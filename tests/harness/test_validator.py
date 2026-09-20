@@ -315,6 +315,35 @@ class ValidatorTests(unittest.TestCase):
         _, _, reviewed = self.reviewed_result()
         self.check(0, '', '--protected-base', self.base, '--task-id', 'KL-001', '--reviewed-head', reviewed)
 
+    def test_ci_merge_gate_binds_base_task_and_reviewed_revision(self):
+        self.reviewed_result()
+        self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_merge_gate_rejects_coordinated_frozen_tamper(self):
+        baseline = self.root / 'FROZEN_BASELINE.json'
+        frozen = json.loads(baseline.read_text())
+        protected = self.root / frozen['files'][0]['path']
+        protected.write_text(protected.read_text() + '\ncoordinated CI tamper\n')
+        frozen['files'][0]['sha256'] = v.sha(protected)
+        dump(baseline, frozen)
+        refresh(self.root)
+        tested = self.commit('coordinated frozen tamper')
+        self.result(tested=tested)
+        reviewed = self.commit('record tampered result')
+        self.review(reviewed)
+        self.check(0)
+        self.check(1, 'protected-baseline-change:',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_merge_gate_requires_exact_head_and_review(self):
+        self.result(tested=self.base)
+        head = self.commit('result without review')
+        self.check(1, 'ci-general-review-missing:KL-001',
+                   '--ci-pr-base', self.base, '--ci-pr-head', head)
+        self.review(head)
+        self.check(1, 'ci-head-not-checked-out',
+                   '--ci-pr-base', self.base, '--ci-pr-head', head)
+
     def test_code_change_after_review_rejected(self):
         _, _, reviewed = self.reviewed_result()
         self.put('src/kineticloop/entry.py')

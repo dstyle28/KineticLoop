@@ -153,6 +153,33 @@ def review_patterns(task_id):
     return [f'docs/exec-plans/reviews/{task_id}/**']
 
 
+def configure_ci_merge_gate(root, args):
+    """Bind a pull-request checkout to its trusted base, task result and review SHA."""
+    if not args.ci_pr_base or not args.ci_pr_head:
+        raise ValueError('ci-revisions-required')
+    base, head = resolve(root, args.ci_pr_base), resolve(root, args.ci_pr_head)
+    if resolve(root, 'HEAD') != head:
+        raise ValueError('ci-head-not-checked-out')
+    git(root, 'merge-base', '--is-ancestor', base, head)
+    candidates = []
+    for path in changed_paths(root, base, head):
+        match = re.fullmatch(r'docs/exec-plans/completed/(KL-[0-9]{3}[A-Z]?)_RESULT\.(?:yaml|json)', path)
+        if match:
+            candidates.append(match.group(1))
+    if len(set(candidates)) != 1:
+        raise ValueError('ci-task-result-count:' + str(len(set(candidates))))
+    task_id = candidates[0]
+    review_path = root / 'docs/exec-plans/reviews' / task_id / 'GENERAL.json'
+    if not review_path.is_file():
+        raise ValueError('ci-general-review-missing:' + task_id)
+    review = load_artifact(review_path)
+    if not isinstance(review, dict) or not isinstance(review.get('reviewed_head_sha'), str):
+        raise ValueError('ci-general-review-invalid:' + task_id)
+    args.protected_base = base
+    args.task_id = task_id
+    args.reviewed_head = review['reviewed_head_sha']
+
+
 def suffix_errors(root, start, end, task_id, kind):
     """Require ancestry and check every bookkeeping commit, including reverted changes."""
     errors = []
@@ -446,8 +473,12 @@ def main(argv=None, root=ROOT):
     parser.add_argument('--protected-base', help='Trusted, already-integrated base commit for PR protection.')
     parser.add_argument('--reviewed-head', help='Reviewed implementation/result revision; requires --task-id.')
     parser.add_argument('--task-id')
+    parser.add_argument('--ci-pr-base', help='Pull request base SHA supplied by CI.')
+    parser.add_argument('--ci-pr-head', help='Pull request head SHA supplied by CI.')
     args = parser.parse_args(argv)
     try:
+        if args.ci_pr_base or args.ci_pr_head:
+            configure_ci_merge_gate(root, args)
         errors, count, active = validate(root, args)
     except (ValueError, KeyError, TypeError, OSError, ImportError) as ex:
         errors, count, active = ['validation-error:' + str(ex)], 0, 0

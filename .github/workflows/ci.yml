@@ -24,3 +24,22 @@ jobs:
       - run: uv run kl test-unit
       - run: uv run kl test-harness
       - run: uv run kl check-harness
+
+  merge-gate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.17"
+          enable-cache: true
+      - run: uv sync --locked
+      - name: Validate revision-bound task merge gate
+        run: >-
+          uv run kl check-harness
+          --ci-pr-base "${{ github.event.pull_request.base.sha }}"
+          --ci-pr-head "${{ github.event.pull_request.head.sha }}"
