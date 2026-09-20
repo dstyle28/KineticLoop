@@ -1,0 +1,1229 @@
+{
+  "status": "PASS",
+  "protocol_status": "FREEZE_CANDIDATE_NOT_FROZEN",
+  "generated_at": "2026-09-18T17:30:03.168440+00:00",
+  "python": "3.9.6",
+  "scope": "Bounded atomic transition model; synthetic single-subject data; no real database, provider or processes.",
+  "source_sha256": {
+    "fixtures.json": "6aed493fefc50132450fe6e75ab737dca203d724ff3dd7c4f1168482db570c48",
+    "kineticloop_model/__init__.py": "cbe4117cd2058f4c28b4cc774e893210db0cd94e7b266c69297ae8a40043e408",
+    "kineticloop_model/interleavings.py": "4e392d90143f2608041efef475f354c33a840e7ca4a8e25a62c2832c165501f3",
+    "kineticloop_model/model.py": "aac8a4614aa9e3b41703ee9753eab70bbca8d21e1c0257a178b7fcb0bedc5440",
+    "policies.json": "3ba24e4d814326b783bd457ad65a86283fcd7191dd6a7306eb6a8d93e26f1a24",
+    "run_model.py": "dbd00d2449d11e9445857037e87cf024ff6c48a4f8e0f99276a699a160097290",
+    "tests/__init__.py": "692b526ec772d03371970f31d532526e1700a84069e7aa2275fafea36ce39a3a",
+    "tests/test_acceptance.py": "688fe17293d77ca88214c0bb80194a5887cade0bbfac9c4e96b21123903c5bbb",
+    "tests/test_interleavings.py": "19da39945a7da8ea0f7c5464f0db43fbb1cb312751c248295b0f46b61f7be1dc",
+    "tests/test_mutations.py": "253cadeeaf330443b773de238f2d034c2420ef96d7885dec58b4403774f170c8"
+  },
+  "baseline": {
+    "path": "KineticLoop_DB_Schema_v0.1_Traceability.json",
+    "sha256": "ea77e555f7b838553dbe44c642f1c912cadf2c7e82eb71ae02eeddce4bad4297"
+  },
+  "acceptance": [
+    {
+      "test_id": "E01",
+      "given": "处方 3 组，原文只完成 1 组",
+      "when": "解析/准入/进阶",
+      "then": "只有有证据的 actual，额外组不计完成",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S10",
+        "S13",
+        "S14"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_E01",
+      "model_scope": "Structured observations stand in for NLP extraction; no natural-language parser tested.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_E01",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "E02",
+      "given": "风险通道收到尚未解析文本",
+      "when": "解析不可用",
+      "then": "适用 pending hold 生效，进阶被阻断",
+      "layers": [
+        "PU",
+        "WF",
+        "E2E"
+      ],
+      "tables": [
+        "S17",
+        "S18",
+        "S43"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_E02",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_E02",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "WF": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "E03",
+      "given": "三来源指向一次训练",
+      "when": "关联与 projection",
+      "then": "独立事件数 1，三来源仍留存",
+      "layers": [
+        "PU",
+        "DC"
+      ],
+      "tables": [
+        "S11",
+        "S12",
+        "S21"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_E03",
+      "model_scope": "Synthetic event association; real provider matching is not implemented.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_E03",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "DC": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "E04",
+      "given": "相近训练是否重复不明确",
+      "when": "reconciliation",
+      "then": "保留歧义，不强制合并/双计成功",
+      "layers": [
+        "PU"
+      ],
+      "tables": [
+        "S12",
+        "S36"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_E04",
+      "model_scope": "Explicit ambiguous event IDs; probabilistic entity resolution is outside scope.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_E04",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "E05",
+      "given": "完成量下界确定，上界未知",
+      "when": "计算 exposure",
+      "then": "上界 unknown，不取计划值或零",
+      "layers": [
+        "PU"
+      ],
+      "tables": [
+        "S14",
+        "S21"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_E05",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_E05",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "E06",
+      "given": "成功后有反证，Agent 只引成功",
+      "when": "解析加重义务",
+      "then": "Resolver 包含反证并按完整范围判断",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S36",
+        "S37"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_E06",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_E06",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "E07",
+      "given": "原事实已用于授权",
+      "when": "新更正撤回依据",
+      "then": "admission/epoch/投影资格变化原子生效",
+      "layers": [
+        "DC",
+        "E2E"
+      ],
+      "tables": [
+        "S13",
+        "S15",
+        "S01",
+        "S43"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_E07",
+      "model_scope": "Conservative user epoch invalidation; full dependency graph invalidation is not implemented.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_E07",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "DC": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "E08",
+      "given": "备注夹带批准指令，经多轮摘要",
+      "when": "context 与批准入口",
+      "then": "保持非命令，不能产生 approval",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S10",
+        "S26",
+        "S08"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_E08",
+      "model_scope": "Authority labels and rejection guards only; no model or prompt-injection red team.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_E08",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "D01",
+      "given": "projection ready，Manifest 未发布",
+      "when": "写计算结果",
+      "then": "generation 不变",
+      "layers": [
+        "PU",
+        "DC"
+      ],
+      "tables": [
+        "S21",
+        "S01"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_D01",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_D01",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "DC": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "D02",
+      "given": "无关输入变化，进阶依赖未变",
+      "when": "BuildManifest",
+      "then": "复用原投影且 basis 验证通过",
+      "layers": [
+        "PU"
+      ],
+      "tables": [
+        "S22",
+        "S25"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_D02",
+      "model_scope": "Single exercise dependency signature; production projection catalog not implemented.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_D02",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "D03",
+      "given": "接受新输入但未发新 Manifest",
+      "when": "tool live query",
+      "then": "不混入未绑定修订",
+      "layers": [
+        "DC",
+        "E2E"
+      ],
+      "tables": [
+        "S15",
+        "S24",
+        "S33"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_D03",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_D03",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "DC": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "D04",
+      "given": "原查询不存在限制/相关事件",
+      "when": "并发插入新记录",
+      "then": "集合依赖或 epoch 捕捉变化",
+      "layers": [
+        "DC"
+      ],
+      "tables": [
+        "S22",
+        "S17",
+        "S01"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_D04",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_D04",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "DC": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "D05",
+      "given": "旧 epoch 的 READY build",
+      "when": "revoke 与 publish 交错",
+      "then": "只允许 §5.1 两种合法结果",
+      "layers": [
+        "PU",
+        "DC"
+      ],
+      "tables": [
+        "S23",
+        "S24",
+        "S01"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_D05",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_D05",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "DC": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "A01",
+      "given": "活跃计划可执行，模型服务故障",
+      "when": "revoke",
+      "then": "旧 A 立即失权，无需替代计划",
+      "layers": [
+        "DC",
+        "WF",
+        "E2E"
+      ],
+      "tables": [
+        "S01",
+        "S43"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_A01",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_A01",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "DC": "NOT_RUN",
+        "WF": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "A02",
+      "given": "epoch 已增加，Manifest 仍旧",
+      "when": "重新签发相同 P",
+      "then": "旧 Manifest 签发失败",
+      "layers": [
+        "PU",
+        "DC"
+      ],
+      "tables": [
+        "S24",
+        "S42"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_A02",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_A02",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "DC": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "A03",
+      "given": "有效 P/A，尚未 START",
+      "when": "START/revoke 竞争",
+      "then": "按提交顺序；无晚越权 START",
+      "layers": [
+        "PU",
+        "DC"
+      ],
+      "tables": [
+        "S01",
+        "S43",
+        "S45"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_A03",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_A03",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "DC": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "A04",
+      "given": "缓存仍标 VALID，实际已过期",
+      "when": "Start/eligibility",
+      "then": "AUTH_EXPIRED，与后台 job 无关",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S42",
+        "S45"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_A04",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_A04",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "A05",
+      "given": "P7 已通过 A1 开始",
+      "when": "签 A2 并 RESUME",
+      "then": "原 START 保留 A1，新 binding 引 A2",
+      "layers": [
+        "PU",
+        "DC"
+      ],
+      "tables": [
+        "S42",
+        "S45"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_A05",
+      "model_scope": "Immutable issuance/binding identity; complete session lifecycle not implemented.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_A05",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "DC": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "A06",
+      "given": "hold 有效，模型不可用",
+      "when": "fallback 选择",
+      "then": "同样受限，无适用项则 UNAVAILABLE",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S05",
+        "S18",
+        "S42"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_A06",
+      "model_scope": "No configured fallback; UNAVAILABLE is tested; no clinical fallback rules.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_A06",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "A07",
+      "given": "普通规划队列和预算耗尽",
+      "when": "STOP 请求",
+      "then": "独立容量处理撤销",
+      "layers": [
+        "WF",
+        "E2E"
+      ],
+      "tables": [
+        "S17",
+        "S01",
+        "S43"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_A07",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_A07",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "WF": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "A08",
+      "given": "用户在无有效 A 时实际训练",
+      "when": "ingest actual",
+      "then": "保存事实，无虚构 execution binding",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S14",
+        "S44",
+        "S45"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_A08",
+      "model_scope": "External-session persistence bypasses authorization; source ingestion not implemented.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_A08",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "W01",
+      "given": "已 RESERVED 或 DISPATCH_INTENT",
+      "when": "各边界 kill worker",
+      "then": "仅许可前可退款，可能发送后 UNKNOWN 占用",
+      "layers": [
+        "PU",
+        "WF"
+      ],
+      "tables": [
+        "S27",
+        "S31",
+        "S32"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_W01",
+      "model_scope": "Command-boundary cut simulation; no OS process was killed.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_W01",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "WF": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "W02",
+      "given": "RESERVED，有取消与发送请求",
+      "when": "两事务交错",
+      "then": "取消释放与发送许可不能同时成立",
+      "layers": [
+        "PU",
+        "DC"
+      ],
+      "tables": [
+        "S31",
+        "S32",
+        "S27"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_W02",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_W02",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "DC": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "W03",
+      "given": "provider 返回 transient error",
+      "when": "SDK/runtime retry",
+      "then": "每次物理请求有独立预算覆盖",
+      "layers": [
+        "WF",
+        "E2E"
+      ],
+      "tables": [
+        "S31",
+        "S32"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_W03",
+      "model_scope": "Controlled synthetic transport; no SDK/provider exactly-once guarantee.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_W03",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "WF": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "W04",
+      "given": "rev1=70min/full gym 正在运行",
+      "when": "rev2=20min/no equipment",
+      "then": "rev1 失权，根预算/deadline 未重置",
+      "layers": [
+        "PU",
+        "DC",
+        "E2E"
+      ],
+      "tables": [
+        "S27",
+        "S28",
+        "S29"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_W04",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_W04",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "DC": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "W05",
+      "given": "token7 worker 暂停，lease 到期",
+      "when": "token8 接管，7 晚提交",
+      "then": "7 不可提交；可信回执仅可结算",
+      "layers": [
+        "PU",
+        "DC",
+        "WF"
+      ],
+      "tables": [
+        "S27",
+        "S29",
+        "S32",
+        "S42"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_W05",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_W05",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "DC": "NOT_RUN",
+        "WF": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "W06",
+      "given": "intent 已取消或 deadline 结束",
+      "when": "模型晚返回",
+      "then": "不复活 intent/attempt，不新签 A",
+      "layers": [
+        "PU",
+        "WF"
+      ],
+      "tables": [
+        "S27",
+        "S29",
+        "S42"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_W06",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_W06",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "WF": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "W07",
+      "given": "F1/D1/N1 已存在",
+      "when": "修复出 F2",
+      "then": "D1/N1 不能用于 F2，重算计原预算",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S34",
+        "S35",
+        "S37"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_W07",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_W07",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "W08",
+      "given": "T6 已成功 commit",
+      "when": "ACK 丢失后重发",
+      "then": "返回相同 result/issuance，不重复写",
+      "layers": [
+        "DC",
+        "WF",
+        "E2E"
+      ],
+      "tables": [
+        "S02",
+        "S39",
+        "S42"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_W08",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_W08",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "DC": "NOT_RUN",
+        "WF": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "W09",
+      "given": "两次搜索失败，无形式冲突证明",
+      "when": "workflow 结束",
+      "then": "非 PROVEN_CONSTRAINT_CONFLICT",
+      "layers": [
+        "PU"
+      ],
+      "tables": [
+        "S27",
+        "S37"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_W09",
+      "model_scope": "No constraint solver; only budget-exhausted classification.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_W09",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "R01",
+      "given": "九月更正八月事实",
+      "when": "cutoff=八月 replay",
+      "then": "排除九月获知修订",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S14",
+        "S46",
+        "S47"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_R01",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_R01",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "R02",
+      "given": "相同 cutoff，历史/当前 release 不同",
+      "when": "两模式 replay",
+      "then": "分别绑定指定 artifact bundle",
+      "layers": [
+        "PU"
+      ],
+      "tables": [
+        "S46",
+        "S48"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_R02",
+      "model_scope": "Known-at facts and release identity selection; no model release is actually executed.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_R02",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "R03",
+      "given": "九月人工建立个体映射",
+      "when": "八月 current backtest",
+      "then": "不导入未来个体知识",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S20",
+        "S46",
+        "S47"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_R03",
+      "model_scope": "Atomic in-memory state transitions and guards; production layer obligations remain open.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_R03",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "PU": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    },
+    {
+      "test_id": "R04",
+      "given": "replay 产生模拟有效结果",
+      "when": "尝试生产提交",
+      "then": "角色/存储隔离拒绝，无 live issuance",
+      "layers": [
+        "DC",
+        "E2E"
+      ],
+      "tables": [
+        "S46",
+        "S47",
+        "S42"
+      ],
+      "implementation_status": "MODEL_ABSTRACTION_IMPLEMENTED",
+      "execution_status": "SEE_RUN_REPORT",
+      "handler": "tests.test_acceptance.AcceptanceTests.test_R04",
+      "model_scope": "Environment guard only; no database roles, grants or separate storage tested.",
+      "model_result": {
+        "test": "tests.test_acceptance.AcceptanceTests.test_R04",
+        "status": "PASS",
+        "failures": []
+      },
+      "production_layer_results": {
+        "DC": "NOT_RUN",
+        "E2E": "NOT_RUN"
+      }
+    }
+  ],
+  "boundaries": [
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P01_unsealed_not_canonical",
+      "status": "PASS",
+      "failures": []
+    },
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P02_candidate_frozen_at_ready",
+      "status": "PASS",
+      "failures": []
+    },
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P03_stale_seal_atomic",
+      "status": "PASS",
+      "failures": []
+    },
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P04_artifact_revocation_stops_issue_and_execution",
+      "status": "PASS",
+      "failures": []
+    },
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P05_transitive_artifact_and_unrelated_revocation",
+      "status": "PASS",
+      "failures": []
+    },
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P06_ttl_closure_each_component",
+      "status": "PASS",
+      "failures": []
+    },
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P07_missing_validity_denied_timeless_explicit",
+      "status": "PASS",
+      "failures": []
+    },
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P08_expired_dependency_no_partial_commit",
+      "status": "PASS",
+      "failures": []
+    },
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P09_execution_basis_prevents_combined_overcommit",
+      "status": "PASS",
+      "failures": []
+    },
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P10_ordinary_manifest_does_not_revoke_authorization",
+      "status": "PASS",
+      "failures": []
+    },
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P11_config_disables_progression_and_production",
+      "status": "PASS",
+      "failures": []
+    },
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P12_receipt_conflict_and_single_physical_send",
+      "status": "PASS",
+      "failures": []
+    },
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P13_stale_restarts_keep_root_budget_and_deadline",
+      "status": "PASS",
+      "failures": []
+    },
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P14_extra_validity_cannot_override_manifest",
+      "status": "PASS",
+      "failures": []
+    },
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P15_default_policy_is_fail_closed",
+      "status": "PASS",
+      "failures": []
+    },
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P16_artifact_revoke_blocks_resume_and_continue",
+      "status": "PASS",
+      "failures": []
+    },
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P17_undeclared_artifact_validity_is_denied",
+      "status": "PASS",
+      "failures": []
+    },
+    {
+      "test": "tests.test_acceptance.BoundaryTests.test_P18_transitive_artifact_expiry_caps_authorization",
+      "status": "PASS",
+      "failures": []
+    }
+  ],
+  "interleavings": [
+    {
+      "scenario": "publish_vs_user_revoke",
+      "complete_schedules": 40,
+      "visited_prefixes": 216,
+      "deadlocks": 0,
+      "violations": [],
+      "outcomes": {
+        "publish=OK;revoke=OK": 25,
+        "publish=EPOCH_MISMATCH;revoke=OK": 15
+      }
+    },
+    {
+      "scenario": "start_vs_user_revoke",
+      "complete_schedules": 40,
+      "visited_prefixes": 216,
+      "deadlocks": 0,
+      "violations": [],
+      "outcomes": {
+        "start=OK;revoke=OK": 25,
+        "start=EPOCH_MISMATCH;revoke=OK": 15
+      }
+    },
+    {
+      "scenario": "cancel_vs_dispatch_intent",
+      "complete_schedules": 10,
+      "visited_prefixes": 65,
+      "deadlocks": 0,
+      "violations": [],
+      "outcomes": {
+        "cancel=OK;permit=INTENT_TERMINAL": 5,
+        "cancel=OK;permit=OK": 5
+      }
+    },
+    {
+      "scenario": "lease_takeover_vs_commit_with_clock",
+      "complete_schedules": 440,
+      "visited_prefixes": 1995,
+      "deadlocks": 0,
+      "violations": [],
+      "outcomes": {
+        "takeover=LEASE_HELD;commit=OK;clock=OK": 45,
+        "takeover=LEASE_HELD;commit=LEASE_EXPIRED;clock=OK": 57,
+        "takeover=OK;commit=FENCE_MISMATCH;clock=OK": 63,
+        "takeover=INTENT_TERMINAL;commit=OK;clock=OK": 159,
+        "takeover=OK;commit=LEASE_EXPIRED;clock=OK": 116
+      }
+    },
+    {
+      "scenario": "artifact_revoke_vs_issue",
+      "complete_schedules": 14,
+      "visited_prefixes": 135,
+      "deadlocks": 0,
+      "violations": [],
+      "outcomes": {
+        "issue=OK;revoke=OK": 7,
+        "issue=ARTIFACT_REVOKED;revoke=OK": 7
+      }
+    },
+    {
+      "scenario": "artifact_revoke_vs_start",
+      "complete_schedules": 14,
+      "visited_prefixes": 135,
+      "deadlocks": 0,
+      "violations": [],
+      "outcomes": {
+        "start=OK;revoke=OK": 7,
+        "start=ARTIFACT_REVOKED;revoke=OK": 7
+      }
+    },
+    {
+      "scenario": "artifact_revoke_vs_publish",
+      "complete_schedules": 14,
+      "visited_prefixes": 135,
+      "deadlocks": 0,
+      "violations": [],
+      "outcomes": {
+        "publish=OK;revoke=OK": 7,
+        "publish=ARTIFACT_REVOKED;revoke=OK": 7
+      }
+    },
+    {
+      "scenario": "factset_seal_vs_input_update",
+      "complete_schedules": 10,
+      "visited_prefixes": 65,
+      "deadlocks": 0,
+      "violations": [],
+      "outcomes": {
+        "seal=OK;input=OK": 5,
+        "seal=BUILD_STALE;input=OK": 5
+      }
+    },
+    {
+      "scenario": "dependency_expiry_vs_start",
+      "complete_schedules": 7,
+      "visited_prefixes": 35,
+      "deadlocks": 0,
+      "violations": [],
+      "outcomes": {
+        "start=OK;clock=OK": 3,
+        "start=AUTH_EXPIRED;clock=OK": 4
+      }
+    }
+  ],
+  "negative_controls": [
+    {
+      "mutant": "missing_user_epoch_guard",
+      "detected": true,
+      "test": "AcceptanceTests.test_D05",
+      "failure_kind": "assertion"
+    },
+    {
+      "mutant": "missing_fencing_guard",
+      "detected": true,
+      "test": "AcceptanceTests.test_W05",
+      "failure_kind": "assertion"
+    },
+    {
+      "mutant": "unsealed_factset_readable",
+      "detected": true,
+      "test": "BoundaryTests.test_P01_unsealed_not_canonical",
+      "failure_kind": "assertion"
+    },
+    {
+      "mutant": "missing_global_revocation_guard",
+      "detected": true,
+      "test": "BoundaryTests.test_P04_artifact_revocation_stops_issue_and_execution",
+      "failure_kind": "assertion"
+    },
+    {
+      "mutant": "authorization_outlives_dependencies",
+      "detected": true,
+      "test": "BoundaryTests.test_P06_ttl_closure_each_component",
+      "failure_kind": "assertion"
+    },
+    {
+      "mutant": "refund_possible_dispatch",
+      "detected": true,
+      "test": "AcceptanceTests.test_W01",
+      "failure_kind": "assertion"
+    },
+    {
+      "mutant": "resolver_ignores_contradictions",
+      "detected": true,
+      "test": "AcceptanceTests.test_E06",
+      "failure_kind": "assertion"
+    },
+    {
+      "mutant": "unknown_exposure_zeroed",
+      "detected": true,
+      "test": "AcceptanceTests.test_E05",
+      "failure_kind": "assertion"
+    }
+  ],
+  "totals": {
+    "acceptance_cases": 34,
+    "boundary_cases": 18,
+    "interleaving_scenarios": 9,
+    "complete_schedules": 589,
+    "visited_prefixes": 2997,
+    "mutants_detected": 8,
+    "real_postgres_tests": 0,
+    "real_process_fault_tests": 0,
+    "live_llm_calls": 0
+  },
+  "unverified": [
+    "PostgreSQL constraints, isolation, statement interleavings and rollback",
+    "Actual crash recovery, provider billing, SDK retries and transport fencing",
+    "Multiple subjects, permissions, replay storage isolation and timezones",
+    "Production medical/training policy and complete event/exposure reconciliation",
+    "Registry outage, lock fairness, fleet fanout and load/latency limits"
+  ]
+}

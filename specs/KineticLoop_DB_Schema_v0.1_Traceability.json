@@ -1,0 +1,2023 @@
+{
+  "document_status": "LOGICAL_SCHEMA_REVIEW_CANDIDATE",
+  "protocol_status": "FREEZE_CANDIDATE_NOT_FROZEN",
+  "baseline_file": "/Users/davetian/Documents/Codex/2026-09-17/role-objective-principal-ai-native-architect/outputs/KineticLoop_v1.2_Protocol_Freeze_Candidate.md",
+  "baseline_sha256": "6a0ad564b934498a6a441f48a8f62905c1eab8e7a03cf11e325226d629715187",
+  "schema_design_file": "/Users/davetian/Documents/Codex/2026-09-17/role-objective-principal-ai-native-architect/outputs/KineticLoop_DB_Schema_Design_v0.1.md",
+  "schema_design_sha256": "4dbf52d8c110139648c3e85dd583277855082a10a27a163bc64a018c39fed567",
+  "validation_scope": "Document structure and traceability only; no protocol/DB/concurrency/worker tests run.",
+  "tables": [
+    {
+      "table_id": "S01",
+      "name": "user_decision_state",
+      "record_class": "M",
+      "fields": {
+        "作用/字段": "`subject_id` 主键；current_factset_id、input_frontier_hash、active_program_id、active_policy_bundle_id、current_manifest_id、decision_generation、authorization_epoch、last_control_event_id、execution_basis_event_id。",
+        "约束": "DB：每主体一行、计数非负、指针同主体。TX：generation 仅 T3 成功发布时递增；epoch 只由失效命令推进；指针与事件同事务。",
+        "索引": "主键就是用户协调锁入口；不建立全用户全局锁。",
+        "唯一写入所有者": "DecisionStateCoordinator；决策发布/输入/控制字段经 T2/T3 更新；改变计划或执行暴露的 T2/T6/T7 同事务更新 execution_basis_event_id；其余事务仅锁住并读取 guard。",
+        "映射": "INV-07, INV-08, INV-09, INV-10, INV-17；T2, T3, T4, T5, T6, T7, T8。"
+      },
+      "invariants": [
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-17"
+      ],
+      "transactions": [
+        "T2",
+        "T3",
+        "T4",
+        "T5",
+        "T6",
+        "T7",
+        "T8"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S02",
+      "name": "command_receipts",
+      "record_class": "M",
+      "fields": {
+        "作用/字段": "command_kind、client_key、actor_scope、request_hash、status、result_entity_refs、error_code、accepted_at、completed_at。",
+        "约束": "DB：主体/actor_scope/command_kind/client_key 唯一。TX：同 key 同 hash 返回既有结果；不同 hash 拒绝。数据库 mutation 的 receipt 与结果同事务，不能先写 SUCCESS 再操作。",
+        "索引": "幂等唯一键；completed_at 支持保留策略。不因删除旧 receipt 允许危险命令重放，见 §3。",
+        "唯一写入所有者": "CommandGateway 与对应原子事务；模型无权写。",
+        "映射": "INV-02, INV-08, INV-11, INV-13, INV-18；T1, T2, T3, T4, T5, T6, T7, T8。"
+      },
+      "invariants": [
+        "INV-02",
+        "INV-08",
+        "INV-11",
+        "INV-13",
+        "INV-18"
+      ],
+      "transactions": [
+        "T1",
+        "T2",
+        "T3",
+        "T4",
+        "T5",
+        "T6",
+        "T7",
+        "T8"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S03",
+      "name": "domain_events",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "aggregate_type/id、aggregate_revision、event_type、causation_command_id、correlation_intent_id、typed payload、effective/known time。",
+        "约束": "DB：聚合内 revision 唯一、引用同主体。TX：与可见状态变化同事务；不要求所有原始 telemetry 使用同一个用户序号。",
+        "索引": "subject/aggregate/revision；subject/known_at；correlation_intent_id。",
+        "唯一写入所有者": "每个领域 command 的事务；EventWriter 负责格式，不绕过领域入口。",
+        "映射": "INV-07, INV-08, INV-12, INV-13, INV-16, INV-18；T1, T2, T3, T4, T5, T6, T7, T8。"
+      },
+      "invariants": [
+        "INV-07",
+        "INV-08",
+        "INV-12",
+        "INV-13",
+        "INV-16",
+        "INV-18"
+      ],
+      "transactions": [
+        "T1",
+        "T2",
+        "T3",
+        "T4",
+        "T5",
+        "T6",
+        "T7",
+        "T8"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S04",
+      "name": "outbox_deliveries",
+      "record_class": "M",
+      "fields": {
+        "作用/字段": "domain_event_id、destination、delivery_status、next_attempt_at、delivery_lease、attempt_count、last_error。",
+        "约束": "DB：event/destination 唯一。TX：与对应 event 同事务创建；投递成功不是业务提交的前提。",
+        "索引": "待投递状态/next_attempt_at、lease expiry。claim 使用队列专属锁，不反向取得 S01。",
+        "唯一写入所有者": "原命令创建、OutboxDispatcher 更新投递元数据；不修改事件内容。",
+        "映射": "INV-08, INV-12, INV-17；T1, T2, T3, T4, T5, T6, T7, T8。"
+      },
+      "invariants": [
+        "INV-08",
+        "INV-12",
+        "INV-17"
+      ],
+      "transactions": [
+        "T1",
+        "T2",
+        "T3",
+        "T4",
+        "T5",
+        "T6",
+        "T7",
+        "T8"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S05",
+      "name": "policy_bundles",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "policy_namespace/version、admission/obligation/envelope/authorization/fallback/workflow 配置、dependency signatures、engine artifact refs、配置完整性报告、review provenance。",
+        "约束": "DB：namespace/version 唯一、不可变。DOMAIN：各模块闭合 schema、引用版本可解析。未配置与显式禁用不同；hash 不是人工审核通过的证明。",
+        "索引": "namespace/version；content_hash 仅做同 namespace 内容定位。",
+        "唯一写入所有者": "PolicyRegistry.PublishBundle；生效只经 T2 激活到用户指针，不能修改全局 alias 静默改变执行规则。",
+        "映射": "INV-02, INV-05, INV-06, INV-09, INV-15, INV-16；T2, T3, T6, T7。"
+      },
+      "invariants": [
+        "INV-02",
+        "INV-05",
+        "INV-06",
+        "INV-09",
+        "INV-15",
+        "INV-16"
+      ],
+      "transactions": [
+        "T2",
+        "T3",
+        "T6",
+        "T7"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S06",
+      "name": "program_versions",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "program_id、revision、parent_version_id、goals、结构化 blueprint/schedule/targets、nutrition policy refs、activation basis。",
+        "约束": "DB：主体/program/revision 唯一。TX：唯一 active 权威是 S01.active_program_id；pending proposal 不能改变该指针。不再维护第二个独立可写 ACTIVE 标记。",
+        "索引": "subject/program/revision；subject/known_at。",
+        "唯一写入所有者": "ProgramService.ActivateApprovedProgram，或明确授权的初始 Program import；激活 T2 重检批准与 basis。",
+        "映射": "INV-02, INV-07, INV-09, INV-16；T2, T3, T6。"
+      },
+      "invariants": [
+        "INV-02",
+        "INV-07",
+        "INV-09",
+        "INV-16"
+      ],
+      "transactions": [
+        "T2",
+        "T3",
+        "T6"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S07",
+      "name": "durable_change_proposals",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "proposal_family_id、revision、change_class、base_program_id、base_manifest_id、exact proposed change、origin proposal/artifact、content_hash。",
+        "约束": "DB：family/revision 唯一、基础版本同主体。DOMAIN：变化类别与 payload 相符。改变内容必须新 revision，不修改已被批准对象。",
+        "索引": "subject/change_class/known_at；base_program_id。",
+        "唯一写入所有者": "ProgramReviewService.SubmitChangeProposal；此入口不能激活 Program。",
+        "映射": "INV-02, INV-09, INV-15, INV-16；T2。"
+      },
+      "invariants": [
+        "INV-02",
+        "INV-09",
+        "INV-15",
+        "INV-16"
+      ],
+      "transactions": [
+        "T2"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S08",
+      "name": "approval_issuances",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "proposal_revision_id、bound_content_hash、actor_id、command_receipt_id、approved_scope、base_program/policy、approval time/expiry、approval_mode。",
+        "约束": "DB：一次批准 command 只产生一个 issuance；subject/proposal/hash 绑定。TX：用户批准入口或明确的 change-class 自动批准政策才能写；激活时再检查有效期、基础版本与当前权限。",
+        "索引": "proposal_revision_id；subject/actor/time。使用同 issuance 重放 Program activation 必须返回原 activation，而非再次创建新版本。",
+        "唯一写入所有者": "ApprovalService.ApproveChange；撤回通过追加 domain event，不篡改 issuance。",
+        "映射": "INV-02, INV-09, INV-15, INV-16；T2。"
+      },
+      "invariants": [
+        "INV-02",
+        "INV-09",
+        "INV-15",
+        "INV-16"
+      ],
+      "transactions": [
+        "T2"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S09",
+      "name": "evidence_revisions",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "source_connection_id、source_object_type/id、source_revision/observation_key、payload hash/blob、observed_at、known_at、trust_class、source_class、command_authority=NONE。",
+        "约束": "DB：可靠 provider revision 时来源对象/revision 唯一；无可靠 revision 时用稳定接收 observation key 去重。payload hash 相同只可去重存储，不能删除独立时间点的测量或回滚后的新观察。",
+        "索引": "subject/source/object/revision；subject/known_at；subject/observed_at。",
+        "唯一写入所有者": "EvidenceService.ReceiveEvidence；known_at 由可信持久接收边界产生，不能回填 provider 时间。",
+        "映射": "INV-01, INV-02, INV-03, INV-15, INV-16, INV-18；T1。"
+      },
+      "invariants": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-15",
+        "INV-16",
+        "INV-18"
+      ],
+      "transactions": [
+        "T1"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S10",
+      "name": "candidate_assertions",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "assertion_family/revision、evidence_revision_id、predicate、typed value/unit、negation/modality、assertion_type、field provenance、extractor artifact、uncertainty。",
+        "约束": "DB：证据引用同主体；结构 schema 闭合。DOMAIN：否定、未知、零不能混合；模型 confidence 仅诊断。候选无 admission/command 写权。",
+        "索引": "evidence_revision_id；subject/predicate/effective_at；assertion_family/revision。",
+        "唯一写入所有者": "ExtractionService.RecordCandidate；失败候选留痕，不自动进入事实投影。",
+        "映射": "INV-01, INV-02, INV-04, INV-15, INV-16；T1, T2。"
+      },
+      "invariants": [
+        "INV-01",
+        "INV-02",
+        "INV-04",
+        "INV-15",
+        "INV-16"
+      ],
+      "transactions": [
+        "T1",
+        "T2"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S11",
+      "name": "underlying_events",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "event_id、subject、event_kind、creation provenance、初始已知时间；表示稳定的现实事件身份。",
+        "约束": "DB：event_id 同主体唯一。DOMAIN：创建 ID 不等于确认事件发生，不等于获得 progression credit。事件合并/拆分由新 association decision 表达。",
+        "索引": "subject/event_kind/known_at。",
+        "唯一写入所有者": "EvidenceAssociationService；禁止由 Agent 自造 ID 后直接计数。",
+        "映射": "INV-03, INV-04, INV-16, INV-18；T2。"
+      },
+      "invariants": [
+        "INV-03",
+        "INV-04",
+        "INV-16",
+        "INV-18"
+      ],
+      "transactions": [
+        "T2"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S12",
+      "name": "event_association_decisions",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "association_family/revision、evidence_revision_id、candidate_event_ids、accepted_event_id（可空）、MATCHED/AMBIGUOUS/RETRACTED、method/policy、supersedes、source lineage。",
+        "约束": "DB：family/revision 唯一；单项决定的 accepted_event 只能有一个。TX：同一关联前序不能产生两个同时生效的 successor；merge/split 的关联批次原子进入新的 factset。",
+        "索引": "evidence_revision_id/known_at；accepted_event_id；supersedes_id。",
+        "唯一写入所有者": "EvidenceAssociationService.DecideAssociation；AI matching 仅提供候选。",
+        "映射": "INV-03, INV-04, INV-05, INV-16；T2。"
+      },
+      "invariants": [
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-16"
+      ],
+      "transactions": [
+        "T2"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S13",
+      "name": "admission_decisions",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "assertion_id、action_scope、decision=ELIGIBLE/NOT_ELIGIBLE/UNRESOLVED、policy_bundle_id、evidence basis、reason_codes、supersedes_id、effective/known times。",
+        "约束": "DB：assertion/scope/decision revision 唯一；scope 非空。TX：同 scope 的当前决策更替经同一协调点，禁止并发分叉；撤回追加新决策。不允许 verified boolean 代替用途资格。",
+        "索引": "subject/assertion/action_scope/known_at；supersedes_id；policy_bundle_id。",
+        "唯一写入所有者": "AdmissionService.DecideAdmission；触发失效的决策与 epoch 变化同 T2。",
+        "映射": "INV-01, INV-02, INV-04, INV-05, INV-08, INV-16；T2。"
+      },
+      "invariants": [
+        "INV-01",
+        "INV-02",
+        "INV-04",
+        "INV-05",
+        "INV-08",
+        "INV-16"
+      ],
+      "transactions": [
+        "T2"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S14",
+      "name": "canonical_fact_revisions",
+      "record_class": "I，领域事实版本根",
+      "fields": {
+        "作用/字段": "stable_fact_id、revision、fact_kind、underlying_event_id、source assertion/admission refs、effective/known time、typed fact payload、supersedes_id。",
+        "领域形状": "WORKOUT_ACTUAL（稳定 set/bout 子身份、实际动作/数值/缺失状态）、HEALTH_OBSERVATION、NUTRITION_INTAKE、BODY_MEASUREMENT、OUTCOME_OBSERVATION。每种形状独立领域 schema；计划处方不属于此 union。",
+        "约束": "DB：stable_fact/revision 唯一、kind/identity/单位形状一致、actual 字段不可引用处方作为完成证据。DOMAIN：字段 provenance 与各用途 admission 对齐。被接受的用户报告仍保留 USER_REPORTED 性质。",
+        "索引": "subject/kind/effective_at；subject/stable_fact/revision；underlying_event_id；known_at。",
+        "唯一写入所有者": "CanonicalFactService.AcceptFactRevision，嵌入 T2 admission/修订事务。",
+        "映射": "INV-01, INV-03, INV-04, INV-16, INV-18；T2。",
+        "物理化边界": "这是一个逻辑版本根，不是任意 key/value EAV。DDL 阶段可为高频 strength_sets、cardio_bouts、health/nutrition 数值拆 typed child relations，但必须保持 revision/admission 与事务边界；不能把未定义 payload 留给 LLM。"
+      },
+      "invariants": [
+        "INV-01",
+        "INV-03",
+        "INV-04",
+        "INV-16",
+        "INV-18"
+      ],
+      "transactions": [
+        "T2"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S15",
+      "name": "factset_revisions",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "factset_id、parent_factset_id、storage_mode=FULL/DELTA、delta_depth、membership_digest、association/admission/mapping basis、knowledge boundary、effective scope、sealed_at。",
+        "约束": "DB：ID 唯一。TX：只有成员完整且验证后才封存并推进 S01.current_factset_id。封存后不可追加成员；parent 不代表可以忽略成员具体修订。",
+        "索引": "subject/known_at；parent_factset_id。",
+        "唯一写入所有者": "CanonicalViewService.SealFactset，T2。",
+        "映射": "INV-03, INV-05, INV-06, INV-07, INV-16；T2, T3。"
+      },
+      "invariants": [
+        "INV-03",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-16"
+      ],
+      "transactions": [
+        "T2",
+        "T3"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S16",
+      "name": "factset_members",
+      "record_class": "I（封存后）",
+      "fields": {
+        "作用/字段": "factset_id、member_operation=SET/REMOVE、member_kind、明确类型的 fact_revision/admission_decision/association_decision/mapping_decision 引用、logical_member_key、action_scope（如适用）；REMOVE 为可解释 tombstone，不表示删除原证据。",
+        "约束": "DB：factset/kind/logical_member_key/scope 唯一；类型与目标 FK 对应，禁止无外键的任意 target_type/target_id。TX：member 与 parent 同主体；封存后禁止增删；同一事实在同一集合不能同时选择冲突版本。",
+        "索引": "factset/kind/logical_member_key；各被引用 revision_id 的反向索引。",
+        "唯一写入所有者": "CanonicalViewService.SealFactset。",
+        "映射": "INV-03, INV-05, INV-06, INV-16；T2, T3。"
+      },
+      "invariants": [
+        "INV-03",
+        "INV-05",
+        "INV-06",
+        "INV-16"
+      ],
+      "transactions": [
+        "T2",
+        "T3"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S17",
+      "name": "control_events",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "control_id、control_revision、kind（HOLD/STOP/OVERRIDE/RESTRICTION/CLEAR）、scope、command/evidence/admission refs、policy、effective/known times、review_due_at、previous_event_id。",
+        "约束": "DB：control/revision 唯一、CLEAR 必须引用被解除对象及 clearance basis。DOMAIN：普通文本/摘要不能产生 command authority。TX：改变执行权限与 epoch 同事务。",
+        "索引": "subject/control/revision；subject/scope/known_at；关联 evidence_id。",
+        "唯一写入所有者": "ControlService.ApplyControl / ClearControl（同一 writer）；紧急路径可先 hold 再完整解析。",
+        "映射": "INV-02, INV-08, INV-09, INV-10, INV-15, INV-16；T2。"
+      },
+      "invariants": [
+        "INV-02",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-15",
+        "INV-16"
+      ],
+      "transactions": [
+        "T2"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S18",
+      "name": "control_heads",
+      "record_class": "M，同步投影",
+      "fields": {
+        "作用/字段": "subject/control_id、last_event_id/revision、current state、execution_scope、review_due_at。",
+        "约束": "DB：subject/control_id 唯一。TX：与 S17 同事务更新；不能靠异步消费者更新执行安全状态。失配或不可验证时 authorization fail closed，不从缓存推导已解除。",
+        "索引": "subject/active-state/scope；待 review 时间（仅调度，不自动清除）。",
+        "唯一写入所有者": "ControlService；可从 S17 重建但重建期间不得错放行。",
+        "映射": "INV-08, INV-09, INV-10；T2, T6, T7。"
+      },
+      "invariants": [
+        "INV-08",
+        "INV-09",
+        "INV-10"
+      ],
+      "transactions": [
+        "T2",
+        "T6",
+        "T7"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S19",
+      "name": "exercise_catalog_revisions",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "namespace、exercise_identity、revision、movement/equipment/unit semantics、compatibility、known_at。",
+        "约束": "DB：namespace/exercise/revision 唯一；个人 catalog 受主体隔离，全局 catalog 只读。DOMAIN：不同器械/load convention 不因名称相近自动兼容。",
+        "索引": "namespace/exercise/revision；movement/equipment 用于 bounded catalog search。",
+        "唯一写入所有者": "ExerciseCatalogService.PublishRevision；被采用为用户输入的变化经 T2 分类/失效。",
+        "映射": "INV-02, INV-05, INV-06, INV-16；T2, T3。"
+      },
+      "invariants": [
+        "INV-02",
+        "INV-05",
+        "INV-06",
+        "INV-16"
+      ],
+      "transactions": [
+        "T2",
+        "T3"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S20",
+      "name": "exercise_mapping_decisions",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "source_exercise_identity、catalog_revision_id、mapping scope、ACCEPTED/UNRESOLVED/RETRACTED、policy/method、approval ref、supersedes、known/effective times。",
+        "约束": "DB：mapping family/revision 唯一、catalog FK。TX：当前采用映射经 factset 明确选择；模糊映射不直接进入 sequence/progression qualification。",
+        "索引": "subject/source_exercise/known_at；catalog_revision_id；supersedes_id。",
+        "唯一写入所有者": "ExerciseMappingService.DecideMapping。",
+        "映射": "INV-02, INV-05, INV-06, INV-16；T2, T3。"
+      },
+      "invariants": [
+        "INV-02",
+        "INV-05",
+        "INV-06",
+        "INV-16"
+      ],
+      "transactions": [
+        "T2",
+        "T3"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S21",
+      "name": "projection_versions",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "projection_kind、engine artifact、input_basis_hash、window、typed result、quality/coverage、computed_at、validity boundary。",
+        "约束": "DB：subject/kind/engine/basis/window 的计算身份唯一或幂等；DOMAIN：Exposure 上下界与 unknown 分离，sequence 只由已准入 actual 计算。不得用 computation time 冒充输入 known time。",
+        "索引": "subject/kind/basis_hash；window end；engine version 反向影响查询。",
+        "唯一写入所有者": "ProjectionService.RecordResult；T3 准备阶段独立短事务，完成不更新 S01 generation。",
+        "映射": "INV-03, INV-04, INV-06, INV-07, INV-16；T3。"
+      },
+      "invariants": [
+        "INV-03",
+        "INV-04",
+        "INV-06",
+        "INV-07",
+        "INV-16"
+      ],
+      "transactions": [
+        "T3"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S22",
+      "name": "projection_dependencies",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "projection_id、dependency_kind、明确 FK（factset/fact revision/mapping/catalog/program/policy）、collection predicate signature、collection revision/digest、query window。",
+        "约束": "DB：projection/dependency semantic key 唯一，闭合 target kinds 与对应 FK。DOMAIN：同时保留正依赖和 absence/集合依赖；不宣称列几个读取行就足以覆盖新增记录。",
+        "索引": "各 dependency target 的反向索引；projection_id；kind/collection signature。",
+        "唯一写入所有者": "ProjectionService，与 S21 结果封存同事务。",
+        "映射": "INV-05, INV-06, INV-07, INV-16；T2, T3。"
+      },
+      "invariants": [
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-16"
+      ],
+      "transactions": [
+        "T2",
+        "T3"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S23",
+      "name": "manifest_builds",
+      "record_class": "B",
+      "fields": {
+        "作用/字段": "build_id、captured_factset/frontier/epoch/program/policy、candidate binding refs、BUILDING/READY/STALE/FAILED/PUBLISHED、error_code。",
+        "约束": "DB：build_id 唯一；完成的 candidate 内容不可在 READY 后偷偷改变。TX：PUBLISHED 只在生成 S24 的 T3 内发生；旧 epoch build 不能重贴 epoch。",
+        "索引": "subject/build status/created_at；captured input frontier。",
+        "唯一写入所有者": "DecisionPublicationService.Build / Publish。",
+        "映射": "INV-06, INV-07, INV-10, INV-17；T3。"
+      },
+      "invariants": [
+        "INV-06",
+        "INV-07",
+        "INV-10",
+        "INV-17"
+      ],
+      "transactions": [
+        "T3"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S24",
+      "name": "decision_manifests",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "build_id、generation、factset_id、input_frontier_hash、program/policy/catalog/mapping bindings、captured_epoch、source watermarks、local_date/calendar policy、valid_until、manifest_hash。",
+        "约束": "DB：subject/generation 唯一、build_id 唯一、所有主体引用匹配、valid_until 晚于发布时间。TX：完整 basis、epoch、当前 Program/policy 复核后与 S01 pointer/generation 同事务提交。",
+        "索引": "subject/generation；subject/published_at；captured_epoch；factset_id。",
+        "唯一写入所有者": "DecisionPublicationService.PublishManifest。",
+        "映射": "INV-05, INV-06, INV-07, INV-09, INV-10, INV-16；T3, T6。"
+      },
+      "invariants": [
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-09",
+        "INV-10",
+        "INV-16"
+      ],
+      "transactions": [
+        "T3",
+        "T6"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S25",
+      "name": "manifest_projection_bindings",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "manifest_id、projection_role、projection_id 或显式 unavailable_reason、validated_basis_hash。",
+        "约束": "DB：manifest/role 唯一，projection 与 unavailable 二选一。TX/DOMAIN：必须角色齐全，basis 兼容；缺失不是零。与 Manifest 同事务封存。",
+        "索引": "manifest/role；projection_id 反向定位受影响历史。",
+        "唯一写入所有者": "DecisionPublicationService.PublishManifest。",
+        "映射": "INV-04, INV-05, INV-06, INV-07, INV-10；T3。"
+      },
+      "invariants": [
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-10"
+      ],
+      "transactions": [
+        "T3"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S26",
+      "name": "decision_snapshots",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "attempt_id、manifest_id、request_revision_id、captured_epoch、mandatory context payload/hash、context-builder version、token accounting、source cutoff。",
+        "约束": "DB：attempt/snapshot sequence 唯一；引用同主体。DOMAIN：mandatory evidence 不被静默裁剪；命令权限与推断摘要类型固定。重建内容产生新 snapshot，不改原记录。",
+        "索引": "attempt_id；manifest_id；context_hash 仅作同主体缓存识别。",
+        "唯一写入所有者": "ContextService.RecordSnapshot；T4/T5 准备阶段受 attempt guard 保护。",
+        "映射": "INV-05, INV-10, INV-13, INV-15, INV-16；T4, T5, T6。"
+      },
+      "invariants": [
+        "INV-05",
+        "INV-10",
+        "INV-13",
+        "INV-15",
+        "INV-16"
+      ],
+      "transactions": [
+        "T4",
+        "T5",
+        "T6"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S27",
+      "name": "planning_intents",
+      "record_class": "M",
+      "fields": {
+        "作用/字段": "purpose/date/calendar scope、root_request_id、status、current_request_revision_id、current_attempt_id、deadline、lease_owner/expires_at、fence_token、各维度 root limits/reserved/settled counters、stale_restart_count、result_bundle/auth refs。",
+        "约束": "DB：同主体/date/purpose 的 ADMITTED/RUNNING intent 唯一；root request 自然身份唯一；计数非负。TX：budget aggregate 原子占用，终态不可重开，request 更新不重置预算/deadline。",
+        "索引": "active partition 唯一索引；status/deadline；status/lease expiry 供 reaper 发现候选。",
+        "唯一写入所有者": "PlanningWorkflowService；late settlement 仅经限定账本入口更新核算字段，不复活 intent。",
+        "映射": "INV-10, INV-11, INV-12, INV-13, INV-17；T4, T5, T6, T8。"
+      },
+      "invariants": [
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-17"
+      ],
+      "transactions": [
+        "T4",
+        "T5",
+        "T6",
+        "T8"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S28",
+      "name": "planning_request_revisions",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "intent_id、revision、normalized constraints、constraint_fingerprint、calendar policy、command_receipt_id、origin actor/trigger。",
+        "约束": "DB：intent/revision 唯一；request_hash 与 canonical normalization version 绑定。TX：写新行与 S27 当前指针切换同 T4，旧 attempt 即刻失权。",
+        "索引": "intent/revision；intent/fingerprint（不要求永久唯一，因为用户可改回旧约束）。",
+        "唯一写入所有者": "PlanningWorkflowService.AdmitOrReviseIntent。",
+        "映射": "INV-10, INV-11, INV-13；T4, T6。"
+      },
+      "invariants": [
+        "INV-10",
+        "INV-11",
+        "INV-13"
+      ],
+      "transactions": [
+        "T4",
+        "T6"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S29",
+      "name": "planning_attempts",
+      "record_class": "M，执行元数据",
+      "fields": {
+        "作用/字段": "intent_id、attempt_no、request_revision_id、manifest/snapshot_id、captured_epoch、fence_token、status、model/prompt/tool/runtime artifact versions、failure_code、started/completed times。",
+        "约束": "DB：intent/attempt_no 唯一。TX：写入阶段校验 intent/request/fence/lease；terminal attempt 不恢复。proposal 正文单独存 S34，不能用 attempt 更新覆盖模型输出历史。",
+        "索引": "intent/attempt_no；status/updated_at；manifest_id。",
+        "唯一写入所有者": "PlanningWorkflowService.AdvanceAttempt；worker 仅调用命令。",
+        "映射": "INV-10, INV-11, INV-12, INV-13, INV-14, INV-17；T4, T5, T6, T8。"
+      },
+      "invariants": [
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-17"
+      ],
+      "transactions": [
+        "T4",
+        "T5",
+        "T6",
+        "T8"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S30",
+      "name": "planning_quota_buckets",
+      "record_class": "M",
+      "fields": {
+        "作用/字段": "subject、quota_kind、UTC window start/end、policy_version、admitted_count、limit。",
+        "约束": "DB：subject/kind/window/policy 唯一。TX：新 intent 与额度扣减同 T4；修改 request 不新扣 root 配额也不恢复原配额。",
+        "索引": "quota 唯一键；window_end 供保留策略。用户级配额不取代系统/provider 容量控制。",
+        "唯一写入所有者": "PlanningWorkflowService.AdmitIntent。",
+        "映射": "INV-11, INV-13；T4。"
+      },
+      "invariants": [
+        "INV-11",
+        "INV-13"
+      ],
+      "transactions": [
+        "T4"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S31",
+      "name": "call_reservations",
+      "record_class": "M，状态与核算投影",
+      "fields": {
+        "作用/字段": "intent/attempt_id、operation_slot、provider/model/config fingerprint、reserved amounts、price-accounting version、status、dispatch_owner/fence/permit_id、provider_request_id（可空）、actual_usage、settlement_revision。",
+        "约束": "DB：intent/attempt/operation_slot 唯一，reservation ID 唯一；状态 enum 闭合。TX：原子预留后才允许 DISPATCH_INTENT；只有 RESERVED 可取消退款；网络未知不能重置为 RESERVED。",
+        "索引": "intent/status；status/last_transition_at；provider/request_id（有可靠身份才唯一，不能以空值构造身份）。",
+        "唯一写入所有者": "CallLedgerService.Reserve / PermitDispatch / CancelUndispatched / Settle / MarkUnknown；业务字段修改受 PlanningWorkflow 协调。",
+        "映射": "INV-11, INV-12, INV-17；T5, T8。"
+      },
+      "invariants": [
+        "INV-11",
+        "INV-12",
+        "INV-17"
+      ],
+      "transactions": [
+        "T5",
+        "T8"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S32",
+      "name": "call_ledger_events",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "reservation_id、transition_revision、event_type、amount deltas、receipt/reconciliation source、dispatch permit identity、occurred/recorded times。",
+        "约束": "DB：reservation/transition_revision 唯一、可靠 settlement receipt 唯一。TX：与 S31 状态、S27 预算 counter 同事务；结算重复回执无双重扣减/释放。",
+        "索引": "reservation/revision；intent correlation；receipt identity。",
+        "唯一写入所有者": "CallLedgerService；旧 worker 仅能提交绑定 reservation 的证据给结算入口，不能任意设置 terminal/result。",
+        "映射": "INV-11, INV-12, INV-16；T5, T8。"
+      },
+      "invariants": [
+        "INV-11",
+        "INV-12",
+        "INV-16"
+      ],
+      "transactions": [
+        "T5",
+        "T8"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S33",
+      "name": "tool_evidence_records",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "attempt/snapshot_id、tool_name/version、arguments hash/payload、query scope/window、input revision refs、result hash/blob、coverage/truncation、trust_class、start/end times。",
+        "约束": "DB：attempt/tool_operation_slot 唯一或记录重试序号；scope 必须同主体。DOMAIN：结果能回溯固定 Manifest；live 输入未绑定则不准采用。",
+        "索引": "attempt/operation_slot；snapshot_id；result_hash 仅同主体。",
+        "唯一写入所有者": "ContextToolGateway.RecordResult；读取与记录属于 T5 工作阶段，不持用户锁等待远端。",
+        "映射": "INV-05, INV-10, INV-15, INV-16, INV-17；T5。"
+      },
+      "invariants": [
+        "INV-05",
+        "INV-10",
+        "INV-15",
+        "INV-16",
+        "INV-17"
+      ],
+      "transactions": [
+        "T5"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S34",
+      "name": "proposal_revisions",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "proposal_family/revision、attempt/snapshot、kind=FITNESS/NUTRITION/BLUEPRINT、payload/hash、producer artifact、citations、parent proposal（修复）、fitness_proposal_id/hash 与 demand_feature_id/hash（Nutrition 必填）。",
+        "约束": "DB：family/revision 唯一、kind 与必填依赖一致、类型化 FK、same subject。DOMAIN：proposal 不含实际完成事实或批准权限；重新修复创建新 revision。",
+        "索引": "attempt/kind/revision；fitness_proposal_id；demand_feature_id。",
+        "唯一写入所有者": "ProposalService.RecordProposal；模型输出由服务器验证后记录，无 canonical write capability。",
+        "映射": "INV-01, INV-02, INV-13, INV-14, INV-15；T5, T6。"
+      },
+      "invariants": [
+        "INV-01",
+        "INV-02",
+        "INV-13",
+        "INV-14",
+        "INV-15"
+      ],
+      "transactions": [
+        "T5",
+        "T6"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S35",
+      "name": "prescription_demand_features",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "fitness_proposal_id/hash、method version、feature payload/hash、逐字段 semantic class、估计区间、window/basis。",
+        "约束": "DB：Fitness/method/basis 唯一；code-computed producer，不接受模型填充事实元数据。DOMAIN：PRESCRIBED_QUANTITY/TARGET/ESTIMATE 分离，不当作实际生理消耗。",
+        "索引": "fitness_proposal_id；content_hash。",
+        "唯一写入所有者": "DemandFeatureService.ComputeAndRecord；不推进 Manifest generation。",
+        "映射": "INV-01, INV-02, INV-07, INV-14；T5, T6。"
+      },
+      "invariants": [
+        "INV-01",
+        "INV-02",
+        "INV-07",
+        "INV-14"
+      ],
+      "transactions": [
+        "T5",
+        "T6"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S36",
+      "name": "evidence_resolutions",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "manifest_id、action_type/parameters hash、exercise identity、resolver/policy version、support/contradiction/association refs、coverage、consistency、truncation、query basis hash、resolution expiry。",
+        "约束": "DB：动作与 manifest/policy 绑定。DOMAIN：权威 resolver 从政策范围计算，不由 Agent citations 构造。覆盖完整与无冲突是不同维度；结果 hash 相同不能证明适用于另一动作。",
+        "索引": "subject/manifest/action fingerprint；被影响 evidence revision 的可定位引用。",
+        "唯一写入所有者": "EvidenceResolver.ResolveActionEvidence；T6 准备阶段，最终提交复核 basis。",
+        "映射": "INV-02, INV-03, INV-04, INV-05, INV-09, INV-16；T6。"
+      },
+      "invariants": [
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-09",
+        "INV-16"
+      ],
+      "transactions": [
+        "T6"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S37",
+      "name": "validation_results",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "attempt、request_revision、manifest/epoch、proposal hashes、demand hash、resolver results、policy_bundle、execution_basis_event_id 及相关 execution/head 修订、PASS/FAIL/REVIEW、codes、valid_until、validator artifact。",
+        "约束": "DB：validation identity 唯一、明确目标 FK。DOMAIN：逐项验证/证据义务。TX：PASS certificate 只有全部 binding 仍匹配才可消费；不是 bearer authorization。",
+        "索引": "attempt/result；manifest_id；policy_bundle_id；失败码统计索引按实际查询决定。",
+        "唯一写入所有者": "ValidationService.RecordResult；最终 T6 提交命令不能省略 guard。",
+        "映射": "INV-02, INV-05, INV-09, INV-10, INV-13, INV-14；T6。"
+      },
+      "invariants": [
+        "INV-02",
+        "INV-05",
+        "INV-09",
+        "INV-10",
+        "INV-13",
+        "INV-14"
+      ],
+      "transactions": [
+        "T6"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S38",
+      "name": "daily_plan_heads",
+      "record_class": "M",
+      "fields": {
+        "作用/字段": "subject/local_date、calendar_policy、current_bundle_revision_id、head_revision、day lifecycle。",
+        "约束": "DB：subject/local_date 唯一。TX：唯一 active bundle 由此指针表达；旧 bundle 不覆写，切换与新处方/授权/intent success 同 T6；不能维护两个各自可写的 ACTIVE 真相。",
+        "索引": "唯一 subject/local_date；current_bundle_revision_id。",
+        "唯一写入所有者": "PrescriptionCommitService.CommitBundle；取消/关闭同一 writer 由明确控制命令调用。",
+        "映射": "INV-09, INV-10, INV-13, INV-14；T2, T6, T7。"
+      },
+      "invariants": [
+        "INV-09",
+        "INV-10",
+        "INV-13",
+        "INV-14"
+      ],
+      "transactions": [
+        "T2",
+        "T6",
+        "T7"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S39",
+      "name": "daily_bundle_revisions",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "day scope、revision_no、parent_revision_id、intent/attempt/manifest、commit_receipt_id、generation_mode、content_hash、validation_result_id。",
+        "约束": "DB：subject/date/revision 唯一、commit receipt 唯一。TX：内容、成员、授权全部成功才切换 head。REUSED_VALID_PLAN 可返回现有 bundle 而不制造无内容变化的 revision。",
+        "索引": "subject/date/revision；intent_id；manifest_id。",
+        "唯一写入所有者": "PrescriptionCommitService.CommitBundle。",
+        "映射": "INV-09, INV-10, INV-13, INV-14, INV-16；T6。"
+      },
+      "invariants": [
+        "INV-09",
+        "INV-10",
+        "INV-13",
+        "INV-14",
+        "INV-16"
+      ],
+      "transactions": [
+        "T6"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S40",
+      "name": "prescription_revisions",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "prescription_identity/revision、kind=TRAINING/NUTRITION、typed content、source proposal/fallback template、content_hash、hash_scheme_version。",
+        "约束": "DB：subject/prescription/revision 唯一、kind 与 typed payload 一致。DOMAIN：已验证内容；不存可写 authorization_status。相同内容重新授权不强制创建新处方。",
+        "索引": "identity/revision；subject/content_hash（不跨用户复用身份）。",
+        "唯一写入所有者": "PrescriptionCommitService；draft/proposal 留在 S34，不把未验证流式片段放入 executable registry。",
+        "映射": "INV-01, INV-02, INV-09, INV-14, INV-16；T6。"
+      },
+      "invariants": [
+        "INV-01",
+        "INV-02",
+        "INV-09",
+        "INV-14",
+        "INV-16"
+      ],
+      "transactions": [
+        "T6"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S41",
+      "name": "bundle_prescription_members",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "bundle_revision_id、prescription_revision_id、kind、session_slot、order。",
+        "约束": "DB：bundle/kind/slot 唯一、kind 与处方复合引用一致。V1 TRAINING 只允许单个明确 slot，NUTRITION 只允许一个 daily slot；以关系唯一性与 allowed-slot 检查表达，不仅在 UI 限制 count。",
+        "索引": "bundle/kind；prescription_revision_id。",
+        "唯一写入所有者": "PrescriptionCommitService，与 S39/S40 同 T6。",
+        "映射": "INV-09, INV-14；T6, T7。"
+      },
+      "invariants": [
+        "INV-09",
+        "INV-14"
+      ],
+      "transactions": [
+        "T6",
+        "T7"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S42",
+      "name": "authorization_issuances",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "prescription_revision_id/bound_hash、manifest/epoch、policy、validation_result_id、scope、valid_from/until、issuance_reason、issuing_command_id。",
+        "约束": "DB：issuance id 唯一、command/处方/scope 唯一、处方与 hash 绑定、有效期行内检查。TX：完整最新签发 guard。A1 与 A2 可绑定同一 P；禁止更新旧 A 的有效期或“恢复”历史。",
+        "索引": "subject/prescription/scope/issued_at；subject/epoch；valid_until 仅筛选候选。",
+        "唯一写入所有者": "AuthorizationService.Issue，必须被 T6 CommitBundle/Reauthorize 命令原子调用，不能开放通用 INSERT API。",
+        "映射": "INV-02, INV-08, INV-09, INV-10, INV-16；T6, T7。"
+      },
+      "invariants": [
+        "INV-02",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-16"
+      ],
+      "transactions": [
+        "T6",
+        "T7"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S43",
+      "name": "authorization_events",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "authorization_id（定向事件）或 invalidated_epoch/scope（用户屏障事件）、event_kind、cause_control/admission/command、recorded time。",
+        "约束": "DB：事件 target 类型闭合且互斥、幂等因果键。TX：屏障变更和 S01 epoch 同事务；定向 suspension/revocation 经同一协调锁。禁止 RESTORE_VALID 事件。",
+        "索引": "subject/authorization_id/event time；subject/invalidated_epoch；cause id。",
+        "唯一写入所有者": "AuthorizationService.Invalidate，受 T2 control/admission 命令调用。",
+        "映射": "INV-08, INV-09, INV-10, INV-16；T2, T6, T7。"
+      },
+      "invariants": [
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-16"
+      ],
+      "transactions": [
+        "T2",
+        "T6",
+        "T7"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S44",
+      "name": "workout_sessions",
+      "record_class": "M，实际会话身份与生命周期",
+      "fields": {
+        "作用/字段": "session_id、underlying_event_id、origin=APP_STARTED/EXTERNAL_REPORTED、lifecycle、start/completion times、latest_actual_fact_revision_id、execution_revision。",
+        "约束": "DB：subject/session 唯一；当前确认关联的 event/session 身份不得重复。TX：START 受 T7 guard；外部实际训练由 T2 接受，无授权也可保存。实际 set/bout 修订在 S14，不覆写原事实。",
+        "索引": "subject/start time；underlying_event_id；subject/in-progress state。",
+        "唯一写入所有者": "ExecutionService，通过 Start/Resume 或 AcceptExternalExecution 调用；identity correction 保留 alias/association 历史，不删除旧实体。",
+        "映射": "INV-01, INV-03, INV-09, INV-16, INV-18；T2, T7。"
+      },
+      "invariants": [
+        "INV-01",
+        "INV-03",
+        "INV-09",
+        "INV-16",
+        "INV-18"
+      ],
+      "transactions": [
+        "T2",
+        "T7"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S45",
+      "name": "execution_bindings",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "session_id、binding_revision、kind=START/RESUME、prescription_revision_id、authorization_id、accepted_at、command_receipt_id、execution_scope。",
+        "约束": "DB：session/binding_revision 唯一、START 每 session 最多一条、P/A 主体与内容关联匹配。TX：当前资格通过才写；外部训练无有效 A 时不伪造 binding，S44.origin 表达其来源。",
+        "索引": "session/binding_revision；authorization_id；prescription_revision_id。",
+        "唯一写入所有者": "ExecutionService.StartSession / ResumeSession。停止与完成事件保存在 S03，原绑定不被更新为新 A。",
+        "映射": "INV-09, INV-10, INV-16, INV-18；T7。"
+      },
+      "invariants": [
+        "INV-09",
+        "INV-10",
+        "INV-16",
+        "INV-18"
+      ],
+      "transactions": [
+        "T7"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    },
+    {
+      "table_id": "S46",
+      "name": "replay_runs",
+      "record_class": "M，隔离 evaluation 存储",
+      "fields": {
+        "作用/字段": "replay_mode、knowledge_cutoff、release_bundle_id、historical_manifest_id、evaluation_subject、status、input selection hash、randomness/available-model limitations。",
+        "约束": "DB：run_id 唯一；有显式 mode/cutoff；无可写 production FK target。DOMAIN：cutoff tool policy 全链路一致；权限角色不可写 live 命令。",
+        "索引": "release/mode/cutoff；status。",
+        "唯一写入所有者": "ReplayService；不是 T6 生产提交路径。",
+        "映射": "INV-15, INV-16, INV-17；T1–T8 的只读历史重建，不加入 live 事务。"
+      },
+      "invariants": [
+        "INV-15",
+        "INV-16",
+        "INV-17"
+      ],
+      "transactions": [
+        "T1",
+        "T2",
+        "T3",
+        "T4",
+        "T5",
+        "T6",
+        "T7",
+        "T8"
+      ],
+      "transaction_mapping_role": "historical_read_only"
+    },
+    {
+      "table_id": "S47",
+      "name": "replay_artifacts",
+      "record_class": "I，隔离 evaluation 存储",
+      "fields": {
+        "作用/字段": "replay_run_id、artifact_kind、input/derived/output payload/hash、source revision refs、included/excluded reasons、leakage audit、simulation marker。",
+        "约束": "DB：run/artifact identity 唯一。DOMAIN：区分 RECORDED_OUTPUT 与 FRESH_MODEL_RUN；artifact 缺失返回明确错误。模拟 authorization 不进入 S42。",
+        "索引": "run/kind；source reference 仅用于获准的历史读取。",
+        "唯一写入所有者": "ReplayService.RecordArtifact。",
+        "映射": "INV-02, INV-15, INV-16；T1–T8 的只读历史重建，不加入 live 事务。"
+      },
+      "invariants": [
+        "INV-02",
+        "INV-15",
+        "INV-16"
+      ],
+      "transactions": [
+        "T1",
+        "T2",
+        "T3",
+        "T4",
+        "T5",
+        "T6",
+        "T7",
+        "T8"
+      ],
+      "transaction_mapping_role": "historical_read_only"
+    },
+    {
+      "table_id": "S48",
+      "name": "evaluation_releases",
+      "record_class": "I",
+      "fields": {
+        "作用/字段": "release_id、model/prompt/engine/policy artifact bundle、dataset/split ids、freeze times、metrics/threshold config、evaluation report refs、rollout decision provenance。",
+        "约束": "DB：release identity 唯一。DOMAIN：评测报告与用于生产的制品精确绑定；若无实测结果，不可声明 PASSED。修改阈值或模型产生新 release。",
+        "索引": "release id；artifact hashes；recorded_at。",
+        "唯一写入所有者": "ReleaseEvaluationService.RecordRelease；生产选择此 release/policy 仍经 T2 用户激活入口。",
+        "映射": "INV-02, INV-09, INV-15, INV-16；T2（激活绑定）；evaluation 独立运行。"
+      },
+      "invariants": [
+        "INV-02",
+        "INV-09",
+        "INV-15",
+        "INV-16"
+      ],
+      "transactions": [
+        "T2"
+      ],
+      "transaction_mapping_role": "see_owner_and_transaction_matrix"
+    }
+  ],
+  "transaction_matrix": [
+    {
+      "transaction_id": "T1",
+      "atomic_writes": "S09 raw evidence + S02 receipt + S03/S04 接收事件；解析候选另开短事务写 S10",
+      "guards": "subject/source idempotency、内容身份冲突",
+      "exclusions": "不接受未解析候选为训练成功；不重算特征"
+    },
+    {
+      "transaction_id": "T2",
+      "atomic_writes": "S12/S13/S14 输入修订与 S15/S16 封存；或 S17/S18 控制；更新 S01 输入指针/必要 epoch + S43 失效事件 + S03/S04/S02",
+      "guards": "当前 input basis、明确 actor/clearance/approval、变更失效分类",
+      "exclusions": "不等待 Manifest；不批量修改所有旧 A；不后台迟到撤销"
+    },
+    {
+      "transaction_id": "T3",
+      "atomic_writes": "READY S23 guard；S24/S25 + S01 generation/current pointer + S23 published + S03/S04/S02",
+      "guards": "input frontier、所有 dependency basis、当前 program/policy/epoch、validity",
+      "exclusions": "不在事务内算 projection；不发布混合结果"
+    },
+    {
+      "transaction_id": "T4",
+      "atomic_writes": "S30 准入配额、S27 intent、S28 request revision、S29 初始/失效状态、S02/S03/S04",
+      "guards": "single-flight partition、request fingerprint、root admission limits",
+      "exclusions": "不因改约束重置预算/deadline"
+    },
+    {
+      "transaction_id": "T5",
+      "atomic_writes": "lease/fence 变更；或 S31 reservation + S32 ledger + S27 counters；或 dispatch permit transition；均为独立短事务",
+      "guards": "intent live、request revision、owner/fence/lease/deadline、预算余量",
+      "exclusions": "网络请求发生在 DISPATCH_INTENT 持久化之后、事务之外"
+    },
+    {
+      "transaction_id": "T6",
+      "atomic_writes": "S39/S40/S41、S42、S38 head switch、S27 result/success、S29 committed、S02/S03/S04",
+      "guards": "current snapshot/generation/epoch/request/fence/lease、policy、validation bindings、当前执行暴露、scope 和 active bundle",
+      "exclusions": "不靠 schema valid / validation PASS 单独放行；不先提交 bundle 再异步签授权"
+    },
+    {
+      "transaction_id": "T7",
+      "atomic_writes": "S44 execution + S45 START/RESUME binding + S02/S03/S04",
+      "guards": "当前 A/P/content/scope、时间、epoch/holds、session lifecycle、重复 start",
+      "exclusions": "不需要在线 LLM；不改历史 START 绑定"
+    },
+    {
+      "transaction_id": "T8",
+      "atomic_writes": "S31/S32 与 S27 核算；或 reaper 对 S27/S29 的失权/终态；S02/S03/S04",
+      "guards": "receipt identity、当前 reservation transition；或当前 fence/lease/deadline",
+      "exclusions": "不恢复 unknown 预算；不让迟到响应恢复提交权限"
+    }
+  ],
+  "invariant_mapping": [
+    {
+      "invariant_id": "INV-01",
+      "tables": [
+        "S09",
+        "S10",
+        "S13",
+        "S14",
+        "S34",
+        "S35",
+        "S40",
+        "S44"
+      ],
+      "enforcement": "事实/处方类型分离；准入禁止计划补全实际",
+      "acceptance": "E01,A08"
+    },
+    {
+      "invariant_id": "INV-02",
+      "tables": [
+        "S08",
+        "S10",
+        "S13",
+        "S17",
+        "S34",
+        "S36",
+        "S37",
+        "S42"
+      ],
+      "enforcement": "command capability 与模型输出隔离；唯一 writer",
+      "acceptance": "E08,E06"
+    },
+    {
+      "invariant_id": "INV-03",
+      "tables": [
+        "S11",
+        "S12",
+        "S14",
+        "S16",
+        "S21"
+      ],
+      "enforcement": "underlying event identity + association policy + projection dedup",
+      "acceptance": "E03,E04"
+    },
+    {
+      "invariant_id": "INV-04",
+      "tables": [
+        "S13",
+        "S14",
+        "S21",
+        "S25",
+        "S36"
+      ],
+      "enforcement": "上下界/未知类型与 action-scoped admission",
+      "acceptance": "E05,E02"
+    },
+    {
+      "invariant_id": "INV-05",
+      "tables": [
+        "S16",
+        "S22",
+        "S26",
+        "S33",
+        "S36",
+        "S37"
+      ],
+      "enforcement": "action-driven resolver + completeness/basis binding",
+      "acceptance": "E06,D03,D04"
+    },
+    {
+      "invariant_id": "INV-06",
+      "tables": [
+        "S15",
+        "S16",
+        "S21",
+        "S22",
+        "S24",
+        "S25"
+      ],
+      "enforcement": "revision dependencies + collection/absence signatures",
+      "acceptance": "D02,D04"
+    },
+    {
+      "invariant_id": "INV-07",
+      "tables": [
+        "S01",
+        "S21",
+        "S23",
+        "S24",
+        "S25"
+      ],
+      "enforcement": "generation 唯一 writer T3 + 原子发布",
+      "acceptance": "D01,D05"
+    },
+    {
+      "invariant_id": "INV-08",
+      "tables": [
+        "S01",
+        "S17",
+        "S18",
+        "S43"
+      ],
+      "enforcement": "T2 同步屏障，不逐行等待旧 authorization 更新",
+      "acceptance": "A01,A07,E02"
+    },
+    {
+      "invariant_id": "INV-09",
+      "tables": [
+        "S37",
+        "S38",
+        "S40",
+        "S42",
+        "S43",
+        "S45"
+      ],
+      "enforcement": "FK/内容绑定 + 当前 runtime guard + transaction",
+      "acceptance": "A03,A04,A05,A06"
+    },
+    {
+      "invariant_id": "INV-10",
+      "tables": [
+        "S01",
+        "S24",
+        "S27",
+        "S28",
+        "S29",
+        "S42"
+      ],
+      "enforcement": "epoch/request/fence/current manifest 联合 guard",
+      "acceptance": "A02,D05,W05,W06"
+    },
+    {
+      "invariant_id": "INV-11",
+      "tables": [
+        "S27",
+        "S30",
+        "S31",
+        "S32"
+      ],
+      "enforcement": "ledger + root counter 原子占用，SDK 物理调用全覆盖",
+      "acceptance": "W01,W02,W03,W04"
+    },
+    {
+      "invariant_id": "INV-12",
+      "tables": [
+        "S27",
+        "S31",
+        "S32"
+      ],
+      "enforcement": "UNKNOWN 占用与晚到结算权限隔离",
+      "acceptance": "W01,W05,W06,W08"
+    },
+    {
+      "invariant_id": "INV-13",
+      "tables": [
+        "S27",
+        "S28",
+        "S29",
+        "S37"
+      ],
+      "enforcement": "request revision 不可变、旧 attempt 提交失败",
+      "acceptance": "W04"
+    },
+    {
+      "invariant_id": "INV-14",
+      "tables": [
+        "S34",
+        "S35",
+        "S37",
+        "S39",
+        "S41"
+      ],
+      "enforcement": "类型化依赖与 content hash 校验",
+      "acceptance": "W07"
+    },
+    {
+      "invariant_id": "INV-15",
+      "tables": [
+        "S09",
+        "S10",
+        "S26",
+        "S33",
+        "S34",
+        "S47"
+      ],
+      "enforcement": "summary 固定非命令；命令仅可来自专用入口",
+      "acceptance": "E08,R04"
+    },
+    {
+      "invariant_id": "INV-16",
+      "tables": [
+        "S09",
+        "S12",
+        "S13",
+        "S14",
+        "S20",
+        "S24",
+        "S42",
+        "S46",
+        "S47",
+        "S48"
+      ],
+      "enforcement": "双时间/不可变版本 + cutoff-aware reads + eval 隔离",
+      "acceptance": "R01,R02,R03,R04"
+    },
+    {
+      "invariant_id": "INV-17",
+      "tables": [
+        "S01",
+        "S23",
+        "S27",
+        "S29",
+        "S31",
+        "S33"
+      ],
+      "enforcement": "短事务；准备结果外算；dispatch 外部网络在事务外",
+      "acceptance": "W01,W05,A07 + lock-duration instrumentation"
+    },
+    {
+      "invariant_id": "INV-18",
+      "tables": [
+        "S09",
+        "S14",
+        "S44",
+        "S45"
+      ],
+      "enforcement": "外部 actual 不要求授权；缺绑定不能伪造",
+      "acceptance": "A08,E01"
+    }
+  ],
+  "acceptance_fixtures": [
+    {
+      "test_id": "E01",
+      "given": "处方 3 组，原文只完成 1 组",
+      "when": "解析/准入/进阶",
+      "then": "只有有证据的 actual，额外组不计完成",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S10",
+        "S13",
+        "S14"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "E02",
+      "given": "风险通道收到尚未解析文本",
+      "when": "解析不可用",
+      "then": "适用 pending hold 生效，进阶被阻断",
+      "layers": [
+        "PU",
+        "WF",
+        "E2E"
+      ],
+      "tables": [
+        "S17",
+        "S18",
+        "S43"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "E03",
+      "given": "三来源指向一次训练",
+      "when": "关联与 projection",
+      "then": "独立事件数 1，三来源仍留存",
+      "layers": [
+        "PU",
+        "DC"
+      ],
+      "tables": [
+        "S11",
+        "S12",
+        "S21"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "E04",
+      "given": "相近训练是否重复不明确",
+      "when": "reconciliation",
+      "then": "保留歧义，不强制合并/双计成功",
+      "layers": [
+        "PU"
+      ],
+      "tables": [
+        "S12",
+        "S36"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "E05",
+      "given": "完成量下界确定，上界未知",
+      "when": "计算 exposure",
+      "then": "上界 unknown，不取计划值或零",
+      "layers": [
+        "PU"
+      ],
+      "tables": [
+        "S14",
+        "S21"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "E06",
+      "given": "成功后有反证，Agent 只引成功",
+      "when": "解析加重义务",
+      "then": "Resolver 包含反证并按完整范围判断",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S36",
+        "S37"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "E07",
+      "given": "原事实已用于授权",
+      "when": "新更正撤回依据",
+      "then": "admission/epoch/投影资格变化原子生效",
+      "layers": [
+        "DC",
+        "E2E"
+      ],
+      "tables": [
+        "S13",
+        "S15",
+        "S01",
+        "S43"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "E08",
+      "given": "备注夹带批准指令，经多轮摘要",
+      "when": "context 与批准入口",
+      "then": "保持非命令，不能产生 approval",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S10",
+        "S26",
+        "S08"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "D01",
+      "given": "projection ready，Manifest 未发布",
+      "when": "写计算结果",
+      "then": "generation 不变",
+      "layers": [
+        "PU",
+        "DC"
+      ],
+      "tables": [
+        "S21",
+        "S01"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "D02",
+      "given": "无关输入变化，进阶依赖未变",
+      "when": "BuildManifest",
+      "then": "复用原投影且 basis 验证通过",
+      "layers": [
+        "PU"
+      ],
+      "tables": [
+        "S22",
+        "S25"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "D03",
+      "given": "接受新输入但未发新 Manifest",
+      "when": "tool live query",
+      "then": "不混入未绑定修订",
+      "layers": [
+        "DC",
+        "E2E"
+      ],
+      "tables": [
+        "S15",
+        "S24",
+        "S33"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "D04",
+      "given": "原查询不存在限制/相关事件",
+      "when": "并发插入新记录",
+      "then": "集合依赖或 epoch 捕捉变化",
+      "layers": [
+        "DC"
+      ],
+      "tables": [
+        "S22",
+        "S17",
+        "S01"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "D05",
+      "given": "旧 epoch 的 READY build",
+      "when": "revoke 与 publish 交错",
+      "then": "只允许 §5.1 两种合法结果",
+      "layers": [
+        "PU",
+        "DC"
+      ],
+      "tables": [
+        "S23",
+        "S24",
+        "S01"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "A01",
+      "given": "活跃计划可执行，模型服务故障",
+      "when": "revoke",
+      "then": "旧 A 立即失权，无需替代计划",
+      "layers": [
+        "DC",
+        "WF",
+        "E2E"
+      ],
+      "tables": [
+        "S01",
+        "S43"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "A02",
+      "given": "epoch 已增加，Manifest 仍旧",
+      "when": "重新签发相同 P",
+      "then": "旧 Manifest 签发失败",
+      "layers": [
+        "PU",
+        "DC"
+      ],
+      "tables": [
+        "S24",
+        "S42"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "A03",
+      "given": "有效 P/A，尚未 START",
+      "when": "START/revoke 竞争",
+      "then": "按提交顺序；无晚越权 START",
+      "layers": [
+        "PU",
+        "DC"
+      ],
+      "tables": [
+        "S01",
+        "S43",
+        "S45"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "A04",
+      "given": "缓存仍标 VALID，实际已过期",
+      "when": "Start/eligibility",
+      "then": "AUTH_EXPIRED，与后台 job 无关",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S42",
+        "S45"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "A05",
+      "given": "P7 已通过 A1 开始",
+      "when": "签 A2 并 RESUME",
+      "then": "原 START 保留 A1，新 binding 引 A2",
+      "layers": [
+        "PU",
+        "DC"
+      ],
+      "tables": [
+        "S42",
+        "S45"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "A06",
+      "given": "hold 有效，模型不可用",
+      "when": "fallback 选择",
+      "then": "同样受限，无适用项则 UNAVAILABLE",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S05",
+        "S18",
+        "S42"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "A07",
+      "given": "普通规划队列和预算耗尽",
+      "when": "STOP 请求",
+      "then": "独立容量处理撤销",
+      "layers": [
+        "WF",
+        "E2E"
+      ],
+      "tables": [
+        "S17",
+        "S01",
+        "S43"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "A08",
+      "given": "用户在无有效 A 时实际训练",
+      "when": "ingest actual",
+      "then": "保存事实，无虚构 execution binding",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S14",
+        "S44",
+        "S45"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "W01",
+      "given": "已 RESERVED 或 DISPATCH_INTENT",
+      "when": "各边界 kill worker",
+      "then": "仅许可前可退款，可能发送后 UNKNOWN 占用",
+      "layers": [
+        "PU",
+        "WF"
+      ],
+      "tables": [
+        "S27",
+        "S31",
+        "S32"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "W02",
+      "given": "RESERVED，有取消与发送请求",
+      "when": "两事务交错",
+      "then": "取消释放与发送许可不能同时成立",
+      "layers": [
+        "PU",
+        "DC"
+      ],
+      "tables": [
+        "S31",
+        "S32",
+        "S27"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "W03",
+      "given": "provider 返回 transient error",
+      "when": "SDK/runtime retry",
+      "then": "每次物理请求有独立预算覆盖",
+      "layers": [
+        "WF",
+        "E2E"
+      ],
+      "tables": [
+        "S31",
+        "S32"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "W04",
+      "given": "rev1=70min/full gym 正在运行",
+      "when": "rev2=20min/no equipment",
+      "then": "rev1 失权，根预算/deadline 未重置",
+      "layers": [
+        "PU",
+        "DC",
+        "E2E"
+      ],
+      "tables": [
+        "S27",
+        "S28",
+        "S29"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "W05",
+      "given": "token7 worker 暂停，lease 到期",
+      "when": "token8 接管，7 晚提交",
+      "then": "7 不可提交；可信回执仅可结算",
+      "layers": [
+        "PU",
+        "DC",
+        "WF"
+      ],
+      "tables": [
+        "S27",
+        "S29",
+        "S32",
+        "S42"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "W06",
+      "given": "intent 已取消或 deadline 结束",
+      "when": "模型晚返回",
+      "then": "不复活 intent/attempt，不新签 A",
+      "layers": [
+        "PU",
+        "WF"
+      ],
+      "tables": [
+        "S27",
+        "S29",
+        "S42"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "W07",
+      "given": "F1/D1/N1 已存在",
+      "when": "修复出 F2",
+      "then": "D1/N1 不能用于 F2，重算计原预算",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S34",
+        "S35",
+        "S37"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "W08",
+      "given": "T6 已成功 commit",
+      "when": "ACK 丢失后重发",
+      "then": "返回相同 result/issuance，不重复写",
+      "layers": [
+        "DC",
+        "WF",
+        "E2E"
+      ],
+      "tables": [
+        "S02",
+        "S39",
+        "S42"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "W09",
+      "given": "两次搜索失败，无形式冲突证明",
+      "when": "workflow 结束",
+      "then": "非 PROVEN_CONSTRAINT_CONFLICT",
+      "layers": [
+        "PU"
+      ],
+      "tables": [
+        "S27",
+        "S37"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "R01",
+      "given": "九月更正八月事实",
+      "when": "cutoff=八月 replay",
+      "then": "排除九月获知修订",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S14",
+        "S46",
+        "S47"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "R02",
+      "given": "相同 cutoff，历史/当前 release 不同",
+      "when": "两模式 replay",
+      "then": "分别绑定指定 artifact bundle",
+      "layers": [
+        "PU"
+      ],
+      "tables": [
+        "S46",
+        "S48"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "R03",
+      "given": "九月人工建立个体映射",
+      "when": "八月 current backtest",
+      "then": "不导入未来个体知识",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "tables": [
+        "S20",
+        "S46",
+        "S47"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    },
+    {
+      "test_id": "R04",
+      "given": "replay 产生模拟有效结果",
+      "when": "尝试生产提交",
+      "then": "角色/存储隔离拒绝，无 live issuance",
+      "layers": [
+        "DC",
+        "E2E"
+      ],
+      "tables": [
+        "S46",
+        "S47",
+        "S42"
+      ],
+      "implementation_status": "SPECIFIED_NOT_IMPLEMENTED",
+      "execution_status": "NOT_RUN"
+    }
+  ],
+  "summary": {
+    "logical_tables": 48,
+    "invariants": 18,
+    "transactions": 8,
+    "acceptance_specs": 34,
+    "sql_statements_generated": 0,
+    "protocol_tests_run": 0,
+    "database_tests_run": 0
+  }
+}

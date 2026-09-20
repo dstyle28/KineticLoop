@@ -1,0 +1,30 @@
+{
+  "version": "0.1",
+  "freeze_evidence_status": "DECLARED_HISTORICAL_EVIDENCE_PARTIALLY_BUNDLED",
+  "independently_reproducible_from_this_package": false,
+  "protocol_file": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+  "protocol_sha256": "00bf3eb2e0e2e00867d114b42e147a2341d98454f08629c849ebf0b4c0c4916c",
+  "db_file": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+  "db_sha256": "2158a80bdc0e16eaf9c2cd835f704bdc2f346565dc35cb0c1fc1a8c00a1b8eda",
+  "available_evidence": [
+    {
+      "path": "evidence/protocol_model_report.md",
+      "sha256": "bc5cbc0069de5074f93482d16fa7f3ee8a16491aa05a6cd5def47115e03beb4e"
+    }
+  ],
+  "missing_for_reproduction": [
+    "protocol_model/run_model.py",
+    "protocol_model/reports/model_report.json",
+    "policy fixtures",
+    "exact source commit/tag"
+  ],
+  "historical_declared_results": {
+    "original_model_cases": "34/34",
+    "boundary_cases": "18/18",
+    "interleavings": "9/9",
+    "complete_schedules": 589,
+    "visited_prefixes": 2997,
+    "seeded_mutants": "8/8"
+  },
+  "production_test_promotion": "NONE"
+}

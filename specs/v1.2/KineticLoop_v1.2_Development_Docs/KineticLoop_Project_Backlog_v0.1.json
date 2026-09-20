@@ -1,0 +1,144 @@
+{
+  "project": "KineticLoop",
+  "plan_version": "0.1",
+  "baseline": "KINETICLOOP_PROTOCOL_V1_2_FROZEN",
+  "status": "PRE_DEVELOPMENT_READY_TO_START",
+  "production_auto_activation": "DISABLED",
+  "milestones": [
+    {
+      "id": "M0",
+      "name": "Frozen baseline",
+      "status": "DONE"
+    },
+    {
+      "id": "M1",
+      "name": "Engineering foundation",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M0"
+      ]
+    },
+    {
+      "id": "M2",
+      "name": "PostgreSQL DDL + typed contracts",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M1"
+      ]
+    },
+    {
+      "id": "M3",
+      "name": "Real protocol core on PostgreSQL",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M2"
+      ]
+    },
+    {
+      "id": "M4",
+      "name": "Worker/reaper/fault injection",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M3"
+      ]
+    },
+    {
+      "id": "M5",
+      "name": "Canonical training data vertical slice",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M3"
+      ]
+    },
+    {
+      "id": "M6",
+      "name": "Decision context + read-only tools",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M5"
+      ]
+    },
+    {
+      "id": "M7",
+      "name": "Fitness Coach shadow planner",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M4",
+        "M6"
+      ]
+    },
+    {
+      "id": "M8",
+      "name": "Nutrition Coach + cross-domain bundle",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M7"
+      ]
+    },
+    {
+      "id": "M9",
+      "name": "Live provider adapters in shadow",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M5",
+        "M7"
+      ]
+    },
+    {
+      "id": "M10",
+      "name": "Staging/observability/release evaluation",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M8",
+        "M9"
+      ]
+    },
+    {
+      "id": "M11",
+      "name": "Auto-activation readiness review",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M10"
+      ]
+    }
+  ],
+  "first_backlog_ids": [
+    "KL-001",
+    "KL-002",
+    "KL-003",
+    "KL-004",
+    "KL-005",
+    "KL-010",
+    "KL-011",
+    "KL-012",
+    "KL-013",
+    "KL-014",
+    "KL-015",
+    "KL-020",
+    "KL-021",
+    "KL-022",
+    "KL-023",
+    "KL-024",
+    "KL-025",
+    "KL-026"
+  ],
+  "stack": {
+    "backend": [
+      "Python 3.12+",
+      "FastAPI",
+      "Pydantic v2",
+      "SQLAlchemy 2.x",
+      "psycopg 3",
+      "Alembic"
+    ],
+    "database": "PostgreSQL local Docker first",
+    "ai": "OpenAI Responses API + Function Calling/Structured Outputs; no OpenAI Agents API core runtime",
+    "testing": [
+      "pytest",
+      "pytest-asyncio",
+      "Hypothesis planned",
+      "real PostgreSQL concurrency/fault tests"
+    ],
+    "deployment_stage": "LOCAL_SHADOW"
+  }
+}

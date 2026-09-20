@@ -1,0 +1,111 @@
+{
+  "version": "0.1",
+  "status": "SPECIFIED_NOT_IMPLEMENTED",
+  "source": "DOC-INTEGRATION-V0.1",
+  "requirements": [
+    {
+      "id": "INT-A01",
+      "name": "HEVY_UPDATE_DELETE_REVISION",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "assertion": "Hevy update/delete yields revisions/corrections, not destructive overwrite."
+    },
+    {
+      "id": "INT-A02",
+      "name": "HEVY_UNKNOWN_EXERCISE_NO_BLUEPRINT_CREDIT",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "assertion": "Unknown Hevy exercise preserves actuals but cannot auto-resolve blueprint role."
+    },
+    {
+      "id": "INT-A03",
+      "name": "HEALTHKIT_NO_VISIBLE_DATA_NOT_ZERO",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "assertion": "No visible HealthKit samples maps to unknown/partial coverage, never zero or denied certainty."
+    },
+    {
+      "id": "INT-A04",
+      "name": "HEALTHKIT_DELETION_PROPAGATES_CORRECTION",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "assertion": "Anchored deleted objects produce source correction/invalidation."
+    },
+    {
+      "id": "INT-A05",
+      "name": "HEALTHKIT_SOURCE_REVISION_PRESERVED",
+      "layers": [
+        "PU"
+      ],
+      "assertion": "HealthKit evidence preserves UUID/sourceRevision/device provenance."
+    },
+    {
+      "id": "INT-A06",
+      "name": "WEARABLE_STRENGTH_DOES_NOT_INVENT_SETS",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "assertion": "HealthKit/Oura workout labels cannot create strength set/reps/load facts."
+    },
+    {
+      "id": "INT-A07",
+      "name": "CROSS_SOURCE_WORKOUT_COUNTS_ONCE",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "assertion": "Hevy+HealthKit+chat for one workout remains one underlying event."
+    },
+    {
+      "id": "INT-A08",
+      "name": "OURA_AI_DENIED_BEFORE_GATE",
+      "layers": [
+        "PU",
+        "E2E"
+      ],
+      "assertion": "Oura evidence cannot enter production AI context before compliance policy enablement."
+    },
+    {
+      "id": "INT-A09",
+      "name": "OURA_ABSENCE_DEGRADES_NOT_BLOCKS",
+      "layers": [
+        "E2E"
+      ],
+      "assertion": "Oura unavailable yields reduced completeness but does not block planner when other required evidence satisfies policy."
+    },
+    {
+      "id": "INT-A10",
+      "name": "NO_HEVY_MANUAL_FALLBACK",
+      "layers": [
+        "E2E"
+      ],
+      "assertion": "Without Hevy, manual strength actual ingestion works and wearable labels do not fill missing sets."
+    },
+    {
+      "id": "INT-A11",
+      "name": "NO_HEALTHKIT_PARTIAL_PLANNING",
+      "layers": [
+        "E2E"
+      ],
+      "assertion": "Without HealthKit, partial-data planning works only when policy permits and missing recovery values remain unknown."
+    },
+    {
+      "id": "INT-A12",
+      "name": "PROVIDER_OUTAGE_DOES_NOT_BLOCK_STOP",
+      "layers": [
+        "WF",
+        "E2E"
+      ],
+      "assertion": "Provider outages/retry saturation cannot starve STOP/protective control path."
+    }
+  ]
+}

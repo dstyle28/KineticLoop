@@ -1,0 +1,2051 @@
+{
+  "project": "KineticLoop",
+  "plan_version": "0.2",
+  "baseline": "KINETICLOOP_PROTOCOL_V1_2_FROZEN",
+  "status": "PRE_DEVELOPMENT_READY_WITH_BLOCKING_GATES",
+  "production_auto_activation": "DISABLED",
+  "milestones": [
+    {
+      "id": "M0",
+      "name": "Frozen baseline",
+      "status": "DONE",
+      "depends_on": []
+    },
+    {
+      "id": "M1",
+      "name": "Engineering foundation + evidence/traceability handoff",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M0"
+      ]
+    },
+    {
+      "id": "M2",
+      "name": "Contracts + physical schema roots",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M1"
+      ]
+    },
+    {
+      "id": "M3",
+      "name": "Minimal real PostgreSQL protocol demo",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M2"
+      ]
+    },
+    {
+      "id": "M4",
+      "name": "Worker/reaper/fault boundaries",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M3"
+      ]
+    },
+    {
+      "id": "M5",
+      "name": "Canonical training data vertical slice",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M3"
+      ]
+    },
+    {
+      "id": "M6",
+      "name": "Decision context + read-only tools",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M5"
+      ]
+    },
+    {
+      "id": "M7",
+      "name": "Fitness Coach real-data shadow evaluation",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M4",
+        "M6"
+      ]
+    },
+    {
+      "id": "M8",
+      "name": "Nutrition Coach + cross-domain reasoning",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M7"
+      ]
+    },
+    {
+      "id": "M9A",
+      "name": "Launch-scope live provider adapters",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M5",
+        "M7"
+      ]
+    },
+    {
+      "id": "M9B",
+      "name": "Optional provider extensions",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M5"
+      ],
+      "blocking_for": [
+        "none unless promoted to launch_source_scope"
+      ]
+    },
+    {
+      "id": "M10",
+      "name": "Staging/observability/release evaluation",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M8",
+        "M9A"
+      ]
+    },
+    {
+      "id": "M11",
+      "name": "Auto-activation readiness review",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M10"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "KL-001",
+      "milestone": "M1",
+      "title": "Initialize Python repo/tooling/CI",
+      "owner_role": "platform",
+      "depends_on": [],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [],
+      "table_ids": [],
+      "required_test_layers": [
+        "CI"
+      ],
+      "deliverables": [
+        "uv/pyproject",
+        "lint/type/test pipeline"
+      ],
+      "definition_of_done": "clean checkout runs lint/type/unit skeleton",
+      "entry_conditions": [
+        "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-002",
+      "milestone": "M1",
+      "title": "Local PostgreSQL Docker/test DB lifecycle",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-001"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [],
+      "table_ids": [],
+      "required_test_layers": [
+        "DC"
+      ],
+      "deliverables": [
+        "docker-compose",
+        "test DB reset fixture"
+      ],
+      "definition_of_done": "one command starts and resets deterministic Postgres",
+      "entry_conditions": [
+        "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-003",
+      "milestone": "M1",
+      "title": "Canonical ID/time/hash utilities",
+      "owner_role": "domain",
+      "depends_on": [
+        "KL-001"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "ID/time/hash library"
+      ],
+      "definition_of_done": "canonical serialization/time tests pass",
+      "entry_conditions": [
+        "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-004",
+      "milestone": "M1",
+      "title": "Error registry + command receipt base contracts",
+      "owner_role": "domain",
+      "depends_on": [
+        "KL-003"
+      ],
+      "commands": [
+        "CommandGateway"
+      ],
+      "transaction_boundaries": [
+        "T1-T8"
+      ],
+      "invariant_ids": [
+        "INV-02"
+      ],
+      "table_ids": [
+        "S02"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "error enum",
+        "receipt base models"
+      ],
+      "definition_of_done": "idempotency-key mismatch semantics specified/tested",
+      "entry_conditions": [
+        "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-005",
+      "milestone": "M1",
+      "title": "Acceptance requirement registry + fixture generator",
+      "owner_role": "quality",
+      "depends_on": [
+        "KL-001"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU",
+        "DC",
+        "WF",
+        "E2E"
+      ],
+      "deliverables": [
+        "67 original layer obligations",
+        "B01-B18",
+        "I01-I09 fixture registry"
+      ],
+      "definition_of_done": "CI can enumerate every required obligation and default NOT_RUN",
+      "entry_conditions": [
+        "KineticLoop_Acceptance_Spec_v1.2.1.json exists"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-006",
+      "milestone": "M1",
+      "title": "Stable document index + evidence handoff manifest",
+      "owner_role": "architecture",
+      "depends_on": [
+        "KL-001"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "DOCUMENT_INDEX.json",
+        "evidence manifest"
+      ],
+      "definition_of_done": "all canonical docs resolved by stable ID; missing model source reported, not hidden",
+      "entry_conditions": [
+        "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-007",
+      "milestone": "M1",
+      "title": "Subject/test/admin/evaluation role vocabulary",
+      "owner_role": "security",
+      "depends_on": [
+        "KL-001"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-02",
+        "INV-15"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "role/capability contracts"
+      ],
+      "definition_of_done": "test/eval capability cannot be accepted as production actor",
+      "entry_conditions": [
+        "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-008",
+      "milestone": "M1",
+      "title": "Shadow/test semantic contract",
+      "owner_role": "architecture",
+      "depends_on": [
+        "KL-005",
+        "KL-007"
+      ],
+      "commands": [
+        "test-only T6/T7",
+        "shadow evaluation"
+      ],
+      "transaction_boundaries": [
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10"
+      ],
+      "table_ids": [
+        "S38",
+        "S42",
+        "S45"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "shadow storage/API contract",
+        "test-only authorization scope"
+      ],
+      "definition_of_done": "real-data shadow cannot write live head/issuance/binding; test path can exercise full T6/T7",
+      "entry_conditions": [
+        "G-SHADOW"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-009",
+      "milestone": "M1",
+      "title": "Secret/config separation + synthetic data/log-redaction harness",
+      "owner_role": "security",
+      "depends_on": [
+        "KL-001",
+        "KL-007"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-15",
+        "INV-16"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "secret loader",
+        "redaction test harness",
+        "synthetic fixtures"
+      ],
+      "definition_of_done": "sensitive fixture fields not emitted by default logs",
+      "entry_conditions": [
+        "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-010",
+      "milestone": "M2",
+      "title": "Physical schema dependency topology",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-002",
+        "KL-003"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [
+        "S01-S51"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "FK/reference-root migration plan"
+      ],
+      "definition_of_done": "DDL ordering follows references, not logical table numbers",
+      "entry_conditions": [
+        "M1 exit evidence complete"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-011",
+      "milestone": "M2",
+      "title": "Typed canonical fact child-table design",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-010"
+      ],
+      "commands": [
+        "AcceptFactRevision"
+      ],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-04",
+        "INV-18"
+      ],
+      "table_ids": [
+        "S14",
+        "S44"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "strength/cardio/health/nutrition typed child plan"
+      ],
+      "definition_of_done": "actual/unknown/zero semantics typed and provenance-preserving",
+      "entry_conditions": [
+        "M1 exit evidence complete"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-012",
+      "milestone": "M2",
+      "title": "Immutable history + write-permission protections",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-010",
+        "KL-007"
+      ],
+      "commands": [],
+      "transaction_boundaries": [
+        "T1-T8"
+      ],
+      "invariant_ids": [
+        "INV-02",
+        "INV-16"
+      ],
+      "table_ids": [
+        "I-class tables"
+      ],
+      "required_test_layers": [
+        "DC"
+      ],
+      "deliverables": [
+        "DB roles/permissions/triggers/repository guards"
+      ],
+      "definition_of_done": "ordinary app role cannot rewrite immutable semantic history",
+      "entry_conditions": [
+        "M1 exit evidence complete"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-013",
+      "milestone": "M2",
+      "title": "Alembic baseline migration",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-010",
+        "KL-011",
+        "KL-012"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [
+        "S01-S51"
+      ],
+      "required_test_layers": [
+        "DC"
+      ],
+      "deliverables": [
+        "initial migration"
+      ],
+      "definition_of_done": "empty DB rebuilds deterministically",
+      "entry_conditions": [
+        "M1 exit evidence complete"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-014",
+      "milestone": "M2",
+      "title": "Pydantic T1-T8 command/result contracts",
+      "owner_role": "domain",
+      "depends_on": [
+        "KL-004",
+        "KL-008"
+      ],
+      "commands": [
+        "T1-T8 commands"
+      ],
+      "transaction_boundaries": [
+        "T1-T8"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "typed commands/results/errors"
+      ],
+      "definition_of_done": "all commands bind subject/actor/idempotency/basis fields",
+      "entry_conditions": [
+        "G-SHADOW closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-015",
+      "milestone": "M2",
+      "title": "Repository transaction interfaces",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-013",
+        "KL-014",
+        "KL-016"
+      ],
+      "commands": [
+        "command owners"
+      ],
+      "transaction_boundaries": [
+        "T1-T8"
+      ],
+      "invariant_ids": [
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S01",
+        "S27",
+        "S31",
+        "S38",
+        "S44",
+        "S51"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "deliverables": [
+        "transaction interfaces"
+      ],
+      "definition_of_done": "no interface allows T3/T6/T7 to bypass registry shared gate",
+      "entry_conditions": [
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-016",
+      "milestone": "M2",
+      "title": "SafetyRegistry shared/exclusive gate contract",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-010"
+      ],
+      "commands": [
+        "RevokeArtifact",
+        "PublishManifest",
+        "CommitBundle",
+        "StartSession",
+        "ResumeSession"
+      ],
+      "transaction_boundaries": [
+        "T2-GLOBAL",
+        "T3",
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S49",
+        "S50",
+        "S51",
+        "S01"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "deliverables": [
+        "lock/gate API"
+      ],
+      "definition_of_done": "shared→S01 ordering and exclusive global revoke encoded/testable",
+      "entry_conditions": [
+        "M1 exit evidence complete"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-017",
+      "milestone": "M2",
+      "title": "Production/test/evaluation subject isolation in persistence",
+      "owner_role": "security",
+      "depends_on": [
+        "KL-007",
+        "KL-013"
+      ],
+      "commands": [],
+      "transaction_boundaries": [
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-02",
+        "INV-15"
+      ],
+      "table_ids": [
+        "S38",
+        "S42",
+        "S45",
+        "S46",
+        "S47"
+      ],
+      "required_test_layers": [
+        "DC",
+        "E2E"
+      ],
+      "deliverables": [
+        "DB/application role policies"
+      ],
+      "definition_of_done": "test/eval authorization cannot cross into production subject namespace",
+      "entry_conditions": [
+        "M1 exit evidence complete"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-018",
+      "milestone": "M2",
+      "title": "Minimal artifact registry/release identity",
+      "owner_role": "release",
+      "depends_on": [
+        "KL-013",
+        "KL-016"
+      ],
+      "commands": [
+        "RegisterArtifact"
+      ],
+      "transaction_boundaries": [
+        "T2-GLOBAL",
+        "T3",
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S49",
+        "S51"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "deliverables": [
+        "artifact identity API"
+      ],
+      "definition_of_done": "model/prompt/tool/runtime/policy artifacts have exact immutable identities before use",
+      "entry_conditions": [
+        "M1 exit evidence complete"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-020",
+      "milestone": "M3",
+      "title": "S01 coordination + command idempotency",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-015"
+      ],
+      "commands": [
+        "CommandGateway"
+      ],
+      "transaction_boundaries": [
+        "T2-T7"
+      ],
+      "invariant_ids": [
+        "INV-07",
+        "INV-08",
+        "INV-10"
+      ],
+      "table_ids": [
+        "S01",
+        "S02"
+      ],
+      "required_test_layers": [
+        "DC"
+      ],
+      "deliverables": [
+        "coordination implementation"
+      ],
+      "definition_of_done": "concurrent command guards serialize as designed",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-021",
+      "milestone": "M3",
+      "title": "SafetyRegistry T2-GLOBAL implementation",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-016",
+        "KL-018",
+        "KL-020"
+      ],
+      "commands": [
+        "RevokeArtifact"
+      ],
+      "transaction_boundaries": [
+        "T2-GLOBAL"
+      ],
+      "invariant_ids": [
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S49",
+        "S50",
+        "S51"
+      ],
+      "required_test_layers": [
+        "DC"
+      ],
+      "deliverables": [
+        "registry implementation"
+      ],
+      "definition_of_done": "commit is revoke linearization point; rollback has no effect",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-022",
+      "milestone": "M3",
+      "title": "Authorization evaluator + validity closure",
+      "owner_role": "authorization",
+      "depends_on": [
+        "KL-015",
+        "KL-018",
+        "KL-021"
+      ],
+      "commands": [
+        "Issue",
+        "is_executable"
+      ],
+      "transaction_boundaries": [
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10"
+      ],
+      "table_ids": [
+        "S42",
+        "S43",
+        "S49",
+        "S51"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC",
+        "E2E"
+      ],
+      "deliverables": [
+        "evaluator"
+      ],
+      "definition_of_done": "min-validity closure, transitive revoke and TIMELESS rules enforced",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-023",
+      "milestone": "M3",
+      "title": "Factset build/ready/seal",
+      "owner_role": "evidence",
+      "depends_on": [
+        "KL-015"
+      ],
+      "commands": [
+        "SealFactset"
+      ],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-03",
+        "INV-05",
+        "INV-06",
+        "INV-07"
+      ],
+      "table_ids": [
+        "S15",
+        "S16",
+        "S01"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "deliverables": [
+        "factset implementation"
+      ],
+      "definition_of_done": "READY noncanonical; SEALED immutable; stale frontier cannot seal",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-024",
+      "milestone": "M3",
+      "title": "Planning intent + lease/fencing minimal implementation",
+      "owner_role": "planning",
+      "depends_on": [
+        "KL-015"
+      ],
+      "commands": [
+        "AdmitIntent",
+        "AcquireLease"
+      ],
+      "transaction_boundaries": [
+        "T4",
+        "T5"
+      ],
+      "invariant_ids": [
+        "INV-10",
+        "INV-11",
+        "INV-13"
+      ],
+      "table_ids": [
+        "S27",
+        "S28",
+        "S29"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "deliverables": [
+        "planning core"
+      ],
+      "definition_of_done": "old request/fence cannot commit",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-025",
+      "milestone": "M3",
+      "title": "Call reservation ledger + dispatch permit",
+      "owner_role": "planning",
+      "depends_on": [
+        "KL-024"
+      ],
+      "commands": [
+        "ReserveCall",
+        "PermitDispatch"
+      ],
+      "transaction_boundaries": [
+        "T5",
+        "T8"
+      ],
+      "invariant_ids": [
+        "INV-11",
+        "INV-12",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S31",
+        "S32"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "deliverables": [
+        "ledger core"
+      ],
+      "definition_of_done": "cancel and dispatch permission are mutually exclusive",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-026",
+      "milestone": "M3",
+      "title": "Nine interleavings on real PostgreSQL",
+      "owner_role": "quality",
+      "depends_on": [
+        "KL-021",
+        "KL-022",
+        "KL-023",
+        "KL-024",
+        "KL-025"
+      ],
+      "commands": [],
+      "transaction_boundaries": [
+        "T2-GLOBAL",
+        "T2",
+        "T3",
+        "T5",
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12"
+      ],
+      "table_ids": [
+        "S01",
+        "S15",
+        "S16",
+        "S27",
+        "S31",
+        "S42",
+        "S49",
+        "S50",
+        "S51"
+      ],
+      "required_test_layers": [
+        "DC"
+      ],
+      "deliverables": [
+        "I01-I09 test suite"
+      ],
+      "definition_of_done": "all required orderings pass with persistent-state assertions",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-027",
+      "milestone": "M3",
+      "title": "Full deterministic test-only T6/T7 protocol demo",
+      "owner_role": "integration",
+      "depends_on": [
+        "KL-022",
+        "KL-023",
+        "KL-024",
+        "KL-025",
+        "KL-017"
+      ],
+      "commands": [
+        "CommitBundle",
+        "StartSession",
+        "Revoke"
+      ],
+      "transaction_boundaries": [
+        "T6",
+        "T7",
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10",
+        "INV-14"
+      ],
+      "table_ids": [
+        "S38",
+        "S39",
+        "S40",
+        "S41",
+        "S42",
+        "S45"
+      ],
+      "required_test_layers": [
+        "DC",
+        "E2E"
+      ],
+      "deliverables": [
+        "fixture F/D/N + test A"
+      ],
+      "definition_of_done": "valid→START→revoke/expire→deny trajectory with audit evidence",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-028",
+      "milestone": "M3",
+      "title": "Supplemental B01-B18 production boundary suite",
+      "owner_role": "quality",
+      "depends_on": [
+        "KL-021",
+        "KL-022",
+        "KL-023",
+        "KL-027"
+      ],
+      "commands": [],
+      "transaction_boundaries": [
+        "T2-GLOBAL",
+        "T2",
+        "T3",
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-06",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S15",
+        "S16",
+        "S42",
+        "S49",
+        "S50",
+        "S51"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC",
+        "E2E"
+      ],
+      "deliverables": [
+        "B01-B18 evidence"
+      ],
+      "definition_of_done": "every release-required B obligation has bound result",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-029",
+      "milestone": "M3",
+      "title": "Shadow isolation enforcement",
+      "owner_role": "security",
+      "depends_on": [
+        "KL-008",
+        "KL-017",
+        "KL-027"
+      ],
+      "commands": [],
+      "transaction_boundaries": [
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10"
+      ],
+      "table_ids": [
+        "S38",
+        "S42",
+        "S45"
+      ],
+      "required_test_layers": [
+        "DC",
+        "E2E"
+      ],
+      "deliverables": [
+        "negative shadow-crossing tests"
+      ],
+      "definition_of_done": "shadow evaluation cannot mutate live head/issuance/binding",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-030",
+      "milestone": "M5",
+      "title": "Evidence receive/assertion/admission",
+      "owner_role": "evidence",
+      "depends_on": [
+        "KL-027"
+      ],
+      "commands": [
+        "ReceiveEvidence",
+        "DecideAdmission"
+      ],
+      "transaction_boundaries": [
+        "T1",
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-04"
+      ],
+      "table_ids": [
+        "S09",
+        "S10",
+        "S13"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "Evidence receive/assertion/admission deliverable"
+      ],
+      "definition_of_done": "Evidence receive/assertion/admission acceptance evidence recorded",
+      "entry_conditions": [
+        "M5 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-031",
+      "milestone": "M5",
+      "title": "Workout actual typed schema",
+      "owner_role": "evidence",
+      "depends_on": [
+        "KL-011",
+        "KL-030"
+      ],
+      "commands": [
+        "AcceptFactRevision"
+      ],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-18"
+      ],
+      "table_ids": [
+        "S14",
+        "S44"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "Workout actual typed schema deliverable"
+      ],
+      "definition_of_done": "Workout actual typed schema acceptance evidence recorded",
+      "entry_conditions": [
+        "M5 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-032",
+      "milestone": "M5",
+      "title": "Event association/dedup",
+      "owner_role": "evidence",
+      "depends_on": [
+        "KL-030"
+      ],
+      "commands": [
+        "DecideAssociation"
+      ],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-03"
+      ],
+      "table_ids": [
+        "S11",
+        "S12"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "deliverables": [
+        "Event association/dedup deliverable"
+      ],
+      "definition_of_done": "Event association/dedup acceptance evidence recorded",
+      "entry_conditions": [
+        "M5 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-033",
+      "milestone": "M5",
+      "title": "Sequence/progression/exposure projections",
+      "owner_role": "projection",
+      "depends_on": [
+        "KL-031",
+        "KL-032"
+      ],
+      "commands": [
+        "RecordProjection"
+      ],
+      "transaction_boundaries": [
+        "T3"
+      ],
+      "invariant_ids": [
+        "INV-03",
+        "INV-04",
+        "INV-06"
+      ],
+      "table_ids": [
+        "S21",
+        "S22"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "Sequence/progression/exposure projections deliverable"
+      ],
+      "definition_of_done": "Sequence/progression/exposure projections acceptance evidence recorded",
+      "entry_conditions": [
+        "M5 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-034",
+      "milestone": "M5",
+      "title": "Correction invalidation propagation",
+      "owner_role": "evidence",
+      "depends_on": [
+        "KL-033"
+      ],
+      "commands": [
+        "AcceptFactRevision"
+      ],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-08",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S13",
+        "S14",
+        "S15",
+        "S01"
+      ],
+      "required_test_layers": [
+        "DC",
+        "E2E"
+      ],
+      "deliverables": [
+        "Correction invalidation propagation deliverable"
+      ],
+      "definition_of_done": "Correction invalidation propagation acceptance evidence recorded",
+      "entry_conditions": [
+        "M5 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-035",
+      "milestone": "M5",
+      "title": "Google Sheet migration staging/import",
+      "owner_role": "integration",
+      "depends_on": [
+        "KL-009",
+        "KL-031",
+        "KL-032"
+      ],
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1",
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-03",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09",
+        "S14"
+      ],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "Google Sheet migration staging/import deliverable"
+      ],
+      "definition_of_done": "Google Sheet migration staging/import acceptance evidence recorded",
+      "entry_conditions": [
+        "M5 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-040",
+      "milestone": "M6",
+      "title": "DecisionManifest + snapshot",
+      "owner_role": "publication",
+      "depends_on": [
+        "KL-033",
+        "KL-021"
+      ],
+      "commands": [
+        "PublishManifest"
+      ],
+      "transaction_boundaries": [
+        "T3"
+      ],
+      "invariant_ids": [
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-10"
+      ],
+      "table_ids": [
+        "S23",
+        "S24",
+        "S25",
+        "S26",
+        "S51"
+      ],
+      "required_test_layers": [
+        "DC",
+        "E2E"
+      ],
+      "deliverables": [
+        "DecisionManifest + snapshot deliverable"
+      ],
+      "definition_of_done": "DecisionManifest + snapshot acceptance evidence recorded",
+      "entry_conditions": [
+        "M6 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-041",
+      "milestone": "M6",
+      "title": "Context tool gateway",
+      "owner_role": "context",
+      "depends_on": [
+        "KL-040"
+      ],
+      "commands": [
+        "RecordToolResult"
+      ],
+      "transaction_boundaries": [
+        "T5"
+      ],
+      "invariant_ids": [
+        "INV-05",
+        "INV-15",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S33"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "Context tool gateway deliverable"
+      ],
+      "definition_of_done": "Context tool gateway acceptance evidence recorded",
+      "entry_conditions": [
+        "M6 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-042",
+      "milestone": "M7",
+      "title": "FitnessProposal contracts",
+      "owner_role": "ai",
+      "depends_on": [
+        "KL-014",
+        "KL-041"
+      ],
+      "commands": [],
+      "transaction_boundaries": [
+        "T5"
+      ],
+      "invariant_ids": [
+        "INV-02",
+        "INV-14"
+      ],
+      "table_ids": [
+        "S34"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "FitnessProposal contracts deliverable"
+      ],
+      "definition_of_done": "FitnessProposal contracts acceptance evidence recorded",
+      "entry_conditions": [
+        "M7 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-043",
+      "milestone": "M7",
+      "title": "Responses API adapter with ledger-controlled calls",
+      "owner_role": "ai",
+      "depends_on": [
+        "KL-025",
+        "KL-018",
+        "KL-042"
+      ],
+      "commands": [
+        "ReserveCall",
+        "PermitDispatch"
+      ],
+      "transaction_boundaries": [
+        "T5",
+        "T8"
+      ],
+      "invariant_ids": [
+        "INV-11",
+        "INV-12",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S31",
+        "S32"
+      ],
+      "required_test_layers": [
+        "WF",
+        "E2E"
+      ],
+      "deliverables": [
+        "Responses API adapter with ledger-controlled calls deliverable"
+      ],
+      "definition_of_done": "Responses API adapter with ledger-controlled calls acceptance evidence recorded",
+      "entry_conditions": [
+        "M7 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-044",
+      "milestone": "M7",
+      "title": "Evidence resolver + validation",
+      "owner_role": "authorization",
+      "depends_on": [
+        "KL-041",
+        "KL-042"
+      ],
+      "commands": [
+        "ResolveEvidence",
+        "RecordValidation"
+      ],
+      "transaction_boundaries": [
+        "T6-prep"
+      ],
+      "invariant_ids": [
+        "INV-05",
+        "INV-09",
+        "INV-14"
+      ],
+      "table_ids": [
+        "S36",
+        "S37"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "Evidence resolver + validation deliverable"
+      ],
+      "definition_of_done": "Evidence resolver + validation acceptance evidence recorded",
+      "entry_conditions": [
+        "M7 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-045",
+      "milestone": "M7",
+      "title": "Real-data shadow evaluation store/API",
+      "owner_role": "evaluation",
+      "depends_on": [
+        "KL-008",
+        "KL-029",
+        "KL-043",
+        "KL-044"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10",
+        "INV-15"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "Real-data shadow evaluation store/API deliverable"
+      ],
+      "definition_of_done": "Real-data shadow evaluation store/API acceptance evidence recorded",
+      "entry_conditions": [
+        "M7 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-046",
+      "milestone": "M7",
+      "title": "Historical planning replay",
+      "owner_role": "evaluation",
+      "depends_on": [
+        "KL-040",
+        "KL-044"
+      ],
+      "commands": [
+        "RunReplay"
+      ],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S46",
+        "S47"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "Historical planning replay deliverable"
+      ],
+      "definition_of_done": "Historical planning replay acceptance evidence recorded",
+      "entry_conditions": [
+        "M7 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-047",
+      "milestone": "M7",
+      "title": "Fixed predeclared Fitness eval set + scorer",
+      "owner_role": "quality",
+      "depends_on": [
+        "KL-005",
+        "KL-018"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S48"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "Fixed predeclared Fitness eval set + scorer deliverable"
+      ],
+      "definition_of_done": "Fixed predeclared Fitness eval set + scorer acceptance evidence recorded",
+      "entry_conditions": [
+        "M7 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-048",
+      "milestone": "M7",
+      "title": "Remote-context outbound/redaction gate",
+      "owner_role": "security",
+      "depends_on": [
+        "KL-009",
+        "KL-018",
+        "KL-041"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-15",
+        "INV-16"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "Remote-context outbound/redaction gate deliverable"
+      ],
+      "definition_of_done": "Remote-context outbound/redaction gate acceptance evidence recorded",
+      "entry_conditions": [
+        "M7 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-050",
+      "milestone": "M9A",
+      "title": "Launch-source scope registry",
+      "owner_role": "product",
+      "depends_on": [
+        "KL-018"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "Launch-source scope registry deliverable"
+      ],
+      "definition_of_done": "Launch-source scope registry acceptance evidence recorded",
+      "entry_conditions": [
+        "M9A entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-051",
+      "milestone": "M9A",
+      "title": "Hevy adapter if launch-scoped",
+      "owner_role": "integration",
+      "depends_on": [
+        "KL-030",
+        "KL-050"
+      ],
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-03",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09"
+      ],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "Hevy adapter if launch-scoped deliverable"
+      ],
+      "definition_of_done": "Hevy adapter if launch-scoped acceptance evidence recorded",
+      "entry_conditions": [
+        "M9A entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-052",
+      "milestone": "M9A",
+      "title": "HealthKit bridge if launch-scoped",
+      "owner_role": "integration",
+      "depends_on": [
+        "KL-030",
+        "KL-050"
+      ],
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1"
+      ],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09"
+      ],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "HealthKit bridge if launch-scoped deliverable"
+      ],
+      "definition_of_done": "HealthKit bridge if launch-scoped acceptance evidence recorded",
+      "entry_conditions": [
+        "M9A entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-053",
+      "milestone": "M9B",
+      "title": "Optional Oura adapter",
+      "owner_role": "integration",
+      "depends_on": [
+        "KL-030"
+      ],
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1"
+      ],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09"
+      ],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "Optional Oura adapter deliverable"
+      ],
+      "definition_of_done": "Optional Oura adapter acceptance evidence recorded",
+      "entry_conditions": [
+        "M9B entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-054",
+      "milestone": "M9B",
+      "title": "Optional nutrition/DEXA adapters",
+      "owner_role": "integration",
+      "depends_on": [
+        "KL-030"
+      ],
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1"
+      ],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09"
+      ],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "Optional nutrition/DEXA adapters deliverable"
+      ],
+      "definition_of_done": "Optional nutrition/DEXA adapters acceptance evidence recorded",
+      "entry_conditions": [
+        "M9B entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-060",
+      "milestone": "M10",
+      "title": "Staging observability/SLOs",
+      "owner_role": "platform",
+      "depends_on": [
+        "KL-043",
+        "KL-045"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-17"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "Staging observability/SLOs deliverable"
+      ],
+      "definition_of_done": "Staging observability/SLOs acceptance evidence recorded",
+      "entry_conditions": [
+        "M10 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-061",
+      "milestone": "M10",
+      "title": "Release registry + full eval/replay hardening",
+      "owner_role": "release",
+      "depends_on": [
+        "KL-047",
+        "KL-060"
+      ],
+      "commands": [
+        "RecordRelease"
+      ],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S48"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "Release registry + full eval/replay hardening deliverable"
+      ],
+      "definition_of_done": "Release registry + full eval/replay hardening acceptance evidence recorded",
+      "entry_conditions": [
+        "M10 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-070",
+      "milestone": "M11",
+      "title": "Integrated auto-activation evidence review",
+      "owner_role": "release",
+      "depends_on": [
+        "KL-061",
+        "KL-028"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU",
+        "DC",
+        "WF",
+        "E2E"
+      ],
+      "deliverables": [
+        "Integrated auto-activation evidence review deliverable"
+      ],
+      "definition_of_done": "Integrated auto-activation evidence review acceptance evidence recorded",
+      "entry_conditions": [
+        "M11 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    }
+  ],
+  "task_count": 51,
+  "acceptance_requirement_set": "KINETICLOOP_ACCEPTANCE_V1_2_1"
+}

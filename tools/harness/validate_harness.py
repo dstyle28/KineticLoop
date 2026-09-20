@@ -1,0 +1,414 @@
+#!/usr/bin/env python3
+"""Validate Harness contracts; Git arguments enable revision-bound PR checks."""
+import argparse
+import fnmatch
+import hashlib
+import json
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+BACKLOG = 'KineticLoop_Harness_Backlog_v0.2.json'
+INDEX = 'CURRENT_DOCUMENT_INDEX.json'
+MANIFEST = 'HARNESS_DOCUMENT_MANIFEST.json'
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def relative_path(path):
+    return (isinstance(path, str) and bool(path) and '\\' not in path
+            and all(p not in ('', '.', '..') for p in path.split('/')))
+
+
+def matches(path, patterns):
+    """Match glob components; * cannot cross / and ** matches whole directories."""
+    if not relative_path(path):
+        return False
+
+    def match(parts, pattern):
+        if not pattern:
+            return not parts
+        if pattern[0] == '**':
+            return match(parts, pattern[1:]) or bool(parts and match(parts[1:], pattern))
+        return bool(parts and fnmatch.fnmatchcase(parts[0], pattern[0])
+                    and match(parts[1:], pattern[1:]))
+
+    return any(relative_path(p) and match(path.split('/'), p.split('/')) for p in patterns)
+
+
+def unique_mapping(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError('duplicate-key:' + str(key))
+        result[key] = value
+    return result
+
+
+def load_artifact(path):
+    if path.suffix == '.json':
+        return json.loads(path.read_text(), object_pairs_hook=unique_mapping)
+    import yaml
+
+    class StrictLoader(yaml.SafeLoader):
+        pass
+
+    def mapping(loader, node):
+        loader.flatten_mapping(node)
+        return unique_mapping((loader.construct_object(k), loader.construct_object(v))
+                              for k, v in node.value)
+
+    StrictLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, mapping)
+    try:
+        return yaml.load(path.read_text(), Loader=StrictLoader)
+    except yaml.YAMLError as ex:
+        raise ValueError('yaml-parse:' + str(ex)) from ex
+
+
+def section(text, heading):
+    match = re.search(r'^## ' + re.escape(heading) + r'\s*\n(.*?)(?=^## |\Z)', text, re.M | re.S)
+    return match.group(1) if match else None
+
+
+def bullets(text):
+    return [line[2:].strip() for line in text.splitlines() if line.startswith('- ')]
+
+
+def packet_errors(task, text):
+    errors = []
+    name = task['id']
+    if task['task_identity'] not in text:
+        errors.append('packet-identity:' + name)
+    if task['status'] == 'SUPERSEDED':
+        return errors
+    if task['title'] not in text:
+        errors.append('packet-title:' + name)
+    deps = section(text, 'Dependencies')
+    if deps is None or set(re.findall(r'KL-[0-9]{3}[A-Z]?', deps.split('### Conditional dependencies')[0])) != set(task['depends_on']):
+        errors.append('packet-deps:' + name)
+    checks = section(text, 'Checks required for this task PR')
+    if checks is None or sorted(bullets(checks)) != sorted(task['checks_required_for_this_task']):
+        errors.append('packet-checks:' + name)
+    if task.get('write_paths_status') == 'ENFORCEABLE':
+        scope = section(text, 'Resource / write isolation') or ''
+        found = re.search(r'^Expected (?:implementation )?write paths:\s*\n((?:- [^\n]+\n?)+)', scope, re.M)
+        if not found or sorted(bullets(found.group(1))) != sorted(task['write_paths']):
+            errors.append('packet-write-paths:' + name)
+    return errors
+
+
+def git(root, *args):
+    proc = subprocess.run(['git', *args], cwd=root, capture_output=True)
+    if proc.returncode:
+        raise ValueError('git:' + proc.stderr.decode(errors='replace').strip())
+    return proc.stdout
+
+
+def resolve(root, ref):
+    # --end-of-options prevents a user-supplied ref from becoming a Git option.
+    return git(root, 'rev-parse', '--verify', '--end-of-options', ref + '^{commit}').decode().strip()
+
+
+def changed_paths(root, before, after):
+    return git(root, 'diff', '--no-renames', '--name-only', '-z', before, after, '--').decode().split('\0')[:-1]
+
+
+def result_paths(task_id):
+    return [f'docs/exec-plans/completed/{task_id}_RESULT.{ext}' for ext in ('yaml', 'json')]
+
+
+def evidence_pattern(task_id):
+    return f'docs/exec-plans/evidence/{task_id}/**'
+
+
+def review_patterns(task_id):
+    return [f'docs/exec-plans/reviews/{task_id}/**']
+
+
+def suffix_errors(root, start, end, task_id, kind):
+    """Require ancestry and check every bookkeeping commit, including reverted changes."""
+    errors = []
+    try:
+        start, end = resolve(root, start), resolve(root, end)
+        git(root, 'merge-base', '--is-ancestor', start, end)
+        commits = git(root, 'rev-list', '--reverse', start + '..' + end).decode().splitlines()
+        allowed = review_patterns(task_id) if kind == 'review' else result_paths(task_id) + [evidence_pattern(task_id)]
+        for commit in commits:
+            parents = git(root, 'rev-list', '--parents', '-n', '1', commit).decode().split()[1:]
+            if len(parents) != 1:
+                errors.append(kind + '-suffix-merge:' + commit)
+                continue
+            for path in changed_paths(root, parents[0], commit):
+                if not matches(path, allowed):
+                    errors.append(kind + '-stale-change:' + path)
+                elif kind == 'tested' and matches(path, [evidence_pattern(task_id)]):
+                    exists = subprocess.run(['git', 'cat-file', '-e', parents[0] + ':' + path], cwd=root, capture_output=True)
+                    if exists.returncode == 0:
+                        errors.append('tested-evidence-not-addition:' + path)
+    except ValueError as ex:
+        errors.append(kind + '-revision:' + str(ex))
+    return errors
+
+
+def evidence_exists(root, ref):
+    if not relative_path(ref):
+        return False
+    path = root / ref
+    return path.is_file() and root.resolve() in path.resolve().parents
+
+
+def semantic_result_errors(obj, task, root):
+    errors = []
+    if obj['task_identity'] != task['task_identity'] or obj['display_task_id'] != task['id']:
+        errors.append('result-task-identity')
+    if obj['task_status'] == 'PASS' and obj['task_checks_status'] != 'PASS':
+        errors.append('pass-without-check-pass')
+    commands = obj['commands_run']
+    if obj['task_status'] == 'PASS' and not commands:
+        errors.append('pass-empty-commands')
+    check_ids = [c['check_id'] for c in commands]
+    expected = set(task['checks_required_for_this_task'])
+    if len(check_ids) != len(set(check_ids)) or set(check_ids) - expected:
+        errors.append('result-check-ids')
+    if obj['task_status'] == 'PASS' or obj['task_checks_status'] == 'PASS':
+        if set(check_ids) != expected or any(c['result'] != 'PASS' for c in commands):
+            errors.append('required-checks-not-pass')
+    for c in commands:
+        if c['result'] in ('PASS', 'FAIL') and not evidence_exists(root, c.get('evidence_ref')):
+            errors.append('command-evidence:' + c['check_id'])
+    for requirement in obj['requirements_covered']:
+        if requirement['status'] in ('PASS', 'APPROVED_NA'):
+            if not evidence_exists(root, requirement.get('evidence_ref')):
+                errors.append('requirement-evidence:' + requirement['requirement_id'])
+            if requirement.get('tested_commit') != obj['tested_commit']:
+                errors.append('requirement-revision:' + requirement['requirement_id'])
+            if '@' not in requirement['requirement_id']:
+                errors.append('requirement-layer:' + requirement['requirement_id'])
+    return errors
+
+
+def requirement_ids(root):
+    """Expand all requirement sources to concrete ID@layer obligations."""
+    ids = set()
+    sources = load_artifact(root / 'CURRENT_REQUIREMENT_SET.json')['sources']
+    for source in sources:
+        data = load_artifact(root / source['path'])
+        for entry in data.get('original_layer_obligations', []):
+            ids.add(entry['obligation_id'])
+        for group in ('supplemental_boundary_requirements', 'interleaving_requirements', 'requirements'):
+            for entry in data.get(group, []):
+                name = entry.get('requirement_id', entry.get('id'))
+                ids.update(name + '@' + layer for layer in entry['layers'])
+    return ids
+
+
+def hash_refresh_errors(root, base_revision, name, task, changed, protected_paths):
+    """Only change hashes/byte counts of already-indexed, authorized changed files."""
+    old = json.loads(git(root, 'show', base_revision + ':' + name))
+    new = load_artifact(root / name)
+    errors = []
+    groups = ('documents', 'machine_readable') if name == INDEX else ('files',)
+    old_meta = {k: v for k, v in old.items() if k not in groups}
+    new_meta = {k: v for k, v in new.items() if k not in groups}
+    if old_meta != new_meta:
+        errors.append('derived-index-metadata:' + name)
+    for group in groups:
+        before, after = old.get(group, []), new.get(group, [])
+        if [e['path'] for e in before] != [e['path'] for e in after]:
+            errors.append('derived-index-paths:' + name)
+            continue
+        for previous, current in zip(before, after):
+            if previous == current:
+                continue
+            path = previous['path']
+            permitted = (path not in protected_paths and path in changed
+                         and (matches(path, task['write_paths']) or (name == MANIFEST and path == INDEX)))
+            if not permitted:
+                errors.append('derived-index-unauthorized:' + path)
+                continue
+            if {k: v for k, v in previous.items() if k not in ('sha256', 'bytes')} != {k: v for k, v in current.items() if k not in ('sha256', 'bytes')}:
+                errors.append('derived-index-entry:' + path)
+            target = root / path
+            if not target.is_file() or current.get('sha256') != sha(target):
+                errors.append('derived-index-hash:' + path)
+            if 'bytes' in current and (not target.is_file() or current['bytes'] != target.stat().st_size):
+                errors.append('derived-index-bytes:' + path)
+    return errors
+
+
+def validate(root, args):
+    from jsonschema import Draft202012Validator
+
+    errors = []
+    index, frozen, backlog = (load_artifact(root / n) for n in (INDEX, 'FROZEN_BASELINE.json', BACKLOG))
+    for entry in index['documents'] + index.get('machine_readable', []) + frozen['files']:
+        path = root / entry['path']
+        if not relative_path(entry['path']) or not path.is_file():
+            errors.append('missing:' + entry['path'])
+        elif sha(path) != entry['sha256']:
+            errors.append('hash:' + entry['path'])
+    tasks = {task['id']: task for task in backlog['tasks']}
+    identities = [t['task_identity'] for t in backlog['tasks']]
+    if len(tasks) != len(backlog['tasks']) or len(identities) != len(set(identities)):
+        errors.append('task-identity-duplicate')
+    for task in backlog['tasks']:
+        name = task['id']
+        packet = root / 'docs/exec-plans/active' / (name + '.md')
+        if packet.exists():
+            errors.extend(packet_errors(task, packet.read_text()))
+        elif task['status'] != 'SUPERSEDED':
+            errors.append('packet:' + name)
+        for dep in task['depends_on']:
+            if dep not in tasks:
+                errors.append('unknown-dep:' + name + '->' + dep)
+        for dep in task.get('conditional_depends_on', []):
+            dep = dep if isinstance(dep, str) else dep['task_id']
+            if dep not in tasks:
+                errors.append('unknown-conditional-dep:' + name + '->' + dep)
+        if task.get('status') == 'READY' and (task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY' or task.get('write_paths_status') != 'ENFORCEABLE'):
+            errors.append('ready-write-scope-unrefined:' + name)
+    pending = set(tasks)
+    while pending:
+        ready = {name for name in pending if not set(tasks[name]['depends_on']) & pending}
+        if not ready:
+            errors.append('dag-cycle')
+            break
+        pending -= ready
+
+    schemas = {}
+    known_requirements = requirement_ids(root)
+    for kind in ('RESULT', 'REVIEW'):
+        schema = load_artifact(root / ('THREAD_' + kind + '.schema.json'))
+        try:
+            Draft202012Validator.check_schema(schema)
+        except Exception as ex:
+            raise ValueError('invalid-schema:' + kind + ':' + str(ex)) from ex
+        schemas[kind] = Draft202012Validator(schema)
+    results = {}
+    completed = root / 'docs/exec-plans/completed'
+    for path in sorted(list(completed.glob('*_RESULT.yaml')) + list(completed.glob('*_RESULT.json'))):
+        obj = load_artifact(path)
+        issues = list(schemas['RESULT'].iter_errors(obj))
+        if issues:
+            errors.extend('result-schema:' + path.name + ':' + e.message for e in issues)
+            continue
+        task = tasks.get(obj['display_task_id'])
+        if task is None:
+            errors.append('result-unknown-task:' + path.name)
+            continue
+        if path.name not in [Path(p).name for p in result_paths(task['id'])] or task['id'] in results:
+            errors.append('result-duplicate-or-path:' + path.name)
+        results[task['id']] = (path, obj)
+        errors.extend(path.name + ':' + e for e in semantic_result_errors(obj, task, root))
+        requirement_names = [r['requirement_id'] for r in obj['requirements_covered']]
+        if len(requirement_names) != len(set(requirement_names)):
+            errors.append('result-duplicate-requirement:' + path.name)
+        for requirement in obj['requirements_covered']:
+            name = requirement['requirement_id']
+            covered = task['requirements_covered']
+            if name not in known_requirements or (name not in covered and name.split('@')[0] not in covered):
+                errors.append('result-unknown-or-unassigned-requirement:' + name)
+
+    reviews = []
+    for path in sorted((root / 'docs/exec-plans/reviews').glob('*/*.json')):
+        obj = load_artifact(path)
+        issues = list(schemas['REVIEW'].iter_errors(obj))
+        if issues:
+            errors.extend('review-schema:' + path.name + ':' + e.message for e in issues)
+            continue
+        task = tasks.get(path.parent.name)
+        if not task or task['task_identity'] != obj['task_identity'] or path.stem != obj['review_type']:
+            errors.append('review-identity-or-path:' + str(path.relative_to(root)))
+            continue
+        for ref in obj.get('evidence_refs', []):
+            if not evidence_exists(root, ref):
+                errors.append('review-evidence:' + ref)
+        reviews.append((path, obj, task))
+
+    if args.protected_base or args.reviewed_head:
+        # PR checks use committed artifacts and may not silently ignore working edits.
+        if git(root, 'status', '--porcelain', '--untracked-files=all').strip():
+            errors.append('git-worktree-not-clean')
+    if args.protected_base:
+        base_sha, head = resolve(root, args.protected_base), resolve(root, 'HEAD')
+        git(root, 'merge-base', '--is-ancestor', base_sha, head)
+        changed = set(changed_paths(root, base_sha, head))
+        old_frozen = json.loads(git(root, 'show', base_sha + ':FROZEN_BASELINE.json'))
+        protected_paths = {e['path'] for e in old_frozen['files']} | {'FROZEN_BASELINE.json'}
+        errors.extend('protected-baseline-change:' + p for p in sorted(changed & protected_paths))
+        if args.task_id:
+            task = tasks.get(args.task_id)
+            # The PR may not widen its own definition to authorize additional writes.
+            old_tasks = json.loads(git(root, 'show', base_sha + ':' + BACKLOG))['tasks']
+            baseline_task = next((t for t in old_tasks if t['id'] == args.task_id), None)
+            if not task or not baseline_task or baseline_task.get('write_paths_status') != 'ENFORCEABLE':
+                errors.append('write-scope-unrefined-or-unknown:' + args.task_id)
+            else:
+                allowed = baseline_task['write_paths'] + result_paths(args.task_id) + review_patterns(args.task_id) + [evidence_pattern(args.task_id)]
+                for path in sorted(changed):
+                    if path in (INDEX, MANIFEST):
+                        errors.extend(hash_refresh_errors(root, base_sha, path, baseline_task, changed, protected_paths))
+                    elif not matches(path, allowed):
+                        errors.append('write-scope:' + args.task_id + ':' + path)
+
+    for path, review, task in reviews:
+        # Historical reviews describe their own PR, not every later repository HEAD.
+        if review['status'] != 'PASS' or not args.reviewed_head or task['id'] != args.task_id:
+            continue
+        reviewed = review['reviewed_head_sha']
+        errors.extend(suffix_errors(root, reviewed, 'HEAD', task['id'], 'review'))
+        result = results.get(task['id'])
+        if not result:
+            errors.append('review-missing-result:' + task['id'])
+            continue
+        result_path, obj = result
+        try:
+            if git(root, 'show', resolve(root, reviewed) + ':' + str(result_path.relative_to(root))) != result_path.read_bytes():
+                errors.append('review-result-not-bound:' + task['id'])
+            if obj['task_status'] != 'PASS':
+                errors.append('review-result-not-pass:' + task['id'])
+            git(root, 'merge-base', '--is-ancestor', resolve(root, obj['base_commit']), resolve(root, obj['tested_commit']))
+            errors.extend(suffix_errors(root, obj['tested_commit'], reviewed, task['id'], 'tested'))
+            refs = [c.get('evidence_ref') for c in obj['commands_run']] + [r.get('evidence_ref') for r in obj['requirements_covered']]
+            for ref in filter(None, refs):
+                if git(root, 'show', resolve(root, reviewed) + ':' + ref) != (root / ref).read_bytes():
+                    errors.append('review-evidence-not-bound:' + ref)
+        except ValueError as ex:
+            errors.append('review-revision:' + str(ex))
+    if args.reviewed_head:
+        if not args.task_id:
+            errors.append('review-suffix:task-id-required')
+        else:
+            errors.extend(suffix_errors(root, args.reviewed_head, 'HEAD', args.task_id, 'review'))
+            task = tasks.get(args.task_id)
+            relevant = [review for _, review, t in reviews if t['id'] == args.task_id and review['status'] == 'PASS']
+            types = {r['review_type'] for r in relevant if resolve(root, r['reviewed_head_sha']) == resolve(root, args.reviewed_head)}
+            if not task or not set(task['review_requirements']) <= types:
+                errors.append('required-reviews-not-pass:' + args.task_id)
+    return errors, len(tasks), sum(t['status'] != 'SUPERSEDED' for t in tasks.values())
+
+
+def main(argv=None, root=ROOT):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--protected-base', help='Trusted, already-integrated base commit for PR protection.')
+    parser.add_argument('--reviewed-head', help='Reviewed implementation/result revision; requires --task-id.')
+    parser.add_argument('--task-id')
+    args = parser.parse_args(argv)
+    try:
+        errors, count, active = validate(root, args)
+    except (ValueError, KeyError, TypeError, OSError, ImportError) as ex:
+        errors, count, active = ['validation-error:' + str(ex)], 0, 0
+    if errors:
+        print('HARNESS_CHECK_FAIL')
+        print('\n'.join(errors))
+        return 1
+    print(f'HARNESS_CHECK_PASS tasks={count} active={active}')
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

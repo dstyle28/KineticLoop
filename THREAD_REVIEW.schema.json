@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kineticloop/thread-review-v0.2",
+  "type": "object",
+  "required": [
+    "task_identity",
+    "reviewed_head_sha",
+    "review_type",
+    "status",
+    "findings",
+    "review_contract_version"
+  ],
+  "properties": {
+    "task_identity": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reviewed_head_sha": {
+      "type": "string",
+      "minLength": 7,
+      "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "review_type": {
+      "enum": [
+        "GENERAL",
+        "PROTOCOL",
+        "DB_CONCURRENCY",
+        "SECURITY_DATA_BOUNDARY"
+      ]
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "CHANGES_REQUIRED",
+        "STALE"
+      ]
+    },
+    "findings": {
+      "type": "array"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "review_contract_version": {
+      "type": "string",
+      "const": "v0.2"
+    }
+  }
+}
