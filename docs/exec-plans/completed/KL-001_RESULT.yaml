@@ -1,0 +1,90 @@
+task_identity: harness-backlog-v0.2/KL-001
+display_task_id: KL-001
+task_definition_version: v0.2
+base_commit: 548ef61b93411d7edf26293681fbb2ba77e65c25
+tested_commit: a438b63f182d476a34e8478f2863bc496c1df7ab
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Initialized the Python 3.12 uv project, stable kl engineering commands, lint/type/test
+  CI, and executable positive/negative Harness guards for KL-001.
+commands_run:
+  - check_id: harness_document_index_valid
+    command: uv run kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-001/checks.log
+  - check_id: frozen_baseline_protected_against_git_base
+    command: uv run kl check-harness --protected-base 548ef61b93411d7edf26293681fbb2ba77e65c25 --task-id KL-001
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-001/checks.log
+  - check_id: task_packet_backlog_consistent
+    command: uv run kl test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-001/checks.log
+  - check_id: dag_acyclic
+    command: uv run kl test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-001/checks.log
+  - check_id: conditional_dependencies_valid
+    command: uv run kl test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-001/checks.log
+  - check_id: result_schema_and_semantics_valid
+    command: uv run kl test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-001/checks.log
+  - check_id: review_schema_valid
+    command: uv run kl test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-001/checks.log
+  - check_id: review_record_only_suffix_valid
+    command: uv run kl test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-001/checks.log
+  - check_id: task_write_scope_valid
+    command: uv run kl check-harness --protected-base 548ef61b93411d7edf26293681fbb2ba77e65c25 --task-id KL-001
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-001/checks.log
+  - check_id: unified_check_entrypoint_smoke
+    command: uv run kl test-unit
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-001/checks.log
+  - check_id: negative_fixture_matrix_passes
+    command: uv run kl test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-001/checks.log
+  - check_id: tested_to_reviewed_revision_valid
+    command: uv run kl test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-001/checks.log
+  - check_id: authorized_derived_hash_refresh_valid
+    command: uv run kl test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-001/checks.log
+requirements_covered: []
+files_changed:
+  - .github/workflows/ci.yml
+  - .python-version
+  - CURRENT_DOCUMENT_INDEX.json
+  - HARNESS_DOCUMENT_MANIFEST.json
+  - docs/harness/RESOURCE_LOCKS.md
+  - pyproject.toml
+  - src/kineticloop/__init__.py
+  - src/kineticloop/cli.py
+  - tests/harness/test_validator.py
+  - tests/unit/test_cli.py
+  - tools/harness/README.md
+  - tools/harness/validate_harness.py
+  - uv.lock
+  - docs/exec-plans/evidence/KL-001/checks.log
+  - docs/exec-plans/completed/KL-001_RESULT.yaml
+decisions:
+  - Keep protocol-model execution explicit and unavailable until its missing source is supplied.
+  - Treat conditional dependency edges as DAG edges and validate resource keys against the registry.
+known_limitations:
+  - The historical protocol model source is unavailable, so test-protocol-model reports NOT_RUN with exit status 2.
+follow_up_tasks:
+  - KL-006 owns the broader evidence handoff manifest.
+spec_change_request: null
