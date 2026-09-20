@@ -1,0 +1,75 @@
+change_identity: harness-governance-v0.1/HG-001
+display_change_id: HG-001
+base_commit: 7aa52e06bba8271eb3ae56ba2a4c27782377ee7e
+tested_commit: d02a0527004bc24c93bc971db70b54b97692a331
+change_status: PASS
+summary: Install a revision-bound Harness governance path, record KL-001 integration,
+  and refine KL-002, KL-003, KL-005, KL-006, and KL-007 into enforceable M1 task packets.
+packets_refined:
+- KL-002
+- KL-003
+- KL-005
+- KL-006
+- KL-007
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_CHANGE.schema.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- INTEGRATION_RECORD.schema.json
+- KineticLoop_Harness_Backlog_v0.2.json
+- docs/exec-plans/active/KL-002.md
+- docs/exec-plans/active/KL-003.md
+- docs/exec-plans/active/KL-005.md
+- docs/exec-plans/active/KL-006.md
+- docs/exec-plans/active/KL-007.md
+- docs/exec-plans/evidence/HG-001/checks.log
+- docs/exec-plans/governance/HG-001.yaml
+- docs/exec-plans/integrations/KL-001.json
+- docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
+- docs/harness/HARNESS_NEGATIVE_TEST_MATRIX.md
+- docs/harness/MERGE_GATE.md
+- docs/harness/THREAD_RESULT_CONTRACT.md
+- docs/harness/THREAD_ROUTING.md
+- tests/harness/test_validator.py
+- tools/harness/README.md
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: harness_structure_valid
+  command: /Users/davetian/.codex/worktrees/fe04/KineticLoop/.venv/bin/python tools/harness/validate_harness.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-001/checks.log
+- check_id: lint_passes
+  command: /Users/davetian/.codex/worktrees/fe04/KineticLoop/.venv/bin/ruff check
+    .
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-001/checks.log
+- check_id: typecheck_passes
+  command: MYPY_CACHE_DIR=/tmp/kl-harness-mypy-evidence /Users/davetian/.codex/worktrees/fe04/KineticLoop/.venv/bin/mypy
+    src tools
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-001/checks.log
+- check_id: unit_tests_pass
+  command: /Users/davetian/.codex/worktrees/fe04/KineticLoop/.venv/bin/pytest -q tests/unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-001/checks.log
+- check_id: harness_tests_pass
+  command: /Users/davetian/.codex/worktrees/fe04/KineticLoop/.venv/bin/pytest -q tests/harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-001/checks.log
+- check_id: diff_clean
+  command: git diff --check 7aa52e06bba8271eb3ae56ba2a4c27782377ee7e d02a0527004bc24c93bc971db70b54b97692a331
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-001/checks.log
+- check_id: frozen_baseline_unchanged
+  command: git diff --exit-code 7aa52e06bba8271eb3ae56ba2a4c27782377ee7e d02a0527004bc24c93bc971db70b54b97692a331
+    -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-001/checks.log
+frozen_impact: NONE
+authority_entries_added:
+- docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
+- HARNESS_CHANGE.schema.json
+- INTEGRATION_RECORD.schema.json
+known_limitations:
+- HG-001 still requires independent GENERAL and PROTOCOL reviews bound to its reviewed
+  head before merge.
