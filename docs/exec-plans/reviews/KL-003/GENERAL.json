@@ -1,41 +1,30 @@
 {
   "task_identity": "harness-backlog-v0.2/KL-003",
-  "reviewed_head_sha": "ae3f8dc782a603bb5fdc755cf8158196ac7dea16",
+  "reviewed_head_sha": "8c2eb19257999fc23243be7b26483f9fecf6df79",
   "review_type": "GENERAL",
   "status": "CHANGES_REQUIRED",
   "findings": [
     {
       "severity": "BLOCKER",
-      "title": "String subclasses can escape the canonical identifier postcondition",
-      "location": "src/kineticloop/primitives/ids.py:26",
-      "description": "canonical_id accepts a str subclass after validating its underlying text and returns that same subclass instance. A subclass whose stored value is one canonical UUID but whose __str__ returns a different valid canonical UUID is therefore accepted, is reported canonical by is_canonical_id, and leaves the API as an identity-substituting object rather than a trusted plain wire string. It is also rejected later by canonical_json, which requires exact strings, so the public primitives disagree about whether the returned value is canonical.",
-      "required_change": "Require exact str inputs or reconstruct and return a trusted exact str without invoking overrideable subclass methods. Add regressions proving that identifier string subclasses cannot substitute identity and that canonical_id always returns an exact str accepted by canonical serialization."
+      "title": "Stateful tzinfo can make one exact datetime normalize to different instants",
+      "location": "src/kineticloop/primitives/times.py:15",
+      "description": "The exact-datetime check closes datetime subclass substitution, but an exact datetime still carries an arbitrary tzinfo object. normalize_utc calls value.utcoffset() to validate awareness and then value.astimezone(UTC), which calls the same mutable/overrideable tzinfo again. A tzinfo returning successive offsets of +01:00, +02:00, +03:00, and +04:00 makes two canonical_utc calls on the same unchanged datetime emit 2026-01-02T10:00:00.000000Z and 2026-01-02T08:00:00.000000Z. The validated offset is not the offset used for conversion, so the same accepted value can substitute its instant and violates utc_time_normalized determinism.",
+      "required_change": "Establish normalization from one trusted offset snapshot, or reject timezone providers that cannot satisfy a non-overrideable boundary. Ensure conversion does not consult mutable timezone behavior again after validation, return an exact UTC datetime, and add a regression using an exact datetime with a stateful custom tzinfo."
     },
     {
       "severity": "BLOCKER",
-      "title": "Time subclasses can substitute the parsed instant and canonical output",
-      "location": "src/kineticloop/primitives/times.py:12",
-      "description": "The time API accepts str and datetime subclasses and invokes overrideable methods on them. A str subclass can override endswith and slicing so parse_utc validates one RFC 3339 value but returns a different instant. A datetime subclass can override utcoffset, astimezone, or isoformat so normalize_utc returns the untrusted subclass and canonical_utc emits a different valid timestamp or arbitrary non-RFC text. These paths violate UTC normalization and canonical-format postconditions.",
-      "required_change": "Do not invoke overrideable subclass behavior while establishing canonical time values. Reject unsupported subclasses or copy from trusted base-type state, ensure normalize_utc returns an exact UTC datetime, validate the final canonical_utc postcondition, and add substitution and noncanonical-output regressions for both str and datetime subclasses."
-    },
-    {
-      "severity": "BLOCKER",
-      "title": "Overrideable Mapping.items defeats canonical serialization and hashing",
-      "location": "src/kineticloop/primitives/canonical.py:44",
-      "description": "Canonical JSON admits arbitrary Mapping implementations and trusts their overrideable items method even though the declared JsonValue object type is dict and arrays and scalar types use exact-type admission. A dict subclass can keep one stored payload while returning a different payload, or different payloads on successive calls, from items. canonical_json and canonical_sha256 then serialize or hash substituted and potentially nondeterministic content for the same stored value.",
-      "required_change": "Restrict canonical JSON objects to exact dict values, or establish an equally strong non-overrideable representation boundary, and add regression coverage proving mapping subclasses cannot substitute or vary canonical payload content."
+      "title": "Hash verification accepts digest strings with a substituted presented identity",
+      "location": "src/kineticloop/primitives/hashes.py:29",
+      "description": "verify_canonical_sha256 uses isinstance(expected, str), unlike the exact scalar boundaries used by the other canonical primitives. A str subclass can store the correct 64-character digest while __str__ presents a different invalid digest; the regex and compare_digest consume the stored payload and verification returns True even though str(expected) reports another identity. This recreates the stored/presented identity split already closed for canonical IDs and leaves the hash boundary inconsistent with the exact built-in canonical wire contract.",
+      "required_change": "Require type(expected) is str before validating or comparing the digest, and add a regression proving a str subclass with mismatched stored and presented digest identity is rejected."
     }
   ],
   "evidence_refs": [
     "docs/exec-plans/completed/KL-003_RESULT.yaml",
-    "docs/exec-plans/evidence/KL-003/remediation-checks-b54750a.log",
-    "src/kineticloop/primitives/canonical.py",
+    "docs/exec-plans/evidence/KL-003/remediation-checks-8dd5b50.log",
     "src/kineticloop/primitives/hashes.py",
-    "src/kineticloop/primitives/ids.py",
     "src/kineticloop/primitives/times.py",
-    "tests/unit/primitives/test_canonical.py",
     "tests/unit/primitives/test_hashes.py",
-    "tests/unit/primitives/test_ids.py",
     "tests/unit/primitives/test_times.py"
   ],
   "review_contract_version": "v0.2"
