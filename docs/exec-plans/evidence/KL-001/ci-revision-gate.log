@@ -1,0 +1,50 @@
+KL-001 revision-bound CI correction evidence
+base_commit: 548ef61b93411d7edf26293681fbb2ba77e65c25
+tested_commit: 7cd54f60141b61122b388148bbc9d83be891d552
+date: 2026-09-20
+
+Command: uv lock --check
+Result: PASS
+Output: Resolved 21 packages in 8ms
+
+Command: uv run kl lint
+Result: PASS
+Output: All checks passed!
+
+Command: uv run kl typecheck
+Result: PASS
+Output: Success: no issues found in 5 source files
+
+Command: uv run kl test-unit
+Result: PASS
+Output: 3 passed in 0.19s
+
+Command: uv run kl test-harness
+Result: PASS
+Output: 38 passed in 15.57s
+Coverage added: CI derives the task from the changed result, requires the exact
+checked-out PR head, loads the GENERAL reviewed SHA, accepts a valid review-only
+suffix, and rejects coordinated frozen-file/baseline tampering that passes the
+unbound structural command.
+
+Command: uv run kl check-harness
+Result: PASS
+Output: HARNESS_CHECK_PASS tasks=68 active=66
+
+Command: uv run kl check-harness --protected-base 548ef61b93411d7edf26293681fbb2ba77e65c25 --task-id KL-001
+Result: PASS
+Output: HARNESS_CHECK_PASS tasks=68 active=66
+
+Pre-review workflow proof:
+Command: uv run kl check-harness --ci-pr-base 548ef61b93411d7edf26293681fbb2ba77e65c25 --ci-pr-head 7cd54f60141b61122b388148bbc9d83be891d552
+Result: EXPECTED_FAIL
+Diagnostics: review-stale-change for every post-review implementation path and
+required-reviews-not-pass:KL-001. This proves the required workflow job does not
+accept the prior stale/CHANGES_REQUIRED review. A new independent review is required.
+
+Self-review:
+- git diff --check passed.
+- No frozen Protocol, DB, or FROZEN_BASELINE.json file changed.
+- The workflow uses GitHub's trusted pull_request base/head SHAs and explicitly
+  checks out the exact head before executing the merge gate.
+- Product requirement status remains unclaimed.
