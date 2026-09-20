@@ -1,0 +1,70 @@
+KL-003 identity-substitution remediation validation evidence
+tested_commit: b54750ae24f003ee2d2d8768f06727bf0718f148
+base_commit: 1fd56e3f8e9207f0d63ae03647c93e54563d1abc
+python: CPython 3.12.14
+runner: /private/tmp/kl001-bootstrap/bin/uv with UV_CACHE_DIR=/private/tmp/kl003-uv-cache
+
+TASK CHECK: id_format_valid
+COMMAND: uv run pytest tests/unit/primitives -q -k id_format_valid
+RESULT: PASS
+OUTPUT:
+.                                                                        [100%]
+1 passed, 25 deselected in 0.01s
+
+TASK CHECK: utc_time_normalized
+COMMAND: uv run pytest tests/unit/primitives -q -k utc_time_normalized
+RESULT: PASS
+OUTPUT:
+.                                                                        [100%]
+1 passed, 25 deselected in 0.01s
+
+TASK CHECK: canonical_serialization_deterministic
+COMMAND: uv run pytest tests/unit/primitives -q -k canonical_serialization_deterministic
+RESULT: PASS
+OUTPUT:
+.                                                                        [100%]
+1 passed, 25 deselected in 0.01s
+
+TASK CHECK: hash_deterministic
+COMMAND: uv run pytest tests/unit/primitives -q -k hash_deterministic
+RESULT: PASS
+OUTPUT:
+.                                                                        [100%]
+1 passed, 25 deselected in 0.01s
+
+TASK CHECK: invalid_input_rejected
+COMMAND: uv run pytest tests/unit/primitives -q -k invalid_input_rejected
+RESULT: PASS
+OUTPUT:
+......................                                                   [100%]
+22 passed, 4 deselected in 0.02s
+
+REPOSITORY REGRESSION: lint
+COMMAND: uv run kl lint
+RESULT: PASS
+OUTPUT:
+All checks passed!
+
+REPOSITORY REGRESSION: typecheck
+COMMAND: uv run kl typecheck
+RESULT: PASS
+OUTPUT:
+Success: no issues found in 14 source files
+
+REPOSITORY REGRESSION: unit tests
+COMMAND: uv run kl test-unit
+RESULT: PASS
+OUTPUT:
+29 passed in 0.56s
+
+REPOSITORY REGRESSION: harness tests
+COMMAND: uv run kl test-harness
+RESULT: PASS
+OUTPUT:
+52 passed in 22.60s
+
+REPOSITORY REGRESSION: task-scoped harness check
+COMMAND: uv run kl check-harness --protected-base 1fd56e3f8e9207f0d63ae03647c93e54563d1abc --task-id KL-003
+RESULT: PASS
+OUTPUT:
+HARNESS_CHECK_PASS tasks=68 active=66
