@@ -23,3 +23,11 @@ Each fixture records the expected validator exit code and diagnostic key. Positi
 16. a review using an unrelated/non-ancestor tested revision, uncommitted result/evidence, implementation changes after testing, overwritten evidence or a reverted implementation change must fail;
 17. authorized derived-hash refresh must pass, but index entry additions/removals, path/authority changes, refreshes for unrelated files and frozen entries must fail;
 18. required review artifacts must actually exist, conform to their schema and match the reviewed revision; old reviews of other tasks must not be compared to the current PR head.
+19. a PR containing both a task result and a Harness governance record, or neither, must fail closed;
+20. a governance change writing outside its fixed protected-base allowlist, omitting declared files, or changing Frozen authority must fail;
+21. packet refinement must update backlog and packet together and leave concrete checks, resource keys and enforceable write paths;
+22. integration records must bind an existing result, reviewed head, PASS review record and reachable merge commit.
+23. a selected governance record with `BLOCKED` or `SPEC_CHANGE_REQUIRED` status must not merge even when checks and reviews PASS;
+24. changing a task definition may not remove a specialist review: governance review requirements are the protected-base/head union for every changed task;
+25. an integration record must accept one valid YAML or JSON task result at `result_commit` and reject zero or both representations.
+26. an integration record must reject a result whose path/content changes before review, a non-PASS result, or a schema-valid result that fails semantic checks.

@@ -43,7 +43,13 @@ class ValidatorTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         manifest = json.loads((ROOT / v.MANIFEST).read_text())
-        for name in [e['path'] for e in manifest['files']] + [v.MANIFEST]:
+        index = json.loads((ROOT / v.INDEX).read_text())
+        names = (
+            [entry['path'] for entry in manifest['files']]
+            + [v.MANIFEST]
+            + [entry['path'] for entry in index['documents'] + index['machine_readable']]
+        )
+        for name in dict.fromkeys(names):
             dst = self.root / name
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / name, dst)
@@ -101,6 +107,70 @@ class ValidatorTests(unittest.TestCase):
                'review_type': 'GENERAL', 'review_contract_version': 'v0.2', 'status': 'PASS', 'findings': []}
         dump(self.root / f'docs/exec-plans/reviews/{task_id}/GENERAL.json', obj)
         return self.commit('persist review')
+
+    def governance_review(self, change_id, reviewed, review_type='GENERAL'):
+        obj = {
+            'task_identity': 'harness-governance-v0.1/' + change_id,
+            'reviewed_head_sha': reviewed,
+            'review_type': review_type,
+            'review_contract_version': 'v0.2',
+            'status': 'PASS',
+            'findings': [],
+        }
+        dump(self.root / f'docs/exec-plans/reviews/{change_id}/{review_type}.json', obj)
+
+    def persist_governance_change(self, change_id, tested, packets_refined,
+                                  review_types, change_status='PASS'):
+        evidence = f'docs/exec-plans/evidence/{change_id}/checks.log'
+        self.put(evidence, 'governance checks passed\n')
+        record_path = self.root / f'docs/exec-plans/governance/{change_id}.yaml'
+        planned = set(self.git('diff', '--name-only', self.base, 'HEAD').splitlines())
+        planned.update((evidence, str(record_path.relative_to(self.root))))
+        record = {
+            'change_identity': 'harness-governance-v0.1/' + change_id,
+            'display_change_id': change_id,
+            'base_commit': self.base,
+            'tested_commit': tested,
+            'change_status': change_status,
+            'summary': 'Fixture governance change',
+            'packets_refined': packets_refined,
+            'files_changed': sorted(planned),
+            'checks_run': [{
+                'check_id': 'governance_contract_valid',
+                'command': 'fixture governance check',
+                'result': 'PASS',
+                'evidence_ref': evidence,
+            }],
+            'frozen_impact': 'NONE',
+            'authority_entries_added': [],
+        }
+        self.save_result(record_path, record)
+        reviewed = self.commit('record governance result')
+        for review_type in sorted(set(review_types) | {'GENERAL'}):
+            self.governance_review(change_id, reviewed, review_type)
+        self.commit('persist governance review')
+        return change_id, reviewed
+
+    def governance_change(self, change_id='HG-999', task_id='KL-008',
+                          change_status='PASS'):
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == task_id)
+        task['packet_refinement'] = 'READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED'
+        task['write_paths_status'] = 'ENFORCEABLE'
+        task['write_paths'] = ['src/kineticloop/shadow/**']
+        dump(backlog_path, backlog)
+        packet = self.root / f'docs/exec-plans/active/{task_id}.md'
+        text = packet.read_text().replace(
+            '**Packet refinement:** MUST_REFINE_BEFORE_READY',
+            '**Packet refinement:** READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED')
+        text = text.replace('- TO_BE_REFINED_BEFORE_READY', '- src/kineticloop/shadow/**')
+        packet.write_text(text)
+        refresh(self.root)
+        tested = self.commit('refine packet')
+        return self.persist_governance_change(
+            change_id, tested, [task_id], task.get('review_requirements', []),
+            change_status)
 
     def reviewed_result(self):
         path, obj = self.result()
@@ -189,10 +259,12 @@ class ValidatorTests(unittest.TestCase):
     def test_ready_task_with_unresolved_scope_rejected(self):
         path = self.root / v.BACKLOG
         obj = json.loads(path.read_text())
-        obj['tasks'][1]['status'] = 'READY'
+        task = next(item for item in obj['tasks']
+                    if item.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY')
+        task['status'] = 'READY'
         dump(path, obj)
         refresh(self.root)
-        self.check(1, 'ready-write-scope-unrefined:KL-002')
+        self.check(1, 'ready-write-scope-unrefined:' + task['id'])
 
     def test_duplicate_result_formats_rejected(self):
         self.result('yaml')
@@ -343,6 +415,175 @@ class ValidatorTests(unittest.TestCase):
         self.review(head)
         self.check(1, 'ci-head-not-checked-out',
                    '--ci-pr-base', self.base, '--ci-pr-head', head)
+
+    def test_ci_governance_merge_gate_binds_record_and_reviews(self):
+        self.governance_change()
+        self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_requires_pass_change_status(self):
+        self.governance_change(change_status='BLOCKED')
+        self.check(1, 'governance-change-not-pass:HG-999',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_rejects_spec_change_required_status(self):
+        self.governance_change(change_status='SPEC_CHANGE_REQUIRED')
+        self.check(1, 'governance-change-not-pass:HG-999',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_cannot_remove_its_specialist_review(self):
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-007')
+        self.assertIn('PROTOCOL', task['review_requirements'])
+        task['review_requirements'] = ['GENERAL']
+        dump(backlog_path, backlog)
+        refresh(self.root)
+        tested = self.commit('weaken specialist review requirement')
+        self.persist_governance_change('HG-999', tested, [], ['GENERAL'])
+        self.check(1, 'governance-required-reviews-not-pass:HG-999',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_rejects_undeclared_write(self):
+        self.governance_change()
+        self.put('README.md', 'out of governance scope\n')
+        self.commit('unauthorized governance write')
+        self.check(1, 'governance-write-scope:HG-999:README.md',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_rejects_mixed_task_and_governance_records(self):
+        self.governance_change()
+        self.result()
+        self.commit('mix task and governance records')
+        self.check(1, 'ci-change-record-count:task=1,governance=1',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_invalid_integration_record_rejected(self):
+        dump(self.root / 'docs/exec-plans/integrations/KL-001.json', {
+            'task_identity': 'harness-backlog-v0.2/KL-001',
+            'display_task_id': 'KL-001',
+            'integration_status': 'MERGED',
+        })
+        self.check(1, 'integration-schema:KL-001.json:')
+
+    def test_integration_accepts_exactly_one_json_result(self):
+        self.result(ext='json', tested=self.base)
+        result_commit = self.commit('persist JSON result')
+        review_commit = self.review(result_commit)
+        dump(self.root / 'docs/exec-plans/integrations/KL-001.json', {
+            'task_identity': self.task['task_identity'],
+            'display_task_id': 'KL-001',
+            'result_commit': result_commit,
+            'reviewed_head_sha': result_commit,
+            'review_record_commit': review_commit,
+            'merge_commit': review_commit,
+            'integration_status': 'MERGED',
+        })
+        self.check()
+
+    def test_integration_rejects_result_changed_before_review(self):
+        result_path, result = self.result(ext='yaml', tested=self.base)
+        result['task_status'] = 'BLOCKED'
+        result['task_checks_status'] = 'FAIL'
+        self.save_result(result_path, result)
+        result_commit = self.commit('persist blocked result')
+        result['task_status'] = 'PASS'
+        result['task_checks_status'] = 'PASS'
+        self.save_result(result_path, result)
+        reviewed = self.commit('replace result before review')
+        review_commit = self.review(reviewed)
+        dump(self.root / 'docs/exec-plans/integrations/KL-001.json', {
+            'task_identity': self.task['task_identity'],
+            'display_task_id': 'KL-001',
+            'result_commit': result_commit,
+            'reviewed_head_sha': reviewed,
+            'review_record_commit': review_commit,
+            'merge_commit': review_commit,
+            'integration_status': 'MERGED',
+        })
+        self.check(1, 'integration-result-content-mismatch:KL-001')
+
+    def test_integration_rejects_nonpass_or_semantically_invalid_result(self):
+        result_path, result = self.result(ext='yaml', tested=self.base)
+        result['commands_run'][0]['check_id'] = 'invented_check'
+        self.save_result(result_path, result)
+        result_commit = self.commit('persist semantically invalid PASS result')
+        review_commit = self.review(result_commit)
+        dump(self.root / 'docs/exec-plans/integrations/KL-001.json', {
+            'task_identity': self.task['task_identity'],
+            'display_task_id': 'KL-001',
+            'result_commit': result_commit,
+            'reviewed_head_sha': result_commit,
+            'review_record_commit': review_commit,
+            'merge_commit': review_commit,
+            'integration_status': 'MERGED',
+        })
+        self.check(1, 'integration-result-semantic:KL-001:result-check-ids')
+
+    def test_integration_rejects_unchanged_nonpass_result(self):
+        result_path, result = self.result(ext='yaml', tested=self.base)
+        result['task_status'] = 'BLOCKED'
+        result['task_checks_status'] = 'FAIL'
+        self.save_result(result_path, result)
+        result_commit = self.commit('persist blocked result')
+        review_commit = self.review(result_commit)
+        dump(self.root / 'docs/exec-plans/integrations/KL-001.json', {
+            'task_identity': self.task['task_identity'],
+            'display_task_id': 'KL-001',
+            'result_commit': result_commit,
+            'reviewed_head_sha': result_commit,
+            'review_record_commit': review_commit,
+            'merge_commit': review_commit,
+            'integration_status': 'MERGED',
+        })
+        self.check(1, 'integration-result-not-pass:KL-001')
+
+    def test_integration_rejects_result_representation_switch_before_review(self):
+        result_path, result = self.result(ext='yaml', tested=self.base)
+        result_commit = self.commit('persist YAML result')
+        result_path.unlink()
+        json_path = result_path.with_suffix('.json')
+        self.save_result(json_path, result)
+        reviewed = self.commit('switch result representation before review')
+        review_commit = self.review(reviewed)
+        dump(self.root / 'docs/exec-plans/integrations/KL-001.json', {
+            'task_identity': self.task['task_identity'],
+            'display_task_id': 'KL-001',
+            'result_commit': result_commit,
+            'reviewed_head_sha': reviewed,
+            'review_record_commit': review_commit,
+            'merge_commit': review_commit,
+            'integration_status': 'MERGED',
+        })
+        self.check(1, 'integration-result-path-mismatch:KL-001')
+
+    def test_integration_rejects_both_result_representations(self):
+        self.result(ext='yaml', tested=self.base)
+        self.result(ext='json', tested=self.base)
+        result_commit = self.commit('persist duplicate result representations')
+        review_commit = self.review(result_commit)
+        dump(self.root / 'docs/exec-plans/integrations/KL-001.json', {
+            'task_identity': self.task['task_identity'],
+            'display_task_id': 'KL-001',
+            'result_commit': result_commit,
+            'reviewed_head_sha': result_commit,
+            'review_record_commit': review_commit,
+            'merge_commit': review_commit,
+            'integration_status': 'MERGED',
+        })
+        self.check(1, 'integration-result-representation-count:KL-001:2')
+
+    def test_integration_rejects_missing_result_representation(self):
+        review_commit = self.review(self.base)
+        dump(self.root / 'docs/exec-plans/integrations/KL-001.json', {
+            'task_identity': self.task['task_identity'],
+            'display_task_id': 'KL-001',
+            'result_commit': self.base,
+            'reviewed_head_sha': self.base,
+            'review_record_commit': review_commit,
+            'merge_commit': review_commit,
+            'integration_status': 'MERGED',
+        })
+        self.check(1, 'integration-result-representation-count:KL-001:0')
 
     def test_code_change_after_review_rejected(self):
         _, _, reviewed = self.reviewed_result()

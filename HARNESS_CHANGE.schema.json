@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kineticloop/harness-change-v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "change_identity",
+    "display_change_id",
+    "base_commit",
+    "tested_commit",
+    "change_status",
+    "summary",
+    "packets_refined",
+    "files_changed",
+    "checks_run",
+    "frozen_impact"
+  ],
+  "properties": {
+    "change_identity": {
+      "type": "string",
+      "pattern": "^harness-governance-v0\\.1/HG-[0-9]{3}$"
+    },
+    "display_change_id": {
+      "type": "string",
+      "pattern": "^HG-[0-9]{3}$"
+    },
+    "base_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "tested_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "change_status": {
+      "enum": ["PASS", "BLOCKED", "SPEC_CHANGE_REQUIRED"]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "packets_refined": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^KL-[0-9]{3}[A-Z]?$"
+      }
+    },
+    "files_changed": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "checks_run": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["check_id", "command", "result", "evidence_ref"],
+        "properties": {
+          "check_id": {"type": "string", "minLength": 1},
+          "command": {"type": "string", "minLength": 1},
+          "result": {"enum": ["PASS", "FAIL", "NOT_RUN"]},
+          "evidence_ref": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "frozen_impact": {
+      "enum": ["NONE", "SPEC_CHANGE_REQUIRED"]
+    },
+    "authority_entries_added": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "known_limitations": {
+      "type": "array"
+    }
+  }
+}

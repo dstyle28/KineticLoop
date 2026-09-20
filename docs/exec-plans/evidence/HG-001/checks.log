@@ -1,0 +1,39 @@
+HG-001 tested_commit=d02a0527004bc24c93bc971db70b54b97692a331
+protected_base=7aa52e06bba8271eb3ae56ba2a4c27782377ee7e
+
+[harness_structure_valid]
+$ /Users/davetian/.codex/worktrees/fe04/KineticLoop/.venv/bin/python tools/harness/validate_harness.py
+HARNESS_CHECK_PASS tasks=68 active=66
+exit_code=0
+
+[lint_passes]
+$ /Users/davetian/.codex/worktrees/fe04/KineticLoop/.venv/bin/ruff check .
+All checks passed!
+exit_code=0
+
+[typecheck_passes]
+$ /Users/davetian/.codex/worktrees/fe04/KineticLoop/.venv/bin/mypy src tools
+Success: no issues found in 3 source files
+exit_code=0
+
+[unit_tests_pass]
+$ /Users/davetian/.codex/worktrees/fe04/KineticLoop/.venv/bin/pytest -q tests/unit
+...                                                                      [100%]
+3 passed in 0.31s
+exit_code=0
+
+[harness_tests_pass]
+$ /Users/davetian/.codex/worktrees/fe04/KineticLoop/.venv/bin/pytest -q tests/harness
+..........................................                               [100%]
+42 passed in 17.61s
+exit_code=0
+
+[diff_clean]
+$ git diff --check 7aa52e06bba8271eb3ae56ba2a4c27782377ee7e d02a0527004bc24c93bc971db70b54b97692a331
+
+exit_code=0
+
+[frozen_baseline_unchanged]
+$ git diff --exit-code 7aa52e06bba8271eb3ae56ba2a4c27782377ee7e d02a0527004bc24c93bc971db70b54b97692a331 -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md
+
+exit_code=0

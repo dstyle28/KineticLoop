@@ -36,6 +36,17 @@ uv run kl check-harness \
   --ci-pr-head <pull-request-head-sha>
 ```
 
+Harness-definition PRs use one `docs/exec-plans/governance/HG-xxx.yaml` record
+instead of a task result. The same CI command detects the governance record,
+requires PASS status, enforces its fixed path allowlist, verifies packet refinement
+and requires the bound GENERAL review plus the base/head union of specialist reviews
+for every changed task definition. Task results and governance records cannot be
+mixed in one PR.
+
+Integration records resolve both supported result representations at the recorded
+result commit and reviewed head. Exactly one must exist at each revision, with the
+same path and byte content; the bound result must be PASS and semantically valid.
+
 This requires a clean checkout and committed artifacts. The selected task's required reviews must pass, its result/evidence must exist at the reviewed revision, and both revision suffixes must satisfy the contracts. Historical reviews of other tasks are schema-checked, not compared with the current PR head. The trusted baseline must already contain the Harness files; the initial documentation installation is not a feature PR checked against an empty repository.
 
 Evidence references are repository-relative regular files, not URLs or unchecked log labels. Store new per-task evidence under `docs/exec-plans/evidence/<TASK_ID>/`. Commands carry `check_id` matching the task's check registry. Failed intermediate attempts may remain in raw evidence; a PASS result records one successful final execution per required check.

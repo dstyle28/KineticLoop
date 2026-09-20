@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kineticloop/integration-record-v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task_identity",
+    "display_task_id",
+    "result_commit",
+    "reviewed_head_sha",
+    "review_record_commit",
+    "merge_commit",
+    "integration_status"
+  ],
+  "properties": {
+    "task_identity": {"type": "string", "minLength": 1},
+    "display_task_id": {"type": "string", "pattern": "^KL-[0-9]{3}[A-Z]?$"},
+    "result_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "reviewed_head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "review_record_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "merge_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "integration_status": {"const": "MERGED"}
+  }
+}

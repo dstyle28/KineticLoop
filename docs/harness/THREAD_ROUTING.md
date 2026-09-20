@@ -17,3 +17,5 @@ The orchestrator records task identity as `<backlog namespace>/<display id>` and
 ## Write-scope refinement
 
 A task with template or unresolved `write_paths` is not READY. The orchestrator must require concrete task-specific paths before dispatch. Standard task result/review bookkeeping paths are implicit allowances defined by `HARNESS_OPERATING_MODEL.md`, not implementation write-scope overlap.
+
+Packet refinement is a Harness governance change, not an implementation task. It follows `HARNESS_GOVERNANCE_CONTRACT.md`, updates the machine backlog and packet together, and must make the task checks, DoD, resource keys and write paths concrete before the task can enter READY computation.
