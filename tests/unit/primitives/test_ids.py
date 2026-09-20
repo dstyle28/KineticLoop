@@ -15,6 +15,11 @@ class _SubstitutingUUID(UUID):
         return "61f59c6c-4ad1-4d95-9c06-4379cd382728"
 
 
+class _SubstitutingString(str):
+    def __str__(self) -> str:
+        return "61f59c6c-4ad1-4d95-9c06-4379cd382728"
+
+
 def test_id_format_valid_for_generated_and_existing_ids() -> None:
     generated = new_id()
 
@@ -52,3 +57,23 @@ def test_invalid_input_rejected_for_uuid_subclass_that_substitutes_identity() ->
 
     with pytest.raises(TypeError, match="identifier must be a string or UUID"):
         canonical_id(value)
+
+
+def test_invalid_input_rejected_for_string_subclass_that_substitutes_identity() -> None:
+    stored = "8c7d83ee-49db-4b2c-9df2-0b0f158c328f"
+    value = _SubstitutingString(stored)
+
+    assert value == stored
+    assert str(value) != stored
+    with pytest.raises(TypeError, match="identifier must be a string or UUID"):
+        canonical_id(value)
+    assert not is_canonical_id(value)
+
+
+def test_id_format_valid_returns_exact_string_accepted_by_canonical_json() -> None:
+    from kineticloop.primitives import canonical_json
+
+    value = canonical_id("8c7d83ee-49db-4b2c-9df2-0b0f158c328f")
+
+    assert type(value) is str
+    assert canonical_json({"id": value}) == '{"id":"8c7d83ee-49db-4b2c-9df2-0b0f158c328f"}'

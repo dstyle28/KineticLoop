@@ -8,7 +8,6 @@ cross-runtime hash bindings. Strings and object keys are normalized to NFC.
 
 import json
 import unicodedata
-from collections.abc import Mapping, Sequence
 from typing import TypeAlias
 
 CANONICAL_JSON_SCHEME = "kineticloop-json-v1"
@@ -47,7 +46,7 @@ def _normalize(value: object, active: set[int]) -> JsonValue:
     if type(value) is str:
         return _normalized_string(value)
 
-    if isinstance(value, Mapping):
+    if type(value) is dict:
         marker = id(value)
         if marker in active:
             raise CanonicalizationError("cyclic values cannot be serialized")
@@ -68,9 +67,7 @@ def _normalize(value: object, active: set[int]) -> JsonValue:
         finally:
             active.remove(marker)
 
-    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
-        if type(value) is not list:
-            raise CanonicalizationError("arrays must be represented by lists")
+    if type(value) is list:
         marker = id(value)
         if marker in active:
             raise CanonicalizationError("cyclic values cannot be serialized")

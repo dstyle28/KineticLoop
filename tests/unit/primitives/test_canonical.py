@@ -1,3 +1,6 @@
+from collections.abc import Iterator, Mapping
+from typing import Any
+
 import pytest
 
 from kineticloop.primitives import (
@@ -34,3 +37,41 @@ def test_invalid_input_rejected_for_cycles_and_normalized_key_collisions() -> No
         canonical_json(cyclic)
     with pytest.raises(CanonicalizationError):
         canonical_json({"é": 1, "e\N{COMBINING ACUTE ACCENT}": 2})
+
+
+class _SubstitutingMapping(Mapping[str, object]):
+    def __getitem__(self, key: str) -> object:
+        return "stored"
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(("value",))
+
+    def __len__(self) -> int:
+        return 1
+
+    def items(self) -> Any:
+        return (("value", "substituted"),)
+
+
+class _StatefulDict(dict[str, object]):
+    calls = 0
+
+    def items(self) -> Any:
+        self.calls += 1
+        return (("value", self.calls),)
+
+
+@pytest.mark.parametrize("value", [_SubstitutingMapping(), _StatefulDict({"value": "stored"})])
+def test_invalid_input_rejected_for_mapping_with_substituting_items(value: object) -> None:
+    with pytest.raises(CanonicalizationError):
+        canonical_json(value)
+    with pytest.raises(CanonicalizationError):
+        canonical_json(value)
+
+
+def test_canonical_serialization_returns_exact_builtin_wire_types() -> None:
+    text = canonical_json({"value": [None, True, 1, "text"]})
+    encoded = canonical_json_bytes({"value": [None, True, 1, "text"]})
+
+    assert type(text) is str
+    assert type(encoded) is bytes

@@ -22,7 +22,7 @@ def canonical_id(value: str | UUID) -> str:
 
     if type(value) is UUID:
         text = str(value)
-    elif isinstance(value, str):
+    elif type(value) is str:
         text = value
     else:
         raise TypeError("identifier must be a string or UUID")
@@ -48,7 +48,7 @@ def new_id() -> str:
 def is_canonical_id(value: object) -> bool:
     """Return whether *value* is a canonical identifier string."""
 
-    if not isinstance(value, str):
+    if type(value) is not str:
         return False
     try:
         canonical_id(value)
