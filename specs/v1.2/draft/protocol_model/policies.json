@@ -1,0 +1,34 @@
+{
+  "local_shadow": {
+    "environment": "LOCAL_SHADOW",
+    "production_issuance": false,
+    "max_calls": 0,
+    "max_tokens": 0,
+    "max_cost_units": 0,
+    "deadline_ticks": 60,
+    "lease_ticks": 10,
+    "max_stale_restarts": 0,
+    "max_roots": 2,
+    "authorization_ttl": 0,
+    "calendar_end": 0,
+    "progression_enabled": false,
+    "allow_offline_start": false,
+    "fallbacks": []
+  },
+  "test_fixture": {
+    "environment": "TEST_ONLY",
+    "production_issuance": false,
+    "max_calls": 8,
+    "max_tokens": 800,
+    "max_cost_units": 800,
+    "deadline_ticks": 100,
+    "lease_ticks": 20,
+    "max_stale_restarts": 2,
+    "max_roots": 8,
+    "authorization_ttl": 40,
+    "calendar_end": 100,
+    "progression_enabled": true,
+    "allow_offline_start": false,
+    "fallbacks": []
+  }
+}

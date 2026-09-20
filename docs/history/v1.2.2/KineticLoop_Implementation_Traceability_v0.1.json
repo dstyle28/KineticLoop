@@ -1,0 +1,1209 @@
+{
+  "version": "0.1",
+  "baseline_db": "KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+  "acceptance_requirement_set": "KINETICLOOP_ACCEPTANCE_V1_2_1",
+  "task_edges": [
+    {
+      "id": "KL-001",
+      "milestone": "M1",
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [],
+      "table_ids": [],
+      "required_test_layers": [
+        "CI"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-002",
+      "milestone": "M1",
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [],
+      "table_ids": [],
+      "required_test_layers": [
+        "DC"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-003",
+      "milestone": "M1",
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-004",
+      "milestone": "M1",
+      "commands": [
+        "CommandGateway"
+      ],
+      "transaction_boundaries": [
+        "T1-T8"
+      ],
+      "invariant_ids": [
+        "INV-02"
+      ],
+      "table_ids": [
+        "S02"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-005",
+      "milestone": "M1",
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU",
+        "DC",
+        "WF",
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-006",
+      "milestone": "M1",
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-007",
+      "milestone": "M1",
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-02",
+        "INV-15"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-008",
+      "milestone": "M1",
+      "commands": [
+        "test-only T6/T7",
+        "shadow evaluation"
+      ],
+      "transaction_boundaries": [
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10"
+      ],
+      "table_ids": [
+        "S38",
+        "S42",
+        "S45"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-009",
+      "milestone": "M1",
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-15",
+        "INV-16"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-010",
+      "milestone": "M2",
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [
+        "S01-S51"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-011",
+      "milestone": "M2",
+      "commands": [
+        "AcceptFactRevision"
+      ],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-04",
+        "INV-18"
+      ],
+      "table_ids": [
+        "S14",
+        "S44"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-012",
+      "milestone": "M2",
+      "commands": [],
+      "transaction_boundaries": [
+        "T1-T8"
+      ],
+      "invariant_ids": [
+        "INV-02",
+        "INV-16"
+      ],
+      "table_ids": [
+        "I-class tables"
+      ],
+      "required_test_layers": [
+        "DC"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-013",
+      "milestone": "M2",
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [
+        "S01-S51"
+      ],
+      "required_test_layers": [
+        "DC"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-014",
+      "milestone": "M2",
+      "commands": [
+        "T1-T8 commands"
+      ],
+      "transaction_boundaries": [
+        "T1-T8"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-015",
+      "milestone": "M2",
+      "commands": [
+        "command owners"
+      ],
+      "transaction_boundaries": [
+        "T1-T8"
+      ],
+      "invariant_ids": [
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S01",
+        "S27",
+        "S31",
+        "S38",
+        "S44",
+        "S51"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-016",
+      "milestone": "M2",
+      "commands": [
+        "RevokeArtifact",
+        "PublishManifest",
+        "CommitBundle",
+        "StartSession",
+        "ResumeSession"
+      ],
+      "transaction_boundaries": [
+        "T2-GLOBAL",
+        "T3",
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S49",
+        "S50",
+        "S51",
+        "S01"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-017",
+      "milestone": "M2",
+      "commands": [],
+      "transaction_boundaries": [
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-02",
+        "INV-15"
+      ],
+      "table_ids": [
+        "S38",
+        "S42",
+        "S45",
+        "S46",
+        "S47"
+      ],
+      "required_test_layers": [
+        "DC",
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-018",
+      "milestone": "M2",
+      "commands": [
+        "RegisterArtifact"
+      ],
+      "transaction_boundaries": [
+        "T2-GLOBAL",
+        "T3",
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S49",
+        "S51"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-020",
+      "milestone": "M3",
+      "commands": [
+        "CommandGateway"
+      ],
+      "transaction_boundaries": [
+        "T2-T7"
+      ],
+      "invariant_ids": [
+        "INV-07",
+        "INV-08",
+        "INV-10"
+      ],
+      "table_ids": [
+        "S01",
+        "S02"
+      ],
+      "required_test_layers": [
+        "DC"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-021",
+      "milestone": "M3",
+      "commands": [
+        "RevokeArtifact"
+      ],
+      "transaction_boundaries": [
+        "T2-GLOBAL"
+      ],
+      "invariant_ids": [
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S49",
+        "S50",
+        "S51"
+      ],
+      "required_test_layers": [
+        "DC"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-022",
+      "milestone": "M3",
+      "commands": [
+        "Issue",
+        "is_executable"
+      ],
+      "transaction_boundaries": [
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10"
+      ],
+      "table_ids": [
+        "S42",
+        "S43",
+        "S49",
+        "S51"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC",
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-023",
+      "milestone": "M3",
+      "commands": [
+        "SealFactset"
+      ],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-03",
+        "INV-05",
+        "INV-06",
+        "INV-07"
+      ],
+      "table_ids": [
+        "S15",
+        "S16",
+        "S01"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-024",
+      "milestone": "M3",
+      "commands": [
+        "AdmitIntent",
+        "AcquireLease"
+      ],
+      "transaction_boundaries": [
+        "T4",
+        "T5"
+      ],
+      "invariant_ids": [
+        "INV-10",
+        "INV-11",
+        "INV-13"
+      ],
+      "table_ids": [
+        "S27",
+        "S28",
+        "S29"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-025",
+      "milestone": "M3",
+      "commands": [
+        "ReserveCall",
+        "PermitDispatch"
+      ],
+      "transaction_boundaries": [
+        "T5",
+        "T8"
+      ],
+      "invariant_ids": [
+        "INV-11",
+        "INV-12",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S31",
+        "S32"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-026",
+      "milestone": "M3",
+      "commands": [],
+      "transaction_boundaries": [
+        "T2-GLOBAL",
+        "T2",
+        "T3",
+        "T5",
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12"
+      ],
+      "table_ids": [
+        "S01",
+        "S15",
+        "S16",
+        "S27",
+        "S31",
+        "S42",
+        "S49",
+        "S50",
+        "S51"
+      ],
+      "required_test_layers": [
+        "DC"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-027",
+      "milestone": "M3",
+      "commands": [
+        "CommitBundle",
+        "StartSession",
+        "Revoke"
+      ],
+      "transaction_boundaries": [
+        "T6",
+        "T7",
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10",
+        "INV-14"
+      ],
+      "table_ids": [
+        "S38",
+        "S39",
+        "S40",
+        "S41",
+        "S42",
+        "S45"
+      ],
+      "required_test_layers": [
+        "DC",
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-028",
+      "milestone": "M3",
+      "commands": [],
+      "transaction_boundaries": [
+        "T2-GLOBAL",
+        "T2",
+        "T3",
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-06",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S15",
+        "S16",
+        "S42",
+        "S49",
+        "S50",
+        "S51"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC",
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-029",
+      "milestone": "M3",
+      "commands": [],
+      "transaction_boundaries": [
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10"
+      ],
+      "table_ids": [
+        "S38",
+        "S42",
+        "S45"
+      ],
+      "required_test_layers": [
+        "DC",
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-030",
+      "milestone": "M5",
+      "commands": [
+        "ReceiveEvidence",
+        "DecideAdmission"
+      ],
+      "transaction_boundaries": [
+        "T1",
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-04"
+      ],
+      "table_ids": [
+        "S09",
+        "S10",
+        "S13"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-031",
+      "milestone": "M5",
+      "commands": [
+        "AcceptFactRevision"
+      ],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-18"
+      ],
+      "table_ids": [
+        "S14",
+        "S44"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-032",
+      "milestone": "M5",
+      "commands": [
+        "DecideAssociation"
+      ],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-03"
+      ],
+      "table_ids": [
+        "S11",
+        "S12"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-033",
+      "milestone": "M5",
+      "commands": [
+        "RecordProjection"
+      ],
+      "transaction_boundaries": [
+        "T3"
+      ],
+      "invariant_ids": [
+        "INV-03",
+        "INV-04",
+        "INV-06"
+      ],
+      "table_ids": [
+        "S21",
+        "S22"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-034",
+      "milestone": "M5",
+      "commands": [
+        "AcceptFactRevision"
+      ],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-08",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S13",
+        "S14",
+        "S15",
+        "S01"
+      ],
+      "required_test_layers": [
+        "DC",
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-035",
+      "milestone": "M5",
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1",
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-03",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09",
+        "S14"
+      ],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-040",
+      "milestone": "M6",
+      "commands": [
+        "PublishManifest"
+      ],
+      "transaction_boundaries": [
+        "T3"
+      ],
+      "invariant_ids": [
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-10"
+      ],
+      "table_ids": [
+        "S23",
+        "S24",
+        "S25",
+        "S26",
+        "S51"
+      ],
+      "required_test_layers": [
+        "DC",
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-041",
+      "milestone": "M6",
+      "commands": [
+        "RecordToolResult"
+      ],
+      "transaction_boundaries": [
+        "T5"
+      ],
+      "invariant_ids": [
+        "INV-05",
+        "INV-15",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S33"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-042",
+      "milestone": "M7",
+      "commands": [],
+      "transaction_boundaries": [
+        "T5"
+      ],
+      "invariant_ids": [
+        "INV-02",
+        "INV-14"
+      ],
+      "table_ids": [
+        "S34"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-043",
+      "milestone": "M7",
+      "commands": [
+        "ReserveCall",
+        "PermitDispatch"
+      ],
+      "transaction_boundaries": [
+        "T5",
+        "T8"
+      ],
+      "invariant_ids": [
+        "INV-11",
+        "INV-12",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S31",
+        "S32"
+      ],
+      "required_test_layers": [
+        "WF",
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-044",
+      "milestone": "M7",
+      "commands": [
+        "ResolveEvidence",
+        "RecordValidation"
+      ],
+      "transaction_boundaries": [
+        "T6-prep"
+      ],
+      "invariant_ids": [
+        "INV-05",
+        "INV-09",
+        "INV-14"
+      ],
+      "table_ids": [
+        "S36",
+        "S37"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-045",
+      "milestone": "M7",
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10",
+        "INV-15"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-046",
+      "milestone": "M7",
+      "commands": [
+        "RunReplay"
+      ],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S46",
+        "S47"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-047",
+      "milestone": "M7",
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S48"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-048",
+      "milestone": "M7",
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-15",
+        "INV-16"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-050",
+      "milestone": "M9A",
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-051",
+      "milestone": "M9A",
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-03",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09"
+      ],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-052",
+      "milestone": "M9A",
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1"
+      ],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09"
+      ],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-053",
+      "milestone": "M9B",
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1"
+      ],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09"
+      ],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-054",
+      "milestone": "M9B",
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1"
+      ],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09"
+      ],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-060",
+      "milestone": "M10",
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-17"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-061",
+      "milestone": "M10",
+      "commands": [
+        "RecordRelease"
+      ],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S48"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "KL-070",
+      "milestone": "M11",
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU",
+        "DC",
+        "WF",
+        "E2E"
+      ],
+      "evidence_refs": []
+    }
+  ],
+  "integration_contract": "DOC-INTEGRATION-V0.1",
+  "integration_matrix": "KineticLoop_Integration_Matrix_v0.1.json",
+  "integration_backlog_ids": [
+    "KL-60",
+    "KL-61",
+    "KL-62",
+    "KL-63",
+    "KL-64",
+    "KL-65",
+    "KL-66"
+  ]
+}

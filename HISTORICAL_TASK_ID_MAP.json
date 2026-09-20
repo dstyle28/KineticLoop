@@ -1,0 +1,78 @@
+{
+  "version": "v0.1",
+  "status": "CURRENT",
+  "identity_rule": "Machine task identity is <backlog_namespace>/<display_id>.",
+  "current_namespace": "harness-backlog-v0.2",
+  "legacy_namespaces": [
+    "project-backlog-v0.3"
+  ],
+  "reused_display_ids": [
+    {
+      "legacy_identity": "project-backlog-v0.3/KL-062",
+      "legacy_title": "Implement Apple HealthKit iOS bridge",
+      "current_identity": "harness-backlog-v0.2/KL-062",
+      "current_title": "Shadow comparison + reproducible release evidence bundle",
+      "warning": "Same display ID, different task meaning. Never join evidence without namespace."
+    },
+    {
+      "legacy_identity": "project-backlog-v0.3/KL-063",
+      "legacy_title": "Cross-source workout reconciliation",
+      "current_identity": "harness-backlog-v0.2/KL-063",
+      "current_title": "Leakage audit + point-in-time replay validation",
+      "warning": "Same display ID, different task meaning. Never join evidence without namespace."
+    },
+    {
+      "legacy_identity": "project-backlog-v0.3/KL-064",
+      "legacy_title": "Implement Oura deterministic adapter with AI exposure disabled",
+      "current_identity": "harness-backlog-v0.2/KL-064",
+      "current_title": "Operational dashboards for revoke, ledger, tool and sync health",
+      "warning": "Same display ID, different task meaning. Never join evidence without namespace."
+    },
+    {
+      "legacy_identity": "project-backlog-v0.3/KL-065",
+      "legacy_title": "Oura AI/compliance enablement gate",
+      "current_identity": "harness-backlog-v0.2/KL-065",
+      "current_title": "Security/privacy integrated staging review",
+      "warning": "Same display ID, different task meaning. Never join evidence without namespace."
+    },
+    {
+      "legacy_identity": "project-backlog-v0.3/KL-066",
+      "legacy_title": "Nutrition/body import adapters",
+      "current_identity": "harness-backlog-v0.2/KL-066",
+      "current_title": "Release gate runner + evidence verifier",
+      "warning": "Same display ID, different task meaning. Never join evidence without namespace."
+    }
+  ],
+  "semantic_migrations": [
+    {
+      "legacy_identity": "project-backlog-v0.3/KL-062",
+      "current_identity": "harness-backlog-v0.2/KL-052",
+      "relationship": "concept_moved",
+      "note": "HealthKit bridge"
+    },
+    {
+      "legacy_identity": "project-backlog-v0.3/KL-063",
+      "current_identity": "harness-backlog-v0.2/KL-056",
+      "relationship": "concept_moved",
+      "note": "Cross-source reconciliation"
+    },
+    {
+      "legacy_identity": "project-backlog-v0.3/KL-064",
+      "current_identity": "harness-backlog-v0.2/KL-057",
+      "relationship": "concept_merged",
+      "note": "Oura deterministic adapter"
+    },
+    {
+      "legacy_identity": "project-backlog-v0.3/KL-065",
+      "current_identity": "harness-backlog-v0.2/KL-057",
+      "relationship": "concept_merged",
+      "note": "Oura AI/compliance gate"
+    },
+    {
+      "legacy_identity": "project-backlog-v0.3/KL-066",
+      "current_identity": "harness-backlog-v0.2/KL-058",
+      "relationship": "concept_moved",
+      "note": "Nutrition/body imports"
+    }
+  ]
+}

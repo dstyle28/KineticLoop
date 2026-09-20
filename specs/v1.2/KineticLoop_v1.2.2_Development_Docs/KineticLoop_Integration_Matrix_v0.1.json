@@ -1,0 +1,176 @@
+{
+  "document_status": "DEVELOPMENT_CONTRACT",
+  "version": "0.1",
+  "verified_as_of": "2026-09-18",
+  "baseline": {
+    "protocol": "DOC-PROTOCOL-V1.2",
+    "db": "DOC-DB-V0.2"
+  },
+  "launch_source_scope": {
+    "baseline_required": [
+      "MANUAL_CHAT"
+    ],
+    "target": [
+      "HEVY",
+      "APPLE_HEALTHKIT"
+    ],
+    "conditional_nonblocking": [
+      "OURA"
+    ],
+    "optional": [
+      "HEALTHKIT_NUTRITION",
+      "MACROFACTOR_EXPORT",
+      "DEXA_FILE"
+    ]
+  },
+  "providers": [
+    {
+      "id": "MANUAL_CHAT",
+      "role": [
+        "subjective",
+        "correction",
+        "workout_fallback",
+        "command_surface"
+      ],
+      "transport": "authenticated_app",
+      "ai_use": "ADMITTED_FACTS_ONLY",
+      "launch_decision": "BUILD_BASELINE",
+      "degradation": "other provider facts only; ambiguous fields unresolved"
+    },
+    {
+      "id": "HEVY",
+      "role": [
+        "strength_actuals",
+        "exercise_identity",
+        "body_measurement_optional"
+      ],
+      "transport": "public_api",
+      "incremental": "workout_events_polling",
+      "ai_use": "NORMALIZED_CANONICAL_FACTS",
+      "launch_decision": "BUILD_TARGET",
+      "risks": [
+        "api_early_unstable",
+        "pro_only"
+      ]
+    },
+    {
+      "id": "APPLE_HEALTHKIT",
+      "role": [
+        "sleep",
+        "heart_rate",
+        "hrv",
+        "rhr",
+        "activity",
+        "cardio",
+        "weight",
+        "nutrition_optional"
+      ],
+      "transport": "ios_bridge",
+      "incremental": "observer_plus_anchored_queries",
+      "ai_use": "NORMALIZED_CANONICAL_FACTS",
+      "launch_decision": "BUILD_TARGET",
+      "risks": [
+        "read_permission_ambiguity",
+        "multi_source_duplicates",
+        "device_background_testing"
+      ]
+    },
+    {
+      "id": "OURA",
+      "role": [
+        "sleep",
+        "daily_recovery_summaries",
+        "heart_rate",
+        "activity",
+        "workout",
+        "spo2_optional"
+      ],
+      "transport": "oauth2_api_or_approved_mcp",
+      "incremental": "polling_watermarks",
+      "ai_use": "DENIED_UNTIL_COMPLIANCE_GATE",
+      "launch_decision": "BUILD_ADAPTER_NONBLOCKING",
+      "risks": [
+        "agreement_compliance",
+        "app_approval_scale",
+        "scope_partiality"
+      ]
+    },
+    {
+      "id": "MACROFACTOR_EXPORT",
+      "role": [
+        "nutrition",
+        "expenditure_estimate",
+        "weight_trend",
+        "weight"
+      ],
+      "transport": "file_export_import",
+      "ai_use": "NORMALIZED_IMPORTED_FACTS_AND_PROVIDER_ESTIMATES",
+      "launch_decision": "OPTIONAL"
+    },
+    {
+      "id": "DEXA_FILE",
+      "role": [
+        "body_composition"
+      ],
+      "transport": "file_upload",
+      "ai_use": "ADMITTED_EXTRACTED_FACTS_ONLY",
+      "launch_decision": "OPTIONAL"
+    }
+  ],
+  "domain_source_rules": {
+    "strength_sets": {
+      "preferred": [
+        "HEVY",
+        "MANUAL_CHAT"
+      ],
+      "forbidden_inference": [
+        "HEALTHKIT_WORKOUT_LABEL_TO_SETS",
+        "OURA_WORKOUT_LABEL_TO_SETS"
+      ]
+    },
+    "cardio": {
+      "sources": [
+        "APPLE_HEALTHKIT",
+        "OURA",
+        "HEVY",
+        "MANUAL_CHAT"
+      ]
+    },
+    "sleep_recovery": {
+      "sources": [
+        "APPLE_HEALTHKIT",
+        "OURA",
+        "MANUAL_CHAT"
+      ],
+      "rule": "same-source baselines where applicable"
+    },
+    "nutrition": {
+      "sources": [
+        "HEALTHKIT_NUTRITION",
+        "MACROFACTOR_EXPORT",
+        "MANUAL_CHAT"
+      ]
+    },
+    "body_weight": {
+      "sources": [
+        "APPLE_HEALTHKIT",
+        "HEVY",
+        "MACROFACTOR_EXPORT",
+        "MANUAL_CHAT"
+      ],
+      "rule": "event association, no universal overwrite priority"
+    }
+  },
+  "common_release_gates": [
+    "identity_idempotency",
+    "update_delete_correction",
+    "late_out_of_order",
+    "partial_permissions",
+    "outage_retry",
+    "provenance_preserved",
+    "dedup_underlying_event",
+    "ai_exposure_authorized",
+    "control_path_independent",
+    "missing_is_not_zero"
+  ]
+}

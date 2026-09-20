@@ -1,0 +1,2314 @@
+{
+  "version": "v0.3",
+  "task_namespace": "harness-backlog-v0.2",
+  "requirement_set": "KINETICLOOP_HARNESS_REQSET_V1_2_2_INTEGRATION_V0_1",
+  "tasks": [
+    {
+      "task_identity": "harness-backlog-v0.2/KL-001",
+      "id": "KL-001",
+      "milestone": "M1",
+      "depends_on": [],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "harness_document_index_valid",
+        "frozen_baseline_protected_against_git_base",
+        "task_packet_backlog_consistent",
+        "dag_acyclic",
+        "conditional_dependencies_valid",
+        "result_schema_and_semantics_valid",
+        "review_schema_valid",
+        "review_record_only_suffix_valid",
+        "task_write_scope_valid",
+        "unified_check_entrypoint_smoke",
+        "negative_fixture_matrix_passes",
+        "tested_to_reviewed_revision_valid",
+        "authorized_derived_hash_refresh_valid"
+      ],
+      "resource_keys": [
+        "harness_core"
+      ],
+      "write_paths": [
+        "pyproject.toml",
+        "uv.lock",
+        ".python-version",
+        ".github/workflows/**",
+        "src/kineticloop/**",
+        "tools/harness/**",
+        "tests/harness/**",
+        "tests/unit/**",
+        "docs/harness/**",
+        "THREAD_RESULT.schema.json",
+        "THREAD_REVIEW.schema.json"
+      ],
+      "write_paths_status": "ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-002",
+      "id": "KL-002",
+      "milestone": "M1",
+      "depends_on": [
+        "KL-001"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [],
+      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-003",
+      "id": "KL-003",
+      "milestone": "M1",
+      "depends_on": [
+        "KL-001"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [],
+      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-004",
+      "id": "KL-004",
+      "milestone": "M1",
+      "depends_on": [
+        "KL-003"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [
+        "command_contracts",
+        "registry_coordination"
+      ],
+      "write_paths": [],
+      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-005",
+      "id": "KL-005",
+      "milestone": "M1",
+      "depends_on": [
+        "KL-001"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [
+        "E01@PU",
+        "E01@E2E",
+        "E02@PU",
+        "E02@WF",
+        "E02@E2E",
+        "E03@PU",
+        "E03@DC",
+        "E04@PU",
+        "E05@PU",
+        "E06@PU",
+        "E06@E2E",
+        "E07@DC",
+        "E07@E2E",
+        "E08@PU",
+        "E08@E2E",
+        "D01@PU",
+        "D01@DC",
+        "D02@PU",
+        "D03@DC",
+        "D03@E2E",
+        "D04@DC",
+        "D05@PU",
+        "D05@DC",
+        "A01@DC",
+        "A01@WF",
+        "A01@E2E",
+        "A02@PU",
+        "A02@DC",
+        "A03@PU",
+        "A03@DC",
+        "A04@PU",
+        "A04@E2E",
+        "A05@PU",
+        "A05@DC",
+        "A06@PU",
+        "A06@E2E",
+        "A07@WF",
+        "A07@E2E",
+        "A08@PU",
+        "A08@E2E",
+        "W01@PU",
+        "W01@WF",
+        "W02@PU",
+        "W02@DC",
+        "W03@WF",
+        "W03@E2E",
+        "W04@PU",
+        "W04@DC",
+        "W04@E2E",
+        "W05@PU",
+        "W05@DC",
+        "W05@WF",
+        "W06@PU",
+        "W06@WF",
+        "W07@PU",
+        "W07@E2E",
+        "W08@DC",
+        "W08@WF",
+        "W08@E2E",
+        "W09@PU",
+        "R01@PU",
+        "R01@E2E",
+        "R02@PU",
+        "R03@PU",
+        "R03@E2E",
+        "R04@DC",
+        "R04@E2E",
+        "B01",
+        "B02",
+        "B03",
+        "B04",
+        "B05",
+        "B06",
+        "B07",
+        "B08",
+        "B09",
+        "B10",
+        "B11",
+        "B12",
+        "B13",
+        "B14",
+        "B15",
+        "B16",
+        "B17",
+        "B18",
+        "I01",
+        "I02",
+        "I03",
+        "I04",
+        "I05",
+        "I06",
+        "I07",
+        "I08",
+        "I09",
+        "INT-A01@PU",
+        "INT-A01@E2E",
+        "INT-A02@PU",
+        "INT-A02@E2E",
+        "INT-A03@PU",
+        "INT-A03@E2E",
+        "INT-A04@PU",
+        "INT-A04@E2E",
+        "INT-A05@PU",
+        "INT-A06@PU",
+        "INT-A06@E2E",
+        "INT-A07@PU",
+        "INT-A07@E2E",
+        "INT-A08@PU",
+        "INT-A08@E2E",
+        "INT-A09@E2E",
+        "INT-A10@E2E",
+        "INT-A11@E2E",
+        "INT-A12@WF",
+        "INT-A12@E2E"
+      ],
+      "checks_required_for_this_task": [
+        "requirement_sources_parse",
+        "obligation_ids_unique",
+        "all_expected_layers_registered",
+        "default_status_not_run",
+        "integration_obligations_registered"
+      ],
+      "resource_keys": [
+        "requirement_registry"
+      ],
+      "write_paths": [],
+      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-006",
+      "id": "KL-006",
+      "milestone": "M1",
+      "depends_on": [
+        "KL-001"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "current_document_index_resolves",
+        "evidence_manifest_paths_resolve",
+        "historical_task_id_map_valid"
+      ],
+      "resource_keys": [
+        "release_evidence",
+        "user_coordination"
+      ],
+      "write_paths": [],
+      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-007",
+      "id": "KL-007",
+      "milestone": "M1",
+      "depends_on": [
+        "KL-001"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [],
+      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-008",
+      "id": "KL-008",
+      "milestone": "M1",
+      "depends_on": [
+        "KL-005",
+        "KL-007"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [
+        "A06@PU",
+        "A06@E2E",
+        "B14",
+        "B15"
+      ],
+      "checks_required_for_this_task": [
+        "shadow_contract_schema_valid",
+        "real_data_shadow_forbids_live_head_issuance_binding",
+        "test_only_scope_requires_isolation"
+      ],
+      "resource_keys": [
+        "command_contracts"
+      ],
+      "write_paths": [],
+      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-009",
+      "id": "KL-009",
+      "milestone": "M1",
+      "depends_on": [
+        "KL-001",
+        "KL-007"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [],
+      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-010",
+      "id": "KL-010",
+      "milestone": "M2",
+      "depends_on": [
+        "KL-002",
+        "KL-003"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [
+        "migration_chain"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-011",
+      "id": "KL-011",
+      "milestone": "M2",
+      "depends_on": [
+        "KL-010"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [
+        "migration_chain"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-012",
+      "id": "KL-012",
+      "milestone": "M2",
+      "depends_on": [
+        "KL-010",
+        "KL-007"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "immutable_protection_design_complete",
+        "permission_matrix_contract_test"
+      ],
+      "resource_keys": [
+        "migration_chain"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-013",
+      "id": "KL-013",
+      "milestone": "M2",
+      "depends_on": [
+        "KL-010",
+        "KL-011",
+        "KL-012"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "empty_db_upgrade_head",
+        "downgrade_or_rebuild_policy_check",
+        "single_migration_head"
+      ],
+      "resource_keys": [
+        "migration_chain"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-014",
+      "id": "KL-014",
+      "milestone": "M2",
+      "depends_on": [
+        "KL-004",
+        "KL-008"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [
+        "command_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-015",
+      "id": "KL-015",
+      "milestone": "M2",
+      "depends_on": [
+        "KL-013",
+        "KL-014",
+        "KL-016"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-016",
+      "id": "KL-016",
+      "milestone": "M2",
+      "depends_on": [
+        "KL-010"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [
+        "command_contracts",
+        "registry_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-017",
+      "id": "KL-017",
+      "milestone": "M2",
+      "depends_on": [
+        "KL-007",
+        "KL-013"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "migration_chain"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-018",
+      "id": "KL-018",
+      "milestone": "M2",
+      "depends_on": [
+        "KL-013",
+        "KL-016"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger",
+        "registry_coordination",
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-055",
+      "id": "KL-055",
+      "milestone": "M2",
+      "depends_on": [
+        "KL-003",
+        "KL-014"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [
+        "provider_contracts",
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-019",
+      "id": "KL-019",
+      "milestone": "M3",
+      "depends_on": [
+        "KL-017",
+        "KL-020",
+        "KL-021",
+        "KL-022",
+        "KL-023",
+        "KL-024",
+        "KL-025"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [
+        "I01",
+        "I02",
+        "I04",
+        "I07",
+        "A03@DC"
+      ],
+      "checks_required_for_this_task": [
+        "minimal_publish_commit_start_api_tests",
+        "test_subject_only_authorization_path"
+      ],
+      "resource_keys": [
+        "authorization_core",
+        "registry_coordination",
+        "user_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-020",
+      "id": "KL-020",
+      "milestone": "M3",
+      "depends_on": [
+        "KL-015"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [
+        "command_contracts",
+        "user_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-021",
+      "id": "KL-021",
+      "milestone": "M3",
+      "depends_on": [
+        "KL-016",
+        "KL-018",
+        "KL-020"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [
+        "registry_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-022",
+      "id": "KL-022",
+      "milestone": "M3",
+      "depends_on": [
+        "KL-015",
+        "KL-018",
+        "KL-021"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "authorization_core"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-023",
+      "id": "KL-023",
+      "milestone": "M3",
+      "depends_on": [
+        "KL-015"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [
+        "user_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-024",
+      "id": "KL-024",
+      "milestone": "M3",
+      "depends_on": [
+        "KL-015"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-025",
+      "id": "KL-025",
+      "milestone": "M3",
+      "depends_on": [
+        "KL-024"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-026",
+      "id": "KL-026",
+      "milestone": "M3",
+      "depends_on": [
+        "KL-019"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [
+        "I01",
+        "I02",
+        "I03",
+        "I04",
+        "I05",
+        "I06",
+        "I07",
+        "I08",
+        "I09"
+      ],
+      "checks_required_for_this_task": [
+        "I01-I09@DC"
+      ],
+      "resource_keys": [
+        "authorization_core",
+        "planning_ledger",
+        "registry_coordination",
+        "user_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-027",
+      "id": "KL-027",
+      "milestone": "M3",
+      "depends_on": [
+        "KL-017",
+        "KL-019",
+        "KL-022",
+        "KL-023",
+        "KL-024",
+        "KL-025"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "authorization_core"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-028",
+      "id": "KL-028",
+      "milestone": "M3",
+      "depends_on": [
+        "KL-021",
+        "KL-022",
+        "KL-023",
+        "KL-027"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [
+        "B01",
+        "B02",
+        "B03",
+        "B04",
+        "B05",
+        "B06",
+        "B07",
+        "B08",
+        "B09",
+        "B10",
+        "B11",
+        "B12",
+        "B13",
+        "B14",
+        "B15",
+        "B16",
+        "B17",
+        "B18"
+      ],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-029",
+      "id": "KL-029",
+      "milestone": "M3",
+      "depends_on": [
+        "KL-008",
+        "KL-017",
+        "KL-027"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-036",
+      "id": "KL-036",
+      "milestone": "M4",
+      "depends_on": [
+        "KL-024",
+        "KL-026"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks",
+        "task_scope_wf_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-037",
+      "id": "KL-037",
+      "milestone": "M4",
+      "depends_on": [
+        "KL-020"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks",
+        "task_scope_wf_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-038",
+      "id": "KL-038",
+      "milestone": "M4",
+      "depends_on": [
+        "KL-025",
+        "KL-036"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_wf_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-039",
+      "id": "KL-039",
+      "milestone": "M4",
+      "depends_on": [
+        "KL-021",
+        "KL-036"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_wf_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-030",
+      "id": "KL-030",
+      "milestone": "M5",
+      "depends_on": [
+        "KL-027"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-031",
+      "id": "KL-031",
+      "milestone": "M5",
+      "depends_on": [
+        "KL-011",
+        "KL-030"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-032",
+      "id": "KL-032",
+      "milestone": "M5",
+      "depends_on": [
+        "KL-030"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-033",
+      "id": "KL-033",
+      "milestone": "M5",
+      "depends_on": [
+        "KL-031",
+        "KL-032"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-034",
+      "id": "KL-034",
+      "milestone": "M5",
+      "depends_on": [
+        "KL-033"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-035",
+      "id": "KL-035",
+      "milestone": "M5",
+      "depends_on": [
+        "KL-009",
+        "KL-031",
+        "KL-032"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "migration_chain"
+      ],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-056",
+      "id": "KL-056",
+      "milestone": "M5",
+      "depends_on": [
+        "KL-030",
+        "KL-032",
+        "KL-055"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [
+        "INT-A07@PU",
+        "INT-A07@E2E"
+      ],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "provider_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-040",
+      "id": "KL-040",
+      "milestone": "M6",
+      "depends_on": [
+        "KL-033",
+        "KL-021"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "user_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-041",
+      "id": "KL-041",
+      "milestone": "M6",
+      "depends_on": [
+        "KL-040"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-042",
+      "id": "KL-042",
+      "milestone": "M7",
+      "depends_on": [
+        "KL-014",
+        "KL-041"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [
+        "command_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/agents/**",
+        "src/kineticloop/evaluation/**",
+        "tests/agents/**",
+        "tests/evaluation/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-043",
+      "id": "KL-043",
+      "milestone": "M7",
+      "depends_on": [
+        "KL-025",
+        "KL-018",
+        "KL-042"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_wf_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger"
+      ],
+      "write_paths": [
+        "src/kineticloop/agents/**",
+        "src/kineticloop/evaluation/**",
+        "tests/agents/**",
+        "tests/evaluation/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-044",
+      "id": "KL-044",
+      "milestone": "M7",
+      "depends_on": [
+        "KL-041",
+        "KL-042"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/agents/**",
+        "src/kineticloop/evaluation/**",
+        "tests/agents/**",
+        "tests/evaluation/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-045",
+      "id": "KL-045",
+      "milestone": "M7",
+      "depends_on": [
+        "KL-008",
+        "KL-029",
+        "KL-043",
+        "KL-044"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/agents/**",
+        "src/kineticloop/evaluation/**",
+        "tests/agents/**",
+        "tests/evaluation/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-046",
+      "id": "KL-046",
+      "milestone": "M7",
+      "depends_on": [
+        "KL-040",
+        "KL-044"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger"
+      ],
+      "write_paths": [
+        "src/kineticloop/agents/**",
+        "src/kineticloop/evaluation/**",
+        "tests/agents/**",
+        "tests/evaluation/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-047",
+      "id": "KL-047",
+      "milestone": "M7",
+      "depends_on": [
+        "KL-005",
+        "KL-018"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/agents/**",
+        "src/kineticloop/evaluation/**",
+        "tests/agents/**",
+        "tests/evaluation/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-048",
+      "id": "KL-048",
+      "milestone": "M7",
+      "depends_on": [
+        "KL-009",
+        "KL-018",
+        "KL-041"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/agents/**",
+        "src/kineticloop/evaluation/**",
+        "tests/agents/**",
+        "tests/evaluation/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-049",
+      "id": "KL-049",
+      "milestone": "M8",
+      "depends_on": [
+        "KL-042",
+        "KL-043",
+        "KL-044",
+        "KL-047"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/agents/**",
+        "src/kineticloop/evaluation/**",
+        "tests/agents/**",
+        "tests/evaluation/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-050",
+      "id": "KL-050",
+      "milestone": "M9A",
+      "depends_on": [
+        "KL-055"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [
+        "provider_contracts",
+        "registry_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/integrations/**",
+        "tests/integrations/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-051",
+      "id": "KL-051",
+      "milestone": "M9A",
+      "depends_on": [
+        "KL-050",
+        "KL-055",
+        "KL-030",
+        "KL-032"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [
+        "INT-A01@PU",
+        "INT-A01@E2E",
+        "INT-A02@PU",
+        "INT-A02@E2E",
+        "INT-A10@E2E"
+      ],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "provider_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/integrations/**",
+        "tests/integrations/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-052",
+      "id": "KL-052",
+      "milestone": "M9A",
+      "depends_on": [
+        "KL-050",
+        "KL-055",
+        "KL-030"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [
+        "INT-A03@PU",
+        "INT-A03@E2E",
+        "INT-A04@PU",
+        "INT-A04@E2E",
+        "INT-A05@PU",
+        "INT-A06@PU",
+        "INT-A06@E2E",
+        "INT-A11@E2E"
+      ],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "provider_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/integrations/**",
+        "tests/integrations/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-059",
+      "id": "KL-059",
+      "milestone": "M9A",
+      "depends_on": [
+        "KL-050",
+        "KL-051",
+        "KL-052",
+        "KL-056"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [
+        "INT-A09@E2E",
+        "INT-A10@E2E",
+        "INT-A11@E2E",
+        "INT-A12@WF",
+        "INT-A12@E2E"
+      ],
+      "checks_required_for_this_task": [
+        "task_scope_wf_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "provider_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/integrations/**",
+        "tests/integrations/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-053",
+      "id": "KL-053",
+      "milestone": "M9B",
+      "depends_on": [
+        "KL-057"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "provider_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/integrations/**",
+        "tests/integrations/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "SUPERSEDED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-054",
+      "id": "KL-054",
+      "milestone": "M9B",
+      "depends_on": [
+        "KL-058"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/integrations/**",
+        "tests/integrations/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "SUPERSEDED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-057",
+      "id": "KL-057",
+      "milestone": "M9B",
+      "depends_on": [
+        "KL-055",
+        "KL-040"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [
+        "INT-A08@PU",
+        "INT-A08@E2E",
+        "INT-A09@E2E"
+      ],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "provider_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/integrations/**",
+        "tests/integrations/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-058",
+      "id": "KL-058",
+      "milestone": "M9B",
+      "depends_on": [
+        "KL-055",
+        "KL-030"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "command_contracts",
+        "provider_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/integrations/**",
+        "tests/integrations/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-060",
+      "id": "KL-060",
+      "milestone": "M10",
+      "depends_on": [
+        "KL-043",
+        "KL-045"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-061",
+      "id": "KL-061",
+      "milestone": "M10",
+      "depends_on": [
+        "KL-047",
+        "KL-060"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger",
+        "registry_coordination",
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-062",
+      "id": "KL-062",
+      "milestone": "M10",
+      "depends_on": [
+        "KL-061",
+        "KL-045",
+        "KL-049",
+        "KL-059"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger",
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-063",
+      "id": "KL-063",
+      "milestone": "M10",
+      "depends_on": [
+        "KL-046",
+        "KL-061"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-064",
+      "id": "KL-064",
+      "milestone": "M10",
+      "depends_on": [
+        "KL-036",
+        "KL-037",
+        "KL-038",
+        "KL-059"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger",
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-065",
+      "id": "KL-065",
+      "milestone": "M10",
+      "depends_on": [
+        "KL-048",
+        "KL-062"
+      ],
+      "conditional_depends_on": [
+        {
+          "task_id": "KL-057",
+          "condition": "launch_source_scope includes Oura or staging candidate contains Oura data/AI exposure"
+        },
+        {
+          "task_id": "KL-058",
+          "condition": "launch_source_scope includes nutrition/body import adapters or staging candidate contains those data flows"
+        }
+      ],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-066",
+      "id": "KL-066",
+      "milestone": "M10",
+      "depends_on": [
+        "KL-005",
+        "KL-028",
+        "KL-062",
+        "KL-063",
+        "KL-064",
+        "KL-065"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_ci_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger",
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-070",
+      "id": "KL-070",
+      "milestone": "M11",
+      "depends_on": [
+        "KL-061",
+        "KL-028"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks",
+        "task_scope_wf_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-071",
+      "id": "KL-071",
+      "milestone": "M11",
+      "depends_on": [
+        "KL-066",
+        "KL-070"
+      ],
+      "conditional_depends_on": [],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_review_checks"
+      ],
+      "resource_keys": [
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "write_paths_status": null,
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "status": "NOT_STARTED"
+    }
+  ]
+}

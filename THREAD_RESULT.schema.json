@@ -1,0 +1,253 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kineticloop/thread-result-v0.3",
+  "type": "object",
+  "required": [
+    "task_identity",
+    "display_task_id",
+    "base_commit",
+    "tested_commit",
+    "task_status",
+    "task_checks_status",
+    "integration_status",
+    "summary",
+    "commands_run",
+    "requirements_covered",
+    "files_changed"
+  ],
+  "properties": {
+    "task_identity": {
+      "type": "string",
+      "minLength": 1
+    },
+    "display_task_id": {
+      "type": "string",
+      "pattern": "^KL-[0-9]{3}[A-Z]?$"
+    },
+    "task_definition_version": {
+      "type": "string"
+    },
+    "base_commit": {
+      "type": "string",
+      "minLength": 7,
+      "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "tested_commit": {
+      "type": "string",
+      "minLength": 7,
+      "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "merge_commit": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "task_status": {
+      "enum": [
+        "PASS",
+        "BLOCKED",
+        "SPEC_CHANGE_REQUIRED"
+      ]
+    },
+    "task_checks_status": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "NOT_RUN"
+      ]
+    },
+    "integration_status": {
+      "enum": [
+        "UNMERGED",
+        "MERGED"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "commands_run": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "command",
+          "result",
+          "check_id"
+        ],
+        "properties": {
+          "command": {
+            "type": "string",
+            "minLength": 1
+          },
+          "result": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "NOT_RUN"
+            ]
+          },
+          "evidence_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "check_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "result": {
+                  "enum": [
+                    "PASS",
+                    "FAIL"
+                  ]
+                }
+              },
+              "required": [
+                "result"
+              ]
+            },
+            "then": {
+              "required": [
+                "evidence_ref"
+              ],
+              "properties": {
+                "evidence_ref": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "requirements_covered": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "requirement_id",
+          "status"
+        ],
+        "properties": {
+          "requirement_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "NOT_RUN",
+              "PASS",
+              "FAIL",
+              "APPROVED_NA"
+            ]
+          },
+          "evidence_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tested_commit": {
+            "type": "string",
+            "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "enum": [
+                    "PASS",
+                    "APPROVED_NA"
+                  ]
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "evidence_ref",
+                "tested_commit"
+              ],
+              "properties": {
+                "evidence_ref": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "files_changed": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "decisions": {
+      "type": "array"
+    },
+    "known_limitations": {
+      "type": "array"
+    },
+    "follow_up_tasks": {
+      "type": "array"
+    },
+    "spec_change_request": {}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "task_status": {
+            "const": "PASS"
+          }
+        },
+        "required": [
+          "task_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "task_checks_status": {
+            "const": "PASS"
+          },
+          "commands_run": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "integration_status": {
+            "const": "MERGED"
+          }
+        },
+        "required": [
+          "integration_status"
+        ]
+      },
+      "then": {
+        "required": [
+          "merge_commit"
+        ]
+      }
+    }
+  ]
+}

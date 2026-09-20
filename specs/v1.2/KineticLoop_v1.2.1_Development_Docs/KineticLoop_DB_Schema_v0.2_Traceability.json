@@ -1,0 +1,440 @@
+{
+  "release": "KineticLoop v1.2 FROZEN",
+  "protocol_status": "FROZEN",
+  "logical_schema_status": "FROZEN_IMPLEMENTATION_BASELINE",
+  "implementation_status": "NOT_STARTED",
+  "auto_activation": "DISABLED",
+  "default_mode": "LOCAL_SHADOW_DENY_BY_DEFAULT",
+  "logical_tables_count": 51,
+  "logical_tables": [
+    {
+      "table_id": "S01",
+      "name": "user_decision_state",
+      "record_class": "M"
+    },
+    {
+      "table_id": "S02",
+      "name": "command_receipts",
+      "record_class": "M"
+    },
+    {
+      "table_id": "S03",
+      "name": "domain_events",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S04",
+      "name": "outbox_deliveries",
+      "record_class": "M"
+    },
+    {
+      "table_id": "S05",
+      "name": "policy_bundles",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S06",
+      "name": "program_versions",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S07",
+      "name": "durable_change_proposals",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S08",
+      "name": "approval_issuances",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S09",
+      "name": "evidence_revisions",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S10",
+      "name": "candidate_assertions",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S11",
+      "name": "underlying_events",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S12",
+      "name": "event_association_decisions",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S13",
+      "name": "admission_decisions",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S14",
+      "name": "canonical_fact_revisions",
+      "record_class": "I，领域事实版本根"
+    },
+    {
+      "table_id": "S15",
+      "name": "factset_revisions",
+      "record_class": "B→I（仅 SEALED 成为 canonical history）"
+    },
+    {
+      "table_id": "S16",
+      "name": "factset_members",
+      "record_class": "B→I（仅父对象 SEALED 后）"
+    },
+    {
+      "table_id": "S17",
+      "name": "control_events",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S18",
+      "name": "control_heads",
+      "record_class": "M，同步投影"
+    },
+    {
+      "table_id": "S19",
+      "name": "exercise_catalog_revisions",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S20",
+      "name": "exercise_mapping_decisions",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S21",
+      "name": "projection_versions",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S22",
+      "name": "projection_dependencies",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S23",
+      "name": "manifest_builds",
+      "record_class": "B"
+    },
+    {
+      "table_id": "S24",
+      "name": "decision_manifests",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S25",
+      "name": "manifest_projection_bindings",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S26",
+      "name": "decision_snapshots",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S27",
+      "name": "planning_intents",
+      "record_class": "M"
+    },
+    {
+      "table_id": "S28",
+      "name": "planning_request_revisions",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S29",
+      "name": "planning_attempts",
+      "record_class": "M，执行元数据"
+    },
+    {
+      "table_id": "S30",
+      "name": "planning_quota_buckets",
+      "record_class": "M"
+    },
+    {
+      "table_id": "S31",
+      "name": "call_reservations",
+      "record_class": "M，状态与核算投影"
+    },
+    {
+      "table_id": "S32",
+      "name": "call_ledger_events",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S33",
+      "name": "tool_evidence_records",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S34",
+      "name": "proposal_revisions",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S35",
+      "name": "prescription_demand_features",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S36",
+      "name": "evidence_resolutions",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S37",
+      "name": "validation_results",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S38",
+      "name": "daily_plan_heads",
+      "record_class": "M"
+    },
+    {
+      "table_id": "S39",
+      "name": "daily_bundle_revisions",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S40",
+      "name": "prescription_revisions",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S41",
+      "name": "bundle_prescription_members",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S42",
+      "name": "authorization_issuances",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S43",
+      "name": "authorization_events",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S44",
+      "name": "workout_sessions",
+      "record_class": "M，实际会话身份与生命周期"
+    },
+    {
+      "table_id": "S45",
+      "name": "execution_bindings",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S46",
+      "name": "replay_runs",
+      "record_class": "M，隔离 evaluation 存储"
+    },
+    {
+      "table_id": "S47",
+      "name": "replay_artifacts",
+      "record_class": "I，隔离 evaluation 存储"
+    },
+    {
+      "table_id": "S48",
+      "name": "evaluation_releases",
+      "record_class": "I"
+    },
+    {
+      "table_id": "S49",
+      "name": "safety_artifacts",
+      "record_class": "I（全局 namespace）"
+    },
+    {
+      "table_id": "S50",
+      "name": "artifact_revocation_events",
+      "record_class": "I（全局 namespace）"
+    },
+    {
+      "table_id": "S51",
+      "name": "safety_registry_state",
+      "record_class": "M（全局协调点）"
+    }
+  ],
+  "invariants_count": 18,
+  "invariants": [
+    {
+      "id": "INV-01",
+      "text": "Prescription 中的计划值 MUST NOT 补全 actual execution。"
+    },
+    {
+      "id": "INV-02",
+      "text": "模型自报 confidence、reasoning、citation 或 command text 不产生 admission/approval/authorization。"
+    },
+    {
+      "id": "INV-03",
+      "text": "同一 underlying event 的多来源记录 MUST NOT 增加独立训练事件计数。"
+    },
+    {
+      "id": "INV-04",
+      "text": "无法证明成功，不等于没有 physiological exposure。"
+    },
+    {
+      "id": "INV-05",
+      "text": "Evidence Resolver 的覆盖范围由动作政策定义，不能由 Agent 的引用列表缩窄。"
+    },
+    {
+      "id": "INV-06",
+      "text": "Projection 是否可复用由 dependency basis 决定，不由其 generation 数字是否最新决定。"
+    },
+    {
+      "id": "INV-07",
+      "text": "只有 Manifest 的原子发布递增 decision_generation。"
+    },
+    {
+      "id": "INV-08",
+      "text": "用户与全局制品紧急失效不等待模型、projection、Manifest、替代计划或逐用户 fanout。"
+    },
+    {
+      "id": "INV-09",
+      "text": "Authorization 的内容、epoch、scope、依赖有效期闭包、控制状态及传递制品未撤销资格必须共同有效。"
+    },
+    {
+      "id": "INV-10",
+      "text": "失效的旧 Manifest / 旧 attempt / 被撤销制品不能重新产生执行权限。"
+    },
+    {
+      "id": "INV-11",
+      "text": "所有 attempt、repair、stale restart 和实际外部请求共享根预算。"
+    },
+    {
+      "id": "INV-12",
+      "text": "外部调用结果未知不恢复已占用预算；晚到结果不恢复失去的提交权。"
+    },
+    {
+      "id": "INV-13",
+      "text": "新 request revision 使旧 attempt 失权，不重置根预算。"
+    },
+    {
+      "id": "INV-14",
+      "text": "替换 Fitness 内容必然使依赖其内容的 Demand 与 Nutrition 失效。"
+    },
+    {
+      "id": "INV-15",
+      "text": "模型摘要始终为非命令推断；转换或重复总结不能提升 trust / authority。"
+    },
+    {
+      "id": "INV-16",
+      "text": "Replay 不能读取 knowledge cutoff 之后才被系统知道的个体证据及人工修正。"
+    },
+    {
+      "id": "INV-17",
+      "text": "LLM 等待、外部网络调用、长时间特征计算 MUST NOT 发生在协调事务内。"
+    },
+    {
+      "id": "INV-18",
+      "text": "授权只决定建议可否执行，不能阻止保存用户实际上已经发生的训练事实。"
+    }
+  ],
+  "transactions_count": 8,
+  "transactions": [
+    {
+      "id": "T1",
+      "atomic_writes": "S09 raw evidence + S02 receipt + S03/S04 接收事件；解析候选另开短事务写 S10",
+      "guards": "subject/source idempotency、内容身份冲突",
+      "exclusions": "不接受未解析候选为训练成功；不重算特征"
+    },
+    {
+      "id": "T2",
+      "atomic_writes": "IN：S12/S13/S14 或 S17/S18 + S01 frontier/epoch/basis + S43/events/receipt；SEAL：S15 READY→SEALED + S01 factset head/events/receipt；GLOBAL：S50 + S51 revision/管理 receipt；三者是独立原子命令",
+      "guards": "IN：输入/actor/失效分类；SEAL：captured frontier/epoch/member revision/完成凭据；GLOBAL：管理 capability/identity + exclusive registry gate",
+      "exclusions": "不把 IN 与 SEAL 假装跨构建原子；不在 S01 锁内批量写 S16；不逐用户 revoke"
+    },
+    {
+      "id": "T3",
+      "atomic_writes": "READY S23 guard；S24/S25 + S01 generation/current pointer + S23 published + S03/S04/S02",
+      "guards": "sealed factset/input frontier、所有 dependency basis、当前 program/policy/epoch、validity、shared registry/current artifact eligibility",
+      "exclusions": "不在事务内算 projection；不发布混合结果"
+    },
+    {
+      "id": "T4",
+      "atomic_writes": "S30 准入配额、S27 intent、S28 request revision、S29 初始/失效状态、S02/S03/S04",
+      "guards": "single-flight partition、request fingerprint、root admission limits",
+      "exclusions": "不因改约束重置预算/deadline"
+    },
+    {
+      "id": "T5",
+      "atomic_writes": "lease/fence 变更；或 S31 reservation + S32 ledger + S27 counters；或 dispatch permit transition；均为独立短事务",
+      "guards": "intent live、request revision、owner/fence/lease/deadline、预算余量",
+      "exclusions": "网络请求发生在 DISPATCH_INTENT 持久化之后、事务之外"
+    },
+    {
+      "id": "T6",
+      "atomic_writes": "S39/S40/S41、S42、S38 head switch、S27 result/success、S29 committed、S02/S03/S04",
+      "guards": "current snapshot/generation/epoch/request/fence/lease、policy、validation bindings、当前执行暴露、scope 和 active bundle、shared registry/current artifact eligibility、依赖有效期闭包",
+      "exclusions": "不靠 schema valid / validation PASS 单独放行；不先提交 bundle 再异步签授权"
+    },
+    {
+      "id": "T7",
+      "atomic_writes": "S44 execution + S45 START/RESUME binding + S02/S03/S04",
+      "guards": "当前 A/P/content/scope、依赖有效期、epoch/holds、shared registry/current artifact eligibility、session lifecycle、重复 start",
+      "exclusions": "不需要在线 LLM；不改历史 START 绑定"
+    },
+    {
+      "id": "T8",
+      "atomic_writes": "S31/S32 与 S27 核算；或 reaper 对 S27/S29 的失权/终态；S02/S03/S04",
+      "guards": "receipt identity、当前 reservation transition；或当前 fence/lease/deadline",
+      "exclusions": "不恢复 unknown 预算；不让迟到响应恢复提交权限"
+    }
+  ],
+  "acceptance_specs_count": 34,
+  "acceptance_spec_ids": [
+    "E01",
+    "E02",
+    "E03",
+    "E04",
+    "E05",
+    "E06",
+    "E07",
+    "E08",
+    "D01",
+    "D02",
+    "D03",
+    "D04",
+    "D05",
+    "A01",
+    "A02",
+    "A03",
+    "A04",
+    "A05",
+    "A06",
+    "A07",
+    "A08",
+    "W01",
+    "W02",
+    "W03",
+    "W04",
+    "W05",
+    "W06",
+    "W07",
+    "W08",
+    "W09",
+    "R01",
+    "R02",
+    "R03",
+    "R04"
+  ],
+  "model_evidence": {
+    "original_acceptance_model_cases": "34/34 PASS",
+    "additional_boundary_cases": "18/18 PASS",
+    "interleaving_scenarios": "9/9",
+    "complete_schedules": 589,
+    "visited_prefixes": 2997,
+    "seeded_mutants_detected": "8/8",
+    "real_postgresql_tests": 0,
+    "real_process_fault_tests": 0,
+    "live_llm_tests": 0
+  }
+}

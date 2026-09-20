@@ -1,0 +1,5386 @@
+{
+  "project": "KineticLoop",
+  "plan_version": "v0.5-harness-hardened",
+  "baseline": "KINETICLOOP_PROTOCOL_V1_2_FROZEN",
+  "status": "HARNESS_CONTRACT_HARDENED_V0_3_PRE_DEVELOPMENT",
+  "production_auto_activation": "DISABLED",
+  "execution_model": {
+    "unit": "one_task_one_thread_one_worktree_one_pr",
+    "thread_context": "fresh; no inherited chat history",
+    "knowledge_transfer": "committed code/tests/docs/evidence only",
+    "orchestrator_role": "prioritize, admit ready tasks, merge-gate, never implement all tasks in one context",
+    "review_role": "fresh independent thread",
+    "write_parallelism": "parallel only when dependencies met and write sets do not overlap critical hotspots"
+  },
+  "milestones": [
+    {
+      "id": "M0",
+      "name": "Frozen baseline",
+      "status": "DONE",
+      "depends_on": []
+    },
+    {
+      "id": "M1",
+      "name": "Engineering foundation + evidence/traceability handoff",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M0"
+      ]
+    },
+    {
+      "id": "M2",
+      "name": "Contracts + physical schema roots",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M1"
+      ]
+    },
+    {
+      "id": "M3",
+      "name": "Minimal real PostgreSQL protocol demo",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M2"
+      ]
+    },
+    {
+      "id": "M4",
+      "name": "Worker/reaper/fault boundaries",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M3"
+      ]
+    },
+    {
+      "id": "M5",
+      "name": "Canonical training data vertical slice",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M3"
+      ]
+    },
+    {
+      "id": "M6",
+      "name": "Decision context + read-only tools",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M5"
+      ]
+    },
+    {
+      "id": "M7",
+      "name": "Fitness Coach real-data shadow evaluation",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M4",
+        "M6"
+      ]
+    },
+    {
+      "id": "M8",
+      "name": "Nutrition Coach + cross-domain reasoning",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M7"
+      ]
+    },
+    {
+      "id": "M9A",
+      "name": "Launch-scope live provider adapters",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M5",
+        "M7"
+      ]
+    },
+    {
+      "id": "M9B",
+      "name": "Optional provider extensions",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M5"
+      ],
+      "blocking_for": [
+        "none unless promoted to launch_source_scope"
+      ]
+    },
+    {
+      "id": "M10",
+      "name": "Staging/observability/release evaluation",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M8",
+        "M9A"
+      ]
+    },
+    {
+      "id": "M11",
+      "name": "Auto-activation readiness review",
+      "status": "NOT_STARTED",
+      "depends_on": [
+        "M10"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "KL-001",
+      "milestone": "M1",
+      "title": "Initialize Python repo/tooling/CI",
+      "owner_role": "platform",
+      "depends_on": [],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [],
+      "table_ids": [],
+      "required_test_layers": [
+        "CI"
+      ],
+      "deliverables": [
+        "uv/pyproject",
+        "lint/type/test pipeline",
+        "harness validator command",
+        "frozen baseline check",
+        "task/result/review schema checks",
+        "DAG/resource consistency checks",
+        "negative harness fixture suite",
+        "review-record-only diff validator",
+        "write-scope validator"
+      ],
+      "definition_of_done": "clean checkout runs lint/type/unit skeleton and `uv run kl check-harness`; positive and negative harness fixtures prove document/frozen/DAG/packet/result/review/write-scope guards including the REVIEW_RECORD_ONLY exception",
+      "entry_conditions": [
+        "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-001",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "README.md",
+        "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-001_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-001",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "harness_document_index_valid",
+        "frozen_baseline_protected_against_git_base",
+        "task_packet_backlog_consistent",
+        "dag_acyclic",
+        "conditional_dependencies_valid",
+        "result_schema_and_semantics_valid",
+        "review_schema_valid",
+        "review_record_only_suffix_valid",
+        "task_write_scope_valid",
+        "unified_check_entrypoint_smoke",
+        "negative_fixture_matrix_passes",
+        "tested_to_reviewed_revision_valid",
+        "authorized_derived_hash_refresh_valid"
+      ],
+      "resource_keys": [
+        "harness_core"
+      ],
+      "write_paths": [
+        "pyproject.toml",
+        "uv.lock",
+        ".python-version",
+        ".github/workflows/**",
+        "src/kineticloop/**",
+        "tools/harness/**",
+        "tests/harness/**",
+        "tests/unit/**",
+        "docs/harness/**",
+        "THREAD_RESULT.schema.json",
+        "THREAD_REVIEW.schema.json"
+      ],
+      "review_requirements": [
+        "GENERAL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "write_paths_status": "ENFORCEABLE"
+    },
+    {
+      "id": "KL-002",
+      "milestone": "M1",
+      "title": "Local PostgreSQL Docker/test DB lifecycle",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-001"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [],
+      "table_ids": [],
+      "required_test_layers": [
+        "DC"
+      ],
+      "deliverables": [
+        "docker-compose",
+        "test DB reset fixture"
+      ],
+      "definition_of_done": "one command starts and resets deterministic Postgres",
+      "entry_conditions": [
+        "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-002",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "README.md",
+        "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-002_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "environment_requirements": [
+        "unique worktree database name",
+        "unique Docker Compose project name",
+        "no shared resettable DB across concurrent write tasks"
+      ],
+      "task_identity": "harness-backlog-v0.2/KL-002",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL"
+      ],
+      "conditional_depends_on": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
+      "write_path_hints": [
+        "pyproject.toml",
+        "tools/harness/**",
+        "tests/harness/**",
+        "docs/harness/**"
+      ]
+    },
+    {
+      "id": "KL-003",
+      "milestone": "M1",
+      "title": "Canonical ID/time/hash utilities",
+      "owner_role": "domain",
+      "depends_on": [
+        "KL-001"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "ID/time/hash library"
+      ],
+      "definition_of_done": "canonical serialization/time tests pass",
+      "entry_conditions": [
+        "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-003",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "README.md",
+        "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-003_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-003",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [],
+      "review_requirements": [
+        "GENERAL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
+      "write_path_hints": [
+        "pyproject.toml",
+        "tools/harness/**",
+        "tests/harness/**",
+        "docs/harness/**"
+      ]
+    },
+    {
+      "id": "KL-004",
+      "milestone": "M1",
+      "title": "Error registry + command receipt base contracts",
+      "owner_role": "domain",
+      "depends_on": [
+        "KL-003"
+      ],
+      "commands": [
+        "CommandGateway"
+      ],
+      "transaction_boundaries": [
+        "T1-T8"
+      ],
+      "invariant_ids": [
+        "INV-02"
+      ],
+      "table_ids": [
+        "S02"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "error enum",
+        "receipt base models"
+      ],
+      "definition_of_done": "idempotency-key mismatch semantics specified/tested",
+      "entry_conditions": [
+        "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-004",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "README.md",
+        "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-004_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-004",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [
+        "command_contracts",
+        "registry_coordination"
+      ],
+      "write_paths": [],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
+      "write_path_hints": [
+        "pyproject.toml",
+        "tools/harness/**",
+        "tests/harness/**",
+        "docs/harness/**"
+      ]
+    },
+    {
+      "id": "KL-005",
+      "milestone": "M1",
+      "title": "Acceptance requirement registry + fixture generator",
+      "owner_role": "quality",
+      "depends_on": [
+        "KL-001"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU",
+        "DC",
+        "WF",
+        "E2E"
+      ],
+      "deliverables": [
+        "67 original layer obligations",
+        "B01-B18",
+        "I01-I09 fixture registry"
+      ],
+      "definition_of_done": "CI can enumerate every required obligation and default NOT_RUN",
+      "entry_conditions": [
+        "KineticLoop_Acceptance_Spec_v1.2.2.json and KineticLoop_Integration_Acceptance_v0.1.json resolve through CURRENT_REQUIREMENT_SET.json"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-005",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "README.md",
+        "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-005_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-005",
+      "requirements_covered": [
+        "E01@PU",
+        "E01@E2E",
+        "E02@PU",
+        "E02@WF",
+        "E02@E2E",
+        "E03@PU",
+        "E03@DC",
+        "E04@PU",
+        "E05@PU",
+        "E06@PU",
+        "E06@E2E",
+        "E07@DC",
+        "E07@E2E",
+        "E08@PU",
+        "E08@E2E",
+        "D01@PU",
+        "D01@DC",
+        "D02@PU",
+        "D03@DC",
+        "D03@E2E",
+        "D04@DC",
+        "D05@PU",
+        "D05@DC",
+        "A01@DC",
+        "A01@WF",
+        "A01@E2E",
+        "A02@PU",
+        "A02@DC",
+        "A03@PU",
+        "A03@DC",
+        "A04@PU",
+        "A04@E2E",
+        "A05@PU",
+        "A05@DC",
+        "A06@PU",
+        "A06@E2E",
+        "A07@WF",
+        "A07@E2E",
+        "A08@PU",
+        "A08@E2E",
+        "W01@PU",
+        "W01@WF",
+        "W02@PU",
+        "W02@DC",
+        "W03@WF",
+        "W03@E2E",
+        "W04@PU",
+        "W04@DC",
+        "W04@E2E",
+        "W05@PU",
+        "W05@DC",
+        "W05@WF",
+        "W06@PU",
+        "W06@WF",
+        "W07@PU",
+        "W07@E2E",
+        "W08@DC",
+        "W08@WF",
+        "W08@E2E",
+        "W09@PU",
+        "R01@PU",
+        "R01@E2E",
+        "R02@PU",
+        "R03@PU",
+        "R03@E2E",
+        "R04@DC",
+        "R04@E2E",
+        "B01",
+        "B02",
+        "B03",
+        "B04",
+        "B05",
+        "B06",
+        "B07",
+        "B08",
+        "B09",
+        "B10",
+        "B11",
+        "B12",
+        "B13",
+        "B14",
+        "B15",
+        "B16",
+        "B17",
+        "B18",
+        "I01",
+        "I02",
+        "I03",
+        "I04",
+        "I05",
+        "I06",
+        "I07",
+        "I08",
+        "I09",
+        "INT-A01@PU",
+        "INT-A01@E2E",
+        "INT-A02@PU",
+        "INT-A02@E2E",
+        "INT-A03@PU",
+        "INT-A03@E2E",
+        "INT-A04@PU",
+        "INT-A04@E2E",
+        "INT-A05@PU",
+        "INT-A06@PU",
+        "INT-A06@E2E",
+        "INT-A07@PU",
+        "INT-A07@E2E",
+        "INT-A08@PU",
+        "INT-A08@E2E",
+        "INT-A09@E2E",
+        "INT-A10@E2E",
+        "INT-A11@E2E",
+        "INT-A12@WF",
+        "INT-A12@E2E"
+      ],
+      "checks_required_for_this_task": [
+        "requirement_sources_parse",
+        "obligation_ids_unique",
+        "all_expected_layers_registered",
+        "default_status_not_run",
+        "integration_obligations_registered"
+      ],
+      "resource_keys": [
+        "requirement_registry"
+      ],
+      "write_paths": [],
+      "review_requirements": [
+        "GENERAL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
+      "write_path_hints": [
+        "pyproject.toml",
+        "tools/harness/**",
+        "tests/harness/**",
+        "docs/harness/**"
+      ]
+    },
+    {
+      "id": "KL-006",
+      "milestone": "M1",
+      "title": "Stable document index + evidence handoff manifest",
+      "owner_role": "architecture",
+      "depends_on": [
+        "KL-001"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "DOCUMENT_INDEX.json",
+        "evidence manifest"
+      ],
+      "definition_of_done": "all canonical docs resolved by stable ID; missing model source reported, not hidden",
+      "entry_conditions": [
+        "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-006",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "README.md",
+        "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-006_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-006",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "current_document_index_resolves",
+        "evidence_manifest_paths_resolve",
+        "historical_task_id_map_valid"
+      ],
+      "resource_keys": [
+        "release_evidence",
+        "user_coordination"
+      ],
+      "write_paths": [],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
+      "write_path_hints": [
+        "pyproject.toml",
+        "tools/harness/**",
+        "tests/harness/**",
+        "docs/harness/**"
+      ]
+    },
+    {
+      "id": "KL-007",
+      "milestone": "M1",
+      "title": "Subject/test/admin/evaluation role vocabulary",
+      "owner_role": "security",
+      "depends_on": [
+        "KL-001"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-02",
+        "INV-15"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "role/capability contracts"
+      ],
+      "definition_of_done": "test/eval capability cannot be accepted as production actor",
+      "entry_conditions": [
+        "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-007",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "README.md",
+        "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-007_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-007",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
+      "write_path_hints": [
+        "pyproject.toml",
+        "tools/harness/**",
+        "tests/harness/**",
+        "docs/harness/**"
+      ]
+    },
+    {
+      "id": "KL-008",
+      "milestone": "M1",
+      "title": "Shadow/test semantic contract",
+      "owner_role": "architecture",
+      "depends_on": [
+        "KL-005",
+        "KL-007"
+      ],
+      "commands": [
+        "test-only T6/T7",
+        "shadow evaluation"
+      ],
+      "transaction_boundaries": [
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10"
+      ],
+      "table_ids": [
+        "S38",
+        "S42",
+        "S45"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "shadow storage/API contract",
+        "test-only authorization scope"
+      ],
+      "definition_of_done": "real-data shadow cannot write live head/issuance/binding; test path can exercise full T6/T7",
+      "entry_conditions": [
+        "KL-005 and KL-007 merged",
+        "This task DEFINES G-SHADOW; it is not blocked by G-SHADOW"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-008",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "README.md",
+        "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-008_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-008",
+      "requirements_covered": [
+        "A06@PU",
+        "A06@E2E",
+        "B14",
+        "B15"
+      ],
+      "checks_required_for_this_task": [
+        "shadow_contract_schema_valid",
+        "real_data_shadow_forbids_live_head_issuance_binding",
+        "test_only_scope_requires_isolation"
+      ],
+      "resource_keys": [
+        "command_contracts"
+      ],
+      "write_paths": [],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
+      "write_path_hints": [
+        "pyproject.toml",
+        "tools/harness/**",
+        "tests/harness/**",
+        "docs/harness/**"
+      ]
+    },
+    {
+      "id": "KL-009",
+      "milestone": "M1",
+      "title": "Secret/config separation + synthetic data/log-redaction harness",
+      "owner_role": "security",
+      "depends_on": [
+        "KL-001",
+        "KL-007"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-15",
+        "INV-16"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "secret loader",
+        "redaction test harness",
+        "synthetic fixtures"
+      ],
+      "definition_of_done": "sensitive fixture fields not emitted by default logs",
+      "entry_conditions": [
+        "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-009",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "README.md",
+        "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-009_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-009",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
+      "write_path_hints": [
+        "pyproject.toml",
+        "tools/harness/**",
+        "tests/harness/**",
+        "docs/harness/**"
+      ]
+    },
+    {
+      "id": "KL-010",
+      "milestone": "M2",
+      "title": "Physical schema dependency topology",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-002",
+        "KL-003"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [
+        "S01-S51"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "FK/reference-root migration plan"
+      ],
+      "definition_of_done": "DDL ordering follows references, not logical table numbers",
+      "entry_conditions": [
+        "M1 exit evidence complete"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-010",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-010_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-010",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [
+        "migration_chain"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-011",
+      "milestone": "M2",
+      "title": "Typed canonical fact child-table design",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-010"
+      ],
+      "commands": [
+        "AcceptFactRevision"
+      ],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-04",
+        "INV-18"
+      ],
+      "table_ids": [
+        "S14",
+        "S44"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "strength/cardio/health/nutrition typed child plan"
+      ],
+      "definition_of_done": "actual/unknown/zero semantics typed and provenance-preserving",
+      "entry_conditions": [
+        "M1 exit evidence complete"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-011",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-011_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-011",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [
+        "migration_chain"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-012",
+      "milestone": "M2",
+      "title": "Immutable history + write-permission protections",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-010",
+        "KL-007"
+      ],
+      "commands": [],
+      "transaction_boundaries": [
+        "T1-T8"
+      ],
+      "invariant_ids": [
+        "INV-02",
+        "INV-16"
+      ],
+      "table_ids": [
+        "I-class tables"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "immutable-history permission design",
+        "DB role/trigger/repository guard definitions and test fixtures"
+      ],
+      "definition_of_done": "permission/immutability contract is executable against a minimal fixture schema; full baseline-schema enforcement is verified by KL-013",
+      "entry_conditions": [
+        "M1 exit evidence complete"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-012",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-012_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-012",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "immutable_protection_design_complete",
+        "permission_matrix_contract_test"
+      ],
+      "resource_keys": [
+        "migration_chain"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-013",
+      "milestone": "M2",
+      "title": "Alembic baseline migration",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-010",
+        "KL-011",
+        "KL-012"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [
+        "S01-S51"
+      ],
+      "required_test_layers": [
+        "DC"
+      ],
+      "deliverables": [
+        "initial migration",
+        "materialized immutable-history protections from KL-012"
+      ],
+      "definition_of_done": "empty DB rebuilds deterministically and ordinary app role cannot rewrite immutable semantic history on migrated schema",
+      "entry_conditions": [
+        "M1 exit evidence complete"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-013",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-013_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-013",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "empty_db_upgrade_head",
+        "downgrade_or_rebuild_policy_check",
+        "single_migration_head"
+      ],
+      "resource_keys": [
+        "migration_chain"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-014",
+      "milestone": "M2",
+      "title": "Pydantic T1-T8 command/result contracts",
+      "owner_role": "domain",
+      "depends_on": [
+        "KL-004",
+        "KL-008"
+      ],
+      "commands": [
+        "T1-T8 commands"
+      ],
+      "transaction_boundaries": [
+        "T1-T8"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "typed commands/results/errors"
+      ],
+      "definition_of_done": "all commands bind subject/actor/idempotency/basis fields",
+      "entry_conditions": [
+        "G-SHADOW closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-014",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-014_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-014",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [
+        "command_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-015",
+      "milestone": "M2",
+      "title": "Repository transaction interfaces",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-013",
+        "KL-014",
+        "KL-016"
+      ],
+      "commands": [
+        "command owners"
+      ],
+      "transaction_boundaries": [
+        "T1-T8"
+      ],
+      "invariant_ids": [
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S01",
+        "S27",
+        "S31",
+        "S38",
+        "S44",
+        "S51"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "deliverables": [
+        "transaction interfaces"
+      ],
+      "definition_of_done": "no interface allows T3/T6/T7 to bypass registry shared gate",
+      "entry_conditions": [
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-015",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-015_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-015",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-016",
+      "milestone": "M2",
+      "title": "SafetyRegistry shared/exclusive gate contract",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-010"
+      ],
+      "commands": [
+        "RevokeArtifact",
+        "PublishManifest",
+        "CommitBundle",
+        "StartSession",
+        "ResumeSession"
+      ],
+      "transaction_boundaries": [
+        "T2-GLOBAL",
+        "T3",
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S49",
+        "S50",
+        "S51",
+        "S01"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "deliverables": [
+        "lock/gate API"
+      ],
+      "definition_of_done": "shared→S01 ordering and exclusive global revoke encoded/testable",
+      "entry_conditions": [
+        "M1 exit evidence complete"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-016",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-016_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-016",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [
+        "command_contracts",
+        "registry_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-017",
+      "milestone": "M2",
+      "title": "Production/test/evaluation subject isolation in persistence",
+      "owner_role": "security",
+      "depends_on": [
+        "KL-007",
+        "KL-013"
+      ],
+      "commands": [],
+      "transaction_boundaries": [
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-02",
+        "INV-15"
+      ],
+      "table_ids": [
+        "S38",
+        "S42",
+        "S45",
+        "S46",
+        "S47"
+      ],
+      "required_test_layers": [
+        "DC",
+        "E2E"
+      ],
+      "deliverables": [
+        "DB/application role policies"
+      ],
+      "definition_of_done": "test/eval authorization cannot cross into production subject namespace",
+      "entry_conditions": [
+        "M1 exit evidence complete"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-017",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-017_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-017",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "migration_chain"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-018",
+      "milestone": "M2",
+      "title": "Minimal artifact registry/release identity",
+      "owner_role": "release",
+      "depends_on": [
+        "KL-013",
+        "KL-016"
+      ],
+      "commands": [
+        "RegisterArtifact"
+      ],
+      "transaction_boundaries": [
+        "T2-GLOBAL",
+        "T3",
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S49",
+        "S51"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "deliverables": [
+        "artifact identity API"
+      ],
+      "definition_of_done": "model/prompt/tool/runtime/policy artifacts have exact immutable identities before use",
+      "entry_conditions": [
+        "M1 exit evidence complete"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-018",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-018_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-018",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger",
+        "registry_coordination",
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-055",
+      "milestone": "M2",
+      "title": "Provider identity + EvidenceEnvelope + adapter interface",
+      "owner_role": "integration",
+      "depends_on": [
+        "KL-003",
+        "KL-014"
+      ],
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "ProviderId/StreamId types",
+        "EvidenceEnvelope",
+        "adapter interface",
+        "provider fixture contract"
+      ],
+      "definition_of_done": "provider transport can only emit evidence envelopes; cannot write canonical facts or commands",
+      "entry_conditions": [
+        "DOC-INTEGRATION-V0.1 available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-055",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-055_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-055",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [
+        "provider_contracts",
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/contracts/**",
+        "src/kineticloop/persistence/**",
+        "migrations/**",
+        "tests/contracts/**",
+        "tests/persistence/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-019",
+      "milestone": "M3",
+      "title": "Minimal publish/commit/start protocol execution slice",
+      "owner_role": "protocol",
+      "depends_on": [
+        "KL-017",
+        "KL-020",
+        "KL-021",
+        "KL-022",
+        "KL-023",
+        "KL-024",
+        "KL-025"
+      ],
+      "commands": [
+        "PublishManifest",
+        "CommitBundle",
+        "StartSession",
+        "Revoke"
+      ],
+      "transaction_boundaries": [
+        "T2-GLOBAL",
+        "T3",
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10"
+      ],
+      "table_ids": [
+        "S01",
+        "S24",
+        "S38",
+        "S42",
+        "S45",
+        "S49",
+        "S50",
+        "S51"
+      ],
+      "required_test_layers": [
+        "DC"
+      ],
+      "deliverables": [
+        "minimal real-DB publish/commit/start implementation used by interleaving tests"
+      ],
+      "definition_of_done": "test subject can publish, commit, issue TEST_ONLY authorization and START through production transaction entrypoints; no fixture direct-write substitute",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-019",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "CURRENT_DOCUMENT_INDEX.json",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-019_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-019",
+      "requirements_covered": [
+        "I01",
+        "I02",
+        "I04",
+        "I07",
+        "A03@DC"
+      ],
+      "checks_required_for_this_task": [
+        "minimal_publish_commit_start_api_tests",
+        "test_subject_only_authorization_path"
+      ],
+      "resource_keys": [
+        "authorization_core",
+        "registry_coordination",
+        "user_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-020",
+      "milestone": "M3",
+      "title": "S01 coordination + command idempotency",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-015"
+      ],
+      "commands": [
+        "CommandGateway"
+      ],
+      "transaction_boundaries": [
+        "T2-T7"
+      ],
+      "invariant_ids": [
+        "INV-07",
+        "INV-08",
+        "INV-10"
+      ],
+      "table_ids": [
+        "S01",
+        "S02"
+      ],
+      "required_test_layers": [
+        "DC"
+      ],
+      "deliverables": [
+        "coordination implementation"
+      ],
+      "definition_of_done": "concurrent command guards serialize as designed",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-020",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-020_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-020",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [
+        "command_contracts",
+        "user_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-021",
+      "milestone": "M3",
+      "title": "SafetyRegistry T2-GLOBAL implementation",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-016",
+        "KL-018",
+        "KL-020"
+      ],
+      "commands": [
+        "RevokeArtifact"
+      ],
+      "transaction_boundaries": [
+        "T2-GLOBAL"
+      ],
+      "invariant_ids": [
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S49",
+        "S50",
+        "S51"
+      ],
+      "required_test_layers": [
+        "DC"
+      ],
+      "deliverables": [
+        "registry implementation"
+      ],
+      "definition_of_done": "commit is revoke linearization point; rollback has no effect",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-021",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-021_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-021",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [
+        "registry_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-022",
+      "milestone": "M3",
+      "title": "Authorization evaluator + validity closure",
+      "owner_role": "authorization",
+      "depends_on": [
+        "KL-015",
+        "KL-018",
+        "KL-021"
+      ],
+      "commands": [
+        "Issue",
+        "is_executable"
+      ],
+      "transaction_boundaries": [
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10"
+      ],
+      "table_ids": [
+        "S42",
+        "S43",
+        "S49",
+        "S51"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC",
+        "E2E"
+      ],
+      "deliverables": [
+        "evaluator"
+      ],
+      "definition_of_done": "min-validity closure, transitive revoke and TIMELESS rules enforced",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-022",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-022_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-022",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "authorization_core"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-023",
+      "milestone": "M3",
+      "title": "Factset build/ready/seal",
+      "owner_role": "evidence",
+      "depends_on": [
+        "KL-015"
+      ],
+      "commands": [
+        "SealFactset"
+      ],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-03",
+        "INV-05",
+        "INV-06",
+        "INV-07"
+      ],
+      "table_ids": [
+        "S15",
+        "S16",
+        "S01"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "deliverables": [
+        "factset implementation"
+      ],
+      "definition_of_done": "READY noncanonical; SEALED immutable; stale frontier cannot seal",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-023",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-023_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-023",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [
+        "user_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-024",
+      "milestone": "M3",
+      "title": "Planning intent + lease/fencing minimal implementation",
+      "owner_role": "planning",
+      "depends_on": [
+        "KL-015"
+      ],
+      "commands": [
+        "AdmitIntent",
+        "AcquireLease"
+      ],
+      "transaction_boundaries": [
+        "T4",
+        "T5"
+      ],
+      "invariant_ids": [
+        "INV-10",
+        "INV-11",
+        "INV-13"
+      ],
+      "table_ids": [
+        "S27",
+        "S28",
+        "S29"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "deliverables": [
+        "planning core"
+      ],
+      "definition_of_done": "old request/fence cannot commit",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-024",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-024_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-024",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-025",
+      "milestone": "M3",
+      "title": "Call reservation ledger + dispatch permit",
+      "owner_role": "planning",
+      "depends_on": [
+        "KL-024"
+      ],
+      "commands": [
+        "ReserveCall",
+        "PermitDispatch"
+      ],
+      "transaction_boundaries": [
+        "T5",
+        "T8"
+      ],
+      "invariant_ids": [
+        "INV-11",
+        "INV-12",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S31",
+        "S32"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "deliverables": [
+        "ledger core"
+      ],
+      "definition_of_done": "cancel and dispatch permission are mutually exclusive",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-025",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-025_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-025",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-026",
+      "milestone": "M3",
+      "title": "Nine interleavings on real PostgreSQL",
+      "owner_role": "quality",
+      "depends_on": [
+        "KL-019"
+      ],
+      "commands": [],
+      "transaction_boundaries": [
+        "T2-GLOBAL",
+        "T2",
+        "T3",
+        "T5",
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12"
+      ],
+      "table_ids": [
+        "S01",
+        "S15",
+        "S16",
+        "S27",
+        "S31",
+        "S42",
+        "S49",
+        "S50",
+        "S51"
+      ],
+      "required_test_layers": [
+        "DC"
+      ],
+      "deliverables": [
+        "I01-I09 test suite"
+      ],
+      "definition_of_done": "all required orderings pass with persistent-state assertions",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-026",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-026_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-026",
+      "requirements_covered": [
+        "I01",
+        "I02",
+        "I03",
+        "I04",
+        "I05",
+        "I06",
+        "I07",
+        "I08",
+        "I09"
+      ],
+      "checks_required_for_this_task": [
+        "I01-I09@DC"
+      ],
+      "resource_keys": [
+        "authorization_core",
+        "planning_ledger",
+        "registry_coordination",
+        "user_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-027",
+      "milestone": "M3",
+      "title": "Full deterministic test-only T6/T7 protocol demo",
+      "owner_role": "integration",
+      "depends_on": [
+        "KL-017",
+        "KL-019",
+        "KL-022",
+        "KL-023",
+        "KL-024",
+        "KL-025"
+      ],
+      "commands": [
+        "CommitBundle",
+        "StartSession",
+        "Revoke"
+      ],
+      "transaction_boundaries": [
+        "T6",
+        "T7",
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10",
+        "INV-14"
+      ],
+      "table_ids": [
+        "S38",
+        "S39",
+        "S40",
+        "S41",
+        "S42",
+        "S45"
+      ],
+      "required_test_layers": [
+        "DC",
+        "E2E"
+      ],
+      "deliverables": [
+        "fixture F/D/N + test A"
+      ],
+      "definition_of_done": "valid→START→revoke/expire→deny trajectory with audit evidence",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-027",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-027_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-027",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "authorization_core"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-028",
+      "milestone": "M3",
+      "title": "Supplemental B01-B18 production boundary suite",
+      "owner_role": "quality",
+      "depends_on": [
+        "KL-021",
+        "KL-022",
+        "KL-023",
+        "KL-027"
+      ],
+      "commands": [],
+      "transaction_boundaries": [
+        "T2-GLOBAL",
+        "T2",
+        "T3",
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-06",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S15",
+        "S16",
+        "S42",
+        "S49",
+        "S50",
+        "S51"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC",
+        "E2E"
+      ],
+      "deliverables": [
+        "B01-B18 evidence"
+      ],
+      "definition_of_done": "every release-required B obligation has bound result",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-028",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-028_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-028",
+      "requirements_covered": [
+        "B01",
+        "B02",
+        "B03",
+        "B04",
+        "B05",
+        "B06",
+        "B07",
+        "B08",
+        "B09",
+        "B10",
+        "B11",
+        "B12",
+        "B13",
+        "B14",
+        "B15",
+        "B16",
+        "B17",
+        "B18"
+      ],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-029",
+      "milestone": "M3",
+      "title": "Shadow isolation enforcement",
+      "owner_role": "security",
+      "depends_on": [
+        "KL-008",
+        "KL-017",
+        "KL-027"
+      ],
+      "commands": [],
+      "transaction_boundaries": [
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10"
+      ],
+      "table_ids": [
+        "S38",
+        "S42",
+        "S45"
+      ],
+      "required_test_layers": [
+        "DC",
+        "E2E"
+      ],
+      "deliverables": [
+        "negative shadow-crossing tests"
+      ],
+      "definition_of_done": "shadow evaluation cannot mutate live head/issuance/binding",
+      "entry_conditions": [
+        "M2 migration/contracts merged",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-029",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-029_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-029",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-036",
+      "milestone": "M4",
+      "title": "Worker lease/fencing + independent reaper",
+      "owner_role": "workflow",
+      "depends_on": [
+        "KL-024",
+        "KL-026"
+      ],
+      "commands": [
+        "AcquireLease",
+        "RenewLease",
+        "ReapIntent"
+      ],
+      "transaction_boundaries": [
+        "T5",
+        "T8"
+      ],
+      "invariant_ids": [
+        "INV-10",
+        "INV-12",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S27",
+        "S29"
+      ],
+      "required_test_layers": [
+        "DC",
+        "WF"
+      ],
+      "deliverables": [
+        "worker lease loop",
+        "independent reaper process",
+        "fence checks"
+      ],
+      "definition_of_done": "expired worker loses commit authority; reaper never reverses a committed success",
+      "entry_conditions": [
+        "M3 protocol slice merged"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-036",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-036_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-036",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks",
+        "task_scope_wf_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-037",
+      "milestone": "M4",
+      "title": "Transactional outbox dispatcher + idempotent consumers",
+      "owner_role": "platform",
+      "depends_on": [
+        "KL-020"
+      ],
+      "commands": [],
+      "transaction_boundaries": [
+        "T1-T8"
+      ],
+      "invariant_ids": [
+        "INV-08",
+        "INV-12",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S03",
+        "S04"
+      ],
+      "required_test_layers": [
+        "DC",
+        "WF"
+      ],
+      "deliverables": [
+        "outbox claim/delivery worker",
+        "consumer idempotency fixtures"
+      ],
+      "definition_of_done": "duplicate delivery cannot duplicate business effects; dispatcher never locks S01 after claiming outbox",
+      "entry_conditions": [
+        "M3 protocol slice merged"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-037",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-037_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-037",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks",
+        "task_scope_wf_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger"
+      ],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-038",
+      "milestone": "M4",
+      "title": "Physical-request fault injection and UNKNOWN budget suite",
+      "owner_role": "quality",
+      "depends_on": [
+        "KL-025",
+        "KL-036"
+      ],
+      "commands": [
+        "ReserveCall",
+        "PermitDispatch",
+        "SettleCall",
+        "MarkUnknown"
+      ],
+      "transaction_boundaries": [
+        "T5",
+        "T8"
+      ],
+      "invariant_ids": [
+        "INV-11",
+        "INV-12",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S27",
+        "S31",
+        "S32"
+      ],
+      "required_test_layers": [
+        "WF",
+        "E2E"
+      ],
+      "deliverables": [
+        "process-kill harness",
+        "network-send boundary fixtures"
+      ],
+      "definition_of_done": "kills before/after DISPATCH_INTENT produce the frozen budget semantics; late result cannot commit",
+      "entry_conditions": [
+        "real worker + PostgreSQL available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-038",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-038_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-038",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_wf_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-039",
+      "milestone": "M4",
+      "title": "Independent STOP/control execution lane + safety metrics",
+      "owner_role": "control",
+      "depends_on": [
+        "KL-021",
+        "KL-036"
+      ],
+      "commands": [
+        "ApplyControl",
+        "ClearControl"
+      ],
+      "transaction_boundaries": [
+        "T2",
+        "T8"
+      ],
+      "invariant_ids": [
+        "INV-08",
+        "INV-10",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S01",
+        "S17",
+        "S18",
+        "S43"
+      ],
+      "required_test_layers": [
+        "WF",
+        "E2E"
+      ],
+      "deliverables": [
+        "priority control queue/path",
+        "revoke latency metrics"
+      ],
+      "definition_of_done": "STOP succeeds when inference queue/budget is exhausted and invalidates execution authority",
+      "entry_conditions": [
+        "SafetyRegistry implementation merged"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-039",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-039_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-039",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_wf_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/protocol/**",
+        "src/kineticloop/workflow/**",
+        "tests/protocol/**",
+        "tests/faults/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-030",
+      "milestone": "M5",
+      "title": "Evidence receive/assertion/admission",
+      "owner_role": "evidence",
+      "depends_on": [
+        "KL-027"
+      ],
+      "commands": [
+        "ReceiveEvidence",
+        "DecideAdmission"
+      ],
+      "transaction_boundaries": [
+        "T1",
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-04"
+      ],
+      "table_ids": [
+        "S09",
+        "S10",
+        "S13"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "Evidence receive/assertion/admission deliverable"
+      ],
+      "definition_of_done": "Evidence receive/assertion/admission acceptance evidence recorded",
+      "entry_conditions": [
+        "M5 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-030",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "12_KineticLoop_Integration_Spec_v0.1.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-030_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-030",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-031",
+      "milestone": "M5",
+      "title": "Workout actual typed schema",
+      "owner_role": "evidence",
+      "depends_on": [
+        "KL-011",
+        "KL-030"
+      ],
+      "commands": [
+        "AcceptFactRevision"
+      ],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-18"
+      ],
+      "table_ids": [
+        "S14",
+        "S44"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "Workout actual typed schema deliverable"
+      ],
+      "definition_of_done": "Workout actual typed schema acceptance evidence recorded",
+      "entry_conditions": [
+        "M5 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-031",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "12_KineticLoop_Integration_Spec_v0.1.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-031_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-031",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-032",
+      "milestone": "M5",
+      "title": "Event association/dedup",
+      "owner_role": "evidence",
+      "depends_on": [
+        "KL-030"
+      ],
+      "commands": [
+        "DecideAssociation"
+      ],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-03"
+      ],
+      "table_ids": [
+        "S11",
+        "S12"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "deliverables": [
+        "Event association/dedup deliverable"
+      ],
+      "definition_of_done": "Event association/dedup acceptance evidence recorded",
+      "entry_conditions": [
+        "M5 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-032",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "12_KineticLoop_Integration_Spec_v0.1.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-032_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-032",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-033",
+      "milestone": "M5",
+      "title": "Sequence/progression/exposure projections",
+      "owner_role": "projection",
+      "depends_on": [
+        "KL-031",
+        "KL-032"
+      ],
+      "commands": [
+        "RecordProjection"
+      ],
+      "transaction_boundaries": [
+        "T3"
+      ],
+      "invariant_ids": [
+        "INV-03",
+        "INV-04",
+        "INV-06"
+      ],
+      "table_ids": [
+        "S21",
+        "S22"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "Sequence/progression/exposure projections deliverable"
+      ],
+      "definition_of_done": "Sequence/progression/exposure projections acceptance evidence recorded",
+      "entry_conditions": [
+        "M5 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-033",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "12_KineticLoop_Integration_Spec_v0.1.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-033_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-033",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-034",
+      "milestone": "M5",
+      "title": "Correction invalidation propagation",
+      "owner_role": "evidence",
+      "depends_on": [
+        "KL-033"
+      ],
+      "commands": [
+        "AcceptFactRevision"
+      ],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-08",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S13",
+        "S14",
+        "S15",
+        "S01"
+      ],
+      "required_test_layers": [
+        "DC",
+        "E2E"
+      ],
+      "deliverables": [
+        "Correction invalidation propagation deliverable"
+      ],
+      "definition_of_done": "Correction invalidation propagation acceptance evidence recorded",
+      "entry_conditions": [
+        "M5 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-034",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "12_KineticLoop_Integration_Spec_v0.1.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-034_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-034",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-035",
+      "milestone": "M5",
+      "title": "Google Sheet migration staging/import",
+      "owner_role": "integration",
+      "depends_on": [
+        "KL-009",
+        "KL-031",
+        "KL-032"
+      ],
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1",
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-03",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09",
+        "S14"
+      ],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "Google Sheet migration staging/import deliverable"
+      ],
+      "definition_of_done": "Google Sheet migration staging/import acceptance evidence recorded",
+      "entry_conditions": [
+        "M5 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-035",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "12_KineticLoop_Integration_Spec_v0.1.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-035_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-035",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "migration_chain"
+      ],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-056",
+      "milestone": "M5",
+      "title": "Cross-source workout/recovery reconciliation harness",
+      "owner_role": "integration",
+      "depends_on": [
+        "KL-030",
+        "KL-032",
+        "KL-055"
+      ],
+      "commands": [],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-03",
+        "INV-04",
+        "INV-05"
+      ],
+      "table_ids": [
+        "S11",
+        "S12",
+        "S14",
+        "S36"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "Hevy+HealthKit+manual synthetic fixtures",
+        "same-event dedup oracle",
+        "missing-source degradation fixtures"
+      ],
+      "definition_of_done": "INT-A06/A07/A10/A11 or equivalent requirements have executable fixtures",
+      "entry_conditions": [
+        "canonical evidence + event association implemented"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-056",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "12_KineticLoop_Integration_Spec_v0.1.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-056_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-056",
+      "requirements_covered": [
+        "INT-A07@PU",
+        "INT-A07@E2E"
+      ],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "provider_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-040",
+      "milestone": "M6",
+      "title": "DecisionManifest + snapshot",
+      "owner_role": "publication",
+      "depends_on": [
+        "KL-033",
+        "KL-021"
+      ],
+      "commands": [
+        "PublishManifest"
+      ],
+      "transaction_boundaries": [
+        "T3"
+      ],
+      "invariant_ids": [
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-10"
+      ],
+      "table_ids": [
+        "S23",
+        "S24",
+        "S25",
+        "S26",
+        "S51"
+      ],
+      "required_test_layers": [
+        "DC",
+        "E2E"
+      ],
+      "deliverables": [
+        "DecisionManifest + snapshot deliverable"
+      ],
+      "definition_of_done": "DecisionManifest + snapshot acceptance evidence recorded",
+      "entry_conditions": [
+        "M6 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-040",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "02_KineticLoop_System_Design_v1.2.2_DEV_READY.md",
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-040_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-040",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_dc_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "user_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-041",
+      "milestone": "M6",
+      "title": "Context tool gateway",
+      "owner_role": "context",
+      "depends_on": [
+        "KL-040"
+      ],
+      "commands": [
+        "RecordToolResult"
+      ],
+      "transaction_boundaries": [
+        "T5"
+      ],
+      "invariant_ids": [
+        "INV-05",
+        "INV-15",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S33"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "Context tool gateway deliverable"
+      ],
+      "definition_of_done": "Context tool gateway acceptance evidence recorded",
+      "entry_conditions": [
+        "M6 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-041",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "02_KineticLoop_System_Design_v1.2.2_DEV_READY.md",
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-041_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-041",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/evidence/**",
+        "src/kineticloop/training/**",
+        "src/kineticloop/context/**",
+        "tests/evidence/**",
+        "tests/training/**",
+        "tests/context/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-042",
+      "milestone": "M7",
+      "title": "FitnessProposal contracts",
+      "owner_role": "ai",
+      "depends_on": [
+        "KL-014",
+        "KL-041"
+      ],
+      "commands": [],
+      "transaction_boundaries": [
+        "T5"
+      ],
+      "invariant_ids": [
+        "INV-02",
+        "INV-14"
+      ],
+      "table_ids": [
+        "S34"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "FitnessProposal contracts deliverable"
+      ],
+      "definition_of_done": "FitnessProposal contracts acceptance evidence recorded",
+      "entry_conditions": [
+        "M7 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-042",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-042_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-042",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [
+        "command_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/agents/**",
+        "src/kineticloop/evaluation/**",
+        "tests/agents/**",
+        "tests/evaluation/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-043",
+      "milestone": "M7",
+      "title": "Responses API adapter with ledger-controlled calls",
+      "owner_role": "ai",
+      "depends_on": [
+        "KL-025",
+        "KL-018",
+        "KL-042"
+      ],
+      "commands": [
+        "ReserveCall",
+        "PermitDispatch"
+      ],
+      "transaction_boundaries": [
+        "T5",
+        "T8"
+      ],
+      "invariant_ids": [
+        "INV-11",
+        "INV-12",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S31",
+        "S32"
+      ],
+      "required_test_layers": [
+        "WF",
+        "E2E"
+      ],
+      "deliverables": [
+        "Responses API adapter with ledger-controlled calls deliverable"
+      ],
+      "definition_of_done": "Responses API adapter with ledger-controlled calls acceptance evidence recorded",
+      "entry_conditions": [
+        "M7 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-043",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-043_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-043",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_wf_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger"
+      ],
+      "write_paths": [
+        "src/kineticloop/agents/**",
+        "src/kineticloop/evaluation/**",
+        "tests/agents/**",
+        "tests/evaluation/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-044",
+      "milestone": "M7",
+      "title": "Evidence resolver + validation",
+      "owner_role": "authorization",
+      "depends_on": [
+        "KL-041",
+        "KL-042"
+      ],
+      "commands": [
+        "ResolveEvidence",
+        "RecordValidation"
+      ],
+      "transaction_boundaries": [
+        "T6-prep"
+      ],
+      "invariant_ids": [
+        "INV-05",
+        "INV-09",
+        "INV-14"
+      ],
+      "table_ids": [
+        "S36",
+        "S37"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "Evidence resolver + validation deliverable"
+      ],
+      "definition_of_done": "Evidence resolver + validation acceptance evidence recorded",
+      "entry_conditions": [
+        "M7 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-044",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-044_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-044",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/agents/**",
+        "src/kineticloop/evaluation/**",
+        "tests/agents/**",
+        "tests/evaluation/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-045",
+      "milestone": "M7",
+      "title": "Real-data shadow evaluation store/API",
+      "owner_role": "evaluation",
+      "depends_on": [
+        "KL-008",
+        "KL-029",
+        "KL-043",
+        "KL-044"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10",
+        "INV-15"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "Real-data shadow evaluation store/API deliverable"
+      ],
+      "definition_of_done": "Real-data shadow evaluation store/API acceptance evidence recorded",
+      "entry_conditions": [
+        "M7 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-045",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-045_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-045",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/agents/**",
+        "src/kineticloop/evaluation/**",
+        "tests/agents/**",
+        "tests/evaluation/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-046",
+      "milestone": "M7",
+      "title": "Historical planning replay",
+      "owner_role": "evaluation",
+      "depends_on": [
+        "KL-040",
+        "KL-044"
+      ],
+      "commands": [
+        "RunReplay"
+      ],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S46",
+        "S47"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "Historical planning replay deliverable"
+      ],
+      "definition_of_done": "Historical planning replay acceptance evidence recorded",
+      "entry_conditions": [
+        "M7 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-046",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-046_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-046",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger"
+      ],
+      "write_paths": [
+        "src/kineticloop/agents/**",
+        "src/kineticloop/evaluation/**",
+        "tests/agents/**",
+        "tests/evaluation/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-047",
+      "milestone": "M7",
+      "title": "Fixed predeclared Fitness eval set + scorer",
+      "owner_role": "quality",
+      "depends_on": [
+        "KL-005",
+        "KL-018"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S48"
+      ],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "Fixed predeclared Fitness eval set + scorer deliverable"
+      ],
+      "definition_of_done": "Fixed predeclared Fitness eval set + scorer acceptance evidence recorded",
+      "entry_conditions": [
+        "KL-005 and KL-018 merged",
+        "This task helps BUILD G-REMOTE-AI and is not blocked by that gate"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-047",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-047_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-047",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/agents/**",
+        "src/kineticloop/evaluation/**",
+        "tests/agents/**",
+        "tests/evaluation/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-048",
+      "milestone": "M7",
+      "title": "Remote-context outbound/redaction gate",
+      "owner_role": "security",
+      "depends_on": [
+        "KL-009",
+        "KL-018",
+        "KL-041"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-15",
+        "INV-16"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "Remote-context outbound/redaction gate deliverable"
+      ],
+      "definition_of_done": "Remote-context outbound/redaction gate acceptance evidence recorded",
+      "entry_conditions": [
+        "KL-009, KL-018 and KL-041 merged",
+        "This task helps BUILD G-REMOTE-AI and is not blocked by that gate"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-048",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-048_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-048",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/agents/**",
+        "src/kineticloop/evaluation/**",
+        "tests/agents/**",
+        "tests/evaluation/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-049",
+      "milestone": "M8",
+      "title": "Nutrition Agent + bounded cross-domain repair",
+      "owner_role": "ai-runtime",
+      "depends_on": [
+        "KL-042",
+        "KL-043",
+        "KL-044",
+        "KL-047"
+      ],
+      "commands": [
+        "RecordProposal",
+        "RecordDemandFeatures",
+        "RecordValidation"
+      ],
+      "transaction_boundaries": [
+        "T5",
+        "T6"
+      ],
+      "invariant_ids": [
+        "INV-11",
+        "INV-13",
+        "INV-14"
+      ],
+      "table_ids": [
+        "S27",
+        "S34",
+        "S35",
+        "S37"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "NutritionProposal contracts",
+        "bounded repair loop",
+        "F/D/N dependency checks"
+      ],
+      "definition_of_done": "Fitness change invalidates old D/N; all repairs share root budget; no silent durable target mutation",
+      "entry_conditions": [
+        "M7 shadow evaluation working"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-049",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-049_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-049",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/agents/**",
+        "src/kineticloop/evaluation/**",
+        "tests/agents/**",
+        "tests/evaluation/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-050",
+      "milestone": "M9A",
+      "title": "Publish launch_source_scope and provider capability registry",
+      "owner_role": "product",
+      "depends_on": [
+        "KL-055"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU"
+      ],
+      "deliverables": [
+        "Launch-source scope registry deliverable"
+      ],
+      "definition_of_done": "Launch-source scope registry acceptance evidence recorded",
+      "entry_conditions": [
+        "KL-055 merged",
+        "This task PUBLISHES launch_source_scope; it is not blocked by M9A source-scope completion"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-050",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "12_KineticLoop_Integration_Spec_v0.1.md",
+        "KineticLoop_Integration_Matrix_v0.1.json",
+        "KineticLoop_Integration_Acceptance_v0.1.json"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-050_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-050",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks"
+      ],
+      "resource_keys": [
+        "provider_contracts",
+        "registry_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/integrations/**",
+        "tests/integrations/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-051",
+      "milestone": "M9A",
+      "title": "Hevy adapter: workout events, corrections, exercise mapping",
+      "owner_role": "integration",
+      "depends_on": [
+        "KL-050",
+        "KL-055",
+        "KL-030",
+        "KL-032"
+      ],
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-03",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09"
+      ],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "Hevy adapter if launch-scoped deliverable"
+      ],
+      "definition_of_done": "Hevy adapter if launch-scoped acceptance evidence recorded",
+      "entry_conditions": [
+        "M9A entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-051",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "12_KineticLoop_Integration_Spec_v0.1.md",
+        "KineticLoop_Integration_Matrix_v0.1.json",
+        "KineticLoop_Integration_Acceptance_v0.1.json"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-051_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-051",
+      "requirements_covered": [
+        "INT-A01@PU",
+        "INT-A01@E2E",
+        "INT-A02@PU",
+        "INT-A02@E2E",
+        "INT-A10@E2E"
+      ],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "provider_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/integrations/**",
+        "tests/integrations/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-052",
+      "milestone": "M9A",
+      "title": "Apple HealthKit iOS bridge: anchored sync, deletions, provenance",
+      "owner_role": "integration",
+      "depends_on": [
+        "KL-050",
+        "KL-055",
+        "KL-030"
+      ],
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1"
+      ],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09"
+      ],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "HealthKit bridge if launch-scoped deliverable"
+      ],
+      "definition_of_done": "before READY split/confirm iOS permissions+anchored-query+deletion/background-delivery test ownership and backend upload contract; current umbrella task is not schedulable as one PR",
+      "entry_conditions": [
+        "M9A entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-052",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "12_KineticLoop_Integration_Spec_v0.1.md",
+        "KineticLoop_Integration_Matrix_v0.1.json",
+        "KineticLoop_Integration_Acceptance_v0.1.json"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-052_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-052",
+      "requirements_covered": [
+        "INT-A03@PU",
+        "INT-A03@E2E",
+        "INT-A04@PU",
+        "INT-A04@E2E",
+        "INT-A05@PU",
+        "INT-A06@PU",
+        "INT-A06@E2E",
+        "INT-A11@E2E"
+      ],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "provider_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/integrations/**",
+        "tests/integrations/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-059",
+      "milestone": "M9A",
+      "title": "Launch-source degradation and outage suite",
+      "owner_role": "quality",
+      "depends_on": [
+        "KL-050",
+        "KL-051",
+        "KL-052",
+        "KL-056"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-04",
+        "INV-05",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S09",
+        "S24",
+        "S33"
+      ],
+      "required_test_layers": [
+        "WF",
+        "E2E"
+      ],
+      "deliverables": [
+        "provider outage matrix",
+        "no-Hevy/manual fallback",
+        "no-HealthKit partial planning"
+      ],
+      "definition_of_done": "loss of each launch source yields documented degradation and never blocks STOP",
+      "entry_conditions": [
+        "launch_source_scope published"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-059",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "12_KineticLoop_Integration_Spec_v0.1.md",
+        "KineticLoop_Integration_Matrix_v0.1.json",
+        "KineticLoop_Integration_Acceptance_v0.1.json"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-059_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-059",
+      "requirements_covered": [
+        "INT-A09@E2E",
+        "INT-A10@E2E",
+        "INT-A11@E2E",
+        "INT-A12@WF",
+        "INT-A12@E2E"
+      ],
+      "checks_required_for_this_task": [
+        "task_scope_wf_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "provider_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/integrations/**",
+        "tests/integrations/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-053",
+      "milestone": "M9B",
+      "title": "Oura adapter placeholder (superseded by KL-057)",
+      "owner_role": "integration",
+      "depends_on": [
+        "KL-057"
+      ],
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1"
+      ],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09"
+      ],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "Optional Oura adapter deliverable"
+      ],
+      "definition_of_done": "No implementation; traceability preserved. Execute the superseding task.",
+      "entry_conditions": [
+        "M9B entry gates satisfied"
+      ],
+      "status": "SUPERSEDED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-053",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "12_KineticLoop_Integration_Spec_v0.1.md",
+        "KineticLoop_Integration_Matrix_v0.1.json",
+        "KineticLoop_Integration_Acceptance_v0.1.json"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-053_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-053",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "provider_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/integrations/**",
+        "tests/integrations/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-054",
+      "milestone": "M9B",
+      "title": "Optional nutrition/DEXA imports placeholder (superseded by KL-058)",
+      "owner_role": "integration",
+      "depends_on": [
+        "KL-058"
+      ],
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1"
+      ],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09"
+      ],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "Optional nutrition/DEXA adapters deliverable"
+      ],
+      "definition_of_done": "No implementation; traceability preserved. Execute the superseding task.",
+      "entry_conditions": [
+        "M9B entry gates satisfied"
+      ],
+      "status": "SUPERSEDED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-054",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "12_KineticLoop_Integration_Spec_v0.1.md",
+        "KineticLoop_Integration_Matrix_v0.1.json",
+        "KineticLoop_Integration_Acceptance_v0.1.json"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-054_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-054",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [],
+      "write_paths": [
+        "src/kineticloop/integrations/**",
+        "tests/integrations/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-057",
+      "milestone": "M9B",
+      "title": "Oura deterministic adapter + AI/compliance gate",
+      "owner_role": "integration",
+      "depends_on": [
+        "KL-055",
+        "KL-040"
+      ],
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1",
+        "T5"
+      ],
+      "invariant_ids": [
+        "INV-02",
+        "INV-05",
+        "INV-15"
+      ],
+      "table_ids": [
+        "S09",
+        "S26",
+        "S33"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "Oura adapter",
+        "AI-context eligibility gate",
+        "consent/retention config boundary"
+      ],
+      "definition_of_done": "Oura data can normalize deterministically but production AI context rejects it until policy enablement",
+      "entry_conditions": [
+        "current Oura terms/compliance decision recorded"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-057",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "12_KineticLoop_Integration_Spec_v0.1.md",
+        "KineticLoop_Integration_Matrix_v0.1.json",
+        "KineticLoop_Integration_Acceptance_v0.1.json"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-057_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-057",
+      "requirements_covered": [
+        "INT-A08@PU",
+        "INT-A08@E2E",
+        "INT-A09@E2E"
+      ],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "provider_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/integrations/**",
+        "tests/integrations/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-058",
+      "milestone": "M9B",
+      "title": "Nutrition/body import contracts (MacroFactor export + DEXA)",
+      "owner_role": "integration",
+      "depends_on": [
+        "KL-055",
+        "KL-030"
+      ],
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1",
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-04",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09",
+        "S10",
+        "S14"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "export/file ingestion contracts",
+        "provider-derived estimate semantics",
+        "field provenance"
+      ],
+      "definition_of_done": "provider-derived estimates remain estimates; extraction ambiguity remains unresolved",
+      "entry_conditions": [
+        "file/evidence import path implemented"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-058",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "12_KineticLoop_Integration_Spec_v0.1.md",
+        "KineticLoop_Integration_Matrix_v0.1.json",
+        "KineticLoop_Integration_Acceptance_v0.1.json"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-058_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-058",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "command_contracts",
+        "provider_contracts"
+      ],
+      "write_paths": [
+        "src/kineticloop/integrations/**",
+        "tests/integrations/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-060",
+      "milestone": "M10",
+      "title": "Staging observability/SLOs",
+      "owner_role": "platform",
+      "depends_on": [
+        "KL-043",
+        "KL-045"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-17"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "Staging observability/SLOs deliverable"
+      ],
+      "definition_of_done": "Staging observability/SLOs acceptance evidence recorded",
+      "entry_conditions": [
+        "M10 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-060",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "10_KineticLoop_Evidence_Handoff_v0.1.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-060_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-060",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-061",
+      "milestone": "M10",
+      "title": "Release registry + full eval/replay hardening",
+      "owner_role": "release",
+      "depends_on": [
+        "KL-047",
+        "KL-060"
+      ],
+      "commands": [
+        "RecordRelease"
+      ],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S48"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "Release registry + full eval/replay hardening deliverable"
+      ],
+      "definition_of_done": "Release registry + full eval/replay hardening acceptance evidence recorded",
+      "entry_conditions": [
+        "M10 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-061",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "10_KineticLoop_Evidence_Handoff_v0.1.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-061_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-061",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger",
+        "registry_coordination",
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-062",
+      "milestone": "M10",
+      "title": "Shadow comparison + reproducible release evidence bundle",
+      "owner_role": "quality",
+      "depends_on": [
+        "KL-061",
+        "KL-045",
+        "KL-049",
+        "KL-059"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-15",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S46",
+        "S47",
+        "S48"
+      ],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "shadow comparison report",
+        "release evidence bundle"
+      ],
+      "definition_of_done": "each release result binds exact code/migration/policy/model/eval identities",
+      "entry_conditions": [
+        "staging environment available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-062",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "10_KineticLoop_Evidence_Handoff_v0.1.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-062_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-062",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger",
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-063",
+      "milestone": "M10",
+      "title": "Leakage audit + point-in-time replay validation",
+      "owner_role": "quality",
+      "depends_on": [
+        "KL-046",
+        "KL-061"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-16"
+      ],
+      "table_ids": [
+        "S46",
+        "S47",
+        "S48"
+      ],
+      "required_test_layers": [
+        "PU",
+        "E2E"
+      ],
+      "deliverables": [
+        "leakage audit",
+        "historical/current-policy backtest comparison"
+      ],
+      "definition_of_done": "future corrections/mappings cannot leak across cutoff",
+      "entry_conditions": [
+        "replay implementation available"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-063",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "10_KineticLoop_Evidence_Handoff_v0.1.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-063_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-063",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-064",
+      "milestone": "M10",
+      "title": "Operational dashboards for revoke, ledger, tool and sync health",
+      "owner_role": "observability",
+      "depends_on": [
+        "KL-036",
+        "KL-037",
+        "KL-038",
+        "KL-059"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-08",
+        "INV-11",
+        "INV-12",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S03",
+        "S04",
+        "S27",
+        "S31",
+        "S32"
+      ],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "dashboards/alerts",
+        "SLO queries"
+      ],
+      "definition_of_done": "critical revoke/UNKNOWN budget/provider lag paths are observable",
+      "entry_conditions": [
+        "telemetry emitted"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-064",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "10_KineticLoop_Evidence_Handoff_v0.1.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-064_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-064",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger",
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-065",
+      "milestone": "M10",
+      "title": "Security/privacy integrated staging review",
+      "owner_role": "security",
+      "depends_on": [
+        "KL-048",
+        "KL-062"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-02",
+        "INV-15",
+        "INV-16"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "E2E"
+      ],
+      "deliverables": [
+        "security review report",
+        "data-flow inventory",
+        "retention/redaction verification"
+      ],
+      "definition_of_done": "no production promotion while unresolved high-severity data-boundary finding exists",
+      "entry_conditions": [
+        "staging release candidate exists"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-065",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "10_KineticLoop_Evidence_Handoff_v0.1.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-065_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "conditional_depends_on": [
+        {
+          "task_id": "KL-057",
+          "condition": "launch_source_scope includes Oura or staging candidate contains Oura data/AI exposure"
+        },
+        {
+          "task_id": "KL-058",
+          "condition": "launch_source_scope includes nutrition/body import adapters or staging candidate contains those data flows"
+        }
+      ],
+      "task_identity": "harness-backlog-v0.2/KL-065",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-066",
+      "milestone": "M10",
+      "title": "Release gate runner + evidence verifier",
+      "owner_role": "quality",
+      "depends_on": [
+        "KL-005",
+        "KL-028",
+        "KL-062",
+        "KL-063",
+        "KL-064",
+        "KL-065"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [],
+      "table_ids": [],
+      "required_test_layers": [
+        "CI",
+        "E2E"
+      ],
+      "deliverables": [
+        "machine gate runner",
+        "evidence verifier"
+      ],
+      "definition_of_done": "NOT_RUN/SKIPPED never count as PASS; gate is tied to exact requirement-set hash",
+      "entry_conditions": [
+        "acceptance registry complete"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-066",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "10_KineticLoop_Evidence_Handoff_v0.1.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-066_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-066",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_ci_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "planning_ledger",
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-070",
+      "milestone": "M11",
+      "title": "Integrated auto-activation evidence review",
+      "owner_role": "release",
+      "depends_on": [
+        "KL-061",
+        "KL-028"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "PU",
+        "DC",
+        "WF",
+        "E2E"
+      ],
+      "deliverables": [
+        "Integrated auto-activation evidence review deliverable"
+      ],
+      "definition_of_done": "Integrated auto-activation evidence review acceptance evidence recorded",
+      "entry_conditions": [
+        "M11 entry gates satisfied"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-070",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "07_KineticLoop_Protocol_Freeze_Review.md",
+        "08_KineticLoop_ADR_and_Change_Control_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-070_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-070",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_pu_checks",
+        "task_scope_dc_checks",
+        "task_scope_wf_checks",
+        "task_scope_e2e_checks"
+      ],
+      "resource_keys": [
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    },
+    {
+      "id": "KL-071",
+      "milestone": "M11",
+      "title": "Independent protocol/security/reliability launch review",
+      "owner_role": "review",
+      "depends_on": [
+        "KL-066",
+        "KL-070"
+      ],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-05",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-16",
+        "INV-17"
+      ],
+      "table_ids": [],
+      "required_test_layers": [
+        "REVIEW"
+      ],
+      "deliverables": [
+        "independent review report"
+      ],
+      "definition_of_done": "review uses fresh context and evidence, not implementation thread history; unresolved P0/P1 blocks recommendation",
+      "entry_conditions": [
+        "release evidence bundle complete"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-071",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "07_KineticLoop_Protocol_Freeze_Review.md",
+        "08_KineticLoop_ADR_and_Change_Control_v1.2.2.md"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-071_RESULT.yaml",
+      "shared_hotspot": false,
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "task_identity": "harness-backlog-v0.2/KL-071",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "task_scope_review_checks"
+      ],
+      "resource_keys": [
+        "release_evidence"
+      ],
+      "write_paths": [
+        "src/kineticloop/evaluation/**",
+        "src/kineticloop/observability/**",
+        "docs/release-evidence/**",
+        "tests/release/**"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [],
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+    }
+  ],
+  "task_count": 68,
+  "acceptance_requirement_set": "v1.2.2 + integration-v0.1",
+  "task_namespace": "harness-backlog-v0.2",
+  "requirement_set": "KINETICLOOP_HARNESS_REQSET_V1_2_2_INTEGRATION_V0_1",
+  "active_task_count": 66
+}
