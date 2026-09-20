@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-003
 display_task_id: KL-003
 task_definition_version: v0.2
 base_commit: 1fd56e3f8e9207f0d63ae03647c93e54563d1abc
-tested_commit: b54750ae24f003ee2d2d8768f06727bf0718f148
+tested_commit: 8dd5b50ec78b5dd4bc70209876a13b10d4fd2ca5
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -10,30 +10,30 @@ integration_status: UNMERGED
 summary: >-
   Added strict canonical UUID identifiers, UTC instant normalization, versioned
   deterministic JSON serialization, and SHA-256 content hashing with focused
-  rejection tests for unsafe or ambiguous inputs. UUID object inputs now require
-  the exact UUID type so subclasses cannot substitute another identity through an
-  overridden wire representation.
+  rejection tests for unsafe or ambiguous inputs. Canonical identity, time, and
+  JSON boundaries now require exact built-in input types so subclasses and custom
+  mappings cannot substitute validated content through overridden behavior.
 commands_run:
   - check_id: id_format_valid
     command: uv run pytest tests/unit/primitives -q -k id_format_valid
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-003/remediation-checks-b54750a.log
+    evidence_ref: docs/exec-plans/evidence/KL-003/remediation-checks-8dd5b50.log
   - check_id: utc_time_normalized
     command: uv run pytest tests/unit/primitives -q -k utc_time_normalized
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-003/remediation-checks-b54750a.log
+    evidence_ref: docs/exec-plans/evidence/KL-003/remediation-checks-8dd5b50.log
   - check_id: canonical_serialization_deterministic
     command: uv run pytest tests/unit/primitives -q -k canonical_serialization_deterministic
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-003/remediation-checks-b54750a.log
+    evidence_ref: docs/exec-plans/evidence/KL-003/remediation-checks-8dd5b50.log
   - check_id: hash_deterministic
     command: uv run pytest tests/unit/primitives -q -k hash_deterministic
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-003/remediation-checks-b54750a.log
+    evidence_ref: docs/exec-plans/evidence/KL-003/remediation-checks-8dd5b50.log
   - check_id: invalid_input_rejected
     command: uv run pytest tests/unit/primitives -q -k invalid_input_rejected
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-003/remediation-checks-b54750a.log
+    evidence_ref: docs/exec-plans/evidence/KL-003/remediation-checks-8dd5b50.log
 requirements_covered: []
 files_changed:
   - src/kineticloop/primitives/__init__.py
@@ -48,12 +48,13 @@ files_changed:
   - docs/exec-plans/evidence/KL-003/checks.log
   - docs/exec-plans/evidence/KL-003/remediation-checks-94c0942.log
   - docs/exec-plans/evidence/KL-003/remediation-checks-b54750a.log
+  - docs/exec-plans/evidence/KL-003/remediation-checks-8dd5b50.log
   - docs/exec-plans/completed/KL-003_RESULT.yaml
 decisions:
   - Use lower-case hyphenated RFC 4122 UUIDs as the canonical ID wire form and UUIDv4 for generation.
-  - Accept UUID object inputs only when their exact type is UUID, preventing subclasses from overriding the wire representation and substituting identity.
-  - Emit UTC instants as RFC 3339 with Z and fixed microsecond precision; reject naive timestamps.
-  - Version canonical JSON as kineticloop-json-v1, normalize strings to NFC, sort object keys by UTF-16 code units, and reject floats and values outside the supported JSON domain.
+  - Accept identifier inputs only when their exact type is str or UUID, preventing subclasses from substituting stored or presented identity.
+  - Accept time inputs only when their exact type is str or datetime, return exact built-in datetime/string values, emit RFC 3339 UTC with fixed microsecond precision, and reject naive timestamps.
+  - Version canonical JSON as kineticloop-json-v1, admit only exact dict/list and JSON scalar types, normalize strings to NFC, sort object keys by UTF-16 code units, and reject overrideable containers, floats, and values outside the supported JSON domain.
   - Keep the SHA-256 digest separate from its sha256-kineticloop-json-v1 scheme identifier, matching the logical DB baseline's content_hash and hash_scheme_version fields.
 known_limitations:
   - Canonical JSON version 1 intentionally excludes floating-point values, tuples, bytes, and integers outside the signed 64-bit range.
