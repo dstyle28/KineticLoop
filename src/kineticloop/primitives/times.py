@@ -1,0 +1,61 @@
+"""UTC instant normalization and canonical RFC 3339 formatting."""
+
+import re
+from datetime import UTC, datetime, timezone
+
+_RFC3339_INSTANT = re.compile(
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"
+    r"(?:\.\d{1,6})?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$"
+)
+
+
+def normalize_utc(value: datetime) -> datetime:
+    """Normalize a timezone-aware datetime to a UTC instant."""
+
+    if type(value) is not datetime:
+        raise TypeError("instant must be a datetime")
+    if type(value.tzinfo) is not timezone:
+        raise ValueError("instant must use a fixed UTC offset")
+    normalized = value.astimezone(UTC)
+    if type(normalized) is not datetime or normalized.tzinfo is not UTC:
+        raise ValueError("instant could not be normalized to UTC")
+    return normalized
+
+
+def parse_utc(value: str) -> datetime:
+    """Parse an RFC 3339 instant and normalize it to UTC."""
+
+    if type(value) is not str:
+        raise TypeError("instant must be an RFC 3339 string")
+    if _RFC3339_INSTANT.fullmatch(value) is None:
+        raise ValueError("instant must be RFC 3339 with an explicit UTC offset")
+    if value.endswith("-00:00"):
+        raise ValueError("instant must have a known UTC offset")
+
+    source = value[:-1] + "+00:00" if value.endswith("Z") else value
+    try:
+        parsed = datetime.fromisoformat(source)
+    except ValueError as error:
+        raise ValueError("instant is not a valid RFC 3339 timestamp") from error
+    return normalize_utc(parsed)
+
+
+def canonical_utc(value: datetime | str) -> str:
+    """Return an instant as a UTC RFC 3339 string with microsecond precision."""
+
+    if type(value) is str:
+        instant = parse_utc(value)
+    elif type(value) is datetime:
+        instant = normalize_utc(value)
+    else:
+        raise TypeError("instant must be a datetime or RFC 3339 string")
+    text = instant.isoformat(timespec="microseconds").replace("+00:00", "Z")
+    if type(text) is not str or _RFC3339_INSTANT.fullmatch(text) is None:
+        raise ValueError("instant could not be represented as canonical RFC 3339")
+    return text
+
+
+def utc_now() -> datetime:
+    """Read the system clock as a timezone-aware UTC instant."""
+
+    return datetime.now(UTC)

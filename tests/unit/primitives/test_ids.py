@@ -1,0 +1,79 @@
+from uuid import UUID
+
+import pytest
+
+from kineticloop.primitives import canonical_id, is_canonical_id, new_id
+
+
+class _MisleadingUUID(UUID):
+    def __str__(self) -> str:
+        return "not-a-uuid"
+
+
+class _SubstitutingUUID(UUID):
+    def __str__(self) -> str:
+        return "61f59c6c-4ad1-4d95-9c06-4379cd382728"
+
+
+class _SubstitutingString(str):
+    def __str__(self) -> str:
+        return "61f59c6c-4ad1-4d95-9c06-4379cd382728"
+
+
+def test_id_format_valid_for_generated_and_existing_ids() -> None:
+    generated = new_id()
+
+    assert is_canonical_id(generated)
+    assert UUID(generated).version == 4
+    assert canonical_id(UUID("8c7d83ee-49db-4b2c-9df2-0b0f158c328f")) == (
+        "8c7d83ee-49db-4b2c-9df2-0b0f158c328f"
+    )
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "8C7D83EE-49DB-4B2C-9DF2-0B0F158C328F",
+        "8c7d83ee49db4b2c9df20b0f158c328f",
+        " 8c7d83ee-49db-4b2c-9df2-0b0f158c328f",
+        "00000000-0000-0000-0000-000000000000",
+    ],
+)
+def test_invalid_input_rejected_for_noncanonical_ids(value: str) -> None:
+    with pytest.raises(ValueError):
+        canonical_id(value)
+    assert not is_canonical_id(value)
+
+
+def test_invalid_input_rejected_for_uuid_subclass_with_noncanonical_text() -> None:
+    value = _MisleadingUUID("8c7d83ee-49db-4b2c-9df2-0b0f158c328f")
+
+    with pytest.raises(TypeError, match="identifier must be a string or UUID"):
+        canonical_id(value)
+
+
+def test_invalid_input_rejected_for_uuid_subclass_that_substitutes_identity() -> None:
+    value = _SubstitutingUUID("8c7d83ee-49db-4b2c-9df2-0b0f158c328f")
+
+    with pytest.raises(TypeError, match="identifier must be a string or UUID"):
+        canonical_id(value)
+
+
+def test_invalid_input_rejected_for_string_subclass_that_substitutes_identity() -> None:
+    stored = "8c7d83ee-49db-4b2c-9df2-0b0f158c328f"
+    value = _SubstitutingString(stored)
+
+    assert value == stored
+    assert str(value) != stored
+    with pytest.raises(TypeError, match="identifier must be a string or UUID"):
+        canonical_id(value)
+    assert not is_canonical_id(value)
+
+
+def test_id_format_valid_returns_exact_string_accepted_by_canonical_json() -> None:
+    from kineticloop.primitives import canonical_json
+
+    value = canonical_id("8c7d83ee-49db-4b2c-9df2-0b0f158c328f")
+
+    assert type(value) is str
+    assert canonical_json({"id": value}) == '{"id":"8c7d83ee-49db-4b2c-9df2-0b0f158c328f"}'

@@ -1,0 +1,70 @@
+task_identity: harness-backlog-v0.2/KL-003
+display_task_id: KL-003
+task_definition_version: v0.2
+base_commit: 1fd56e3f8e9207f0d63ae03647c93e54563d1abc
+tested_commit: 36ebdf32a27a0a568453c6c06bcec4ae921639c8
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Added strict canonical UUID identifiers, UTC instant normalization, versioned
+  deterministic JSON serialization, and SHA-256 content hashing with focused
+  rejection tests for unsafe or ambiguous inputs. Canonical identity, time, and
+  JSON boundaries now require exact built-in input types so subclasses and custom
+  mappings cannot substitute validated content through overridden behavior. UTC
+  normalization admits only built-in fixed-offset timezone providers, and hash
+  inputs, digests, and results preserve exact built-in wire types. RFC 3339
+  parsing rejects the unknown local offset spelling -00:00 and invalid numeric
+  offset ranges without weakening Z, +00:00, or valid fixed-offset inputs.
+commands_run:
+  - check_id: id_format_valid
+    command: uv run pytest tests/unit/primitives -q -k id_format_valid
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-003/remediation-checks-36ebdf3.log
+  - check_id: utc_time_normalized
+    command: uv run pytest tests/unit/primitives -q -k utc_time_normalized
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-003/remediation-checks-36ebdf3.log
+  - check_id: canonical_serialization_deterministic
+    command: uv run pytest tests/unit/primitives -q -k canonical_serialization_deterministic
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-003/remediation-checks-36ebdf3.log
+  - check_id: hash_deterministic
+    command: uv run pytest tests/unit/primitives -q -k hash_deterministic
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-003/remediation-checks-36ebdf3.log
+  - check_id: invalid_input_rejected
+    command: uv run pytest tests/unit/primitives -q -k invalid_input_rejected
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-003/remediation-checks-36ebdf3.log
+requirements_covered: []
+files_changed:
+  - src/kineticloop/primitives/__init__.py
+  - src/kineticloop/primitives/canonical.py
+  - src/kineticloop/primitives/hashes.py
+  - src/kineticloop/primitives/ids.py
+  - src/kineticloop/primitives/times.py
+  - tests/unit/primitives/test_canonical.py
+  - tests/unit/primitives/test_hashes.py
+  - tests/unit/primitives/test_ids.py
+  - tests/unit/primitives/test_times.py
+  - docs/exec-plans/evidence/KL-003/checks.log
+  - docs/exec-plans/evidence/KL-003/remediation-checks-94c0942.log
+  - docs/exec-plans/evidence/KL-003/remediation-checks-b54750a.log
+  - docs/exec-plans/evidence/KL-003/remediation-checks-8dd5b50.log
+  - docs/exec-plans/evidence/KL-003/remediation-checks-c0db529.log
+  - docs/exec-plans/evidence/KL-003/remediation-checks-36ebdf3.log
+  - docs/exec-plans/completed/KL-003_RESULT.yaml
+decisions:
+  - Use lower-case hyphenated RFC 4122 UUIDs as the canonical ID wire form and UUIDv4 for generation.
+  - Accept identifier inputs only when their exact type is str or UUID, preventing subclasses from substituting stored or presented identity.
+  - Accept time inputs only when their exact type is str or datetime, require exact built-in fixed-offset timezone providers for datetime inputs, return exact built-in datetime/string values, emit RFC 3339 UTC with fixed microsecond precision, and reject naive or behavior-overrideable timestamps.
+  - Reject RFC 3339 -00:00 because it denotes an unknown local offset, enforce valid numeric offset ranges before parsing, and preserve Z, +00:00, and known fixed-offset normalization.
+  - Version canonical JSON as kineticloop-json-v1, admit only exact dict/list and JSON scalar types, normalize strings to NFC, sort object keys by UTF-16 code units, and reject overrideable containers, floats, and values outside the supported JSON domain.
+  - Keep the SHA-256 digest separate from its sha256-kineticloop-json-v1 scheme identifier, matching the logical DB baseline's content_hash and hash_scheme_version fields.
+  - Require exact bytes for raw hashes and exact canonical str digests for verification, with exact built-in str and bool outputs.
+known_limitations:
+  - Canonical JSON version 1 intentionally excludes floating-point values, tuples, bytes, and integers outside the signed 64-bit range.
+follow_up_tasks: []
+spec_change_request: null

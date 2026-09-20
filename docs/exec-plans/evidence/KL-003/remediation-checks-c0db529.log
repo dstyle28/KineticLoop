@@ -1,0 +1,59 @@
+KL-003 mutable-timezone and digest-identity remediation validation
+tested_commit: c0db529dadd3e51fc04851d7fb5ccfd3c2540687
+base_commit: 1fd56e3f8e9207f0d63ae03647c93e54563d1abc
+
+$ uv run pytest tests/unit/primitives -q -k id_format_valid
+..                                                                       [100%]
+2 passed, 35 deselected in 0.01s
+
+$ uv run pytest tests/unit/primitives -q -k utc_time_normalized
+..                                                                       [100%]
+2 passed, 35 deselected in 0.01s
+
+$ uv run pytest tests/unit/primitives -q -k canonical_serialization_deterministic
+.                                                                        [100%]
+1 passed, 36 deselected in 0.01s
+
+$ uv run pytest tests/unit/primitives -q -k hash_deterministic
+..                                                                       [100%]
+2 passed, 35 deselected in 0.01s
+
+$ uv run pytest tests/unit/primitives -q -k invalid_input_rejected
+.............................                                            [100%]
+29 passed, 8 deselected in 0.02s
+
+$ uv run ruff check .
+All checks passed!
+
+$ uv run mypy
+Success: no issues found in 14 source files
+
+$ uv run kl test-unit
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /private/tmp/KineticLoop-kl003-subagent-01a0b850
+configfile: pyproject.toml
+collected 40 items
+
+tests/unit/primitives/test_canonical.py ...........                      [ 27%]
+tests/unit/primitives/test_hashes.py ........                            [ 47%]
+tests/unit/primitives/test_ids.py .........                              [ 70%]
+tests/unit/primitives/test_times.py .........                            [ 92%]
+tests/unit/test_cli.py ...                                               [100%]
+
+============================== 40 passed in 0.59s ==============================
+
+$ uv run kl test-harness
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /private/tmp/KineticLoop-kl003-subagent-01a0b850
+configfile: pyproject.toml
+collected 52 items
+
+tests/harness/test_validator.py ........................................ [ 76%]
+............                                                             [100%]
+
+============================= 52 passed in 25.26s ==============================
+
+$ uv run kl check-harness --protected-base 1fd56e3f8e9207f0d63ae03647c93e54563d1abc --task-id KL-003
+HARNESS_CHECK_PASS tasks=68 active=66
