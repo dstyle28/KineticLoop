@@ -2,11 +2,22 @@
   "task_identity": "harness-backlog-v0.2/KL-001",
   "reviewed_head_sha": "f7f00448d633cd9b85eb75704ee7fce923e4fb94",
   "review_type": "GENERAL",
-  "status": "PASS",
-  "findings": [],
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "ci-merge-gate-not-enforced",
+      "path": ".github/workflows/ci.yml",
+      "line": 26,
+      "summary": "CI runs the Harness validator without revision-bound merge-gate inputs.",
+      "detail": "The workflow calls bare `uv run kl check-harness`, so protected-base frozen-file checks, task write-scope checks, tested-to-reviewed ancestry, required review presence, and review-record-only freshness are not enforced on pull requests. An isolated coordinated Frozen file plus FROZEN_BASELINE/index tamper returned HARNESS_CHECK_PASS with the workflow command and was rejected only when --protected-base and --task-id were supplied. Wire the PR base SHA, task identity, and reviewed implementation SHA into a required CI merge-gate invocation, and add a workflow-level regression proving the required job rejects the tamper."
+    }
+  ],
   "evidence_refs": [
     "docs/exec-plans/completed/KL-001_RESULT.yaml",
-    "docs/exec-plans/evidence/KL-001/checks.log"
+    "docs/exec-plans/evidence/KL-001/checks.log",
+    ".github/workflows/ci.yml",
+    "docs/harness/MERGE_GATE.md"
   ],
   "review_contract_version": "v0.2"
 }
