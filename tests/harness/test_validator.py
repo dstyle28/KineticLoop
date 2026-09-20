@@ -480,6 +480,82 @@ class ValidatorTests(unittest.TestCase):
         })
         self.check()
 
+    def test_integration_rejects_result_changed_before_review(self):
+        result_path, result = self.result(ext='yaml', tested=self.base)
+        result['task_status'] = 'BLOCKED'
+        result['task_checks_status'] = 'FAIL'
+        self.save_result(result_path, result)
+        result_commit = self.commit('persist blocked result')
+        result['task_status'] = 'PASS'
+        result['task_checks_status'] = 'PASS'
+        self.save_result(result_path, result)
+        reviewed = self.commit('replace result before review')
+        review_commit = self.review(reviewed)
+        dump(self.root / 'docs/exec-plans/integrations/KL-001.json', {
+            'task_identity': self.task['task_identity'],
+            'display_task_id': 'KL-001',
+            'result_commit': result_commit,
+            'reviewed_head_sha': reviewed,
+            'review_record_commit': review_commit,
+            'merge_commit': review_commit,
+            'integration_status': 'MERGED',
+        })
+        self.check(1, 'integration-result-content-mismatch:KL-001')
+
+    def test_integration_rejects_nonpass_or_semantically_invalid_result(self):
+        result_path, result = self.result(ext='yaml', tested=self.base)
+        result['commands_run'][0]['check_id'] = 'invented_check'
+        self.save_result(result_path, result)
+        result_commit = self.commit('persist semantically invalid PASS result')
+        review_commit = self.review(result_commit)
+        dump(self.root / 'docs/exec-plans/integrations/KL-001.json', {
+            'task_identity': self.task['task_identity'],
+            'display_task_id': 'KL-001',
+            'result_commit': result_commit,
+            'reviewed_head_sha': result_commit,
+            'review_record_commit': review_commit,
+            'merge_commit': review_commit,
+            'integration_status': 'MERGED',
+        })
+        self.check(1, 'integration-result-semantic:KL-001:result-check-ids')
+
+    def test_integration_rejects_unchanged_nonpass_result(self):
+        result_path, result = self.result(ext='yaml', tested=self.base)
+        result['task_status'] = 'BLOCKED'
+        result['task_checks_status'] = 'FAIL'
+        self.save_result(result_path, result)
+        result_commit = self.commit('persist blocked result')
+        review_commit = self.review(result_commit)
+        dump(self.root / 'docs/exec-plans/integrations/KL-001.json', {
+            'task_identity': self.task['task_identity'],
+            'display_task_id': 'KL-001',
+            'result_commit': result_commit,
+            'reviewed_head_sha': result_commit,
+            'review_record_commit': review_commit,
+            'merge_commit': review_commit,
+            'integration_status': 'MERGED',
+        })
+        self.check(1, 'integration-result-not-pass:KL-001')
+
+    def test_integration_rejects_result_representation_switch_before_review(self):
+        result_path, result = self.result(ext='yaml', tested=self.base)
+        result_commit = self.commit('persist YAML result')
+        result_path.unlink()
+        json_path = result_path.with_suffix('.json')
+        self.save_result(json_path, result)
+        reviewed = self.commit('switch result representation before review')
+        review_commit = self.review(reviewed)
+        dump(self.root / 'docs/exec-plans/integrations/KL-001.json', {
+            'task_identity': self.task['task_identity'],
+            'display_task_id': 'KL-001',
+            'result_commit': result_commit,
+            'reviewed_head_sha': reviewed,
+            'review_record_commit': review_commit,
+            'merge_commit': review_commit,
+            'integration_status': 'MERGED',
+        })
+        self.check(1, 'integration-result-path-mismatch:KL-001')
+
     def test_integration_rejects_both_result_representations(self):
         self.result(ext='yaml', tested=self.base)
         self.result(ext='json', tested=self.base)

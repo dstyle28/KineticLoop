@@ -151,6 +151,15 @@ def result_paths(task_id):
     return [f'docs/exec-plans/completed/{task_id}_RESULT.{ext}' for ext in ('yaml', 'json')]
 
 
+def result_paths_at_revision(root, task_id, revision):
+    return [
+        candidate for candidate in result_paths(task_id)
+        if subprocess.run(
+            ['git', 'cat-file', '-e', revision + ':' + candidate],
+            cwd=root, capture_output=True).returncode == 0
+    ]
+
+
 def evidence_pattern(task_id):
     return f'docs/exec-plans/evidence/{task_id}/**'
 
@@ -272,14 +281,18 @@ def governance_suffix_errors(root, start, end, change_id, kind):
     return errors
 
 
-def evidence_exists(root, ref):
+def evidence_exists(root, ref, revision=None):
     if not relative_path(ref):
         return False
+    if revision is not None:
+        return subprocess.run(
+            ['git', 'cat-file', '-e', revision + ':' + ref],
+            cwd=root, capture_output=True).returncode == 0
     path = root / ref
     return path.is_file() and root.resolve() in path.resolve().parents
 
 
-def semantic_result_errors(obj, task, root):
+def semantic_result_errors(obj, task, root, evidence_revision=None):
     errors = []
     if obj['task_identity'] != task['task_identity'] or obj['display_task_id'] != task['id']:
         errors.append('result-task-identity')
@@ -296,11 +309,12 @@ def semantic_result_errors(obj, task, root):
         if set(check_ids) != expected or any(c['result'] != 'PASS' for c in commands):
             errors.append('required-checks-not-pass')
     for c in commands:
-        if c['result'] in ('PASS', 'FAIL') and not evidence_exists(root, c.get('evidence_ref')):
+        if (c['result'] in ('PASS', 'FAIL')
+                and not evidence_exists(root, c.get('evidence_ref'), evidence_revision)):
             errors.append('command-evidence:' + c['check_id'])
     for requirement in obj['requirements_covered']:
         if requirement['status'] in ('PASS', 'APPROVED_NA'):
-            if not evidence_exists(root, requirement.get('evidence_ref')):
+            if not evidence_exists(root, requirement.get('evidence_ref'), evidence_revision):
                 errors.append('requirement-evidence:' + requirement['requirement_id'])
             if requirement.get('tested_commit') != obj['tested_commit']:
                 errors.append('requirement-revision:' + requirement['requirement_id'])
@@ -484,29 +498,41 @@ def integration_record_errors(root, path, record, schema, result_schema, tasks):
                 git(root, 'merge-base', '--is-ancestor', before, after)
             except ValueError:
                 errors.append('integration-ancestry:' + task_id + ':' + label)
-        result_candidates = result_paths(task_id)
-        result_paths_at_commit = [
-            candidate for candidate in result_candidates
-            if subprocess.run(
-                ['git', 'cat-file', '-e', result_commit + ':' + candidate],
-                cwd=root, capture_output=True).returncode == 0
-        ]
+        result_paths_at_commit = result_paths_at_revision(root, task_id, result_commit)
+        result_paths_at_review = result_paths_at_revision(root, task_id, reviewed)
         if len(result_paths_at_commit) != 1:
             errors.append(
                 'integration-result-representation-count:' + task_id + ':'
                 + str(len(result_paths_at_commit)))
-        else:
+        if len(result_paths_at_review) != 1:
+            errors.append(
+                'integration-reviewed-result-representation-count:' + task_id + ':'
+                + str(len(result_paths_at_review)))
+        if len(result_paths_at_commit) == 1 and len(result_paths_at_review) == 1:
             result_path = result_paths_at_commit[0]
+            reviewed_result_path = result_paths_at_review[0]
+            if result_path != reviewed_result_path:
+                errors.append('integration-result-path-mismatch:' + task_id)
+            result_bytes = git(root, 'show', result_commit + ':' + result_path)
+            reviewed_result_bytes = git(root, 'show', reviewed + ':' + reviewed_result_path)
+            if result_bytes != reviewed_result_bytes:
+                errors.append('integration-result-content-mismatch:' + task_id)
             result = load_artifact_text(
-                git(root, 'show', result_commit + ':' + result_path).decode(),
+                result_bytes.decode(),
                 Path(result_path).suffix)
             issues = list(result_schema.iter_errors(result))
             errors.extend('integration-result-schema:' + task_id + ':' + issue.message
                           for issue in issues)
-            if (not issues and (
-                    result.get('display_task_id') != task_id
-                    or result.get('task_identity') != record['task_identity'])):
-                errors.append('integration-result-identity:' + task_id)
+            if not issues:
+                if (result.get('display_task_id') != task_id
+                        or result.get('task_identity') != record['task_identity']):
+                    errors.append('integration-result-identity:' + task_id)
+                if result['task_status'] != 'PASS':
+                    errors.append('integration-result-not-pass:' + task_id)
+                errors.extend(
+                    'integration-result-semantic:' + task_id + ':' + issue
+                    for issue in semantic_result_errors(
+                        result, task, root, evidence_revision=reviewed))
         review_path = f'docs/exec-plans/reviews/{task_id}/GENERAL.json'
         review = json.loads(git(root, 'show', review_commit + ':' + review_path))
         if review.get('status') != 'PASS' or resolve(root, review.get('reviewed_head_sha', '')) != reviewed:

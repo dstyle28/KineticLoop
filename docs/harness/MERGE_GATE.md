@@ -16,7 +16,7 @@ A task PR may merge only when:
 
 Any implementation/configuration/migration/test/contract change after a reviewed SHA invalidates that review. Appending the prescribed review artifact does not invalidate the review when the review-record-only diff check passes.
 
-Merge state is recorded separately from task PASS. A review PASS is not a merge fact, and a merged task does not imply any covered product requirement is PASS.
+Merge state is recorded separately from task PASS. A review PASS is not a merge fact, and a merged task does not imply any covered product requirement is PASS. An integration record is valid only when its result commit contains the same byte-identical result path and content reviewed at `reviewed_head_sha`; that result must be PASS and semantically valid.
 
 Derived-hash bookkeeping is permitted for `CURRENT_DOCUMENT_INDEX.json` and `HARNESS_DOCUMENT_MANIFEST.json`: only checksums/byte counts of already-indexed, actually changed, task-authorized implementation files may refresh. No entry, path, identity, authority metadata or frozen hash may be changed under this allowance. The package manifest may refresh the current index checksum after an allowed refresh. The trusted Git baseline supplies the task write scope and frozen paths; a PR cannot authorize itself by editing its task definition.
 

@@ -30,3 +30,4 @@ Each fixture records the expected validator exit code and diagnostic key. Positi
 23. a selected governance record with `BLOCKED` or `SPEC_CHANGE_REQUIRED` status must not merge even when checks and reviews PASS;
 24. changing a task definition may not remove a specialist review: governance review requirements are the protected-base/head union for every changed task;
 25. an integration record must accept one valid YAML or JSON task result at `result_commit` and reject zero or both representations.
+26. an integration record must reject a result whose path/content changes before review, a non-PASS result, or a schema-valid result that fails semantic checks.

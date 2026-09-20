@@ -31,4 +31,6 @@ Post-merge state is recorded separately under
 review-record commit and merge commit; it never rewrites the pre-review task result.
 The referenced result commit must contain exactly one supported representation,
 `<TASK_ID>_RESULT.yaml` or `<TASK_ID>_RESULT.json`, and that artifact must parse and
-conform to the result schema.
+conform to the result schema. The reviewed head must contain the same representation
+with byte-identical content. The bound result must be PASS and satisfy all semantic
+result checks, including required task checks and revision-bound evidence.
