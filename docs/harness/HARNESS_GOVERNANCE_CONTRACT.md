@@ -9,12 +9,15 @@ schemas and derived document hashes. It may not change Frozen Protocol/DB files 
 `FROZEN_BASELINE.json`. The committed change record must conform to
 `HARNESS_CHANGE.schema.json`, name the protected base and tested revision, enumerate
 the exact changed files and refined packets, and link every executed check to
-committed evidence.
+committed evidence. The selected governance record must have `change_status: PASS`;
+`BLOCKED` and `SPEC_CHANGE_REQUIRED` records are durable outcomes but cannot merge.
 
 Governance reviews use `docs/exec-plans/reviews/<CHANGE_ID>/<TYPE>.json`. A PASS
-GENERAL review is always required. A PROTOCOL review is also required when the
-governance change refines packets whose implementation has protocol impact. After
-the reviewed governance/result revision, only that change's review directory may be
+GENERAL review is always required. For every task definition changed between the
+protected base and reviewed head, the gate requires the union of specialist review
+types declared by both revisions. A governance PR therefore cannot remove its own
+PROTOCOL, DB_CONCURRENCY or SECURITY_DATA_BOUNDARY review requirement. After the
+reviewed governance/result revision, only that change's review directory may be
 modified without rereview.
 
 The CI merge gate derives either exactly one task result or exactly one governance
@@ -26,3 +29,6 @@ Post-merge state is recorded separately under
 `docs/exec-plans/integrations/<TASK_ID>.json` and conforms to
 `INTEGRATION_RECORD.schema.json`. The record binds the task result, reviewed head,
 review-record commit and merge commit; it never rewrites the pre-review task result.
+The referenced result commit must contain exactly one supported representation,
+`<TASK_ID>_RESULT.yaml` or `<TASK_ID>_RESULT.json`, and that artifact must parse and
+conform to the result schema.

@@ -38,9 +38,10 @@ uv run kl check-harness \
 
 Harness-definition PRs use one `docs/exec-plans/governance/HG-xxx.yaml` record
 instead of a task result. The same CI command detects the governance record,
-enforces its fixed path allowlist, verifies packet refinement and requires the
-bound GENERAL review plus PROTOCOL review when a refined task has protocol impact.
-Task results and governance records cannot be mixed in one PR.
+requires PASS status, enforces its fixed path allowlist, verifies packet refinement
+and requires the bound GENERAL review plus the base/head union of specialist reviews
+for every changed task definition. Task results and governance records cannot be
+mixed in one PR.
 
 This requires a clean checkout and committed artifacts. The selected task's required reviews must pass, its result/evidence must exist at the reviewed revision, and both revision suffixes must satisfy the contracts. Historical reviews of other tasks are schema-checked, not compared with the current PR head. The trusted baseline must already contain the Harness files; the initial documentation installation is not a feature PR checked against an empty repository.
 

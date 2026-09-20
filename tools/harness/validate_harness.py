@@ -51,9 +51,9 @@ def unique_mapping(pairs):
     return result
 
 
-def load_artifact(path):
-    if path.suffix == '.json':
-        return json.loads(path.read_text(), object_pairs_hook=unique_mapping)
+def load_artifact_text(text, suffix):
+    if suffix == '.json':
+        return json.loads(text, object_pairs_hook=unique_mapping)
     import yaml
 
     class StrictLoader(yaml.SafeLoader):
@@ -66,9 +66,13 @@ def load_artifact(path):
 
     StrictLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, mapping)
     try:
-        return yaml.load(path.read_text(), Loader=StrictLoader)
+        return yaml.load(text, Loader=StrictLoader)
     except yaml.YAMLError as ex:
         raise ValueError('yaml-parse:' + str(ex)) from ex
+
+
+def load_artifact(path):
+    return load_artifact_text(path.read_text(), path.suffix)
 
 
 def section(text, heading):
@@ -456,7 +460,7 @@ def governance_manifest_errors(root, base_revision, changed):
     return errors
 
 
-def integration_record_errors(root, path, record, schema, tasks):
+def integration_record_errors(root, path, record, schema, result_schema, tasks):
     errors = ['integration-schema:' + path.name + ':' + issue.message
               for issue in schema.iter_errors(record)]
     if errors:
@@ -480,8 +484,29 @@ def integration_record_errors(root, path, record, schema, tasks):
                 git(root, 'merge-base', '--is-ancestor', before, after)
             except ValueError:
                 errors.append('integration-ancestry:' + task_id + ':' + label)
-        result_path = f'docs/exec-plans/completed/{task_id}_RESULT.yaml'
-        git(root, 'cat-file', '-e', result_commit + ':' + result_path)
+        result_candidates = result_paths(task_id)
+        result_paths_at_commit = [
+            candidate for candidate in result_candidates
+            if subprocess.run(
+                ['git', 'cat-file', '-e', result_commit + ':' + candidate],
+                cwd=root, capture_output=True).returncode == 0
+        ]
+        if len(result_paths_at_commit) != 1:
+            errors.append(
+                'integration-result-representation-count:' + task_id + ':'
+                + str(len(result_paths_at_commit)))
+        else:
+            result_path = result_paths_at_commit[0]
+            result = load_artifact_text(
+                git(root, 'show', result_commit + ':' + result_path).decode(),
+                Path(result_path).suffix)
+            issues = list(result_schema.iter_errors(result))
+            errors.extend('integration-result-schema:' + task_id + ':' + issue.message
+                          for issue in issues)
+            if (not issues and (
+                    result.get('display_task_id') != task_id
+                    or result.get('task_identity') != record['task_identity'])):
+                errors.append('integration-result-identity:' + task_id)
         review_path = f'docs/exec-plans/reviews/{task_id}/GENERAL.json'
         review = json.loads(git(root, 'show', review_commit + ':' + review_path))
         if review.get('status') != 'PASS' or resolve(root, review.get('reviewed_head_sha', '')) != reviewed:
@@ -653,7 +678,7 @@ def validate(root, args):
         for path in sorted(integrations.glob('*.json')):
             record = load_artifact(path)
             errors.extend(integration_record_errors(
-                root, path, record, schemas['INTEGRATION'], tasks))
+                root, path, record, schemas['INTEGRATION'], schemas['RESULT'], tasks))
 
     if (args.protected_base or args.reviewed_head or
             getattr(args, 'governance_reviewed_head', None)):
@@ -692,6 +717,8 @@ def validate(root, args):
                 errors.append('governance-record-missing:' + change_id)
             else:
                 _, record = selected
+                if record['change_status'] != 'PASS':
+                    errors.append('governance-change-not-pass:' + change_id)
                 if resolve(root, record['base_commit']) != base_sha:
                     errors.append('governance-base-mismatch:' + change_id)
                 for path in sorted(changed):
@@ -708,6 +735,12 @@ def validate(root, args):
 
                 old_tasks = {task['id']: task for task in
                              json.loads(git(root, 'show', base_sha + ':' + BACKLOG))['tasks']}
+                changed_task_ids = {
+                    task_id for task_id in set(old_tasks) | set(tasks)
+                    if old_tasks.get(task_id) != tasks.get(task_id)
+                }
+                args.governance_changed_task_ids = changed_task_ids
+                args.governance_base_tasks = old_tasks
                 refined = set(record['packets_refined'])
                 observed = set()
                 for task_id in refined:
@@ -789,9 +822,11 @@ def validate(root, args):
             except ValueError as ex:
                 errors.append('governance-review-revision:' + str(ex))
             required = {'GENERAL'}
-            if any('PROTOCOL' in tasks[task_id].get('review_requirements', [])
-                   for task_id in record['packets_refined'] if task_id in tasks):
-                required.add('PROTOCOL')
+            old_tasks = getattr(args, 'governance_base_tasks', {})
+            changed_task_ids = getattr(args, 'governance_changed_task_ids', set())
+            for task_id in changed_task_ids:
+                required.update(old_tasks.get(task_id, {}).get('review_requirements', []))
+                required.update(tasks.get(task_id, {}).get('review_requirements', []))
             types = {
                 review['review_type'] for _, review in governance_reviews
                 if review['status'] == 'PASS' and

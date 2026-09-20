@@ -27,3 +27,6 @@ Each fixture records the expected validator exit code and diagnostic key. Positi
 20. a governance change writing outside its fixed protected-base allowlist, omitting declared files, or changing Frozen authority must fail;
 21. packet refinement must update backlog and packet together and leave concrete checks, resource keys and enforceable write paths;
 22. integration records must bind an existing result, reviewed head, PASS review record and reachable merge commit.
+23. a selected governance record with `BLOCKED` or `SPEC_CHANGE_REQUIRED` status must not merge even when checks and reviews PASS;
+24. changing a task definition may not remove a specialist review: governance review requirements are the protected-base/head union for every changed task;
+25. an integration record must accept one valid YAML or JSON task result at `result_commit` and reject zero or both representations.
