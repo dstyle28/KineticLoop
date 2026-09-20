@@ -1,21 +1,34 @@
 {
   "task_identity": "harness-backlog-v0.2/KL-003",
-  "reviewed_head_sha": "e86b7205ddb33797ebe25c2a60acf5f143340967",
+  "reviewed_head_sha": "ae3f8dc782a603bb5fdc755cf8158196ac7dea16",
   "review_type": "GENERAL",
   "status": "CHANGES_REQUIRED",
   "findings": [
     {
       "severity": "BLOCKER",
-      "title": "UUID subclasses can substitute a different canonical identifier",
-      "location": "src/kineticloop/primitives/ids.py:24",
-      "description": "canonical_id calls the overridable UUID.__str__ dispatch and validates only the returned text. A UUID subclass containing one identifier can return a different, canonical-looking RFC 4122 UUID and canonical_id accepts and returns that different identity. This violates the function contract to return the supplied UUID value in canonical wire form. The added regression closes the non-UUID-text case but does not cover canonical-looking identity substitution.",
-      "required_change": "Derive the wire form from trusted UUID value state without invoking an overridden __str__, and add a regression asserting that a UUID subclass cannot substitute a different canonical UUID. Rerun all KL-003 checks and refresh the result and evidence before rereview."
+      "title": "String subclasses can escape the canonical identifier postcondition",
+      "location": "src/kineticloop/primitives/ids.py:26",
+      "description": "canonical_id accepts a str subclass after validating its underlying text and returns that same subclass instance. A subclass whose stored value is one canonical UUID but whose __str__ returns a different valid canonical UUID is therefore accepted, is reported canonical by is_canonical_id, and leaves the API as an identity-substituting object rather than a trusted plain wire string. It is also rejected later by canonical_json, which requires exact strings, so the public primitives disagree about whether the returned value is canonical.",
+      "required_change": "Require exact str inputs or reconstruct and return a trusted exact str without invoking overrideable subclass methods. Add regressions proving that identifier string subclasses cannot substitute identity and that canonical_id always returns an exact str accepted by canonical serialization."
+    },
+    {
+      "severity": "BLOCKER",
+      "title": "Time subclasses can substitute the parsed instant and canonical output",
+      "location": "src/kineticloop/primitives/times.py:12",
+      "description": "The time API accepts str and datetime subclasses and invokes overrideable methods on them. A str subclass can override endswith and slicing so parse_utc validates one RFC 3339 value but returns a different instant. A datetime subclass can override utcoffset, astimezone, or isoformat so normalize_utc returns the untrusted subclass and canonical_utc emits a different valid timestamp or arbitrary non-RFC text. These paths violate UTC normalization and canonical-format postconditions.",
+      "required_change": "Do not invoke overrideable subclass behavior while establishing canonical time values. Reject unsupported subclasses or copy from trusted base-type state, ensure normalize_utc returns an exact UTC datetime, validate the final canonical_utc postcondition, and add substitution and noncanonical-output regressions for both str and datetime subclasses."
+    },
+    {
+      "severity": "BLOCKER",
+      "title": "Overrideable Mapping.items defeats canonical serialization and hashing",
+      "location": "src/kineticloop/primitives/canonical.py:44",
+      "description": "Canonical JSON admits arbitrary Mapping implementations and trusts their overrideable items method even though the declared JsonValue object type is dict and arrays and scalar types use exact-type admission. A dict subclass can keep one stored payload while returning a different payload, or different payloads on successive calls, from items. canonical_json and canonical_sha256 then serialize or hash substituted and potentially nondeterministic content for the same stored value.",
+      "required_change": "Restrict canonical JSON objects to exact dict values, or establish an equally strong non-overrideable representation boundary, and add regression coverage proving mapping subclasses cannot substitute or vary canonical payload content."
     }
   ],
   "evidence_refs": [
     "docs/exec-plans/completed/KL-003_RESULT.yaml",
-    "docs/exec-plans/evidence/KL-003/checks.log",
-    "docs/exec-plans/evidence/KL-003/remediation-checks-94c0942.log",
+    "docs/exec-plans/evidence/KL-003/remediation-checks-b54750a.log",
     "src/kineticloop/primitives/canonical.py",
     "src/kineticloop/primitives/hashes.py",
     "src/kineticloop/primitives/ids.py",
