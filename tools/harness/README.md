@@ -1,24 +1,39 @@
 # Reference Harness validator
 
-Install the reference validator's dependencies in an isolated environment:
+Install the locked development environment and run the stable checks:
 
 ```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install -r tools/harness/requirements.txt
-.venv/bin/python tools/harness/validate_harness.py
-.venv/bin/python -B -m unittest discover -s tests/harness -v
+uv sync --locked
+uv run kl lint
+uv run kl typecheck
+uv run kl test-unit
+uv run kl test-harness
+uv run kl check-harness
 ```
 
-KL-001 will incorporate these dependencies and commands into uv and CI. This reference implementation does not mark KL-001 complete.
+`uv run kl test-protocol-model` exits with status 2 and `PROTOCOL_MODEL_NOT_RUN`
+until the unavailable model source is supplied. It never creates protocol evidence from
+the Harness fixture suite.
 
 Without Git arguments, the validator checks current hashes, task packets/DAG, and every result/review artifact's schema and local evidence. Both YAML and JSON results are validated; duplicate result representations are rejected. Missing dependencies or malformed artifacts fail validation.
 
 For a task PR, use the trusted integrated baseline and the revision named by the independent review:
 
 ```sh
-.venv/bin/python tools/harness/validate_harness.py \
+uv run kl check-harness \
   --protected-base <integrated-baseline-sha> \
   --task-id KL-001 --reviewed-head <reviewed-implementation-and-result-sha>
+```
+
+Pull-request CI derives the task from the single changed result artifact, reads the
+GENERAL review's `reviewed_head_sha`, verifies that the event head is checked out,
+and invokes the same gate with trusted `pull_request.base.sha` and
+`pull_request.head.sha` values:
+
+```sh
+uv run kl check-harness \
+  --ci-pr-base <pull-request-base-sha> \
+  --ci-pr-head <pull-request-head-sha>
 ```
 
 This requires a clean checkout and committed artifacts. The selected task's required reviews must pass, its result/evidence must exist at the reviewed revision, and both revision suffixes must satisfy the contracts. Historical reviews of other tasks are schema-checked, not compared with the current PR head. The trusted baseline must already contain the Harness files; the initial documentation installation is not a feature PR checked against an empty repository.

@@ -1,0 +1,43 @@
+KL-001 required check evidence
+base_commit: 548ef61b93411d7edf26293681fbb2ba77e65c25
+tested_commit: a438b63f182d476a34e8478f2863bc496c1df7ab
+date: 2026-09-20
+
+Command: uv lock --check
+Result: PASS
+Output: Resolved 21 packages in 2ms
+
+Command: uv run kl lint
+Result: PASS
+Output: All checks passed!
+
+Command: uv run kl typecheck
+Result: PASS
+Output: Success: no issues found in 5 source files
+
+Command: uv run kl test-unit
+Result: PASS
+Output: 3 passed in 0.18s
+
+Command: uv run kl test-harness
+Result: PASS
+Output: 35 passed in 13.26s
+Coverage: positive and negative fixtures for index/frozen-baseline protection,
+packet/backlog checks, hard and conditional DAG edges, resource keys, result and
+review schemas, evidence paths, write scope, derived hashes, tested/reviewed
+ancestry, immutable evidence, and REVIEW_RECORD_ONLY suffixes.
+
+Command: uv run kl check-harness
+Result: PASS
+Output: HARNESS_CHECK_PASS tasks=68 active=66
+
+Command: uv run kl check-harness --protected-base 548ef61b93411d7edf26293681fbb2ba77e65c25 --task-id KL-001
+Result: PASS
+Output: HARNESS_CHECK_PASS tasks=68 active=66
+
+Self-review:
+- git diff --check passed.
+- No frozen Protocol, DB, or FROZEN_BASELINE.json file changed.
+- All implementation paths are within KL-001 scope; the two manifest/index edits
+  contain only authorized derived hash and byte-count refreshes.
+- Product requirement status remains unclaimed.
