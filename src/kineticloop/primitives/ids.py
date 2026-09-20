@@ -20,7 +20,7 @@ def canonical_id(value: str | UUID) -> str:
     distinct input representations cannot enter durable keys.
     """
 
-    if isinstance(value, UUID):
+    if type(value) is UUID:
         text = str(value)
     elif isinstance(value, str):
         text = value
