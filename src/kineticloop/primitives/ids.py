@@ -21,18 +21,18 @@ def canonical_id(value: str | UUID) -> str:
     """
 
     if isinstance(value, UUID):
-        parsed = value
         text = str(value)
     elif isinstance(value, str):
         text = value
-        if _CANONICAL_UUID.fullmatch(text) is None:
-            raise ValueError("identifier must be a lower-case, hyphenated RFC 4122 UUID")
-        try:
-            parsed = UUID(text)
-        except ValueError as error:
-            raise ValueError("identifier is not a valid UUID") from error
     else:
         raise TypeError("identifier must be a string or UUID")
+
+    if _CANONICAL_UUID.fullmatch(text) is None:
+        raise ValueError("identifier must be a lower-case, hyphenated RFC 4122 UUID")
+    try:
+        parsed = UUID(text)
+    except ValueError as error:
+        raise ValueError("identifier is not a valid UUID") from error
 
     if parsed.variant != RFC_4122:
         raise ValueError("identifier must use the RFC 4122 variant")
