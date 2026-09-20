@@ -50,12 +50,54 @@ def test_utc_time_normalized_from_offset_and_rfc3339_inputs() -> None:
 
 
 @pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        ("2026-01-01T00:00:00Z", "2026-01-01T00:00:00.000000Z"),
+        ("2026-01-01T00:00:00+00:00", "2026-01-01T00:00:00.000000Z"),
+        ("2026-01-01T00:00:00.1Z", "2026-01-01T00:00:00.100000Z"),
+        ("2026-01-01T00:00:00.123456+00:00", "2026-01-01T00:00:00.123456Z"),
+        ("2026-01-01T00:00:00.25+05:30", "2025-12-31T18:30:00.250000Z"),
+        ("2026-01-01T00:00:00-00:01", "2026-01-01T00:01:00.000000Z"),
+        ("2026-01-01T00:00:00+23:59", "2025-12-31T00:01:00.000000Z"),
+    ],
+)
+def test_utc_time_normalized_preserves_known_rfc3339_offsets(
+    value: str, expected: str
+) -> None:
+    parsed = parse_utc(value)
+
+    assert type(parsed) is datetime
+    assert parsed.tzinfo is UTC
+    assert canonical_utc(value) == expected
+    assert type(canonical_utc(value)) is str
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "2026-01-01T00:00:00-00:00",
+        "2026-01-01T00:00:00.1-00:00",
+        "2026-01-01T00:00:00.123456-00:00",
+    ],
+)
+def test_invalid_input_rejected_for_unknown_rfc3339_offset(value: str) -> None:
+    with pytest.raises(ValueError, match="instant must have a known UTC offset"):
+        parse_utc(value)
+    with pytest.raises(ValueError, match="instant must have a known UTC offset"):
+        canonical_utc(value)
+
+
+@pytest.mark.parametrize(
     "value",
     [
         datetime(2026, 1, 1),
         "2026-01-01T00:00:00",
         "2026-01-01 00:00:00Z",
         "2026-02-30T00:00:00Z",
+        "2026-01-01T00:00:00+24:00",
+        "2026-01-01T00:00:00+00:60",
+        "2026-01-01T00:00:00.1234567Z",
+        "2026-01-01T00:00:00z",
     ],
 )
 def test_invalid_input_rejected_for_untrusted_times(value: datetime | str) -> None:

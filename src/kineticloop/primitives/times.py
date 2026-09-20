@@ -4,7 +4,8 @@ import re
 from datetime import UTC, datetime, timezone
 
 _RFC3339_INSTANT = re.compile(
-    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$"
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"
+    r"(?:\.\d{1,6})?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$"
 )
 
 
@@ -28,6 +29,8 @@ def parse_utc(value: str) -> datetime:
         raise TypeError("instant must be an RFC 3339 string")
     if _RFC3339_INSTANT.fullmatch(value) is None:
         raise ValueError("instant must be RFC 3339 with an explicit UTC offset")
+    if value.endswith("-00:00"):
+        raise ValueError("instant must have a known UTC offset")
 
     source = value[:-1] + "+00:00" if value.endswith("Z") else value
     try:
