@@ -5,16 +5,17 @@ import importlib.util
 import io
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import tempfile
 import unittest
+from pathlib import Path
 
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location('harness_validator', ROOT / 'tools/harness/validate_harness.py')
+assert spec is not None and spec.loader is not None
 v = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(v)
 
@@ -214,6 +215,15 @@ class ValidatorTests(unittest.TestCase):
         path.write_text(original.replace('## Dependencies\nnone', '## Dependencies\nKL-002'))
         self.check(1, 'packet-deps:KL-001')
 
+    def test_conditional_dependency_and_resource_drift_rejected(self):
+        packet = self.root / 'docs/exec-plans/active/KL-001.md'
+        original = packet.read_text()
+        packet.write_text(original.replace('- none\n\n## Entry conditions',
+                                           '- KL-002 when enabled\n\n## Entry conditions'))
+        self.check(1, 'packet-conditional-deps:KL-001')
+        packet.write_text(original.replace('- harness_core', '- release_evidence'))
+        self.check(1, 'packet-resource-keys:KL-001')
+
     def test_unknown_dependency_and_cycle_fail_cleanly(self):
         p = self.root / v.BACKLOG
         original = json.loads(p.read_text())
@@ -223,6 +233,34 @@ class ValidatorTests(unittest.TestCase):
             dump(p, b)
             refresh(self.root)
             self.check(1, 'unknown-dep:' if dependency == 'KL-999' else 'dag-cycle')
+
+    def test_conditional_dependency_shape_unknown_target_and_cycle_rejected(self):
+        path = self.root / v.BACKLOG
+        original = json.loads(path.read_text())
+        cases = [
+            ({'task_id': 'KL-002', 'condition': ''}, 'invalid-conditional-dep:KL-001'),
+            ({'task_id': 'KL-999', 'condition': 'enabled'}, 'unknown-conditional-dep:KL-001'),
+            ({'task_id': 'KL-002', 'condition': 'enabled'}, 'dag-cycle'),
+        ]
+        for dependency, diagnostic in cases:
+            backlog = copy.deepcopy(original)
+            backlog['tasks'][0]['conditional_depends_on'] = [dependency]
+            dump(path, backlog)
+            refresh(self.root)
+            self.check(1, diagnostic)
+
+    def test_unknown_and_duplicate_resource_keys_rejected(self):
+        path = self.root / v.BACKLOG
+        original = json.loads(path.read_text())
+        for resources, diagnostic in [
+            (['invented_resource'], 'unknown-resource-key:KL-001'),
+            (['harness_core', 'harness_core'], 'duplicate-resource-key:KL-001'),
+        ]:
+            backlog = copy.deepcopy(original)
+            backlog['tasks'][0]['resource_keys'] = resources
+            dump(path, backlog)
+            refresh(self.root)
+            self.check(1, diagnostic)
 
     def test_path_components_enforced_in_real_git_diff(self):
         self.put('src/kineticloop_extra/entry.py')

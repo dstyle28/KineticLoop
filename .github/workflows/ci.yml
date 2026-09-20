@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.17"
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run kl lint
+      - run: uv run kl typecheck
+      - run: uv run kl test-unit
+      - run: uv run kl test-harness
+      - run: uv run kl check-harness

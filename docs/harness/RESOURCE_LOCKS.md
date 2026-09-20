@@ -4,6 +4,7 @@ Worktrees isolate files, not external resources. The orchestrator must serialize
 
 Initial resource keys:
 
+- `harness_core`
 - `migration_chain`
 - `command_contracts`
 - `registry_coordination`

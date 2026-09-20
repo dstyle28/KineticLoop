@@ -4,10 +4,10 @@ import argparse
 import fnmatch
 import hashlib
 import json
-from pathlib import Path
 import re
 import subprocess
 import sys
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 BACKLOG = 'KineticLoop_Harness_Backlog_v0.2.json'
@@ -74,6 +74,12 @@ def section(text, heading):
     return match.group(1) if match else None
 
 
+def subsection(text, heading):
+    match = re.search(r'^### ' + re.escape(heading) + r'\s*\n(.*?)(?=^## |^### |\Z)',
+                      text, re.M | re.S)
+    return match.group(1) if match else None
+
+
 def bullets(text):
     return [line[2:].strip() for line in text.splitlines() if line.startswith('- ')]
 
@@ -90,11 +96,29 @@ def packet_errors(task, text):
     deps = section(text, 'Dependencies')
     if deps is None or set(re.findall(r'KL-[0-9]{3}[A-Z]?', deps.split('### Conditional dependencies')[0])) != set(task['depends_on']):
         errors.append('packet-deps:' + name)
+    conditional = subsection(text, 'Conditional dependencies')
+    expected_conditional = {
+        dependency if isinstance(dependency, str)
+        else dependency['task_id'] + ' when ' + dependency['condition']
+        for dependency in task.get('conditional_depends_on', [])
+    }
+    found_conditional = set() if conditional is None else {
+        value for value in bullets(conditional) if value != 'none'
+    }
+    if conditional is None or found_conditional != expected_conditional:
+        errors.append('packet-conditional-deps:' + name)
     checks = section(text, 'Checks required for this task PR')
     if checks is None or sorted(bullets(checks)) != sorted(task['checks_required_for_this_task']):
         errors.append('packet-checks:' + name)
     if task.get('write_paths_status') == 'ENFORCEABLE':
         scope = section(text, 'Resource / write isolation') or ''
+        resource_block = re.search(r'^Resource keys:\s*\n((?:- [^\n]+\n?)+)', scope, re.M)
+        expected_resources = set(task.get('resource_keys', []))
+        found_resources = set() if not resource_block else {
+            value for value in bullets(resource_block.group(1)) if value != 'none'
+        }
+        if found_resources != expected_resources:
+            errors.append('packet-resource-keys:' + name)
         found = re.search(r'^Expected (?:implementation )?write paths:\s*\n((?:- [^\n]+\n?)+)', scope, re.M)
         if not found or sorted(bullets(found.group(1))) != sorted(task['write_paths']):
             errors.append('packet-write-paths:' + name)
@@ -255,6 +279,8 @@ def validate(root, args):
     identities = [t['task_identity'] for t in backlog['tasks']]
     if len(tasks) != len(backlog['tasks']) or len(identities) != len(set(identities)):
         errors.append('task-identity-duplicate')
+    resource_text = (root / 'docs/harness/RESOURCE_LOCKS.md').read_text()
+    known_resources = set(re.findall(r'^- `([^`]+)`$', resource_text, re.M))
     for task in backlog['tasks']:
         name = task['id']
         packet = root / 'docs/exec-plans/active' / (name + '.md')
@@ -265,15 +291,38 @@ def validate(root, args):
         for dep in task['depends_on']:
             if dep not in tasks:
                 errors.append('unknown-dep:' + name + '->' + dep)
-        for dep in task.get('conditional_depends_on', []):
-            dep = dep if isinstance(dep, str) else dep['task_id']
+        conditional_dependencies = task.get('conditional_depends_on', [])
+        for conditional in conditional_dependencies:
+            if isinstance(conditional, str):
+                dep = conditional
+            elif (isinstance(conditional, dict)
+                  and isinstance(conditional.get('task_id'), str)
+                  and isinstance(conditional.get('condition'), str)
+                  and conditional['condition'].strip()):
+                dep = conditional['task_id']
+            else:
+                errors.append('invalid-conditional-dep:' + name)
+                continue
             if dep not in tasks:
                 errors.append('unknown-conditional-dep:' + name + '->' + dep)
+        resources = task.get('resource_keys', [])
+        if len(resources) != len(set(resources)):
+            errors.append('duplicate-resource-key:' + name)
+        for resource in resources:
+            if resource not in known_resources:
+                errors.append('unknown-resource-key:' + name + '->' + resource)
         if task.get('status') == 'READY' and (task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY' or task.get('write_paths_status') != 'ENFORCEABLE'):
             errors.append('ready-write-scope-unrefined:' + name)
     pending = set(tasks)
     while pending:
-        ready = {name for name in pending if not set(tasks[name]['depends_on']) & pending}
+        ready = set()
+        for name in pending:
+            conditional = tasks[name].get('conditional_depends_on', [])
+            dependencies = set(tasks[name]['depends_on']) | {
+                item if isinstance(item, str) else item.get('task_id') for item in conditional
+            }
+            if not dependencies & pending:
+                ready.add(name)
         if not ready:
             errors.append('dag-cycle')
             break
