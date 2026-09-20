@@ -1,30 +1,27 @@
 {
   "task_identity": "harness-backlog-v0.2/KL-003",
-  "reviewed_head_sha": "8c2eb19257999fc23243be7b26483f9fecf6df79",
+  "reviewed_head_sha": "1b70de9c5f8b98d06a464ba664d559faf498a68a",
   "review_type": "GENERAL",
   "status": "CHANGES_REQUIRED",
   "findings": [
     {
       "severity": "BLOCKER",
-      "title": "Stateful tzinfo can make one exact datetime normalize to different instants",
-      "location": "src/kineticloop/primitives/times.py:15",
-      "description": "The exact-datetime check closes datetime subclass substitution, but an exact datetime still carries an arbitrary tzinfo object. normalize_utc calls value.utcoffset() to validate awareness and then value.astimezone(UTC), which calls the same mutable/overrideable tzinfo again. A tzinfo returning successive offsets of +01:00, +02:00, +03:00, and +04:00 makes two canonical_utc calls on the same unchanged datetime emit 2026-01-02T10:00:00.000000Z and 2026-01-02T08:00:00.000000Z. The validated offset is not the offset used for conversion, so the same accepted value can substitute its instant and violates utc_time_normalized determinism.",
-      "required_change": "Establish normalization from one trusted offset snapshot, or reject timezone providers that cannot satisfy a non-overrideable boundary. Ensure conversion does not consult mutable timezone behavior again after validation, return an exact UTC datetime, and add a regression using an exact datetime with a stateful custom tzinfo."
-    },
-    {
-      "severity": "BLOCKER",
-      "title": "Hash verification accepts digest strings with a substituted presented identity",
-      "location": "src/kineticloop/primitives/hashes.py:29",
-      "description": "verify_canonical_sha256 uses isinstance(expected, str), unlike the exact scalar boundaries used by the other canonical primitives. A str subclass can store the correct 64-character digest while __str__ presents a different invalid digest; the regex and compare_digest consume the stored payload and verification returns True even though str(expected) reports another identity. This recreates the stored/presented identity split already closed for canonical IDs and leaves the hash boundary inconsistent with the exact built-in canonical wire contract.",
-      "required_change": "Require type(expected) is str before validating or comparing the digest, and add a regression proving a str subclass with mismatched stored and presented digest identity is rejected."
+      "title": "Unknown RFC 3339 offset is converted into a known UTC instant",
+      "location": "src/kineticloop/primitives/times.py:27",
+      "description": "parse_utc accepts the RFC 3339 offset spelling -00:00 and datetime.fromisoformat maps it to timezone.utc, so canonical_utc(\"2026-01-01T00:00:00-00:00\") returns \"2026-01-01T00:00:00.000000Z\". RFC 3339 reserves -00:00 to mean that the local offset is unknown. Treating that value as +00:00 invents a known instant from an input that does not establish one, violating the UTC instant normalization boundary and allowing two semantically different inputs to collapse to the same canonical value.",
+      "required_change": "Reject -00:00 before datetime.fromisoformat, while continuing to accept Z and +00:00 as known UTC offsets. Add regressions proving parse_utc and canonical_utc reject the unknown-offset spelling and preserve deterministic exact built-in outputs for accepted offsets."
     }
   ],
   "evidence_refs": [
     "docs/exec-plans/completed/KL-003_RESULT.yaml",
-    "docs/exec-plans/evidence/KL-003/remediation-checks-8dd5b50.log",
+    "docs/exec-plans/evidence/KL-003/remediation-checks-c0db529.log",
+    "src/kineticloop/primitives/canonical.py",
     "src/kineticloop/primitives/hashes.py",
+    "src/kineticloop/primitives/ids.py",
     "src/kineticloop/primitives/times.py",
+    "tests/unit/primitives/test_canonical.py",
     "tests/unit/primitives/test_hashes.py",
+    "tests/unit/primitives/test_ids.py",
     "tests/unit/primitives/test_times.py"
   ],
   "review_contract_version": "v0.2"
