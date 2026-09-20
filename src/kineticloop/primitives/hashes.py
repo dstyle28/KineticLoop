@@ -16,7 +16,10 @@ def sha256_bytes(value: bytes) -> str:
 
     if type(value) is not bytes:
         raise TypeError("hash input must be bytes")
-    return hashlib.sha256(value).hexdigest()
+    digest = hashlib.sha256(value).hexdigest()
+    if type(digest) is not str:
+        raise TypeError("hash digest must be a string")
+    return digest
 
 
 def canonical_sha256(value: object) -> str:
@@ -28,6 +31,9 @@ def canonical_sha256(value: object) -> str:
 def verify_canonical_sha256(value: object, expected: str) -> bool:
     """Compare a canonical payload hash against a canonical digest."""
 
-    if not isinstance(expected, str) or _SHA256_HEX.fullmatch(expected) is None:
+    if type(expected) is not str or _SHA256_HEX.fullmatch(expected) is None:
         raise ValueError("expected hash must be 64 lower-case hexadecimal characters")
-    return hmac.compare_digest(canonical_sha256(value), expected)
+    verified = hmac.compare_digest(canonical_sha256(value), expected)
+    if type(verified) is not bool:
+        raise TypeError("hash verification result must be a boolean")
+    return verified

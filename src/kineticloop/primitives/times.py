@@ -1,7 +1,7 @@
 """UTC instant normalization and canonical RFC 3339 formatting."""
 
 import re
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timezone
 
 _RFC3339_INSTANT = re.compile(
     r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$"
@@ -13,9 +13,12 @@ def normalize_utc(value: datetime) -> datetime:
 
     if type(value) is not datetime:
         raise TypeError("instant must be a datetime")
-    if value.tzinfo is None or value.utcoffset() is None:
-        raise ValueError("instant must include a UTC offset")
-    return value.astimezone(UTC)
+    if type(value.tzinfo) is not timezone:
+        raise ValueError("instant must use a fixed UTC offset")
+    normalized = value.astimezone(UTC)
+    if type(normalized) is not datetime or normalized.tzinfo is not UTC:
+        raise ValueError("instant could not be normalized to UTC")
+    return normalized
 
 
 def parse_utc(value: str) -> datetime:

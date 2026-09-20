@@ -25,6 +25,21 @@ class _SubstitutingDatetime(datetime):
         return "arbitrary output"
 
 
+class _StatefulTimezone(tzinfo):
+    def __init__(self) -> None:
+        self.calls = 0
+
+    def utcoffset(self, value: datetime | None) -> timedelta:
+        self.calls += 1
+        return timedelta(hours=self.calls)
+
+    def dst(self, value: datetime | None) -> timedelta:
+        return timedelta(0)
+
+    def tzname(self, value: datetime | None) -> str:
+        return "stateful"
+
+
 def test_utc_time_normalized_from_offset_and_rfc3339_inputs() -> None:
     source = datetime(2026, 3, 8, 1, 30, 45, 123456, tzinfo=timezone(timedelta(hours=-8)))
 
@@ -66,9 +81,25 @@ def test_invalid_input_rejected_for_datetime_subclass_with_method_substitution()
         canonical_utc(value)
 
 
+def test_invalid_input_rejected_for_stateful_timezone_across_repeated_calls() -> None:
+    provider = _StatefulTimezone()
+    value = datetime(2026, 1, 2, 12, tzinfo=provider)
+
+    for _ in range(2):
+        with pytest.raises(ValueError, match="instant must use a fixed UTC offset"):
+            normalize_utc(value)
+        with pytest.raises(ValueError, match="instant must use a fixed UTC offset"):
+            canonical_utc(value)
+    assert provider.calls == 0
+
+
 def test_utc_time_normalized_returns_exact_builtin_wire_types() -> None:
     instant = normalize_utc(datetime(2026, 1, 1, tzinfo=UTC))
+    parsed = parse_utc("2026-01-01T00:00:00Z")
+    current = utc_now()
     text = canonical_utc(instant)
 
     assert type(instant) is datetime
+    assert type(parsed) is datetime
+    assert type(current) is datetime
     assert type(text) is str
