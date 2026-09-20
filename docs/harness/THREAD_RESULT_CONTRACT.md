@@ -42,7 +42,7 @@ follow_up_tasks: []
 spec_change_request: null
 ```
 
-`tested_commit` is the exact revision on which required task checks ran. Review identity is recorded in the separate review artifact; the result does not need to predict or later copy `reviewed_head_sha`. `merge_commit` is populated by an integration record after merge and is not required to appear in the pre-review result.
+`tested_commit` is the exact revision on which required task checks ran. Review identity is recorded in the separate review artifact; the result does not need to predict or later copy `reviewed_head_sha`. Post-merge state is recorded without mutating this reviewed result at `docs/exec-plans/integrations/<TASK_ID>.json`, conforming to `INTEGRATION_RECORD.schema.json`. The integration record binds the result commit, reviewed head, review-record commit and merge commit.
 
 ## Semantic validity rules
 

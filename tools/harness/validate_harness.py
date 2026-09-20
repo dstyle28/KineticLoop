@@ -13,6 +13,8 @@ ROOT = Path(__file__).resolve().parents[2]
 BACKLOG = 'KineticLoop_Harness_Backlog_v0.2.json'
 INDEX = 'CURRENT_DOCUMENT_INDEX.json'
 MANIFEST = 'HARNESS_DOCUMENT_MANIFEST.json'
+GOVERNANCE_SCHEMA = 'HARNESS_CHANGE.schema.json'
+INTEGRATION_SCHEMA = 'INTEGRATION_RECORD.schema.json'
 
 
 def sha(path):
@@ -153,31 +155,64 @@ def review_patterns(task_id):
     return [f'docs/exec-plans/reviews/{task_id}/**']
 
 
+def governance_record_paths(change_id):
+    return [f'docs/exec-plans/governance/{change_id}.{ext}' for ext in ('yaml', 'json')]
+
+
+def governance_allowed_patterns(change_id):
+    return [
+        BACKLOG,
+        INDEX,
+        MANIFEST,
+        GOVERNANCE_SCHEMA,
+        INTEGRATION_SCHEMA,
+        '.github/workflows/**',
+        'docs/exec-plans/active/**',
+        f'docs/exec-plans/evidence/{change_id}/**',
+        'docs/exec-plans/integrations/**',
+        f'docs/exec-plans/reviews/{change_id}/**',
+        f'docs/exec-plans/governance/{change_id}.yaml',
+        f'docs/exec-plans/governance/{change_id}.json',
+        'docs/harness/**',
+        'tests/harness/**',
+        'tools/harness/**',
+    ]
+
+
 def configure_ci_merge_gate(root, args):
-    """Bind a pull-request checkout to its trusted base, task result and review SHA."""
+    """Bind a PR checkout to one task result or one Harness governance record."""
     if not args.ci_pr_base or not args.ci_pr_head:
         raise ValueError('ci-revisions-required')
     base, head = resolve(root, args.ci_pr_base), resolve(root, args.ci_pr_head)
     if resolve(root, 'HEAD') != head:
         raise ValueError('ci-head-not-checked-out')
     git(root, 'merge-base', '--is-ancestor', base, head)
-    candidates = []
+    task_candidates = []
+    governance_candidates = []
     for path in changed_paths(root, base, head):
         match = re.fullmatch(r'docs/exec-plans/completed/(KL-[0-9]{3}[A-Z]?)_RESULT\.(?:yaml|json)', path)
         if match:
-            candidates.append(match.group(1))
-    if len(set(candidates)) != 1:
-        raise ValueError('ci-task-result-count:' + str(len(set(candidates))))
-    task_id = candidates[0]
-    review_path = root / 'docs/exec-plans/reviews' / task_id / 'GENERAL.json'
+            task_candidates.append(match.group(1))
+        match = re.fullmatch(r'docs/exec-plans/governance/(HG-[0-9]{3})\.(?:yaml|json)', path)
+        if match:
+            governance_candidates.append(match.group(1))
+    task_ids, change_ids = set(task_candidates), set(governance_candidates)
+    if (len(task_ids), len(change_ids)) not in ((1, 0), (0, 1)):
+        raise ValueError(f'ci-change-record-count:task={len(task_ids)},governance={len(change_ids)}')
+    selected = next(iter(task_ids or change_ids))
+    review_path = root / 'docs/exec-plans/reviews' / selected / 'GENERAL.json'
     if not review_path.is_file():
-        raise ValueError('ci-general-review-missing:' + task_id)
+        raise ValueError('ci-general-review-missing:' + selected)
     review = load_artifact(review_path)
     if not isinstance(review, dict) or not isinstance(review.get('reviewed_head_sha'), str):
-        raise ValueError('ci-general-review-invalid:' + task_id)
+        raise ValueError('ci-general-review-invalid:' + selected)
     args.protected_base = base
-    args.task_id = task_id
-    args.reviewed_head = review['reviewed_head_sha']
+    if task_ids:
+        args.task_id = selected
+        args.reviewed_head = review['reviewed_head_sha']
+    else:
+        args.governance_change_id = selected
+        args.governance_reviewed_head = review['reviewed_head_sha']
 
 
 def suffix_errors(root, start, end, task_id, kind):
@@ -202,6 +237,34 @@ def suffix_errors(root, start, end, task_id, kind):
                         errors.append('tested-evidence-not-addition:' + path)
     except ValueError as ex:
         errors.append(kind + '-revision:' + str(ex))
+    return errors
+
+
+def governance_suffix_errors(root, start, end, change_id, kind):
+    """Restrict post-test and post-review governance bookkeeping commits."""
+    errors = []
+    try:
+        start, end = resolve(root, start), resolve(root, end)
+        git(root, 'merge-base', '--is-ancestor', start, end)
+        commits = git(root, 'rev-list', '--reverse', start + '..' + end).decode().splitlines()
+        allowed = (review_patterns(change_id) if kind == 'review'
+                   else governance_record_paths(change_id) + [evidence_pattern(change_id)])
+        for commit in commits:
+            parents = git(root, 'rev-list', '--parents', '-n', '1', commit).decode().split()[1:]
+            if len(parents) != 1:
+                errors.append('governance-' + kind + '-suffix-merge:' + commit)
+                continue
+            for path in changed_paths(root, parents[0], commit):
+                if not matches(path, allowed):
+                    errors.append('governance-' + kind + '-stale-change:' + path)
+                elif kind == 'tested' and matches(path, [evidence_pattern(change_id)]):
+                    exists = subprocess.run(
+                        ['git', 'cat-file', '-e', parents[0] + ':' + path],
+                        cwd=root, capture_output=True)
+                    if exists.returncode == 0:
+                        errors.append('governance-tested-evidence-not-addition:' + path)
+    except ValueError as ex:
+        errors.append('governance-' + kind + '-revision:' + str(ex))
     return errors
 
 
@@ -291,6 +354,143 @@ def hash_refresh_errors(root, base_revision, name, task, changed, protected_path
     return errors
 
 
+def governance_index_errors(root, base_revision, record, changed, protected_paths):
+    """Allow declared additions while preserving every existing authority identity."""
+    old = json.loads(git(root, 'show', base_revision + ':' + INDEX))
+    new = load_artifact(root / INDEX)
+    errors = []
+    if {k: v for k, v in old.items() if k not in ('documents', 'machine_readable')} != {
+            k: v for k, v in new.items() if k not in ('documents', 'machine_readable')}:
+        errors.append('governance-index-metadata')
+    declared_additions = set(record.get('authority_entries_added', []))
+    observed_additions = set()
+    for group in ('documents', 'machine_readable'):
+        before = {entry['path']: entry for entry in old.get(group, [])}
+        after = {entry['path']: entry for entry in new.get(group, [])}
+        removed = set(before) - set(after)
+        if removed:
+            errors.extend('governance-index-removal:' + path for path in sorted(removed))
+        observed_additions |= set(after) - set(before)
+        for path in sorted(set(before) & set(after)):
+            previous, current = before[path], after[path]
+            if previous == current:
+                continue
+            if path in protected_paths:
+                errors.append('governance-index-frozen:' + path)
+                continue
+            if {k: v for k, v in previous.items() if k != 'sha256'} != {
+                    k: v for k, v in current.items() if k != 'sha256'}:
+                errors.append('governance-index-entry:' + path)
+            target = root / path
+            if path not in changed or not target.is_file() or current.get('sha256') != sha(target):
+                errors.append('governance-index-hash:' + path)
+        for path in sorted(set(after) - set(before)):
+            current = after[path]
+            target = root / path
+            if path not in declared_additions:
+                errors.append('governance-index-undeclared-addition:' + path)
+            if path in protected_paths or not target.is_file() or current.get('sha256') != sha(target):
+                errors.append('governance-index-addition-hash:' + path)
+    if observed_additions != declared_additions:
+        errors.append('governance-index-additions-mismatch')
+    return errors
+
+
+def task_index_authority_errors(root, base_revision, task, changed, protected_paths):
+    """Permit a baseline-authorized index owner to add only files in its write scope."""
+    old = json.loads(git(root, 'show', base_revision + ':' + INDEX))
+    new = load_artifact(root / INDEX)
+    errors = []
+    if {k: v for k, v in old.items() if k not in ('documents', 'machine_readable')} != {
+            k: v for k, v in new.items() if k not in ('documents', 'machine_readable')}:
+        errors.append('authority-index-metadata')
+    for group in ('documents', 'machine_readable'):
+        before = {entry['path']: entry for entry in old.get(group, [])}
+        after = {entry['path']: entry for entry in new.get(group, [])}
+        for path in sorted(set(before) - set(after)):
+            errors.append('authority-index-removal:' + path)
+        for path, current in after.items():
+            target = root / path
+            if path in before:
+                previous = before[path]
+                if previous == current:
+                    continue
+                if path in protected_paths:
+                    errors.append('authority-index-frozen:' + path)
+                if {k: v for k, v in previous.items() if k != 'sha256'} != {
+                        k: v for k, v in current.items() if k != 'sha256'}:
+                    errors.append('authority-index-entry:' + path)
+                if path not in changed or not matches(path, task['write_paths']):
+                    errors.append('authority-index-unauthorized:' + path)
+            elif path in protected_paths or not matches(path, task['write_paths']):
+                errors.append('authority-index-addition:' + path)
+            if (path not in before or before[path] != current) and (
+                    not target.is_file() or current.get('sha256') != sha(target)):
+                errors.append('authority-index-hash:' + path)
+    return errors
+
+
+def governance_manifest_errors(root, base_revision, changed):
+    """The delivery manifest may refresh existing changed entries, never change its inventory."""
+    old = json.loads(git(root, 'show', base_revision + ':' + MANIFEST))
+    new = load_artifact(root / MANIFEST)
+    errors = []
+    if {k: v for k, v in old.items() if k != 'files'} != {k: v for k, v in new.items() if k != 'files'}:
+        errors.append('governance-manifest-metadata')
+    before, after = old.get('files', []), new.get('files', [])
+    if [entry['path'] for entry in before] != [entry['path'] for entry in after]:
+        errors.append('governance-manifest-paths')
+        return errors
+    for previous, current in zip(before, after):
+        if previous == current:
+            continue
+        path = previous['path']
+        if {k: v for k, v in previous.items() if k not in ('sha256', 'bytes')} != {
+                k: v for k, v in current.items() if k not in ('sha256', 'bytes')}:
+            errors.append('governance-manifest-entry:' + path)
+        target = root / path
+        if path not in changed or not target.is_file() or current.get('sha256') != sha(target):
+            errors.append('governance-manifest-hash:' + path)
+        if 'bytes' in current and (not target.is_file() or current['bytes'] != target.stat().st_size):
+            errors.append('governance-manifest-bytes:' + path)
+    return errors
+
+
+def integration_record_errors(root, path, record, schema, tasks):
+    errors = ['integration-schema:' + path.name + ':' + issue.message
+              for issue in schema.iter_errors(record)]
+    if errors:
+        return errors
+    task_id = record['display_task_id']
+    task = tasks.get(task_id)
+    if not task or task['task_identity'] != record['task_identity'] or path.stem != task_id:
+        return ['integration-identity:' + path.name]
+    try:
+        result_commit = resolve(root, record['result_commit'])
+        reviewed = resolve(root, record['reviewed_head_sha'])
+        review_commit = resolve(root, record['review_record_commit'])
+        merge_commit = resolve(root, record['merge_commit'])
+        head = resolve(root, 'HEAD')
+        for before, after, label in (
+                (result_commit, reviewed, 'result-to-reviewed'),
+                (reviewed, review_commit, 'reviewed-to-review-record'),
+                (review_commit, merge_commit, 'review-to-merge'),
+                (merge_commit, head, 'merge-to-head')):
+            try:
+                git(root, 'merge-base', '--is-ancestor', before, after)
+            except ValueError:
+                errors.append('integration-ancestry:' + task_id + ':' + label)
+        result_path = f'docs/exec-plans/completed/{task_id}_RESULT.yaml'
+        git(root, 'cat-file', '-e', result_commit + ':' + result_path)
+        review_path = f'docs/exec-plans/reviews/{task_id}/GENERAL.json'
+        review = json.loads(git(root, 'show', review_commit + ':' + review_path))
+        if review.get('status') != 'PASS' or resolve(root, review.get('reviewed_head_sha', '')) != reviewed:
+            errors.append('integration-review-binding:' + task_id)
+    except ValueError as ex:
+        errors.append('integration-revision:' + task_id + ':' + str(ex))
+    return errors
+
+
 def validate(root, args):
     from jsonschema import Draft202012Validator
 
@@ -357,8 +557,14 @@ def validate(root, args):
 
     schemas = {}
     known_requirements = requirement_ids(root)
-    for kind in ('RESULT', 'REVIEW'):
-        schema = load_artifact(root / ('THREAD_' + kind + '.schema.json'))
+    schema_files = {
+        'RESULT': 'THREAD_RESULT.schema.json',
+        'REVIEW': 'THREAD_REVIEW.schema.json',
+        'GOVERNANCE': GOVERNANCE_SCHEMA,
+        'INTEGRATION': INTEGRATION_SCHEMA,
+    }
+    for kind, schema_name in schema_files.items():
+        schema = load_artifact(root / schema_name)
         try:
             Draft202012Validator.check_schema(schema)
         except Exception as ex:
@@ -390,11 +596,22 @@ def validate(root, args):
                 errors.append('result-unknown-or-unassigned-requirement:' + name)
 
     reviews = []
+    governance_reviews = []
     for path in sorted((root / 'docs/exec-plans/reviews').glob('*/*.json')):
         obj = load_artifact(path)
         issues = list(schemas['REVIEW'].iter_errors(obj))
         if issues:
             errors.extend('review-schema:' + path.name + ':' + e.message for e in issues)
+            continue
+        if re.fullmatch(r'HG-[0-9]{3}', path.parent.name):
+            expected_identity = 'harness-governance-v0.1/' + path.parent.name
+            if obj['task_identity'] != expected_identity or path.stem != obj['review_type']:
+                errors.append('governance-review-identity-or-path:' + str(path.relative_to(root)))
+                continue
+            for ref in obj.get('evidence_refs', []):
+                if not evidence_exists(root, ref):
+                    errors.append('governance-review-evidence:' + ref)
+            governance_reviews.append((path, obj))
             continue
         task = tasks.get(path.parent.name)
         if not task or task['task_identity'] != obj['task_identity'] or path.stem != obj['review_type']:
@@ -405,7 +622,41 @@ def validate(root, args):
                 errors.append('review-evidence:' + ref)
         reviews.append((path, obj, task))
 
-    if args.protected_base or args.reviewed_head:
+    governance_records = {}
+    governance_dir = root / 'docs/exec-plans/governance'
+    if governance_dir.exists():
+        for path in sorted(list(governance_dir.glob('HG-*.yaml')) +
+                           list(governance_dir.glob('HG-*.json'))):
+            record = load_artifact(path)
+            issues = list(schemas['GOVERNANCE'].iter_errors(record))
+            if issues:
+                errors.extend('governance-schema:' + path.name + ':' + issue.message
+                              for issue in issues)
+                continue
+            change_id = record['display_change_id']
+            if path.stem != change_id or change_id in governance_records:
+                errors.append('governance-duplicate-or-path:' + path.name)
+            governance_records[change_id] = (path, record)
+            if record['change_identity'] != 'harness-governance-v0.1/' + change_id:
+                errors.append('governance-identity:' + change_id)
+            check_ids = [check['check_id'] for check in record['checks_run']]
+            if len(check_ids) != len(set(check_ids)):
+                errors.append('governance-duplicate-check:' + change_id)
+            for check in record['checks_run']:
+                if check['result'] != 'PASS' or not evidence_exists(root, check['evidence_ref']):
+                    errors.append('governance-check-evidence:' + change_id + ':' + check['check_id'])
+            if record['change_status'] == 'PASS' and record['frozen_impact'] != 'NONE':
+                errors.append('governance-pass-frozen-impact:' + change_id)
+
+    integrations = root / 'docs/exec-plans/integrations'
+    if integrations.exists():
+        for path in sorted(integrations.glob('*.json')):
+            record = load_artifact(path)
+            errors.extend(integration_record_errors(
+                root, path, record, schemas['INTEGRATION'], tasks))
+
+    if (args.protected_base or args.reviewed_head or
+            getattr(args, 'governance_reviewed_head', None)):
         # PR checks use committed artifacts and may not silently ignore working edits.
         if git(root, 'status', '--porcelain', '--untracked-files=all').strip():
             errors.append('git-worktree-not-clean')
@@ -426,10 +677,60 @@ def validate(root, args):
             else:
                 allowed = baseline_task['write_paths'] + result_paths(args.task_id) + review_patterns(args.task_id) + [evidence_pattern(args.task_id)]
                 for path in sorted(changed):
-                    if path in (INDEX, MANIFEST):
+                    if (path == INDEX and
+                            INDEX in baseline_task.get('authority_update_paths', [])):
+                        errors.extend(task_index_authority_errors(
+                            root, base_sha, baseline_task, changed, protected_paths))
+                    elif path in (INDEX, MANIFEST):
                         errors.extend(hash_refresh_errors(root, base_sha, path, baseline_task, changed, protected_paths))
                     elif not matches(path, allowed):
                         errors.append('write-scope:' + args.task_id + ':' + path)
+        elif getattr(args, 'governance_change_id', None):
+            change_id = args.governance_change_id
+            selected = governance_records.get(change_id)
+            if not selected:
+                errors.append('governance-record-missing:' + change_id)
+            else:
+                _, record = selected
+                if resolve(root, record['base_commit']) != base_sha:
+                    errors.append('governance-base-mismatch:' + change_id)
+                for path in sorted(changed):
+                    if not matches(path, governance_allowed_patterns(change_id)):
+                        errors.append('governance-write-scope:' + change_id + ':' + path)
+                reviewed = resolve(root, args.governance_reviewed_head)
+                declared = set(record['files_changed'])
+                actual_at_review = set(changed_paths(root, base_sha, reviewed))
+                if declared != actual_at_review:
+                    errors.append('governance-files-changed-mismatch:' + change_id)
+                errors.extend(governance_index_errors(
+                    root, base_sha, record, changed, protected_paths))
+                errors.extend(governance_manifest_errors(root, base_sha, changed))
+
+                old_tasks = {task['id']: task for task in
+                             json.loads(git(root, 'show', base_sha + ':' + BACKLOG))['tasks']}
+                refined = set(record['packets_refined'])
+                observed = set()
+                for task_id in refined:
+                    task = tasks.get(task_id)
+                    old_task = old_tasks.get(task_id)
+                    if not task or not old_task:
+                        errors.append('governance-refined-task-unknown:' + task_id)
+                        continue
+                    if (old_task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY' and
+                            task.get('packet_refinement') != 'MUST_REFINE_BEFORE_READY'):
+                        observed.add(task_id)
+                    if (task.get('write_paths_status') != 'ENFORCEABLE' or
+                            not task.get('write_paths') or
+                            any('TO_BE_REFINED' in path for path in task.get('write_paths', []))):
+                        errors.append('governance-refinement-incomplete:' + task_id)
+                changed_packets = {
+                    Path(path).stem for path in changed
+                    if re.fullmatch(r'docs/exec-plans/active/KL-[0-9]{3}[A-Z]?\.md', path)
+                }
+                if refined != observed or refined != changed_packets:
+                    errors.append('governance-refined-packets-mismatch:' + change_id)
+        else:
+            errors.append('protected-change-kind-required')
 
     for path, review, task in reviews:
         # Historical reviews describe their own PR, not every later repository HEAD.
@@ -465,6 +766,39 @@ def validate(root, args):
             types = {r['review_type'] for r in relevant if resolve(root, r['reviewed_head_sha']) == resolve(root, args.reviewed_head)}
             if not task or not set(task['review_requirements']) <= types:
                 errors.append('required-reviews-not-pass:' + args.task_id)
+    if getattr(args, 'governance_reviewed_head', None):
+        change_id = args.governance_change_id
+        reviewed = resolve(root, args.governance_reviewed_head)
+        errors.extend(governance_suffix_errors(root, reviewed, 'HEAD', change_id, 'review'))
+        selected = governance_records.get(change_id)
+        if not selected:
+            errors.append('governance-record-missing:' + change_id)
+        else:
+            record_path, record = selected
+            try:
+                if git(root, 'show', reviewed + ':' + str(record_path.relative_to(root))) != record_path.read_bytes():
+                    errors.append('governance-record-not-bound:' + change_id)
+                git(root, 'merge-base', '--is-ancestor',
+                    resolve(root, record['base_commit']), resolve(root, record['tested_commit']))
+                errors.extend(governance_suffix_errors(
+                    root, record['tested_commit'], reviewed, change_id, 'tested'))
+                for check in record['checks_run']:
+                    ref = check['evidence_ref']
+                    if git(root, 'show', reviewed + ':' + ref) != (root / ref).read_bytes():
+                        errors.append('governance-evidence-not-bound:' + ref)
+            except ValueError as ex:
+                errors.append('governance-review-revision:' + str(ex))
+            required = {'GENERAL'}
+            if any('PROTOCOL' in tasks[task_id].get('review_requirements', [])
+                   for task_id in record['packets_refined'] if task_id in tasks):
+                required.add('PROTOCOL')
+            types = {
+                review['review_type'] for _, review in governance_reviews
+                if review['status'] == 'PASS' and
+                resolve(root, review['reviewed_head_sha']) == reviewed
+            }
+            if not required <= types:
+                errors.append('governance-required-reviews-not-pass:' + change_id)
     return errors, len(tasks), sum(t['status'] != 'SUPERSEDED' for t in tasks.values())
 
 
@@ -475,6 +809,7 @@ def main(argv=None, root=ROOT):
     parser.add_argument('--task-id')
     parser.add_argument('--ci-pr-base', help='Pull request base SHA supplied by CI.')
     parser.add_argument('--ci-pr-head', help='Pull request head SHA supplied by CI.')
+    parser.set_defaults(governance_change_id=None, governance_reviewed_head=None)
     args = parser.parse_args(argv)
     try:
         if args.ci_pr_base or args.ci_pr_head:

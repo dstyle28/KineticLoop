@@ -226,7 +226,7 @@
         "docker-compose",
         "test DB reset fixture"
       ],
-      "definition_of_done": "one command starts and resets deterministic Postgres",
+      "definition_of_done": "`uv run kl db-reset` starts a deterministic PostgreSQL instance, resets it idempotently, and proves two worktrees use distinct database and Compose namespaces.",
       "entry_conditions": [
         "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
       ],
@@ -252,24 +252,30 @@
       "task_identity": "harness-backlog-v0.2/KL-002",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_dc_checks"
+        "compose_config_valid",
+        "postgres_ready",
+        "reset_idempotent",
+        "worktree_db_isolated"
       ],
       "resource_keys": [],
-      "write_paths": [],
+      "write_paths": [
+        "compose.yaml",
+        ".env.example",
+        ".github/workflows/db.yml",
+        "pyproject.toml",
+        "uv.lock",
+        "src/kineticloop/db/**",
+        "tools/db/**",
+        "tests/db/**"
+      ],
       "review_requirements": [
         "DB_CONCURRENCY",
         "GENERAL"
       ],
       "conditional_depends_on": [],
-      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
       "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
-      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
-      "write_path_hints": [
-        "pyproject.toml",
-        "tools/harness/**",
-        "tests/harness/**",
-        "docs/harness/**"
-      ]
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-003",
@@ -289,7 +295,7 @@
       "deliverables": [
         "ID/time/hash library"
       ],
-      "definition_of_done": "canonical serialization/time tests pass",
+      "definition_of_done": "focused unit tests prove canonical ID format, UTC normalization, serialization determinism, hash determinism and invalid-input rejection.",
       "entry_conditions": [
         "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
       ],
@@ -310,24 +316,25 @@
       "task_identity": "harness-backlog-v0.2/KL-003",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_pu_checks"
+        "id_format_valid",
+        "utc_time_normalized",
+        "canonical_serialization_deterministic",
+        "hash_deterministic",
+        "invalid_input_rejected"
       ],
       "resource_keys": [],
-      "write_paths": [],
+      "write_paths": [
+        "src/kineticloop/primitives/**",
+        "tests/unit/primitives/**"
+      ],
       "review_requirements": [
         "GENERAL"
       ],
       "conditional_depends_on": [],
       "environment_requirements": [],
-      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
       "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
-      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
-      "write_path_hints": [
-        "pyproject.toml",
-        "tools/harness/**",
-        "tests/harness/**",
-        "docs/harness/**"
-      ]
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-004",
@@ -443,7 +450,7 @@
         "B01-B18",
         "I01-I09 fixture registry"
       ],
-      "definition_of_done": "CI can enumerate every required obligation and default NOT_RUN",
+      "definition_of_done": "CI enumerates every required obligation from current sources, rejects duplicates/missing layers, and initializes every obligation to NOT_RUN without claiming product PASS.",
       "entry_conditions": [
         "KineticLoop_Acceptance_Spec_v1.2.2.json and KineticLoop_Integration_Acceptance_v0.1.json resolve through CURRENT_REQUIREMENT_SET.json"
       ],
@@ -588,21 +595,20 @@
       "resource_keys": [
         "requirement_registry"
       ],
-      "write_paths": [],
+      "write_paths": [
+        "src/kineticloop/acceptance/**",
+        "tools/acceptance/**",
+        "tests/harness/acceptance/**",
+        "tests/fixtures/acceptance/**"
+      ],
       "review_requirements": [
         "GENERAL"
       ],
       "conditional_depends_on": [],
       "environment_requirements": [],
-      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
       "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
-      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
-      "write_path_hints": [
-        "pyproject.toml",
-        "tools/harness/**",
-        "tests/harness/**",
-        "docs/harness/**"
-      ]
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-006",
@@ -625,7 +631,7 @@
         "DOCUMENT_INDEX.json",
         "evidence manifest"
       ],
-      "definition_of_done": "all canonical docs resolved by stable ID; missing model source reported, not hidden",
+      "definition_of_done": "tests resolve every canonical document by stable ID, validate every evidence-manifest path and historical task mapping, and report missing model sources explicitly.",
       "entry_conditions": [
         "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
       ],
@@ -654,21 +660,25 @@
         "release_evidence",
         "user_coordination"
       ],
-      "write_paths": [],
+      "write_paths": [
+        "CURRENT_DOCUMENT_INDEX.json",
+        "HISTORICAL_TASK_ID_MAP.json",
+        "KineticLoop_Evidence_Manifest_v0.1.json",
+        "src/kineticloop/harness/documents/**",
+        "tools/harness/document_index/**",
+        "tests/harness/document_index/**"
+      ],
       "review_requirements": [
         "GENERAL",
         "PROTOCOL"
       ],
       "conditional_depends_on": [],
       "environment_requirements": [],
-      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
       "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
-      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
-      "write_path_hints": [
-        "pyproject.toml",
-        "tools/harness/**",
-        "tests/harness/**",
-        "docs/harness/**"
+      "write_paths_status": "ENFORCEABLE",
+      "authority_update_paths": [
+        "CURRENT_DOCUMENT_INDEX.json"
       ]
     },
     {
@@ -692,7 +702,7 @@
       "deliverables": [
         "role/capability contracts"
       ],
-      "definition_of_done": "test/eval capability cannot be accepted as production actor",
+      "definition_of_done": "unit tests prove the role vocabulary and capability matrix are stable, serialize round-trip, and reject test/evaluation identities as production actors.",
       "entry_conditions": [
         "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
       ],
@@ -713,25 +723,28 @@
       "task_identity": "harness-backlog-v0.2/KL-007",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_pu_checks"
+        "role_vocabulary_valid",
+        "capability_matrix_enforced",
+        "nonproduction_actor_rejected",
+        "serialization_round_trip"
       ],
-      "resource_keys": [],
-      "write_paths": [],
+      "resource_keys": [
+        "authorization_core"
+      ],
+      "write_paths": [
+        "src/kineticloop/identity/**",
+        "tests/unit/identity/**",
+        "docs/contracts/role_vocabulary.md"
+      ],
       "review_requirements": [
         "GENERAL",
         "PROTOCOL"
       ],
       "conditional_depends_on": [],
       "environment_requirements": [],
-      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
       "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
-      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
-      "write_path_hints": [
-        "pyproject.toml",
-        "tools/harness/**",
-        "tests/harness/**",
-        "docs/harness/**"
-      ]
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-008",

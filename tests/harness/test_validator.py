@@ -43,7 +43,13 @@ class ValidatorTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         manifest = json.loads((ROOT / v.MANIFEST).read_text())
-        for name in [e['path'] for e in manifest['files']] + [v.MANIFEST]:
+        index = json.loads((ROOT / v.INDEX).read_text())
+        names = (
+            [entry['path'] for entry in manifest['files']]
+            + [v.MANIFEST]
+            + [entry['path'] for entry in index['documents'] + index['machine_readable']]
+        )
+        for name in dict.fromkeys(names):
             dst = self.root / name
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / name, dst)
@@ -101,6 +107,64 @@ class ValidatorTests(unittest.TestCase):
                'review_type': 'GENERAL', 'review_contract_version': 'v0.2', 'status': 'PASS', 'findings': []}
         dump(self.root / f'docs/exec-plans/reviews/{task_id}/GENERAL.json', obj)
         return self.commit('persist review')
+
+    def governance_review(self, change_id, reviewed, review_type='GENERAL'):
+        obj = {
+            'task_identity': 'harness-governance-v0.1/' + change_id,
+            'reviewed_head_sha': reviewed,
+            'review_type': review_type,
+            'review_contract_version': 'v0.2',
+            'status': 'PASS',
+            'findings': [],
+        }
+        dump(self.root / f'docs/exec-plans/reviews/{change_id}/{review_type}.json', obj)
+
+    def governance_change(self, change_id='HG-999', task_id='KL-008'):
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == task_id)
+        task['packet_refinement'] = 'READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED'
+        task['write_paths_status'] = 'ENFORCEABLE'
+        task['write_paths'] = ['src/kineticloop/shadow/**']
+        dump(backlog_path, backlog)
+        packet = self.root / f'docs/exec-plans/active/{task_id}.md'
+        text = packet.read_text().replace(
+            '**Packet refinement:** MUST_REFINE_BEFORE_READY',
+            '**Packet refinement:** READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED')
+        text = text.replace('- TO_BE_REFINED_BEFORE_READY', '- src/kineticloop/shadow/**')
+        packet.write_text(text)
+        refresh(self.root)
+        tested = self.commit('refine packet')
+        evidence = f'docs/exec-plans/evidence/{change_id}/checks.log'
+        self.put(evidence, 'governance checks passed\n')
+        record_path = self.root / f'docs/exec-plans/governance/{change_id}.yaml'
+        planned = set(self.git('diff', '--name-only', self.base, 'HEAD').splitlines())
+        planned.update((evidence, str(record_path.relative_to(self.root))))
+        record = {
+            'change_identity': 'harness-governance-v0.1/' + change_id,
+            'display_change_id': change_id,
+            'base_commit': self.base,
+            'tested_commit': tested,
+            'change_status': 'PASS',
+            'summary': 'Refine one fixture packet',
+            'packets_refined': [task_id],
+            'files_changed': sorted(planned),
+            'checks_run': [{
+                'check_id': 'governance_contract_valid',
+                'command': 'fixture governance check',
+                'result': 'PASS',
+                'evidence_ref': evidence,
+            }],
+            'frozen_impact': 'NONE',
+            'authority_entries_added': [],
+        }
+        self.save_result(record_path, record)
+        reviewed = self.commit('record governance result')
+        self.governance_review(change_id, reviewed)
+        if 'PROTOCOL' in task.get('review_requirements', []):
+            self.governance_review(change_id, reviewed, 'PROTOCOL')
+        self.commit('persist governance review')
+        return change_id, reviewed
 
     def reviewed_result(self):
         path, obj = self.result()
@@ -189,10 +253,12 @@ class ValidatorTests(unittest.TestCase):
     def test_ready_task_with_unresolved_scope_rejected(self):
         path = self.root / v.BACKLOG
         obj = json.loads(path.read_text())
-        obj['tasks'][1]['status'] = 'READY'
+        task = next(item for item in obj['tasks']
+                    if item.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY')
+        task['status'] = 'READY'
         dump(path, obj)
         refresh(self.root)
-        self.check(1, 'ready-write-scope-unrefined:KL-002')
+        self.check(1, 'ready-write-scope-unrefined:' + task['id'])
 
     def test_duplicate_result_formats_rejected(self):
         self.result('yaml')
@@ -343,6 +409,32 @@ class ValidatorTests(unittest.TestCase):
         self.review(head)
         self.check(1, 'ci-head-not-checked-out',
                    '--ci-pr-base', self.base, '--ci-pr-head', head)
+
+    def test_ci_governance_merge_gate_binds_record_and_reviews(self):
+        self.governance_change()
+        self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_rejects_undeclared_write(self):
+        self.governance_change()
+        self.put('README.md', 'out of governance scope\n')
+        self.commit('unauthorized governance write')
+        self.check(1, 'governance-write-scope:HG-999:README.md',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_rejects_mixed_task_and_governance_records(self):
+        self.governance_change()
+        self.result()
+        self.commit('mix task and governance records')
+        self.check(1, 'ci-change-record-count:task=1,governance=1',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_invalid_integration_record_rejected(self):
+        dump(self.root / 'docs/exec-plans/integrations/KL-001.json', {
+            'task_identity': 'harness-backlog-v0.2/KL-001',
+            'display_task_id': 'KL-001',
+            'integration_status': 'MERGED',
+        })
+        self.check(1, 'integration-schema:KL-001.json:')
 
     def test_code_change_after_review_rejected(self):
         _, _, reviewed = self.reviewed_result()
