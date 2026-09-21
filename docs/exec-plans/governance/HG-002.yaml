@@ -1,0 +1,57 @@
+change_identity: harness-governance-v0.1/HG-002
+display_change_id: HG-002
+base_commit: cc6008f5a591d851dcc5a1dcf526c5393dc66cff
+tested_commit: 4f19fb3d13965c4417091b15a9faaa3d79a76645
+change_status: PASS
+summary: >-
+  Record the durable post-merge integration binding for KL-003, tying its PASS
+  result and independent review to the integrated merge commit without rewriting
+  the pre-review task result.
+packets_refined: []
+files_changed:
+  - docs/exec-plans/evidence/HG-002/checks.log
+  - docs/exec-plans/governance/HG-002.yaml
+  - docs/exec-plans/integrations/KL-003.json
+checks_run:
+  - check_id: harness_structure_valid
+    command: .venv/bin/kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-002/checks.log
+  - check_id: lint_passes
+    command: .venv/bin/ruff check .
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-002/checks.log
+  - check_id: typecheck_passes
+    command: MYPY_CACHE_DIR=/private/tmp/hg-002-mypy .venv/bin/mypy src tools
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-002/checks.log
+  - check_id: unit_tests_pass
+    command: .venv/bin/pytest -q tests/unit
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-002/checks.log
+  - check_id: harness_tests_pass
+    command: .venv/bin/pytest -q tests/harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-002/checks.log
+  - check_id: integration_binding_tests_pass
+    command: .venv/bin/pytest -q tests/harness/test_validator.py -k integration
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-002/checks.log
+  - check_id: diff_clean
+    command: >-
+      git diff --check cc6008f5a591d851dcc5a1dcf526c5393dc66cff
+      4f19fb3d13965c4417091b15a9faaa3d79a76645
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-002/checks.log
+  - check_id: frozen_baseline_unchanged
+    command: >-
+      git diff --exit-code cc6008f5a591d851dcc5a1dcf526c5393dc66cff
+      4f19fb3d13965c4417091b15a9faaa3d79a76645 -- FROZEN_BASELINE.json
+      04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
+      05_KineticLoop_Protocol_v1.2_FROZEN.md
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-002/checks.log
+frozen_impact: NONE
+known_limitations:
+  - HG-002 still requires an independent GENERAL review bound to the governance
+    head before the merge gate can pass.
