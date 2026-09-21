@@ -1,8 +1,8 @@
 task_identity: harness-backlog-v0.2/KL-002
 display_task_id: KL-002
 task_definition_version: v0.2
-base_commit: 7da20cdd24720705f3bb6584921f5413d9aa18f4
-tested_commit: 8f782091a0d918ec5dcd0d391e97537900f5275c
+base_commit: 6a6f04103cc02d32d5eb086d65bbc2a60fbc9f43
+tested_commit: 7b75360af09b38db4de89d82036e9689da4db8be
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -13,19 +13,19 @@ commands_run:
 - check_id: compose_config_valid
   command: uv run python tools/db/verify.py compose-config-valid
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-002/compose_config_valid-8f782091a0d918ec5dcd0d391e97537900f5275c.log
+  evidence_ref: docs/exec-plans/evidence/KL-002/compose_config_valid-7b75360af09b38db4de89d82036e9689da4db8be.log
 - check_id: postgres_ready
   command: uv run python tools/db/verify.py postgres-ready
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-002/postgres_ready-8f782091a0d918ec5dcd0d391e97537900f5275c.log
+  evidence_ref: docs/exec-plans/evidence/KL-002/postgres_ready-7b75360af09b38db4de89d82036e9689da4db8be.log
 - check_id: reset_idempotent
   command: uv run python tools/db/verify.py reset-idempotent
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-002/reset_idempotent-8f782091a0d918ec5dcd0d391e97537900f5275c.log
+  evidence_ref: docs/exec-plans/evidence/KL-002/reset_idempotent-7b75360af09b38db4de89d82036e9689da4db8be.log
 - check_id: worktree_db_isolated
   command: uv run python tools/db/verify.py worktree-db-isolated --peer-root <second-git-worktree>
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-002/worktree_db_isolated-8f782091a0d918ec5dcd0d391e97537900f5275c.log
+  evidence_ref: docs/exec-plans/evidence/KL-002/worktree_db_isolated-7b75360af09b38db4de89d82036e9689da4db8be.log
 requirements_covered: []
 files_changed:
 - .env.example
@@ -41,14 +41,15 @@ files_changed:
 - tests/db/test_cli.py
 - tests/db/test_lifecycle.py
 - tests/db/test_result_writer.py
+- tests/db/test_workflow.py
 - docs/exec-plans/evidence/KL-002/compose_config_valid.log
 - docs/exec-plans/evidence/KL-002/postgres_ready.log
 - docs/exec-plans/evidence/KL-002/reset_idempotent.log
 - docs/exec-plans/evidence/KL-002/worktree_db_isolated.log
-- docs/exec-plans/evidence/KL-002/compose_config_valid-8f782091a0d918ec5dcd0d391e97537900f5275c.log
-- docs/exec-plans/evidence/KL-002/postgres_ready-8f782091a0d918ec5dcd0d391e97537900f5275c.log
-- docs/exec-plans/evidence/KL-002/reset_idempotent-8f782091a0d918ec5dcd0d391e97537900f5275c.log
-- docs/exec-plans/evidence/KL-002/worktree_db_isolated-8f782091a0d918ec5dcd0d391e97537900f5275c.log
+- docs/exec-plans/evidence/KL-002/compose_config_valid-7b75360af09b38db4de89d82036e9689da4db8be.log
+- docs/exec-plans/evidence/KL-002/postgres_ready-7b75360af09b38db4de89d82036e9689da4db8be.log
+- docs/exec-plans/evidence/KL-002/reset_idempotent-7b75360af09b38db4de89d82036e9689da4db8be.log
+- docs/exec-plans/evidence/KL-002/worktree_db_isolated-7b75360af09b38db4de89d82036e9689da4db8be.log
 - docs/exec-plans/completed/KL-002_RESULT.yaml
 decisions:
 - Derive Compose and database namespaces from the resolved physical worktree path.
