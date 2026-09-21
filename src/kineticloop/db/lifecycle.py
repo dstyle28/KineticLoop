@@ -1,0 +1,245 @@
+"""Worktree-isolated PostgreSQL lifecycle driven through Docker Compose."""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+import re
+import subprocess
+import time
+from collections.abc import Callable, Mapping, Sequence
+from dataclasses import asdict, dataclass
+from pathlib import Path
+from urllib.parse import quote
+
+CommandRunner = Callable[..., subprocess.CompletedProcess[str]]
+_SAFE_IDENTIFIER = re.compile(r"^[a-z][a-z0-9_]{0,62}$")
+
+
+class DatabaseLifecycleError(RuntimeError):
+    """Raised when the local database lifecycle cannot complete safely."""
+
+
+@dataclass(frozen=True)
+class DatabaseNamespace:
+    """Names derived from a physical worktree path."""
+
+    project_name: str
+    database_name: str
+
+    @classmethod
+    def for_worktree(cls, worktree_root: Path) -> DatabaseNamespace:
+        resolved = worktree_root.resolve()
+        digest = hashlib.sha256(os.fsencode(resolved)).hexdigest()[:12]
+        parent = re.sub(r"[^a-z0-9]+", "_", resolved.parent.name.lower()).strip("_")
+        label = parent[:20] or "worktree"
+        project_name = f"kl_{label}_{digest}"
+        database_name = f"{project_name}_test"
+        if not _SAFE_IDENTIFIER.fullmatch(project_name):
+            raise DatabaseLifecycleError(f"unsafe Compose project name: {project_name}")
+        if not _SAFE_IDENTIFIER.fullmatch(database_name):
+            raise DatabaseLifecycleError(f"unsafe PostgreSQL database name: {database_name}")
+        return cls(project_name=project_name, database_name=database_name)
+
+
+@dataclass(frozen=True)
+class DatabaseConnection:
+    """Connection details for the reset worktree database."""
+
+    project_name: str
+    database_name: str
+    host: str
+    port: int
+    user: str
+    password: str
+
+    @property
+    def url(self) -> str:
+        encoded_user = quote(self.user, safe="")
+        encoded_password = quote(self.password, safe="")
+        return (
+            f"postgresql://{encoded_user}:{encoded_password}@{self.host}:{self.port}/"
+            f"{self.database_name}"
+        )
+
+    def as_json(self) -> str:
+        payload = asdict(self)
+        payload["url"] = self.url
+        return json.dumps(payload, sort_keys=True)
+
+
+class DatabaseLifecycle:
+    """Manage only the PostgreSQL instance assigned to one worktree."""
+
+    def __init__(
+        self,
+        worktree_root: Path,
+        *,
+        runner: CommandRunner = subprocess.run,
+        environ: Mapping[str, str] | None = None,
+    ) -> None:
+        self.root = worktree_root.resolve()
+        self.compose_file = self.root / "compose.yaml"
+        self.namespace = DatabaseNamespace.for_worktree(self.root)
+        self._runner = runner
+        self._base_environ = dict(os.environ if environ is None else environ)
+        self.user = self._base_environ.get("KINETICLOOP_DB_USER", "kineticloop")
+        self.password = self._base_environ.get(
+            "KINETICLOOP_DB_PASSWORD", "kineticloop-local-only"
+        )
+        if not _SAFE_IDENTIFIER.fullmatch(self.user):
+            raise DatabaseLifecycleError("KINETICLOOP_DB_USER must be a safe SQL identifier")
+
+    @property
+    def environment(self) -> dict[str, str]:
+        env = dict(self._base_environ)
+        env.update(
+            {
+                "COMPOSE_PROJECT_NAME": self.namespace.project_name,
+                "KINETICLOOP_DB_NAME": self.namespace.database_name,
+                "KINETICLOOP_DB_USER": self.user,
+                "KINETICLOOP_DB_PASSWORD": self.password,
+            }
+        )
+        return env
+
+    def compose_command(self, *args: str) -> list[str]:
+        return [
+            "docker",
+            "compose",
+            "--project-name",
+            self.namespace.project_name,
+            "--file",
+            str(self.compose_file),
+            *args,
+        ]
+
+    def _run(
+        self,
+        command: Sequence[str],
+        *,
+        check: bool = True,
+    ) -> subprocess.CompletedProcess[str]:
+        try:
+            return self._runner(
+                list(command),
+                cwd=self.root,
+                env=self.environment,
+                check=check,
+                capture_output=True,
+                text=True,
+            )
+        except FileNotFoundError as error:
+            raise DatabaseLifecycleError(
+                "Docker with the Compose plugin is required for the local test database."
+            ) from error
+        except subprocess.CalledProcessError as error:
+            details = (error.stderr or error.stdout or str(error)).strip()
+            raise DatabaseLifecycleError(f"database command failed: {details}") from error
+
+    def validate_compose(self) -> None:
+        if not self.compose_file.is_file():
+            raise DatabaseLifecycleError(f"missing Compose file: {self.compose_file}")
+        self._run(self.compose_command("config", "--quiet"))
+
+    def start(self, *, timeout_seconds: float = 60.0) -> None:
+        self.validate_compose()
+        self._run(self.compose_command("up", "--detach", "postgres"))
+        deadline = time.monotonic() + timeout_seconds
+        while time.monotonic() < deadline:
+            result = self._run(
+                self.compose_command(
+                    "exec",
+                    "--no-TTY",
+                    "postgres",
+                    "pg_isready",
+                    "--username",
+                    self.user,
+                    "--dbname",
+                    "postgres",
+                ),
+                check=False,
+            )
+            if result.returncode == 0:
+                return
+            time.sleep(0.5)
+        raise DatabaseLifecycleError(
+            f"PostgreSQL did not become ready within {timeout_seconds:g} seconds"
+        )
+
+    def _psql(self, database: str, sql: str) -> subprocess.CompletedProcess[str]:
+        if not _SAFE_IDENTIFIER.fullmatch(database):
+            raise DatabaseLifecycleError(f"unsafe PostgreSQL database name: {database}")
+        return self._run(
+            self.compose_command(
+                "exec",
+                "--no-TTY",
+                "postgres",
+                "psql",
+                "--username",
+                self.user,
+                "--dbname",
+                database,
+                "--set",
+                "ON_ERROR_STOP=1",
+                "--tuples-only",
+                "--no-align",
+                "--command",
+                sql,
+            )
+        )
+
+    def execute_sql(self, sql: str) -> str:
+        return self._psql(self.namespace.database_name, sql).stdout.strip()
+
+    def reset(self, *, timeout_seconds: float = 60.0) -> DatabaseConnection:
+        self.start(timeout_seconds=timeout_seconds)
+        quoted_database = f'"{self.namespace.database_name}"'
+        quoted_user = f'"{self.user}"'
+        self._psql(
+            "postgres",
+            f"DROP DATABASE IF EXISTS {quoted_database} WITH (FORCE);",
+        )
+        self._psql(
+            "postgres",
+            f"CREATE DATABASE {quoted_database} OWNER {quoted_user};",
+        )
+        ready = self._run(
+            self.compose_command(
+                "exec",
+                "--no-TTY",
+                "postgres",
+                "pg_isready",
+                "--username",
+                self.user,
+                "--dbname",
+                self.namespace.database_name,
+            ),
+            check=False,
+        )
+        if ready.returncode != 0:
+            raise DatabaseLifecycleError("reset database failed its readiness probe")
+        return self.connection()
+
+    def connection(self) -> DatabaseConnection:
+        result = self._run(self.compose_command("port", "postgres", "5432"))
+        endpoint = result.stdout.strip().rsplit("\n", maxsplit=1)[-1]
+        host, separator, raw_port = endpoint.rpartition(":")
+        if not separator or not raw_port.isdigit():
+            raise DatabaseLifecycleError(f"unexpected Docker port output: {endpoint!r}")
+        return DatabaseConnection(
+            project_name=self.namespace.project_name,
+            database_name=self.namespace.database_name,
+            host=host.strip("[]") or "127.0.0.1",
+            port=int(raw_port),
+            user=self.user,
+            password=self.password,
+        )
+
+    def destroy(self) -> None:
+        """Remove only this worktree's containers, network, and named volume."""
+        self._run(
+            self.compose_command("down", "--volumes", "--remove-orphans"),
+            check=False,
+        )

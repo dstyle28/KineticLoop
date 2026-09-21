@@ -10,13 +10,13 @@ requires-python = ">=3.12"
 dependencies = ["PyYAML==6.0.3", "jsonschema==4.25.1"]
 
 [project.scripts]
-kl = "kineticloop.cli:main"
+kl = "kineticloop.db.cli:main"
 
 [dependency-groups]
 dev = ["pytest>=8.3,<9", "ruff>=0.11,<1", "mypy>=1.15,<2", "types-PyYAML", "types-jsonschema"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests/unit", "tests/harness"]
+testpaths = ["tests/unit", "tests/harness", "tests/db"]
 addopts = "-ra"
 
 [tool.ruff]

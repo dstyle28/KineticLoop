@@ -1,0 +1,41 @@
+name: PostgreSQL lifecycle
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  kl-002-database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.17"
+          enable-cache: true
+      - run: uv sync --locked
+      - name: Unit, lint, and type checks
+        run: |
+          uv run kl lint
+          uv run kl typecheck
+          uv run pytest tests/db
+      - name: compose_config_valid
+        run: uv run python tools/db/verify.py compose-config-valid
+      - name: postgres_ready
+        run: uv run python tools/db/verify.py postgres-ready
+      - name: reset_idempotent
+        run: uv run python tools/db/verify.py reset-idempotent
+      - name: worktree_db_isolated
+        run: |
+          peer_root="${RUNNER_TEMP}/kl002-peer/KineticLoop"
+          git worktree add --detach "${peer_root}" "${GITHUB_SHA}"
+          uv run python tools/db/verify.py worktree-db-isolated --peer-root "${peer_root}"
+          git worktree remove --force "${peer_root}"
+      - name: Remove worktree database
+        if: always()
+        run: uv run python tools/db/verify.py destroy
