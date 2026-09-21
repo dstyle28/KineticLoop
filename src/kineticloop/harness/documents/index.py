@@ -17,6 +17,22 @@ DOCUMENT_INDEX = "CURRENT_DOCUMENT_INDEX.json"
 EVIDENCE_MANIFEST = "KineticLoop_Evidence_Manifest_v0.1.json"
 HISTORICAL_TASK_MAP = "HISTORICAL_TASK_ID_MAP.json"
 CURRENT_BACKLOG = "KineticLoop_Harness_Backlog_v0.2.json"
+PACKAGE_MANIFEST = "HARNESS_DOCUMENT_MANIFEST.json"
+
+_PACKAGE_BINDINGS = (DOCUMENT_INDEX, HISTORICAL_TASK_MAP, EVIDENCE_MANIFEST)
+_LEGACY_NAMESPACE_SOURCES = {
+    "project-backlog-v0.3": "docs/history/v1.2.2/KineticLoop_Project_Backlog_v0.3.json",
+}
+_FREEZE_EVIDENCE_STATUS = "DECLARED_HISTORICAL_EVIDENCE_PARTIALLY_BUNDLED"
+_HISTORICAL_RESULTS_STATUS = "UNVERIFIED_HISTORICAL_DECLARATION"
+_HISTORICAL_DECLARED_RESULTS = {
+    "original_model_cases": "34/34",
+    "boundary_cases": "18/18",
+    "interleavings": "9/9",
+    "complete_schedules": 589,
+    "visited_prefixes": 2997,
+    "seeded_mutants": "8/8",
+}
 
 _DOCUMENT_ID = re.compile(r"DOC-[A-Z0-9][A-Z0-9.-]*\Z")
 _TASK_IDENTITY = re.compile(r"([a-z0-9][a-z0-9.-]*)/(KL-[0-9]{3}[A-Z]?)\Z")
@@ -183,6 +199,38 @@ class DocumentIndex:
             raise ValidationError([f"unknown-document-id:{document_id}"]) from error
 
 
+def validate_package_manifest(root: Path) -> tuple[str, ...]:
+    """Validate derived package bindings for KL-006's indexed handoff files."""
+    root = root.resolve()
+    data = _load_json(root / PACKAGE_MANIFEST)
+    files = data.get("files")
+    if not isinstance(files, list):
+        raise ValidationError(["package-manifest-files"])
+    entries: dict[str, dict[str, Any]] = {}
+    errors: list[str] = []
+    for entry in files:
+        if not isinstance(entry, dict) or not isinstance(entry.get("path"), str):
+            errors.append("package-manifest-entry-not-object")
+            continue
+        path = entry["path"]
+        if path in entries:
+            errors.append(f"package-manifest-duplicate-path:{path}")
+        entries[path] = entry
+    for path in _PACKAGE_BINDINGS:
+        entry = entries.get(path)
+        if entry is None:
+            errors.append(f"package-manifest-missing-entry:{path}")
+            continue
+        target = _target(root, path)
+        if entry.get("sha256") != _sha256(target):
+            errors.append(f"package-manifest-hash:{path}")
+        if entry.get("bytes") != target.stat().st_size:
+            errors.append(f"package-manifest-bytes:{path}")
+    if errors:
+        raise ValidationError(errors)
+    return _PACKAGE_BINDINGS
+
+
 @dataclass(frozen=True)
 class ManifestFinding:
     artifact_id: str
@@ -195,6 +243,7 @@ class ManifestFinding:
 class EvidenceManifestReport:
     verified_paths: tuple[str, ...]
     missing: tuple[ManifestFinding, ...]
+    historical_claims_status: str
 
 
 def validate_evidence_manifest(root: Path) -> EvidenceManifestReport:
@@ -277,6 +326,12 @@ def validate_evidence_manifest(root: Path) -> EvidenceManifestReport:
 
     if data.get("independently_reproducible_from_this_package") is not False:
         errors.append("evidence-reproducibility-must-remain-false")
+    if data.get("freeze_evidence_status") != _FREEZE_EVIDENCE_STATUS:
+        errors.append("evidence-freeze-status")
+    if data.get("historical_declared_results_status") != _HISTORICAL_RESULTS_STATUS:
+        errors.append("evidence-historical-results-status")
+    if data.get("historical_declared_results") != _HISTORICAL_DECLARED_RESULTS:
+        errors.append("evidence-historical-results-declaration")
     if data.get("production_test_promotion") != "NONE":
         errors.append("evidence-production-promotion")
     required_kinds = {"MODEL_SOURCE", "MODEL_REPORT", "POLICY_FIXTURE", "SOURCE_REVISION"}
@@ -284,7 +339,7 @@ def validate_evidence_manifest(root: Path) -> EvidenceManifestReport:
         errors.append("evidence-missing-model-sources-not-explicit")
     if errors:
         raise ValidationError(errors)
-    return EvidenceManifestReport(tuple(verified), tuple(missing))
+    return EvidenceManifestReport(tuple(verified), tuple(missing), _HISTORICAL_RESULTS_STATUS)
 
 
 class HistoricalTaskMap:
@@ -298,7 +353,11 @@ class HistoricalTaskMap:
         current_namespace = data.get("current_namespace")
         legacy_namespaces = data.get("legacy_namespaces")
         sources = data.get("namespace_sources")
-        if not isinstance(current_namespace, str):
+        current_backlog = _load_json(root / CURRENT_BACKLOG)
+        authoritative_current_namespace = current_backlog.get("task_namespace")
+        if not isinstance(authoritative_current_namespace, str):
+            errors.append("historical-current-backlog-namespace-missing")
+        if current_namespace != authoritative_current_namespace:
             errors.append("historical-current-namespace")
         if not isinstance(legacy_namespaces, list) or not all(
             isinstance(item, str) for item in legacy_namespaces
@@ -329,6 +388,11 @@ class HistoricalTaskMap:
                 errors.append(f"historical-source-missing:{namespace}:{path}")
                 continue
             backlog = _load_json(target)
+            if path == CURRENT_BACKLOG:
+                if namespace != current_namespace:
+                    errors.append("historical-current-source-namespace")
+                if backlog.get("task_namespace") != current_namespace:
+                    errors.append("historical-current-backlog-namespace")
             tasks = backlog.get("tasks")
             if not isinstance(tasks, list):
                 errors.append(f"historical-source-tasks:{namespace}")
@@ -345,6 +409,23 @@ class HistoricalTaskMap:
         expected_namespaces = ({current_namespace} if isinstance(current_namespace, str) else set()) | set(legacy_namespaces)
         if source_namespaces != expected_namespaces:
             errors.append("historical-source-namespace-set")
+        expected_sources = dict(_LEGACY_NAMESPACE_SOURCES)
+        if isinstance(authoritative_current_namespace, str):
+            expected_sources[authoritative_current_namespace] = CURRENT_BACKLOG
+        observed_sources = {
+            source.get("namespace"): source.get("path")
+            for source in sources
+            if isinstance(source, dict) and isinstance(source.get("namespace"), str)
+        }
+        if observed_sources != expected_sources:
+            errors.append("historical-authority-sources")
+        current_sources = [
+            source
+            for source in sources
+            if isinstance(source, dict) and source.get("path") == CURRENT_BACKLOG
+        ]
+        if len(current_sources) != 1:
+            errors.append("historical-current-backlog-source")
 
         reused = data.get("reused_display_ids")
         migrations = data.get("semantic_migrations")

@@ -15,6 +15,7 @@ from kineticloop.harness.documents import (  # noqa: E402
     HistoricalTaskMap,
     ValidationError,
     validate_evidence_manifest,
+    validate_package_manifest,
 )
 
 CHECKS = (
@@ -33,13 +34,18 @@ def main(argv: list[str] | None = None) -> int:
             index = DocumentIndex.load(ROOT)
             for document_id in index.document_ids:
                 index.resolve(document_id)
-            print(f"CURRENT_DOCUMENT_INDEX_PASS resolved={len(index.document_ids)}")
+            package_bindings = validate_package_manifest(ROOT)
+            print(
+                f"CURRENT_DOCUMENT_INDEX_PASS resolved={len(index.document_ids)} "
+                f"package_bindings={len(package_bindings)}"
+            )
         elif args.check == "evidence_manifest_paths_resolve":
             report = validate_evidence_manifest(ROOT)
             print(f"EVIDENCE_MANIFEST_PASS verified_paths={len(report.verified_paths)}")
             for finding in report.missing:
                 location = finding.path or "<no-bound-revision>"
                 print(f"MISSING_{finding.artifact_kind} {finding.artifact_id} path={location}")
+            print(f"HISTORICAL_CLAIMS_STATUS {report.historical_claims_status}")
         else:
             count = HistoricalTaskMap.validate(ROOT)
             print(f"HISTORICAL_TASK_ID_MAP_PASS mappings={count}")

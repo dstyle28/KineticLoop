@@ -19,7 +19,7 @@ def write_json(path: Path, value: object) -> None:
 @pytest.fixture
 def indexed_root(tmp_path: Path) -> Path:
     index = json.loads((ROOT / "CURRENT_DOCUMENT_INDEX.json").read_text())
-    paths = ["CURRENT_DOCUMENT_INDEX.json"]
+    paths = ["CURRENT_DOCUMENT_INDEX.json", "HARNESS_DOCUMENT_MANIFEST.json"]
     paths.extend(entry["path"] for entry in index["documents"])
     paths.extend(entry["path"] for entry in index["machine_readable"])
     manifest = json.loads((ROOT / "KineticLoop_Evidence_Manifest_v0.1.json").read_text())

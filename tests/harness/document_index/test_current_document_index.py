@@ -9,7 +9,11 @@ from pathlib import Path
 import pytest
 from conftest import write_json
 
-from kineticloop.harness.documents import DocumentIndex, ValidationError
+from kineticloop.harness.documents import (
+    DocumentIndex,
+    ValidationError,
+    validate_package_manifest,
+)
 
 
 def test_every_canonical_document_resolves_by_stable_id(indexed_root: Path) -> None:
@@ -29,6 +33,27 @@ def test_filename_is_not_an_authority_alias(indexed_root: Path) -> None:
 
     with pytest.raises(ValidationError, match="unknown-document-id"):
         index.resolve("05_KineticLoop_Protocol_v1.2_FROZEN.md")
+
+
+def test_package_manifest_binds_changed_handoff_files(indexed_root: Path) -> None:
+    assert validate_package_manifest(indexed_root) == (
+        "CURRENT_DOCUMENT_INDEX.json",
+        "HISTORICAL_TASK_ID_MAP.json",
+        "KineticLoop_Evidence_Manifest_v0.1.json",
+    )
+
+
+def test_stale_package_manifest_hash_is_rejected(indexed_root: Path) -> None:
+    path = indexed_root / "HARNESS_DOCUMENT_MANIFEST.json"
+    manifest = json.loads(path.read_text())
+    entry = next(
+        item for item in manifest["files"] if item["path"] == "CURRENT_DOCUMENT_INDEX.json"
+    )
+    entry["sha256"] = "0" * 64
+    write_json(path, manifest)
+
+    with pytest.raises(ValidationError, match="package-manifest-hash:CURRENT_DOCUMENT_INDEX"):
+        validate_package_manifest(indexed_root)
 
 
 @pytest.mark.parametrize("mutation,diagnostic", [

@@ -8,6 +8,7 @@ from .index import (
     ResolvedDocument,
     ValidationError,
     validate_evidence_manifest,
+    validate_package_manifest,
 )
 
 __all__ = [
@@ -18,4 +19,5 @@ __all__ = [
     "ResolvedDocument",
     "ValidationError",
     "validate_evidence_manifest",
+    "validate_package_manifest",
 ]
