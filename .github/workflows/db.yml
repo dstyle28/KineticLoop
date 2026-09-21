@@ -2,6 +2,9 @@ name: PostgreSQL lifecycle
 
 on:
   push:
+    paths-ignore:
+      - docs/exec-plans/completed/KL-002_RESULT.yaml
+      - docs/exec-plans/evidence/KL-002/**
   pull_request:
 
 permissions:
@@ -25,17 +28,63 @@ jobs:
           uv run kl typecheck
           uv run pytest tests/db
       - name: compose_config_valid
-        run: uv run python tools/db/verify.py compose-config-valid
+        run: |
+          mkdir -p docs/exec-plans/evidence/KL-002
+          uv run python tools/db/verify.py compose-config-valid \
+            | tee docs/exec-plans/evidence/KL-002/compose_config_valid.log
       - name: postgres_ready
-        run: uv run python tools/db/verify.py postgres-ready
+        run: >-
+          uv run python tools/db/verify.py postgres-ready
+          | tee docs/exec-plans/evidence/KL-002/postgres_ready.log
       - name: reset_idempotent
-        run: uv run python tools/db/verify.py reset-idempotent
+        run: >-
+          uv run python tools/db/verify.py reset-idempotent
+          | tee docs/exec-plans/evidence/KL-002/reset_idempotent.log
       - name: worktree_db_isolated
         run: |
           peer_root="${RUNNER_TEMP}/kl002-peer/KineticLoop"
           git worktree add --detach "${peer_root}" "${GITHUB_SHA}"
-          uv run python tools/db/verify.py worktree-db-isolated --peer-root "${peer_root}"
+          uv run python tools/db/verify.py worktree-db-isolated --peer-root "${peer_root}" \
+            | tee docs/exec-plans/evidence/KL-002/worktree_db_isolated.log
           git worktree remove --force "${peer_root}"
       - name: Remove worktree database
         if: always()
         run: uv run python tools/db/verify.py destroy
+      - name: Preserve revision-bound check logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: kl-002-evidence-${{ github.sha }}
+          path: docs/exec-plans/evidence/KL-002/*.log
+          if-no-files-found: error
+
+  record-evidence:
+    if: >-
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/codex/kl-002-postgres-lifecycle'
+    needs: kl-002-database
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.17"
+          enable-cache: true
+      - run: uv sync --locked
+      - uses: actions/download-artifact@v4
+        with:
+          name: kl-002-evidence-${{ github.sha }}
+          path: docs/exec-plans/evidence/KL-002
+      - name: Commit revision-bound task result
+        env:
+          TESTED_COMMIT: ${{ github.sha }}
+        run: |
+          uv run python tools/db/write_result.py --tested-commit "${TESTED_COMMIT}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/exec-plans/evidence/KL-002 docs/exec-plans/completed/KL-002_RESULT.yaml
+          git commit -m "chore: record KL-002 evidence"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
