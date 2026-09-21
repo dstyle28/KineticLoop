@@ -1,0 +1,51 @@
+task_identity: harness-backlog-v0.2/KL-007
+display_task_id: KL-007
+task_definition_version: v0.2
+base_commit: 7da20cdd24720705f3bb6584921f5413d9aa18f4
+tested_commit: 94ecc00a2748fc85e224ccb6789e7d69049d4ad7
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Added a closed subject/test/admin/evaluation role vocabulary, immutable derived
+  capability matrix, strict versioned identity serialization, and exact production
+  capability guards. Test and evaluation identities cannot cross a production actor
+  boundary, serialized input cannot assert capabilities, and the contract does not
+  replace authentication or command-specific authorization guards.
+commands_run:
+  - check_id: role_vocabulary_valid
+    command: .venv/bin/pytest tests/unit/identity/test_roles.py::test_role_vocabulary_valid -q
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-007/checks-94ecc00.log
+  - check_id: capability_matrix_enforced
+    command: .venv/bin/pytest tests/unit/identity/test_roles.py::test_capability_matrix_enforced -q
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-007/checks-94ecc00.log
+  - check_id: nonproduction_actor_rejected
+    command: .venv/bin/pytest tests/unit/identity/test_roles.py -q -k nonproduction_actor_rejected
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-007/checks-94ecc00.log
+  - check_id: serialization_round_trip
+    command: .venv/bin/pytest tests/unit/identity/test_roles.py::test_serialization_round_trip -q
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-007/checks-94ecc00.log
+requirements_covered: []
+files_changed:
+  - src/kineticloop/identity/__init__.py
+  - src/kineticloop/identity/roles.py
+  - tests/unit/identity/test_roles.py
+  - docs/contracts/role_vocabulary.md
+  - docs/exec-plans/evidence/KL-007/checks-c1d5145.log
+  - docs/exec-plans/evidence/KL-007/checks-94ecc00.log
+  - docs/exec-plans/completed/KL-007_RESULT.yaml
+decisions:
+  - Capabilities are derived only from the immutable role matrix and are excluded from serialized identity payloads.
+  - Subject and admin have distinct production capabilities; production boundaries require the exact capability rather than a generic production classification.
+  - Test simulation and isolated evaluation remain nonproduction categories with no capability promotion path.
+  - Role capabilities are coarse classification markers and never replace trusted role binding, command policy, authorization, scope, or transaction guards.
+known_limitations:
+  - Authentication and trusted persistence of role assignments remain outside this vocabulary-only task.
+  - Production issuance and auto-activation remain disabled pending their independent release gates.
+follow_up_tasks: []
+spec_change_request: null

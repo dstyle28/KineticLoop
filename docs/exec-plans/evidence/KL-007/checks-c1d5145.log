@@ -1,0 +1,63 @@
+task_identity: harness-backlog-v0.2/KL-007
+tested_commit: c1d5145b63c21af899d83516950ad70174806533
+base_commit: cc6008f5a591d851dcc5a1dcf526c5393dc66cff
+tested_at: 2026-09-20T18:37:14-07:00
+
+check_id: role_vocabulary_valid
+command: .venv/bin/pytest tests/unit/identity/test_roles.py::test_role_vocabulary_valid -q
+exit_code: 0
+output:
+  .                                                                        [100%]
+  1 passed in 0.01s
+
+check_id: capability_matrix_enforced
+command: .venv/bin/pytest tests/unit/identity/test_roles.py::test_capability_matrix_enforced -q
+exit_code: 0
+output:
+  .                                                                        [100%]
+  1 passed in 0.01s
+
+check_id: nonproduction_actor_rejected
+command: .venv/bin/pytest tests/unit/identity/test_roles.py -q -k nonproduction_actor_rejected
+exit_code: 0
+output:
+  ..                                                                       [100%]
+  2 passed, 11 deselected in 0.01s
+
+check_id: serialization_round_trip
+command: .venv/bin/pytest tests/unit/identity/test_roles.py::test_serialization_round_trip -q
+exit_code: 0
+output:
+  .                                                                        [100%]
+  1 passed in 0.01s
+
+additional_verification: unit_suite
+command: .venv/bin/kl test-unit
+exit_code: 0
+output:
+  collected 67 items
+  tests/unit/identity/test_roles.py .............                          [ 19%]
+  tests/unit/primitives/test_canonical.py ...........                      [ 35%]
+  tests/unit/primitives/test_hashes.py ........                            [ 47%]
+  tests/unit/primitives/test_ids.py .........                              [ 61%]
+  tests/unit/primitives/test_times.py .......................              [ 95%]
+  tests/unit/test_cli.py ...                                               [100%]
+  67 passed in 0.54s
+
+additional_verification: lint
+command: .venv/bin/kl lint
+exit_code: 0
+output:
+  All checks passed!
+
+additional_verification: typecheck
+command: .venv/bin/kl typecheck
+exit_code: 0
+output:
+  Success: no issues found in 17 source files
+
+additional_verification: task_scoped_harness
+command: .venv/bin/kl check-harness --protected-base cc6008f5a591d851dcc5a1dcf526c5393dc66cff --task-id KL-007
+exit_code: 0
+output:
+  HARNESS_CHECK_PASS tasks=68 active=66
