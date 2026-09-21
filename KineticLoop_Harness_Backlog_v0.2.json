@@ -363,7 +363,7 @@
         "error enum",
         "receipt base models"
       ],
-      "definition_of_done": "a closed exact-wire error registry and strict S02 receipt base contracts preserve frozen command identity and replay semantics; same identity plus the same request hash returns the original result identity with replayed=true, the generic same identity plus a different request hash is rejected as IDEMPOTENCY_KEY_REUSE_WITH_DIFFERENT_PAYLOAD, ambiguous/invalid wire inputs are rejected, and no receipt or model-supplied field grants command authority",
+      "definition_of_done": "a closed exact-wire error registry and strict S02 receipt base contracts preserve frozen command identity and replay semantics; same identity plus the same request hash returns the original result identity with replayed=true; same identity plus a different request hash preserves the command-bound frozen error identity, using IDEMPOTENCY_KEY_REUSE_WITH_DIFFERENT_PAYLOAD at the generic DB section 3 boundary and IDEMPOTENCY_CONFLICT for BeginBuild, WriteCandidate, and RevokeArtifact as assigned by frozen DB section 11; structurally invalid wire inputs are rejected; and no receipt or model-supplied field grants command authority",
       "entry_conditions": [
         "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available through CURRENT_DOCUMENT_INDEX.json",
         "KL-003 has a PASS result bound by a MERGED integration record"
