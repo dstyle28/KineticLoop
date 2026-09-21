@@ -34,3 +34,12 @@ The referenced result commit must contain exactly one supported representation,
 conform to the result schema. The reviewed head must contain the same representation
 with byte-identical content. The bound result must be PASS and satisfy all semantic
 result checks, including required task checks and revision-bound evidence.
+
+The integration revision chain is intentionally asymmetric. `result_commit` must
+be a Git ancestor of `reviewed_head_sha`, and `reviewed_head_sha` must be a Git
+ancestor of `review_record_commit`. `merge_commit` must be a Git ancestor of the
+current HEAD. Only the `review_record_commit` to `merge_commit` edge has a squash
+merge exception: that edge is valid when it has normal Git ancestry or when the
+two commits' complete Git tree object IDs are exactly equal. The validator does
+not accept matching path subsets, selected-file content comparisons, patch
+equivalence, or any other near match in place of complete tree identity.

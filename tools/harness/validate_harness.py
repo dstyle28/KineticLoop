@@ -143,6 +143,11 @@ def resolve(root, ref):
     return git(root, 'rev-parse', '--verify', '--end-of-options', ref + '^{commit}').decode().strip()
 
 
+def tree_object(root, commit):
+    """Return the complete Git tree object ID for an already-resolved commit."""
+    return git(root, 'rev-parse', '--verify', '--end-of-options', commit + '^{tree}').decode().strip()
+
+
 def changed_paths(root, before, after):
     return git(root, 'diff', '--no-renames', '--name-only', '-z', before, after, '--').decode().split('\0')[:-1]
 
@@ -492,12 +497,16 @@ def integration_record_errors(root, path, record, schema, result_schema, tasks):
         for before, after, label in (
                 (result_commit, reviewed, 'result-to-reviewed'),
                 (reviewed, review_commit, 'reviewed-to-review-record'),
-                (review_commit, merge_commit, 'review-to-merge'),
                 (merge_commit, head, 'merge-to-head')):
             try:
                 git(root, 'merge-base', '--is-ancestor', before, after)
             except ValueError:
                 errors.append('integration-ancestry:' + task_id + ':' + label)
+        try:
+            git(root, 'merge-base', '--is-ancestor', review_commit, merge_commit)
+        except ValueError:
+            if tree_object(root, review_commit) != tree_object(root, merge_commit):
+                errors.append('integration-ancestry-or-exact-tree:' + task_id + ':review-to-merge')
         result_paths_at_commit = result_paths_at_revision(root, task_id, result_commit)
         result_paths_at_review = result_paths_at_revision(root, task_id, reviewed)
         if len(result_paths_at_commit) != 1:
