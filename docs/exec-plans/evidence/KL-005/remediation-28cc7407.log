@@ -1,0 +1,56 @@
+KL-005 revision-bound remediation verification
+==============================================
+
+base_commit: 28cc7407f1d4184cf3407db0bcd09794cb60fa5b
+tested_commit: 28cc7407f1d4184cf3407db0bcd09794cb60fa5b
+worktree_status_before_checks: clean
+
+The test environment was created from the repository lock with:
+UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv sync --python /Users/davetian/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3
+
+requirement_sources_parse
+-------------------------
+command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_requirement_sources_parse -q
+result: PASS
+output: 1 passed in 0.02s
+
+obligation_ids_unique
+---------------------
+command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_obligation_ids_unique -q
+result: PASS
+output: 1 passed in 0.02s
+
+all_expected_layers_registered
+------------------------------
+command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_all_expected_layers_registered -q
+result: PASS
+output: 1 passed in 0.02s
+
+default_status_not_run
+----------------------
+command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_default_status_not_run -q
+result: PASS
+output: 1 passed in 0.02s
+
+integration_obligations_registered
+----------------------------------
+command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_integration_obligations_registered -q
+result: PASS
+output: 1 passed in 0.02s
+
+Supporting source-binding and registry audit on the same tested commit
+---------------------------------------------------------------------
+fixture command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run python tools/acceptance/generate_fixtures.py --check
+fixture result: PASS (CURRENT: tests/fixtures/acceptance/requirement_registry.json)
+requirement_set_id: KINETICLOOP_HARNESS_REQSET_V1_2_2_INTEGRATION_V0_1
+source_binding: KineticLoop_Acceptance_Spec_v1.2.2.json 32481bd6eb29fe0d8ce1e5ec3cb9b90821743cc5708343e4695a446f51e78892 acceptance
+source_binding: KineticLoop_Integration_Acceptance_v0.1.json 1b4ea126ed5cc8c45adde29a4db45fec96e9949267b21baf47934b4af69bf473 integration
+registry_counts: original=67 boundary=18 interleaving=9 integration=20 total=114
+unique_statuses: NOT_RUN
+product_requirement_pass_claims: 0
+
+Scope confirmation
+------------------
+- The tested revision is the exact requested current master commit.
+- No implementation, test, fixture, contract, index, migration, or frozen-spec file changed before verification.
+- This evidence records task-check PASS only. All 114 product obligations remain NOT_RUN.

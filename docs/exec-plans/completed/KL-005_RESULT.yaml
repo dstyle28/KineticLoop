@@ -1,38 +1,38 @@
 task_identity: harness-backlog-v0.2/KL-005
 display_task_id: KL-005
 task_definition_version: v0.2
-base_commit: cc6008f5a591d851dcc5a1dcf526c5393dc66cff
-tested_commit: a6ab8a474bb26b74162e6f6811a8a9f58f83deeb
+base_commit: 28cc7407f1d4184cf3407db0bcd09794cb60fa5b
+tested_commit: 28cc7407f1d4184cf3407db0bcd09794cb60fa5b
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
 integration_status: UNMERGED
 summary: >-
-  Added a source-hash-bound acceptance registry and deterministic fixture generator for
-  67 original layer obligations, B01-B18, I01-I09, and 20 integration layer obligations.
-  The registry rejects duplicate or missing identities/layers and initializes all 114
-  entries to NOT_RUN without claiming product requirement PASS.
+  Revalidated the existing source-hash-bound acceptance registry and deterministic
+  fixture generator on current master. All five KL-005 packet checks pass for 67 original
+  layer obligations, B01-B18, I01-I09, and 20 integration layer obligations; all 114
+  generated entries remain NOT_RUN and no product requirement PASS is claimed.
 commands_run:
   - check_id: requirement_sources_parse
     command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_requirement_sources_parse -q
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-005/checks.log
+    evidence_ref: docs/exec-plans/evidence/KL-005/remediation-28cc7407.log
   - check_id: obligation_ids_unique
     command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_obligation_ids_unique -q
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-005/checks.log
+    evidence_ref: docs/exec-plans/evidence/KL-005/remediation-28cc7407.log
   - check_id: all_expected_layers_registered
     command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_all_expected_layers_registered -q
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-005/checks.log
+    evidence_ref: docs/exec-plans/evidence/KL-005/remediation-28cc7407.log
   - check_id: default_status_not_run
     command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_default_status_not_run -q
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-005/checks.log
+    evidence_ref: docs/exec-plans/evidence/KL-005/remediation-28cc7407.log
   - check_id: integration_obligations_registered
     command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_integration_obligations_registered -q
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-005/checks.log
+    evidence_ref: docs/exec-plans/evidence/KL-005/remediation-28cc7407.log
 requirements_covered:
   - {requirement_id: E01@PU, status: NOT_RUN, evidence_ref: null}
   - {requirement_id: E01@E2E, status: NOT_RUN, evidence_ref: null}
@@ -163,19 +163,14 @@ requirements_covered:
   - {requirement_id: INT-A12@WF, status: NOT_RUN, evidence_ref: null}
   - {requirement_id: INT-A12@E2E, status: NOT_RUN, evidence_ref: null}
 files_changed:
-  - src/kineticloop/acceptance/__init__.py
-  - src/kineticloop/acceptance/registry.py
-  - tools/acceptance/generate_fixtures.py
-  - tests/harness/acceptance/__init__.py
-  - tests/harness/acceptance/test_registry.py
-  - tests/fixtures/acceptance/requirement_registry.json
-  - docs/exec-plans/evidence/KL-005/checks.log
+  - docs/exec-plans/evidence/KL-005/remediation-28cc7407.log
   - docs/exec-plans/completed/KL-005_RESULT.yaml
 decisions:
-  - Verify indexed source SHA-256 identities before deriving any registry entry.
-  - Preserve B and I stable requirement IDs while carrying their declared required layers; expand only original and integration obligations into the layer-qualified identities defined by the current requirement set.
-  - Generate NOT_RUN unconditionally rather than translating source specification-state labels into evidence claims.
+  - Preserve the merged KL-005 implementation unchanged; this remediation supplies only new revision-bound evidence and result bookkeeping.
+  - Bind the rerun to the exact current-master SHA and retain the registry's indexed SHA-256 source identities.
+  - Keep all 114 product obligations NOT_RUN because task-check PASS is not product requirement PASS.
 known_limitations:
-  - This task registers obligations and fixtures only; it does not execute or pass any product requirement.
-follow_up_tasks: []
+  - This remediation revalidates registration and fixture generation only; it does not execute or pass any product requirement.
+follow_up_tasks:
+  - Run a fresh independent GENERAL review against the forthcoming remediation PR head.
 spec_change_request: null
