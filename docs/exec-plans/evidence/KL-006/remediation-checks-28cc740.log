@@ -1,0 +1,42 @@
+KL-006 durable-review remediation verification evidence
+task_identity: harness-backlog-v0.2/KL-006
+base_commit: 28cc7407f1d4184cf3407db0bcd09794cb60fa5b
+tested_commit: 28cc7407f1d4184cf3407db0bcd09794cb60fa5b
+
+The required KL-006 packet checks were rerun against exact master commit
+28cc7407f1d4184cf3407db0bcd09794cb60fa5b. This remediation changes only the
+durable task result and adds this immutable evidence file; it does not change
+implementation or authority artifacts.
+
+$ UV_CACHE_DIR=/private/tmp/kl006-uv-cache /private/tmp/kl001-bootstrap/bin/uv run python tools/harness/document_index/check.py current_document_index_resolves
+CURRENT_DOCUMENT_INDEX_PASS resolved=13 package_bindings=3
+
+$ UV_CACHE_DIR=/private/tmp/kl006-uv-cache /private/tmp/kl001-bootstrap/bin/uv run python tools/harness/document_index/check.py evidence_manifest_paths_resolve
+EVIDENCE_MANIFEST_PASS verified_paths=3
+MISSING_MODEL_SOURCE canonical-protocol-model-runner path=protocol_model/run_model.py
+MISSING_MODEL_REPORT canonical-protocol-model-report-json path=protocol_model/reports/model_report.json
+MISSING_POLICY_FIXTURE canonical-protocol-model-fixtures path=protocol_model/fixtures.json
+MISSING_POLICY_FIXTURE canonical-protocol-model-policies path=protocol_model/policies.json
+MISSING_SOURCE_REVISION protocol-model-source-revision path=<no-bound-revision>
+HISTORICAL_CLAIMS_STATUS UNVERIFIED_HISTORICAL_DECLARATION
+
+$ UV_CACHE_DIR=/private/tmp/kl006-uv-cache /private/tmp/kl001-bootstrap/bin/uv run python tools/harness/document_index/check.py historical_task_id_map_valid
+HISTORICAL_TASK_ID_MAP_PASS mappings=10
+
+Frozen authority identity and hash verification:
+CURRENT_DOCUMENT_INDEX.json records:
+DOC-PROTOCOL-V1.2 path=05_KineticLoop_Protocol_v1.2_FROZEN.md sha256=00bf3eb2e0e2e00867d114b42e147a2341d98454f08629c849ebf0b4c0c4916c status=FROZEN
+DOC-DB-V0.2 path=04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md sha256=2158a80bdc0e16eaf9c2cd835f704bdc2f346565dc35cb0c1fc1a8c00a1b8eda status=FROZEN
+
+Actual repository hashes:
+05_KineticLoop_Protocol_v1.2_FROZEN.md sha256=00bf3eb2e0e2e00867d114b42e147a2341d98454f08629c849ebf0b4c0c4916c
+04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md sha256=2158a80bdc0e16eaf9c2cd835f704bdc2f346565dc35cb0c1fc1a8c00a1b8eda
+FROZEN_BASELINE.json sha256=bb8cd79942d3ca735e38e0363d8f56c5c45bbd79210a6618d29704aac3dd04df
+CURRENT_DOCUMENT_INDEX.json sha256=9bba63bdb8bbcbb1856837d54c957ed09e256561cc0c18d32cd6fa4e41460cb2
+KineticLoop_Evidence_Manifest_v0.1.json sha256=d042e477f0224d843390b5abd1d94ca376278da390db7e7aed99a192c9a60e99
+HISTORICAL_TASK_ID_MAP.json sha256=1b5acd3e339e86175f39999a9388b7dcd0c436dd02d32dbe29e0cd9dcff04253
+
+The Protocol and DB identities and content hashes match CURRENT_DOCUMENT_INDEX.json,
+FROZEN_BASELINE.json, and the evidence manifest. The missing model inputs remain
+explicit and the historical aggregate declaration remains unverified. No product
+requirement status is claimed by this evidence.
