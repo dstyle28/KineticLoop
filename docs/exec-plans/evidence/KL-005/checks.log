@@ -1,0 +1,55 @@
+KL-005 revision-bound verification
+==================================
+
+base_commit: cc6008f5a591d851dcc5a1dcf526c5393dc66cff
+tested_commit: a6ab8a474bb26b74162e6f6811a8a9f58f83deeb
+worktree_status_before_checks: clean
+
+requirement_sources_parse
+-------------------------
+command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_requirement_sources_parse -q
+result: PASS
+output: 1 passed in 0.01s
+
+obligation_ids_unique
+---------------------
+command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_obligation_ids_unique -q
+result: PASS
+output: 1 passed in 0.01s
+
+all_expected_layers_registered
+------------------------------
+command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_all_expected_layers_registered -q
+result: PASS
+output: 1 passed in 0.01s
+
+default_status_not_run
+----------------------
+command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_default_status_not_run -q
+result: PASS
+output: 1 passed in 0.01s
+
+integration_obligations_registered
+----------------------------------
+command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_integration_obligations_registered -q
+result: PASS
+output: 1 passed in 0.01s
+
+Supporting validation on the same tested commit
+-----------------------------------------------
+- Fixture freshness: PASS (CURRENT: tests/fixtures/acceptance/requirement_registry.json)
+- Harness scope/index guard: PASS (HARNESS_CHECK_PASS tasks=68 active=66)
+- Full test suite: PASS (111 passed in 25.39s)
+- Ruff: PASS
+- Mypy: PASS (18 source files)
+- Diff check: PASS
+
+Registry summary
+----------------
+- original layer obligations: 67
+- boundary requirements: 18
+- interleaving requirements: 9
+- integration layer obligations: 20
+- total registry entries: 114
+- unique generated statuses: NOT_RUN
+- product requirement PASS claims: 0

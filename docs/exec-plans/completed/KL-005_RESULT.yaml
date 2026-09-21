@@ -1,0 +1,181 @@
+task_identity: harness-backlog-v0.2/KL-005
+display_task_id: KL-005
+task_definition_version: v0.2
+base_commit: cc6008f5a591d851dcc5a1dcf526c5393dc66cff
+tested_commit: a6ab8a474bb26b74162e6f6811a8a9f58f83deeb
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Added a source-hash-bound acceptance registry and deterministic fixture generator for
+  67 original layer obligations, B01-B18, I01-I09, and 20 integration layer obligations.
+  The registry rejects duplicate or missing identities/layers and initializes all 114
+  entries to NOT_RUN without claiming product requirement PASS.
+commands_run:
+  - check_id: requirement_sources_parse
+    command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_requirement_sources_parse -q
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-005/checks.log
+  - check_id: obligation_ids_unique
+    command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_obligation_ids_unique -q
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-005/checks.log
+  - check_id: all_expected_layers_registered
+    command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_all_expected_layers_registered -q
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-005/checks.log
+  - check_id: default_status_not_run
+    command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_default_status_not_run -q
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-005/checks.log
+  - check_id: integration_obligations_registered
+    command: UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_integration_obligations_registered -q
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-005/checks.log
+requirements_covered:
+  - {requirement_id: E01@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: E01@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: E02@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: E02@WF, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: E02@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: E03@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: E03@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: E04@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: E05@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: E06@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: E06@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: E07@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: E07@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: E08@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: E08@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: D01@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: D01@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: D02@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: D03@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: D03@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: D04@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: D05@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: D05@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A01@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A01@WF, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A01@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A02@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A02@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A03@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A03@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A04@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A04@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A05@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A05@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A06@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A06@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A07@WF, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A07@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A08@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A08@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W01@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W01@WF, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W02@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W02@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W03@WF, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W03@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W04@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W04@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W04@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W05@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W05@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W05@WF, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W06@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W06@WF, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W07@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W07@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W08@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W08@WF, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W08@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: W09@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: R01@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: R01@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: R02@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: R03@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: R03@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: R04@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: R04@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B01@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B01@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B02@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B03@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B04@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B04@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B05@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B05@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B06@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B07@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B07@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B08@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B08@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B09@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B09@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B10@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B10@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B11@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B11@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B12@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B12@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B13@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B14@WF, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B14@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B15@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B16@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B16@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B17@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B17@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B18@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B18@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: I01@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: I02@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: I03@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: I04@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: I04@WF, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: I05@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: I06@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: I07@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: I08@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: I09@DC, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A01@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A01@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A02@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A02@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A03@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A03@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A04@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A04@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A05@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A06@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A06@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A07@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A07@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A08@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A08@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A09@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A10@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A11@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A12@WF, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: INT-A12@E2E, status: NOT_RUN, evidence_ref: null}
+files_changed:
+  - src/kineticloop/acceptance/__init__.py
+  - src/kineticloop/acceptance/registry.py
+  - tools/acceptance/generate_fixtures.py
+  - tests/harness/acceptance/__init__.py
+  - tests/harness/acceptance/test_registry.py
+  - tests/fixtures/acceptance/requirement_registry.json
+  - docs/exec-plans/evidence/KL-005/checks.log
+  - docs/exec-plans/completed/KL-005_RESULT.yaml
+decisions:
+  - Verify indexed source SHA-256 identities before deriving any registry entry.
+  - Preserve B and I stable requirement IDs while carrying their declared required layers; expand only original and integration obligations into the layer-qualified identities defined by the current requirement set.
+  - Generate NOT_RUN unconditionally rather than translating source specification-state labels into evidence claims.
+known_limitations:
+  - This task registers obligations and fixtures only; it does not execute or pass any product requirement.
+follow_up_tasks: []
+spec_change_request: null
