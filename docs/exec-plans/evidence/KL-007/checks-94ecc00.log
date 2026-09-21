@@ -1,0 +1,73 @@
+task_identity: harness-backlog-v0.2/KL-007
+tested_commit: 94ecc00a2748fc85e224ccb6789e7d69049d4ad7
+base_commit: 7da20cdd24720705f3bb6584921f5413d9aa18f4
+tested_at: 2026-09-21T00:12:58-07:00
+
+check_id: role_vocabulary_valid
+command: .venv/bin/pytest tests/unit/identity/test_roles.py::test_role_vocabulary_valid -q
+exit_code: 0
+output:
+  .                                                                        [100%]
+  1 passed in 0.02s
+
+check_id: capability_matrix_enforced
+command: .venv/bin/pytest tests/unit/identity/test_roles.py::test_capability_matrix_enforced -q
+exit_code: 0
+output:
+  .                                                                        [100%]
+  1 passed in 0.02s
+
+check_id: nonproduction_actor_rejected
+command: .venv/bin/pytest tests/unit/identity/test_roles.py -q -k nonproduction_actor_rejected
+exit_code: 0
+output:
+  ..                                                                       [100%]
+  2 passed, 11 deselected in 0.02s
+
+check_id: serialization_round_trip
+command: .venv/bin/pytest tests/unit/identity/test_roles.py::test_serialization_round_trip -q
+exit_code: 0
+output:
+  .                                                                        [100%]
+  1 passed in 0.02s
+
+additional_verification: unit_suite
+command: .venv/bin/kl test-unit
+exit_code: 0
+output:
+  collected 67 items
+  tests/unit/identity/test_roles.py .............                          [ 19%]
+  tests/unit/primitives/test_canonical.py ...........                      [ 35%]
+  tests/unit/primitives/test_hashes.py ........                            [ 47%]
+  tests/unit/primitives/test_ids.py .........                              [ 61%]
+  tests/unit/primitives/test_times.py .......................              [ 95%]
+  tests/unit/test_cli.py ...                                               [100%]
+  67 passed in 0.88s
+
+additional_verification: harness_suite
+command: .venv/bin/kl test-harness
+exit_code: 0
+output:
+  collected 57 items
+  tests/harness/acceptance/test_registry.py .....                          [  8%]
+  tests/harness/test_validator.py ........................................ [ 78%]
+  ............                                                             [100%]
+  57 passed in 23.93s
+
+additional_verification: lint
+command: .venv/bin/kl lint
+exit_code: 0
+output:
+  All checks passed!
+
+additional_verification: typecheck
+command: .venv/bin/kl typecheck
+exit_code: 0
+output:
+  Success: no issues found in 21 source files
+
+additional_verification: task_scoped_harness
+command: .venv/bin/kl check-harness --protected-base 7da20cdd24720705f3bb6584921f5413d9aa18f4 --task-id KL-007
+exit_code: 0
+output:
+  HARNESS_CHECK_PASS tasks=68 active=66
