@@ -1,0 +1,40 @@
+HG-004 review remediation check evidence
+base_commit: 28cc7407f1d4184cf3407db0bcd09794cb60fa5b
+superseded_reviewed_head: 8df16c8590dadfff1e172d25e5ec45e03f0785ba
+tested_commit: f3c6da244b32a67442fe5cf26dc71ec810ced387
+
+Remediation:
+- Parameterized same-key/different-hash rejection by frozen command binding:
+  generic DB section 3 uses IDEMPOTENCY_KEY_REUSE_WITH_DIFFERENT_PAYLOAD;
+  BeginBuild, WriteCandidate, and RevokeArtifact use IDEMPOTENCY_CONFLICT under DB section 11.
+- Removed the unsupported contradictory result/error-shape assertion and explicitly
+  deferred status/result/error lifecycle correlation to a future authority.
+
+$ .venv/bin/kl check-harness
+HARNESS_CHECK_PASS tasks=68 active=66
+RESULT: PASS
+
+$ .venv/bin/ruff check .
+All checks passed!
+RESULT: PASS
+
+$ MYPY_CACHE_DIR=/private/tmp/hg-004-remediation-tested-mypy .venv/bin/mypy src tools
+Success: no issues found in 21 source files
+RESULT: PASS
+
+$ .venv/bin/pytest -q tests/unit
+...................................................................      [100%]
+67 passed in 0.99s
+RESULT: PASS
+
+$ .venv/bin/pytest -q tests/harness
+........................................................................ [ 93%]
+.....                                                                    [100%]
+77 passed in 23.19s
+RESULT: PASS
+
+$ git diff --check 28cc7407f1d4184cf3407db0bcd09794cb60fa5b f3c6da244b32a67442fe5cf26dc71ec810ced387
+RESULT: PASS (no output)
+
+$ git diff --exit-code 28cc7407f1d4184cf3407db0bcd09794cb60fa5b f3c6da244b32a67442fe5cf26dc71ec810ced387 -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md
+RESULT: PASS (no output)

@@ -363,18 +363,22 @@
         "error enum",
         "receipt base models"
       ],
-      "definition_of_done": "idempotency-key mismatch semantics specified/tested",
+      "definition_of_done": "a closed exact-wire error registry and strict S02 receipt base contracts preserve frozen command identity and replay semantics; same identity plus the same request hash returns the original result identity with replayed=true; same identity plus a different request hash preserves the command-bound frozen error identity, using IDEMPOTENCY_KEY_REUSE_WITH_DIFFERENT_PAYLOAD at the generic DB section 3 boundary and IDEMPOTENCY_CONFLICT for BeginBuild, WriteCandidate, and RevokeArtifact as assigned by frozen DB section 11; structurally invalid wire inputs are rejected; and no receipt or model-supplied field grants command authority",
       "entry_conditions": [
-        "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
+        "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available through CURRENT_DOCUMENT_INDEX.json",
+        "KL-003 has a PASS result bound by a MERGED integration record"
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
       "thread_id": "THREAD-KL-004",
       "thread_mode": "INDEPENDENT_WORKTREE",
       "context_files": [
-        "README.md",
+        "docs/exec-plans/completed/KL-003_RESULT.yaml",
+        "docs/exec-plans/integrations/KL-003.json",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
         "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
-        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+        "docs/harness/RESOURCE_LOCKS.md"
       ],
       "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
       "merge_unit": "ONE_PR",
@@ -384,13 +388,22 @@
       "task_identity": "harness-backlog-v0.2/KL-004",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_pu_checks"
+        "error_registry_wire_values_valid",
+        "receipt_identity_contract_valid",
+        "same_key_same_hash_replays_original_result",
+        "same_key_different_hash_rejected",
+        "receipt_invalid_input_rejected"
       ],
       "resource_keys": [
-        "command_contracts",
-        "registry_coordination"
+        "command_contracts"
       ],
-      "write_paths": [],
+      "write_paths": [
+        "src/kineticloop/contracts/__init__.py",
+        "src/kineticloop/contracts/errors.py",
+        "src/kineticloop/contracts/receipts.py",
+        "tests/unit/contracts/test_errors.py",
+        "tests/unit/contracts/test_receipts.py"
+      ],
       "review_requirements": [
         "DB_CONCURRENCY",
         "GENERAL",
@@ -398,15 +411,9 @@
       ],
       "conditional_depends_on": [],
       "environment_requirements": [],
-      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
       "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
-      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
-      "write_path_hints": [
-        "pyproject.toml",
-        "tools/harness/**",
-        "tests/harness/**",
-        "docs/harness/**"
-      ]
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-005",
