@@ -1,0 +1,1 @@
+"""Acceptance-registry harness tests."""
