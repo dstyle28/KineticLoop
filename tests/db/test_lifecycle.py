@@ -89,6 +89,19 @@ def test_destroy_is_scoped_to_the_derived_compose_project(tmp_path: Path) -> Non
     assert lifecycle.namespace.project_name in command
 
 
+def test_destroy_reports_compose_cleanup_failure(tmp_path: Path) -> None:
+    root = tmp_path / "abc123" / "KineticLoop"
+    failure = subprocess.CalledProcessError(
+        1,
+        ["docker", "compose", "down"],
+        stderr="volume is still in use",
+    )
+    lifecycle = DatabaseLifecycle(root, runner=Mock(side_effect=failure), environ={})
+
+    with pytest.raises(DatabaseLifecycleError, match="volume is still in use"):
+        lifecycle.destroy()
+
+
 def test_missing_docker_has_actionable_error(tmp_path: Path) -> None:
     root = tmp_path / "abc123" / "KineticLoop"
     root.mkdir(parents=True)

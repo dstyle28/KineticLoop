@@ -239,7 +239,4 @@ class DatabaseLifecycle:
 
     def destroy(self) -> None:
         """Remove only this worktree's containers, network, and named volume."""
-        self._run(
-            self.compose_command("down", "--volumes", "--remove-orphans"),
-            check=False,
-        )
+        self._run(self.compose_command("down", "--volumes", "--remove-orphans"))

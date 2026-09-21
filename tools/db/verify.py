@@ -61,6 +61,7 @@ def reset_idempotent(args: argparse.Namespace) -> None:
 def worktree_db_isolated(args: argparse.Namespace) -> None:
     primary = _lifecycle()
     peer = _lifecycle(args.peer_root)
+    check_error: Exception | None = None
     try:
         if primary.namespace == peer.namespace:
             raise DatabaseLifecycleError("distinct worktrees resolved to the same database namespace")
@@ -92,9 +93,20 @@ def worktree_db_isolated(args: argparse.Namespace) -> None:
                 sort_keys=True,
             )
         )
+    except Exception as error:
+        check_error = error
     finally:
-        primary.destroy()
-        peer.destroy()
+        cleanup_errors: list[str] = []
+        for label, lifecycle in (("primary", primary), ("peer", peer)):
+            try:
+                lifecycle.destroy()
+            except DatabaseLifecycleError as error:
+                cleanup_errors.append(f"{label}: {error}")
+        if cleanup_errors:
+            detail = "; ".join(cleanup_errors)
+            raise DatabaseLifecycleError(f"worktree cleanup failed: {detail}") from check_error
+    if check_error is not None:
+        raise check_error
 
 
 def destroy(_: argparse.Namespace) -> None:
