@@ -1,0 +1,56 @@
+task_identity: harness-backlog-v0.2/KL-004
+display_task_id: KL-004
+task_definition_version: v0.2
+base_commit: faa29f162ca0ccd9ecf0ccfdb2dfa1916b04ed21
+tested_commit: ac41a590d85300bc0f10adc33dc0a7441478722e
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Added the closed frozen command-error registry, strict immutable S02 receipt
+  identity/result base values, and a pure replay/mismatch boundary. Same-key,
+  same-hash calls return the exact stored result with replayed=true; mismatches
+  preserve the distinct generic and DB section 11 command-bound error identities.
+commands_run:
+  - check_id: error_registry_wire_values_valid
+    command: .venv/bin/pytest -q tests/unit/contracts/test_errors.py -k error_registry_wire_values_valid
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-004/focused-checks-ac41a59.log
+  - check_id: receipt_identity_contract_valid
+    command: .venv/bin/pytest -q tests/unit/contracts/test_receipts.py -k receipt_identity_contract_valid
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-004/focused-checks-ac41a59.log
+  - check_id: same_key_same_hash_replays_original_result
+    command: .venv/bin/pytest -q tests/unit/contracts/test_receipts.py -k same_key_same_hash_replays_original_result
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-004/focused-checks-ac41a59.log
+  - check_id: same_key_different_hash_rejected
+    command: .venv/bin/pytest -q tests/unit/contracts/test_receipts.py -k same_key_different_hash_rejected
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-004/focused-checks-ac41a59.log
+  - check_id: receipt_invalid_input_rejected
+    command: .venv/bin/pytest -q tests/unit/contracts/test_receipts.py -k receipt_invalid_input_rejected
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-004/focused-checks-ac41a59.log
+requirements_covered: []
+files_changed:
+  - src/kineticloop/contracts/__init__.py
+  - src/kineticloop/contracts/errors.py
+  - src/kineticloop/contracts/receipts.py
+  - tests/unit/contracts/test_errors.py
+  - tests/unit/contracts/test_receipts.py
+  - docs/exec-plans/evidence/KL-004/focused-checks-ac41a59.log
+  - docs/exec-plans/completed/KL-004_RESULT.yaml
+decisions:
+  - Preserve every DB section 3 and section 11 error wire identity as a unique ErrorCode member without aliases or normalization.
+  - Model receipt uniqueness with exactly one canonical subject ID or explicit scope, so global management commands do not manufacture a subject.
+  - Keep status and result/error/time fields structurally strict but semantically opaque; no receipt lifecycle or field-correlation rules are introduced.
+  - Derive mismatch behavior from an explicit command binding, preserving IDEMPOTENCY_CONFLICT only for BeginBuild, WriteCandidate, and RevokeArtifact and the generic frozen spelling otherwise.
+  - Return the exact stored ReceiptResult object for same-hash replay and expose no admission, authorization, execution, or provider-send permission.
+known_limitations:
+  - This pure base contract does not implement S02 persistence, PostgreSQL uniqueness, transaction atomicity, receipt retention, ACK-loss handling, lock acquisition, or concurrency validation.
+  - Receipt status lifecycle and valid status/result/error combinations remain intentionally undefined pending later authority.
+follow_up_tasks:
+  - The later S02/CommandGateway implementation must enforce the frozen lock order, same-transaction receipt/result mutation, persistence, and real PostgreSQL concurrency evidence.
+spec_change_request: null
