@@ -16,11 +16,21 @@ def main() -> int:
     args = parser.parse_args()
     if re.fullmatch(r"[0-9a-f]{40}", args.tested_commit) is None:
         parser.error("--tested-commit must be a full 40-character lowercase Git SHA")
+    evidence_root = "docs/exec-plans/evidence/KL-002"
+    evidence_refs = {
+        check_id: f"{evidence_root}/{check_id}-{args.tested_commit}.log"
+        for check_id in (
+            "compose_config_valid",
+            "postgres_ready",
+            "reset_idempotent",
+            "worktree_db_isolated",
+        )
+    }
     result = {
         "task_identity": "harness-backlog-v0.2/KL-002",
         "display_task_id": "KL-002",
         "task_definition_version": "v0.2",
-        "base_commit": "cc6008f5a591d851dcc5a1dcf526c5393dc66cff",
+        "base_commit": "7da20cdd24720705f3bb6584921f5413d9aa18f4",
         "tested_commit": args.tested_commit,
         "merge_commit": None,
         "task_status": "PASS",
@@ -35,21 +45,19 @@ def main() -> int:
                 "check_id": "compose_config_valid",
                 "command": "uv run python tools/db/verify.py compose-config-valid",
                 "result": "PASS",
-                "evidence_ref": (
-                    "docs/exec-plans/evidence/KL-002/compose_config_valid.log"
-                ),
+                "evidence_ref": evidence_refs["compose_config_valid"],
             },
             {
                 "check_id": "postgres_ready",
                 "command": "uv run python tools/db/verify.py postgres-ready",
                 "result": "PASS",
-                "evidence_ref": "docs/exec-plans/evidence/KL-002/postgres_ready.log",
+                "evidence_ref": evidence_refs["postgres_ready"],
             },
             {
                 "check_id": "reset_idempotent",
                 "command": "uv run python tools/db/verify.py reset-idempotent",
                 "result": "PASS",
-                "evidence_ref": "docs/exec-plans/evidence/KL-002/reset_idempotent.log",
+                "evidence_ref": evidence_refs["reset_idempotent"],
             },
             {
                 "check_id": "worktree_db_isolated",
@@ -58,9 +66,7 @@ def main() -> int:
                     "--peer-root <second-git-worktree>"
                 ),
                 "result": "PASS",
-                "evidence_ref": (
-                    "docs/exec-plans/evidence/KL-002/worktree_db_isolated.log"
-                ),
+                "evidence_ref": evidence_refs["worktree_db_isolated"],
             },
         ],
         "requirements_covered": [],
@@ -82,6 +88,7 @@ def main() -> int:
             "docs/exec-plans/evidence/KL-002/postgres_ready.log",
             "docs/exec-plans/evidence/KL-002/reset_idempotent.log",
             "docs/exec-plans/evidence/KL-002/worktree_db_isolated.log",
+            *evidence_refs.values(),
             "docs/exec-plans/completed/KL-002_RESULT.yaml",
         ],
         "decisions": [

@@ -21,6 +21,7 @@ def test_result_writer_binds_exact_tested_commit(tmp_path: Path) -> None:
 
     result = yaml.safe_load((output_dir / "KL-002_RESULT.yaml").read_text())
     assert result["tested_commit"] == tested_commit
+    assert result["base_commit"] == "7da20cdd24720705f3bb6584921f5413d9aa18f4"
     assert result["task_status"] == "PASS"
     assert result["requirements_covered"] == []
     assert {item["check_id"] for item in result["commands_run"]} == {
@@ -29,3 +30,7 @@ def test_result_writer_binds_exact_tested_commit(tmp_path: Path) -> None:
         "reset_idempotent",
         "worktree_db_isolated",
     }
+    assert all(
+        item["evidence_ref"].endswith(f"-{tested_commit}.log")
+        for item in result["commands_run"]
+    )

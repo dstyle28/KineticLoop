@@ -31,21 +31,21 @@ jobs:
         run: |
           mkdir -p docs/exec-plans/evidence/KL-002
           uv run python tools/db/verify.py compose-config-valid \
-            | tee docs/exec-plans/evidence/KL-002/compose_config_valid.log
+            | tee "docs/exec-plans/evidence/KL-002/compose_config_valid-${GITHUB_SHA}.log"
       - name: postgres_ready
         run: >-
           uv run python tools/db/verify.py postgres-ready
-          | tee docs/exec-plans/evidence/KL-002/postgres_ready.log
+          | tee "docs/exec-plans/evidence/KL-002/postgres_ready-${GITHUB_SHA}.log"
       - name: reset_idempotent
         run: >-
           uv run python tools/db/verify.py reset-idempotent
-          | tee docs/exec-plans/evidence/KL-002/reset_idempotent.log
+          | tee "docs/exec-plans/evidence/KL-002/reset_idempotent-${GITHUB_SHA}.log"
       - name: worktree_db_isolated
         run: |
           peer_root="${RUNNER_TEMP}/kl002-peer/KineticLoop"
           git worktree add --detach "${peer_root}" "${GITHUB_SHA}"
           uv run python tools/db/verify.py worktree-db-isolated --peer-root "${peer_root}" \
-            | tee docs/exec-plans/evidence/KL-002/worktree_db_isolated.log
+            | tee "docs/exec-plans/evidence/KL-002/worktree_db_isolated-${GITHUB_SHA}.log"
           git worktree remove --force "${peer_root}"
       - name: Remove worktree database
         if: always()
@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: kl-002-evidence-${{ github.sha }}
-          path: docs/exec-plans/evidence/KL-002/*.log
+          path: docs/exec-plans/evidence/KL-002/*-${{ github.sha }}.log
           if-no-files-found: error
 
   record-evidence:
