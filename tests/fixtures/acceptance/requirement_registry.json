@@ -1,0 +1,1955 @@
+{
+  "schema_version": "1.0",
+  "requirement_set_id": "KINETICLOOP_HARNESS_REQSET_V1_2_2_INTEGRATION_V0_1",
+  "status": "NOT_RUN",
+  "source_bindings": [
+    {
+      "path": "KineticLoop_Acceptance_Spec_v1.2.2.json",
+      "sha256": "32481bd6eb29fe0d8ce1e5ec3cb9b90821743cc5708343e4695a446f51e78892",
+      "kind": "acceptance"
+    },
+    {
+      "path": "KineticLoop_Integration_Acceptance_v0.1.json",
+      "sha256": "1b4ea126ed5cc8c45adde29a4db45fec96e9949267b21baf47934b4af69bf473",
+      "kind": "integration"
+    }
+  ],
+  "counts": {
+    "original": 67,
+    "boundary": 18,
+    "interleaving": 9,
+    "integration": 20,
+    "total": 114
+  },
+  "obligations": [
+    {
+      "obligation_id": "E01@PU",
+      "requirement_id": "E01",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "处方 3 组，原文只完成 1 组",
+        "when": "解析/准入/进阶",
+        "then": "只有有证据的 actual，额外组不计完成",
+        "primary_tables": "S10,S13,S14"
+      }
+    },
+    {
+      "obligation_id": "E01@E2E",
+      "requirement_id": "E01",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "处方 3 组，原文只完成 1 组",
+        "when": "解析/准入/进阶",
+        "then": "只有有证据的 actual，额外组不计完成",
+        "primary_tables": "S10,S13,S14"
+      }
+    },
+    {
+      "obligation_id": "E02@PU",
+      "requirement_id": "E02",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "WF",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "风险通道收到尚未解析文本",
+        "when": "解析不可用",
+        "then": "适用 pending hold 生效，进阶被阻断",
+        "primary_tables": "S17,S18,S43"
+      }
+    },
+    {
+      "obligation_id": "E02@WF",
+      "requirement_id": "E02",
+      "kind": "ORIGINAL",
+      "layer": "WF",
+      "required_layers": [
+        "PU",
+        "WF",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "风险通道收到尚未解析文本",
+        "when": "解析不可用",
+        "then": "适用 pending hold 生效，进阶被阻断",
+        "primary_tables": "S17,S18,S43"
+      }
+    },
+    {
+      "obligation_id": "E02@E2E",
+      "requirement_id": "E02",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "WF",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "风险通道收到尚未解析文本",
+        "when": "解析不可用",
+        "then": "适用 pending hold 生效，进阶被阻断",
+        "primary_tables": "S17,S18,S43"
+      }
+    },
+    {
+      "obligation_id": "E03@PU",
+      "requirement_id": "E03",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "三来源指向一次训练",
+        "when": "关联与 projection",
+        "then": "独立事件数 1，三来源仍留存",
+        "primary_tables": "S11,S12,S21"
+      }
+    },
+    {
+      "obligation_id": "E03@DC",
+      "requirement_id": "E03",
+      "kind": "ORIGINAL",
+      "layer": "DC",
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "三来源指向一次训练",
+        "when": "关联与 projection",
+        "then": "独立事件数 1，三来源仍留存",
+        "primary_tables": "S11,S12,S21"
+      }
+    },
+    {
+      "obligation_id": "E04@PU",
+      "requirement_id": "E04",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "相近训练是否重复不明确",
+        "when": "reconciliation",
+        "then": "保留歧义，不强制合并/双计成功",
+        "primary_tables": "S12,S36"
+      }
+    },
+    {
+      "obligation_id": "E05@PU",
+      "requirement_id": "E05",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "完成量下界确定，上界未知",
+        "when": "计算 exposure",
+        "then": "上界 unknown，不取计划值或零",
+        "primary_tables": "S14,S21"
+      }
+    },
+    {
+      "obligation_id": "E06@PU",
+      "requirement_id": "E06",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "成功后有反证，Agent 只引成功",
+        "when": "解析加重义务",
+        "then": "Resolver 包含反证并按完整范围判断",
+        "primary_tables": "S36,S37"
+      }
+    },
+    {
+      "obligation_id": "E06@E2E",
+      "requirement_id": "E06",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "成功后有反证，Agent 只引成功",
+        "when": "解析加重义务",
+        "then": "Resolver 包含反证并按完整范围判断",
+        "primary_tables": "S36,S37"
+      }
+    },
+    {
+      "obligation_id": "E07@DC",
+      "requirement_id": "E07",
+      "kind": "ORIGINAL",
+      "layer": "DC",
+      "required_layers": [
+        "DC",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "原事实已用于授权",
+        "when": "新更正撤回依据",
+        "then": "admission/epoch/投影资格变化原子生效",
+        "primary_tables": "S13,S15,S01,S43"
+      }
+    },
+    {
+      "obligation_id": "E07@E2E",
+      "requirement_id": "E07",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "DC",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "原事实已用于授权",
+        "when": "新更正撤回依据",
+        "then": "admission/epoch/投影资格变化原子生效",
+        "primary_tables": "S13,S15,S01,S43"
+      }
+    },
+    {
+      "obligation_id": "E08@PU",
+      "requirement_id": "E08",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "备注夹带批准指令，经多轮摘要",
+        "when": "context 与批准入口",
+        "then": "保持非命令，不能产生 approval",
+        "primary_tables": "S10,S26,S08"
+      }
+    },
+    {
+      "obligation_id": "E08@E2E",
+      "requirement_id": "E08",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "备注夹带批准指令，经多轮摘要",
+        "when": "context 与批准入口",
+        "then": "保持非命令，不能产生 approval",
+        "primary_tables": "S10,S26,S08"
+      }
+    },
+    {
+      "obligation_id": "D01@PU",
+      "requirement_id": "D01",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "projection ready，Manifest 未发布",
+        "when": "写计算结果",
+        "then": "generation 不变",
+        "primary_tables": "S21,S01"
+      }
+    },
+    {
+      "obligation_id": "D01@DC",
+      "requirement_id": "D01",
+      "kind": "ORIGINAL",
+      "layer": "DC",
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "projection ready，Manifest 未发布",
+        "when": "写计算结果",
+        "then": "generation 不变",
+        "primary_tables": "S21,S01"
+      }
+    },
+    {
+      "obligation_id": "D02@PU",
+      "requirement_id": "D02",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "无关输入变化，进阶依赖未变",
+        "when": "BuildManifest",
+        "then": "复用原投影且 basis 验证通过",
+        "primary_tables": "S22,S25"
+      }
+    },
+    {
+      "obligation_id": "D03@DC",
+      "requirement_id": "D03",
+      "kind": "ORIGINAL",
+      "layer": "DC",
+      "required_layers": [
+        "DC",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "接受新输入但未发新 Manifest",
+        "when": "tool live query",
+        "then": "不混入未绑定修订",
+        "primary_tables": "S15,S24,S33"
+      }
+    },
+    {
+      "obligation_id": "D03@E2E",
+      "requirement_id": "D03",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "DC",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "接受新输入但未发新 Manifest",
+        "when": "tool live query",
+        "then": "不混入未绑定修订",
+        "primary_tables": "S15,S24,S33"
+      }
+    },
+    {
+      "obligation_id": "D04@DC",
+      "requirement_id": "D04",
+      "kind": "ORIGINAL",
+      "layer": "DC",
+      "required_layers": [
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "原查询不存在限制/相关事件",
+        "when": "并发插入新记录",
+        "then": "集合依赖或 epoch 捕捉变化",
+        "primary_tables": "S22,S17,S01"
+      }
+    },
+    {
+      "obligation_id": "D05@PU",
+      "requirement_id": "D05",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "旧 epoch 的 READY build",
+        "when": "revoke 与 publish 交错",
+        "then": "只允许 §5.1 两种合法结果",
+        "primary_tables": "S23,S24,S01"
+      }
+    },
+    {
+      "obligation_id": "D05@DC",
+      "requirement_id": "D05",
+      "kind": "ORIGINAL",
+      "layer": "DC",
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "旧 epoch 的 READY build",
+        "when": "revoke 与 publish 交错",
+        "then": "只允许 §5.1 两种合法结果",
+        "primary_tables": "S23,S24,S01"
+      }
+    },
+    {
+      "obligation_id": "A01@DC",
+      "requirement_id": "A01",
+      "kind": "ORIGINAL",
+      "layer": "DC",
+      "required_layers": [
+        "DC",
+        "WF",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "活跃计划可执行，模型服务故障",
+        "when": "revoke",
+        "then": "旧 A 立即失权，无需替代计划",
+        "primary_tables": "S01,S43"
+      }
+    },
+    {
+      "obligation_id": "A01@WF",
+      "requirement_id": "A01",
+      "kind": "ORIGINAL",
+      "layer": "WF",
+      "required_layers": [
+        "DC",
+        "WF",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "活跃计划可执行，模型服务故障",
+        "when": "revoke",
+        "then": "旧 A 立即失权，无需替代计划",
+        "primary_tables": "S01,S43"
+      }
+    },
+    {
+      "obligation_id": "A01@E2E",
+      "requirement_id": "A01",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "DC",
+        "WF",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "活跃计划可执行，模型服务故障",
+        "when": "revoke",
+        "then": "旧 A 立即失权，无需替代计划",
+        "primary_tables": "S01,S43"
+      }
+    },
+    {
+      "obligation_id": "A02@PU",
+      "requirement_id": "A02",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "epoch 已增加，Manifest 仍旧",
+        "when": "重新签发相同 P",
+        "then": "旧 Manifest 签发失败",
+        "primary_tables": "S24,S42"
+      }
+    },
+    {
+      "obligation_id": "A02@DC",
+      "requirement_id": "A02",
+      "kind": "ORIGINAL",
+      "layer": "DC",
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "epoch 已增加，Manifest 仍旧",
+        "when": "重新签发相同 P",
+        "then": "旧 Manifest 签发失败",
+        "primary_tables": "S24,S42"
+      }
+    },
+    {
+      "obligation_id": "A03@PU",
+      "requirement_id": "A03",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "有效 P/A，尚未 START",
+        "when": "START/revoke 竞争",
+        "then": "按提交顺序；无晚越权 START",
+        "primary_tables": "S01,S43,S45"
+      }
+    },
+    {
+      "obligation_id": "A03@DC",
+      "requirement_id": "A03",
+      "kind": "ORIGINAL",
+      "layer": "DC",
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "有效 P/A，尚未 START",
+        "when": "START/revoke 竞争",
+        "then": "按提交顺序；无晚越权 START",
+        "primary_tables": "S01,S43,S45"
+      }
+    },
+    {
+      "obligation_id": "A04@PU",
+      "requirement_id": "A04",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "缓存仍标 VALID，实际已过期",
+        "when": "Start/eligibility",
+        "then": "AUTH_EXPIRED，与后台 job 无关",
+        "primary_tables": "S42,S45"
+      }
+    },
+    {
+      "obligation_id": "A04@E2E",
+      "requirement_id": "A04",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "缓存仍标 VALID，实际已过期",
+        "when": "Start/eligibility",
+        "then": "AUTH_EXPIRED，与后台 job 无关",
+        "primary_tables": "S42,S45"
+      }
+    },
+    {
+      "obligation_id": "A05@PU",
+      "requirement_id": "A05",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "P7 已通过 A1 开始",
+        "when": "签 A2 并 RESUME",
+        "then": "原 START 保留 A1，新 binding 引 A2",
+        "primary_tables": "S42,S45"
+      }
+    },
+    {
+      "obligation_id": "A05@DC",
+      "requirement_id": "A05",
+      "kind": "ORIGINAL",
+      "layer": "DC",
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "P7 已通过 A1 开始",
+        "when": "签 A2 并 RESUME",
+        "then": "原 START 保留 A1，新 binding 引 A2",
+        "primary_tables": "S42,S45"
+      }
+    },
+    {
+      "obligation_id": "A06@PU",
+      "requirement_id": "A06",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "hold 有效，模型不可用",
+        "when": "fallback 选择",
+        "then": "同样受限，无适用项则 UNAVAILABLE",
+        "primary_tables": "S05,S18,S42"
+      }
+    },
+    {
+      "obligation_id": "A06@E2E",
+      "requirement_id": "A06",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "hold 有效，模型不可用",
+        "when": "fallback 选择",
+        "then": "同样受限，无适用项则 UNAVAILABLE",
+        "primary_tables": "S05,S18,S42"
+      }
+    },
+    {
+      "obligation_id": "A07@WF",
+      "requirement_id": "A07",
+      "kind": "ORIGINAL",
+      "layer": "WF",
+      "required_layers": [
+        "WF",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "普通规划队列和预算耗尽",
+        "when": "STOP 请求",
+        "then": "独立容量处理撤销",
+        "primary_tables": "S17,S01,S43"
+      }
+    },
+    {
+      "obligation_id": "A07@E2E",
+      "requirement_id": "A07",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "WF",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "普通规划队列和预算耗尽",
+        "when": "STOP 请求",
+        "then": "独立容量处理撤销",
+        "primary_tables": "S17,S01,S43"
+      }
+    },
+    {
+      "obligation_id": "A08@PU",
+      "requirement_id": "A08",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "用户在无有效 A 时实际训练",
+        "when": "ingest actual",
+        "then": "保存事实，无虚构 execution binding",
+        "primary_tables": "S14,S44,S45"
+      }
+    },
+    {
+      "obligation_id": "A08@E2E",
+      "requirement_id": "A08",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "用户在无有效 A 时实际训练",
+        "when": "ingest actual",
+        "then": "保存事实，无虚构 execution binding",
+        "primary_tables": "S14,S44,S45"
+      }
+    },
+    {
+      "obligation_id": "W01@PU",
+      "requirement_id": "W01",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "WF"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "已 RESERVED 或 DISPATCH_INTENT",
+        "when": "各边界 kill worker",
+        "then": "仅许可前可退款，可能发送后 UNKNOWN 占用",
+        "primary_tables": "S27,S31,S32"
+      }
+    },
+    {
+      "obligation_id": "W01@WF",
+      "requirement_id": "W01",
+      "kind": "ORIGINAL",
+      "layer": "WF",
+      "required_layers": [
+        "PU",
+        "WF"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "已 RESERVED 或 DISPATCH_INTENT",
+        "when": "各边界 kill worker",
+        "then": "仅许可前可退款，可能发送后 UNKNOWN 占用",
+        "primary_tables": "S27,S31,S32"
+      }
+    },
+    {
+      "obligation_id": "W02@PU",
+      "requirement_id": "W02",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "RESERVED，有取消与发送请求",
+        "when": "两事务交错",
+        "then": "取消释放与发送许可不能同时成立",
+        "primary_tables": "S31,S32,S27"
+      }
+    },
+    {
+      "obligation_id": "W02@DC",
+      "requirement_id": "W02",
+      "kind": "ORIGINAL",
+      "layer": "DC",
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "RESERVED，有取消与发送请求",
+        "when": "两事务交错",
+        "then": "取消释放与发送许可不能同时成立",
+        "primary_tables": "S31,S32,S27"
+      }
+    },
+    {
+      "obligation_id": "W03@WF",
+      "requirement_id": "W03",
+      "kind": "ORIGINAL",
+      "layer": "WF",
+      "required_layers": [
+        "WF",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "provider 返回 transient error",
+        "when": "SDK/runtime retry",
+        "then": "每次物理请求有独立预算覆盖",
+        "primary_tables": "S31,S32"
+      }
+    },
+    {
+      "obligation_id": "W03@E2E",
+      "requirement_id": "W03",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "WF",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "provider 返回 transient error",
+        "when": "SDK/runtime retry",
+        "then": "每次物理请求有独立预算覆盖",
+        "primary_tables": "S31,S32"
+      }
+    },
+    {
+      "obligation_id": "W04@PU",
+      "requirement_id": "W04",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "DC",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "rev1=70min/full gym 正在运行",
+        "when": "rev2=20min/no equipment",
+        "then": "rev1 失权，根预算/deadline 未重置",
+        "primary_tables": "S27,S28,S29"
+      }
+    },
+    {
+      "obligation_id": "W04@DC",
+      "requirement_id": "W04",
+      "kind": "ORIGINAL",
+      "layer": "DC",
+      "required_layers": [
+        "PU",
+        "DC",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "rev1=70min/full gym 正在运行",
+        "when": "rev2=20min/no equipment",
+        "then": "rev1 失权，根预算/deadline 未重置",
+        "primary_tables": "S27,S28,S29"
+      }
+    },
+    {
+      "obligation_id": "W04@E2E",
+      "requirement_id": "W04",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "DC",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "rev1=70min/full gym 正在运行",
+        "when": "rev2=20min/no equipment",
+        "then": "rev1 失权，根预算/deadline 未重置",
+        "primary_tables": "S27,S28,S29"
+      }
+    },
+    {
+      "obligation_id": "W05@PU",
+      "requirement_id": "W05",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "DC",
+        "WF"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "token7 worker 暂停，lease 到期",
+        "when": "token8 接管，7 晚提交",
+        "then": "7 不可提交；可信回执仅可结算",
+        "primary_tables": "S27,S29,S32,S42"
+      }
+    },
+    {
+      "obligation_id": "W05@DC",
+      "requirement_id": "W05",
+      "kind": "ORIGINAL",
+      "layer": "DC",
+      "required_layers": [
+        "PU",
+        "DC",
+        "WF"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "token7 worker 暂停，lease 到期",
+        "when": "token8 接管，7 晚提交",
+        "then": "7 不可提交；可信回执仅可结算",
+        "primary_tables": "S27,S29,S32,S42"
+      }
+    },
+    {
+      "obligation_id": "W05@WF",
+      "requirement_id": "W05",
+      "kind": "ORIGINAL",
+      "layer": "WF",
+      "required_layers": [
+        "PU",
+        "DC",
+        "WF"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "token7 worker 暂停，lease 到期",
+        "when": "token8 接管，7 晚提交",
+        "then": "7 不可提交；可信回执仅可结算",
+        "primary_tables": "S27,S29,S32,S42"
+      }
+    },
+    {
+      "obligation_id": "W06@PU",
+      "requirement_id": "W06",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "WF"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "intent 已取消或 deadline 结束",
+        "when": "模型晚返回",
+        "then": "不复活 intent/attempt，不新签 A",
+        "primary_tables": "S27,S29,S42"
+      }
+    },
+    {
+      "obligation_id": "W06@WF",
+      "requirement_id": "W06",
+      "kind": "ORIGINAL",
+      "layer": "WF",
+      "required_layers": [
+        "PU",
+        "WF"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "intent 已取消或 deadline 结束",
+        "when": "模型晚返回",
+        "then": "不复活 intent/attempt，不新签 A",
+        "primary_tables": "S27,S29,S42"
+      }
+    },
+    {
+      "obligation_id": "W07@PU",
+      "requirement_id": "W07",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "F1/D1/N1 已存在",
+        "when": "修复出 F2",
+        "then": "D1/N1 不能用于 F2，重算计原预算",
+        "primary_tables": "S34,S35,S37"
+      }
+    },
+    {
+      "obligation_id": "W07@E2E",
+      "requirement_id": "W07",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "F1/D1/N1 已存在",
+        "when": "修复出 F2",
+        "then": "D1/N1 不能用于 F2，重算计原预算",
+        "primary_tables": "S34,S35,S37"
+      }
+    },
+    {
+      "obligation_id": "W08@DC",
+      "requirement_id": "W08",
+      "kind": "ORIGINAL",
+      "layer": "DC",
+      "required_layers": [
+        "DC",
+        "WF",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "T6 已成功 commit",
+        "when": "ACK 丢失后重发",
+        "then": "返回相同 result/issuance，不重复写",
+        "primary_tables": "S02,S39,S42"
+      }
+    },
+    {
+      "obligation_id": "W08@WF",
+      "requirement_id": "W08",
+      "kind": "ORIGINAL",
+      "layer": "WF",
+      "required_layers": [
+        "DC",
+        "WF",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "T6 已成功 commit",
+        "when": "ACK 丢失后重发",
+        "then": "返回相同 result/issuance，不重复写",
+        "primary_tables": "S02,S39,S42"
+      }
+    },
+    {
+      "obligation_id": "W08@E2E",
+      "requirement_id": "W08",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "DC",
+        "WF",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "T6 已成功 commit",
+        "when": "ACK 丢失后重发",
+        "then": "返回相同 result/issuance，不重复写",
+        "primary_tables": "S02,S39,S42"
+      }
+    },
+    {
+      "obligation_id": "W09@PU",
+      "requirement_id": "W09",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "两次搜索失败，无形式冲突证明",
+        "when": "workflow 结束",
+        "then": "非 PROVEN_CONSTRAINT_CONFLICT",
+        "primary_tables": "S27,S37"
+      }
+    },
+    {
+      "obligation_id": "R01@PU",
+      "requirement_id": "R01",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "九月更正八月事实",
+        "when": "cutoff=八月 replay",
+        "then": "排除九月获知修订",
+        "primary_tables": "S14,S46,S47"
+      }
+    },
+    {
+      "obligation_id": "R01@E2E",
+      "requirement_id": "R01",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "九月更正八月事实",
+        "when": "cutoff=八月 replay",
+        "then": "排除九月获知修订",
+        "primary_tables": "S14,S46,S47"
+      }
+    },
+    {
+      "obligation_id": "R02@PU",
+      "requirement_id": "R02",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "相同 cutoff，历史/当前 release 不同",
+        "when": "两模式 replay",
+        "then": "分别绑定指定 artifact bundle",
+        "primary_tables": "S46,S48"
+      }
+    },
+    {
+      "obligation_id": "R03@PU",
+      "requirement_id": "R03",
+      "kind": "ORIGINAL",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "九月人工建立个体映射",
+        "when": "八月 current backtest",
+        "then": "不导入未来个体知识",
+        "primary_tables": "S20,S46,S47"
+      }
+    },
+    {
+      "obligation_id": "R03@E2E",
+      "requirement_id": "R03",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "九月人工建立个体映射",
+        "when": "八月 current backtest",
+        "then": "不导入未来个体知识",
+        "primary_tables": "S20,S46,S47"
+      }
+    },
+    {
+      "obligation_id": "R04@DC",
+      "requirement_id": "R04",
+      "kind": "ORIGINAL",
+      "layer": "DC",
+      "required_layers": [
+        "DC",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "replay 产生模拟有效结果",
+        "when": "尝试生产提交",
+        "then": "角色/存储隔离拒绝，无 live issuance",
+        "primary_tables": "S46,S47,S42"
+      }
+    },
+    {
+      "obligation_id": "R04@E2E",
+      "requirement_id": "R04",
+      "kind": "ORIGINAL",
+      "layer": "E2E",
+      "required_layers": [
+        "DC",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "replay 产生模拟有效结果",
+        "when": "尝试生产提交",
+        "then": "角色/存储隔离拒绝，无 live issuance",
+        "primary_tables": "S46,S47,S42"
+      }
+    },
+    {
+      "obligation_id": "B01",
+      "requirement_id": "B01",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "Factset BUILDING/READY is not canonical",
+        "when": "Attempt to read/use unsealed factset",
+        "then": "Only SEALED may satisfy canonical publication/authorization basis",
+        "primary_tables": [
+          "S15",
+          "S16"
+        ]
+      }
+    },
+    {
+      "obligation_id": "B02",
+      "requirement_id": "B02",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "Factset seal captured frontier becomes stale",
+        "when": "Concurrent input update before seal",
+        "then": "Seal fails/rebuilds; stale candidate never becomes current",
+        "primary_tables": [
+          "S01",
+          "S15",
+          "S16"
+        ]
+      }
+    },
+    {
+      "obligation_id": "B03",
+      "requirement_id": "B03",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "SEALED factset is immutable",
+        "when": "Post-seal member mutation attempted",
+        "then": "Write rejected; correction creates new revision/factset",
+        "primary_tables": [
+          "S15",
+          "S16"
+        ]
+      }
+    },
+    {
+      "obligation_id": "B04",
+      "requirement_id": "B04",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "DC",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "Relevant artifact is revoked",
+        "when": "Issue/reauthorize depends transitively on revoked artifact",
+        "then": "T6 authorization issuance denied",
+        "primary_tables": [
+          "S42",
+          "S49",
+          "S50",
+          "S51"
+        ]
+      }
+    },
+    {
+      "obligation_id": "B05",
+      "requirement_id": "B05",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "DC",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "Unrelated artifact is revoked",
+        "when": "Existing authorization dependency closure excludes artifact",
+        "then": "Authorization remains eligible absent other invalidation",
+        "primary_tables": [
+          "S42",
+          "S49",
+          "S50",
+          "S51"
+        ]
+      }
+    },
+    {
+      "obligation_id": "B06",
+      "requirement_id": "B06",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "Relevant artifact revoked before Manifest publish",
+        "when": "T3 tries to publish under shared gate",
+        "then": "Publish denied/stale; revoke wins by commit order",
+        "primary_tables": [
+          "S24",
+          "S49",
+          "S50",
+          "S51"
+        ]
+      }
+    },
+    {
+      "obligation_id": "B07",
+      "requirement_id": "B07",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "DC",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "Relevant artifact revoked after prior issuance",
+        "when": "START/CONTINUE/RESUME checked",
+        "then": "Execution denied without rewriting historical START",
+        "primary_tables": [
+          "S42",
+          "S45",
+          "S49",
+          "S50",
+          "S51"
+        ]
+      }
+    },
+    {
+      "obligation_id": "B08",
+      "requirement_id": "B08",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "Required dependency has no validity or approved TIMELESS basis",
+        "when": "Authorization requested",
+        "then": "Issuance denied, missing value not treated as infinite",
+        "primary_tables": [
+          "S42",
+          "S49"
+        ]
+      }
+    },
+    {
+      "obligation_id": "B09",
+      "requirement_id": "B09",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "Dependencies have different expiries",
+        "when": "Authorization valid_until calculated",
+        "then": "valid_until equals minimum closure bound",
+        "primary_tables": [
+          "S42"
+        ]
+      }
+    },
+    {
+      "obligation_id": "B10",
+      "requirement_id": "B10",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "Bound dependency expires with cached status unchanged",
+        "when": "START eligibility evaluated",
+        "then": "Execution denied without background expiry job",
+        "primary_tables": [
+          "S42",
+          "S45"
+        ]
+      }
+    },
+    {
+      "obligation_id": "B11",
+      "requirement_id": "B11",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "Emergency revoke has backdated effective_at",
+        "when": "T2-GLOBAL commits now",
+        "then": "New checks deny from commit forward; past START is not retroactively rewritten",
+        "primary_tables": [
+          "S50",
+          "S51"
+        ]
+      }
+    },
+    {
+      "obligation_id": "B12",
+      "requirement_id": "B12",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "Emergency revoke has future effective_at",
+        "when": "T2-GLOBAL commits in V1",
+        "then": "Revoke is immediate at commit; effective_at does not schedule future behavior",
+        "primary_tables": [
+          "S50",
+          "S51"
+        ]
+      }
+    },
+    {
+      "obligation_id": "B13",
+      "requirement_id": "B13",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "T2-GLOBAL revoke transaction rolls back",
+        "when": "T3/T6/T7 evaluate registry",
+        "then": "No revocation effect is visible",
+        "primary_tables": [
+          "S50",
+          "S51"
+        ]
+      }
+    },
+    {
+      "obligation_id": "B14",
+      "requirement_id": "B14",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "WF",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "SafetyRegistry unavailable/degraded",
+        "when": "Publish/issue/start versus STOP requested",
+        "then": "Authorization-relevant paths fail closed while STOP remains available",
+        "primary_tables": [
+          "S17",
+          "S18",
+          "S49",
+          "S51"
+        ]
+      }
+    },
+    {
+      "obligation_id": "B15",
+      "requirement_id": "B15",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "T3/T6/T7 and T2-GLOBAL race",
+        "when": "Shared/exclusive gate interleaves",
+        "then": "No operation commits after a prior revoke using stale registry read",
+        "primary_tables": [
+          "S51"
+        ]
+      }
+    },
+    {
+      "obligation_id": "B16",
+      "requirement_id": "B16",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "DC",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "Session already started with old authorization",
+        "when": "CONTINUE/RESUME occurs after relevant epoch/registry invalidation",
+        "then": "Current permission is rechecked and denied as required",
+        "primary_tables": [
+          "S42",
+          "S45",
+          "S51"
+        ]
+      }
+    },
+    {
+      "obligation_id": "B17",
+      "requirement_id": "B17",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "PU",
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "Artifact A depends on B which is revoked",
+        "when": "Eligibility checks only direct action artifact",
+        "then": "Transitive dependency closure still denies affected operation",
+        "primary_tables": [
+          "S49",
+          "S50",
+          "S51"
+        ]
+      }
+    },
+    {
+      "obligation_id": "B18",
+      "requirement_id": "B18",
+      "kind": "BOUNDARY",
+      "layer": null,
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "given": "Artifact validity is TIMELESS without explicit approved policy/reason",
+        "when": "Registration/authorization attempted",
+        "then": "Registration or authorization basis rejected",
+        "primary_tables": [
+          "S49",
+          "S42"
+        ]
+      }
+    },
+    {
+      "obligation_id": "I01",
+      "requirement_id": "I01",
+      "kind": "INTERLEAVING",
+      "layer": null,
+      "required_layers": [
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "scenario": "publish_vs_user_revoke"
+      }
+    },
+    {
+      "obligation_id": "I02",
+      "requirement_id": "I02",
+      "kind": "INTERLEAVING",
+      "layer": null,
+      "required_layers": [
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "scenario": "start_vs_user_revoke"
+      }
+    },
+    {
+      "obligation_id": "I03",
+      "requirement_id": "I03",
+      "kind": "INTERLEAVING",
+      "layer": null,
+      "required_layers": [
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "scenario": "cancel_vs_dispatch_intent"
+      }
+    },
+    {
+      "obligation_id": "I04",
+      "requirement_id": "I04",
+      "kind": "INTERLEAVING",
+      "layer": null,
+      "required_layers": [
+        "DC",
+        "WF"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "scenario": "lease_takeover_vs_commit_with_clock"
+      }
+    },
+    {
+      "obligation_id": "I05",
+      "requirement_id": "I05",
+      "kind": "INTERLEAVING",
+      "layer": null,
+      "required_layers": [
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "scenario": "artifact_revoke_vs_issue"
+      }
+    },
+    {
+      "obligation_id": "I06",
+      "requirement_id": "I06",
+      "kind": "INTERLEAVING",
+      "layer": null,
+      "required_layers": [
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "scenario": "artifact_revoke_vs_start"
+      }
+    },
+    {
+      "obligation_id": "I07",
+      "requirement_id": "I07",
+      "kind": "INTERLEAVING",
+      "layer": null,
+      "required_layers": [
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "scenario": "artifact_revoke_vs_publish"
+      }
+    },
+    {
+      "obligation_id": "I08",
+      "requirement_id": "I08",
+      "kind": "INTERLEAVING",
+      "layer": null,
+      "required_layers": [
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "scenario": "factset_seal_vs_input_update"
+      }
+    },
+    {
+      "obligation_id": "I09",
+      "requirement_id": "I09",
+      "kind": "INTERLEAVING",
+      "layer": null,
+      "required_layers": [
+        "DC"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "scenario": "dependency_expiry_vs_start"
+      }
+    },
+    {
+      "obligation_id": "INT-A01@PU",
+      "requirement_id": "INT-A01",
+      "kind": "INTEGRATION",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "HEVY_UPDATE_DELETE_REVISION",
+        "assertion": "Hevy update/delete yields revisions/corrections, not destructive overwrite."
+      }
+    },
+    {
+      "obligation_id": "INT-A01@E2E",
+      "requirement_id": "INT-A01",
+      "kind": "INTEGRATION",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "HEVY_UPDATE_DELETE_REVISION",
+        "assertion": "Hevy update/delete yields revisions/corrections, not destructive overwrite."
+      }
+    },
+    {
+      "obligation_id": "INT-A02@PU",
+      "requirement_id": "INT-A02",
+      "kind": "INTEGRATION",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "HEVY_UNKNOWN_EXERCISE_NO_BLUEPRINT_CREDIT",
+        "assertion": "Unknown Hevy exercise preserves actuals but cannot auto-resolve blueprint role."
+      }
+    },
+    {
+      "obligation_id": "INT-A02@E2E",
+      "requirement_id": "INT-A02",
+      "kind": "INTEGRATION",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "HEVY_UNKNOWN_EXERCISE_NO_BLUEPRINT_CREDIT",
+        "assertion": "Unknown Hevy exercise preserves actuals but cannot auto-resolve blueprint role."
+      }
+    },
+    {
+      "obligation_id": "INT-A03@PU",
+      "requirement_id": "INT-A03",
+      "kind": "INTEGRATION",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "HEALTHKIT_NO_VISIBLE_DATA_NOT_ZERO",
+        "assertion": "No visible HealthKit samples maps to unknown/partial coverage, never zero or denied certainty."
+      }
+    },
+    {
+      "obligation_id": "INT-A03@E2E",
+      "requirement_id": "INT-A03",
+      "kind": "INTEGRATION",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "HEALTHKIT_NO_VISIBLE_DATA_NOT_ZERO",
+        "assertion": "No visible HealthKit samples maps to unknown/partial coverage, never zero or denied certainty."
+      }
+    },
+    {
+      "obligation_id": "INT-A04@PU",
+      "requirement_id": "INT-A04",
+      "kind": "INTEGRATION",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "HEALTHKIT_DELETION_PROPAGATES_CORRECTION",
+        "assertion": "Anchored deleted objects produce source correction/invalidation."
+      }
+    },
+    {
+      "obligation_id": "INT-A04@E2E",
+      "requirement_id": "INT-A04",
+      "kind": "INTEGRATION",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "HEALTHKIT_DELETION_PROPAGATES_CORRECTION",
+        "assertion": "Anchored deleted objects produce source correction/invalidation."
+      }
+    },
+    {
+      "obligation_id": "INT-A05@PU",
+      "requirement_id": "INT-A05",
+      "kind": "INTEGRATION",
+      "layer": "PU",
+      "required_layers": [
+        "PU"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "HEALTHKIT_SOURCE_REVISION_PRESERVED",
+        "assertion": "HealthKit evidence preserves UUID/sourceRevision/device provenance."
+      }
+    },
+    {
+      "obligation_id": "INT-A06@PU",
+      "requirement_id": "INT-A06",
+      "kind": "INTEGRATION",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "WEARABLE_STRENGTH_DOES_NOT_INVENT_SETS",
+        "assertion": "HealthKit/Oura workout labels cannot create strength set/reps/load facts."
+      }
+    },
+    {
+      "obligation_id": "INT-A06@E2E",
+      "requirement_id": "INT-A06",
+      "kind": "INTEGRATION",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "WEARABLE_STRENGTH_DOES_NOT_INVENT_SETS",
+        "assertion": "HealthKit/Oura workout labels cannot create strength set/reps/load facts."
+      }
+    },
+    {
+      "obligation_id": "INT-A07@PU",
+      "requirement_id": "INT-A07",
+      "kind": "INTEGRATION",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "CROSS_SOURCE_WORKOUT_COUNTS_ONCE",
+        "assertion": "Hevy+HealthKit+chat for one workout remains one underlying event."
+      }
+    },
+    {
+      "obligation_id": "INT-A07@E2E",
+      "requirement_id": "INT-A07",
+      "kind": "INTEGRATION",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "CROSS_SOURCE_WORKOUT_COUNTS_ONCE",
+        "assertion": "Hevy+HealthKit+chat for one workout remains one underlying event."
+      }
+    },
+    {
+      "obligation_id": "INT-A08@PU",
+      "requirement_id": "INT-A08",
+      "kind": "INTEGRATION",
+      "layer": "PU",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "OURA_AI_DENIED_BEFORE_GATE",
+        "assertion": "Oura evidence cannot enter production AI context before compliance policy enablement."
+      }
+    },
+    {
+      "obligation_id": "INT-A08@E2E",
+      "requirement_id": "INT-A08",
+      "kind": "INTEGRATION",
+      "layer": "E2E",
+      "required_layers": [
+        "PU",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "OURA_AI_DENIED_BEFORE_GATE",
+        "assertion": "Oura evidence cannot enter production AI context before compliance policy enablement."
+      }
+    },
+    {
+      "obligation_id": "INT-A09@E2E",
+      "requirement_id": "INT-A09",
+      "kind": "INTEGRATION",
+      "layer": "E2E",
+      "required_layers": [
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "OURA_ABSENCE_DEGRADES_NOT_BLOCKS",
+        "assertion": "Oura unavailable yields reduced completeness but does not block planner when other required evidence satisfies policy."
+      }
+    },
+    {
+      "obligation_id": "INT-A10@E2E",
+      "requirement_id": "INT-A10",
+      "kind": "INTEGRATION",
+      "layer": "E2E",
+      "required_layers": [
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "NO_HEVY_MANUAL_FALLBACK",
+        "assertion": "Without Hevy, manual strength actual ingestion works and wearable labels do not fill missing sets."
+      }
+    },
+    {
+      "obligation_id": "INT-A11@E2E",
+      "requirement_id": "INT-A11",
+      "kind": "INTEGRATION",
+      "layer": "E2E",
+      "required_layers": [
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "NO_HEALTHKIT_PARTIAL_PLANNING",
+        "assertion": "Without HealthKit, partial-data planning works only when policy permits and missing recovery values remain unknown."
+      }
+    },
+    {
+      "obligation_id": "INT-A12@WF",
+      "requirement_id": "INT-A12",
+      "kind": "INTEGRATION",
+      "layer": "WF",
+      "required_layers": [
+        "WF",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "PROVIDER_OUTAGE_DOES_NOT_BLOCK_STOP",
+        "assertion": "Provider outages/retry saturation cannot starve STOP/protective control path."
+      }
+    },
+    {
+      "obligation_id": "INT-A12@E2E",
+      "requirement_id": "INT-A12",
+      "kind": "INTEGRATION",
+      "layer": "E2E",
+      "required_layers": [
+        "WF",
+        "E2E"
+      ],
+      "status": "NOT_RUN",
+      "specification": {
+        "name": "PROVIDER_OUTAGE_DOES_NOT_BLOCK_STOP",
+        "assertion": "Provider outages/retry saturation cannot starve STOP/protective control path."
+      }
+    }
+  ]
+}
