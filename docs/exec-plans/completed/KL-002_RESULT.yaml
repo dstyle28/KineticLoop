@@ -1,61 +1,49 @@
 task_identity: harness-backlog-v0.2/KL-002
 display_task_id: KL-002
 task_definition_version: v0.2
-base_commit: 6a6f04103cc02d32d5eb086d65bbc2a60fbc9f43
-tested_commit: 7b75360af09b38db4de89d82036e9689da4db8be
+base_commit: 28cc7407f1d4184cf3407db0bcd09794cb60fa5b
+tested_commit: 28cc7407f1d4184cf3407db0bcd09794cb60fa5b
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
 integration_status: UNMERGED
-summary: Added a deterministic local PostgreSQL 16 lifecycle whose Compose project,
-  database, volume, network, and ephemeral host port are isolated by worktree.
+summary: >-
+  Revalidated the merged deterministic PostgreSQL 16 lifecycle at the exact remediation
+  base revision, including distinct Compose and database namespaces across two worktrees.
+  No implementation, test, workflow, or frozen-authority change was required.
 commands_run:
-- check_id: compose_config_valid
-  command: uv run python tools/db/verify.py compose-config-valid
-  result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-002/compose_config_valid-7b75360af09b38db4de89d82036e9689da4db8be.log
-- check_id: postgres_ready
-  command: uv run python tools/db/verify.py postgres-ready
-  result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-002/postgres_ready-7b75360af09b38db4de89d82036e9689da4db8be.log
-- check_id: reset_idempotent
-  command: uv run python tools/db/verify.py reset-idempotent
-  result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-002/reset_idempotent-7b75360af09b38db4de89d82036e9689da4db8be.log
-- check_id: worktree_db_isolated
-  command: uv run python tools/db/verify.py worktree-db-isolated --peer-root <second-git-worktree>
-  result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-002/worktree_db_isolated-7b75360af09b38db4de89d82036e9689da4db8be.log
+  - check_id: compose_config_valid
+    command: uv run python tools/db/verify.py compose-config-valid
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-002/compose_config_valid-28cc7407f1d4184cf3407db0bcd09794cb60fa5b.log
+  - check_id: postgres_ready
+    command: uv run python tools/db/verify.py postgres-ready
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-002/postgres_ready-28cc7407f1d4184cf3407db0bcd09794cb60fa5b.log
+  - check_id: reset_idempotent
+    command: uv run python tools/db/verify.py reset-idempotent
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-002/reset_idempotent-28cc7407f1d4184cf3407db0bcd09794cb60fa5b.log
+  - check_id: worktree_db_isolated
+    command: >-
+      uv run python tools/db/verify.py worktree-db-isolated
+      --peer-root /private/tmp/kl002-remediation-peer-f3be
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-002/worktree_db_isolated-28cc7407f1d4184cf3407db0bcd09794cb60fa5b.log
 requirements_covered: []
 files_changed:
-- .env.example
-- .github/workflows/db.yml
-- compose.yaml
-- pyproject.toml
-- src/kineticloop/db/__init__.py
-- src/kineticloop/db/cli.py
-- src/kineticloop/db/lifecycle.py
-- tools/db/verify.py
-- tools/db/write_result.py
-- tests/db/__init__.py
-- tests/db/test_cli.py
-- tests/db/test_lifecycle.py
-- tests/db/test_result_writer.py
-- tests/db/test_workflow.py
-- docs/exec-plans/evidence/KL-002/compose_config_valid.log
-- docs/exec-plans/evidence/KL-002/postgres_ready.log
-- docs/exec-plans/evidence/KL-002/reset_idempotent.log
-- docs/exec-plans/evidence/KL-002/worktree_db_isolated.log
-- docs/exec-plans/evidence/KL-002/compose_config_valid-7b75360af09b38db4de89d82036e9689da4db8be.log
-- docs/exec-plans/evidence/KL-002/postgres_ready-7b75360af09b38db4de89d82036e9689da4db8be.log
-- docs/exec-plans/evidence/KL-002/reset_idempotent-7b75360af09b38db4de89d82036e9689da4db8be.log
-- docs/exec-plans/evidence/KL-002/worktree_db_isolated-7b75360af09b38db4de89d82036e9689da4db8be.log
-- docs/exec-plans/completed/KL-002_RESULT.yaml
+  - docs/exec-plans/evidence/KL-002/compose_config_valid-28cc7407f1d4184cf3407db0bcd09794cb60fa5b.log
+  - docs/exec-plans/evidence/KL-002/postgres_ready-28cc7407f1d4184cf3407db0bcd09794cb60fa5b.log
+  - docs/exec-plans/evidence/KL-002/reset_idempotent-28cc7407f1d4184cf3407db0bcd09794cb60fa5b.log
+  - docs/exec-plans/evidence/KL-002/worktree_db_isolated-28cc7407f1d4184cf3407db0bcd09794cb60fa5b.log
+  - docs/exec-plans/completed/KL-002_RESULT.yaml
 decisions:
-- Derive Compose and database namespaces from the resolved physical worktree path.
-- Publish PostgreSQL on an ephemeral loopback port rather than a shared fixed port.
-- Make teardown failures fail lifecycle verification.
+  - Preserve the merged KL-002 implementation unchanged because every packet check passed.
+  - Bind remediation evidence to the exact master revision tested before bookkeeping commits.
+  - Use path-derived, distinct database and Docker Compose namespaces for both worktrees.
 known_limitations:
-- Docker with the Compose plugin is required for live lifecycle checks.
-follow_up_tasks: []
+  - Docker with the Compose plugin is required for live lifecycle checks.
+follow_up_tasks:
+  - Run a fresh SHA-bound DB_CONCURRENCY independent review.
+  - Run a fresh SHA-bound GENERAL independent review.
 spec_change_request: null
