@@ -1,0 +1,32 @@
+HG-004 governance check evidence
+base_commit: 28cc7407f1d4184cf3407db0bcd09794cb60fa5b
+tested_commit: 382bcecb34d3d8c1e855cd116cc8bb87fda9e27c
+
+$ .venv/bin/kl check-harness
+HARNESS_CHECK_PASS tasks=68 active=66
+RESULT: PASS
+
+$ .venv/bin/ruff check .
+All checks passed!
+RESULT: PASS
+
+$ MYPY_CACHE_DIR=/private/tmp/hg-004-mypy .venv/bin/mypy src tools
+Success: no issues found in 21 source files
+RESULT: PASS
+
+$ .venv/bin/pytest -q tests/unit
+...................................................................      [100%]
+67 passed in 0.77s
+RESULT: PASS
+
+$ .venv/bin/pytest -q tests/harness
+........................................................................ [ 93%]
+.....                                                                    [100%]
+77 passed in 20.90s
+RESULT: PASS
+
+$ git diff --check 28cc7407f1d4184cf3407db0bcd09794cb60fa5b 382bcecb34d3d8c1e855cd116cc8bb87fda9e27c
+RESULT: PASS (no output)
+
+$ git diff --exit-code 28cc7407f1d4184cf3407db0bcd09794cb60fa5b 382bcecb34d3d8c1e855cd116cc8bb87fda9e27c -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md
+RESULT: PASS (no output)
