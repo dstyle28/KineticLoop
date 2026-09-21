@@ -1,0 +1,54 @@
+KL-004 focused checks and frozen-scope self-review
+tested_commit: ac41a590d85300bc0f10adc33dc0a7441478722e
+base_commit: faa29f162ca0ccd9ecf0ccfdb2dfa1916b04ed21
+
+CHECK error_registry_wire_values_valid
+$ .venv/bin/pytest -q tests/unit/contracts/test_errors.py -k error_registry_wire_values_valid
+.                                                                        [100%]
+1 passed in 0.01s
+RESULT: PASS
+
+CHECK receipt_identity_contract_valid
+$ .venv/bin/pytest -q tests/unit/contracts/test_receipts.py -k receipt_identity_contract_valid
+.                                                                        [100%]
+1 passed, 23 deselected in 0.01s
+RESULT: PASS
+
+CHECK same_key_same_hash_replays_original_result
+$ .venv/bin/pytest -q tests/unit/contracts/test_receipts.py -k same_key_same_hash_replays_original_result
+.                                                                        [100%]
+1 passed, 23 deselected in 0.01s
+RESULT: PASS
+
+CHECK same_key_different_hash_rejected
+$ .venv/bin/pytest -q tests/unit/contracts/test_receipts.py -k same_key_different_hash_rejected
+....                                                                     [100%]
+4 passed, 20 deselected in 0.01s
+RESULT: PASS
+
+CHECK receipt_invalid_input_rejected
+$ .venv/bin/pytest -q tests/unit/contracts/test_receipts.py -k receipt_invalid_input_rejected
+..................                                                       [100%]
+18 passed, 6 deselected in 0.01s
+RESULT: PASS
+
+FROZEN-SCOPE SELF-REVIEW
+
+GENERAL: PASS for task scope.
+- Changed only the packet's five expected implementation/test paths plus KL-004 evidence/result bookkeeping.
+- ErrorCode is a closed, unique StrEnum whose names and values exactly match the DB section 3 and section 11 rejection vocabulary.
+- Receipt values are frozen/slotted and reject mutable retained containers, subclassed wire scalars/models, ambiguous subject/scope identity, extra fields, and duplicate constructor fields.
+- Status, result references, error, accepted time, and completed time remain opaque base fields; no lifecycle correlation was invented.
+
+PROTOCOL: PASS for task scope.
+- INV-02 is preserved: receipt/result/replay types expose no admission, approval, authorization, execution-permission, or provider-send permission.
+- Same-hash replay returns the exact stored historical result with a non-overridable replayed=true marker; it does not create a new success or current permission.
+- The change does not alter T1-T8 atomic boundaries, production/shadow separation, provider trust, or command ownership.
+
+DB_CONCURRENCY: PASS for base-interface compatibility only; no database guarantee claimed.
+- The pure decision function performs no persistence or lock acquisition, so it cannot invert the frozen registry -> user -> quota -> intent -> reservation -> plan head -> execution -> receipt order.
+- A required explicit/derived CommandBinding preserves generic DB section 3 IDEMPOTENCY_KEY_REUSE_WITH_DIFFERENT_PAYLOAD and DB section 11 BeginBuild/WriteCandidate/RevokeArtifact IDEMPOTENCY_CONFLICT as distinct identities.
+- PostgreSQL uniqueness, same-transaction receipt/result mutation, ACK-loss behavior, retention, and cross-transaction concurrency remain deferred to the later S02/CommandGateway implementation task.
+
+SELF-REVIEW RESULT: PASS
+SPEC_CHANGE_REQUIRED: no
