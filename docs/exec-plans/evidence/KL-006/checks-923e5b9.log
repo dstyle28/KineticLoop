@@ -1,0 +1,42 @@
+KL-006 verification evidence
+task_identity: harness-backlog-v0.2/KL-006
+base_commit: cc6008f5a591d851dcc5a1dcf526c5393dc66cff
+tested_commit: 923e5b91ba80e422323f35773121a08e48d2a221
+
+$ uv run python tools/harness/document_index/check.py current_document_index_resolves
+CURRENT_DOCUMENT_INDEX_PASS resolved=13
+
+$ uv run python tools/harness/document_index/check.py evidence_manifest_paths_resolve
+EVIDENCE_MANIFEST_PASS verified_paths=3
+MISSING_MODEL_SOURCE canonical-protocol-model-runner path=protocol_model/run_model.py
+MISSING_MODEL_REPORT canonical-protocol-model-report-json path=protocol_model/reports/model_report.json
+MISSING_POLICY_FIXTURE canonical-protocol-model-fixtures path=protocol_model/fixtures.json
+MISSING_POLICY_FIXTURE canonical-protocol-model-policies path=protocol_model/policies.json
+MISSING_SOURCE_REVISION protocol-model-source-revision path=<no-bound-revision>
+
+$ uv run python tools/harness/document_index/check.py historical_task_id_map_valid
+HISTORICAL_TASK_ID_MAP_PASS mappings=10
+
+Additional regression evidence on tested_commit:
+
+$ uv run kl lint
+All checks passed!
+
+$ uv run kl typecheck
+Success: no issues found in 21 source files
+
+$ uv run kl test-unit
+54 passed in 0.47s
+
+$ uv run kl test-harness
+65 passed in 23.92s
+
+$ uv run kl check-harness --protected-base cc6008f5a591d851dcc5a1dcf526c5393dc66cff --task-id KL-006
+HARNESS_CHECK_PASS tasks=68 active=66
+
+Frozen authority verification:
+DOC-DB-V0.2 sha256=2158a80bdc0e16eaf9c2cd835f704bdc2f346565dc35cb0c1fc1a8c00a1b8eda
+DOC-PROTOCOL-V1.2 sha256=00bf3eb2e0e2e00867d114b42e147a2341d98454f08629c849ebf0b4c0c4916c
+FROZEN_BASELINE.json sha256=bb8cd79942d3ca735e38e0363d8f56c5c45bbd79210a6618d29704aac3dd04df
+
+No product requirement status is claimed by this evidence.

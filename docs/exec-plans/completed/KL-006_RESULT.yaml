@@ -1,0 +1,57 @@
+task_identity: harness-backlog-v0.2/KL-006
+display_task_id: KL-006
+task_definition_version: v0.2
+base_commit: cc6008f5a591d851dcc5a1dcf526c5393dc66cff
+tested_commit: cc43eee74d428bdb859bfa30b8c5dd5651696137
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Added stable-ID-only current-document resolution, strict path and hash validation
+  for canonical and machine-readable index entries, derived package-manifest
+  bindings, evidence-handoff validation, and authority-anchored historical task-map
+  validation. The evidence manifest binds the available historical summary while
+  explicitly preserving missing model inputs and labeling the aggregate result
+  declaration unverified. Frozen Protocol and DB identities and hashes are unchanged.
+commands_run:
+  - check_id: current_document_index_resolves
+    command: uv run python tools/harness/document_index/check.py current_document_index_resolves
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-006/checks-cc43eee.log
+  - check_id: evidence_manifest_paths_resolve
+    command: uv run python tools/harness/document_index/check.py evidence_manifest_paths_resolve
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-006/checks-cc43eee.log
+  - check_id: historical_task_id_map_valid
+    command: uv run python tools/harness/document_index/check.py historical_task_id_map_valid
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-006/checks-cc43eee.log
+requirements_covered: []
+files_changed:
+  - CURRENT_DOCUMENT_INDEX.json
+  - HARNESS_DOCUMENT_MANIFEST.json
+  - HISTORICAL_TASK_ID_MAP.json
+  - KineticLoop_Evidence_Manifest_v0.1.json
+  - src/kineticloop/harness/documents/__init__.py
+  - src/kineticloop/harness/documents/index.py
+  - tools/harness/document_index/check.py
+  - tests/harness/document_index/conftest.py
+  - tests/harness/document_index/test_current_document_index.py
+  - tests/harness/document_index/test_evidence_manifest.py
+  - tests/harness/document_index/test_historical_task_map.py
+  - docs/exec-plans/evidence/KL-006/checks-923e5b9.log
+  - docs/exec-plans/evidence/KL-006/checks-cc43eee.log
+  - docs/exec-plans/completed/KL-006_RESULT.yaml
+decisions:
+  - Resolve current authority only by exact document_id entries in CURRENT_DOCUMENT_INDEX.json; reject filenames and guessed aliases.
+  - Treat machine-readable index entries as integrity-checked artifacts without inventing new authority identities beyond the packet's allowance.
+  - Verify the package manifest's hash and byte bindings for CURRENT_DOCUMENT_INDEX.json, HISTORICAL_TASK_ID_MAP.json, and KineticLoop_Evidence_Manifest_v0.1.json.
+  - Bind the available historical summary at its actual archived repository path without treating unindexed draft model copies as canonical or reproducible source evidence.
+  - Anchor the current namespace to the declared current backlog path and its task_namespace, pin the legacy namespace source, and require fully namespaced historical evidence joins.
+  - Preserve the known historical aggregate values as an explicitly UNVERIFIED_HISTORICAL_DECLARATION; reject status promotion or rewritten figures.
+known_limitations:
+  - The canonical model runner, detailed model_report.json, exact fixtures and policies, and exact repository commit or tag remain missing from the evidence handoff.
+  - Draft model files under specs/v1.2/draft are unindexed and lack an exact historical source-revision binding, so they do not close the reproduction gap.
+follow_up_tasks: []
+spec_change_request: null
