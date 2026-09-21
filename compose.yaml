@@ -1,0 +1,27 @@
+name: ${COMPOSE_PROJECT_NAME:?set by `kl db-reset`}
+
+services:
+  postgres:
+    image: postgres:16.10-alpine
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: ${KINETICLOOP_DB_USER:-kineticloop}
+      POSTGRES_PASSWORD: ${KINETICLOOP_DB_PASSWORD:-kineticloop-local-only}
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready --username "$${POSTGRES_USER}" --dbname "$${POSTGRES_DB}"
+      interval: 1s
+      timeout: 5s
+      retries: 60
+      start_period: 2s
+    ports:
+      - target: 5432
+        host_ip: 127.0.0.1
+        published: "0"
+        protocol: tcp
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
