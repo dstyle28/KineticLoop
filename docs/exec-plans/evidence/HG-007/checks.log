@@ -1,0 +1,64 @@
+HG-007 governance check evidence
+
+Protected base
+  commit: 2e84dfb5904449351da9ff8f9d7d944d34fefb11
+  tree:   f1b2088ee724bee4fe763b49413e47f93f81dd28
+
+Anchor verification and authorized repair
+  origin/codex/kl-004-review-record-anchor:
+    c22d3ff49f2ba6ab9dd4e3a3993a26395b57b162
+  original KL-004 anchor tree:
+    d4793c8d194aeea8012303b9f090cc2c43cce4c8
+  refreshed KL-004 ancestry commit:
+    3d8c5f1aa828bc75819d3204778708248c49fef3
+  refreshed KL-004 parent:
+    c22d3ff49f2ba6ab9dd4e3a3993a26395b57b162
+  refreshed KL-004 tree:
+    f1b2088ee724bee4fe763b49413e47f93f81dd28
+  codex/kl-005-durable-binding:
+    a159dec2f4c7c0a3a14fc45b4feae046a940e484
+  KL-005 tree:
+    f1b2088ee724bee4fe763b49413e47f93f81dd28
+  result: PASS
+
+Tested no-content octopus merge
+  commit: 0f943db0aa572e11fda95ac05895b73b6d4b7745
+  tree:   f1b2088ee724bee4fe763b49413e47f93f81dd28
+  parents, in order:
+    2e84dfb5904449351da9ff8f9d7d944d34fefb11
+    3d8c5f1aa828bc75819d3204778708248c49fef3
+    a159dec2f4c7c0a3a14fc45b4feae046a940e484
+  original KL-004 anchor is ancestor of refreshed KL-004 anchor: PASS
+  all three parents are ancestors of tested merge: PASS
+  tested tree equals protected-base tree: PASS
+  protected-base-to-tested name-status diff is empty: PASS
+
+.venv/bin/kl check-harness
+  HARNESS_CHECK_PASS tasks=68 active=66
+  result: PASS
+
+.venv/bin/ruff check .
+  All checks passed!
+  result: PASS
+
+MYPY_CACHE_DIR=/private/tmp/hg-007-mypy .venv/bin/mypy src tools tests
+  Success: no issues found in 44 source files
+  result: PASS
+
+.venv/bin/pytest -q tests/unit
+  92 passed in 1.56s
+  result: PASS
+
+.venv/bin/pytest -q tests/harness
+  81 passed in 27.31s
+  result: PASS
+
+git diff --check 2e84dfb5904449351da9ff8f9d7d944d34fefb11 0f943db0aa572e11fda95ac05895b73b6d4b7745
+  result: PASS
+
+git diff --exit-code 2e84dfb5904449351da9ff8f9d7d944d34fefb11 0f943db0aa572e11fda95ac05895b73b6d4b7745 -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md
+  result: PASS
+
+Integration constraint
+  Preserve ancestry by fast-forward or merge commit only.
+  Do not squash or rebase HG-007.
