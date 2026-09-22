@@ -1,0 +1,102 @@
+change_identity: harness-governance-v0.1/HG-006
+display_change_id: HG-006
+base_commit: 878e4522c7819fe1a0256be835ee0b4dca83ac68
+tested_commit: 090e019c960a342487b378d51f6ff77843de9987
+change_status: PASS
+summary: >-
+  Record the durable post-merge integration binding for KL-004 under the
+  exact-complete-tree squash rule, tying its byte-identical PASS result and
+  independent reviews to the integrated merge commit without rewriting any
+  task implementation, result, or review artifact.
+packets_refined: []
+files_changed:
+  - docs/exec-plans/evidence/HG-006/checks.log
+  - docs/exec-plans/governance/HG-006.yaml
+  - docs/exec-plans/integrations/KL-004.json
+checks_run:
+  - check_id: integration_schema_valid
+    command: >-
+      .venv/bin/python -c 'import json, jsonschema;
+      jsonschema.Draft202012Validator(json.load(open("INTEGRATION_RECORD.schema.json"))).validate(
+      json.load(open("docs/exec-plans/integrations/KL-004.json")))'
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-006/checks.log
+  - check_id: harness_structure_valid
+    command: .venv/bin/kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-006/checks.log
+  - check_id: lint_passes
+    command: .venv/bin/ruff check .
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-006/checks.log
+  - check_id: typecheck_passes
+    command: MYPY_CACHE_DIR=/private/tmp/hg-006-mypy .venv/bin/mypy src tools tests
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-006/checks.log
+  - check_id: unit_tests_pass
+    command: .venv/bin/pytest -q tests/unit
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-006/checks.log
+  - check_id: harness_tests_pass
+    command: .venv/bin/pytest -q tests/harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-006/checks.log
+  - check_id: integration_binding_tests_pass
+    command: .venv/bin/pytest -q tests/harness/test_validator.py -k integration
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-006/checks.log
+  - check_id: integration_revision_chain_valid
+    command: >-
+      git merge-base --is-ancestor 21df1542ff54dc6ccf6df710a70ca924d713fb89
+      21df1542ff54dc6ccf6df710a70ca924d713fb89 && git merge-base
+      --is-ancestor 21df1542ff54dc6ccf6df710a70ca924d713fb89
+      c22d3ff49f2ba6ab9dd4e3a3993a26395b57b162 && ! git merge-base
+      --is-ancestor c22d3ff49f2ba6ab9dd4e3a3993a26395b57b162
+      1fc97cbcecabf4c32cda2f20160489661fa3677b && test "$(git rev-parse
+      c22d3ff49f2ba6ab9dd4e3a3993a26395b57b162^{tree})" = "$(git rev-parse
+      1fc97cbcecabf4c32cda2f20160489661fa3677b^{tree})" && git merge-base
+      --is-ancestor 1fc97cbcecabf4c32cda2f20160489661fa3677b
+      090e019c960a342487b378d51f6ff77843de9987
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-006/checks.log
+  - check_id: result_review_artifacts_bound
+    command: >-
+      test "$(git rev-parse
+      21df1542ff54dc6ccf6df710a70ca924d713fb89:docs/exec-plans/completed/KL-004_RESULT.yaml)"
+      = "$(git rev-parse
+      c22d3ff49f2ba6ab9dd4e3a3993a26395b57b162:docs/exec-plans/completed/KL-004_RESULT.yaml)"
+      && test "$(git rev-parse
+      c22d3ff49f2ba6ab9dd4e3a3993a26395b57b162:docs/exec-plans/reviews/KL-004/DB_CONCURRENCY.json)"
+      = "$(git rev-parse
+      1fc97cbcecabf4c32cda2f20160489661fa3677b:docs/exec-plans/reviews/KL-004/DB_CONCURRENCY.json)"
+      && test "$(git rev-parse
+      c22d3ff49f2ba6ab9dd4e3a3993a26395b57b162:docs/exec-plans/reviews/KL-004/GENERAL.json)"
+      = "$(git rev-parse
+      1fc97cbcecabf4c32cda2f20160489661fa3677b:docs/exec-plans/reviews/KL-004/GENERAL.json)"
+      && test "$(git rev-parse
+      c22d3ff49f2ba6ab9dd4e3a3993a26395b57b162:docs/exec-plans/reviews/KL-004/PROTOCOL.json)"
+      = "$(git rev-parse
+      1fc97cbcecabf4c32cda2f20160489661fa3677b:docs/exec-plans/reviews/KL-004/PROTOCOL.json)"
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-006/checks.log
+  - check_id: diff_clean
+    command: >-
+      git diff --check 878e4522c7819fe1a0256be835ee0b4dca83ac68
+      090e019c960a342487b378d51f6ff77843de9987
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-006/checks.log
+  - check_id: frozen_baseline_unchanged
+    command: >-
+      git diff --exit-code 878e4522c7819fe1a0256be835ee0b4dca83ac68
+      090e019c960a342487b378d51f6ff77843de9987 -- FROZEN_BASELINE.json
+      04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
+      05_KineticLoop_Protocol_v1.2_FROZEN.md
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-006/checks.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+  - >-
+    HG-006 still requires a fresh independent GENERAL review bound to the final
+    governance head before merge; this change intentionally creates no review
+    artifact.

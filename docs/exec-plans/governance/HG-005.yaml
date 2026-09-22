@@ -1,0 +1,73 @@
+change_identity: harness-governance-v0.1/HG-005
+display_change_id: HG-005
+base_commit: 1fc97cbcecabf4c32cda2f20160489661fa3677b
+tested_commit: 7e8c63d3fbfb90918b1f72d31e707a3929801dcf
+change_status: PASS
+summary: >-
+  Permit post-merge integration records for GitHub squash merges only when the
+  review-record commit and merge commit have exactly equal complete Git tree
+  object IDs, while preserving strict ancestry for the result-to-reviewed,
+  reviewed-to-review-record, and merge-to-current-HEAD bindings.
+packets_refined: []
+files_changed:
+  - CURRENT_DOCUMENT_INDEX.json
+  - HARNESS_DOCUMENT_MANIFEST.json
+  - docs/exec-plans/evidence/HG-005/checks.log
+  - docs/exec-plans/governance/HG-005.yaml
+  - docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
+  - docs/harness/HARNESS_NEGATIVE_TEST_MATRIX.md
+  - tests/harness/test_validator.py
+  - tools/harness/validate_harness.py
+checks_run:
+  - check_id: harness_structure_valid
+    command: .venv/bin/kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-005/checks.log
+  - check_id: lint_passes
+    command: .venv/bin/ruff check .
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-005/checks.log
+  - check_id: typecheck_passes
+    command: MYPY_CACHE_DIR=/private/tmp/hg-005-tested-mypy .venv/bin/mypy src tools tests
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-005/checks.log
+  - check_id: unit_tests_pass
+    command: .venv/bin/pytest -q tests/unit
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-005/checks.log
+  - check_id: harness_tests_pass
+    command: .venv/bin/pytest -q tests/harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-005/checks.log
+  - check_id: squash_integration_focused_tests_pass
+    command: >-
+      .venv/bin/pytest -q tests/harness/test_validator.py -k
+      'exact_complete_tree_squash_merge or
+      squash_tree_with_unrelated_content_change or
+      squash_tree_with_mode_only_difference or
+      exact_tree_exception_does_not_replace_review_binding_ancestry'
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-005/checks.log
+  - check_id: diff_clean
+    command: >-
+      git diff --check 1fc97cbcecabf4c32cda2f20160489661fa3677b
+      7e8c63d3fbfb90918b1f72d31e707a3929801dcf
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-005/checks.log
+  - check_id: frozen_baseline_unchanged
+    command: >-
+      git diff --exit-code 1fc97cbcecabf4c32cda2f20160489661fa3677b
+      7e8c63d3fbfb90918b1f72d31e707a3929801dcf -- FROZEN_BASELINE.json
+      04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
+      05_KineticLoop_Protocol_v1.2_FROZEN.md
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-005/checks.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+  - >-
+    HG-005 still requires a fresh independent GENERAL review bound to the final
+    governance head before merge; this change intentionally creates no review
+    artifact.
+  - >-
+    HG-005 does not create the KL-004 post-merge integration record.

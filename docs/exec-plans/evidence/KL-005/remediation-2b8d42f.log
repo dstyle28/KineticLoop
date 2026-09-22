@@ -1,0 +1,60 @@
+KL-005 durable review/integration binding remediation
+task_identity: harness-backlog-v0.2/KL-005
+base_commit: 2b8d42f09a635e2e206b32d38285d0052d3f89de
+tested_commit: 2b8d42f09a635e2e206b32d38285d0052d3f89de
+branch: codex/kl-005-durable-binding
+
+Packet-required checks
+
+$ UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_requirement_sources_parse -q
+.                                                                        [100%]
+1 passed in 0.02s
+
+$ UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_obligation_ids_unique -q
+.                                                                        [100%]
+1 passed in 0.02s
+
+$ UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_all_expected_layers_registered -q
+.                                                                        [100%]
+1 passed in 0.02s
+
+$ UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_default_status_not_run -q
+.                                                                        [100%]
+1 passed in 0.02s
+
+$ UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance/test_registry.py::test_integration_obligations_registered -q
+.                                                                        [100%]
+1 passed in 0.02s
+
+Regression checks
+
+$ UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run pytest tests/harness/acceptance -q
+.....                                                                    [100%]
+5 passed in 0.02s
+
+$ UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run kl test-unit
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/davetian/.codex/worktrees/e0d2/KineticLoop
+configfile: pyproject.toml
+collected 92 items
+
+tests/unit/contracts/test_errors.py .                                    [  1%]
+tests/unit/contracts/test_receipts.py ........................           [ 27%]
+tests/unit/identity/test_roles.py .............                          [ 41%]
+tests/unit/primitives/test_canonical.py ...........                      [ 53%]
+tests/unit/primitives/test_hashes.py ........                            [ 61%]
+tests/unit/primitives/test_ids.py .........                              [ 71%]
+tests/unit/primitives/test_times.py .......................              [ 96%]
+tests/unit/test_cli.py ...                                               [100%]
+
+============================== 92 passed in 1.41s ==============================
+
+$ UV_CACHE_DIR=/private/tmp/kl001-uv-cache /private/tmp/kl001-bootstrap/bin/uv run kl check-harness
+HARNESS_CHECK_PASS tasks=68 active=66
+
+Result preservation check
+
+requirements_covered: 128
+statuses: NOT_RUN=128
+requirement evidence references: null=128

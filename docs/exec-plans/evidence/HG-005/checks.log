@@ -1,0 +1,38 @@
+HG-005 governance check evidence
+base_commit: 1fc97cbcecabf4c32cda2f20160489661fa3677b
+tested_commit: 7e8c63d3fbfb90918b1f72d31e707a3929801dcf
+
+$ .venv/bin/kl check-harness
+HARNESS_CHECK_PASS tasks=68 active=66
+RESULT: PASS
+
+$ .venv/bin/ruff check .
+All checks passed!
+RESULT: PASS
+
+$ MYPY_CACHE_DIR=/private/tmp/hg-005-tested-mypy .venv/bin/mypy src tools tests
+Success: no issues found in 44 source files
+RESULT: PASS
+
+$ .venv/bin/pytest -q tests/unit
+........................................................................ [ 78%]
+....................                                                     [100%]
+92 passed in 1.09s
+RESULT: PASS
+
+$ .venv/bin/pytest -q tests/harness
+........................................................................ [ 88%]
+.........                                                                [100%]
+81 passed in 23.45s
+RESULT: PASS
+
+$ .venv/bin/pytest -q tests/harness/test_validator.py -k 'exact_complete_tree_squash_merge or squash_tree_with_unrelated_content_change or squash_tree_with_mode_only_difference or exact_tree_exception_does_not_replace_review_binding_ancestry'
+....                                                                     [100%]
+4 passed, 52 deselected in 2.36s
+RESULT: PASS
+
+$ git diff --check 1fc97cbcecabf4c32cda2f20160489661fa3677b 7e8c63d3fbfb90918b1f72d31e707a3929801dcf
+RESULT: PASS (no output)
+
+$ git diff --exit-code 1fc97cbcecabf4c32cda2f20160489661fa3677b 7e8c63d3fbfb90918b1f72d31e707a3929801dcf -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md
+RESULT: PASS (no output)

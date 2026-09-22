@@ -108,6 +108,21 @@ class ValidatorTests(unittest.TestCase):
         dump(self.root / f'docs/exec-plans/reviews/{task_id}/GENERAL.json', obj)
         return self.commit('persist review')
 
+    def sibling_commit(self, treeish, message='squash merge'):
+        tree = self.git('rev-parse', treeish + '^{tree}')
+        return self.git('commit-tree', tree, '-p', self.base, '-m', message)
+
+    def integration_record(self, result_commit, reviewed, review_commit, merge_commit):
+        dump(self.root / 'docs/exec-plans/integrations/KL-001.json', {
+            'task_identity': self.task['task_identity'],
+            'display_task_id': 'KL-001',
+            'result_commit': result_commit,
+            'reviewed_head_sha': reviewed,
+            'review_record_commit': review_commit,
+            'merge_commit': merge_commit,
+            'integration_status': 'MERGED',
+        })
+
     def governance_review(self, change_id, reviewed, review_type='GENERAL'):
         obj = {
             'task_identity': 'harness-governance-v0.1/' + change_id,
@@ -479,6 +494,48 @@ class ValidatorTests(unittest.TestCase):
             'integration_status': 'MERGED',
         })
         self.check()
+
+    def test_integration_accepts_exact_complete_tree_squash_merge(self):
+        self.result(tested=self.base)
+        result_commit = self.commit('persist result')
+        review_commit = self.review(result_commit)
+        merge_commit = self.sibling_commit(review_commit)
+        self.git('checkout', '-q', '--detach', merge_commit)
+        self.integration_record(result_commit, result_commit, review_commit, merge_commit)
+        self.check()
+
+    def test_integration_rejects_squash_tree_with_unrelated_content_change(self):
+        self.result(tested=self.base)
+        result_commit = self.commit('persist result')
+        review_commit = self.review(result_commit)
+        self.put('unrelated.txt', 'not part of the reviewed tree\n')
+        near_match = self.commit('change unrelated content')
+        merge_commit = self.sibling_commit(near_match)
+        self.git('checkout', '-q', '--detach', merge_commit)
+        self.integration_record(result_commit, result_commit, review_commit, merge_commit)
+        self.check(1, 'integration-ancestry-or-exact-tree:KL-001:review-to-merge')
+
+    def test_integration_rejects_squash_tree_with_mode_only_difference(self):
+        self.result(tested=self.base)
+        result_commit = self.commit('persist result')
+        review_commit = self.review(result_commit)
+        readme = self.root / 'README.md'
+        readme.chmod(readme.stat().st_mode | 0o111)
+        mode_change = self.commit('change unrelated file mode')
+        merge_commit = self.sibling_commit(mode_change)
+        self.git('checkout', '-q', '--detach', merge_commit)
+        self.integration_record(result_commit, result_commit, review_commit, merge_commit)
+        self.check(1, 'integration-ancestry-or-exact-tree:KL-001:review-to-merge')
+
+    def test_exact_tree_exception_does_not_replace_review_binding_ancestry(self):
+        self.result(tested=self.base)
+        result_commit = self.commit('persist result')
+        review_commit = self.review(result_commit)
+        unrelated_review_commit = self.sibling_commit(review_commit, 'parallel review record')
+        self.git('checkout', '-q', '--detach', unrelated_review_commit)
+        self.integration_record(
+            result_commit, result_commit, unrelated_review_commit, unrelated_review_commit)
+        self.check(1, 'integration-ancestry:KL-001:reviewed-to-review-record')
 
     def test_integration_rejects_result_changed_before_review(self):
         result_path, result = self.result(ext='yaml', tested=self.base)
