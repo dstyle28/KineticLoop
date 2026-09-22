@@ -1,0 +1,65 @@
+HG-006 tested_commit=090e019c960a342487b378d51f6ff77843de9987
+
+check_id=integration_schema_valid
+command=.venv/bin/python -c 'import json, jsonschema; jsonschema.Draft202012Validator(json.load(open("INTEGRATION_RECORD.schema.json"))).validate(json.load(open("docs/exec-plans/integrations/KL-004.json")))'
+exit_code=0
+INTEGRATION_RECORD.schema.json validation PASS
+
+check_id=harness_structure_valid
+command=.venv/bin/kl check-harness
+exit_code=0
+HARNESS_CHECK_PASS tasks=68 active=66
+
+check_id=lint_passes
+command=.venv/bin/ruff check .
+exit_code=0
+All checks passed!
+
+check_id=typecheck_passes
+command=MYPY_CACHE_DIR=/private/tmp/hg-006-mypy .venv/bin/mypy src tools tests
+exit_code=0
+Success: no issues found in 44 source files
+
+check_id=unit_tests_pass
+command=.venv/bin/pytest -q tests/unit
+exit_code=0
+........................................................................ [ 78%]
+....................                                                     [100%]
+92 passed in 2.14s
+
+check_id=harness_tests_pass
+command=.venv/bin/pytest -q tests/harness
+exit_code=0
+........................................................................ [ 88%]
+.........                                                                [100%]
+81 passed in 26.15s
+
+check_id=integration_binding_tests_pass
+command=.venv/bin/pytest -q tests/harness/test_validator.py -k integration
+exit_code=0
+...........                                                              [100%]
+11 passed, 45 deselected in 7.21s
+
+check_id=integration_revision_chain_valid
+command=git merge-base --is-ancestor 21df1542ff54dc6ccf6df710a70ca924d713fb89 21df1542ff54dc6ccf6df710a70ca924d713fb89 && git merge-base --is-ancestor 21df1542ff54dc6ccf6df710a70ca924d713fb89 c22d3ff49f2ba6ab9dd4e3a3993a26395b57b162 && ! git merge-base --is-ancestor c22d3ff49f2ba6ab9dd4e3a3993a26395b57b162 1fc97cbcecabf4c32cda2f20160489661fa3677b && test "$(git rev-parse c22d3ff49f2ba6ab9dd4e3a3993a26395b57b162^{tree})" = "$(git rev-parse 1fc97cbcecabf4c32cda2f20160489661fa3677b^{tree})" && git merge-base --is-ancestor 1fc97cbcecabf4c32cda2f20160489661fa3677b 090e019c960a342487b378d51f6ff77843de9987
+exit_code=0
+strict_edge result_to_reviewed PASS
+strict_edge reviewed_to_review_record PASS
+squash_edge review_record_to_merge PASS tree=d4793c8d194aeea8012303b9f090cc2c43cce4c8
+strict_edge merge_to_tested PASS
+
+check_id=result_review_artifacts_bound
+command=test result and review blob identities at the bound result, review-record, merge, and tested revisions
+exit_code=0
+result_blob_bound PASS blob=0d92516625410b16260d221a9629b124afddcc21
+review_blob_bound PASS path=docs/exec-plans/reviews/KL-004/DB_CONCURRENCY.json blob=16643f33c4870e73fa6d37e648e21e68730a9998
+review_blob_bound PASS path=docs/exec-plans/reviews/KL-004/GENERAL.json blob=7ec51fcc2ad79419bc6071b55367d0a66468ea53
+review_blob_bound PASS path=docs/exec-plans/reviews/KL-004/PROTOCOL.json blob=4906e519fb0b15d17cb1a7d8b9c3a51d256482e1
+
+check_id=diff_clean
+command=git diff --check 878e4522c7819fe1a0256be835ee0b4dca83ac68 090e019c960a342487b378d51f6ff77843de9987
+exit_code=0
+
+check_id=frozen_baseline_unchanged
+command=git diff --exit-code 878e4522c7819fe1a0256be835ee0b4dca83ac68 090e019c960a342487b378d51f6ff77843de9987 -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md
+exit_code=0
