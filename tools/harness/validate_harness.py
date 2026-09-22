@@ -152,6 +152,12 @@ def changed_paths(root, before, after):
     return git(root, 'diff', '--no-renames', '--name-only', '-z', before, after, '--').decode().split('\0')[:-1]
 
 
+def is_ancestor(root, ancestor, descendant):
+    return subprocess.run(
+        ['git', 'merge-base', '--is-ancestor', ancestor, descendant],
+        cwd=root, capture_output=True).returncode == 0
+
+
 def result_paths(task_id):
     return [f'docs/exec-plans/completed/{task_id}_RESULT.{ext}' for ext in ('yaml', 'json')]
 
@@ -207,6 +213,7 @@ def configure_ci_merge_gate(root, args):
     git(root, 'merge-base', '--is-ancestor', base, head)
     task_candidates = []
     governance_candidates = []
+    review_candidates = []
     for path in changed_paths(root, base, head):
         match = re.fullmatch(r'docs/exec-plans/completed/(KL-[0-9]{3}[A-Z]?)_RESULT\.(?:yaml|json)', path)
         if match:
@@ -214,7 +221,13 @@ def configure_ci_merge_gate(root, args):
         match = re.fullmatch(r'docs/exec-plans/governance/(HG-[0-9]{3})\.(?:yaml|json)', path)
         if match:
             governance_candidates.append(match.group(1))
+        match = re.fullmatch(r'docs/exec-plans/reviews/(HG-[0-9]{3})/[A-Z_]+\.json', path)
+        if match:
+            review_candidates.append(match.group(1))
     task_ids, change_ids = set(task_candidates), set(governance_candidates)
+    if not task_ids and not change_ids and len(set(review_candidates)) == 1:
+        change_ids = set(review_candidates)
+        args.governance_review_only = True
     if (len(task_ids), len(change_ids)) not in ((1, 0), (0, 1)):
         raise ValueError(f'ci-change-record-count:task={len(task_ids)},governance={len(change_ids)}')
     selected = next(iter(task_ids or change_ids))
@@ -270,6 +283,22 @@ def governance_suffix_errors(root, start, end, change_id, kind):
         for commit in commits:
             parents = git(root, 'rev-list', '--parents', '-n', '1', commit).decode().split()[1:]
             if len(parents) != 1:
+                tested_descendants = [
+                    parent for parent in parents if is_ancestor(root, start, parent)
+                ]
+                prior_ancestors = [
+                    parent for parent in parents if is_ancestor(root, parent, start)
+                ]
+                safe_tested_reintegration = (
+                    kind == 'tested'
+                    and len(parents) == 2
+                    and len(tested_descendants) == 1
+                    and len(prior_ancestors) == 1
+                    and set(tested_descendants).isdisjoint(prior_ancestors)
+                    and tree_object(root, commit) == tree_object(root, tested_descendants[0])
+                )
+                if safe_tested_reintegration:
+                    continue
                 errors.append('governance-' + kind + '-suffix-merge:' + commit)
                 continue
             for path in changed_paths(root, parents[0], commit):
@@ -752,24 +781,49 @@ def validate(root, args):
                 errors.append('governance-record-missing:' + change_id)
             else:
                 _, record = selected
+                review_only = getattr(args, 'governance_review_only', False)
                 if record['change_status'] != 'PASS':
                     errors.append('governance-change-not-pass:' + change_id)
-                if resolve(root, record['base_commit']) != base_sha:
+                record_base = resolve(root, record['base_commit'])
+                reviewed = resolve(root, args.governance_reviewed_head)
+                if not review_only and record_base != base_sha:
                     errors.append('governance-base-mismatch:' + change_id)
+                if review_only:
+                    governance_base = record_base
+                    governance_changed = set(changed_paths(root, governance_base, reviewed))
+                    old_frozen = json.loads(
+                        git(root, 'show', governance_base + ':FROZEN_BASELINE.json'))
+                    governance_protected = {
+                        entry['path'] for entry in old_frozen['files']
+                    } | {'FROZEN_BASELINE.json'}
+                    errors.extend(
+                        'protected-baseline-change:' + path
+                        for path in sorted(governance_changed & governance_protected)
+                    )
+                else:
+                    governance_base = base_sha
+                    governance_changed = set(changed_paths(root, governance_base, reviewed))
+                    governance_protected = protected_paths
                 for path in sorted(changed):
+                    allowed = (review_patterns(change_id) if review_only
+                               else governance_allowed_patterns(change_id))
+                    if not matches(path, allowed):
+                        prefix = ('governance-review-only-scope:' if review_only
+                                  else 'governance-write-scope:')
+                        errors.append(prefix + change_id + ':' + path)
+                for path in sorted(governance_changed if review_only else ()):
                     if not matches(path, governance_allowed_patterns(change_id)):
                         errors.append('governance-write-scope:' + change_id + ':' + path)
-                reviewed = resolve(root, args.governance_reviewed_head)
                 declared = set(record['files_changed'])
-                actual_at_review = set(changed_paths(root, base_sha, reviewed))
-                if declared != actual_at_review:
+                if declared != governance_changed:
                     errors.append('governance-files-changed-mismatch:' + change_id)
                 errors.extend(governance_index_errors(
-                    root, base_sha, record, changed, protected_paths))
-                errors.extend(governance_manifest_errors(root, base_sha, changed))
+                    root, governance_base, record, governance_changed, governance_protected))
+                errors.extend(governance_manifest_errors(
+                    root, governance_base, governance_changed))
 
                 old_tasks = {task['id']: task for task in
-                             json.loads(git(root, 'show', base_sha + ':' + BACKLOG))['tasks']}
+                             json.loads(git(root, 'show', governance_base + ':' + BACKLOG))['tasks']}
                 changed_task_ids = {
                     task_id for task_id in set(old_tasks) | set(tasks)
                     if old_tasks.get(task_id) != tasks.get(task_id)

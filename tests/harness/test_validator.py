@@ -112,6 +112,13 @@ class ValidatorTests(unittest.TestCase):
         tree = self.git('rev-parse', treeish + '^{tree}')
         return self.git('commit-tree', tree, '-p', self.base, '-m', message)
 
+    def merge_commit(self, treeish, *parents, message='merge'):
+        tree = self.git('rev-parse', treeish + '^{tree}')
+        args = ['commit-tree', tree]
+        for parent in parents:
+            args.extend(('-p', parent))
+        return self.git(*args, '-m', message)
+
     def integration_record(self, result_commit, reviewed, review_commit, merge_commit):
         dump(self.root / 'docs/exec-plans/integrations/KL-001.json', {
             'task_identity': self.task['task_identity'],
@@ -434,6 +441,82 @@ class ValidatorTests(unittest.TestCase):
     def test_ci_governance_merge_gate_binds_record_and_reviews(self):
         self.governance_change()
         self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_review_only_accepts_exact_tree_post_merge_review(self):
+        self.put('tools/harness/post_merge_fixture.py')
+        tested = self.commit('governance implementation')
+        evidence = 'docs/exec-plans/evidence/HG-999/checks.log'
+        record_path = 'docs/exec-plans/governance/HG-999.yaml'
+        self.put(evidence, 'governance checks passed\n')
+        self.save_result(self.root / record_path, {
+            'change_identity': 'harness-governance-v0.1/HG-999',
+            'display_change_id': 'HG-999',
+            'base_commit': self.base,
+            'tested_commit': tested,
+            'change_status': 'PASS',
+            'summary': 'Fixture governance change reviewed after merge',
+            'packets_refined': [],
+            'files_changed': sorted((
+                'tools/harness/post_merge_fixture.py', evidence, record_path)),
+            'checks_run': [{
+                'check_id': 'governance_contract_valid',
+                'command': 'fixture governance check',
+                'result': 'PASS',
+                'evidence_ref': evidence,
+            }],
+            'frozen_impact': 'NONE',
+            'authority_entries_added': [],
+        })
+        record_commit = self.commit('record governance result')
+        merge_commit = self.merge_commit(
+            record_commit, self.base, record_commit, message='merge governance before review')
+        self.git('checkout', '-q', '--detach', merge_commit)
+        self.governance_review('HG-999', merge_commit)
+        self.commit('persist post-merge governance review')
+        self.check(0, '', '--ci-pr-base', merge_commit, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_review_only_rejects_content_changing_merge(self):
+        self.put('tools/harness/post_merge_fixture.py')
+        tested = self.commit('governance implementation')
+        change_id, reviewed = self.persist_governance_change(
+            'HG-999', tested, [], ['GENERAL'])
+        self.assertEqual(change_id, 'HG-999')
+        review_commit = self.git('rev-parse', 'HEAD')
+        merge_commit = self.merge_commit(
+            review_commit, self.base, reviewed, message='content-changing merge')
+        self.git('checkout', '-q', '--detach', merge_commit)
+        self.governance_review('HG-999', merge_commit)
+        self.commit('persist replacement review')
+        self.check(1, 'governance-tested-suffix-merge:' + merge_commit,
+                   '--ci-pr-base', merge_commit, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_review_only_rejects_non_review_write(self):
+        _, reviewed = self.governance_change()
+        merged = self.git('rev-parse', 'HEAD')
+        review_path = self.root / 'docs/exec-plans/reviews/HG-999/GENERAL.json'
+        review = json.loads(review_path.read_text())
+        review['reviewed_head_sha'] = reviewed
+        review['findings'] = [{'severity': 'INFO', 'summary': 'review-only fixture'}]
+        dump(review_path, review)
+        self.put('tools/harness/review_only_escape.py')
+        self.commit('mix implementation into review-only PR')
+        self.check(1, 'governance-review-only-scope:HG-999:',
+                   '--ci-pr-base', merged, '--ci-pr-head', 'HEAD')
+
+    def test_governance_tested_suffix_rejects_unrelated_merge_parent(self):
+        self.put('tools/harness/post_merge_fixture.py')
+        tested = self.commit('governance implementation')
+        _, reviewed = self.persist_governance_change('HG-999', tested, [], ['GENERAL'])
+        unrelated = self.git(
+            'commit-tree', self.base + '^{tree}', '-p', self.base,
+            '-m', 'unrelated sibling history')
+        merge_commit = self.merge_commit(
+            reviewed, unrelated, reviewed, message='merge unrelated parent')
+        self.git('checkout', '-q', '--detach', merge_commit)
+        self.governance_review('HG-999', merge_commit)
+        self.commit('persist replacement review')
+        self.check(1, 'governance-tested-suffix-merge:' + merge_commit,
+                   '--ci-pr-base', merge_commit, '--ci-pr-head', 'HEAD')
 
     def test_ci_governance_requires_pass_change_status(self):
         self.governance_change(change_status='BLOCKED')
