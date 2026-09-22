@@ -1,0 +1,104 @@
+change_identity: harness-governance-v0.1/HG-007
+display_change_id: HG-007
+base_commit: 2e84dfb5904449351da9ff8f9d7d944d34fefb11
+tested_commit: 0f943db0aa572e11fda95ac05895b73b6d4b7745
+change_status: PASS
+summary: >-
+  Preserve the durable KL-004 and KL-005 review-anchor histories in a no-content
+  three-parent merge whose complete tree is identical to the protected base. The
+  stale KL-004 review anchor is first advanced by a tree-identical ancestry commit;
+  the original remote anchor remains unchanged and is retained as its parent.
+packets_refined: []
+files_changed:
+  - docs/exec-plans/evidence/HG-007/checks.log
+  - docs/exec-plans/governance/HG-007.yaml
+checks_run:
+  - check_id: harness_structure_valid
+    command: .venv/bin/kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-007/checks.log
+  - check_id: lint_passes
+    command: .venv/bin/ruff check .
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-007/checks.log
+  - check_id: typecheck_passes
+    command: MYPY_CACHE_DIR=/private/tmp/hg-007-mypy .venv/bin/mypy src tools tests
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-007/checks.log
+  - check_id: unit_tests_pass
+    command: .venv/bin/pytest -q tests/unit
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-007/checks.log
+  - check_id: harness_tests_pass
+    command: .venv/bin/pytest -q tests/harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-007/checks.log
+  - check_id: anchor_refs_and_trees_valid
+    command: >-
+      test "$(git rev-parse origin/codex/kl-004-review-record-anchor)" =
+      c22d3ff49f2ba6ab9dd4e3a3993a26395b57b162 && test "$(git rev-parse
+      codex/kl-005-durable-binding)" =
+      a159dec2f4c7c0a3a14fc45b4feae046a940e484 && test "$(git rev-parse
+      2e84dfb5904449351da9ff8f9d7d944d34fefb11^{tree})" =
+      f1b2088ee724bee4fe763b49413e47f93f81dd28 && test "$(git rev-parse
+      3d8c5f1aa828bc75819d3204778708248c49fef3^{tree})" =
+      f1b2088ee724bee4fe763b49413e47f93f81dd28 && test "$(git rev-parse
+      a159dec2f4c7c0a3a14fc45b4feae046a940e484^{tree})" =
+      f1b2088ee724bee4fe763b49413e47f93f81dd28
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-007/checks.log
+  - check_id: merge_parent_order_valid
+    command: >-
+      test "$(git show --no-patch --format=%P
+      0f943db0aa572e11fda95ac05895b73b6d4b7745)" =
+      "2e84dfb5904449351da9ff8f9d7d944d34fefb11
+      3d8c5f1aa828bc75819d3204778708248c49fef3
+      a159dec2f4c7c0a3a14fc45b4feae046a940e484"
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-007/checks.log
+  - check_id: anchor_ancestry_valid
+    command: >-
+      git merge-base --is-ancestor
+      c22d3ff49f2ba6ab9dd4e3a3993a26395b57b162
+      3d8c5f1aa828bc75819d3204778708248c49fef3 && git merge-base
+      --is-ancestor 2e84dfb5904449351da9ff8f9d7d944d34fefb11
+      0f943db0aa572e11fda95ac05895b73b6d4b7745 && git merge-base
+      --is-ancestor 3d8c5f1aa828bc75819d3204778708248c49fef3
+      0f943db0aa572e11fda95ac05895b73b6d4b7745 && git merge-base
+      --is-ancestor a159dec2f4c7c0a3a14fc45b4feae046a940e484
+      0f943db0aa572e11fda95ac05895b73b6d4b7745
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-007/checks.log
+  - check_id: tested_tree_matches_base
+    command: >-
+      test "$(git rev-parse
+      0f943db0aa572e11fda95ac05895b73b6d4b7745^{tree})" =
+      "$(git rev-parse
+      2e84dfb5904449351da9ff8f9d7d944d34fefb11^{tree})"
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-007/checks.log
+  - check_id: diff_clean
+    command: >-
+      git diff --check 2e84dfb5904449351da9ff8f9d7d944d34fefb11
+      0f943db0aa572e11fda95ac05895b73b6d4b7745
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-007/checks.log
+  - check_id: frozen_baseline_unchanged
+    command: >-
+      git diff --exit-code 2e84dfb5904449351da9ff8f9d7d944d34fefb11
+      0f943db0aa572e11fda95ac05895b73b6d4b7745 -- FROZEN_BASELINE.json
+      04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
+      05_KineticLoop_Protocol_v1.2_FROZEN.md
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-007/checks.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+  - >-
+    Final integration must preserve the tested ancestry by fast-forwarding this
+    branch or by a merge commit. Squash merge and rebase are prohibited because
+    either would discard or rewrite the durable KL-004/KL-005 anchor ancestry.
+  - >-
+    HG-007 still requires a fresh independent GENERAL review bound to the final
+    governance head before merge; this change intentionally creates no review
+    artifact.
