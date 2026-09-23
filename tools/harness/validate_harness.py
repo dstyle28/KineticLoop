@@ -918,7 +918,8 @@ def validate(root, args):
                 required.update(tasks.get(task_id, {}).get('review_requirements', []))
             types = {
                 review['review_type'] for _, review in governance_reviews
-                if review['status'] == 'PASS' and
+                if review['task_identity'] == 'harness-governance-v0.1/' + change_id and
+                review['status'] == 'PASS' and
                 resolve(root, review['reviewed_head_sha']) == reviewed
             }
             if not required <= types:

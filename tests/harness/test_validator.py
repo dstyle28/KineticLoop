@@ -62,7 +62,8 @@ class ValidatorTests(unittest.TestCase):
         env = dict(os.environ, GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull)
         return subprocess.check_output(
             ['git', '-c', 'user.name=Harness Test', '-c', 'user.email=harness@example.invalid',
-             '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', *args],
+             '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null',
+             '-c', 'gc.auto=0', '-c', 'maintenance.auto=false', *args],
             cwd=self.root, env=env, stderr=subprocess.STDOUT).decode().strip()
 
     def commit(self, message):
@@ -439,6 +440,12 @@ class ValidatorTests(unittest.TestCase):
                    '--ci-pr-base', self.base, '--ci-pr-head', head)
 
     def test_ci_governance_merge_gate_binds_record_and_reviews(self):
+        self.governance_change()
+        self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_ignores_unrelated_unresolvable_review_sha(self):
+        self.governance_review('HG-998', 'f' * 40)
+        self.base = self.commit('historical governance review with unavailable revision')
         self.governance_change()
         self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
