@@ -422,6 +422,9 @@ class ValidatorTests(unittest.TestCase):
         packet = self.root / 'docs/exec-plans/active/KL-010.md'
         original = packet.read_text()
         variants = (
+            ('- 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md',
+             '- 12_KineticLoop_Integration_Spec_v0.1.md',
+             'packet-context-files:KL-010'),
             ('FK/reference-root migration plan', 'wrong deliverable',
              'packet-deliverables:KL-010'),
             ('DDL ordering follows references, not logical table numbers', 'wrong DoD',

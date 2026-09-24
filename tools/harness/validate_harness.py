@@ -166,6 +166,9 @@ def packet_errors(task, text):
     if checks is None or sorted(bullets(checks)) != sorted(task['checks_required_for_this_task']):
         errors.append('packet-checks:' + name)
     if name in M2_REFINED_TASK_IDS:
+        read_first = section(text, 'Read first') or ''
+        if bullets(read_first) != task.get('context_files', []):
+            errors.append('packet-context-files:' + name)
         entry = section(text, 'Entry conditions') or ''
         expected_entry = [value.replace(
             'docs/exec-plans/milestones/M1.json',

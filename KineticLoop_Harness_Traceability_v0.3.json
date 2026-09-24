@@ -818,7 +818,7 @@
       "commands": [
         "T1: ReceiveEvidence, RecordCandidate",
         "T2-IN: DecideAssociation, DecideAdmission, AcceptFactRevision, ApplyControl, ClearControl, ApproveChange, ActivateApprovedProgram, RecordActualExecution, CompleteReportedWorkout",
-        "T2-BUILD: BeginBuild, WriteCandidate, CompleteFactset",
+        "BUILD-PREPARATION (outside T2): BeginBuild, WriteCandidate, CompleteFactset",
         "T2-SEAL: SealFactset",
         "T2-GLOBAL: RegisterArtifact, RevokeArtifact",
         "T3: RecordProjection, BuildManifest, PublishManifest",
@@ -866,11 +866,12 @@
       "deliverables": [
         "typed commands/results/errors"
       ],
-      "definition_of_done": "every command binds an authenticated subject or explicit global scope as applicable, trusted actor/capability, idempotency identity, and command-specific immutable basis",
+      "definition_of_done": "every command binds an authenticated subject or explicit global scope as applicable, trusted actor/capability, idempotency identity, and command-specific immutable basis; BeginBuild, WriteCandidate, and CompleteFactset remain build preparation outside T2/S01 coordination",
       "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "strict_t1_t8_contract_matrix",
+        "build_preparation_stays_outside_t2",
         "identity_idempotency_and_basis_fields",
         "shadow_and_test_scope_fail_closed",
         "command_result_roundtrip",
@@ -883,6 +884,11 @@
           "check_id": "strict_t1_t8_contract_matrix",
           "command": "uv run pytest -q tests/unit/contracts/test_commands.py::test_strict_t1_t8_contract_matrix",
           "pass_oracle": "The named test passes for every T1-T8 command/result shape with extra fields forbidden."
+        },
+        {
+          "check_id": "build_preparation_stays_outside_t2",
+          "command": "uv run pytest -q tests/unit/contracts/test_commands.py::test_build_preparation_stays_outside_t2",
+          "pass_oracle": "The named test proves BeginBuild, WriteCandidate, and CompleteFactset are build preparation outside T2, cannot acquire S01, and cannot serialize as T2 commands."
         },
         {
           "check_id": "identity_idempotency_and_basis_fields",
