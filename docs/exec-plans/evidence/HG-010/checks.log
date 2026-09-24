@@ -1,0 +1,84 @@
+HG-010 tested_commit=16123eb2e6393cfe0f8b076993bd86666f440130
+base_commit=0350c1e764220e53d87a7fb86ca2041802cbff3d
+
+check_id=governance_schema_valid
+command=Validate docs/exec-plans/governance/HG-010.yaml with jsonschema.Draft202012Validator against HARNESS_CHANGE.schema.json.
+exit_code=0
+HARNESS_CHANGE.schema.json validation PASS
+
+check_id=integration_schema_valid
+command=Validate docs/exec-plans/integrations/KL-005.json with jsonschema.Draft202012Validator against INTEGRATION_RECORD.schema.json.
+exit_code=0
+INTEGRATION_RECORD.schema.json validation PASS
+
+check_id=harness_structure_valid
+command=PYTHONPATH=/private/tmp/kineticloop-hg010/src /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
+exit_code=0
+HARNESS_CHECK_PASS tasks=68 active=66
+
+check_id=lint_passes
+command=PYTHONPATH=/private/tmp/kineticloop-hg010/src /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/ruff check .
+exit_code=0
+All checks passed!
+
+check_id=typecheck_passes
+command=MYPY_CACHE_DIR=/private/tmp/hg-010-mypy PYTHONPATH=/private/tmp/kineticloop-hg010/src /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/mypy src tools tests
+exit_code=0
+Success: no issues found in 44 source files
+
+check_id=unit_tests_pass
+command=PYTHONPATH=/private/tmp/kineticloop-hg010/src /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/unit
+exit_code=0
+........................................................................ [ 78%]
+....................                                                     [100%]
+92 passed in 1.97s
+
+check_id=harness_tests_pass
+command=PYTHONPATH=/private/tmp/kineticloop-hg010/src /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness
+exit_code=0
+........................................................................ [ 79%]
+...................                                                      [100%]
+91 passed in 78.78s (0:01:18)
+
+check_id=integration_binding_tests_pass
+command=PYTHONPATH=/private/tmp/kineticloop-hg010/src /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness/test_validator.py -k integration
+exit_code=0
+...........                                                              [100%]
+11 passed, 55 deselected in 6.84s
+
+check_id=integration_revision_chain_valid
+command=Verify the recorded KL-005 ancestry edges and exact-complete-tree squash exception with git merge-base --is-ancestor and git rev-parse REV^{tree}.
+exit_code=0
+strict_edge result_to_reviewed PASS
+strict_edge reviewed_to_review_record PASS
+squash_edge review_record_to_merge PASS tree=f1b2088ee724bee4fe763b49413e47f93f81dd28
+strict_edge merge_to_tested PASS
+
+check_id=result_review_artifacts_bound
+command=Compare Git blob identities for the single KL-005 result representation and GENERAL review across their bound result, review-record, merge, and tested revisions.
+exit_code=0
+result_blob_bound PASS blob=c7c4d90fe320168112bc7e94e3527229ed0ae37b
+review_blob_bound PASS blob=5043ea3267612f4a3359c1dfc2e5b45ccdde2db0
+single_result_representation PASS
+
+check_id=task_result_semantics_valid
+command=Parse the result and review from their bound Git revisions and validate KL-005 PASS semantics, exact packet checks, evidence presence, requirement statuses, and review binding.
+exit_code=0
+task_result_semantics PASS required_checks=5 requirements_not_run=128 review_status=PASS
+
+check_id=current_master_presence_valid
+command=Verify the merge is an ancestor of protected base and compare the protected-base result and review blobs with their bound source revisions.
+exit_code=0
+merge_present_on_protected_base PASS
+result_present_on_protected_base PASS
+review_present_on_protected_base PASS
+
+check_id=diff_clean
+command=git diff --check 0350c1e764220e53d87a7fb86ca2041802cbff3d 16123eb2e6393cfe0f8b076993bd86666f440130
+exit_code=0
+diff_clean PASS
+
+check_id=frozen_baseline_unchanged
+command=git diff --exit-code 0350c1e764220e53d87a7fb86ca2041802cbff3d 16123eb2e6393cfe0f8b076993bd86666f440130 -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md
+exit_code=0
+frozen_baseline_unchanged PASS
