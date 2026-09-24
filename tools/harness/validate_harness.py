@@ -91,14 +91,13 @@ M2_REQUIRED_CHECK_IDS = {
 KL015_REQUIRED_INVARIANT_IDS = [f'INV-{number:02d}' for number in range(1, 19)]
 KL015_REQUIRED_TRANSACTION_BOUNDARIES = ['T1-T8']
 KL015_REQUIRED_TABLE_IDS = [
-    *(f'S{number:02d}' for number in range(1, 19)),
-    *(f'S{number:02d}' for number in range(21, 46)),
-    'S49', 'S50', 'S51',
+    *(f'S{number:02d}' for number in range(1, 46)),
+    *(f'S{number:02d}' for number in range(48, 52)),
 ]
 # SHA256 of canonical JSON {check_id, command, pass_oracle}. These security-critical
 # contracts must change through an explicit Harness governance edit; keeping an ID
 # while weakening its executable command or oracle fails closed.
-M2_SECURITY_CONTRACT_DIGESTS = {
+M2_CRITICAL_CONTRACT_DIGESTS = {
     'KL-014': {
         'strict_t1_t8_contract_matrix': 'f7fff61a6a44a0ac8ee0e57be4145b8ba8602d3f3348acad80e0eba45cf047ad',
         'build_preparation_stays_outside_t2': 'bfcfd359b83698cfb96d8986ddba85e620fb4c6eb51c1c5c55f4f39be37d0aed',
@@ -108,6 +107,7 @@ M2_SECURITY_CONTRACT_DIGESTS = {
     },
     'KL-015': {
         'transaction_owner_matrix_complete': '10458fc375a0982d6795c19a419999ebb27564fd146c95a092ea747bd54a0c30',
+        'catalog_mapping_and_release_owner_boundaries_complete': '746f0f09c7f1f6e2d4c698e53b955615dab58f545cde253453baa52e9c766d27',
         'registry_lease_required_for_publish_commit_and_session_entry': '97d957a3cba60ae035c30df4be6b4b46d7af9737c03bb54e6104afe75a1be1ab',
         'preparation_work_stays_outside_coordination_locks': '64ecd2f92279e5e0d3d243c40fe929a48b29b36f56ebd78bacc153a38ec6e9ae',
         'factset_build_stays_outside_subject_coordination': '773498075ad55a7ac92ff672ae04c2897807bb3df7073de5b263449c21d26883',
@@ -125,6 +125,18 @@ M2_SECURITY_CONTRACT_DIGESTS = {
         'ack_loss_replay_preserves_natural_uniqueness': '283df1d589323633f8302d397e5ad617f267c60935359eac5173e153ea3d1508',
         't6_ack_loss_replay_returns_same_issuance': 'db76c689857128c515c6137642cd189798105ff029a4686e36615f6a02329703',
         'transaction_db_conformance_passes': 'c0a56d2f9acecef30bd5715fe72a4bcb10866cec4702893f213c0a39da40b576',
+        'harness_validation_passes': '2dbb33f46e379c228225cd02bc8afdf39689c54008b8ca7b1b019e0d2c4139bf',
+    },
+    'KL-016': {
+        'shared_gate_precedes_s01': 'bb0d5238d6b8dae20e9947e7f67f8b3c0bcb0ae14bedb10c4e763b72aeb06a3c',
+        'reauthorize_shared_gate_precedes_s01_and_fails_closed': 'ea48e409c531b8bc1156140e0ce093f9247d6ad73516c93996cd46694d5fbb52',
+        'continue_session_rechecks_shared_gate_and_fails_closed': '600456a617778faff3e8c22156c9bac3a1c0ff93db1bb59ff9f32493465242d3',
+        'exclusive_global_gate_serializes': 'd2fc834e2bd924a37c3fe180e687519cd17f13bc09cdf005a5c0aa43bfed9f53',
+        'committed_revoke_visibility': 'a6f4a0dbc59a9ed8c0a8b2a4a8fbb92c4ac22e8e503257f1da5036f53846aaf6',
+        'registry_unavailable_or_timeout_denies': '487d7388e3d5583b58d6484235b7f9a811788c8d9f6f10b5a5f317846b5aad79',
+        'global_revoke_never_locks_s01': '5edfb2de841a8afab3bf324945860139af75c0b1fa7581eef2c91c1f991c7fd9',
+        'stop_has_no_registry_dependency': 'ec49d6b0473172e218ff75d07e437af29de62520db520050f0ed91e584b27a16',
+        'safety_registry_db_regressions_pass': 'df141dcc2acec0f58fcf4932e9c3ba9c1186a0bef529e3658f787b6d1ad124f1',
         'harness_validation_passes': '2dbb33f46e379c228225cd02bc8afdf39689c54008b8ca7b1b019e0d2c4139bf',
     },
     'KL-017': {
@@ -160,7 +172,7 @@ M2_SECURITY_CONTRACT_DIGESTS = {
         'provider_credentials_do_not_cross_evidence_or_diagnostic_boundary': 'dda6bb6c86340f6ebb62a8854ae9add3b8832cad3f332bf59a4051133ec4622b',
     },
 }
-for _task_id, _contracts in M2_SECURITY_CONTRACT_DIGESTS.items():
+for _task_id, _contracts in M2_CRITICAL_CONTRACT_DIGESTS.items():
     M2_REQUIRED_CHECK_IDS.setdefault(_task_id, set()).update(_contracts)
 KL014_REQUIRED_COMMAND_SURFACE = [
     'T1: ReceiveEvidence',
@@ -185,6 +197,15 @@ KL014_REQUIRED_COMMAND_SURFACE = [
     'Results: one typed success result per public command plus CommandRejected',
     ('Internal-only: IssueAuthorization, InvalidateAuthorization, RecordSnapshot, '
      'AdvanceAttempt, CancelUndispatched'),
+]
+KL016_REQUIRED_COMMAND_SURFACE = [
+    'RevokeArtifact',
+    'PublishManifest',
+    'CommitBundle',
+    'Reauthorize',
+    'StartSession',
+    'ResumeSession',
+    'ContinueSession',
 ]
 M2_REQUIRED_SECURITY_REVIEWS = {'KL-014', 'KL-017', 'KL-018', 'KL-055'}
 M1_CLEAN_START_CHECKS = {
@@ -399,6 +420,10 @@ def packet_errors(task, text):
             errors.append('packet-parallel-policy:' + name)
     if name == 'KL-014':
         command_surface = section(text, 'Public command surface') or ''
+        if bullets(command_surface) != task.get('commands', []):
+            errors.append('packet-command-surface:' + name)
+    if name == 'KL-016':
+        command_surface = section(text, 'Registry-gated command surface') or ''
         if bullets(command_surface) != task.get('commands', []):
             errors.append('packet-command-surface:' + name)
     return errors
@@ -1278,6 +1303,8 @@ def task_definition_errors(root, backlog, revision=None):
                 errors.append('m2-required-semantic-checks:' + name)
             if name == 'KL-014' and task.get('commands') != KL014_REQUIRED_COMMAND_SURFACE:
                 errors.append('m2-kl014-command-surface')
+            if name == 'KL-016' and task.get('commands') != KL016_REQUIRED_COMMAND_SURFACE:
+                errors.append('m2-kl016-command-surface')
             if name == 'KL-015':
                 if task.get('invariant_ids') != KL015_REQUIRED_INVARIANT_IDS:
                     errors.append('m2-kl015-frozen-impact:invariants')
@@ -1289,7 +1316,7 @@ def task_definition_errors(root, backlog, revision=None):
                 item.get('check_id'): item for item in contracts or []
                 if isinstance(item, dict)
             }
-            for check_id, expected_digest in M2_SECURITY_CONTRACT_DIGESTS.get(
+            for check_id, expected_digest in M2_CRITICAL_CONTRACT_DIGESTS.get(
                     name, {}).items():
                 contract = contract_map.get(check_id)
                 actual_digest = hashlib.sha256(json.dumps(

@@ -579,7 +579,11 @@ class ValidatorTests(unittest.TestCase):
                  'm2-kl015-frozen-impact:invariants'),
                 ('transaction_boundaries', 'T1-T8', '- Transactions: T1-T8',
                  'm2-kl015-frozen-impact:transactions'),
+                ('table_ids', 'S19', ', S19',
+                 'm2-kl015-frozen-impact:tables'),
                 ('table_ids', 'S42', ', S42',
+                 'm2-kl015-frozen-impact:tables'),
+                ('table_ids', 'S48', ', S48',
                  'm2-kl015-frozen-impact:tables')):
             backlog = copy.deepcopy(original_backlog)
             task = next(item for item in backlog['tasks'] if item['id'] == 'KL-015')
@@ -608,6 +612,7 @@ class ValidatorTests(unittest.TestCase):
         selected = {
             'KL-014': 'identity_idempotency_and_basis_fields',
             'KL-015': 't6_ack_loss_replay_returns_same_issuance',
+            'KL-016': 'reauthorize_shared_gate_precedes_s01_and_fails_closed',
             'KL-017': 'cross_subject_denial_is_non_enumerating',
             'KL-018': 'artifact_identity_is_immutable',
             'KL-055': 'provider_subject_source_binding_is_trusted',
@@ -660,6 +665,22 @@ class ValidatorTests(unittest.TestCase):
                     (self.root / f'docs/exec-plans/active/{packet_task_id}.md').write_text(
                         packet_text)
                 refresh(self.root)
+
+    def test_m2_kl016_synchronized_registry_command_omission_rejected(self):
+        backlog_path = self.root / v.BACKLOG
+        traceability_path = self.root / v.TRACEABILITY
+        packet_path = self.root / 'docs/exec-plans/active/KL-016.md'
+        backlog = json.loads(backlog_path.read_text())
+        traceability = json.loads(traceability_path.read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-016')
+        trace = next(item for item in traceability['tasks'] if item['id'] == 'KL-016')
+        task['commands'].remove('Reauthorize')
+        trace['commands'].remove('Reauthorize')
+        dump(backlog_path, backlog)
+        dump(traceability_path, traceability)
+        packet_path.write_text(packet_path.read_text().replace('- Reauthorize\n', '', 1))
+        refresh(self.root)
+        self.check(1, 'm2-kl016-command-surface')
 
     def test_manifest_claimed_m1_closure_cannot_be_missing(self):
         manifest_path = self.root / v.MANIFEST

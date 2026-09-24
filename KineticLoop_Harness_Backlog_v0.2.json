@@ -1628,6 +1628,8 @@
         "S16",
         "S17",
         "S18",
+        "S19",
+        "S20",
         "S21",
         "S22",
         "S23",
@@ -1653,6 +1655,7 @@
         "S43",
         "S44",
         "S45",
+        "S48",
         "S49",
         "S50",
         "S51"
@@ -1686,6 +1689,7 @@
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "transaction_owner_matrix_complete",
+        "catalog_mapping_and_release_owner_boundaries_complete",
         "registry_lease_required_for_publish_commit_and_session_entry",
         "preparation_work_stays_outside_coordination_locks",
         "factset_build_stays_outside_subject_coordination",
@@ -1732,6 +1736,11 @@
           "check_id": "transaction_owner_matrix_complete",
           "command": "uv run pytest -q tests/unit/persistence/test_transactions.py::test_transaction_owner_matrix_complete",
           "pass_oracle": "The named test maps exactly one repository owner for each T1-T8 mutation surface."
+        },
+        {
+          "check_id": "catalog_mapping_and_release_owner_boundaries_complete",
+          "command": "uv run pytest -q tests/unit/persistence/test_transactions.py::test_catalog_mapping_and_release_owner_boundaries_complete",
+          "pass_oracle": "The named test proves S19 revisions are written only by ExerciseCatalogService.PublishRevision, S20 decisions only by ExerciseMappingService.DecideMapping, and S48 releases only by ReleaseEvaluationService.RecordRelease outside live T1-T8; production adoption of catalog/mapping revisions and an evaluation release or policy occurs only through the authorized T2/T3 owners with immutable identity, and direct-write adoption is rejected."
         },
         {
           "check_id": "registry_lease_required_for_publish_commit_and_session_entry",
@@ -1841,8 +1850,10 @@
         "RevokeArtifact",
         "PublishManifest",
         "CommitBundle",
+        "Reauthorize",
         "StartSession",
-        "ResumeSession"
+        "ResumeSession",
+        "ContinueSession"
       ],
       "transaction_boundaries": [
         "T2-GLOBAL",
@@ -1869,7 +1880,7 @@
       "deliverables": [
         "lock/gate API"
       ],
-      "definition_of_done": "shared→S01 ordering and exclusive global revoke are encoded and testable against a task-local minimal PostgreSQL fixture without adding migrations",
+      "definition_of_done": "shared→S01 ordering is encoded and command-specifically tested for PublishManifest, CommitBundle, Reauthorize, StartSession, ResumeSession, and executable ContinueSession; every path reads current artifact eligibility after acquiring the shared gate and fails closed before mutation on unavailable, timeout, revoked, expired, or stale registry state; exclusive global RevokeArtifact never locks S01; STOP remains registry-independent; all behavior is testable against a task-local minimal PostgreSQL fixture without adding migrations",
       "entry_conditions": [
         "M1 closure PASS: docs/exec-plans/milestones/M1.json"
       ],
@@ -1890,6 +1901,8 @@
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "shared_gate_precedes_s01",
+        "reauthorize_shared_gate_precedes_s01_and_fails_closed",
+        "continue_session_rechecks_shared_gate_and_fails_closed",
         "exclusive_global_gate_serializes",
         "committed_revoke_visibility",
         "registry_unavailable_or_timeout_denies",
@@ -1927,6 +1940,16 @@
           "check_id": "shared_gate_precedes_s01",
           "command": "uv run pytest -q tests/db/test_safety_registry.py::test_shared_gate_precedes_s01",
           "pass_oracle": "The named interleaving test proves shared registry gate acquisition precedes S01."
+        },
+        {
+          "check_id": "reauthorize_shared_gate_precedes_s01_and_fails_closed",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_reauthorize_shared_gate_precedes_s01_and_fails_closed",
+          "pass_oracle": "The named PostgreSQL interleaving test proves Reauthorize acquires the shared registry gate before S01, reads current artifact eligibility after the gate is held, and rejects unavailable, timed-out, revoked, expired, or stale-registry states before any authorization, receipt, event, outbox, intent, or plan mutation."
+        },
+        {
+          "check_id": "continue_session_rechecks_shared_gate_and_fails_closed",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_continue_session_rechecks_shared_gate_and_fails_closed",
+          "pass_oracle": "The named PostgreSQL/application-boundary test proves executable ContinueSession reacquires the shared registry gate before S01, re-evaluates current artifact and authorization eligibility, and rejects unavailable, timed-out, revoked, expired, or stale-registry states without extending execution authority or mutating session, binding, receipt, event, or outbox state."
         },
         {
           "check_id": "exclusive_global_gate_serializes",
