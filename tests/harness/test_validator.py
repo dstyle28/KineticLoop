@@ -398,6 +398,24 @@ class ValidatorTests(unittest.TestCase):
 
         backlog = copy.deepcopy(original)
         task = next(item for item in backlog['tasks'] if item['id'] == 'KL-018')
+        removed = {
+            'artifact_dependencies_must_be_pre_registered',
+            'artifact_dependency_graph_is_acyclic',
+            'artifact_dependency_closure_is_bounded',
+        }
+        task['checks_required_for_this_task'] = [
+            check_id for check_id in task['checks_required_for_this_task']
+            if check_id not in removed
+        ]
+        task['check_contracts'] = [
+            contract for contract in task['check_contracts']
+            if contract['check_id'] not in removed
+        ]
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-required-semantic-checks:KL-018')
+
+        backlog = copy.deepcopy(original)
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-018')
         task['review_requirements'].remove('SECURITY_DATA_BOUNDARY')
         dump(backlog_path, backlog)
         self.check(1, 'm2-security-review-required:KL-018')

@@ -1241,7 +1241,12 @@
       ],
       "invariant_ids": [
         "INV-02",
-        "INV-15"
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-15",
+        "INV-16",
+        "INV-18"
       ],
       "table_ids": [
         "S38",
@@ -1365,9 +1370,12 @@
         "T7"
       ],
       "invariant_ids": [
+        "INV-02",
+        "INV-08",
         "INV-09",
         "INV-10",
-        "INV-16"
+        "INV-16",
+        "INV-17"
       ],
       "table_ids": [
         "S49",
@@ -1387,12 +1395,15 @@
       "deliverables": [
         "artifact identity API"
       ],
-      "definition_of_done": "model/prompt/tool/runtime/policy artifacts have exact immutable identities before use, and registration is owned only by the exclusive SafetyRegistry management command with trusted ADMINISTER_PRODUCTION capability",
+      "definition_of_done": "model/prompt/tool/runtime/policy artifacts have exact immutable identities before use; every declared dependency is already registered and the dependency graph is complete, acyclic, and bounded; registration is owned only by the exclusive SafetyRegistry management command with trusted ADMINISTER_PRODUCTION capability",
       "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "artifact_identity_is_immutable",
         "artifact_dependency_closure_required",
+        "artifact_dependencies_must_be_pre_registered",
+        "artifact_dependency_graph_is_acyclic",
+        "artifact_dependency_closure_is_bounded",
         "artifact_registration_requires_management_capability",
         "artifact_registration_uses_exclusive_registry_gate",
         "artifact_registration_direct_write_rejected",
@@ -1412,6 +1423,21 @@
           "check_id": "artifact_dependency_closure_required",
           "command": "uv run pytest -q tests/unit/contracts/test_artifact_registry.py::test_artifact_dependency_closure_required",
           "pass_oracle": "The named test rejects incomplete artifact dependency closures."
+        },
+        {
+          "check_id": "artifact_dependencies_must_be_pre_registered",
+          "command": "uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_dependencies_must_be_pre_registered",
+          "pass_oracle": "The named PostgreSQL registration-admission test rejects every declared dependency identity that is not already registered before the new artifact."
+        },
+        {
+          "check_id": "artifact_dependency_graph_is_acyclic",
+          "command": "uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_dependency_graph_is_acyclic",
+          "pass_oracle": "The named PostgreSQL registration-admission test rejects direct and transitive dependency cycles."
+        },
+        {
+          "check_id": "artifact_dependency_closure_is_bounded",
+          "command": "uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_dependency_closure_is_bounded",
+          "pass_oracle": "The named PostgreSQL registration-admission test rejects dependency closures that exceed the configured traversal depth or node bound."
         },
         {
           "check_id": "artifact_registration_requires_management_capability",
@@ -1498,6 +1524,7 @@
       "invariant_ids": [
         "INV-01",
         "INV-02",
+        "INV-15",
         "INV-16"
       ],
       "table_ids": [

@@ -60,6 +60,9 @@ M2_REQUIRED_CHECK_IDS = {
         'receipt_before_s01_is_rejected',
     },
     'KL-018': {
+        'artifact_dependencies_must_be_pre_registered',
+        'artifact_dependency_graph_is_acyclic',
+        'artifact_dependency_closure_is_bounded',
         'artifact_registration_requires_management_capability',
         'artifact_registration_uses_exclusive_registry_gate',
         'artifact_registration_direct_write_rejected',
