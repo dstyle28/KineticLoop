@@ -23,6 +23,12 @@ class UnsafeDiagnosticInt(int):
         return "unsafe-scalar-secret"
 
 
+class UnsafeReturnCode(int):
+    def __format__(self, format_spec: str) -> str:
+        del format_spec
+        return "RETURN_CODE_SECRET"
+
+
 def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     secret_named_value_type = type(SENTINEL, (), {})
     secret_named_error_type = type(SENTINEL, (ValueError,), {})
@@ -208,6 +214,7 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
         "provider-client",
         "--password=plain-first-secret plain-second-secret",
     ]
+    source["bytes_argv"] = [b"provider-client", b"--password", b"opaque-byte-secret"]
     source["escaped_quote_password_text"] = (
         'provider-client --password "escaped-first-secret\\" escaped-second-secret"'
     )
@@ -294,6 +301,7 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     assert "quoted-second-secret" not in rendered
     assert "plain-first-secret" not in rendered
     assert "plain-second-secret" not in rendered
+    assert "opaque-byte-secret" not in rendered
     assert "escaped-first-secret" not in rendered
     assert "escaped-second-secret" not in rendered
     assert "exception-format-secret" not in rendered
@@ -331,3 +339,84 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
         "authorization",
     ):
         assert not hasattr(diagnostic, authority_field)
+
+
+def test_nested_query_credentials_are_redacted_recursively() -> None:
+    nested_url_secret = "NESTED_URL_SECRET"
+    nested_db_secret = "NESTED_DB_SECRET"
+    nested_query_secret = "NESTED_QUERY_SECRET"
+    nested_assignment_secret = "NESTED_ASSIGN_SECRET"
+    nested_url = f"https://alice:{nested_url_secret}@inner.invalid/path"
+    nested_database_url = (
+        f"postgresql://dbuser:{nested_db_secret}@db.invalid/data"
+        f"?token={nested_query_secret}"
+    )
+    recursively_encoded = quote(quote(nested_url, safe=""), safe="")
+    values = (
+        f"https://outer.invalid/?redirect={quote(nested_url, safe='')}",
+        f"https://outer.invalid/?next={quote(nested_database_url, safe='')}",
+        "https://outer.invalid/?payload="
+        + quote(f"password={nested_assignment_secret}", safe=""),
+        f"https://outer.invalid/?redirect={recursively_encoded}",
+    )
+
+    rendered = repr(Redactor().redact(values))
+
+    for secret in (
+        nested_url_secret,
+        nested_db_secret,
+        nested_query_secret,
+        nested_assignment_secret,
+    ):
+        assert secret not in rendered
+        assert quote(secret, safe="") not in rendered
+
+
+def test_nested_brace_format_fields_redact_outer_credential_arguments() -> None:
+    nested_width_secret = "NESTED_BRACE_WIDTH_SECRET"
+    nested_precision_secret = "NESTED_BRACE_PRECISION_SECRET"
+    width_values = (
+        "password={0:{1}}",
+        nested_width_secret,
+        ">20",
+    )
+    precision_values = (
+        "safe={0} token={1:.{2}}",
+        "retained-context",
+        nested_precision_secret,
+        "8",
+    )
+    error = ValueError("password={0:{1}}", nested_width_secret, ">20")
+    chained = RuntimeError("safe outer")
+    chained.__cause__ = error
+
+    rendered_values = repr(
+        (Redactor().redact(width_values), Redactor().redact(precision_values))
+    )
+    rendered_error = str(Redactor().exception_diagnostic(chained))
+
+    assert nested_width_secret not in rendered_values
+    assert nested_precision_secret not in rendered_values
+    assert nested_width_secret not in rendered_error
+    assert "retained-context" in rendered_values
+
+
+def test_subprocess_return_codes_cannot_bypass_redaction() -> None:
+    direct = subprocess.CalledProcessError(
+        UnsafeReturnCode(9),
+        ["provider-client", "status"],
+    )
+    chained = RuntimeError("outer failure")
+    chained.__cause__ = subprocess.CalledProcessError(
+        "STRING_RETURN_CODE_SECRET",  # type: ignore[arg-type]
+        ["provider-client", "status"],
+    )
+    redactor = Redactor(("RETURN_CODE_SECRET", "STRING_RETURN_CODE_SECRET"))
+
+    direct_rendered = str(redactor.exception_diagnostic(direct))
+    chained_rendered = str(redactor.exception_diagnostic(chained))
+
+    assert "RETURN_CODE_SECRET" not in direct_rendered
+    assert "STRING_RETURN_CODE_SECRET" not in chained_rendered
+    assert "<diagnostic-value>" in direct_rendered
+    assert REDACTED in chained_rendered

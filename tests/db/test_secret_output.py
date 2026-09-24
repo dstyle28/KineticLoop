@@ -185,3 +185,17 @@ def test_db_reset_split_argument_errors_are_credential_free(
     stderr = capsys.readouterr().err
     assert secret not in stderr
     assert "[REDACTED]" in stderr
+
+
+@pytest.mark.parametrize("argument", ["--timeout=%36%30", "--j%73on"])
+def test_db_reset_never_executes_percent_decoded_parser_input(
+    argument: str,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    with patch("kineticloop.db.cli.DatabaseLifecycle") as lifecycle_type:
+        with pytest.raises(SystemExit) as exit_info:
+            main(["db-reset", argument])
+
+    assert exit_info.value.code == 2
+    lifecycle_type.assert_not_called()
+    assert "error:" in capsys.readouterr().err

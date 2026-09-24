@@ -23,9 +23,9 @@ fixtures, test input, evidence logs, or default diagnostics.
 
 `Redactor` recursively creates a diagnostic copy of mappings, structured-log argument
 sequences, URLs, exceptions, and subprocess failures. It removes registered raw and
-percent-encoded values, URL userinfo, sensitive query values, and values below
-sensitive keys while preserving safe context such as provider/host, retry count, and
-failure class. It never mutates the input.
+percent-encoded values, URL userinfo, recursively nested URL/query credentials,
+sensitive query values, and values below sensitive keys while preserving safe context
+such as provider/host, retry count, and failure class. It never mutates the input.
 
 `DatabaseConnection.url` is an explicit in-process connection surface. Default
 string/repr/JSON and `kl db-reset` plain/JSON output use a redacted diagnostic mapping;
@@ -33,6 +33,9 @@ they keep project, database, host, and port useful without emitting usernames,
 passwords, URL userinfo, or sensitive query values. Lifecycle subprocess failures are
 redacted before they cross the CLI error boundary. Database reset operations,
 worktree/Compose namespace derivation, and verifier behavior are unchanged.
+Argument parsing always operates on the original input; redaction applies only to
+parser error presentation and cannot turn encoded text into an executable option or
+value.
 
 ## Canonical evidence and authority
 

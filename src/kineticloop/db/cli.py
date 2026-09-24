@@ -3,21 +3,26 @@
 from __future__ import annotations
 
 import argparse
+from typing import NoReturn
 
 from kineticloop import cli as engineering_cli
 from kineticloop.db.lifecycle import DatabaseLifecycle, DatabaseLifecycleError
-from kineticloop.security.redaction import REDACTED, Redactor
+from kineticloop.security.redaction import Redactor
+
+
+class _RedactingArgumentParser(argparse.ArgumentParser):
+    """Keep parser input authoritative while sanitizing presentation output."""
+
+    def exit(self, status: int = 0, message: str | None = None) -> NoReturn:
+        redacted_message = Redactor().text(message) if message is not None else None
+        super().exit(status, redacted_message)
 
 
 def _db_reset(argv: list[str]) -> int:
-    parser = argparse.ArgumentParser(prog="kl db-reset")
+    parser = _RedactingArgumentParser(prog="kl db-reset")
     parser.add_argument("--timeout", type=float, default=60.0)
     parser.add_argument("--json", action="store_true")
-    redacted_argv = Redactor().redact(argv)
-    assert isinstance(redacted_argv, list)
-    args = parser.parse_args(
-        [item if isinstance(item, str) else REDACTED for item in redacted_argv]
-    )
+    args = parser.parse_args(argv)
     try:
         lifecycle = DatabaseLifecycle(engineering_cli.repository_root())
         connection = lifecycle.reset(timeout_seconds=args.timeout)

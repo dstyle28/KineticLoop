@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import string
 import subprocess
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -39,7 +40,6 @@ _CREDENTIAL_URL = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\r\n]*?@[^\s,;]+")
 _PERCENT_PLACEHOLDER = re.compile(
     r"(?<!%)%(?!%)(?:\([^)]+\))?[-+#0 ]*(?:\*|\d*)(?:\.(?:\*|\d+))?[A-Za-z]"
 )
-_BRACE_PLACEHOLDER = re.compile(r"(?<!\{)\{[^{}]*\}(?!\})")
 _SENSITIVE_KEY_EXPRESSION = (
     r"access[\s_-]?token|api[\s_-]?key|authorization|client[\s_-]?secret|cookie|"
     r"credential(?:s)?|database[\s_-]?url|dsn|passwd|password|refresh[\s_-]?token|"
@@ -63,10 +63,6 @@ _AUTH_HEADER = re.compile(
     r"(?i)(?P<prefix>\bauthorization\s+(?:bearer|basic|digest|token)\s+)"
     r"(?P<value>[^;\r\n]+)"
 )
-_FORMAT_PLACEHOLDER = re.compile(
-    rf"(?:{_PERCENT_PLACEHOLDER.pattern})|(?:{_BRACE_PLACEHOLDER.pattern})"
-)
-
 DiagnosticScalar: TypeAlias = str | bytes | int | float | bool | None
 
 
@@ -86,20 +82,34 @@ def _format_sensitive_positions(value: str) -> set[int]:
     positions: set[int] = set()
     active_sensitive = False
     previous_end = 0
-    automatic_index = 0
     percent_index = 0
-    for placeholder in _FORMAT_PLACEHOLDER.finditer(value):
+    for placeholder in _PERCENT_PLACEHOLDER.finditer(value):
         segment = value[previous_end : placeholder.start()]
         assignments = list(re.finditer(r"(?i)([a-z0-9_. -]+)\s*[:=]\s*$", segment))
         if assignments:
             active_sensitive = _is_sensitive_key(assignments[-1].group(1))
         token = placeholder.group(0)
-        if token.startswith("%"):
-            star_count = token.count("*")
-            argument_index = percent_index + star_count
-            percent_index += star_count + 1
-        else:
-            field_name = token[1:-1].split("!", maxsplit=1)[0].split(":", maxsplit=1)[0]
+        star_count = token.count("*")
+        argument_index = percent_index + star_count
+        percent_index += star_count + 1
+        if active_sensitive:
+            positions.add(argument_index)
+        previous_end = placeholder.end()
+
+    automatic_index = 0
+    formatter = string.Formatter()
+
+    def inspect_braces(format_string: str, *, classify_fields: bool) -> None:
+        nonlocal automatic_index
+        active_brace_sensitive = False
+        for literal, field_name, format_spec, _conversion in formatter.parse(format_string):
+            assignments = list(
+                re.finditer(r"(?i)([a-z0-9_. -]+)\s*[:=]\s*$", literal)
+            )
+            if assignments:
+                active_brace_sensitive = _is_sensitive_key(assignments[-1].group(1))
+            if field_name is None:
+                continue
             root_name = re.split(r"[.[]", field_name, maxsplit=1)[0]
             if root_name.isdigit():
                 argument_index = int(root_name)
@@ -108,9 +118,18 @@ def _format_sensitive_positions(value: str) -> set[int]:
                 automatic_index += 1
             else:
                 argument_index = 0
-        if active_sensitive:
-            positions.add(argument_index)
-        previous_end = placeholder.end()
+            if classify_fields and active_brace_sensitive:
+                positions.add(argument_index)
+            if format_spec:
+                inspect_braces(format_spec, classify_fields=False)
+
+    try:
+        inspect_braces(value, classify_fields=True)
+    except ValueError:
+        prefix = value.partition("{")[0]
+        key, found, _member = prefix.rpartition("=")
+        if found and _is_sensitive_key(key):
+            positions.add(0)
     return positions
 
 
@@ -267,14 +286,24 @@ class Redactor:
     def text(self, value: str) -> str:
         """Redact one diagnostic string without changing the source value."""
 
+        return self._text(value, nested_depth=0)
+
+    def _text(self, value: str, *, nested_depth: int) -> str:
+        if nested_depth >= 8:
+            return REDACTED
+
         decoded = _stable_unquote(value)
         if decoded is None:
             return REDACTED
         result = decoded
         for pattern in self.__patterns:
             result = pattern.sub(_SECRET_MARKER, result)
-        result = _CREDENTIAL_URL.sub(lambda match: self._url(match.group(0)), result)
-        result = _URL.sub(lambda match: self._url(match.group(0)), result)
+        result = _CREDENTIAL_URL.sub(
+            lambda match: self._url(match.group(0), nested_depth=nested_depth), result
+        )
+        result = _URL.sub(
+            lambda match: self._url(match.group(0), nested_depth=nested_depth), result
+        )
         result = result.replace(_SECRET_MARKER, REDACTED)
         result = result.replace(_USERINFO_MARKER, REDACTED)
         result = _COMMAND_OPTION.sub(lambda match: f"{match.group('prefix')}{REDACTED}", result)
@@ -285,7 +314,9 @@ class Redactor:
         )
         return _redact_sensitive_assignments(result)
 
-    def _url(self, matched_url: str) -> str:
+    def _url(self, matched_url: str, *, nested_depth: int) -> str:
+        if nested_depth >= 8:
+            return REDACTED
         trailing = ""
         while matched_url and matched_url[-1] in ".,;)":
             trailing = matched_url[-1] + trailing
@@ -318,9 +349,13 @@ class Redactor:
                 if not found:
                     query_parts[index] = quote_plus(part)
                     continue
+                sanitized_value = (
+                    REDACTED
+                    if _is_sensitive_key(key)
+                    else self._text(query_value, nested_depth=nested_depth + 1)
+                )
                 query_parts[index] = (
-                    f"{quote_plus(key)}="
-                    f"{quote_plus(REDACTED if _is_sensitive_key(key) else query_value)}"
+                    f"{quote_plus(key)}={quote_plus(sanitized_value)}"
                 )
             sanitized = urlunsplit(
                 (parsed.scheme, host, parsed.path, "".join(query_parts), parsed.fragment)
@@ -388,14 +423,24 @@ class Redactor:
     def _redact_sequence(self, value: Sequence[object]) -> list[object]:
         sensitive_indices: set[int] = set()
         for index, item in enumerate(value):
-            if not isinstance(item, str):
+            if type(item) is str:
+                item_text = item
+            elif type(item) is bytes:
+                item_text = item.decode("utf-8", errors="replace")
+            else:
                 continue
-            decoded_item = _stable_unquote(item)
+            decoded_item = _stable_unquote(item_text)
             positions = {0} if decoded_item is None else _sequence_sensitive_positions(decoded_item)
             if positions == {0} and index + 1 < len(value):
                 next_item = value[index + 1]
-                if isinstance(next_item, str):
-                    decoded_next = _stable_unquote(next_item)
+                if type(next_item) is str:
+                    next_text = next_item
+                elif type(next_item) is bytes:
+                    next_text = next_item.decode("utf-8", errors="replace")
+                else:
+                    next_text = None
+                if next_text is not None:
+                    decoded_next = _stable_unquote(next_text)
                     if decoded_next is None or decoded_next.casefold() in {
                         "bearer",
                         "basic",
@@ -423,7 +468,8 @@ class Redactor:
             return RedactedDiagnostic(self.text(type(error).__name__), "exception cycle omitted")
         details: list[str] = []
         if isinstance(error, subprocess.CalledProcessError):
-            details.append(f"returncode={error.returncode}")
+            redacted_returncode = self.redact(error.returncode)
+            details.append(f"returncode={redacted_returncode!r}")
             details.append(f"command={self.redact(error.cmd)!r}")
             if error.stdout is not None:
                 details.append(f"stdout={self.redact(error.stdout)!r}")
@@ -431,7 +477,7 @@ class Redactor:
                 details.append(f"stderr={self.redact(error.stderr)!r}")
         cause = error.__cause__ or error.__context__
         if isinstance(error, subprocess.CalledProcessError):
-            message = f"subprocess failed with return code {error.returncode}"
+            message = f"subprocess failed with return code {redacted_returncode!r}"
         else:
             redacted_args = self.redact(error.args)
             assert isinstance(redacted_args, tuple)
