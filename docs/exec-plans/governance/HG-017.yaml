@@ -1,7 +1,7 @@
 change_identity: harness-governance-v0.1/HG-017
 display_change_id: HG-017
 base_commit: 16eab836be754b6000efeb2f38a8f0f89648a767
-tested_commit: a5074bc0be6e3d4a4dc42b45b08ba5aae322e1f7
+tested_commit: 2fc66266b75e7230416408bb773d18761d43aed2
 change_status: PASS
 summary: >-
   Mechanically close M1 from exact valid KL-001 through KL-009 MERGED integrations,
@@ -41,6 +41,7 @@ files_changed:
   - docs/exec-plans/evidence/HG-017/checks-r4.log
   - docs/exec-plans/evidence/HG-017/checks-r5.log
   - docs/exec-plans/evidence/HG-017/checks-r6.log
+  - docs/exec-plans/evidence/HG-017/checks-r7.log
   - docs/exec-plans/governance/HG-017.yaml
   - docs/exec-plans/milestones/M1.json
   - docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
@@ -54,80 +55,80 @@ checks_run:
   - check_id: milestone_schema_valid
     command: Validate MILESTONE_CLOSURE.schema.json and M1.json with Draft 2020-12.
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r6.log
+    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r7.log
   - check_id: closure_active_task_set_and_integrations_valid
     command: Validate exact M1 task equality and every integration schema/binding/ancestry.
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r6.log
+    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r7.log
   - check_id: closure_exit_evidence_bound
     command: Validate M1 exit checks and revision-bound evidence without requirement overclaim.
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r6.log
+    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r7.log
   - check_id: m2_contract_projection_valid
     command: Validate backlog/traceability/packet projection for all ten refined M2 tasks.
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r6.log
+    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r7.log
   - check_id: milestone_and_refinement_negative_tests_pass
     command: >-
       PYTHONPATH="$PWD/src"
       /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q
       tests/harness/test_validator.py
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r6.log
+    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r7.log
   - check_id: harness_structure_valid
     command: >-
       PYTHONPATH="$PWD/src"
       /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r6.log
+    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r7.log
   - check_id: lint_passes
     command: >-
       PYTHONPATH="$PWD/src"
       /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/ruff check .
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r6.log
+    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r7.log
   - check_id: typecheck_passes
     command: >-
       MYPY_CACHE_DIR=/private/tmp/hg017-final8-mypy PYTHONPATH="$PWD/src"
       /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/mypy src tools tests
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r6.log
+    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r7.log
   - check_id: unit_tests_pass
     command: >-
       PYTHONPATH="$PWD/src"
       /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-unit
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r6.log
+    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r7.log
   - check_id: harness_tests_pass
     command: >-
       PYTHONPATH="$PWD/src"
       /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r6.log
+    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r7.log
   - check_id: full_suite_passes
     command: >-
       PYTHONPATH="$PWD/src"
       /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r6.log
+    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r7.log
   - check_id: governance_scope_exact
     command: Verify every protected-base-to-tested path matches the HG-017 governance allowlist.
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r6.log
+    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r7.log
   - check_id: diff_clean
     command: >-
       git diff --check 16eab836be754b6000efeb2f38a8f0f89648a767
-      a5074bc0be6e3d4a4dc42b45b08ba5aae322e1f7
+      2fc66266b75e7230416408bb773d18761d43aed2
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r6.log
+    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r7.log
   - check_id: frozen_baseline_unchanged
     command: >-
       git diff --exit-code 16eab836be754b6000efeb2f38a8f0f89648a767
-      a5074bc0be6e3d4a4dc42b45b08ba5aae322e1f7 -- FROZEN_BASELINE.json
+      2fc66266b75e7230416408bb773d18761d43aed2 -- FROZEN_BASELINE.json
       04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
       05_KineticLoop_Protocol_v1.2_FROZEN.md
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r6.log
+    evidence_ref: docs/exec-plans/evidence/HG-017/checks-r7.log
 frozen_impact: NONE
 authority_entries_added:
   - MILESTONE_CLOSURE.schema.json
