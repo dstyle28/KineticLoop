@@ -1,0 +1,98 @@
+change_identity: harness-governance-v0.1/HG-012
+display_change_id: HG-012
+base_commit: 404553af617375891a7f4c37617baa08e25ea3dd
+tested_commit: 94975e794d72d641215b6e449b39b05f7efad839
+change_status: PASS
+summary: >-
+  Close KL-006's durable post-merge GENERAL and PROTOCOL review and integration
+  state without changing its implementation, result, evidence, packet, product
+  requirements, document authorities, Harness contracts, or frozen authority.
+  Reuse the hardened delayed-review admission path from HG-011 and bind both
+  required reviews to the exact historical integrated tree.
+packets_refined: []
+files_changed:
+  - docs/exec-plans/evidence/HG-012/checks.log
+  - docs/exec-plans/governance/HG-012.yaml
+  - docs/exec-plans/integrations/KL-006.json
+  - docs/exec-plans/reviews/KL-006/GENERAL.json
+  - docs/exec-plans/reviews/KL-006/PROTOCOL.json
+checks_run:
+  - check_id: governance_schema_valid
+    command: Validate HG-012.yaml against HARNESS_CHANGE.schema.json.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-012/checks.log
+  - check_id: integration_schema_valid
+    command: Validate KL-006.json against INTEGRATION_RECORD.schema.json.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-012/checks.log
+  - check_id: review_schema_and_binding_valid
+    command: Validate both required KL-006 reviews and their exact merge-tree binding.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-012/checks.log
+  - check_id: historical_revision_packet_checks_pass
+    command: Run all three KL-006 packet checks at exact reviewed revision 992024b7.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-012/checks.log
+  - check_id: historical_revision_document_index_tests_pass
+    command: Run tests/harness/document_index at exact reviewed revision 992024b7.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-012/checks.log
+  - check_id: explicit_unresolved_model_sources
+    command: Verify all missing model inputs and unverified historical status are explicit.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-012/checks.log
+  - check_id: harness_structure_valid
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-012/checks.log
+  - check_id: lint_passes
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/ruff check .
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-012/checks.log
+  - check_id: typecheck_passes
+    command: MYPY_CACHE_DIR=/private/tmp/hg-012-mypy PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/mypy src tools tests
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-012/checks.log
+  - check_id: unit_tests_pass
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-unit
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-012/checks.log
+  - check_id: harness_tests_pass
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-012/checks.log
+  - check_id: current_packet_checks_pass
+    command: Run all three KL-006 document-index checks on current master content.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-012/checks.log
+  - check_id: current_document_index_tests_pass
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness/document_index
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-012/checks.log
+  - check_id: integration_binding_tests_pass
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness/test_validator.py -k 'integration or task_review_without_integration'
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-012/checks.log
+  - check_id: current_master_ancestry_and_content_continuity
+    command: Verify reviewed merge ancestry and byte-identical KL-006 content through current master.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-012/checks.log
+  - check_id: inv16_preserved
+    command: Verify KL-006 adds no replay read or knowledge-cutoff semantic change.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-012/checks.log
+  - check_id: frozen_baseline_unchanged
+    command: Verify frozen Protocol, DB, and FROZEN_BASELINE.json are unchanged.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-012/checks.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+  - >-
+    The canonical model runner, detailed model_report.json, exact fixtures and
+    policies, and exact historical source revision remain unavailable and are
+    explicitly unresolved; historical aggregate results remain unverified.
+  - >-
+    HG-012 requires a fresh independent GENERAL review bound to the final
+    governance head before merge; that review is recorded separately after this
+    governance record and evidence are committed.
