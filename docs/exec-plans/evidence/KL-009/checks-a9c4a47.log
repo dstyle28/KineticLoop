@@ -1,0 +1,62 @@
+KL-009 immutable tested-commit evidence, delimiter-separated authority hardening
+date: 2026-09-24
+task_identity: harness-backlog-v0.2/KL-009
+base_commit: c2740b8dfa25c079bb51f816baa5a87d6422b841
+tested_commit: a9c4a4758957265cc5b7a67fa26e2ee37c258c71
+
+CHECK config_secret_sources_are_separated
+COMMAND .venv/bin/pytest -q tests/unit/config/test_secret_loader.py::test_config_secret_sources_are_separated
+RESULT PASS
+OUTPUT 1 passed in 0.01s
+
+CHECK nested_redaction_is_non_mutating_and_authority_neutral
+COMMAND .venv/bin/pytest -q tests/unit/security/test_redaction.py::test_nested_redaction_is_non_mutating_and_authority_neutral
+RESULT PASS
+OUTPUT 1 passed in 0.01s
+
+CHECK synthetic_security_fixtures_have_provenance
+COMMAND .venv/bin/pytest -q tests/unit/security/test_synthetic_fixtures.py::test_synthetic_security_fixtures_have_provenance
+RESULT PASS
+OUTPUT 1 passed in 0.01s
+
+CHECK database_diagnostics_redact_credentials
+COMMAND .venv/bin/pytest -q tests/db/test_secret_output.py
+RESULT PASS
+OUTPUT 31 passed in 0.04s
+
+CHECK security_and_database_regressions_pass
+COMMAND .venv/bin/pytest -q tests/unit/config tests/unit/security tests/db
+RESULT PASS
+OUTPUT 73 passed in 0.10s
+
+CHECK harness_validation_passes
+COMMAND .venv/bin/kl check-harness && .venv/bin/kl test-harness
+RESULT PASS
+OUTPUT HARNESS_CHECK_PASS tasks=68 active=66; 100 passed in 74.03s
+
+ADDITIONAL CHECK lint
+COMMAND .venv/bin/kl lint
+RESULT PASS
+OUTPUT All checks passed!
+
+ADDITIONAL CHECK typecheck
+COMMAND .venv/bin/kl typecheck
+RESULT PASS
+OUTPUT Success: no issues found in 54 source files
+
+ADDITIONAL CHECK unit
+COMMAND .venv/bin/kl test-unit
+RESULT PASS
+OUTPUT 127 passed in 2.27s
+
+ADDITIONAL CHECK full_suite
+COMMAND .venv/bin/pytest -q
+RESULT PASS
+OUTPUT 268 passed in 75.61s
+
+ADVERSARIAL BOUNDARY COVERAGE
+- Whitespace, comma, semicolon, slash, and other non-username delimiters expose every subsequent malformed scheme-less userinfo candidate to redaction.
+- A colon-prefixed safe diagnostic followed by whitespace is not misclassified as a username/password pair.
+- First-pass and repeated redaction both retain the `db-reset:` prefix and already-redacted URL authorities.
+- Lifecycle errors cover a preceding email-like authority followed by credential-bearing malformed endpoints under each explicit delimiter regression.
+- All earlier configuration, serialization, URL, parser, fixture, DB/CLI, host, mapping, set, exception, format, delimiter, encoding, subclass, cycle/depth, and non-mutation probes remain covered.
