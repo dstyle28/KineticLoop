@@ -50,7 +50,10 @@ M2_REFINED_TASK_IDS = {
     'KL-015', 'KL-016', 'KL-017', 'KL-018', 'KL-055',
 }
 M2_REQUIRED_CHECK_IDS = {
-    'KL-014': {'build_preparation_stays_outside_t2'},
+    'KL-014': {
+        'build_preparation_stays_outside_t2',
+        'preparation_and_registry_management_stay_outside_atomic_boundaries',
+    },
     'KL-015': {
         'registry_lease_required_for_publish_commit_and_session_entry',
         'preparation_work_stays_outside_coordination_locks',
@@ -79,6 +82,30 @@ M2_REQUIRED_CHECK_IDS = {
         'provider_fixtures_pass_hardened_synthetic_guard',
     },
 }
+KL014_REQUIRED_COMMAND_SURFACE = [
+    'T1: ReceiveEvidence',
+    'T1-PREPARATION (outside T1): RecordCandidate',
+    ('T2-IN: DecideAssociation, DecideAdmission, AcceptFactRevision, ApplyControl, '
+     'ClearControl, ApproveChange, ActivateApprovedProgram, RecordActualExecution, '
+     'CompleteReportedWorkout'),
+    'BUILD-PREPARATION (outside T2): BeginBuild, WriteCandidate, CompleteFactset',
+    'T2-SEAL: SealFactset',
+    'REGISTRY-MANAGEMENT (outside T2-GLOBAL): RegisterArtifact',
+    'T2-GLOBAL: RevokeArtifact',
+    'T3-PREPARATION (outside T3): RecordProjection, BuildManifest',
+    'T3: PublishManifest',
+    'T4: AdmitOrReviseIntent, CancelIntent',
+    'T5: AcquireLease, RenewLease, ReserveCall, PermitDispatch',
+    ('T5-PREPARATION (outside T5): RecordToolResult, RecordProposal, '
+     'RecordDemandFeatures'),
+    'T6-PREPARATION (outside T6): ResolveEvidence, RecordValidation',
+    'T6: CommitBundle, Reauthorize',
+    'T7: StartSession, ResumeSession, ContinueSession',
+    'T8: SettleCall, MarkUnknown, ReapIntent; CancelIntent is shared with T4',
+    'Results: one typed success result per public command plus CommandRejected',
+    ('Internal-only: IssueAuthorization, InvalidateAuthorization, RecordSnapshot, '
+     'AdvanceAttempt, CancelUndispatched'),
+]
 M2_REQUIRED_SECURITY_REVIEWS = {'KL-014', 'KL-017', 'KL-018', 'KL-055'}
 M1_CLEAN_START_CHECKS = {
     'compose_config_valid': (
@@ -1169,6 +1196,8 @@ def task_definition_errors(root, backlog, revision=None):
             required_checks = M2_REQUIRED_CHECK_IDS.get(name, set())
             if not required_checks.issubset(set(contract_ids)):
                 errors.append('m2-required-semantic-checks:' + name)
+            if name == 'KL-014' and task.get('commands') != KL014_REQUIRED_COMMAND_SURFACE:
+                errors.append('m2-kl014-command-surface')
             if (name in M2_REQUIRED_SECURITY_REVIEWS
                     and 'SECURITY_DATA_BOUNDARY' not in task.get('review_requirements', [])):
                 errors.append('m2-security-review-required:' + name)

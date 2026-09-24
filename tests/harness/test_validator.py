@@ -432,6 +432,20 @@ class ValidatorTests(unittest.TestCase):
         self.check(1, 'm2-required-semantic-checks:KL-015')
 
         backlog = copy.deepcopy(original)
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-014')
+        removed = {'preparation_and_registry_management_stay_outside_atomic_boundaries'}
+        task['checks_required_for_this_task'] = [
+            check_id for check_id in task['checks_required_for_this_task']
+            if check_id not in removed
+        ]
+        task['check_contracts'] = [
+            contract for contract in task['check_contracts']
+            if contract['check_id'] not in removed
+        ]
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-required-semantic-checks:KL-014')
+
+        backlog = copy.deepcopy(original)
         task = next(item for item in backlog['tasks'] if item['id'] == 'KL-018')
         task['review_requirements'].remove('SECURITY_DATA_BOUNDARY')
         dump(backlog_path, backlog)
@@ -443,6 +457,14 @@ class ValidatorTests(unittest.TestCase):
         dump(backlog_path, backlog)
         self.check(1, 'm2-db-review-required:KL-014')
         dump(backlog_path, original)
+
+    def test_kl014_preparation_cannot_be_reclassified_into_atomic_boundaries(self):
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-014')
+        task['commands'][0] = 'T1: ReceiveEvidence, RecordCandidate'
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-kl014-command-surface')
 
     def test_m2_packet_check_contract_drift_rejected(self):
         packet = self.root / 'docs/exec-plans/active/KL-010.md'
