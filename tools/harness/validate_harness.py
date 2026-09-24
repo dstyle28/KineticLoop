@@ -451,7 +451,7 @@ def configure_ci_merge_gate(root, args):
         args.governance_reviewed_head = review['reviewed_head_sha']
 
 
-def suffix_errors(root, start, end, task_id, kind):
+def suffix_errors(root, start, end, task_id, kind, scope_patterns=None):
     """Require ancestry and check every bookkeeping commit, including reverted changes."""
     errors = []
     try:
@@ -465,6 +465,10 @@ def suffix_errors(root, start, end, task_id, kind):
                 errors.append(kind + '-suffix-merge:' + commit)
                 continue
             for path in changed_paths(root, parents[0], commit):
+                if (scope_patterns is not None
+                        and not matches(path, scope_patterns)
+                        and not matches(path, allowed)):
+                    continue
                 if not matches(path, allowed):
                     errors.append(kind + '-stale-change:' + path)
                 elif kind == 'tested' and matches(path, [evidence_pattern(task_id)]):
@@ -830,6 +834,8 @@ def integration_record_errors(
             )
             if not exact_tree_squash and not delayed_post_merge_review:
                 errors.append('integration-ancestry-or-exact-tree:' + task_id + ':review-to-merge')
+        else:
+            delayed_post_merge_review = False
         result_paths_at_commit = result_paths_at_revision(root, task_id, result_commit)
         result_paths_at_review = result_paths_at_revision(root, task_id, reviewed)
         if len(result_paths_at_commit) != 1:
@@ -865,6 +871,20 @@ def integration_record_errors(
                     'integration-result-semantic:' + task_id + ':' + issue
                     for issue in semantic_result_errors(
                         result, task, root, evidence_revision=reviewed))
+                result_base = resolve(root, result['base_commit'])
+                tested = resolve(root, result['tested_commit'])
+                if not is_ancestor(root, result_base, tested):
+                    errors.append('integration-result-base-tested-ancestry:' + task_id)
+                errors.extend(
+                    'integration-' + issue
+                    for issue in suffix_errors(
+                        root, tested, reviewed, task_id, 'tested',
+                        task['write_paths'] + [f'docs/exec-plans/active/{task_id}.md']))
+                if not delayed_post_merge_review:
+                    errors.extend(
+                        'integration-' + issue
+                        for issue in suffix_errors(
+                            root, reviewed, review_commit, task_id, 'review'))
         for review_type in task['review_requirements']:
             review_path = f'docs/exec-plans/reviews/{task_id}/{review_type}.json'
             review = load_artifact_text(

@@ -1240,6 +1240,33 @@ class ValidatorTests(unittest.TestCase):
         self.integration_record(result_commit, result_commit, review_commit, review_commit)
         self.check(1, 'integration-review-evidence:KL-001:GENERAL:')
 
+    def test_integration_rejects_implementation_after_historical_tested_commit(self):
+        self.put('src/kineticloop/post_test_change.py')
+        self.commit('change implementation after claimed tested revision')
+        self.result(tested=self.base)
+        reviewed = self.commit('persist result after stale implementation change')
+        review_commit = self.review(reviewed)
+        self.integration_record(reviewed, reviewed, review_commit, review_commit)
+        self.check(1, 'integration-tested-stale-change:src/kineticloop/post_test_change.py')
+
+    def test_integration_allows_unrelated_task_bookkeeping_after_tested_commit(self):
+        self.put('docs/exec-plans/evidence/KL-002/unrelated.log')
+        self.commit('persist unrelated task bookkeeping')
+        self.result(tested=self.base)
+        reviewed = self.commit('persist result after unrelated bookkeeping')
+        review_commit = self.review(reviewed)
+        self.integration_record(reviewed, reviewed, review_commit, review_commit)
+        self.check()
+
+    def test_integration_rejects_implementation_after_historical_reviewed_head(self):
+        self.result(tested=self.base)
+        reviewed = self.commit('persist reviewed result')
+        self.put('src/kineticloop/post_review_change.py')
+        self.commit('change implementation after reviewed head')
+        review_commit = self.review(reviewed)
+        self.integration_record(reviewed, reviewed, review_commit, review_commit)
+        self.check(1, 'integration-review-stale-change:src/kineticloop/post_review_change.py')
+
     def test_integration_accepts_exact_complete_tree_squash_merge(self):
         self.result(tested=self.base)
         result_commit = self.commit('persist result')
