@@ -37,9 +37,11 @@ machine report and source-revision binding are supplied.
 Dispatch requires no conflicting `resource_keys` or concrete implementation write paths. Worktree database/Compose namespaces are isolated. Migration-chain tasks are serialized.
 
 M2 uses structured `check_contracts` and `evidence_paths` mirrored exactly by the
-backlog, traceability record and packet. A PASS result must use every declared check
-ID, execute its exact command, satisfy its explicit PASS oracle, and write evidence
-only below the task-owned evidence path.
+backlog, traceability record and packet. The projection also binds entry conditions,
+frozen-impact maps, context files, deliverables, DoD, environment requirements and
+parallel policy. A PASS result must use every declared check ID, execute its exact
+command, satisfy its explicit PASS oracle, and write evidence only below the
+task-owned evidence path.
 
 `write_paths` describes the task's implementation/configuration/test/document write scope. Two task-scoped bookkeeping paths are granted separately and do not need to be repeated in every task packet:
 
