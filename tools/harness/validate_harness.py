@@ -1011,7 +1011,7 @@ def milestone_closure_errors(
         for item in closure['exit_checks']
     }
     clean_start_evidence = evidence_paths.get('clean_checkout_starts_test_environment', set())
-    clean_start_records = next(
+    clean_start_records: list[dict] = next(
         (item['evidence'] for item in closure['exit_checks']
          if item['check_id'] == 'clean_checkout_starts_test_environment'), [])
     expected_clean_paths = {
