@@ -1,0 +1,57 @@
+task_identity: harness-backlog-v0.2/KL-010
+tested_commit: 17c6947243dbe02158ef2a0f4580d64b502494f0
+base_commit: 3896db8d5b0ee6b9b74514ecaec817bf0e0a437e
+execution_date: 2026-09-24
+environment: uv 0.10.4 bootstrap binary with repository-locked dependencies
+
+check_id: all_logical_relations_mapped_once
+command: uv run pytest -q tests/unit/persistence/test_schema_topology.py::test_all_logical_relations_mapped_once
+result: PASS
+output:
+  .                                                                        [100%]
+  1 passed in 0.01s
+
+check_id: fk_dependency_graph_is_acyclic
+command: uv run pytest -q tests/unit/persistence/test_schema_topology.py::test_fk_dependency_graph_is_acyclic
+result: PASS
+output:
+  .                                                                        [100%]
+  1 passed in 0.00s
+
+check_id: authority_roots_precede_dependents
+command: uv run pytest -q tests/unit/persistence/test_schema_topology.py::test_authority_roots_precede_dependents
+result: PASS
+output:
+  .                                                                        [100%]
+  1 passed in 0.00s
+
+check_id: schema_topology_unit_suite_passes
+command: uv run pytest -q tests/unit/persistence/test_schema_topology.py
+result: PASS
+output:
+  ......                                                                   [100%]
+  6 passed in 0.01s
+
+check_id: harness_validation_passes
+command: uv run kl check-harness
+result: PASS
+output:
+  HARNESS_CHECK_PASS tasks=68 active=66
+
+broader_check: lint
+command: uv run ruff check .
+result: PASS
+output:
+  All checks passed!
+
+broader_check: typecheck
+command: uv run mypy src tools tests
+result: PASS
+output:
+  Success: no issues found in 58 source files
+
+broader_check: repository_regression_suite
+command: uv run pytest -q
+result: PASS
+output:
+  326 passed in 190.37s (0:03:10)
