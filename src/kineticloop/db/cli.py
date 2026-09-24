@@ -21,9 +21,11 @@ def _db_reset(argv: list[str]) -> int:
     if args.json:
         print(connection.as_json())
     else:
-        print(f"PostgreSQL reset for Compose project {connection.project_name}.")
-        print(f"Database: {connection.database_name}")
-        print(f"DATABASE_URL={connection.url}")
+        diagnostic = connection.diagnostic_mapping()
+        print(f"PostgreSQL reset for Compose project {diagnostic['project_name']}.")
+        print(f"Database: {diagnostic['database_name']}")
+        print(f"Host: {diagnostic['host']}:{diagnostic['port']}")
+        print(f"DATABASE_URL={diagnostic['url']}")
     return 0
 
 

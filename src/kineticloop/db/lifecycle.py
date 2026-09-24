@@ -9,9 +9,13 @@ import re
 import subprocess
 import time
 from collections.abc import Callable, Mapping, Sequence
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from pathlib import Path
+from typing import cast
 from urllib.parse import quote
+
+from kineticloop.config.secrets import SecretValue
+from kineticloop.security.redaction import REDACTED, Redactor
 
 CommandRunner = Callable[..., subprocess.CompletedProcess[str]]
 _SAFE_IDENTIFIER = re.compile(r"^[a-z][a-z0-9_]{0,62}$")
@@ -52,21 +56,54 @@ class DatabaseConnection:
     host: str
     port: int
     user: str
-    password: str
+    password: SecretValue | str
+
+    def __post_init__(self) -> None:
+        if isinstance(self.password, str):
+            object.__setattr__(self, "password", SecretValue(self.password))
 
     @property
     def url(self) -> str:
         encoded_user = quote(self.user, safe="")
-        encoded_password = quote(self.password, safe="")
+        password = self.password
+        assert isinstance(password, SecretValue)
+        encoded_password = quote(password.reveal(), safe="")
         return (
             f"postgresql://{encoded_user}:{encoded_password}@{self.host}:{self.port}/"
             f"{self.database_name}"
         )
 
+    @property
+    def redacted_url(self) -> str:
+        value = f"postgresql://{REDACTED}@{self.host}:{self.port}/{self.database_name}"
+        password = self.password
+        assert isinstance(password, SecretValue)
+        return str(Redactor((self.user, password)).redact(value))
+
+    def diagnostic_mapping(self) -> dict[str, str | int]:
+        password = self.password
+        assert isinstance(password, SecretValue)
+        return cast(
+            dict[str, str | int],
+            Redactor((self.user, password)).redact(
+                {
+                    "project_name": self.project_name,
+                    "database_name": self.database_name,
+                    "host": self.host,
+                    "port": self.port,
+                    "url": self.redacted_url,
+                }
+            ),
+        )
+
     def as_json(self) -> str:
-        payload = asdict(self)
-        payload["url"] = self.url
-        return json.dumps(payload, sort_keys=True)
+        return json.dumps(self.diagnostic_mapping(), sort_keys=True)
+
+    def __str__(self) -> str:
+        return self.as_json()
+
+    def __repr__(self) -> str:
+        return f"DatabaseConnection({self.as_json()})"
 
 
 class DatabaseLifecycle:
@@ -85,8 +122,8 @@ class DatabaseLifecycle:
         self._runner = runner
         self._base_environ = dict(os.environ if environ is None else environ)
         self.user = self._base_environ.get("KINETICLOOP_DB_USER", "kineticloop")
-        self.password = self._base_environ.get(
-            "KINETICLOOP_DB_PASSWORD", "kineticloop-local-only"
+        self.password = SecretValue(
+            self._base_environ.get("KINETICLOOP_DB_PASSWORD", "kineticloop-local-only")
         )
         if not _SAFE_IDENTIFIER.fullmatch(self.user):
             raise DatabaseLifecycleError("KINETICLOOP_DB_USER must be a safe SQL identifier")
@@ -99,7 +136,7 @@ class DatabaseLifecycle:
                 "COMPOSE_PROJECT_NAME": self.namespace.project_name,
                 "KINETICLOOP_DB_NAME": self.namespace.database_name,
                 "KINETICLOOP_DB_USER": self.user,
-                "KINETICLOOP_DB_PASSWORD": self.password,
+                "KINETICLOOP_DB_PASSWORD": self.password.reveal(),
             }
         )
         return env
@@ -135,8 +172,8 @@ class DatabaseLifecycle:
                 "Docker with the Compose plugin is required for the local test database."
             ) from error
         except subprocess.CalledProcessError as error:
-            details = (error.stderr or error.stdout or str(error)).strip()
-            raise DatabaseLifecycleError(f"database command failed: {details}") from error
+            details = Redactor((self.user, self.password)).exception_diagnostic(error)
+            raise DatabaseLifecycleError(f"database command failed: {details}") from None
 
     def validate_compose(self) -> None:
         if not self.compose_file.is_file():
@@ -227,7 +264,8 @@ class DatabaseLifecycle:
         endpoint = result.stdout.strip().rsplit("\n", maxsplit=1)[-1]
         host, separator, raw_port = endpoint.rpartition(":")
         if not separator or not raw_port.isdigit():
-            raise DatabaseLifecycleError(f"unexpected Docker port output: {endpoint!r}")
+            safe_endpoint = Redactor((self.user, self.password)).redact(endpoint)
+            raise DatabaseLifecycleError(f"unexpected Docker port output: {safe_endpoint!r}")
         return DatabaseConnection(
             project_name=self.namespace.project_name,
             database_name=self.namespace.database_name,
