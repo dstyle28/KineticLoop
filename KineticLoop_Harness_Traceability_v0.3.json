@@ -1096,7 +1096,7 @@
         {
           "check_id": "catalog_mapping_and_release_owner_boundaries_complete",
           "command": "uv run pytest -q tests/unit/persistence/test_transactions.py::test_catalog_mapping_and_release_owner_boundaries_complete",
-          "pass_oracle": "The named test proves S19 revisions are written only by ExerciseCatalogService.PublishRevision, S20 decisions only by ExerciseMappingService.DecideMapping, and S48 releases only by ReleaseEvaluationService.RecordRelease outside live T1-T8; production adoption of catalog/mapping revisions and an evaluation release or policy occurs only through the authorized T2/T3 owners with immutable identity, and direct-write adoption is rejected."
+          "pass_oracle": "The named test proves S19 revisions are written only by ExerciseCatalogService.PublishRevision and adoption of a revision as user input occurs only through T2 classification/invalidation; S20 decisions are written only by ExerciseMappingService.DecideMapping and the current mapping is adopted only through explicit factset selection; S48 releases are written only by ReleaseEvaluationService.RecordRelease outside live T1-T8 and production release/policy selection occurs only through the T2 user-activation entry. T3 may consume only the exact immutable S19/S20 identities selected by its sealed input basis and the already activated exact S48 release/policy, cannot perform adoption or activation, and direct-write adoption is rejected."
         },
         {
           "check_id": "registry_lease_required_for_publish_commit_and_session_entry",
@@ -1260,15 +1260,15 @@
       "deliverables": [
         "lock/gate API"
       ],
-      "definition_of_done": "shared→S01 ordering is encoded and command-specifically tested for PublishManifest, CommitBundle, Reauthorize, StartSession, ResumeSession, and executable ContinueSession; every path reads current artifact eligibility after acquiring the shared gate and fails closed before mutation on unavailable, timeout, revoked, expired, or stale registry state; exclusive global RevokeArtifact never locks S01; STOP remains registry-independent; all behavior is testable against a task-local minimal PostgreSQL fixture without adding migrations",
+      "definition_of_done": "shared→S01 ordering is encoded and command-specifically tested for PublishManifest, CommitBundle, Reauthorize, StartSession, ResumeSession, and executable ContinueSession; every path reads current artifact and applicable authorization eligibility after acquiring the shared gate and fails closed before mutation on unavailable, timeout, revoked, expired, or stale registry state; authenticated exclusive RevokeArtifact never locks S01, atomically appends S50, advances S51, and records its management receipt/audit/outbox, with commit as the global revocation linearization point, exact same-key/same-hash replay, different-hash rejection, and effective_at prohibited from retroactive or scheduled authorization effect; STOP remains registry-independent; all behavior is testable against a task-local minimal PostgreSQL fixture without adding migrations",
       "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "shared_gate_precedes_s01",
+        "shared_gate_command_matrix_fails_closed",
         "reauthorize_shared_gate_precedes_s01_and_fails_closed",
         "continue_session_rechecks_shared_gate_and_fails_closed",
         "exclusive_global_gate_serializes",
-        "committed_revoke_visibility",
+        "revoke_artifact_atomic_linearization_and_idempotency",
         "registry_unavailable_or_timeout_denies",
         "global_revoke_never_locks_s01",
         "stop_has_no_registry_dependency",
@@ -1277,9 +1277,9 @@
       ],
       "check_contracts": [
         {
-          "check_id": "shared_gate_precedes_s01",
-          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_shared_gate_precedes_s01",
-          "pass_oracle": "The named interleaving test proves shared registry gate acquisition precedes S01."
+          "check_id": "shared_gate_command_matrix_fails_closed",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_shared_gate_command_matrix_fails_closed",
+          "pass_oracle": "The named PostgreSQL interleaving matrix individually proves PublishManifest, CommitBundle, Reauthorize, StartSession, ResumeSession, and executable ContinueSession acquire shared S51 before S01, then read committed current artifact registration, dependency closure, revocation, validity, and applicable authorization eligibility after the gate is held, and each rejects registry unavailable/timeout plus revoked, expired, or stale state before any domain, receipt, event, outbox, manifest, bundle, authorization, binding, or session mutation."
         },
         {
           "check_id": "reauthorize_shared_gate_precedes_s01_and_fails_closed",
@@ -1297,9 +1297,9 @@
           "pass_oracle": "The named test proves global revocation holds the exclusive registry gate."
         },
         {
-          "check_id": "committed_revoke_visibility",
-          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_committed_revoke_visibility",
-          "pass_oracle": "The named test proves later shared holders observe a committed revoke."
+          "check_id": "revoke_artifact_atomic_linearization_and_idempotency",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_revoke_artifact_atomic_linearization_and_idempotency",
+          "pass_oracle": "The named PostgreSQL failure-injection and idempotency test proves authenticated RevokeArtifact with emergency management capability acquires exclusive S51 without S01; atomically appends S50, advances S51, and writes its management receipt, audit event, and outbox delivery in one commit; treats successful commit as the global revocation linearization point observed by later shared holders; returns the exact original result without duplicates for the same command_key/request_hash; rejects the same key with a different hash; and proves effective_at neither changes past authorization facts nor schedules future execution validity."
         },
         {
           "check_id": "registry_unavailable_or_timeout_denies",

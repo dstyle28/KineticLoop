@@ -107,7 +107,7 @@ M2_CRITICAL_CONTRACT_DIGESTS = {
     },
     'KL-015': {
         'transaction_owner_matrix_complete': '10458fc375a0982d6795c19a419999ebb27564fd146c95a092ea747bd54a0c30',
-        'catalog_mapping_and_release_owner_boundaries_complete': '746f0f09c7f1f6e2d4c698e53b955615dab58f545cde253453baa52e9c766d27',
+        'catalog_mapping_and_release_owner_boundaries_complete': '1bb1261aa5640da7fdbafa31812c91879b233ee116ee69e5ce91d7427b168bcc',
         'registry_lease_required_for_publish_commit_and_session_entry': '97d957a3cba60ae035c30df4be6b4b46d7af9737c03bb54e6104afe75a1be1ab',
         'preparation_work_stays_outside_coordination_locks': '64ecd2f92279e5e0d3d243c40fe929a48b29b36f56ebd78bacc153a38ec6e9ae',
         'factset_build_stays_outside_subject_coordination': '773498075ad55a7ac92ff672ae04c2897807bb3df7073de5b263449c21d26883',
@@ -128,11 +128,11 @@ M2_CRITICAL_CONTRACT_DIGESTS = {
         'harness_validation_passes': '2dbb33f46e379c228225cd02bc8afdf39689c54008b8ca7b1b019e0d2c4139bf',
     },
     'KL-016': {
-        'shared_gate_precedes_s01': 'bb0d5238d6b8dae20e9947e7f67f8b3c0bcb0ae14bedb10c4e763b72aeb06a3c',
+        'shared_gate_command_matrix_fails_closed': '0711c176d2c1b0487c4f1a22ac3afcec93ef50b9de9bf3478b1db62b0f4a5a03',
         'reauthorize_shared_gate_precedes_s01_and_fails_closed': 'ea48e409c531b8bc1156140e0ce093f9247d6ad73516c93996cd46694d5fbb52',
         'continue_session_rechecks_shared_gate_and_fails_closed': '600456a617778faff3e8c22156c9bac3a1c0ff93db1bb59ff9f32493465242d3',
         'exclusive_global_gate_serializes': 'd2fc834e2bd924a37c3fe180e687519cd17f13bc09cdf005a5c0aa43bfed9f53',
-        'committed_revoke_visibility': 'a6f4a0dbc59a9ed8c0a8b2a4a8fbb92c4ac22e8e503257f1da5036f53846aaf6',
+        'revoke_artifact_atomic_linearization_and_idempotency': '46b9c47de463a4fec8445b3c89b788c578679d49e4f9e3ea71f014649db233d5',
         'registry_unavailable_or_timeout_denies': '487d7388e3d5583b58d6484235b7f9a811788c8d9f6f10b5a5f317846b5aad79',
         'global_revoke_never_locks_s01': '5edfb2de841a8afab3bf324945860139af75c0b1fa7581eef2c91c1f991c7fd9',
         'stop_has_no_registry_dependency': 'ec49d6b0473172e218ff75d07e437af29de62520db520050f0ed91e584b27a16',

@@ -609,20 +609,21 @@ class ValidatorTests(unittest.TestCase):
         traceability_path = self.root / v.TRACEABILITY
         original_backlog = json.loads(backlog_path.read_text())
         original_traceability = json.loads(traceability_path.read_text())
-        selected = {
-            'KL-014': 'identity_idempotency_and_basis_fields',
-            'KL-015': 't6_ack_loss_replay_returns_same_issuance',
-            'KL-016': 'reauthorize_shared_gate_precedes_s01_and_fails_closed',
-            'KL-017': 'cross_subject_denial_is_non_enumerating',
-            'KL-018': 'artifact_identity_is_immutable',
-            'KL-055': 'provider_subject_source_binding_is_trusted',
-        }
+        selected = [
+            ('KL-014', 'identity_idempotency_and_basis_fields'),
+            ('KL-015', 'catalog_mapping_and_release_owner_boundaries_complete'),
+            ('KL-016', 'shared_gate_command_matrix_fails_closed'),
+            ('KL-016', 'revoke_artifact_atomic_linearization_and_idempotency'),
+            ('KL-017', 'cross_subject_denial_is_non_enumerating'),
+            ('KL-018', 'artifact_identity_is_immutable'),
+            ('KL-055', 'provider_subject_source_binding_is_trusted'),
+        ]
         original_packets = {
             task_id: (self.root / f'docs/exec-plans/active/{task_id}.md').read_text()
-            for task_id in selected
+            for task_id, _ in selected
         }
 
-        for task_id, check_id in selected.items():
+        for task_id, check_id in selected:
             expected = f'm2-security-contract:{task_id}:{check_id}'
             source_task = next(
                 item for item in original_backlog['tasks'] if item['id'] == task_id)
