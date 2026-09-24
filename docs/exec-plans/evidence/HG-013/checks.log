@@ -51,3 +51,21 @@ HARNESS_CHECK_FAIL
 governance-check-evidence:HG-013:harness_tests_pass
 The validator requires every recorded check to be PASS even for BLOCKED records.
 The FAIL remains recorded faithfully; this branch is not merge-ready.
+
+Remediation (supersedes the blocked outcome above):
+User authorized extending scope to tests/harness/test_validator.py.
+tested_commit: 281ab908518e977813410d105ccd7a4947507e16
+Fixture setup establishes an unrefined KL-008 baseline inside each temporary
+repository. Production packets and validator behavior are not changed by setup.
+Same runtime and PYTHONPATH as above:
+ruff check .: All checks passed!
+MYPY_CACHE_DIR=/private/tmp/hg-013-mypy mypy src tools tests:
+Success: no issues found in 44 source files
+kl test-harness: 95 passed in 74.75s
+git diff --check 7fb89473737015d517d3e3c18a5adf6d0b274fb3 HEAD: exit 0
+git diff --exit-code 7fb89473737015d517d3e3c18a5adf6d0b274fb3 HEAD -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md: exit 0
+Intermediate unit rerun: 91 passed, 1 failed because the CLI validated the prior
+BLOCKED record's failed check. Rerun after governance bookkeeping follows below.
+Final kl test-unit: 92 passed in 2.33s.
+Final kl check-harness: HARNESS_CHECK_PASS tasks=68 active=66.
+Implementation remains at tested_commit; subsequent changes are HG-013 record/evidence only.
