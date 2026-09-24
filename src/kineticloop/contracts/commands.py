@@ -139,6 +139,11 @@ class SubjectCommand(StrictCommand):
         if isinstance(self.authorization_scope, ProductionScope):
             if self.actor.capability is not Capability.ACT_AS_PRODUCTION_SUBJECT:
                 raise ValueError("production subject commands require a subject actor")
+            if self.actor.identity_id != self.subject_id:
+                raise ValueError(
+                    "production subject commands require the authenticated actor "
+                    "identity to match the command subject"
+                )
         else:
             if self.actor.capability is not Capability.RUN_TEST_SIMULATION:
                 raise ValueError("TEST_ONLY commands require a TEST actor")

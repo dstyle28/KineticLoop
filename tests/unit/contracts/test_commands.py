@@ -259,6 +259,13 @@ def test_identity_idempotency_and_basis_fields() -> None:
             assert command.subject_id == ID
             assert command.explicit_scope is None
 
+    payload = command_payload(CommitBundle)
+    actor = payload["actor"]
+    assert isinstance(actor, TrustedActor)
+    payload["actor"] = actor.model_copy(update={"identity_id": OTHER_ID})
+    with pytest.raises(ValidationError, match="authenticated actor identity"):
+        CommitBundle.model_validate(payload)
+
 
 def test_shadow_and_test_scope_fail_closed() -> None:
     for model in (CommitBundle, PUBLIC_COMMAND_BY_KIND["Reauthorize"], PUBLIC_COMMAND_BY_KIND["StartSession"], PUBLIC_COMMAND_BY_KIND["ResumeSession"], PUBLIC_COMMAND_BY_KIND["ContinueSession"]):
