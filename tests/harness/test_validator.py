@@ -568,6 +568,26 @@ class ValidatorTests(unittest.TestCase):
         self.check(1, 'packet-write-paths:KL-008',
                    '--ci-pr-base', protected_base, '--ci-pr-head', 'HEAD')
 
+    def test_ci_governance_review_only_rejects_later_hash_repair_masking(self):
+        validator = self.root / 'tools/harness/validate_harness.py'
+        validator.write_text(validator.read_text() + '\n# unindexed historical change\n')
+        tested = self.commit('historical governance omits derived hash refresh')
+        _, reviewed = self.persist_governance_change('HG-999', tested, [], ['GENERAL'])
+        self.git('checkout', '-q', '--detach', reviewed)
+
+        refresh(self.root)
+        later_tip = self.commit('later governance repairs derived hashes')
+        protected_base = self.merge_commit(
+            later_tip, reviewed, later_tip, message='merge later hash repair')
+        self.git('checkout', '-q', '--detach', protected_base)
+        self.governance_review('HG-999', reviewed)
+        self.commit('persist delayed review of invalid historical hashes')
+
+        self.check(1, 'governance-index-hash:tools/harness/validate_harness.py',
+                   '--ci-pr-base', protected_base, '--ci-pr-head', 'HEAD')
+        self.check(1, 'governance-manifest-hash:tools/harness/validate_harness.py',
+                   '--ci-pr-base', protected_base, '--ci-pr-head', 'HEAD')
+
     def test_ci_governance_review_only_rejects_content_changing_merge(self):
         self.put('tools/harness/post_merge_fixture.py')
         tested = self.commit('governance implementation')

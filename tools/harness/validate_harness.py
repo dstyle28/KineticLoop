@@ -442,6 +442,16 @@ def governance_index_errors(
         observed_additions |= set(after) - set(before)
         for path in sorted(set(before) & set(after)):
             previous, current = before[path], after[path]
+            if target_revision:
+                try:
+                    target_valid = (
+                        current.get('sha256')
+                        == blob_sha_at_revision(root, path, target_revision)
+                    )
+                except ValueError:
+                    target_valid = False
+                if not target_valid:
+                    errors.append('governance-index-hash:' + path)
             if previous == current:
                 continue
             if path in protected_paths:
@@ -450,12 +460,12 @@ def governance_index_errors(
             if {k: v for k, v in previous.items() if k != 'sha256'} != {
                     k: v for k, v in current.items() if k != 'sha256'}:
                 errors.append('governance-index-entry:' + path)
-            target_valid = (
-                current.get('sha256') == blob_sha_at_revision(root, path, target_revision)
-                if target_revision else
-                (root / path).is_file() and current.get('sha256') == sha(root / path)
-            )
-            if path not in changed or not target_valid:
+            if not target_revision:
+                target_valid = (
+                    (root / path).is_file()
+                    and current.get('sha256') == sha(root / path)
+                )
+            if path not in changed or (not target_revision and not target_valid):
                 errors.append('governance-index-hash:' + path)
         for path in sorted(set(after) - set(before)):
             current = after[path]
@@ -523,21 +533,31 @@ def governance_manifest_errors(root, base_revision, changed, target_revision=Non
         errors.append('governance-manifest-paths')
         return errors
     for previous, current in zip(before, after):
+        path = previous['path']
+        if target_revision:
+            try:
+                target_hash = blob_sha_at_revision(root, path, target_revision)
+                target_size = blob_size_at_revision(root, path, target_revision)
+            except ValueError:
+                target_hash, target_size = None, None
+            if current.get('sha256') != target_hash:
+                errors.append('governance-manifest-hash:' + path)
+            if 'bytes' in current and current['bytes'] != target_size:
+                errors.append('governance-manifest-bytes:' + path)
         if previous == current:
             continue
-        path = previous['path']
         if {k: v for k, v in previous.items() if k not in ('sha256', 'bytes')} != {
                 k: v for k, v in current.items() if k not in ('sha256', 'bytes')}:
             errors.append('governance-manifest-entry:' + path)
-        target_hash = (blob_sha_at_revision(root, path, target_revision)
-                       if target_revision else
-                       sha(root / path) if (root / path).is_file() else None)
-        target_size = (blob_size_at_revision(root, path, target_revision)
-                       if target_revision else
-                       (root / path).stat().st_size if (root / path).is_file() else None)
-        if path not in changed or current.get('sha256') != target_hash:
+        if not target_revision:
+            target_hash = sha(root / path) if (root / path).is_file() else None
+            target_size = ((root / path).stat().st_size
+                           if (root / path).is_file() else None)
+        if path not in changed or (not target_revision
+                                   and current.get('sha256') != target_hash):
             errors.append('governance-manifest-hash:' + path)
-        if 'bytes' in current and current['bytes'] != target_size:
+        if (not target_revision and 'bytes' in current
+                and current['bytes'] != target_size):
             errors.append('governance-manifest-bytes:' + path)
     return errors
 
