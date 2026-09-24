@@ -31,6 +31,10 @@ _PROVIDER_FIELDS = {
         "health_fields": {"resting_heart_rate_bpm", "sleep_duration_minutes"},
     },
 }
+_PROVIDER_NAME_PREFIX = {
+    "HEVY_TEST": "hevy-",
+    "HEALTHKIT_BRIDGE_TEST": "healthkit-",
+}
 
 
 class SyntheticFixtureError(ValueError):
@@ -77,6 +81,8 @@ def validate_synthetic_fixture(payload: object) -> None:
         raise SyntheticFixtureError("fixture provider must be explicitly non-production")
     if set(provider) != {"id", "environment"}:
         raise SyntheticFixtureError("fixture provider has undocumented fields")
+    if not fixture_match.group("name").startswith(_PROVIDER_NAME_PREFIX[provider_id]):
+        raise SyntheticFixtureError("fixture identity does not match its synthetic provider")
 
     credentials = _require_mapping(fixture.get("credentials"), "credentials")
     profile = _PROVIDER_FIELDS[provider_id]

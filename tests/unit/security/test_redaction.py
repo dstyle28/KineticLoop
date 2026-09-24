@@ -33,12 +33,17 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
         f"registered-key-{SENTINEL}": "safe value",
         "canonical_evidence": evidence,
     }
-    child = ValueError(f"password={SENTINEL}")
+    child = ValueError({"password": "opaque-exception-secret", "safe": "child context"})
     process_error = subprocess.CalledProcessError(
         1,
-        ["provider-client", f"--token={SENTINEL}"],
+        [
+            "provider-client",
+            f"--token={SENTINEL}",
+            "--password",
+            "opaque-cmd-secret",
+        ],
         output=f"url=https://user:{quote(SENTINEL, safe='')}@provider.invalid/data",
-        stderr=f"Authorization: Bearer {SENTINEL}",
+        stderr='{"password":"opaque-stderr-secret","safe":"retry context"}',
     )
     process_error.__cause__ = child
     source["error"] = process_error
@@ -50,6 +55,24 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     )
     source["argv"] = ["provider-client", "--hevy-api-key", "opaque-argument"]
     source["string_command"] = 'provider-client --password "opaque command value"'
+    source["malformed_url"] = (
+        "https://alice:hunter2@example.invalid:notaport/path?token=query-secret"
+    )
+    source["malformed_ipv6"] = (
+        "postgresql://alice:hunter2@[2001:db8::1]:notaport/db?token=query-secret"
+    )
+    source["interior_keys"] = {
+        "provider_api_key_value": "opaque-interior-secret",
+        "clientSecret": "opaque-camel-secret",
+        "accessToken": "opaque-access-secret",
+    }
+    source["authorization_argv"] = [
+        "provider-client",
+        "--authorization",
+        "Bearer",
+        "opaque-auth-secret",
+    ]
+    source["formatted_log_args"] = ("Authorization=%s", "Bearer format-secret")
     source_without_error = dict(source)
     source_without_error.pop("error")
     untouched = copy.deepcopy(source_without_error)
@@ -66,6 +89,14 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     assert "opaque multi word" not in rendered
     assert "opaque-argument" not in rendered
     assert "opaque command value" not in rendered
+    assert "opaque-exception-secret" not in rendered
+    assert "opaque-cmd-secret" not in rendered
+    assert "opaque-stderr-secret" not in rendered
+    assert "opaque-interior-secret" not in rendered
+    assert "opaque-camel-secret" not in rendered
+    assert "opaque-access-secret" not in rendered
+    assert "opaque-auth-secret" not in rendered
+    assert "format-secret" not in rendered
     assert "provider timeout" in rendered
     assert "sslmode=require" in rendered
     assert "attempt': 3" in rendered

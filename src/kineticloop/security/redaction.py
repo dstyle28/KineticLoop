@@ -40,7 +40,7 @@ _SENSITIVE_KEY_EXPRESSION = (
 )
 _ASSIGNMENT = re.compile(
     rf"(?i)(?P<key>[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*)"
-    r"(?P<separator>\s*[:=]\s*)"
+    r"(?P<key_quote>[\"']?)(?P<separator>\s*[:=]\s*)"
     r"(?P<value>\"[^\"\r\n]*\"|'[^'\r\n]*'|[^,;\r\n]+)"
 )
 _COMMAND_OPTION = re.compile(
@@ -49,22 +49,31 @@ _COMMAND_OPTION = re.compile(
 )
 _COMMAND_SEPARATE = re.compile(
     rf"(?i)(?P<prefix>--[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*\s+)"
-    r"(?P<value>\"[^\"\r\n]*\"|'[^'\r\n]*'|[^\s,;\r\n]+)"
+    r"(?P<value>\"[^\"\r\n]*\"|'[^'\r\n]*'|"
+    r"(?:bearer|basic|digest|token)\s+[^\s,;\r\n]+|[^\s,;\r\n]+)"
 )
 
 DiagnosticScalar: TypeAlias = str | bytes | int | float | bool | None
 
 
 def _normalized_key(value: object) -> str:
-    return re.sub(r"[^a-z0-9]+", "_", str(value).strip().lower()).strip("_")
+    camel_split = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "_", str(value).strip())
+    return re.sub(r"[^a-z0-9]+", "_", camel_split.lower()).strip("_")
 
 
 def _is_sensitive_key(value: object) -> bool:
     normalized = _normalized_key(value)
-    return any(
-        normalized == part or normalized.startswith(f"{part}_") or normalized.endswith(f"_{part}")
-        for part in _SENSITIVE_KEY_PARTS
-    )
+    padded = f"_{normalized}_"
+    return any(f"_{part}_" in padded for part in _SENSITIVE_KEY_PARTS)
+
+
+def _sequence_field_is_sensitive(value: str) -> bool:
+    stripped = value.lstrip("-").strip()
+    for separator in ("=", ":"):
+        key, found, member = stripped.partition(separator)
+        if found:
+            return _is_sensitive_key(key) and (not member or "%" in member or "{" in member)
+    return _is_sensitive_key(stripped)
 
 
 def _percent_byte_pattern(value: int) -> str:
@@ -138,7 +147,10 @@ class Redactor:
         result = _COMMAND_OPTION.sub(lambda match: f"{match.group('prefix')}{REDACTED}", result)
         result = _COMMAND_SEPARATE.sub(lambda match: f"{match.group('prefix')}{REDACTED}", result)
         return _ASSIGNMENT.sub(
-            lambda match: f"{match.group('key')}{match.group('separator')}{REDACTED}",
+            lambda match: (
+                f"{match.group('key')}{match.group('key_quote')}"
+                f"{match.group('separator')}{REDACTED}"
+            ),
             result,
         )
 
@@ -151,7 +163,7 @@ class Redactor:
             parsed = urlsplit(matched_url)
             hostname = parsed.hostname
             if not parsed.scheme or hostname is None:
-                return matched_url + trailing
+                return REDACTED + trailing
             host = f"[{hostname}]" if ":" in hostname else hostname
             if parsed.port is not None:
                 host = f"{host}:{parsed.port}"
@@ -168,7 +180,7 @@ class Redactor:
                 (parsed.scheme, host, parsed.path, urlencode(query, doseq=True), parsed.fragment)
             )
         except (TypeError, ValueError):
-            sanitized = matched_url
+            sanitized = REDACTED
         return sanitized + trailing
 
     def redact(self, value: object) -> object:
@@ -201,16 +213,24 @@ class Redactor:
 
     def _redact_sequence(self, value: Sequence[object]) -> list[object]:
         result: list[object] = []
-        redact_next = False
-        for item in value:
-            if redact_next:
-                result.append(REDACTED)
-                redact_next = False
-                continue
+        index = 0
+        while index < len(value):
+            item = value[index]
             result.append(self.redact(item))
-            if isinstance(item, str):
-                option = item.lstrip("-")
-                redact_next = "=" not in option and _is_sensitive_key(option)
+            if isinstance(item, str) and _sequence_field_is_sensitive(item):
+                index += 1
+                if index >= len(value):
+                    break
+                next_item = value[index]
+                result.append(REDACTED)
+                if (
+                    isinstance(next_item, str)
+                    and next_item.casefold() in {"bearer", "basic", "digest", "token"}
+                    and index + 1 < len(value)
+                ):
+                    index += 1
+                    result.append(REDACTED)
+            index += 1
         return result
 
     def exception_diagnostic(self, error: BaseException) -> RedactedDiagnostic:
@@ -234,9 +254,14 @@ class Redactor:
             if error.stderr is not None:
                 details.append(f"stderr={self.redact(error.stderr)!r}")
         cause = error.__cause__ or error.__context__
+        message = (
+            f"subprocess failed with return code {error.returncode}"
+            if isinstance(error, subprocess.CalledProcessError)
+            else self.text(str(error))
+        )
         return RedactedDiagnostic(
             exception_type=type(error).__name__,
-            message=self.text(str(error)),
+            message=message,
             details=tuple(details),
             cause=(
                 self._exception_diagnostic(cause, seen | {id(error)}) if cause is not None else None

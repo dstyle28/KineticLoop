@@ -11,7 +11,6 @@ import time
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import cast
 from urllib.parse import quote
 
 from kineticloop.config.secrets import SecretValue
@@ -75,26 +74,24 @@ class DatabaseConnection:
 
     @property
     def redacted_url(self) -> str:
-        value = f"postgresql://{REDACTED}@{self.host}:{self.port}/{self.database_name}"
         password = self.password
         assert isinstance(password, SecretValue)
-        return str(Redactor((self.user, password)).redact(value))
+        redactor = Redactor((self.user, password))
+        host = redactor.redact(self.host)
+        database_name = redactor.redact(self.database_name)
+        return f"postgresql://{REDACTED}@{host}:{self.port}/{database_name}"
 
     def diagnostic_mapping(self) -> dict[str, str | int]:
         password = self.password
         assert isinstance(password, SecretValue)
-        return cast(
-            dict[str, str | int],
-            Redactor((self.user, password)).redact(
-                {
-                    "project_name": self.project_name,
-                    "database_name": self.database_name,
-                    "host": self.host,
-                    "port": self.port,
-                    "url": self.redacted_url,
-                }
-            ),
-        )
+        redactor = Redactor((self.user, password))
+        return {
+            "project_name": str(redactor.redact(self.project_name)),
+            "database_name": str(redactor.redact(self.database_name)),
+            "host": str(redactor.redact(self.host)),
+            "port": self.port,
+            "url": self.redacted_url,
+        }
 
     def as_json(self) -> str:
         return json.dumps(self.diagnostic_mapping(), sort_keys=True)

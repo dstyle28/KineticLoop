@@ -52,5 +52,27 @@ def test_synthetic_security_fixtures_have_provenance() -> None:
         if cross_provider["provider"]["id"] == "HEALTHKIT_BRIDGE_TEST"
         else "HEALTHKIT_BRIDGE_TEST"
     )
-    with pytest.raises(SyntheticFixtureError, match="provider profile"):
+    with pytest.raises(SyntheticFixtureError, match="synthetic provider"):
         validate_synthetic_fixture(cross_provider)
+
+    coherent_cross_provider = copy.deepcopy(fixtures[0])
+    if coherent_cross_provider["provider"]["id"] == "HEALTHKIT_BRIDGE_TEST":
+        coherent_cross_provider["provider"]["id"] = "HEVY_TEST"
+        coherent_cross_provider["credentials"] = {
+            "HEVY_API_KEY": "SYNTHETIC_HEVY_API_KEY_NOT_A_CREDENTIAL"
+        }
+        coherent_cross_provider["health_fields"] = {
+            "workout_type": "SYNTHETIC_STRENGTH",
+            "duration_minutes": 42,
+        }
+    else:
+        coherent_cross_provider["provider"]["id"] = "HEALTHKIT_BRIDGE_TEST"
+        coherent_cross_provider["credentials"] = {
+            "HEALTHKIT_BRIDGE_CLIENT_SECRET": ("SYNTHETIC_HEALTHKIT_BRIDGE_SECRET_NOT_A_CREDENTIAL")
+        }
+        coherent_cross_provider["health_fields"] = {
+            "resting_heart_rate_bpm": 61,
+            "sleep_duration_minutes": 444,
+        }
+    with pytest.raises(SyntheticFixtureError, match="synthetic provider"):
+        validate_synthetic_fixture(coherent_cross_provider)
