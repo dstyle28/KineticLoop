@@ -1,7 +1,7 @@
 change_identity: harness-governance-v0.1/HG-014
 display_change_id: HG-014
-base_commit: fb9e54a62400c97f3dfae6596ad8a40554de377e
-tested_commit: 2baebc26ddf9edcf54ac6eaead0275e6c2befef6
+base_commit: 94e2d66eabbe57405cf1efbdf4fd520cd78c62f2
+tested_commit: 1ff84cb3ba570e02e964960720ba750597b051f0
 change_status: PASS
 summary: >-
   Refine only KL-009 into an enforceable security/configuration packet with exact
@@ -9,6 +9,8 @@ summary: >-
   regression and Harness checks. Add the security_data_boundary resource lock,
   update KL-009's derived traceability projection, and admit that indexed projection
   in governance scope without changing product implementation or frozen authority.
+  Bind backlog and traceability changes to the exact refined task identity so
+  wrong-target edits fail closed.
 packets_refined:
   - KL-009
 files_changed:
@@ -18,55 +20,63 @@ files_changed:
   - KineticLoop_Harness_Traceability_v0.3.json
   - docs/exec-plans/active/KL-009.md
   - docs/exec-plans/evidence/HG-014/checks-2baebc2.log
+  - docs/exec-plans/evidence/HG-014/checks-1ff84cb.log
   - docs/exec-plans/evidence/HG-014/governance-validation.log
+  - docs/exec-plans/evidence/HG-014/governance-validation-final-1ff84cb.log
+  - docs/exec-plans/evidence/HG-014/governance-validation-plan-1ff84cb.log
   - docs/exec-plans/governance/HG-014.yaml
   - docs/harness/RESOURCE_LOCKS.md
   - tests/harness/test_validator.py
   - tools/harness/validate_harness.py
 checks_run:
   - check_id: governance_implementation_valid
-    command: Invoke tools.harness.validate_harness.validate with protected_base fb9e54a62400c97f3dfae6596ad8a40554de377e, governance_change_id HG-014 and governance_reviewed_head HEAD; require the sole error to be governance-required-reviews-not-pass:HG-014.
+    command: Invoke tools.harness.validate_harness.validate with protected_base 94e2d66eabbe57405cf1efbdf4fd520cd78c62f2, governance_change_id HG-014 and governance_reviewed_head HEAD; require the sole error to be governance-required-reviews-not-pass:HG-014.
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-014/governance-validation.log
+    evidence_ref: docs/exec-plans/evidence/HG-014/governance-validation-plan-1ff84cb.log
   - check_id: harness_structure_valid
     command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-014/checks-2baebc2.log
+    evidence_ref: docs/exec-plans/evidence/HG-014/checks-1ff84cb.log
   - check_id: lint_passes
     command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/ruff check .
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-014/checks-2baebc2.log
+    evidence_ref: docs/exec-plans/evidence/HG-014/checks-1ff84cb.log
   - check_id: typecheck_passes
-    command: MYPY_CACHE_DIR=/private/tmp/hg-014-final-mypy PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/mypy src tools tests
+    command: MYPY_CACHE_DIR=/private/tmp/hg-014-finalbase-mypy PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/mypy src tools tests
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-014/checks-2baebc2.log
+    evidence_ref: docs/exec-plans/evidence/HG-014/checks-1ff84cb.log
   - check_id: unit_tests_pass
     command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-unit
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-014/checks-2baebc2.log
+    evidence_ref: docs/exec-plans/evidence/HG-014/checks-1ff84cb.log
   - check_id: harness_tests_pass
     command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-014/checks-2baebc2.log
+    evidence_ref: docs/exec-plans/evidence/HG-014/checks-1ff84cb.log
+  - check_id: task_identity_scope_enforced
+    command: Compare protected-base/current backlog and traceability by task_identity and run the focused refined-traceability and wrong-target rejection tests.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-014/checks-1ff84cb.log
   - check_id: kl009_scope_and_db_consumers_valid
     command: Compare KL-009 packet/backlog/traceability fields, KL-008 locks/write paths, and every DatabaseConnection diagnostic consumer/test against the refined scope.
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-014/checks-2baebc2.log
+    evidence_ref: docs/exec-plans/evidence/HG-014/checks-1ff84cb.log
   - check_id: protocol_and_authority_boundaries_preserved
     command: Inspect DOC-PROTOCOL-V1.2 INV-15, INV-16 and Replay 7.2-7.4 against the refined checks, DoD and non-goals; require no Evidence Admission, authorization, command-authority, replay-cutoff or canonical-evidence mutation.
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-014/checks-2baebc2.log
+    evidence_ref: docs/exec-plans/evidence/HG-014/checks-1ff84cb.log
   - check_id: diff_clean
-    command: git diff --check fb9e54a62400c97f3dfae6596ad8a40554de377e HEAD
+    command: git diff --check 94e2d66eabbe57405cf1efbdf4fd520cd78c62f2 HEAD
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-014/checks-2baebc2.log
+    evidence_ref: docs/exec-plans/evidence/HG-014/checks-1ff84cb.log
   - check_id: frozen_baseline_unchanged
-    command: git diff --exit-code fb9e54a62400c97f3dfae6596ad8a40554de377e HEAD -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md
+    command: git diff --exit-code 94e2d66eabbe57405cf1efbdf4fd520cd78c62f2 HEAD -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-014/checks-2baebc2.log
+    evidence_ref: docs/exec-plans/evidence/HG-014/checks-1ff84cb.log
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
   - Independent GENERAL, PROTOCOL and SECURITY_DATA_BOUNDARY reviews are required by the protected-base/head union before merge.
   - No KL-009 implementation or product requirement PASS is claimed; the task remains NOT_STARTED until separately implemented, reviewed and merged.
-  - Existing traceability projections for previously refined tasks are outside HG-014; this change updates only KL-009 and adds a regression for governance admission of indexed traceability metadata.
+  - Existing traceability projections for previously refined tasks are outside HG-014; this change updates only KL-009 and enforces identity-scoped projection consistency for future refinements.
+  - All review artifacts bound to a pre-HG-015 head are stale and cannot satisfy this review cycle.
