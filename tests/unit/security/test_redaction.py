@@ -693,3 +693,81 @@ def test_composite_mapping_keys_are_snapshotted_once() -> None:
     assert frozenset_secret not in rendered
     assert tuple_key.iteration_count == 0
     assert frozenset_key.iteration_count == 0
+
+
+def test_empty_delimiter_authorization_suppresses_scheme_and_credential() -> None:
+    raw_secret = "EMPTY_AUTHORIZATION_VALUE"
+    encoded_secret = "ENCODED_EMPTY_AUTHORIZATION_VALUE"
+    colon_secret = "COLON_EMPTY_AUTHORIZATION_VALUE"
+    values = (
+        ["--authorization=", "Negotiate", raw_secret],
+        ["--authorization%3D", "Custom-Scheme", encoded_secret],
+        ["--authorization%3A", "AWS4-HMAC-SHA256", colon_secret],
+    )
+    error = ValueError("--authorization=", "Negotiate", raw_secret)
+
+    rendered = repr(Redactor().redact(values))
+    rendered_error = str(Redactor().exception_diagnostic(error))
+
+    assert raw_secret not in rendered
+    assert encoded_secret not in rendered
+    assert colon_secret not in rendered
+    assert raw_secret not in rendered_error
+
+
+def test_mixed_format_dialects_suppress_unresolved_arguments() -> None:
+    brace_secret = "MIXED_BRACE_DIALECT_VALUE"
+    percent_secret = "MIXED_PERCENT_DIALECT_VALUE"
+    values = (
+        ("safe=%s password={}", "retained-percent-context", brace_secret),
+        ("safe={} password=%s", "retained-brace-context", percent_secret),
+    )
+    direct_error = ValueError(
+        "safe=%s password={}", "retained-percent-context", brace_secret
+    )
+    chained_error = RuntimeError("outer")
+    chained_error.__cause__ = ValueError(
+        "safe={} password=%s", "retained-brace-context", percent_secret
+    )
+
+    rendered = repr(Redactor().redact(values))
+    rendered_direct = str(Redactor().exception_diagnostic(direct_error))
+    rendered_chained = str(Redactor().exception_diagnostic(chained_error))
+
+    assert brace_secret not in rendered
+    assert percent_secret not in rendered
+    assert brace_secret not in rendered_direct
+    assert percent_secret not in rendered_chained
+
+
+def test_unresolved_sensitive_fields_and_authorization_formats_fail_closed() -> None:
+    out_of_range_secret = "OUT_OF_RANGE_FIELD_VALUE"
+    named_secret = "NAMED_FIELD_VALUE"
+    authorization_secret = "AUTHORIZATION_FORMAT_VALUE"
+    values = (
+        ("password={99}", out_of_range_secret),
+        ("password={credential}", named_secret),
+        ("Authorization %s %s", "Negotiate", authorization_secret),
+    )
+    direct_error = ValueError("password={99}", out_of_range_secret)
+    chained_error = RuntimeError("outer")
+    chained_error.__cause__ = ValueError("password={credential}", named_secret)
+    process_error = subprocess.CalledProcessError(
+        1,
+        ["provider-client", "status"],
+        stderr=(  # type: ignore[arg-type]
+            "Authorization %s %s",
+            "Custom-Scheme",
+            authorization_secret,
+        ),
+    )
+
+    rendered = repr(Redactor().redact((*values, process_error)))
+    rendered_direct = str(Redactor().exception_diagnostic(direct_error))
+    rendered_chained = str(Redactor().exception_diagnostic(chained_error))
+
+    assert out_of_range_secret not in rendered
+    assert named_secret not in rendered
+    assert authorization_secret not in rendered
+    assert out_of_range_secret not in rendered_direct
+    assert named_secret not in rendered_chained

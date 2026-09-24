@@ -121,7 +121,7 @@ def _format_sensitive_positions(value: str) -> set[int]:
                 argument_index = automatic_index
                 automatic_index += 1
             else:
-                argument_index = 0
+                argument_index = _ALL_FOLLOWING_ARGUMENTS
             if classify_fields and active_brace_sensitive:
                 positions.add(argument_index)
             if format_spec:
@@ -141,6 +141,7 @@ def _has_malformed_sensitive_format(value: str) -> bool:
     if _SENSITIVE_ASSIGNMENT.search(value) is None:
         return False
     index = 0
+    has_percent_placeholder = False
     while index < len(value):
         if value[index] != "%":
             index += 1
@@ -151,17 +152,20 @@ def _has_malformed_sensitive_format(value: str) -> bool:
         placeholder = _PERCENT_PLACEHOLDER.match(value, index)
         if placeholder is None:
             return True
+        has_percent_placeholder = True
         index = placeholder.end()
     saw_automatic = False
     saw_manual = False
+    saw_brace_field = False
 
     def inspect_numbering(format_string: str) -> None:
-        nonlocal saw_automatic, saw_manual
+        nonlocal saw_automatic, saw_brace_field, saw_manual
         for _literal, field_name, format_spec, _conversion in string.Formatter().parse(
             format_string
         ):
             if field_name is None:
                 continue
+            saw_brace_field = True
             root_name = re.split(r"[.[]", field_name, maxsplit=1)[0]
             if not root_name:
                 saw_automatic = True
@@ -176,11 +180,15 @@ def _has_malformed_sensitive_format(value: str) -> bool:
         inspect_numbering(value)
     except ValueError:
         return True
-    return False
+    return has_percent_placeholder and saw_brace_field
 
 
 def _sequence_sensitive_positions(value: str) -> set[int]:
     if _has_malformed_sensitive_format(value):
+        return {_ALL_FOLLOWING_ARGUMENTS}
+    if re.search(r"(?i)\bauthorization\b", value) and (
+        _PERCENT_PLACEHOLDER.search(value) is not None or "{" in value
+    ):
         return {_ALL_FOLLOWING_ARGUMENTS}
     format_positions = _format_sensitive_positions(value)
     if format_positions:
@@ -190,7 +198,7 @@ def _sequence_sensitive_positions(value: str) -> set[int]:
         key, found, member = stripped.partition(separator)
         if found and _is_sensitive_key(key):
             if _normalized_key(key) == "authorization":
-                return {0}
+                return {0} if member else {0, 1}
             if not member or member.casefold() in {"bearer", "basic", "digest", "token"}:
                 return {0}
             return set()
@@ -529,6 +537,10 @@ class Redactor:
                 else _sequence_sensitive_positions(decoded_item)
             )
             if _ALL_FOLLOWING_ARGUMENTS in positions:
+                sensitive_indices.update(range(index + 1, len(items)))
+                continue
+            remaining_count = len(items) - index - 1
+            if any(position >= remaining_count for position in positions):
                 sensitive_indices.update(range(index + 1, len(items)))
                 continue
             if positions == {0} and index + 1 < len(items):
