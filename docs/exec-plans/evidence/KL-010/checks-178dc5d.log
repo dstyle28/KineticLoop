@@ -1,0 +1,23 @@
+KL-010 tested revision: 178dc5da967eb0b3e62b196890c5b0be7206a7a4
+Base revision: 3896db8d5b0ee6b9b74514ecaec817bf0e0a437e
+
+PASS all_logical_relations_mapped_once
+  pytest tests/unit/persistence/test_schema_topology.py::test_all_logical_relations_mapped_once: 1 passed.
+PASS fk_dependency_graph_is_acyclic
+  pytest tests/unit/persistence/test_schema_topology.py::test_fk_dependency_graph_is_acyclic: 1 passed.
+  The test compares the complete create-edge map against an independent expected oracle.
+PASS authority_roots_precede_dependents
+  pytest tests/unit/persistence/test_schema_topology.py::test_authority_roots_precede_dependents: 1 passed.
+  S42 explicitly depends on S36 evidence resolutions.
+PASS schema_topology_unit_suite_passes
+  pytest tests/unit/persistence/test_schema_topology.py: 7 passed, 0 skipped, 0 deselected.
+  S47 source references use a post-base target-typed child-edge plan after all S01-S51,
+  with same-subject FKs and required S14/S20 replay roots.
+PASS harness_validation_passes
+  kl check-harness: HARNESS_CHECK_PASS tasks=68 active=66.
+PASS lint_passes
+  ruff check src/kineticloop/persistence tests/unit/persistence: All checks passed.
+PASS diff_clean
+  git diff --check: exit 0, no output.
+PASS frozen_baseline_unchanged
+  No changes to FROZEN_BASELINE.json, the frozen DB baseline, or the frozen Protocol.

@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-010
 display_task_id: KL-010
 task_definition_version: v0.2
 base_commit: 3896db8d5b0ee6b9b74514ecaec817bf0e0a437e
-tested_commit: 17c6947243dbe02158ef2a0f4580d64b502494f0
+tested_commit: 178dc5da967eb0b3e62b196890c5b0be7206a7a4
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -12,28 +12,29 @@ summary: >-
   acyclic physical creation topology. The migration contract creates authority and
   reference roots before dependents, then adds mandatory forward pointers in a second
   phase so current-authority relationships remain referentially enforced without
-  creating DDL cycles.
+  creating DDL cycles. It explicitly binds S42 to S36 evidence resolutions and gives
+  S47 source revisions a target-typed post-base child-edge plan.
 commands_run:
   - check_id: all_logical_relations_mapped_once
     command: uv run pytest -q tests/unit/persistence/test_schema_topology.py::test_all_logical_relations_mapped_once
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-010/checks-17c6947.log
+    evidence_ref: docs/exec-plans/evidence/KL-010/checks-178dc5d.log
   - check_id: fk_dependency_graph_is_acyclic
     command: uv run pytest -q tests/unit/persistence/test_schema_topology.py::test_fk_dependency_graph_is_acyclic
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-010/checks-17c6947.log
+    evidence_ref: docs/exec-plans/evidence/KL-010/checks-178dc5d.log
   - check_id: authority_roots_precede_dependents
     command: uv run pytest -q tests/unit/persistence/test_schema_topology.py::test_authority_roots_precede_dependents
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-010/checks-17c6947.log
+    evidence_ref: docs/exec-plans/evidence/KL-010/checks-178dc5d.log
   - check_id: schema_topology_unit_suite_passes
     command: uv run pytest -q tests/unit/persistence/test_schema_topology.py
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-010/checks-17c6947.log
+    evidence_ref: docs/exec-plans/evidence/KL-010/checks-178dc5d.log
   - check_id: harness_validation_passes
     command: uv run kl check-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-010/checks-17c6947.log
+    evidence_ref: docs/exec-plans/evidence/KL-010/checks-178dc5d.log
 requirements_covered: []
 files_changed:
   - docs/contracts/physical_schema_topology.md
@@ -41,12 +42,15 @@ files_changed:
   - src/kineticloop/persistence/schema_topology.py
   - tests/unit/persistence/test_schema_topology.py
   - docs/exec-plans/evidence/KL-010/checks-17c6947.log
+  - docs/exec-plans/evidence/KL-010/checks-178dc5d.log
   - docs/exec-plans/completed/KL-010_RESULT.yaml
 decisions:
   - Treat frozen logical relation numbers as identities, never as DDL sequence numbers.
   - Create mutable authority roots before their dependents and add forward authority pointers only after all target relations exist.
   - Keep self-references local to their owning relation and model cross-relation dependencies as validated logical IDs.
   - Require downstream DDL to materialize polymorphic reference sets as closed typed foreign keys or normalized child edges.
+  - Bind S42 authorization issuance to S36 evidence resolutions as a mandatory create-time dependency.
+  - Materialize S47 source revision references as target-typed, same-subject child edges only after all S01-S51 base relations exist; R01/R03 require S14/S20 capabilities.
 known_limitations:
   - This task defines migration topology only; KL-013 owns concrete PostgreSQL DDL, constraints, indexes, and migration execution.
 follow_up_tasks:
