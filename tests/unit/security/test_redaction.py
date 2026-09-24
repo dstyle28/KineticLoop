@@ -129,6 +129,20 @@ class HostileDiagnosticFrozenSet(frozenset[str]):
         return iter(("attacker-substituted-value",))
 
 
+class HostileAttributeError(RuntimeError):
+    def __getattribute__(self, name: str) -> Any:
+        if name in {"args", "__cause__", "__context__"}:
+            raise RuntimeError("HOSTILE_EXCEPTION_ATTRIBUTE_VALUE")
+        return super().__getattribute__(name)
+
+
+class HostileCalledProcessError(subprocess.CalledProcessError):
+    def __getattribute__(self, name: str) -> Any:
+        if name in {"returncode", "cmd", "stdout", "stderr", "output"}:
+            raise RuntimeError("HOSTILE_SUBPROCESS_ATTRIBUTE_VALUE")
+        return super().__getattribute__(name)
+
+
 def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     secret_named_value_type = type(SENTINEL, (), {})
     secret_named_error_type = type(SENTINEL, (ValueError,), {})
@@ -927,3 +941,26 @@ def test_set_subclasses_use_trusted_snapshots_without_mutation() -> None:
     assert frozenset(frozenset.__iter__(immutable)) == immutable_before
     assert mutable.iteration_count == 0
     assert immutable.iteration_count == 0
+
+
+def test_exception_state_uses_trusted_base_descriptors() -> None:
+    hostile_attribute_secret = "HOSTILE_EXCEPTION_ATTRIBUTE_VALUE"
+    hostile_subprocess_secret = "HOSTILE_SUBPROCESS_ATTRIBUTE_VALUE"
+    command_secret = "HOSTILE_SUBPROCESS_COMMAND_VALUE"
+    direct = HostileAttributeError("safe direct detail")
+    outer = RuntimeError("safe outer detail")
+    outer.__cause__ = HostileAttributeError("safe chained detail")
+    process_error = HostileCalledProcessError(
+        1,
+        ["provider-client", "--password", command_secret],
+        stderr="password=HOSTILE_SUBPROCESS_STDERR_VALUE",
+    )
+
+    rendered = repr(Redactor().redact((direct, outer, process_error)))
+
+    assert hostile_attribute_secret not in rendered
+    assert hostile_subprocess_secret not in rendered
+    assert command_secret not in rendered
+    assert "HOSTILE_SUBPROCESS_STDERR_VALUE" not in rendered
+    assert "safe direct detail" in rendered
+    assert "safe chained detail" in rendered

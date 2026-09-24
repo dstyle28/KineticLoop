@@ -586,29 +586,47 @@ class Redactor:
         error: BaseException,
         seen: frozenset[int],
     ) -> RedactedDiagnostic:
+        try:
+            base_exception_members = vars(BaseException)
+            error_args = base_exception_members["args"].__get__(error, BaseException)
+            explicit_cause = base_exception_members["__cause__"].__get__(
+                error, BaseException
+            )
+            implicit_context = base_exception_members["__context__"].__get__(
+                error, BaseException
+            )
+            raw_state = base_exception_members["__dict__"].__get__(
+                error, BaseException
+            )
+            error_state = dict(dict.items(raw_state))
+            exception_type = type.__getattribute__(type(error), "__name__")
+        except BaseException:
+            return RedactedDiagnostic("Exception", "exception details unavailable")
         if id(error) in seen:
-            return RedactedDiagnostic(self.text(type(error).__name__), "exception cycle omitted")
+            return RedactedDiagnostic(self.text(exception_type), "exception cycle omitted")
         details: list[str] = []
         if isinstance(error, subprocess.CalledProcessError):
-            redacted_returncode = self.redact(error.returncode)
+            redacted_returncode = self.redact(error_state.get("returncode"))
             details.append(f"returncode={redacted_returncode!r}")
-            details.append(f"command={self.redact(error.cmd)!r}")
-            if error.stdout is not None:
-                details.append(f"stdout={self.redact(error.stdout)!r}")
-            if error.stderr is not None:
-                details.append(f"stderr={self.redact(error.stderr)!r}")
-        cause = error.__cause__ or error.__context__
+            details.append(f"command={self.redact(error_state.get('cmd'))!r}")
+            stdout = error_state.get("output")
+            stderr = error_state.get("stderr")
+            if stdout is not None:
+                details.append(f"stdout={self.redact(stdout)!r}")
+            if stderr is not None:
+                details.append(f"stderr={self.redact(stderr)!r}")
+        cause = explicit_cause or implicit_context
         if isinstance(error, subprocess.CalledProcessError):
             message = f"subprocess failed with return code {redacted_returncode!r}"
         else:
-            redacted_args = self.redact(error.args)
+            redacted_args = self.redact(error_args)
             assert isinstance(redacted_args, tuple)
             if len(redacted_args) == 1:
                 message = str(redacted_args[0])
             else:
                 message = repr(redacted_args)
         return RedactedDiagnostic(
-            exception_type=self.text(type(error).__name__),
+            exception_type=self.text(exception_type),
             message=message,
             details=tuple(details),
             cause=(
