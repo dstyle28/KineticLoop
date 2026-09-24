@@ -204,6 +204,29 @@ def test_db_reset_argument_errors_are_credential_free(
 
 
 @pytest.mark.parametrize(
+    "separator", [" ", ",", ";", "/", "-", "+", ".", "_", "~", "%", ":"]
+)
+def test_db_reset_multiple_schemeless_authorities_are_credential_free(
+    separator: str,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    argument = (
+        f"notice@example.com{separator}alice:hunter2@db.invalid:notaport"
+    )
+
+    with pytest.raises(SystemExit) as exit_info:
+        main(["db-reset", argument])
+
+    assert exit_info.value.code == 2
+    stderr = capsys.readouterr().err
+    assert "notice" not in stderr
+    assert "alice" not in stderr
+    assert "hunter2" not in stderr
+    assert "kl db-reset: error: unrecognized arguments:" in stderr
+    assert "[REDACTED]" in stderr
+
+
+@pytest.mark.parametrize(
     "arguments,secret",
     [
         (["--pass%77ord", "SYNTHETIC_SEPARATE_SECRET"], "SYNTHETIC_SEPARATE_SECRET"),
@@ -267,6 +290,13 @@ def test_db_reset_arbitrary_authorization_diagnostic_is_credential_free(
         ("notice@example.com,alice:hunter2@db.invalid:notaport", "hunter2"),
         ("notice@example.com;alice:hunter2@db.invalid:notaport", "hunter2"),
         ("notice@example.com/alice:hunter2@db.invalid:notaport", "hunter2"),
+        ("notice@example.com-alice:hunter2@db.invalid:notaport", "hunter2"),
+        ("notice@example.com+alice:hunter2@db.invalid:notaport", "hunter2"),
+        ("notice@example.com.alice:hunter2@db.invalid:notaport", "hunter2"),
+        ("notice@example.com_alice:hunter2@db.invalid:notaport", "hunter2"),
+        ("notice@example.com~alice:hunter2@db.invalid:notaport", "hunter2"),
+        ("notice@example.com%alice:hunter2@db.invalid:notaport", "hunter2"),
+        ("notice@example.com:alice:hunter2@db.invalid:notaport", "hunter2"),
     ],
 )
 def test_malformed_docker_endpoints_redact_scheme_less_userinfo(

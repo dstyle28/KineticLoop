@@ -51,6 +51,11 @@ _SCHEMELESS_USERINFO_START = re.compile(
     r"[A-Za-z0-9._%+-]+)@)"
     r"(?P<host>\[[^\]]+\]|[A-Za-z0-9.-]+)"
 )
+_SCHEMELESS_PASSWORD_USERINFO = re.compile(
+    r"(?P<userinfo>[A-Za-z0-9._~!$&'()*+,;%-]+:"
+    r"[^@\s\r\n][^@\r\n]*?@)"
+    r"(?P<host>\[[^\]]+\]|[A-Za-z0-9.-]+)"
+)
 _PERCENT_PLACEHOLDER = re.compile(
     r"(?<!%)%(?!%)(?:\([^)]+\))?[-+#0 ]*(?:\*|\d*)(?:\.(?:\*|\d+))?[A-Za-z]"
 )
@@ -417,6 +422,9 @@ class Redactor:
             result,
         )
         result = _SCHEMELESS_USERINFO_START.sub(
+            lambda match: f"{REDACTED}@{match.group('host')}", result
+        )
+        result = _SCHEMELESS_PASSWORD_USERINFO.sub(
             lambda match: f"{REDACTED}@{match.group('host')}", result
         )
         result = result.replace(_PROTECTED_USERINFO_MARKER, f"{REDACTED}@")
