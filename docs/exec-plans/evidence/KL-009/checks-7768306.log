@@ -1,0 +1,63 @@
+KL-009 immutable tested-commit evidence, bounded recursive graph cycle
+date: 2026-09-24
+task_identity: harness-backlog-v0.2/KL-009
+base_commit: c2740b8dfa25c079bb51f816baa5a87d6422b841
+tested_commit: 7768306155a8eae13523f8f50ee9578f46cf63fe
+
+CHECK config_secret_sources_are_separated
+COMMAND .venv/bin/pytest -q tests/unit/config/test_secret_loader.py::test_config_secret_sources_are_separated
+RESULT PASS
+OUTPUT 1 passed in 0.01s
+
+CHECK nested_redaction_is_non_mutating_and_authority_neutral
+COMMAND .venv/bin/pytest -q tests/unit/security/test_redaction.py::test_nested_redaction_is_non_mutating_and_authority_neutral
+RESULT PASS
+OUTPUT 1 passed in 0.02s
+
+CHECK synthetic_security_fixtures_have_provenance
+COMMAND .venv/bin/pytest -q tests/unit/security/test_synthetic_fixtures.py::test_synthetic_security_fixtures_have_provenance
+RESULT PASS
+OUTPUT 1 passed in 0.01s
+
+CHECK database_diagnostics_redact_credentials
+COMMAND .venv/bin/pytest -q tests/db/test_secret_output.py
+RESULT PASS
+OUTPUT 27 passed in 0.03s
+
+CHECK security_and_database_regressions_pass
+COMMAND .venv/bin/pytest -q tests/unit/config tests/unit/security tests/db
+RESULT PASS
+OUTPUT 65 passed in 0.10s
+
+CHECK harness_validation_passes
+COMMAND .venv/bin/kl check-harness && .venv/bin/kl test-harness
+RESULT PASS
+OUTPUT HARNESS_CHECK_PASS tasks=68 active=66; 100 passed in 74.13s
+
+ADDITIONAL CHECK lint
+COMMAND .venv/bin/kl lint
+RESULT PASS
+OUTPUT All checks passed!
+
+ADDITIONAL CHECK typecheck
+COMMAND .venv/bin/kl typecheck
+RESULT PASS
+OUTPUT Success: no issues found in 54 source files
+
+ADDITIONAL CHECK unit
+COMMAND .venv/bin/kl test-unit
+RESULT PASS
+OUTPUT 123 passed in 2.28s
+
+ADDITIONAL CHECK full_suite
+COMMAND .venv/bin/pytest -q
+RESULT PASS
+OUTPUT 260 passed in 77.01s
+
+ADVERSARIAL BOUNDARY COVERAGE
+- Literal-prefixed percent/brace credentials retain correct mixed safe/sensitive argument positions.
+- Multi-placeholder sensitive command formats suppress every unresolved credential argument.
+- Hostile exception-cause __bool__ hooks are never invoked, including CalledProcessError chains.
+- Self-referential lists, mapping/list cycles, self-referential exception args, and over-depth graphs emit fixed markers.
+- Malformed scheme-less lifecycle userinfo containing slash or whitespace is fully redacted without losing the error prefix.
+- All earlier configuration, serialization, URL, parser, fixture, DB/CLI, host, mapping, set, exception, format, delimiter, encoding, subclass, and non-mutation probes remain covered.

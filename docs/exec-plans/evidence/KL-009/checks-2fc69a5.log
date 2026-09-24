@@ -1,0 +1,61 @@
+KL-009 immutable tested-commit evidence, subclass and over-depth mapping-key cycle
+date: 2026-09-24
+task_identity: harness-backlog-v0.2/KL-009
+base_commit: c2740b8dfa25c079bb51f816baa5a87d6422b841
+tested_commit: 2fc69a5fe1f440ad9f77e2562d39c49dc1109a51
+
+CHECK config_secret_sources_are_separated
+COMMAND .venv/bin/pytest -q tests/unit/config/test_secret_loader.py::test_config_secret_sources_are_separated
+RESULT PASS
+OUTPUT 1 passed in 0.01s
+
+CHECK nested_redaction_is_non_mutating_and_authority_neutral
+COMMAND .venv/bin/pytest -q tests/unit/security/test_redaction.py::test_nested_redaction_is_non_mutating_and_authority_neutral
+RESULT PASS
+OUTPUT 1 passed in 0.01s
+
+CHECK synthetic_security_fixtures_have_provenance
+COMMAND .venv/bin/pytest -q tests/unit/security/test_synthetic_fixtures.py::test_synthetic_security_fixtures_have_provenance
+RESULT PASS
+OUTPUT 1 passed in 0.01s
+
+CHECK database_diagnostics_redact_credentials
+COMMAND .venv/bin/pytest -q tests/db/test_secret_output.py
+RESULT PASS
+OUTPUT 16 passed in 0.03s
+
+CHECK security_and_database_regressions_pass
+COMMAND .venv/bin/pytest -q tests/unit/config tests/unit/security tests/db
+RESULT PASS
+OUTPUT 34 passed in 0.08s
+
+CHECK harness_validation_passes
+COMMAND .venv/bin/kl check-harness && .venv/bin/kl test-harness
+RESULT PASS
+OUTPUT HARNESS_CHECK_PASS tasks=68 active=66; 100 passed in 73.73s
+
+ADDITIONAL CHECK lint
+COMMAND .venv/bin/kl lint
+RESULT PASS
+OUTPUT All checks passed!
+
+ADDITIONAL CHECK typecheck
+COMMAND .venv/bin/kl typecheck
+RESULT PASS
+OUTPUT Success: no issues found in 54 source files
+
+ADDITIONAL CHECK unit
+COMMAND .venv/bin/kl test-unit
+RESULT PASS
+OUTPUT 103 passed in 2.24s
+
+ADDITIONAL CHECK full_suite
+COMMAND .venv/bin/pytest -q
+RESULT PASS
+OUTPUT 229 passed in 77.03s
+
+ADVERSARIAL BOUNDARY COVERAGE
+- String and bytes subclasses cannot hide sensitive options, schemes, or structured format relationships.
+- Subclass-based format relationships remain credential-free in direct exception diagnostics.
+- Mapping keys beyond the decoding bound suppress values for string, bytes, tuple, and frozenset key shapes.
+- All earlier configuration, serialization, URL, parser-semantics, fixture, DB/CLI, return-code, type-name, and non-mutation probes remain covered.

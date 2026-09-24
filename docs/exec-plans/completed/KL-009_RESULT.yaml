@@ -1,0 +1,126 @@
+task_identity: harness-backlog-v0.2/KL-009
+display_task_id: KL-009
+task_definition_version: v0.2
+base_commit: c2740b8dfa25c079bb51f816baa5a87d6422b841
+tested_commit: f1d416c1a32a8cc18d6957dfdbf076c1e922ce38
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Added an explicit typed provider-secret source boundary, recursive presentation-only
+  redaction, provenance-enforced synthetic security fixtures, and credential-free
+  PostgreSQL lifecycle/CLI diagnostics without changing DB reset, namespace,
+  Evidence Admission, role/capability, replay, or authorization semantics.
+commands_run:
+  - check_id: config_secret_sources_are_separated
+    command: .venv/bin/pytest -q tests/unit/config/test_secret_loader.py::test_config_secret_sources_are_separated
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-f1d416c.log
+  - check_id: nested_redaction_is_non_mutating_and_authority_neutral
+    command: .venv/bin/pytest -q tests/unit/security/test_redaction.py::test_nested_redaction_is_non_mutating_and_authority_neutral
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-f1d416c.log
+  - check_id: synthetic_security_fixtures_have_provenance
+    command: .venv/bin/pytest -q tests/unit/security/test_synthetic_fixtures.py::test_synthetic_security_fixtures_have_provenance
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-f1d416c.log
+  - check_id: database_diagnostics_redact_credentials
+    command: .venv/bin/pytest -q tests/db/test_secret_output.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-f1d416c.log
+  - check_id: security_and_database_regressions_pass
+    command: .venv/bin/pytest -q tests/unit/config tests/unit/security tests/db
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-f1d416c.log
+  - check_id: harness_validation_passes
+    command: .venv/bin/kl check-harness && .venv/bin/kl test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-f1d416c.log
+requirements_covered: []
+files_changed:
+  - docs/contracts/security_config_and_redaction.md
+  - src/kineticloop/config/__init__.py
+  - src/kineticloop/config/secrets.py
+  - src/kineticloop/db/cli.py
+  - src/kineticloop/db/lifecycle.py
+  - src/kineticloop/security/__init__.py
+  - src/kineticloop/security/redaction.py
+  - src/kineticloop/security/synthetic.py
+  - tests/db/test_secret_output.py
+  - tests/fixtures/synthetic/security/healthkit_recovery.json
+  - tests/fixtures/synthetic/security/hevy_workout.json
+  - tests/unit/config/test_secret_loader.py
+  - tests/unit/security/test_redaction.py
+  - tests/unit/security/test_synthetic_fixtures.py
+  - docs/exec-plans/evidence/KL-009/checks-2ada6e0.log
+  - docs/exec-plans/evidence/KL-009/checks-5ad7f8a.log
+  - docs/exec-plans/evidence/KL-009/checks-a3b257b.log
+  - docs/exec-plans/evidence/KL-009/checks-adcf349.log
+  - docs/exec-plans/evidence/KL-009/checks-942ea94.log
+  - docs/exec-plans/evidence/KL-009/checks-4d1053f.log
+  - docs/exec-plans/evidence/KL-009/checks-37ea3d4.log
+  - docs/exec-plans/evidence/KL-009/checks-09cc1aa.log
+  - docs/exec-plans/evidence/KL-009/checks-05bf2b2.log
+  - docs/exec-plans/evidence/KL-009/checks-63b3c5b.log
+  - docs/exec-plans/evidence/KL-009/checks-0447ce9.log
+  - docs/exec-plans/evidence/KL-009/checks-b5a960e.log
+  - docs/exec-plans/evidence/KL-009/checks-d0f2679.log
+  - docs/exec-plans/evidence/KL-009/checks-2fc69a5.log
+  - docs/exec-plans/evidence/KL-009/checks-be45e27.log
+  - docs/exec-plans/evidence/KL-009/checks-422eac6.log
+  - docs/exec-plans/evidence/KL-009/checks-37a6034.log
+  - docs/exec-plans/evidence/KL-009/checks-382adb5.log
+  - docs/exec-plans/evidence/KL-009/checks-5056325.log
+  - docs/exec-plans/evidence/KL-009/checks-5230d8a.log
+  - docs/exec-plans/evidence/KL-009/checks-7768306.log
+  - docs/exec-plans/evidence/KL-009/checks-8ca6f8a.log
+  - docs/exec-plans/evidence/KL-009/checks-a9c4a47.log
+  - docs/exec-plans/evidence/KL-009/checks-f1d416c.log
+  - docs/exec-plans/completed/KL-009_RESULT.yaml
+decisions:
+  - Public provider configuration names credential requirements but never stores credential values; callers must select an explicit SecretSource.
+  - SecretValue is deliberately opaque to generic JSON, dataclass, mapping, repr, and string diagnostic paths; reveal is an explicit in-process operation.
+  - Secret-bearing wrapper/source objects also reject pickle serialization so generic object serialization cannot recover plaintext.
+  - RedactedDiagnostic is presentation-only and has no Evidence Admission, command, role, capability, approval, or authorization behavior.
+  - DatabaseConnection.url remains the explicit in-process tooling surface while all default JSON/string/repr and CLI diagnostics use redacted fields.
+  - Synthetic fixture validation fails closed on missing provenance, production markers, undocumented fields, or non-sentinel credential/health values.
+  - Synthetic fixture/provenance identities and provider-specific credential/health profiles must match exactly.
+  - Fixture loading rejects duplicate JSON keys before provenance validation so ambiguous committed input fails closed.
+  - Unsupported diagnostic values and compound keys fail closed; structured format arguments redact only credential-bearing positions.
+  - SecretValue is sealed against subclass overrides, and provider secret bundles require exact built-in/string wrapper runtime types.
+  - Provider secret mappings are snapshotted once before validation; format positions and recursively encoded URL authorities fail closed.
+  - Recursively encoded query keys and exact JSON-native fixture sentinel types are validated before diagnostic output.
+  - Registered secrets and query assignments are classified through bounded recursive percent-decoding.
+  - Text that exceeds the bounded percent-decoding depth fails closed rather than emitting encoded credentials.
+  - Encoded compound query assignments and argparse-originated credential-shaped diagnostics fail closed.
+  - Decoded credential shapes are classified before emission, and database ports require exact valid integers.
+  - Decoded sequence relationships and runtime type-name diagnostics cannot expose registered secrets.
+  - CLI parsing consumes only original argv; bounded decoding and redaction apply solely to emitted parser diagnostics.
+  - Safe query values are recursively sanitized with a bounded fail-closed depth, including nested URLs and assignments.
+  - Nested brace format specifications, byte-form option sequences, and subprocess return codes pass through the diagnostic boundary.
+  - String and byte subclasses are classified through base-type operations before unsupported values are replaced with fixed markers.
+  - Mapping keys that exceed bounded decoding, including compound key members, suppress their associated values.
+  - List and tuple diagnostics are snapshotted once through their built-in iterators before classification and emission.
+  - Split Authorization values fail closed for extensible schemes, and malformed sensitive formats suppress unresolved arguments.
+  - Text diagnostics normalize dotted credential labels and redact arbitrary Authorization schemes, including encoded forms.
+  - Composite mapping keys are snapshotted once, and ambiguous mixed brace numbering suppresses unresolved arguments.
+  - Database hosts are validated as host-only values; raw or encoded userinfo fails closed before diagnostic construction.
+  - Empty-delimiter Authorization, mixed format dialects, named fields, and out-of-range fields suppress all unresolved arguments.
+  - Built-in mapping storage is snapshotted through trusted operations; uninspectable Mapping implementations use a fixed marker.
+  - Split Authorization suppresses every trailing component, and credential matches consume encoded line/semicolon continuations.
+  - Single/combined Authorization values and semicolon option delimiters share the same all-following fail-closed rule.
+  - Colon-delimited sensitive query members redact their values, and set/frozenset subclasses use trusted snapshots.
+  - Exception args, cause/context, class names, and subprocess state are snapshotted through trusted base descriptors.
+  - Recursive container/exception diagnostics are identity-cycle safe and bounded to a fixed maximum depth.
+  - Sensitive assignments remain active across literal format prefixes; exception causes are selected without truthiness dispatch.
+  - Malformed scheme-less userinfo with slash or whitespace is fully suppressed while retaining surrounding diagnostic context.
+  - Multiple scheme-less authority candidates are each sanitized, and repeated redaction protects already-redacted userinfo while retaining the surrounding diagnostic prefix.
+  - Delimiter-separated malformed authorities are sanitized across whitespace and punctuation without reclassifying a colon-terminated safe prefix whose following text starts with whitespace.
+  - Embedded username/password authorities are detected independently of their preceding delimiter, including delimiters that are otherwise legal username characters.
+known_limitations:
+  - No production secret-store vendor or provider adapter is introduced; later integrations must supply an explicit SecretSource implementation.
+  - No product requirement PASS is claimed by this task-level security/configuration evidence.
+follow_up_tasks:
+  - Provider adapter tasks may reuse these credential and diagnostic boundaries without bypassing Evidence Admission.
+spec_change_request: null

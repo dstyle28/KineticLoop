@@ -1,0 +1,62 @@
+KL-009 immutable tested-commit evidence, embedded credential authority hardening
+date: 2026-09-24
+task_identity: harness-backlog-v0.2/KL-009
+base_commit: c2740b8dfa25c079bb51f816baa5a87d6422b841
+tested_commit: f1d416c1a32a8cc18d6957dfdbf076c1e922ce38
+
+CHECK config_secret_sources_are_separated
+COMMAND .venv/bin/pytest -q tests/unit/config/test_secret_loader.py::test_config_secret_sources_are_separated
+RESULT PASS
+OUTPUT 1 passed in 0.01s
+
+CHECK nested_redaction_is_non_mutating_and_authority_neutral
+COMMAND .venv/bin/pytest -q tests/unit/security/test_redaction.py::test_nested_redaction_is_non_mutating_and_authority_neutral
+RESULT PASS
+OUTPUT 1 passed in 0.01s
+
+CHECK synthetic_security_fixtures_have_provenance
+COMMAND .venv/bin/pytest -q tests/unit/security/test_synthetic_fixtures.py::test_synthetic_security_fixtures_have_provenance
+RESULT PASS
+OUTPUT 1 passed in 0.01s
+
+CHECK database_diagnostics_redact_credentials
+COMMAND .venv/bin/pytest -q tests/db/test_secret_output.py
+RESULT PASS
+OUTPUT 49 passed in 0.05s
+
+CHECK security_and_database_regressions_pass
+COMMAND .venv/bin/pytest -q tests/unit/config tests/unit/security tests/db
+RESULT PASS
+OUTPUT 98 passed in 0.11s
+
+CHECK harness_validation_passes
+COMMAND .venv/bin/kl check-harness && .venv/bin/kl test-harness
+RESULT PASS
+OUTPUT HARNESS_CHECK_PASS tasks=68 active=66; 100 passed in 74.12s
+
+ADDITIONAL CHECK lint
+COMMAND .venv/bin/kl lint
+RESULT PASS
+OUTPUT All checks passed!
+
+ADDITIONAL CHECK typecheck
+COMMAND .venv/bin/kl typecheck
+RESULT PASS
+OUTPUT Success: no issues found in 54 source files
+
+ADDITIONAL CHECK unit
+COMMAND .venv/bin/kl test-unit
+RESULT PASS
+OUTPUT 134 passed in 2.27s
+
+ADDITIONAL CHECK full_suite
+COMMAND .venv/bin/pytest -q
+RESULT PASS
+OUTPUT 293 passed in 75.59s
+
+ADVERSARIAL BOUNDARY COVERAGE
+- A boundary-independent username/password detector sanitizes embedded malformed authorities even when their separator is also legal in a username.
+- Direct redaction, DatabaseLifecycle errors, and real argparse diagnostics cover whitespace, comma, semicolon, slash, hyphen, plus, dot, underscore, tilde, percent, and colon joins.
+- First-pass and repeated redaction retain the `db-reset:` and `kl db-reset: error: unrecognized arguments:` diagnostic prefixes.
+- The detector requires a non-whitespace password start, preventing a colon-terminated safe prefix followed by prose from being consumed as credentials.
+- All earlier configuration, serialization, URL, parser, fixture, DB/CLI, host, mapping, set, exception, format, delimiter, encoding, subclass, cycle/depth, and non-mutation probes remain covered.

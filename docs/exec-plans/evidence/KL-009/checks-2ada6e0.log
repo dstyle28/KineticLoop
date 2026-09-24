@@ -1,0 +1,47 @@
+KL-009 immutable tested-revision evidence
+task_identity: harness-backlog-v0.2/KL-009
+base_commit: c2740b8dfa25c079bb51f816baa5a87d6422b841
+tested_commit: 2ada6e0bd2182131b97272914c4e197822ba0bb5
+executed_at: 2026-09-24 America/Los_Angeles
+
+PASS config_secret_sources_are_separated
+command: .venv/bin/pytest -q tests/unit/config/test_secret_loader.py::test_config_secret_sources_are_separated
+output: 1 passed in 0.01s
+
+PASS nested_redaction_is_non_mutating_and_authority_neutral
+command: .venv/bin/pytest -q tests/unit/security/test_redaction.py::test_nested_redaction_is_non_mutating_and_authority_neutral
+output: 1 passed in 0.01s
+
+PASS synthetic_security_fixtures_have_provenance
+command: .venv/bin/pytest -q tests/unit/security/test_synthetic_fixtures.py::test_synthetic_security_fixtures_have_provenance
+output: 1 passed in 0.01s
+
+PASS database_diagnostics_redact_credentials
+command: .venv/bin/pytest -q tests/db/test_secret_output.py
+output: 4 passed in 0.02s
+
+PASS security_and_database_regressions_pass
+command: .venv/bin/pytest -q tests/unit/config tests/unit/security tests/db
+output: 17 passed in 0.07s
+
+PASS harness_validation_passes
+command: .venv/bin/kl check-harness && .venv/bin/kl test-harness
+output: HARNESS_CHECK_PASS tasks=68 active=66; 100 passed in 94.25s
+
+Additional regression evidence
+PASS command: .venv/bin/ruff check .
+output: All checks passed!
+
+PASS command: MYPY_CACHE_DIR=/private/tmp/kl009-tested-mypy .venv/bin/mypy src tools tests
+output: Success: no issues found in 55 source files
+
+PASS command: .venv/bin/kl test-unit
+output: 98 passed in 3.29s
+
+PASS command: .venv/bin/pytest -q
+output: 212 passed in 98.17s
+
+Security data-boundary notes
+- Inputs used only committed synthetic sentinel values; no ambient provider credentials or real health/training data were read.
+- Redaction was verified non-mutating against canonical evidence bytes and SHA-256 hash output.
+- No frozen Protocol/DB file, transaction boundary, table, Evidence Admission path, role/capability guard, or KL-008-owned path changed.

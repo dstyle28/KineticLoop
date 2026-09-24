@@ -3,18 +3,23 @@
 from __future__ import annotations
 
 import hashlib
+import ipaddress
 import json
 import os
 import re
 import subprocess
 import time
 from collections.abc import Callable, Mapping, Sequence
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, unquote
+
+from kineticloop.config.secrets import SecretValue
+from kineticloop.security.redaction import REDACTED, Redactor
 
 CommandRunner = Callable[..., subprocess.CompletedProcess[str]]
 _SAFE_IDENTIFIER = re.compile(r"^[a-z][a-z0-9_]{0,62}$")
+_SAFE_HOSTNAME = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$")
 
 
 class DatabaseLifecycleError(RuntimeError):
@@ -52,21 +57,74 @@ class DatabaseConnection:
     host: str
     port: int
     user: str
-    password: str
+    password: SecretValue | str
+
+    def __post_init__(self) -> None:
+        if type(self.host) is not str:
+            raise TypeError("database host must be a string")
+        decoded_host = unquote(self.host)
+        if decoded_host != self.host:
+            raise ValueError("database host must not be percent-encoded")
+        if not self.host or any(character.isspace() for character in self.host):
+            raise ValueError("database host must be host-only")
+        if any(character in self.host for character in "@/?#[]"):
+            raise ValueError("database host must be host-only")
+        if ":" in self.host:
+            try:
+                ipaddress.ip_address(self.host)
+            except ValueError as error:
+                raise ValueError("database host must be host-only") from error
+        elif _SAFE_HOSTNAME.fullmatch(self.host) is None:
+            raise ValueError("database host must be host-only")
+        if type(self.port) is not int:
+            raise TypeError("database port must be an integer")
+        if not 1 <= self.port <= 65535:
+            raise ValueError("database port must be between 1 and 65535")
+        if isinstance(self.password, str):
+            object.__setattr__(self, "password", SecretValue(self.password))
 
     @property
     def url(self) -> str:
         encoded_user = quote(self.user, safe="")
-        encoded_password = quote(self.password, safe="")
+        password = self.password
+        assert isinstance(password, SecretValue)
+        encoded_password = quote(password.reveal(), safe="")
+        url_host = f"[{self.host}]" if ":" in self.host else self.host
         return (
-            f"postgresql://{encoded_user}:{encoded_password}@{self.host}:{self.port}/"
+            f"postgresql://{encoded_user}:{encoded_password}@{url_host}:{self.port}/"
             f"{self.database_name}"
         )
 
+    @property
+    def redacted_url(self) -> str:
+        password = self.password
+        assert isinstance(password, SecretValue)
+        redactor = Redactor((self.user, password))
+        host = redactor.redact(self.host)
+        database_name = redactor.redact(self.database_name)
+        url_host = f"[{host}]" if ":" in str(host) else host
+        return f"postgresql://{REDACTED}@{url_host}:{self.port}/{database_name}"
+
+    def diagnostic_mapping(self) -> dict[str, str | int]:
+        password = self.password
+        assert isinstance(password, SecretValue)
+        redactor = Redactor((self.user, password))
+        return {
+            "project_name": str(redactor.redact(self.project_name)),
+            "database_name": str(redactor.redact(self.database_name)),
+            "host": str(redactor.redact(self.host)),
+            "port": self.port,
+            "url": self.redacted_url,
+        }
+
     def as_json(self) -> str:
-        payload = asdict(self)
-        payload["url"] = self.url
-        return json.dumps(payload, sort_keys=True)
+        return json.dumps(self.diagnostic_mapping(), sort_keys=True)
+
+    def __str__(self) -> str:
+        return self.as_json()
+
+    def __repr__(self) -> str:
+        return f"DatabaseConnection({self.as_json()})"
 
 
 class DatabaseLifecycle:
@@ -85,8 +143,8 @@ class DatabaseLifecycle:
         self._runner = runner
         self._base_environ = dict(os.environ if environ is None else environ)
         self.user = self._base_environ.get("KINETICLOOP_DB_USER", "kineticloop")
-        self.password = self._base_environ.get(
-            "KINETICLOOP_DB_PASSWORD", "kineticloop-local-only"
+        self.password = SecretValue(
+            self._base_environ.get("KINETICLOOP_DB_PASSWORD", "kineticloop-local-only")
         )
         if not _SAFE_IDENTIFIER.fullmatch(self.user):
             raise DatabaseLifecycleError("KINETICLOOP_DB_USER must be a safe SQL identifier")
@@ -99,7 +157,7 @@ class DatabaseLifecycle:
                 "COMPOSE_PROJECT_NAME": self.namespace.project_name,
                 "KINETICLOOP_DB_NAME": self.namespace.database_name,
                 "KINETICLOOP_DB_USER": self.user,
-                "KINETICLOOP_DB_PASSWORD": self.password,
+                "KINETICLOOP_DB_PASSWORD": self.password.reveal(),
             }
         )
         return env
@@ -135,8 +193,8 @@ class DatabaseLifecycle:
                 "Docker with the Compose plugin is required for the local test database."
             ) from error
         except subprocess.CalledProcessError as error:
-            details = (error.stderr or error.stdout or str(error)).strip()
-            raise DatabaseLifecycleError(f"database command failed: {details}") from error
+            details = Redactor((self.user, self.password)).exception_diagnostic(error)
+            raise DatabaseLifecycleError(f"database command failed: {details}") from None
 
     def validate_compose(self) -> None:
         if not self.compose_file.is_file():
@@ -227,15 +285,22 @@ class DatabaseLifecycle:
         endpoint = result.stdout.strip().rsplit("\n", maxsplit=1)[-1]
         host, separator, raw_port = endpoint.rpartition(":")
         if not separator or not raw_port.isdigit():
-            raise DatabaseLifecycleError(f"unexpected Docker port output: {endpoint!r}")
-        return DatabaseConnection(
-            project_name=self.namespace.project_name,
-            database_name=self.namespace.database_name,
-            host=host.strip("[]") or "127.0.0.1",
-            port=int(raw_port),
-            user=self.user,
-            password=self.password,
-        )
+            safe_endpoint = Redactor((self.user, self.password)).redact(endpoint)
+            raise DatabaseLifecycleError(f"unexpected Docker port output: {safe_endpoint!r}")
+        try:
+            return DatabaseConnection(
+                project_name=self.namespace.project_name,
+                database_name=self.namespace.database_name,
+                host=host.strip("[]") or "127.0.0.1",
+                port=int(raw_port),
+                user=self.user,
+                password=self.password,
+            )
+        except (TypeError, ValueError):
+            safe_endpoint = Redactor((self.user, self.password)).redact(endpoint)
+            raise DatabaseLifecycleError(
+                f"unexpected Docker port output: {safe_endpoint!r}"
+            ) from None
 
     def destroy(self) -> None:
         """Remove only this worktree's containers, network, and named volume."""
