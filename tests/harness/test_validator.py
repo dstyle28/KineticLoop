@@ -588,6 +588,50 @@ class ValidatorTests(unittest.TestCase):
         self.check(1, 'governance-manifest-hash:tools/harness/validate_harness.py',
                    '--ci-pr-base', protected_base, '--ci-pr-head', 'HEAD')
 
+    def test_ci_governance_review_only_rejects_later_index_deduplication(self):
+        index_path = self.root / v.INDEX
+        index = json.loads(index_path.read_text())
+        validator_entry = next(
+            entry for entry in index['machine_readable']
+            if entry['path'] == 'tools/harness/validate_harness.py')
+        stale_duplicate = copy.deepcopy(validator_entry)
+        stale_duplicate['sha256'] = '0' * 64
+        position = index['machine_readable'].index(validator_entry)
+        index['machine_readable'].insert(position, stale_duplicate)
+        dump(index_path, index)
+        manifest_path = self.root / v.MANIFEST
+        manifest = json.loads(manifest_path.read_text())
+        manifest_entry = next(
+            entry for entry in manifest['files'] if entry['path'] == v.INDEX)
+        manifest_entry['sha256'] = v.sha(index_path)
+        manifest_entry['bytes'] = index_path.stat().st_size
+        dump(manifest_path, manifest)
+        tested = self.commit('historical governance duplicates an index path')
+        _, reviewed = self.persist_governance_change('HG-999', tested, [], ['GENERAL'])
+        self.git('checkout', '-q', '--detach', reviewed)
+
+        index = json.loads(index_path.read_text())
+        seen_validator = False
+        deduplicated = []
+        for entry in reversed(index['machine_readable']):
+            if entry['path'] == 'tools/harness/validate_harness.py':
+                if seen_validator:
+                    continue
+                seen_validator = True
+            deduplicated.append(entry)
+        index['machine_readable'] = list(reversed(deduplicated))
+        dump(index_path, index)
+        refresh(self.root)
+        later_tip = self.commit('later governance removes duplicate index path')
+        protected_base = self.merge_commit(
+            later_tip, reviewed, later_tip, message='merge later index repair')
+        self.git('checkout', '-q', '--detach', protected_base)
+        self.governance_review('HG-999', reviewed)
+        self.commit('persist delayed review of duplicate historical index')
+
+        self.check(1, 'governance-index-duplicate-path',
+                   '--ci-pr-base', protected_base, '--ci-pr-head', 'HEAD')
+
     def test_ci_governance_review_only_rejects_content_changing_merge(self):
         self.put('tools/harness/post_merge_fixture.py')
         tested = self.commit('governance implementation')

@@ -433,6 +433,16 @@ def governance_index_errors(
         errors.append('governance-index-metadata')
     declared_additions = set(record.get('authority_entries_added', []))
     observed_additions = set()
+    after_paths = [
+        entry['path']
+        for group in ('documents', 'machine_readable')
+        for entry in new.get(group, [])
+    ]
+    if len(after_paths) != len(set(after_paths)):
+        errors.append('governance-index-duplicate-path')
+    document_ids = [entry['document_id'] for entry in new.get('documents', [])]
+    if len(document_ids) != len(set(document_ids)):
+        errors.append('governance-index-duplicate-id')
     for group in ('documents', 'machine_readable'):
         before = {entry['path']: entry for entry in old.get(group, [])}
         after = {entry['path']: entry for entry in new.get(group, [])}
