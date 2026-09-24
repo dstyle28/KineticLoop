@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import pickle
+from collections.abc import Iterator, Mapping
 from dataclasses import asdict, dataclass
 
 import pytest
@@ -88,6 +89,23 @@ def test_config_secret_sources_are_separated() -> None:
 
     with pytest.raises(TypeError, match="must be a string"):
         load_provider_secrets(HEVY_CONFIG, InvalidSource())  # type: ignore[arg-type]
+
+    class DeceptiveMapping(Mapping[str, SecretValue]):
+        def __getitem__(self, key: str) -> SecretValue:
+            del key
+            return HEVY_SENTINEL  # type: ignore[return-value]
+
+        def __iter__(self) -> Iterator[str]:
+            return iter(("HEVY_API_KEY",))
+
+        def __len__(self) -> int:
+            return 1
+
+        def values(self) -> object:  # type: ignore[override]
+            return (opaque,)
+
+    with pytest.raises(TypeError, match="SecretValue"):
+        ProviderSecrets("HEVY", DeceptiveMapping())
 
     with pytest.raises(MissingSecretError, match="missing or blank"):
         load_provider_secrets(HEVY_CONFIG, MappingSecretSource({}))

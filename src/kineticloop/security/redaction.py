@@ -36,7 +36,9 @@ _SENSITIVE_KEY_PARTS = frozenset(
 )
 _URL = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\s<>\"']+")
 _CREDENTIAL_URL = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\r\n]*?@[^\s,;]+")
-_PERCENT_PLACEHOLDER = re.compile(r"(?<!%)%(?!%)(?:\([^)]+\))?[-+#0 ]*\d*(?:\.\d+)?[A-Za-z]")
+_PERCENT_PLACEHOLDER = re.compile(
+    r"(?<!%)%(?!%)(?:\([^)]+\))?[-+#0 ]*(?:\*|\d*)(?:\.(?:\*|\d+))?[A-Za-z]"
+)
 _BRACE_PLACEHOLDER = re.compile(r"(?<!\{)\{[^{}]*\}(?!\})")
 _SENSITIVE_KEY_EXPRESSION = (
     r"access[\s_-]?token|api[\s_-]?key|authorization|client[\s_-]?secret|cookie|"
@@ -49,7 +51,8 @@ _SENSITIVE_ASSIGNMENT = re.compile(
 )
 _COMMAND_OPTION = re.compile(
     rf"(?i)(?P<prefix>--[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*=)"
-    r"(?P<value>[^\s\r\n]+)"
+    r"(?P<value>\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*'|"
+    r"(?:bearer|basic|digest|token)\s+[^\r\n]+|[^\s\r\n]+)"
 )
 _COMMAND_SEPARATE = re.compile(
     rf"(?i)(?P<prefix>--[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*\s+)"
@@ -83,11 +86,28 @@ def _format_sensitive_positions(value: str) -> set[int]:
     positions: set[int] = set()
     active_sensitive = False
     previous_end = 0
-    for argument_index, placeholder in enumerate(_FORMAT_PLACEHOLDER.finditer(value)):
+    automatic_index = 0
+    percent_index = 0
+    for placeholder in _FORMAT_PLACEHOLDER.finditer(value):
         segment = value[previous_end : placeholder.start()]
         assignments = list(re.finditer(r"(?i)([a-z0-9_. -]+)\s*[:=]\s*$", segment))
         if assignments:
             active_sensitive = _is_sensitive_key(assignments[-1].group(1))
+        token = placeholder.group(0)
+        if token.startswith("%"):
+            star_count = token.count("*")
+            argument_index = percent_index + star_count
+            percent_index += star_count + 1
+        else:
+            field_name = token[1:-1].split("!", maxsplit=1)[0].split(":", maxsplit=1)[0]
+            root_name = re.split(r"[.[]", field_name, maxsplit=1)[0]
+            if root_name.isdigit():
+                argument_index = int(root_name)
+            elif not root_name:
+                argument_index = automatic_index
+                automatic_index += 1
+            else:
+                argument_index = 0
         if active_sensitive:
             positions.add(argument_index)
         previous_end = placeholder.end()
@@ -252,7 +272,14 @@ class Redactor:
             parsed = urlsplit(matched_url)
             authority = parsed
             has_userinfo = parsed.username is not None or parsed.password is not None
-            decoded_netloc = unquote(parsed.netloc)
+            decoded_netloc = parsed.netloc
+            for _ in range(8):
+                next_netloc = unquote(decoded_netloc)
+                if next_netloc == decoded_netloc:
+                    break
+                decoded_netloc = next_netloc
+            else:
+                return REDACTED + trailing
             if not has_userinfo and "@" in decoded_netloc:
                 authority = urlsplit(f"//{decoded_netloc.rsplit('@', maxsplit=1)[1]}")
                 has_userinfo = True
@@ -279,13 +306,13 @@ class Redactor:
     def redact(self, value: object) -> object:
         """Return a recursively redacted diagnostic copy of a supported value."""
 
-        if isinstance(value, SecretValue):
+        if type(value) is SecretValue:
             return REDACTED
         if isinstance(value, BaseException):
             return self.exception_diagnostic(value)
-        if isinstance(value, str):
+        if type(value) is str:
             return self.text(value)
-        if isinstance(value, bytes):
+        if type(value) is bytes:
             return self.text(value.decode("utf-8", errors="replace")).encode("utf-8")
         if isinstance(value, Mapping):
             result: dict[object, object] = {}
@@ -303,32 +330,32 @@ class Redactor:
             return {self.redact(item) for item in value}
         if isinstance(value, frozenset):
             return frozenset(self.redact(item) for item in value)
-        if value is None or isinstance(value, (int, float, bool)):
+        if value is None or type(value) in (int, float, bool):
             return value
         return f"<diagnostic-value:{type(value).__name__}>"
 
     def _redact_mapping_key(self, key: object) -> object:
-        if isinstance(key, str):
+        if type(key) is str:
             return self.text(key)
-        if isinstance(key, bytes):
+        if type(key) is bytes:
             return self.redact(key)
         if isinstance(key, tuple):
             return tuple(self._redact_mapping_key(item) for item in key)
         if isinstance(key, frozenset):
             return frozenset(self._redact_mapping_key(item) for item in key)
-        if key is None or isinstance(key, (int, float, bool)):
+        if key is None or type(key) in (int, float, bool):
             return key
         return f"<diagnostic-key:{type(key).__name__}>"
 
     def _mapping_key_is_sensitive(self, key: object) -> bool:
-        if isinstance(key, str):
+        if type(key) is str:
             return _is_sensitive_key(self.text(key))
-        if isinstance(key, bytes):
+        if type(key) is bytes:
             decoded = key.decode("utf-8", errors="replace")
             return _is_sensitive_key(self.text(decoded))
         if isinstance(key, (tuple, frozenset)):
             return any(self._mapping_key_is_sensitive(item) for item in key)
-        if key is None or isinstance(key, (int, float, bool)):
+        if key is None or type(key) in (int, float, bool):
             return False
         return True
 

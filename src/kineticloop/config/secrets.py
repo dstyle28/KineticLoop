@@ -123,12 +123,13 @@ class ProviderSecrets:
             raise TypeError("provider_id must be a non-blank string")
         if not isinstance(values, Mapping):
             raise TypeError("secret values must be a mapping")
-        if any(type(name) is not str for name in values):
+        snapshot = dict(values.items())
+        if any(type(name) is not str for name in snapshot):
             raise TypeError("secret names must be strings")
-        if any(type(value) is not SecretValue for value in values.values()):
+        if any(type(value) is not SecretValue for value in snapshot.values()):
             raise TypeError("secret values must be SecretValue instances")
         self.__provider_id = provider_id
-        self.__values = dict(values)
+        self.__values = snapshot
 
     @property
     def provider_id(self) -> str:

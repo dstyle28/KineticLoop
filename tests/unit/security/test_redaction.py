@@ -18,6 +18,11 @@ class CompoundDiagnosticKey:
     value: str
 
 
+class UnsafeDiagnosticInt(int):
+    def __repr__(self) -> str:
+        return "unsafe-scalar-secret"
+
+
 def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     evidence = {
         "evidence_id": "evidence-synthetic-001",
@@ -150,6 +155,32 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     source["fully_encoded_userinfo"] = (
         "https://alice%3Aopaque-encoded-userinfo-secret%40provider.invalid/path"
     )
+    source["recursively_encoded_userinfo"] = (
+        "https://alice%253Aopaque-double-encoded-secret%2540provider.invalid/path"
+    )
+    source["indexed_format_args"] = (
+        "password={1} safe={0}",
+        "retained-indexed-context",
+        "indexed-format-secret",
+    )
+    source["dynamic_width_args"] = (
+        "password=%*s",
+        8,
+        "dynamic-width-secret",
+    )
+    source["dynamic_precision_args"] = (
+        "password=%.*s",
+        4,
+        "dynamic-precision-secret",
+    )
+    source["unsafe_scalar_value"] = UnsafeDiagnosticInt(7)
+    source["unsafe_scalar_key"] = {UnsafeDiagnosticInt(8): "safe mapped value"}
+    source["equals_authorization_text"] = (
+        "provider-client --authorization=Bearer equals-authorization-secret"
+    )
+    source["quoted_password_text"] = (
+        'provider-client --password="quoted-first-secret quoted-second-secret"'
+    )
     format_exception = ValueError(
         "safe=%s password=%s",
         "retained-exception-context",
@@ -217,6 +248,14 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     assert "registered-object-secret" not in rendered
     assert "opaque-cookie-tail-secret" not in rendered
     assert "opaque-encoded-userinfo-secret" not in rendered
+    assert "opaque-double-encoded-secret" not in rendered
+    assert "indexed-format-secret" not in rendered
+    assert "dynamic-width-secret" not in rendered
+    assert "dynamic-precision-secret" not in rendered
+    assert "unsafe-scalar-secret" not in rendered
+    assert "equals-authorization-secret" not in rendered
+    assert "quoted-first-secret" not in rendered
+    assert "quoted-second-secret" not in rendered
     assert "exception-format-secret" not in rendered
     assert "[2001:db8::1]" in rendered
     assert "provider timeout" in rendered
@@ -226,6 +265,7 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     assert "retained-format-context" in rendered
     assert "retained-brace-context" in rendered
     assert "retained-exception-context" in rendered
+    assert "retained-indexed-context" in rendered
     assert REDACTED in rendered
     assert isinstance(redacted["error"], RedactedDiagnostic)  # type: ignore[index]
 
