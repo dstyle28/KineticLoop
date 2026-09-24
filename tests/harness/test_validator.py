@@ -449,13 +449,6 @@ class ValidatorTests(unittest.TestCase):
             if entry['path'] == 'docs/exec-plans/milestones/M1.json')
         manifest['files'].append(closure_entry)
         dump(manifest_path, manifest)
-        index_path = self.root / v.INDEX
-        index = json.loads(index_path.read_text())
-        manifest_index = next(
-            entry for entry in index['documents'] + index['machine_readable']
-            if entry['path'] == v.MANIFEST)
-        manifest_index['sha256'] = v.sha(manifest_path)
-        dump(index_path, index)
         self.check(1, 'manifest-missing:docs/exec-plans/milestones/M1.json')
 
     def test_malformed_m1_closure_discovery_rejected(self):
