@@ -1,7 +1,7 @@
 change_identity: harness-governance-v0.1/HG-011
 display_change_id: HG-011
 base_commit: a1e407d10bed1701efd0975b01c3054615503cb5
-tested_commit: 56ec95a5edcf7ec166d389766ca03dba7606d5c3
+tested_commit: 90605d4888fe9ed128eb5f2e34c11f11c2facdb3
 change_status: PASS
 summary: >-
   Close KL-002's durable post-merge review and integration state without changing
@@ -14,10 +14,12 @@ files_changed:
   - CURRENT_DOCUMENT_INDEX.json
   - HARNESS_DOCUMENT_MANIFEST.json
   - docs/exec-plans/evidence/HG-011/checks.log
+  - docs/exec-plans/evidence/HG-011/final-checks.log
   - docs/exec-plans/governance/HG-011.yaml
   - docs/exec-plans/integrations/KL-002.json
   - docs/exec-plans/reviews/KL-002/DB_CONCURRENCY.json
   - docs/exec-plans/reviews/KL-002/GENERAL.json
+  - docs/exec-plans/reviews/HG-011/GENERAL.json
   - docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
   - docs/harness/MERGE_GATE.md
   - tests/harness/test_validator.py
@@ -95,6 +97,10 @@ checks_run:
     command: git diff --check base_commit tested_commit
     result: PASS
     evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: final_revision_revalidation
+    command: Re-run harness, lint, typecheck, unit, DB, focused integration, live PostgreSQL, continuity, frozen-baseline, and diff checks at tested_commit.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/final-checks.log
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:

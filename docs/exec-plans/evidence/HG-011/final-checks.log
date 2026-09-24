@@ -1,0 +1,41 @@
+HG-011 final revision revalidation
+base_commit=a1e407d10bed1701efd0975b01c3054615503cb5
+tested_commit=90605d4888fe9ed128eb5f2e34c11f11c2facdb3
+
+The final tested revision adds only the initial HG-011 review record after the
+hardened implementation. All required checks were rerun at this exact revision.
+
+harness_structure_valid: PASS
+  HARNESS_CHECK_PASS tasks=68 active=66
+lint_passes: PASS
+  All checks passed!
+typecheck_passes: PASS
+  Success: no issues found in 44 source files
+unit_tests_pass: PASS
+  92 passed in 1.95s
+db_unit_tests_pass: PASS
+  10 passed in 0.06s
+harness_tests_pass: PASS
+  95 passed in 77.65s
+integration_binding_tests_pass: PASS
+  15 passed, 55 deselected in 9.38s
+compose_config_valid: PASS
+  project_name=kl_d1f3_c0283faae1a8 status=PASS
+postgres_ready: PASS
+  database_name=kl_d1f3_c0283faae1a8_test host=127.0.0.1 port=55005
+reset_idempotent: PASS
+  resets=3 sentinel_removed=true status=PASS
+worktree_db_isolated: PASS
+  peer_root=/private/tmp/hg011-kl002-peer.tsU5d3
+  primary_project=kl_d1f3_c0283faae1a8 peer_project=kl_tmp_51c72cc6ffd2
+  peer_cannot_see_primary_probe=true status=PASS
+result_continuity: PASS
+  KL-002_RESULT.yaml remains byte-identical to merge revision
+  e6f7a36485e4a9557297a9c282eb38c6ac37e72c with SHA-256
+  ba7098f56e6b4d2618d2ddb3fa14c3a2eb894ed716cca4552431a536d44570bb.
+frozen_baseline_unchanged: PASS
+  No diff from base through tested_commit in FROZEN_BASELINE.json,
+  04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md, or
+  05_KineticLoop_Protocol_v1.2_FROZEN.md.
+diff_clean: PASS
+  git diff --check base_commit tested_commit
