@@ -19,9 +19,27 @@ A task that **builds** a gate is not itself blocked by that gate. Gate consumers
 
 See `TASK_STATE_MODEL.md`. Task PASS, requirement PASS, review PASS, and Git merge are separate facts.
 
+## Milestone closure
+
+Milestone completion is a machine record, not a count of task result files. The M1
+record at `docs/exec-plans/milestones/M1.json` conforms to
+`MILESTONE_CLOSURE.schema.json` and closes only when the active M1 set is exactly
+KL-001 through KL-009 and every task has a valid, reachable `MERGED` integration
+record. Each exit check carries evidence path, evidence revision and SHA-256.
+
+M1 closure does not promote product requirements. Historical protocol-model results
+remain `UNVERIFIED_HISTORICAL_DECLARATION` and
+`independently_reproducible_protocol_model=false` until the missing source, fixtures,
+machine report and source-revision binding are supplied.
+
 ## Parallel writes
 
 Dispatch requires no conflicting `resource_keys` or concrete implementation write paths. Worktree database/Compose namespaces are isolated. Migration-chain tasks are serialized.
+
+M2 uses structured `check_contracts` and `evidence_paths` mirrored exactly by the
+backlog, traceability record and packet. A PASS result must use every declared check
+ID, execute its exact command, satisfy its explicit PASS oracle, and write evidence
+only below the task-owned evidence path.
 
 `write_paths` describes the task's implementation/configuration/test/document write scope. Two task-scoped bookkeeping paths are granted separately and do not need to be repeated in every task packet:
 

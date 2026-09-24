@@ -32,3 +32,6 @@ Each fixture records the expected validator exit code and diagnostic key. Positi
 25. an integration record must accept one valid YAML or JSON task result at `result_commit` and reject zero or both representations.
 26. an integration record must reject a result whose path/content changes before review, a non-PASS result, or a schema-valid result that fails semantic checks.
 27. a squash-merge integration record may replace only the review-record-to-merge ancestry edge with exact equality of the two complete Git tree object IDs; selected-path matches, unrelated content or mode differences, patch equivalence, and use of tree equality on any other edge must fail.
+28. M1 closure must reject a missing or extra active task, missing/mismatched/unmerged/unreachable integration, historical model-evidence overclaim, failed exit check, missing or hash-mismatched revision-bound evidence, and duplicate closure record.
+29. an M2 refinement must reject generic, duplicate or missing check contracts, packet/backlog/traceability drift, an escaping or wrong task evidence path, and unlocked concrete write-path overlap.
+30. an M2 task marked READY must reject a missing or invalid M1 PASS closure.

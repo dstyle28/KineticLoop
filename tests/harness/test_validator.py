@@ -51,6 +51,10 @@ class ValidatorTests(unittest.TestCase):
             + [entry['path'] for entry in index['documents'] + index['machine_readable']]
         )
         for name in dict.fromkeys(names):
+            if name == 'docs/exec-plans/milestones/M1.json':
+                # Generic fixtures deliberately have no closure; READY-specific
+                # tests exercise the fail-closed admission rule.
+                continue
             dst = self.root / name
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / name, dst)
@@ -317,6 +321,58 @@ class ValidatorTests(unittest.TestCase):
         dump(path, obj)
         refresh(self.root)
         self.check(1, 'ready-write-scope-unrefined:' + task['id'])
+
+    def test_ready_m2_task_without_closure_rejected(self):
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-010')
+        task['status'] = 'READY'
+        dump(backlog_path, backlog)
+        refresh(self.root)
+        self.check(1, 'ready-m1-closure-invalid:KL-010')
+
+    def test_duplicate_m1_closure_rejected(self):
+        fixture = {'display_milestone_id': 'M1'}
+        dump(self.root / 'docs/exec-plans/milestones/M1.json', fixture)
+        dump(self.root / 'docs/exec-plans/milestones/M1-copy.json', fixture)
+        self.check(1, 'milestone-closure-count:M1:2')
+
+    def test_m2_check_contract_missing_duplicate_and_generic_rejected(self):
+        backlog_path = self.root / v.BACKLOG
+        original = json.loads(backlog_path.read_text())
+        for variant, key in (
+                ('missing', 'check-contract-ids:KL-010'),
+                ('duplicate', 'check-contract-ids:KL-010'),
+                ('generic', 'check-contract-generic-or-invalid:KL-010')):
+            backlog = copy.deepcopy(original)
+            task = next(item for item in backlog['tasks'] if item['id'] == 'KL-010')
+            if variant == 'missing':
+                task['check_contracts'].pop()
+            elif variant == 'duplicate':
+                task['check_contracts'].append(copy.deepcopy(task['check_contracts'][0]))
+            else:
+                task['check_contracts'][0]['command'] = 'TODO placeholder'
+            dump(backlog_path, backlog)
+            self.check(1, key)
+        dump(backlog_path, original)
+
+    def test_m2_wrong_or_escaping_evidence_path_rejected(self):
+        backlog_path = self.root / v.BACKLOG
+        original = json.loads(backlog_path.read_text())
+        for evidence_path in ('docs/exec-plans/evidence/KL-011/**', '../escape/**'):
+            backlog = copy.deepcopy(original)
+            task = next(item for item in backlog['tasks'] if item['id'] == 'KL-010')
+            task['evidence_paths'] = [evidence_path]
+            dump(backlog_path, backlog)
+            self.check(1, 'evidence-path:KL-010')
+        dump(backlog_path, original)
+
+    def test_m2_packet_check_contract_drift_rejected(self):
+        packet = self.root / 'docs/exec-plans/active/KL-010.md'
+        packet.write_text(packet.read_text().replace(
+            'Command exits 0 and prints HARNESS_CHECK_PASS.',
+            'Command merely exits 0.', 1))
+        self.check(1, 'packet-check-contract:KL-010')
 
     def test_duplicate_result_formats_rejected(self):
         self.result('yaml')

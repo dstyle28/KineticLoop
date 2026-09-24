@@ -971,7 +971,7 @@
       ],
       "definition_of_done": "DDL ordering follows references, not logical table numbers",
       "entry_conditions": [
-        "M1 exit evidence complete"
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
@@ -979,8 +979,7 @@
       "thread_mode": "INDEPENDENT_WORKTREE",
       "context_files": [
         "05_KineticLoop_Protocol_v1.2_FROZEN.md",
-        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
-        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
       ],
       "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
       "merge_unit": "ONE_PR",
@@ -990,27 +989,61 @@
       "task_identity": "harness-backlog-v0.2/KL-010",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_pu_checks"
+        "all_logical_relations_mapped_once",
+        "fk_dependency_graph_is_acyclic",
+        "authority_roots_precede_dependents",
+        "schema_topology_unit_suite_passes",
+        "harness_validation_passes"
       ],
       "resource_keys": [
-        "migration_chain"
+        "schema_topology"
       ],
       "write_paths": [
-        "src/kineticloop/contracts/**",
-        "src/kineticloop/persistence/**",
-        "migrations/**",
-        "tests/contracts/**",
-        "tests/persistence/**"
+        "docs/contracts/physical_schema_topology.md",
+        "src/kineticloop/persistence/__init__.py",
+        "src/kineticloop/persistence/schema_topology.py",
+        "tests/unit/persistence/test_schema_topology.py"
       ],
       "review_requirements": [
-        "DB_CONCURRENCY",
         "GENERAL",
-        "PROTOCOL"
+        "PROTOCOL",
+        "DB_CONCURRENCY"
       ],
       "conditional_depends_on": [],
       "environment_requirements": [],
-      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
-      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+      "packet_refinement": "ENFORCEABLE",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "check_contracts": [
+        {
+          "check_id": "all_logical_relations_mapped_once",
+          "command": "uv run pytest -q tests/unit/persistence/test_schema_topology.py::test_all_logical_relations_mapped_once",
+          "pass_oracle": "The named test passes and every S01-S51 logical relation appears exactly once."
+        },
+        {
+          "check_id": "fk_dependency_graph_is_acyclic",
+          "command": "uv run pytest -q tests/unit/persistence/test_schema_topology.py::test_fk_dependency_graph_is_acyclic",
+          "pass_oracle": "The named test passes and topological sorting consumes the complete graph."
+        },
+        {
+          "check_id": "authority_roots_precede_dependents",
+          "command": "uv run pytest -q tests/unit/persistence/test_schema_topology.py::test_authority_roots_precede_dependents",
+          "pass_oracle": "The named test passes for all declared authority-root ordering constraints."
+        },
+        {
+          "check_id": "schema_topology_unit_suite_passes",
+          "command": "uv run pytest -q tests/unit/persistence/test_schema_topology.py",
+          "pass_oracle": "Command exits 0 with no failed, skipped, or deselected topology tests."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Command exits 0 and prints HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-010/**"
+      ],
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-011",
@@ -1043,7 +1076,7 @@
       ],
       "definition_of_done": "actual/unknown/zero semantics typed and provenance-preserving",
       "entry_conditions": [
-        "M1 exit evidence complete"
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
@@ -1051,8 +1084,7 @@
       "thread_mode": "INDEPENDENT_WORKTREE",
       "context_files": [
         "05_KineticLoop_Protocol_v1.2_FROZEN.md",
-        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
-        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
       ],
       "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
       "merge_unit": "ONE_PR",
@@ -1062,27 +1094,60 @@
       "task_identity": "harness-backlog-v0.2/KL-011",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_pu_checks"
+        "typed_fact_children_are_closed",
+        "actual_unknown_zero_are_distinct",
+        "fact_child_provenance_is_mandatory",
+        "schema_topology_regression_passes",
+        "harness_validation_passes"
       ],
       "resource_keys": [
-        "migration_chain"
+        "canonical_fact_schema"
       ],
       "write_paths": [
-        "src/kineticloop/contracts/**",
-        "src/kineticloop/persistence/**",
-        "migrations/**",
-        "tests/contracts/**",
-        "tests/persistence/**"
+        "docs/contracts/canonical_fact_children.md",
+        "src/kineticloop/persistence/fact_children.py",
+        "tests/unit/persistence/test_fact_children.py"
       ],
       "review_requirements": [
-        "DB_CONCURRENCY",
         "GENERAL",
-        "PROTOCOL"
+        "PROTOCOL",
+        "DB_CONCURRENCY"
       ],
       "conditional_depends_on": [],
       "environment_requirements": [],
-      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
-      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+      "packet_refinement": "ENFORCEABLE",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "check_contracts": [
+        {
+          "check_id": "typed_fact_children_are_closed",
+          "command": "uv run pytest -q tests/unit/persistence/test_fact_children.py::test_typed_fact_children_are_closed",
+          "pass_oracle": "The named test passes and rejects undeclared fact child variants."
+        },
+        {
+          "check_id": "actual_unknown_zero_are_distinct",
+          "command": "uv run pytest -q tests/unit/persistence/test_fact_children.py::test_actual_unknown_zero_are_distinct",
+          "pass_oracle": "The named test passes for actual, unknown, and numeric zero as distinct states."
+        },
+        {
+          "check_id": "fact_child_provenance_is_mandatory",
+          "command": "uv run pytest -q tests/unit/persistence/test_fact_children.py::test_fact_child_provenance_is_mandatory",
+          "pass_oracle": "The named test passes and missing provenance is rejected."
+        },
+        {
+          "check_id": "schema_topology_regression_passes",
+          "command": "uv run pytest -q tests/unit/persistence/test_schema_topology.py tests/unit/persistence/test_fact_children.py",
+          "pass_oracle": "Command exits 0 with both topology and fact-child suites passing."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Command exits 0 and prints HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-011/**"
+      ],
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-012",
@@ -1090,8 +1155,8 @@
       "title": "Immutable history + write-permission protections",
       "owner_role": "persistence",
       "depends_on": [
-        "KL-010",
-        "KL-007"
+        "KL-007",
+        "KL-010"
       ],
       "commands": [],
       "transaction_boundaries": [
@@ -1113,7 +1178,7 @@
       ],
       "definition_of_done": "permission/immutability contract is executable against a minimal fixture schema; full baseline-schema enforcement is verified by KL-013",
       "entry_conditions": [
-        "M1 exit evidence complete"
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
@@ -1121,8 +1186,7 @@
       "thread_mode": "INDEPENDENT_WORKTREE",
       "context_files": [
         "05_KineticLoop_Protocol_v1.2_FROZEN.md",
-        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
-        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
       ],
       "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
       "merge_unit": "ONE_PR",
@@ -1132,28 +1196,70 @@
       "task_identity": "harness-backlog-v0.2/KL-012",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "immutable_protection_design_complete",
-        "permission_matrix_contract_test"
+        "permission_matrix_enforced",
+        "update_delete_rejected",
+        "owned_transition_only",
+        "direct_sql_bypass_rejected",
+        "immutable_history_db_regressions_pass",
+        "harness_validation_passes"
       ],
       "resource_keys": [
-        "migration_chain"
+        "persistence_permissions"
       ],
       "write_paths": [
-        "src/kineticloop/contracts/**",
-        "src/kineticloop/persistence/**",
-        "migrations/**",
-        "tests/contracts/**",
-        "tests/persistence/**"
+        "docs/contracts/immutable_history_permissions.md",
+        "src/kineticloop/persistence/immutability.py",
+        "tests/unit/persistence/test_immutability.py",
+        "tests/db/test_immutability.py",
+        "tests/fixtures/db/immutable_history/**"
       ],
       "review_requirements": [
-        "DB_CONCURRENCY",
         "GENERAL",
-        "PROTOCOL"
+        "PROTOCOL",
+        "DB_CONCURRENCY"
       ],
       "conditional_depends_on": [],
-      "environment_requirements": [],
-      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
-      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "check_contracts": [
+        {
+          "check_id": "permission_matrix_enforced",
+          "command": "uv run pytest -q tests/unit/persistence/test_immutability.py::test_permission_matrix_enforced",
+          "pass_oracle": "The named test passes for every declared role/table permission cell."
+        },
+        {
+          "check_id": "update_delete_rejected",
+          "command": "uv run pytest -q tests/db/test_immutability.py::test_update_delete_rejected",
+          "pass_oracle": "The named PostgreSQL test passes and immutable rows reject UPDATE and DELETE."
+        },
+        {
+          "check_id": "owned_transition_only",
+          "command": "uv run pytest -q tests/db/test_immutability.py::test_owned_transition_only",
+          "pass_oracle": "The named PostgreSQL test passes and only the command owner can perform allowed state transitions."
+        },
+        {
+          "check_id": "direct_sql_bypass_rejected",
+          "command": "uv run pytest -q tests/db/test_immutability.py::test_direct_sql_bypass_rejected",
+          "pass_oracle": "The named PostgreSQL test passes and the application role cannot bypass guards with direct SQL."
+        },
+        {
+          "check_id": "immutable_history_db_regressions_pass",
+          "command": "uv run pytest -q tests/db/test_immutability.py tests/db/test_lifecycle.py",
+          "pass_oracle": "Command exits 0 against the isolated PostgreSQL namespace."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Command exits 0 and prints HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-012/**"
+      ],
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-013",
@@ -1163,7 +1269,8 @@
       "depends_on": [
         "KL-010",
         "KL-011",
-        "KL-012"
+        "KL-012",
+        "KL-016"
       ],
       "commands": [],
       "transaction_boundaries": [],
@@ -1199,7 +1306,7 @@
       ],
       "definition_of_done": "empty DB rebuilds deterministically and ordinary app role cannot rewrite immutable semantic history on migrated schema",
       "entry_conditions": [
-        "M1 exit evidence complete"
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
@@ -1207,40 +1314,96 @@
       "thread_mode": "INDEPENDENT_WORKTREE",
       "context_files": [
         "05_KineticLoop_Protocol_v1.2_FROZEN.md",
-        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
-        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
       ],
       "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
       "merge_unit": "ONE_PR",
       "handoff_artifact": "docs/exec-plans/completed/KL-013_RESULT.yaml",
       "shared_hotspot": false,
-      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "task_identity": "harness-backlog-v0.2/KL-013",
       "requirements_covered": [],
       "checks_required_for_this_task": [
+        "single_migration_head",
         "empty_db_upgrade_head",
-        "downgrade_or_rebuild_policy_check",
-        "single_migration_head"
+        "logical_inventory_complete",
+        "fk_order_matches_topology",
+        "immutable_history_materialized",
+        "database_rebuild_is_deterministic",
+        "migration_db_regressions_pass",
+        "harness_validation_passes"
       ],
       "resource_keys": [
-        "migration_chain"
+        "migration_chain",
+        "persistence_schema",
+        "python_dependency_lock"
       ],
       "write_paths": [
-        "src/kineticloop/contracts/**",
-        "src/kineticloop/persistence/**",
+        "pyproject.toml",
+        "uv.lock",
+        "alembic.ini",
         "migrations/**",
-        "tests/contracts/**",
-        "tests/persistence/**"
+        "src/kineticloop/persistence/metadata.py",
+        "tests/db/test_migrations.py",
+        "tests/fixtures/db/migrations/**"
       ],
       "review_requirements": [
-        "DB_CONCURRENCY",
         "GENERAL",
-        "PROTOCOL"
+        "PROTOCOL",
+        "DB_CONCURRENCY"
       ],
       "conditional_depends_on": [],
-      "environment_requirements": [],
-      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
-      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "check_contracts": [
+        {
+          "check_id": "single_migration_head",
+          "command": "uv run alembic heads",
+          "pass_oracle": "Command exits 0 and prints exactly one head revision."
+        },
+        {
+          "check_id": "empty_db_upgrade_head",
+          "command": "uv run pytest -q tests/db/test_migrations.py::test_empty_db_upgrade_head",
+          "pass_oracle": "The named isolated-PostgreSQL test upgrades an empty database to head."
+        },
+        {
+          "check_id": "logical_inventory_complete",
+          "command": "uv run pytest -q tests/db/test_migrations.py::test_logical_inventory_complete",
+          "pass_oracle": "The named test passes and maps the complete frozen logical inventory."
+        },
+        {
+          "check_id": "fk_order_matches_topology",
+          "command": "uv run pytest -q tests/db/test_migrations.py::test_fk_order_matches_topology",
+          "pass_oracle": "The named test passes against the KL-010 dependency topology."
+        },
+        {
+          "check_id": "immutable_history_materialized",
+          "command": "uv run pytest -q tests/db/test_migrations.py::test_immutable_history_materialized",
+          "pass_oracle": "The named test proves KL-012 protections on the migrated schema."
+        },
+        {
+          "check_id": "database_rebuild_is_deterministic",
+          "command": "uv run pytest -q tests/db/test_migrations.py::test_database_rebuild_is_deterministic",
+          "pass_oracle": "The named test passes for two isolated empty-database rebuilds."
+        },
+        {
+          "check_id": "migration_db_regressions_pass",
+          "command": "uv run pytest -q tests/db/test_migrations.py tests/db/test_immutability.py tests/db/test_lifecycle.py",
+          "pass_oracle": "Command exits 0 against the isolated PostgreSQL namespace."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Command exits 0 and prints HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-013/**"
+      ],
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-014",
@@ -1286,7 +1449,7 @@
       ],
       "definition_of_done": "all commands bind subject/actor/idempotency/basis fields",
       "entry_conditions": [
-        "G-SHADOW closed"
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
@@ -1294,8 +1457,7 @@
       "thread_mode": "INDEPENDENT_WORKTREE",
       "context_files": [
         "05_KineticLoop_Protocol_v1.2_FROZEN.md",
-        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
-        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
       ],
       "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
       "merge_unit": "ONE_PR",
@@ -1305,17 +1467,26 @@
       "task_identity": "harness-backlog-v0.2/KL-014",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_pu_checks"
+        "strict_t1_t8_contract_matrix",
+        "identity_idempotency_and_basis_fields",
+        "shadow_and_test_scope_fail_closed",
+        "command_result_roundtrip",
+        "error_registry_regression_passes",
+        "command_contract_unit_suite_passes",
+        "harness_validation_passes"
       ],
       "resource_keys": [
-        "command_contracts"
+        "command_contracts",
+        "python_dependency_lock"
       ],
       "write_paths": [
-        "src/kineticloop/contracts/**",
-        "src/kineticloop/persistence/**",
-        "migrations/**",
-        "tests/contracts/**",
-        "tests/persistence/**"
+        "docs/contracts/transaction_commands.md",
+        "pyproject.toml",
+        "uv.lock",
+        "src/kineticloop/contracts/commands.py",
+        "src/kineticloop/contracts/results.py",
+        "tests/unit/contracts/test_commands.py",
+        "tests/unit/contracts/test_results.py"
       ],
       "review_requirements": [
         "GENERAL",
@@ -1323,8 +1494,49 @@
       ],
       "conditional_depends_on": [],
       "environment_requirements": [],
-      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
-      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+      "packet_refinement": "ENFORCEABLE",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "check_contracts": [
+        {
+          "check_id": "strict_t1_t8_contract_matrix",
+          "command": "uv run pytest -q tests/unit/contracts/test_commands.py::test_strict_t1_t8_contract_matrix",
+          "pass_oracle": "The named test passes for every T1-T8 command/result shape with extra fields forbidden."
+        },
+        {
+          "check_id": "identity_idempotency_and_basis_fields",
+          "command": "uv run pytest -q tests/unit/contracts/test_commands.py::test_identity_idempotency_and_basis_fields",
+          "pass_oracle": "The named matrix test passes for the protocol-required identity, idempotency, and basis fields; T2-GLOBAL is not assigned a fake subject_id."
+        },
+        {
+          "check_id": "shadow_and_test_scope_fail_closed",
+          "command": "uv run pytest -q tests/unit/contracts/test_commands.py::test_shadow_and_test_scope_fail_closed",
+          "pass_oracle": "The named test passes and invalid shadow/test scope is rejected."
+        },
+        {
+          "check_id": "command_result_roundtrip",
+          "command": "uv run pytest -q tests/unit/contracts/test_results.py::test_command_result_roundtrip",
+          "pass_oracle": "The named canonical serialization round-trip test passes."
+        },
+        {
+          "check_id": "error_registry_regression_passes",
+          "command": "uv run pytest -q tests/unit/contracts/test_errors.py tests/unit/contracts/test_commands.py tests/unit/contracts/test_results.py",
+          "pass_oracle": "Command exits 0 and preserves the existing error registry."
+        },
+        {
+          "check_id": "command_contract_unit_suite_passes",
+          "command": "uv run pytest -q tests/unit/contracts",
+          "pass_oracle": "Command exits 0 with no contract-test failures."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Command exits 0 and prints HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-014/**"
+      ],
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-015",
@@ -1334,7 +1546,9 @@
       "depends_on": [
         "KL-013",
         "KL-014",
-        "KL-016"
+        "KL-016",
+        "KL-017",
+        "KL-018"
       ],
       "commands": [
         "command owners"
@@ -1366,7 +1580,7 @@
       ],
       "definition_of_done": "no interface allows T3/T6/T7 to bypass registry shared gate",
       "entry_conditions": [
-        "G-REGISTRY closed"
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
@@ -1374,8 +1588,7 @@
       "thread_mode": "INDEPENDENT_WORKTREE",
       "context_files": [
         "05_KineticLoop_Protocol_v1.2_FROZEN.md",
-        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
-        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
       ],
       "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
       "merge_unit": "ONE_PR",
@@ -1385,26 +1598,77 @@
       "task_identity": "harness-backlog-v0.2/KL-015",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_pu_checks",
-        "task_scope_dc_checks"
+        "transaction_owner_matrix_complete",
+        "registry_lease_required_for_t3_t6_t7",
+        "subject_guard_required",
+        "artifact_identity_required",
+        "direct_write_bypass_rejected",
+        "transaction_db_conformance_passes",
+        "harness_validation_passes"
       ],
-      "resource_keys": [],
+      "resource_keys": [
+        "transaction_interfaces",
+        "user_coordination",
+        "registry_coordination"
+      ],
       "write_paths": [
-        "src/kineticloop/contracts/**",
-        "src/kineticloop/persistence/**",
-        "migrations/**",
-        "tests/contracts/**",
-        "tests/persistence/**"
+        "docs/contracts/repository_transactions.md",
+        "src/kineticloop/persistence/transactions.py",
+        "tests/unit/persistence/test_transactions.py",
+        "tests/db/test_transaction_interfaces.py"
       ],
       "review_requirements": [
-        "DB_CONCURRENCY",
         "GENERAL",
-        "PROTOCOL"
+        "PROTOCOL",
+        "DB_CONCURRENCY"
       ],
       "conditional_depends_on": [],
-      "environment_requirements": [],
-      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
-      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "check_contracts": [
+        {
+          "check_id": "transaction_owner_matrix_complete",
+          "command": "uv run pytest -q tests/unit/persistence/test_transactions.py::test_transaction_owner_matrix_complete",
+          "pass_oracle": "The named test maps exactly one repository owner for each T1-T8 mutation surface."
+        },
+        {
+          "check_id": "registry_lease_required_for_t3_t6_t7",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_registry_lease_required_for_t3_t6_t7",
+          "pass_oracle": "The named test denies T3, T6, and T7 without a valid shared registry lease."
+        },
+        {
+          "check_id": "subject_guard_required",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_subject_guard_required",
+          "pass_oracle": "The named test rejects subject-scoped writes without the S01 guard."
+        },
+        {
+          "check_id": "artifact_identity_required",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_artifact_identity_required",
+          "pass_oracle": "The named test rejects artifact-consuming transactions without exact registered identity."
+        },
+        {
+          "check_id": "direct_write_bypass_rejected",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_direct_write_bypass_rejected",
+          "pass_oracle": "The named test proves the application role cannot bypass transaction owners."
+        },
+        {
+          "check_id": "transaction_db_conformance_passes",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py",
+          "pass_oracle": "Command exits 0 against the isolated PostgreSQL namespace."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Command exits 0 and prints HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-015/**"
+      ],
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-016",
@@ -1446,9 +1710,9 @@
       "deliverables": [
         "lock/gate API"
       ],
-      "definition_of_done": "shared→S01 ordering and exclusive global revoke encoded/testable",
+      "definition_of_done": "shared\u2192S01 ordering and exclusive global revoke encoded/testable",
       "entry_conditions": [
-        "M1 exit evidence complete"
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
@@ -1456,8 +1720,7 @@
       "thread_mode": "INDEPENDENT_WORKTREE",
       "context_files": [
         "05_KineticLoop_Protocol_v1.2_FROZEN.md",
-        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
-        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
       ],
       "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
       "merge_unit": "ONE_PR",
@@ -1467,29 +1730,85 @@
       "task_identity": "harness-backlog-v0.2/KL-016",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_pu_checks",
-        "task_scope_dc_checks"
+        "shared_gate_precedes_s01",
+        "exclusive_global_gate_serializes",
+        "committed_revoke_visibility",
+        "registry_unavailable_or_timeout_denies",
+        "global_revoke_never_locks_s01",
+        "stop_has_no_registry_dependency",
+        "safety_registry_db_regressions_pass",
+        "harness_validation_passes"
       ],
       "resource_keys": [
-        "command_contracts",
-        "registry_coordination"
+        "registry_coordination",
+        "python_dependency_lock"
       ],
       "write_paths": [
-        "src/kineticloop/contracts/**",
-        "src/kineticloop/persistence/**",
-        "migrations/**",
-        "tests/contracts/**",
-        "tests/persistence/**"
+        "docs/contracts/safety_registry.md",
+        "pyproject.toml",
+        "uv.lock",
+        "src/kineticloop/contracts/safety_registry.py",
+        "src/kineticloop/persistence/safety_registry.py",
+        "tests/unit/contracts/test_safety_registry.py",
+        "tests/db/test_safety_registry.py"
       ],
       "review_requirements": [
-        "DB_CONCURRENCY",
         "GENERAL",
-        "PROTOCOL"
+        "PROTOCOL",
+        "DB_CONCURRENCY"
       ],
       "conditional_depends_on": [],
-      "environment_requirements": [],
-      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
-      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "check_contracts": [
+        {
+          "check_id": "shared_gate_precedes_s01",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_shared_gate_precedes_s01",
+          "pass_oracle": "The named interleaving test proves shared registry gate acquisition precedes S01."
+        },
+        {
+          "check_id": "exclusive_global_gate_serializes",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_exclusive_global_gate_serializes",
+          "pass_oracle": "The named test proves global revocation holds the exclusive registry gate."
+        },
+        {
+          "check_id": "committed_revoke_visibility",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_committed_revoke_visibility",
+          "pass_oracle": "The named test proves later shared holders observe a committed revoke."
+        },
+        {
+          "check_id": "registry_unavailable_or_timeout_denies",
+          "command": "uv run pytest -q tests/unit/contracts/test_safety_registry.py::test_registry_unavailable_or_timeout_denies",
+          "pass_oracle": "The named test passes and both unavailable and timeout paths deny."
+        },
+        {
+          "check_id": "global_revoke_never_locks_s01",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_global_revoke_never_locks_s01",
+          "pass_oracle": "The named lock-observation test passes with no S01 lock by global revoke."
+        },
+        {
+          "check_id": "stop_has_no_registry_dependency",
+          "command": "uv run pytest -q tests/unit/contracts/test_safety_registry.py::test_stop_has_no_registry_dependency",
+          "pass_oracle": "The named test proves STOP remains independent of registry availability."
+        },
+        {
+          "check_id": "safety_registry_db_regressions_pass",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py tests/db/test_lifecycle.py",
+          "pass_oracle": "Command exits 0 against the isolated PostgreSQL namespace."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Command exits 0 and prints HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-016/**"
+      ],
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-017",
@@ -1498,6 +1817,7 @@
       "owner_role": "security",
       "depends_on": [
         "KL-007",
+        "KL-008",
         "KL-013"
       ],
       "commands": [],
@@ -1525,7 +1845,7 @@
       ],
       "definition_of_done": "test/eval authorization cannot cross into production subject namespace",
       "entry_conditions": [
-        "M1 exit evidence complete"
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
@@ -1533,8 +1853,7 @@
       "thread_mode": "INDEPENDENT_WORKTREE",
       "context_files": [
         "05_KineticLoop_Protocol_v1.2_FROZEN.md",
-        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
-        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
       ],
       "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
       "merge_unit": "ONE_PR",
@@ -1544,28 +1863,88 @@
       "task_identity": "harness-backlog-v0.2/KL-017",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_dc_checks",
-        "task_scope_e2e_checks"
+        "subject_namespace_isolation",
+        "test_authorization_is_isolated",
+        "evaluation_storage_is_isolated",
+        "application_role_scope_enforced",
+        "subject_isolation_e2e_passes",
+        "subject_scope_db_regressions_pass",
+        "single_migration_head",
+        "harness_validation_passes"
       ],
       "resource_keys": [
-        "migration_chain"
+        "migration_chain",
+        "authorization_core",
+        "user_coordination",
+        "persistence_permissions",
+        "security_data_boundary"
       ],
       "write_paths": [
-        "src/kineticloop/contracts/**",
-        "src/kineticloop/persistence/**",
-        "migrations/**",
-        "tests/contracts/**",
-        "tests/persistence/**"
+        "docs/contracts/subject_scope.md",
+        "migrations/versions/*_subject_scope.py",
+        "src/kineticloop/persistence/subject_scope.py",
+        "tests/db/test_subject_scope.py",
+        "tests/e2e/test_subject_isolation.py",
+        "tests/fixtures/db/subject_scope/**"
       ],
       "review_requirements": [
-        "DB_CONCURRENCY",
         "GENERAL",
-        "PROTOCOL"
+        "PROTOCOL",
+        "DB_CONCURRENCY",
+        "SECURITY_DATA_BOUNDARY"
       ],
       "conditional_depends_on": [],
-      "environment_requirements": [],
-      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
-      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "check_contracts": [
+        {
+          "check_id": "subject_namespace_isolation",
+          "command": "uv run pytest -q tests/db/test_subject_scope.py::test_subject_namespace_isolation",
+          "pass_oracle": "The named PostgreSQL test proves test/evaluation scopes cannot address production subjects."
+        },
+        {
+          "check_id": "test_authorization_is_isolated",
+          "command": "uv run pytest -q tests/db/test_subject_scope.py::test_test_authorization_is_isolated",
+          "pass_oracle": "The named test proves test authorization is limited to isolated test policy and subject rows."
+        },
+        {
+          "check_id": "evaluation_storage_is_isolated",
+          "command": "uv run pytest -q tests/db/test_subject_scope.py::test_evaluation_storage_is_isolated",
+          "pass_oracle": "The named test proves evaluation artifacts cannot bind production execution state."
+        },
+        {
+          "check_id": "application_role_scope_enforced",
+          "command": "uv run pytest -q tests/db/test_subject_scope.py::test_application_role_scope_enforced",
+          "pass_oracle": "The named test proves database and application-role scope checks agree."
+        },
+        {
+          "check_id": "subject_isolation_e2e_passes",
+          "command": "uv run pytest -q tests/e2e/test_subject_isolation.py",
+          "pass_oracle": "Command exits 0 with every subject-isolation end-to-end case passing."
+        },
+        {
+          "check_id": "subject_scope_db_regressions_pass",
+          "command": "uv run pytest -q tests/db/test_subject_scope.py tests/db/test_migrations.py",
+          "pass_oracle": "Command exits 0 against the isolated PostgreSQL namespace."
+        },
+        {
+          "check_id": "single_migration_head",
+          "command": "uv run alembic heads",
+          "pass_oracle": "Command exits 0 and prints exactly one head revision."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Command exits 0 and prints HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-017/**"
+      ],
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-018",
@@ -1603,7 +1982,7 @@
       ],
       "definition_of_done": "model/prompt/tool/runtime/policy artifacts have exact immutable identities before use",
       "entry_conditions": [
-        "M1 exit evidence complete"
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
@@ -1611,8 +1990,7 @@
       "thread_mode": "INDEPENDENT_WORKTREE",
       "context_files": [
         "05_KineticLoop_Protocol_v1.2_FROZEN.md",
-        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
-        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
       ],
       "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
       "merge_unit": "ONE_PR",
@@ -1622,30 +2000,77 @@
       "task_identity": "harness-backlog-v0.2/KL-018",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_pu_checks",
-        "task_scope_dc_checks"
+        "artifact_identity_is_immutable",
+        "artifact_dependency_closure_required",
+        "unregistered_or_revoked_artifact_denied",
+        "t3_t6_t7_require_artifact_refs",
+        "artifact_registry_db_constraints_pass",
+        "artifact_contract_unit_suite_passes",
+        "harness_validation_passes"
       ],
       "resource_keys": [
-        "planning_ledger",
         "registry_coordination",
         "release_evidence"
       ],
       "write_paths": [
-        "src/kineticloop/contracts/**",
-        "src/kineticloop/persistence/**",
-        "migrations/**",
-        "tests/contracts/**",
-        "tests/persistence/**"
+        "docs/contracts/artifact_registry.md",
+        "src/kineticloop/contracts/artifacts.py",
+        "src/kineticloop/persistence/artifact_registry.py",
+        "tests/unit/contracts/test_artifact_registry.py",
+        "tests/db/test_artifact_registry.py"
       ],
       "review_requirements": [
-        "DB_CONCURRENCY",
         "GENERAL",
-        "PROTOCOL"
+        "PROTOCOL",
+        "DB_CONCURRENCY"
       ],
       "conditional_depends_on": [],
-      "environment_requirements": [],
-      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
-      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "check_contracts": [
+        {
+          "check_id": "artifact_identity_is_immutable",
+          "command": "uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_identity_is_immutable",
+          "pass_oracle": "The named PostgreSQL test rejects mutation of registered artifact identity."
+        },
+        {
+          "check_id": "artifact_dependency_closure_required",
+          "command": "uv run pytest -q tests/unit/contracts/test_artifact_registry.py::test_artifact_dependency_closure_required",
+          "pass_oracle": "The named test rejects incomplete artifact dependency closures."
+        },
+        {
+          "check_id": "unregistered_or_revoked_artifact_denied",
+          "command": "uv run pytest -q tests/db/test_artifact_registry.py::test_unregistered_or_revoked_artifact_denied",
+          "pass_oracle": "The named test denies absent and revoked artifact identities."
+        },
+        {
+          "check_id": "t3_t6_t7_require_artifact_refs",
+          "command": "uv run pytest -q tests/unit/contracts/test_artifact_registry.py::test_t3_t6_t7_require_artifact_refs",
+          "pass_oracle": "The named test proves T3, T6, and T7 contracts require exact artifact references."
+        },
+        {
+          "check_id": "artifact_registry_db_constraints_pass",
+          "command": "uv run pytest -q tests/db/test_artifact_registry.py",
+          "pass_oracle": "Command exits 0 with every artifact-registry constraint test passing."
+        },
+        {
+          "check_id": "artifact_contract_unit_suite_passes",
+          "command": "uv run pytest -q tests/unit/contracts/test_artifact_registry.py",
+          "pass_oracle": "Command exits 0 with every artifact contract test passing."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Command exits 0 and prints HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-018/**"
+      ],
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-055",
@@ -1654,7 +2079,9 @@
       "owner_role": "integration",
       "depends_on": [
         "KL-003",
-        "KL-014"
+        "KL-009",
+        "KL-014",
+        "KL-018"
       ],
       "commands": [
         "ReceiveEvidence"
@@ -1681,7 +2108,7 @@
       ],
       "definition_of_done": "provider transport can only emit evidence envelopes; cannot write canonical facts or commands",
       "entry_conditions": [
-        "DOC-INTEGRATION-V0.1 available"
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
@@ -1690,28 +2117,39 @@
       "context_files": [
         "05_KineticLoop_Protocol_v1.2_FROZEN.md",
         "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
-        "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md"
+        "12_KineticLoop_Integration_Spec_v0.1.md"
       ],
       "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
       "merge_unit": "ONE_PR",
       "handoff_artifact": "docs/exec-plans/completed/KL-055_RESULT.yaml",
       "shared_hotspot": false,
-      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "task_identity": "harness-backlog-v0.2/KL-055",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_pu_checks"
+        "provider_and_stream_ids_are_canonical",
+        "evidence_provenance_and_times_required",
+        "server_assigns_known_at",
+        "provider_has_no_fact_or_command_authority",
+        "transport_health_differs_from_coverage",
+        "synthetic_provider_fixtures_pass",
+        "provider_security_regressions_pass",
+        "harness_validation_passes"
       ],
       "resource_keys": [
         "provider_contracts",
-        "release_evidence"
+        "release_evidence",
+        "security_data_boundary",
+        "python_dependency_lock"
       ],
       "write_paths": [
-        "src/kineticloop/contracts/**",
-        "src/kineticloop/persistence/**",
-        "migrations/**",
-        "tests/contracts/**",
-        "tests/persistence/**"
+        "docs/contracts/provider_evidence.md",
+        "pyproject.toml",
+        "uv.lock",
+        "src/kineticloop/integrations/__init__.py",
+        "src/kineticloop/integrations/provider.py",
+        "tests/unit/integrations/test_provider.py",
+        "tests/fixtures/synthetic/providers/**"
       ],
       "review_requirements": [
         "GENERAL",
@@ -1719,9 +2157,58 @@
         "SECURITY_DATA_BOUNDARY"
       ],
       "conditional_depends_on": [],
-      "environment_requirements": [],
-      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
-      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+      "environment_requirements": [
+        "NO_AMBIENT_CREDENTIALS",
+        "NO_NETWORK_ACCESS"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "check_contracts": [
+        {
+          "check_id": "provider_and_stream_ids_are_canonical",
+          "command": "uv run pytest -q tests/unit/integrations/test_provider.py::test_provider_and_stream_ids_are_canonical",
+          "pass_oracle": "The named test passes canonical ProviderId and StreamId validation."
+        },
+        {
+          "check_id": "evidence_provenance_and_times_required",
+          "command": "uv run pytest -q tests/unit/integrations/test_provider.py::test_evidence_provenance_and_times_required",
+          "pass_oracle": "The named test rejects missing provenance, observed_at, effective_at, or known_at fields."
+        },
+        {
+          "check_id": "server_assigns_known_at",
+          "command": "uv run pytest -q tests/unit/integrations/test_provider.py::test_server_assigns_known_at",
+          "pass_oracle": "The named test proves provider payloads cannot choose server known_at."
+        },
+        {
+          "check_id": "provider_has_no_fact_or_command_authority",
+          "command": "uv run pytest -q tests/unit/integrations/test_provider.py::test_provider_has_no_fact_or_command_authority",
+          "pass_oracle": "The named test proves adapters can emit only EvidenceEnvelope values."
+        },
+        {
+          "check_id": "transport_health_differs_from_coverage",
+          "command": "uv run pytest -q tests/unit/integrations/test_provider.py::test_transport_health_differs_from_coverage",
+          "pass_oracle": "The named test preserves distinct transport-health and evidence-coverage states."
+        },
+        {
+          "check_id": "synthetic_provider_fixtures_pass",
+          "command": "uv run pytest -q tests/unit/integrations/test_provider.py::test_synthetic_provider_fixtures_pass",
+          "pass_oracle": "The named test validates only committed synthetic fixtures."
+        },
+        {
+          "check_id": "provider_security_regressions_pass",
+          "command": "uv run pytest -q tests/unit/integrations tests/unit/security tests/unit/config",
+          "pass_oracle": "Command exits 0 without ambient credentials or network access."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Command exits 0 and prints HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-055/**"
+      ],
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-019",
@@ -2430,7 +2917,7 @@
       "deliverables": [
         "fixture F/D/N + test A"
       ],
-      "definition_of_done": "valid→START→revoke/expire→deny trajectory with audit evidence",
+      "definition_of_done": "valid\u2192START\u2192revoke/expire\u2192deny trajectory with audit evidence",
       "entry_conditions": [
         "M2 migration/contracts merged",
         "G-SHADOW closed",

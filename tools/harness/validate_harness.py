@@ -20,6 +20,8 @@ TRACEABILITY_TASK_FIELDS = (
     'conditional_depends_on',
     'requirements_covered',
     'checks_required_for_this_task',
+    'check_contracts',
+    'evidence_paths',
     'resource_keys',
     'write_paths',
     'write_paths_status',
@@ -31,6 +33,12 @@ INDEX = 'CURRENT_DOCUMENT_INDEX.json'
 MANIFEST = 'HARNESS_DOCUMENT_MANIFEST.json'
 GOVERNANCE_SCHEMA = 'HARNESS_CHANGE.schema.json'
 INTEGRATION_SCHEMA = 'INTEGRATION_RECORD.schema.json'
+MILESTONE_CLOSURE_SCHEMA = 'MILESTONE_CLOSURE.schema.json'
+M1_TASK_IDS = {f'KL-{number:03d}' for number in range(1, 10)}
+M2_REFINED_TASK_IDS = {
+    'KL-010', 'KL-011', 'KL-012', 'KL-013', 'KL-014',
+    'KL-015', 'KL-016', 'KL-017', 'KL-018', 'KL-055',
+}
 
 
 def sha(path):
@@ -147,6 +155,26 @@ def packet_errors(task, text):
     checks = section(text, 'Checks required for this task PR')
     if checks is None or sorted(bullets(checks)) != sorted(task['checks_required_for_this_task']):
         errors.append('packet-checks:' + name)
+    if name in M2_REFINED_TASK_IDS:
+        entry = section(text, 'Entry conditions') or ''
+        if bullets(entry) != ['M1 closure PASS: `docs/exec-plans/milestones/M1.json`']:
+            errors.append('packet-entry-condition:' + name)
+        contract_section = section(text, 'Machine-readable check contract') or ''
+        contract_match = re.search(r'```json\s*(\{.*?\})\s*```', contract_section, re.S)
+        if not contract_match:
+            errors.append('packet-check-contract:' + name)
+        else:
+            try:
+                packet_contract = json.loads(
+                    contract_match.group(1), object_pairs_hook=unique_mapping)
+                expected_contract = {
+                    'check_contracts': task.get('check_contracts'),
+                    'evidence_paths': task.get('evidence_paths'),
+                }
+                if packet_contract != expected_contract:
+                    errors.append('packet-check-contract:' + name)
+            except (ValueError, TypeError):
+                errors.append('packet-check-contract:' + name)
     if task.get('write_paths_status') == 'ENFORCEABLE':
         scope = section(text, 'Resource / write isolation') or ''
         resource_block = re.search(r'^Resource keys:\s*\n((?:- [^\n]+\n?)+)', scope, re.M)
@@ -222,10 +250,12 @@ def governance_allowed_patterns(change_id):
         MANIFEST,
         GOVERNANCE_SCHEMA,
         INTEGRATION_SCHEMA,
+        MILESTONE_CLOSURE_SCHEMA,
         '.github/workflows/**',
         'docs/exec-plans/active/**',
         f'docs/exec-plans/evidence/{change_id}/**',
         'docs/exec-plans/integrations/**',
+        'docs/exec-plans/milestones/**',
         'docs/exec-plans/reviews/KL-*/**',
         f'docs/exec-plans/reviews/{change_id}/**',
         f'docs/exec-plans/governance/{change_id}.yaml',
@@ -586,7 +616,7 @@ def task_index_authority_errors(root, base_revision, task, changed, protected_pa
 
 
 def governance_manifest_errors(root, base_revision, changed, target_revision=None):
-    """The delivery manifest may refresh existing changed entries, never change its inventory."""
+    """Refresh existing entries and append changed, hashed governance artifacts."""
     old = json.loads(git(root, 'show', base_revision + ':' + MANIFEST))
     new = (load_artifact_at_revision(root, MANIFEST, target_revision)
            if target_revision else load_artifact(root / MANIFEST))
@@ -594,7 +624,10 @@ def governance_manifest_errors(root, base_revision, changed, target_revision=Non
     if {k: v for k, v in old.items() if k != 'files'} != {k: v for k, v in new.items() if k != 'files'}:
         errors.append('governance-manifest-metadata')
     before, after = old.get('files', []), new.get('files', [])
-    if [entry['path'] for entry in before] != [entry['path'] for entry in after]:
+    before_paths = [entry['path'] for entry in before]
+    after_paths = [entry['path'] for entry in after]
+    if (after_paths[:len(before_paths)] != before_paths
+            or len(after_paths) != len(set(after_paths))):
         errors.append('governance-manifest-paths')
         return errors
     for previous, current in zip(before, after):
@@ -623,6 +656,23 @@ def governance_manifest_errors(root, base_revision, changed, target_revision=Non
             errors.append('governance-manifest-hash:' + path)
         if (not target_revision and 'bytes' in current
                 and current['bytes'] != target_size):
+            errors.append('governance-manifest-bytes:' + path)
+    for current in after[len(before):]:
+        path = current['path']
+        try:
+            target_hash = (
+                blob_sha_at_revision(root, path, target_revision)
+                if target_revision else sha(root / path)
+            )
+            target_size = (
+                blob_size_at_revision(root, path, target_revision)
+                if target_revision else (root / path).stat().st_size
+            )
+        except (ValueError, OSError):
+            target_hash, target_size = None, None
+        if path not in changed or current.get('sha256') != target_hash:
+            errors.append('governance-manifest-addition:' + path)
+        if 'bytes' in current and current['bytes'] != target_size:
             errors.append('governance-manifest-bytes:' + path)
     return errors
 
@@ -707,6 +757,116 @@ def integration_record_errors(root, path, record, schema, result_schema, tasks):
     return errors
 
 
+def milestone_closure_errors(
+        root, closure, schema, integration_schema, result_schema, backlog, tasks):
+    """Validate the M1 closure as revision-bound evidence, not a status assertion."""
+    errors = [
+        'milestone-schema:M1.json:' + issue.message
+        for issue in schema.iter_errors(closure)
+    ]
+    if errors:
+        return errors
+    if (closure['milestone_identity'] != 'harness-backlog-v0.2/M1'
+            or closure['display_milestone_id'] != 'M1'
+            or closure['closure_status'] != 'PASS'):
+        errors.append('milestone-identity-or-status:M1')
+    if closure['historical_model_evidence'] != {
+            'status': 'UNVERIFIED_HISTORICAL_DECLARATION',
+            'independently_reproducible_protocol_model': False,
+    }:
+        errors.append('milestone-model-evidence-overclaim:M1')
+    if closure['product_requirement_pass_claims']:
+        errors.append('milestone-product-requirement-overclaim:M1')
+    try:
+        evaluated = resolve(root, closure['evaluated_commit'])
+        head = resolve(root, 'HEAD')
+        if not is_ancestor(root, evaluated, head):
+            errors.append('milestone-evaluated-unreachable:M1')
+    except ValueError as ex:
+        return errors + ['milestone-evaluated-revision:M1:' + str(ex)]
+
+    active_m1 = {
+        task['id'] for task in backlog['tasks']
+        if task['milestone'] == 'M1' and task['status'] != 'SUPERSEDED'
+    }
+    declared_ids = [item['display_task_id'] for item in closure['integrations']]
+    if active_m1 != M1_TASK_IDS or set(declared_ids) != active_m1 or len(
+            declared_ids) != len(set(declared_ids)):
+        errors.append('milestone-active-task-set:M1')
+    for item in closure['integrations']:
+        task_id = item['display_task_id']
+        expected_path = f'docs/exec-plans/integrations/{task_id}.json'
+        if (item['task_identity'] != f'harness-backlog-v0.2/{task_id}'
+                or item['integration_record'] != expected_path):
+            errors.append('milestone-integration-binding:' + task_id)
+            continue
+        try:
+            record = load_artifact_at_revision(root, expected_path, evaluated)
+            if item['sha256'] != blob_sha_at_revision(root, expected_path, evaluated):
+                errors.append('milestone-integration-hash:' + task_id)
+            if record.get('integration_status') != 'MERGED':
+                errors.append('milestone-integration-unmerged:' + task_id)
+            if (record.get('task_identity') != item['task_identity']
+                    or record.get('display_task_id') != task_id):
+                errors.append('milestone-integration-binding:' + task_id)
+            merge_commit = resolve(root, record.get('merge_commit', ''))
+            if not is_ancestor(root, merge_commit, evaluated):
+                errors.append('milestone-integration-unreachable:' + task_id)
+            integration_issues = integration_record_errors(
+                root, root / expected_path, record, integration_schema, result_schema, tasks)
+            errors.extend(
+                'milestone-integration-invalid:' + task_id + ':' + issue
+                for issue in integration_issues)
+        except (ValueError, OSError, KeyError, TypeError) as ex:
+            errors.append('milestone-integration-invalid:' + task_id + ':' + str(ex))
+
+    expected_exit_checks = {
+        'clean_checkout_starts_test_environment',
+        'm1_m2_task_contracts_complete',
+        'historical_model_evidence_not_overclaimed',
+    }
+    exit_ids = [item['check_id'] for item in closure['exit_checks']]
+    if set(exit_ids) != expected_exit_checks or len(exit_ids) != len(set(exit_ids)):
+        errors.append('milestone-exit-check-set:M1')
+    for exit_check in closure['exit_checks']:
+        if exit_check['result'] != 'PASS':
+            errors.append('milestone-exit-check-failed:' + exit_check['check_id'])
+        if not exit_check['evidence']:
+            errors.append('milestone-exit-evidence-missing:' + exit_check['check_id'])
+        for evidence in exit_check['evidence']:
+            path = evidence['path']
+            if not relative_path(path):
+                errors.append('milestone-exit-evidence-path:' + exit_check['check_id'])
+                continue
+            try:
+                revision = resolve(root, evidence['revision'])
+                if not is_ancestor(root, revision, evaluated):
+                    errors.append('milestone-exit-evidence-unreachable:' + exit_check['check_id'])
+                if evidence['sha256'] != blob_sha_at_revision(root, path, revision):
+                    errors.append('milestone-exit-evidence-hash:' + exit_check['check_id'])
+            except ValueError as ex:
+                errors.append(
+                    'milestone-exit-evidence-missing:' + exit_check['check_id'] + ':' + str(ex))
+
+    try:
+        evaluated_backlog = load_artifact_at_revision(root, BACKLOG, evaluated)
+        evaluated_trace = load_artifact_at_revision(root, TRACEABILITY, evaluated)
+        evaluated_task_errors, evaluated_tasks = task_definition_errors(
+            root, evaluated_backlog, evaluated)
+        errors.extend('milestone-task-contract:' + issue for issue in evaluated_task_errors)
+        trace_errors, trace_tasks = traceability_task_map(
+            evaluated_trace, 'milestone-traceability')
+        errors.extend(trace_errors)
+        for task_id in M2_REFINED_TASK_IDS:
+            task = evaluated_tasks.get(task_id)
+            trace_task = trace_tasks.get(f'harness-backlog-v0.2/{task_id}')
+            if task is None or trace_task != traceability_projection(task):
+                errors.append('milestone-m2-projection:' + task_id)
+    except (ValueError, OSError, KeyError, TypeError) as ex:
+        errors.append('milestone-m2-contract-revision:' + str(ex))
+    return errors
+
+
 def task_definition_errors(root, backlog, revision=None):
     """Validate one revision's complete backlog, packet, resource and DAG state."""
     errors = []
@@ -758,10 +918,54 @@ def task_definition_errors(root, backlog, revision=None):
         for resource in resources:
             if resource not in known_resources:
                 errors.append('unknown-resource-key:' + name + '->' + resource)
+        if name in M2_REFINED_TASK_IDS:
+            contracts = task.get('check_contracts')
+            evidence_paths = task.get('evidence_paths')
+            contract_ids = (
+                [item.get('check_id') for item in contracts]
+                if isinstance(contracts, list) and all(isinstance(item, dict) for item in contracts)
+                else []
+            )
+            generic = re.compile(r'(?:^task_scope_|todo|tbd|placeholder)', re.I)
+            if (not contracts or len(contract_ids) != len(set(contract_ids))
+                    or contract_ids != task.get('checks_required_for_this_task')):
+                errors.append('check-contract-ids:' + name)
+            elif any(
+                    set(item) != {'check_id', 'command', 'pass_oracle'}
+                    or not all(isinstance(item.get(field), str) and item[field].strip()
+                               for field in ('check_id', 'command', 'pass_oracle'))
+                    or generic.search(item['check_id'])
+                    or generic.search(item['command'])
+                    or generic.search(item['pass_oracle'])
+                    for item in contracts):
+                errors.append('check-contract-generic-or-invalid:' + name)
+            expected_evidence = [f'docs/exec-plans/evidence/{name}/**']
+            if evidence_paths != expected_evidence or not all(
+                    relative_path(path[:-3]) for path in evidence_paths or []):
+                errors.append('evidence-path:' + name)
+            if task.get('packet_refinement') != 'ENFORCEABLE':
+                errors.append('m2-packet-not-enforceable:' + name)
+            if task.get('entry_conditions') != [
+                    'M1 closure PASS: docs/exec-plans/milestones/M1.json']:
+                errors.append('m2-entry-condition:' + name)
         if (task.get('status') == 'READY'
-                and (task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY'
+                and (task.get('packet_refinement') != 'ENFORCEABLE'
                      or task.get('write_paths_status') != 'ENFORCEABLE')):
             errors.append('ready-write-scope-unrefined:' + name)
+    refined = [tasks[name] for name in sorted(M2_REFINED_TASK_IDS) if name in tasks]
+    for position, left in enumerate(refined):
+        for right in refined[position + 1:]:
+            overlaps = {
+                left_path for left_path in left.get('write_paths', [])
+                for right_path in right.get('write_paths', [])
+                if (left_path == right_path
+                    or matches(left_path.replace('*', 'x'), [right_path])
+                    or matches(right_path.replace('*', 'x'), [left_path]))
+            }
+            if overlaps and not set(left.get('resource_keys', [])) & set(
+                    right.get('resource_keys', [])):
+                errors.append(
+                    'unlocked-write-path-overlap:' + left['id'] + ':' + right['id'])
     pending = set(tasks)
     while pending:
         ready = set()
@@ -804,6 +1008,7 @@ def validate(root, args):
         'REVIEW': 'THREAD_REVIEW.schema.json',
         'GOVERNANCE': GOVERNANCE_SCHEMA,
         'INTEGRATION': INTEGRATION_SCHEMA,
+        'MILESTONE': MILESTONE_CLOSURE_SCHEMA,
     }
     for kind, schema_name in schema_files.items():
         schema = load_artifact(root / schema_name)
@@ -812,6 +1017,30 @@ def validate(root, args):
         except Exception as ex:
             raise ValueError('invalid-schema:' + kind + ':' + str(ex)) from ex
         schemas[kind] = Draft202012Validator(schema)
+    milestone_dir = root / 'docs/exec-plans/milestones'
+    milestone_records = []
+    if milestone_dir.exists():
+        for path in sorted(milestone_dir.glob('*.json')):
+            record = load_artifact(path)
+            if isinstance(record, dict) and record.get('display_milestone_id') == 'M1':
+                milestone_records.append((path, record))
+    if not milestone_records:
+        m1_closure_valid = False
+    elif len(milestone_records) != 1:
+        errors.append('milestone-closure-count:M1:' + str(len(milestone_records)))
+        m1_closure_valid = False
+    else:
+        closure_path, closure = milestone_records[0]
+        if closure_path.name != 'M1.json':
+            errors.append('milestone-closure-path:M1:' + closure_path.name)
+        closure_errors = milestone_closure_errors(
+            root, closure, schemas['MILESTONE'], schemas['INTEGRATION'],
+            schemas['RESULT'], backlog, tasks)
+        errors.extend(closure_errors)
+        m1_closure_valid = not closure_errors and closure_path.name == 'M1.json'
+    for task in tasks.values():
+        if task['milestone'] == 'M2' and task['status'] == 'READY' and not m1_closure_valid:
+            errors.append('ready-m1-closure-invalid:' + task['id'])
     results = {}
     completed = root / 'docs/exec-plans/completed'
     for path in sorted(list(completed.glob('*_RESULT.yaml')) + list(completed.glob('*_RESULT.json'))):
@@ -1084,8 +1313,10 @@ def validate(root, args):
                     if not task or not old_task:
                         errors.append('governance-refined-task-unknown:' + task_id)
                         continue
-                    if (old_task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY' and
-                            task.get('packet_refinement') != 'MUST_REFINE_BEFORE_READY'):
+                    if ((old_task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY'
+                         and task.get('packet_refinement') != 'MUST_REFINE_BEFORE_READY')
+                            or (old_task != task and
+                                task.get('packet_refinement') == 'ENFORCEABLE')):
                         observed.add(task_id)
                     if (task.get('write_paths_status') != 'ENFORCEABLE' or
                             not task.get('write_paths') or

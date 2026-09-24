@@ -15,5 +15,16 @@ Initial resource keys:
 - `release_evidence`
 - `requirement_registry`
 - `security_data_boundary`
+- `schema_topology`
+- `canonical_fact_schema`
+- `persistence_permissions`
+- `persistence_schema`
+- `python_dependency_lock`
+- `transaction_interfaces`
 
 Every database-writing worktree uses a unique namespace, e.g. database `kineticloop_<task>_<shortsha>` and Compose project `kineticloop-<task>-<shortsha>`, unless the task explicitly declares a shared serialized environment.
+
+`python_dependency_lock` serializes `pyproject.toml`/`uv.lock` writers.
+`migration_chain` serializes Alembic-chain writers. A concrete path overlap is
+allowed only when every overlapping task declares a shared exclusive resource key;
+otherwise the Harness definition is invalid rather than merely unschedulable.

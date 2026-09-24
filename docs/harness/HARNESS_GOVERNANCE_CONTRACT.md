@@ -12,6 +12,11 @@ the exact changed files and refined packets, and link every executed check to
 committed evidence. The selected governance record must have `change_status: PASS`;
 `BLOCKED` and `SPEC_CHANGE_REQUIRED` records are durable outcomes but cannot merge.
 
+Governance changes may add a milestone schema at the repository root and milestone
+records under `docs/exec-plans/milestones/`. The schema is indexed as machine-readable
+authority; individual closure instances remain revision-bound records and are not
+separate authority entries. Both may be appended to the delivery manifest.
+
 Governance reviews use `docs/exec-plans/reviews/<CHANGE_ID>/<TYPE>.json`. A PASS
 GENERAL review is always required. For every task definition changed between the
 protected base and reviewed head, the gate requires the union of specialist review

@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kineticloop/milestone-closure-v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "milestone_identity",
+    "display_milestone_id",
+    "closure_status",
+    "evaluated_commit",
+    "integrations",
+    "exit_checks",
+    "historical_model_evidence",
+    "product_requirement_pass_claims"
+  ],
+  "properties": {
+    "milestone_identity": {
+      "const": "harness-backlog-v0.2/M1"
+    },
+    "display_milestone_id": {
+      "const": "M1"
+    },
+    "closure_status": {
+      "const": "PASS"
+    },
+    "evaluated_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "integrations": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["task_identity", "display_task_id", "integration_record", "sha256"],
+        "properties": {
+          "task_identity": {
+            "type": "string",
+            "pattern": "^harness-backlog-v0\\.2/KL-00[1-9]$"
+          },
+          "display_task_id": {
+            "type": "string",
+            "pattern": "^KL-00[1-9]$"
+          },
+          "integration_record": {
+            "type": "string",
+            "pattern": "^docs/exec-plans/integrations/KL-00[1-9]\\.json$"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "exit_checks": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["check_id", "result", "evidence"],
+        "properties": {
+          "check_id": {
+            "enum": [
+              "clean_checkout_starts_test_environment",
+              "m1_m2_task_contracts_complete",
+              "historical_model_evidence_not_overclaimed"
+            ]
+          },
+          "result": {
+            "const": "PASS"
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["path", "revision", "sha256"],
+              "properties": {
+                "path": {"type": "string", "minLength": 1},
+                "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+                "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "historical_model_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "independently_reproducible_protocol_model"],
+      "properties": {
+        "status": {"const": "UNVERIFIED_HISTORICAL_DECLARATION"},
+        "independently_reproducible_protocol_model": {"const": false}
+      }
+    },
+    "product_requirement_pass_claims": {
+      "type": "array",
+      "maxItems": 0
+    }
+  }
+}
