@@ -76,7 +76,7 @@ numbers.
 | 43 | S39 | `daily_bundle_revisions` | S02, S24, S27, S29, S37, S38 |
 | 44 | S40 | `prescription_revisions` | S34, S49 |
 | 45 | S41 | `bundle_prescription_members` | S39, S40 |
-| 46 | S42 | `authorization_issuances` | S02, S05, S24, S37, S40, S49, S51 |
+| 46 | S42 | `authorization_issuances` | S02, S05, S24, S36, S37, S40, S49, S51 |
 | 47 | S43 | `authorization_events` | S02, S13, S17, S42 |
 | 48 | S44 | `workout_sessions` | S01, S11, S14 |
 | 49 | S45 | `execution_bindings` | S02, S40, S42, S44 |
@@ -110,11 +110,16 @@ rows to which its current pointer refers.
 | S51.`last_revocation_id` | S50 | Registry head authority |
 
 Polymorphic reference sets such as S16 member targets, S22 dependency targets, S36
-support/contradiction references, S47 replay source references, and S49 declared artifact
-dependencies must be materialized as closed typed foreign keys or normalized child edges
-by the DDL task. Their owning relation already depends on every permitted target relation
-needed for that materialization. A free-text or unvalidated identifier is not an
-equivalent implementation.
+support/contradiction references, and S49 declared artifact dependencies must be
+materialized as closed typed foreign keys or normalized child edges by the DDL task.
+A free-text or unvalidated identifier is not an equivalent implementation.
+
+S47 `source_revision_refs` uses the explicit `POST_BASE_REFERENCE_PLANS` phase. Its
+target-typed child-edge tables are created only after all S01-S51 base relations exist,
+must use same-subject composite foreign keys, and may not use a generic `(kind, text_id)`
+target. R01 and R03 require typed S14 fact-revision and S20 mapping-decision edge
+capabilities. Any additional source kind requires an explicit frozen-clause mapping in
+the DDL task. Production relations never point back into evaluation storage.
 
 ## Authority roots
 

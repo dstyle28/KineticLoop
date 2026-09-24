@@ -35,6 +35,19 @@ class DeferredReference:
     reason: str
 
 
+@dataclass(frozen=True)
+class NormalizedReferencePlan:
+    """A typed child-edge family created only after every base relation exists."""
+
+    owner: str
+    field: str
+    phase: str
+    materialization: str
+    after_relations: frozenset[str]
+    required_target_roots: frozenset[str]
+    requires_same_subject: bool
+
+
 # This is physical creation order, not frozen logical-number order. In particular,
 # the independent global/evaluation roots S48 and S51 are created before their
 # lower-numbered dependents. Self-references are added with their own table and do
@@ -104,7 +117,7 @@ LOGICAL_RELATIONS: tuple[LogicalRelation, ...] = (
     LogicalRelation(
         "S42",
         "authorization_issuances",
-        ("S02", "S05", "S24", "S37", "S40", "S49", "S51"),
+        ("S02", "S05", "S24", "S36", "S37", "S40", "S49", "S51"),
     ),
     LogicalRelation("S43", "authorization_events", ("S02", "S13", "S17", "S42")),
     LogicalRelation("S44", "workout_sessions", ("S01", "S11", "S14")),
@@ -147,6 +160,24 @@ DEFERRED_REFERENCES: tuple[DeferredReference, ...] = (
 )
 
 
+# S47's frozen ``source_revision_refs`` is a polymorphic semantic field, but the
+# frozen authorities do not define one exhaustive direct-target enum. Physical DDL
+# therefore creates target-typed child-edge tables only after every S01-S51 base
+# relation exists. R01 and R03 make S14 and S20 the minimum required target roots;
+# additional target kinds need their own frozen-clause mapping in the DDL task.
+POST_BASE_REFERENCE_PLANS: tuple[NormalizedReferencePlan, ...] = (
+    NormalizedReferencePlan(
+        owner="S47",
+        field="source_revision_refs",
+        phase="POST_BASE_RELATIONS",
+        materialization="TARGET_TYPED_CHILD_EDGES",
+        after_relations=frozenset(f"S{number:02d}" for number in range(1, 52)),
+        required_target_roots=frozenset({"S14", "S20"}),
+        requires_same_subject=True,
+    ),
+)
+
+
 # Explicit authority-root ordering obligations. These are narrower than reachability:
 # every listed dependent must be created after the authority it directly consumes.
 AUTHORITY_ROOT_CONSTRAINTS: Mapping[str, tuple[str, ...]] = MappingProxyType(
@@ -162,6 +193,7 @@ AUTHORITY_ROOT_CONSTRAINTS: Mapping[str, tuple[str, ...]] = MappingProxyType(
         "S24": ("S25", "S26", "S29", "S36", "S37", "S39", "S42", "S46"),
         "S27": ("S28", "S29", "S31", "S39"),
         "S31": ("S32",),
+        "S36": ("S37", "S42"),
         "S38": ("S39",),
         "S44": ("S45",),
         "S46": ("S47",),
