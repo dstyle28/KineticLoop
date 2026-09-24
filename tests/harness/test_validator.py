@@ -5,6 +5,7 @@ import importlib.util
 import io
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -53,6 +54,24 @@ class ValidatorTests(unittest.TestCase):
             dst = self.root / name
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / name, dst)
+        # Governance scenarios need a pending refinement regardless of the live
+        # repository's scheduling state. Establish that state in the fixture only.
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-008')
+        task['packet_refinement'] = 'MUST_REFINE_BEFORE_READY'
+        task['write_paths_status'] = 'TEMPLATE_NOT_ENFORCEABLE'
+        task['write_paths'] = []
+        dump(backlog_path, backlog)
+        packet = self.root / 'docs/exec-plans/active/KL-008.md'
+        text = re.sub(
+            r'^\*\*Packet refinement:\*\* .*$',
+            '**Packet refinement:** MUST_REFINE_BEFORE_READY',
+            packet.read_text(), flags=re.M)
+        text = re.sub(
+            r'(^Expected implementation write paths:\n)(?:- [^\n]+\n)+',
+            r'\g<1>- TO_BE_REFINED_BEFORE_READY\n', text, flags=re.M)
+        packet.write_text(text)
         refresh(self.root)
         self.task = json.loads((self.root / v.BACKLOG).read_text())['tasks'][0]
         self.git('init', '-q')
