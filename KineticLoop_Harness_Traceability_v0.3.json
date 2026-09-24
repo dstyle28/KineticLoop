@@ -967,11 +967,13 @@
       ],
       "table_ids": [
         "S01",
+        "S30",
         "S27",
         "S31",
         "S38",
         "S44",
-        "S51"
+        "S51",
+        "exact command receipt / remaining aggregate rows"
       ],
       "context_files": [
         "05_KineticLoop_Protocol_v1.2_FROZEN.md",
@@ -985,15 +987,19 @@
         "ISOLATED_POSTGRESQL_NAMESPACE"
       ],
       "deliverables": [
-        "transaction interfaces"
+        "complete frozen lock-order repository transaction interfaces"
       ],
-      "definition_of_done": "no interface allows T3/T6/T7 to bypass registry shared gate",
+      "definition_of_done": "every repository interface preserves the complete frozen lock order S51 (when applicable) → S01 → S30 → S27 → S31 → S38 → S44 → exact command receipt / remaining aggregate rows, with stable multi-key ordering and no direct-write or reverse-order path",
       "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "transaction_owner_matrix_complete",
         "registry_lease_required_for_t3_t6_t7",
         "subject_guard_required",
+        "complete_frozen_lock_order_enforced",
+        "multi_key_lock_order_is_stable",
+        "reverse_lock_order_is_rejected",
+        "receipt_before_s01_is_rejected",
         "artifact_identity_required",
         "direct_write_bypass_rejected",
         "transaction_db_conformance_passes",
@@ -1014,6 +1020,26 @@
           "check_id": "subject_guard_required",
           "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_subject_guard_required",
           "pass_oracle": "The named test rejects subject-scoped writes without the S01 guard."
+        },
+        {
+          "check_id": "complete_frozen_lock_order_enforced",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_complete_frozen_lock_order_enforced",
+          "pass_oracle": "The named PostgreSQL test observes S51 when applicable, then S01, S30, S27, S31, S38, S44, and exact receipt/remaining aggregate locks in frozen order."
+        },
+        {
+          "check_id": "multi_key_lock_order_is_stable",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_multi_key_lock_order_is_stable",
+          "pass_oracle": "The named PostgreSQL test proves S30 quota keys and multiple S27/S31 rows are locked in stable key/ID order under opposing input order."
+        },
+        {
+          "check_id": "reverse_lock_order_is_rejected",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected",
+          "pass_oracle": "The named PostgreSQL test rejects every attempted later-to-earlier lock acquisition in the frozen sequence."
+        },
+        {
+          "check_id": "receipt_before_s01_is_rejected",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_receipt_before_s01_is_rejected",
+          "pass_oracle": "The named PostgreSQL test proves a subject-scoped transaction cannot win or wait on a receipt unique key before acquiring S01."
         },
         {
           "check_id": "artifact_identity_required",
