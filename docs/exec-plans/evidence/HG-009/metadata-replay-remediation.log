@@ -1,0 +1,37 @@
+HG-009 complete historical metadata replay evidence
+
+Identity
+  change: harness-governance-v0.1/HG-009
+  protected base: 1834f6add0ed3860556458817c7620b2ef2d394e
+  tested revision: 9765b424eda1aff568a81aafd51fe7d21e0c395c
+
+Checks executed against the exact committed tested revision
+  kl check-harness: HARNESS_CHECK_PASS tasks=68 active=66
+  ruff check .: All checks passed
+  mypy src tools tests: Success, 44 source files
+  pytest -q tests/unit: 92 passed
+  pytest -q tests/harness: 90 passed
+  focused governance replay regressions: 9 passed, 56 deselected
+  exact HG-007 delayed-review reproduction: HARNESS_CHECK_PASS tasks=68 active=66
+  git diff --check: PASS
+  frozen Protocol, DB and FROZEN_BASELINE diff: unchanged
+
+Review finding remediated
+  Review of db6990f found that historical derived-metadata replay checked only index
+  and manifest entries whose stored metadata changed from the original governance
+  base. The tested revision now verifies every unchanged historical index hash and
+  every unchanged historical manifest hash/byte count against the reviewed tree.
+  A negative regression changes an indexed file without refreshing metadata,
+  repairs the metadata only in a later protected base, and proves delayed review
+  still fails on both historical index and manifest hash diagnostics.
+
+Evidence immutability
+  This file is newly added after tested_commit. Existing HG-009 evidence files are
+  unchanged after the tested revision. The only accompanying modification is the
+  task-scoped governance record update allowed by the tested suffix contract.
+
+Scope conclusion
+  Full historical derived metadata and task-definition state are replayed from the
+  reviewed revision. Original ancestry, exact-tree, declared scope, evidence
+  binding, required-review, review-only suffix and frozen-baseline protections
+  remain fail closed.
