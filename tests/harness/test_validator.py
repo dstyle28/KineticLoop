@@ -482,6 +482,59 @@ class ValidatorTests(unittest.TestCase):
         self.commit('persist post-merge governance review')
         self.check(0, '', '--ci-pr-base', merge_commit, '--ci-pr-head', 'HEAD')
 
+    def test_ci_governance_review_only_replays_reviewed_tree_from_later_base(self):
+        self.put('tools/harness/post_merge_fixture.py')
+        tested = self.commit('governance implementation')
+        evidence = 'docs/exec-plans/evidence/HG-999/checks.log'
+        record_path = 'docs/exec-plans/governance/HG-999.yaml'
+        self.put(evidence, 'governance checks passed\n')
+        self.save_result(self.root / record_path, {
+            'change_identity': 'harness-governance-v0.1/HG-999',
+            'display_change_id': 'HG-999',
+            'base_commit': self.base,
+            'tested_commit': tested,
+            'change_status': 'PASS',
+            'summary': 'Fixture governance change reviewed after a later integration',
+            'packets_refined': [],
+            'files_changed': sorted((
+                'tools/harness/post_merge_fixture.py', evidence, record_path)),
+            'checks_run': [{
+                'check_id': 'governance_contract_valid',
+                'command': 'fixture governance check',
+                'result': 'PASS',
+                'evidence_ref': evidence,
+            }],
+            'frozen_impact': 'NONE',
+            'authority_entries_added': [],
+        })
+        record_commit = self.commit('record governance result')
+        reviewed = self.merge_commit(
+            record_commit, self.base, record_commit, message='merge governance before review')
+        self.git('checkout', '-q', '--detach', reviewed)
+
+        validator = self.root / 'tools/harness/validate_harness.py'
+        validator.write_text(validator.read_text() + '\n# later governance fixture\n')
+        refresh(self.root)
+        later_tip = self.commit('later governance change')
+        protected_base = self.merge_commit(
+            later_tip, reviewed, later_tip, message='merge later governance change')
+        self.git('checkout', '-q', '--detach', protected_base)
+        self.governance_review('HG-999', reviewed)
+        self.commit('persist delayed governance review')
+
+        self.check(0, '', '--ci-pr-base', protected_base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_review_only_rejects_unrelated_later_base(self):
+        self.put('tools/harness/post_merge_fixture.py')
+        tested = self.commit('governance implementation')
+        _, reviewed = self.persist_governance_change('HG-999', tested, [], ['GENERAL'])
+        unrelated_base = self.sibling_commit(reviewed, 'unrelated squash-equivalent base')
+        self.git('checkout', '-q', '--detach', unrelated_base)
+        self.governance_review('HG-999', reviewed)
+        self.commit('persist review from unrelated base')
+        self.check(1, 'governance-review-only-reviewed-not-merged:HG-999',
+                   '--ci-pr-base', unrelated_base, '--ci-pr-head', 'HEAD')
+
     def test_ci_governance_review_only_rejects_content_changing_merge(self):
         self.put('tools/harness/post_merge_fixture.py')
         tested = self.commit('governance implementation')
