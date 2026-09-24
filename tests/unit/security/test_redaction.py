@@ -24,6 +24,9 @@ class UnsafeDiagnosticInt(int):
 
 
 def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
+    deeply_encoded_sentinel = SENTINEL
+    for _ in range(9):
+        deeply_encoded_sentinel = quote(deeply_encoded_sentinel, safe="")
     evidence = {
         "evidence_id": "evidence-synthetic-001",
         "observed": {"metric": "duration_minutes", "value": 42},
@@ -43,6 +46,7 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
         "log_args": ("retry %s", {"Authorization": f"Bearer {SENTINEL}"}),
         "registered": f"failure contained {quote(SENTINEL, safe='')}",
         "double_encoded_registered": quote(quote(SENTINEL, safe=""), safe=""),
+        "over_depth_encoded_registered": deeply_encoded_sentinel,
         f"registered-key-{SENTINEL}": "safe value",
         "canonical_evidence": evidence,
     }

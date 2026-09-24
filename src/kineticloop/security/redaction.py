@@ -267,6 +267,8 @@ class Redactor:
     def text(self, value: str) -> str:
         """Redact one diagnostic string without changing the source value."""
 
+        if _stable_unquote(value) is None:
+            return REDACTED
         result = value
         for pattern in self.__patterns:
             result = pattern.sub(_SECRET_MARKER, result)
