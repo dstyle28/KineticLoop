@@ -1,0 +1,107 @@
+HG-016 durable KL-009 integration validation
+base_commit=415f41203c934f74cec3f15fe56b3298f88049b6
+tested_commit=b7b8c28c8dd0e489993d3de151502002ca93011d
+kl009_result_commit=3b8ff5ef3e6be7789042fcf720deeefd96bbe622
+kl009_reviewed_head=3b8ff5ef3e6be7789042fcf720deeefd96bbe622
+kl009_review_record_commit=b4f3568a8029e4be68575e3b6a340ab8b0d66df5
+kl009_merge_commit=415f41203c934f74cec3f15fe56b3298f88049b6
+
+governance_schema_valid: PASS
+  HARNESS_CHANGE.schema.json validates docs/exec-plans/governance/HG-016.yaml.
+
+integration_schema_valid: PASS
+  INTEGRATION_RECORD.schema.json validates
+  docs/exec-plans/integrations/KL-009.json.
+
+review_schema_and_binding_valid: PASS
+  THREAD_REVIEW.schema.json validates all three required KL-009 reviews:
+  GENERAL, PROTOCOL, and SECURITY_DATA_BOUNDARY. Each review is PASS and binds
+  3b8ff5ef3e6be7789042fcf720deeefd96bbe622.
+
+integration_revision_chain_valid: PASS
+  result_commit equals reviewed_head_sha.
+  3b8ff5ef3e6be7789042fcf720deeefd96bbe622 is an ancestor of
+  b4f3568a8029e4be68575e3b6a340ab8b0d66df5.
+  b4f3568a8029e4be68575e3b6a340ab8b0d66df5 is the second parent of and an
+  ancestor of 415f41203c934f74cec3f15fe56b3298f88049b6.
+  415f41203c934f74cec3f15fe56b3298f88049b6 is an ancestor of tested_commit.
+  Review-record and merge trees are identical:
+  dac67fa84a7faf902f57d473fc32d951bde1b2e1.
+
+result_review_artifacts_bound: PASS
+  KL-009_RESULT.yaml has Git blob
+  d93af93785f990a650b41148bda57fdcb0618946 at result_commit,
+  review_record_commit, merge_commit, and tested_commit.
+  GENERAL.json has Git blob
+  4077ad54f757225d6bf2394c0be906851dcf05f4 at review_record_commit,
+  merge_commit, and tested_commit.
+  PROTOCOL.json has Git blob
+  718ef55f9e7fe8734539a673fc9a36c82b6d8eff at review_record_commit,
+  merge_commit, and tested_commit.
+  SECURITY_DATA_BOUNDARY.json has Git blob
+  c2a02b31d33d97e963c86ae010a31f3b4da99df7 at review_record_commit,
+  merge_commit, and tested_commit.
+
+task_result_semantics_valid: PASS
+  task_status=PASS and task_checks_status=PASS.
+  Exact packet checks are PASS: config_secret_sources_are_separated,
+  nested_redaction_is_non_mutating_and_authority_neutral,
+  synthetic_security_fixtures_have_provenance,
+  database_diagnostics_redact_credentials,
+  security_and_database_regressions_pass, and harness_validation_passes.
+  requirements_covered is empty, so no product requirement PASS is claimed.
+  The standard Harness validator accepts the result and all referenced evidence.
+
+harness_structure_valid: PASS
+  PYTHONPATH="$PWD/src"
+  /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
+  HARNESS_CHECK_PASS tasks=68 active=66
+
+lint_passes: PASS
+  PYTHONPATH="$PWD/src"
+  /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/ruff check .
+  All checks passed!
+
+typecheck_passes: PASS
+  MYPY_CACHE_DIR=/private/tmp/hg-016-mypy PYTHONPATH="$PWD/src"
+  /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/mypy src tools tests
+  Success: no issues found in 55 source files
+
+unit_tests_pass: PASS
+  PYTHONPATH="$PWD/src"
+  /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-unit
+  134 passed in 3.67s
+
+harness_tests_pass: PASS
+  PYTHONPATH="$PWD/src"
+  /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-harness
+  100 passed in 80.00s
+
+integration_binding_tests_pass: PASS
+  PYTHONPATH="$PWD/src"
+  /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q
+  tests/harness/test_validator.py -k integration
+  13 passed, 62 deselected in 8.83s
+
+governance_scope_exact: PASS
+  The protected-base change set is exactly:
+  docs/exec-plans/evidence/HG-016/checks.log
+  docs/exec-plans/governance/HG-016.yaml
+  docs/exec-plans/integrations/KL-009.json
+  No KL-009 result/review or HG-015 path is modified.
+
+diff_clean: PASS
+  git diff --check 415f41203c934f74cec3f15fe56b3298f88049b6
+  b7b8c28c8dd0e489993d3de151502002ca93011d
+  No output.
+
+frozen_baseline_unchanged: PASS
+  git diff --exit-code 415f41203c934f74cec3f15fe56b3298f88049b6
+  b7b8c28c8dd0e489993d3de151502002ca93011d -- FROZEN_BASELINE.json
+  04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
+  05_KineticLoop_Protocol_v1.2_FROZEN.md
+  No output.
+
+No task implementation, packet, result, evidence, review, contract, schema,
+validator, test, product requirement, document index, frozen authority, or HG-015
+file is changed by HG-016.
