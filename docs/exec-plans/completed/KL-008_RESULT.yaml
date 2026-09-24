@@ -1,0 +1,53 @@
+task_identity: harness-backlog-v0.2/KL-008
+display_task_id: KL-008
+task_definition_version: v0.2
+base_commit: fb9e54a62400c97f3dfae6596ad8a40554de377e
+tested_commit: efec6102a4a29c4d5f263205f6b74ac567e61db1
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Added strict immutable v1 contracts that keep real-data shadow artifacts
+  SHADOW_ONLY / NOT_EXECUTABLE with no live S38, S42, S45, or PlanningIntent-success
+  target, and admit TEST_ONLY scope only for a KL-007 TEST actor bound to explicitly
+  isolated non-production subject, policy, and environment identifiers. The scope
+  forbids direct writes and preserves the normal T6/T7 command-owner guards.
+commands_run:
+  - check_id: shadow_contract_schema_valid
+    command: .venv/bin/pytest -q tests/unit/contracts/test_shadow.py::test_shadow_contract_schema_valid
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-008/checks-efec610.log
+  - check_id: real_data_shadow_forbids_live_head_issuance_binding
+    command: .venv/bin/pytest -q tests/unit/contracts/test_shadow.py::test_real_data_shadow_forbids_live_head_issuance_binding
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-008/checks-efec610.log
+  - check_id: test_only_scope_requires_isolation
+    command: .venv/bin/pytest -q tests/unit/contracts/test_shadow.py::test_test_only_scope_requires_isolation
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-008/checks-efec610.log
+requirements_covered:
+  - {requirement_id: A06@PU, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: A06@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B14@WF, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B14@E2E, status: NOT_RUN, evidence_ref: null}
+  - {requirement_id: B15@DC, status: NOT_RUN, evidence_ref: null}
+files_changed:
+  - docs/contracts/shadow_test_semantics.md
+  - src/kineticloop/contracts/__init__.py
+  - src/kineticloop/contracts/shadow.py
+  - tests/unit/contracts/test_shadow.py
+  - docs/exec-plans/evidence/KL-008/checks-efec610.log
+  - docs/exec-plans/completed/KL-008_RESULT.yaml
+decisions:
+  - Model forbidden live shadow targets as explicit null wire fields so construction and deserialization fail closed if any S38, S42, S45, or live PlanningIntent-success target is supplied.
+  - Bind TEST_ONLY to the merged KL-007 RoleIdentity TEST role and its derived RUN_TEST_SIMULATION capability; caller-asserted capabilities are never accepted.
+  - Encode isolated non-production subject, policy, and environment boundaries plus mandatory T6/T7 command-owner guards in the strict wire contract.
+  - Keep all related product obligations NOT_RUN because contract-level task PASS is not PU, DC, WF, or E2E requirement PASS.
+known_limitations:
+  - This task intentionally provides no storage, migration, command owner, transaction implementation, live authorization, or integration/E2E test.
+  - Authentication and trusted role assignment remain outside this typed contract and must be enforced before a later command owner consumes it.
+follow_up_tasks:
+  - Implement later isolated evaluation persistence and guarded T6/T7 command-owner paths only in their assigned task packets.
+  - Obtain fresh independent DB_CONCURRENCY, GENERAL, and PROTOCOL reviews against the exact implementation/result head before merge.
+spec_change_request: null
