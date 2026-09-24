@@ -1,0 +1,51 @@
+KL-009 immutable tested-commit evidence, terminal recursive-encoding cycle
+date: 2026-09-24
+task_identity: harness-backlog-v0.2/KL-009
+base_commit: c2740b8dfa25c079bb51f816baa5a87d6422b841
+tested_commit: 09cc1aa9e5dcf184d196a6f51c290adbac1df385
+
+PASS config_secret_sources_are_separated
+command: .venv/bin/pytest -q tests/unit/config/test_secret_loader.py::test_config_secret_sources_are_separated
+output: 1 passed in 0.01s
+
+PASS nested_redaction_is_non_mutating_and_authority_neutral
+command: .venv/bin/pytest -q tests/unit/security/test_redaction.py::test_nested_redaction_is_non_mutating_and_authority_neutral
+output: 1 passed in 0.02s
+
+PASS synthetic_security_fixtures_have_provenance
+command: .venv/bin/pytest -q tests/unit/security/test_synthetic_fixtures.py::test_synthetic_security_fixtures_have_provenance
+output: 1 passed in 0.01s
+
+PASS database_diagnostics_redact_credentials
+command: .venv/bin/pytest -q tests/db/test_secret_output.py
+output: 4 passed in 0.04s
+
+PASS security_and_database_regressions_pass
+command: .venv/bin/pytest -q tests/unit/config tests/unit/security tests/db
+output: 17 passed in 0.10s
+
+PASS harness_validation_passes
+command: .venv/bin/kl check-harness && .venv/bin/kl test-harness
+output: HARNESS_CHECK_PASS tasks=68 active=66; 100 passed in 96.92s
+
+PASS lint
+command: RUFF_CACHE_DIR=/private/tmp/kl009-ruff-cache-final4 .venv/bin/ruff check .
+output: All checks passed!
+
+PASS typecheck
+command: MYPY_CACHE_DIR=/private/tmp/kl009-mypy-cache-final4 .venv/bin/mypy src tools tests
+output: Success: no issues found in 55 source files
+
+PASS unit
+command: .venv/bin/kl test-unit
+output: 98 passed in 3.10s
+
+PASS full_suite
+command: .venv/bin/pytest -q
+output: 212 passed in 100.29s
+
+Adversarial closure
+- Registered secret matching covers raw and bounded recursively percent-encoded spellings.
+- URL query parsing recognizes recursively encoded keys and fully encoded key/value assignments.
+- Synthetic subject and provider environment markers require exact built-in string values.
+- All earlier command, format, object, mapping, fixture, URL, canonical-evidence, and authority probes remain covered.
