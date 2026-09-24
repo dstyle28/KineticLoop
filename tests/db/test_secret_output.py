@@ -179,6 +179,15 @@ def test_lifecycle_subprocess_and_cli_errors_are_redacted(
             "--password=FIRST%0AENCODED_ARGPARSE_TAIL",
             "ENCODED_ARGPARSE_TAIL",
         ),
+        ("--password;ARGPARSE_SEMICOLON_VALUE", "ARGPARSE_SEMICOLON_VALUE"),
+        (
+            "--password%3BARGPARSE_ENCODED_SEMICOLON_VALUE",
+            "ARGPARSE_ENCODED_SEMICOLON_VALUE",
+        ),
+        (
+            "--authorization;AWS4-HMAC-SHA256;Signature=ARGPARSE_AUTH_SEMICOLON_VALUE",
+            "ARGPARSE_AUTH_SEMICOLON_VALUE",
+        ),
     ],
 )
 def test_db_reset_argument_errors_are_credential_free(

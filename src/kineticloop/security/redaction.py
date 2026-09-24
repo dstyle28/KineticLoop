@@ -50,10 +50,10 @@ _SENSITIVE_KEY_EXPRESSION = (
 )
 _SENSITIVE_ASSIGNMENT = re.compile(
     rf"(?i)(?P<quote>[\"']?)(?P<key>[a-z0-9_. -]*(?:{_SENSITIVE_KEY_EXPRESSION})"
-    r"[a-z0-9_. -]*)(?P=quote)(?P<separator>\s*[:=]\s*)"
+    r"[a-z0-9_. -]*)(?P=quote)(?P<separator>\s*[:=;]\s*)"
 )
 _COMMAND_OPTION = re.compile(
-    rf"(?i)(?P<prefix>--[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*=)"
+    rf"(?i)(?P<prefix>--[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*[=:;])"
     r"(?P<value>[\s\S]+)"
 )
 _COMMAND_SEPARATE = re.compile(
@@ -61,7 +61,7 @@ _COMMAND_SEPARATE = re.compile(
     r"(?P<value>[\s\S]+)"
 )
 _AUTH_HEADER = re.compile(
-    r"(?i)(?P<prefix>\bauthorization\s+[a-z][a-z0-9+._-]*\s+)"
+    r"(?i)(?P<prefix>\bauthorization(?:\s+|\s*[=:;]\s*))"
     r"(?P<value>[\s\S]+)"
 )
 DiagnosticScalar: TypeAlias = str | bytes | int | float | bool | None
@@ -192,7 +192,9 @@ def _sequence_sensitive_positions(value: str) -> set[int]:
     if format_positions:
         return format_positions
     stripped = value.lstrip("-").strip()
-    for separator in ("=", ":"):
+    if re.match(r"(?i)^authorization(?:\b|[=:;])", stripped):
+        return {_ALL_FOLLOWING_ARGUMENTS}
+    for separator in ("=", ":", ";"):
         key, found, member = stripped.partition(separator)
         if found and _is_sensitive_key(key):
             if _normalized_key(key) == "authorization":
@@ -200,8 +202,6 @@ def _sequence_sensitive_positions(value: str) -> set[int]:
             if not member or member.casefold() in {"bearer", "basic", "digest", "token"}:
                 return {0}
             return set()
-    if _normalized_key(stripped) == "authorization":
-        return {_ALL_FOLLOWING_ARGUMENTS}
     return {0} if _is_sensitive_key(stripped) else set()
 
 
@@ -419,7 +419,22 @@ class Redactor:
                 part = query_parts[index]
                 key, found, query_value = part.partition("=")
                 if not found:
-                    query_parts[index] = quote_plus(part)
+                    colon_key, colon_found, colon_value = part.partition(":")
+                    if colon_found:
+                        sanitized_colon_value = (
+                            REDACTED
+                            if _is_sensitive_key(colon_key)
+                            else self._text(
+                                colon_value, nested_depth=nested_depth + 1
+                            )
+                        )
+                        query_parts[index] = (
+                            f"{quote_plus(colon_key)}%3A{quote_plus(sanitized_colon_value)}"
+                        )
+                    else:
+                        query_parts[index] = quote_plus(
+                            self._text(part, nested_depth=nested_depth + 1)
+                        )
                     continue
                 sanitized_value = (
                     REDACTED
@@ -465,9 +480,11 @@ class Redactor:
         if isinstance(value, list):
             return self._redact_sequence(value)
         if isinstance(value, set):
-            return {self.redact(item) for item in value}
+            items = tuple(set.__iter__(value))
+            return {self.redact(item) for item in items}
         if isinstance(value, frozenset):
-            return frozenset(self.redact(item) for item in value)
+            items = tuple(frozenset.__iter__(value))
+            return frozenset(self.redact(item) for item in items)
         if value is None or type(value) in (int, float, bool):
             return value
         return "<diagnostic-value>"

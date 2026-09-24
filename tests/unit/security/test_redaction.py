@@ -112,6 +112,23 @@ class HostileDiagnosticDict(dict[str, str]):
         return (("safe", dict.__getitem__(self, "password")),)
 
 
+class HostileDiagnosticSet(set[str]):
+    iteration_count: int = 0
+
+    def __iter__(self) -> Iterator[str]:
+        self.iteration_count += 1
+        self.add("source-was-mutated")
+        return set.__iter__(self)
+
+
+class HostileDiagnosticFrozenSet(frozenset[str]):
+    iteration_count: int = 0
+
+    def __iter__(self) -> Iterator[str]:
+        self.iteration_count += 1
+        return iter(("attacker-substituted-value",))
+
+
 def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     secret_named_value_type = type(SENTINEL, (), {})
     secret_named_error_type = type(SENTINEL, (ValueError,), {})
@@ -839,3 +856,74 @@ def test_encoded_delimiters_cannot_escape_credential_redaction() -> None:
     assert password_tail not in rendered
     assert authorization_tail not in rendered
     assert semicolon_tail not in rendered
+
+
+def test_single_and_combined_authorization_values_fail_closed() -> None:
+    single_secret = "SINGLE_TOKEN_AUTHORIZATION_VALUE"
+    encoded_secret = "ENCODED_SINGLE_AUTHORIZATION_VALUE"
+    multipart_secret = "COMBINED_MULTIPART_SIGNATURE_VALUE"
+    encoded_text = quote(f"Authorization {encoded_secret}", safe="")
+    combined = [
+        "Authorization AWS4-HMAC-SHA256",
+        "Credential=FIRST",
+        "SignedHeaders=host",
+        f"Signature={multipart_secret}",
+    ]
+    direct_error = ValueError(f"Authorization {single_secret}")
+    process_error = subprocess.CalledProcessError(
+        1,
+        combined,
+        stderr=tuple(combined),  # type: ignore[arg-type]
+    )
+
+    rendered = repr(
+        Redactor().redact(
+            (
+                f"Authorization {single_secret}",
+                encoded_text,
+                combined,
+                direct_error,
+                process_error,
+            )
+        )
+    )
+
+    assert single_secret not in rendered
+    assert encoded_secret not in rendered
+    assert multipart_secret not in rendered
+    assert "Credential=FIRST" not in rendered
+    assert "SignedHeaders=host" not in rendered
+
+
+def test_colon_delimited_sensitive_query_values_are_redacted() -> None:
+    raw_secret = "COLON_QUERY_VALUE"
+    encoded_secret = "ENCODED_COLON_QUERY_VALUE"
+    mixed_secret = "MIXED_COLON_QUERY_VALUE"
+    values = (
+        f"https://x.invalid/?token:{raw_secret}",
+        f"https://x.invalid/?password%3A{encoded_secret}",
+        f"https://x.invalid/?safe=retained&authorization:{mixed_secret}",
+    )
+
+    rendered = repr(tuple(Redactor().text(value) for value in values))
+
+    assert raw_secret not in rendered
+    assert encoded_secret not in rendered
+    assert mixed_secret not in rendered
+    assert "retained" in rendered
+
+
+def test_set_subclasses_use_trusted_snapshots_without_mutation() -> None:
+    mutable = HostileDiagnosticSet({"safe-set-value"})
+    immutable = HostileDiagnosticFrozenSet({"safe-frozenset-value"})
+    mutable_before = set(set.__iter__(mutable))
+    immutable_before = frozenset(frozenset.__iter__(immutable))
+
+    rendered = repr(Redactor().redact((mutable, immutable)))
+
+    assert "safe-set-value" in rendered
+    assert "safe-frozenset-value" in rendered
+    assert set(set.__iter__(mutable)) == mutable_before
+    assert frozenset(frozenset.__iter__(immutable)) == immutable_before
+    assert mutable.iteration_count == 0
+    assert immutable.iteration_count == 0
