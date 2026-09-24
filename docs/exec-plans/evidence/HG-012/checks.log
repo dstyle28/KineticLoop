@@ -1,0 +1,99 @@
+HG-012 durable review and integration closure validation
+base_commit=404553af617375891a7f4c37617baa08e25ea3dd
+tested_commit=94975e794d72d641215b6e449b39b05f7efad839
+kl006_result_commit=992024b7ed3bdee932b8907bc6ddc4f7b31916d6
+kl006_reviewed_head=992024b7ed3bdee932b8907bc6ddc4f7b31916d6
+kl006_review_record_commit=86a2a8cabfa8df379f47520b8cea56f47b612170
+kl006_merge_commit=992024b7ed3bdee932b8907bc6ddc4f7b31916d6
+
+historical_revision_packet_checks: PASS
+  At exact integrated revision 992024b7ed3bdee932b8907bc6ddc4f7b31916d6:
+  CURRENT_DOCUMENT_INDEX_PASS resolved=13 package_bindings=3
+  EVIDENCE_MANIFEST_PASS verified_paths=3
+  HISTORICAL_TASK_ID_MAP_PASS mappings=10
+
+historical_revision_document_index_tests: PASS
+  PYTHONPATH=/private/tmp/hg012-kl006-review-992-clone/src
+  /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q
+  tests/harness/document_index
+  20 passed in 0.12s
+
+explicit_unresolved_model_sources: PASS
+  The evidence-manifest check at the reviewed revision reported:
+  MISSING_MODEL_SOURCE canonical-protocol-model-runner path=protocol_model/run_model.py
+  MISSING_MODEL_REPORT canonical-protocol-model-report-json path=protocol_model/reports/model_report.json
+  MISSING_POLICY_FIXTURE canonical-protocol-model-fixtures path=protocol_model/fixtures.json
+  MISSING_POLICY_FIXTURE canonical-protocol-model-policies path=protocol_model/policies.json
+  MISSING_SOURCE_REVISION protocol-model-source-revision path=<no-bound-revision>
+  HISTORICAL_CLAIMS_STATUS UNVERIFIED_HISTORICAL_DECLARATION
+
+review_schema_and_binding_valid: PASS
+  THREAD_REVIEW.schema.json validates KL-006 GENERAL and PROTOCOL reviews;
+  both are PASS and bind the exact integrated tree
+  992024b7ed3bdee932b8907bc6ddc4f7b31916d6.
+
+integration_schema_valid: PASS
+  INTEGRATION_RECORD.schema.json validates docs/exec-plans/integrations/KL-006.json.
+
+harness_structure_valid: PASS
+  PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
+  HARNESS_CHECK_PASS tasks=68 active=66
+
+lint_passes: PASS
+  PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/ruff check .
+  All checks passed!
+
+typecheck_passes: PASS
+  MYPY_CACHE_DIR=/private/tmp/hg-012-mypy PYTHONPATH="$PWD/src"
+  /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/mypy src tools tests
+  Success: no issues found in 44 source files
+
+unit_tests_pass: PASS
+  PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-unit
+  92 passed in 2.45s
+
+harness_tests_pass: PASS
+  PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-harness
+  95 passed in 77.70s
+
+current_packet_checks_pass: PASS
+  current_document_index_resolves: CURRENT_DOCUMENT_INDEX_PASS resolved=13 package_bindings=3
+  evidence_manifest_paths_resolve: EVIDENCE_MANIFEST_PASS verified_paths=3
+  historical_task_id_map_valid: HISTORICAL_TASK_ID_MAP_PASS mappings=10
+  The current evidence check reports the same five missing inputs and
+  UNVERIFIED_HISTORICAL_DECLARATION status as the reviewed revision.
+
+current_document_index_tests_pass: PASS
+  PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q
+  tests/harness/document_index
+  20 passed in 0.15s
+
+integration_binding_tests_pass: PASS
+  PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q
+  tests/harness/test_validator.py -k 'integration or task_review_without_integration'
+  13 passed, 57 deselected in 8.21s
+
+current_master_ancestry_and_content_continuity: PASS
+  992024b7ed3bdee932b8907bc6ddc4f7b31916d6 is an ancestor of current master
+  404553af617375891a7f4c37617baa08e25ea3dd and tested_commit.
+  KL-006_RESULT.yaml has Git blob 685e3fe6f3ee2e148c49ed9215ef5c5148e2d60d
+  at both the reviewed revision and current master. The evidence manifest has Git
+  blob 8cec9e8eaf507b536aaff33dedbb0427df0e1c8c at both revisions. The historical
+  task map, document-index implementation, focused checks/tests, result, and task
+  evidence are byte-identical between the reviewed revision and current master.
+  All 13 document ID/path/status bindings and both frozen hashes remain identical;
+  later CURRENT_DOCUMENT_INDEX.json changes are derived hash refreshes only.
+
+inv16_preserved: PASS
+  KL-006 resolves authority and reports evidence availability only. It introduces
+  no replay read, knowledge-cutoff selection, transaction, authorization, command,
+  production activation, or provider-admission path. INV-16 semantics are unchanged.
+
+frozen_baseline_unchanged: PASS
+  No diff from base_commit through tested_commit in FROZEN_BASELINE.json,
+  04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md, or
+  05_KineticLoop_Protocol_v1.2_FROZEN.md.
+
+No task implementation, task result, task evidence, task packet, product requirement,
+document index, evidence manifest, historical task map, frozen authority, contract,
+schema, validator, or test file is changed by HG-012.
