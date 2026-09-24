@@ -614,30 +614,34 @@ def integration_record_errors(root, path, record, schema, result_schema, tasks):
     return errors
 
 
-def validate(root, args):
-    from jsonschema import Draft202012Validator
-
+def task_definition_errors(root, backlog, revision=None):
+    """Validate one revision's complete backlog, packet, resource and DAG state."""
     errors = []
-    index, frozen, backlog = (load_artifact(root / n) for n in (INDEX, 'FROZEN_BASELINE.json', BACKLOG))
-    for entry in index['documents'] + index.get('machine_readable', []) + frozen['files']:
-        path = root / entry['path']
-        if not relative_path(entry['path']) or not path.is_file():
-            errors.append('missing:' + entry['path'])
-        elif sha(path) != entry['sha256']:
-            errors.append('hash:' + entry['path'])
     tasks = {task['id']: task for task in backlog['tasks']}
-    identities = [t['task_identity'] for t in backlog['tasks']]
+    identities = [task['task_identity'] for task in backlog['tasks']]
     if len(tasks) != len(backlog['tasks']) or len(identities) != len(set(identities)):
         errors.append('task-identity-duplicate')
-    resource_text = (root / 'docs/harness/RESOURCE_LOCKS.md').read_text()
+    resource_path = 'docs/harness/RESOURCE_LOCKS.md'
+    resource_text = (git(root, 'show', revision + ':' + resource_path).decode()
+                     if revision else (root / resource_path).read_text())
     known_resources = set(re.findall(r'^- `([^`]+)`$', resource_text, re.M))
     for task in backlog['tasks']:
         name = task['id']
-        packet = root / 'docs/exec-plans/active' / (name + '.md')
-        if packet.exists():
-            errors.extend(packet_errors(task, packet.read_text()))
-        elif task['status'] != 'SUPERSEDED':
-            errors.append('packet:' + name)
+        packet_path = 'docs/exec-plans/active/' + name + '.md'
+        if revision:
+            packet = subprocess.run(
+                ['git', 'show', revision + ':' + packet_path],
+                cwd=root, capture_output=True)
+            if packet.returncode == 0:
+                errors.extend(packet_errors(task, packet.stdout.decode()))
+            elif task['status'] != 'SUPERSEDED':
+                errors.append('packet:' + name)
+        else:
+            packet = root / packet_path
+            if packet.exists():
+                errors.extend(packet_errors(task, packet.read_text()))
+            elif task['status'] != 'SUPERSEDED':
+                errors.append('packet:' + name)
         for dep in task['depends_on']:
             if dep not in tasks:
                 errors.append('unknown-dep:' + name + '->' + dep)
@@ -661,7 +665,9 @@ def validate(root, args):
         for resource in resources:
             if resource not in known_resources:
                 errors.append('unknown-resource-key:' + name + '->' + resource)
-        if task.get('status') == 'READY' and (task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY' or task.get('write_paths_status') != 'ENFORCEABLE'):
+        if (task.get('status') == 'READY'
+                and (task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY'
+                     or task.get('write_paths_status') != 'ENFORCEABLE')):
             errors.append('ready-write-scope-unrefined:' + name)
     pending = set(tasks)
     while pending:
@@ -669,7 +675,8 @@ def validate(root, args):
         for name in pending:
             conditional = tasks[name].get('conditional_depends_on', [])
             dependencies = set(tasks[name]['depends_on']) | {
-                item if isinstance(item, str) else item.get('task_id') for item in conditional
+                item if isinstance(item, str) else item.get('task_id')
+                for item in conditional
             }
             if not dependencies & pending:
                 ready.add(name)
@@ -677,6 +684,22 @@ def validate(root, args):
             errors.append('dag-cycle')
             break
         pending -= ready
+    return errors, tasks
+
+
+def validate(root, args):
+    from jsonschema import Draft202012Validator
+
+    errors = []
+    index, frozen, backlog = (load_artifact(root / n) for n in (INDEX, 'FROZEN_BASELINE.json', BACKLOG))
+    for entry in index['documents'] + index.get('machine_readable', []) + frozen['files']:
+        path = root / entry['path']
+        if not relative_path(entry['path']) or not path.is_file():
+            errors.append('missing:' + entry['path'])
+        elif sha(path) != entry['sha256']:
+            errors.append('hash:' + entry['path'])
+    task_errors, tasks = task_definition_errors(root, backlog)
+    errors.extend(task_errors)
 
     schemas = {}
     known_requirements = requirement_ids(root)
@@ -861,9 +884,13 @@ def validate(root, args):
 
                 old_tasks = {task['id']: task for task in
                              json.loads(git(root, 'show', governance_base + ':' + BACKLOG))['tasks']}
-                replay_tasks = ({task['id']: task for task in
-                                 load_artifact_at_revision(root, BACKLOG, reviewed)['tasks']}
-                                if review_only else tasks)
+                if review_only:
+                    replay_backlog = load_artifact_at_revision(root, BACKLOG, reviewed)
+                    replay_task_errors, replay_tasks = task_definition_errors(
+                        root, replay_backlog, reviewed)
+                    errors.extend(replay_task_errors)
+                else:
+                    replay_tasks = tasks
                 changed_task_ids = {
                     task_id for task_id in set(old_tasks) | set(replay_tasks)
                     if old_tasks.get(task_id) != replay_tasks.get(task_id)

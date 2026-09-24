@@ -535,6 +535,39 @@ class ValidatorTests(unittest.TestCase):
         self.check(1, 'governance-review-only-reviewed-not-merged:HG-999',
                    '--ci-pr-base', unrelated_base, '--ci-pr-head', 'HEAD')
 
+    def test_ci_governance_review_only_rejects_later_packet_repair_masking(self):
+        task_id = 'KL-008'
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == task_id)
+        task['packet_refinement'] = 'READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED'
+        task['write_paths_status'] = 'ENFORCEABLE'
+        task['write_paths'] = ['src/expected/**']
+        dump(backlog_path, backlog)
+        packet = self.root / f'docs/exec-plans/active/{task_id}.md'
+        packet_text = packet.read_text().replace(
+            '**Packet refinement:** MUST_REFINE_BEFORE_READY',
+            '**Packet refinement:** READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED')
+        packet.write_text(packet_text.replace(
+            '- TO_BE_REFINED_BEFORE_READY', '- src/wrong/**'))
+        refresh(self.root)
+        tested = self.commit('invalid historical packet refinement')
+        _, reviewed = self.persist_governance_change(
+            'HG-999', tested, [task_id], task['review_requirements'])
+        self.git('checkout', '-q', '--detach', reviewed)
+
+        packet.write_text(packet.read_text().replace('- src/wrong/**', '- src/expected/**'))
+        refresh(self.root)
+        later_tip = self.commit('later governance repairs packet')
+        protected_base = self.merge_commit(
+            later_tip, reviewed, later_tip, message='merge later packet repair')
+        self.git('checkout', '-q', '--detach', protected_base)
+        self.governance_review('HG-999', reviewed)
+        self.commit('persist delayed review of invalid historical packet')
+
+        self.check(1, 'packet-write-paths:KL-008',
+                   '--ci-pr-base', protected_base, '--ci-pr-head', 'HEAD')
+
     def test_ci_governance_review_only_rejects_content_changing_merge(self):
         self.put('tools/harness/post_merge_fixture.py')
         tested = self.commit('governance implementation')
