@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 import yaml
@@ -58,6 +59,13 @@ class ValidatorTests(unittest.TestCase):
             dst = self.root / name
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / name, dst)
+        fixture_manifest_path = self.root / v.MANIFEST
+        fixture_manifest = json.loads(fixture_manifest_path.read_text())
+        fixture_manifest['files'] = [
+            entry for entry in fixture_manifest['files']
+            if entry['path'] != 'docs/exec-plans/milestones/M1.json'
+        ]
+        dump(fixture_manifest_path, fixture_manifest)
         # Governance scenarios need a pending refinement regardless of the live
         # repository's scheduling state. Establish that state in the fixture only.
         backlog_path = self.root / v.BACKLOG
@@ -373,6 +381,96 @@ class ValidatorTests(unittest.TestCase):
             'Command exits 0 and prints HARNESS_CHECK_PASS.',
             'Command merely exits 0.', 1))
         self.check(1, 'packet-check-contract:KL-010')
+
+    def closure_errors(self, closure):
+        from jsonschema import Draft202012Validator
+
+        backlog = v.load_artifact(ROOT / v.BACKLOG)
+        _, tasks = v.task_definition_errors(ROOT, backlog)
+        return v.milestone_closure_errors(
+            ROOT,
+            closure,
+            Draft202012Validator(v.load_artifact(ROOT / v.MILESTONE_CLOSURE_SCHEMA)),
+            Draft202012Validator(v.load_artifact(ROOT / v.INTEGRATION_SCHEMA)),
+            Draft202012Validator(v.load_artifact(ROOT / 'THREAD_RESULT.schema.json')),
+            backlog,
+            tasks,
+        )
+
+    def test_m1_closure_rejects_missing_extra_and_mismatched_tasks(self):
+        original = v.load_artifact(ROOT / 'docs/exec-plans/milestones/M1.json')
+        missing = copy.deepcopy(original)
+        missing['integrations'].pop()
+        self.assertTrue(self.closure_errors(missing))
+        extra = copy.deepcopy(original)
+        extra['integrations'].append(copy.deepcopy(extra['integrations'][0]))
+        self.assertTrue(self.closure_errors(extra))
+        mismatch = copy.deepcopy(original)
+        mismatch['integrations'][0]['task_identity'] = 'harness-backlog-v0.2/KL-002'
+        self.assertIn('milestone-integration-binding:KL-001', self.closure_errors(mismatch))
+
+    def test_m1_closure_rejects_model_overclaim_and_exit_evidence_failures(self):
+        original = v.load_artifact(ROOT / 'docs/exec-plans/milestones/M1.json')
+        overclaim = copy.deepcopy(original)
+        overclaim['historical_model_evidence'][
+            'independently_reproducible_protocol_model'] = True
+        self.assertTrue(self.closure_errors(overclaim))
+        failed = copy.deepcopy(original)
+        failed['exit_checks'][0]['result'] = 'FAIL'
+        self.assertTrue(self.closure_errors(failed))
+        missing = copy.deepcopy(original)
+        missing['exit_checks'][0]['evidence'] = []
+        self.assertTrue(self.closure_errors(missing))
+        bad_hash = copy.deepcopy(original)
+        bad_hash['exit_checks'][0]['evidence'][0]['sha256'] = '0' * 64
+        self.assertIn(
+            'milestone-exit-evidence-hash:clean_checkout_starts_test_environment',
+            self.closure_errors(bad_hash),
+        )
+
+    def test_m1_closure_rejects_missing_unmerged_and_unreachable_integration(self):
+        original = v.load_artifact(ROOT / 'docs/exec-plans/milestones/M1.json')
+        real_loader = v.load_artifact_at_revision
+        target = original['integrations'][0]['integration_record']
+
+        def missing_loader(root, path, revision):
+            if path == target:
+                raise ValueError('fixture-missing')
+            return real_loader(root, path, revision)
+
+        with mock.patch.object(v, 'load_artifact_at_revision', side_effect=missing_loader):
+            self.assertTrue(any(
+                issue.startswith('milestone-integration-invalid:KL-001:')
+                for issue in self.closure_errors(original)))
+
+        def changed_loader(root, path, revision, *, unreachable=False):
+            record = real_loader(root, path, revision)
+            if path == target:
+                record = copy.deepcopy(record)
+                if unreachable:
+                    record['merge_commit'] = v.resolve(ROOT, 'HEAD')
+                else:
+                    record['integration_status'] = 'UNMERGED'
+            return record
+
+        with mock.patch.object(
+                v, 'load_artifact_at_revision',
+                side_effect=lambda root, path, revision: changed_loader(root, path, revision)):
+            self.assertTrue(any(
+                'milestone-integration-unmerged:KL-001' in issue
+                or 'milestone-integration-invalid:KL-001:' in issue
+                for issue in self.closure_errors(original)))
+        with mock.patch.object(
+                v, 'load_artifact_at_revision',
+                side_effect=lambda root, path, revision: changed_loader(
+                    root, path, revision, unreachable=True)):
+            earlier = copy.deepcopy(original)
+            earlier['evaluated_commit'] = v.resolve(
+                ROOT, original['evaluated_commit'] + '^')
+            self.assertIn(
+                'milestone-integration-unreachable:KL-001',
+                self.closure_errors(earlier),
+            )
 
     def test_duplicate_result_formats_rejected(self):
         self.result('yaml')

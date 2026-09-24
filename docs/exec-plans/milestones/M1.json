@@ -1,0 +1,107 @@
+{
+  "milestone_identity": "harness-backlog-v0.2/M1",
+  "display_milestone_id": "M1",
+  "closure_status": "PASS",
+  "evaluated_commit": "2109c0d027a2d27687edf2f74c78cc825c4a0a98",
+  "integrations": [
+    {
+      "task_identity": "harness-backlog-v0.2/KL-001",
+      "display_task_id": "KL-001",
+      "integration_record": "docs/exec-plans/integrations/KL-001.json",
+      "sha256": "9b70f7fcafdf220d26dbb48b7ad8db78693402ece9466256dc8e11961f99cdbf"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-002",
+      "display_task_id": "KL-002",
+      "integration_record": "docs/exec-plans/integrations/KL-002.json",
+      "sha256": "2130c8e0d46b545738bcc4a37a43850e906ca183f7b9eeb50f7a5e39c4d69636"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-003",
+      "display_task_id": "KL-003",
+      "integration_record": "docs/exec-plans/integrations/KL-003.json",
+      "sha256": "22f9cdaab18d59682e83308554df72e1cac5ad63d296ac8d09ab8893668ed8cc"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-004",
+      "display_task_id": "KL-004",
+      "integration_record": "docs/exec-plans/integrations/KL-004.json",
+      "sha256": "792d192bc3c193f11b9840ef808298cbaecb07c7003d532a7dd5e511e6e22d4d"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-005",
+      "display_task_id": "KL-005",
+      "integration_record": "docs/exec-plans/integrations/KL-005.json",
+      "sha256": "d90f022d2beac939b5f88c0d8a9e808bcfe410920437cb7042af0976650f480b"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-006",
+      "display_task_id": "KL-006",
+      "integration_record": "docs/exec-plans/integrations/KL-006.json",
+      "sha256": "7d9f870a6e2bedbd8fba3fb76b9dd878cf93c0c4b6a81e718c3b184f38bb7d13"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-007",
+      "display_task_id": "KL-007",
+      "integration_record": "docs/exec-plans/integrations/KL-007.json",
+      "sha256": "c61f0039eb55ade04cedf8187709bf074b242e7486e1a89e5eadd5011037e83e"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-008",
+      "display_task_id": "KL-008",
+      "integration_record": "docs/exec-plans/integrations/KL-008.json",
+      "sha256": "32a4bccef426bd806ccd0714d9f21e5048e4e1c2fea3201f431cca56a25f72eb"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-009",
+      "display_task_id": "KL-009",
+      "integration_record": "docs/exec-plans/integrations/KL-009.json",
+      "sha256": "d6234be8496a1ee336e9a499a655d7bbb7221adcb0e8da8e05d2aa0d55cf26f7"
+    }
+  ],
+  "exit_checks": [
+    {
+      "check_id": "clean_checkout_starts_test_environment",
+      "result": "PASS",
+      "evidence": [
+        {
+          "path": "docs/exec-plans/evidence/KL-002/compose_config_valid-28cc7407f1d4184cf3407db0bcd09794cb60fa5b.log",
+          "revision": "e6f7a36485e4a9557297a9c282eb38c6ac37e72c",
+          "sha256": "f925c44a8f2410034af81b02d60a75d0690332729edf13c20da6e1c4067776e3"
+        }
+      ]
+    },
+    {
+      "check_id": "m1_m2_task_contracts_complete",
+      "result": "PASS",
+      "evidence": [
+        {
+          "path": "KineticLoop_Harness_Backlog_v0.2.json",
+          "revision": "2109c0d027a2d27687edf2f74c78cc825c4a0a98",
+          "sha256": "7606b01b971b33bad37a0786b2e315f3718a716ef70c5435102fd041fe99b5ac"
+        },
+        {
+          "path": "KineticLoop_Harness_Traceability_v0.3.json",
+          "revision": "2109c0d027a2d27687edf2f74c78cc825c4a0a98",
+          "sha256": "7a2efddb6308da7a874b41c945de79c7344081758ee61b0d038298d2c30c647b"
+        }
+      ]
+    },
+    {
+      "check_id": "historical_model_evidence_not_overclaimed",
+      "result": "PASS",
+      "evidence": [
+        {
+          "path": "KineticLoop_Evidence_Manifest_v0.1.json",
+          "revision": "2109c0d027a2d27687edf2f74c78cc825c4a0a98",
+          "sha256": "d042e477f0224d843390b5abd1d94ca376278da390db7e7aed99a192c9a60e99"
+        }
+      ]
+    }
+  ],
+  "historical_model_evidence": {
+    "status": "UNVERIFIED_HISTORICAL_DECLARATION",
+    "independently_reproducible_protocol_model": false
+  },
+  "product_requirement_pass_claims": []
+}
