@@ -1,0 +1,106 @@
+HG-015 durable KL-008 integration validation
+base_commit=2fdbd205ac35e396f1fec0edcc4ad53c1b059660
+tested_commit=d21fcd4493c9b06e47bf390b9f9c867b04aaf360
+kl008_result_commit=d0924a71a33a52bd1dc1ad8eb69063b3bc0914e4
+kl008_reviewed_head=d0924a71a33a52bd1dc1ad8eb69063b3bc0914e4
+kl008_review_record_commit=13dfb41593d78babca799f2c877ec4d6810baf91
+kl008_merge_commit=2fdbd205ac35e396f1fec0edcc4ad53c1b059660
+
+governance_schema_valid: PASS
+  HARNESS_CHANGE.schema.json validates docs/exec-plans/governance/HG-015.yaml.
+
+integration_schema_valid: PASS
+  INTEGRATION_RECORD.schema.json validates
+  docs/exec-plans/integrations/KL-008.json.
+
+review_schema_and_binding_valid: PASS
+  THREAD_REVIEW.schema.json validates all three required KL-008 reviews:
+  DB_CONCURRENCY, GENERAL, and PROTOCOL. Each review is PASS and binds
+  d0924a71a33a52bd1dc1ad8eb69063b3bc0914e4.
+
+integration_revision_chain_valid: PASS
+  result_commit equals reviewed_head_sha.
+  d0924a71a33a52bd1dc1ad8eb69063b3bc0914e4 is an ancestor of
+  13dfb41593d78babca799f2c877ec4d6810baf91.
+  13dfb41593d78babca799f2c877ec4d6810baf91 is the second parent of and an
+  ancestor of 2fdbd205ac35e396f1fec0edcc4ad53c1b059660.
+  2fdbd205ac35e396f1fec0edcc4ad53c1b059660 is an ancestor of tested_commit.
+  review-record and merge trees are identical:
+  6d35d7a73a313ff10852ca7a26a50d31f6f5e76a.
+
+result_review_artifacts_bound: PASS
+  KL-008_RESULT.yaml has Git blob
+  6f2ce5180d7b4a758e74a38bcb52d6e9e9ef0cf4 at result_commit,
+  review_record_commit, merge_commit, and tested_commit.
+  DB_CONCURRENCY.json has Git blob
+  5109db7d73c137f9e0ad6989f4596f9f493e1bcf at review_record_commit,
+  merge_commit, and tested_commit.
+  GENERAL.json has Git blob
+  581416c8c632ab44b22379cd75b2ac3a7997add3 at review_record_commit,
+  merge_commit, and tested_commit.
+  PROTOCOL.json has Git blob
+  d3f993e3cee17eb2afca483195101f0823e9f10d at review_record_commit,
+  merge_commit, and tested_commit.
+
+task_result_semantics_valid: PASS
+  task_status=PASS and task_checks_status=PASS.
+  Exact packet checks are PASS: shadow_contract_schema_valid,
+  real_data_shadow_forbids_live_head_issuance_binding, and
+  test_only_scope_requires_isolation.
+  All five covered requirement obligations remain explicitly NOT_RUN:
+  A06@PU, A06@E2E, B14@WF, B14@E2E, and B15@DC.
+  The standard Harness validator accepts the result and all referenced evidence.
+
+harness_structure_valid: PASS
+  PYTHONPATH="$PWD/src"
+  /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
+  HARNESS_CHECK_PASS tasks=68 active=66
+
+lint_passes: PASS
+  PYTHONPATH="$PWD/src"
+  /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/ruff check .
+  All checks passed!
+
+typecheck_passes: PASS
+  MYPY_CACHE_DIR=/private/tmp/hg-015-mypy PYTHONPATH="$PWD/src"
+  /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/mypy src tools tests
+  Success: no issues found in 46 source files
+
+unit_tests_pass: PASS
+  PYTHONPATH="$PWD/src"
+  /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-unit
+  95 passed in 2.35s
+
+harness_tests_pass: PASS
+  PYTHONPATH="$PWD/src"
+  /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-harness
+  95 passed in 76.42s
+
+integration_binding_tests_pass: PASS
+  PYTHONPATH="$PWD/src"
+  /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q
+  tests/harness/test_validator.py -k integration
+  13 passed, 57 deselected in 7.41s
+
+governance_scope_exact: PASS
+  The protected-base change set is exactly:
+  docs/exec-plans/evidence/HG-015/checks.log
+  docs/exec-plans/governance/HG-015.yaml
+  docs/exec-plans/integrations/KL-008.json
+  No KL-008 result/review or HG-014 path is modified.
+
+diff_clean: PASS
+  git diff --check 2fdbd205ac35e396f1fec0edcc4ad53c1b059660
+  d21fcd4493c9b06e47bf390b9f9c867b04aaf360
+  No output.
+
+frozen_baseline_unchanged: PASS
+  git diff --exit-code 2fdbd205ac35e396f1fec0edcc4ad53c1b059660
+  d21fcd4493c9b06e47bf390b9f9c867b04aaf360 -- FROZEN_BASELINE.json
+  04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
+  05_KineticLoop_Protocol_v1.2_FROZEN.md
+  No output.
+
+No task implementation, packet, result, evidence, review, contract, schema,
+validator, test, product requirement, document index, frozen authority, or HG-014
+file is changed by HG-015.
