@@ -29,6 +29,16 @@ class UnsafeReturnCode(int):
         return "RETURN_CODE_SECRET"
 
 
+class UnsafeDiagnosticStr(str):
+    def __str__(self) -> str:
+        return "attacker-controlled-str-rendering"
+
+
+class UnsafeDiagnosticBytes(bytes):
+    def __bytes__(self) -> bytes:
+        return b"attacker-controlled-bytes-rendering"
+
+
 def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     secret_named_value_type = type(SENTINEL, (), {})
     secret_named_error_type = type(SENTINEL, (ValueError,), {})
@@ -420,3 +430,51 @@ def test_subprocess_return_codes_cannot_bypass_redaction() -> None:
     assert "STRING_RETURN_CODE_SECRET" not in chained_rendered
     assert "<diagnostic-value>" in direct_rendered
     assert REDACTED in chained_rendered
+
+
+def test_string_subclass_sequence_relationships_fail_closed() -> None:
+    option_secret = "UNREGISTERED_OPTION_VALUE"
+    format_secret = "UNREGISTERED_FORMAT_VALUE"
+    bytes_secret = b"UNREGISTERED_BYTES_VALUE"
+    authorization_secret = "UNREGISTERED_AUTHORIZATION_VALUE"
+    exception_secret = "UNREGISTERED_EXCEPTION_VALUE"
+    values = (
+        [UnsafeDiagnosticStr("--password"), option_secret],
+        (UnsafeDiagnosticStr("password=%s"), format_secret),
+        [UnsafeDiagnosticBytes(b"--password"), bytes_secret],
+        [
+            UnsafeDiagnosticStr("--authorization"),
+            UnsafeDiagnosticStr("Bearer"),
+            authorization_secret,
+        ],
+    )
+    error = ValueError(UnsafeDiagnosticStr("password=%s"), exception_secret)
+
+    rendered_values = repr(Redactor().redact(values))
+    rendered_error = str(Redactor().exception_diagnostic(error))
+
+    assert option_secret not in rendered_values
+    assert format_secret not in rendered_values
+    assert bytes_secret.decode() not in rendered_values
+    assert authorization_secret not in rendered_values
+    assert exception_secret not in rendered_error
+
+
+def test_over_depth_mapping_keys_suppress_associated_values() -> None:
+    encoded_key = "".join(f"%{ord(character):02X}" for character in "password")
+    for _ in range(8):
+        encoded_key = quote(encoded_key, safe="")
+    values = (
+        {encoded_key: "OVERDEPTH_STRING_KEY_VALUE"},
+        {encoded_key.encode(): "OVERDEPTH_BYTES_KEY_VALUE"},
+        {("safe", encoded_key): "OVERDEPTH_TUPLE_KEY_VALUE"},
+        {frozenset({"safe", encoded_key}): "OVERDEPTH_FROZENSET_KEY_VALUE"},
+    )
+
+    rendered = repr(Redactor().redact(values))
+
+    assert "OVERDEPTH_STRING_KEY_VALUE" not in rendered
+    assert "OVERDEPTH_BYTES_KEY_VALUE" not in rendered
+    assert "OVERDEPTH_TUPLE_KEY_VALUE" not in rendered
+    assert "OVERDEPTH_FROZENSET_KEY_VALUE" not in rendered
+    assert REDACTED in rendered

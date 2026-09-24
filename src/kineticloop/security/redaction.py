@@ -147,6 +147,18 @@ def _sequence_sensitive_positions(value: str) -> set[int]:
     return {0} if _is_sensitive_key(stripped) else set()
 
 
+def _sequence_item_text(value: object) -> str | None:
+    if type(value) is str:
+        return value
+    if type(value) is bytes:
+        return value.decode("utf-8", errors="replace")
+    if isinstance(value, str):
+        return str.__str__(value)
+    if isinstance(value, bytes):
+        return bytes.__bytes__(value).decode("utf-8", errors="replace")
+    return None
+
+
 def _sensitive_value_end(value: str, start: int) -> int:
     if start >= len(value):
         return start
@@ -410,10 +422,19 @@ class Redactor:
 
     def _mapping_key_is_sensitive(self, key: object) -> bool:
         if type(key) is str:
-            return _is_sensitive_key(self.text(key))
+            decoded = _stable_unquote(key)
+            if decoded is None:
+                return True
+            return _is_sensitive_key(decoded) or any(
+                pattern.search(decoded) for pattern in self.__patterns
+            )
         if type(key) is bytes:
-            decoded = key.decode("utf-8", errors="replace")
-            return _is_sensitive_key(self.text(decoded))
+            decoded = _stable_unquote(key.decode("utf-8", errors="replace"))
+            if decoded is None:
+                return True
+            return _is_sensitive_key(decoded) or any(
+                pattern.search(decoded) for pattern in self.__patterns
+            )
         if isinstance(key, (tuple, frozenset)):
             return any(self._mapping_key_is_sensitive(item) for item in key)
         if key is None or type(key) in (int, float, bool):
@@ -423,22 +444,13 @@ class Redactor:
     def _redact_sequence(self, value: Sequence[object]) -> list[object]:
         sensitive_indices: set[int] = set()
         for index, item in enumerate(value):
-            if type(item) is str:
-                item_text = item
-            elif type(item) is bytes:
-                item_text = item.decode("utf-8", errors="replace")
-            else:
+            item_text = _sequence_item_text(item)
+            if item_text is None:
                 continue
             decoded_item = _stable_unquote(item_text)
             positions = {0} if decoded_item is None else _sequence_sensitive_positions(decoded_item)
             if positions == {0} and index + 1 < len(value):
-                next_item = value[index + 1]
-                if type(next_item) is str:
-                    next_text = next_item
-                elif type(next_item) is bytes:
-                    next_text = next_item.decode("utf-8", errors="replace")
-                else:
-                    next_text = None
+                next_text = _sequence_item_text(value[index + 1])
                 if next_text is not None:
                     decoded_next = _stable_unquote(next_text)
                     if decoded_next is None or decoded_next.casefold() in {
