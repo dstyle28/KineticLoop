@@ -763,8 +763,9 @@
         "KL-007"
       ],
       "commands": [
-        "test-only T6/T7",
-        "shadow evaluation"
+        "validate real-data shadow output as SHADOW_ONLY / NOT_EXECUTABLE",
+        "admit TEST_ONLY authorization scope only for an isolated test subject, policy, and environment",
+        "present TEST_ONLY scope to the T6/T7 command-owner entrypoints without bypassing their guards"
       ],
       "transaction_boundaries": [
         "T6",
@@ -784,12 +785,15 @@
         "E2E"
       ],
       "deliverables": [
-        "shadow storage/API contract",
-        "test-only authorization scope"
+        "strict versioned shadow evaluation artifact contract with no live S38, S42, or S45 target",
+        "strict TEST_ONLY authorization-scope contract bound to the KL-007 test capability and isolated subject/policy/environment identifiers",
+        "contract documentation naming the storage boundary, command-owner integration boundary, and fail-closed validation rules"
       ],
-      "definition_of_done": "real-data shadow cannot write live head/issuance/binding; test path can exercise full T6/T7",
+      "definition_of_done": "focused unit tests prove strict immutable schema validation and round-trip behavior; real-data shadow is always SHADOW_ONLY / NOT_EXECUTABLE and rejects any live S38 head, S42 production issuance, S45 execution binding, or live PlanningIntent-success target; TEST_ONLY scope is admitted only for a KL-007 TEST actor bound to explicit isolated non-production subject, policy, and environment identifiers, rejects every production/evaluation/admin crossing, and is usable only as guarded input to the real T6/T7 command-owner entrypoints rather than as a direct-write or authorization bypass",
       "entry_conditions": [
-        "KL-005 and KL-007 merged",
+        "KL-005 integration record is MERGED and its acceptance registry contains A06@PU, A06@E2E, B14, and B15 as NOT_RUN obligations",
+        "KL-007 integration record is MERGED and its role vocabulary exposes TEST with RUN_TEST_SIMULATION while production, admin, and evaluation capabilities remain distinct",
+        "DOC-PROTOCOL-V1.2 clauses INV-09, INV-10, T6, and T7 and DOC-DB-V0.2 clauses S38, S42, and S45 resolve through CURRENT_DOCUMENT_INDEX.json",
         "This task DEFINES G-SHADOW; it is not blocked by G-SHADOW"
       ],
       "status": "NOT_STARTED",
@@ -819,9 +823,15 @@
         "test_only_scope_requires_isolation"
       ],
       "resource_keys": [
+        "authorization_core",
         "command_contracts"
       ],
-      "write_paths": [],
+      "write_paths": [
+        "docs/contracts/shadow_test_semantics.md",
+        "src/kineticloop/contracts/__init__.py",
+        "src/kineticloop/contracts/shadow.py",
+        "tests/unit/contracts/test_shadow.py"
+      ],
       "review_requirements": [
         "DB_CONCURRENCY",
         "GENERAL",
@@ -829,15 +839,9 @@
       ],
       "conditional_depends_on": [],
       "environment_requirements": [],
-      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
       "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
-      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
-      "write_path_hints": [
-        "pyproject.toml",
-        "tools/harness/**",
-        "tests/harness/**",
-        "docs/harness/**"
-      ]
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-009",

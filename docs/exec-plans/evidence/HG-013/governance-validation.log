@@ -1,0 +1,15 @@
+HG-013 governance implementation validation at b07be40
+Interpreter: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python
+from argparse import Namespace
+from pathlib import Path
+from tools.harness import validate_harness as v
+args = Namespace(protected_base="7fb89473737015d517d3e3c18a5adf6d0b274fb3", reviewed_head=None, task_id=None, governance_change_id="HG-013", governance_reviewed_head="HEAD")
+errors, count, active = v.validate(Path.cwd(), args)
+assert errors == ["governance-required-reviews-not-pass:HG-013"]
+
+Output: ['governance-required-reviews-not-pass:HG-013']
+Exit: 0
+All scope, schema, derived hashes, frozen protection, file enumeration, refinement,
+evidence binding, ancestry and tested-suffix checks pass. The full merge gate is
+not PASS: independent GENERAL, PROTOCOL and DB_CONCURRENCY reviews are pending.
+No review was fabricated or requirement removed to run this diagnostic.

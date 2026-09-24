@@ -1,0 +1,71 @@
+HG-013 verification transcript summary
+base_commit: 7fb89473737015d517d3e3c18a5adf6d0b274fb3
+tested_commit: 1d58bdace9d7c761771bb038b50470d9375c052e
+The checks below ran on the identical four-file implementation working tree immediately before its commit.
+Runtime: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin
+Every Python command used PYTHONPATH="$PWD/src" to select this worktree.
+
+kl check-harness
+HARNESS_CHECK_PASS tasks=68 active=66
+ruff check .
+All checks passed!
+MYPY_CACHE_DIR=/private/tmp/hg-013-mypy mypy src tools tests
+Success: no issues found in 44 source files
+kl test-unit
+92 passed in 2.58s
+kl test-harness
+3 failed, 92 passed in 72.63s
+
+Failures in tests/harness/test_validator.py:
+test_ci_governance_ignores_unrelated_unresolvable_review_sha
+  packet-write-paths:KL-008
+  governance-refined-packets-mismatch:HG-999
+test_ci_governance_merge_gate_binds_record_and_reviews
+  packet-write-paths:KL-008
+  governance-refined-packets-mismatch:HG-999
+test_ci_governance_review_only_rejects_later_packet_repair_masking
+  git commit failed: nothing to commit, working tree clean
+
+Cause: governance_change() defaults to KL-008 and assumes its source packet has
+MUST_REFINE_BEFORE_READY and TO_BE_REFINED_BEFORE_READY. The later-packet-repair
+test hard-codes the same assumption. The test setup copies current repository
+packets into its fixture baseline, so the requested refinement invalidates these
+fixture assumptions. Repair requires a test fixture change outside this task's
+explicit packet/backlog/derived-metadata scope. No tests were changed or skipped.
+
+git diff --check
+PASS, exit 0
+git diff --exit-code 7fb89473737015d517d3e3c18a5adf6d0b274fb3 -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md
+PASS, exit 0
+
+Protocol-guardian inspection: INV-09/10, T6/T7, S38/S42/S45 command ownership,
+atomic guards, and registry/S01 ordering remain authoritative. Packet refinement
+provides no direct writer and changes no frozen authorization meaning.
+Required reviews by base/head task-definition union: GENERAL, PROTOCOL, DB_CONCURRENCY.
+No governance review artifacts were created. Product requirements remain NOT_RUN.
+
+Post-record validation:
+HARNESS_CHANGE.schema.json Draft202012Validator validation of HG-013.yaml: PASS.
+kl check-harness after adding the truthful BLOCKED record:
+HARNESS_CHECK_FAIL
+governance-check-evidence:HG-013:harness_tests_pass
+The validator requires every recorded check to be PASS even for BLOCKED records.
+The FAIL remains recorded faithfully; this branch is not merge-ready.
+
+Remediation (supersedes the blocked outcome above):
+User authorized extending scope to tests/harness/test_validator.py.
+tested_commit: 281ab908518e977813410d105ccd7a4947507e16
+Fixture setup establishes an unrefined KL-008 baseline inside each temporary
+repository. Production packets and validator behavior are not changed by setup.
+Same runtime and PYTHONPATH as above:
+ruff check .: All checks passed!
+MYPY_CACHE_DIR=/private/tmp/hg-013-mypy mypy src tools tests:
+Success: no issues found in 44 source files
+kl test-harness: 95 passed in 74.75s
+git diff --check 7fb89473737015d517d3e3c18a5adf6d0b274fb3 HEAD: exit 0
+git diff --exit-code 7fb89473737015d517d3e3c18a5adf6d0b274fb3 HEAD -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md: exit 0
+Intermediate unit rerun: 91 passed, 1 failed because the CLI validated the prior
+BLOCKED record's failed check. Rerun after governance bookkeeping follows below.
+Final kl test-unit: 92 passed in 2.33s.
+Final kl check-harness: HARNESS_CHECK_PASS tasks=68 active=66.
+Implementation remains at tested_commit; subsequent changes are HG-013 record/evidence only.
