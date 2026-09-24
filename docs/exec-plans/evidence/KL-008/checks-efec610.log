@@ -1,0 +1,44 @@
+task_identity: harness-backlog-v0.2/KL-008
+base_commit: fb9e54a62400c97f3dfae6596ad8a40554de377e
+tested_commit: efec6102a4a29c4d5f263205f6b74ac567e61db1
+
+command: .venv/bin/pytest -q tests/unit/contracts/test_shadow.py::test_shadow_contract_schema_valid
+result: PASS
+output: 1 passed in 0.01s
+
+command: .venv/bin/pytest -q tests/unit/contracts/test_shadow.py::test_real_data_shadow_forbids_live_head_issuance_binding
+result: PASS
+output: 1 passed in 0.01s
+
+command: .venv/bin/pytest -q tests/unit/contracts/test_shadow.py::test_test_only_scope_requires_isolation
+result: PASS
+output: 1 passed in 0.01s
+
+regression_command: .venv/bin/ruff check src tests
+result: PASS
+output: All checks passed!
+
+regression_command: .venv/bin/mypy src tests/unit/contracts/test_shadow.py
+result: PASS
+output: Success: no issues found in 21 source files
+
+regression_command: .venv/bin/pytest -q tests/unit
+result: PASS
+output: 95 passed in 2.17s
+
+regression_command: .venv/bin/pytest -q
+result: PASS
+output: 200 passed in 80.16s
+
+protocol_guardian:
+  invariants:
+    - INV-09 remains enforced by making TEST_ONLY a non-authorizing guarded input and by fixing real-data shadow to SHADOW_ONLY / NOT_EXECUTABLE.
+    - INV-10 remains enforced because neither contract can revive or mint live authority, and every live target is absent and rejected.
+  transaction_boundaries:
+    - T6 command-owner, current-state, registry, epoch, dependency-validity, idempotency, and atomic commit guards remain mandatory and unimplemented here.
+    - T7 command-owner and current execution-eligibility guards remain mandatory and unimplemented here.
+  frozen_tables:
+    - S38 live-head targets are explicitly null and non-constructible.
+    - S42 production-issuance targets are explicitly null and non-constructible.
+    - S45 execution-binding targets are explicitly null and non-constructible.
+  conclusion: PASS; no frozen semantic change or convenience bypass introduced.
