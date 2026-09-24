@@ -64,6 +64,7 @@ _AUTH_HEADER = re.compile(
     r"(?P<value>[^;\r\n]+)"
 )
 DiagnosticScalar: TypeAlias = str | bytes | int | float | bool | None
+_ALL_FOLLOWING_ARGUMENTS = -1
 
 
 def _normalized_key(value: object) -> str:
@@ -133,7 +134,31 @@ def _format_sensitive_positions(value: str) -> set[int]:
     return positions
 
 
+def _has_malformed_sensitive_format(value: str) -> bool:
+    if _SENSITIVE_ASSIGNMENT.search(value) is None:
+        return False
+    index = 0
+    while index < len(value):
+        if value[index] != "%":
+            index += 1
+            continue
+        if value.startswith("%%", index):
+            index += 2
+            continue
+        placeholder = _PERCENT_PLACEHOLDER.match(value, index)
+        if placeholder is None:
+            return True
+        index = placeholder.end()
+    try:
+        tuple(string.Formatter().parse(value))
+    except ValueError:
+        return True
+    return False
+
+
 def _sequence_sensitive_positions(value: str) -> set[int]:
+    if _has_malformed_sensitive_format(value):
+        return {_ALL_FOLLOWING_ARGUMENTS}
     format_positions = _format_sensitive_positions(value)
     if format_positions:
         return format_positions
@@ -141,9 +166,13 @@ def _sequence_sensitive_positions(value: str) -> set[int]:
     for separator in ("=", ":"):
         key, found, member = stripped.partition(separator)
         if found and _is_sensitive_key(key):
+            if _normalized_key(key) == "authorization":
+                return {0}
             if not member or member.casefold() in {"bearer", "basic", "digest", "token"}:
                 return {0}
             return set()
+    if _normalized_key(stripped) == "authorization":
+        return {0, 1}
     return {0} if _is_sensitive_key(stripped) else set()
 
 
@@ -442,15 +471,24 @@ class Redactor:
         return True
 
     def _redact_sequence(self, value: Sequence[object]) -> list[object]:
+        if isinstance(value, list):
+            items = tuple(list.__iter__(value))
+        elif isinstance(value, tuple):
+            items = tuple(tuple.__iter__(value))
+        else:
+            raise TypeError("diagnostic sequence must be a list or tuple")
         sensitive_indices: set[int] = set()
-        for index, item in enumerate(value):
+        for index, item in enumerate(items):
             item_text = _sequence_item_text(item)
             if item_text is None:
                 continue
             decoded_item = _stable_unquote(item_text)
             positions = {0} if decoded_item is None else _sequence_sensitive_positions(decoded_item)
-            if positions == {0} and index + 1 < len(value):
-                next_text = _sequence_item_text(value[index + 1])
+            if _ALL_FOLLOWING_ARGUMENTS in positions:
+                sensitive_indices.update(range(index + 1, len(items)))
+                continue
+            if positions == {0} and index + 1 < len(items):
+                next_text = _sequence_item_text(items[index + 1])
                 if next_text is not None:
                     decoded_next = _stable_unquote(next_text)
                     if decoded_next is None or decoded_next.casefold() in {
@@ -463,7 +501,7 @@ class Redactor:
             sensitive_indices.update(index + 1 + position for position in positions)
         return [
             REDACTED if index in sensitive_indices else self.redact(item)
-            for index, item in enumerate(value)
+            for index, item in enumerate(items)
         ]
 
     def exception_diagnostic(self, error: BaseException) -> RedactedDiagnostic:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import subprocess
+from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import quote
@@ -37,6 +38,38 @@ class UnsafeDiagnosticStr(str):
 class UnsafeDiagnosticBytes(bytes):
     def __bytes__(self) -> bytes:
         return b"attacker-controlled-bytes-rendering"
+
+
+class StatefulDiagnosticList(list[str | bytes]):
+    def __init__(self, values: list[str | bytes]) -> None:
+        super().__init__(values)
+        self.iteration_count = 0
+
+    def __iter__(self) -> Iterator[str | bytes]:
+        self.iteration_count += 1
+        if self.iteration_count == 1:
+            return iter(("safe", "safe"))
+        return list.__iter__(self)
+
+
+class StatefulDiagnosticTuple(tuple[str | bytes, ...]):
+    iteration_count: int
+
+    def __new__(cls, values: tuple[str | bytes, ...]) -> StatefulDiagnosticTuple:
+        instance = super().__new__(cls, values)
+        instance.iteration_count = 0
+        return instance
+
+    def __iter__(self) -> Iterator[str | bytes]:
+        self.iteration_count += 1
+        if self.iteration_count == 1:
+            return iter(("safe", "safe"))
+        return tuple.__iter__(self)
+
+
+class DeceptiveLengthList(list[str]):
+    def __len__(self) -> int:
+        return 0
 
 
 def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
@@ -478,3 +511,86 @@ def test_over_depth_mapping_keys_suppress_associated_values() -> None:
     assert "OVERDEPTH_TUPLE_KEY_VALUE" not in rendered
     assert "OVERDEPTH_FROZENSET_KEY_VALUE" not in rendered
     assert REDACTED in rendered
+
+
+def test_hostile_sequence_containers_are_snapshotted_once() -> None:
+    list_secret = "STATEFUL_LIST_VALUE"
+    tuple_secret = "STATEFUL_TUPLE_VALUE"
+    length_secret = "DECEPTIVE_LENGTH_AUTH_VALUE"
+    exception_secret = "STATEFUL_EXCEPTION_VALUE"
+    subprocess_secret = "STATEFUL_SUBPROCESS_VALUE"
+    stateful_list = StatefulDiagnosticList(["--password", list_secret])
+    stateful_tuple = StatefulDiagnosticTuple(("password=%s", tuple_secret))
+    deceptive_length = DeceptiveLengthList(
+        ["--authorization", "Negotiate", length_secret]
+    )
+    error = ValueError()
+    error.args = StatefulDiagnosticTuple(("password=%s", exception_secret))
+    process_error = subprocess.CalledProcessError(
+        1,
+        StatefulDiagnosticList(["--password", subprocess_secret]),
+    )
+
+    rendered = repr(
+        Redactor().redact(
+            (stateful_list, stateful_tuple, deceptive_length, error, process_error)
+        )
+    )
+
+    for secret in (
+        list_secret,
+        tuple_secret,
+        length_secret,
+        exception_secret,
+        subprocess_secret,
+    ):
+        assert secret not in rendered
+    assert stateful_list.iteration_count == 0
+    assert stateful_tuple.iteration_count == 0
+
+
+def test_extensible_authorization_schemes_fail_closed() -> None:
+    negotiate_secret = "NEGOTIATE_AUTH_VALUE"
+    aws_secret = "AWS4_AUTH_VALUE"
+    subclass_secret = "SUBCLASS_AUTH_VALUE"
+    values = (
+        ["--authorization", "Negotiate", negotiate_secret],
+        [b"--authorization", b"AWS4-HMAC-SHA256", aws_secret.encode()],
+        [
+            UnsafeDiagnosticStr("--authorization"),
+            UnsafeDiagnosticStr("Custom-Scheme"),
+            subclass_secret,
+        ],
+    )
+
+    rendered = repr(Redactor().redact(values))
+
+    assert negotiate_secret not in rendered
+    assert aws_secret not in rendered
+    assert subclass_secret not in rendered
+
+
+def test_malformed_sensitive_formats_suppress_unresolved_arguments() -> None:
+    percent_secret = "MALFORMED_PERCENT_VALUE"
+    mixed_percent_secret = "MALFORMED_MIXED_PERCENT_VALUE"
+    brace_secret = "MALFORMED_BRACE_VALUE"
+    values = (
+        ("password=%", percent_secret),
+        ("safe=%s password=%", "retained-percent-context", mixed_percent_secret),
+        ("safe={} password={", "retained-brace-context", brace_secret),
+    )
+    direct_error = ValueError("password=%", percent_secret)
+    chained_error = RuntimeError("outer")
+    chained_error.__cause__ = ValueError(
+        "safe={} password={", "retained-brace-context", brace_secret
+    )
+
+    rendered = repr(Redactor().redact(values))
+    rendered_direct = str(Redactor().exception_diagnostic(direct_error))
+    rendered_chained = str(Redactor().exception_diagnostic(chained_error))
+
+    assert percent_secret not in rendered
+    assert mixed_percent_secret not in rendered
+    assert brace_secret not in rendered
+    assert percent_secret not in rendered_direct
+    assert brace_secret not in rendered_chained
