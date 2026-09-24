@@ -419,6 +419,12 @@ class ValidatorTests(unittest.TestCase):
         task['review_requirements'].remove('SECURITY_DATA_BOUNDARY')
         dump(backlog_path, backlog)
         self.check(1, 'm2-security-review-required:KL-018')
+
+        backlog = copy.deepcopy(original)
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-014')
+        task['review_requirements'].remove('DB_CONCURRENCY')
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-db-review-required:KL-014')
         dump(backlog_path, original)
 
     def test_m2_packet_check_contract_drift_rejected(self):
@@ -529,6 +535,7 @@ class ValidatorTests(unittest.TestCase):
             Draft202012Validator(v.load_artifact(ROOT / v.MILESTONE_CLOSURE_SCHEMA)),
             Draft202012Validator(v.load_artifact(ROOT / v.INTEGRATION_SCHEMA)),
             Draft202012Validator(v.load_artifact(ROOT / 'THREAD_RESULT.schema.json')),
+            Draft202012Validator(v.load_artifact(ROOT / 'THREAD_REVIEW.schema.json')),
             backlog,
             tasks,
         )
@@ -615,6 +622,17 @@ class ValidatorTests(unittest.TestCase):
             self.assertIn(
                 'milestone-integration-unreachable:KL-001',
                 self.closure_errors(earlier),
+            )
+
+    def test_m1_closure_propagates_historical_review_validation_errors(self):
+        original = v.load_artifact(ROOT / 'docs/exec-plans/milestones/M1.json')
+        with mock.patch.object(
+                v, 'integration_record_errors',
+                return_value=['integration-review-identity:KL-001:GENERAL']):
+            self.assertIn(
+                'milestone-integration-invalid:KL-001:'
+                'integration-review-identity:KL-001:GENERAL',
+                self.closure_errors(original),
             )
 
     def test_duplicate_result_formats_rejected(self):
@@ -1152,6 +1170,44 @@ class ValidatorTests(unittest.TestCase):
             'integration_status': 'MERGED',
         })
         self.check()
+
+    def test_integration_rejects_invalid_historical_review_schema(self):
+        self.result(tested=self.base)
+        result_commit = self.commit('persist result')
+        dump(self.root / 'docs/exec-plans/reviews/KL-001/GENERAL.json', {
+            'task_identity': self.task['task_identity'],
+            'reviewed_head_sha': result_commit,
+            'review_type': 'GENERAL',
+            'status': 'PASS',
+            'findings': [],
+        })
+        review_commit = self.commit('persist schema-invalid review')
+        self.integration_record(result_commit, result_commit, review_commit, review_commit)
+        self.check(1, 'integration-review-schema:KL-001:GENERAL:')
+
+    def test_integration_rejects_historical_review_task_identity_mismatch(self):
+        self.result(tested=self.base)
+        result_commit = self.commit('persist result')
+        review_commit = self.review(result_commit)
+        review_path = self.root / 'docs/exec-plans/reviews/KL-001/GENERAL.json'
+        review = json.loads(review_path.read_text())
+        review['task_identity'] = 'harness-backlog-v0.2/KL-002'
+        dump(review_path, review)
+        review_commit = self.commit('persist mismatched review identity')
+        self.integration_record(result_commit, result_commit, review_commit, review_commit)
+        self.check(1, 'integration-review-identity:KL-001:GENERAL')
+
+    def test_integration_rejects_missing_historical_review_evidence(self):
+        self.result(tested=self.base)
+        result_commit = self.commit('persist result')
+        review_commit = self.review(result_commit)
+        review_path = self.root / 'docs/exec-plans/reviews/KL-001/GENERAL.json'
+        review = json.loads(review_path.read_text())
+        review['evidence_refs'] = ['docs/exec-plans/evidence/KL-001/missing.log']
+        dump(review_path, review)
+        review_commit = self.commit('persist review with missing evidence')
+        self.integration_record(result_commit, result_commit, review_commit, review_commit)
+        self.check(1, 'integration-review-evidence:KL-001:GENERAL:')
 
     def test_integration_accepts_exact_complete_tree_squash_merge(self):
         self.result(tested=self.base)

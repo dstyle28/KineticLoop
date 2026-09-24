@@ -58,6 +58,11 @@ M2_REQUIRED_CHECK_IDS = {
         'multi_key_lock_order_is_stable',
         'reverse_lock_order_is_rejected',
         'receipt_before_s01_is_rejected',
+        'event_outbox_atomicity_enforced',
+        'outbox_dispatcher_does_not_lock_subject_guard',
+        'stale_fence_commit_is_rejected',
+        'dispatch_first_winner_and_replay_non_resend',
+        'ack_loss_replay_preserves_natural_uniqueness',
     },
     'KL-018': {
         'artifact_dependencies_must_be_pre_registered',
@@ -73,6 +78,10 @@ M2_REQUIRED_CHECK_IDS = {
     },
 }
 M2_REQUIRED_SECURITY_REVIEWS = {'KL-014', 'KL-017', 'KL-018', 'KL-055'}
+M2_REQUIRED_DB_REVIEWS = {
+    'KL-010', 'KL-011', 'KL-012', 'KL-013', 'KL-014',
+    'KL-015', 'KL-016', 'KL-017', 'KL-018',
+}
 
 
 def sha(path):
@@ -769,7 +778,8 @@ def governance_manifest_errors(root, base_revision, changed, target_revision=Non
     return errors
 
 
-def integration_record_errors(root, path, record, schema, result_schema, tasks):
+def integration_record_errors(
+        root, path, record, schema, result_schema, review_schema, tasks):
     errors = ['integration-schema:' + path.name + ':' + issue.message
               for issue in schema.iter_errors(record)]
     if errors:
@@ -839,18 +849,31 @@ def integration_record_errors(root, path, record, schema, result_schema, tasks):
                         result, task, root, evidence_revision=reviewed))
         for review_type in task['review_requirements']:
             review_path = f'docs/exec-plans/reviews/{task_id}/{review_type}.json'
-            review = json.loads(git(root, 'show', review_commit + ':' + review_path))
+            review = load_artifact_text(
+                git(root, 'show', review_commit + ':' + review_path).decode(), '.json')
+            review_issues = list(review_schema.iter_errors(review))
+            errors.extend(
+                'integration-review-schema:' + task_id + ':' + review_type + ':' + issue.message
+                for issue in review_issues)
+            if review_issues:
+                continue
+            if review.get('task_identity') != task['task_identity']:
+                errors.append('integration-review-identity:' + task_id + ':' + review_type)
             if (review.get('review_type') != review_type
                     or review.get('status') != 'PASS'
                     or resolve(root, review.get('reviewed_head_sha', '')) != reviewed):
                 errors.append('integration-review-binding:' + task_id + ':' + review_type)
+            for ref in review.get('evidence_refs', []):
+                if not evidence_exists(root, ref, reviewed):
+                    errors.append(
+                        'integration-review-evidence:' + task_id + ':' + review_type + ':' + ref)
     except ValueError as ex:
         errors.append('integration-revision:' + task_id + ':' + str(ex))
     return errors
 
 
 def milestone_closure_errors(
-        root, closure, schema, integration_schema, result_schema, backlog, tasks):
+        root, closure, schema, integration_schema, result_schema, review_schema, backlog, tasks):
     """Validate the M1 closure as revision-bound evidence, not a status assertion."""
     errors = [
         'milestone-schema:M1.json:' + issue.message
@@ -910,6 +933,7 @@ def milestone_closure_errors(
                 errors.append('milestone-integration-unreachable:' + task_id)
             integration_issues = integration_record_errors(
                 root, root / expected_path, record, integration_schema, result_schema,
+                review_schema,
                 evaluated_tasks)
             errors.extend(
                 'milestone-integration-invalid:' + task_id + ':' + issue
@@ -1061,6 +1085,9 @@ def task_definition_errors(root, backlog, revision=None):
             if (name in M2_REQUIRED_SECURITY_REVIEWS
                     and 'SECURITY_DATA_BOUNDARY' not in task.get('review_requirements', [])):
                 errors.append('m2-security-review-required:' + name)
+            if (name in M2_REQUIRED_DB_REVIEWS
+                    and 'DB_CONCURRENCY' not in task.get('review_requirements', [])):
+                errors.append('m2-db-review-required:' + name)
         if (task.get('status') == 'READY'
                 and (task.get('packet_refinement') != 'ENFORCEABLE'
                      or task.get('write_paths_status') != 'ENFORCEABLE')):
@@ -1157,7 +1184,7 @@ def validate(root, args):
             errors.append('milestone-closure-path:M1:' + closure_path.name)
         closure_errors = milestone_closure_errors(
             root, closure, schemas['MILESTONE'], schemas['INTEGRATION'],
-            schemas['RESULT'], backlog, tasks)
+            schemas['RESULT'], schemas['REVIEW'], backlog, tasks)
         errors.extend(closure_errors)
         m1_closure_valid = not closure_errors and closure_path.name == 'M1.json'
     for task in tasks.values():
@@ -1246,7 +1273,8 @@ def validate(root, args):
         for path in sorted(integrations.glob('*.json')):
             record = load_artifact(path)
             errors.extend(integration_record_errors(
-                root, path, record, schemas['INTEGRATION'], schemas['RESULT'], tasks))
+                root, path, record, schemas['INTEGRATION'], schemas['RESULT'],
+                schemas['REVIEW'], tasks))
 
     if (args.protected_base or args.reviewed_head or
             getattr(args, 'governance_reviewed_head', None)):

@@ -942,6 +942,7 @@
       "review_requirements": [
         "GENERAL",
         "PROTOCOL",
+        "DB_CONCURRENCY",
         "SECURITY_DATA_BOUNDARY"
       ],
       "packet_refinement": "ENFORCEABLE",
@@ -980,7 +981,11 @@
         "S31",
         "S38",
         "S44",
-        "S51"
+        "S51",
+        "S03",
+        "S04",
+        "S28",
+        "S32"
       ],
       "context_files": [
         "05_KineticLoop_Protocol_v1.2_FROZEN.md",
@@ -996,7 +1001,7 @@
       "deliverables": [
         "complete frozen lock-order repository transaction interfaces"
       ],
-      "definition_of_done": "preparation interfaces perform projection, resolution and validation outside coordination locks; publish/commit/session-entry interfaces acquire only their applicable locks in the complete frozen order S51 (when required) → S01 → S30 → S27 → S31 → S38 → S44 → S02 / remaining aggregate rows, with stable multi-key ordering and no direct-write or reverse-order path",
+      "definition_of_done": "preparation interfaces perform projection, resolution and validation outside coordination locks; publish/commit/session-entry interfaces acquire only their applicable locks in the complete frozen order S51 (when required) → S01 → S30 → S27 → S31 → S38 → S44 → S02 / remaining aggregate rows, with stable multi-key ordering and no direct-write or reverse-order path; each applicable T1-T8 mutation atomically writes S03/S04, OutboxDispatcher never acquires S01, stale fences cannot commit, only the first DISPATCH_INTENT winner may send, and ACK-loss replay returns the durable prior outcome without duplicate identities",
       "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
@@ -1010,6 +1015,11 @@
         "receipt_before_s01_is_rejected",
         "artifact_identity_required",
         "direct_write_bypass_rejected",
+        "event_outbox_atomicity_enforced",
+        "outbox_dispatcher_does_not_lock_subject_guard",
+        "stale_fence_commit_is_rejected",
+        "dispatch_first_winner_and_replay_non_resend",
+        "ack_loss_replay_preserves_natural_uniqueness",
         "transaction_db_conformance_passes",
         "harness_validation_passes"
       ],
@@ -1063,6 +1073,31 @@
           "check_id": "direct_write_bypass_rejected",
           "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_direct_write_bypass_rejected",
           "pass_oracle": "The named test proves the application role cannot bypass transaction owners."
+        },
+        {
+          "check_id": "event_outbox_atomicity_enforced",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_event_outbox_atomicity_enforced",
+          "pass_oracle": "The named PostgreSQL failure-injection matrix proves each applicable T1-T8 state mutation commits or rolls back its S03 domain event and S04 outbox delivery atomically."
+        },
+        {
+          "check_id": "outbox_dispatcher_does_not_lock_subject_guard",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_outbox_dispatcher_does_not_lock_subject_guard",
+          "pass_oracle": "The named PostgreSQL lock-observation test proves OutboxDispatcher claim/delivery transactions never acquire S01 and invoke business work only through a new idempotent command after releasing the outbox row lock."
+        },
+        {
+          "check_id": "stale_fence_commit_is_rejected",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_stale_fence_commit_is_rejected",
+          "pass_oracle": "The named PostgreSQL interleaving test proves a stale lease/fence holder cannot commit after a newer owner wins."
+        },
+        {
+          "check_id": "dispatch_first_winner_and_replay_non_resend",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_dispatch_first_winner_and_replay_non_resend",
+          "pass_oracle": "The named PostgreSQL interleaving test proves only the first RESERVED-to-DISPATCH_INTENT transition winner receives executable permission and idempotent replay is marked non-sendable."
+        },
+        {
+          "check_id": "ack_loss_replay_preserves_natural_uniqueness",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_ack_loss_replay_preserves_natural_uniqueness",
+          "pass_oracle": "The named PostgreSQL failure-injection test loses the commit acknowledgement, retries the command, returns the durable prior outcome, and creates no duplicate receipt, event, outbox, reservation, or operation identity."
         },
         {
           "check_id": "transaction_db_conformance_passes",
