@@ -513,6 +513,42 @@ class ValidatorTests(unittest.TestCase):
             'governance-traceability-scope:HG-999:harness-backlog-v0.2/KL-003',
             '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
+    def test_duplicate_traceability_identity_and_id_rejected(self):
+        traceability_path = self.root / v.TRACEABILITY
+        traceability = json.loads(traceability_path.read_text())
+        duplicate = copy.deepcopy(traceability['tasks'][2])
+        traceability['tasks'].append(duplicate)
+        dump(traceability_path, traceability)
+        refresh(self.root)
+        self.check(1, 'traceability-duplicate-task-identity:' + duplicate['task_identity'])
+        self.check(1, 'traceability-duplicate-task-id:' + duplicate['id'])
+
+    def test_invalid_traceability_identity_and_id_rejected(self):
+        traceability_path = self.root / v.TRACEABILITY
+        original = json.loads(traceability_path.read_text())
+        cases = [
+            ('missing', None, 'traceability-task-identity:0'),
+            ('non-string', 7, 'traceability-task-identity:0'),
+            ('mismatched', 'harness-backlog-v0.2/KL-999',
+             'traceability-task-identity-mismatch:harness-backlog-v0.2/KL-999'),
+            ('bad-id', 'KL-nine',
+             'traceability-task-id:harness-backlog-v0.2/KL-001'),
+        ]
+        for kind, value, diagnostic in cases:
+            traceability = copy.deepcopy(original)
+            if kind in ('missing', 'non-string'):
+                if kind == 'missing':
+                    traceability['tasks'][0].pop('task_identity')
+                else:
+                    traceability['tasks'][0]['task_identity'] = value
+            elif kind == 'mismatched':
+                traceability['tasks'][0]['task_identity'] = value
+            else:
+                traceability['tasks'][0]['id'] = value
+            dump(traceability_path, traceability)
+            refresh(self.root)
+            self.check(1, diagnostic)
+
     def test_ci_governance_ignores_unrelated_unresolvable_review_sha(self):
         self.governance_review('HG-998', 'f' * 40)
         self.base = self.commit('historical governance review with unavailable revision')

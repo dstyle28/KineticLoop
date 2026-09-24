@@ -241,6 +241,38 @@ def traceability_projection(task):
     return {field: task.get(field) for field in TRACEABILITY_TASK_FIELDS}
 
 
+def traceability_task_map(document, prefix='traceability'):
+    """Validate traceability identity/index integrity without collapsing duplicates."""
+    errors = []
+    tasks = document.get('tasks') if isinstance(document, dict) else None
+    if not isinstance(tasks, list):
+        return [prefix + '-tasks'], {}
+    by_identity = {}
+    seen_ids = set()
+    for position, task in enumerate(tasks):
+        if not isinstance(task, dict):
+            errors.append(prefix + '-task-shape:' + str(position))
+            continue
+        identity, task_id = task.get('task_identity'), task.get('id')
+        if not isinstance(identity, str) or not identity:
+            errors.append(prefix + '-task-identity:' + str(position))
+            continue
+        if not isinstance(task_id, str) or not re.fullmatch(r'KL-[0-9]{3}[A-Z]?', task_id):
+            errors.append(prefix + '-task-id:' + identity)
+            continue
+        if identity != 'harness-backlog-v0.2/' + task_id:
+            errors.append(prefix + '-task-identity-mismatch:' + identity)
+        if identity in by_identity:
+            errors.append(prefix + '-duplicate-task-identity:' + identity)
+        else:
+            by_identity[identity] = task
+        if task_id in seen_ids:
+            errors.append(prefix + '-duplicate-task-id:' + task_id)
+        else:
+            seen_ids.add(task_id)
+    return errors, by_identity
+
+
 def configure_ci_merge_gate(root, args):
     """Bind a PR checkout to one task result or one Harness governance record."""
     if not args.ci_pr_base or not args.ci_pr_head:
@@ -753,6 +785,9 @@ def validate(root, args):
 
     errors = []
     index, frozen, backlog = (load_artifact(root / n) for n in (INDEX, 'FROZEN_BASELINE.json', BACKLOG))
+    traceability = load_artifact(root / TRACEABILITY)
+    traceability_errors, _ = traceability_task_map(traceability)
+    errors.extend(traceability_errors)
     for entry in index['documents'] + index.get('machine_readable', []) + frozen['files']:
         path = root / entry['path']
         if not relative_path(entry['path']) or not path.is_file():
@@ -1014,14 +1049,12 @@ def validate(root, args):
                     load_artifact_at_revision(root, TRACEABILITY, reviewed)
                     if review_only else load_artifact(root / TRACEABILITY)
                 )
-                base_trace_by_identity = {
-                    task.get('task_identity'): task
-                    for task in base_traceability.get('tasks', [])
-                }
-                reviewed_trace_by_identity = {
-                    task.get('task_identity'): task
-                    for task in reviewed_traceability.get('tasks', [])
-                }
+                base_trace_errors, base_trace_by_identity = traceability_task_map(
+                    base_traceability, 'governance-base-traceability')
+                reviewed_trace_errors, reviewed_trace_by_identity = traceability_task_map(
+                    reviewed_traceability, 'governance-reviewed-traceability')
+                errors.extend(base_trace_errors)
+                errors.extend(reviewed_trace_errors)
                 changed_trace_identities = {
                     identity
                     for identity in set(base_trace_by_identity) | set(reviewed_trace_by_identity)
