@@ -83,12 +83,13 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
         ("registered", SENTINEL): "safe tuple-key value",
         CompoundDiagnosticKey(SENTINEL): "safe object-key value",
     }
-    source["compound_exception"] = ValueError(
+    compound_exception = ValueError(
         "diagnostic payload: "
         '{"password": ["json-secret-one", "json-secret-two"], '
         "'credentials': ('python-secret-one', 'python-secret-two'), "
         "'safe': 'retained context'}"
     )
+    source["compound_exception"] = compound_exception
     source["hybrid_authorization_argv"] = [
         "provider-client",
         "--authorization=Bearer",
@@ -124,8 +125,10 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     )
     source["malformed_space_url"] = "https://alice:hun opaque-space@example.invalid/path"
     source["terminal_ipv6"] = "https://alice:hunter2@[2001:db8::1]"
+    compound_exception_args = compound_exception.args
     source_without_error = dict(source)
     source_without_error.pop("error")
+    source_without_error.pop("compound_exception")
     untouched = copy.deepcopy(source_without_error)
 
     redacted = Redactor((SENTINEL,)).redact(source)
@@ -181,7 +184,9 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
 
     source_without_error = dict(source)
     source_without_error.pop("error")
+    source_without_error.pop("compound_exception")
     assert source_without_error == untouched
+    assert compound_exception.args == compound_exception_args
     assert canonical_json_bytes(evidence) == canonical_before
     assert sha256_bytes(canonical_json_bytes(evidence)) == hash_before
 

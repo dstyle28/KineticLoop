@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import json
 import re
 from collections.abc import Mapping
+from pathlib import Path
+from typing import Any
 
 _FIXTURE_ID = re.compile(r"^synthetic-security-(?P<name>[a-z0-9-]+)-v(?P<version>[0-9]+)$")
 _PROVENANCE_ID = re.compile(r"^kineticloop-test-fixture:(?P<name>[a-z0-9-]+):v(?P<version>[0-9]+)$")
@@ -39,6 +42,33 @@ _PROVIDER_NAME_PREFIX = {
 
 class SyntheticFixtureError(ValueError):
     """Fixture provenance or sentinel content is unsafe or malformed."""
+
+
+def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise SyntheticFixtureError(f"duplicate JSON key {key!r}")
+        result[key] = value
+    return result
+
+
+def load_synthetic_fixture(path: str | Path) -> dict[str, Any]:
+    """Load and validate a fixture while rejecting ambiguous JSON objects."""
+
+    try:
+        payload: object = json.loads(
+            Path(path).read_text(encoding="utf-8"),
+            object_pairs_hook=_reject_duplicate_keys,
+        )
+    except SyntheticFixtureError:
+        raise
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        raise SyntheticFixtureError(f"fixture cannot be loaded: {error}") from error
+    validate_synthetic_fixture(payload)
+    if not isinstance(payload, dict):
+        raise SyntheticFixtureError("fixture must be an object")
+    return payload
 
 
 def _require_mapping(value: object, label: str) -> Mapping[str, object]:

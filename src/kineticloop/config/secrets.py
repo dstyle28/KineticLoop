@@ -115,6 +115,14 @@ class ProviderSecrets:
     __slots__ = ("__provider_id", "__values")
 
     def __init__(self, provider_id: str, values: Mapping[str, SecretValue]) -> None:
+        if not isinstance(provider_id, str) or not provider_id.strip():
+            raise TypeError("provider_id must be a non-blank string")
+        if not isinstance(values, Mapping):
+            raise TypeError("secret values must be a mapping")
+        if any(not isinstance(name, str) for name in values):
+            raise TypeError("secret names must be strings")
+        if any(not isinstance(value, SecretValue) for value in values.values()):
+            raise TypeError("secret values must be SecretValue instances")
         self.__provider_id = provider_id
         self.__values = dict(values)
 
@@ -134,6 +142,16 @@ class ProviderSecrets:
 
     def __repr__(self) -> str:
         return str(self)
+
+    def __reduce__(self) -> str | tuple[Any, ...]:
+        raise TypeError("ProviderSecrets cannot be serialized")
+
+    def __reduce_ex__(self, protocol: SupportsIndex) -> str | tuple[Any, ...]:
+        del protocol
+        raise TypeError("ProviderSecrets cannot be serialized")
+
+    def __getstate__(self) -> object:
+        raise TypeError("ProviderSecrets cannot be serialized")
 
 
 def load_provider_secrets(

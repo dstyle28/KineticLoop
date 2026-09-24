@@ -7,7 +7,7 @@ import subprocess
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import TypeAlias
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from urllib.parse import quote_plus, unquote_plus, urlsplit, urlunsplit
 
 from kineticloop.config.secrets import SecretValue
 
@@ -45,11 +45,12 @@ _SENSITIVE_KEY_EXPRESSION = (
 _ASSIGNMENT = re.compile(
     rf"(?i)(?P<key>[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*)"
     r"(?P<key_quote>[\"']?)(?P<separator>\s*[:=]\s*)"
-    r"(?P<value>.*)"
+    r"(?P<value>\[[^\]\r\n]*\]|\([^\)\r\n]*\)|"
+    r"\"(?:\\.|[^\"\\])*\"|\'(?:\\.|[^\'\\])*\'|[^,;&}\]\)\r\n]+)"
 )
 _COMMAND_OPTION = re.compile(
     rf"(?i)(?P<prefix>--[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*=)"
-    r"(?P<value>[^,;\r\n]+)"
+    r"(?P<value>[^\s\r\n]+)"
 )
 _COMMAND_SEPARATE = re.compile(
     rf"(?i)(?P<prefix>--[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*\s+)"
@@ -80,7 +81,9 @@ def _sequence_sensitive_arity(value: str) -> int:
             placeholder_count = len(_PERCENT_PLACEHOLDER.findall(member)) + len(
                 _BRACE_PLACEHOLDER.findall(member)
             )
-            return placeholder_count or int(not member)
+            if placeholder_count:
+                return placeholder_count
+            return int(not member or member.casefold() in {"bearer", "basic", "digest", "token"})
     return int(_is_sensitive_key(stripped))
 
 
@@ -179,15 +182,13 @@ class Redactor:
                 host = f"{host}:{parsed.port}"
             if parsed.username is not None or parsed.password is not None:
                 host = f"{_USERINFO_MARKER}@{host}"
-            query = [
-                (
-                    key,
-                    REDACTED if _is_sensitive_key(key) else value,
-                )
-                for key, value in parse_qsl(parsed.query, keep_blank_values=True)
-            ]
+            query_parts = re.split(r"([&;])", parsed.query)
+            for index in range(0, len(query_parts), 2):
+                key, found, value = query_parts[index].partition("=")
+                if found and _is_sensitive_key(unquote_plus(key)):
+                    query_parts[index] = f"{key}={quote_plus(REDACTED)}"
             sanitized = urlunsplit(
-                (parsed.scheme, host, parsed.path, urlencode(query, doseq=True), parsed.fragment)
+                (parsed.scheme, host, parsed.path, "".join(query_parts), parsed.fragment)
             )
         except (TypeError, ValueError):
             sanitized = REDACTED
@@ -206,8 +207,10 @@ class Redactor:
             return self.text(value.decode("utf-8", errors="replace")).encode("utf-8")
         if isinstance(value, Mapping):
             return {
-                (self.text(key) if isinstance(key, str) else key): (
-                    REDACTED if _is_sensitive_key(key) else self.redact(item)
+                self._redact_mapping_key(key): (
+                    REDACTED
+                    if isinstance(key, str) and _is_sensitive_key(key)
+                    else self.redact(item)
                 )
                 for key, item in value.items()
             }
@@ -220,6 +223,19 @@ class Redactor:
         if isinstance(value, frozenset):
             return frozenset(self.redact(item) for item in value)
         return value
+
+    def _redact_mapping_key(self, key: object) -> object:
+        if isinstance(key, str):
+            return self.text(key)
+        if isinstance(key, bytes):
+            return self.redact(key)
+        if isinstance(key, tuple):
+            return tuple(self._redact_mapping_key(item) for item in key)
+        if isinstance(key, frozenset):
+            return frozenset(self._redact_mapping_key(item) for item in key)
+        if key is None or isinstance(key, (int, float, bool)):
+            return key
+        return f"<diagnostic-key:{type(key).__name__}>"
 
     def _redact_sequence(self, value: Sequence[object]) -> list[object]:
         result: list[object] = []
@@ -265,11 +281,15 @@ class Redactor:
             if error.stderr is not None:
                 details.append(f"stderr={self.redact(error.stderr)!r}")
         cause = error.__cause__ or error.__context__
-        message = (
-            f"subprocess failed with return code {error.returncode}"
-            if isinstance(error, subprocess.CalledProcessError)
-            else self.text(str(error))
-        )
+        if isinstance(error, subprocess.CalledProcessError):
+            message = f"subprocess failed with return code {error.returncode}"
+        else:
+            redacted_args = self.redact(error.args)
+            assert isinstance(redacted_args, tuple)
+            if len(redacted_args) == 1:
+                message = str(redacted_args[0])
+            else:
+                message = repr(redacted_args)
         return RedactedDiagnostic(
             exception_type=type(error).__name__,
             message=message,
