@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import pickle
 from dataclasses import asdict, dataclass
 
 import pytest
@@ -55,6 +56,12 @@ def test_config_secret_sources_are_separated() -> None:
         json.dumps(generic_dataclass)
     with pytest.raises(TypeError):
         json.dumps(generic_mapping)
+    with pytest.raises(TypeError, match="cannot be serialized"):
+        pickle.dumps(opaque)
+    with pytest.raises(TypeError, match="cannot be serialized"):
+        pickle.dumps(generic_dataclass)
+    with pytest.raises(TypeError, match="cannot be serialized"):
+        pickle.dumps(source)
 
     with pytest.raises(MissingSecretError, match="missing or blank"):
         load_provider_secrets(HEVY_CONFIG, MappingSecretSource({}))

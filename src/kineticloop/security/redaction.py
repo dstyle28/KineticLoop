@@ -7,38 +7,49 @@ import subprocess
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import TypeAlias
-from urllib.parse import parse_qsl, quote, quote_plus, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from kineticloop.config.secrets import SecretValue
 
 REDACTED = "[REDACTED]"
 _SECRET_MARKER = "__KINETICLOOP_REDACTED_SECRET__"
 
-_SENSITIVE_KEYS = frozenset(
+_SENSITIVE_KEY_PARTS = frozenset(
     {
         "access_token",
         "api_key",
         "apikey",
         "authorization",
         "client_secret",
+        "cookie",
         "credential",
         "credentials",
         "database_url",
+        "dsn",
+        "passwd",
         "password",
         "refresh_token",
         "secret",
         "token",
     }
 )
-_URL = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\s<>\"'{}\[\]]+")
+_URL = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\s<>\"']+")
+_SENSITIVE_KEY_EXPRESSION = (
+    r"access[_-]?token|api[_-]?key|authorization|client[_-]?secret|cookie|credential(?:s)?|"
+    r"database[_-]?url|dsn|passwd|password|refresh[_-]?token|secret|token"
+)
 _ASSIGNMENT = re.compile(
-    r"(?i)(?P<key>access[_-]?token|api[_-]?key|authorization|client[_-]?secret|"
-    r"credential|database[_-]?url|password|refresh[_-]?token|secret|token)"
-    r"(?P<separator>\s*[:=]\s*)(?P<value>[^\s,;]+)"
+    rf"(?i)(?P<key>[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*)"
+    r"(?P<separator>\s*[:=]\s*)"
+    r"(?P<value>\"[^\"\r\n]*\"|'[^'\r\n]*'|[^,;\r\n]+)"
 )
 _COMMAND_OPTION = re.compile(
-    r"(?i)(?P<prefix>--(?:access[_-]?token|api[_-]?key|client[_-]?secret|"
-    r"password|refresh[_-]?token|secret|token)=)(?P<value>[^\s,;]+)"
+    rf"(?i)(?P<prefix>--[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*=)"
+    r"(?P<value>[^,;\r\n]+)"
+)
+_COMMAND_SEPARATE = re.compile(
+    rf"(?i)(?P<prefix>--[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*\s+)"
+    r"(?P<value>\"[^\"\r\n]*\"|'[^'\r\n]*'|[^\s,;\r\n]+)"
 )
 
 DiagnosticScalar: TypeAlias = str | bytes | int | float | bool | None
@@ -46,6 +57,35 @@ DiagnosticScalar: TypeAlias = str | bytes | int | float | bool | None
 
 def _normalized_key(value: object) -> str:
     return re.sub(r"[^a-z0-9]+", "_", str(value).strip().lower()).strip("_")
+
+
+def _is_sensitive_key(value: object) -> bool:
+    normalized = _normalized_key(value)
+    return any(
+        normalized == part or normalized.startswith(f"{part}_") or normalized.endswith(f"_{part}")
+        for part in _SENSITIVE_KEY_PARTS
+    )
+
+
+def _percent_byte_pattern(value: int) -> str:
+    encoded = f"{value:02X}"
+    return "%" + "".join(
+        f"[{nibble.lower()}{nibble.upper()}]" if nibble.isalpha() else nibble for nibble in encoded
+    )
+
+
+def _secret_pattern(value: str) -> re.Pattern[str]:
+    """Match raw and arbitrarily percent-encoded spellings of an exact secret."""
+
+    pieces: list[str] = []
+    for character in value:
+        choices = [re.escape(character)]
+        percent_encoded = "".join(_percent_byte_pattern(byte) for byte in character.encode())
+        choices.append(percent_encoded)
+        if character == " ":
+            choices.append(r"\+")
+        pieces.append(f"(?:{'|'.join(dict.fromkeys(choices))})")
+    return re.compile("".join(pieces))
 
 
 @dataclass(frozen=True, slots=True)
@@ -72,27 +112,31 @@ class RedactedDiagnostic:
 class Redactor:
     """Copy diagnostic values while removing registered and key-shaped secrets."""
 
-    __slots__ = ("__variants",)
+    __slots__ = ("__patterns",)
 
     def __init__(self, secrets: Sequence[str | SecretValue] = ()) -> None:
-        variants: set[str] = set()
+        raw_values: set[str] = set()
         for secret in secrets:
             raw = secret.reveal() if isinstance(secret, SecretValue) else secret
             if not isinstance(raw, str):
                 raise TypeError("redaction secrets must be strings or SecretValue instances")
             if raw:
-                variants.update({raw, quote(raw, safe=""), quote_plus(raw, safe="")})
-        self.__variants = tuple(sorted(variants, key=lambda item: (-len(item), item)))
+                raw_values.add(raw)
+        self.__patterns = tuple(
+            _secret_pattern(value)
+            for value in sorted(raw_values, key=lambda item: (-len(item), item))
+        )
 
     def text(self, value: str) -> str:
         """Redact one diagnostic string without changing the source value."""
 
         result = value
-        for variant in self.__variants:
-            result = result.replace(variant, _SECRET_MARKER)
+        for pattern in self.__patterns:
+            result = pattern.sub(_SECRET_MARKER, result)
         result = _URL.sub(lambda match: self._url(match.group(0)), result)
         result = result.replace(_SECRET_MARKER, REDACTED)
         result = _COMMAND_OPTION.sub(lambda match: f"{match.group('prefix')}{REDACTED}", result)
+        result = _COMMAND_SEPARATE.sub(lambda match: f"{match.group('prefix')}{REDACTED}", result)
         return _ASSIGNMENT.sub(
             lambda match: f"{match.group('key')}{match.group('separator')}{REDACTED}",
             result,
@@ -116,7 +160,7 @@ class Redactor:
             query = [
                 (
                     key,
-                    REDACTED if _normalized_key(key) in _SENSITIVE_KEYS else value,
+                    REDACTED if _is_sensitive_key(key) else value,
                 )
                 for key, value in parse_qsl(parsed.query, keep_blank_values=True)
             ]
@@ -125,8 +169,6 @@ class Redactor:
             )
         except (TypeError, ValueError):
             sanitized = matched_url
-        for variant in self.__variants:
-            sanitized = sanitized.replace(variant, REDACTED)
         return sanitized + trailing
 
     def redact(self, value: object) -> object:
@@ -143,19 +185,33 @@ class Redactor:
         if isinstance(value, Mapping):
             return {
                 (self.text(key) if isinstance(key, str) else key): (
-                    REDACTED if _normalized_key(key) in _SENSITIVE_KEYS else self.redact(item)
+                    REDACTED if _is_sensitive_key(key) else self.redact(item)
                 )
                 for key, item in value.items()
             }
         if isinstance(value, tuple):
-            return tuple(self.redact(item) for item in value)
+            return tuple(self._redact_sequence(value))
         if isinstance(value, list):
-            return [self.redact(item) for item in value]
+            return self._redact_sequence(value)
         if isinstance(value, set):
             return {self.redact(item) for item in value}
         if isinstance(value, frozenset):
             return frozenset(self.redact(item) for item in value)
         return value
+
+    def _redact_sequence(self, value: Sequence[object]) -> list[object]:
+        result: list[object] = []
+        redact_next = False
+        for item in value:
+            if redact_next:
+                result.append(REDACTED)
+                redact_next = False
+                continue
+            result.append(self.redact(item))
+            if isinstance(item, str):
+                option = item.lstrip("-")
+                redact_next = "=" not in option and _is_sensitive_key(option)
+        return result
 
     def exception_diagnostic(self, error: BaseException) -> RedactedDiagnostic:
         """Redact an exception, subprocess output, and its chained exceptions."""

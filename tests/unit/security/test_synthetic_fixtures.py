@@ -36,6 +36,21 @@ def test_synthetic_security_fixtures_have_provenance() -> None:
         validate_synthetic_fixture(production_provider)
 
     undocumented_secret = copy.deepcopy(fixtures[0])
-    undocumented_secret["credentials"]["HEVY_API_KEY"] = "possibly-real"
+    credential_name = next(iter(undocumented_secret["credentials"]))
+    undocumented_secret["credentials"][credential_name] = "possibly-real"
     with pytest.raises(SyntheticFixtureError, match="documented sentinel"):
         validate_synthetic_fixture(undocumented_secret)
+
+    mismatched_identity = copy.deepcopy(fixtures[0])
+    mismatched_identity["provenance_id"] = "kineticloop-test-fixture:other-fixture:v1"
+    with pytest.raises(SyntheticFixtureError, match="same fixture"):
+        validate_synthetic_fixture(mismatched_identity)
+
+    cross_provider = copy.deepcopy(fixtures[0])
+    cross_provider["provider"]["id"] = (
+        "HEVY_TEST"
+        if cross_provider["provider"]["id"] == "HEALTHKIT_BRIDGE_TEST"
+        else "HEALTHKIT_BRIDGE_TEST"
+    )
+    with pytest.raises(SyntheticFixtureError, match="provider profile"):
+        validate_synthetic_fixture(cross_provider)

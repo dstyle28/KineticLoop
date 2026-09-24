@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Any, Protocol, SupportsIndex
 
 _HIDDEN = "<secret>"
 
@@ -42,6 +42,16 @@ class SecretValue:
         del memo
         return self
 
+    def __reduce__(self) -> str | tuple[Any, ...]:
+        raise TypeError("SecretValue cannot be serialized")
+
+    def __reduce_ex__(self, protocol: SupportsIndex) -> str | tuple[Any, ...]:
+        del protocol
+        raise TypeError("SecretValue cannot be serialized")
+
+    def __getstate__(self) -> object:
+        raise TypeError("SecretValue cannot be serialized")
+
 
 class SecretSource(Protocol):
     """Explicit source selected by the caller; never an implicit environment read."""
@@ -65,6 +75,16 @@ class MappingSecretSource:
 
     def __repr__(self) -> str:
         return "MappingSecretSource(<redacted>)"
+
+    def __reduce__(self) -> str | tuple[Any, ...]:
+        raise TypeError("MappingSecretSource cannot be serialized")
+
+    def __reduce_ex__(self, protocol: SupportsIndex) -> str | tuple[Any, ...]:
+        del protocol
+        raise TypeError("MappingSecretSource cannot be serialized")
+
+    def __getstate__(self) -> object:
+        raise TypeError("MappingSecretSource cannot be serialized")
 
 
 @dataclass(frozen=True)

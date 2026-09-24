@@ -33,8 +33,6 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
         f"registered-key-{SENTINEL}": "safe value",
         "canonical_evidence": evidence,
     }
-    untouched = copy.deepcopy(source)
-
     child = ValueError(f"password={SENTINEL}")
     process_error = subprocess.CalledProcessError(
         1,
@@ -44,6 +42,17 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     )
     process_error.__cause__ = child
     source["error"] = process_error
+    source["ipv6"] = "postgresql://alice:hunter2@[::1]:5432/db?token=abc"
+    source["mixed_encoding"] = quote(SENTINEL, safe="").replace("%2F", "%2f")
+    source["partial_encoding"] = SENTINEL.replace("/", "%2f").replace("?", "%3f")
+    source["unregistered_sensitive_text"] = (
+        'Authorization: Bearer opaque.jwt.value; password="opaque multi word"'
+    )
+    source["argv"] = ["provider-client", "--hevy-api-key", "opaque-argument"]
+    source["string_command"] = 'provider-client --password "opaque command value"'
+    source_without_error = dict(source)
+    source_without_error.pop("error")
+    untouched = copy.deepcopy(source_without_error)
 
     redacted = Redactor((SENTINEL,)).redact(source)
     rendered = repr(redacted)
@@ -51,6 +60,12 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     assert SENTINEL not in rendered
     assert quote(SENTINEL, safe="") not in rendered
     assert "also-secret" not in rendered
+    assert "alice" not in rendered
+    assert "hunter2" not in rendered
+    assert "opaque.jwt.value" not in rendered
+    assert "opaque multi word" not in rendered
+    assert "opaque-argument" not in rendered
+    assert "opaque command value" not in rendered
     assert "provider timeout" in rendered
     assert "sslmode=require" in rendered
     assert "attempt': 3" in rendered
