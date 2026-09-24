@@ -16,7 +16,7 @@ PASS m2_contract_projection_valid
   and resolve/validation preparation from frozen T1/T2-GLOBAL/T3/T5/T6 atomic commands.
   The complete command surface and required semantic check are mechanically pinned.
 PASS milestone_and_refinement_negative_tests_pass
-  pytest -q tests/harness/test_validator.py: 99 passed in 171.45s.
+  pytest -q tests/harness/test_validator.py: 99 passed in 158.53s.
 PASS harness_structure_valid
   kl check-harness: HARNESS_CHECK_PASS tasks=68 active=66.
 PASS lint_passes
@@ -24,11 +24,11 @@ PASS lint_passes
 PASS typecheck_passes
   mypy src tools tests: Success, no issues in 55 source files.
 PASS unit_tests_pass
-  kl test-unit: 134 passed in 21.61s.
+  kl test-unit: 134 passed in 19.39s.
 PASS harness_tests_pass
-  kl test-harness: 124 passed in 187.04s.
+  kl test-harness: 124 passed in 179.61s.
 PASS full_suite_passes
-  pytest -q: 317 passed in 205.06s.
+  pytest -q: 317 passed in 182.85s.
 PASS frozen_baseline_unchanged
   git diff --exit-code 16eab836be754b6000efeb2f38a8f0f89648a767
   79f87816155b8006bac63f23deda62550dca1461 -- FROZEN_BASELINE.json

@@ -94,7 +94,7 @@ checks_run:
     evidence_ref: docs/exec-plans/evidence/HG-017/checks-r10.log
   - check_id: typecheck_passes
     command: >-
-      MYPY_CACHE_DIR=/private/tmp/hg017-final8-mypy PYTHONPATH="$PWD/src"
+      MYPY_CACHE_DIR=/private/tmp/hg017-r10-mypy PYTHONPATH="$PWD/src"
       /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/mypy src tools tests
     result: PASS
     evidence_ref: docs/exec-plans/evidence/HG-017/checks-r10.log
