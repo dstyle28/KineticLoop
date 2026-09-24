@@ -1,0 +1,36 @@
+HG-009 post-review remediation evidence
+
+Identity
+  change: harness-governance-v0.1/HG-009
+  protected base: 1834f6add0ed3860556458817c7620b2ef2d394e
+  tested revision: 43a719abd0593e929430fcb56bb222aa22b814a1
+
+The tested revision contains the complete implementation, historical packet-masking
+regression, derived hashes, governance record and original evidence. The commands
+below were run against that exact committed tree during fresh independent review.
+This file is a newly added post-test evidence artifact; the earlier checks.log is
+left byte-for-byte unchanged after the tested revision.
+
+Checks
+  kl check-harness: HARNESS_CHECK_PASS tasks=68 active=66
+  ruff check .: All checks passed
+  mypy src tools tests: Success, 44 source files
+  pytest -q tests/unit: 92 passed
+  pytest -q tests/harness: 89 passed
+  focused governance replay regressions: 8 passed, 56 deselected
+  git diff --check: PASS
+  frozen Protocol, DB and FROZEN_BASELINE diff: unchanged
+
+Review finding remediated
+  The previous tested_commit preceded a modification to an existing evidence file,
+  which correctly triggered governance-tested-evidence-not-addition. The governance
+  record now binds tested_commit to 43a719abd0593e929430fcb56bb222aa22b814a1 and
+  references this newly added evidence artifact. No existing evidence file changes
+  after that tested revision.
+
+Scope conclusion
+  The implementation replays historical governance index, manifest, backlog,
+  packets, resources, dependencies, DAG/readiness and required-review state from
+  the reviewed revision. It requires reviewed-revision ancestry into the later
+  protected base and retains exact-tree, declared-scope, evidence-binding,
+  review-only suffix and frozen-baseline protections.
