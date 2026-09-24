@@ -1,0 +1,51 @@
+KL-009 immutable tested-commit evidence, final encoded-input review-fix cycle
+date: 2026-09-24
+task_identity: harness-backlog-v0.2/KL-009
+base_commit: c2740b8dfa25c079bb51f816baa5a87d6422b841
+tested_commit: 37ea3d4595e9609840ef4a15e7c44ee0e97ee59a
+
+PASS config_secret_sources_are_separated
+command: .venv/bin/pytest -q tests/unit/config/test_secret_loader.py::test_config_secret_sources_are_separated
+output: 1 passed in 0.01s
+
+PASS nested_redaction_is_non_mutating_and_authority_neutral
+command: .venv/bin/pytest -q tests/unit/security/test_redaction.py::test_nested_redaction_is_non_mutating_and_authority_neutral
+output: 1 passed in 0.03s
+
+PASS synthetic_security_fixtures_have_provenance
+command: .venv/bin/pytest -q tests/unit/security/test_synthetic_fixtures.py::test_synthetic_security_fixtures_have_provenance
+output: 1 passed in 0.01s
+
+PASS database_diagnostics_redact_credentials
+command: .venv/bin/pytest -q tests/db/test_secret_output.py
+output: 4 passed in 0.02s
+
+PASS security_and_database_regressions_pass
+command: .venv/bin/pytest -q tests/unit/config tests/unit/security tests/db
+output: 17 passed in 0.09s
+
+PASS harness_validation_passes
+command: .venv/bin/kl check-harness && .venv/bin/kl test-harness
+output: HARNESS_CHECK_PASS tasks=68 active=66; 100 passed in 83.64s
+
+PASS lint
+command: RUFF_CACHE_DIR=/private/tmp/kl009-ruff-cache-final3 .venv/bin/ruff check .
+output: All checks passed!
+
+PASS typecheck
+command: MYPY_CACHE_DIR=/private/tmp/kl009-mypy-cache-final3 .venv/bin/mypy src tools tests
+output: Success: no issues found in 55 source files
+
+PASS unit
+command: .venv/bin/kl test-unit
+output: 98 passed in 3.13s
+
+PASS full_suite
+command: .venv/bin/pytest -q
+output: 212 passed in 86.80s
+
+Adversarial closure
+- Complete equals/separate option values redact across embedded spaces and escaped quotes in text, argv, and subprocess diagnostics.
+- Query keys and URL userinfo use bounded recursive decoding before sensitivity classification.
+- Synthetic fixture mappings require exact dict/string/native sentinel value types; custom equality objects are rejected.
+- Every prior review probe remains represented in focused regressions; canonical evidence and authority semantics remain unchanged.
