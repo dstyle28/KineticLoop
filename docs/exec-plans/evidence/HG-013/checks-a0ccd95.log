@@ -1,0 +1,19 @@
+HG-013 final verification
+tested_commit: a0ccd95479bd1abeaaa04c04eea945164b9bb5a8
+base_commit: 7fb89473737015d517d3e3c18a5adf6d0b274fb3
+Runtime: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin
+Python package selection: PYTHONPATH="$PWD/src"
+
+kl check-harness: HARNESS_CHECK_PASS tasks=68 active=66
+ruff check .: All checks passed!
+MYPY_CACHE_DIR=/private/tmp/hg-013-mypy mypy src tools tests:
+Success: no issues found in 44 source files
+kl test-unit: 92 passed in 2.42s
+kl test-harness: 95 passed in 70.18s
+git diff --check 7fb89473737015d517d3e3c18a5adf6d0b274fb3 HEAD: exit 0
+git diff --exit-code 7fb89473737015d517d3e3c18a5adf6d0b274fb3 HEAD -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md: exit 0
+
+Earlier failures and their repair are retained in checks.log.
+All implementation files remained unchanged throughout this run. Only HG-013
+record/new evidence bookkeeping follows the tested revision.
+Required review union remains GENERAL, PROTOCOL, DB_CONCURRENCY.
