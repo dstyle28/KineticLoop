@@ -263,6 +263,7 @@ def test_db_reset_arbitrary_authorization_diagnostic_is_credential_free(
         ("alice%3Ahunter2%40db.invalid:5432", "hunter2"),
         ("alice:alpha/bravo@db.invalid:notaport", "alpha"),
         ("alice:alpha bravo@db.invalid:notaport", "alpha"),
+        ("notice@example.com alice:hunter2@db.invalid:notaport", "hunter2"),
     ],
 )
 def test_malformed_docker_endpoints_redact_scheme_less_userinfo(

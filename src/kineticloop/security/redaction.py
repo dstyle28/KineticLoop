@@ -15,6 +15,7 @@ from kineticloop.config.secrets import SecretValue
 REDACTED = "[REDACTED]"
 _SECRET_MARKER = "__KINETICLOOP_REDACTED_SECRET__"
 _USERINFO_MARKER = "__KINETICLOOP_REDACTED_USERINFO__"
+_PROTECTED_USERINFO_MARKER = "__KINETICLOOP_PROTECTED_USERINFO__"
 
 _SENSITIVE_KEY_PARTS = frozenset(
     {
@@ -38,11 +39,14 @@ _SENSITIVE_KEY_PARTS = frozenset(
 _URL = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\s<>\"']+")
 _CREDENTIAL_URL = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\r\n]*?@[^\s,;]+")
 _SCHEMELESS_USERINFO = re.compile(
-    r"(?P<boundary>[\n'\"(=])(?P<userinfo>[^@\r\n]+@)"
+    r"(?P<boundary>[\s'\"(=])"
+    r"(?P<userinfo>(?:[A-Za-z0-9._~!$&'()*+,;%-]+:[^@\r\n]*?|"
+    r"[A-Za-z0-9._%+-]+)@)"
     r"(?P<host>\[[^\]]+\]|[A-Za-z0-9.-]+)"
 )
 _SCHEMELESS_USERINFO_START = re.compile(
-    r"^(?P<userinfo>[^@=\r\n'\"()]+@)"
+    r"^(?P<userinfo>(?:[A-Za-z0-9._~!$&'()*+,;%-]+:[^@\r\n]*?|"
+    r"[A-Za-z0-9._%+-]+)@)"
     r"(?P<host>\[[^\]]+\]|[A-Za-z0-9.-]+)"
 )
 _PERCENT_PLACEHOLDER = re.compile(
@@ -400,7 +404,10 @@ class Redactor:
             lambda match: self._url(match.group(0), nested_depth=nested_depth), result
         )
         result = result.replace(_SECRET_MARKER, REDACTED)
-        result = result.replace(_USERINFO_MARKER, REDACTED)
+        result = result.replace(f"{REDACTED}@", _PROTECTED_USERINFO_MARKER)
+        result = result.replace(
+            f"{_USERINFO_MARKER}@", _PROTECTED_USERINFO_MARKER
+        )
         result = _SCHEMELESS_USERINFO.sub(
             lambda match: (
                 f"{match.group('boundary')}{REDACTED}@{match.group('host')}"
@@ -410,6 +417,7 @@ class Redactor:
         result = _SCHEMELESS_USERINFO_START.sub(
             lambda match: f"{REDACTED}@{match.group('host')}", result
         )
+        result = result.replace(_PROTECTED_USERINFO_MARKER, f"{REDACTED}@")
         result = _COMMAND_OPTION.sub(lambda match: f"{match.group('prefix')}{REDACTED}", result)
         result = _COMMAND_SEPARATE.sub(lambda match: f"{match.group('prefix')}{REDACTED}", result)
         result = _AUTH_HEADER.sub(

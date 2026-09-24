@@ -460,6 +460,19 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
         assert not hasattr(diagnostic, authority_field)
 
 
+def test_multiple_schemeless_authorities_each_redact_userinfo() -> None:
+    rendered = Redactor().text(
+        "notice@example.com alice:hunter2@db.invalid:notaport"
+    )
+
+    assert "notice" not in rendered
+    assert "alice" not in rendered
+    assert "hunter2" not in rendered
+    assert rendered == (
+        "[REDACTED]@example.com [REDACTED]@db.invalid:notaport"
+    )
+
+
 def test_nested_query_credentials_are_redacted_recursively() -> None:
     nested_url_secret = "NESTED_URL_SECRET"
     nested_db_secret = "NESTED_DB_SECRET"
