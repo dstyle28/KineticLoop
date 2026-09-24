@@ -358,7 +358,7 @@ class Redactor:
             return frozenset(self.redact(item) for item in value)
         if value is None or type(value) in (int, float, bool):
             return value
-        return f"<diagnostic-value:{type(value).__name__}>"
+        return "<diagnostic-value>"
 
     def _redact_mapping_key(self, key: object) -> object:
         if type(key) is str:
@@ -371,7 +371,7 @@ class Redactor:
             return frozenset(self._redact_mapping_key(item) for item in key)
         if key is None or type(key) in (int, float, bool):
             return key
-        return f"<diagnostic-key:{type(key).__name__}>"
+        return "<diagnostic-key>"
 
     def _mapping_key_is_sensitive(self, key: object) -> bool:
         if type(key) is str:
@@ -390,16 +390,19 @@ class Redactor:
         for index, item in enumerate(value):
             if not isinstance(item, str):
                 continue
-            positions = _sequence_sensitive_positions(item)
+            decoded_item = _stable_unquote(item)
+            positions = {0} if decoded_item is None else _sequence_sensitive_positions(decoded_item)
             if positions == {0} and index + 1 < len(value):
                 next_item = value[index + 1]
-                if isinstance(next_item, str) and next_item.casefold() in {
-                    "bearer",
-                    "basic",
-                    "digest",
-                    "token",
-                }:
-                    positions = {0, 1}
+                if isinstance(next_item, str):
+                    decoded_next = _stable_unquote(next_item)
+                    if decoded_next is None or decoded_next.casefold() in {
+                        "bearer",
+                        "basic",
+                        "digest",
+                        "token",
+                    }:
+                        positions = {0, 1}
             sensitive_indices.update(index + 1 + position for position in positions)
         return [
             REDACTED if index in sensitive_indices else self.redact(item)
@@ -417,7 +420,7 @@ class Redactor:
         seen: frozenset[int],
     ) -> RedactedDiagnostic:
         if id(error) in seen:
-            return RedactedDiagnostic(type(error).__name__, "exception cycle omitted")
+            return RedactedDiagnostic(self.text(type(error).__name__), "exception cycle omitted")
         details: list[str] = []
         if isinstance(error, subprocess.CalledProcessError):
             details.append(f"returncode={error.returncode}")
@@ -437,7 +440,7 @@ class Redactor:
             else:
                 message = repr(redacted_args)
         return RedactedDiagnostic(
-            exception_type=type(error).__name__,
+            exception_type=self.text(type(error).__name__),
             message=message,
             details=tuple(details),
             cause=(

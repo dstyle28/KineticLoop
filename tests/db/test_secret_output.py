@@ -162,3 +162,26 @@ def test_db_reset_argument_errors_are_credential_free(
     stderr = capsys.readouterr().err
     assert secret not in stderr
     assert "[REDACTED]" in stderr
+
+
+@pytest.mark.parametrize(
+    "arguments,secret",
+    [
+        (["--pass%77ord", "SYNTHETIC_SEPARATE_SECRET"], "SYNTHETIC_SEPARATE_SECRET"),
+        (
+            ["--authorization", "B%65arer", "SYNTHETIC_AUTH_SECRET"],
+            "SYNTHETIC_AUTH_SECRET",
+        ),
+    ],
+)
+def test_db_reset_split_argument_errors_are_credential_free(
+    arguments: list[str],
+    secret: str,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    with pytest.raises(SystemExit) as exit_info:
+        main(["db-reset", *arguments])
+    assert exit_info.value.code == 2
+    stderr = capsys.readouterr().err
+    assert secret not in stderr
+    assert "[REDACTED]" in stderr

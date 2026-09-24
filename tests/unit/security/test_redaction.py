@@ -24,6 +24,8 @@ class UnsafeDiagnosticInt(int):
 
 
 def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
+    secret_named_value_type = type(SENTINEL, (), {})
+    secret_named_error_type = type(SENTINEL, (ValueError,), {})
     deeply_encoded_sentinel = SENTINEL
     for _ in range(9):
         deeply_encoded_sentinel = quote(deeply_encoded_sentinel, safe="")
@@ -50,7 +52,9 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
         f"registered-key-{SENTINEL}": "safe value",
         "canonical_evidence": evidence,
     }
-    child = ValueError({"password": "opaque-exception-secret", "safe": "child context"})
+    child = secret_named_error_type(
+        {"password": "opaque-exception-secret", "safe": "child context"}
+    )
     process_error = subprocess.CalledProcessError(
         1,
         [
@@ -155,6 +159,8 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
         frozenset({"slot", "clientSecret"}): "frozenset-key-secret"
     }
     source["unsupported_value"] = CompoundDiagnosticKey("registered-object-secret")
+    source["secret_named_value"] = secret_named_value_type()
+    source["secret_named_key"] = {secret_named_value_type(): "safe type-key value"}
     source["unsupported_path"] = Path(f"/tmp/{SENTINEL}")
     source["cookie_tail"] = "cookie=session-value; opaque-cookie-tail-secret"
     source["fully_encoded_userinfo"] = (
@@ -217,6 +223,8 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     source_without_error.pop("error")
     source_without_error.pop("compound_exception")
     source_without_error.pop("format_exception")
+    source_without_error.pop("secret_named_value")
+    source_without_error.pop("secret_named_key")
     untouched = copy.deepcopy(source_without_error)
 
     redacted = Redactor((SENTINEL,)).redact(source)
@@ -305,6 +313,8 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     source_without_error.pop("error")
     source_without_error.pop("compound_exception")
     source_without_error.pop("format_exception")
+    source_without_error.pop("secret_named_value")
+    source_without_error.pop("secret_named_key")
     assert source_without_error == untouched
     assert compound_exception.args == compound_exception_args
     assert format_exception.args == format_exception_args
