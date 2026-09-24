@@ -534,6 +534,38 @@ class ValidatorTests(unittest.TestCase):
             self.check(1, expected)
         packet.write_text(original)
 
+    def test_m2_kl015_synchronized_frozen_impact_underdeclaration_rejected(self):
+        backlog_path = self.root / v.BACKLOG
+        traceability_path = self.root / v.TRACEABILITY
+        packet_path = self.root / 'docs/exec-plans/active/KL-015.md'
+        original_backlog = json.loads(backlog_path.read_text())
+        original_traceability = json.loads(traceability_path.read_text())
+        original_packet = packet_path.read_text()
+
+        for field, omitted, packet_token, expected in (
+                ('invariant_ids', 'INV-11', ', INV-11',
+                 'm2-kl015-frozen-impact:invariants'),
+                ('table_ids', 'S42', ', S42',
+                 'm2-kl015-frozen-impact:tables')):
+            backlog = copy.deepcopy(original_backlog)
+            task = next(item for item in backlog['tasks'] if item['id'] == 'KL-015')
+            task[field].remove(omitted)
+            dump(backlog_path, backlog)
+
+            traceability = copy.deepcopy(original_traceability)
+            trace = next(item for item in traceability['tasks'] if item['id'] == 'KL-015')
+            trace[field].remove(omitted)
+            dump(traceability_path, traceability)
+
+            packet_path.write_text(original_packet.replace(packet_token, '', 1))
+            refresh(self.root)
+            self.check(1, expected)
+
+        dump(backlog_path, original_backlog)
+        dump(traceability_path, original_traceability)
+        packet_path.write_text(original_packet)
+        refresh(self.root)
+
     def test_manifest_claimed_m1_closure_cannot_be_missing(self):
         manifest_path = self.root / v.MANIFEST
         manifest = json.loads(manifest_path.read_text())

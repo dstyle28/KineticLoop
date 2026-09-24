@@ -82,6 +82,12 @@ M2_REQUIRED_CHECK_IDS = {
         'provider_fixtures_pass_hardened_synthetic_guard',
     },
 }
+KL015_REQUIRED_INVARIANT_IDS = [f'INV-{number:02d}' for number in range(1, 19)]
+KL015_REQUIRED_TABLE_IDS = [
+    *(f'S{number:02d}' for number in range(1, 19)),
+    *(f'S{number:02d}' for number in range(21, 46)),
+    'S49', 'S50', 'S51',
+]
 KL014_REQUIRED_COMMAND_SURFACE = [
     'T1: ReceiveEvidence',
     'T1-PREPARATION (outside T1): RecordCandidate',
@@ -1198,6 +1204,11 @@ def task_definition_errors(root, backlog, revision=None):
                 errors.append('m2-required-semantic-checks:' + name)
             if name == 'KL-014' and task.get('commands') != KL014_REQUIRED_COMMAND_SURFACE:
                 errors.append('m2-kl014-command-surface')
+            if name == 'KL-015':
+                if task.get('invariant_ids') != KL015_REQUIRED_INVARIANT_IDS:
+                    errors.append('m2-kl015-frozen-impact:invariants')
+                if task.get('table_ids') != KL015_REQUIRED_TABLE_IDS:
+                    errors.append('m2-kl015-frozen-impact:tables')
             if (name in M2_REQUIRED_SECURITY_REVIEWS
                     and 'SECURITY_DATA_BOUNDARY' not in task.get('review_requirements', [])):
                 errors.append('m2-security-review-required:' + name)
