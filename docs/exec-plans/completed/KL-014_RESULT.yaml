@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-014
 display_task_id: KL-014
 task_definition_version: v0.2
 base_commit: bac21cf6a920859c74e3906383626557b379e758
-tested_commit: fa5684711cdfe683abddd27b24869ea54656ea85
+tested_commit: f04b74145ef0d415eef6127ec019a11e772356bc
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -18,39 +18,39 @@ commands_run:
   - check_id: strict_t1_t8_contract_matrix
     command: uv run pytest -q tests/unit/contracts/test_commands.py::test_strict_t1_t8_contract_matrix
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-014/checks-fa56847.log
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-f04b741.log
   - check_id: build_preparation_stays_outside_t2
     command: uv run pytest -q tests/unit/contracts/test_commands.py::test_build_preparation_stays_outside_t2
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-014/checks-fa56847.log
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-f04b741.log
   - check_id: preparation_and_registry_management_stay_outside_atomic_boundaries
     command: uv run pytest -q tests/unit/contracts/test_commands.py::test_preparation_and_registry_management_stay_outside_atomic_boundaries
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-014/checks-fa56847.log
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-f04b741.log
   - check_id: identity_idempotency_and_basis_fields
     command: uv run pytest -q tests/unit/contracts/test_commands.py::test_identity_idempotency_and_basis_fields
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-014/checks-fa56847.log
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-f04b741.log
   - check_id: shadow_and_test_scope_fail_closed
     command: uv run pytest -q tests/unit/contracts/test_commands.py::test_shadow_and_test_scope_fail_closed
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-014/checks-fa56847.log
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-f04b741.log
   - check_id: command_result_roundtrip
     command: uv run pytest -q tests/unit/contracts/test_results.py::test_command_result_roundtrip
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-014/checks-fa56847.log
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-f04b741.log
   - check_id: error_registry_regression_passes
     command: uv run pytest -q tests/unit/contracts/test_errors.py tests/unit/contracts/test_commands.py tests/unit/contracts/test_results.py
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-014/checks-fa56847.log
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-f04b741.log
   - check_id: command_contract_unit_suite_passes
     command: uv run pytest -q tests/unit/contracts
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-014/checks-fa56847.log
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-f04b741.log
   - check_id: harness_validation_passes
     command: uv run kl check-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-014/checks-fa56847.log
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-f04b741.log
 requirements_covered: []
 files_changed:
   - docs/contracts/transaction_commands.md
@@ -64,6 +64,7 @@ files_changed:
   - docs/exec-plans/evidence/KL-014/checks-111a58d.log
   - docs/exec-plans/evidence/KL-014/checks-aa28044.log
   - docs/exec-plans/evidence/KL-014/checks-fa56847.log
+  - docs/exec-plans/evidence/KL-014/checks-f04b741.log
   - docs/exec-plans/completed/KL-014_RESULT.yaml
 decisions:
   - Encode every atomic or preparation boundary as a required Literal field so callers cannot relabel a preparation command as T1, T2, T3, T5, or T6.
@@ -73,6 +74,7 @@ decisions:
   - Keep IssueAuthorization, InvalidateAuthorization, RecordSnapshot, AdvanceAttempt, and CancelUndispatched out of the public model registry.
   - Make historical eligibility explicit on T6/T7 results and reject a replayed PermitDispatch result that purports to grant a second provider send.
   - Require every production subject command's authenticated actor identity to equal its subject_id; no implicit cross-subject delegation is admitted.
+  - Represent the immutable input revision frontier as explicit SHA-256 `*_input_frontier_hash` values; never treat it as a protocol counter.
 known_limitations:
   - These are typed immutable wire contracts only; they do not implement command-owner authorization, receipts, persistence, PostgreSQL transactions, locking, registry gates, or external dispatch.
   - Command acceptance remains responsible for proving that TrustedActor data originated at the authenticated service boundary; a Pydantic value does not itself authenticate a caller.
