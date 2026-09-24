@@ -12,6 +12,21 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 BACKLOG = 'KineticLoop_Harness_Backlog_v0.2.json'
 TRACEABILITY = 'KineticLoop_Harness_Traceability_v0.3.json'
+TRACEABILITY_TASK_FIELDS = (
+    'task_identity',
+    'id',
+    'milestone',
+    'depends_on',
+    'conditional_depends_on',
+    'requirements_covered',
+    'checks_required_for_this_task',
+    'resource_keys',
+    'write_paths',
+    'write_paths_status',
+    'review_requirements',
+    'packet_refinement',
+    'status',
+)
 INDEX = 'CURRENT_DOCUMENT_INDEX.json'
 MANIFEST = 'HARNESS_DOCUMENT_MANIFEST.json'
 GOVERNANCE_SCHEMA = 'HARNESS_CHANGE.schema.json'
@@ -219,6 +234,11 @@ def governance_allowed_patterns(change_id):
         'tests/harness/**',
         'tools/harness/**',
     ]
+
+
+def traceability_projection(task):
+    """Return the exact task-definition fields mirrored by traceability."""
+    return {field: task.get(field) for field in TRACEABILITY_TASK_FIELDS}
 
 
 def configure_ci_merge_gate(root, args):
@@ -983,6 +1003,47 @@ def validate(root, args):
                 args.governance_base_tasks = old_tasks
                 args.governance_reviewed_tasks = replay_tasks
                 refined = set(record['packets_refined'])
+                for task_id in sorted(changed_task_ids - refined):
+                    errors.append(
+                        'governance-task-definition-scope:'
+                        + change_id + ':' + task_id)
+
+                base_traceability = load_artifact_at_revision(
+                    root, TRACEABILITY, governance_base)
+                reviewed_traceability = (
+                    load_artifact_at_revision(root, TRACEABILITY, reviewed)
+                    if review_only else load_artifact(root / TRACEABILITY)
+                )
+                base_trace_by_identity = {
+                    task.get('task_identity'): task
+                    for task in base_traceability.get('tasks', [])
+                }
+                reviewed_trace_by_identity = {
+                    task.get('task_identity'): task
+                    for task in reviewed_traceability.get('tasks', [])
+                }
+                changed_trace_identities = {
+                    identity
+                    for identity in set(base_trace_by_identity) | set(reviewed_trace_by_identity)
+                    if base_trace_by_identity.get(identity) != reviewed_trace_by_identity.get(identity)
+                }
+                refined_identities = {
+                    replay_tasks[task_id]['task_identity']
+                    for task_id in refined if task_id in replay_tasks
+                }
+                for identity in sorted(changed_trace_identities - refined_identities):
+                    errors.append(
+                        'governance-traceability-scope:'
+                        + change_id + ':' + str(identity))
+                for task_id in sorted(refined):
+                    task = replay_tasks.get(task_id)
+                    if not task:
+                        continue
+                    trace_task = reviewed_trace_by_identity.get(task['task_identity'])
+                    if (trace_task is None
+                            or trace_task.get('id') != task_id
+                            or traceability_projection(task) != trace_task):
+                        errors.append('governance-traceability-mismatch:' + task_id)
                 observed = set()
                 for task_id in refined:
                     task = replay_tasks.get(task_id)

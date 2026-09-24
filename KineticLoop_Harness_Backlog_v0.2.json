@@ -129,11 +129,7 @@
       "title": "Initialize Python repo/tooling/CI",
       "owner_role": "platform",
       "depends_on": [],
-      "commands": [
-        "load provider/backend credentials only through an explicit secret source separated from public configuration",
-        "redact nested diagnostics, structured-log arguments, credential-bearing URLs and chained exceptions without mutating canonical evidence",
-        "emit credential-free database lifecycle and kl db-reset diagnostics while preserving explicit in-process connection access"
-      ],
+      "commands": [],
       "transaction_boundaries": [],
       "invariant_ids": [],
       "table_ids": [],
@@ -856,7 +852,11 @@
         "KL-001",
         "KL-007"
       ],
-      "commands": [],
+      "commands": [
+        "load provider/backend credentials only through an explicit secret source separated from public configuration",
+        "redact nested diagnostics, structured-log arguments, credential-bearing URLs and chained exceptions without mutating canonical evidence",
+        "emit credential-free database lifecycle and kl db-reset diagnostics while preserving explicit in-process connection access"
+      ],
       "transaction_boundaries": [],
       "invariant_ids": [
         "INV-15",
