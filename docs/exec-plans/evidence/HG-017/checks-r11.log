@@ -1,0 +1,42 @@
+HG-017 tested revision: 230cff13338b43e70a2cec128dfc38946a0d9272
+Protected base: 16eab836be754b6000efeb2f38a8f0f89648a767
+
+PASS milestone_schema_valid
+  MILESTONE_CLOSURE.schema.json is valid Draft 2020-12 and M1.json conforms.
+PASS closure_active_task_set_and_integrations_valid
+  kl check-harness: HARNESS_CHECK_PASS tasks=68 active=66.
+  Historical integrations and ordinary/delayed bookkeeping suffixes remain fail closed.
+PASS closure_exit_evidence_bound
+  Clean-start evidence is typed, command/hash/freshness bound at evaluated revision
+  f736262597c661f11ba671a733d81bf838514685. Historical model evidence remains
+  UNVERIFIED_HISTORICAL_DECLARATION and product requirement claims remain empty.
+PASS m2_contract_projection_valid
+  All ten refined M2 packet/backlog/traceability projections match. KL-014 separates
+  RecordCandidate, registry registration, projection/manifest, tool/proposal/features,
+  and resolve/validation preparation from frozen T1/T2-GLOBAL/T3/T5/T6 atomic commands.
+  The complete command surface and required semantic check are mechanically pinned.
+PASS milestone_and_refinement_negative_tests_pass
+  pytest -q tests/harness/test_validator.py: 99 passed in 182.31s.
+PASS harness_structure_valid
+  kl check-harness: HARNESS_CHECK_PASS tasks=68 active=66.
+PASS lint_passes
+  ruff check .: All checks passed.
+PASS typecheck_passes
+  mypy src tools tests: Success, no issues in 55 source files.
+PASS unit_tests_pass
+  kl test-unit: 134 passed in 33.33s.
+PASS harness_tests_pass
+  kl test-harness: 124 passed in 211.31s.
+PASS full_suite_passes
+  pytest -q: 317 passed in 232.79s.
+PASS frozen_baseline_unchanged
+  git diff --exit-code 16eab836be754b6000efeb2f38a8f0f89648a767
+  230cff13338b43e70a2cec128dfc38946a0d9272 -- FROZEN_BASELINE.json
+  04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
+  05_KineticLoop_Protocol_v1.2_FROZEN.md
+  Exit 0; no output.
+PASS governance_scope_exact
+  All 36 protected-base-to-tested paths match governance_allowed_patterns(HG-017).
+PASS diff_clean
+  git diff --check 16eab836be754b6000efeb2f38a8f0f89648a767 230cff13338b43e70a2cec128dfc38946a0d9272
+  Exit 0; no output.
