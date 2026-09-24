@@ -217,8 +217,12 @@ def packet_errors(task, text):
         }
         if found_resources != expected_resources:
             errors.append('packet-resource-keys:' + name)
-        found = re.search(r'^Expected (?:implementation )?write paths:\s*\n((?:- [^\n]+\n?)+)', scope, re.M)
-        if not found or sorted(bullets(found.group(1))) != sorted(task['write_paths']):
+        write_block = re.search(
+            r'^Expected (?:implementation )?write paths:\s*\n((?:- [^\n]+\n?)+)',
+            scope,
+            re.M,
+        )
+        if not write_block or sorted(bullets(write_block.group(1))) != sorted(task['write_paths']):
             errors.append('packet-write-paths:' + name)
         environment_block = re.search(
             r'^Environment requirements:\s*\n((?:- [^\n]+\n?)+)', scope, re.M)
