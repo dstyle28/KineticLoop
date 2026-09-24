@@ -89,6 +89,7 @@ M2_REQUIRED_CHECK_IDS = {
     },
 }
 KL015_REQUIRED_INVARIANT_IDS = [f'INV-{number:02d}' for number in range(1, 19)]
+KL015_REQUIRED_TRANSACTION_BOUNDARIES = ['T1-T8']
 KL015_REQUIRED_TABLE_IDS = [
     *(f'S{number:02d}' for number in range(1, 19)),
     *(f'S{number:02d}' for number in range(21, 46)),
@@ -104,6 +105,27 @@ M2_SECURITY_CONTRACT_DIGESTS = {
         'preparation_and_registry_management_stay_outside_atomic_boundaries': 'a2d6965d4bcb0ac6c9c8c61f49ce9eee21fccdda97d69193b537ad945bc96ec2',
         'identity_idempotency_and_basis_fields': '9d87f21fcec3ef684dda3572e8e5865b51096829f2c2482ffb08d1bf9e6ce9f7',
         'shadow_and_test_scope_fail_closed': '3aaa19becec551cc9eb9b8396d3b33a87ed9072b0f186e66147fbc8cab4dbb8f',
+    },
+    'KL-015': {
+        'transaction_owner_matrix_complete': '10458fc375a0982d6795c19a419999ebb27564fd146c95a092ea747bd54a0c30',
+        'registry_lease_required_for_publish_commit_and_session_entry': '97d957a3cba60ae035c30df4be6b4b46d7af9737c03bb54e6104afe75a1be1ab',
+        'preparation_work_stays_outside_coordination_locks': '64ecd2f92279e5e0d3d243c40fe929a48b29b36f56ebd78bacc153a38ec6e9ae',
+        'factset_build_stays_outside_subject_coordination': '773498075ad55a7ac92ff672ae04c2897807bb3df7073de5b263449c21d26883',
+        'subject_guard_required': '5e515f490a6d9b54621f3c55da06e9b324b60bc26b4b1016f10be31ae966da67',
+        'complete_frozen_lock_order_enforced': 'd8b5fd7ff163fb58c5791cc61b01dd19280215bb49f7cf0c6fa693df757b8889',
+        'multi_key_lock_order_is_stable': 'cd947a603d940b366393516120d0a870fdafaa69c6475a6ddb2b927a8913cda5',
+        'reverse_lock_order_is_rejected': 'b3a61a67ef63c23dd263918530833bbafbe507e44e9874235130905b085bba46',
+        'receipt_before_s01_is_rejected': '256fd5073276fe82812d6afc26d9ed7d4c2c6f754565d0ea596a2479fdbf0f2b',
+        'artifact_identity_required': '746290a1755b3b563c7edf343230923aa43c362a018230a3fa1a40cbebae9266',
+        'direct_write_bypass_rejected': 'b10f700f6c090f6bae91f9b3a9b25906fff8bb1a68564a6b38b652519cbdc671',
+        'event_outbox_atomicity_enforced': '63a96e4486095e240fd1e080195ae8772386e02ce96f56393712276104a1a1c8',
+        'outbox_dispatcher_does_not_lock_subject_guard': '78493bf5b16948e2cccc8796cd05e45d4680d19edc94138b4d9bbcc17b249366',
+        'stale_fence_commit_is_rejected': '54e6aefccb148342b7d39003e1045035c8022e22f45d189f4fa045ca1f25401c',
+        'dispatch_first_winner_and_replay_non_resend': '81a0efb991b343baab90742c8bea62f6a1ebf492cda0b48f3ad9ddf7d5fa0b6a',
+        'ack_loss_replay_preserves_natural_uniqueness': '283df1d589323633f8302d397e5ad617f267c60935359eac5173e153ea3d1508',
+        't6_ack_loss_replay_returns_same_issuance': 'db76c689857128c515c6137642cd189798105ff029a4686e36615f6a02329703',
+        'transaction_db_conformance_passes': 'c0a56d2f9acecef30bd5715fe72a4bcb10866cec4702893f213c0a39da40b576',
+        'harness_validation_passes': '2dbb33f46e379c228225cd02bc8afdf39689c54008b8ca7b1b019e0d2c4139bf',
     },
     'KL-017': {
         'subject_namespace_isolation': 'f4372d9ad4ad1395f9fbf07611ba68813e0c46de01249de56e312f3731f7e2ff',
@@ -1259,6 +1281,8 @@ def task_definition_errors(root, backlog, revision=None):
             if name == 'KL-015':
                 if task.get('invariant_ids') != KL015_REQUIRED_INVARIANT_IDS:
                     errors.append('m2-kl015-frozen-impact:invariants')
+                if task.get('transaction_boundaries') != KL015_REQUIRED_TRANSACTION_BOUNDARIES:
+                    errors.append('m2-kl015-frozen-impact:transactions')
                 if task.get('table_ids') != KL015_REQUIRED_TABLE_IDS:
                     errors.append('m2-kl015-frozen-impact:tables')
             contract_map = {

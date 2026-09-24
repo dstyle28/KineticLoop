@@ -577,6 +577,8 @@ class ValidatorTests(unittest.TestCase):
         for field, omitted, packet_token, expected in (
                 ('invariant_ids', 'INV-11', ', INV-11',
                  'm2-kl015-frozen-impact:invariants'),
+                ('transaction_boundaries', 'T1-T8', '- Transactions: T1-T8',
+                 'm2-kl015-frozen-impact:transactions'),
                 ('table_ids', 'S42', ', S42',
                  'm2-kl015-frozen-impact:tables')):
             backlog = copy.deepcopy(original_backlog)
@@ -605,6 +607,7 @@ class ValidatorTests(unittest.TestCase):
         original_traceability = json.loads(traceability_path.read_text())
         selected = {
             'KL-014': 'identity_idempotency_and_basis_fields',
+            'KL-015': 't6_ack_loss_replay_returns_same_issuance',
             'KL-017': 'cross_subject_denial_is_non_enumerating',
             'KL-018': 'artifact_identity_is_immutable',
             'KL-055': 'provider_subject_source_binding_is_trusted',
