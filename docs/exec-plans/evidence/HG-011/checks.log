@@ -1,6 +1,6 @@
 HG-011 durable review and integration closure validation
 base_commit=a1e407d10bed1701efd0975b01c3054615503cb5
-tested_commit=8a2a1a34de52c0cedd5e6d5f4cfad96ac2f6c9b0
+tested_commit=56ec95a5edcf7ec166d389766ca03dba7606d5c3
 kl002_result_commit=e6f7a36485e4a9557297a9c282eb38c6ac37e72c
 kl002_reviewed_head=e6f7a36485e4a9557297a9c282eb38c6ac37e72c
 kl002_review_record_commit=bf2e9e086ec29dbfd1e58e1e082f396a19526983
@@ -28,14 +28,14 @@ unit_tests_pass: PASS
   92 passed in 1.81s
 harness_tests_pass: PASS
   PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness
-  94 passed in 73.99s
+  95 passed in 75.72s
 db_unit_tests_pass: PASS
   PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/db
   10 passed in 0.06s
 integration_binding_tests_pass: PASS
   PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q
   tests/harness/test_validator.py -k 'integration or task_review_without_integration'
-  13 passed, 56 deselected in 7.37s
+  15 passed, 55 deselected in 9.40s
 compose_config_valid: PASS
   PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python
   tools/db/verify.py compose-config-valid
@@ -43,15 +43,15 @@ compose_config_valid: PASS
 postgres_ready: PASS
   PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python
   tools/db/verify.py postgres-ready
-  database_name=kl_d1f3_c0283faae1a8_test host=127.0.0.1 port=55000
+  database_name=kl_d1f3_c0283faae1a8_test host=127.0.0.1 port=55003
 reset_idempotent: PASS
   PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python
   tools/db/verify.py reset-idempotent
   resets=3 sentinel_removed=true status=PASS
 worktree_db_isolated: PASS
   PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python
-  tools/db/verify.py worktree-db-isolated --peer-root /private/tmp/hg011-kl002-peer.A5z1gp
-  primary_project=kl_d1f3_c0283faae1a8 peer_project=kl_tmp_ee8f22944f2f
+  tools/db/verify.py worktree-db-isolated --peer-root /private/tmp/hg011-kl002-peer.cVnVCB
+  primary_project=kl_d1f3_c0283faae1a8 peer_project=kl_tmp_e9018dd43c0c
   peer_cannot_see_primary_probe=true status=PASS
 current_master_ancestry_and_result_continuity: PASS
   e6f7a36485e4a9557297a9c282eb38c6ac37e72c is an ancestor of tested_commit;
@@ -62,9 +62,9 @@ review_record_commit_contains_both_required_reviews: PASS
   DB_CONCURRENCY.json under docs/exec-plans/reviews/KL-002/.
 frozen_baseline_unchanged: PASS
   git diff --exit-code a1e407d10bed1701efd0975b01c3054615503cb5
-  8a2a1a34de52c0cedd5e6d5f4cfad96ac2f6c9b0 -- FROZEN_BASELINE.json
+  56ec95a5edcf7ec166d389766ca03dba7606d5c3 -- FROZEN_BASELINE.json
   04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
   05_KineticLoop_Protocol_v1.2_FROZEN.md
 diff_clean: PASS
   git diff --check a1e407d10bed1701efd0975b01c3054615503cb5
-  8a2a1a34de52c0cedd5e6d5f4cfad96ac2f6c9b0
+  56ec95a5edcf7ec166d389766ca03dba7606d5c3

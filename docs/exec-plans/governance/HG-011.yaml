@@ -1,7 +1,7 @@
 change_identity: harness-governance-v0.1/HG-011
 display_change_id: HG-011
 base_commit: a1e407d10bed1701efd0975b01c3054615503cb5
-tested_commit: 8a2a1a34de52c0cedd5e6d5f4cfad96ac2f6c9b0
+tested_commit: 56ec95a5edcf7ec166d389766ca03dba7606d5c3
 change_status: PASS
 summary: >-
   Close KL-002's durable post-merge review and integration state without changing
@@ -76,7 +76,7 @@ checks_run:
     result: PASS
     evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
   - check_id: worktree_db_isolated
-    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python tools/db/verify.py worktree-db-isolated --peer-root /private/tmp/hg011-kl002-peer.A5z1gp
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python tools/db/verify.py worktree-db-isolated --peer-root /private/tmp/hg011-kl002-peer.cVnVCB
     result: PASS
     evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
   - check_id: current_master_ancestry_and_result_continuity
