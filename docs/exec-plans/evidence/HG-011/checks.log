@@ -1,0 +1,70 @@
+HG-011 durable review and integration closure validation
+base_commit=a1e407d10bed1701efd0975b01c3054615503cb5
+tested_commit=8a2a1a34de52c0cedd5e6d5f4cfad96ac2f6c9b0
+kl002_result_commit=e6f7a36485e4a9557297a9c282eb38c6ac37e72c
+kl002_reviewed_head=e6f7a36485e4a9557297a9c282eb38c6ac37e72c
+kl002_review_record_commit=bf2e9e086ec29dbfd1e58e1e082f396a19526983
+kl002_merge_commit=e6f7a36485e4a9557297a9c282eb38c6ac37e72c
+
+governance_schema_valid: PASS
+  HARNESS_CHANGE.schema.json validates docs/exec-plans/governance/HG-011.yaml.
+integration_schema_valid: PASS
+  INTEGRATION_RECORD.schema.json validates docs/exec-plans/integrations/KL-002.json.
+review_schema_and_binding_valid: PASS
+  THREAD_REVIEW.schema.json validates KL-002 GENERAL and DB_CONCURRENCY reviews;
+  both are PASS and bind exact integrated tree e6f7a36485e4a9557297a9c282eb38c6ac37e72c.
+harness_structure_valid: PASS
+  PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
+  HARNESS_CHECK_PASS tasks=68 active=66
+lint_passes: PASS
+  PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/ruff check .
+  All checks passed!
+typecheck_passes: PASS
+  MYPY_CACHE_DIR=/private/tmp/hg-011-mypy PYTHONPATH="$PWD/src"
+  /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/mypy src tools tests
+  Success: no issues found in 44 source files
+unit_tests_pass: PASS
+  PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/unit
+  92 passed in 1.81s
+harness_tests_pass: PASS
+  PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness
+  94 passed in 73.99s
+db_unit_tests_pass: PASS
+  PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/db
+  10 passed in 0.06s
+integration_binding_tests_pass: PASS
+  PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q
+  tests/harness/test_validator.py -k 'integration or task_review_without_integration'
+  13 passed, 56 deselected in 7.37s
+compose_config_valid: PASS
+  PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python
+  tools/db/verify.py compose-config-valid
+  project_name=kl_d1f3_c0283faae1a8 status=PASS
+postgres_ready: PASS
+  PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python
+  tools/db/verify.py postgres-ready
+  database_name=kl_d1f3_c0283faae1a8_test host=127.0.0.1 port=55000
+reset_idempotent: PASS
+  PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python
+  tools/db/verify.py reset-idempotent
+  resets=3 sentinel_removed=true status=PASS
+worktree_db_isolated: PASS
+  PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python
+  tools/db/verify.py worktree-db-isolated --peer-root /private/tmp/hg011-kl002-peer.A5z1gp
+  primary_project=kl_d1f3_c0283faae1a8 peer_project=kl_tmp_ee8f22944f2f
+  peer_cannot_see_primary_probe=true status=PASS
+current_master_ancestry_and_result_continuity: PASS
+  e6f7a36485e4a9557297a9c282eb38c6ac37e72c is an ancestor of tested_commit;
+  KL-002_RESULT.yaml SHA-256 is ba7098f56e6b4d2618d2ddb3fa14c3a2eb894ed716cca4552431a536d44570bb
+  at both the merge revision and tested commit.
+review_record_commit_contains_both_required_reviews: PASS
+  bf2e9e086ec29dbfd1e58e1e082f396a19526983 contains GENERAL.json and
+  DB_CONCURRENCY.json under docs/exec-plans/reviews/KL-002/.
+frozen_baseline_unchanged: PASS
+  git diff --exit-code a1e407d10bed1701efd0975b01c3054615503cb5
+  8a2a1a34de52c0cedd5e6d5f4cfad96ac2f6c9b0 -- FROZEN_BASELINE.json
+  04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
+  05_KineticLoop_Protocol_v1.2_FROZEN.md
+diff_clean: PASS
+  git diff --check a1e407d10bed1701efd0975b01c3054615503cb5
+  8a2a1a34de52c0cedd5e6d5f4cfad96ac2f6c9b0
