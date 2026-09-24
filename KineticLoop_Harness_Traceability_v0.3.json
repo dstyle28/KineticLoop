@@ -1373,11 +1373,12 @@
       "deliverables": [
         "DB/application role policies"
       ],
-      "definition_of_done": "test/eval authorization cannot cross into production subject namespace",
+      "definition_of_done": "test/eval authorization cannot cross into the production subject namespace, and existing versus nonexistent foreign-subject targets produce the same rejection code, response shape, timing classification, and non-disclosing payload",
       "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "subject_namespace_isolation",
+        "cross_subject_denial_is_non_enumerating",
         "test_authorization_is_isolated",
         "evaluation_storage_is_isolated",
         "application_role_scope_enforced",
@@ -1391,6 +1392,11 @@
           "check_id": "subject_namespace_isolation",
           "command": "uv run pytest -q tests/db/test_subject_scope.py::test_subject_namespace_isolation",
           "pass_oracle": "The named PostgreSQL test proves test/evaluation scopes cannot address production subjects."
+        },
+        {
+          "check_id": "cross_subject_denial_is_non_enumerating",
+          "command": "uv run pytest -q tests/db/test_subject_scope.py::test_cross_subject_denial_is_non_enumerating",
+          "pass_oracle": "The named PostgreSQL/application-boundary test proves test and evaluation actors receive the same rejection code, response shape, timing classification, and non-disclosing payload when targeting an existing production-subject object or a nonexistent object; neither response exposes the foreign subject, object identity, row existence, policy, authorization, or execution state."
         },
         {
           "check_id": "test_authorization_is_isolated",
@@ -1654,14 +1660,17 @@
         "adapter interface",
         "provider fixture contract"
       ],
-      "definition_of_done": "provider transport can only emit evidence envelopes; cannot write canonical facts or commands; tests deny network and ambient credentials; every committed provider fixture passes the hardened synthetic provenance/non-production/sentinel guard",
+      "definition_of_done": "provider transport can only emit strict closed S09 evidence envelopes with trusted server-side subject/source binding, complete provenance and time fields, server-assigned known_at, and command_authority fixed to NONE; provider identity mismatch fails with non-enumerating SUBJECT_MISMATCH; adapters cannot write canonical facts or commands; raw and encoded credentials cannot enter envelopes, serialization, logs, exceptions, evidence, or diagnostics; tests deny network and ambient credentials; every committed provider fixture passes the hardened synthetic provenance/non-production/sentinel guard",
       "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "provider_and_stream_ids_are_canonical",
+        "provider_subject_source_binding_is_trusted",
         "evidence_provenance_and_times_required",
+        "evidence_envelope_closed_s09_schema",
         "server_assigns_known_at",
         "provider_has_no_fact_or_command_authority",
+        "provider_credentials_do_not_cross_evidence_or_diagnostic_boundary",
         "transport_health_differs_from_coverage",
         "provider_contract_is_hermetic",
         "provider_fixtures_pass_hardened_synthetic_guard",
@@ -1676,9 +1685,19 @@
           "pass_oracle": "The named test passes canonical ProviderId and StreamId validation."
         },
         {
+          "check_id": "provider_subject_source_binding_is_trusted",
+          "command": "uv run pytest -q tests/unit/integrations/test_provider.py::test_provider_subject_source_binding_is_trusted",
+          "pass_oracle": "The named test proves EvidenceEnvelope subject_id and source_connection_id are derived from the authenticated server-side provider binding, provider payload fields cannot select or replace either identity, and any envelope/ReceiveEvidence mismatch rejects with SUBJECT_MISMATCH without revealing whether the foreign subject or source object exists."
+        },
+        {
           "check_id": "evidence_provenance_and_times_required",
           "command": "uv run pytest -q tests/unit/integrations/test_provider.py::test_evidence_provenance_and_times_required",
           "pass_oracle": "The named test rejects missing provenance, observed_at, effective_at, or known_at fields."
+        },
+        {
+          "check_id": "evidence_envelope_closed_s09_schema",
+          "command": "uv run pytest -q tests/unit/integrations/test_provider.py::test_evidence_envelope_closed_s09_schema",
+          "pass_oracle": "The named test proves EvidenceEnvelope is a strict closed schema containing canonical subject binding, provider/source connection, provider object identity, provider revision or stable observation key, observed_at, effective_at, server-assigned known_at, payload hash or controlled blob reference, source_class, trust_class, lineage, and schema/adapter version; command_authority is fixed to NONE; missing, duplicate, extra, canonical-fact, command, approval, capability, or authorization fields are rejected."
         },
         {
           "check_id": "server_assigns_known_at",
@@ -1689,6 +1708,11 @@
           "check_id": "provider_has_no_fact_or_command_authority",
           "command": "uv run pytest -q tests/unit/integrations/test_provider.py::test_provider_has_no_fact_or_command_authority",
           "pass_oracle": "The named test proves adapters can emit only EvidenceEnvelope values."
+        },
+        {
+          "check_id": "provider_credentials_do_not_cross_evidence_or_diagnostic_boundary",
+          "command": "uv run pytest -q tests/unit/integrations/test_provider.py::test_provider_credentials_do_not_cross_evidence_or_diagnostic_boundary",
+          "pass_oracle": "The named test injects documented raw and percent-encoded sentinel credentials through provider configuration, URL userinfo/query values, nested payloads, exceptions, and adapter failures; credential-bearing evidence input fails closed, and no sentinel appears in serialized EvidenceEnvelope values, repr/str, logs, exceptions, evidence files, or diagnostics while safe provenance and failure context remain available."
         },
         {
           "check_id": "transport_health_differs_from_coverage",

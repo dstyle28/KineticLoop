@@ -69,6 +69,9 @@ M2_REQUIRED_CHECK_IDS = {
         'ack_loss_replay_preserves_natural_uniqueness',
         't6_ack_loss_replay_returns_same_issuance',
     },
+    'KL-017': {
+        'cross_subject_denial_is_non_enumerating',
+    },
     'KL-018': {
         'artifact_dependencies_must_be_pre_registered',
         'artifact_dependency_graph_is_acyclic',
@@ -78,6 +81,9 @@ M2_REQUIRED_CHECK_IDS = {
         'artifact_registration_direct_write_rejected',
     },
     'KL-055': {
+        'provider_subject_source_binding_is_trusted',
+        'evidence_envelope_closed_s09_schema',
+        'provider_credentials_do_not_cross_evidence_or_diagnostic_boundary',
         'provider_contract_is_hermetic',
         'provider_fixtures_pass_hardened_synthetic_guard',
     },
@@ -88,6 +94,52 @@ KL015_REQUIRED_TABLE_IDS = [
     *(f'S{number:02d}' for number in range(21, 46)),
     'S49', 'S50', 'S51',
 ]
+# SHA256 of canonical JSON {check_id, command, pass_oracle}. These security-critical
+# contracts must change through an explicit Harness governance edit; keeping an ID
+# while weakening its executable command or oracle fails closed.
+M2_SECURITY_CONTRACT_DIGESTS = {
+    'KL-014': {
+        'strict_t1_t8_contract_matrix': 'f7fff61a6a44a0ac8ee0e57be4145b8ba8602d3f3348acad80e0eba45cf047ad',
+        'build_preparation_stays_outside_t2': 'bfcfd359b83698cfb96d8986ddba85e620fb4c6eb51c1c5c55f4f39be37d0aed',
+        'preparation_and_registry_management_stay_outside_atomic_boundaries': 'a2d6965d4bcb0ac6c9c8c61f49ce9eee21fccdda97d69193b537ad945bc96ec2',
+        'identity_idempotency_and_basis_fields': '9d87f21fcec3ef684dda3572e8e5865b51096829f2c2482ffb08d1bf9e6ce9f7',
+        'shadow_and_test_scope_fail_closed': '3aaa19becec551cc9eb9b8396d3b33a87ed9072b0f186e66147fbc8cab4dbb8f',
+    },
+    'KL-017': {
+        'subject_namespace_isolation': 'f4372d9ad4ad1395f9fbf07611ba68813e0c46de01249de56e312f3731f7e2ff',
+        'test_authorization_is_isolated': 'f89d192eedb9c346bcaa7ef047a859e8c0cb6d462e42d018e2a5b0e6ae5392ab',
+        'evaluation_storage_is_isolated': 'e3b35eaae47e664a203bf700ce4f28a796e7787226faf92146673ce2b80015e6',
+        'application_role_scope_enforced': 'a1b2c42c5c8aed9e3caa1ad43404aabde2d449a2fe0a6294637449977baad975',
+        'subject_isolation_e2e_passes': '2c6c1aed417611a457c2eda86771cb0a8dee38db398311f940b7b3c7b5b775f1',
+        'cross_subject_denial_is_non_enumerating': 'a1a5fccddd0d93ee54ff8f118732452c977ce234439593acefb1a32a27089bd4',
+    },
+    'KL-018': {
+        'artifact_identity_is_immutable': '5a5d6976957b081e045743ba114df6e8aebf782c4cc66123026dafbee59456eb',
+        'artifact_dependency_closure_required': '6f69a7171def4c61b7d7390a0272495b2ddd75b5902375447cc9aac410def2ce',
+        'artifact_dependencies_must_be_pre_registered': '935e593ad9d7d2bdf05257326866c139e2ff4471ea0f2fdffee1e01adc1a087d',
+        'artifact_dependency_graph_is_acyclic': '2db1302d2bd5319910e6c9aa9d861fa8f3ef1c7d9f4d2f813fe229f72f915960',
+        'artifact_dependency_closure_is_bounded': '18805edc8865ec58437c7752aad50ac34d685c55c487e0baf0d7cff12f91bd9e',
+        'artifact_registration_requires_management_capability': '055c6d74460bb1bcc64da38cf018f29df96b7829e8eebcfd365a8b7cffba7658',
+        'artifact_registration_uses_exclusive_registry_gate': '4b43e27668003b90fb22932b54e776a5a8f2280b2a674e0eb518411c0a90b540',
+        'artifact_registration_direct_write_rejected': 'd5e91d07031d5fb89a4aca4658aef275d7684cc8325f4532bf20b69e7c3a2643',
+        'unregistered_or_revoked_artifact_denied': 'e45c0d2b3765a6e2a9a8534b21410a02c67f270a8a9f33c1ed5bec6b22deb4cb',
+        't3_t6_t7_require_artifact_refs': 'b4ef957a9ee368b6e074fa04ab340490904927371239ab0f42244ad22f5c4d6e',
+    },
+    'KL-055': {
+        'provider_and_stream_ids_are_canonical': '693c802ea77603a2d4ee8291c782087a85252ba06ef5d7528a1ca849a830f0ed',
+        'evidence_provenance_and_times_required': '07532bee2529ee6ec92c3281c672a9d950ec48fde21b9e4dacac0ec745bb133e',
+        'server_assigns_known_at': '085f0303e26e3db855a4d98e10045728db0a2315471f90fdeb45a6772c0d5817',
+        'provider_has_no_fact_or_command_authority': 'f27587ee00c780744299d5453b8f4f13d1a62f2761456327e63f74ca12c181f8',
+        'transport_health_differs_from_coverage': 'efa0aed772b80aa91847c5ff4fb64ccb2eb0fb421417fd40d2daf1cac757e931',
+        'provider_contract_is_hermetic': '2b8ae59751721aee491edd4edbcf29963ca48d423ccd0e1ab2f51ff82103a951',
+        'provider_fixtures_pass_hardened_synthetic_guard': '9e43a2e97f8003ad08480ad0e884d95c0ef98d157d8b47fec71c1fa81614bd61',
+        'provider_subject_source_binding_is_trusted': '637472b15b54f1458b5a374a0450efa1150dc4c5bf2475fffd116bc9da9bbbd6',
+        'evidence_envelope_closed_s09_schema': '58d01940cbf7e04eaff82daf085c1a003089ad46efa7f01dade5c8ee56ee7ec7',
+        'provider_credentials_do_not_cross_evidence_or_diagnostic_boundary': 'dda6bb6c86340f6ebb62a8854ae9add3b8832cad3f332bf59a4051133ec4622b',
+    },
+}
+for _task_id, _contracts in M2_SECURITY_CONTRACT_DIGESTS.items():
+    M2_REQUIRED_CHECK_IDS.setdefault(_task_id, set()).update(_contracts)
 KL014_REQUIRED_COMMAND_SURFACE = [
     'T1: ReceiveEvidence',
     'T1-PREPARATION (outside T1): RecordCandidate',
@@ -1209,6 +1261,19 @@ def task_definition_errors(root, backlog, revision=None):
                     errors.append('m2-kl015-frozen-impact:invariants')
                 if task.get('table_ids') != KL015_REQUIRED_TABLE_IDS:
                     errors.append('m2-kl015-frozen-impact:tables')
+            contract_map = {
+                item.get('check_id'): item for item in contracts or []
+                if isinstance(item, dict)
+            }
+            for check_id, expected_digest in M2_SECURITY_CONTRACT_DIGESTS.get(
+                    name, {}).items():
+                contract = contract_map.get(check_id)
+                actual_digest = hashlib.sha256(json.dumps(
+                    contract, ensure_ascii=False, sort_keys=True,
+                    separators=(',', ':'),
+                ).encode()).hexdigest() if contract is not None else ''
+                if actual_digest != expected_digest:
+                    errors.append('m2-security-contract:' + name + ':' + check_id)
             if (name in M2_REQUIRED_SECURITY_REVIEWS
                     and 'SECURITY_DATA_BOUNDARY' not in task.get('review_requirements', [])):
                 errors.append('m2-security-review-required:' + name)

@@ -432,6 +432,38 @@ class ValidatorTests(unittest.TestCase):
         self.check(1, 'm2-required-semantic-checks:KL-015')
 
         backlog = copy.deepcopy(original)
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-017')
+        removed = {'cross_subject_denial_is_non_enumerating'}
+        task['checks_required_for_this_task'] = [
+            check_id for check_id in task['checks_required_for_this_task']
+            if check_id not in removed
+        ]
+        task['check_contracts'] = [
+            contract for contract in task['check_contracts']
+            if contract['check_id'] not in removed
+        ]
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-required-semantic-checks:KL-017')
+
+        backlog = copy.deepcopy(original)
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-055')
+        removed = {
+            'provider_subject_source_binding_is_trusted',
+            'evidence_envelope_closed_s09_schema',
+            'provider_credentials_do_not_cross_evidence_or_diagnostic_boundary',
+        }
+        task['checks_required_for_this_task'] = [
+            check_id for check_id in task['checks_required_for_this_task']
+            if check_id not in removed
+        ]
+        task['check_contracts'] = [
+            contract for contract in task['check_contracts']
+            if contract['check_id'] not in removed
+        ]
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-required-semantic-checks:KL-055')
+
+        backlog = copy.deepcopy(original)
         task = next(item for item in backlog['tasks'] if item['id'] == 'KL-014')
         removed = {'preparation_and_registry_management_stay_outside_atomic_boundaries'}
         task['checks_required_for_this_task'] = [
@@ -565,6 +597,66 @@ class ValidatorTests(unittest.TestCase):
         dump(traceability_path, original_traceability)
         packet_path.write_text(original_packet)
         refresh(self.root)
+
+    def test_m2_security_contracts_reject_removal_substitution_and_weakening(self):
+        backlog_path = self.root / v.BACKLOG
+        traceability_path = self.root / v.TRACEABILITY
+        original_backlog = json.loads(backlog_path.read_text())
+        original_traceability = json.loads(traceability_path.read_text())
+        selected = {
+            'KL-014': 'identity_idempotency_and_basis_fields',
+            'KL-017': 'cross_subject_denial_is_non_enumerating',
+            'KL-018': 'artifact_identity_is_immutable',
+            'KL-055': 'provider_subject_source_binding_is_trusted',
+        }
+        original_packets = {
+            task_id: (self.root / f'docs/exec-plans/active/{task_id}.md').read_text()
+            for task_id in selected
+        }
+
+        for task_id, check_id in selected.items():
+            expected = f'm2-security-contract:{task_id}:{check_id}'
+            source_task = next(
+                item for item in original_backlog['tasks'] if item['id'] == task_id)
+            source_contract = next(
+                item for item in source_task['check_contracts']
+                if item['check_id'] == check_id)
+            for variant in ('remove', 'command', 'oracle', 'coordinated'):
+                backlog = copy.deepcopy(original_backlog)
+                task = next(item for item in backlog['tasks'] if item['id'] == task_id)
+                contract = next(
+                    item for item in task['check_contracts'] if item['check_id'] == check_id)
+                if variant == 'remove':
+                    task['checks_required_for_this_task'].remove(check_id)
+                    task['check_contracts'].remove(contract)
+                elif variant == 'command':
+                    contract['command'] = 'true'
+                else:
+                    contract['pass_oracle'] = 'Command exits 0.'
+                dump(backlog_path, backlog)
+
+                if variant == 'coordinated':
+                    traceability = copy.deepcopy(original_traceability)
+                    trace = next(
+                        item for item in traceability['tasks'] if item['id'] == task_id)
+                    trace_contract = next(
+                        item for item in trace['check_contracts']
+                        if item['check_id'] == check_id)
+                    trace_contract['pass_oracle'] = 'Command exits 0.'
+                    dump(traceability_path, traceability)
+                    packet_path = self.root / f'docs/exec-plans/active/{task_id}.md'
+                    packet_path.write_text(original_packets[task_id].replace(
+                        source_contract['pass_oracle'], 'Command exits 0.', 1))
+                    refresh(self.root)
+
+                self.check(1, expected)
+
+                dump(backlog_path, original_backlog)
+                dump(traceability_path, original_traceability)
+                for packet_task_id, packet_text in original_packets.items():
+                    (self.root / f'docs/exec-plans/active/{packet_task_id}.md').write_text(
+                        packet_text)
+                refresh(self.root)
 
     def test_manifest_claimed_m1_closure_cannot_be_missing(self):
         manifest_path = self.root / v.MANIFEST
