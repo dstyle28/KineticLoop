@@ -18,6 +18,16 @@ TRACEABILITY_TASK_FIELDS = (
     'milestone',
     'depends_on',
     'conditional_depends_on',
+    'commands',
+    'transaction_boundaries',
+    'invariant_ids',
+    'table_ids',
+    'context_files',
+    'entry_conditions',
+    'environment_requirements',
+    'deliverables',
+    'definition_of_done',
+    'parallel_write_policy',
     'requirements_covered',
     'checks_required_for_this_task',
     'check_contracts',
@@ -157,8 +167,31 @@ def packet_errors(task, text):
         errors.append('packet-checks:' + name)
     if name in M2_REFINED_TASK_IDS:
         entry = section(text, 'Entry conditions') or ''
-        if bullets(entry) != ['M1 closure PASS: `docs/exec-plans/milestones/M1.json`']:
+        expected_entry = [value.replace(
+            'docs/exec-plans/milestones/M1.json',
+            '`docs/exec-plans/milestones/M1.json`',
+        ) for value in task.get('entry_conditions', [])]
+        if bullets(entry) != expected_entry:
             errors.append('packet-entry-condition:' + name)
+        impact = section(text, 'Frozen impact map') or ''
+        impact_fields = {
+            'Invariants': task.get('invariant_ids', []),
+            'Transactions': task.get('transaction_boundaries', []),
+            'Logical tables': task.get('table_ids', []),
+        }
+        for label, expected in impact_fields.items():
+            match = re.search(r'^- ' + re.escape(label) + r':\s*(.*)$', impact, re.M)
+            found = [] if not match or match.group(1).strip() == 'none' else [
+                value.strip() for value in match.group(1).split(',') if value.strip()
+            ]
+            if found != expected:
+                errors.append('packet-impact-map:' + name + ':' + label.lower().replace(' ', '-'))
+        deliverables = section(text, 'Deliverables') or ''
+        if bullets(deliverables) != task.get('deliverables', []):
+            errors.append('packet-deliverables:' + name)
+        definition = (section(text, 'Definition of Done') or '').strip()
+        if definition != task.get('definition_of_done', ''):
+            errors.append('packet-definition-of-done:' + name)
         contract_section = section(text, 'Machine-readable check contract') or ''
         contract_match = re.search(r'```json\s*(\{.*?\})\s*```', contract_section, re.S)
         if not contract_match:
@@ -187,6 +220,20 @@ def packet_errors(task, text):
         found = re.search(r'^Expected (?:implementation )?write paths:\s*\n((?:- [^\n]+\n?)+)', scope, re.M)
         if not found or sorted(bullets(found.group(1))) != sorted(task['write_paths']):
             errors.append('packet-write-paths:' + name)
+        environment_block = re.search(
+            r'^Environment requirements:\s*\n((?:- [^\n]+\n?)+)', scope, re.M)
+        found_environment = [] if not environment_block else [
+            value for value in bullets(environment_block.group(1)) if value != 'none'
+        ]
+        if found_environment != task.get('environment_requirements', []):
+            errors.append('packet-environment:' + name)
+        policy = re.search(r'^Parallel write policy: \*\*([^*]+)\*\*', scope, re.M)
+        if not policy or policy.group(1) != task.get('parallel_write_policy'):
+            errors.append('packet-parallel-policy:' + name)
+    if name == 'KL-014':
+        command_surface = section(text, 'Public command surface') or ''
+        if bullets(command_surface) != task.get('commands', []):
+            errors.append('packet-command-surface:' + name)
     return errors
 
 
@@ -442,9 +489,23 @@ def semantic_result_errors(obj, task, root, evidence_revision=None):
     if obj['task_status'] == 'PASS' or obj['task_checks_status'] == 'PASS':
         if set(check_ids) != expected or any(c['result'] != 'PASS' for c in commands):
             errors.append('required-checks-not-pass')
+    contracts = {
+        item['check_id']: item for item in task.get('check_contracts', [])
+        if isinstance(item, dict) and isinstance(item.get('check_id'), str)
+    }
     for c in commands:
+        contract = contracts.get(c['check_id'])
+        if contract is not None and c.get('command') != contract.get('command'):
+            errors.append('command-contract-command:' + c['check_id'])
+        evidence_ref = c.get('evidence_ref')
+        if (contract is not None and task.get('evidence_paths')
+                and not isinstance(evidence_ref, str)):
+            errors.append('command-evidence-scope:' + c['check_id'])
+        elif (contract is not None and task.get('evidence_paths')
+              and not matches(evidence_ref, task['evidence_paths'])):
+            errors.append('command-evidence-scope:' + c['check_id'])
         if (c['result'] in ('PASS', 'FAIL')
-                and not evidence_exists(root, c.get('evidence_ref'), evidence_revision)):
+                and not evidence_exists(root, evidence_ref, evidence_revision)):
             errors.append('command-evidence:' + c['check_id'])
     for requirement in obj['requirements_covered']:
         if requirement['status'] in ('PASS', 'APPROVED_NA'):
@@ -782,11 +843,15 @@ def milestone_closure_errors(
         head = resolve(root, 'HEAD')
         if not is_ancestor(root, evaluated, head):
             errors.append('milestone-evaluated-unreachable:M1')
+        evaluated_backlog = load_artifact_at_revision(root, BACKLOG, evaluated)
+        evaluated_trace = load_artifact_at_revision(root, TRACEABILITY, evaluated)
+        evaluated_task_errors, evaluated_tasks = task_definition_errors(
+            root, evaluated_backlog, evaluated)
     except ValueError as ex:
         return errors + ['milestone-evaluated-revision:M1:' + str(ex)]
 
     active_m1 = {
-        task['id'] for task in backlog['tasks']
+        task['id'] for task in evaluated_backlog['tasks']
         if task['milestone'] == 'M1' and task['status'] != 'SUPERSEDED'
     }
     declared_ids = [item['display_task_id'] for item in closure['integrations']]
@@ -813,7 +878,8 @@ def milestone_closure_errors(
             if not is_ancestor(root, merge_commit, evaluated):
                 errors.append('milestone-integration-unreachable:' + task_id)
             integration_issues = integration_record_errors(
-                root, root / expected_path, record, integration_schema, result_schema, tasks)
+                root, root / expected_path, record, integration_schema, result_schema,
+                evaluated_tasks)
             errors.extend(
                 'milestone-integration-invalid:' + task_id + ':' + issue
                 for issue in integration_issues)
@@ -847,12 +913,22 @@ def milestone_closure_errors(
             except ValueError as ex:
                 errors.append(
                     'milestone-exit-evidence-missing:' + exit_check['check_id'] + ':' + str(ex))
+    evidence_paths = {
+        item['check_id']: {evidence['path'] for evidence in item['evidence']}
+        for item in closure['exit_checks']
+    }
+    clean_start_evidence = evidence_paths.get('clean_checkout_starts_test_environment', set())
+    if (not any('/compose_config_valid-' in path for path in clean_start_evidence)
+            or not any('/postgres_ready-' in path for path in clean_start_evidence)):
+        errors.append('milestone-exit-evidence-semantic:clean_checkout_starts_test_environment')
+    contract_evidence = evidence_paths.get('m1_m2_task_contracts_complete', set())
+    if not {BACKLOG, TRACEABILITY}.issubset(contract_evidence):
+        errors.append('milestone-exit-evidence-semantic:m1_m2_task_contracts_complete')
+    model_evidence = evidence_paths.get('historical_model_evidence_not_overclaimed', set())
+    if 'KineticLoop_Evidence_Manifest_v0.1.json' not in model_evidence:
+        errors.append('milestone-exit-evidence-semantic:historical_model_evidence_not_overclaimed')
 
     try:
-        evaluated_backlog = load_artifact_at_revision(root, BACKLOG, evaluated)
-        evaluated_trace = load_artifact_at_revision(root, TRACEABILITY, evaluated)
-        evaluated_task_errors, evaluated_tasks = task_definition_errors(
-            root, evaluated_backlog, evaluated)
         errors.extend('milestone-task-contract:' + issue for issue in evaluated_task_errors)
         trace_errors, trace_tasks = traceability_task_map(
             evaluated_trace, 'milestone-traceability')
@@ -945,8 +1021,8 @@ def task_definition_errors(root, backlog, revision=None):
                 errors.append('evidence-path:' + name)
             if task.get('packet_refinement') != 'ENFORCEABLE':
                 errors.append('m2-packet-not-enforceable:' + name)
-            if task.get('entry_conditions') != [
-                    'M1 closure PASS: docs/exec-plans/milestones/M1.json']:
+            if 'M1 closure PASS: docs/exec-plans/milestones/M1.json' not in task.get(
+                    'entry_conditions', []):
                 errors.append('m2-entry-condition:' + name)
         if (task.get('status') == 'READY'
                 and (task.get('packet_refinement') != 'ENFORCEABLE'
@@ -989,6 +1065,7 @@ def validate(root, args):
 
     errors = []
     index, frozen, backlog = (load_artifact(root / n) for n in (INDEX, 'FROZEN_BASELINE.json', BACKLOG))
+    manifest = load_artifact(root / MANIFEST)
     traceability = load_artifact(root / TRACEABILITY)
     traceability_errors, _ = traceability_task_map(traceability)
     errors.extend(traceability_errors)
@@ -998,6 +1075,14 @@ def validate(root, args):
             errors.append('missing:' + entry['path'])
         elif sha(path) != entry['sha256']:
             errors.append('hash:' + entry['path'])
+    for entry in manifest.get('files', []):
+        path = root / entry['path']
+        if not relative_path(entry['path']) or not path.is_file():
+            errors.append('manifest-missing:' + entry['path'])
+        elif sha(path) != entry['sha256']:
+            errors.append('manifest-hash:' + entry['path'])
+        elif entry.get('bytes') != path.stat().st_size:
+            errors.append('manifest-bytes:' + entry['path'])
     task_errors, tasks = task_definition_errors(root, backlog)
     errors.extend(task_errors)
 

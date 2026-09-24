@@ -391,6 +391,44 @@
         "KL-003"
       ],
       "conditional_depends_on": [],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [
+        "S01-S51"
+      ],
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
+      ],
+      "entry_conditions": [
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
+      ],
+      "environment_requirements": [],
+      "deliverables": [
+        "FK/reference-root migration plan"
+      ],
+      "definition_of_done": "DDL ordering follows references, not logical table numbers",
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "all_logical_relations_mapped_once",
@@ -399,23 +437,6 @@
         "schema_topology_unit_suite_passes",
         "harness_validation_passes"
       ],
-      "resource_keys": [
-        "schema_topology"
-      ],
-      "write_paths": [
-        "docs/contracts/physical_schema_topology.md",
-        "src/kineticloop/persistence/__init__.py",
-        "src/kineticloop/persistence/schema_topology.py",
-        "tests/unit/persistence/test_schema_topology.py"
-      ],
-      "write_paths_status": "ENFORCEABLE",
-      "review_requirements": [
-        "GENERAL",
-        "PROTOCOL",
-        "DB_CONCURRENCY"
-      ],
-      "packet_refinement": "ENFORCEABLE",
-      "status": "NOT_STARTED",
       "check_contracts": [
         {
           "check_id": "all_logical_relations_mapped_once",
@@ -445,7 +466,24 @@
       ],
       "evidence_paths": [
         "docs/exec-plans/evidence/KL-010/**"
-      ]
+      ],
+      "resource_keys": [
+        "schema_topology"
+      ],
+      "write_paths": [
+        "docs/contracts/physical_schema_topology.md",
+        "src/kineticloop/persistence/__init__.py",
+        "src/kineticloop/persistence/schema_topology.py",
+        "tests/unit/persistence/test_schema_topology.py"
+      ],
+      "write_paths_status": "ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "DB_CONCURRENCY"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED"
     },
     {
       "task_identity": "harness-backlog-v0.2/KL-011",
@@ -455,6 +493,34 @@
         "KL-010"
       ],
       "conditional_depends_on": [],
+      "commands": [
+        "AcceptFactRevision"
+      ],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-04",
+        "INV-18"
+      ],
+      "table_ids": [
+        "S14",
+        "S44"
+      ],
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
+      ],
+      "entry_conditions": [
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
+      ],
+      "environment_requirements": [],
+      "deliverables": [
+        "strength/cardio/health/nutrition typed child plan"
+      ],
+      "definition_of_done": "actual/unknown/zero semantics typed and provenance-preserving",
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "typed_fact_children_are_closed",
@@ -463,22 +529,6 @@
         "schema_topology_regression_passes",
         "harness_validation_passes"
       ],
-      "resource_keys": [
-        "canonical_fact_schema"
-      ],
-      "write_paths": [
-        "docs/contracts/canonical_fact_children.md",
-        "src/kineticloop/persistence/fact_children.py",
-        "tests/unit/persistence/test_fact_children.py"
-      ],
-      "write_paths_status": "ENFORCEABLE",
-      "review_requirements": [
-        "GENERAL",
-        "PROTOCOL",
-        "DB_CONCURRENCY"
-      ],
-      "packet_refinement": "ENFORCEABLE",
-      "status": "NOT_STARTED",
       "check_contracts": [
         {
           "check_id": "typed_fact_children_are_closed",
@@ -508,7 +558,23 @@
       ],
       "evidence_paths": [
         "docs/exec-plans/evidence/KL-011/**"
-      ]
+      ],
+      "resource_keys": [
+        "canonical_fact_schema"
+      ],
+      "write_paths": [
+        "docs/contracts/canonical_fact_children.md",
+        "src/kineticloop/persistence/fact_children.py",
+        "tests/unit/persistence/test_fact_children.py"
+      ],
+      "write_paths_status": "ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "DB_CONCURRENCY"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED"
     },
     {
       "task_identity": "harness-backlog-v0.2/KL-012",
@@ -519,6 +585,33 @@
         "KL-010"
       ],
       "conditional_depends_on": [],
+      "commands": [],
+      "transaction_boundaries": [
+        "T1-T8"
+      ],
+      "invariant_ids": [
+        "INV-02",
+        "INV-16"
+      ],
+      "table_ids": [
+        "I-class tables"
+      ],
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
+      ],
+      "entry_conditions": [
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
+      ],
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE"
+      ],
+      "deliverables": [
+        "immutable-history permission design",
+        "DB role/trigger/repository guard definitions and test fixtures"
+      ],
+      "definition_of_done": "permission/immutability contract is executable against a minimal fixture schema; full baseline-schema enforcement is verified by KL-013",
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "permission_matrix_enforced",
@@ -528,24 +621,6 @@
         "immutable_history_db_regressions_pass",
         "harness_validation_passes"
       ],
-      "resource_keys": [
-        "persistence_permissions"
-      ],
-      "write_paths": [
-        "docs/contracts/immutable_history_permissions.md",
-        "src/kineticloop/persistence/immutability.py",
-        "tests/unit/persistence/test_immutability.py",
-        "tests/db/test_immutability.py",
-        "tests/fixtures/db/immutable_history/**"
-      ],
-      "write_paths_status": "ENFORCEABLE",
-      "review_requirements": [
-        "GENERAL",
-        "PROTOCOL",
-        "DB_CONCURRENCY"
-      ],
-      "packet_refinement": "ENFORCEABLE",
-      "status": "NOT_STARTED",
       "check_contracts": [
         {
           "check_id": "permission_matrix_enforced",
@@ -580,7 +655,25 @@
       ],
       "evidence_paths": [
         "docs/exec-plans/evidence/KL-012/**"
-      ]
+      ],
+      "resource_keys": [
+        "persistence_permissions"
+      ],
+      "write_paths": [
+        "docs/contracts/immutable_history_permissions.md",
+        "src/kineticloop/persistence/immutability.py",
+        "tests/unit/persistence/test_immutability.py",
+        "tests/db/test_immutability.py",
+        "tests/fixtures/db/immutable_history/**"
+      ],
+      "write_paths_status": "ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "DB_CONCURRENCY"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED"
     },
     {
       "task_identity": "harness-backlog-v0.2/KL-013",
@@ -593,6 +686,47 @@
         "KL-016"
       ],
       "conditional_depends_on": [],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [
+        "S01-S51"
+      ],
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
+      ],
+      "entry_conditions": [
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
+      ],
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE"
+      ],
+      "deliverables": [
+        "initial migration",
+        "materialized immutable-history protections from KL-012"
+      ],
+      "definition_of_done": "empty DB rebuilds deterministically and ordinary app role cannot rewrite immutable semantic history on migrated schema",
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "single_migration_head",
@@ -604,28 +738,6 @@
         "migration_db_regressions_pass",
         "harness_validation_passes"
       ],
-      "resource_keys": [
-        "migration_chain",
-        "persistence_schema",
-        "python_dependency_lock"
-      ],
-      "write_paths": [
-        "pyproject.toml",
-        "uv.lock",
-        "alembic.ini",
-        "migrations/**",
-        "src/kineticloop/persistence/metadata.py",
-        "tests/db/test_migrations.py",
-        "tests/fixtures/db/migrations/**"
-      ],
-      "write_paths_status": "ENFORCEABLE",
-      "review_requirements": [
-        "GENERAL",
-        "PROTOCOL",
-        "DB_CONCURRENCY"
-      ],
-      "packet_refinement": "ENFORCEABLE",
-      "status": "NOT_STARTED",
       "check_contracts": [
         {
           "check_id": "single_migration_head",
@@ -670,7 +782,29 @@
       ],
       "evidence_paths": [
         "docs/exec-plans/evidence/KL-013/**"
-      ]
+      ],
+      "resource_keys": [
+        "migration_chain",
+        "persistence_schema",
+        "python_dependency_lock"
+      ],
+      "write_paths": [
+        "pyproject.toml",
+        "uv.lock",
+        "alembic.ini",
+        "migrations/**",
+        "src/kineticloop/persistence/metadata.py",
+        "tests/db/test_migrations.py",
+        "tests/fixtures/db/migrations/**"
+      ],
+      "write_paths_status": "ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "DB_CONCURRENCY"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED"
     },
     {
       "task_identity": "harness-backlog-v0.2/KL-014",
@@ -681,6 +815,59 @@
         "KL-008"
       ],
       "conditional_depends_on": [],
+      "commands": [
+        "T1: ReceiveEvidence, RecordCandidate",
+        "T2-IN: DecideAssociation, DecideAdmission, AcceptFactRevision, ApplyControl, ClearControl, ApproveChange, ActivateApprovedProgram, RecordActualExecution, CompleteReportedWorkout",
+        "T2-BUILD: BeginBuild, WriteCandidate, CompleteFactset",
+        "T2-SEAL: SealFactset",
+        "T2-GLOBAL: RegisterArtifact, RevokeArtifact",
+        "T3: RecordProjection, BuildManifest, PublishManifest",
+        "T4: AdmitOrReviseIntent, CancelIntent",
+        "T5: AcquireLease, RenewLease, ReserveCall, PermitDispatch, RecordToolResult, RecordProposal, RecordDemandFeatures",
+        "T6: ResolveEvidence, RecordValidation, CommitBundle, Reauthorize",
+        "T7: StartSession, ResumeSession, ContinueSession",
+        "T8: SettleCall, MarkUnknown, ReapIntent; CancelIntent is shared with T4",
+        "Results: one typed success result per public command plus CommandRejected",
+        "Internal-only: IssueAuthorization, InvalidateAuthorization, RecordSnapshot, AdvanceAttempt, CancelUndispatched"
+      ],
+      "transaction_boundaries": [
+        "T1-T8"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-15",
+        "INV-16",
+        "INV-17",
+        "INV-18"
+      ],
+      "table_ids": [],
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
+      ],
+      "entry_conditions": [
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json",
+        "G-SHADOW closed"
+      ],
+      "environment_requirements": [],
+      "deliverables": [
+        "typed commands/results/errors"
+      ],
+      "definition_of_done": "every command binds an authenticated subject or explicit global scope as applicable, trusted actor/capability, idempotency identity, and command-specific immutable basis",
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "strict_t1_t8_contract_matrix",
@@ -691,26 +878,6 @@
         "command_contract_unit_suite_passes",
         "harness_validation_passes"
       ],
-      "resource_keys": [
-        "command_contracts",
-        "python_dependency_lock"
-      ],
-      "write_paths": [
-        "docs/contracts/transaction_commands.md",
-        "pyproject.toml",
-        "uv.lock",
-        "src/kineticloop/contracts/commands.py",
-        "src/kineticloop/contracts/results.py",
-        "tests/unit/contracts/test_commands.py",
-        "tests/unit/contracts/test_results.py"
-      ],
-      "write_paths_status": "ENFORCEABLE",
-      "review_requirements": [
-        "GENERAL",
-        "PROTOCOL"
-      ],
-      "packet_refinement": "ENFORCEABLE",
-      "status": "NOT_STARTED",
       "check_contracts": [
         {
           "check_id": "strict_t1_t8_contract_matrix",
@@ -750,7 +917,28 @@
       ],
       "evidence_paths": [
         "docs/exec-plans/evidence/KL-014/**"
-      ]
+      ],
+      "resource_keys": [
+        "command_contracts",
+        "python_dependency_lock"
+      ],
+      "write_paths": [
+        "docs/contracts/transaction_commands.md",
+        "pyproject.toml",
+        "uv.lock",
+        "src/kineticloop/contracts/__init__.py",
+        "src/kineticloop/contracts/commands.py",
+        "src/kineticloop/contracts/results.py",
+        "tests/unit/contracts/test_commands.py",
+        "tests/unit/contracts/test_results.py"
+      ],
+      "write_paths_status": "ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED"
     },
     {
       "task_identity": "harness-backlog-v0.2/KL-015",
@@ -764,6 +952,43 @@
         "KL-018"
       ],
       "conditional_depends_on": [],
+      "commands": [
+        "command owners"
+      ],
+      "transaction_boundaries": [
+        "T1-T8"
+      ],
+      "invariant_ids": [
+        "INV-07",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S01",
+        "S27",
+        "S31",
+        "S38",
+        "S44",
+        "S51"
+      ],
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
+      ],
+      "entry_conditions": [
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json",
+        "G-REGISTRY closed"
+      ],
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE"
+      ],
+      "deliverables": [
+        "transaction interfaces"
+      ],
+      "definition_of_done": "no interface allows T3/T6/T7 to bypass registry shared gate",
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "transaction_owner_matrix_complete",
@@ -774,25 +999,6 @@
         "transaction_db_conformance_passes",
         "harness_validation_passes"
       ],
-      "resource_keys": [
-        "transaction_interfaces",
-        "user_coordination",
-        "registry_coordination"
-      ],
-      "write_paths": [
-        "docs/contracts/repository_transactions.md",
-        "src/kineticloop/persistence/transactions.py",
-        "tests/unit/persistence/test_transactions.py",
-        "tests/db/test_transaction_interfaces.py"
-      ],
-      "write_paths_status": "ENFORCEABLE",
-      "review_requirements": [
-        "GENERAL",
-        "PROTOCOL",
-        "DB_CONCURRENCY"
-      ],
-      "packet_refinement": "ENFORCEABLE",
-      "status": "NOT_STARTED",
       "check_contracts": [
         {
           "check_id": "transaction_owner_matrix_complete",
@@ -832,7 +1038,26 @@
       ],
       "evidence_paths": [
         "docs/exec-plans/evidence/KL-015/**"
-      ]
+      ],
+      "resource_keys": [
+        "transaction_interfaces",
+        "user_coordination",
+        "registry_coordination"
+      ],
+      "write_paths": [
+        "docs/contracts/repository_transactions.md",
+        "src/kineticloop/persistence/transactions.py",
+        "tests/unit/persistence/test_transactions.py",
+        "tests/db/test_transaction_interfaces.py"
+      ],
+      "write_paths_status": "ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "DB_CONCURRENCY"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED"
     },
     {
       "task_identity": "harness-backlog-v0.2/KL-016",
@@ -842,6 +1067,46 @@
         "KL-010"
       ],
       "conditional_depends_on": [],
+      "commands": [
+        "RevokeArtifact",
+        "PublishManifest",
+        "CommitBundle",
+        "StartSession",
+        "ResumeSession"
+      ],
+      "transaction_boundaries": [
+        "T2-GLOBAL",
+        "T3",
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S49",
+        "S50",
+        "S51",
+        "S01"
+      ],
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
+      ],
+      "entry_conditions": [
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
+      ],
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE"
+      ],
+      "deliverables": [
+        "lock/gate API"
+      ],
+      "definition_of_done": "shared→S01 ordering and exclusive global revoke are encoded and testable against a task-local minimal PostgreSQL fixture without adding migrations",
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "shared_gate_precedes_s01",
@@ -853,27 +1118,6 @@
         "safety_registry_db_regressions_pass",
         "harness_validation_passes"
       ],
-      "resource_keys": [
-        "registry_coordination",
-        "python_dependency_lock"
-      ],
-      "write_paths": [
-        "docs/contracts/safety_registry.md",
-        "pyproject.toml",
-        "uv.lock",
-        "src/kineticloop/contracts/safety_registry.py",
-        "src/kineticloop/persistence/safety_registry.py",
-        "tests/unit/contracts/test_safety_registry.py",
-        "tests/db/test_safety_registry.py"
-      ],
-      "write_paths_status": "ENFORCEABLE",
-      "review_requirements": [
-        "GENERAL",
-        "PROTOCOL",
-        "DB_CONCURRENCY"
-      ],
-      "packet_refinement": "ENFORCEABLE",
-      "status": "NOT_STARTED",
       "check_contracts": [
         {
           "check_id": "shared_gate_precedes_s01",
@@ -918,7 +1162,28 @@
       ],
       "evidence_paths": [
         "docs/exec-plans/evidence/KL-016/**"
-      ]
+      ],
+      "resource_keys": [
+        "registry_coordination",
+        "python_dependency_lock"
+      ],
+      "write_paths": [
+        "docs/contracts/safety_registry.md",
+        "pyproject.toml",
+        "uv.lock",
+        "src/kineticloop/contracts/safety_registry.py",
+        "src/kineticloop/persistence/safety_registry.py",
+        "tests/unit/contracts/test_safety_registry.py",
+        "tests/db/test_safety_registry.py"
+      ],
+      "write_paths_status": "ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "DB_CONCURRENCY"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED"
     },
     {
       "task_identity": "harness-backlog-v0.2/KL-017",
@@ -930,6 +1195,37 @@
         "KL-013"
       ],
       "conditional_depends_on": [],
+      "commands": [],
+      "transaction_boundaries": [
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-02",
+        "INV-15"
+      ],
+      "table_ids": [
+        "S38",
+        "S42",
+        "S45",
+        "S46",
+        "S47"
+      ],
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
+      ],
+      "entry_conditions": [
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
+      ],
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE"
+      ],
+      "deliverables": [
+        "DB/application role policies"
+      ],
+      "definition_of_done": "test/eval authorization cannot cross into production subject namespace",
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "subject_namespace_isolation",
@@ -941,30 +1237,6 @@
         "single_migration_head",
         "harness_validation_passes"
       ],
-      "resource_keys": [
-        "migration_chain",
-        "authorization_core",
-        "user_coordination",
-        "persistence_permissions",
-        "security_data_boundary"
-      ],
-      "write_paths": [
-        "docs/contracts/subject_scope.md",
-        "migrations/versions/*_subject_scope.py",
-        "src/kineticloop/persistence/subject_scope.py",
-        "tests/db/test_subject_scope.py",
-        "tests/e2e/test_subject_isolation.py",
-        "tests/fixtures/db/subject_scope/**"
-      ],
-      "write_paths_status": "ENFORCEABLE",
-      "review_requirements": [
-        "GENERAL",
-        "PROTOCOL",
-        "DB_CONCURRENCY",
-        "SECURITY_DATA_BOUNDARY"
-      ],
-      "packet_refinement": "ENFORCEABLE",
-      "status": "NOT_STARTED",
       "check_contracts": [
         {
           "check_id": "subject_namespace_isolation",
@@ -1009,7 +1281,31 @@
       ],
       "evidence_paths": [
         "docs/exec-plans/evidence/KL-017/**"
-      ]
+      ],
+      "resource_keys": [
+        "migration_chain",
+        "authorization_core",
+        "user_coordination",
+        "persistence_permissions",
+        "security_data_boundary"
+      ],
+      "write_paths": [
+        "docs/contracts/subject_scope.md",
+        "migrations/versions/*_subject_scope.py",
+        "src/kineticloop/persistence/subject_scope.py",
+        "tests/db/test_subject_scope.py",
+        "tests/e2e/test_subject_isolation.py",
+        "tests/fixtures/db/subject_scope/**"
+      ],
+      "write_paths_status": "ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "DB_CONCURRENCY",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED"
     },
     {
       "task_identity": "harness-backlog-v0.2/KL-018",
@@ -1020,6 +1316,40 @@
         "KL-016"
       ],
       "conditional_depends_on": [],
+      "commands": [
+        "RegisterArtifact"
+      ],
+      "transaction_boundaries": [
+        "T2-GLOBAL",
+        "T3",
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-09",
+        "INV-10",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S49",
+        "S50",
+        "S51"
+      ],
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
+      ],
+      "entry_conditions": [
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
+      ],
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE"
+      ],
+      "deliverables": [
+        "artifact identity API"
+      ],
+      "definition_of_done": "model/prompt/tool/runtime/policy artifacts have exact immutable identities before use",
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "artifact_identity_is_immutable",
@@ -1030,25 +1360,6 @@
         "artifact_contract_unit_suite_passes",
         "harness_validation_passes"
       ],
-      "resource_keys": [
-        "registry_coordination",
-        "release_evidence"
-      ],
-      "write_paths": [
-        "docs/contracts/artifact_registry.md",
-        "src/kineticloop/contracts/artifacts.py",
-        "src/kineticloop/persistence/artifact_registry.py",
-        "tests/unit/contracts/test_artifact_registry.py",
-        "tests/db/test_artifact_registry.py"
-      ],
-      "write_paths_status": "ENFORCEABLE",
-      "review_requirements": [
-        "GENERAL",
-        "PROTOCOL",
-        "DB_CONCURRENCY"
-      ],
-      "packet_refinement": "ENFORCEABLE",
-      "status": "NOT_STARTED",
       "check_contracts": [
         {
           "check_id": "artifact_identity_is_immutable",
@@ -1088,7 +1399,26 @@
       ],
       "evidence_paths": [
         "docs/exec-plans/evidence/KL-018/**"
-      ]
+      ],
+      "resource_keys": [
+        "registry_coordination",
+        "release_evidence"
+      ],
+      "write_paths": [
+        "docs/contracts/artifact_registry.md",
+        "src/kineticloop/contracts/artifacts.py",
+        "src/kineticloop/persistence/artifact_registry.py",
+        "tests/unit/contracts/test_artifact_registry.py",
+        "tests/db/test_artifact_registry.py"
+      ],
+      "write_paths_status": "ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "DB_CONCURRENCY"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED"
     },
     {
       "task_identity": "harness-backlog-v0.2/KL-055",
@@ -1101,6 +1431,41 @@
         "KL-018"
       ],
       "conditional_depends_on": [],
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09"
+      ],
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "12_KineticLoop_Integration_Spec_v0.1.md"
+      ],
+      "entry_conditions": [
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json",
+        "DOC-INTEGRATION-V0.1 available"
+      ],
+      "environment_requirements": [
+        "NO_AMBIENT_CREDENTIALS",
+        "NO_NETWORK_ACCESS"
+      ],
+      "deliverables": [
+        "ProviderId/StreamId types",
+        "EvidenceEnvelope",
+        "adapter interface",
+        "provider fixture contract"
+      ],
+      "definition_of_done": "provider transport can only emit evidence envelopes; cannot write canonical facts or commands",
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "provider_and_stream_ids_are_canonical",
@@ -1112,29 +1477,6 @@
         "provider_security_regressions_pass",
         "harness_validation_passes"
       ],
-      "resource_keys": [
-        "provider_contracts",
-        "release_evidence",
-        "security_data_boundary",
-        "python_dependency_lock"
-      ],
-      "write_paths": [
-        "docs/contracts/provider_evidence.md",
-        "pyproject.toml",
-        "uv.lock",
-        "src/kineticloop/integrations/__init__.py",
-        "src/kineticloop/integrations/provider.py",
-        "tests/unit/integrations/test_provider.py",
-        "tests/fixtures/synthetic/providers/**"
-      ],
-      "write_paths_status": "ENFORCEABLE",
-      "review_requirements": [
-        "GENERAL",
-        "PROTOCOL",
-        "SECURITY_DATA_BOUNDARY"
-      ],
-      "packet_refinement": "ENFORCEABLE",
-      "status": "NOT_STARTED",
       "check_contracts": [
         {
           "check_id": "provider_and_stream_ids_are_canonical",
@@ -1179,7 +1521,30 @@
       ],
       "evidence_paths": [
         "docs/exec-plans/evidence/KL-055/**"
-      ]
+      ],
+      "resource_keys": [
+        "provider_contracts",
+        "release_evidence",
+        "security_data_boundary",
+        "python_dependency_lock"
+      ],
+      "write_paths": [
+        "docs/contracts/provider_evidence.md",
+        "pyproject.toml",
+        "uv.lock",
+        "src/kineticloop/integrations/__init__.py",
+        "src/kineticloop/integrations/provider.py",
+        "tests/unit/integrations/test_provider.py",
+        "tests/fixtures/synthetic/providers/**"
+      ],
+      "write_paths_status": "ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED"
     },
     {
       "task_identity": "harness-backlog-v0.2/KL-019",

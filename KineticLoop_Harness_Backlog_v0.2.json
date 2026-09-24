@@ -1415,7 +1415,19 @@
         "KL-008"
       ],
       "commands": [
-        "T1-T8 commands"
+        "T1: ReceiveEvidence, RecordCandidate",
+        "T2-IN: DecideAssociation, DecideAdmission, AcceptFactRevision, ApplyControl, ClearControl, ApproveChange, ActivateApprovedProgram, RecordActualExecution, CompleteReportedWorkout",
+        "T2-BUILD: BeginBuild, WriteCandidate, CompleteFactset",
+        "T2-SEAL: SealFactset",
+        "T2-GLOBAL: RegisterArtifact, RevokeArtifact",
+        "T3: RecordProjection, BuildManifest, PublishManifest",
+        "T4: AdmitOrReviseIntent, CancelIntent",
+        "T5: AcquireLease, RenewLease, ReserveCall, PermitDispatch, RecordToolResult, RecordProposal, RecordDemandFeatures",
+        "T6: ResolveEvidence, RecordValidation, CommitBundle, Reauthorize",
+        "T7: StartSession, ResumeSession, ContinueSession",
+        "T8: SettleCall, MarkUnknown, ReapIntent; CancelIntent is shared with T4",
+        "Results: one typed success result per public command plus CommandRejected",
+        "Internal-only: IssueAuthorization, InvalidateAuthorization, RecordSnapshot, AdvanceAttempt, CancelUndispatched"
       ],
       "transaction_boundaries": [
         "T1-T8"
@@ -1447,9 +1459,10 @@
       "deliverables": [
         "typed commands/results/errors"
       ],
-      "definition_of_done": "all commands bind subject/actor/idempotency/basis fields",
+      "definition_of_done": "every command binds an authenticated subject or explicit global scope as applicable, trusted actor/capability, idempotency identity, and command-specific immutable basis",
       "entry_conditions": [
-        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json",
+        "G-SHADOW closed"
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
@@ -1483,6 +1496,7 @@
         "docs/contracts/transaction_commands.md",
         "pyproject.toml",
         "uv.lock",
+        "src/kineticloop/contracts/__init__.py",
         "src/kineticloop/contracts/commands.py",
         "src/kineticloop/contracts/results.py",
         "tests/unit/contracts/test_commands.py",
@@ -1580,7 +1594,8 @@
       ],
       "definition_of_done": "no interface allows T3/T6/T7 to bypass registry shared gate",
       "entry_conditions": [
-        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json",
+        "G-REGISTRY closed"
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
@@ -1710,7 +1725,7 @@
       "deliverables": [
         "lock/gate API"
       ],
-      "definition_of_done": "shared\u2192S01 ordering and exclusive global revoke encoded/testable",
+      "definition_of_done": "shared→S01 ordering and exclusive global revoke are encoded and testable against a task-local minimal PostgreSQL fixture without adding migrations",
       "entry_conditions": [
         "M1 closure PASS: docs/exec-plans/milestones/M1.json"
       ],
@@ -1971,6 +1986,7 @@
       ],
       "table_ids": [
         "S49",
+        "S50",
         "S51"
       ],
       "required_test_layers": [
@@ -2108,7 +2124,8 @@
       ],
       "definition_of_done": "provider transport can only emit evidence envelopes; cannot write canonical facts or commands",
       "entry_conditions": [
-        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json",
+        "DOC-INTEGRATION-V0.1 available"
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
@@ -2917,7 +2934,7 @@
       "deliverables": [
         "fixture F/D/N + test A"
       ],
-      "definition_of_done": "valid\u2192START\u2192revoke/expire\u2192deny trajectory with audit evidence",
+      "definition_of_done": "valid→START→revoke/expire→deny trajectory with audit evidence",
       "entry_conditions": [
         "M2 migration/contracts merged",
         "G-SHADOW closed",

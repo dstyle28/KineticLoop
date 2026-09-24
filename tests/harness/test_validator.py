@@ -382,6 +382,100 @@ class ValidatorTests(unittest.TestCase):
             'Command merely exits 0.', 1))
         self.check(1, 'packet-check-contract:KL-010')
 
+    def test_m2_result_requires_exact_command_and_task_owned_evidence(self):
+        backlog = json.loads((self.root / v.BACKLOG).read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-010')
+        evidence = 'docs/exec-plans/evidence/KL-010/checks.log'
+        self.put(evidence, 'exact KL-010 checks\n')
+        result = {
+            'task_identity': task['task_identity'],
+            'display_task_id': task['id'],
+            'task_status': 'PASS',
+            'task_checks_status': 'PASS',
+            'tested_commit': self.base,
+            'requirements_covered': [],
+            'commands_run': [
+                {
+                    'check_id': contract['check_id'],
+                    'command': contract['command'],
+                    'result': 'PASS',
+                    'evidence_ref': evidence,
+                }
+                for contract in task['check_contracts']
+            ],
+        }
+        self.assertEqual([], v.semantic_result_errors(result, task, self.root))
+        wrong_command = copy.deepcopy(result)
+        wrong_command['commands_run'][0]['command'] = 'true'
+        self.assertIn(
+            'command-contract-command:' + wrong_command['commands_run'][0]['check_id'],
+            v.semantic_result_errors(wrong_command, task, self.root),
+        )
+        wrong_evidence = copy.deepcopy(result)
+        wrong_evidence['commands_run'][0]['evidence_ref'] = v.INDEX
+        self.assertIn(
+            'command-evidence-scope:' + wrong_evidence['commands_run'][0]['check_id'],
+            v.semantic_result_errors(wrong_evidence, task, self.root),
+        )
+
+    def test_m2_packet_material_contract_drift_rejected(self):
+        packet = self.root / 'docs/exec-plans/active/KL-010.md'
+        original = packet.read_text()
+        variants = (
+            ('FK/reference-root migration plan', 'wrong deliverable',
+             'packet-deliverables:KL-010'),
+            ('DDL ordering follows references, not logical table numbers', 'wrong DoD',
+             'packet-definition-of-done:KL-010'),
+            ('Environment requirements:\n- none',
+             'Environment requirements:\n- ISOLATED_POSTGRESQL_NAMESPACE',
+             'packet-environment:KL-010'),
+            ('Parallel write policy: **PARALLEL_IF_DEPENDENCIES_MET**',
+             'Parallel write policy: **SERIALIZE_WITH_OTHER_HOTSPOT_TASKS**',
+             'packet-parallel-policy:KL-010'),
+            ('- Logical tables: S01-S51', '- Logical tables: S01-S50',
+             'packet-impact-map:KL-010:logical-tables'),
+        )
+        for old, new, expected in variants:
+            packet.write_text(original.replace(old, new, 1))
+            self.check(1, expected)
+        packet.write_text(original)
+
+    def test_manifest_claimed_m1_closure_cannot_be_missing(self):
+        manifest_path = self.root / v.MANIFEST
+        manifest = json.loads(manifest_path.read_text())
+        source_manifest = json.loads((ROOT / v.MANIFEST).read_text())
+        closure_entry = next(
+            entry for entry in source_manifest['files']
+            if entry['path'] == 'docs/exec-plans/milestones/M1.json')
+        manifest['files'].append(closure_entry)
+        dump(manifest_path, manifest)
+        index_path = self.root / v.INDEX
+        index = json.loads(index_path.read_text())
+        manifest_index = next(
+            entry for entry in index['documents'] + index['machine_readable']
+            if entry['path'] == v.MANIFEST)
+        manifest_index['sha256'] = v.sha(manifest_path)
+        dump(index_path, index)
+        self.check(1, 'manifest-missing:docs/exec-plans/milestones/M1.json')
+
+    def test_malformed_m1_closure_discovery_rejected(self):
+        dump(self.root / 'docs/exec-plans/milestones/M1.json', {
+            'display_milestone_id': 'M1',
+        })
+        self.check(1, 'milestone-schema:M1.json:')
+
+    def test_unlocked_m2_write_overlap_rejected(self):
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        left = next(item for item in backlog['tasks'] if item['id'] == 'KL-010')
+        right = next(item for item in backlog['tasks'] if item['id'] == 'KL-011')
+        left['write_paths'] = ['src/shared.py']
+        right['write_paths'] = ['src/shared.py']
+        left['resource_keys'] = ['schema_topology']
+        right['resource_keys'] = ['canonical_fact_schema']
+        dump(backlog_path, backlog)
+        self.check(1, 'unlocked-write-path-overlap:KL-010:KL-011')
+
     def closure_errors(self, closure):
         from jsonschema import Draft202012Validator
 
@@ -426,6 +520,15 @@ class ValidatorTests(unittest.TestCase):
         self.assertIn(
             'milestone-exit-evidence-hash:clean_checkout_starts_test_environment',
             self.closure_errors(bad_hash),
+        )
+        semantic_substitution = copy.deepcopy(original)
+        semantic_substitution['exit_checks'][0]['evidence'] = [
+            item for item in semantic_substitution['exit_checks'][0]['evidence']
+            if '/postgres_ready-' not in item['path']
+        ]
+        self.assertIn(
+            'milestone-exit-evidence-semantic:clean_checkout_starts_test_environment',
+            self.closure_errors(semantic_substitution),
         )
 
     def test_m1_closure_rejects_missing_unmerged_and_unreachable_integration(self):
