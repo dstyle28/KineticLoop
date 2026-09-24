@@ -11,6 +11,7 @@ from kineticloop.config import (
     HEVY_CONFIG,
     MappingSecretSource,
     MissingSecretError,
+    ProviderSecrets,
     SecretValue,
     load_provider_secrets,
 )
@@ -62,6 +63,15 @@ def test_config_secret_sources_are_separated() -> None:
         pickle.dumps(generic_dataclass)
     with pytest.raises(TypeError, match="cannot be serialized"):
         pickle.dumps(source)
+    with pytest.raises(TypeError, match="cannot be serialized"):
+        pickle.dumps(hevy)
+
+    with pytest.raises(TypeError, match="provider_id"):
+        ProviderSecrets(123, {"HEVY_API_KEY": opaque})  # type: ignore[arg-type]
+    with pytest.raises(TypeError, match="secret names"):
+        ProviderSecrets("HEVY", {1: opaque})  # type: ignore[dict-item]
+    with pytest.raises(TypeError, match="SecretValue"):
+        ProviderSecrets("HEVY", {"HEVY_API_KEY": HEVY_SENTINEL})  # type: ignore[dict-item]
 
     with pytest.raises(MissingSecretError, match="missing or blank"):
         load_provider_secrets(HEVY_CONFIG, MappingSecretSource({}))

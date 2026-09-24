@@ -13,6 +13,7 @@ from kineticloop.config.secrets import SecretValue
 
 REDACTED = "[REDACTED]"
 _SECRET_MARKER = "__KINETICLOOP_REDACTED_SECRET__"
+_USERINFO_MARKER = "__KINETICLOOP_REDACTED_USERINFO__"
 
 _SENSITIVE_KEY_PARTS = frozenset(
     {
@@ -34,6 +35,9 @@ _SENSITIVE_KEY_PARTS = frozenset(
     }
 )
 _URL = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\s<>\"']+")
+_CREDENTIAL_URL = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\r\n]*?@[^\s,;]+")
+_PERCENT_PLACEHOLDER = re.compile(r"%(?!%)(?:\([^)]+\))?[-+#0 ]*\d*(?:\.\d+)?[A-Za-z]")
+_BRACE_PLACEHOLDER = re.compile(r"(?<!\{)\{[^{}]*\}(?!\})")
 _SENSITIVE_KEY_EXPRESSION = (
     r"access[_-]?token|api[_-]?key|authorization|client[_-]?secret|cookie|credential(?:s)?|"
     r"database[_-]?url|dsn|passwd|password|refresh[_-]?token|secret|token"
@@ -41,7 +45,7 @@ _SENSITIVE_KEY_EXPRESSION = (
 _ASSIGNMENT = re.compile(
     rf"(?i)(?P<key>[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*)"
     r"(?P<key_quote>[\"']?)(?P<separator>\s*[:=]\s*)"
-    r"(?P<value>\"[^\"\r\n]*\"|'[^'\r\n]*'|[^,;\r\n]+)"
+    r"(?P<value>.*)"
 )
 _COMMAND_OPTION = re.compile(
     rf"(?i)(?P<prefix>--[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*=)"
@@ -57,7 +61,8 @@ DiagnosticScalar: TypeAlias = str | bytes | int | float | bool | None
 
 
 def _normalized_key(value: object) -> str:
-    camel_split = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "_", str(value).strip())
+    camel_split = re.sub(r"(?<=[A-Z])(?=[A-Z][a-z])", "_", str(value).strip())
+    camel_split = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "_", camel_split)
     return re.sub(r"[^a-z0-9]+", "_", camel_split.lower()).strip("_")
 
 
@@ -67,13 +72,16 @@ def _is_sensitive_key(value: object) -> bool:
     return any(f"_{part}_" in padded for part in _SENSITIVE_KEY_PARTS)
 
 
-def _sequence_field_is_sensitive(value: str) -> bool:
+def _sequence_sensitive_arity(value: str) -> int:
     stripped = value.lstrip("-").strip()
     for separator in ("=", ":"):
         key, found, member = stripped.partition(separator)
-        if found:
-            return _is_sensitive_key(key) and (not member or "%" in member or "{" in member)
-    return _is_sensitive_key(stripped)
+        if found and _is_sensitive_key(key):
+            placeholder_count = len(_PERCENT_PLACEHOLDER.findall(member)) + len(
+                _BRACE_PLACEHOLDER.findall(member)
+            )
+            return placeholder_count or int(not member)
+    return int(_is_sensitive_key(stripped))
 
 
 def _percent_byte_pattern(value: int) -> str:
@@ -142,8 +150,10 @@ class Redactor:
         result = value
         for pattern in self.__patterns:
             result = pattern.sub(_SECRET_MARKER, result)
+        result = _CREDENTIAL_URL.sub(lambda match: self._url(match.group(0)), result)
         result = _URL.sub(lambda match: self._url(match.group(0)), result)
         result = result.replace(_SECRET_MARKER, REDACTED)
+        result = result.replace(_USERINFO_MARKER, REDACTED)
         result = _COMMAND_OPTION.sub(lambda match: f"{match.group('prefix')}{REDACTED}", result)
         result = _COMMAND_SEPARATE.sub(lambda match: f"{match.group('prefix')}{REDACTED}", result)
         return _ASSIGNMENT.sub(
@@ -156,7 +166,7 @@ class Redactor:
 
     def _url(self, matched_url: str) -> str:
         trailing = ""
-        while matched_url and matched_url[-1] in ".,;)]":
+        while matched_url and matched_url[-1] in ".,;)":
             trailing = matched_url[-1] + trailing
             matched_url = matched_url[:-1]
         try:
@@ -168,7 +178,7 @@ class Redactor:
             if parsed.port is not None:
                 host = f"{host}:{parsed.port}"
             if parsed.username is not None or parsed.password is not None:
-                host = f"{REDACTED}@{host}"
+                host = f"{_USERINFO_MARKER}@{host}"
             query = [
                 (
                     key,
@@ -217,18 +227,19 @@ class Redactor:
         while index < len(value):
             item = value[index]
             result.append(self.redact(item))
-            if isinstance(item, str) and _sequence_field_is_sensitive(item):
-                index += 1
-                if index >= len(value):
-                    break
-                next_item = value[index]
-                result.append(REDACTED)
+            sensitive_arity = _sequence_sensitive_arity(item) if isinstance(item, str) else 0
+            if sensitive_arity:
+                next_item = value[index + 1] if index + 1 < len(value) else None
                 if (
-                    isinstance(next_item, str)
+                    sensitive_arity == 1
+                    and isinstance(next_item, str)
                     and next_item.casefold() in {"bearer", "basic", "digest", "token"}
-                    and index + 1 < len(value)
                 ):
+                    sensitive_arity = 2
+                for _ in range(sensitive_arity):
                     index += 1
+                    if index >= len(value):
+                        break
                     result.append(REDACTED)
             index += 1
         return result

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import subprocess
+from dataclasses import dataclass
 from urllib.parse import quote
 
 from kineticloop.primitives.canonical import canonical_json_bytes
@@ -9,6 +10,11 @@ from kineticloop.primitives.hashes import sha256_bytes
 from kineticloop.security import REDACTED, RedactedDiagnostic, Redactor
 
 SENTINEL = "SYNTHETIC p@ss/word? NOT A CREDENTIAL"
+
+
+@dataclass(frozen=True)
+class CompoundDiagnosticKey:
+    value: str
 
 
 def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
@@ -73,6 +79,51 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
         "opaque-auth-secret",
     ]
     source["formatted_log_args"] = ("Authorization=%s", "Bearer format-secret")
+    source["compound_keys"] = {
+        ("registered", SENTINEL): "safe tuple-key value",
+        CompoundDiagnosticKey(SENTINEL): "safe object-key value",
+    }
+    source["compound_exception"] = ValueError(
+        "diagnostic payload: "
+        '{"password": ["json-secret-one", "json-secret-two"], '
+        "'credentials': ('python-secret-one', 'python-secret-two'), "
+        "'safe': 'retained context'}"
+    )
+    source["hybrid_authorization_argv"] = [
+        "provider-client",
+        "--authorization=Bearer",
+        "hybrid-auth-secret",
+    ]
+    source["punctuated_argv"] = [
+        "provider-client",
+        "--api-key=comma-secret,semicolon-secret;tail-secret",
+    ]
+    source["semicolon_query"] = (
+        "https://provider.invalid/data?safe=retained;token=semicolon-query-secret;"
+        "password=second-query-secret"
+    )
+    source["multi_format_args"] = (
+        "credentials=%s:%s",
+        "opaque-format-user",
+        "opaque-format-password",
+    )
+    source["brace_format_args"] = (
+        "clientSecret={}{}",
+        "opaque-brace-one",
+        "opaque-brace-two",
+    )
+    source["acronym_keys"] = {
+        "providerDSNValue": "opaque-acronym-dsn",
+        "refreshTOKENValue": "opaque-acronym-token",
+    }
+    source["composite_text"] = '{"password":["first","opaque-composite-tail"]}'
+    source["escaped_text"] = '{"password":"first\\"opaque-escaped-tail"}'
+    source["malformed_quote_url"] = 'https://alice:hun"opaque-double-quote@example.invalid/path'
+    source["malformed_single_quote_url"] = (
+        "https://alice:hun'opaque-single-quote@example.invalid/path"
+    )
+    source["malformed_space_url"] = "https://alice:hun opaque-space@example.invalid/path"
+    source["terminal_ipv6"] = "https://alice:hunter2@[2001:db8::1]"
     source_without_error = dict(source)
     source_without_error.pop("error")
     untouched = copy.deepcopy(source_without_error)
@@ -97,9 +148,34 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     assert "opaque-access-secret" not in rendered
     assert "opaque-auth-secret" not in rendered
     assert "format-secret" not in rendered
+    assert "json-secret-one" not in rendered
+    assert "json-secret-two" not in rendered
+    assert "python-secret-one" not in rendered
+    assert "python-secret-two" not in rendered
+    assert "hybrid-auth-secret" not in rendered
+    assert "comma-secret" not in rendered
+    assert "semicolon-secret" not in rendered
+    assert "tail-secret" not in rendered
+    assert "semicolon-query-secret" not in rendered
+    assert "second-query-secret" not in rendered
+    assert "opaque-format-user" not in rendered
+    assert "opaque-format-password" not in rendered
+    assert "opaque-brace-one" not in rendered
+    assert "opaque-brace-two" not in rendered
+    assert "opaque-acronym-dsn" not in rendered
+    assert "opaque-acronym-token" not in rendered
+    assert "opaque-composite-tail" not in rendered
+    assert "opaque-escaped-tail" not in rendered
+    assert "opaque-double-quote" not in rendered
+    assert "opaque-single-quote" not in rendered
+    assert "opaque-space" not in rendered
+    assert "[2001:db8::1]" in rendered
     assert "provider timeout" in rendered
     assert "sslmode=require" in rendered
     assert "attempt': 3" in rendered
+    assert "retained context" in rendered
+    assert "safe tuple-key value" in rendered
+    assert "safe object-key value" in rendered
     assert REDACTED in rendered
     assert isinstance(redacted["error"], RedactedDiagnostic)  # type: ignore[index]
 

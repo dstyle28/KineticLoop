@@ -1,24 +1,33 @@
 from __future__ import annotations
 
 import copy
-import json
 from pathlib import Path
 
 import pytest
 
-from kineticloop.security.synthetic import SyntheticFixtureError, validate_synthetic_fixture
+from kineticloop.security.synthetic import (
+    SyntheticFixtureError,
+    load_synthetic_fixture,
+    validate_synthetic_fixture,
+)
 
 
-def test_synthetic_security_fixtures_have_provenance() -> None:
+def test_synthetic_security_fixtures_have_provenance(tmp_path: Path) -> None:
     root = Path(__file__).parents[2] / "fixtures/synthetic/security"
     fixture_paths = sorted(root.glob("**/*.json"))
     assert fixture_paths
 
     fixtures = []
     for path in fixture_paths:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-        validate_synthetic_fixture(payload)
-        fixtures.append(payload)
+        fixtures.append(load_synthetic_fixture(path))
+
+    duplicate_key = tmp_path / "duplicate-key.json"
+    duplicate_key.write_text(
+        '{"synthetic": true, "synthetic": true}',
+        encoding="utf-8",
+    )
+    with pytest.raises(SyntheticFixtureError, match="duplicate JSON key.*synthetic"):
+        load_synthetic_fixture(duplicate_key)
 
     missing = copy.deepcopy(fixtures[0])
     missing.pop("provenance_id")
