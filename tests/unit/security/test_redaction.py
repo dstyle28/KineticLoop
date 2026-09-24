@@ -143,6 +143,11 @@ class HostileCalledProcessError(subprocess.CalledProcessError):
         return super().__getattribute__(name)
 
 
+class HostileTruthinessError(RuntimeError):
+    def __bool__(self) -> bool:
+        raise RuntimeError("HOSTILE_CAUSE_TRUTHINESS_VALUE")
+
+
 def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     secret_named_value_type = type(SENTINEL, (), {})
     secret_named_error_type = type(SENTINEL, (ValueError,), {})
@@ -964,3 +969,77 @@ def test_exception_state_uses_trusted_base_descriptors() -> None:
     assert "HOSTILE_SUBPROCESS_STDERR_VALUE" not in rendered
     assert "safe direct detail" in rendered
     assert "safe chained detail" in rendered
+
+
+def test_prefixed_sensitive_formats_redact_credential_arguments() -> None:
+    percent_secret = "PREFIXED_PERCENT_FORMAT_VALUE"
+    brace_secret = "PREFIXED_BRACE_FORMAT_VALUE"
+    parenthesized_secret = "PREFIXED_PARENTHESIZED_VALUE"
+    mixed_secret = "PREFIXED_MIXED_POSITION_VALUE"
+    values = (
+        ("password=prefix%s", percent_secret),
+        ("client_secret=prefix{}", brace_secret),
+        ("password=(prefix%s)", parenthesized_secret),
+        ("safe=%s password=prefix%s", "retained-context", mixed_secret),
+    )
+    direct_error = ValueError("password=prefix%s", percent_secret)
+    chained_error = RuntimeError("outer")
+    chained_error.__cause__ = ValueError("client_secret=prefix{}", brace_secret)
+
+    rendered = repr(Redactor().redact((*values, direct_error, chained_error)))
+
+    assert percent_secret not in rendered
+    assert brace_secret not in rendered
+    assert parenthesized_secret not in rendered
+    assert mixed_secret not in rendered
+    assert "retained-context" in rendered
+
+
+def test_sensitive_command_formats_suppress_all_credential_arguments() -> None:
+    first_secret = "COMMAND_FORMAT_FIRST_VALUE"
+    second_secret = "COMMAND_FORMAT_SECOND_VALUE"
+    values = ("--password %s %s", first_secret, second_secret)
+    direct_error = ValueError(*values)
+    process_error = subprocess.CalledProcessError(1, list(values))
+
+    rendered = repr(Redactor().redact((values, direct_error, process_error)))
+
+    assert first_secret not in rendered
+    assert second_secret not in rendered
+
+
+def test_exception_chain_never_executes_cause_truthiness() -> None:
+    truthiness_secret = "HOSTILE_CAUSE_TRUTHINESS_VALUE"
+    direct_outer = RuntimeError("direct outer")
+    direct_outer.__cause__ = HostileTruthinessError("safe cause")
+    process_outer = subprocess.CalledProcessError(1, ["provider-client", "status"])
+    process_outer.__cause__ = HostileTruthinessError("safe process cause")
+
+    rendered = repr(Redactor().redact((direct_outer, process_outer)))
+
+    assert truthiness_secret not in rendered
+    assert "safe cause" in rendered
+    assert "safe process cause" in rendered
+
+
+def test_recursive_object_graphs_are_cycle_and_depth_bounded() -> None:
+    cyclic_list: list[object] = []
+    cyclic_list.append(cyclic_list)
+    cyclic_mapping: dict[str, object] = {}
+    mapping_member: list[object] = [cyclic_mapping]
+    cyclic_mapping["safe"] = mapping_member
+    cyclic_error = ValueError("placeholder")
+    cyclic_error.args = (cyclic_error,)
+    deep_value: object = "safe leaf"
+    for _ in range(40):
+        deep_value = [deep_value]
+
+    rendered = repr(
+        Redactor().redact((cyclic_list, cyclic_mapping, cyclic_error, deep_value))
+    )
+
+    assert "<diagnostic-cycle>" in rendered or "exception cycle omitted" in rendered
+    assert "<diagnostic-depth-exceeded>" in rendered
+    assert cyclic_list[0] is cyclic_list
+    assert mapping_member[0] is cyclic_mapping
+    assert cyclic_error.args[0] is cyclic_error
