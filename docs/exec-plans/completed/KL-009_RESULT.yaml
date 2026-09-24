@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-009
 display_task_id: KL-009
 task_definition_version: v0.2
 base_commit: c2740b8dfa25c079bb51f816baa5a87d6422b841
-tested_commit: 2ada6e0bd2182131b97272914c4e197822ba0bb5
+tested_commit: 5ad7f8a514aa9cbb4f5e17f7e5ad7f0afd3968dc
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -16,27 +16,27 @@ commands_run:
   - check_id: config_secret_sources_are_separated
     command: .venv/bin/pytest -q tests/unit/config/test_secret_loader.py::test_config_secret_sources_are_separated
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-009/checks-2ada6e0.log
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-5ad7f8a.log
   - check_id: nested_redaction_is_non_mutating_and_authority_neutral
     command: .venv/bin/pytest -q tests/unit/security/test_redaction.py::test_nested_redaction_is_non_mutating_and_authority_neutral
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-009/checks-2ada6e0.log
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-5ad7f8a.log
   - check_id: synthetic_security_fixtures_have_provenance
     command: .venv/bin/pytest -q tests/unit/security/test_synthetic_fixtures.py::test_synthetic_security_fixtures_have_provenance
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-009/checks-2ada6e0.log
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-5ad7f8a.log
   - check_id: database_diagnostics_redact_credentials
     command: .venv/bin/pytest -q tests/db/test_secret_output.py
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-009/checks-2ada6e0.log
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-5ad7f8a.log
   - check_id: security_and_database_regressions_pass
     command: .venv/bin/pytest -q tests/unit/config tests/unit/security tests/db
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-009/checks-2ada6e0.log
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-5ad7f8a.log
   - check_id: harness_validation_passes
     command: .venv/bin/kl check-harness && .venv/bin/kl test-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-009/checks-2ada6e0.log
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-5ad7f8a.log
 requirements_covered: []
 files_changed:
   - docs/contracts/security_config_and_redaction.md
@@ -54,13 +54,16 @@ files_changed:
   - tests/unit/security/test_redaction.py
   - tests/unit/security/test_synthetic_fixtures.py
   - docs/exec-plans/evidence/KL-009/checks-2ada6e0.log
+  - docs/exec-plans/evidence/KL-009/checks-5ad7f8a.log
   - docs/exec-plans/completed/KL-009_RESULT.yaml
 decisions:
   - Public provider configuration names credential requirements but never stores credential values; callers must select an explicit SecretSource.
   - SecretValue is deliberately opaque to generic JSON, dataclass, mapping, repr, and string diagnostic paths; reveal is an explicit in-process operation.
+  - Secret-bearing wrapper/source objects also reject pickle serialization so generic object serialization cannot recover plaintext.
   - RedactedDiagnostic is presentation-only and has no Evidence Admission, command, role, capability, approval, or authorization behavior.
   - DatabaseConnection.url remains the explicit in-process tooling surface while all default JSON/string/repr and CLI diagnostics use redacted fields.
   - Synthetic fixture validation fails closed on missing provenance, production markers, undocumented fields, or non-sentinel credential/health values.
+  - Synthetic fixture/provenance identities and provider-specific credential/health profiles must match exactly.
 known_limitations:
   - No production secret-store vendor or provider adapter is introduced; later integrations must supply an explicit SecretSource implementation.
   - No product requirement PASS is claimed by this task-level security/configuration evidence.
