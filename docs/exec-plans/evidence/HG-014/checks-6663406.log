@@ -1,0 +1,39 @@
+HG-014 final verification after independent-review remediation
+base_commit: 94e2d66eabbe57405cf1efbdf4fd520cd78c62f2
+tested_commit: 66634063e59156a915021551e9571c718ee18b59
+branch: codex/hg-014-refine-kl-009
+runtime: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin
+python package selection: PYTHONPATH="$PWD/src"
+
+Base, scope, and prior-review remediation:
+- origin/master is exact merged HG-015 commit
+  94e2d66eabbe57405cf1efbdf4fd520cd78c62f2.
+- Backlog and traceability task_identity comparisons against the protected base
+  report only harness-backlog-v0.2/KL-009 as changed.
+- The earlier wrong-target KL-001/KL-003 edits are absent.
+- The fresh PROTOCOL review blocker showed duplicate traceability identities could
+  collapse in dictionary construction. The validator now rejects missing/non-string
+  identities, invalid IDs, identity/ID mismatch, duplicate task_identity, duplicate
+  display ID, wrong-target task definitions, wrong-target traceability changes, and
+  refined projection mismatch before comparison.
+- Superseded pre-HG-015 and pre-remediation HG-014 evidence files were removed. No old
+  review SHA or review artifact is reused.
+
+Checks executed on the tested commit:
+- `kl check-harness`: HARNESS_CHECK_PASS tasks=68 active=66
+- `ruff check .`: All checks passed!
+- `mypy src tools tests`: Success: no issues found in 46 source files
+- `kl test-unit`: 95 passed in 2.74s
+- `kl test-harness`: 100 passed in 80.25s
+- focused identity/wrong-target suite: 4 passed in 2.02s
+- protected-base/current backlog identity diff: only KL-009
+- protected-base/current traceability identity diff: only KL-009
+- `git diff --check 94e2d66eabbe57405cf1efbdf4fd520cd78c62f2 HEAD`: exit 0
+- frozen Protocol, DB and FROZEN_BASELINE diff: exit 0
+
+KL-008 is merged and integrated in the protected base. HG-014 does not change its
+owned files or overlap its authorization_core/command_contracts resources. No product
+implementation, frozen authority, production authorization, provider command
+authority, replay cutoff, canonical evidence, or product requirement status changed.
+
+Required fresh review union: GENERAL, PROTOCOL, SECURITY_DATA_BOUNDARY.

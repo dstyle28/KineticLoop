@@ -352,17 +352,34 @@
       "conditional_depends_on": [],
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_pu_checks"
+        "config_secret_sources_are_separated",
+        "nested_redaction_is_non_mutating_and_authority_neutral",
+        "synthetic_security_fixtures_have_provenance",
+        "database_diagnostics_redact_credentials",
+        "security_and_database_regressions_pass",
+        "harness_validation_passes"
       ],
-      "resource_keys": [],
-      "write_paths": [],
-      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
+      "resource_keys": [
+        "security_data_boundary"
+      ],
+      "write_paths": [
+        "docs/contracts/security_config_and_redaction.md",
+        "src/kineticloop/config/**",
+        "src/kineticloop/db/cli.py",
+        "src/kineticloop/db/lifecycle.py",
+        "src/kineticloop/security/**",
+        "tests/db/test_secret_output.py",
+        "tests/fixtures/synthetic/security/**",
+        "tests/unit/config/**",
+        "tests/unit/security/**"
+      ],
+      "write_paths_status": "ENFORCEABLE",
       "review_requirements": [
         "GENERAL",
         "PROTOCOL",
         "SECURITY_DATA_BOUNDARY"
       ],
-      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
       "status": "NOT_STARTED"
     },
     {

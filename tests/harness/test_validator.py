@@ -195,6 +195,14 @@ class ValidatorTests(unittest.TestCase):
 
     def governance_change(self, change_id='HG-999', task_id='KL-008',
                           change_status='PASS'):
+        task = self.refine_task(task_id)
+        refresh(self.root)
+        tested = self.commit('refine packet')
+        return self.persist_governance_change(
+            change_id, tested, [task_id], task.get('review_requirements', []),
+            change_status)
+
+    def refine_task(self, task_id='KL-008'):
         backlog_path = self.root / v.BACKLOG
         backlog = json.loads(backlog_path.read_text())
         task = next(item for item in backlog['tasks'] if item['id'] == task_id)
@@ -208,11 +216,13 @@ class ValidatorTests(unittest.TestCase):
             '**Packet refinement:** READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED')
         text = text.replace('- TO_BE_REFINED_BEFORE_READY', '- src/kineticloop/shadow/**')
         packet.write_text(text)
-        refresh(self.root)
-        tested = self.commit('refine packet')
-        return self.persist_governance_change(
-            change_id, tested, [task_id], task.get('review_requirements', []),
-            change_status)
+        traceability_path = self.root / v.TRACEABILITY
+        traceability = json.loads(traceability_path.read_text())
+        trace = next(item for item in traceability['tasks'] if item['id'] == task_id)
+        for field in v.TRACEABILITY_TASK_FIELDS:
+            trace[field] = task.get(field)
+        dump(traceability_path, traceability)
+        return task
 
     def reviewed_result(self):
         path, obj = self.result()
@@ -461,6 +471,83 @@ class ValidatorTests(unittest.TestCase):
     def test_ci_governance_merge_gate_binds_record_and_reviews(self):
         self.governance_change()
         self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_allows_refined_traceability_metadata(self):
+        task_id = 'KL-008'
+        task = self.refine_task(task_id)
+        refresh(self.root)
+        tested = self.commit('refine packet and derived traceability metadata')
+        self.persist_governance_change(
+            'HG-999', tested, [task_id], task['review_requirements'])
+        self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_rejects_wrong_target_backlog_edit(self):
+        task_id = 'KL-008'
+        task = self.refine_task(task_id)
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        wrong = next(item for item in backlog['tasks'] if item['id'] == 'KL-001')
+        wrong['commands'] = ['wrong-target governance edit']
+        dump(backlog_path, backlog)
+        refresh(self.root)
+        tested = self.commit('misapply refinement to unrelated backlog task')
+        self.persist_governance_change(
+            'HG-999', tested, [task_id], task['review_requirements'])
+        self.check(1, 'governance-task-definition-scope:HG-999:KL-001',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_rejects_wrong_target_traceability_edit(self):
+        task_id = 'KL-008'
+        task = self.refine_task(task_id)
+        traceability_path = self.root / v.TRACEABILITY
+        traceability = json.loads(traceability_path.read_text())
+        wrong = next(item for item in traceability['tasks'] if item['id'] == 'KL-003')
+        wrong['checks_required_for_this_task'] = task['checks_required_for_this_task']
+        dump(traceability_path, traceability)
+        refresh(self.root)
+        tested = self.commit('misapply refinement to unrelated traceability task')
+        self.persist_governance_change(
+            'HG-999', tested, [task_id], task['review_requirements'])
+        self.check(
+            1,
+            'governance-traceability-scope:HG-999:harness-backlog-v0.2/KL-003',
+            '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_duplicate_traceability_identity_and_id_rejected(self):
+        traceability_path = self.root / v.TRACEABILITY
+        traceability = json.loads(traceability_path.read_text())
+        duplicate = copy.deepcopy(traceability['tasks'][2])
+        traceability['tasks'].append(duplicate)
+        dump(traceability_path, traceability)
+        refresh(self.root)
+        self.check(1, 'traceability-duplicate-task-identity:' + duplicate['task_identity'])
+        self.check(1, 'traceability-duplicate-task-id:' + duplicate['id'])
+
+    def test_invalid_traceability_identity_and_id_rejected(self):
+        traceability_path = self.root / v.TRACEABILITY
+        original = json.loads(traceability_path.read_text())
+        cases = [
+            ('missing', None, 'traceability-task-identity:0'),
+            ('non-string', 7, 'traceability-task-identity:0'),
+            ('mismatched', 'harness-backlog-v0.2/KL-999',
+             'traceability-task-identity-mismatch:harness-backlog-v0.2/KL-999'),
+            ('bad-id', 'KL-nine',
+             'traceability-task-id:harness-backlog-v0.2/KL-001'),
+        ]
+        for kind, value, diagnostic in cases:
+            traceability = copy.deepcopy(original)
+            if kind in ('missing', 'non-string'):
+                if kind == 'missing':
+                    traceability['tasks'][0].pop('task_identity')
+                else:
+                    traceability['tasks'][0]['task_identity'] = value
+            elif kind == 'mismatched':
+                traceability['tasks'][0]['task_identity'] = value
+            else:
+                traceability['tasks'][0]['id'] = value
+            dump(traceability_path, traceability)
+            refresh(self.root)
+            self.check(1, diagnostic)
 
     def test_ci_governance_ignores_unrelated_unresolvable_review_sha(self):
         self.governance_review('HG-998', 'f' * 40)
