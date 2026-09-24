@@ -1,0 +1,59 @@
+HG-014 final verification
+base_commit: fb9e54a62400c97f3dfae6596ad8a40554de377e
+tested_commit: 2baebc26ddf9edcf54ac6eaead0275e6c2befef6
+branch: codex/hg-014-refine-kl-009
+runtime: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin
+python package selection: PYTHONPATH="$PWD/src"
+
+Allocation and base checks:
+- `rg -n --hidden --glob '!docs/history/**' --glob '!.git/**' 'HG-014' .`
+  returned no match before allocation: PASS
+- protected base resolved to merged `origin/master` at
+  fb9e54a62400c97f3dfae6596ad8a40554de377e: PASS
+- KL-001 and KL-007 integration records both report MERGED: PASS
+
+Implementation checks executed on tested_commit:
+- `PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness`
+  HARNESS_CHECK_PASS tasks=68 active=66
+- `PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/ruff check .`
+  All checks passed!
+- `MYPY_CACHE_DIR=/private/tmp/hg-014-final-mypy PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/mypy src tools tests`
+  Success: no issues found in 44 source files
+- `PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-unit`
+  92 passed in 2.86s
+- `PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-harness`
+  96 passed in 86.53s
+- `git diff --check fb9e54a62400c97f3dfae6596ad8a40554de377e HEAD`
+  exit 0
+- `git diff --exit-code fb9e54a62400c97f3dfae6596ad8a40554de377e HEAD -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md`
+  exit 0
+
+Scope and contract inspection:
+- KL-009 now has exact task checks, PASS oracles, write paths, entry conditions,
+  deliverables, non-goals, and DoD in both packet and backlog: PASS
+- the KL-009 projection in KineticLoop_Harness_Traceability_v0.3.json matches the
+  refined check IDs, resource key, write paths, write-path status, and packet state: PASS
+- `security_data_boundary` is registered in docs/harness/RESOURCE_LOCKS.md and the
+  validator accepts it as a known exclusive resource key: PASS
+- KL-008 owns only contracts/shadow.py, contracts/__init__.py,
+  tests/unit/contracts/test_shadow.py, and docs/contracts/shadow_test_semantics.md;
+  no KL-009 implementation write path or resource key overlaps that task: PASS
+- existing DB consumers are src/kineticloop/db/cli.py, tools/db/verify.py, and their
+  tests. KL-009 may make DatabaseConnection diagnostic serialization redacted by
+  default while retaining explicit in-process connection access; tools/db/verify.py
+  needs no write scope and the complete tests/db suite is a required regression: PASS
+- no application/product implementation file changed in HG-014: PASS
+
+Protocol-guardian inspection:
+- frozen impact map remains INV-15 and INV-16, with no assigned transaction or
+  logical table: PASS
+- the packet makes redaction presentation-only, requires canonical evidence bytes
+  and hashes to remain unchanged, and forbids Evidence Admission, role/capability,
+  command, approval, or authorization effects: PASS
+- no replay retrieval, cutoff, cache, projection, resolver, or live-write behavior
+  is added or changed, so INV-16 and Replay clauses 7.2-7.4 remain unchanged: PASS
+- no convenience shadow/test branch, production authorization path, provider command
+  authority, or frozen T1-T8 semantic change is introduced: PASS
+
+Required independent review union: GENERAL, PROTOCOL, SECURITY_DATA_BOUNDARY.
+No governance review artifact was created. No product requirement PASS is claimed.
