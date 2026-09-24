@@ -72,6 +72,36 @@ class DeceptiveLengthList(list[str]):
         return 0
 
 
+class StatefulMappingTuple(tuple[str, ...]):
+    iteration_count: int
+
+    def __new__(cls, values: tuple[str, ...]) -> StatefulMappingTuple:
+        instance = super().__new__(cls, values)
+        instance.iteration_count = 0
+        return instance
+
+    def __iter__(self) -> Iterator[str]:
+        self.iteration_count += 1
+        if self.iteration_count == 1:
+            return tuple.__iter__(self)
+        return iter(("safe",))
+
+
+class StatefulMappingFrozenSet(frozenset[str]):
+    iteration_count: int
+
+    def __new__(cls, values: frozenset[str]) -> StatefulMappingFrozenSet:
+        instance = super().__new__(cls, values)
+        instance.iteration_count = 0
+        return instance
+
+    def __iter__(self) -> Iterator[str]:
+        self.iteration_count += 1
+        if self.iteration_count == 1:
+            return frozenset.__iter__(self)
+        return iter(("safe",))
+
+
 def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     secret_named_value_type = type(SENTINEL, (), {})
     secret_named_error_type = type(SENTINEL, (ValueError,), {})
@@ -574,15 +604,17 @@ def test_malformed_sensitive_formats_suppress_unresolved_arguments() -> None:
     percent_secret = "MALFORMED_PERCENT_VALUE"
     mixed_percent_secret = "MALFORMED_MIXED_PERCENT_VALUE"
     brace_secret = "MALFORMED_BRACE_VALUE"
+    mixed_numbering_secret = "MIXED_NUMBERING_VALUE"
     values = (
         ("password=%", percent_secret),
         ("safe=%s password=%", "retained-percent-context", mixed_percent_secret),
         ("safe={} password={", "retained-brace-context", brace_secret),
+        ("safe={0} password={}", "retained-numbering-context", mixed_numbering_secret),
     )
     direct_error = ValueError("password=%", percent_secret)
     chained_error = RuntimeError("outer")
     chained_error.__cause__ = ValueError(
-        "safe={} password={", "retained-brace-context", brace_secret
+        "safe={0} password={}", "retained-numbering-context", mixed_numbering_secret
     )
 
     rendered = repr(Redactor().redact(values))
@@ -592,5 +624,72 @@ def test_malformed_sensitive_formats_suppress_unresolved_arguments() -> None:
     assert percent_secret not in rendered
     assert mixed_percent_secret not in rendered
     assert brace_secret not in rendered
+    assert mixed_numbering_secret not in rendered
     assert percent_secret not in rendered_direct
-    assert brace_secret not in rendered_chained
+    assert mixed_numbering_secret not in rendered_chained
+
+
+def test_extensible_text_authorization_and_dotted_assignments_are_redacted() -> None:
+    negotiate_secret = "TEXT_NEGOTIATE_VALUE"
+    custom_secret = "TEXT_CUSTOM_SCHEME_VALUE"
+    dotted_api_secret = "DOTTED_API_KEY_VALUE"
+    dotted_database_secret = "DOTTED_DATABASE_URL_VALUE"
+    encoded_authorization = quote(
+        f"Authorization AWS4-HMAC-SHA256 {custom_secret}", safe=""
+    )
+    values = (
+        f"Authorization Negotiate {negotiate_secret}",
+        encoded_authorization,
+        f"api.key={dotted_api_secret}",
+        f"database.url={dotted_database_secret}",
+    )
+    process_error = subprocess.CalledProcessError(
+        1,
+        ["provider-client", "status"],
+        stderr=f"Authorization Custom-Scheme {custom_secret}",
+    )
+
+    rendered = repr(Redactor().redact((*values, process_error)))
+
+    for secret in (
+        negotiate_secret,
+        custom_secret,
+        dotted_api_secret,
+        dotted_database_secret,
+    ):
+        assert secret not in rendered
+        assert quote(secret, safe="") not in rendered
+
+
+def test_over_depth_sequence_token_suppresses_all_unresolved_arguments() -> None:
+    encoded_authorization = "".join(
+        f"%{ord(character):02X}" for character in "--authorization"
+    )
+    for _ in range(8):
+        encoded_authorization = quote(encoded_authorization, safe="")
+    secret = "OVERDEPTH_AUTHORIZATION_VALUE"
+
+    rendered = repr(
+        Redactor().redact([encoded_authorization, "AWS4-HMAC-SHA256", secret])
+    )
+
+    assert secret not in rendered
+    assert "AWS4-HMAC-SHA256" not in rendered
+
+
+def test_composite_mapping_keys_are_snapshotted_once() -> None:
+    tuple_key = StatefulMappingTuple(("password",))
+    frozenset_key = StatefulMappingFrozenSet(frozenset({"clientSecret"}))
+    tuple_secret = "STATEFUL_TUPLE_KEY_VALUE"
+    frozenset_secret = "STATEFUL_FROZENSET_KEY_VALUE"
+
+    rendered = repr(
+        Redactor().redact(
+            ({tuple_key: tuple_secret}, {frozenset_key: frozenset_secret})
+        )
+    )
+
+    assert tuple_secret not in rendered
+    assert frozenset_secret not in rendered
+    assert tuple_key.iteration_count == 0
+    assert frozenset_key.iteration_count == 0

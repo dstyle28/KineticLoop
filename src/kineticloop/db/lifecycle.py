@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import ipaddress
 import json
 import os
 import re
@@ -11,13 +12,14 @@ import time
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 from kineticloop.config.secrets import SecretValue
 from kineticloop.security.redaction import REDACTED, Redactor
 
 CommandRunner = Callable[..., subprocess.CompletedProcess[str]]
 _SAFE_IDENTIFIER = re.compile(r"^[a-z][a-z0-9_]{0,62}$")
+_SAFE_HOSTNAME = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$")
 
 
 class DatabaseLifecycleError(RuntimeError):
@@ -58,6 +60,22 @@ class DatabaseConnection:
     password: SecretValue | str
 
     def __post_init__(self) -> None:
+        if type(self.host) is not str:
+            raise TypeError("database host must be a string")
+        decoded_host = unquote(self.host)
+        if decoded_host != self.host:
+            raise ValueError("database host must not be percent-encoded")
+        if not self.host or any(character.isspace() for character in self.host):
+            raise ValueError("database host must be host-only")
+        if any(character in self.host for character in "@/?#[]"):
+            raise ValueError("database host must be host-only")
+        if ":" in self.host:
+            try:
+                ipaddress.ip_address(self.host)
+            except ValueError as error:
+                raise ValueError("database host must be host-only") from error
+        elif _SAFE_HOSTNAME.fullmatch(self.host) is None:
+            raise ValueError("database host must be host-only")
         if type(self.port) is not int:
             raise TypeError("database port must be an integer")
         if not 1 <= self.port <= 65535:
@@ -71,8 +89,9 @@ class DatabaseConnection:
         password = self.password
         assert isinstance(password, SecretValue)
         encoded_password = quote(password.reveal(), safe="")
+        url_host = f"[{self.host}]" if ":" in self.host else self.host
         return (
-            f"postgresql://{encoded_user}:{encoded_password}@{self.host}:{self.port}/"
+            f"postgresql://{encoded_user}:{encoded_password}@{url_host}:{self.port}/"
             f"{self.database_name}"
         )
 
@@ -83,7 +102,8 @@ class DatabaseConnection:
         redactor = Redactor((self.user, password))
         host = redactor.redact(self.host)
         database_name = redactor.redact(self.database_name)
-        return f"postgresql://{REDACTED}@{host}:{self.port}/{database_name}"
+        url_host = f"[{host}]" if ":" in str(host) else host
+        return f"postgresql://{REDACTED}@{url_host}:{self.port}/{database_name}"
 
     def diagnostic_mapping(self) -> dict[str, str | int]:
         password = self.password
@@ -267,14 +287,20 @@ class DatabaseLifecycle:
         if not separator or not raw_port.isdigit():
             safe_endpoint = Redactor((self.user, self.password)).redact(endpoint)
             raise DatabaseLifecycleError(f"unexpected Docker port output: {safe_endpoint!r}")
-        return DatabaseConnection(
-            project_name=self.namespace.project_name,
-            database_name=self.namespace.database_name,
-            host=host.strip("[]") or "127.0.0.1",
-            port=int(raw_port),
-            user=self.user,
-            password=self.password,
-        )
+        try:
+            return DatabaseConnection(
+                project_name=self.namespace.project_name,
+                database_name=self.namespace.database_name,
+                host=host.strip("[]") or "127.0.0.1",
+                port=int(raw_port),
+                user=self.user,
+                password=self.password,
+            )
+        except (TypeError, ValueError):
+            safe_endpoint = Redactor((self.user, self.password)).redact(endpoint)
+            raise DatabaseLifecycleError(
+                f"unexpected Docker port output: {safe_endpoint!r}"
+            ) from None
 
     def destroy(self) -> None:
         """Remove only this worktree's containers, network, and named volume."""

@@ -59,6 +59,32 @@ def test_connection_default_diagnostics_are_credential_free() -> None:
             user=USER,
             password=PASSWORD,
         )
+    for unsafe_host in (
+        "alice:hunter2@db.invalid",
+        "alice%3Ahunter2%40db.invalid",
+    ):
+        with pytest.raises(ValueError, match="database host") as caught:
+            DatabaseConnection(
+                project_name=connection.project_name,
+                database_name=connection.database_name,
+                host=unsafe_host,
+                port=5432,
+                user=USER,
+                password=PASSWORD,
+            )
+        assert "alice" not in str(caught.value)
+        assert "hunter2" not in str(caught.value)
+
+    ipv6_connection = DatabaseConnection(
+        project_name=connection.project_name,
+        database_name=connection.database_name,
+        host="::1",
+        port=5432,
+        user=USER,
+        password=PASSWORD,
+    )
+    assert "@[::1]:5432/" in ipv6_connection.url
+    assert "@[::1]:5432/" in ipv6_connection.redacted_url
     with pytest.raises(TypeError, match="port must be an integer"):
         DatabaseConnection(
             project_name=connection.project_name,
@@ -199,3 +225,51 @@ def test_db_reset_never_executes_percent_decoded_parser_input(
     assert exit_info.value.code == 2
     lifecycle_type.assert_not_called()
     assert "error:" in capsys.readouterr().err
+
+
+def test_db_reset_arbitrary_authorization_diagnostic_is_credential_free(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    secret = "ARGPARSE_NEGOTIATE_VALUE"
+
+    with pytest.raises(SystemExit) as exit_info:
+        main(["db-reset", "Authorization", "Negotiate", secret])
+
+    assert exit_info.value.code == 2
+    stderr = capsys.readouterr().err
+    assert secret not in stderr
+    assert "[REDACTED]" in stderr
+
+
+@pytest.mark.parametrize(
+    "endpoint,secret",
+    [
+        ("alice:hunter2@db.invalid:notaport", "hunter2"),
+        ("alice%3Ahunter2%40db.invalid:notaport", "hunter2"),
+        ("alice:hunter2@db.invalid:5432", "hunter2"),
+        ("alice%3Ahunter2%40db.invalid:5432", "hunter2"),
+    ],
+)
+def test_malformed_docker_endpoints_redact_scheme_less_userinfo(
+    endpoint: str,
+    secret: str,
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "synthetic" / "KineticLoop"
+    root.mkdir(parents=True)
+    result = subprocess.CompletedProcess(
+        ["docker", "compose", "port"],
+        0,
+        stdout=f"{endpoint}\n",
+        stderr="",
+    )
+    lifecycle = DatabaseLifecycle(root, runner=Mock(return_value=result), environ={})
+
+    with pytest.raises(DatabaseLifecycleError) as caught:
+        lifecycle.connection()
+
+    rendered = str(caught.value)
+    assert "alice" not in rendered
+    assert secret not in rendered
+    assert "%3A" not in rendered
+    assert "[REDACTED]" in rendered

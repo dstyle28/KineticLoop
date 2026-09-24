@@ -37,12 +37,15 @@ _SENSITIVE_KEY_PARTS = frozenset(
 )
 _URL = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\s<>\"']+")
 _CREDENTIAL_URL = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\r\n]*?@[^\s,;]+")
+_SCHEMELESS_USERINFO = re.compile(
+    r"(?P<userinfo>[^\s/@:]+(?::[^\s/@]*)?@)(?P<host>\[[^\]]+\]|[A-Za-z0-9.-]+)"
+)
 _PERCENT_PLACEHOLDER = re.compile(
     r"(?<!%)%(?!%)(?:\([^)]+\))?[-+#0 ]*(?:\*|\d*)(?:\.(?:\*|\d+))?[A-Za-z]"
 )
 _SENSITIVE_KEY_EXPRESSION = (
-    r"access[\s_-]?token|api[\s_-]?key|authorization|client[\s_-]?secret|cookie|"
-    r"credential(?:s)?|database[\s_-]?url|dsn|passwd|password|refresh[\s_-]?token|"
+    r"access[\s_.-]?token|api[\s_.-]?key|authorization|client[\s_.-]?secret|cookie|"
+    r"credential(?:s)?|database[\s_.-]?url|dsn|passwd|password|refresh[\s_.-]?token|"
     r"secret|token"
 )
 _SENSITIVE_ASSIGNMENT = re.compile(
@@ -60,7 +63,7 @@ _COMMAND_SEPARATE = re.compile(
     r"(?:bearer|basic|digest|token)\s+[^\r\n]+|[^\r\n]+)"
 )
 _AUTH_HEADER = re.compile(
-    r"(?i)(?P<prefix>\bauthorization\s+(?:bearer|basic|digest|token)\s+)"
+    r"(?i)(?P<prefix>\bauthorization\s+[a-z][a-z0-9+._-]*\s+)"
     r"(?P<value>[^;\r\n]+)"
 )
 DiagnosticScalar: TypeAlias = str | bytes | int | float | bool | None
@@ -149,8 +152,28 @@ def _has_malformed_sensitive_format(value: str) -> bool:
         if placeholder is None:
             return True
         index = placeholder.end()
+    saw_automatic = False
+    saw_manual = False
+
+    def inspect_numbering(format_string: str) -> None:
+        nonlocal saw_automatic, saw_manual
+        for _literal, field_name, format_spec, _conversion in string.Formatter().parse(
+            format_string
+        ):
+            if field_name is None:
+                continue
+            root_name = re.split(r"[.[]", field_name, maxsplit=1)[0]
+            if not root_name:
+                saw_automatic = True
+            elif root_name.isdigit():
+                saw_manual = True
+            if saw_automatic and saw_manual:
+                raise ValueError("mixed automatic and manual field numbering")
+            if format_spec:
+                inspect_numbering(format_spec)
+
     try:
-        tuple(string.Formatter().parse(value))
+        inspect_numbering(value)
     except ValueError:
         return True
     return False
@@ -347,6 +370,9 @@ class Redactor:
         )
         result = result.replace(_SECRET_MARKER, REDACTED)
         result = result.replace(_USERINFO_MARKER, REDACTED)
+        result = _SCHEMELESS_USERINFO.sub(
+            lambda match: f"{REDACTED}@{match.group('host')}", result
+        )
         result = _COMMAND_OPTION.sub(lambda match: f"{match.group('prefix')}{REDACTED}", result)
         result = _COMMAND_SEPARATE.sub(lambda match: f"{match.group('prefix')}{REDACTED}", result)
         result = _AUTH_HEADER.sub(
@@ -419,9 +445,12 @@ class Redactor:
         if isinstance(value, Mapping):
             result: dict[object, object] = {}
             for key, item in value.items():
-                redacted_key = self._redact_mapping_key(key)
+                snapshot_key = self._snapshot_mapping_key(key)
+                redacted_key = self._redact_mapping_key(snapshot_key)
                 result[redacted_key] = (
-                    REDACTED if self._mapping_key_is_sensitive(key) else self.redact(item)
+                    REDACTED
+                    if self._mapping_key_is_sensitive(snapshot_key)
+                    else self.redact(item)
                 )
             return result
         if isinstance(value, tuple):
@@ -435,6 +464,17 @@ class Redactor:
         if value is None or type(value) in (int, float, bool):
             return value
         return "<diagnostic-value>"
+
+    def _snapshot_mapping_key(self, key: object) -> object:
+        if isinstance(key, tuple):
+            return tuple(
+                self._snapshot_mapping_key(item) for item in tuple.__iter__(key)
+            )
+        if isinstance(key, frozenset):
+            return frozenset(
+                self._snapshot_mapping_key(item) for item in frozenset.__iter__(key)
+            )
+        return key
 
     def _redact_mapping_key(self, key: object) -> object:
         if type(key) is str:
@@ -483,7 +523,11 @@ class Redactor:
             if item_text is None:
                 continue
             decoded_item = _stable_unquote(item_text)
-            positions = {0} if decoded_item is None else _sequence_sensitive_positions(decoded_item)
+            positions = (
+                {_ALL_FOLLOWING_ARGUMENTS}
+                if decoded_item is None
+                else _sequence_sensitive_positions(decoded_item)
+            )
             if _ALL_FOLLOWING_ARGUMENTS in positions:
                 sensitive_indices.update(range(index + 1, len(items)))
                 continue
