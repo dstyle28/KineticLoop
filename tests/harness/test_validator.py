@@ -711,6 +711,13 @@ class ValidatorTests(unittest.TestCase):
         self.check(1, 'governance-task-review-without-integration:HG-999:KL-001',
                    '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
+    def test_ci_governance_rejects_nonrecord_task_review_path(self):
+        self.put('docs/exec-plans/reviews/KL-001/notes.md')
+        self.commit('persist unstructured task review note')
+        self.governance_change()
+        self.check(1, 'governance-task-review-path:HG-999:',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
     def test_ci_rejects_mixed_task_and_governance_records(self):
         self.governance_change()
         self.result()
