@@ -129,7 +129,11 @@
       "title": "Initialize Python repo/tooling/CI",
       "owner_role": "platform",
       "depends_on": [],
-      "commands": [],
+      "commands": [
+        "load provider/backend credentials only through an explicit secret source separated from public configuration",
+        "redact nested diagnostics, structured-log arguments, credential-bearing URLs and chained exceptions without mutating canonical evidence",
+        "emit credential-free database lifecycle and kl db-reset diagnostics while preserving explicit in-process connection access"
+      ],
       "transaction_boundaries": [],
       "invariant_ids": [],
       "table_ids": [],
@@ -863,13 +867,18 @@
         "PU"
       ],
       "deliverables": [
-        "secret loader",
-        "redaction test harness",
-        "synthetic fixtures"
+        "typed public-configuration and secret-source boundary suitable for backend provider credentials without serializing, logging, or committing secret values",
+        "recursive non-mutating redaction boundary for structured values, log arguments, URLs, exceptions, and subprocess failures",
+        "provenance-marked synthetic security and health fixtures using sentinel values only",
+        "redacted-by-default database lifecycle and CLI diagnostics preserving existing DB reset and verifier behavior",
+        "contract documentation naming default-deny diagnostics, canonical-evidence immutability, and the Evidence Admission and authorization non-authority boundary"
       ],
-      "definition_of_done": "sensitive fixture fields not emitted by default logs",
+      "definition_of_done": "focused tests prove public configuration and secrets are separate, required secrets fail closed, and generic serialization/default diagnostics reveal neither raw nor encoded sentinel credentials; recursive redaction covers nested structures, structured-log arguments, credential-bearing URLs, sensitive query parameters, and chained exceptions/subprocess failures without changing source objects or canonical evidence bytes/hashes; every security/health fixture is provenance-marked synthetic and unmarked or production-like provenance is rejected; default DB lifecycle, verifier, and kl db-reset plain/JSON output is credential-free while existing worktree isolation/reset tooling passes; redaction is presentation-only and cannot admit evidence, alter canonical evidence, derive a production actor/capability, or grant command/authorization authority",
       "entry_conditions": [
-        "DOC-PROTOCOL-V1.2 and DOC-DB-V0.2 available"
+        "KL-001 integration record is MERGED and the stable kl check-harness, kl test-unit, and kl test-harness entrypoints are available",
+        "KL-007 integration record is MERGED and its closed role/capability vocabulary remains the authority boundary for subject, test, admin, and evaluation actors",
+        "DOC-PROTOCOL-V1.2 clauses INV-15 and INV-16, DOC-INTEGRATION-V0.1 provider-data boundaries, and the G-REALDATA/log-redaction gates resolve through CURRENT_DOCUMENT_INDEX.json",
+        "Use only committed synthetic sentinel values; do not read, copy, or require real provider credentials or health/training data"
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
@@ -883,15 +892,32 @@
       "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
       "merge_unit": "ONE_PR",
       "handoff_artifact": "docs/exec-plans/completed/KL-009_RESULT.yaml",
-      "shared_hotspot": false,
-      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "task_identity": "harness-backlog-v0.2/KL-009",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_pu_checks"
+        "config_secret_sources_are_separated",
+        "nested_redaction_is_non_mutating_and_authority_neutral",
+        "synthetic_security_fixtures_have_provenance",
+        "database_diagnostics_redact_credentials",
+        "security_and_database_regressions_pass",
+        "harness_validation_passes"
       ],
-      "resource_keys": [],
-      "write_paths": [],
+      "resource_keys": [
+        "security_data_boundary"
+      ],
+      "write_paths": [
+        "docs/contracts/security_config_and_redaction.md",
+        "src/kineticloop/config/**",
+        "src/kineticloop/db/cli.py",
+        "src/kineticloop/db/lifecycle.py",
+        "src/kineticloop/security/**",
+        "tests/db/test_secret_output.py",
+        "tests/fixtures/synthetic/security/**",
+        "tests/unit/config/**",
+        "tests/unit/security/**"
+      ],
       "review_requirements": [
         "GENERAL",
         "PROTOCOL",
@@ -899,15 +925,9 @@
       ],
       "conditional_depends_on": [],
       "environment_requirements": [],
-      "packet_refinement": "MUST_REFINE_BEFORE_READY",
+      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
       "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
-      "write_paths_status": "TEMPLATE_NOT_ENFORCEABLE",
-      "write_path_hints": [
-        "pyproject.toml",
-        "tools/harness/**",
-        "tests/harness/**",
-        "docs/harness/**"
-      ]
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-010",

@@ -14,5 +14,6 @@ Initial resource keys:
 - `provider_contracts`
 - `release_evidence`
 - `requirement_registry`
+- `security_data_boundary`
 
 Every database-writing worktree uses a unique namespace, e.g. database `kineticloop_<task>_<shortsha>` and Compose project `kineticloop-<task>-<shortsha>`, unless the task explicitly declares a shared serialized environment.

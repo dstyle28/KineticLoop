@@ -462,6 +462,37 @@ class ValidatorTests(unittest.TestCase):
         self.governance_change()
         self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
+    def test_ci_governance_allows_refined_traceability_metadata(self):
+        task_id = 'KL-008'
+        write_paths = ['src/kineticloop/shadow/**']
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == task_id)
+        task['packet_refinement'] = 'READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED'
+        task['write_paths_status'] = 'ENFORCEABLE'
+        task['write_paths'] = write_paths
+        dump(backlog_path, backlog)
+
+        packet = self.root / f'docs/exec-plans/active/{task_id}.md'
+        packet.write_text(packet.read_text().replace(
+            '**Packet refinement:** MUST_REFINE_BEFORE_READY',
+            '**Packet refinement:** READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED').replace(
+                '- TO_BE_REFINED_BEFORE_READY', '- src/kineticloop/shadow/**'))
+
+        traceability_path = self.root / v.TRACEABILITY
+        traceability = json.loads(traceability_path.read_text())
+        trace = next(item for item in traceability['tasks'] if item['id'] == task_id)
+        trace['packet_refinement'] = task['packet_refinement']
+        trace['write_paths_status'] = task['write_paths_status']
+        trace['write_paths'] = write_paths
+        dump(traceability_path, traceability)
+
+        refresh(self.root)
+        tested = self.commit('refine packet and derived traceability metadata')
+        self.persist_governance_change(
+            'HG-999', tested, [task_id], task['review_requirements'])
+        self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
     def test_ci_governance_ignores_unrelated_unresolvable_review_sha(self):
         self.governance_review('HG-998', 'f' * 40)
         self.base = self.commit('historical governance review with unavailable revision')

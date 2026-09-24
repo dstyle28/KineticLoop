@@ -11,6 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 BACKLOG = 'KineticLoop_Harness_Backlog_v0.2.json'
+TRACEABILITY = 'KineticLoop_Harness_Traceability_v0.3.json'
 INDEX = 'CURRENT_DOCUMENT_INDEX.json'
 MANIFEST = 'HARNESS_DOCUMENT_MANIFEST.json'
 GOVERNANCE_SCHEMA = 'HARNESS_CHANGE.schema.json'
@@ -201,6 +202,7 @@ def governance_record_paths(change_id):
 def governance_allowed_patterns(change_id):
     return [
         BACKLOG,
+        TRACEABILITY,
         INDEX,
         MANIFEST,
         GOVERNANCE_SCHEMA,
