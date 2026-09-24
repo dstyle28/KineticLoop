@@ -72,7 +72,10 @@ def test_lifecycle_subprocess_and_cli_errors_are_redacted(
         1,
         ["docker", "compose", f"--username={USER}", f"--password={PASSWORD}"],
         output=f"DATABASE_URL=postgresql://{USER}:{encoded}@db.invalid/test?token={PASSWORD}",
-        stderr=f"nested password={PASSWORD}",
+        stderr=(
+            f'nested password=[["first"],"{PASSWORD}"]\n'
+            "cookie=session-value; SYNTHETIC_COOKIE_TAIL_NOT_A_CREDENTIAL"
+        ),
     )
     lifecycle = DatabaseLifecycle(
         root,
@@ -86,6 +89,7 @@ def test_lifecycle_subprocess_and_cli_errors_are_redacted(
     assert USER not in rendered_error
     assert PASSWORD not in rendered_error
     assert encoded not in rendered_error
+    assert "SYNTHETIC_COOKIE_TAIL_NOT_A_CREDENTIAL" not in rendered_error
     assert "database command failed" in rendered_error
 
     with patch("kineticloop.db.cli.DatabaseLifecycle", return_value=lifecycle):
@@ -96,4 +100,5 @@ def test_lifecycle_subprocess_and_cli_errors_are_redacted(
     assert USER not in cli_error
     assert PASSWORD not in cli_error
     assert encoded not in cli_error
+    assert "SYNTHETIC_COOKIE_TAIL_NOT_A_CREDENTIAL" not in cli_error
     assert "db-reset: database command failed" in cli_error

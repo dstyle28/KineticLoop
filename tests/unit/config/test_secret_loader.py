@@ -72,6 +72,22 @@ def test_config_secret_sources_are_separated() -> None:
         ProviderSecrets("HEVY", {1: opaque})  # type: ignore[dict-item]
     with pytest.raises(TypeError, match="SecretValue"):
         ProviderSecrets("HEVY", {"HEVY_API_KEY": HEVY_SENTINEL})  # type: ignore[dict-item]
+    with pytest.raises(TypeError, match="cannot be subclassed"):
+        type("UnsafeSecretValue", (SecretValue,), {})
+
+    class UnsafeString(str):
+        pass
+
+    with pytest.raises(TypeError, match="provider_id"):
+        ProviderSecrets(UnsafeString("HEVY"), {"HEVY_API_KEY": opaque})
+
+    class InvalidSource:
+        def get_secret(self, name: str) -> object:
+            del name
+            return 42
+
+    with pytest.raises(TypeError, match="must be a string"):
+        load_provider_secrets(HEVY_CONFIG, InvalidSource())  # type: ignore[arg-type]
 
     with pytest.raises(MissingSecretError, match="missing or blank"):
         load_provider_secrets(HEVY_CONFIG, MappingSecretSource({}))

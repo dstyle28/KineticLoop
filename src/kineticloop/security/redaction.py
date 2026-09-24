@@ -7,7 +7,7 @@ import subprocess
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import TypeAlias
-from urllib.parse import quote_plus, unquote_plus, urlsplit, urlunsplit
+from urllib.parse import quote_plus, unquote, unquote_plus, urlsplit, urlunsplit
 
 from kineticloop.config.secrets import SecretValue
 
@@ -36,17 +36,16 @@ _SENSITIVE_KEY_PARTS = frozenset(
 )
 _URL = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\s<>\"']+")
 _CREDENTIAL_URL = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\r\n]*?@[^\s,;]+")
-_PERCENT_PLACEHOLDER = re.compile(r"%(?!%)(?:\([^)]+\))?[-+#0 ]*\d*(?:\.\d+)?[A-Za-z]")
+_PERCENT_PLACEHOLDER = re.compile(r"(?<!%)%(?!%)(?:\([^)]+\))?[-+#0 ]*\d*(?:\.\d+)?[A-Za-z]")
 _BRACE_PLACEHOLDER = re.compile(r"(?<!\{)\{[^{}]*\}(?!\})")
 _SENSITIVE_KEY_EXPRESSION = (
-    r"access[_-]?token|api[_-]?key|authorization|client[_-]?secret|cookie|credential(?:s)?|"
-    r"database[_-]?url|dsn|passwd|password|refresh[_-]?token|secret|token"
+    r"access[\s_-]?token|api[\s_-]?key|authorization|client[\s_-]?secret|cookie|"
+    r"credential(?:s)?|database[\s_-]?url|dsn|passwd|password|refresh[\s_-]?token|"
+    r"secret|token"
 )
-_ASSIGNMENT = re.compile(
-    rf"(?i)(?P<key>[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*)"
-    r"(?P<key_quote>[\"']?)(?P<separator>\s*[:=]\s*)"
-    r"(?P<value>\[[^\]\r\n]*\]|\([^\)\r\n]*\)|"
-    r"\"(?:\\.|[^\"\\])*\"|\'(?:\\.|[^\'\\])*\'|[^,;&}\]\)\r\n]+)"
+_SENSITIVE_ASSIGNMENT = re.compile(
+    rf"(?i)(?P<quote>[\"']?)(?P<key>[a-z0-9_. -]*(?:{_SENSITIVE_KEY_EXPRESSION})"
+    r"[a-z0-9_. -]*)(?P=quote)(?P<separator>\s*[:=]\s*)"
 )
 _COMMAND_OPTION = re.compile(
     rf"(?i)(?P<prefix>--[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*=)"
@@ -55,7 +54,14 @@ _COMMAND_OPTION = re.compile(
 _COMMAND_SEPARATE = re.compile(
     rf"(?i)(?P<prefix>--[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*\s+)"
     r"(?P<value>\"[^\"\r\n]*\"|'[^'\r\n]*'|"
-    r"(?:bearer|basic|digest|token)\s+[^\s,;\r\n]+|[^\s,;\r\n]+)"
+    r"(?:bearer|basic|digest|token)\s+[^\s\r\n]+|[^\s\r\n]+)"
+)
+_AUTH_HEADER = re.compile(
+    r"(?i)(?P<prefix>\bauthorization\s+(?:bearer|basic|digest|token)\s+)"
+    r"(?P<value>[^;\r\n]+)"
+)
+_FORMAT_PLACEHOLDER = re.compile(
+    rf"(?:{_PERCENT_PLACEHOLDER.pattern})|(?:{_BRACE_PLACEHOLDER.pattern})"
 )
 
 DiagnosticScalar: TypeAlias = str | bytes | int | float | bool | None
@@ -73,18 +79,90 @@ def _is_sensitive_key(value: object) -> bool:
     return any(f"_{part}_" in padded for part in _SENSITIVE_KEY_PARTS)
 
 
-def _sequence_sensitive_arity(value: str) -> int:
+def _format_sensitive_positions(value: str) -> set[int]:
+    positions: set[int] = set()
+    active_sensitive = False
+    previous_end = 0
+    for argument_index, placeholder in enumerate(_FORMAT_PLACEHOLDER.finditer(value)):
+        segment = value[previous_end : placeholder.start()]
+        assignments = list(re.finditer(r"(?i)([a-z0-9_. -]+)\s*[:=]\s*$", segment))
+        if assignments:
+            active_sensitive = _is_sensitive_key(assignments[-1].group(1))
+        if active_sensitive:
+            positions.add(argument_index)
+        previous_end = placeholder.end()
+    return positions
+
+
+def _sequence_sensitive_positions(value: str) -> set[int]:
+    format_positions = _format_sensitive_positions(value)
+    if format_positions:
+        return format_positions
     stripped = value.lstrip("-").strip()
     for separator in ("=", ":"):
         key, found, member = stripped.partition(separator)
         if found and _is_sensitive_key(key):
-            placeholder_count = len(_PERCENT_PLACEHOLDER.findall(member)) + len(
-                _BRACE_PLACEHOLDER.findall(member)
-            )
-            if placeholder_count:
-                return placeholder_count
-            return int(not member or member.casefold() in {"bearer", "basic", "digest", "token"})
-    return int(_is_sensitive_key(stripped))
+            if not member or member.casefold() in {"bearer", "basic", "digest", "token"}:
+                return {0}
+            return set()
+    return {0} if _is_sensitive_key(stripped) else set()
+
+
+def _sensitive_value_end(value: str, start: int) -> int:
+    if start >= len(value):
+        return start
+    opening = value[start]
+    pairs = {"[": "]", "(": ")", "{": "}"}
+    if opening in pairs:
+        stack = [pairs[opening]]
+        quote: str | None = None
+        escaped = False
+        index = start + 1
+        while index < len(value) and stack:
+            character = value[index]
+            if quote is not None:
+                if escaped:
+                    escaped = False
+                elif character == "\\":
+                    escaped = True
+                elif character == quote:
+                    quote = None
+            elif character in {'"', "'"}:
+                quote = character
+            elif character in pairs:
+                stack.append(pairs[character])
+            elif character == stack[-1]:
+                stack.pop()
+            index += 1
+        return index
+    if opening in {'"', "'"}:
+        index = start + 1
+        escaped = False
+        while index < len(value):
+            character = value[index]
+            index += 1
+            if escaped:
+                escaped = False
+            elif character == "\\":
+                escaped = True
+            elif character == opening:
+                break
+        return index
+    end = value.find("\n", start)
+    return len(value) if end < 0 else end
+
+
+def _redact_sensitive_assignments(value: str) -> str:
+    result: list[str] = []
+    cursor = 0
+    while match := _SENSITIVE_ASSIGNMENT.search(value, cursor):
+        value_start = match.end()
+        value_end = _sensitive_value_end(value, value_start)
+        result.append(value[cursor:value_start])
+        result.append(REDACTED)
+        cursor = value_end
+    result.append(value[cursor:])
+    return "".join(result)
 
 
 def _percent_byte_pattern(value: int) -> str:
@@ -137,8 +215,8 @@ class Redactor:
     def __init__(self, secrets: Sequence[str | SecretValue] = ()) -> None:
         raw_values: set[str] = set()
         for secret in secrets:
-            raw = secret.reveal() if isinstance(secret, SecretValue) else secret
-            if not isinstance(raw, str):
+            raw = secret.reveal() if type(secret) is SecretValue else secret
+            if type(raw) is not str:
                 raise TypeError("redaction secrets must be strings or SecretValue instances")
             if raw:
                 raw_values.add(raw)
@@ -159,13 +237,11 @@ class Redactor:
         result = result.replace(_USERINFO_MARKER, REDACTED)
         result = _COMMAND_OPTION.sub(lambda match: f"{match.group('prefix')}{REDACTED}", result)
         result = _COMMAND_SEPARATE.sub(lambda match: f"{match.group('prefix')}{REDACTED}", result)
-        return _ASSIGNMENT.sub(
-            lambda match: (
-                f"{match.group('key')}{match.group('key_quote')}"
-                f"{match.group('separator')}{REDACTED}"
-            ),
+        result = _AUTH_HEADER.sub(
+            lambda match: f"{match.group('prefix')}{REDACTED}",
             result,
         )
+        return _redact_sensitive_assignments(result)
 
     def _url(self, matched_url: str) -> str:
         trailing = ""
@@ -174,13 +250,19 @@ class Redactor:
             matched_url = matched_url[:-1]
         try:
             parsed = urlsplit(matched_url)
-            hostname = parsed.hostname
+            authority = parsed
+            has_userinfo = parsed.username is not None or parsed.password is not None
+            decoded_netloc = unquote(parsed.netloc)
+            if not has_userinfo and "@" in decoded_netloc:
+                authority = urlsplit(f"//{decoded_netloc.rsplit('@', maxsplit=1)[1]}")
+                has_userinfo = True
+            hostname = authority.hostname
             if not parsed.scheme or hostname is None:
                 return REDACTED + trailing
             host = f"[{hostname}]" if ":" in hostname else hostname
-            if parsed.port is not None:
-                host = f"{host}:{parsed.port}"
-            if parsed.username is not None or parsed.password is not None:
+            if authority.port is not None:
+                host = f"{host}:{authority.port}"
+            if has_userinfo:
                 host = f"{_USERINFO_MARKER}@{host}"
             query_parts = re.split(r"([&;])", parsed.query)
             for index in range(0, len(query_parts), 2):
@@ -206,14 +288,13 @@ class Redactor:
         if isinstance(value, bytes):
             return self.text(value.decode("utf-8", errors="replace")).encode("utf-8")
         if isinstance(value, Mapping):
-            return {
-                self._redact_mapping_key(key): (
-                    REDACTED
-                    if isinstance(key, str) and _is_sensitive_key(key)
-                    else self.redact(item)
+            result: dict[object, object] = {}
+            for key, item in value.items():
+                redacted_key = self._redact_mapping_key(key)
+                result[redacted_key] = (
+                    REDACTED if self._mapping_key_is_sensitive(key) else self.redact(item)
                 )
-                for key, item in value.items()
-            }
+            return result
         if isinstance(value, tuple):
             return tuple(self._redact_sequence(value))
         if isinstance(value, list):
@@ -222,7 +303,9 @@ class Redactor:
             return {self.redact(item) for item in value}
         if isinstance(value, frozenset):
             return frozenset(self.redact(item) for item in value)
-        return value
+        if value is None or isinstance(value, (int, float, bool)):
+            return value
+        return f"<diagnostic-value:{type(value).__name__}>"
 
     def _redact_mapping_key(self, key: object) -> object:
         if isinstance(key, str):
@@ -237,28 +320,38 @@ class Redactor:
             return key
         return f"<diagnostic-key:{type(key).__name__}>"
 
+    def _mapping_key_is_sensitive(self, key: object) -> bool:
+        if isinstance(key, str):
+            return _is_sensitive_key(self.text(key))
+        if isinstance(key, bytes):
+            decoded = key.decode("utf-8", errors="replace")
+            return _is_sensitive_key(self.text(decoded))
+        if isinstance(key, (tuple, frozenset)):
+            return any(self._mapping_key_is_sensitive(item) for item in key)
+        if key is None or isinstance(key, (int, float, bool)):
+            return False
+        return True
+
     def _redact_sequence(self, value: Sequence[object]) -> list[object]:
-        result: list[object] = []
-        index = 0
-        while index < len(value):
-            item = value[index]
-            result.append(self.redact(item))
-            sensitive_arity = _sequence_sensitive_arity(item) if isinstance(item, str) else 0
-            if sensitive_arity:
-                next_item = value[index + 1] if index + 1 < len(value) else None
-                if (
-                    sensitive_arity == 1
-                    and isinstance(next_item, str)
-                    and next_item.casefold() in {"bearer", "basic", "digest", "token"}
-                ):
-                    sensitive_arity = 2
-                for _ in range(sensitive_arity):
-                    index += 1
-                    if index >= len(value):
-                        break
-                    result.append(REDACTED)
-            index += 1
-        return result
+        sensitive_indices: set[int] = set()
+        for index, item in enumerate(value):
+            if not isinstance(item, str):
+                continue
+            positions = _sequence_sensitive_positions(item)
+            if positions == {0} and index + 1 < len(value):
+                next_item = value[index + 1]
+                if isinstance(next_item, str) and next_item.casefold() in {
+                    "bearer",
+                    "basic",
+                    "digest",
+                    "token",
+                }:
+                    positions = {0, 1}
+            sensitive_indices.update(index + 1 + position for position in positions)
+        return [
+            REDACTED if index in sensitive_indices else self.redact(item)
+            for index, item in enumerate(value)
+        ]
 
     def exception_diagnostic(self, error: BaseException) -> RedactedDiagnostic:
         """Redact an exception, subprocess output, and its chained exceptions."""

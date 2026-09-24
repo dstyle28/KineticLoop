@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import subprocess
 from dataclasses import dataclass
+from pathlib import Path
 from urllib.parse import quote
 
 from kineticloop.primitives.canonical import canonical_json_bytes
@@ -125,10 +126,42 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     )
     source["malformed_space_url"] = "https://alice:hun opaque-space@example.invalid/path"
     source["terminal_ipv6"] = "https://alice:hunter2@[2001:db8::1]"
+    source["spaced_key_text"] = "API Key: opaque-space-key-secret"
+    source["authorization_header"] = "Authorization Bearer opaque-header-secret"
+    source["nested_compound_text"] = '{"password":[["inner-secret"],"tail-secret"]}'
+    source["mixed_format_args"] = (
+        "safe=%s password=%s",
+        "retained-format-context",
+        "mixed-format-secret",
+    )
+    source["mixed_brace_args"] = (
+        "safe={} client secret={}",
+        "retained-brace-context",
+        "mixed-brace-secret",
+    )
+    source["sensitive_compound_key"] = {("password", "slot"): "tuple-key-secret"}
+    source["sensitive_bytes_key"] = {b"password": "bytes-key-secret"}
+    source["sensitive_frozenset_key"] = {
+        frozenset({"slot", "clientSecret"}): "frozenset-key-secret"
+    }
+    source["unsupported_value"] = CompoundDiagnosticKey("registered-object-secret")
+    source["unsupported_path"] = Path(f"/tmp/{SENTINEL}")
+    source["cookie_tail"] = "cookie=session-value; opaque-cookie-tail-secret"
+    source["fully_encoded_userinfo"] = (
+        "https://alice%3Aopaque-encoded-userinfo-secret%40provider.invalid/path"
+    )
+    format_exception = ValueError(
+        "safe=%s password=%s",
+        "retained-exception-context",
+        "exception-format-secret",
+    )
+    source["format_exception"] = format_exception
     compound_exception_args = compound_exception.args
+    format_exception_args = format_exception.args
     source_without_error = dict(source)
     source_without_error.pop("error")
     source_without_error.pop("compound_exception")
+    source_without_error.pop("format_exception")
     untouched = copy.deepcopy(source_without_error)
 
     redacted = Redactor((SENTINEL,)).redact(source)
@@ -172,21 +205,37 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     assert "opaque-double-quote" not in rendered
     assert "opaque-single-quote" not in rendered
     assert "opaque-space" not in rendered
+    assert "opaque-space-key-secret" not in rendered
+    assert "opaque-header-secret" not in rendered
+    assert "inner-secret" not in rendered
+    assert "tail-secret" not in rendered
+    assert "mixed-format-secret" not in rendered
+    assert "mixed-brace-secret" not in rendered
+    assert "tuple-key-secret" not in rendered
+    assert "bytes-key-secret" not in rendered
+    assert "frozenset-key-secret" not in rendered
+    assert "registered-object-secret" not in rendered
+    assert "opaque-cookie-tail-secret" not in rendered
+    assert "opaque-encoded-userinfo-secret" not in rendered
+    assert "exception-format-secret" not in rendered
     assert "[2001:db8::1]" in rendered
     assert "provider timeout" in rendered
     assert "sslmode=require" in rendered
     assert "attempt': 3" in rendered
     assert "retained context" in rendered
-    assert "safe tuple-key value" in rendered
-    assert "safe object-key value" in rendered
+    assert "retained-format-context" in rendered
+    assert "retained-brace-context" in rendered
+    assert "retained-exception-context" in rendered
     assert REDACTED in rendered
     assert isinstance(redacted["error"], RedactedDiagnostic)  # type: ignore[index]
 
     source_without_error = dict(source)
     source_without_error.pop("error")
     source_without_error.pop("compound_exception")
+    source_without_error.pop("format_exception")
     assert source_without_error == untouched
     assert compound_exception.args == compound_exception_args
+    assert format_exception.args == format_exception_args
     assert canonical_json_bytes(evidence) == canonical_before
     assert sha256_bytes(canonical_json_bytes(evidence)) == hash_before
 

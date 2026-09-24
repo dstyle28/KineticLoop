@@ -22,8 +22,12 @@ class SecretValue:
 
     __slots__ = ("__value",)
 
+    def __init_subclass__(cls, **kwargs: object) -> None:
+        del cls, kwargs
+        raise TypeError("SecretValue cannot be subclassed")
+
     def __init__(self, value: str) -> None:
-        if not isinstance(value, str) or not value.strip():
+        if type(value) is not str or not value.strip():
             raise MissingSecretError("secret values must be non-blank strings")
         self.__value = value
 
@@ -115,13 +119,13 @@ class ProviderSecrets:
     __slots__ = ("__provider_id", "__values")
 
     def __init__(self, provider_id: str, values: Mapping[str, SecretValue]) -> None:
-        if not isinstance(provider_id, str) or not provider_id.strip():
+        if type(provider_id) is not str or not provider_id.strip():
             raise TypeError("provider_id must be a non-blank string")
         if not isinstance(values, Mapping):
             raise TypeError("secret values must be a mapping")
-        if any(not isinstance(name, str) for name in values):
+        if any(type(name) is not str for name in values):
             raise TypeError("secret names must be strings")
-        if any(not isinstance(value, SecretValue) for value in values.values()):
+        if any(type(value) is not SecretValue for value in values.values()):
             raise TypeError("secret values must be SecretValue instances")
         self.__provider_id = provider_id
         self.__values = dict(values)
@@ -163,7 +167,11 @@ def load_provider_secrets(
     loaded: dict[str, SecretValue] = {}
     for name in config.required_secret_names:
         raw = source.get_secret(name)
-        if raw is None or not raw.strip():
+        if raw is None:
+            raise MissingSecretError(f"required secret {name!r} is missing or blank")
+        if type(raw) is not str:
+            raise TypeError(f"required secret {name!r} must be a string")
+        if not raw.strip():
             raise MissingSecretError(f"required secret {name!r} is missing or blank")
         loaded[name] = SecretValue(raw)
     return ProviderSecrets(config.provider_id, loaded)
