@@ -15,6 +15,12 @@ USER = "synthetic_db_user"
 PASSWORD = "SYNTHETIC db:p@ss/word? NOT A CREDENTIAL"
 
 
+class UnsafePort(int):
+    def __format__(self, format_spec: str) -> str:
+        del format_spec
+        return "5432?token=PORT_FORMAT_SECRET"
+
+
 def _connection() -> DatabaseConnection:
     return DatabaseConnection(
         project_name="kl_synthetic_deadbeef0000",
@@ -43,6 +49,25 @@ def test_connection_default_diagnostics_are_credential_free() -> None:
     assert quote(PASSWORD, safe="") in connection.url
     assert USER in connection.url
     assert json.loads(connection.as_json())["url"].startswith("postgresql://[REDACTED]@")
+
+    with pytest.raises(TypeError, match="port must be an integer"):
+        DatabaseConnection(
+            project_name=connection.project_name,
+            database_name=connection.database_name,
+            host=connection.host,
+            port="5432?token=PORT_STRING_SECRET",  # type: ignore[arg-type]
+            user=USER,
+            password=PASSWORD,
+        )
+    with pytest.raises(TypeError, match="port must be an integer"):
+        DatabaseConnection(
+            project_name=connection.project_name,
+            database_name=connection.database_name,
+            host=connection.host,
+            port=UnsafePort(5432),
+            user=USER,
+            password=PASSWORD,
+        )
 
 
 @pytest.mark.parametrize("as_json", [False, True])
@@ -113,6 +138,17 @@ def test_lifecycle_subprocess_and_cli_errors_are_redacted(
             "alice%3Ahunter2",
         ),
         ("--timeout=password=SYNTHETIC_TIMEOUT_SECRET", "SYNTHETIC_TIMEOUT_SECRET"),
+        ("--timeout=password%3DSYNTHETIC_TIMEOUT_ENCODED", "SYNTHETIC_TIMEOUT_ENCODED"),
+        ("--timeout=token%253DSYNTHETIC_TIMEOUT_DOUBLE", "SYNTHETIC_TIMEOUT_DOUBLE"),
+        (
+            "--timeout=https%3A%2F%2Falice%3Ahunter2%40db.invalid%2Fdb%3Ftoken%3Dquerysecret",
+            "hunter2",
+        ),
+        ("--pass%77ord=ENCODED_KEY_SECRET", "ENCODED_KEY_SECRET"),
+        (
+            "--timeout=%70%61%73%73%77%6F%72%64%3D%53%59%4E%54%48%45%54%49%43",
+            "%53%59%4E%54%48%45%54%49%43",
+        ),
     ],
 )
 def test_db_reset_argument_errors_are_credential_free(

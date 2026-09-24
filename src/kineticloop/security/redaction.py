@@ -267,9 +267,10 @@ class Redactor:
     def text(self, value: str) -> str:
         """Redact one diagnostic string without changing the source value."""
 
-        if _stable_unquote(value) is None:
+        decoded = _stable_unquote(value)
+        if decoded is None:
             return REDACTED
-        result = value
+        result = decoded
         for pattern in self.__patterns:
             result = pattern.sub(_SECRET_MARKER, result)
         result = _CREDENTIAL_URL.sub(lambda match: self._url(match.group(0)), result)

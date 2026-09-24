@@ -58,6 +58,10 @@ class DatabaseConnection:
     password: SecretValue | str
 
     def __post_init__(self) -> None:
+        if type(self.port) is not int:
+            raise TypeError("database port must be an integer")
+        if not 1 <= self.port <= 65535:
+            raise ValueError("database port must be between 1 and 65535")
         if isinstance(self.password, str):
             object.__setattr__(self, "password", SecretValue(self.password))
 
