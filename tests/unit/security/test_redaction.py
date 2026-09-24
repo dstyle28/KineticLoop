@@ -42,6 +42,7 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
         ],
         "log_args": ("retry %s", {"Authorization": f"Bearer {SENTINEL}"}),
         "registered": f"failure contained {quote(SENTINEL, safe='')}",
+        "double_encoded_registered": quote(quote(SENTINEL, safe=""), safe=""),
         f"registered-key-{SENTINEL}": "safe value",
         "canonical_evidence": evidence,
     }
@@ -161,6 +162,9 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     source["recursively_encoded_query"] = (
         "https://provider.invalid/path?to%256ben=opaque-double-query-secret"
     )
+    source["fully_encoded_query_assignment"] = (
+        "https://provider.invalid/path?to%256ben%253Dopaque-fully-encoded-query-secret"
+    )
     source["indexed_format_args"] = (
         "password={1} safe={0}",
         "retained-indexed-context",
@@ -189,7 +193,7 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
         "--password=plain-first-secret plain-second-secret",
     ]
     source["escaped_quote_password_text"] = (
-        'provider-client --password "escaped-first-secret\\\" escaped-second-secret"'
+        'provider-client --password "escaped-first-secret\\" escaped-second-secret"'
     )
     format_exception = ValueError(
         "safe=%s password=%s",
@@ -260,6 +264,7 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     assert "opaque-encoded-userinfo-secret" not in rendered
     assert "opaque-double-encoded-secret" not in rendered
     assert "opaque-double-query-secret" not in rendered
+    assert "opaque-fully-encoded-query-secret" not in rendered
     assert "indexed-format-secret" not in rendered
     assert "dynamic-width-secret" not in rendered
     assert "dynamic-precision-secret" not in rendered

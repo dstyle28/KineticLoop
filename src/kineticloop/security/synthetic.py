@@ -100,7 +100,12 @@ def validate_synthetic_fixture(payload: object) -> None:
         raise SyntheticFixtureError("fixture_id and provenance_id must identify the same fixture")
 
     subject = _require_mapping(fixture.get("subject"), "subject")
-    if subject != {"marker": "NON_PRODUCTION_TEST_SUBJECT"}:
+    subject_marker = subject.get("marker")
+    if (
+        set(subject) != {"marker"}
+        or type(subject_marker) is not str
+        or subject_marker != "NON_PRODUCTION_TEST_SUBJECT"
+    ):
         raise SyntheticFixtureError("fixture subject must be the non-production test marker")
 
     provider = _require_mapping(fixture.get("provider"), "provider")
@@ -108,6 +113,7 @@ def validate_synthetic_fixture(payload: object) -> None:
     if (
         type(provider_id) is not str
         or provider_id not in _PROVIDERS
+        or type(provider.get("environment")) is not str
         or provider.get("environment") != "SYNTHETIC_TEST"
     ):
         raise SyntheticFixtureError("fixture provider must be explicitly non-production")

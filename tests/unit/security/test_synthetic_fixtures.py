@@ -48,10 +48,20 @@ def test_synthetic_security_fixtures_have_provenance(tmp_path: Path) -> None:
     with pytest.raises(SyntheticFixtureError, match="non-production"):
         validate_synthetic_fixture(production_subject)
 
+    deceptive_subject = copy.deepcopy(fixtures[0])
+    deceptive_subject["subject"]["marker"] = EqualSentinel()
+    with pytest.raises(SyntheticFixtureError, match="non-production"):
+        validate_synthetic_fixture(deceptive_subject)
+
     production_provider = copy.deepcopy(fixtures[0])
     production_provider["provider"]["environment"] = "PRODUCTION"
     with pytest.raises(SyntheticFixtureError, match="non-production"):
         validate_synthetic_fixture(production_provider)
+
+    deceptive_environment = copy.deepcopy(fixtures[0])
+    deceptive_environment["provider"]["environment"] = EqualSentinel()
+    with pytest.raises(SyntheticFixtureError, match="non-production"):
+        validate_synthetic_fixture(deceptive_environment)
 
     undocumented_secret = copy.deepcopy(fixtures[0])
     credential_name = next(iter(undocumented_secret["credentials"]))

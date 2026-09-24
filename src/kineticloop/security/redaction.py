@@ -196,10 +196,15 @@ def _stable_unquote(value: str, *, plus: bool = False) -> str | None:
     return None
 
 
-def _percent_byte_pattern(value: int) -> str:
+def _percent_byte_pattern(value: int, *, depth: int = 1) -> str:
     encoded = f"{value:02X}"
-    return "%" + "".join(
-        f"[{nibble.lower()}{nibble.upper()}]" if nibble.isalpha() else nibble for nibble in encoded
+    return (
+        "%"
+        + ("25" * (depth - 1))
+        + "".join(
+            f"[{nibble.lower()}{nibble.upper()}]" if nibble.isalpha() else nibble
+            for nibble in encoded
+        )
     )
 
 
@@ -209,10 +214,13 @@ def _secret_pattern(value: str) -> re.Pattern[str]:
     pieces: list[str] = []
     for character in value:
         choices = [re.escape(character)]
-        percent_encoded = "".join(_percent_byte_pattern(byte) for byte in character.encode())
-        choices.append(percent_encoded)
+        for depth in range(1, 9):
+            choices.append(
+                "".join(_percent_byte_pattern(byte, depth=depth) for byte in character.encode())
+            )
         if character == " ":
             choices.append(r"\+")
+            choices.extend(_percent_byte_pattern(ord("+"), depth=depth) for depth in range(1, 9))
         pieces.append(f"(?:{'|'.join(dict.fromkeys(choices))})")
     return re.compile("".join(pieces))
 
@@ -299,12 +307,18 @@ class Redactor:
                 host = f"{_USERINFO_MARKER}@{host}"
             query_parts = re.split(r"([&;])", parsed.query)
             for index in range(0, len(query_parts), 2):
-                key, found, value = query_parts[index].partition("=")
-                decoded_key = _stable_unquote(key, plus=True)
-                if decoded_key is None:
+                part = query_parts[index]
+                key, found, _ = part.partition("=")
+                decoded_part = _stable_unquote(part, plus=True)
+                if decoded_part is None:
                     return REDACTED + trailing
-                if found and _is_sensitive_key(decoded_key):
-                    query_parts[index] = f"{key}={quote_plus(REDACTED)}"
+                decoded_key, decoded_found, _ = decoded_part.partition("=")
+                candidate_key = key if found else decoded_key
+                stable_key = _stable_unquote(candidate_key, plus=True)
+                if stable_key is None:
+                    return REDACTED + trailing
+                if (found or decoded_found) and _is_sensitive_key(stable_key):
+                    query_parts[index] = f"{quote_plus(stable_key)}={quote_plus(REDACTED)}"
             sanitized = urlunsplit(
                 (parsed.scheme, host, parsed.path, "".join(query_parts), parsed.fragment)
             )
