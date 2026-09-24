@@ -18,9 +18,14 @@ files_changed:
   - docs/exec-plans/active/KL-008.md
   - docs/exec-plans/evidence/HG-013/checks-a0ccd95.log
   - docs/exec-plans/evidence/HG-013/checks.log
+  - docs/exec-plans/evidence/HG-013/governance-validation.log
   - docs/exec-plans/governance/HG-013.yaml
   - tests/harness/test_validator.py
 checks_run:
+  - check_id: governance_implementation_valid
+    command: Invoke tools.harness.validate_harness.validate with protected_base 7fb89473737015d517d3e3c18a5adf6d0b274fb3, governance_change_id HG-013 and governance_reviewed_head HEAD; require the sole error to be governance-required-reviews-not-pass:HG-013.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-013/governance-validation.log
   - check_id: harness_structure_valid
     command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
     result: PASS
