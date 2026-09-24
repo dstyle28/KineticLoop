@@ -54,6 +54,7 @@ M2_REQUIRED_CHECK_IDS = {
     'KL-015': {
         'registry_lease_required_for_publish_commit_and_session_entry',
         'preparation_work_stays_outside_coordination_locks',
+        'factset_build_stays_outside_subject_coordination',
         'complete_frozen_lock_order_enforced',
         'multi_key_lock_order_is_stable',
         'reverse_lock_order_is_rejected',
@@ -63,6 +64,7 @@ M2_REQUIRED_CHECK_IDS = {
         'stale_fence_commit_is_rejected',
         'dispatch_first_winner_and_replay_non_resend',
         'ack_loss_replay_preserves_natural_uniqueness',
+        't6_ack_loss_replay_returns_same_issuance',
     },
     'KL-018': {
         'artifact_dependencies_must_be_pre_registered',
@@ -451,7 +453,9 @@ def configure_ci_merge_gate(root, args):
         args.governance_reviewed_head = review['reviewed_head_sha']
 
 
-def suffix_errors(root, start, end, task_id, kind, scope_patterns=None):
+def suffix_errors(
+        root, start, end, task_id, kind, scope_patterns=None,
+        allow_unrelated_merges=False):
     """Require ancestry and check every bookkeeping commit, including reverted changes."""
     errors = []
     try:
@@ -461,8 +465,11 @@ def suffix_errors(root, start, end, task_id, kind, scope_patterns=None):
         allowed = review_patterns(task_id) if kind == 'review' else result_paths(task_id) + [evidence_pattern(task_id)]
         for commit in commits:
             parents = git(root, 'rev-list', '--parents', '-n', '1', commit).decode().split()[1:]
-            if len(parents) != 1:
+            if len(parents) != 1 and not allow_unrelated_merges:
                 errors.append(kind + '-suffix-merge:' + commit)
+                continue
+            if not parents:
+                errors.append(kind + '-suffix-root:' + commit)
                 continue
             for path in changed_paths(root, parents[0], commit):
                 if (scope_patterns is not None
@@ -880,7 +887,18 @@ def integration_record_errors(
                     for issue in suffix_errors(
                         root, tested, reviewed, task_id, 'tested',
                         task['write_paths'] + [f'docs/exec-plans/active/{task_id}.md']))
-                if not delayed_post_merge_review:
+                delayed_scope = (
+                    [path for path in task['write_paths'] if path not in (INDEX, MANIFEST)]
+                    + result_paths(task_id)
+                    + [evidence_pattern(task_id), f'docs/exec-plans/active/{task_id}.md']
+                )
+                if delayed_post_merge_review:
+                    errors.extend(
+                        'integration-delayed-' + issue
+                        for issue in suffix_errors(
+                            root, reviewed, review_commit, task_id, 'review',
+                            delayed_scope, allow_unrelated_merges=True))
+                else:
                     errors.extend(
                         'integration-' + issue
                         for issue in suffix_errors(

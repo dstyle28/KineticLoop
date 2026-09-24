@@ -1606,7 +1606,7 @@
       "deliverables": [
         "complete frozen lock-order repository transaction interfaces"
       ],
-      "definition_of_done": "preparation interfaces perform projection, resolution and validation outside coordination locks; publish/commit/session-entry interfaces acquire only their applicable locks in the complete frozen order S51 (when required) → S01 → S30 → S27 → S31 → S38 → S44 → S02 / remaining aggregate rows, with stable multi-key ordering and no direct-write or reverse-order path; each applicable T1-T8 mutation atomically writes S03/S04, OutboxDispatcher never acquires S01, stale fences cannot commit, only the first DISPATCH_INTENT winner may send, and ACK-loss replay returns the durable prior outcome without duplicate identities",
+      "definition_of_done": "preparation interfaces, including Factset build commands, stay outside S01 coordination; publish/commit/session-entry interfaces acquire only their applicable locks in the complete frozen order S51 (when required) → S01 → S30 → S27 → S31 → S38 → S44 → S02 / remaining aggregate rows, with stable multi-key ordering and no direct-write or reverse-order path; each applicable T1-T8 mutation atomically writes S03/S04, OutboxDispatcher never acquires S01, stale fences cannot commit, only the first DISPATCH_INTENT winner may send, and T6 ACK-loss replay returns the exact prior receipt, bundle revision, and authorization issuance without duplicate issuance, supersession, event, outbox, reservation, operation, or other natural identity",
       "entry_conditions": [
         "M1 closure PASS: docs/exec-plans/milestones/M1.json",
         "G-REGISTRY closed"
@@ -1630,6 +1630,7 @@
         "transaction_owner_matrix_complete",
         "registry_lease_required_for_publish_commit_and_session_entry",
         "preparation_work_stays_outside_coordination_locks",
+        "factset_build_stays_outside_subject_coordination",
         "subject_guard_required",
         "complete_frozen_lock_order_enforced",
         "multi_key_lock_order_is_stable",
@@ -1642,6 +1643,7 @@
         "stale_fence_commit_is_rejected",
         "dispatch_first_winner_and_replay_non_resend",
         "ack_loss_replay_preserves_natural_uniqueness",
+        "t6_ack_loss_replay_returns_same_issuance",
         "transaction_db_conformance_passes",
         "harness_validation_passes"
       ],
@@ -1682,6 +1684,11 @@
           "check_id": "preparation_work_stays_outside_coordination_locks",
           "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_preparation_work_stays_outside_coordination_locks",
           "pass_oracle": "The named PostgreSQL lock-observation test proves RecordProjection, BuildManifest, ResolveEvidence, and RecordValidation perform preparation without holding S51 or S01 coordination locks."
+        },
+        {
+          "check_id": "factset_build_stays_outside_subject_coordination",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_factset_build_stays_outside_subject_coordination",
+          "pass_oracle": "The named PostgreSQL lock-observation test proves BeginBuild, WriteCandidate, and CompleteFactset acquire only build-specific locks and never acquire S01 subject coordination."
         },
         {
           "check_id": "subject_guard_required",
@@ -1742,6 +1749,11 @@
           "check_id": "ack_loss_replay_preserves_natural_uniqueness",
           "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_ack_loss_replay_preserves_natural_uniqueness",
           "pass_oracle": "The named PostgreSQL failure-injection test loses the commit acknowledgement, retries the command, returns the durable prior outcome, and creates no duplicate receipt, event, outbox, reservation, or operation identity."
+        },
+        {
+          "check_id": "t6_ack_loss_replay_returns_same_issuance",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_ack_loss_replay_returns_same_issuance",
+          "pass_oracle": "The named PostgreSQL W08 failure-injection test loses the T6 commit acknowledgement, retries the same command key and hash, returns the exact prior receipt, bundle revision, and authorization issuance, and creates no second S39 bundle revision, S42 issuance or supersession, S03 event, S04 outbox delivery, reservation, or operation identity."
         },
         {
           "check_id": "transaction_db_conformance_passes",

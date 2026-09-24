@@ -415,6 +415,23 @@ class ValidatorTests(unittest.TestCase):
         self.check(1, 'm2-required-semantic-checks:KL-018')
 
         backlog = copy.deepcopy(original)
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-015')
+        removed = {
+            'factset_build_stays_outside_subject_coordination',
+            't6_ack_loss_replay_returns_same_issuance',
+        }
+        task['checks_required_for_this_task'] = [
+            check_id for check_id in task['checks_required_for_this_task']
+            if check_id not in removed
+        ]
+        task['check_contracts'] = [
+            contract for contract in task['check_contracts']
+            if contract['check_id'] not in removed
+        ]
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-required-semantic-checks:KL-015')
+
+        backlog = copy.deepcopy(original)
         task = next(item for item in backlog['tasks'] if item['id'] == 'KL-018')
         task['review_requirements'].remove('SECURITY_DATA_BOUNDARY')
         dump(backlog_path, backlog)
@@ -1284,6 +1301,19 @@ class ValidatorTests(unittest.TestCase):
         review_commit = self.review(merge_commit)
         self.integration_record(merge_commit, merge_commit, review_commit, merge_commit)
         self.check()
+
+    def test_delayed_review_rejects_task_change_after_merge(self):
+        self.result(tested=self.base)
+        merge_commit = self.commit('merge result before delayed review')
+        self.put('src/kineticloop/delayed_review_change.py')
+        self.commit('change reviewed task after merge')
+        review_commit = self.review(merge_commit)
+        self.integration_record(merge_commit, merge_commit, review_commit, merge_commit)
+        self.check(
+            1,
+            'integration-delayed-review-stale-change:'
+            'src/kineticloop/delayed_review_change.py',
+        )
 
     def test_delayed_review_must_bind_the_merge_tree(self):
         self.result(tested=self.base)
