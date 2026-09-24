@@ -3,7 +3,7 @@ HG-009 governance remediation evidence
 Identity
   change: harness-governance-v0.1/HG-009
   protected base: 1834f6add0ed3860556458817c7620b2ef2d394e
-  tested revision: 698c2d6e660fefbac0a8b4726884230c54f87932
+  tested revision: 2d5d05e642e6a4f4e046dcbcd04fecbb66216f87
 
 PYTHONPATH=/Users/davetian/.codex/worktrees/c758/KineticLoop/src /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
   HARNESS_CHECK_PASS tasks=68 active=66
@@ -22,11 +22,11 @@ PYTHONPATH=/Users/davetian/.codex/worktrees/c758/KineticLoop/src /Users/davetian
   result: PASS
 
 PYTHONPATH=/Users/davetian/.codex/worktrees/c758/KineticLoop/src /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness
-  88 passed
+  89 passed
   result: PASS
 
 PYTHONPATH=/Users/davetian/.codex/worktrees/c758/KineticLoop/src /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness/test_validator.py -k 'governance_review_only or governance_tested_suffix or governance_merge_gate'
-  7 passed, 56 deselected
+  8 passed, 56 deselected
   result: PASS
 
 Exact HG-007 delayed-review reproduction
@@ -45,12 +45,14 @@ git diff --exit-code 1834f6add0ed3860556458817c7620b2ef2d394e HEAD -- FROZEN_BAS
   result: PASS
 
 Scope conclusion
-  The correction replays the historical governance index, manifest, backlog and
-  required-review state from the reviewed revision. It requires the reviewed
-  revision to be an ancestor of the later protected base and applies the linear
-  review-record-only suffix check from that protected base to HEAD. Original
-  protected-base scope, declared-file, exact-tree tested-suffix, evidence-binding,
-  frozen-baseline and required-review checks remain enforced.
+  The correction replays the historical governance index, manifest, backlog,
+  packets, resources, dependencies, DAG and required-review state from the reviewed
+  revision. It requires the reviewed revision to be an ancestor of the later
+  protected base and applies the linear review-record-only suffix check from that
+  protected base to HEAD. Original protected-base scope, declared-file, exact-tree
+  tested-suffix, evidence-binding, frozen-baseline and required-review checks remain
+  enforced. A negative regression proves a later packet repair cannot mask an
+  invalid reviewed packet/backlog pair.
 
 Review state
   A fresh independent GENERAL review of the final HG-009 governance head is still

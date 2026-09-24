@@ -1,14 +1,14 @@
 change_identity: harness-governance-v0.1/HG-009
 display_change_id: HG-009
 base_commit: 1834f6add0ed3860556458817c7620b2ef2d394e
-tested_commit: 698c2d6e660fefbac0a8b4726884230c54f87932
+tested_commit: 2d5d05e642e6a4f4e046dcbcd04fecbb66216f87
 change_status: PASS
 summary: >-
-  Replay an already-merged governance change's derived metadata, task definitions
-  and required-review state from its reviewed revision when a delayed review-only
-  PR starts from a later protected base. Require that reviewed revision to be
-  integrated into the protected base, then apply the review-record-only freshness
-  check only to the protected-base-to-HEAD append.
+  Replay an already-merged governance change's derived metadata and complete task,
+  packet, resource, dependency, DAG and required-review state from its reviewed
+  revision when a delayed review-only PR starts from a later protected base. Require
+  that reviewed revision to be integrated into the protected base, then apply the
+  review-record-only freshness check only to the protected-base-to-HEAD append.
 packets_refined: []
 files_changed:
   - CURRENT_DOCUMENT_INDEX.json
