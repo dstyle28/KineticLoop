@@ -11,6 +11,7 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import yaml
 
@@ -51,9 +52,20 @@ class ValidatorTests(unittest.TestCase):
             + [entry['path'] for entry in index['documents'] + index['machine_readable']]
         )
         for name in dict.fromkeys(names):
+            if name == 'docs/exec-plans/milestones/M1.json':
+                # Generic fixtures deliberately have no closure; READY-specific
+                # tests exercise the fail-closed admission rule.
+                continue
             dst = self.root / name
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / name, dst)
+        fixture_manifest_path = self.root / v.MANIFEST
+        fixture_manifest = json.loads(fixture_manifest_path.read_text())
+        fixture_manifest['files'] = [
+            entry for entry in fixture_manifest['files']
+            if entry['path'] != 'docs/exec-plans/milestones/M1.json'
+        ]
+        dump(fixture_manifest_path, fixture_manifest)
         # Governance scenarios need a pending refinement regardless of the live
         # repository's scheduling state. Establish that state in the fixture only.
         backlog_path = self.root / v.BACKLOG
@@ -317,6 +329,530 @@ class ValidatorTests(unittest.TestCase):
         dump(path, obj)
         refresh(self.root)
         self.check(1, 'ready-write-scope-unrefined:' + task['id'])
+
+    def test_ready_m2_task_without_closure_rejected(self):
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-010')
+        task['status'] = 'READY'
+        dump(backlog_path, backlog)
+        refresh(self.root)
+        self.check(1, 'ready-m1-closure-invalid:KL-010')
+
+    def test_duplicate_m1_closure_rejected(self):
+        fixture = {'display_milestone_id': 'M1'}
+        dump(self.root / 'docs/exec-plans/milestones/M1.json', fixture)
+        dump(self.root / 'docs/exec-plans/milestones/M1-copy.json', fixture)
+        self.check(1, 'milestone-closure-count:M1:2')
+
+    def test_m2_check_contract_missing_duplicate_and_generic_rejected(self):
+        backlog_path = self.root / v.BACKLOG
+        original = json.loads(backlog_path.read_text())
+        for variant, key in (
+                ('missing', 'check-contract-ids:KL-010'),
+                ('duplicate', 'check-contract-ids:KL-010'),
+                ('generic', 'check-contract-generic-or-invalid:KL-010')):
+            backlog = copy.deepcopy(original)
+            task = next(item for item in backlog['tasks'] if item['id'] == 'KL-010')
+            if variant == 'missing':
+                task['check_contracts'].pop()
+            elif variant == 'duplicate':
+                task['check_contracts'].append(copy.deepcopy(task['check_contracts'][0]))
+            else:
+                task['check_contracts'][0]['command'] = 'TODO placeholder'
+            dump(backlog_path, backlog)
+            self.check(1, key)
+        dump(backlog_path, original)
+
+    def test_m2_wrong_or_escaping_evidence_path_rejected(self):
+        backlog_path = self.root / v.BACKLOG
+        original = json.loads(backlog_path.read_text())
+        for evidence_path in ('docs/exec-plans/evidence/KL-011/**', '../escape/**'):
+            backlog = copy.deepcopy(original)
+            task = next(item for item in backlog['tasks'] if item['id'] == 'KL-010')
+            task['evidence_paths'] = [evidence_path]
+            dump(backlog_path, backlog)
+            self.check(1, 'evidence-path:KL-010')
+        dump(backlog_path, original)
+
+    def test_m2_required_security_contracts_cannot_be_removed(self):
+        backlog_path = self.root / v.BACKLOG
+        original = json.loads(backlog_path.read_text())
+
+        backlog = copy.deepcopy(original)
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-055')
+        removed = {
+            'provider_contract_is_hermetic',
+            'provider_fixtures_pass_hardened_synthetic_guard',
+        }
+        task['checks_required_for_this_task'] = [
+            check_id for check_id in task['checks_required_for_this_task']
+            if check_id not in removed
+        ]
+        task['check_contracts'] = [
+            contract for contract in task['check_contracts']
+            if contract['check_id'] not in removed
+        ]
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-required-semantic-checks:KL-055')
+
+        backlog = copy.deepcopy(original)
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-018')
+        removed = {
+            'artifact_dependencies_must_be_pre_registered',
+            'artifact_dependency_graph_is_acyclic',
+            'artifact_dependency_closure_is_bounded',
+        }
+        task['checks_required_for_this_task'] = [
+            check_id for check_id in task['checks_required_for_this_task']
+            if check_id not in removed
+        ]
+        task['check_contracts'] = [
+            contract for contract in task['check_contracts']
+            if contract['check_id'] not in removed
+        ]
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-required-semantic-checks:KL-018')
+
+        backlog = copy.deepcopy(original)
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-015')
+        removed = {
+            'factset_build_stays_outside_subject_coordination',
+            't6_ack_loss_replay_returns_same_issuance',
+        }
+        task['checks_required_for_this_task'] = [
+            check_id for check_id in task['checks_required_for_this_task']
+            if check_id not in removed
+        ]
+        task['check_contracts'] = [
+            contract for contract in task['check_contracts']
+            if contract['check_id'] not in removed
+        ]
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-required-semantic-checks:KL-015')
+
+        backlog = copy.deepcopy(original)
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-017')
+        removed = {'cross_subject_denial_is_non_enumerating'}
+        task['checks_required_for_this_task'] = [
+            check_id for check_id in task['checks_required_for_this_task']
+            if check_id not in removed
+        ]
+        task['check_contracts'] = [
+            contract for contract in task['check_contracts']
+            if contract['check_id'] not in removed
+        ]
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-required-semantic-checks:KL-017')
+
+        backlog = copy.deepcopy(original)
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-055')
+        removed = {
+            'provider_subject_source_binding_is_trusted',
+            'evidence_envelope_closed_s09_schema',
+            'provider_credentials_do_not_cross_evidence_or_diagnostic_boundary',
+        }
+        task['checks_required_for_this_task'] = [
+            check_id for check_id in task['checks_required_for_this_task']
+            if check_id not in removed
+        ]
+        task['check_contracts'] = [
+            contract for contract in task['check_contracts']
+            if contract['check_id'] not in removed
+        ]
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-required-semantic-checks:KL-055')
+
+        backlog = copy.deepcopy(original)
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-014')
+        removed = {'preparation_and_registry_management_stay_outside_atomic_boundaries'}
+        task['checks_required_for_this_task'] = [
+            check_id for check_id in task['checks_required_for_this_task']
+            if check_id not in removed
+        ]
+        task['check_contracts'] = [
+            contract for contract in task['check_contracts']
+            if contract['check_id'] not in removed
+        ]
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-required-semantic-checks:KL-014')
+
+        backlog = copy.deepcopy(original)
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-018')
+        task['review_requirements'].remove('SECURITY_DATA_BOUNDARY')
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-security-review-required:KL-018')
+
+        backlog = copy.deepcopy(original)
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-014')
+        task['review_requirements'].remove('DB_CONCURRENCY')
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-db-review-required:KL-014')
+        dump(backlog_path, original)
+
+    def test_kl014_preparation_cannot_be_reclassified_into_atomic_boundaries(self):
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-014')
+        task['commands'][0] = 'T1: ReceiveEvidence, RecordCandidate'
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-kl014-command-surface')
+
+    def test_m2_packet_check_contract_drift_rejected(self):
+        packet = self.root / 'docs/exec-plans/active/KL-010.md'
+        packet.write_text(packet.read_text().replace(
+            'Command exits 0 and prints HARNESS_CHECK_PASS.',
+            'Command merely exits 0.', 1))
+        self.check(1, 'packet-check-contract:KL-010')
+
+    def test_m2_result_requires_exact_command_and_task_owned_evidence(self):
+        backlog = json.loads((self.root / v.BACKLOG).read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-010')
+        evidence = 'docs/exec-plans/evidence/KL-010/checks.log'
+        self.put(evidence, 'exact KL-010 checks\n')
+        result = {
+            'task_identity': task['task_identity'],
+            'display_task_id': task['id'],
+            'task_status': 'PASS',
+            'task_checks_status': 'PASS',
+            'tested_commit': self.base,
+            'requirements_covered': [],
+            'commands_run': [
+                {
+                    'check_id': contract['check_id'],
+                    'command': contract['command'],
+                    'result': 'PASS',
+                    'evidence_ref': evidence,
+                }
+                for contract in task['check_contracts']
+            ],
+        }
+        self.assertEqual([], v.semantic_result_errors(result, task, self.root))
+        wrong_command = copy.deepcopy(result)
+        wrong_command['commands_run'][0]['command'] = 'true'
+        self.assertIn(
+            'command-contract-command:' + wrong_command['commands_run'][0]['check_id'],
+            v.semantic_result_errors(wrong_command, task, self.root),
+        )
+        wrong_evidence = copy.deepcopy(result)
+        wrong_evidence['commands_run'][0]['evidence_ref'] = v.INDEX
+        self.assertIn(
+            'command-evidence-scope:' + wrong_evidence['commands_run'][0]['check_id'],
+            v.semantic_result_errors(wrong_evidence, task, self.root),
+        )
+
+    def test_m2_packet_material_contract_drift_rejected(self):
+        packet = self.root / 'docs/exec-plans/active/KL-010.md'
+        original = packet.read_text()
+        variants = (
+            ('- 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md',
+             '- 12_KineticLoop_Integration_Spec_v0.1.md',
+             'packet-context-files:KL-010'),
+            ('FK/reference-root migration plan', 'wrong deliverable',
+             'packet-deliverables:KL-010'),
+            ('DDL ordering follows references, not logical table numbers', 'wrong DoD',
+             'packet-definition-of-done:KL-010'),
+            ('Environment requirements:\n- none',
+             'Environment requirements:\n- ISOLATED_POSTGRESQL_NAMESPACE',
+             'packet-environment:KL-010'),
+            ('Parallel write policy: **PARALLEL_IF_DEPENDENCIES_MET**',
+             'Parallel write policy: **SERIALIZE_WITH_OTHER_HOTSPOT_TASKS**',
+             'packet-parallel-policy:KL-010'),
+            ('- Logical tables: S01-S51', '- Logical tables: S01-S50',
+             'packet-impact-map:KL-010:logical-tables'),
+        )
+        for old, new, expected in variants:
+            packet.write_text(original.replace(old, new, 1))
+            self.check(1, expected)
+        packet.write_text(original)
+
+    def test_m2_kl015_synchronized_frozen_impact_underdeclaration_rejected(self):
+        backlog_path = self.root / v.BACKLOG
+        traceability_path = self.root / v.TRACEABILITY
+        packet_path = self.root / 'docs/exec-plans/active/KL-015.md'
+        original_backlog = json.loads(backlog_path.read_text())
+        original_traceability = json.loads(traceability_path.read_text())
+        original_packet = packet_path.read_text()
+
+        for field, omitted, packet_token, expected in (
+                ('invariant_ids', 'INV-11', ', INV-11',
+                 'm2-kl015-frozen-impact:invariants'),
+                ('transaction_boundaries', 'T1-T8', '- Transactions: T1-T8',
+                 'm2-kl015-frozen-impact:transactions'),
+                ('table_ids', 'S19', ', S19',
+                 'm2-kl015-frozen-impact:tables'),
+                ('table_ids', 'S42', ', S42',
+                 'm2-kl015-frozen-impact:tables'),
+                ('table_ids', 'S48', ', S48',
+                 'm2-kl015-frozen-impact:tables')):
+            backlog = copy.deepcopy(original_backlog)
+            task = next(item for item in backlog['tasks'] if item['id'] == 'KL-015')
+            task[field].remove(omitted)
+            dump(backlog_path, backlog)
+
+            traceability = copy.deepcopy(original_traceability)
+            trace = next(item for item in traceability['tasks'] if item['id'] == 'KL-015')
+            trace[field].remove(omitted)
+            dump(traceability_path, traceability)
+
+            packet_path.write_text(original_packet.replace(packet_token, '', 1))
+            refresh(self.root)
+            self.check(1, expected)
+
+        dump(backlog_path, original_backlog)
+        dump(traceability_path, original_traceability)
+        packet_path.write_text(original_packet)
+        refresh(self.root)
+
+    def test_m2_security_contracts_reject_removal_substitution_and_weakening(self):
+        backlog_path = self.root / v.BACKLOG
+        traceability_path = self.root / v.TRACEABILITY
+        original_backlog = json.loads(backlog_path.read_text())
+        original_traceability = json.loads(traceability_path.read_text())
+        selected = [
+            ('KL-014', 'identity_idempotency_and_basis_fields'),
+            ('KL-015', 'catalog_mapping_and_release_owner_boundaries_complete'),
+            ('KL-016', 'shared_gate_command_matrix_fails_closed'),
+            ('KL-016', 'revoke_artifact_atomic_linearization_and_idempotency'),
+            ('KL-017', 'cross_subject_denial_is_non_enumerating'),
+            ('KL-018', 'artifact_identity_is_immutable'),
+            ('KL-055', 'provider_subject_source_binding_is_trusted'),
+        ]
+        original_packets = {
+            task_id: (self.root / f'docs/exec-plans/active/{task_id}.md').read_text()
+            for task_id, _ in selected
+        }
+
+        for task_id, check_id in selected:
+            expected = f'm2-security-contract:{task_id}:{check_id}'
+            source_task = next(
+                item for item in original_backlog['tasks'] if item['id'] == task_id)
+            source_contract = next(
+                item for item in source_task['check_contracts']
+                if item['check_id'] == check_id)
+            for variant in ('remove', 'command', 'oracle', 'coordinated'):
+                backlog = copy.deepcopy(original_backlog)
+                task = next(item for item in backlog['tasks'] if item['id'] == task_id)
+                contract = next(
+                    item for item in task['check_contracts'] if item['check_id'] == check_id)
+                if variant == 'remove':
+                    task['checks_required_for_this_task'].remove(check_id)
+                    task['check_contracts'].remove(contract)
+                elif variant == 'command':
+                    contract['command'] = 'true'
+                else:
+                    contract['pass_oracle'] = 'Command exits 0.'
+                dump(backlog_path, backlog)
+
+                if variant == 'coordinated':
+                    traceability = copy.deepcopy(original_traceability)
+                    trace = next(
+                        item for item in traceability['tasks'] if item['id'] == task_id)
+                    trace_contract = next(
+                        item for item in trace['check_contracts']
+                        if item['check_id'] == check_id)
+                    trace_contract['pass_oracle'] = 'Command exits 0.'
+                    dump(traceability_path, traceability)
+                    packet_path = self.root / f'docs/exec-plans/active/{task_id}.md'
+                    packet_path.write_text(original_packets[task_id].replace(
+                        source_contract['pass_oracle'], 'Command exits 0.', 1))
+                    refresh(self.root)
+
+                self.check(1, expected)
+
+                dump(backlog_path, original_backlog)
+                dump(traceability_path, original_traceability)
+                for packet_task_id, packet_text in original_packets.items():
+                    (self.root / f'docs/exec-plans/active/{packet_task_id}.md').write_text(
+                        packet_text)
+                refresh(self.root)
+
+    def test_m2_kl016_synchronized_registry_command_omission_rejected(self):
+        backlog_path = self.root / v.BACKLOG
+        traceability_path = self.root / v.TRACEABILITY
+        packet_path = self.root / 'docs/exec-plans/active/KL-016.md'
+        backlog = json.loads(backlog_path.read_text())
+        traceability = json.loads(traceability_path.read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-016')
+        trace = next(item for item in traceability['tasks'] if item['id'] == 'KL-016')
+        task['commands'].remove('Reauthorize')
+        trace['commands'].remove('Reauthorize')
+        dump(backlog_path, backlog)
+        dump(traceability_path, traceability)
+        packet_path.write_text(packet_path.read_text().replace('- Reauthorize\n', '', 1))
+        refresh(self.root)
+        self.check(1, 'm2-kl016-command-surface')
+
+    def test_manifest_claimed_m1_closure_cannot_be_missing(self):
+        manifest_path = self.root / v.MANIFEST
+        manifest = json.loads(manifest_path.read_text())
+        source_manifest = json.loads((ROOT / v.MANIFEST).read_text())
+        closure_entry = next(
+            entry for entry in source_manifest['files']
+            if entry['path'] == 'docs/exec-plans/milestones/M1.json')
+        manifest['files'].append(closure_entry)
+        dump(manifest_path, manifest)
+        self.check(1, 'manifest-missing:docs/exec-plans/milestones/M1.json')
+
+    def test_malformed_m1_closure_discovery_rejected(self):
+        dump(self.root / 'docs/exec-plans/milestones/M1.json', {
+            'display_milestone_id': 'M1',
+        })
+        self.check(1, 'milestone-schema:M1.json:')
+
+    def test_unlocked_m2_write_overlap_rejected(self):
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        left = next(item for item in backlog['tasks'] if item['id'] == 'KL-010')
+        right = next(item for item in backlog['tasks'] if item['id'] == 'KL-011')
+        left['write_paths'] = ['src/shared.py']
+        right['write_paths'] = ['src/shared.py']
+        left['resource_keys'] = ['schema_topology']
+        right['resource_keys'] = ['canonical_fact_schema']
+        dump(backlog_path, backlog)
+        self.check(1, 'unlocked-write-path-overlap:KL-010:KL-011')
+
+    def closure_errors(self, closure):
+        from jsonschema import Draft202012Validator
+
+        backlog = v.load_artifact(ROOT / v.BACKLOG)
+        _, tasks = v.task_definition_errors(ROOT, backlog)
+        return v.milestone_closure_errors(
+            ROOT,
+            closure,
+            Draft202012Validator(v.load_artifact(ROOT / v.MILESTONE_CLOSURE_SCHEMA)),
+            Draft202012Validator(v.load_artifact(ROOT / v.INTEGRATION_SCHEMA)),
+            Draft202012Validator(v.load_artifact(ROOT / 'THREAD_RESULT.schema.json')),
+            Draft202012Validator(v.load_artifact(ROOT / 'THREAD_REVIEW.schema.json')),
+            backlog,
+            tasks,
+        )
+
+    def test_m1_closure_rejects_missing_extra_and_mismatched_tasks(self):
+        original = v.load_artifact(ROOT / 'docs/exec-plans/milestones/M1.json')
+        missing = copy.deepcopy(original)
+        missing['integrations'].pop()
+        self.assertTrue(self.closure_errors(missing))
+        extra = copy.deepcopy(original)
+        extra['integrations'].append(copy.deepcopy(extra['integrations'][0]))
+        self.assertTrue(self.closure_errors(extra))
+        mismatch = copy.deepcopy(original)
+        mismatch['integrations'][0]['task_identity'] = 'harness-backlog-v0.2/KL-002'
+        self.assertIn('milestone-integration-binding:KL-001', self.closure_errors(mismatch))
+
+    def test_m1_closure_rejects_model_overclaim_and_exit_evidence_failures(self):
+        original = v.load_artifact(ROOT / 'docs/exec-plans/milestones/M1.json')
+        overclaim = copy.deepcopy(original)
+        overclaim['historical_model_evidence'][
+            'independently_reproducible_protocol_model'] = True
+        self.assertTrue(self.closure_errors(overclaim))
+        failed = copy.deepcopy(original)
+        failed['exit_checks'][0]['result'] = 'FAIL'
+        self.assertTrue(self.closure_errors(failed))
+        missing = copy.deepcopy(original)
+        missing['exit_checks'][0]['evidence'] = []
+        self.assertTrue(self.closure_errors(missing))
+        bad_hash = copy.deepcopy(original)
+        bad_hash['exit_checks'][0]['evidence'][0]['sha256'] = '0' * 64
+        self.assertIn(
+            'milestone-exit-evidence-hash:clean_checkout_starts_test_environment',
+            self.closure_errors(bad_hash),
+        )
+        semantic_substitution = copy.deepcopy(original)
+        semantic_substitution['exit_checks'][0]['evidence'] = [
+            item for item in semantic_substitution['exit_checks'][0]['evidence']
+            if '/postgres_ready-' not in item['path']
+        ]
+        self.assertIn(
+            'milestone-exit-evidence-semantic:clean_checkout_starts_test_environment',
+            self.closure_errors(semantic_substitution),
+        )
+
+    def test_m1_clean_start_evidence_requires_fresh_pass_oracle(self):
+        original = v.load_artifact(ROOT / 'docs/exec-plans/milestones/M1.json')
+        clean = next(item for item in original['exit_checks']
+                     if item['check_id'] == 'clean_checkout_starts_test_environment')
+
+        stale = copy.deepcopy(original)
+        stale_clean = next(item for item in stale['exit_checks']
+                           if item['check_id'] == 'clean_checkout_starts_test_environment')
+        stale_clean['evidence'][0]['revision'] = v.resolve(
+            ROOT, original['evaluated_commit'] + '^')
+        self.assertIn(
+            'milestone-exit-evidence-stale:compose_config_valid',
+            self.closure_errors(stale),
+        )
+
+        target = clean['evidence'][0]['path']
+        real_loader = v.load_artifact_at_revision
+
+        def failing_loader(root, path, revision):
+            payload = real_loader(root, path, revision)
+            if path == target:
+                payload = copy.deepcopy(payload)
+                payload['status'] = 'FAIL'
+            return payload
+
+        with mock.patch.object(v, 'load_artifact_at_revision', side_effect=failing_loader):
+            self.assertIn(
+                'milestone-exit-evidence-oracle:compose_config_valid',
+                self.closure_errors(original),
+            )
+
+    def test_m1_closure_rejects_missing_unmerged_and_unreachable_integration(self):
+        original = v.load_artifact(ROOT / 'docs/exec-plans/milestones/M1.json')
+        real_loader = v.load_artifact_at_revision
+        target = original['integrations'][0]['integration_record']
+
+        def missing_loader(root, path, revision):
+            if path == target:
+                raise ValueError('fixture-missing')
+            return real_loader(root, path, revision)
+
+        with mock.patch.object(v, 'load_artifact_at_revision', side_effect=missing_loader):
+            self.assertTrue(any(
+                issue.startswith('milestone-integration-invalid:KL-001:')
+                for issue in self.closure_errors(original)))
+
+        def changed_loader(root, path, revision, *, unreachable=False):
+            record = real_loader(root, path, revision)
+            if path == target:
+                record = copy.deepcopy(record)
+                if unreachable:
+                    record['merge_commit'] = v.resolve(ROOT, 'HEAD')
+                else:
+                    record['integration_status'] = 'UNMERGED'
+            return record
+
+        with mock.patch.object(
+                v, 'load_artifact_at_revision',
+                side_effect=lambda root, path, revision: changed_loader(root, path, revision)):
+            self.assertTrue(any(
+                'milestone-integration-unmerged:KL-001' in issue
+                or 'milestone-integration-invalid:KL-001:' in issue
+                for issue in self.closure_errors(original)))
+        with mock.patch.object(
+                v, 'load_artifact_at_revision',
+                side_effect=lambda root, path, revision: changed_loader(
+                    root, path, revision, unreachable=True)):
+            earlier = copy.deepcopy(original)
+            earlier['evaluated_commit'] = v.resolve(
+                ROOT, original['evaluated_commit'] + '^')
+            self.assertIn(
+                'milestone-integration-unreachable:KL-001',
+                self.closure_errors(earlier),
+            )
+
+    def test_m1_closure_propagates_historical_review_validation_errors(self):
+        original = v.load_artifact(ROOT / 'docs/exec-plans/milestones/M1.json')
+        with mock.patch.object(
+                v, 'integration_record_errors',
+                return_value=['integration-review-identity:KL-001:GENERAL']):
+            self.assertIn(
+                'milestone-integration-invalid:KL-001:'
+                'integration-review-identity:KL-001:GENERAL',
+                self.closure_errors(original),
+            )
 
     def test_duplicate_result_formats_rejected(self):
         self.result('yaml')
@@ -854,6 +1390,71 @@ class ValidatorTests(unittest.TestCase):
         })
         self.check()
 
+    def test_integration_rejects_invalid_historical_review_schema(self):
+        self.result(tested=self.base)
+        result_commit = self.commit('persist result')
+        dump(self.root / 'docs/exec-plans/reviews/KL-001/GENERAL.json', {
+            'task_identity': self.task['task_identity'],
+            'reviewed_head_sha': result_commit,
+            'review_type': 'GENERAL',
+            'status': 'PASS',
+            'findings': [],
+        })
+        review_commit = self.commit('persist schema-invalid review')
+        self.integration_record(result_commit, result_commit, review_commit, review_commit)
+        self.check(1, 'integration-review-schema:KL-001:GENERAL:')
+
+    def test_integration_rejects_historical_review_task_identity_mismatch(self):
+        self.result(tested=self.base)
+        result_commit = self.commit('persist result')
+        review_commit = self.review(result_commit)
+        review_path = self.root / 'docs/exec-plans/reviews/KL-001/GENERAL.json'
+        review = json.loads(review_path.read_text())
+        review['task_identity'] = 'harness-backlog-v0.2/KL-002'
+        dump(review_path, review)
+        review_commit = self.commit('persist mismatched review identity')
+        self.integration_record(result_commit, result_commit, review_commit, review_commit)
+        self.check(1, 'integration-review-identity:KL-001:GENERAL')
+
+    def test_integration_rejects_missing_historical_review_evidence(self):
+        self.result(tested=self.base)
+        result_commit = self.commit('persist result')
+        review_commit = self.review(result_commit)
+        review_path = self.root / 'docs/exec-plans/reviews/KL-001/GENERAL.json'
+        review = json.loads(review_path.read_text())
+        review['evidence_refs'] = ['docs/exec-plans/evidence/KL-001/missing.log']
+        dump(review_path, review)
+        review_commit = self.commit('persist review with missing evidence')
+        self.integration_record(result_commit, result_commit, review_commit, review_commit)
+        self.check(1, 'integration-review-evidence:KL-001:GENERAL:')
+
+    def test_integration_rejects_implementation_after_historical_tested_commit(self):
+        self.put('src/kineticloop/post_test_change.py')
+        self.commit('change implementation after claimed tested revision')
+        self.result(tested=self.base)
+        reviewed = self.commit('persist result after stale implementation change')
+        review_commit = self.review(reviewed)
+        self.integration_record(reviewed, reviewed, review_commit, review_commit)
+        self.check(1, 'integration-tested-stale-change:src/kineticloop/post_test_change.py')
+
+    def test_integration_allows_unrelated_task_bookkeeping_after_tested_commit(self):
+        self.put('docs/exec-plans/evidence/KL-002/unrelated.log')
+        self.commit('persist unrelated task bookkeeping')
+        self.result(tested=self.base)
+        reviewed = self.commit('persist result after unrelated bookkeeping')
+        review_commit = self.review(reviewed)
+        self.integration_record(reviewed, reviewed, review_commit, review_commit)
+        self.check()
+
+    def test_integration_rejects_implementation_after_historical_reviewed_head(self):
+        self.result(tested=self.base)
+        reviewed = self.commit('persist reviewed result')
+        self.put('src/kineticloop/post_review_change.py')
+        self.commit('change implementation after reviewed head')
+        review_commit = self.review(reviewed)
+        self.integration_record(reviewed, reviewed, review_commit, review_commit)
+        self.check(1, 'integration-review-stale-change:src/kineticloop/post_review_change.py')
+
     def test_integration_accepts_exact_complete_tree_squash_merge(self):
         self.result(tested=self.base)
         result_commit = self.commit('persist result')
@@ -871,6 +1472,19 @@ class ValidatorTests(unittest.TestCase):
         review_commit = self.review(merge_commit)
         self.integration_record(merge_commit, merge_commit, review_commit, merge_commit)
         self.check()
+
+    def test_delayed_review_rejects_task_change_after_merge(self):
+        self.result(tested=self.base)
+        merge_commit = self.commit('merge result before delayed review')
+        self.put('src/kineticloop/delayed_review_change.py')
+        self.commit('change reviewed task after merge')
+        review_commit = self.review(merge_commit)
+        self.integration_record(merge_commit, merge_commit, review_commit, merge_commit)
+        self.check(
+            1,
+            'integration-delayed-review-stale-change:'
+            'src/kineticloop/delayed_review_change.py',
+        )
 
     def test_delayed_review_must_bind_the_merge_tree(self):
         self.result(tested=self.base)

@@ -18,8 +18,20 @@ TRACEABILITY_TASK_FIELDS = (
     'milestone',
     'depends_on',
     'conditional_depends_on',
+    'commands',
+    'transaction_boundaries',
+    'invariant_ids',
+    'table_ids',
+    'context_files',
+    'entry_conditions',
+    'environment_requirements',
+    'deliverables',
+    'definition_of_done',
+    'parallel_write_policy',
     'requirements_covered',
     'checks_required_for_this_task',
+    'check_contracts',
+    'evidence_paths',
     'resource_keys',
     'write_paths',
     'write_paths_status',
@@ -31,6 +43,193 @@ INDEX = 'CURRENT_DOCUMENT_INDEX.json'
 MANIFEST = 'HARNESS_DOCUMENT_MANIFEST.json'
 GOVERNANCE_SCHEMA = 'HARNESS_CHANGE.schema.json'
 INTEGRATION_SCHEMA = 'INTEGRATION_RECORD.schema.json'
+MILESTONE_CLOSURE_SCHEMA = 'MILESTONE_CLOSURE.schema.json'
+M1_TASK_IDS = {f'KL-{number:03d}' for number in range(1, 10)}
+M2_REFINED_TASK_IDS = {
+    'KL-010', 'KL-011', 'KL-012', 'KL-013', 'KL-014',
+    'KL-015', 'KL-016', 'KL-017', 'KL-018', 'KL-055',
+}
+M2_REQUIRED_CHECK_IDS = {
+    'KL-014': {
+        'build_preparation_stays_outside_t2',
+        'preparation_and_registry_management_stay_outside_atomic_boundaries',
+    },
+    'KL-015': {
+        'registry_lease_required_for_publish_commit_and_session_entry',
+        'preparation_work_stays_outside_coordination_locks',
+        'factset_build_stays_outside_subject_coordination',
+        'complete_frozen_lock_order_enforced',
+        'multi_key_lock_order_is_stable',
+        'reverse_lock_order_is_rejected',
+        'receipt_before_s01_is_rejected',
+        'event_outbox_atomicity_enforced',
+        'outbox_dispatcher_does_not_lock_subject_guard',
+        'stale_fence_commit_is_rejected',
+        'dispatch_first_winner_and_replay_non_resend',
+        'ack_loss_replay_preserves_natural_uniqueness',
+        't6_ack_loss_replay_returns_same_issuance',
+    },
+    'KL-017': {
+        'cross_subject_denial_is_non_enumerating',
+    },
+    'KL-018': {
+        'artifact_dependencies_must_be_pre_registered',
+        'artifact_dependency_graph_is_acyclic',
+        'artifact_dependency_closure_is_bounded',
+        'artifact_registration_requires_management_capability',
+        'artifact_registration_uses_exclusive_registry_gate',
+        'artifact_registration_direct_write_rejected',
+    },
+    'KL-055': {
+        'provider_subject_source_binding_is_trusted',
+        'evidence_envelope_closed_s09_schema',
+        'provider_credentials_do_not_cross_evidence_or_diagnostic_boundary',
+        'provider_contract_is_hermetic',
+        'provider_fixtures_pass_hardened_synthetic_guard',
+    },
+}
+KL015_REQUIRED_INVARIANT_IDS = [f'INV-{number:02d}' for number in range(1, 19)]
+KL015_REQUIRED_TRANSACTION_BOUNDARIES = ['T1-T8']
+KL015_REQUIRED_TABLE_IDS = [
+    *(f'S{number:02d}' for number in range(1, 46)),
+    *(f'S{number:02d}' for number in range(48, 52)),
+]
+# SHA256 of canonical JSON {check_id, command, pass_oracle}. These security-critical
+# contracts must change through an explicit Harness governance edit; keeping an ID
+# while weakening its executable command or oracle fails closed.
+M2_CRITICAL_CONTRACT_DIGESTS = {
+    'KL-014': {
+        'strict_t1_t8_contract_matrix': 'f7fff61a6a44a0ac8ee0e57be4145b8ba8602d3f3348acad80e0eba45cf047ad',
+        'build_preparation_stays_outside_t2': 'bfcfd359b83698cfb96d8986ddba85e620fb4c6eb51c1c5c55f4f39be37d0aed',
+        'preparation_and_registry_management_stay_outside_atomic_boundaries': 'a2d6965d4bcb0ac6c9c8c61f49ce9eee21fccdda97d69193b537ad945bc96ec2',
+        'identity_idempotency_and_basis_fields': '9d87f21fcec3ef684dda3572e8e5865b51096829f2c2482ffb08d1bf9e6ce9f7',
+        'shadow_and_test_scope_fail_closed': '3aaa19becec551cc9eb9b8396d3b33a87ed9072b0f186e66147fbc8cab4dbb8f',
+    },
+    'KL-015': {
+        'transaction_owner_matrix_complete': '10458fc375a0982d6795c19a419999ebb27564fd146c95a092ea747bd54a0c30',
+        'catalog_mapping_and_release_owner_boundaries_complete': '1bb1261aa5640da7fdbafa31812c91879b233ee116ee69e5ce91d7427b168bcc',
+        'registry_lease_required_for_publish_commit_and_session_entry': '97d957a3cba60ae035c30df4be6b4b46d7af9737c03bb54e6104afe75a1be1ab',
+        'preparation_work_stays_outside_coordination_locks': '64ecd2f92279e5e0d3d243c40fe929a48b29b36f56ebd78bacc153a38ec6e9ae',
+        'factset_build_stays_outside_subject_coordination': '773498075ad55a7ac92ff672ae04c2897807bb3df7073de5b263449c21d26883',
+        'subject_guard_required': '5e515f490a6d9b54621f3c55da06e9b324b60bc26b4b1016f10be31ae966da67',
+        'complete_frozen_lock_order_enforced': 'd8b5fd7ff163fb58c5791cc61b01dd19280215bb49f7cf0c6fa693df757b8889',
+        'multi_key_lock_order_is_stable': 'cd947a603d940b366393516120d0a870fdafaa69c6475a6ddb2b927a8913cda5',
+        'reverse_lock_order_is_rejected': 'b3a61a67ef63c23dd263918530833bbafbe507e44e9874235130905b085bba46',
+        'receipt_before_s01_is_rejected': '256fd5073276fe82812d6afc26d9ed7d4c2c6f754565d0ea596a2479fdbf0f2b',
+        'artifact_identity_required': '746290a1755b3b563c7edf343230923aa43c362a018230a3fa1a40cbebae9266',
+        'direct_write_bypass_rejected': 'b10f700f6c090f6bae91f9b3a9b25906fff8bb1a68564a6b38b652519cbdc671',
+        'event_outbox_atomicity_enforced': '63a96e4486095e240fd1e080195ae8772386e02ce96f56393712276104a1a1c8',
+        'outbox_dispatcher_does_not_lock_subject_guard': '78493bf5b16948e2cccc8796cd05e45d4680d19edc94138b4d9bbcc17b249366',
+        'stale_fence_commit_is_rejected': '54e6aefccb148342b7d39003e1045035c8022e22f45d189f4fa045ca1f25401c',
+        'dispatch_first_winner_and_replay_non_resend': '81a0efb991b343baab90742c8bea62f6a1ebf492cda0b48f3ad9ddf7d5fa0b6a',
+        'ack_loss_replay_preserves_natural_uniqueness': '283df1d589323633f8302d397e5ad617f267c60935359eac5173e153ea3d1508',
+        't6_ack_loss_replay_returns_same_issuance': 'db76c689857128c515c6137642cd189798105ff029a4686e36615f6a02329703',
+        'transaction_db_conformance_passes': 'c0a56d2f9acecef30bd5715fe72a4bcb10866cec4702893f213c0a39da40b576',
+        'harness_validation_passes': '2dbb33f46e379c228225cd02bc8afdf39689c54008b8ca7b1b019e0d2c4139bf',
+    },
+    'KL-016': {
+        'shared_gate_command_matrix_fails_closed': '0711c176d2c1b0487c4f1a22ac3afcec93ef50b9de9bf3478b1db62b0f4a5a03',
+        'reauthorize_shared_gate_precedes_s01_and_fails_closed': 'ea48e409c531b8bc1156140e0ce093f9247d6ad73516c93996cd46694d5fbb52',
+        'continue_session_rechecks_shared_gate_and_fails_closed': '600456a617778faff3e8c22156c9bac3a1c0ff93db1bb59ff9f32493465242d3',
+        'exclusive_global_gate_serializes': 'd2fc834e2bd924a37c3fe180e687519cd17f13bc09cdf005a5c0aa43bfed9f53',
+        'revoke_artifact_atomic_linearization_and_idempotency': '46b9c47de463a4fec8445b3c89b788c578679d49e4f9e3ea71f014649db233d5',
+        'registry_unavailable_or_timeout_denies': '487d7388e3d5583b58d6484235b7f9a811788c8d9f6f10b5a5f317846b5aad79',
+        'global_revoke_never_locks_s01': '5edfb2de841a8afab3bf324945860139af75c0b1fa7581eef2c91c1f991c7fd9',
+        'stop_has_no_registry_dependency': 'ec49d6b0473172e218ff75d07e437af29de62520db520050f0ed91e584b27a16',
+        'safety_registry_db_regressions_pass': 'df141dcc2acec0f58fcf4932e9c3ba9c1186a0bef529e3658f787b6d1ad124f1',
+        'harness_validation_passes': '2dbb33f46e379c228225cd02bc8afdf39689c54008b8ca7b1b019e0d2c4139bf',
+    },
+    'KL-017': {
+        'subject_namespace_isolation': 'f4372d9ad4ad1395f9fbf07611ba68813e0c46de01249de56e312f3731f7e2ff',
+        'test_authorization_is_isolated': 'f89d192eedb9c346bcaa7ef047a859e8c0cb6d462e42d018e2a5b0e6ae5392ab',
+        'evaluation_storage_is_isolated': 'e3b35eaae47e664a203bf700ce4f28a796e7787226faf92146673ce2b80015e6',
+        'application_role_scope_enforced': 'a1b2c42c5c8aed9e3caa1ad43404aabde2d449a2fe0a6294637449977baad975',
+        'subject_isolation_e2e_passes': '2c6c1aed417611a457c2eda86771cb0a8dee38db398311f940b7b3c7b5b775f1',
+        'cross_subject_denial_is_non_enumerating': 'a1a5fccddd0d93ee54ff8f118732452c977ce234439593acefb1a32a27089bd4',
+    },
+    'KL-018': {
+        'artifact_identity_is_immutable': '5a5d6976957b081e045743ba114df6e8aebf782c4cc66123026dafbee59456eb',
+        'artifact_dependency_closure_required': '6f69a7171def4c61b7d7390a0272495b2ddd75b5902375447cc9aac410def2ce',
+        'artifact_dependencies_must_be_pre_registered': '935e593ad9d7d2bdf05257326866c139e2ff4471ea0f2fdffee1e01adc1a087d',
+        'artifact_dependency_graph_is_acyclic': '2db1302d2bd5319910e6c9aa9d861fa8f3ef1c7d9f4d2f813fe229f72f915960',
+        'artifact_dependency_closure_is_bounded': '18805edc8865ec58437c7752aad50ac34d685c55c487e0baf0d7cff12f91bd9e',
+        'artifact_registration_requires_management_capability': '055c6d74460bb1bcc64da38cf018f29df96b7829e8eebcfd365a8b7cffba7658',
+        'artifact_registration_uses_exclusive_registry_gate': '4b43e27668003b90fb22932b54e776a5a8f2280b2a674e0eb518411c0a90b540',
+        'artifact_registration_direct_write_rejected': 'd5e91d07031d5fb89a4aca4658aef275d7684cc8325f4532bf20b69e7c3a2643',
+        'unregistered_or_revoked_artifact_denied': 'e45c0d2b3765a6e2a9a8534b21410a02c67f270a8a9f33c1ed5bec6b22deb4cb',
+        't3_t6_t7_require_artifact_refs': 'b4ef957a9ee368b6e074fa04ab340490904927371239ab0f42244ad22f5c4d6e',
+    },
+    'KL-055': {
+        'provider_and_stream_ids_are_canonical': '693c802ea77603a2d4ee8291c782087a85252ba06ef5d7528a1ca849a830f0ed',
+        'evidence_provenance_and_times_required': '07532bee2529ee6ec92c3281c672a9d950ec48fde21b9e4dacac0ec745bb133e',
+        'server_assigns_known_at': '085f0303e26e3db855a4d98e10045728db0a2315471f90fdeb45a6772c0d5817',
+        'provider_has_no_fact_or_command_authority': 'f27587ee00c780744299d5453b8f4f13d1a62f2761456327e63f74ca12c181f8',
+        'transport_health_differs_from_coverage': 'efa0aed772b80aa91847c5ff4fb64ccb2eb0fb421417fd40d2daf1cac757e931',
+        'provider_contract_is_hermetic': '2b8ae59751721aee491edd4edbcf29963ca48d423ccd0e1ab2f51ff82103a951',
+        'provider_fixtures_pass_hardened_synthetic_guard': '9e43a2e97f8003ad08480ad0e884d95c0ef98d157d8b47fec71c1fa81614bd61',
+        'provider_subject_source_binding_is_trusted': '637472b15b54f1458b5a374a0450efa1150dc4c5bf2475fffd116bc9da9bbbd6',
+        'evidence_envelope_closed_s09_schema': '58d01940cbf7e04eaff82daf085c1a003089ad46efa7f01dade5c8ee56ee7ec7',
+        'provider_credentials_do_not_cross_evidence_or_diagnostic_boundary': 'dda6bb6c86340f6ebb62a8854ae9add3b8832cad3f332bf59a4051133ec4622b',
+    },
+}
+for _task_id, _contracts in M2_CRITICAL_CONTRACT_DIGESTS.items():
+    M2_REQUIRED_CHECK_IDS.setdefault(_task_id, set()).update(_contracts)
+KL014_REQUIRED_COMMAND_SURFACE = [
+    'T1: ReceiveEvidence',
+    'T1-PREPARATION (outside T1): RecordCandidate',
+    ('T2-IN: DecideAssociation, DecideAdmission, AcceptFactRevision, ApplyControl, '
+     'ClearControl, ApproveChange, ActivateApprovedProgram, RecordActualExecution, '
+     'CompleteReportedWorkout'),
+    'BUILD-PREPARATION (outside T2): BeginBuild, WriteCandidate, CompleteFactset',
+    'T2-SEAL: SealFactset',
+    'REGISTRY-MANAGEMENT (outside T2-GLOBAL): RegisterArtifact',
+    'T2-GLOBAL: RevokeArtifact',
+    'T3-PREPARATION (outside T3): RecordProjection, BuildManifest',
+    'T3: PublishManifest',
+    'T4: AdmitOrReviseIntent, CancelIntent',
+    'T5: AcquireLease, RenewLease, ReserveCall, PermitDispatch',
+    ('T5-PREPARATION (outside T5): RecordToolResult, RecordProposal, '
+     'RecordDemandFeatures'),
+    'T6-PREPARATION (outside T6): ResolveEvidence, RecordValidation',
+    'T6: CommitBundle, Reauthorize',
+    'T7: StartSession, ResumeSession, ContinueSession',
+    'T8: SettleCall, MarkUnknown, ReapIntent; CancelIntent is shared with T4',
+    'Results: one typed success result per public command plus CommandRejected',
+    ('Internal-only: IssueAuthorization, InvalidateAuthorization, RecordSnapshot, '
+     'AdvanceAttempt, CancelUndispatched'),
+]
+KL016_REQUIRED_COMMAND_SURFACE = [
+    'RevokeArtifact',
+    'PublishManifest',
+    'CommitBundle',
+    'Reauthorize',
+    'StartSession',
+    'ResumeSession',
+    'ContinueSession',
+]
+M2_REQUIRED_SECURITY_REVIEWS = {'KL-014', 'KL-017', 'KL-018', 'KL-055'}
+M1_CLEAN_START_CHECKS = {
+    'compose_config_valid': (
+        'PYTHONPATH="$PWD/src" '
+        '/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python '
+        'tools/db/verify.py compose-config-valid'),
+    'postgres_ready': (
+        'PYTHONPATH="$PWD/src" '
+        '/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python '
+        'tools/db/verify.py postgres-ready'),
+}
+M1_CLEAN_START_RELEVANT_PATHS = [
+    'compose.yaml',
+    'pyproject.toml',
+    'uv.lock',
+    'src/kineticloop/cli.py',
+    'src/kineticloop/db/**',
+    'tools/db/verify.py',
+]
+M2_REQUIRED_DB_REVIEWS = {
+    'KL-010', 'KL-011', 'KL-012', 'KL-013', 'KL-014',
+    'KL-015', 'KL-016', 'KL-017', 'KL-018',
+}
 
 
 def sha(path):
@@ -147,6 +346,52 @@ def packet_errors(task, text):
     checks = section(text, 'Checks required for this task PR')
     if checks is None or sorted(bullets(checks)) != sorted(task['checks_required_for_this_task']):
         errors.append('packet-checks:' + name)
+    if name in M2_REFINED_TASK_IDS:
+        read_first = section(text, 'Read first') or ''
+        if bullets(read_first) != task.get('context_files', []):
+            errors.append('packet-context-files:' + name)
+        entry = section(text, 'Entry conditions') or ''
+        expected_entry = [value.replace(
+            'docs/exec-plans/milestones/M1.json',
+            '`docs/exec-plans/milestones/M1.json`',
+        ) for value in task.get('entry_conditions', [])]
+        if bullets(entry) != expected_entry:
+            errors.append('packet-entry-condition:' + name)
+        impact = section(text, 'Frozen impact map') or ''
+        impact_fields = {
+            'Invariants': task.get('invariant_ids', []),
+            'Transactions': task.get('transaction_boundaries', []),
+            'Logical tables': task.get('table_ids', []),
+        }
+        for label, expected in impact_fields.items():
+            match = re.search(r'^- ' + re.escape(label) + r':\s*(.*)$', impact, re.M)
+            found = [] if not match or match.group(1).strip() == 'none' else [
+                value.strip() for value in match.group(1).split(',') if value.strip()
+            ]
+            if found != expected:
+                errors.append('packet-impact-map:' + name + ':' + label.lower().replace(' ', '-'))
+        deliverables = section(text, 'Deliverables') or ''
+        if bullets(deliverables) != task.get('deliverables', []):
+            errors.append('packet-deliverables:' + name)
+        definition = (section(text, 'Definition of Done') or '').strip()
+        if definition != task.get('definition_of_done', ''):
+            errors.append('packet-definition-of-done:' + name)
+        contract_section = section(text, 'Machine-readable check contract') or ''
+        contract_match = re.search(r'```json\s*(\{.*?\})\s*```', contract_section, re.S)
+        if not contract_match:
+            errors.append('packet-check-contract:' + name)
+        else:
+            try:
+                packet_contract = json.loads(
+                    contract_match.group(1), object_pairs_hook=unique_mapping)
+                expected_contract = {
+                    'check_contracts': task.get('check_contracts'),
+                    'evidence_paths': task.get('evidence_paths'),
+                }
+                if packet_contract != expected_contract:
+                    errors.append('packet-check-contract:' + name)
+            except (ValueError, TypeError):
+                errors.append('packet-check-contract:' + name)
     if task.get('write_paths_status') == 'ENFORCEABLE':
         scope = section(text, 'Resource / write isolation') or ''
         resource_block = re.search(r'^Resource keys:\s*\n((?:- [^\n]+\n?)+)', scope, re.M)
@@ -156,9 +401,31 @@ def packet_errors(task, text):
         }
         if found_resources != expected_resources:
             errors.append('packet-resource-keys:' + name)
-        found = re.search(r'^Expected (?:implementation )?write paths:\s*\n((?:- [^\n]+\n?)+)', scope, re.M)
-        if not found or sorted(bullets(found.group(1))) != sorted(task['write_paths']):
+        write_block = re.search(
+            r'^Expected (?:implementation )?write paths:\s*\n((?:- [^\n]+\n?)+)',
+            scope,
+            re.M,
+        )
+        if not write_block or sorted(bullets(write_block.group(1))) != sorted(task['write_paths']):
             errors.append('packet-write-paths:' + name)
+        environment_block = re.search(
+            r'^Environment requirements:\s*\n((?:- [^\n]+\n?)+)', scope, re.M)
+        found_environment = [] if not environment_block else [
+            value for value in bullets(environment_block.group(1)) if value != 'none'
+        ]
+        if found_environment != task.get('environment_requirements', []):
+            errors.append('packet-environment:' + name)
+        policy = re.search(r'^Parallel write policy: \*\*([^*]+)\*\*', scope, re.M)
+        if not policy or policy.group(1) != task.get('parallel_write_policy'):
+            errors.append('packet-parallel-policy:' + name)
+    if name == 'KL-014':
+        command_surface = section(text, 'Public command surface') or ''
+        if bullets(command_surface) != task.get('commands', []):
+            errors.append('packet-command-surface:' + name)
+    if name == 'KL-016':
+        command_surface = section(text, 'Registry-gated command surface') or ''
+        if bullets(command_surface) != task.get('commands', []):
+            errors.append('packet-command-surface:' + name)
     return errors
 
 
@@ -222,10 +489,12 @@ def governance_allowed_patterns(change_id):
         MANIFEST,
         GOVERNANCE_SCHEMA,
         INTEGRATION_SCHEMA,
+        MILESTONE_CLOSURE_SCHEMA,
         '.github/workflows/**',
         'docs/exec-plans/active/**',
         f'docs/exec-plans/evidence/{change_id}/**',
         'docs/exec-plans/integrations/**',
+        'docs/exec-plans/milestones/**',
         'docs/exec-plans/reviews/KL-*/**',
         f'docs/exec-plans/reviews/{change_id}/**',
         f'docs/exec-plans/governance/{change_id}.yaml',
@@ -316,7 +585,9 @@ def configure_ci_merge_gate(root, args):
         args.governance_reviewed_head = review['reviewed_head_sha']
 
 
-def suffix_errors(root, start, end, task_id, kind):
+def suffix_errors(
+        root, start, end, task_id, kind, scope_patterns=None,
+        allow_unrelated_merges=False):
     """Require ancestry and check every bookkeeping commit, including reverted changes."""
     errors = []
     try:
@@ -326,10 +597,17 @@ def suffix_errors(root, start, end, task_id, kind):
         allowed = review_patterns(task_id) if kind == 'review' else result_paths(task_id) + [evidence_pattern(task_id)]
         for commit in commits:
             parents = git(root, 'rev-list', '--parents', '-n', '1', commit).decode().split()[1:]
-            if len(parents) != 1:
+            if len(parents) != 1 and not allow_unrelated_merges:
                 errors.append(kind + '-suffix-merge:' + commit)
                 continue
+            if not parents:
+                errors.append(kind + '-suffix-root:' + commit)
+                continue
             for path in changed_paths(root, parents[0], commit):
+                if (scope_patterns is not None
+                        and not matches(path, scope_patterns)
+                        and not matches(path, allowed)):
+                    continue
                 if not matches(path, allowed):
                     errors.append(kind + '-stale-change:' + path)
                 elif kind == 'tested' and matches(path, [evidence_pattern(task_id)]):
@@ -412,9 +690,23 @@ def semantic_result_errors(obj, task, root, evidence_revision=None):
     if obj['task_status'] == 'PASS' or obj['task_checks_status'] == 'PASS':
         if set(check_ids) != expected or any(c['result'] != 'PASS' for c in commands):
             errors.append('required-checks-not-pass')
+    contracts = {
+        item['check_id']: item for item in task.get('check_contracts', [])
+        if isinstance(item, dict) and isinstance(item.get('check_id'), str)
+    }
     for c in commands:
+        contract = contracts.get(c['check_id'])
+        if contract is not None and c.get('command') != contract.get('command'):
+            errors.append('command-contract-command:' + c['check_id'])
+        evidence_ref = c.get('evidence_ref')
+        if (contract is not None and task.get('evidence_paths')
+                and not isinstance(evidence_ref, str)):
+            errors.append('command-evidence-scope:' + c['check_id'])
+        elif (contract is not None and task.get('evidence_paths')
+              and not matches(evidence_ref, task['evidence_paths'])):
+            errors.append('command-evidence-scope:' + c['check_id'])
         if (c['result'] in ('PASS', 'FAIL')
-                and not evidence_exists(root, c.get('evidence_ref'), evidence_revision)):
+                and not evidence_exists(root, evidence_ref, evidence_revision)):
             errors.append('command-evidence:' + c['check_id'])
     for requirement in obj['requirements_covered']:
         if requirement['status'] in ('PASS', 'APPROVED_NA'):
@@ -586,7 +878,7 @@ def task_index_authority_errors(root, base_revision, task, changed, protected_pa
 
 
 def governance_manifest_errors(root, base_revision, changed, target_revision=None):
-    """The delivery manifest may refresh existing changed entries, never change its inventory."""
+    """Refresh existing entries and append changed, hashed governance artifacts."""
     old = json.loads(git(root, 'show', base_revision + ':' + MANIFEST))
     new = (load_artifact_at_revision(root, MANIFEST, target_revision)
            if target_revision else load_artifact(root / MANIFEST))
@@ -594,7 +886,10 @@ def governance_manifest_errors(root, base_revision, changed, target_revision=Non
     if {k: v for k, v in old.items() if k != 'files'} != {k: v for k, v in new.items() if k != 'files'}:
         errors.append('governance-manifest-metadata')
     before, after = old.get('files', []), new.get('files', [])
-    if [entry['path'] for entry in before] != [entry['path'] for entry in after]:
+    before_paths = [entry['path'] for entry in before]
+    after_paths = [entry['path'] for entry in after]
+    if (after_paths[:len(before_paths)] != before_paths
+            or len(after_paths) != len(set(after_paths))):
         errors.append('governance-manifest-paths')
         return errors
     for previous, current in zip(before, after):
@@ -624,10 +919,28 @@ def governance_manifest_errors(root, base_revision, changed, target_revision=Non
         if (not target_revision and 'bytes' in current
                 and current['bytes'] != target_size):
             errors.append('governance-manifest-bytes:' + path)
+    for current in after[len(before):]:
+        path = current['path']
+        try:
+            target_hash = (
+                blob_sha_at_revision(root, path, target_revision)
+                if target_revision else sha(root / path)
+            )
+            target_size = (
+                blob_size_at_revision(root, path, target_revision)
+                if target_revision else (root / path).stat().st_size
+            )
+        except (ValueError, OSError):
+            target_hash, target_size = None, None
+        if path not in changed or current.get('sha256') != target_hash:
+            errors.append('governance-manifest-addition:' + path)
+        if 'bytes' in current and current['bytes'] != target_size:
+            errors.append('governance-manifest-bytes:' + path)
     return errors
 
 
-def integration_record_errors(root, path, record, schema, result_schema, tasks):
+def integration_record_errors(
+        root, path, record, schema, result_schema, review_schema, tasks):
     errors = ['integration-schema:' + path.name + ':' + issue.message
               for issue in schema.iter_errors(record)]
     if errors:
@@ -660,6 +973,8 @@ def integration_record_errors(root, path, record, schema, result_schema, tasks):
             )
             if not exact_tree_squash and not delayed_post_merge_review:
                 errors.append('integration-ancestry-or-exact-tree:' + task_id + ':review-to-merge')
+        else:
+            delayed_post_merge_review = False
         result_paths_at_commit = result_paths_at_revision(root, task_id, result_commit)
         result_paths_at_review = result_paths_at_revision(root, task_id, reviewed)
         if len(result_paths_at_commit) != 1:
@@ -695,15 +1010,210 @@ def integration_record_errors(root, path, record, schema, result_schema, tasks):
                     'integration-result-semantic:' + task_id + ':' + issue
                     for issue in semantic_result_errors(
                         result, task, root, evidence_revision=reviewed))
+                result_base = resolve(root, result['base_commit'])
+                tested = resolve(root, result['tested_commit'])
+                if not is_ancestor(root, result_base, tested):
+                    errors.append('integration-result-base-tested-ancestry:' + task_id)
+                errors.extend(
+                    'integration-' + issue
+                    for issue in suffix_errors(
+                        root, tested, reviewed, task_id, 'tested',
+                        task['write_paths'] + [f'docs/exec-plans/active/{task_id}.md']))
+                delayed_scope = (
+                    [path for path in task['write_paths'] if path not in (INDEX, MANIFEST)]
+                    + result_paths(task_id)
+                    + [evidence_pattern(task_id), f'docs/exec-plans/active/{task_id}.md']
+                )
+                if delayed_post_merge_review:
+                    errors.extend(
+                        'integration-delayed-' + issue
+                        for issue in suffix_errors(
+                            root, reviewed, review_commit, task_id, 'review',
+                            delayed_scope, allow_unrelated_merges=True))
+                else:
+                    errors.extend(
+                        'integration-' + issue
+                        for issue in suffix_errors(
+                            root, reviewed, review_commit, task_id, 'review'))
         for review_type in task['review_requirements']:
             review_path = f'docs/exec-plans/reviews/{task_id}/{review_type}.json'
-            review = json.loads(git(root, 'show', review_commit + ':' + review_path))
+            review = load_artifact_text(
+                git(root, 'show', review_commit + ':' + review_path).decode(), '.json')
+            review_issues = list(review_schema.iter_errors(review))
+            errors.extend(
+                'integration-review-schema:' + task_id + ':' + review_type + ':' + issue.message
+                for issue in review_issues)
+            if review_issues:
+                continue
+            if review.get('task_identity') != task['task_identity']:
+                errors.append('integration-review-identity:' + task_id + ':' + review_type)
             if (review.get('review_type') != review_type
                     or review.get('status') != 'PASS'
                     or resolve(root, review.get('reviewed_head_sha', '')) != reviewed):
                 errors.append('integration-review-binding:' + task_id + ':' + review_type)
+            for ref in review.get('evidence_refs', []):
+                if not evidence_exists(root, ref, reviewed):
+                    errors.append(
+                        'integration-review-evidence:' + task_id + ':' + review_type + ':' + ref)
     except ValueError as ex:
         errors.append('integration-revision:' + task_id + ':' + str(ex))
+    return errors
+
+
+def milestone_closure_errors(
+        root, closure, schema, integration_schema, result_schema, review_schema, backlog, tasks):
+    """Validate the M1 closure as revision-bound evidence, not a status assertion."""
+    errors = [
+        'milestone-schema:M1.json:' + issue.message
+        for issue in schema.iter_errors(closure)
+    ]
+    if errors:
+        return errors
+    if (closure['milestone_identity'] != 'harness-backlog-v0.2/M1'
+            or closure['display_milestone_id'] != 'M1'
+            or closure['closure_status'] != 'PASS'):
+        errors.append('milestone-identity-or-status:M1')
+    if closure['historical_model_evidence'] != {
+            'status': 'UNVERIFIED_HISTORICAL_DECLARATION',
+            'independently_reproducible_protocol_model': False,
+    }:
+        errors.append('milestone-model-evidence-overclaim:M1')
+    if closure['product_requirement_pass_claims']:
+        errors.append('milestone-product-requirement-overclaim:M1')
+    try:
+        evaluated = resolve(root, closure['evaluated_commit'])
+        head = resolve(root, 'HEAD')
+        if not is_ancestor(root, evaluated, head):
+            errors.append('milestone-evaluated-unreachable:M1')
+        evaluated_backlog = load_artifact_at_revision(root, BACKLOG, evaluated)
+        evaluated_trace = load_artifact_at_revision(root, TRACEABILITY, evaluated)
+        evaluated_task_errors, evaluated_tasks = task_definition_errors(
+            root, evaluated_backlog, evaluated)
+    except ValueError as ex:
+        return errors + ['milestone-evaluated-revision:M1:' + str(ex)]
+
+    active_m1 = {
+        task['id'] for task in evaluated_backlog['tasks']
+        if task['milestone'] == 'M1' and task['status'] != 'SUPERSEDED'
+    }
+    declared_ids = [item['display_task_id'] for item in closure['integrations']]
+    if active_m1 != M1_TASK_IDS or set(declared_ids) != active_m1 or len(
+            declared_ids) != len(set(declared_ids)):
+        errors.append('milestone-active-task-set:M1')
+    for item in closure['integrations']:
+        task_id = item['display_task_id']
+        expected_path = f'docs/exec-plans/integrations/{task_id}.json'
+        if (item['task_identity'] != f'harness-backlog-v0.2/{task_id}'
+                or item['integration_record'] != expected_path):
+            errors.append('milestone-integration-binding:' + task_id)
+            continue
+        try:
+            record = load_artifact_at_revision(root, expected_path, evaluated)
+            if item['sha256'] != blob_sha_at_revision(root, expected_path, evaluated):
+                errors.append('milestone-integration-hash:' + task_id)
+            if record.get('integration_status') != 'MERGED':
+                errors.append('milestone-integration-unmerged:' + task_id)
+            if (record.get('task_identity') != item['task_identity']
+                    or record.get('display_task_id') != task_id):
+                errors.append('milestone-integration-binding:' + task_id)
+            merge_commit = resolve(root, record.get('merge_commit', ''))
+            if not is_ancestor(root, merge_commit, evaluated):
+                errors.append('milestone-integration-unreachable:' + task_id)
+            integration_issues = integration_record_errors(
+                root, root / expected_path, record, integration_schema, result_schema,
+                review_schema,
+                evaluated_tasks)
+            errors.extend(
+                'milestone-integration-invalid:' + task_id + ':' + issue
+                for issue in integration_issues)
+        except (ValueError, OSError, KeyError, TypeError) as ex:
+            errors.append('milestone-integration-invalid:' + task_id + ':' + str(ex))
+
+    expected_exit_checks = {
+        'clean_checkout_starts_test_environment',
+        'm1_m2_task_contracts_complete',
+        'historical_model_evidence_not_overclaimed',
+    }
+    exit_ids = [item['check_id'] for item in closure['exit_checks']]
+    if set(exit_ids) != expected_exit_checks or len(exit_ids) != len(set(exit_ids)):
+        errors.append('milestone-exit-check-set:M1')
+    for exit_check in closure['exit_checks']:
+        if exit_check['result'] != 'PASS':
+            errors.append('milestone-exit-check-failed:' + exit_check['check_id'])
+        if not exit_check['evidence']:
+            errors.append('milestone-exit-evidence-missing:' + exit_check['check_id'])
+        for evidence in exit_check['evidence']:
+            path = evidence['path']
+            if not relative_path(path):
+                errors.append('milestone-exit-evidence-path:' + exit_check['check_id'])
+                continue
+            try:
+                revision = resolve(root, evidence['revision'])
+                if not is_ancestor(root, revision, evaluated):
+                    errors.append('milestone-exit-evidence-unreachable:' + exit_check['check_id'])
+                if evidence['sha256'] != blob_sha_at_revision(root, path, revision):
+                    errors.append('milestone-exit-evidence-hash:' + exit_check['check_id'])
+            except ValueError as ex:
+                errors.append(
+                    'milestone-exit-evidence-missing:' + exit_check['check_id'] + ':' + str(ex))
+    evidence_paths = {
+        item['check_id']: {evidence['path'] for evidence in item['evidence']}
+        for item in closure['exit_checks']
+    }
+    clean_start_evidence = evidence_paths.get('clean_checkout_starts_test_environment', set())
+    clean_start_records: list[dict] = next(
+        (item['evidence'] for item in closure['exit_checks']
+         if item['check_id'] == 'clean_checkout_starts_test_environment'), [])
+    expected_clean_paths = {
+        check_id: [item for item in clean_start_records
+                   if Path(item['path']).name.startswith(check_id + '-')]
+        for check_id in M1_CLEAN_START_CHECKS
+    }
+    if (set(clean_start_evidence) != {item['path'] for item in clean_start_records}
+            or any(len(items) != 1 for items in expected_clean_paths.values())
+            or len(clean_start_records) != len(M1_CLEAN_START_CHECKS)):
+        errors.append('milestone-exit-evidence-semantic:clean_checkout_starts_test_environment')
+    for check_id, items in expected_clean_paths.items():
+        if len(items) != 1:
+            continue
+        evidence = items[0]
+        try:
+            revision = resolve(root, evidence['revision'])
+            if revision != evaluated:
+                errors.append('milestone-exit-evidence-stale:' + check_id)
+            payload = load_artifact_at_revision(root, evidence['path'], revision)
+            if (not isinstance(payload, dict)
+                    or payload.get('check_id') != check_id
+                    or payload.get('command') != M1_CLEAN_START_CHECKS[check_id]
+                    or payload.get('status') != 'PASS'):
+                errors.append('milestone-exit-evidence-oracle:' + check_id)
+                continue
+            tested = resolve(root, payload.get('tested_commit', ''))
+            if (not is_ancestor(root, tested, evaluated)
+                    or any(matches(path, M1_CLEAN_START_RELEVANT_PATHS)
+                           for path in changed_paths(root, tested, evaluated))):
+                errors.append('milestone-exit-evidence-freshness:' + check_id)
+        except (ValueError, OSError, KeyError, TypeError):
+            errors.append('milestone-exit-evidence-oracle:' + check_id)
+    contract_evidence = evidence_paths.get('m1_m2_task_contracts_complete', set())
+    if not {BACKLOG, TRACEABILITY}.issubset(contract_evidence):
+        errors.append('milestone-exit-evidence-semantic:m1_m2_task_contracts_complete')
+    model_evidence = evidence_paths.get('historical_model_evidence_not_overclaimed', set())
+    if 'KineticLoop_Evidence_Manifest_v0.1.json' not in model_evidence:
+        errors.append('milestone-exit-evidence-semantic:historical_model_evidence_not_overclaimed')
+
+    try:
+        errors.extend('milestone-task-contract:' + issue for issue in evaluated_task_errors)
+        trace_errors, trace_tasks = traceability_task_map(
+            evaluated_trace, 'milestone-traceability')
+        errors.extend(trace_errors)
+        for task_id in M2_REFINED_TASK_IDS:
+            task = evaluated_tasks.get(task_id)
+            trace_task = trace_tasks.get(f'harness-backlog-v0.2/{task_id}')
+            if task is None or trace_task != traceability_projection(task):
+                errors.append('milestone-m2-projection:' + task_id)
+    except (ValueError, OSError, KeyError, TypeError) as ex:
+        errors.append('milestone-m2-contract-revision:' + str(ex))
     return errors
 
 
@@ -758,10 +1268,87 @@ def task_definition_errors(root, backlog, revision=None):
         for resource in resources:
             if resource not in known_resources:
                 errors.append('unknown-resource-key:' + name + '->' + resource)
+        if name in M2_REFINED_TASK_IDS:
+            contracts = task.get('check_contracts')
+            evidence_paths = task.get('evidence_paths')
+            contract_ids = (
+                [item.get('check_id') for item in contracts]
+                if isinstance(contracts, list) and all(isinstance(item, dict) for item in contracts)
+                else []
+            )
+            generic = re.compile(r'(?:^task_scope_|todo|tbd|placeholder)', re.I)
+            if (not contracts or len(contract_ids) != len(set(contract_ids))
+                    or contract_ids != task.get('checks_required_for_this_task')):
+                errors.append('check-contract-ids:' + name)
+            elif any(
+                    set(item) != {'check_id', 'command', 'pass_oracle'}
+                    or not all(isinstance(item.get(field), str) and item[field].strip()
+                               for field in ('check_id', 'command', 'pass_oracle'))
+                    or generic.search(item['check_id'])
+                    or generic.search(item['command'])
+                    or generic.search(item['pass_oracle'])
+                    for item in contracts):
+                errors.append('check-contract-generic-or-invalid:' + name)
+            expected_evidence = [f'docs/exec-plans/evidence/{name}/**']
+            if evidence_paths != expected_evidence or not all(
+                    relative_path(path[:-3]) for path in evidence_paths or []):
+                errors.append('evidence-path:' + name)
+            if task.get('packet_refinement') != 'ENFORCEABLE':
+                errors.append('m2-packet-not-enforceable:' + name)
+            if 'M1 closure PASS: docs/exec-plans/milestones/M1.json' not in task.get(
+                    'entry_conditions', []):
+                errors.append('m2-entry-condition:' + name)
+            required_checks = M2_REQUIRED_CHECK_IDS.get(name, set())
+            if not required_checks.issubset(set(contract_ids)):
+                errors.append('m2-required-semantic-checks:' + name)
+            if name == 'KL-014' and task.get('commands') != KL014_REQUIRED_COMMAND_SURFACE:
+                errors.append('m2-kl014-command-surface')
+            if name == 'KL-016' and task.get('commands') != KL016_REQUIRED_COMMAND_SURFACE:
+                errors.append('m2-kl016-command-surface')
+            if name == 'KL-015':
+                if task.get('invariant_ids') != KL015_REQUIRED_INVARIANT_IDS:
+                    errors.append('m2-kl015-frozen-impact:invariants')
+                if task.get('transaction_boundaries') != KL015_REQUIRED_TRANSACTION_BOUNDARIES:
+                    errors.append('m2-kl015-frozen-impact:transactions')
+                if task.get('table_ids') != KL015_REQUIRED_TABLE_IDS:
+                    errors.append('m2-kl015-frozen-impact:tables')
+            contract_map = {
+                item.get('check_id'): item for item in contracts or []
+                if isinstance(item, dict)
+            }
+            for check_id, expected_digest in M2_CRITICAL_CONTRACT_DIGESTS.get(
+                    name, {}).items():
+                contract = contract_map.get(check_id)
+                actual_digest = hashlib.sha256(json.dumps(
+                    contract, ensure_ascii=False, sort_keys=True,
+                    separators=(',', ':'),
+                ).encode()).hexdigest() if contract is not None else ''
+                if actual_digest != expected_digest:
+                    errors.append('m2-security-contract:' + name + ':' + check_id)
+            if (name in M2_REQUIRED_SECURITY_REVIEWS
+                    and 'SECURITY_DATA_BOUNDARY' not in task.get('review_requirements', [])):
+                errors.append('m2-security-review-required:' + name)
+            if (name in M2_REQUIRED_DB_REVIEWS
+                    and 'DB_CONCURRENCY' not in task.get('review_requirements', [])):
+                errors.append('m2-db-review-required:' + name)
         if (task.get('status') == 'READY'
-                and (task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY'
+                and (task.get('packet_refinement') != 'ENFORCEABLE'
                      or task.get('write_paths_status') != 'ENFORCEABLE')):
             errors.append('ready-write-scope-unrefined:' + name)
+    refined = [tasks[name] for name in sorted(M2_REFINED_TASK_IDS) if name in tasks]
+    for position, left in enumerate(refined):
+        for right in refined[position + 1:]:
+            overlaps = {
+                left_path for left_path in left.get('write_paths', [])
+                for right_path in right.get('write_paths', [])
+                if (left_path == right_path
+                    or matches(left_path.replace('*', 'x'), [right_path])
+                    or matches(right_path.replace('*', 'x'), [left_path]))
+            }
+            if overlaps and not set(left.get('resource_keys', [])) & set(
+                    right.get('resource_keys', [])):
+                errors.append(
+                    'unlocked-write-path-overlap:' + left['id'] + ':' + right['id'])
     pending = set(tasks)
     while pending:
         ready = set()
@@ -785,6 +1372,7 @@ def validate(root, args):
 
     errors = []
     index, frozen, backlog = (load_artifact(root / n) for n in (INDEX, 'FROZEN_BASELINE.json', BACKLOG))
+    manifest = load_artifact(root / MANIFEST)
     traceability = load_artifact(root / TRACEABILITY)
     traceability_errors, _ = traceability_task_map(traceability)
     errors.extend(traceability_errors)
@@ -794,6 +1382,14 @@ def validate(root, args):
             errors.append('missing:' + entry['path'])
         elif sha(path) != entry['sha256']:
             errors.append('hash:' + entry['path'])
+    for entry in manifest.get('files', []):
+        path = root / entry['path']
+        if not relative_path(entry['path']) or not path.is_file():
+            errors.append('manifest-missing:' + entry['path'])
+        elif sha(path) != entry['sha256']:
+            errors.append('manifest-hash:' + entry['path'])
+        elif entry.get('bytes') != path.stat().st_size:
+            errors.append('manifest-bytes:' + entry['path'])
     task_errors, tasks = task_definition_errors(root, backlog)
     errors.extend(task_errors)
 
@@ -804,6 +1400,7 @@ def validate(root, args):
         'REVIEW': 'THREAD_REVIEW.schema.json',
         'GOVERNANCE': GOVERNANCE_SCHEMA,
         'INTEGRATION': INTEGRATION_SCHEMA,
+        'MILESTONE': MILESTONE_CLOSURE_SCHEMA,
     }
     for kind, schema_name in schema_files.items():
         schema = load_artifact(root / schema_name)
@@ -812,6 +1409,30 @@ def validate(root, args):
         except Exception as ex:
             raise ValueError('invalid-schema:' + kind + ':' + str(ex)) from ex
         schemas[kind] = Draft202012Validator(schema)
+    milestone_dir = root / 'docs/exec-plans/milestones'
+    milestone_records = []
+    if milestone_dir.exists():
+        for path in sorted(milestone_dir.glob('*.json')):
+            record = load_artifact(path)
+            if isinstance(record, dict) and record.get('display_milestone_id') == 'M1':
+                milestone_records.append((path, record))
+    if not milestone_records:
+        m1_closure_valid = False
+    elif len(milestone_records) != 1:
+        errors.append('milestone-closure-count:M1:' + str(len(milestone_records)))
+        m1_closure_valid = False
+    else:
+        closure_path, closure = milestone_records[0]
+        if closure_path.name != 'M1.json':
+            errors.append('milestone-closure-path:M1:' + closure_path.name)
+        closure_errors = milestone_closure_errors(
+            root, closure, schemas['MILESTONE'], schemas['INTEGRATION'],
+            schemas['RESULT'], schemas['REVIEW'], backlog, tasks)
+        errors.extend(closure_errors)
+        m1_closure_valid = not closure_errors and closure_path.name == 'M1.json'
+    for task in tasks.values():
+        if task['milestone'] == 'M2' and task['status'] == 'READY' and not m1_closure_valid:
+            errors.append('ready-m1-closure-invalid:' + task['id'])
     results = {}
     completed = root / 'docs/exec-plans/completed'
     for path in sorted(list(completed.glob('*_RESULT.yaml')) + list(completed.glob('*_RESULT.json'))):
@@ -895,7 +1516,8 @@ def validate(root, args):
         for path in sorted(integrations.glob('*.json')):
             record = load_artifact(path)
             errors.extend(integration_record_errors(
-                root, path, record, schemas['INTEGRATION'], schemas['RESULT'], tasks))
+                root, path, record, schemas['INTEGRATION'], schemas['RESULT'],
+                schemas['REVIEW'], tasks))
 
     if (args.protected_base or args.reviewed_head or
             getattr(args, 'governance_reviewed_head', None)):
@@ -1084,8 +1706,10 @@ def validate(root, args):
                     if not task or not old_task:
                         errors.append('governance-refined-task-unknown:' + task_id)
                         continue
-                    if (old_task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY' and
-                            task.get('packet_refinement') != 'MUST_REFINE_BEFORE_READY'):
+                    if ((old_task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY'
+                         and task.get('packet_refinement') != 'MUST_REFINE_BEFORE_READY')
+                            or (old_task != task and
+                                task.get('packet_refinement') == 'ENFORCEABLE')):
                         observed.add(task_id)
                     if (task.get('write_paths_status') != 'ENFORCEABLE' or
                             not task.get('write_paths') or
