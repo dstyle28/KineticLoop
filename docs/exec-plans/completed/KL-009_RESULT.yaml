@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-009
 display_task_id: KL-009
 task_definition_version: v0.2
 base_commit: c2740b8dfa25c079bb51f816baa5a87d6422b841
-tested_commit: 382adb537837ea17f175b1da20aea6ce849b42a2
+tested_commit: 5056325be60e4842cc52cc91bb2ba044b676cb75
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -16,27 +16,27 @@ commands_run:
   - check_id: config_secret_sources_are_separated
     command: .venv/bin/pytest -q tests/unit/config/test_secret_loader.py::test_config_secret_sources_are_separated
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-009/checks-382adb5.log
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-5056325.log
   - check_id: nested_redaction_is_non_mutating_and_authority_neutral
     command: .venv/bin/pytest -q tests/unit/security/test_redaction.py::test_nested_redaction_is_non_mutating_and_authority_neutral
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-009/checks-382adb5.log
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-5056325.log
   - check_id: synthetic_security_fixtures_have_provenance
     command: .venv/bin/pytest -q tests/unit/security/test_synthetic_fixtures.py::test_synthetic_security_fixtures_have_provenance
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-009/checks-382adb5.log
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-5056325.log
   - check_id: database_diagnostics_redact_credentials
     command: .venv/bin/pytest -q tests/db/test_secret_output.py
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-009/checks-382adb5.log
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-5056325.log
   - check_id: security_and_database_regressions_pass
     command: .venv/bin/pytest -q tests/unit/config tests/unit/security tests/db
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-009/checks-382adb5.log
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-5056325.log
   - check_id: harness_validation_passes
     command: .venv/bin/kl check-harness && .venv/bin/kl test-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-009/checks-382adb5.log
+    evidence_ref: docs/exec-plans/evidence/KL-009/checks-5056325.log
 requirements_covered: []
 files_changed:
   - docs/contracts/security_config_and_redaction.md
@@ -71,6 +71,7 @@ files_changed:
   - docs/exec-plans/evidence/KL-009/checks-422eac6.log
   - docs/exec-plans/evidence/KL-009/checks-37a6034.log
   - docs/exec-plans/evidence/KL-009/checks-382adb5.log
+  - docs/exec-plans/evidence/KL-009/checks-5056325.log
   - docs/exec-plans/completed/KL-009_RESULT.yaml
 decisions:
   - Public provider configuration names credential requirements but never stores credential values; callers must select an explicit SecretSource.
@@ -103,6 +104,8 @@ decisions:
   - Empty-delimiter Authorization, mixed format dialects, named fields, and out-of-range fields suppress all unresolved arguments.
   - Built-in mapping storage is snapshotted through trusted operations; uninspectable Mapping implementations use a fixed marker.
   - Split Authorization suppresses every trailing component, and credential matches consume encoded line/semicolon continuations.
+  - Single/combined Authorization values and semicolon option delimiters share the same all-following fail-closed rule.
+  - Colon-delimited sensitive query members redact their values, and set/frozenset subclasses use trusted snapshots.
 known_limitations:
   - No production secret-store vendor or provider adapter is introduced; later integrations must supply an explicit SecretSource implementation.
   - No product requirement PASS is claimed by this task-level security/configuration evidence.
