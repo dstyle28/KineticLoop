@@ -25,6 +25,22 @@ record from the protected-base diff. Mixing both PR types, changing an undeclare
 path, omitting a review, or changing implementation/governance content after review
 fails closed.
 
+An already-merged governance change that lacks its required review may use one
+review-only remediation PR. CI discovers exactly one existing governance change from
+changed files under `docs/exec-plans/reviews/<CHANGE_ID>/` and restricts the entire PR
+to that directory. The validator replays the original record against its recorded
+protected base, including declared files, write scope, derived metadata, Frozen
+baseline protection, evidence binding and required review types. This exception does
+not admit a review-only task PR or allow governance content to change.
+
+For that post-merge review, the tested-to-reviewed suffix may contain the two-parent
+PR reintegration merge only when exactly one parent descends from `tested_commit`, the
+other parent is already an ancestor of `tested_commit`, and the merge's complete Git
+tree is exactly equal to the tested-descendant parent's tree. All intervening
+governance bookkeeping commits remain path-checked. The reviewed-to-HEAD suffix stays
+linear and review-record-only; arbitrary, content-changing and unrelated-parent merges
+remain stale.
+
 Post-merge state is recorded separately under
 `docs/exec-plans/integrations/<TASK_ID>.json` and conforms to
 `INTEGRATION_RECORD.schema.json`. The record binds the task result, reviewed head,

@@ -1,0 +1,66 @@
+HG-008 governance remediation evidence
+
+Identity
+  change: harness-governance-v0.1/HG-008
+  protected base: 2f612be1d08be21a0f46714ddd10777e23329463
+  tested revision: d22b1284f01f2dded13a83da31a204067e20d475
+
+.venv/bin/kl check-harness
+  HARNESS_CHECK_PASS tasks=68 active=66
+  result: PASS
+
+.venv/bin/ruff check .
+  All checks passed!
+  result: PASS
+
+MYPY_CACHE_DIR=/private/tmp/hg-008-mypy .venv/bin/mypy src tools tests
+  Success: no issues found in 44 source files
+  result: PASS
+
+.venv/bin/pytest -q tests/unit
+  92 passed in 1.25s
+  result: PASS
+
+.venv/bin/pytest -q tests/harness
+  85 passed in 27.95s
+  result: PASS
+
+.venv/bin/pytest -q tests/harness/test_validator.py -k 'governance_review_only or governance_tested_suffix or governance_merge_gate'
+  5 passed, 55 deselected in 3.85s
+  result: PASS
+
+HG-007 tested-suffix regression against real repository history
+  command: call governance_suffix_errors for tested
+    0f943db0aa572e11fda95ac05895b73b6d4b7745 through reviewed candidate
+    2f612be1d08be21a0f46714ddd10777e23329463
+  output: HG-007_TESTED_SUFFIX_PASS
+  result: PASS
+
+HG-007 preserved anchor and exact-tree checks
+  c22d3ff49f2ba6ab9dd4e3a3993a26395b57b162 resolves and is an ancestor of HEAD
+  a159dec2f4c7c0a3a14fc45b4feae046a940e484 resolves and is an ancestor of HEAD
+  protected base tree equals tested octopus tree:
+    f1b2088ee724bee4fe763b49413e47f93f81dd28
+  PR #18 side-tip tree equals merge tree:
+    9b5bdba9f875d87b4a6ca194caedf4009203a2a1
+  output: HG-007_ANCHOR_AND_TREE_FACTS_PASS
+  result: PASS
+
+git diff --check 2f612be1d08be21a0f46714ddd10777e23329463 d22b1284f01f2dded13a83da31a204067e20d475
+  result: PASS
+
+git diff --exit-code 2f612be1d08be21a0f46714ddd10777e23329463 d22b1284f01f2dded13a83da31a204067e20d475 -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md
+  output: HG-008_FROZEN_BASELINE_UNCHANGED
+  result: PASS
+
+Scope conclusion
+  The remediation changes only harness governance validation, its canonical
+  contract, focused regressions, and derived hashes. It does not change frozen
+  Protocol/DB authority, FROZEN_BASELINE.json, authorization meaning, Evidence
+  Admission, T1-T8 atomic boundaries, lock order/invariants, production/shadow
+  separation, or provider command authority.
+
+Review state
+  A fresh independent GENERAL review of the final HG-008 governance head is still
+  required. After HG-008 is integrated, HG-007 can be reviewed at merge revision
+  2f612be1d08be21a0f46714ddd10777e23329463 and recorded in a review-only PR.
