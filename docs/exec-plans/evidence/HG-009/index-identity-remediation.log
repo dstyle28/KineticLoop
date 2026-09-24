@@ -1,0 +1,36 @@
+HG-009 historical index identity replay evidence
+
+Identity
+  change: harness-governance-v0.1/HG-009
+  protected base: 1834f6add0ed3860556458817c7620b2ef2d394e
+  tested revision: f1c30c0e4724c65f483f55f14198431233a0f321
+
+Checks executed against the exact committed tested revision
+  kl check-harness: HARNESS_CHECK_PASS tasks=68 active=66
+  ruff check .: All checks passed
+  mypy src tools tests: Success, 44 source files
+  pytest -q tests/unit: 92 passed
+  pytest -q tests/harness: 91 passed
+  focused governance replay regressions: 10 passed, 56 deselected
+  exact HG-007 delayed-review reproduction: HARNESS_CHECK_PASS tasks=68 active=66
+  git diff --check: PASS
+  frozen Protocol, DB and FROZEN_BASELINE diff: unchanged
+
+Review finding remediated
+  Review of a7afb16 found that historical index arrays were converted to path maps
+  before duplicate detection, allowing a stale duplicate preceding a valid entry to
+  collapse. The tested revision rejects duplicate historical paths across document
+  and machine-readable groups and duplicate document IDs before map conversion.
+  Its negative regression creates the exact duplicate, repairs it only in a later
+  protected base, and proves delayed review still fails closed.
+
+Evidence immutability
+  This file is newly added after tested_commit. Existing HG-009 evidence files are
+  unchanged after the tested revision. The only accompanying modification is the
+  task-scoped governance record update allowed by the tested suffix contract.
+
+Scope conclusion
+  Every historical index and manifest entry plus the complete task-definition state
+  is replayed from the reviewed revision without identity collapse. Original
+  ancestry, exact-tree, declared scope, evidence binding, required-review,
+  review-only suffix and frozen-baseline protections remain fail closed.

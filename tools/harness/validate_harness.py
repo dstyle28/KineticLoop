@@ -75,6 +75,21 @@ def load_artifact(path):
     return load_artifact_text(path.read_text(), path.suffix)
 
 
+def load_artifact_at_revision(root, path, revision):
+    return load_artifact_text(
+        git(root, 'show', revision + ':' + path).decode(),
+        Path(path).suffix,
+    )
+
+
+def blob_sha_at_revision(root, path, revision):
+    return hashlib.sha256(git(root, 'show', revision + ':' + path)).hexdigest()
+
+
+def blob_size_at_revision(root, path, revision):
+    return len(git(root, 'show', revision + ':' + path))
+
+
 def section(text, heading):
     match = re.search(r'^## ' + re.escape(heading) + r'\s*\n(.*?)(?=^## |\Z)', text, re.M | re.S)
     return match.group(1) if match else None
@@ -406,16 +421,28 @@ def hash_refresh_errors(root, base_revision, name, task, changed, protected_path
     return errors
 
 
-def governance_index_errors(root, base_revision, record, changed, protected_paths):
+def governance_index_errors(
+        root, base_revision, record, changed, protected_paths, target_revision=None):
     """Allow declared additions while preserving every existing authority identity."""
     old = json.loads(git(root, 'show', base_revision + ':' + INDEX))
-    new = load_artifact(root / INDEX)
+    new = (load_artifact_at_revision(root, INDEX, target_revision)
+           if target_revision else load_artifact(root / INDEX))
     errors = []
     if {k: v for k, v in old.items() if k not in ('documents', 'machine_readable')} != {
             k: v for k, v in new.items() if k not in ('documents', 'machine_readable')}:
         errors.append('governance-index-metadata')
     declared_additions = set(record.get('authority_entries_added', []))
     observed_additions = set()
+    after_paths = [
+        entry['path']
+        for group in ('documents', 'machine_readable')
+        for entry in new.get(group, [])
+    ]
+    if len(after_paths) != len(set(after_paths)):
+        errors.append('governance-index-duplicate-path')
+    document_ids = [entry['document_id'] for entry in new.get('documents', [])]
+    if len(document_ids) != len(set(document_ids)):
+        errors.append('governance-index-duplicate-id')
     for group in ('documents', 'machine_readable'):
         before = {entry['path']: entry for entry in old.get(group, [])}
         after = {entry['path']: entry for entry in new.get(group, [])}
@@ -425,6 +452,16 @@ def governance_index_errors(root, base_revision, record, changed, protected_path
         observed_additions |= set(after) - set(before)
         for path in sorted(set(before) & set(after)):
             previous, current = before[path], after[path]
+            if target_revision:
+                try:
+                    target_valid = (
+                        current.get('sha256')
+                        == blob_sha_at_revision(root, path, target_revision)
+                    )
+                except ValueError:
+                    target_valid = False
+                if not target_valid:
+                    errors.append('governance-index-hash:' + path)
             if previous == current:
                 continue
             if path in protected_paths:
@@ -433,15 +470,26 @@ def governance_index_errors(root, base_revision, record, changed, protected_path
             if {k: v for k, v in previous.items() if k != 'sha256'} != {
                     k: v for k, v in current.items() if k != 'sha256'}:
                 errors.append('governance-index-entry:' + path)
-            target = root / path
-            if path not in changed or not target.is_file() or current.get('sha256') != sha(target):
+            if not target_revision:
+                target_valid = (
+                    (root / path).is_file()
+                    and current.get('sha256') == sha(root / path)
+                )
+            if path not in changed or (not target_revision and not target_valid):
                 errors.append('governance-index-hash:' + path)
         for path in sorted(set(after) - set(before)):
             current = after[path]
-            target = root / path
             if path not in declared_additions:
                 errors.append('governance-index-undeclared-addition:' + path)
-            if path in protected_paths or not target.is_file() or current.get('sha256') != sha(target):
+            try:
+                target_valid = (
+                    current.get('sha256') == blob_sha_at_revision(root, path, target_revision)
+                    if target_revision else
+                    (root / path).is_file() and current.get('sha256') == sha(root / path)
+                )
+            except ValueError:
+                target_valid = False
+            if path in protected_paths or not target_valid:
                 errors.append('governance-index-addition-hash:' + path)
     if observed_additions != declared_additions:
         errors.append('governance-index-additions-mismatch')
@@ -482,10 +530,11 @@ def task_index_authority_errors(root, base_revision, task, changed, protected_pa
     return errors
 
 
-def governance_manifest_errors(root, base_revision, changed):
+def governance_manifest_errors(root, base_revision, changed, target_revision=None):
     """The delivery manifest may refresh existing changed entries, never change its inventory."""
     old = json.loads(git(root, 'show', base_revision + ':' + MANIFEST))
-    new = load_artifact(root / MANIFEST)
+    new = (load_artifact_at_revision(root, MANIFEST, target_revision)
+           if target_revision else load_artifact(root / MANIFEST))
     errors = []
     if {k: v for k, v in old.items() if k != 'files'} != {k: v for k, v in new.items() if k != 'files'}:
         errors.append('governance-manifest-metadata')
@@ -494,16 +543,31 @@ def governance_manifest_errors(root, base_revision, changed):
         errors.append('governance-manifest-paths')
         return errors
     for previous, current in zip(before, after):
+        path = previous['path']
+        if target_revision:
+            try:
+                target_hash = blob_sha_at_revision(root, path, target_revision)
+                target_size = blob_size_at_revision(root, path, target_revision)
+            except ValueError:
+                target_hash, target_size = None, None
+            if current.get('sha256') != target_hash:
+                errors.append('governance-manifest-hash:' + path)
+            if 'bytes' in current and current['bytes'] != target_size:
+                errors.append('governance-manifest-bytes:' + path)
         if previous == current:
             continue
-        path = previous['path']
         if {k: v for k, v in previous.items() if k not in ('sha256', 'bytes')} != {
                 k: v for k, v in current.items() if k not in ('sha256', 'bytes')}:
             errors.append('governance-manifest-entry:' + path)
-        target = root / path
-        if path not in changed or not target.is_file() or current.get('sha256') != sha(target):
+        if not target_revision:
+            target_hash = sha(root / path) if (root / path).is_file() else None
+            target_size = ((root / path).stat().st_size
+                           if (root / path).is_file() else None)
+        if path not in changed or (not target_revision
+                                   and current.get('sha256') != target_hash):
             errors.append('governance-manifest-hash:' + path)
-        if 'bytes' in current and (not target.is_file() or current['bytes'] != target.stat().st_size):
+        if (not target_revision and 'bytes' in current
+                and current['bytes'] != target_size):
             errors.append('governance-manifest-bytes:' + path)
     return errors
 
@@ -580,30 +644,34 @@ def integration_record_errors(root, path, record, schema, result_schema, tasks):
     return errors
 
 
-def validate(root, args):
-    from jsonschema import Draft202012Validator
-
+def task_definition_errors(root, backlog, revision=None):
+    """Validate one revision's complete backlog, packet, resource and DAG state."""
     errors = []
-    index, frozen, backlog = (load_artifact(root / n) for n in (INDEX, 'FROZEN_BASELINE.json', BACKLOG))
-    for entry in index['documents'] + index.get('machine_readable', []) + frozen['files']:
-        path = root / entry['path']
-        if not relative_path(entry['path']) or not path.is_file():
-            errors.append('missing:' + entry['path'])
-        elif sha(path) != entry['sha256']:
-            errors.append('hash:' + entry['path'])
     tasks = {task['id']: task for task in backlog['tasks']}
-    identities = [t['task_identity'] for t in backlog['tasks']]
+    identities = [task['task_identity'] for task in backlog['tasks']]
     if len(tasks) != len(backlog['tasks']) or len(identities) != len(set(identities)):
         errors.append('task-identity-duplicate')
-    resource_text = (root / 'docs/harness/RESOURCE_LOCKS.md').read_text()
+    resource_path = 'docs/harness/RESOURCE_LOCKS.md'
+    resource_text = (git(root, 'show', revision + ':' + resource_path).decode()
+                     if revision else (root / resource_path).read_text())
     known_resources = set(re.findall(r'^- `([^`]+)`$', resource_text, re.M))
     for task in backlog['tasks']:
         name = task['id']
-        packet = root / 'docs/exec-plans/active' / (name + '.md')
-        if packet.exists():
-            errors.extend(packet_errors(task, packet.read_text()))
-        elif task['status'] != 'SUPERSEDED':
-            errors.append('packet:' + name)
+        packet_path = 'docs/exec-plans/active/' + name + '.md'
+        if revision:
+            packet = subprocess.run(
+                ['git', 'show', revision + ':' + packet_path],
+                cwd=root, capture_output=True)
+            if packet.returncode == 0:
+                errors.extend(packet_errors(task, packet.stdout.decode()))
+            elif task['status'] != 'SUPERSEDED':
+                errors.append('packet:' + name)
+        else:
+            packet = root / packet_path
+            if packet.exists():
+                errors.extend(packet_errors(task, packet.read_text()))
+            elif task['status'] != 'SUPERSEDED':
+                errors.append('packet:' + name)
         for dep in task['depends_on']:
             if dep not in tasks:
                 errors.append('unknown-dep:' + name + '->' + dep)
@@ -627,7 +695,9 @@ def validate(root, args):
         for resource in resources:
             if resource not in known_resources:
                 errors.append('unknown-resource-key:' + name + '->' + resource)
-        if task.get('status') == 'READY' and (task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY' or task.get('write_paths_status') != 'ENFORCEABLE'):
+        if (task.get('status') == 'READY'
+                and (task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY'
+                     or task.get('write_paths_status') != 'ENFORCEABLE')):
             errors.append('ready-write-scope-unrefined:' + name)
     pending = set(tasks)
     while pending:
@@ -635,7 +705,8 @@ def validate(root, args):
         for name in pending:
             conditional = tasks[name].get('conditional_depends_on', [])
             dependencies = set(tasks[name]['depends_on']) | {
-                item if isinstance(item, str) else item.get('task_id') for item in conditional
+                item if isinstance(item, str) else item.get('task_id')
+                for item in conditional
             }
             if not dependencies & pending:
                 ready.add(name)
@@ -643,6 +714,22 @@ def validate(root, args):
             errors.append('dag-cycle')
             break
         pending -= ready
+    return errors, tasks
+
+
+def validate(root, args):
+    from jsonschema import Draft202012Validator
+
+    errors = []
+    index, frozen, backlog = (load_artifact(root / n) for n in (INDEX, 'FROZEN_BASELINE.json', BACKLOG))
+    for entry in index['documents'] + index.get('machine_readable', []) + frozen['files']:
+        path = root / entry['path']
+        if not relative_path(entry['path']) or not path.is_file():
+            errors.append('missing:' + entry['path'])
+        elif sha(path) != entry['sha256']:
+            errors.append('hash:' + entry['path'])
+    task_errors, tasks = task_definition_errors(root, backlog)
+    errors.extend(task_errors)
 
     schemas = {}
     known_requirements = requirement_ids(root)
@@ -791,6 +878,7 @@ def validate(root, args):
                 if review_only:
                     governance_base = record_base
                     governance_changed = set(changed_paths(root, governance_base, reviewed))
+                    governance_target = reviewed
                     old_frozen = json.loads(
                         git(root, 'show', governance_base + ':FROZEN_BASELINE.json'))
                     governance_protected = {
@@ -803,6 +891,7 @@ def validate(root, args):
                 else:
                     governance_base = base_sha
                     governance_changed = set(changed_paths(root, governance_base, reviewed))
+                    governance_target = None
                     governance_protected = protected_paths
                 for path in sorted(changed):
                     allowed = (review_patterns(change_id) if review_only
@@ -818,22 +907,31 @@ def validate(root, args):
                 if declared != governance_changed:
                     errors.append('governance-files-changed-mismatch:' + change_id)
                 errors.extend(governance_index_errors(
-                    root, governance_base, record, governance_changed, governance_protected))
+                    root, governance_base, record, governance_changed, governance_protected,
+                    governance_target))
                 errors.extend(governance_manifest_errors(
-                    root, governance_base, governance_changed))
+                    root, governance_base, governance_changed, governance_target))
 
                 old_tasks = {task['id']: task for task in
                              json.loads(git(root, 'show', governance_base + ':' + BACKLOG))['tasks']}
+                if review_only:
+                    replay_backlog = load_artifact_at_revision(root, BACKLOG, reviewed)
+                    replay_task_errors, replay_tasks = task_definition_errors(
+                        root, replay_backlog, reviewed)
+                    errors.extend(replay_task_errors)
+                else:
+                    replay_tasks = tasks
                 changed_task_ids = {
-                    task_id for task_id in set(old_tasks) | set(tasks)
-                    if old_tasks.get(task_id) != tasks.get(task_id)
+                    task_id for task_id in set(old_tasks) | set(replay_tasks)
+                    if old_tasks.get(task_id) != replay_tasks.get(task_id)
                 }
                 args.governance_changed_task_ids = changed_task_ids
                 args.governance_base_tasks = old_tasks
+                args.governance_reviewed_tasks = replay_tasks
                 refined = set(record['packets_refined'])
                 observed = set()
                 for task_id in refined:
-                    task = tasks.get(task_id)
+                    task = replay_tasks.get(task_id)
                     old_task = old_tasks.get(task_id)
                     if not task or not old_task:
                         errors.append('governance-refined-task-unknown:' + task_id)
@@ -846,7 +944,7 @@ def validate(root, args):
                             any('TO_BE_REFINED' in path for path in task.get('write_paths', []))):
                         errors.append('governance-refinement-incomplete:' + task_id)
                 changed_packets = {
-                    Path(path).stem for path in changed
+                    Path(path).stem for path in governance_changed
                     if re.fullmatch(r'docs/exec-plans/active/KL-[0-9]{3}[A-Z]?\.md', path)
                 }
                 if refined != observed or refined != changed_packets:
@@ -891,7 +989,15 @@ def validate(root, args):
     if getattr(args, 'governance_reviewed_head', None):
         change_id = args.governance_change_id
         reviewed = resolve(root, args.governance_reviewed_head)
-        errors.extend(governance_suffix_errors(root, reviewed, 'HEAD', change_id, 'review'))
+        review_only = getattr(args, 'governance_review_only', False)
+        if review_only:
+            protected_base = resolve(root, args.protected_base)
+            if not is_ancestor(root, reviewed, protected_base):
+                errors.append('governance-review-only-reviewed-not-merged:' + change_id)
+            errors.extend(governance_suffix_errors(
+                root, protected_base, 'HEAD', change_id, 'review'))
+        else:
+            errors.extend(governance_suffix_errors(root, reviewed, 'HEAD', change_id, 'review'))
         selected = governance_records.get(change_id)
         if not selected:
             errors.append('governance-record-missing:' + change_id)
@@ -912,10 +1018,11 @@ def validate(root, args):
                 errors.append('governance-review-revision:' + str(ex))
             required = {'GENERAL'}
             old_tasks = getattr(args, 'governance_base_tasks', {})
+            reviewed_tasks = getattr(args, 'governance_reviewed_tasks', tasks)
             changed_task_ids = getattr(args, 'governance_changed_task_ids', set())
             for task_id in changed_task_ids:
                 required.update(old_tasks.get(task_id, {}).get('review_requirements', []))
-                required.update(tasks.get(task_id, {}).get('review_requirements', []))
+                required.update(reviewed_tasks.get(task_id, {}).get('review_requirements', []))
             types = {
                 review['review_type'] for _, review in governance_reviews
                 if review['task_identity'] == 'harness-governance-v0.1/' + change_id and
