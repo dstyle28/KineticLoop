@@ -1,0 +1,63 @@
+KL-009 immutable tested-commit evidence, terminal adversarial review-fix cycle
+date: 2026-09-24
+task_identity: harness-backlog-v0.2/KL-009
+base_commit: c2740b8dfa25c079bb51f816baa5a87d6422b841
+tested_commit: 4d1053f861d57d577793ecfa206c702e839cae3e
+
+CHECK config_secret_sources_are_separated
+COMMAND .venv/bin/pytest -q tests/unit/config/test_secret_loader.py::test_config_secret_sources_are_separated
+RESULT PASS
+OUTPUT 1 passed in 0.01s
+
+CHECK nested_redaction_is_non_mutating_and_authority_neutral
+COMMAND .venv/bin/pytest -q tests/unit/security/test_redaction.py::test_nested_redaction_is_non_mutating_and_authority_neutral
+RESULT PASS
+OUTPUT 1 passed in 0.02s
+
+CHECK synthetic_security_fixtures_have_provenance
+COMMAND .venv/bin/pytest -q tests/unit/security/test_synthetic_fixtures.py::test_synthetic_security_fixtures_have_provenance
+RESULT PASS
+OUTPUT 1 passed in 0.01s
+
+CHECK database_diagnostics_redact_credentials
+COMMAND .venv/bin/pytest -q tests/db/test_secret_output.py
+RESULT PASS
+OUTPUT 4 passed in 0.03s
+
+CHECK security_and_database_regressions_pass
+COMMAND .venv/bin/pytest -q tests/unit/config tests/unit/security tests/db
+RESULT PASS
+OUTPUT 17 passed in 0.09s
+
+CHECK harness_validation_passes
+COMMAND .venv/bin/kl check-harness && .venv/bin/kl test-harness
+RESULT PASS
+OUTPUT HARNESS_CHECK_PASS tasks=68 active=66; 100 passed in 93.17s
+
+ADDITIONAL CHECK lint
+COMMAND RUFF_CACHE_DIR=/private/tmp/kl009-ruff-cache-final2 .venv/bin/ruff check .
+RESULT PASS
+OUTPUT All checks passed!
+
+ADDITIONAL CHECK typecheck
+COMMAND MYPY_CACHE_DIR=/private/tmp/kl009-mypy-cache-final2 .venv/bin/mypy src tools tests
+RESULT PASS
+OUTPUT Success: no issues found in 55 source files
+
+ADDITIONAL CHECK unit
+COMMAND .venv/bin/kl test-unit
+RESULT PASS
+OUTPUT 98 passed in 2.92s
+
+ADDITIONAL CHECK full_suite
+COMMAND .venv/bin/pytest -q
+RESULT PASS
+OUTPUT 212 passed in 96.40s
+
+ADVERSARIAL REVIEW FIXES VERIFIED
+- Equals-style quoted and Authorization option strings redact the complete value in text, argv, and subprocess diagnostics.
+- Explicit-index and dynamic-width/precision format fields redact their credential argument positions.
+- Built-in scalar subclasses fail closed as diagnostic values and mapping keys.
+- ProviderSecrets snapshots a Mapping once and validates the exact stored snapshot.
+- Recursively percent-encoded URL userinfo is decoded to a bounded stable authority or rejected.
+- All prior compound-key, structured-text, fixture duplicate-key, serialization, delimiter, URL, and canonical-evidence probes remain covered.
