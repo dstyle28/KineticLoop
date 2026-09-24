@@ -1,0 +1,50 @@
+HG-008 clean-checkout CI remediation evidence
+
+Identity
+  protected base: 2f612be1d08be21a0f46714ddd10777e23329463
+  tested revision: bbad7d3ab7e75cfe8be9356c6660ef9eb69de896
+
+Observed GitHub Actions failures on review-record commit
+  d086c2042ad0225b839828cb78244eb64ce1af32:
+  - merge-gate: validation-error:git:fatal: Needed a single revision
+  - quality: two TemporaryDirectory cleanup races with Directory not empty: '.git'
+
+Root causes and corrections
+  - Governance review selection resolved unrelated historical reviewed_head_sha values
+    before filtering by change identity. The selection now filters to HG-008 first.
+  - Temporary Git fixture commands could trigger background automatic maintenance on
+    Linux. Fixture Git commands now disable gc.auto and maintenance.auto.
+  - The stale HG-008 GENERAL review was removed before the changed implementation
+    revision; a new independent review is required.
+
+.venv/bin/kl check-harness
+  HARNESS_CHECK_PASS tasks=68 active=66
+  result: PASS
+
+.venv/bin/ruff check .
+  All checks passed!
+  result: PASS
+
+MYPY_CACHE_DIR=/private/tmp/hg-008-ci-mypy .venv/bin/mypy src tools tests
+  Success: no issues found in 44 source files
+  result: PASS
+
+.venv/bin/pytest -q tests/unit
+  92 passed in 1.05s
+  result: PASS
+
+.venv/bin/pytest -q tests/harness
+  86 passed in 26.67s
+  result: PASS
+
+.venv/bin/pytest -q tests/harness/test_validator.py -k 'governance_ignores_unrelated or historical_review or legal_implementation'
+  3 passed, 58 deselected in 1.31s
+  result: PASS
+
+Frozen authority check
+  FROZEN_BASELINE.json, the frozen DB baseline and frozen Protocol are unchanged.
+  result: PASS
+
+Review state
+  A fresh independent GENERAL review must bind the final updated HG-008 governance
+  head before the branch is pushed again.
