@@ -169,6 +169,12 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     source["fully_encoded_query_assignment"] = (
         "https://provider.invalid/path?to%256ben%253Dopaque-fully-encoded-query-secret"
     )
+    source["encoded_compound_query"] = (
+        "https://provider.invalid/path?safe%3Dok%26token%3Dopaque-compound-query-secret"
+    )
+    source["encoded_nested_query"] = (
+        "https://provider.invalid/path?safe=ok%26token%3Dopaque-nested-query-secret"
+    )
     source["indexed_format_args"] = (
         "password={1} safe={0}",
         "retained-indexed-context",
@@ -269,6 +275,8 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     assert "opaque-double-encoded-secret" not in rendered
     assert "opaque-double-query-secret" not in rendered
     assert "opaque-fully-encoded-query-secret" not in rendered
+    assert "opaque-compound-query-secret" not in rendered
+    assert "opaque-nested-query-secret" not in rendered
     assert "indexed-format-secret" not in rendered
     assert "dynamic-width-secret" not in rendered
     assert "dynamic-precision-secret" not in rendered

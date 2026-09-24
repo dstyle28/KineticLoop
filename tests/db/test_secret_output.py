@@ -102,3 +102,27 @@ def test_lifecycle_subprocess_and_cli_errors_are_redacted(
     assert encoded not in cli_error
     assert "SYNTHETIC_COOKIE_TAIL_NOT_A_CREDENTIAL" not in cli_error
     assert "db-reset: database command failed" in cli_error
+
+
+@pytest.mark.parametrize(
+    "argument,secret",
+    [
+        ("--password=SYNTHETIC_CLI_RAW_NOT_A_CREDENTIAL", "SYNTHETIC_CLI_RAW_NOT_A_CREDENTIAL"),
+        (
+            "--database-url=postgresql%3A%2F%2Falice%3Ahunter2%40db.invalid%2Fdb",
+            "alice%3Ahunter2",
+        ),
+        ("--timeout=password=SYNTHETIC_TIMEOUT_SECRET", "SYNTHETIC_TIMEOUT_SECRET"),
+    ],
+)
+def test_db_reset_argument_errors_are_credential_free(
+    argument: str,
+    secret: str,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    with pytest.raises(SystemExit) as exit_info:
+        main(["db-reset", argument])
+    assert exit_info.value.code == 2
+    stderr = capsys.readouterr().err
+    assert secret not in stderr
+    assert "[REDACTED]" in stderr

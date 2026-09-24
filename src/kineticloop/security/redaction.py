@@ -307,20 +307,20 @@ class Redactor:
                 host = f"{host}:{authority.port}"
             if has_userinfo:
                 host = f"{_USERINFO_MARKER}@{host}"
-            query_parts = re.split(r"([&;])", parsed.query)
+            decoded_query = _stable_unquote(parsed.query, plus=True)
+            if decoded_query is None:
+                return REDACTED + trailing
+            query_parts = re.split(r"([&;])", decoded_query)
             for index in range(0, len(query_parts), 2):
                 part = query_parts[index]
-                key, found, _ = part.partition("=")
-                decoded_part = _stable_unquote(part, plus=True)
-                if decoded_part is None:
-                    return REDACTED + trailing
-                decoded_key, decoded_found, _ = decoded_part.partition("=")
-                candidate_key = key if found else decoded_key
-                stable_key = _stable_unquote(candidate_key, plus=True)
-                if stable_key is None:
-                    return REDACTED + trailing
-                if (found or decoded_found) and _is_sensitive_key(stable_key):
-                    query_parts[index] = f"{quote_plus(stable_key)}={quote_plus(REDACTED)}"
+                key, found, query_value = part.partition("=")
+                if not found:
+                    query_parts[index] = quote_plus(part)
+                    continue
+                query_parts[index] = (
+                    f"{quote_plus(key)}="
+                    f"{quote_plus(REDACTED if _is_sensitive_key(key) else query_value)}"
+                )
             sanitized = urlunsplit(
                 (parsed.scheme, host, parsed.path, "".join(query_parts), parsed.fragment)
             )
