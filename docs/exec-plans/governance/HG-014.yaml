@@ -22,6 +22,7 @@ files_changed:
   - docs/exec-plans/evidence/HG-014/checks-2baebc2.log
   - docs/exec-plans/evidence/HG-014/checks-1ff84cb.log
   - docs/exec-plans/evidence/HG-014/governance-validation.log
+  - docs/exec-plans/evidence/HG-014/governance-validation-final-1ff84cb.log
   - docs/exec-plans/evidence/HG-014/governance-validation-plan-1ff84cb.log
   - docs/exec-plans/governance/HG-014.yaml
   - docs/harness/RESOURCE_LOCKS.md
@@ -31,7 +32,7 @@ checks_run:
   - check_id: governance_implementation_valid
     command: Invoke tools.harness.validate_harness.validate with protected_base 94e2d66eabbe57405cf1efbdf4fd520cd78c62f2, governance_change_id HG-014 and governance_reviewed_head HEAD; require the sole error to be governance-required-reviews-not-pass:HG-014.
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-014/governance-validation-plan-1ff84cb.log
+    evidence_ref: docs/exec-plans/evidence/HG-014/governance-validation-final-1ff84cb.log
   - check_id: harness_structure_valid
     command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
     result: PASS
