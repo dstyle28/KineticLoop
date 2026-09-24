@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import quote
 
+import pytest
+
 from kineticloop.primitives.canonical import canonical_json_bytes
 from kineticloop.primitives.hashes import sha256_bytes
 from kineticloop.security import REDACTED, RedactedDiagnostic, Redactor
@@ -460,17 +462,27 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
         assert not hasattr(diagnostic, authority_field)
 
 
-def test_multiple_schemeless_authorities_each_redact_userinfo() -> None:
-    rendered = Redactor().text(
-        "notice@example.com alice:hunter2@db.invalid:notaport"
+@pytest.mark.parametrize("separator", [" ", ",", ";", "/"])
+def test_multiple_schemeless_authorities_each_redact_userinfo(
+    separator: str,
+) -> None:
+    source = (
+        f"db-reset: notice@example.com{separator}"
+        "alice:hunter2@db.invalid:notaport"
     )
+
+    rendered = Redactor().text(source)
+    rendered_again = Redactor().text(rendered)
 
     assert "notice" not in rendered
     assert "alice" not in rendered
     assert "hunter2" not in rendered
+    assert rendered.startswith("db-reset: ")
     assert rendered == (
-        "[REDACTED]@example.com [REDACTED]@db.invalid:notaport"
+        f"db-reset: [REDACTED]@example.com{separator}"
+        "[REDACTED]@db.invalid:notaport"
     )
+    assert rendered_again == rendered
 
 
 def test_nested_query_credentials_are_redacted_recursively() -> None:

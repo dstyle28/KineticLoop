@@ -39,13 +39,15 @@ _SENSITIVE_KEY_PARTS = frozenset(
 _URL = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\s<>\"']+")
 _CREDENTIAL_URL = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\r\n]*?@[^\s,;]+")
 _SCHEMELESS_USERINFO = re.compile(
-    r"(?P<boundary>[\s'\"(=])"
-    r"(?P<userinfo>(?:[A-Za-z0-9._~!$&'()*+,;%-]+:[^@\r\n]*?|"
+    r"(?P<boundary>[^A-Za-z0-9._%+~:-])"
+    r"(?P<userinfo>(?:[A-Za-z0-9._~!$&'()*+,;%-]+:"
+    r"[^@\s\r\n][^@\r\n]*?|"
     r"[A-Za-z0-9._%+-]+)@)"
     r"(?P<host>\[[^\]]+\]|[A-Za-z0-9.-]+)"
 )
 _SCHEMELESS_USERINFO_START = re.compile(
-    r"^(?P<userinfo>(?:[A-Za-z0-9._~!$&'()*+,;%-]+:[^@\r\n]*?|"
+    r"^(?P<userinfo>(?:[A-Za-z0-9._~!$&'()*+,;%-]+:"
+    r"[^@\s\r\n][^@\r\n]*?|"
     r"[A-Za-z0-9._%+-]+)@)"
     r"(?P<host>\[[^\]]+\]|[A-Za-z0-9.-]+)"
 )
