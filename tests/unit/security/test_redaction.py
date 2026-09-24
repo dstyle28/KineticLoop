@@ -5,6 +5,7 @@ import subprocess
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 from urllib.parse import quote
 
 from kineticloop.primitives.canonical import canonical_json_bytes
@@ -100,6 +101,15 @@ class StatefulMappingFrozenSet(frozenset[str]):
         if self.iteration_count == 1:
             return frozenset.__iter__(self)
         return iter(("safe",))
+
+
+class HostileDiagnosticDict(dict[str, str]):
+    items_calls: int = 0
+
+    def items(self) -> Any:
+        self.items_calls += 1
+        self["mutated"] = "source-was-mutated"
+        return (("safe", dict.__getitem__(self, "password")),)
 
 
 def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
@@ -771,3 +781,61 @@ def test_unresolved_sensitive_fields_and_authorization_formats_fail_closed() -> 
     assert authorization_secret not in rendered
     assert out_of_range_secret not in rendered_direct
     assert named_secret not in rendered_chained
+
+
+def test_hostile_dict_subclasses_use_trusted_snapshot_without_mutation() -> None:
+    secret = "HOSTILE_MAPPING_VALUE"
+    source = HostileDiagnosticDict(password=secret)
+    before = tuple(dict.items(source))
+
+    rendered = repr(Redactor().redact(source))
+
+    assert secret not in rendered
+    assert tuple(dict.items(source)) == before
+    assert source.items_calls == 0
+
+
+def test_split_authorization_suppresses_all_trailing_components() -> None:
+    signature_secret = "MULTIPART_SIGNATURE_VALUE"
+    command = [
+        "--authorization",
+        "AWS4-HMAC-SHA256",
+        "Credential=FIRST",
+        "SignedHeaders=host",
+        f"Signature={signature_secret}",
+    ]
+    direct_error = ValueError(*command)
+    process_error = subprocess.CalledProcessError(
+        1,
+        command,
+        stderr=tuple(command),  # type: ignore[arg-type]
+    )
+
+    rendered = repr(Redactor().redact((command, direct_error, process_error)))
+
+    assert signature_secret not in rendered
+    assert "Credential=FIRST" not in rendered
+    assert "SignedHeaders=host" not in rendered
+
+
+def test_encoded_delimiters_cannot_escape_credential_redaction() -> None:
+    password_tail = "ENCODED_NEWLINE_PASSWORD_TAIL"
+    authorization_tail = "ENCODED_NEWLINE_AUTHORIZATION_TAIL"
+    semicolon_tail = "SEMICOLON_AUTHORIZATION_TAIL"
+    values = (
+        f"unrecognized arguments: --password=FIRST%0A{password_tail}",
+        f"Authorization Custom FIRST%0A{authorization_tail}",
+        f"Authorization Custom FIRST;{semicolon_tail}",
+    )
+    direct_error = ValueError(values[0])
+    process_error = subprocess.CalledProcessError(
+        1,
+        ["provider-client", "status"],
+        stderr=values[1],
+    )
+
+    rendered = repr(Redactor().redact((*values, direct_error, process_error)))
+
+    assert password_tail not in rendered
+    assert authorization_tail not in rendered
+    assert semicolon_tail not in rendered

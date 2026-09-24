@@ -175,6 +175,10 @@ def test_lifecycle_subprocess_and_cli_errors_are_redacted(
             "--timeout=%70%61%73%73%77%6F%72%64%3D%53%59%4E%54%48%45%54%49%43",
             "%53%59%4E%54%48%45%54%49%43",
         ),
+        (
+            "--password=FIRST%0AENCODED_ARGPARSE_TAIL",
+            "ENCODED_ARGPARSE_TAIL",
+        ),
     ],
 )
 def test_db_reset_argument_errors_are_credential_free(

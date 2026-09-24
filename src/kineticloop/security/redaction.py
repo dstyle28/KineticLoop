@@ -54,17 +54,15 @@ _SENSITIVE_ASSIGNMENT = re.compile(
 )
 _COMMAND_OPTION = re.compile(
     rf"(?i)(?P<prefix>--[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*=)"
-    r"(?P<value>\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*'|"
-    r"(?:bearer|basic|digest|token)\s+[^\r\n]+|[^\r\n]+)"
+    r"(?P<value>[\s\S]+)"
 )
 _COMMAND_SEPARATE = re.compile(
     rf"(?i)(?P<prefix>--[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*\s+)"
-    r"(?P<value>\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*'|"
-    r"(?:bearer|basic|digest|token)\s+[^\r\n]+|[^\r\n]+)"
+    r"(?P<value>[\s\S]+)"
 )
 _AUTH_HEADER = re.compile(
     r"(?i)(?P<prefix>\bauthorization\s+[a-z][a-z0-9+._-]*\s+)"
-    r"(?P<value>[^;\r\n]+)"
+    r"(?P<value>[\s\S]+)"
 )
 DiagnosticScalar: TypeAlias = str | bytes | int | float | bool | None
 _ALL_FOLLOWING_ARGUMENTS = -1
@@ -198,12 +196,12 @@ def _sequence_sensitive_positions(value: str) -> set[int]:
         key, found, member = stripped.partition(separator)
         if found and _is_sensitive_key(key):
             if _normalized_key(key) == "authorization":
-                return {0} if member else {0, 1}
+                return {_ALL_FOLLOWING_ARGUMENTS}
             if not member or member.casefold() in {"bearer", "basic", "digest", "token"}:
                 return {0}
             return set()
     if _normalized_key(stripped) == "authorization":
-        return {0, 1}
+        return {_ALL_FOLLOWING_ARGUMENTS}
     return {0} if _is_sensitive_key(stripped) else set()
 
 
@@ -259,8 +257,7 @@ def _sensitive_value_end(value: str, start: int) -> int:
             elif character == opening:
                 break
         return index
-    end = value.find("\n", start)
-    return len(value) if end < 0 else end
+    return len(value)
 
 
 def _redact_sensitive_assignments(value: str) -> str:
@@ -450,9 +447,9 @@ class Redactor:
             return self.text(value)
         if type(value) is bytes:
             return self.text(value.decode("utf-8", errors="replace")).encode("utf-8")
-        if isinstance(value, Mapping):
+        if isinstance(value, dict):
             result: dict[object, object] = {}
-            for key, item in value.items():
+            for key, item in tuple(dict.items(value)):
                 snapshot_key = self._snapshot_mapping_key(key)
                 redacted_key = self._redact_mapping_key(snapshot_key)
                 result[redacted_key] = (
@@ -461,6 +458,8 @@ class Redactor:
                     else self.redact(item)
                 )
             return result
+        if isinstance(value, Mapping):
+            return "<diagnostic-mapping>"
         if isinstance(value, tuple):
             return tuple(self._redact_sequence(value))
         if isinstance(value, list):
