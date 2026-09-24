@@ -191,7 +191,7 @@ class DecideAssociation(SubjectCommand):
     command_kind: Literal["DecideAssociation"]
     boundary: Literal[TransactionBoundary.T2_IN]
     evidence_revision_id: CanonicalId
-    expected_input_frontier: PositiveInt
+    expected_input_frontier_hash: Sha256
     association_basis_hash: Sha256
 
 
@@ -199,7 +199,7 @@ class DecideAdmission(SubjectCommand):
     command_kind: Literal["DecideAdmission"]
     boundary: Literal[TransactionBoundary.T2_IN]
     candidate_id: CanonicalId
-    expected_input_frontier: PositiveInt
+    expected_input_frontier_hash: Sha256
     admission_basis_hash: Sha256
 
 
@@ -207,7 +207,7 @@ class AcceptFactRevision(SubjectCommand):
     command_kind: Literal["AcceptFactRevision"]
     boundary: Literal[TransactionBoundary.T2_IN]
     fact_revision_id: CanonicalId
-    expected_input_frontier: PositiveInt
+    expected_input_frontier_hash: Sha256
     fact_basis_hash: Sha256
 
 
@@ -266,7 +266,7 @@ class BeginBuild(SubjectCommand):
     command_kind: Literal["BeginBuild"]
     boundary: Literal[TransactionBoundary.BUILD_PREPARATION]
     build_id: CanonicalId
-    captured_input_frontier: PositiveInt
+    captured_input_frontier_hash: Sha256
     captured_authorization_epoch: NonNegativeInt
     program_revision_id: CanonicalId
     policy_id: CanonicalId
@@ -297,7 +297,7 @@ class SealFactset(SubjectCommand):
     boundary: Literal[TransactionBoundary.T2_SEAL]
     build_id: CanonicalId
     completion_identity: CanonicalId
-    captured_input_frontier: PositiveInt
+    captured_input_frontier_hash: Sha256
     captured_authorization_epoch: NonNegativeInt
     closed_member_revision: NonNegativeInt
     completion_digest: Sha256
@@ -345,7 +345,7 @@ class PublishManifest(SubjectCommand):
     boundary: Literal[TransactionBoundary.T3]
     build_id: CanonicalId
     sealed_factset_id: CanonicalId
-    expected_input_frontier: PositiveInt
+    expected_input_frontier_hash: Sha256
     expected_authorization_epoch: NonNegativeInt
     program_revision_id: CanonicalId
     policy_id: CanonicalId

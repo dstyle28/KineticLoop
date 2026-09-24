@@ -31,6 +31,10 @@ fields. Registry commands carry no fabricated subject: their scope is exactly
 `global:safety-registry`, and their actor must have the authenticated admin
 capability.
 
+T2 input decisions, factset build/seal, and T3 publication bind the input
+frontier as an explicit `*_input_frontier_hash` SHA-256 value. The frontier is
+the digest of the immutable input revision set; it is not a protocol counter.
+
 Preparation commands are independent short transactions. In particular,
 factset build preparation never acquires S01, registry registration is outside
 T2-GLOBAL, and projection/tool/evidence preparation cannot be serialized as the

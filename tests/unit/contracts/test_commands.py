@@ -267,6 +267,31 @@ def test_identity_idempotency_and_basis_fields() -> None:
         CommitBundle.model_validate(payload)
 
 
+@pytest.mark.parametrize(
+    ("command_kind", "field_name"),
+    (
+        ("DecideAssociation", "expected_input_frontier_hash"),
+        ("DecideAdmission", "expected_input_frontier_hash"),
+        ("AcceptFactRevision", "expected_input_frontier_hash"),
+        ("BeginBuild", "captured_input_frontier_hash"),
+        ("SealFactset", "captured_input_frontier_hash"),
+        ("PublishManifest", "expected_input_frontier_hash"),
+    ),
+)
+def test_input_frontier_is_an_immutable_hash(
+    command_kind: str, field_name: str
+) -> None:
+    model = PUBLIC_COMMAND_BY_KIND[command_kind]
+    payload = command_payload(model)
+    assert payload[field_name] == HASH
+    command = model.model_validate(payload)
+    assert getattr(command, field_name) == HASH
+
+    payload[field_name] = 1
+    with pytest.raises(ValidationError):
+        model.model_validate(payload)
+
+
 def test_shadow_and_test_scope_fail_closed() -> None:
     for model in (CommitBundle, PUBLIC_COMMAND_BY_KIND["Reauthorize"], PUBLIC_COMMAND_BY_KIND["StartSession"], PUBLIC_COMMAND_BY_KIND["ResumeSession"], PUBLIC_COMMAND_BY_KIND["ContinueSession"]):
         command = build_command(model, test_only=True)
