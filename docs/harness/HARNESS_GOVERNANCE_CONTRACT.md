@@ -51,6 +51,14 @@ conform to the result schema. The reviewed head must contain the same representa
 with byte-identical content. The bound result must be PASS and satisfy all semantic
 result checks, including required task checks and revision-bound evidence.
 
+An already-merged task that lacks required review or integration bookkeeping may be
+closed by one governance remediation PR. That PR may add only the task's required
+review records together with its integration record; a changed task review directory
+without the matching changed integration record fails closed. Every required review
+must be PASS and bind the exact integrated merge tree. This exception does not permit
+task implementation, result, evidence, packet, requirement, or frozen-authority
+changes.
+
 The integration revision chain is intentionally asymmetric. `result_commit` must
 be a Git ancestor of `reviewed_head_sha`, and `reviewed_head_sha` must be a Git
 ancestor of `review_record_commit`. `merge_commit` must be a Git ancestor of the
@@ -59,3 +67,8 @@ merge exception: that edge is valid when it has normal Git ancestry or when the
 two commits' complete Git tree object IDs are exactly equal. The validator does
 not accept matching path subsets, selected-file content comparisons, patch
 equivalence, or any other near match in place of complete tree identity.
+For the governance remediation exception above, the reverse ancestry direction is
+accepted only when `reviewed_head_sha` equals `merge_commit` exactly and
+`merge_commit` is an ancestor of `review_record_commit`; this records a genuinely
+post-merge review of the integrated tree without relabeling a later commit as the
+historical merge.

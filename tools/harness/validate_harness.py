@@ -209,6 +209,7 @@ def governance_allowed_patterns(change_id):
         'docs/exec-plans/active/**',
         f'docs/exec-plans/evidence/{change_id}/**',
         'docs/exec-plans/integrations/**',
+        'docs/exec-plans/reviews/KL-*/**',
         f'docs/exec-plans/reviews/{change_id}/**',
         f'docs/exec-plans/governance/{change_id}.yaml',
         f'docs/exec-plans/governance/{change_id}.json',
@@ -598,7 +599,12 @@ def integration_record_errors(root, path, record, schema, result_schema, tasks):
         try:
             git(root, 'merge-base', '--is-ancestor', review_commit, merge_commit)
         except ValueError:
-            if tree_object(root, review_commit) != tree_object(root, merge_commit):
+            exact_tree_squash = tree_object(root, review_commit) == tree_object(root, merge_commit)
+            delayed_post_merge_review = (
+                reviewed == merge_commit
+                and is_ancestor(root, merge_commit, review_commit)
+            )
+            if not exact_tree_squash and not delayed_post_merge_review:
                 errors.append('integration-ancestry-or-exact-tree:' + task_id + ':review-to-merge')
         result_paths_at_commit = result_paths_at_revision(root, task_id, result_commit)
         result_paths_at_review = result_paths_at_revision(root, task_id, reviewed)
@@ -635,10 +641,13 @@ def integration_record_errors(root, path, record, schema, result_schema, tasks):
                     'integration-result-semantic:' + task_id + ':' + issue
                     for issue in semantic_result_errors(
                         result, task, root, evidence_revision=reviewed))
-        review_path = f'docs/exec-plans/reviews/{task_id}/GENERAL.json'
-        review = json.loads(git(root, 'show', review_commit + ':' + review_path))
-        if review.get('status') != 'PASS' or resolve(root, review.get('reviewed_head_sha', '')) != reviewed:
-            errors.append('integration-review-binding:' + task_id)
+        for review_type in task['review_requirements']:
+            review_path = f'docs/exec-plans/reviews/{task_id}/{review_type}.json'
+            review = json.loads(git(root, 'show', review_commit + ':' + review_path))
+            if (review.get('review_type') != review_type
+                    or review.get('status') != 'PASS'
+                    or resolve(root, review.get('reviewed_head_sha', '')) != reviewed):
+                errors.append('integration-review-binding:' + task_id + ':' + review_type)
     except ValueError as ex:
         errors.append('integration-revision:' + task_id + ':' + str(ex))
     return errors
@@ -906,6 +915,49 @@ def validate(root, args):
                 declared = set(record['files_changed'])
                 if declared != governance_changed:
                     errors.append('governance-files-changed-mismatch:' + change_id)
+                changed_task_review_types: dict[str, set[str]] = {}
+                for path in sorted(governance_changed):
+                    if not re.match(r'docs/exec-plans/reviews/KL-[0-9]{3}[A-Z]?/', path):
+                        continue
+                    match = re.fullmatch(
+                        r'docs/exec-plans/reviews/(KL-[0-9]{3}[A-Z]?)/([A-Z_]+)\.json',
+                        path)
+                    if not match:
+                        errors.append('governance-task-review-path:' + change_id + ':' + path)
+                        continue
+                    task_id, review_type = match.groups()
+                    changed_task_review_types.setdefault(task_id, set()).add(review_type)
+                    if subprocess.run(
+                            ['git', 'cat-file', '-e', governance_base + ':' + path],
+                            cwd=root, capture_output=True).returncode == 0:
+                        errors.append(
+                            'governance-task-review-not-addition:'
+                            + change_id + ':' + path)
+                changed_integrations = {
+                    match.group(1)
+                    for path in governance_changed
+                    if (match := re.fullmatch(
+                        r'docs/exec-plans/integrations/(KL-[0-9]{3}[A-Z]?)\.json',
+                        path))
+                }
+                changed_task_reviews = set(changed_task_review_types)
+                for task_id in sorted(changed_task_reviews - changed_integrations):
+                    errors.append(
+                        'governance-task-review-without-integration:'
+                        + change_id + ':' + task_id)
+                for task_id in sorted(changed_task_reviews & changed_integrations):
+                    integration_path = f'docs/exec-plans/integrations/{task_id}.json'
+                    if subprocess.run(
+                            ['git', 'cat-file', '-e', governance_base + ':' + integration_path],
+                            cwd=root, capture_output=True).returncode == 0:
+                        errors.append(
+                            'governance-task-integration-not-addition:'
+                            + change_id + ':' + task_id)
+                    required_reviews = set(tasks.get(task_id, {}).get('review_requirements', []))
+                    if changed_task_review_types[task_id] != required_reviews:
+                        errors.append(
+                            'governance-task-review-types:'
+                            + change_id + ':' + task_id)
                 errors.extend(governance_index_errors(
                     root, governance_base, record, governance_changed, governance_protected,
                     governance_target))

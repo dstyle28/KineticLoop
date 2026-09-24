@@ -1,0 +1,110 @@
+change_identity: harness-governance-v0.1/HG-011
+display_change_id: HG-011
+base_commit: a1e407d10bed1701efd0975b01c3054615503cb5
+tested_commit: 90605d4888fe9ed128eb5f2e34c11f11c2facdb3
+change_status: PASS
+summary: >-
+  Close KL-002's durable post-merge review and integration state without changing
+  its implementation, result, evidence, packet, requirements, or frozen authority.
+  Add a fail-closed governance remediation path that accepts delayed task reviews
+  only when every required review binds the exact historical merge tree and the
+  matching integration record is created in the same governance change.
+packets_refined: []
+files_changed:
+  - CURRENT_DOCUMENT_INDEX.json
+  - HARNESS_DOCUMENT_MANIFEST.json
+  - docs/exec-plans/evidence/HG-011/checks.log
+  - docs/exec-plans/evidence/HG-011/final-checks.log
+  - docs/exec-plans/governance/HG-011.yaml
+  - docs/exec-plans/integrations/KL-002.json
+  - docs/exec-plans/reviews/KL-002/DB_CONCURRENCY.json
+  - docs/exec-plans/reviews/KL-002/GENERAL.json
+  - docs/exec-plans/reviews/HG-011/GENERAL.json
+  - docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
+  - docs/harness/MERGE_GATE.md
+  - tests/harness/test_validator.py
+  - tools/harness/validate_harness.py
+checks_run:
+  - check_id: governance_schema_valid
+    command: Validate HG-011.yaml against HARNESS_CHANGE.schema.json.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: integration_schema_valid
+    command: Validate KL-002.json against INTEGRATION_RECORD.schema.json.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: review_schema_and_binding_valid
+    command: Validate both required KL-002 reviews and their exact merge-tree binding.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: harness_structure_valid
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: lint_passes
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/ruff check .
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: typecheck_passes
+    command: MYPY_CACHE_DIR=/private/tmp/hg-011-mypy PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/mypy src tools tests
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: unit_tests_pass
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/unit
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: harness_tests_pass
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: db_unit_tests_pass
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/db
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: integration_binding_tests_pass
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness/test_validator.py -k 'integration or task_review_without_integration'
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: compose_config_valid
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python tools/db/verify.py compose-config-valid
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: postgres_ready
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python tools/db/verify.py postgres-ready
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: reset_idempotent
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python tools/db/verify.py reset-idempotent
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: worktree_db_isolated
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python tools/db/verify.py worktree-db-isolated --peer-root /private/tmp/hg011-kl002-peer.cVnVCB
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: current_master_ancestry_and_result_continuity
+    command: Verify KL-002 merge ancestry and byte-identical result content through tested_commit.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: review_record_commit_contains_both_required_reviews
+    command: Verify GENERAL and DB_CONCURRENCY reviews exist at review_record_commit.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: frozen_baseline_unchanged
+    command: git diff --exit-code base_commit tested_commit -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: diff_clean
+    command: git diff --check base_commit tested_commit
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/checks.log
+  - check_id: final_revision_revalidation
+    command: Re-run harness, lint, typecheck, unit, DB, focused integration, live PostgreSQL, continuity, frozen-baseline, and diff checks at tested_commit.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-011/final-checks.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+  - >-
+    HG-011 requires a fresh independent GENERAL review bound to the final
+    governance head before merge; the review is recorded separately after this
+    governance record and its evidence are committed.

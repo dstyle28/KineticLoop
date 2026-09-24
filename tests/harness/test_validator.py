@@ -705,6 +705,19 @@ class ValidatorTests(unittest.TestCase):
         self.check(1, 'governance-write-scope:HG-999:README.md',
                    '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
+    def test_ci_governance_rejects_task_review_without_integration(self):
+        self.review(self.base)
+        self.governance_change()
+        self.check(1, 'governance-task-review-without-integration:HG-999:KL-001',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_rejects_nonrecord_task_review_path(self):
+        self.put('docs/exec-plans/reviews/KL-001/notes.md')
+        self.commit('persist unstructured task review note')
+        self.governance_change()
+        self.check(1, 'governance-task-review-path:HG-999:',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
     def test_ci_rejects_mixed_task_and_governance_records(self):
         self.governance_change()
         self.result()
@@ -743,6 +756,24 @@ class ValidatorTests(unittest.TestCase):
         self.git('checkout', '-q', '--detach', merge_commit)
         self.integration_record(result_commit, result_commit, review_commit, merge_commit)
         self.check()
+
+    def test_integration_accepts_review_recorded_after_merge(self):
+        self.result(tested=self.base)
+        merge_commit = self.commit('merge result before review')
+        self.put('later.txt', 'later integrated work\n')
+        self.commit('integrate unrelated later work')
+        review_commit = self.review(merge_commit)
+        self.integration_record(merge_commit, merge_commit, review_commit, merge_commit)
+        self.check()
+
+    def test_delayed_review_must_bind_the_merge_tree(self):
+        self.result(tested=self.base)
+        result_commit = self.commit('persist result')
+        self.put('merged.txt', 'content added by merge\n')
+        merge_commit = self.commit('merge task with changed tree')
+        review_commit = self.review(result_commit)
+        self.integration_record(result_commit, result_commit, review_commit, merge_commit)
+        self.check(1, 'integration-ancestry-or-exact-tree:KL-001:review-to-merge')
 
     def test_integration_rejects_squash_tree_with_unrelated_content_change(self):
         self.result(tested=self.base)
