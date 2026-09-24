@@ -78,6 +78,24 @@ M2_REQUIRED_CHECK_IDS = {
     },
 }
 M2_REQUIRED_SECURITY_REVIEWS = {'KL-014', 'KL-017', 'KL-018', 'KL-055'}
+M1_CLEAN_START_CHECKS = {
+    'compose_config_valid': (
+        'PYTHONPATH="$PWD/src" '
+        '/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python '
+        'tools/db/verify.py compose-config-valid'),
+    'postgres_ready': (
+        'PYTHONPATH="$PWD/src" '
+        '/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python '
+        'tools/db/verify.py postgres-ready'),
+}
+M1_CLEAN_START_RELEVANT_PATHS = [
+    'compose.yaml',
+    'pyproject.toml',
+    'uv.lock',
+    'src/kineticloop/cli.py',
+    'src/kineticloop/db/**',
+    'tools/db/verify.py',
+]
 M2_REQUIRED_DB_REVIEWS = {
     'KL-010', 'KL-011', 'KL-012', 'KL-013', 'KL-014',
     'KL-015', 'KL-016', 'KL-017', 'KL-018',
@@ -973,9 +991,40 @@ def milestone_closure_errors(
         for item in closure['exit_checks']
     }
     clean_start_evidence = evidence_paths.get('clean_checkout_starts_test_environment', set())
-    if (not any('/compose_config_valid-' in path for path in clean_start_evidence)
-            or not any('/postgres_ready-' in path for path in clean_start_evidence)):
+    clean_start_records = next(
+        (item['evidence'] for item in closure['exit_checks']
+         if item['check_id'] == 'clean_checkout_starts_test_environment'), [])
+    expected_clean_paths = {
+        check_id: [item for item in clean_start_records
+                   if Path(item['path']).name.startswith(check_id + '-')]
+        for check_id in M1_CLEAN_START_CHECKS
+    }
+    if (set(clean_start_evidence) != {item['path'] for item in clean_start_records}
+            or any(len(items) != 1 for items in expected_clean_paths.values())
+            or len(clean_start_records) != len(M1_CLEAN_START_CHECKS)):
         errors.append('milestone-exit-evidence-semantic:clean_checkout_starts_test_environment')
+    for check_id, items in expected_clean_paths.items():
+        if len(items) != 1:
+            continue
+        evidence = items[0]
+        try:
+            revision = resolve(root, evidence['revision'])
+            if revision != evaluated:
+                errors.append('milestone-exit-evidence-stale:' + check_id)
+            payload = load_artifact_at_revision(root, evidence['path'], revision)
+            if (not isinstance(payload, dict)
+                    or payload.get('check_id') != check_id
+                    or payload.get('command') != M1_CLEAN_START_CHECKS[check_id]
+                    or payload.get('status') != 'PASS'):
+                errors.append('milestone-exit-evidence-oracle:' + check_id)
+                continue
+            tested = resolve(root, payload.get('tested_commit', ''))
+            if (not is_ancestor(root, tested, evaluated)
+                    or any(matches(path, M1_CLEAN_START_RELEVANT_PATHS)
+                           for path in changed_paths(root, tested, evaluated))):
+                errors.append('milestone-exit-evidence-freshness:' + check_id)
+        except (ValueError, OSError, KeyError, TypeError):
+            errors.append('milestone-exit-evidence-oracle:' + check_id)
     contract_evidence = evidence_paths.get('m1_m2_task_contracts_complete', set())
     if not {BACKLOG, TRACEABILITY}.issubset(contract_evidence):
         errors.append('milestone-exit-evidence-semantic:m1_m2_task_contracts_complete')

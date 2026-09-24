@@ -580,6 +580,37 @@ class ValidatorTests(unittest.TestCase):
             self.closure_errors(semantic_substitution),
         )
 
+    def test_m1_clean_start_evidence_requires_fresh_pass_oracle(self):
+        original = v.load_artifact(ROOT / 'docs/exec-plans/milestones/M1.json')
+        clean = next(item for item in original['exit_checks']
+                     if item['check_id'] == 'clean_checkout_starts_test_environment')
+
+        stale = copy.deepcopy(original)
+        stale_clean = next(item for item in stale['exit_checks']
+                           if item['check_id'] == 'clean_checkout_starts_test_environment')
+        stale_clean['evidence'][0]['revision'] = v.resolve(
+            ROOT, original['evaluated_commit'] + '^')
+        self.assertIn(
+            'milestone-exit-evidence-stale:compose_config_valid',
+            self.closure_errors(stale),
+        )
+
+        target = clean['evidence'][0]['path']
+        real_loader = v.load_artifact_at_revision
+
+        def failing_loader(root, path, revision):
+            payload = real_loader(root, path, revision)
+            if path == target:
+                payload = copy.deepcopy(payload)
+                payload['status'] = 'FAIL'
+            return payload
+
+        with mock.patch.object(v, 'load_artifact_at_revision', side_effect=failing_loader):
+            self.assertIn(
+                'milestone-exit-evidence-oracle:compose_config_valid',
+                self.closure_errors(original),
+            )
+
     def test_m1_closure_rejects_missing_unmerged_and_unreachable_integration(self):
         original = v.load_artifact(ROOT / 'docs/exec-plans/milestones/M1.json')
         real_loader = v.load_artifact_at_revision
