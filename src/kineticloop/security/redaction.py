@@ -52,12 +52,12 @@ _SENSITIVE_ASSIGNMENT = re.compile(
 _COMMAND_OPTION = re.compile(
     rf"(?i)(?P<prefix>--[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*=)"
     r"(?P<value>\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*'|"
-    r"(?:bearer|basic|digest|token)\s+[^\r\n]+|[^\s\r\n]+)"
+    r"(?:bearer|basic|digest|token)\s+[^\r\n]+|[^\r\n]+)"
 )
 _COMMAND_SEPARATE = re.compile(
     rf"(?i)(?P<prefix>--[a-z0-9_.-]*(?:{_SENSITIVE_KEY_EXPRESSION})[a-z0-9_.-]*\s+)"
-    r"(?P<value>\"[^\"\r\n]*\"|'[^'\r\n]*'|"
-    r"(?:bearer|basic|digest|token)\s+[^\s\r\n]+|[^\s\r\n]+)"
+    r"(?P<value>\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*'|"
+    r"(?:bearer|basic|digest|token)\s+[^\r\n]+|[^\r\n]+)"
 )
 _AUTH_HEADER = re.compile(
     r"(?i)(?P<prefix>\bauthorization\s+(?:bearer|basic|digest|token)\s+)"
@@ -185,6 +185,17 @@ def _redact_sensitive_assignments(value: str) -> str:
     return "".join(result)
 
 
+def _stable_unquote(value: str, *, plus: bool = False) -> str | None:
+    decoder = unquote_plus if plus else unquote
+    decoded = value
+    for _ in range(8):
+        next_value = decoder(decoded)
+        if next_value == decoded:
+            return decoded
+        decoded = next_value
+    return None
+
+
 def _percent_byte_pattern(value: int) -> str:
     encoded = f"{value:02X}"
     return "%" + "".join(
@@ -272,13 +283,8 @@ class Redactor:
             parsed = urlsplit(matched_url)
             authority = parsed
             has_userinfo = parsed.username is not None or parsed.password is not None
-            decoded_netloc = parsed.netloc
-            for _ in range(8):
-                next_netloc = unquote(decoded_netloc)
-                if next_netloc == decoded_netloc:
-                    break
-                decoded_netloc = next_netloc
-            else:
+            decoded_netloc = _stable_unquote(parsed.netloc)
+            if decoded_netloc is None:
                 return REDACTED + trailing
             if not has_userinfo and "@" in decoded_netloc:
                 authority = urlsplit(f"//{decoded_netloc.rsplit('@', maxsplit=1)[1]}")
@@ -294,7 +300,10 @@ class Redactor:
             query_parts = re.split(r"([&;])", parsed.query)
             for index in range(0, len(query_parts), 2):
                 key, found, value = query_parts[index].partition("=")
-                if found and _is_sensitive_key(unquote_plus(key)):
+                decoded_key = _stable_unquote(key, plus=True)
+                if decoded_key is None:
+                    return REDACTED + trailing
+                if found and _is_sensitive_key(decoded_key):
                     query_parts[index] = f"{key}={quote_plus(REDACTED)}"
             sanitized = urlunsplit(
                 (parsed.scheme, host, parsed.path, "".join(query_parts), parsed.fragment)

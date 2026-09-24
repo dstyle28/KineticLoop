@@ -12,6 +12,15 @@ from kineticloop.security.synthetic import (
 )
 
 
+class EqualSentinel:
+    def __eq__(self, other: object) -> bool:
+        del other
+        return True
+
+    def __repr__(self) -> str:
+        return "possibly-real-secret"
+
+
 def test_synthetic_security_fixtures_have_provenance(tmp_path: Path) -> None:
     root = Path(__file__).parents[2] / "fixtures/synthetic/security"
     fixture_paths = sorted(root.glob("**/*.json"))
@@ -49,6 +58,18 @@ def test_synthetic_security_fixtures_have_provenance(tmp_path: Path) -> None:
     undocumented_secret["credentials"][credential_name] = "possibly-real"
     with pytest.raises(SyntheticFixtureError, match="documented sentinel"):
         validate_synthetic_fixture(undocumented_secret)
+
+    deceptive_credential = copy.deepcopy(fixtures[0])
+    credential_name = next(iter(deceptive_credential["credentials"]))
+    deceptive_credential["credentials"][credential_name] = EqualSentinel()
+    with pytest.raises(SyntheticFixtureError, match="documented sentinel"):
+        validate_synthetic_fixture(deceptive_credential)
+
+    deceptive_health = copy.deepcopy(fixtures[0])
+    health_name = next(iter(deceptive_health["health_fields"]))
+    deceptive_health["health_fields"][health_name] = EqualSentinel()
+    with pytest.raises(SyntheticFixtureError, match="documented sentinel"):
+        validate_synthetic_fixture(deceptive_health)
 
     mismatched_identity = copy.deepcopy(fixtures[0])
     mismatched_identity["provenance_id"] = "kineticloop-test-fixture:other-fixture:v1"

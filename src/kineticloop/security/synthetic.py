@@ -72,8 +72,10 @@ def load_synthetic_fixture(path: str | Path) -> dict[str, Any]:
 
 
 def _require_mapping(value: object, label: str) -> Mapping[str, object]:
-    if not isinstance(value, Mapping):
+    if type(value) is not dict:
         raise SyntheticFixtureError(f"{label} must be an object")
+    if any(type(key) is not str for key in value):
+        raise SyntheticFixtureError(f"{label} keys must be strings")
     return value
 
 
@@ -86,9 +88,9 @@ def validate_synthetic_fixture(payload: object) -> None:
 
     fixture_id = fixture.get("fixture_id")
     provenance_id = fixture.get("provenance_id")
-    fixture_match = _FIXTURE_ID.fullmatch(fixture_id) if isinstance(fixture_id, str) else None
+    fixture_match = _FIXTURE_ID.fullmatch(fixture_id) if type(fixture_id) is str else None
     provenance_match = (
-        _PROVENANCE_ID.fullmatch(provenance_id) if isinstance(provenance_id, str) else None
+        _PROVENANCE_ID.fullmatch(provenance_id) if type(provenance_id) is str else None
     )
     if fixture_match is None:
         raise SyntheticFixtureError("fixture_id is missing or unstable")
@@ -104,7 +106,7 @@ def validate_synthetic_fixture(payload: object) -> None:
     provider = _require_mapping(fixture.get("provider"), "provider")
     provider_id = provider.get("id")
     if (
-        not isinstance(provider_id, str)
+        type(provider_id) is not str
         or provider_id not in _PROVIDERS
         or provider.get("environment") != "SYNTHETIC_TEST"
     ):
@@ -119,14 +121,16 @@ def validate_synthetic_fixture(payload: object) -> None:
     if set(credentials) != profile["credentials"]:
         raise SyntheticFixtureError("credentials do not match the synthetic provider profile")
     for name, value in credentials.items():
-        if SYNTHETIC_SENTINEL_SECRETS.get(name) != value:
+        expected = SYNTHETIC_SENTINEL_SECRETS.get(name)
+        if type(value) is not str or value != expected:
             raise SyntheticFixtureError(f"credential {name!r} is not a documented sentinel")
 
     health_fields = _require_mapping(fixture.get("health_fields"), "health_fields")
     if set(health_fields) != profile["health_fields"]:
         raise SyntheticFixtureError("health_fields do not match the synthetic provider profile")
     for name, value in health_fields.items():
-        if SYNTHETIC_HEALTH_SENTINELS.get(name) != value:
+        expected_health = SYNTHETIC_HEALTH_SENTINELS.get(name)
+        if type(value) is not type(expected_health) or value != expected_health:
             raise SyntheticFixtureError(f"health field {name!r} is not a documented sentinel")
 
     if set(fixture) != {

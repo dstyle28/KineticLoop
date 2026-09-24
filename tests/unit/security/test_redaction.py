@@ -158,6 +158,9 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     source["recursively_encoded_userinfo"] = (
         "https://alice%253Aopaque-double-encoded-secret%2540provider.invalid/path"
     )
+    source["recursively_encoded_query"] = (
+        "https://provider.invalid/path?to%256ben=opaque-double-query-secret"
+    )
     source["indexed_format_args"] = (
         "password={1} safe={0}",
         "retained-indexed-context",
@@ -180,6 +183,13 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     )
     source["quoted_password_text"] = (
         'provider-client --password="quoted-first-secret quoted-second-secret"'
+    )
+    source["plain_space_argv"] = [
+        "provider-client",
+        "--password=plain-first-secret plain-second-secret",
+    ]
+    source["escaped_quote_password_text"] = (
+        'provider-client --password "escaped-first-secret\\\" escaped-second-secret"'
     )
     format_exception = ValueError(
         "safe=%s password=%s",
@@ -249,6 +259,7 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     assert "opaque-cookie-tail-secret" not in rendered
     assert "opaque-encoded-userinfo-secret" not in rendered
     assert "opaque-double-encoded-secret" not in rendered
+    assert "opaque-double-query-secret" not in rendered
     assert "indexed-format-secret" not in rendered
     assert "dynamic-width-secret" not in rendered
     assert "dynamic-precision-secret" not in rendered
@@ -256,6 +267,10 @@ def test_nested_redaction_is_non_mutating_and_authority_neutral() -> None:
     assert "equals-authorization-secret" not in rendered
     assert "quoted-first-secret" not in rendered
     assert "quoted-second-secret" not in rendered
+    assert "plain-first-secret" not in rendered
+    assert "plain-second-secret" not in rendered
+    assert "escaped-first-secret" not in rendered
+    assert "escaped-second-secret" not in rendered
     assert "exception-format-secret" not in rendered
     assert "[2001:db8::1]" in rendered
     assert "provider timeout" in rendered
