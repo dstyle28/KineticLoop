@@ -1,0 +1,89 @@
+change_identity: harness-governance-v0.1/HG-009
+display_change_id: HG-009
+base_commit: 1834f6add0ed3860556458817c7620b2ef2d394e
+tested_commit: 698c2d6e660fefbac0a8b4726884230c54f87932
+change_status: PASS
+summary: >-
+  Replay an already-merged governance change's derived metadata, task definitions
+  and required-review state from its reviewed revision when a delayed review-only
+  PR starts from a later protected base. Require that reviewed revision to be
+  integrated into the protected base, then apply the review-record-only freshness
+  check only to the protected-base-to-HEAD append.
+packets_refined: []
+files_changed:
+  - CURRENT_DOCUMENT_INDEX.json
+  - HARNESS_DOCUMENT_MANIFEST.json
+  - docs/exec-plans/evidence/HG-009/checks.log
+  - docs/exec-plans/governance/HG-009.yaml
+  - tests/harness/test_validator.py
+  - tools/harness/validate_harness.py
+checks_run:
+  - check_id: harness_structure_valid
+    command: >-
+      PYTHONPATH=/Users/davetian/.codex/worktrees/c758/KineticLoop/src
+      /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-009/checks.log
+  - check_id: lint_passes
+    command: >-
+      PYTHONPATH=/Users/davetian/.codex/worktrees/c758/KineticLoop/src
+      /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/ruff check .
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-009/checks.log
+  - check_id: typecheck_passes
+    command: >-
+      MYPY_CACHE_DIR=/private/tmp/hg-009-mypy
+      PYTHONPATH=/Users/davetian/.codex/worktrees/c758/KineticLoop/src
+      /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/mypy src tools tests
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-009/checks.log
+  - check_id: unit_tests_pass
+    command: >-
+      PYTHONPATH=/Users/davetian/.codex/worktrees/c758/KineticLoop/src
+      /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/unit
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-009/checks.log
+  - check_id: harness_tests_pass
+    command: >-
+      PYTHONPATH=/Users/davetian/.codex/worktrees/c758/KineticLoop/src
+      /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-009/checks.log
+  - check_id: delayed_review_regressions_pass
+    command: >-
+      PYTHONPATH=/Users/davetian/.codex/worktrees/c758/KineticLoop/src
+      /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q
+      tests/harness/test_validator.py -k
+      'governance_review_only or governance_tested_suffix or governance_merge_gate'
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-009/checks.log
+  - check_id: hg007_delayed_review_reproduction_pass
+    command: >-
+      Validate review artifact commit 72bcbfd with HG-009 validator logic using
+      kl check-harness --ci-pr-base 1834f6add0ed3860556458817c7620b2ef2d394e
+      --ci-pr-head HEAD.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-009/checks.log
+  - check_id: diff_clean
+    command: >-
+      git diff --check 1834f6add0ed3860556458817c7620b2ef2d394e HEAD
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-009/checks.log
+  - check_id: frozen_baseline_unchanged
+    command: >-
+      git diff --exit-code 1834f6add0ed3860556458817c7620b2ef2d394e HEAD --
+      FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
+      05_KineticLoop_Protocol_v1.2_FROZEN.md
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-009/checks.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+  - >-
+    HG-009 requires a fresh independent GENERAL review bound to the final governance
+    head before merge; this implementation thread intentionally creates no review
+    artifact.
+  - >-
+    HG-007 remains without its independent GENERAL review until HG-009 is integrated
+    and a separate review-only PR records that review against merge revision
+    2f612be1d08be21a0f46714ddd10777e23329463.

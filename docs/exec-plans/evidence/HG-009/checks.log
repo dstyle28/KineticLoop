@@ -1,0 +1,58 @@
+HG-009 governance remediation evidence
+
+Identity
+  change: harness-governance-v0.1/HG-009
+  protected base: 1834f6add0ed3860556458817c7620b2ef2d394e
+  tested revision: 698c2d6e660fefbac0a8b4726884230c54f87932
+
+PYTHONPATH=/Users/davetian/.codex/worktrees/c758/KineticLoop/src /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
+  HARNESS_CHECK_PASS tasks=68 active=66
+  result: PASS
+
+PYTHONPATH=/Users/davetian/.codex/worktrees/c758/KineticLoop/src /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/ruff check .
+  All checks passed!
+  result: PASS
+
+MYPY_CACHE_DIR=/private/tmp/hg-009-mypy PYTHONPATH=/Users/davetian/.codex/worktrees/c758/KineticLoop/src /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/mypy src tools tests
+  Success: no issues found in 44 source files
+  result: PASS
+
+PYTHONPATH=/Users/davetian/.codex/worktrees/c758/KineticLoop/src /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/unit
+  92 passed
+  result: PASS
+
+PYTHONPATH=/Users/davetian/.codex/worktrees/c758/KineticLoop/src /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness
+  88 passed
+  result: PASS
+
+PYTHONPATH=/Users/davetian/.codex/worktrees/c758/KineticLoop/src /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness/test_validator.py -k 'governance_review_only or governance_tested_suffix or governance_merge_gate'
+  7 passed, 56 deselected
+  result: PASS
+
+Exact HG-007 delayed-review reproduction
+  review artifact source commit: 72bcbfd
+  reviewed head: 2f612be1d08be21a0f46714ddd10777e23329463
+  protected base: 1834f6add0ed3860556458817c7620b2ef2d394e
+  invocation: kl check-harness --ci-pr-base 1834f6add0ed3860556458817c7620b2ef2d394e --ci-pr-head HEAD
+  output: HARNESS_CHECK_PASS tasks=68 active=66
+  result: PASS
+
+git diff --check 1834f6add0ed3860556458817c7620b2ef2d394e HEAD
+  result: PASS
+
+git diff --exit-code 1834f6add0ed3860556458817c7620b2ef2d394e HEAD -- FROZEN_BASELINE.json 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md
+  output: HG-009_FROZEN_BASELINE_UNCHANGED
+  result: PASS
+
+Scope conclusion
+  The correction replays the historical governance index, manifest, backlog and
+  required-review state from the reviewed revision. It requires the reviewed
+  revision to be an ancestor of the later protected base and applies the linear
+  review-record-only suffix check from that protected base to HEAD. Original
+  protected-base scope, declared-file, exact-tree tested-suffix, evidence-binding,
+  frozen-baseline and required-review checks remain enforced.
+
+Review state
+  A fresh independent GENERAL review of the final HG-009 governance head is still
+  required. HG-007's review artifact is intentionally absent from this change and
+  must be created in a separate review-only PR after HG-009 is integrated.
