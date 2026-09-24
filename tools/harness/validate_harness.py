@@ -49,6 +49,27 @@ M2_REFINED_TASK_IDS = {
     'KL-010', 'KL-011', 'KL-012', 'KL-013', 'KL-014',
     'KL-015', 'KL-016', 'KL-017', 'KL-018', 'KL-055',
 }
+M2_REQUIRED_CHECK_IDS = {
+    'KL-014': {'build_preparation_stays_outside_t2'},
+    'KL-015': {
+        'registry_lease_required_for_publish_commit_and_session_entry',
+        'preparation_work_stays_outside_coordination_locks',
+        'complete_frozen_lock_order_enforced',
+        'multi_key_lock_order_is_stable',
+        'reverse_lock_order_is_rejected',
+        'receipt_before_s01_is_rejected',
+    },
+    'KL-018': {
+        'artifact_registration_requires_management_capability',
+        'artifact_registration_uses_exclusive_registry_gate',
+        'artifact_registration_direct_write_rejected',
+    },
+    'KL-055': {
+        'provider_contract_is_hermetic',
+        'provider_fixtures_pass_hardened_synthetic_guard',
+    },
+}
+M2_REQUIRED_SECURITY_REVIEWS = {'KL-014', 'KL-017', 'KL-018', 'KL-055'}
 
 
 def sha(path):
@@ -1031,6 +1052,12 @@ def task_definition_errors(root, backlog, revision=None):
             if 'M1 closure PASS: docs/exec-plans/milestones/M1.json' not in task.get(
                     'entry_conditions', []):
                 errors.append('m2-entry-condition:' + name)
+            required_checks = M2_REQUIRED_CHECK_IDS.get(name, set())
+            if not required_checks.issubset(set(contract_ids)):
+                errors.append('m2-required-semantic-checks:' + name)
+            if (name in M2_REQUIRED_SECURITY_REVIEWS
+                    and 'SECURITY_DATA_BOUNDARY' not in task.get('review_requirements', [])):
+                errors.append('m2-security-review-required:' + name)
         if (task.get('status') == 'READY'
                 and (task.get('packet_refinement') != 'ENFORCEABLE'
                      or task.get('write_paths_status') != 'ENFORCEABLE')):

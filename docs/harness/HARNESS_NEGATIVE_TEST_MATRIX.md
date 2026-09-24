@@ -36,3 +36,4 @@ Each fixture records the expected validator exit code and diagnostic key. Positi
 29. an M2 refinement must reject generic, duplicate or missing check contracts; packet/backlog/traceability drift in context files, entry conditions, frozen-impact map, deliverables, DoD, environment or parallel policy; an escaping or wrong task evidence path; and unlocked concrete write-path overlap.
 30. an M2 PASS result must reject a substituted command or evidence outside its task-owned evidence path even when the check IDs and files otherwise exist.
 31. a manifest-claimed M1 closure must fail closed when the closure is absent regardless of the stored task status; READY derivation may not be bypassed through `NOT_STARTED` records.
+32. M2 authority-sensitive refinements must reject removal of required hermetic-provider, hardened-synthetic-fixture, artifact-registration authority, preparation/coordination, lock-order checks, or SECURITY_DATA_BOUNDARY review routing.

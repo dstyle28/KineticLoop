@@ -375,6 +375,34 @@ class ValidatorTests(unittest.TestCase):
             self.check(1, 'evidence-path:KL-010')
         dump(backlog_path, original)
 
+    def test_m2_required_security_contracts_cannot_be_removed(self):
+        backlog_path = self.root / v.BACKLOG
+        original = json.loads(backlog_path.read_text())
+
+        backlog = copy.deepcopy(original)
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-055')
+        removed = {
+            'provider_contract_is_hermetic',
+            'provider_fixtures_pass_hardened_synthetic_guard',
+        }
+        task['checks_required_for_this_task'] = [
+            check_id for check_id in task['checks_required_for_this_task']
+            if check_id not in removed
+        ]
+        task['check_contracts'] = [
+            contract for contract in task['check_contracts']
+            if contract['check_id'] not in removed
+        ]
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-required-semantic-checks:KL-055')
+
+        backlog = copy.deepcopy(original)
+        task = next(item for item in backlog['tasks'] if item['id'] == 'KL-018')
+        task['review_requirements'].remove('SECURITY_DATA_BOUNDARY')
+        dump(backlog_path, backlog)
+        self.check(1, 'm2-security-review-required:KL-018')
+        dump(backlog_path, original)
+
     def test_m2_packet_check_contract_drift_rejected(self):
         packet = self.root / 'docs/exec-plans/active/KL-010.md'
         packet.write_text(packet.read_text().replace(
