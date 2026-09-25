@@ -1,0 +1,20 @@
+KL-016 exact packet checks after concurrency-review remediation
+base_commit: 6bb5b07b155cbd66a005788e0b66978e8711a6e4
+tested_commit: 8de378d2dca163417d143593b26fa6e8ef6f1bfa
+database_namespace: kl_bc91_c28f16de6c34
+
+PASS shared_gate_command_matrix_fails_closed: 1 passed in 2.25s
+  Includes an interleaving where an artifact expires while the command waits on S51; post-gate database time denies before mutation.
+PASS reauthorize_shared_gate_precedes_s01_and_fails_closed: 1 passed in 0.81s
+PASS continue_session_rechecks_shared_gate_and_fails_closed: 1 passed in 0.81s
+PASS exclusive_global_gate_serializes: 1 passed in 0.59s
+PASS revoke_artifact_atomic_linearization_and_idempotency: 1 passed in 0.66s
+PASS registry_unavailable_or_timeout_denies: 1 passed in 0.07s
+PASS global_revoke_never_locks_s01: 1 passed in 0.60s
+PASS stop_has_no_registry_dependency: 1 passed in 0.07s
+PASS command_owners_reject_nested_transactions: shared, revoke, and STOP owners reject non-idle connections before acquiring locks or mutating data
+PASS safety_registry_db_regressions_pass: 14 passed in 3.15s
+PASS harness_validation_passes: HARNESS_CHECK_PASS tasks=68 active=66
+PASS lint_passes: targeted Ruff checks passed with a task-local cache
+PASS diff_clean: git diff --check exited 0 with no output
+PASS frozen_baseline_unchanged: frozen Protocol, DB baseline, and FROZEN_BASELINE.json unchanged
