@@ -19,8 +19,10 @@ transaction:
 The connection uses PostgreSQL's default `READ COMMITTED` isolation. A shared-gate statement
 that waits behind an exclusive holder therefore locks and returns the newly committed S51
 row, and all eligibility reads occur in later statements. After S51 and S01 are held, the
-owner reads authoritative database time and uses it for authorization and artifact validity;
-caller-captured time, pre-gate snapshots, and caches are not accepted. A supplied minimum
+owner reads authoritative database time in a separate statement issued after the S01 locking
+statement returns and uses it for authorization and artifact validity; caller-captured time,
+time expressions evaluated by a statement still waiting for S01, pre-gate snapshots, and
+caches are not accepted. A supplied minimum
 revision rejects a demonstrably stale authority, while a higher unrelated current revision
 does not invalidate an otherwise eligible authorization.
 

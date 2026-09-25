@@ -354,6 +354,45 @@ def run_waiting_shared_then_expire(database_url: str, command: RegistryCommand) 
     assert mutation_count(database_url) == 0
 
 
+def run_waiting_on_subject_then_expire(
+    database_url: str, command: RegistryCommand
+) -> None:
+    clear_state(database_url)
+    blocker = connect(database_url, name=f"subject-expiry-blocker-{command.value}")
+    blocker.execute(
+        "SELECT subject_id FROM subject_coordination "
+        "WHERE subject_id = %s FOR UPDATE",
+        (UUID(SUBJECT_ID),),
+    )
+    outcome: dict[str, object] = {}
+    app_name = f"subject-expiry-shared-{command.value}"
+
+    def worker() -> None:
+        try:
+            with connect(database_url, name=app_name) as connection:
+                execute_shared_registry_command(
+                    connection, eligibility(command), mutate(command), lock_timeout_ms=5_000
+                )
+        except BaseException as error:
+            outcome["error"] = error
+
+    thread = threading.Thread(target=worker)
+    thread.start()
+    wait_until_blocked(database_url, app_name)
+    blocker.execute(
+        "UPDATE safety_artifacts "
+        "SET valid_until = clock_timestamp() - interval '1 second'"
+    )
+    blocker.commit()
+    blocker.close()
+    thread.join(timeout=5)
+    assert not thread.is_alive()
+    error = outcome.get("error")
+    assert isinstance(error, RegistryDenied)
+    assert error.code is RegistryDenialCode.ARTIFACT_EXPIRED
+    assert mutation_count(database_url) == 0
+
+
 def assert_denied_without_mutation(
     database_url: str,
     command: RegistryCommand,
@@ -396,6 +435,7 @@ def test_shared_gate_command_matrix_fails_closed(db_url: str) -> None:
 
         if command is RegistryCommand.START_SESSION:
             run_waiting_shared_then_expire(db_url, command)
+            run_waiting_on_subject_then_expire(db_url, command)
 
         clear_state(db_url)
         with connect(db_url) as connection:

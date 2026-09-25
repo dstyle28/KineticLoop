@@ -104,8 +104,7 @@ def _lock_subject_and_check_authorization(
 ) -> datetime:
     cursor.execute(
         """
-        SELECT t6_issuance_eligible, t7_execution_eligible, authorization_valid_until,
-               clock_timestamp()
+        SELECT t6_issuance_eligible, t7_execution_eligible, authorization_valid_until
           FROM subject_coordination
          WHERE subject_id = %s
          FOR UPDATE
@@ -115,7 +114,12 @@ def _lock_subject_and_check_authorization(
     row = cursor.fetchone()
     if row is None:
         raise RegistryDenied(RegistryDenialCode.AUTHORIZATION_INELIGIBLE)
-    t6_eligible, t7_eligible, authorization_valid_until, authoritative_now = row
+    t6_eligible, t7_eligible, authorization_valid_until = row
+    cursor.execute("SELECT clock_timestamp()")
+    time_row = cursor.fetchone()
+    if time_row is None:
+        raise RegistryDenied(RegistryDenialCode.REGISTRY_UNAVAILABLE)
+    authoritative_now = time_row[0]
     if eligibility.command in T6_COMMANDS and not t6_eligible:
         raise RegistryDenied(RegistryDenialCode.AUTHORIZATION_INELIGIBLE)
     if eligibility.command in T7_COMMANDS and (
