@@ -84,6 +84,35 @@ def test_owned_transition_only(database: DatabaseLifecycle) -> None:
         "SELECT state || ':' || revision FROM kl012_fixture.owned_transitions WHERE entity_id = 1;"
     ) == "SEALED:1"
 
+    database.execute_sql(
+        "SET ROLE kl012_originating_command; "
+        "INSERT INTO kl012_fixture.outbox_deliveries"
+        "(event_id, destination, delivery_status) VALUES (1, 'audit', 'PENDING');"
+    )
+    rejected(
+        database,
+        "SET ROLE kl012_outbox_dispatcher; "
+        "INSERT INTO kl012_fixture.outbox_deliveries"
+        "(event_id, destination, delivery_status) VALUES (2, 'forged', 'PENDING');",
+        "permission denied",
+    )
+    rejected(
+        database,
+        "SET ROLE kl012_originating_command; "
+        "UPDATE kl012_fixture.outbox_deliveries "
+        "SET delivery_status = 'DELIVERED', attempt_count = 1 WHERE event_id = 1;",
+        "permission denied",
+    )
+    database.execute_sql(
+        "SET ROLE kl012_outbox_dispatcher; "
+        "UPDATE kl012_fixture.outbox_deliveries "
+        "SET delivery_status = 'DELIVERED', attempt_count = 1 WHERE event_id = 1;"
+    )
+    assert database.execute_sql(
+        "SELECT delivery_status || ':' || attempt_count "
+        "FROM kl012_fixture.outbox_deliveries WHERE event_id = 1;"
+    ) == "DELIVERED:1"
+
 
 def test_direct_sql_bypass_rejected(database: DatabaseLifecycle) -> None:
     rejected(
@@ -99,3 +128,16 @@ def test_direct_sql_bypass_rejected(database: DatabaseLifecycle) -> None:
         "must be owner",
     )
     assert database.execute_sql("SELECT count(*) FROM kl012_fixture.immutable_history;") == "0"
+
+    assert database.execute_sql(
+        "SELECT has_table_privilege('kl012_outbox_dispatcher', "
+        "'kl012_fixture.outbox_deliveries', 'INSERT');"
+    ) == "f"
+    assert database.execute_sql(
+        "SELECT has_column_privilege('kl012_outbox_dispatcher', "
+        "'kl012_fixture.outbox_deliveries', 'delivery_status', 'UPDATE');"
+    ) == "t"
+    assert database.execute_sql(
+        "SELECT has_table_privilege('kl012_originating_command', "
+        "'kl012_fixture.outbox_deliveries', 'UPDATE');"
+    ) == "f"

@@ -8,15 +8,23 @@ T1–T8 atomic boundaries, or the frozen lock order.
 
 Physical tables and functions are owned by a non-login migration owner. `PUBLIC`
 has no table privileges. Ordinary application and audit roles receive `SELECT`
-only. Each relation has one command-owner role derived from its frozen unique
-writer. Runtime credentials are never table owners, superusers, `BYPASSRLS`, or
-members of migration roles.
+only. DML belongs to non-login logical command principals that own narrow
+`SECURITY DEFINER` routines; application credentials receive only explicit
+`EXECUTE` on a command entrypoint. The same principal spans relations that one
+frozen transaction must mutate atomically, while split table ownership uses
+operation-specific grants. Runtime credentials are never table owners, superusers,
+`BYPASSRLS`, or members of migration/writer roles.
 
 The executable S01–S51 matrix lives in
 `src/kineticloop/persistence/immutability.py`:
 
 - I-class command owners receive `SELECT, INSERT`; `UPDATE` and `DELETE` are absent.
 - M-class command owners receive `SELECT, INSERT, UPDATE`; `DELETE` is absent.
+- S03/S04 creation shares the originating-command principal so event/outbox rows
+  can be inserted atomically. OutboxDispatcher receives only `SELECT, UPDATE` on
+  S04 delivery metadata and cannot fabricate work with `INSERT`.
+- S50/S51 share the SafetyRegistry principal required for atomic T2-GLOBAL revoke;
+  its entrypoint must also enforce the exclusive registry gate and frozen lock order.
 - S23 build state receives guarded owner `UPDATE`; it grants no command authority.
 - S15/S16 receive guarded owner `UPDATE` only during their build phase. S15 is
   immutable from READY onward; S16 mutations are rejected when its parent is READY
@@ -24,9 +32,11 @@ The executable S01–S51 matrix lives in
 - no runtime permission cell grants `DELETE`. Privacy erasure is a separate,
   reviewed maintenance path that preserves permitted tombstone/unavailable history.
 
-Grant generation first revokes `PUBLIC` and all named-role privileges, then grants
-the exact cell. Production migrations must apply the generated grants after table
-creation and must add relation-specific transition triggers for M/B/B→I tables.
+Grant generation first revokes `PUBLIC` and every concrete runtime/writer role from
+each table, then grants the exact cell. This removes stale cross-owner grants rather
+than assuming they do not exist. Production migrations must apply the generated
+grants after table creation and add relation-specific transition triggers for
+M/B/B→I tables.
 
 ## Defense in depth
 
@@ -37,17 +47,25 @@ build relations validate old state, new state, revision/fence expectations, and 
 command's T1–T8 transaction guards. A trigger is not allowed to call a model,
 network service, or acquire locks contrary to the frozen order.
 
+Every relation carries machine-readable guard requirements. These identify command
+entrypoint, same-transaction, idempotency, user coordination, registry gate, lock
+order, revision/fence, lifecycle/build gate, outbox-only, and evaluation-isolation
+obligations. Grants are incomplete unless the listed guards are materialized.
+
 The KL-012 PostgreSQL fixture demonstrates the minimum enforcement shape:
 
 1. the application role cannot insert, update, delete, alter, or disable guards;
 2. the immutable-history writer can append but cannot update or delete;
 3. only the transition owner can perform the declared `OPEN → SEALED` update;
-4. even that owner cannot reverse or reshape a sealed transition.
+4. even that owner cannot reverse or reshape a sealed transition;
+5. the originating command can insert S04 but cannot update delivery metadata;
+6. OutboxDispatcher can perform the guarded delivery update but cannot insert S04.
 
 The fixture is intentionally minimal. KL-013 owns full baseline DDL, including
 installing these grants and lifecycle guards on every physical table and typed child
-relation. Any deployment mapping multiple logical owners to a process must retain a
-non-forgeable command-to-role binding; a generic write connection is prohibited.
+relation and command routine. Any deployment mapping multiple logical principals to
+a process must retain a non-forgeable routine/role binding; a generic write
+connection or caller-controlled `SET ROLE` is prohibited.
 
 ## Protocol mapping
 
