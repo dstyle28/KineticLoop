@@ -1,0 +1,80 @@
+task_identity: harness-backlog-v0.2/KL-016
+tested_commit: af49f4bdd83853bf01f649d43797afef4c2e9f66
+database_namespace: kl_bc91_c28f16de6c34 / kl_bc91_c28f16de6c34_test
+
+CHECK shared_gate_command_matrix_fails_closed
+$ uv run pytest -q tests/db/test_safety_registry.py::test_shared_gate_command_matrix_fails_closed
+.                                                                        [100%]
+1 passed in 2.33s
+ORACLE PASS: For each of PublishManifest, CommitBundle, Reauthorize, StartSession,
+ResumeSession, and ContinueSession, a real PostgreSQL exclusive S51 holder blocked the
+shared command while a separate observer acquired S01 FOR UPDATE NOWAIT. After the blocker
+committed a revocation and advanced S51, the waiter read the committed S50 state and denied
+before its protected mutation. The matrix also proved a successful bounded-closure path,
+and per-command expired, stale-minimum-revision, gate-timeout, unavailable-authority, and
+applicable T6/T7 authorization-denial paths with zero protected mutations.
+
+CHECK reauthorize_shared_gate_precedes_s01_and_fails_closed
+$ uv run pytest -q tests/db/test_safety_registry.py::test_reauthorize_shared_gate_precedes_s01_and_fails_closed
+.                                                                        [100%]
+1 passed in 0.77s
+ORACLE PASS: Reauthorize waited at shared S51 without locking S01, observed a revocation
+committed by the exclusive holder, and denied before mutation. Dedicated assertions also
+covered issuance-ineligible, expired, stale registry, timeout, and unavailable registry.
+
+CHECK continue_session_rechecks_shared_gate_and_fails_closed
+$ uv run pytest -q tests/db/test_safety_registry.py::test_continue_session_rechecks_shared_gate_and_fails_closed
+.                                                                        [100%]
+1 passed in 0.77s
+ORACLE PASS: ContinueSession reacquired shared S51 before S01, observed the exclusive
+revocation commit, and denied without mutation. Dedicated assertions also covered expired
+execution authorization, expired artifact, stale registry, timeout, and unavailable registry.
+
+CHECK exclusive_global_gate_serializes
+$ uv run pytest -q tests/db/test_safety_registry.py::test_exclusive_global_gate_serializes
+.                                                                        [100%]
+1 passed in 0.58s
+ORACLE PASS: A live shared S51 holder blocked RevokeArtifact's FOR UPDATE acquisition;
+revocation completed only after the shared transaction committed.
+
+CHECK revoke_artifact_atomic_linearization_and_idempotency
+$ uv run pytest -q tests/db/test_safety_registry.py::test_revoke_artifact_atomic_linearization_and_idempotency
+.                                                                        [100%]
+1 passed in 0.63s
+ORACLE PASS: An injected outbox failure rolled back S50, S51, receipt, audit, and outbox.
+The successful retry atomically produced exactly one of each and advanced S51 once. Exact
+key/hash replay returned the stored result without duplicates; key reuse with another hash
+was rejected. A future effective_at denied admission immediately after commit, while the
+pre-commit immutable authorization history remained unchanged.
+
+CHECK registry_unavailable_or_timeout_denies
+$ uv run pytest -q tests/unit/contracts/test_safety_registry.py::test_registry_unavailable_or_timeout_denies
+.                                                                        [100%]
+1 passed in 0.07s
+ORACLE PASS: unavailable authority maps to REGISTRY_UNAVAILABLE denial and gate timeout
+maps to REGISTRY_TIMEOUT denial.
+
+CHECK global_revoke_never_locks_s01
+$ uv run pytest -q tests/db/test_safety_registry.py::test_global_revoke_never_locks_s01
+.                                                                        [100%]
+1 passed in 0.57s
+ORACLE PASS: RevokeArtifact committed while another transaction continuously held the
+target subject S01 row FOR UPDATE; the bounded worker never waited on S01.
+
+CHECK stop_has_no_registry_dependency
+$ uv run pytest -q tests/unit/contracts/test_safety_registry.py::test_stop_has_no_registry_dependency
+.                                                                        [100%]
+1 passed in 0.07s
+ORACLE PASS: STOP and FORCE_REST are outside the closed registry-gated command set. The DB
+regression additionally proves STOP commits through S01 while exclusive S51 remains held.
+
+CHECK safety_registry_db_regressions_pass
+$ uv run pytest -q tests/db/test_safety_registry.py tests/db/test_lifecycle.py
+.............                                                            [100%]
+13 passed in 3.06s
+ORACLE PASS: all SafetyRegistry and isolated PostgreSQL lifecycle regressions passed.
+
+CHECK harness_validation_passes
+$ uv run kl check-harness
+HARNESS_CHECK_PASS tasks=68 active=66
+ORACLE PASS: command exited 0 and printed HARNESS_CHECK_PASS.
