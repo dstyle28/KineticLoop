@@ -90,6 +90,66 @@ $preflight$
 
 
 def _shared_routine_sql(name: str) -> str:
+    if name in {"registry_guard_commit_bundle", "registry_guard_reauthorize"}:
+        command_eligibility_sql = """
+  IF current_manifest_id IS NULL OR active_policy_bundle_id IS NULL OR NOT EXISTS (
+    SELECT 1
+    FROM kineticloop.decision_manifests AS manifest
+    WHERE manifest.id = current_manifest_id
+      AND manifest.subject_id = p_subject_id
+      AND manifest.ref_s05_id = active_policy_bundle_id
+      AND manifest.captured_epoch = current_authorization_epoch
+      AND manifest.registry_revision_at_publish <= current_revision
+      AND manifest.valid_until > authoritative_now
+      AND manifest.ref_s49_id = ANY(p_artifact_ids)
+  ) THEN
+    RAISE EXCEPTION 'KL_REGISTRY_AUTHORIZATION_INELIGIBLE';
+  END IF;
+"""
+    elif name in {
+        "registry_guard_start_session",
+        "registry_guard_resume_session",
+        "registry_guard_continue_session",
+    }:
+        command_eligibility_sql = """
+  IF NOT EXISTS (
+    SELECT 1
+    FROM kineticloop.authorization_issuances AS auth
+    WHERE auth.subject_id = p_subject_id
+      AND auth.valid_from <= authoritative_now
+      AND authoritative_now < auth.valid_until
+      AND auth.registry_revision_at_issue <= current_revision
+      AND auth.registry_state_id = 1
+      AND auth.ref_s49_id = ANY(p_artifact_ids)
+      AND (auth.validity_certificate ->> 'authorization_epoch')::bigint
+            = current_authorization_epoch
+      AND NOT EXISTS (
+        SELECT 1
+        FROM kineticloop.authorization_events AS event
+        WHERE event.subject_id = p_subject_id
+          AND event.ref_s42_id = auth.id
+      )
+      AND (
+        SELECT count(*)
+        FROM kineticloop.authorization_artifact_closure AS closure
+        WHERE closure.subject_id = p_subject_id
+          AND closure.authorization_id = auth.id
+          AND closure.artifact_id = ANY(p_artifact_ids)
+          AND closure.valid_from <= authoritative_now
+          AND (closure.valid_until IS NULL OR authoritative_now < closure.valid_until)
+      ) = cardinality(p_artifact_ids)
+      AND (
+        SELECT count(*)
+        FROM kineticloop.authorization_artifact_closure AS closure
+        WHERE closure.subject_id = p_subject_id
+          AND closure.authorization_id = auth.id
+      ) = cardinality(p_artifact_ids)
+  ) THEN
+    RAISE EXCEPTION 'KL_REGISTRY_AUTHORIZATION_INELIGIBLE';
+  END IF;
+"""
+    else:
+        command_eligibility_sql = ""
     return f"""
 CREATE FUNCTION kineticloop.{name}(
   p_subject_id uuid,
@@ -103,6 +163,9 @@ SET search_path = pg_catalog
 AS $routine$
 DECLARE
   current_revision bigint;
+  current_authorization_epoch bigint;
+  current_manifest_id uuid;
+  active_policy_bundle_id uuid;
   authoritative_now timestamptz;
 BEGIN
   IF p_lock_timeout_ms <= 0 THEN
@@ -125,7 +188,10 @@ BEGIN
   IF current_revision < p_minimum_registry_revision THEN
     RAISE EXCEPTION 'KL_REGISTRY_STALE';
   END IF;
-  PERFORM 1 FROM kineticloop.user_decision_state AS subject_state
+  SELECT subject_state.authorization_epoch, subject_state.current_manifest_id,
+         subject_state.active_policy_bundle_id
+    INTO current_authorization_epoch, current_manifest_id, active_policy_bundle_id
+  FROM kineticloop.user_decision_state AS subject_state
   WHERE subject_state.subject_id = p_subject_id
   FOR UPDATE;
   IF NOT FOUND THEN
@@ -165,6 +231,7 @@ BEGIN
   ) THEN
     RAISE EXCEPTION 'KL_REGISTRY_ARTIFACT_REVOKED';
   END IF;
+{command_eligibility_sql}
   RETURN current_revision;
 EXCEPTION
   WHEN lock_not_available OR query_canceled THEN
@@ -210,7 +277,18 @@ BEGIN
   IF NOT pg_has_role(session_user, 'kl_trusted_admin', 'MEMBER') THEN
     RAISE EXCEPTION 'KL_REGISTRY_COMMAND_NOT_AUTHORIZED';
   END IF;
-  IF p_lock_timeout_ms <= 0 OR p_reason_code IS NULL OR btrim(p_reason_code) = '' THEN
+  IF p_lock_timeout_ms <= 0 OR p_effective_at IS NULL
+     OR p_reason_code IS NULL OR btrim(p_reason_code) = ''
+     OR p_revocation_payload_hash IS NULL
+     OR p_revocation_payload_hash IS DISTINCT FROM encode(
+       sha256(convert_to(
+         '{"effective_at":"'
+         || to_char(p_effective_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')
+         || '","reason_code":' || to_json(p_reason_code)::text || '}',
+         'UTF8'
+       )),
+       'hex'
+     ) THEN
     RAISE EXCEPTION 'KL_REGISTRY_INVALID_ARGUMENT';
   END IF;
   PERFORM set_config('lock_timeout', p_lock_timeout_ms::text || 'ms', true);
@@ -360,6 +438,11 @@ def upgrade() -> None:
         "GRANT SELECT, UPDATE ON kineticloop.user_decision_state "
         "TO kl_writer_safety_registry"
     )
+    op.execute(
+        "GRANT SELECT ON kineticloop.decision_manifests, "
+        "kineticloop.authorization_issuances, kineticloop.authorization_events, "
+        "kineticloop.authorization_artifact_closure TO kl_writer_safety_registry"
+    )
     op.execute("GRANT SELECT ON kineticloop.registry_management_receipts TO kl_auditor")
     op.execute("GRANT SELECT ON kineticloop.registry_audit_events TO kl_auditor")
     op.execute("GRANT SELECT ON kineticloop.registry_outbox TO kl_auditor")
@@ -404,6 +487,11 @@ def downgrade() -> None:
     op.execute(
         "REVOKE SELECT, UPDATE ON kineticloop.user_decision_state "
         "FROM kl_writer_safety_registry"
+    )
+    op.execute(
+        "REVOKE SELECT ON kineticloop.decision_manifests, "
+        "kineticloop.authorization_issuances, kineticloop.authorization_events, "
+        "kineticloop.authorization_artifact_closure FROM kl_writer_safety_registry"
     )
     op.execute("DROP TABLE kineticloop.registry_outbox")
     op.execute("DROP TABLE kineticloop.registry_audit_events")

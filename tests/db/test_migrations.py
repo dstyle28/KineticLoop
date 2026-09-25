@@ -454,6 +454,17 @@ def test_safety_registry_repository_integrates_with_migrated_schema() -> None:
             UUID(support.INCIDENT_ID),
         )
         assert row[5] is not None
+        migrated_rows = admin.execute(
+            "SELECT "
+            "(SELECT count(*) FROM kineticloop.user_decision_state),"
+            "(SELECT count(*) FROM kineticloop.command_receipts),"
+            "(SELECT count(*) FROM kineticloop.domain_events),"
+            "(SELECT count(*) FROM kineticloop.outbox_deliveries),"
+            "(SELECT count(*) FROM kineticloop.safety_artifacts),"
+            "(SELECT count(*) FROM kineticloop.artifact_revocation_events),"
+            "(SELECT registry_revision FROM kineticloop.safety_registry_state WHERE id=1)"
+        ).fetchone()
+        assert migrated_rows == (1, 1, 1, 1, 2, 1, 1)
 
 
 def test_logical_inventory_complete(migrated_database: DatabaseLifecycle) -> None:

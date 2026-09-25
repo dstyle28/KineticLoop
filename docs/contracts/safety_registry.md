@@ -50,6 +50,14 @@ commit, so a global revoke cannot linearize between eligibility checking and the
 mutation. No network, model, historical scan, or dependency-closure construction belongs in
 this API; the caller supplies a complete, bounded closure of immutable identities.
 
+The T6 routines require S01's current manifest and active policy to identify a current S24
+whose subject, policy, captured authorization epoch, registry revision, validity, and primary
+S49 reference remain eligible. The T7 routines require a current S42 for the subject whose
+certificate epoch still equals S01, whose validity interval includes authoritative database
+time, whose registry revision is not from the future, which has no targeted S43 invalidation,
+and whose migrated S42 closure contains every supplied S49 identity with current validity.
+These registry predicates do not replace the remaining downstream T6/T7 command-owner guards.
+
 Every helper requires an idle PostgreSQL connection and owns the top-level transaction through
 commit. Invocation inside an existing transaction is rejected, so the API cannot return while
 S51 remains held in an outer transaction or allow a caller to reverse the S51-before-S01 order.
@@ -76,6 +84,11 @@ failure rolls back every T2-GLOBAL effect.
 The routine persists `session_user` as the management operator. Caller-supplied actor identity
 or capability fields are never database authorization inputs and cannot replace the
 session-bound trusted-admin membership check.
+
+The management receipt/audit/outbox relations are physical T2-GLOBAL companions to S50, not
+alternate S02/S03/S04 logical relations. Frozen S02/S03/S04 remain the subject-command chain;
+the migrated integration suite exercises that chain as the immutable basis of the current S42
+used by T7, while proving a global revoke does not rewrite it.
 
 ## Commands outside the gate
 
