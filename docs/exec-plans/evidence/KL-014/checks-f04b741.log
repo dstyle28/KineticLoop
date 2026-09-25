@@ -1,0 +1,18 @@
+KL-014 exact packet checks after protocol review remediation
+base_commit: bac21cf6a920859c74e3906383626557b379e758
+tested_commit: f04b74145ef0d415eef6127ec019a11e772356bc
+
+PASS strict_t1_t8_contract_matrix: 1 passed in 0.08s
+PASS build_preparation_stays_outside_t2: 1 passed in 0.08s
+PASS preparation_and_registry_management_stay_outside_atomic_boundaries: 1 passed in 0.08s
+PASS identity_idempotency_and_basis_fields: 1 passed in 0.08s
+  Production commands reject an authenticated actor identity that differs from subject_id.
+PASS shadow_and_test_scope_fail_closed: 1 passed in 0.08s
+PASS command_result_roundtrip: 1 passed in 0.08s
+PASS input_frontier_is_an_immutable_hash: 6 passed; canonical SHA-256 values accepted and integer substitutes rejected
+PASS error_registry_regression_passes: 14 passed in 0.09s
+PASS command_contract_unit_suite_passes: 41 passed in 0.10s; no failures, skips, or deselections
+PASS harness_validation_passes: HARNESS_CHECK_PASS tasks=68 active=66
+PASS lint_passes: RUFF_CACHE_DIR=/private/tmp/kl014-ruff-cache ruff check src/kineticloop/contracts tests/unit/contracts
+PASS diff_clean: git diff --check exited 0 with no output
+PASS frozen_baseline_unchanged: frozen Protocol, DB baseline, and FROZEN_BASELINE.json unchanged

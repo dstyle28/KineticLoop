@@ -1,0 +1,37 @@
+KL-014 exact packet checks
+tested_commit: 111a58dfc09b34647cb36ebc7f5b4c415164ad4d
+
+$ uv run pytest -q tests/unit/contracts/test_commands.py::test_strict_t1_t8_contract_matrix
+.                                                                        [100%]
+1 passed in 0.08s
+
+$ uv run pytest -q tests/unit/contracts/test_commands.py::test_build_preparation_stays_outside_t2
+.                                                                        [100%]
+1 passed in 0.07s
+
+$ uv run pytest -q tests/unit/contracts/test_commands.py::test_preparation_and_registry_management_stay_outside_atomic_boundaries
+.                                                                        [100%]
+1 passed in 0.07s
+
+$ uv run pytest -q tests/unit/contracts/test_commands.py::test_identity_idempotency_and_basis_fields
+.                                                                        [100%]
+1 passed in 0.07s
+
+$ uv run pytest -q tests/unit/contracts/test_commands.py::test_shadow_and_test_scope_fail_closed
+.                                                                        [100%]
+1 passed in 0.07s
+
+$ uv run pytest -q tests/unit/contracts/test_results.py::test_command_result_roundtrip
+.                                                                        [100%]
+1 passed in 0.07s
+
+$ uv run pytest -q tests/unit/contracts/test_errors.py tests/unit/contracts/test_commands.py tests/unit/contracts/test_results.py
+........                                                                 [100%]
+8 passed in 0.08s
+
+$ uv run pytest -q tests/unit/contracts
+...................................                                      [100%]
+35 passed in 0.09s
+
+$ uv run kl check-harness
+HARNESS_CHECK_PASS tasks=68 active=66

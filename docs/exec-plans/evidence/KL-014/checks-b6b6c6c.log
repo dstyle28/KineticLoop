@@ -1,0 +1,17 @@
+KL-014 exact packet checks after trust/time boundary remediation
+base_commit: bac21cf6a920859c74e3906383626557b379e758
+tested_commit: b6b6c6cacab80edd1424a95fec405bece038d6db
+
+PASS strict_t1_t8_contract_matrix: 1 passed in 0.09s
+PASS build_preparation_stays_outside_t2: 1 passed in 0.09s
+PASS preparation_and_registry_management_stay_outside_atomic_boundaries: 1 passed in 0.09s
+PASS identity_idempotency_and_basis_fields: 1 passed in 0.09s
+PASS shadow_and_test_scope_fail_closed: 1 passed in 0.09s
+PASS command_result_roundtrip: 1 passed in 0.08s
+PASS tool_result_trust_and_canonical_time_negatives: decoded dict and JSON paths reject authority-like trust classes and non-canonical instants
+PASS error_registry_regression_passes: 20 passed in 0.11s
+PASS command_contract_unit_suite_passes: 47 passed in 0.12s; no failures, skips, or deselections
+PASS harness_validation_passes: HARNESS_CHECK_PASS tasks=68 active=66
+PASS lint_passes: RUFF_CACHE_DIR=/private/tmp/kl014-ruff-cache ruff check src/kineticloop/contracts tests/unit/contracts
+PASS diff_clean: git diff --check exited 0 with no output
+PASS frozen_baseline_unchanged: frozen Protocol, DB baseline, and FROZEN_BASELINE.json unchanged

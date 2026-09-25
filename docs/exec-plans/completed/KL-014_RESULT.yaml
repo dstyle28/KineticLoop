@@ -1,0 +1,95 @@
+task_identity: harness-backlog-v0.2/KL-014
+display_task_id: KL-014
+task_definition_version: v0.2
+base_commit: bac21cf6a920859c74e3906383626557b379e758
+tested_commit: b6b6c6cacab80edd1424a95fec405bece038d6db
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Added a strict immutable Pydantic v1 wire surface for all 39 public T1-T8,
+  preparation, factset-build, and registry commands, with a distinct success
+  result for every command plus CommandRejected. Serialized boundary literals
+  keep preparation and registry management outside their frozen atomic
+  transactions; authenticated actor/scope, idempotency, immutable basis,
+  SHADOW_ONLY separation, and guarded TEST_ONLY admission fail closed.
+commands_run:
+  - check_id: strict_t1_t8_contract_matrix
+    command: uv run pytest -q tests/unit/contracts/test_commands.py::test_strict_t1_t8_contract_matrix
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-b6b6c6c.log
+  - check_id: build_preparation_stays_outside_t2
+    command: uv run pytest -q tests/unit/contracts/test_commands.py::test_build_preparation_stays_outside_t2
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-b6b6c6c.log
+  - check_id: preparation_and_registry_management_stay_outside_atomic_boundaries
+    command: uv run pytest -q tests/unit/contracts/test_commands.py::test_preparation_and_registry_management_stay_outside_atomic_boundaries
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-b6b6c6c.log
+  - check_id: identity_idempotency_and_basis_fields
+    command: uv run pytest -q tests/unit/contracts/test_commands.py::test_identity_idempotency_and_basis_fields
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-b6b6c6c.log
+  - check_id: shadow_and_test_scope_fail_closed
+    command: uv run pytest -q tests/unit/contracts/test_commands.py::test_shadow_and_test_scope_fail_closed
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-b6b6c6c.log
+  - check_id: command_result_roundtrip
+    command: uv run pytest -q tests/unit/contracts/test_results.py::test_command_result_roundtrip
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-b6b6c6c.log
+  - check_id: error_registry_regression_passes
+    command: uv run pytest -q tests/unit/contracts/test_errors.py tests/unit/contracts/test_commands.py tests/unit/contracts/test_results.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-b6b6c6c.log
+  - check_id: command_contract_unit_suite_passes
+    command: uv run pytest -q tests/unit/contracts
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-b6b6c6c.log
+  - check_id: harness_validation_passes
+    command: uv run kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-014/checks-b6b6c6c.log
+requirements_covered: []
+files_changed:
+  - docs/contracts/transaction_commands.md
+  - pyproject.toml
+  - uv.lock
+  - src/kineticloop/contracts/__init__.py
+  - src/kineticloop/contracts/commands.py
+  - src/kineticloop/contracts/results.py
+  - tests/unit/contracts/test_commands.py
+  - tests/unit/contracts/test_results.py
+  - docs/exec-plans/evidence/KL-014/checks-111a58d.log
+  - docs/exec-plans/evidence/KL-014/checks-aa28044.log
+  - docs/exec-plans/evidence/KL-014/checks-fa56847.log
+  - docs/exec-plans/evidence/KL-014/checks-f04b741.log
+  - docs/exec-plans/evidence/KL-014/checks-13cb81d.log
+  - docs/exec-plans/evidence/KL-014/checks-5b8974a.log
+  - docs/exec-plans/evidence/KL-014/checks-5020277.log
+  - docs/exec-plans/evidence/KL-014/checks-b6b6c6c.log
+  - docs/exec-plans/completed/KL-014_RESULT.yaml
+decisions:
+  - Encode every atomic or preparation boundary as a required Literal field so callers cannot relabel a preparation command as T1, T2, T3, T5, or T6.
+  - Preserve T2 as the three distinct frozen boundaries T2-IN, T2-SEAL, and T2-GLOBAL; keep factset building and artifact registration outside them.
+  - Bind subject commands to exactly one subject and a role-derived trusted capability; bind registry commands to the explicit global safety-registry scope with no fabricated subject.
+  - Admit isolated TEST_ONLY scope only to CommitBundle, Reauthorize, StartSession, ResumeSession, and ContinueSession, while preserving direct-write denial and the real T6/T7 owner guard.
+  - Keep IssueAuthorization, InvalidateAuthorization, RecordSnapshot, AdvanceAttempt, and CancelUndispatched out of the public model registry.
+  - Make historical eligibility explicit on T6/T7 results and reject a replayed PermitDispatch result that purports to grant a second provider send.
+  - Require every production subject command's authenticated actor identity to equal its subject_id; no implicit cross-subject delegation is admitted.
+  - Represent the immutable input revision frontier as explicit SHA-256 `*_input_frontier_hash` values; never treat it as a protocol counter.
+  - Require TEST_ONLY T6 scope policy_id to equal the CommitBundle or Reauthorize policy_id so isolated policy scope cannot be widened.
+  - Parse JSON strings and ordinary JSON-decoded dictionaries through the same strict JSON-mode validators so wire enum strings behave identically.
+  - Reuse the merged three-field RoleIdentity wire shape and derive capability from role; reject caller-asserted capability, trust, and authentication provenance.
+  - Bind worker-produced T5/T6 preparation records to intent, attempt, request revision, lease owner/fence/expiry, and expected RUNNING status, with typed immutable domain bases.
+  - Return the committed owner, fence token, and lease expiry from acquire/renew success results for downstream fenced writes.
+  - Fix RecordToolResult to MODEL_DERIVED trust with command_authority NONE so tool/provider/model content cannot assert command authority.
+  - Validate all lease, resolution, validation, deadline, completion, and rejection instants in the repository's canonical UTC wire form.
+known_limitations:
+  - These are typed immutable wire contracts only; they do not implement command-owner authorization, receipts, persistence, PostgreSQL transactions, locking, registry gates, or external dispatch.
+  - Command acceptance remains responsible for proving that RoleIdentity was assigned at the authenticated service boundary; a Pydantic value does not itself authenticate a caller.
+follow_up_tasks:
+  - Later command-owner and repository tasks must consume these contracts without widening their serialized transaction boundaries or bypassing frozen guards.
+  - Obtain fresh GENERAL, PROTOCOL, DB_CONCURRENCY, and SECURITY_DATA_BOUNDARY review evidence bound to the exact PR head SHA before merge.
+spec_change_request: null
