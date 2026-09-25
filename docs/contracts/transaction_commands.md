@@ -52,6 +52,11 @@ demand, resolver, policy, epoch, and execution-head bindings. Owners still read
 authoritative lease time and state under the frozen locks; these fields do not
 replace those guards.
 
+Tool results carry the closed `MODEL_DERIVED` trust class and
+`command_authority=NONE`; tool or provider content cannot assert a command
+capability. Lease expiries, validation/resolution validity, reaper deadlines,
+completion times, and rejection times use canonical UTC wire instants.
+
 Production subject commands require the production subject scope and actor.
 `TEST_ONLY` is accepted only by the real T6 and T7 command models, requires a
 TEST actor, binds isolated non-production subject/policy/environment identities,

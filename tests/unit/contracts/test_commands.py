@@ -35,6 +35,7 @@ from kineticloop.contracts import (
     TestOnlyScope as CommandTestOnlyScope,
 )
 from kineticloop.identity import ActorRole, Capability
+from kineticloop.primitives import canonical_json
 
 ID = "6ba7b810-9dad-41d1-80b4-00c04fd430c8"
 OTHER_ID = "6ba7b811-9dad-41d1-80b4-00c04fd430c8"
@@ -109,6 +110,8 @@ def command_payload(model: Any, *, test_only: bool = False) -> dict[str, object]
             fields[name] = (HASH,)
         elif name == "validation_codes":
             fields[name] = ("VALID",)
+        elif name.endswith("_at") or name in {"valid_until", "expected_deadline"}:
+            fields[name] = "2026-09-24T16:05:00.000000Z"
         elif name == "expected_owner_id" and field.annotation is not str:
             fields[name] = ID
         elif name.endswith("_id") or name.endswith("_identity"):
@@ -347,6 +350,38 @@ def test_nutrition_proposal_requires_cross_domain_basis() -> None:
         policy_id=ID,
     )
     assert model.model_validate(payload).proposal_kind == "NUTRITION"
+
+
+def test_tool_results_are_non_command_and_times_are_canonical_utc() -> None:
+    model: Any = PUBLIC_COMMAND_BY_KIND["RecordToolResult"]
+    payload = command_payload(model)
+    assert payload["trust_class"] == "MODEL_DERIVED"
+    assert payload["command_authority"] == "NONE"
+    wire_payload = model.model_validate(payload).model_dump(mode="json")
+
+    for serialized in (wire_payload, canonical_json(wire_payload)):
+        invalid = dict(serialized) if isinstance(serialized, dict) else json.loads(serialized)
+        invalid["trust_class"] = "ADMIN_COMMAND_AUTHORITY"
+        with pytest.raises(ValidationError):
+            parse_command(invalid)
+        with pytest.raises(ValidationError):
+            parse_command(canonical_json(invalid))
+
+    for command_kind, field_name in (
+        ("RecordToolResult", "expected_lease_expires_at"),
+        ("ResolveEvidence", "resolution_expires_at"),
+        ("RecordValidation", "valid_until"),
+        ("ReapIntent", "expected_deadline"),
+    ):
+        command_model = PUBLIC_COMMAND_BY_KIND[command_kind]
+        invalid = command_model.model_validate(command_payload(command_model)).model_dump(
+            mode="json"
+        )
+        invalid[field_name] = "not-an-instant"
+        with pytest.raises(ValidationError):
+            parse_command(invalid)
+        with pytest.raises(ValidationError):
+            parse_command(canonical_json(invalid))
 
 
 @pytest.mark.parametrize(

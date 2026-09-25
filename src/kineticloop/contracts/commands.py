@@ -13,6 +13,7 @@ from enum import StrEnum
 from typing import Annotated, ClassVar, Literal, TypeAlias, get_args
 
 from pydantic import (
+    AfterValidator,
     BaseModel,
     ConfigDict,
     Field,
@@ -22,7 +23,7 @@ from pydantic import (
 )
 
 from kineticloop.identity import ActorRole, Capability, RoleIdentity
-from kineticloop.primitives import canonical_json
+from kineticloop.primitives import canonical_json, canonical_utc
 
 CanonicalId = Annotated[
     str,
@@ -34,6 +35,19 @@ Sha256 = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]
 NonEmpty = Annotated[str, StringConstraints(min_length=1)]
 NonNegativeInt = Annotated[int, Field(ge=0)]
 PositiveInt = Annotated[int, Field(gt=0)]
+
+
+def _require_canonical_utc(value: str) -> str:
+    if canonical_utc(value) != value:
+        raise ValueError("instant must already use canonical UTC wire form")
+    return value
+
+
+CanonicalUtc = Annotated[
+    str,
+    StringConstraints(min_length=1),
+    AfterValidator(_require_canonical_utc),
+]
 
 
 class TransactionBoundary(StrEnum):
@@ -420,7 +434,7 @@ class WorkerPreparationCommand(SubjectCommand):
     expected_request_revision: PositiveInt
     expected_owner_id: CanonicalId
     expected_fence: NonNegativeInt
-    expected_lease_expires_at: NonEmpty
+    expected_lease_expires_at: CanonicalUtc
     expected_intent_status: Literal["RUNNING"]
 
 
@@ -439,7 +453,8 @@ class RecordToolResult(WorkerPreparationCommand):
     result_hash: Sha256
     coverage: Literal["COMPLETE_FOR_POLICY", "PARTIAL", "UNKNOWN"]
     truncation_status: Literal["NOT_TRUNCATED", "TRUNCATED"]
-    trust_class: NonEmpty
+    trust_class: Literal["MODEL_DERIVED"]
+    command_authority: Literal["NONE"]
 
 
 class RecordProposal(WorkerPreparationCommand):
@@ -518,7 +533,7 @@ class ResolveEvidence(WorkerPreparationCommand):
     truncation_status: Literal["NOT_TRUNCATED", "TRUNCATED"]
     execution_basis_event_id: CanonicalId
     basis_fingerprint: Sha256
-    resolution_expires_at: NonEmpty
+    resolution_expires_at: CanonicalUtc
 
 
 class RecordValidation(WorkerPreparationCommand):
@@ -536,7 +551,7 @@ class RecordValidation(WorkerPreparationCommand):
     execution_head_revisions_hash: Sha256
     validation_status: Literal["PASS", "FAIL", "REVIEW"]
     validation_codes: tuple[NonEmpty, ...]
-    valid_until: NonEmpty
+    valid_until: CanonicalUtc
     validator_artifact_id: CanonicalId
     validator_artifact_version: NonEmpty
     validation_basis_fingerprint: Sha256
@@ -632,7 +647,7 @@ class ReapIntent(SubjectCommand):
     intent_id: CanonicalId
     expected_owner_id: CanonicalId
     expected_fence: NonNegativeInt
-    expected_deadline: NonEmpty
+    expected_deadline: CanonicalUtc
 
 
 PUBLIC_COMMAND_MODELS: tuple[type[StrictCommand], ...] = (

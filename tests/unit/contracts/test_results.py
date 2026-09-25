@@ -112,3 +112,28 @@ def test_lease_results_return_fencing_authority(kind: str) -> None:
         invalid.pop(field_name)
         with pytest.raises(ValidationError):
             model.model_validate(invalid)
+
+
+def test_result_times_require_canonical_utc() -> None:
+    success_payload = result_payload(PUBLIC_SUCCESS_RESULT_BY_KIND["AcquireLease"])
+    for field_name in ("completed_at", "lease_expires_at"):
+        invalid = success_payload.copy()
+        invalid[field_name] = "not-an-instant"
+        with pytest.raises(ValidationError):
+            parse_result(invalid)
+        with pytest.raises(ValidationError):
+            parse_result(json.dumps(invalid))
+
+    rejected = {
+        "schema_version": "kineticloop-command-result-v1",
+        "result_kind": "rejected",
+        "command_kind": "CommitBundle",
+        "receipt_id": ID,
+        "error_code": ErrorCode.HOLD_ACTIVE.value,
+        "rejected_at": "not-an-instant",
+        "replayed": False,
+    }
+    with pytest.raises(ValidationError):
+        parse_result(rejected)
+    with pytest.raises(ValidationError):
+        parse_result(json.dumps(rejected))

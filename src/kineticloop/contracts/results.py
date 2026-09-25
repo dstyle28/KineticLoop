@@ -8,7 +8,12 @@ from typing import Literal, get_args
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 from typing_extensions import Annotated
 
-from kineticloop.contracts.commands import PUBLIC_COMMAND_BY_KIND, CanonicalId, Sha256
+from kineticloop.contracts.commands import (
+    PUBLIC_COMMAND_BY_KIND,
+    CanonicalId,
+    CanonicalUtc,
+    Sha256,
+)
 from kineticloop.contracts.errors import ErrorCode
 from kineticloop.primitives import canonical_json
 
@@ -26,7 +31,7 @@ class StrictResult(BaseModel):
     result_id: CanonicalId
     entity_id: CanonicalId
     outcome_hash: Sha256
-    completed_at: NonEmpty
+    completed_at: CanonicalUtc
     replayed: bool
 
     def to_canonical_json(self) -> str:
@@ -134,14 +139,14 @@ class AcquireLeaseSuccess(StrictResult):
     command_kind: Literal["AcquireLease"]
     owner_id: CanonicalId
     fence_token: NonNegativeInt
-    lease_expires_at: NonEmpty
+    lease_expires_at: CanonicalUtc
 
 
 class RenewLeaseSuccess(StrictResult):
     command_kind: Literal["RenewLease"]
     owner_id: CanonicalId
     fence_token: NonNegativeInt
-    lease_expires_at: NonEmpty
+    lease_expires_at: CanonicalUtc
 
 
 class ReserveCallSuccess(StrictResult):
@@ -273,7 +278,7 @@ class CommandRejected(BaseModel):
     command_kind: str
     receipt_id: CanonicalId
     error_code: ErrorCode
-    rejected_at: NonEmpty
+    rejected_at: CanonicalUtc
     replayed: bool
 
     @model_validator(mode="after")
