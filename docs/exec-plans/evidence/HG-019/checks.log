@@ -1,0 +1,104 @@
+HG-019 durable KL-013 integration validation
+base_commit=b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f
+tested_commit=64b8b5ea6afe3a61bacf28a3c06166fd98074762
+kl013_result_commit=2f5174ca5fbdde847f314bd50be067749401a2b0
+kl013_tested_result=b0c5d4abd7ecffb98088a8245cc8dea1ccdea2f5
+kl013_reviewed_head=2f5174ca5fbdde847f314bd50be067749401a2b0
+kl013_review_record_commit=328e7cd2bc32803a2bd4d86114d8dfb34ba5375c
+kl013_merge_commit=b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f
+
+governance_schema_valid: PASS
+  HARNESS_CHANGE.schema.json validates docs/exec-plans/governance/HG-019.yaml.
+
+integration_schema_valid: PASS
+  INTEGRATION_RECORD.schema.json validates
+  docs/exec-plans/integrations/KL-013.json.
+
+review_schema_and_binding_valid: PASS
+  THREAD_REVIEW.schema.json validates all three required KL-013 reviews:
+  GENERAL, PROTOCOL, and DB_CONCURRENCY. Each review is PASS and binds
+  2f5174ca5fbdde847f314bd50be067749401a2b0.
+
+integration_revision_chain_valid: PASS
+  result_commit equals reviewed_head_sha.
+  2f5174ca5fbdde847f314bd50be067749401a2b0 is an ancestor of
+  328e7cd2bc32803a2bd4d86114d8dfb34ba5375c.
+  328e7cd2bc32803a2bd4d86114d8dfb34ba5375c is the second parent of and an
+  ancestor of b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f.
+  b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f is an ancestor of tested_commit.
+  Review-record and merge trees are identical:
+  6af379cf380c8b7506ec9048c9ad36b8339af6e4.
+
+result_review_artifacts_bound: PASS
+  KL-013_RESULT.yaml has Git blob
+  cbd583b33cd1bd1ff528b1869a891f7d05a82134 at result_commit,
+  review_record_commit, merge_commit, and tested_commit.
+  GENERAL.json has Git blob
+  6384471207bcaaa1334683a0cc5f72cd55ac63ce at review_record_commit,
+  merge_commit, and tested_commit.
+  PROTOCOL.json has Git blob
+  f55c48836ef0046129b0fe1873efc596088fe869 at review_record_commit,
+  merge_commit, and tested_commit.
+  DB_CONCURRENCY.json has Git blob
+  701ac2f3e6e3d05fbef05b1104dec2f988afa332 at review_record_commit,
+  merge_commit, and tested_commit.
+
+task_result_semantics_valid: PASS
+  task_status=PASS and task_checks_status=PASS.
+  The result artifact's tested_commit is
+  b0c5d4abd7ecffb98088a8245cc8dea1ccdea2f5.
+  Exact packet checks are PASS: single_migration_head, empty_db_upgrade_head,
+  logical_inventory_complete, fk_order_matches_topology,
+  immutable_history_materialized, database_rebuild_is_deterministic,
+  migration_db_regressions_pass, and harness_validation_passes.
+  requirements_covered is empty, so no product requirement PASS is claimed.
+  The standard Harness validator accepts the result and all referenced evidence.
+
+harness_structure_valid: PASS
+  PYTHONPATH="$PWD/src" .venv/bin/kl check-harness
+  HARNESS_CHECK_PASS tasks=68 active=66
+
+lint_passes: PASS
+  PYTHONPATH="$PWD/src" .venv/bin/ruff check .
+  All checks passed!
+
+typecheck_passes: PASS
+  MYPY_CACHE_DIR=/private/tmp/hg-019-mypy-final PYTHONPATH="$PWD/src"
+  .venv/bin/mypy src tools tests
+  Success: no issues found in 73 source files
+
+unit_tests_pass: PASS
+  PYTHONPATH="$PWD/src" .venv/bin/kl test-unit
+  169 passed in 22.74s
+
+harness_tests_pass: PASS
+  PYTHONPATH="$PWD/src" .venv/bin/kl test-harness
+  127 passed in 184.84s
+
+integration_binding_tests_pass: PASS
+  PYTHONPATH="$PWD/src" .venv/bin/pytest -q
+  tests/harness/test_validator.py -k integration
+  20 passed, 82 deselected in 48.10s
+
+governance_scope_exact: PASS
+  The protected-base change set is exactly:
+  docs/exec-plans/evidence/HG-019/checks.log
+  docs/exec-plans/governance/HG-019.yaml
+  docs/exec-plans/integrations/KL-013.json
+  No KL-013 implementation, packet, result, evidence, or review path is modified.
+
+diff_clean: PASS
+  git diff --check b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f
+  64b8b5ea6afe3a61bacf28a3c06166fd98074762
+  No output.
+
+frozen_baseline_unchanged: PASS
+  git diff --exit-code b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f
+  64b8b5ea6afe3a61bacf28a3c06166fd98074762 -- FROZEN_BASELINE.json
+  04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
+  05_KineticLoop_Protocol_v1.2_FROZEN.md
+  No output.
+
+No task implementation, packet, result, evidence, review, contract, schema,
+validator, test, product requirement, document index, frozen authority, or other
+governance file is changed by HG-019.
