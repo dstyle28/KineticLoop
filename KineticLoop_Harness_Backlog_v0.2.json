@@ -1330,6 +1330,7 @@
         "fk_order_matches_topology",
         "immutable_history_materialized",
         "database_rebuild_is_deterministic",
+        "safety_registry_migrated_schema_integration",
         "migration_db_regressions_pass",
         "harness_validation_passes"
       ],
@@ -1344,6 +1345,7 @@
         "alembic.ini",
         "migrations/**",
         "src/kineticloop/persistence/metadata.py",
+        "src/kineticloop/persistence/safety_registry.py",
         "tests/db/test_migrations.py",
         "tests/fixtures/db/migrations/**"
       ],
@@ -1388,6 +1390,11 @@
           "check_id": "database_rebuild_is_deterministic",
           "command": "uv run pytest -q tests/db/test_migrations.py::test_database_rebuild_is_deterministic",
           "pass_oracle": "The named test passes for two isolated empty-database rebuilds."
+        },
+        {
+          "check_id": "safety_registry_migrated_schema_integration",
+          "command": "uv run pytest -q tests/db/test_migrations.py::test_safety_registry_repository_integrates_with_migrated_schema",
+          "pass_oracle": "The named isolated-PostgreSQL test upgrades an empty database to Alembic head, then uses the production KL-016 SafetyRegistry repository rather than fixture-only SQL to exercise a shared-gate command and RevokeArtifact against migrated S01/S02/S03/S04/S49/S50/S51; proves the seeded singleton global S51 row supplies the shared/exclusive gate and revision transition; and proves the appended S50 row preserves the frozen immutable revocation identity, management operator/capability identity, command_key/request_hash idempotency identity, causation incident identity, and outbox delivery identity, including same-key/same-hash replay and same-key/different-hash rejection."
         },
         {
           "check_id": "migration_db_regressions_pass",
