@@ -12,7 +12,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 BACKLOG = 'KineticLoop_Harness_Backlog_v0.2.json'
 TRACEABILITY = 'KineticLoop_Harness_Traceability_v0.3.json'
-TRACEABILITY_TASK_FIELDS = (
+PROJECT_PLAN = '06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md'
+M1_CLOSURE_TRACEABILITY_TASK_FIELDS = (
     'task_identity',
     'id',
     'milestone',
@@ -39,17 +40,34 @@ TRACEABILITY_TASK_FIELDS = (
     'packet_refinement',
     'status',
 )
+TRACEABILITY_TASK_FIELDS = M1_CLOSURE_TRACEABILITY_TASK_FIELDS + ('shared_hotspot',)
 INDEX = 'CURRENT_DOCUMENT_INDEX.json'
 MANIFEST = 'HARNESS_DOCUMENT_MANIFEST.json'
 GOVERNANCE_SCHEMA = 'HARNESS_CHANGE.schema.json'
 INTEGRATION_SCHEMA = 'INTEGRATION_RECORD.schema.json'
 MILESTONE_CLOSURE_SCHEMA = 'MILESTONE_CLOSURE.schema.json'
 M1_TASK_IDS = {f'KL-{number:03d}' for number in range(1, 10)}
-M2_REFINED_TASK_IDS = {
+M1_CLOSURE_M2_TASK_IDS = {
     'KL-010', 'KL-011', 'KL-012', 'KL-013', 'KL-014',
     'KL-015', 'KL-016', 'KL-017', 'KL-018', 'KL-055',
 }
+# Current M2 may grow through later governance without rewriting the historical M1
+# closure revision that proved the original refinement set.
+M2_REFINED_TASK_IDS = M1_CLOSURE_M2_TASK_IDS | {'KL-072'}
 M2_REQUIRED_CHECK_IDS = {
+    'KL-072': {
+        'baseline_migration_unchanged',
+        'single_successor_migration_head',
+        'successor_migration_contains_no_cluster_role_ddl',
+        'safety_registry_role_preflight_fails_before_object_changes',
+        'two_phase_empty_db_upgrade_head',
+        'safety_registry_migrated_schema_integration',
+        'complete_safety_registry_suite_uses_migrated_schema',
+        'safety_registry_object_ownership_enforced',
+        'safety_registry_command_routine_privileges_enforced',
+        'safety_registry_role_owner_boundary_enforced',
+        'safety_registry_migrated_db_regressions_pass',
+    },
     'KL-014': {
         'build_preparation_stays_outside_t2',
         'preparation_and_registry_management_stay_outside_atomic_boundaries',
@@ -73,12 +91,21 @@ M2_REQUIRED_CHECK_IDS = {
         'cross_subject_denial_is_non_enumerating',
     },
     'KL-018': {
+        'artifact_registry_successor_migration_chain',
+        'artifact_identity_is_immutable',
+        'artifact_dependency_closure_required',
         'artifact_dependencies_must_be_pre_registered',
         'artifact_dependency_graph_is_acyclic',
         'artifact_dependency_closure_is_bounded',
         'artifact_registration_requires_management_capability',
+        'artifact_registration_command_routine_privileges_enforced',
+        'artifact_registration_session_authority_enforced',
         'artifact_registration_uses_exclusive_registry_gate',
         'artifact_registration_direct_write_rejected',
+        'unregistered_or_revoked_artifact_denied',
+        't3_t6_t7_require_artifact_refs',
+        'artifact_registry_db_constraints_pass',
+        'artifact_contract_unit_suite_passes',
     },
     'KL-055': {
         'provider_subject_source_binding_is_trusted',
@@ -97,7 +124,42 @@ KL015_REQUIRED_TABLE_IDS = [
 # SHA256 of canonical JSON {check_id, command, pass_oracle}. These security-critical
 # contracts must change through an explicit Harness governance edit; keeping an ID
 # while weakening its executable command or oracle fails closed.
+M1_CLOSURE_KL018_REQUIRED_CHECK_IDS = {
+    'artifact_dependencies_must_be_pre_registered',
+    'artifact_dependency_graph_is_acyclic',
+    'artifact_dependency_closure_is_bounded',
+    'artifact_registration_requires_management_capability',
+    'artifact_registration_uses_exclusive_registry_gate',
+    'artifact_registration_direct_write_rejected',
+}
+M1_CLOSURE_KL018_CRITICAL_CONTRACT_DIGESTS = {
+    'artifact_identity_is_immutable': '5a5d6976957b081e045743ba114df6e8aebf782c4cc66123026dafbee59456eb',
+    'artifact_dependency_closure_required': '6f69a7171def4c61b7d7390a0272495b2ddd75b5902375447cc9aac410def2ce',
+    'artifact_dependencies_must_be_pre_registered': '935e593ad9d7d2bdf05257326866c139e2ff4471ea0f2fdffee1e01adc1a087d',
+    'artifact_dependency_graph_is_acyclic': '2db1302d2bd5319910e6c9aa9d861fa8f3ef1c7d9f4d2f813fe229f72f915960',
+    'artifact_dependency_closure_is_bounded': '18805edc8865ec58437c7752aad50ac34d685c55c487e0baf0d7cff12f91bd9e',
+    'artifact_registration_requires_management_capability': '055c6d74460bb1bcc64da38cf018f29df96b7829e8eebcfd365a8b7cffba7658',
+    'artifact_registration_uses_exclusive_registry_gate': '4b43e27668003b90fb22932b54e776a5a8f2280b2a674e0eb518411c0a90b540',
+    'artifact_registration_direct_write_rejected': 'd5e91d07031d5fb89a4aca4658aef275d7684cc8325f4532bf20b69e7c3a2643',
+    'unregistered_or_revoked_artifact_denied': 'e45c0d2b3765a6e2a9a8534b21410a02c67f270a8a9f33c1ed5bec6b22deb4cb',
+    't3_t6_t7_require_artifact_refs': 'b4ef957a9ee368b6e074fa04ab340490904927371239ab0f42244ad22f5c4d6e',
+}
+
 M2_CRITICAL_CONTRACT_DIGESTS = {
+    'KL-072': {
+        'baseline_migration_unchanged': '18331c511a80b48d3e8c3bf2504954e468d02dc888cd7fa2a7ce8c568538ea18',
+        'single_successor_migration_head': '4ee1bd768c1e190419ac52f43109c7cb49d0167484f589890d9cd4146a52c299',
+        'successor_migration_contains_no_cluster_role_ddl': '5b52c22832ae9f6eb4e64c7ac61b8af7fc2db361b2c82f0226585a421816b08f',
+        'safety_registry_role_preflight_fails_before_object_changes': '4108abfa9b45652bde4f9f4ba9011deb05fae3c2c4a0e6a41ca24e3490d1465b',
+        'two_phase_empty_db_upgrade_head': 'ccea39a134e60f8f8a3e9bec320b2d431d29dba92951c94c6d7b786201f017a9',
+        'safety_registry_migrated_schema_integration': '936fc29507088c503e2b4ee63ba5acf3c997b555692306924ad1635e215be5b6',
+        'complete_safety_registry_suite_uses_migrated_schema': 'df0a4e0ea1f68ef49969d9bfaf096d8349a5cb96a4320037dec1fc5ab5442496',
+        'safety_registry_object_ownership_enforced': '2b55aa8f3756c8777fa444dcaae960b29138591356343042fdc8c15ff95d1663',
+        'safety_registry_command_routine_privileges_enforced': '1dc169d0cdb6a01e173500842305fb958e86736a35f872337af9d33142b096cc',
+        'safety_registry_role_owner_boundary_enforced': '04133a11d8b6ad8a3f1f0386674ae1a3d56cf35b8bb9be022bc1587d1cee7f79',
+        'safety_registry_migrated_db_regressions_pass': '7a48e66c4016fb4ba4f945c1cbcb6f3d1558f24af7dfe8d58851b0543a399b2b',
+        'harness_validation_passes': '2dbb33f46e379c228225cd02bc8afdf39689c54008b8ca7b1b019e0d2c4139bf',
+    },
     'KL-014': {
         'strict_t1_t8_contract_matrix': 'f7fff61a6a44a0ac8ee0e57be4145b8ba8602d3f3348acad80e0eba45cf047ad',
         'build_preparation_stays_outside_t2': 'bfcfd359b83698cfb96d8986ddba85e620fb4c6eb51c1c5c55f4f39be37d0aed',
@@ -148,16 +210,22 @@ M2_CRITICAL_CONTRACT_DIGESTS = {
         'cross_subject_denial_is_non_enumerating': 'a1a5fccddd0d93ee54ff8f118732452c977ce234439593acefb1a32a27089bd4',
     },
     'KL-018': {
+        'artifact_registry_successor_migration_chain': '330fc8082d050d343039e4664acdabcd8375969bb8b08657c83f9b73e65873ba',
         'artifact_identity_is_immutable': '5a5d6976957b081e045743ba114df6e8aebf782c4cc66123026dafbee59456eb',
         'artifact_dependency_closure_required': '6f69a7171def4c61b7d7390a0272495b2ddd75b5902375447cc9aac410def2ce',
         'artifact_dependencies_must_be_pre_registered': '935e593ad9d7d2bdf05257326866c139e2ff4471ea0f2fdffee1e01adc1a087d',
         'artifact_dependency_graph_is_acyclic': '2db1302d2bd5319910e6c9aa9d861fa8f3ef1c7d9f4d2f813fe229f72f915960',
         'artifact_dependency_closure_is_bounded': '18805edc8865ec58437c7752aad50ac34d685c55c487e0baf0d7cff12f91bd9e',
-        'artifact_registration_requires_management_capability': '055c6d74460bb1bcc64da38cf018f29df96b7829e8eebcfd365a8b7cffba7658',
-        'artifact_registration_uses_exclusive_registry_gate': '4b43e27668003b90fb22932b54e776a5a8f2280b2a674e0eb518411c0a90b540',
-        'artifact_registration_direct_write_rejected': 'd5e91d07031d5fb89a4aca4658aef275d7684cc8325f4532bf20b69e7c3a2643',
+        'artifact_registration_requires_management_capability': 'a5cf669fce9470c22d98c1e3c786b73e63a6c8d278de4aec2a19f839013755e4',
+        'artifact_registration_command_routine_privileges_enforced': '226da89307321450f86d10347284e6b5f2972b95ecd9cf76a270cdbec833ed70',
+        'artifact_registration_session_authority_enforced': 'ac6e147d90503ca0634a97e83bac1d6a65699040e5bbfcabd5602b1978665bb3',
+        'artifact_registration_uses_exclusive_registry_gate': '99d8388734ed54c72c4228f8a0307bb383be2221f6943d64fa90d7d463602ee5',
+        'artifact_registration_direct_write_rejected': 'a975ba38dec8f823adb5b367e0b74155f6d1940eb442c04006b01c16909409af',
         'unregistered_or_revoked_artifact_denied': 'e45c0d2b3765a6e2a9a8534b21410a02c67f270a8a9f33c1ed5bec6b22deb4cb',
         't3_t6_t7_require_artifact_refs': 'b4ef957a9ee368b6e074fa04ab340490904927371239ab0f42244ad22f5c4d6e',
+        'artifact_registry_db_constraints_pass': '1e20c4a67b42583177a1175ebb86fc0ddd370a50256b56f56c5a4c1e7def31fb',
+        'artifact_contract_unit_suite_passes': 'b63c11a97dbcc7b9ee50590bceb7841d5d08aae30b1042d85f98d6301174e934',
+        'harness_validation_passes': '2dbb33f46e379c228225cd02bc8afdf39689c54008b8ca7b1b019e0d2c4139bf',
     },
     'KL-055': {
         'provider_and_stream_ids_are_canonical': '693c802ea77603a2d4ee8291c782087a85252ba06ef5d7528a1ca849a830f0ed',
@@ -198,6 +266,15 @@ KL014_REQUIRED_COMMAND_SURFACE = [
     ('Internal-only: IssueAuthorization, InvalidateAuthorization, RecordSnapshot, '
      'AdvanceAttempt, CancelUndispatched'),
 ]
+KL072_REQUIRED_COMMAND_SURFACE = [
+    'PublishManifest',
+    'CommitBundle',
+    'Reauthorize',
+    'StartSession',
+    'ResumeSession',
+    'ContinueSession',
+    'RevokeArtifact',
+]
 KL016_REQUIRED_COMMAND_SURFACE = [
     'RevokeArtifact',
     'PublishManifest',
@@ -207,7 +284,7 @@ KL016_REQUIRED_COMMAND_SURFACE = [
     'ResumeSession',
     'ContinueSession',
 ]
-M2_REQUIRED_SECURITY_REVIEWS = {'KL-014', 'KL-017', 'KL-018', 'KL-055'}
+M2_REQUIRED_SECURITY_REVIEWS = {'KL-014', 'KL-017', 'KL-018', 'KL-055', 'KL-072'}
 M1_CLEAN_START_CHECKS = {
     'compose_config_valid': (
         'PYTHONPATH="$PWD/src" '
@@ -228,7 +305,7 @@ M1_CLEAN_START_RELEVANT_PATHS = [
 ]
 M2_REQUIRED_DB_REVIEWS = {
     'KL-010', 'KL-011', 'KL-012', 'KL-013', 'KL-014',
-    'KL-015', 'KL-016', 'KL-017', 'KL-018',
+    'KL-015', 'KL-016', 'KL-017', 'KL-018', 'KL-072',
 }
 
 
@@ -418,11 +495,16 @@ def packet_errors(task, text):
         policy = re.search(r'^Parallel write policy: \*\*([^*]+)\*\*', scope, re.M)
         if not policy or policy.group(1) != task.get('parallel_write_policy'):
             errors.append('packet-parallel-policy:' + name)
+        if name == 'KL-072':
+            hotspot = re.search(r'^Shared hotspot: \*\*(true|false)\*\*', scope, re.M)
+            expected_hotspot = str(task.get('shared_hotspot', False)).lower()
+            if not hotspot or hotspot.group(1) != expected_hotspot:
+                errors.append('packet-shared-hotspot:' + name)
     if name == 'KL-014':
         command_surface = section(text, 'Public command surface') or ''
         if bullets(command_surface) != task.get('commands', []):
             errors.append('packet-command-surface:' + name)
-    if name == 'KL-016':
+    if name in {'KL-016', 'KL-072'}:
         command_surface = section(text, 'Registry-gated command surface') or ''
         if bullets(command_surface) != task.get('commands', []):
             errors.append('packet-command-surface:' + name)
@@ -483,6 +565,7 @@ def governance_record_paths(change_id):
 
 def governance_allowed_patterns(change_id):
     return [
+        PROJECT_PLAN,
         BACKLOG,
         TRACEABILITY,
         INDEX,
@@ -505,9 +588,9 @@ def governance_allowed_patterns(change_id):
     ]
 
 
-def traceability_projection(task):
-    """Return the exact task-definition fields mirrored by traceability."""
-    return {field: task.get(field) for field in TRACEABILITY_TASK_FIELDS}
+def traceability_projection(task, fields=TRACEABILITY_TASK_FIELDS):
+    """Return the exact task-definition fields mirrored by this traceability version."""
+    return {field: task.get(field) for field in fields}
 
 
 def traceability_task_map(document, prefix='traceability'):
@@ -1088,7 +1171,7 @@ def milestone_closure_errors(
         evaluated_backlog = load_artifact_at_revision(root, BACKLOG, evaluated)
         evaluated_trace = load_artifact_at_revision(root, TRACEABILITY, evaluated)
         evaluated_task_errors, evaluated_tasks = task_definition_errors(
-            root, evaluated_backlog, evaluated)
+            root, evaluated_backlog, evaluated, historical_m1_closure=True)
     except ValueError as ex:
         return errors + ['milestone-evaluated-revision:M1:' + str(ex)]
 
@@ -1207,17 +1290,19 @@ def milestone_closure_errors(
         trace_errors, trace_tasks = traceability_task_map(
             evaluated_trace, 'milestone-traceability')
         errors.extend(trace_errors)
-        for task_id in M2_REFINED_TASK_IDS:
+        for task_id in M1_CLOSURE_M2_TASK_IDS:
             task = evaluated_tasks.get(task_id)
             trace_task = trace_tasks.get(f'harness-backlog-v0.2/{task_id}')
-            if task is None or trace_task != traceability_projection(task):
+            if (task is None or trace_task != traceability_projection(
+                    task, M1_CLOSURE_TRACEABILITY_TASK_FIELDS)):
                 errors.append('milestone-m2-projection:' + task_id)
     except (ValueError, OSError, KeyError, TypeError) as ex:
         errors.append('milestone-m2-contract-revision:' + str(ex))
     return errors
 
 
-def task_definition_errors(root, backlog, revision=None):
+def task_definition_errors(
+        root, backlog, revision=None, *, historical_m1_closure=False):
     """Validate one revision's complete backlog, packet, resource and DAG state."""
     errors = []
     tasks = {task['id']: task for task in backlog['tasks']}
@@ -1298,13 +1383,29 @@ def task_definition_errors(root, backlog, revision=None):
             if 'M1 closure PASS: docs/exec-plans/milestones/M1.json' not in task.get(
                     'entry_conditions', []):
                 errors.append('m2-entry-condition:' + name)
-            required_checks = M2_REQUIRED_CHECK_IDS.get(name, set())
+            required_checks = (
+                M1_CLOSURE_KL018_REQUIRED_CHECK_IDS
+                if historical_m1_closure and name == 'KL-018'
+                else M2_REQUIRED_CHECK_IDS.get(name, set())
+            )
             if not required_checks.issubset(set(contract_ids)):
                 errors.append('m2-required-semantic-checks:' + name)
             if name == 'KL-014' and task.get('commands') != KL014_REQUIRED_COMMAND_SURFACE:
                 errors.append('m2-kl014-command-surface')
             if name == 'KL-016' and task.get('commands') != KL016_REQUIRED_COMMAND_SURFACE:
                 errors.append('m2-kl016-command-surface')
+            if name == 'KL-072' and task.get('commands') != KL072_REQUIRED_COMMAND_SURFACE:
+                errors.append('m2-kl072-command-surface')
+            if (name == 'KL-072' and (task.get('shared_hotspot') is not True
+                    or 'registry_coordination' not in task.get('resource_keys', []))):
+                errors.append('m2-kl072-registry-hotspot')
+            if (name == 'KL-018' and not historical_m1_closure and (
+                    not {'migration_chain', 'persistence_permissions'} <= set(
+                        task.get('resource_keys', []))
+                    or 'migrations/versions/*_artifact_registry.py' not in task.get(
+                        'write_paths', [])
+                    or 'tests/db/test_migrations.py' not in task.get('write_paths', []))):
+                errors.append('m2-kl018-registry-migration-scope')
             if name == 'KL-015':
                 if task.get('invariant_ids') != KL015_REQUIRED_INVARIANT_IDS:
                     errors.append('m2-kl015-frozen-impact:invariants')
@@ -1316,8 +1417,12 @@ def task_definition_errors(root, backlog, revision=None):
                 item.get('check_id'): item for item in contracts or []
                 if isinstance(item, dict)
             }
-            for check_id, expected_digest in M2_CRITICAL_CONTRACT_DIGESTS.get(
-                    name, {}).items():
+            critical_contracts = (
+                M1_CLOSURE_KL018_CRITICAL_CONTRACT_DIGESTS
+                if historical_m1_closure and name == 'KL-018'
+                else M2_CRITICAL_CONTRACT_DIGESTS.get(name, {})
+            )
+            for check_id, expected_digest in critical_contracts.items():
                 contract = contract_map.get(check_id)
                 actual_digest = hashlib.sha256(json.dumps(
                     contract, ensure_ascii=False, sort_keys=True,
@@ -1703,14 +1808,29 @@ def validate(root, args):
                 for task_id in refined:
                     task = replay_tasks.get(task_id)
                     old_task = old_tasks.get(task_id)
-                    if not task or not old_task:
+                    if not task:
                         errors.append('governance-refined-task-unknown:' + task_id)
                         continue
-                    if ((old_task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY'
-                         and task.get('packet_refinement') != 'MUST_REFINE_BEFORE_READY')
-                            or (old_task != task and
-                                task.get('packet_refinement') == 'ENFORCEABLE')):
-                        observed.add(task_id)
+                    if old_task is None:
+                        task_artifact_patterns = (
+                            result_paths(task_id) + review_patterns(task_id)
+                            + [f'docs/exec-plans/integrations/{task_id}.json']
+                        )
+                        if task.get('status') != 'NOT_STARTED':
+                            errors.append('governance-new-task-status:' + task_id)
+                        if any(matches(path, task_artifact_patterns)
+                               for path in governance_changed):
+                            errors.append('governance-new-task-artifact:' + task_id)
+                        if task.get('packet_refinement') == 'ENFORCEABLE':
+                            observed.add(task_id)
+                    else:
+                        if result_paths_at_revision(root, task_id, governance_base):
+                            errors.append('governance-refine-completed-task:' + task_id)
+                        if ((old_task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY'
+                             and task.get('packet_refinement') != 'MUST_REFINE_BEFORE_READY')
+                                or (old_task != task and
+                                    task.get('packet_refinement') == 'ENFORCEABLE')):
+                            observed.add(task_id)
                     if (task.get('write_paths_status') != 'ENFORCEABLE' or
                             not task.get('write_paths') or
                             any('TO_BE_REFINED' in path for path in task.get('write_paths', []))):

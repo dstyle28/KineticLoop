@@ -236,6 +236,53 @@ class ValidatorTests(unittest.TestCase):
         dump(traceability_path, traceability)
         return task
 
+
+    def add_governance_task(self, task_id='KL-999', status='NOT_STARTED',
+                            add_review_artifact=False):
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        template = copy.deepcopy(next(item for item in backlog['tasks']
+                                      if item['id'] == 'KL-072'))
+        template.update({
+            'id': task_id,
+            'task_identity': 'harness-backlog-v0.2/' + task_id,
+            'thread_id': 'THREAD-' + task_id,
+            'handoff_artifact': f'docs/exec-plans/completed/{task_id}_RESULT.yaml',
+            'status': status,
+            'evidence_paths': [f'docs/exec-plans/evidence/{task_id}/**'],
+        })
+        backlog['tasks'].append(template)
+        backlog['task_count'] = len(backlog['tasks'])
+        backlog['active_task_count'] = sum(
+            task['status'] != 'SUPERSEDED' for task in backlog['tasks'])
+        dump(backlog_path, backlog)
+
+        source_packet = self.root / 'docs/exec-plans/active/KL-072.md'
+        packet_text = source_packet.read_text().replace('KL-072', task_id)
+        packet_text = packet_text.replace('**Status:** NOT_STARTED', f'**Status:** {status}')
+        packet_text = packet_text.replace(
+            'docs/exec-plans/evidence/KL-072/**',
+            f'docs/exec-plans/evidence/{task_id}/**')
+        self.put(f'docs/exec-plans/active/{task_id}.md', packet_text)
+
+        trace_path = self.root / v.TRACEABILITY
+        traceability = json.loads(trace_path.read_text())
+        traceability['tasks'].append({
+            field: template.get(field) for field in v.TRACEABILITY_TASK_FIELDS
+        })
+        dump(trace_path, traceability)
+        if add_review_artifact:
+            dump(self.root / f'docs/exec-plans/reviews/{task_id}/GENERAL.json', {
+                'task_identity': template['task_identity'],
+                'reviewed_head_sha': self.base,
+                'review_type': 'GENERAL',
+                'review_contract_version': 'v0.2',
+                'status': 'PASS',
+                'findings': [],
+            })
+        refresh(self.root)
+        return template
+
     def reviewed_result(self):
         path, obj = self.result()
         reviewed = self.commit('record result and new evidence')
@@ -614,7 +661,14 @@ class ValidatorTests(unittest.TestCase):
             ('KL-015', 'catalog_mapping_and_release_owner_boundaries_complete'),
             ('KL-016', 'shared_gate_command_matrix_fails_closed'),
             ('KL-016', 'revoke_artifact_atomic_linearization_and_idempotency'),
+            ('KL-072', 'successor_migration_contains_no_cluster_role_ddl'),
+            ('KL-072', 'safety_registry_role_preflight_fails_before_object_changes'),
+            ('KL-072', 'safety_registry_object_ownership_enforced'),
+            ('KL-072', 'safety_registry_command_routine_privileges_enforced'),
             ('KL-017', 'cross_subject_denial_is_non_enumerating'),
+            ('KL-018', 'artifact_registry_successor_migration_chain'),
+            ('KL-018', 'artifact_registration_command_routine_privileges_enforced'),
+            ('KL-018', 'artifact_registration_session_authority_enforced'),
             ('KL-018', 'artifact_identity_is_immutable'),
             ('KL-055', 'provider_subject_source_binding_is_trusted'),
         ]
@@ -682,6 +736,22 @@ class ValidatorTests(unittest.TestCase):
         packet_path.write_text(packet_path.read_text().replace('- Reauthorize\n', '', 1))
         refresh(self.root)
         self.check(1, 'm2-kl016-command-surface')
+
+
+    def test_m2_kl018_registry_migration_scope_cannot_be_removed(self):
+        backlog_path = self.root / v.BACKLOG
+        original = json.loads(backlog_path.read_text())
+        for field, value in (
+                ('resource_keys', 'migration_chain'),
+                ('resource_keys', 'persistence_permissions'),
+                ('write_paths', 'migrations/versions/*_artifact_registry.py'),
+                ('write_paths', 'tests/db/test_migrations.py')):
+            backlog = copy.deepcopy(original)
+            task = next(item for item in backlog['tasks'] if item['id'] == 'KL-018')
+            task[field].remove(value)
+            dump(backlog_path, backlog)
+            self.check(1, 'm2-kl018-registry-migration-scope')
+        dump(backlog_path, original)
 
     def test_manifest_claimed_m1_closure_cannot_be_missing(self):
         manifest_path = self.root / v.MANIFEST
@@ -1007,6 +1077,64 @@ class ValidatorTests(unittest.TestCase):
     def test_ci_governance_merge_gate_binds_record_and_reviews(self):
         self.governance_change()
         self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+
+    def test_ci_governance_allows_new_follow_up_task_identity(self):
+        task = self.add_governance_task()
+        tested = self.commit('add explicit follow-up task')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_new_task_must_start_not_started(self):
+        task = self.add_governance_task(status='READY')
+        tested = self.commit('add already-ready follow-up task')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(1, 'governance-new-task-status:' + task['id'],
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_new_task_cannot_arrive_with_review_artifact(self):
+        task = self.add_governance_task(add_review_artifact=True)
+        tested = self.commit('add follow-up task with fabricated review')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(1, 'governance-new-task-artifact:' + task['id'],
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_rejects_retroactive_completed_task_refinement(self):
+        for relative in (
+                'docs/exec-plans/completed/KL-013_RESULT.yaml',
+                'docs/exec-plans/evidence/KL-013/checks-f2416f1.log',
+                'docs/exec-plans/evidence/KL-013/checks-d9085e7.log',
+                'docs/exec-plans/evidence/KL-013/checks-b0c5d4a.log'):
+            destination = self.root / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(ROOT / relative, destination)
+        self.base = self.commit('record completed KL-013 fixture')
+
+        task_id = 'KL-013'
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == task_id)
+        old_dod = task['definition_of_done']
+        task['definition_of_done'] = old_dod + '; retroactive obligation'
+        dump(backlog_path, backlog)
+        packet = self.root / f'docs/exec-plans/active/{task_id}.md'
+        packet.write_text(packet.read_text().replace(
+            old_dod, task['definition_of_done']))
+        trace_path = self.root / v.TRACEABILITY
+        traceability = json.loads(trace_path.read_text())
+        trace = next(item for item in traceability['tasks'] if item['id'] == task_id)
+        for field in v.TRACEABILITY_TASK_FIELDS:
+            trace[field] = task.get(field)
+        dump(trace_path, traceability)
+        refresh(self.root)
+        tested = self.commit('impose obligation on completed task')
+        self.persist_governance_change(
+            'HG-999', tested, [task_id], task['review_requirements'])
+        self.check(1, 'governance-refine-completed-task:' + task_id,
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
     def test_ci_governance_allows_refined_traceability_metadata(self):
         task_id = 'KL-008'
@@ -1346,6 +1474,12 @@ class ValidatorTests(unittest.TestCase):
         self.commit('unauthorized governance write')
         self.check(1, 'governance-write-scope:HG-999:README.md',
                    '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_allows_current_project_plan_refinement(self):
+        plan = self.root / v.PROJECT_PLAN
+        plan.write_text(plan.read_text() + '\nGovernance fixture refinement.\n')
+        self.governance_change()
+        self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
     def test_ci_governance_rejects_task_review_without_integration(self):
         self.review(self.base)

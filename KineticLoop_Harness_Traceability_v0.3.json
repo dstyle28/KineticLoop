@@ -1359,7 +1359,8 @@
       "depends_on": [
         "KL-007",
         "KL-008",
-        "KL-013"
+        "KL-013",
+        "KL-072"
       ],
       "conditional_depends_on": [],
       "commands": [],
@@ -1483,7 +1484,8 @@
         "SECURITY_DATA_BOUNDARY"
       ],
       "packet_refinement": "ENFORCEABLE",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "shared_hotspot": true
     },
     {
       "task_identity": "harness-backlog-v0.2/KL-018",
@@ -1491,7 +1493,8 @@
       "milestone": "M2",
       "depends_on": [
         "KL-013",
-        "KL-016"
+        "KL-016",
+        "KL-072"
       ],
       "conditional_depends_on": [],
       "commands": [
@@ -1518,27 +1521,41 @@
       ],
       "context_files": [
         "05_KineticLoop_Protocol_v1.2_FROZEN.md",
-        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "docs/contracts/safety_registry.md",
+        "docs/contracts/immutable_history_permissions.md",
+        "docs/contracts/artifact_registry.md",
+        "docs/exec-plans/completed/KL-072_RESULT.yaml"
       ],
       "entry_conditions": [
         "M1 closure PASS: docs/exec-plans/milestones/M1.json"
       ],
       "environment_requirements": [
-        "ISOLATED_POSTGRESQL_NAMESPACE"
+        "ISOLATED_POSTGRESQL_NAMESPACE",
+        "EXTERNAL_TWO_PHASE_DB_BOOTSTRAP",
+        "EXTERNALLY_PROVISIONED_POSTGRESQL_ROLES",
+        "NON_SUPERUSER_MIGRATION_PRINCIPAL",
+        "SESSION_BOUND_TRUSTED_ADMIN_PRINCIPAL"
       ],
       "deliverables": [
-        "artifact identity API"
+        "later artifact-registry successor migration",
+        "exact trusted-admin RegisterArtifact SECURITY DEFINER entrypoint",
+        "artifact identity API and dependency admission",
+        "session-bound authorization and direct-SQL negative evidence"
       ],
-      "definition_of_done": "model/prompt/tool/runtime/policy artifacts have exact immutable identities before use; every declared dependency is already registered and the dependency graph is complete, acyclic, and bounded; registration is owned only by the exclusive SafetyRegistry management command with trusted ADMINISTER_PRODUCTION capability",
+      "definition_of_done": "after merged KL-072, one later cluster-role-DDL-free successor installs exactly one registry_register_artifact SECURITY DEFINER entrypoint owned by NOLOGIN kl_writer_safety_registry and executable only by distinct NOLOGIN kl_trusted_admin; database authorization and persisted operator identity derive from the authenticated session rather than caller identity/capability; direct S49/S51 DML and owner-role assumption remain denied; and model/prompt/tool/runtime/policy artifacts have immutable identities with complete, pre-registered, acyclic, bounded dependency closure before use",
       "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
+        "artifact_registry_successor_migration_chain",
         "artifact_identity_is_immutable",
         "artifact_dependency_closure_required",
         "artifact_dependencies_must_be_pre_registered",
         "artifact_dependency_graph_is_acyclic",
         "artifact_dependency_closure_is_bounded",
         "artifact_registration_requires_management_capability",
+        "artifact_registration_command_routine_privileges_enforced",
+        "artifact_registration_session_authority_enforced",
         "artifact_registration_uses_exclusive_registry_gate",
         "artifact_registration_direct_write_rejected",
         "unregistered_or_revoked_artifact_denied",
@@ -1548,6 +1565,11 @@
         "harness_validation_passes"
       ],
       "check_contracts": [
+        {
+          "check_id": "artifact_registry_successor_migration_chain",
+          "command": "uv run pytest -q tests/db/test_migrations.py::test_artifact_registry_successor_migration_chain",
+          "pass_oracle": "The named test proves KL-018 adds exactly one later artifact-registry successor directly after the merged KL-072 revision with one Alembic head; the successor contains no cluster-role or protected-membership DDL and runs through the same external non-superuser/non-CREATEROLE migration-deployer handoff."
+        },
         {
           "check_id": "artifact_identity_is_immutable",
           "command": "uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_identity_is_immutable",
@@ -1576,17 +1598,27 @@
         {
           "check_id": "artifact_registration_requires_management_capability",
           "command": "uv run pytest -q tests/unit/contracts/test_artifact_registry.py::test_artifact_registration_requires_management_capability",
-          "pass_oracle": "The named test rejects USER/AGENT and caller-asserted authority; only a trusted ADMIN identity with derived ADMINISTER_PRODUCTION capability may request RegisterArtifact."
+          "pass_oracle": "The named unit contract test rejects USER/AGENT and caller-asserted authority before persistence; only a trusted ADMIN identity with derived ADMINISTER_PRODUCTION capability may request RegisterArtifact, while the independent database-session authorization check remains mandatory."
+        },
+        {
+          "check_id": "artifact_registration_command_routine_privileges_enforced",
+          "command": "uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_registration_command_routine_privileges",
+          "pass_oracle": "The named PostgreSQL catalog and execution test proves the KL-018 successor adds exactly one non-overloaded kineticloop.registry_register_artifact(uuid,text,text,uuid[],text,text,text,integer) SECURITY DEFINER routine, owned by NOLOGIN kl_writer_safety_registry with fixed safe search_path and EXECUTE granted only to NOLOGIN kl_trusted_admin; PUBLIC, kl_application, kl_auditor, USER, and AGENT principals receive none, and the successor adds no cluster role or membership DDL."
+        },
+        {
+          "check_id": "artifact_registration_session_authority_enforced",
+          "command": "uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_registration_session_authority_enforced",
+          "pass_oracle": "The named direct-SQL PostgreSQL test proves RegisterArtifact authorization is bound inside registry_register_artifact to pg_has_role(session_user, kl_trusted_admin, MEMBER), persists operator_identity from the authenticated database session, and rejects USER, AGENT, generic kl_application, and caller-asserted ADMIN identity/capability attempts without S49/S51, receipt, event, or outbox mutation."
         },
         {
           "check_id": "artifact_registration_uses_exclusive_registry_gate",
           "command": "uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_registration_uses_exclusive_registry_gate",
-          "pass_oracle": "The named PostgreSQL lock-observation test proves RegisterArtifact acquires the exclusive S51 management gate and never locks S01."
+          "pass_oracle": "The named PostgreSQL lock-observation test invokes registry_register_artifact through the trusted-admin database session and proves it acquires the exclusive S51 management gate, never locks S01, and retains the gate through the atomic S49/receipt/event/outbox commit."
         },
         {
           "check_id": "artifact_registration_direct_write_rejected",
           "command": "uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_registration_direct_write_rejected",
-          "pass_oracle": "The named PostgreSQL test denies direct S49 writes outside the SafetyRegistry management command owner."
+          "pass_oracle": "The named PostgreSQL test denies direct S49/S51 writes and owner-role assumption by trusted-admin, generic application, audit, USER, and AGENT runtime logins; registration is possible only through registry_register_artifact."
         },
         {
           "check_id": "unregistered_or_revoked_artifact_denied",
@@ -1600,8 +1632,8 @@
         },
         {
           "check_id": "artifact_registry_db_constraints_pass",
-          "command": "uv run pytest -q tests/db/test_artifact_registry.py",
-          "pass_oracle": "Command exits 0 with every artifact-registry constraint test passing."
+          "command": "uv run pytest -q tests/db/test_artifact_registry.py tests/db/test_migrations.py",
+          "pass_oracle": "Command exits 0 after the exact KL-072 two-phase deployment and KL-018 later successor, covering the migration chain, no-role-DDL rule, exact routine ownership/ACL, session-bound admin authority, gate/atomicity, immutable identity, dependency, and direct-write constraints."
         },
         {
           "check_id": "artifact_contract_unit_suite_passes",
@@ -1618,15 +1650,19 @@
         "docs/exec-plans/evidence/KL-018/**"
       ],
       "resource_keys": [
+        "migration_chain",
+        "persistence_permissions",
         "registry_coordination",
         "release_evidence"
       ],
       "write_paths": [
         "docs/contracts/artifact_registry.md",
+        "migrations/versions/*_artifact_registry.py",
         "src/kineticloop/contracts/artifacts.py",
         "src/kineticloop/persistence/artifact_registry.py",
         "tests/unit/contracts/test_artifact_registry.py",
-        "tests/db/test_artifact_registry.py"
+        "tests/db/test_artifact_registry.py",
+        "tests/db/test_migrations.py"
       ],
       "write_paths_status": "ENFORCEABLE",
       "review_requirements": [
@@ -1636,7 +1672,8 @@
         "SECURITY_DATA_BOUNDARY"
       ],
       "packet_refinement": "ENFORCEABLE",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "shared_hotspot": true
     },
     {
       "task_identity": "harness-backlog-v0.2/KL-055",
@@ -3411,6 +3448,176 @@
       ],
       "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
       "status": "NOT_STARTED"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-072",
+      "id": "KL-072",
+      "milestone": "M2",
+      "depends_on": [
+        "KL-013",
+        "KL-016"
+      ],
+      "conditional_depends_on": [],
+      "commands": [
+        "PublishManifest",
+        "CommitBundle",
+        "Reauthorize",
+        "StartSession",
+        "ResumeSession",
+        "ContinueSession",
+        "RevokeArtifact"
+      ],
+      "transaction_boundaries": [
+        "T2-GLOBAL",
+        "T3",
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S49",
+        "S50",
+        "S51"
+      ],
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "docs/contracts/safety_registry.md",
+        "docs/contracts/immutable_history_permissions.md",
+        "docs/exec-plans/completed/KL-013_RESULT.yaml",
+        "docs/exec-plans/completed/KL-016_RESULT.yaml"
+      ],
+      "entry_conditions": [
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json"
+      ],
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE",
+        "EXTERNAL_TWO_PHASE_DB_BOOTSTRAP",
+        "EXTERNALLY_PROVISIONED_POSTGRESQL_ROLES",
+        "NON_SUPERUSER_MIGRATION_PRINCIPAL",
+        "SESSION_BOUND_TRUSTED_ADMIN_PRINCIPAL"
+      ],
+      "deliverables": [
+        "exact isolated Phase A baseline bootstrap and external ownership handoff",
+        "Phase B successor with fail-closed external-role preflight and no cluster-role DDL",
+        "migration-owner table and guard-function ownership plus narrow SafetyRegistry command routines",
+        "production SafetyRegistry repository integration with session-bound trusted-admin revoke authorization",
+        "shared/exclusive gate, direct-DML denial, and non-elevated runtime evidence"
+      ],
+      "definition_of_done": "an isolated empty database reaches head through an exact two-phase deployment: Phase A applies only the immutable KL-013 baseline under the external CREATEROLE bootstrap and hands its objects to NOLOGIN kl_migration_owner, then a new NOSUPERUSER/NOCREATEROLE deployment session applies only the cluster-role-DDL-free KL-072 successor after fail-closed preflight; migrated tables and guard functions remain owned by kl_migration_owner; six shared-gate routines are executable only by kl_application and the RevokeArtifact routine only by distinct NOLOGIN kl_trusted_admin, all owned by NOLOGIN kl_writer_safety_registry; RevokeArtifact authority and operator identity derive from the authenticated database session; and USER, AGENT, generic application, audit, and caller-asserted admin inputs cannot execute revoke, use direct DML, assume owner roles, or bypass owner, gate, immutable-history, idempotency, receipt, event, or outbox protections",
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "baseline_migration_unchanged",
+        "single_successor_migration_head",
+        "successor_migration_contains_no_cluster_role_ddl",
+        "safety_registry_role_preflight_fails_before_object_changes",
+        "two_phase_empty_db_upgrade_head",
+        "safety_registry_migrated_schema_integration",
+        "complete_safety_registry_suite_uses_migrated_schema",
+        "safety_registry_object_ownership_enforced",
+        "safety_registry_command_routine_privileges_enforced",
+        "safety_registry_role_owner_boundary_enforced",
+        "safety_registry_migrated_db_regressions_pass",
+        "harness_validation_passes"
+      ],
+      "check_contracts": [
+        {
+          "check_id": "baseline_migration_unchanged",
+          "command": "git diff --exit-code b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f HEAD -- migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py",
+          "pass_oracle": "Command exits 0, proving the merged KL-013 baseline revision is byte-unchanged; KL-072 may add only a successor migration."
+        },
+        {
+          "check_id": "single_successor_migration_head",
+          "command": "uv run pytest -q tests/db/test_migrations.py::test_safety_registry_successor_migration_chain",
+          "pass_oracle": "The named test passes and proves there is exactly one Alembic head, the KL-013 baseline remains the immutable root revision, and exactly one KL-072 SafetyRegistry successor points directly to it."
+        },
+        {
+          "check_id": "successor_migration_contains_no_cluster_role_ddl",
+          "command": "uv run pytest -q tests/db/test_migrations.py::test_safety_registry_successor_contains_no_cluster_role_ddl",
+          "pass_oracle": "The named test captures every statement emitted by the KL-072 successor upgrade and downgrade and executes Phase B through kl_migration_deployer, whose session and assumed owner roles are NOSUPERUSER and NOCREATEROLE; it proves the successor contains no CREATE/ALTER/DROP ROLE or USER, REASSIGN OWNED, or role-membership GRANT/REVOKE. Cluster-role bootstrap, memberships, and the ownership handoff occur outside the successor."
+        },
+        {
+          "check_id": "safety_registry_role_preflight_fails_before_object_changes",
+          "command": "uv run pytest -q tests/db/test_migrations.py::test_safety_registry_role_preflight_fails_before_object_changes",
+          "pass_oracle": "The named parameterized PostgreSQL test starts after the isolated Phase A baseline and external ownership handoff, then proves the Phase B successor preflight is its first action and fails before any object, owner, ACL, routine, or Alembic-version change when kl_migration_owner, kl_writer_safety_registry, kl_application, kl_auditor, or kl_trusted_admin is absent; when any protected role has LOGIN, SUPERUSER, CREATEDB, CREATEROLE, INHERIT, REPLICATION, or BYPASSRLS; when protected roles are members of one another; or when the external kl_migration_deployer lacks the exact SET memberships needed for the two owner roles. Every failure leaves an identical normalized catalog fingerprint and the immutable KL-013 baseline revision remains current."
+        },
+        {
+          "check_id": "two_phase_empty_db_upgrade_head",
+          "command": "uv run pytest -q tests/db/test_migrations.py::test_two_phase_empty_db_upgrade_head",
+          "pass_oracle": "The named isolated-PostgreSQL test proves the exact empty-to-head deployment. Phase A connects only as externally provisioned kl_cluster_bootstrap with CREATEROLE, applies the immutable KL-013 baseline alone, disconnects, and performs an explicit external ownership handoff of baseline schema objects to NOLOGIN kl_migration_owner. Phase B opens a new session as NOSUPERUSER/NOCREATEROLE kl_migration_deployer, assumes kl_migration_owner for preflight and object DDL and kl_writer_safety_registry only for the exact command routines through externally provisioned SET memberships, applies only the KL-072 successor, and reaches the single head. It never represents the immutable baseline as runnable by one non-CREATEROLE empty-to-head connection."
+        },
+        {
+          "check_id": "safety_registry_migrated_schema_integration",
+          "command": "uv run pytest -q tests/db/test_migrations.py::test_safety_registry_repository_integrates_with_migrated_schema",
+          "pass_oracle": "The named isolated-PostgreSQL test performs the exact Phase A baseline, external ownership handoff, and new Phase B non-superuser/non-CREATEROLE successor session before using the production SafetyRegistry repository through non-elevated runtime login roles. It exercises a shared-gate command and RevokeArtifact through the approved SECURITY DEFINER routines against migrated S01/S02/S03/S04/S49/S50/S51; proves the seeded singleton S51 row supplies the shared/exclusive gate and revision transition; and proves S50 preserves immutable revocation identity, database-session-derived management operator identity, command_key/request_hash idempotency, causation incident identity, outbox delivery identity, same-key/same-hash replay, and same-key/different-hash rejection."
+        },
+        {
+          "check_id": "complete_safety_registry_suite_uses_migrated_schema",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py",
+          "pass_oracle": "The complete real PostgreSQL SafetyRegistry suite passes after the exact two-phase isolated bootstrap/handoff/upgrade, with no fixture-local DDL for S01/S02/S03/S04/S49/S50/S51 or production command routines, while preserving every KL-016 shared-gate, shared-before-S01, exclusive-revoke-without-S01, fail-closed, atomicity, idempotency, timeout, replay, and STOP-independence assertion."
+        },
+        {
+          "check_id": "safety_registry_object_ownership_enforced",
+          "command": "uv run pytest -q tests/db/test_migrations.py::test_safety_registry_migrated_object_ownership",
+          "pass_oracle": "After the Phase A external ownership handoff and Phase B successor, the named PostgreSQL catalog test proves every migrated S01-S51 base table, typed child table, replay edge table, sequence, and non-command trigger/guard function in schema kineticloop is owned by kl_migration_owner; kl_migration_owner remains NOLOGIN, NOSUPERUSER, NOCREATEDB, NOCREATEROLE, NOINHERIT, NOREPLICATION, and NOBYPASSRLS; and no application, audit, SafetyRegistry writer, login, bootstrap, or superuser role owns those objects."
+        },
+        {
+          "check_id": "safety_registry_command_routine_privileges_enforced",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_command_routine_privileges",
+          "pass_oracle": "The named PostgreSQL catalog and execution test proves the only SafetyRegistry SECURITY DEFINER command routines are the non-overloaded registry_guard_publish_manifest(uuid,uuid[],bigint,integer), registry_guard_commit_bundle(uuid,uuid[],bigint,integer), registry_guard_reauthorize(uuid,uuid[],bigint,integer), registry_guard_start_session(uuid,uuid[],bigint,integer), registry_guard_resume_session(uuid,uuid[],bigint,integer), registry_guard_continue_session(uuid,uuid[],bigint,integer), and registry_revoke_artifact(uuid,text,timestamptz,text,text,text,text,uuid,integer) routines in schema kineticloop. Each is owned by NOLOGIN kl_writer_safety_registry with fixed safe search_path; the six shared-gate routines grant EXECUTE only to kl_application, while registry_revoke_artifact grants EXECUTE only to externally provisioned NOLOGIN kl_trusted_admin; PUBLIC, kl_auditor, and the other execution principal receive none; no overload or generic caller-selected command/SQL routine exists."
+        },
+        {
+          "check_id": "safety_registry_role_owner_boundary_enforced",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_role_owner_boundary",
+          "pass_oracle": "The named direct-SQL PostgreSQL test proves RevokeArtifact authorization is bound inside registry_revoke_artifact to pg_has_role(session_user, kl_trusted_admin, MEMBER), persists operator_identity from the authenticated database session rather than a caller field, and succeeds only for an externally provisioned trusted-admin login whose sole execution membership is kl_trusted_admin. USER, AGENT, generic kl_application, and caller-asserted ADMIN identity/capability attempts cannot EXECUTE revoke, cannot cause S50/S51 mutation, cannot SET ROLE to kl_migration_owner or kl_writer_safety_registry, and cannot use direct S49/S50/S51 DML. No runtime success path uses a superuser, migration owner, object owner, or direct writer connection."
+        },
+        {
+          "check_id": "safety_registry_migrated_db_regressions_pass",
+          "command": "uv run pytest -q tests/db/test_migrations.py tests/db/test_safety_registry.py tests/db/test_immutability.py tests/db/test_lifecycle.py",
+          "pass_oracle": "Command exits 0 against one isolated PostgreSQL namespace after the exact two-phase bootstrap/handoff/upgrade, covering successor role-DDL prohibition, Phase B role-preflight negatives, catalog ownership, session-bound trusted-admin revoke authorization, command-routine ACLs, complete production SafetyRegistry, immutable-history, and lifecycle regressions."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Command exits 0 and prints HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-072/**"
+      ],
+      "resource_keys": [
+        "migration_chain",
+        "persistence_schema",
+        "persistence_permissions",
+        "registry_coordination"
+      ],
+      "write_paths": [
+        "docs/contracts/safety_registry.md",
+        "migrations/versions/*_safety_registry_integration.py",
+        "src/kineticloop/persistence/safety_registry.py",
+        "tests/db/test_migrations.py",
+        "tests/db/test_safety_registry.py"
+      ],
+      "write_paths_status": "ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "DB_CONCURRENCY",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED",
+      "shared_hotspot": true
     }
   ]
 }
