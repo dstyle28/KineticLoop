@@ -1,0 +1,55 @@
+HG-020 validation evidence
+date: 2026-09-25
+protected_base: 038d198c2f31a373a7be5fa950eb05ba4e6f7f94
+tested_commit: bcd713ce4153e5967b96d187577b36ad081c9b74
+
+PASS governance schema and scope
+- HG-020 declares KL-072 as its sole refined packet.
+- The protected-base change set is restricted to the nine files declared in HG-020.
+- Frozen authorities, FROZEN_BASELINE.json, M1 closure, and completed KL-013 artifacts are unchanged.
+
+PASS security-definer boundary contract
+- pg_proc.proconfig must be exactly the singleton search_path=pg_catalog, kineticloop, pg_temp, with pg_temp explicit and last.
+- Before every routine invocation, hostile temporary relations and domains/types with colliding names must prove lookup cannot be hijacked.
+- Implicit pg_temp precedence, $user, caller-writable schemas, extra schemas, dynamic SQL, and caller-selected resolution are forbidden.
+- kineticloop is owned by NOLOGIN kl_migration_owner; no other principal receives CREATE and PUBLIC receives no privilege.
+- Every non-pg_catalog object is explicitly qualified to kineticloop and only trusted pg_catalog built-ins may be called.
+- Runtime/application/audit/trusted-admin principals and execution roles are denied direct INSERT, UPDATE, and DELETE on S01/S02/S03/S04/S49/S50/S51 relations.
+
+PASS runtime-login boundary contract
+- Successful application and trusted-admin logins are distinct and exactly LOGIN, NOSUPERUSER, NOCREATEDB, NOCREATEROLE, INHERIT, NOREPLICATION, NOBYPASSRLS.
+- Each login has exactly one execution membership (kl_application or kl_trusted_admin) with ADMIN FALSE, INHERIT TRUE, SET FALSE.
+- Runtime logins own no database, schema, table, sequence, function, procedure, or migrated object.
+- Runtime logins cannot alter, grant, revoke, assume, SET ROLE to, SET SESSION AUTHORIZATION to, or administer migration, writer, deployer, or bootstrap roles.
+
+PASS canonical critical-contract digests
+- safety_registry_definer_search_path_and_schema_acl_enforced: b9ba8ffa6abd75d6894a50ba2bb2d2bece263a2ab3b30fca1c3797220787a8d5
+- safety_registry_runtime_login_boundary_enforced: de25a21eeb874fc38e07530b948c664f3dbc731d4d5165d54201630e09fa4ca2
+
+PASS focused security-contract negative guard
+- 1 passed, 107 deselected in 2.64s at tested commit bcd713ce4153e5967b96d187577b36ad081c9b74.
+- Removal, command substitution, oracle weakening, and coordinated projection weakening are rejected for both new checks.
+
+PASS complete validator suite
+- 108 passed in 173.25s at tested commit bcd713ce4153e5967b96d187577b36ad081c9b74.
+
+PASS complete harness suite
+- 133 passed in 175.36s at tested commit bcd713ce4153e5967b96d187577b36ad081c9b74.
+
+PASS harness structure
+- HARNESS_CHECK_PASS tasks=69 active=67.
+
+PASS lint
+- All checks passed for tools/harness/validate_harness.py and tests/harness/test_validator.py.
+
+PASS diff hygiene
+- git diff --check passed.
+- JSON syntax validation passed for backlog and traceability.
+- Derived index and package-manifest hashes and byte counts were refreshed.
+
+No review artifacts were created. Independent reviews must bind to the immutable HG-020 governance head.
+
+DB_CONCURRENCY blocker remediation
+- An initial independent review correctly rejected omission of pg_temp because PostgreSQL implicitly searches the session temporary schema first.
+- The remediated contract requires pg_temp explicitly last and requires hostile temporary relation and domain/type collision execution tests for every approved SECURITY DEFINER routine.
+- The critical digest and all packet projections were refreshed before the final immutable review head.

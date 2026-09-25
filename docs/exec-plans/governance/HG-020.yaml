@@ -1,0 +1,89 @@
+change_identity: harness-governance-v0.1/HG-020
+display_change_id: HG-020
+base_commit: 038d198c2f31a373a7be5fa950eb05ba4e6f7f94
+tested_commit: bcd713ce4153e5967b96d187577b36ad081c9b74
+change_status: PASS
+summary: >-
+  Harden KL-072 with exact executable acceptance contracts for SECURITY DEFINER
+  search-path and schema-ACL safety including explicit-last pg_temp and hostile
+  temporary-object collision tests, full S01/S02/S03/S04/S49/S50/S51 direct-DML
+  denial, and non-elevated runtime-login attributes, memberships, ownership, and
+  protected-role escalation denial without changing frozen semantics.
+packets_refined:
+  - KL-072
+files_changed:
+  - CURRENT_DOCUMENT_INDEX.json
+  - HARNESS_DOCUMENT_MANIFEST.json
+  - KineticLoop_Harness_Backlog_v0.2.json
+  - KineticLoop_Harness_Traceability_v0.3.json
+  - docs/exec-plans/active/KL-072.md
+  - docs/exec-plans/evidence/HG-020/checks.log
+  - docs/exec-plans/governance/HG-020.yaml
+  - tests/harness/test_validator.py
+  - tools/harness/validate_harness.py
+checks_run:
+  - check_id: governance_schema_valid
+    command: Validate HG-020.yaml against HARNESS_CHANGE.schema.json.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-020/checks.log
+  - check_id: kl072_projection_exact
+    command: Verify identical KL-072 check IDs, commands, and pass oracles in backlog, traceability, and packet.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-020/checks.log
+  - check_id: security_definer_boundary_exact
+    command: Verify exact pg_proc.proconfig with explicit-last pg_temp, hostile temporary relation/type collision tests, schema ownership and ACL, object qualification, trusted built-ins, and S01/S02/S03/S04/S49/S50/S51 direct-DML denial obligations.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-020/checks.log
+  - check_id: runtime_login_boundary_exact
+    command: Verify exact runtime attributes, single-role membership options, zero object ownership, and protected-role administration and assumption denial obligations.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-020/checks.log
+  - check_id: critical_contract_digests_pinned
+    command: Verify canonical SHA256 pins for both new KL-072 security contracts.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-020/checks.log
+  - check_id: security_contract_negative_guards_pass
+    command: >-
+      PYTHONPATH="$PWD/src" .venv/bin/pytest -q tests/harness/test_validator.py
+      -k m2_security_contracts_reject_removal_substitution_and_weakening
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-020/checks.log
+  - check_id: validator_suite_passes
+    command: PYTHONPATH="$PWD/src" .venv/bin/pytest -q tests/harness/test_validator.py -p no:cacheprovider
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-020/checks.log
+  - check_id: harness_suite_passes
+    command: PYTHONPATH="$PWD/src" .venv/bin/kl test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-020/checks.log
+  - check_id: harness_structure_valid
+    command: PYTHONPATH="$PWD/src" .venv/bin/kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-020/checks.log
+  - check_id: lint_passes
+    command: RUFF_CACHE_DIR=/private/tmp/hg020-ruff .venv/bin/ruff check tools/harness/validate_harness.py tests/harness/test_validator.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-020/checks.log
+  - check_id: governance_scope_exact
+    command: Verify the protected-base change set is exactly the nine declared HG-020 files.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-020/checks.log
+  - check_id: diff_clean
+    command: git diff --check 038d198c2f31a373a7be5fa950eb05ba4e6f7f94 bcd713ce4153e5967b96d187577b36ad081c9b74
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-020/checks.log
+  - check_id: frozen_and_completed_state_unchanged
+    command: Verify frozen authorities, FROZEN_BASELINE.json, M1 closure, and completed KL-013 artifacts are unchanged from the protected base.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-020/checks.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+  - >-
+    KL-072 remains NOT_STARTED; HG-020 defines implementation-time executable
+    security acceptance obligations and does not claim that its migration or
+    PostgreSQL runtime evidence already exists.
+  - >-
+    HG-020 requires fresh independent GENERAL, PROTOCOL, DB_CONCURRENCY, and
+    SECURITY_DATA_BOUNDARY reviews bound to the immutable governance head before
+    merge; this change intentionally creates no review artifact.
