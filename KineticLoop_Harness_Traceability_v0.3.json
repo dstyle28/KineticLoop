@@ -3466,22 +3466,29 @@
         "M1 closure PASS: docs/exec-plans/milestones/M1.json"
       ],
       "environment_requirements": [
-        "ISOLATED_POSTGRESQL_NAMESPACE"
+        "ISOLATED_POSTGRESQL_NAMESPACE",
+        "EXTERNALLY_PROVISIONED_POSTGRESQL_ROLES",
+        "NON_SUPERUSER_MIGRATION_PRINCIPAL"
       ],
       "deliverables": [
-        "successor migration for SafetyRegistry runtime ownership and permissions",
+        "successor migration with fail-closed external-role preflight and no cluster-role DDL",
+        "migration-owner table and guard-function ownership plus narrow SafetyRegistry command routines",
         "production SafetyRegistry repository integration on the migrated schema",
-        "shared/exclusive gate and role-boundary PostgreSQL evidence"
+        "shared/exclusive gate, direct-DML denial, and non-elevated runtime evidence"
       ],
-      "definition_of_done": "an empty database upgrades through an immutable KL-013 baseline and one KL-072 successor, then the production SafetyRegistry executes its complete shared-gate and RevokeArtifact behavior on migrated S01/S02/S03/S04/S49/S50/S51 through the explicit non-login command-owner boundary while application/audit roles remain unable to bypass owner, gate, immutable-history, idempotency, receipt, event, or outbox protections",
+      "definition_of_done": "an empty database with externally provisioned exact protected roles upgrades through an immutable KL-013 baseline and one cluster-role-DDL-free KL-072 successor; unsafe role attributes or memberships fail before object changes; migrated tables and guard functions are owned by NOLOGIN kl_migration_owner; the seven exact narrowly executable SECURITY DEFINER command routines are owned by NOLOGIN kl_writer_safety_registry; and the production SafetyRegistry executes its complete shared-gate and RevokeArtifact behavior on migrated S01/S02/S03/S04/S49/S50/S51 while application/audit roles and non-elevated runtime connections cannot use direct DML, assume an owner role, or bypass owner, gate, immutable-history, idempotency, receipt, event, or outbox protections",
       "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "baseline_migration_unchanged",
         "single_successor_migration_head",
+        "successor_migration_contains_no_cluster_role_ddl",
+        "safety_registry_role_preflight_fails_before_object_changes",
         "empty_db_upgrade_head",
         "safety_registry_migrated_schema_integration",
         "complete_safety_registry_suite_uses_migrated_schema",
+        "safety_registry_object_ownership_enforced",
+        "safety_registry_command_routine_privileges_enforced",
         "safety_registry_role_owner_boundary_enforced",
         "safety_registry_migrated_db_regressions_pass",
         "harness_validation_passes"
@@ -3498,29 +3505,49 @@
           "pass_oracle": "The named test passes and proves there is exactly one Alembic head, the KL-013 baseline remains the immutable root revision, and exactly one KL-072 SafetyRegistry successor points directly to it."
         },
         {
+          "check_id": "successor_migration_contains_no_cluster_role_ddl",
+          "command": "uv run pytest -q tests/db/test_migrations.py::test_safety_registry_successor_contains_no_cluster_role_ddl",
+          "pass_oracle": "The named test inspects and executes the KL-072 successor with an externally provisioned deployment principal that has no CREATEROLE and proves upgrade and downgrade contain no CREATE/ALTER/DROP ROLE or USER, REASSIGN OWNED, or protected-role membership GRANT/REVOKE; cluster principals and memberships are deployment prerequisites outside Alembic."
+        },
+        {
+          "check_id": "safety_registry_role_preflight_fails_before_object_changes",
+          "command": "uv run pytest -q tests/db/test_migrations.py::test_safety_registry_role_preflight_fails_before_object_changes",
+          "pass_oracle": "The named parameterized PostgreSQL test starts at the immutable KL-013 baseline and proves the successor fails before any object, owner, ACL, routine, or Alembic-version change when kl_migration_owner, kl_writer_safety_registry, kl_application, or kl_auditor is absent; when any protected role has LOGIN, SUPERUSER, CREATEDB, CREATEROLE, INHERIT, REPLICATION, or BYPASSRLS; or when any protected role is a member of another protected role. Every failure leaves an identical normalized catalog fingerprint and the baseline revision remains current."
+        },
+        {
           "check_id": "empty_db_upgrade_head",
           "command": "uv run pytest -q tests/db/test_migrations.py::test_empty_db_upgrade_head",
-          "pass_oracle": "The named isolated-PostgreSQL test upgrades an empty database through the immutable KL-013 baseline and KL-072 successor to the single head."
+          "pass_oracle": "The named isolated-PostgreSQL test externally provisions the exact protected role inventory and memberships, then upgrades an empty database through the immutable KL-013 baseline and KL-072 successor to the single head; it proves the KL-072 successor performs no cluster-role or protected-membership management."
         },
         {
           "check_id": "safety_registry_migrated_schema_integration",
           "command": "uv run pytest -q tests/db/test_migrations.py::test_safety_registry_repository_integrates_with_migrated_schema",
-          "pass_oracle": "The named isolated-PostgreSQL test upgrades an empty database to Alembic head, then uses the production SafetyRegistry repository through its non-login command-owner boundary rather than fixture-only SQL to exercise a shared-gate command and RevokeArtifact against migrated S01/S02/S03/S04/S49/S50/S51; proves the seeded singleton S51 row supplies the shared/exclusive gate and revision transition; and proves S50 preserves immutable revocation identity, management operator/capability identity, command_key/request_hash idempotency, causation incident identity, outbox delivery identity, same-key/same-hash replay, and same-key/different-hash rejection."
+          "pass_oracle": "The named isolated-PostgreSQL test externally provisions the exact roles, upgrades an empty database to Alembic head, then uses the production SafetyRegistry repository through the approved SECURITY DEFINER command routines and a non-elevated runtime connection to exercise a shared-gate command and RevokeArtifact against migrated S01/S02/S03/S04/S49/S50/S51; proves the seeded singleton S51 row supplies the shared/exclusive gate and revision transition; and proves S50 preserves immutable revocation identity, management operator/capability identity, command_key/request_hash idempotency, causation incident identity, outbox delivery identity, same-key/same-hash replay, and same-key/different-hash rejection."
         },
         {
           "check_id": "complete_safety_registry_suite_uses_migrated_schema",
           "command": "uv run pytest -q tests/db/test_safety_registry.py",
-          "pass_oracle": "The complete real PostgreSQL SafetyRegistry suite passes using the empty-database Alembic-to-head schema fixture, with no fixture-local DDL for S01/S02/S03/S04/S49/S50/S51, while preserving every KL-016 shared-gate, shared-before-S01, exclusive-revoke-without-S01, fail-closed, atomicity, idempotency, timeout, replay, and STOP-independence assertion."
+          "pass_oracle": "The complete real PostgreSQL SafetyRegistry suite passes using externally provisioned exact roles and the empty-database Alembic-to-head schema fixture, with no fixture-local DDL for S01/S02/S03/S04/S49/S50/S51 or production command routines, while preserving every KL-016 shared-gate, shared-before-S01, exclusive-revoke-without-S01, fail-closed, atomicity, idempotency, timeout, replay, and STOP-independence assertion."
+        },
+        {
+          "check_id": "safety_registry_object_ownership_enforced",
+          "command": "uv run pytest -q tests/db/test_migrations.py::test_safety_registry_migrated_object_ownership",
+          "pass_oracle": "The named PostgreSQL catalog test proves every migrated S01-S51 base table, typed child table, replay edge table, sequence, and non-command trigger/guard function in schema kineticloop is owned by kl_migration_owner; kl_migration_owner remains NOLOGIN, NOSUPERUSER, NOCREATEDB, NOCREATEROLE, NOINHERIT, NOREPLICATION, and NOBYPASSRLS; and no application, audit, SafetyRegistry writer, login, or superuser role owns those objects."
+        },
+        {
+          "check_id": "safety_registry_command_routine_privileges_enforced",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_command_routine_privileges",
+          "pass_oracle": "The named PostgreSQL catalog and execution test proves the only SafetyRegistry SECURITY DEFINER command routines are the non-overloaded registry_guard_publish_manifest(uuid,uuid[],bigint,integer), registry_guard_commit_bundle(uuid,uuid[],bigint,integer), registry_guard_reauthorize(uuid,uuid[],bigint,integer), registry_guard_start_session(uuid,uuid[],bigint,integer), registry_guard_resume_session(uuid,uuid[],bigint,integer), registry_guard_continue_session(uuid,uuid[],bigint,integer), and registry_revoke_artifact(uuid,text,timestamptz,text,text,text,text,text,uuid,integer) routines in schema kineticloop; each is owned by NOLOGIN kl_writer_safety_registry, has a fixed safe search_path, grants EXECUTE explicitly only to kl_application, grants none to PUBLIC or kl_auditor, and exposes no generic caller-selected command or SQL path."
         },
         {
           "check_id": "safety_registry_role_owner_boundary_enforced",
           "command": "uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_role_owner_boundary",
-          "pass_oracle": "The named PostgreSQL test proves the production repository executes registry mutations only through the explicit kl_writer_safety_registry command-owner boundary; that role remains NOLOGIN, NOSUPERUSER, NOCREATEDB, NOCREATEROLE, and NOINHERIT; application and audit roles cannot directly INSERT, UPDATE, or DELETE S49/S50/S51 or bypass the shared/exclusive gate; and no superuser or migration-owner connection is used as the runtime success path."
+          "pass_oracle": "The named PostgreSQL test proves the production repository uses a non-superuser runtime login limited to kl_application and invokes only the approved SafetyRegistry SECURITY DEFINER routines; kl_application and kl_auditor cannot directly INSERT, UPDATE, or DELETE S49/S50/S51, cannot SET ROLE to kl_migration_owner or kl_writer_safety_registry, and cannot bypass the shared/exclusive gate; both owner roles retain the exact NOLOGIN, NOSUPERUSER, NOCREATEDB, NOCREATEROLE, NOINHERIT, NOREPLICATION, NOBYPASSRLS attributes; and no runtime success path uses a superuser, migration owner, object owner, or direct writer connection."
         },
         {
           "check_id": "safety_registry_migrated_db_regressions_pass",
           "command": "uv run pytest -q tests/db/test_migrations.py tests/db/test_safety_registry.py tests/db/test_immutability.py tests/db/test_lifecycle.py",
-          "pass_oracle": "Command exits 0 against one isolated PostgreSQL namespace after empty-database upgrade to Alembic head, covering migration, complete production SafetyRegistry, immutable-history, and lifecycle regressions."
+          "pass_oracle": "Command exits 0 against one isolated PostgreSQL namespace with externally provisioned exact roles after empty-database upgrade to Alembic head, covering migration, role-preflight negatives, catalog ownership, command-routine ACLs, complete production SafetyRegistry, immutable-history, and lifecycle regressions."
         },
         {
           "check_id": "harness_validation_passes",
