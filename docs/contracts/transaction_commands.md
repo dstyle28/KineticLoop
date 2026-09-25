@@ -49,6 +49,10 @@ forbids direct writes, and explicitly preserves the command-owner guard. Shadow
 evaluation artifacts remain governed by `shadow_test_semantics.md` and cannot be
 used as command scope.
 
+For T6, the isolated policy in `TestOnlyScope` must equal the policy bound by
+the command itself. This prevents an isolated test scope from authorizing a
+commit or reauthorization evaluated under a different policy.
+
 `kineticloop.contracts.results` defines a distinct typed success result for each
 public command plus `CommandRejected`. Historical T6/T7 success includes a
 separate current-eligibility value; it is not a new authorization. A replayed

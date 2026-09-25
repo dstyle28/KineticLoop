@@ -472,6 +472,15 @@ class T6Command(SubjectCommand):
     policy_id: CanonicalId
     artifact_dependency_closure_hash: Sha256
 
+    @model_validator(mode="after")
+    def test_scope_policy_must_match(self) -> T6Command:
+        if (
+            isinstance(self.authorization_scope, TestOnlyScope)
+            and self.authorization_scope.policy_id != self.policy_id
+        ):
+            raise ValueError("TEST_ONLY scope must bind the T6 command policy")
+        return self
+
 
 class CommitBundle(T6Command):
     command_kind: Literal["CommitBundle"]

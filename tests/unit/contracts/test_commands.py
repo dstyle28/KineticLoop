@@ -316,3 +316,9 @@ def test_shadow_and_test_scope_fail_closed() -> None:
     payload["authorization_scope"] = scope
     with pytest.raises(ValidationError):
         CommitBundle.model_validate(payload)
+
+    for model in (CommitBundle, PUBLIC_COMMAND_BY_KIND["Reauthorize"]):
+        payload = command_payload(model, test_only=True)
+        payload["policy_id"] = OTHER_ID
+        with pytest.raises(ValidationError, match="scope must bind the T6 command policy"):
+            model.model_validate(payload)
