@@ -59,7 +59,7 @@ M2_REQUIRED_CHECK_IDS = {
         'single_successor_migration_head',
         'successor_migration_contains_no_cluster_role_ddl',
         'safety_registry_role_preflight_fails_before_object_changes',
-        'empty_db_upgrade_head',
+        'two_phase_empty_db_upgrade_head',
         'safety_registry_migrated_schema_integration',
         'complete_safety_registry_suite_uses_migrated_schema',
         'safety_registry_object_ownership_enforced',
@@ -90,12 +90,21 @@ M2_REQUIRED_CHECK_IDS = {
         'cross_subject_denial_is_non_enumerating',
     },
     'KL-018': {
+        'artifact_registry_successor_migration_chain',
+        'artifact_identity_is_immutable',
+        'artifact_dependency_closure_required',
         'artifact_dependencies_must_be_pre_registered',
         'artifact_dependency_graph_is_acyclic',
         'artifact_dependency_closure_is_bounded',
         'artifact_registration_requires_management_capability',
+        'artifact_registration_command_routine_privileges_enforced',
+        'artifact_registration_session_authority_enforced',
         'artifact_registration_uses_exclusive_registry_gate',
         'artifact_registration_direct_write_rejected',
+        'unregistered_or_revoked_artifact_denied',
+        't3_t6_t7_require_artifact_refs',
+        'artifact_registry_db_constraints_pass',
+        'artifact_contract_unit_suite_passes',
     },
     'KL-055': {
         'provider_subject_source_binding_is_trusted',
@@ -114,19 +123,40 @@ KL015_REQUIRED_TABLE_IDS = [
 # SHA256 of canonical JSON {check_id, command, pass_oracle}. These security-critical
 # contracts must change through an explicit Harness governance edit; keeping an ID
 # while weakening its executable command or oracle fails closed.
+M1_CLOSURE_KL018_REQUIRED_CHECK_IDS = {
+    'artifact_dependencies_must_be_pre_registered',
+    'artifact_dependency_graph_is_acyclic',
+    'artifact_dependency_closure_is_bounded',
+    'artifact_registration_requires_management_capability',
+    'artifact_registration_uses_exclusive_registry_gate',
+    'artifact_registration_direct_write_rejected',
+}
+M1_CLOSURE_KL018_CRITICAL_CONTRACT_DIGESTS = {
+    'artifact_identity_is_immutable': '5a5d6976957b081e045743ba114df6e8aebf782c4cc66123026dafbee59456eb',
+    'artifact_dependency_closure_required': '6f69a7171def4c61b7d7390a0272495b2ddd75b5902375447cc9aac410def2ce',
+    'artifact_dependencies_must_be_pre_registered': '935e593ad9d7d2bdf05257326866c139e2ff4471ea0f2fdffee1e01adc1a087d',
+    'artifact_dependency_graph_is_acyclic': '2db1302d2bd5319910e6c9aa9d861fa8f3ef1c7d9f4d2f813fe229f72f915960',
+    'artifact_dependency_closure_is_bounded': '18805edc8865ec58437c7752aad50ac34d685c55c487e0baf0d7cff12f91bd9e',
+    'artifact_registration_requires_management_capability': '055c6d74460bb1bcc64da38cf018f29df96b7829e8eebcfd365a8b7cffba7658',
+    'artifact_registration_uses_exclusive_registry_gate': '4b43e27668003b90fb22932b54e776a5a8f2280b2a674e0eb518411c0a90b540',
+    'artifact_registration_direct_write_rejected': 'd5e91d07031d5fb89a4aca4658aef275d7684cc8325f4532bf20b69e7c3a2643',
+    'unregistered_or_revoked_artifact_denied': 'e45c0d2b3765a6e2a9a8534b21410a02c67f270a8a9f33c1ed5bec6b22deb4cb',
+    't3_t6_t7_require_artifact_refs': 'b4ef957a9ee368b6e074fa04ab340490904927371239ab0f42244ad22f5c4d6e',
+}
+
 M2_CRITICAL_CONTRACT_DIGESTS = {
     'KL-072': {
         'baseline_migration_unchanged': '18331c511a80b48d3e8c3bf2504954e468d02dc888cd7fa2a7ce8c568538ea18',
         'single_successor_migration_head': '4ee1bd768c1e190419ac52f43109c7cb49d0167484f589890d9cd4146a52c299',
-        'successor_migration_contains_no_cluster_role_ddl': '21188331eac6793639f6d5e93252efeda77d91bc3b89ed89a4c68b8817ff6830',
-        'safety_registry_role_preflight_fails_before_object_changes': 'c5a231d2e09e7b1c03a120cb8b16f991ee63f09514dfc579568648fe1f0308fd',
-        'empty_db_upgrade_head': '04c4c2a50f28d2fb09daf5e728464d15e774bd901551e5e12bab3f092e41ceee',
-        'safety_registry_migrated_schema_integration': 'ed743603f1f3a4b49e0e4ae2db75a33a7a4cdcbded07b3421d59c02c72238454',
-        'complete_safety_registry_suite_uses_migrated_schema': 'cf231dfde1cab6cc8c03506e1a06fc395b6ee57f7c7059548c127444925ba373',
-        'safety_registry_object_ownership_enforced': 'b611e2d3c157cd0d9049a4f66b454820d2627ad39e364852a5fe4b2c52b45bb7',
-        'safety_registry_command_routine_privileges_enforced': 'e939595830602fccbe48eeda9faf95e767a21b9c20d54b02860ff39b10d64bd2',
-        'safety_registry_role_owner_boundary_enforced': '97f165e3e770707156f9cc9ed4b2f9d6cf573f21a13db1a0a5916b3298134c22',
-        'safety_registry_migrated_db_regressions_pass': '09d134f3bc96e3a6d0bd1bad292b9d9ae4019950e7ebf237977f2a4935fb8c1b',
+        'successor_migration_contains_no_cluster_role_ddl': '5b52c22832ae9f6eb4e64c7ac61b8af7fc2db361b2c82f0226585a421816b08f',
+        'safety_registry_role_preflight_fails_before_object_changes': '4108abfa9b45652bde4f9f4ba9011deb05fae3c2c4a0e6a41ca24e3490d1465b',
+        'two_phase_empty_db_upgrade_head': 'ccea39a134e60f8f8a3e9bec320b2d431d29dba92951c94c6d7b786201f017a9',
+        'safety_registry_migrated_schema_integration': '936fc29507088c503e2b4ee63ba5acf3c997b555692306924ad1635e215be5b6',
+        'complete_safety_registry_suite_uses_migrated_schema': 'df0a4e0ea1f68ef49969d9bfaf096d8349a5cb96a4320037dec1fc5ab5442496',
+        'safety_registry_object_ownership_enforced': '2b55aa8f3756c8777fa444dcaae960b29138591356343042fdc8c15ff95d1663',
+        'safety_registry_command_routine_privileges_enforced': '1dc169d0cdb6a01e173500842305fb958e86736a35f872337af9d33142b096cc',
+        'safety_registry_role_owner_boundary_enforced': '04133a11d8b6ad8a3f1f0386674ae1a3d56cf35b8bb9be022bc1587d1cee7f79',
+        'safety_registry_migrated_db_regressions_pass': '7a48e66c4016fb4ba4f945c1cbcb6f3d1558f24af7dfe8d58851b0543a399b2b',
         'harness_validation_passes': '2dbb33f46e379c228225cd02bc8afdf39689c54008b8ca7b1b019e0d2c4139bf',
     },
     'KL-014': {
@@ -179,16 +209,22 @@ M2_CRITICAL_CONTRACT_DIGESTS = {
         'cross_subject_denial_is_non_enumerating': 'a1a5fccddd0d93ee54ff8f118732452c977ce234439593acefb1a32a27089bd4',
     },
     'KL-018': {
+        'artifact_registry_successor_migration_chain': '330fc8082d050d343039e4664acdabcd8375969bb8b08657c83f9b73e65873ba',
         'artifact_identity_is_immutable': '5a5d6976957b081e045743ba114df6e8aebf782c4cc66123026dafbee59456eb',
         'artifact_dependency_closure_required': '6f69a7171def4c61b7d7390a0272495b2ddd75b5902375447cc9aac410def2ce',
         'artifact_dependencies_must_be_pre_registered': '935e593ad9d7d2bdf05257326866c139e2ff4471ea0f2fdffee1e01adc1a087d',
         'artifact_dependency_graph_is_acyclic': '2db1302d2bd5319910e6c9aa9d861fa8f3ef1c7d9f4d2f813fe229f72f915960',
         'artifact_dependency_closure_is_bounded': '18805edc8865ec58437c7752aad50ac34d685c55c487e0baf0d7cff12f91bd9e',
-        'artifact_registration_requires_management_capability': '055c6d74460bb1bcc64da38cf018f29df96b7829e8eebcfd365a8b7cffba7658',
-        'artifact_registration_uses_exclusive_registry_gate': '4b43e27668003b90fb22932b54e776a5a8f2280b2a674e0eb518411c0a90b540',
-        'artifact_registration_direct_write_rejected': 'd5e91d07031d5fb89a4aca4658aef275d7684cc8325f4532bf20b69e7c3a2643',
+        'artifact_registration_requires_management_capability': 'a5cf669fce9470c22d98c1e3c786b73e63a6c8d278de4aec2a19f839013755e4',
+        'artifact_registration_command_routine_privileges_enforced': '226da89307321450f86d10347284e6b5f2972b95ecd9cf76a270cdbec833ed70',
+        'artifact_registration_session_authority_enforced': 'ac6e147d90503ca0634a97e83bac1d6a65699040e5bbfcabd5602b1978665bb3',
+        'artifact_registration_uses_exclusive_registry_gate': '99d8388734ed54c72c4228f8a0307bb383be2221f6943d64fa90d7d463602ee5',
+        'artifact_registration_direct_write_rejected': 'a975ba38dec8f823adb5b367e0b74155f6d1940eb442c04006b01c16909409af',
         'unregistered_or_revoked_artifact_denied': 'e45c0d2b3765a6e2a9a8534b21410a02c67f270a8a9f33c1ed5bec6b22deb4cb',
         't3_t6_t7_require_artifact_refs': 'b4ef957a9ee368b6e074fa04ab340490904927371239ab0f42244ad22f5c4d6e',
+        'artifact_registry_db_constraints_pass': '1e20c4a67b42583177a1175ebb86fc0ddd370a50256b56f56c5a4c1e7def31fb',
+        'artifact_contract_unit_suite_passes': 'b63c11a97dbcc7b9ee50590bceb7841d5d08aae30b1042d85f98d6301174e934',
+        'harness_validation_passes': '2dbb33f46e379c228225cd02bc8afdf39689c54008b8ca7b1b019e0d2c4139bf',
     },
     'KL-055': {
         'provider_and_stream_ids_are_canonical': '693c802ea77603a2d4ee8291c782087a85252ba06ef5d7528a1ca849a830f0ed',
@@ -1133,7 +1169,7 @@ def milestone_closure_errors(
         evaluated_backlog = load_artifact_at_revision(root, BACKLOG, evaluated)
         evaluated_trace = load_artifact_at_revision(root, TRACEABILITY, evaluated)
         evaluated_task_errors, evaluated_tasks = task_definition_errors(
-            root, evaluated_backlog, evaluated)
+            root, evaluated_backlog, evaluated, historical_m1_closure=True)
     except ValueError as ex:
         return errors + ['milestone-evaluated-revision:M1:' + str(ex)]
 
@@ -1263,7 +1299,8 @@ def milestone_closure_errors(
     return errors
 
 
-def task_definition_errors(root, backlog, revision=None):
+def task_definition_errors(
+        root, backlog, revision=None, *, historical_m1_closure=False):
     """Validate one revision's complete backlog, packet, resource and DAG state."""
     errors = []
     tasks = {task['id']: task for task in backlog['tasks']}
@@ -1344,7 +1381,11 @@ def task_definition_errors(root, backlog, revision=None):
             if 'M1 closure PASS: docs/exec-plans/milestones/M1.json' not in task.get(
                     'entry_conditions', []):
                 errors.append('m2-entry-condition:' + name)
-            required_checks = M2_REQUIRED_CHECK_IDS.get(name, set())
+            required_checks = (
+                M1_CLOSURE_KL018_REQUIRED_CHECK_IDS
+                if historical_m1_closure and name == 'KL-018'
+                else M2_REQUIRED_CHECK_IDS.get(name, set())
+            )
             if not required_checks.issubset(set(contract_ids)):
                 errors.append('m2-required-semantic-checks:' + name)
             if name == 'KL-014' and task.get('commands') != KL014_REQUIRED_COMMAND_SURFACE:
@@ -1356,6 +1397,13 @@ def task_definition_errors(root, backlog, revision=None):
             if (name == 'KL-072' and (task.get('shared_hotspot') is not True
                     or 'registry_coordination' not in task.get('resource_keys', []))):
                 errors.append('m2-kl072-registry-hotspot')
+            if (name == 'KL-018' and not historical_m1_closure and (
+                    not {'migration_chain', 'persistence_permissions'} <= set(
+                        task.get('resource_keys', []))
+                    or 'migrations/versions/*_artifact_registry.py' not in task.get(
+                        'write_paths', [])
+                    or 'tests/db/test_migrations.py' not in task.get('write_paths', []))):
+                errors.append('m2-kl018-registry-migration-scope')
             if name == 'KL-015':
                 if task.get('invariant_ids') != KL015_REQUIRED_INVARIANT_IDS:
                     errors.append('m2-kl015-frozen-impact:invariants')
@@ -1367,8 +1415,12 @@ def task_definition_errors(root, backlog, revision=None):
                 item.get('check_id'): item for item in contracts or []
                 if isinstance(item, dict)
             }
-            for check_id, expected_digest in M2_CRITICAL_CONTRACT_DIGESTS.get(
-                    name, {}).items():
+            critical_contracts = (
+                M1_CLOSURE_KL018_CRITICAL_CONTRACT_DIGESTS
+                if historical_m1_closure and name == 'KL-018'
+                else M2_CRITICAL_CONTRACT_DIGESTS.get(name, {})
+            )
+            for check_id, expected_digest in critical_contracts.items():
                 contract = contract_map.get(check_id)
                 actual_digest = hashlib.sha256(json.dumps(
                     contract, ensure_ascii=False, sort_keys=True,

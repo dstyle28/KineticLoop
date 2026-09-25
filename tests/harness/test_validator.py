@@ -666,6 +666,9 @@ class ValidatorTests(unittest.TestCase):
             ('KL-072', 'safety_registry_object_ownership_enforced'),
             ('KL-072', 'safety_registry_command_routine_privileges_enforced'),
             ('KL-017', 'cross_subject_denial_is_non_enumerating'),
+            ('KL-018', 'artifact_registry_successor_migration_chain'),
+            ('KL-018', 'artifact_registration_command_routine_privileges_enforced'),
+            ('KL-018', 'artifact_registration_session_authority_enforced'),
             ('KL-018', 'artifact_identity_is_immutable'),
             ('KL-055', 'provider_subject_source_binding_is_trusted'),
         ]
@@ -733,6 +736,22 @@ class ValidatorTests(unittest.TestCase):
         packet_path.write_text(packet_path.read_text().replace('- Reauthorize\n', '', 1))
         refresh(self.root)
         self.check(1, 'm2-kl016-command-surface')
+
+
+    def test_m2_kl018_registry_migration_scope_cannot_be_removed(self):
+        backlog_path = self.root / v.BACKLOG
+        original = json.loads(backlog_path.read_text())
+        for field, value in (
+                ('resource_keys', 'migration_chain'),
+                ('resource_keys', 'persistence_permissions'),
+                ('write_paths', 'migrations/versions/*_artifact_registry.py'),
+                ('write_paths', 'tests/db/test_migrations.py')):
+            backlog = copy.deepcopy(original)
+            task = next(item for item in backlog['tasks'] if item['id'] == 'KL-018')
+            task[field].remove(value)
+            dump(backlog_path, backlog)
+            self.check(1, 'm2-kl018-registry-migration-scope')
+        dump(backlog_path, original)
 
     def test_manifest_claimed_m1_closure_cannot_be_missing(self):
         manifest_path = self.root / v.MANIFEST

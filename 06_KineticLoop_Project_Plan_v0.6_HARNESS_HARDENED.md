@@ -221,7 +221,7 @@ M11 produces a launch recommendation/decision input only; it does not automatica
 
 The machine-readable backlog is authoritative for task records. Key tasks include:
 - KL-001..KL-009 foundation/evidence/acceptance/shadow/security;
-- KL-010..KL-018 plus KL-072 DDL/contracts/registry/migrated-runtime/roles/artifacts;
+- KL-010..KL-018 plus KL-072 DDL/contracts/registry/two-phase migration handoff/session-bound roles/artifacts;
 - KL-020..KL-029 PostgreSQL protocol demo and full boundary/interleaving evidence;
 - KL-030..KL-035 canonical data;
 - KL-040..KL-048 context/Fitness shadow/eval;
