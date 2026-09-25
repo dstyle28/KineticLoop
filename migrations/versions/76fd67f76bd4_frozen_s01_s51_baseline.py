@@ -71,6 +71,148 @@ REPLAY_EDGE_TABLES = (
     'replay_artifact_mapping_revision_sources',
 )
 
+NATURAL_KEYS = {
+    'command_receipts': ('subject_id','actor_scope','command_kind','client_key'),
+    'domain_events': ('subject_id','aggregate_type','aggregate_identity','aggregate_revision'),
+    'outbox_deliveries': ('subject_id','ref_s03_id','destination'),
+    'policy_bundles': ('subject_id','policy_namespace','policy_version'),
+    'program_versions': ('subject_id','program_identity','program_revision'),
+    'durable_change_proposals': ('subject_id','proposal_family_identity','revision'),
+    'approval_issuances': ('subject_id','ref_s02_id'),
+    'candidate_assertions': ('subject_id','assertion_family_identity','revision'),
+    'underlying_events': ('subject_id','event_identity'),
+    'event_association_decisions': ('subject_id','association_family_identity','revision'),
+    'admission_decisions': ('subject_id','ref_s10_id','action_scope','revision'),
+    'canonical_fact_revisions': ('subject_id','stable_fact_identity','fact_revision'),
+    'factset_revisions': ('subject_id','factset_identity'),
+    'factset_members': ('subject_id','ref_s15_id','member_kind','logical_member_key','action_scope'),
+    'control_events': ('subject_id','control_identity','control_revision'),
+    'control_heads': ('subject_id','control_identity'),
+    'exercise_catalog_revisions': ('subject_id','catalog_namespace','exercise_identity','catalog_revision'),
+    'exercise_mapping_decisions': ('subject_id','mapping_family_identity','revision'),
+    'projection_versions': ('subject_id','projection_kind','input_basis_hash','revision'),
+    'projection_dependencies': ('subject_id','ref_s21_id','dependency_kind','dependency_semantic_key'),
+    'manifest_builds': ('subject_id','build_identity'),
+    'decision_manifests': ('subject_id','generation'),
+    'manifest_projection_bindings': ('subject_id','ref_s24_id','projection_role'),
+    'decision_snapshots': ('subject_id','ref_s29_id','revision'),
+    'planning_intents': ('subject_id','root_request_identity'),
+    'planning_request_revisions': ('subject_id','ref_s27_id','request_revision'),
+    'planning_attempts': ('subject_id','ref_s27_id','attempt_no'),
+    'planning_quota_buckets': ('subject_id','quota_kind','window_start','window_end','ref_s05_id'),
+    'call_reservations': ('subject_id','ref_s27_id','ref_s29_id','operation_slot'),
+    'call_ledger_events': ('subject_id','ref_s31_id','transition_revision'),
+    'tool_evidence_records': ('subject_id','ref_s29_id','operation_slot','revision'),
+    'proposal_revisions': ('subject_id','proposal_family_identity','revision'),
+    'prescription_demand_features': ('subject_id','ref_s34_id','method_version','basis_hash'),
+    'evidence_resolutions': ('subject_id','ref_s24_id','action_type','action_parameters_hash'),
+    'validation_results': ('subject_id','ref_s29_id','revision'),
+    'daily_plan_heads': ('subject_id','local_date'),
+    'daily_bundle_revisions': ('subject_id','local_date','revision_no'),
+    'prescription_revisions': ('subject_id','prescription_identity','prescription_revision'),
+    'bundle_prescription_members': ('subject_id','ref_s39_id','member_kind','session_slot'),
+    'authorization_issuances': ('subject_id','ref_s02_id','ref_s40_id','scope'),
+    'workout_sessions': ('subject_id','session_identity'),
+    'execution_bindings': ('subject_id','ref_s44_id','binding_revision'),
+    'replay_runs': ('subject_id','id'),
+    'replay_artifacts': ('subject_id','ref_s46_id','artifact_kind','revision'),
+    'evaluation_releases': ('subject_id','release_namespace','release_version'),
+    'safety_artifacts': ('artifact_kind','artifact_identity','artifact_version'),
+    'artifact_revocation_events': ('management_command_identity',),
+}
+
+REQUIRED_COLUMNS = {
+    table: set(columns) for table, columns in NATURAL_KEYS.items()
+}
+REQUIRED_COLUMNS.update({
+    'command_receipts': REQUIRED_COLUMNS['command_receipts'] | {'request_hash','status'},
+    'policy_bundles': REQUIRED_COLUMNS['policy_bundles'] | {'content_hash'},
+    'evidence_revisions': {'subject_id','source_connection_identity','source_object_type','source_object_identity','trust_class','source_class','command_authority'},
+    'canonical_fact_revisions': REQUIRED_COLUMNS['canonical_fact_revisions'] | {'fact_kind'},
+    'factset_revisions': REQUIRED_COLUMNS['factset_revisions'] | {'status','storage_mode'},
+    'factset_members': REQUIRED_COLUMNS['factset_members'] | {'member_operation'},
+    'manifest_builds': REQUIRED_COLUMNS['manifest_builds'] | {'status','captured_epoch'},
+    'decision_manifests': REQUIRED_COLUMNS['decision_manifests'] | {'captured_epoch','manifest_hash','registry_revision_at_publish','valid_until'},
+    'planning_intents': REQUIRED_COLUMNS['planning_intents'] | {'purpose','local_date','status','fence_token'},
+    'planning_attempts': REQUIRED_COLUMNS['planning_attempts'] | {'status','captured_epoch','fence_token'},
+    'call_reservations': REQUIRED_COLUMNS['call_reservations'] | {'status','settlement_revision'},
+    'validation_results': REQUIRED_COLUMNS['validation_results'] | {'result','valid_until'},
+    'authorization_issuances': REQUIRED_COLUMNS['authorization_issuances'] | {'bound_content_hash','valid_from','valid_until','registry_revision_at_issue'},
+    'workout_sessions': REQUIRED_COLUMNS['workout_sessions'] | {'origin','lifecycle','execution_revision'},
+    'execution_bindings': REQUIRED_COLUMNS['execution_bindings'] | {'binding_kind','accepted_at','execution_scope'},
+    'replay_runs': REQUIRED_COLUMNS['replay_runs'] | {'replay_mode','knowledge_cutoff','status'},
+    'safety_artifacts': REQUIRED_COLUMNS['safety_artifacts'] | {'content_hash','valid_from','valid_until'},
+    'artifact_revocation_events': REQUIRED_COLUMNS['artifact_revocation_events'] | {'reason_code','revocation_payload_hash','effective_at'},
+})
+
+REQUIRED_REFS = {
+    'domain_events': ('ref_s02_id',), 'outbox_deliveries': ('ref_s03_id',),
+    'candidate_assertions': ('ref_s09_id',), 'admission_decisions': ('ref_s05_id','ref_s09_id','ref_s10_id'),
+    'canonical_fact_revisions': ('ref_s10_id','ref_s11_id','ref_s13_id'), 'factset_members': ('ref_s15_id',),
+    'control_heads': ('ref_s17_id',), 'projection_dependencies': ('ref_s21_id',),
+    'decision_manifests': ('ref_s05_id','ref_s06_id','ref_s15_id','ref_s23_id','ref_s49_id','registry_state_id'),
+    'manifest_projection_bindings': ('ref_s24_id',), 'planning_request_revisions': ('ref_s02_id','ref_s27_id'),
+    'planning_attempts': ('ref_s24_id','ref_s27_id','ref_s28_id'),
+    'call_reservations': ('ref_s27_id','ref_s29_id'), 'call_ledger_events': ('ref_s31_id',),
+    'tool_evidence_records': ('ref_s26_id','ref_s29_id'), 'prescription_demand_features': ('ref_s34_id',),
+    'evidence_resolutions': ('ref_s05_id','ref_s24_id'),
+    'validation_results': ('ref_s05_id','ref_s24_id','ref_s28_id','ref_s29_id','ref_s34_id','ref_s35_id','ref_s36_id'),
+    'daily_bundle_revisions': ('ref_s02_id','ref_s24_id','ref_s27_id','ref_s29_id','ref_s37_id','ref_s38_id'),
+    'prescription_revisions': ('ref_s34_id','ref_s49_id'),
+    'bundle_prescription_members': ('ref_s39_id','ref_s40_id'),
+    'authorization_issuances': ('ref_s02_id','ref_s05_id','ref_s24_id','ref_s36_id','ref_s37_id','ref_s40_id','ref_s49_id','registry_state_id'),
+    'execution_bindings': ('ref_s02_id','ref_s40_id','ref_s42_id','ref_s44_id'),
+    'replay_runs': ('ref_s24_id','ref_s48_id'), 'replay_artifacts': ('ref_s46_id',),
+    'safety_artifacts': ('ref_s05_id','ref_s19_id','ref_s48_id'),
+    'artifact_revocation_events': ('ref_s49_id','registry_state_id'),
+}
+
+
+def _install_integrity_constraints() -> None:
+    # S49/S50 are truly global; a fabricated subject is not a namespace.
+    for table, constraint in (
+        ('decision_manifests','fk_s24_s49'), ('prescription_revisions','fk_s40_s49'),
+        ('authorization_issuances','fk_s42_s49'), ('artifact_revocation_events','fk_s50_s49'),
+        ('safety_artifacts','fk_s49_s05'), ('safety_artifacts','fk_s49_s19'),
+        ('safety_artifacts','fk_s49_s48'),
+    ):
+        op.drop_constraint(constraint, table, schema='kineticloop', type_='foreignkey')
+    op.drop_constraint('uq_s49_subject_id', 'safety_artifacts', schema='kineticloop', type_='unique')
+    op.drop_constraint('uq_s50_subject_id', 'artifact_revocation_events', schema='kineticloop', type_='unique')
+    op.drop_column('safety_artifacts', 'subject_id', schema='kineticloop')
+    op.drop_column('artifact_revocation_events', 'subject_id', schema='kineticloop')
+    for source, target, column, name in (
+        ('decision_manifests','safety_artifacts','ref_s49_id','fk_s24_s49'),
+        ('prescription_revisions','safety_artifacts','ref_s49_id','fk_s40_s49'),
+        ('authorization_issuances','safety_artifacts','ref_s49_id','fk_s42_s49'),
+        ('artifact_revocation_events','safety_artifacts','ref_s49_id','fk_s50_s49'),
+        ('safety_artifacts','policy_bundles','ref_s05_id','fk_s49_s05'),
+        ('safety_artifacts','exercise_catalog_revisions','ref_s19_id','fk_s49_s19'),
+        ('safety_artifacts','evaluation_releases','ref_s48_id','fk_s49_s48'),
+    ):
+        op.create_foreign_key(name, source, target, [column], ['id'], source_schema='kineticloop', referent_schema='kineticloop')
+
+    op.add_column('planning_intents', sa.Column('local_date', sa.Date()), schema='kineticloop')
+    op.add_column('daily_plan_heads', sa.Column('local_date', sa.Date()), schema='kineticloop')
+    op.add_column('daily_bundle_revisions', sa.Column('local_date', sa.Date()), schema='kineticloop')
+    op.add_column('artifact_revocation_events', sa.Column('management_command_identity', sa.Text()), schema='kineticloop')
+
+    for table, columns in REQUIRED_REFS.items():
+        REQUIRED_COLUMNS.setdefault(table, set()).update(columns)
+    for table, columns in REQUIRED_COLUMNS.items():
+        for column in sorted(columns):
+            op.alter_column(table, column, schema='kineticloop', nullable=False)
+    for table, columns in NATURAL_KEYS.items():
+        op.create_unique_constraint(f"uq_{table}_natural", table, columns, schema='kineticloop')
+
+    op.create_check_constraint('ck_s09_source_identity', 'evidence_revisions', "source_revision IS NOT NULL OR observation_key IS NOT NULL", schema='kineticloop')
+    op.create_check_constraint('ck_s09_no_command_authority', 'evidence_revisions', "command_authority = 'NONE'", schema='kineticloop')
+    op.create_index('uq_s09_provider_revision', 'evidence_revisions', ['subject_id','source_connection_identity','source_object_type','source_object_identity','source_revision'], unique=True, schema='kineticloop', postgresql_where=sa.text('source_revision IS NOT NULL'))
+    op.create_index('uq_s09_observation_key', 'evidence_revisions', ['subject_id','source_connection_identity','observation_key'], unique=True, schema='kineticloop', postgresql_where=sa.text('source_revision IS NULL'))
+    op.create_check_constraint('ck_s42_validity_interval', 'authorization_issuances', 'valid_until > valid_from', schema='kineticloop')
+    op.create_check_constraint('ck_s49_validity_interval', 'safety_artifacts', 'valid_until IS NULL OR valid_until > valid_from', schema='kineticloop')
+    op.create_index('uq_s45_one_start', 'execution_bindings', ['subject_id','ref_s44_id'], unique=True, schema='kineticloop', postgresql_where=sa.text("binding_kind = 'START'"))
+
 
 def _install_protections() -> None:
     roles = {'kl_application', 'kl_auditor', *(row[2] for row in TABLE_GRANTS)}
@@ -79,6 +221,25 @@ def _install_protections() -> None:
             f"DO $$ BEGIN CREATE ROLE {role} NOLOGIN NOSUPERUSER NOCREATEDB "
             "NOCREATEROLE NOINHERIT; EXCEPTION WHEN duplicate_object THEN NULL; END $$"
         )
+        op.execute(
+            f"ALTER ROLE {role} NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE "
+            "NOINHERIT NOREPLICATION NOBYPASSRLS"
+        )
+        op.execute(f"""
+            DO $body$
+            DECLARE membership record;
+            BEGIN
+              FOR membership IN
+                SELECT parent.rolname AS parent_name, member.rolname AS member_name
+                FROM pg_auth_members memberships
+                JOIN pg_roles parent ON parent.oid = memberships.roleid
+                JOIN pg_roles member ON member.oid = memberships.member
+                WHERE parent.rolname = '{role}' OR member.rolname = '{role}'
+              LOOP
+                EXECUTE format('REVOKE %I FROM %I', membership.parent_name, membership.member_name);
+              END LOOP;
+            END $body$
+        """)
     op.execute("REVOKE ALL ON SCHEMA kineticloop FROM PUBLIC")
     op.execute(f"GRANT USAGE ON SCHEMA kineticloop TO {', '.join(sorted(roles))}")
 
@@ -114,28 +275,71 @@ def _install_protections() -> None:
         CREATE FUNCTION kineticloop.guard_factset_revision_mutation()
         RETURNS trigger LANGUAGE plpgsql SET search_path = pg_catalog AS $body$
         BEGIN
-          IF TG_OP = 'DELETE' OR OLD.status IN ('READY', 'SEALED') THEN
+          IF TG_OP = 'DELETE' THEN
             RAISE EXCEPTION 'KL_FACTSET_HISTORY_MUTATION_REJECTED' USING ERRCODE = '55000';
           END IF;
-          RETURN NEW;
+          IF OLD.status = 'BUILDING' AND NEW.status IN ('BUILDING','READY','STALE','ABANDONED') THEN
+            RETURN NEW;
+          END IF;
+          IF OLD.status = 'READY' AND NEW.status IN ('SEALED','STALE')
+             AND (to_jsonb(NEW) - ARRAY['status','sealed_at']) =
+                 (to_jsonb(OLD) - ARRAY['status','sealed_at']) THEN
+            RETURN NEW;
+          END IF;
+          RAISE EXCEPTION 'KL_FACTSET_HISTORY_MUTATION_REJECTED' USING ERRCODE = '55000';
         END $body$
     """)
     op.execute("CREATE TRIGGER factset_revision_write_gate BEFORE UPDATE OR DELETE ON kineticloop.factset_revisions FOR EACH ROW EXECUTE FUNCTION kineticloop.guard_factset_revision_mutation()")
     op.execute("""
         CREATE FUNCTION kineticloop.guard_factset_member_mutation()
         RETURNS trigger LANGUAGE plpgsql SET search_path = pg_catalog AS $body$
-        DECLARE parent_status text;
+        DECLARE old_parent_status text; new_parent_status text;
         BEGIN
-          SELECT status INTO parent_status FROM kineticloop.factset_revisions
-          WHERE subject_id = COALESCE(NEW.subject_id, OLD.subject_id)
-            AND id = COALESCE(NEW.ref_s15_id, OLD.ref_s15_id);
-          IF parent_status IS DISTINCT FROM 'BUILDING' THEN
-            RAISE EXCEPTION 'KL_FACTSET_MEMBER_WRITE_GATE_REJECTED' USING ERRCODE = '55000';
+          IF TG_OP IN ('UPDATE','DELETE') THEN
+            SELECT status INTO old_parent_status FROM kineticloop.factset_revisions
+            WHERE subject_id = OLD.subject_id AND id = OLD.ref_s15_id FOR UPDATE;
+            IF old_parent_status IS DISTINCT FROM 'BUILDING' THEN
+              RAISE EXCEPTION 'KL_FACTSET_MEMBER_WRITE_GATE_REJECTED' USING ERRCODE = '55000';
+            END IF;
+          END IF;
+          IF TG_OP IN ('INSERT','UPDATE') THEN
+            SELECT status INTO new_parent_status FROM kineticloop.factset_revisions
+            WHERE subject_id = NEW.subject_id AND id = NEW.ref_s15_id FOR UPDATE;
+            IF new_parent_status IS DISTINCT FROM 'BUILDING' THEN
+              RAISE EXCEPTION 'KL_FACTSET_MEMBER_WRITE_GATE_REJECTED' USING ERRCODE = '55000';
+            END IF;
           END IF;
           RETURN CASE WHEN TG_OP = 'DELETE' THEN OLD ELSE NEW END;
         END $body$
     """)
     op.execute("CREATE TRIGGER factset_member_write_gate BEFORE INSERT OR UPDATE OR DELETE ON kineticloop.factset_members FOR EACH ROW EXECUTE FUNCTION kineticloop.guard_factset_member_mutation()")
+    op.execute("""
+        CREATE FUNCTION kineticloop.publish_policy_bundle(
+          p_subject_id uuid, p_namespace text, p_version text,
+          p_content_hash text, p_typed_payload jsonb
+        ) RETURNS uuid
+        LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog AS $body$
+        DECLARE published_id uuid; existing_hash text;
+        BEGIN
+          INSERT INTO kineticloop.policy_bundles(
+            subject_id, policy_namespace, policy_version, content_hash, typed_payload
+          ) VALUES (
+            p_subject_id, p_namespace, p_version, p_content_hash, p_typed_payload
+          ) ON CONFLICT ON CONSTRAINT uq_policy_bundles_natural DO NOTHING
+          RETURNING id INTO published_id;
+          IF published_id IS NOT NULL THEN RETURN published_id; END IF;
+          SELECT id, content_hash INTO published_id, existing_hash
+          FROM kineticloop.policy_bundles
+          WHERE subject_id=p_subject_id AND policy_namespace=p_namespace AND policy_version=p_version;
+          IF existing_hash IS DISTINCT FROM p_content_hash THEN
+            RAISE EXCEPTION 'KL_IDEMPOTENCY_CONFLICT' USING ERRCODE = '23505';
+          END IF;
+          RETURN published_id;
+        END $body$
+    """)
+    op.execute("ALTER FUNCTION kineticloop.publish_policy_bundle(uuid,text,text,text,jsonb) OWNER TO kl_writer_policy_registry")
+    op.execute("REVOKE ALL ON FUNCTION kineticloop.publish_policy_bundle(uuid,text,text,text,jsonb) FROM PUBLIC")
+    op.execute("GRANT EXECUTE ON FUNCTION kineticloop.publish_policy_bundle(uuid,text,text,text,jsonb) TO kl_application")
 
 def upgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
@@ -1687,6 +1891,10 @@ def upgrade() -> None:
     schema='kineticloop',
     comment='S45 frozen logical relation'
     )
+    _install_integrity_constraints()
+    op.create_check_constraint('ck_s15_status', 'factset_revisions', "status IN ('BUILDING','READY','SEALED','STALE','ABANDONED')", schema='kineticloop')
+    op.create_check_constraint('ck_s15_storage_mode', 'factset_revisions', "storage_mode IN ('FULL','DELTA')", schema='kineticloop')
+    op.create_check_constraint('ck_s16_member_operation', 'factset_members', "member_operation IN ('SET','REMOVE')", schema='kineticloop')
     deferred = (
         ('user_decision_state','factset_revisions',['subject_id','current_factset_id'],['subject_id','id'],'fk_s01_s15_current_factset_id'),
         ('user_decision_state','program_versions',['subject_id','active_program_id'],['subject_id','id'],'fk_s01_s06_active_program_id'),
@@ -1713,6 +1921,26 @@ def upgrade() -> None:
     # ### end Alembic commands ###
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
+    for table, constraint in (
+        ('safety_registry_state','fk_s51_s50_last_revocation_id'),
+        ('daily_plan_heads','fk_s38_s39_current_bundle_revision_id'),
+        ('proposal_revisions','fk_s34_s35_demand_feature_id'),
+        ('planning_attempts','fk_s29_s26_snapshot_id'),
+        ('planning_intents','fk_s27_s42_result_authorization_id'),
+        ('planning_intents','fk_s27_s39_result_bundle_revision_id'),
+        ('planning_intents','fk_s27_s29_current_attempt_id'),
+        ('planning_intents','fk_s27_s28_current_request_revision_id'),
+        ('durable_change_proposals','fk_s07_s34_origin_proposal_id'),
+        ('durable_change_proposals','fk_s07_s24_base_manifest_id'),
+        ('domain_events','fk_s03_s27_correlation_intent_id'),
+        ('user_decision_state','fk_s01_s03_execution_basis_event_id'),
+        ('user_decision_state','fk_s01_s17_last_control_event_id'),
+        ('user_decision_state','fk_s01_s24_current_manifest_id'),
+        ('user_decision_state','fk_s01_s05_active_policy_bundle_id'),
+        ('user_decision_state','fk_s01_s06_active_program_id'),
+        ('user_decision_state','fk_s01_s15_current_factset_id'),
+    ):
+        op.drop_constraint(constraint, table, schema='kineticloop', type_='foreignkey')
     op.drop_table('execution_bindings', schema='kineticloop')
     op.drop_table('bundle_prescription_members', schema='kineticloop')
     op.drop_table('authorization_events', schema='kineticloop')
@@ -1770,5 +1998,9 @@ def downgrade() -> None:
     op.drop_table('evidence_revisions', schema='kineticloop')
     op.drop_table('evaluation_releases', schema='kineticloop')
     op.drop_table('command_receipts', schema='kineticloop')
+    op.execute('DROP FUNCTION kineticloop.publish_policy_bundle(uuid,text,text,text,jsonb)')
+    op.execute('DROP FUNCTION kineticloop.guard_factset_member_mutation()')
+    op.execute('DROP FUNCTION kineticloop.guard_factset_revision_mutation()')
+    op.execute('DROP FUNCTION kineticloop.reject_immutable_history_mutation()')
     op.execute('DROP SCHEMA kineticloop')
     # ### end Alembic commands ###

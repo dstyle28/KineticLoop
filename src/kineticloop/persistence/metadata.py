@@ -13,6 +13,7 @@ from kineticloop.persistence.fact_children import FACT_CHILD_PLANS, FactFieldTyp
 from kineticloop.persistence.schema_topology import DEFERRED_REFERENCES, LOGICAL_RELATIONS
 
 SCHEMA = "kineticloop"
+GLOBAL_RELATIONS = frozenset({"S49", "S50"})
 
 
 def _uuid() -> sa.Uuid:
@@ -58,7 +59,7 @@ KEY_FIELDS: dict[str, tuple[str, ...]] = {
     "S45": ("binding_kind", "execution_scope"), "S46": ("replay_mode", "input_selection_hash"),
     "S47": ("artifact_kind", "artifact_hash"), "S48": ("release_namespace", "release_version", "release_status"),
     "S49": ("artifact_kind", "artifact_identity", "artifact_version"),
-    "S50": ("reason_code", "revocation_payload_hash"),
+    "S50": ("management_command_identity", "reason_code", "revocation_payload_hash"),
 }
 
 COUNTER_FIELDS: dict[str, tuple[str, ...]] = {
@@ -87,6 +88,108 @@ TIME_FIELDS: dict[str, tuple[str, ...]] = {
     "S49": ("valid_from", "valid_until"),
 }
 
+DATE_FIELDS: dict[str, tuple[str, ...]] = {
+    "S27": ("local_date",),
+    "S38": ("local_date",),
+    "S39": ("local_date",),
+}
+
+# Frozen natural identities.  PostgreSQL uniqueness is the last line of defense for
+# retries and concurrent writers; application-side lookup is never a substitute.
+NATURAL_KEYS: dict[str, tuple[str, ...]] = {
+    "S02": ("subject_id", "actor_scope", "command_kind", "client_key"),
+    "S03": ("subject_id", "aggregate_type", "aggregate_identity", "aggregate_revision"),
+    "S04": ("subject_id", "ref_s03_id", "destination"),
+    "S05": ("subject_id", "policy_namespace", "policy_version"),
+    "S06": ("subject_id", "program_identity", "program_revision"),
+    "S07": ("subject_id", "proposal_family_identity", "revision"),
+    "S08": ("subject_id", "ref_s02_id"),
+    "S10": ("subject_id", "assertion_family_identity", "revision"),
+    "S11": ("subject_id", "event_identity"),
+    "S12": ("subject_id", "association_family_identity", "revision"),
+    "S13": ("subject_id", "ref_s10_id", "action_scope", "revision"),
+    "S14": ("subject_id", "stable_fact_identity", "fact_revision"),
+    "S15": ("subject_id", "factset_identity"),
+    "S16": ("subject_id", "ref_s15_id", "member_kind", "logical_member_key", "action_scope"),
+    "S17": ("subject_id", "control_identity", "control_revision"),
+    "S18": ("subject_id", "control_identity"),
+    "S19": ("subject_id", "catalog_namespace", "exercise_identity", "catalog_revision"),
+    "S20": ("subject_id", "mapping_family_identity", "revision"),
+    "S21": ("subject_id", "projection_kind", "input_basis_hash", "revision"),
+    "S22": ("subject_id", "ref_s21_id", "dependency_kind", "dependency_semantic_key"),
+    "S23": ("subject_id", "build_identity"),
+    "S24": ("subject_id", "generation"),
+    "S25": ("subject_id", "ref_s24_id", "projection_role"),
+    "S26": ("subject_id", "ref_s29_id", "revision"),
+    "S27": ("subject_id", "root_request_identity"),
+    "S28": ("subject_id", "ref_s27_id", "request_revision"),
+    "S29": ("subject_id", "ref_s27_id", "attempt_no"),
+    "S30": ("subject_id", "quota_kind", "window_start", "window_end", "ref_s05_id"),
+    "S31": ("subject_id", "ref_s27_id", "ref_s29_id", "operation_slot"),
+    "S32": ("subject_id", "ref_s31_id", "transition_revision"),
+    "S33": ("subject_id", "ref_s29_id", "operation_slot", "revision"),
+    "S34": ("subject_id", "proposal_family_identity", "revision"),
+    "S35": ("subject_id", "ref_s34_id", "method_version", "basis_hash"),
+    "S36": ("subject_id", "ref_s24_id", "action_type", "action_parameters_hash"),
+    "S37": ("subject_id", "ref_s29_id", "revision"),
+    "S38": ("subject_id", "local_date"),
+    "S39": ("subject_id", "local_date", "revision_no"),
+    "S40": ("subject_id", "prescription_identity", "prescription_revision"),
+    "S41": ("subject_id", "ref_s39_id", "member_kind", "session_slot"),
+    "S42": ("subject_id", "ref_s02_id", "ref_s40_id", "scope"),
+    "S44": ("subject_id", "session_identity"),
+    "S45": ("subject_id", "ref_s44_id", "binding_revision"),
+    "S46": ("subject_id", "id"),
+    "S47": ("subject_id", "ref_s46_id", "artifact_kind", "revision"),
+    "S48": ("subject_id", "release_namespace", "release_version"),
+    "S49": ("artifact_kind", "artifact_identity", "artifact_version"),
+    "S50": ("management_command_identity",),
+}
+
+REQUIRED_FIELDS: dict[str, frozenset[str]] = {
+    logical_id: frozenset(key) for logical_id, key in NATURAL_KEYS.items()
+}
+REQUIRED_FIELDS.update(
+    {
+        "S02": REQUIRED_FIELDS["S02"] | {"request_hash", "status"},
+        "S05": REQUIRED_FIELDS["S05"] | {"content_hash"},
+        "S09": frozenset({"subject_id", "source_connection_identity", "source_object_type", "source_object_identity", "trust_class", "source_class", "command_authority"}),
+        "S14": REQUIRED_FIELDS["S14"] | {"fact_kind"},
+        "S15": REQUIRED_FIELDS["S15"] | {"status", "storage_mode"},
+        "S16": REQUIRED_FIELDS["S16"] | {"member_operation"},
+        "S23": REQUIRED_FIELDS["S23"] | {"status", "captured_epoch"},
+        "S24": REQUIRED_FIELDS["S24"] | {"captured_epoch", "manifest_hash", "registry_revision_at_publish", "valid_until"},
+        "S27": REQUIRED_FIELDS["S27"] | {"purpose", "local_date", "status", "fence_token"},
+        "S29": REQUIRED_FIELDS["S29"] | {"status", "captured_epoch", "fence_token"},
+        "S31": REQUIRED_FIELDS["S31"] | {"status", "settlement_revision"},
+        "S37": REQUIRED_FIELDS["S37"] | {"result", "valid_until"},
+        "S42": REQUIRED_FIELDS["S42"] | {"bound_content_hash", "valid_from", "valid_until", "registry_revision_at_issue"},
+        "S44": REQUIRED_FIELDS["S44"] | {"origin", "lifecycle", "execution_revision"},
+        "S45": REQUIRED_FIELDS["S45"] | {"binding_kind", "accepted_at", "execution_scope"},
+        "S46": REQUIRED_FIELDS["S46"] | {"replay_mode", "knowledge_cutoff", "status"},
+        "S49": REQUIRED_FIELDS["S49"] | {"content_hash", "valid_from", "valid_until"},
+        "S50": REQUIRED_FIELDS["S50"] | {"reason_code", "revocation_payload_hash", "effective_at"},
+    }
+)
+
+REQUIRED_DEPENDENCIES: dict[str, frozenset[str]] = {
+    "S03": frozenset({"S02"}), "S04": frozenset({"S03"}), "S10": frozenset({"S09"}),
+    "S13": frozenset({"S05", "S09", "S10"}), "S14": frozenset({"S10", "S11", "S13"}),
+    "S16": frozenset({"S15"}), "S18": frozenset({"S17"}), "S22": frozenset({"S21"}),
+    "S24": frozenset({"S05", "S06", "S15", "S23", "S49", "S51"}),
+    "S25": frozenset({"S24"}), "S28": frozenset({"S02", "S27"}),
+    "S29": frozenset({"S24", "S27", "S28"}), "S31": frozenset({"S27", "S29"}),
+    "S32": frozenset({"S31"}), "S33": frozenset({"S26", "S29"}),
+    "S35": frozenset({"S34"}), "S36": frozenset({"S05", "S24"}),
+    "S37": frozenset({"S05", "S24", "S28", "S29", "S34", "S35", "S36"}),
+    "S39": frozenset({"S02", "S24", "S27", "S29", "S37", "S38"}),
+    "S40": frozenset({"S34", "S49"}), "S41": frozenset({"S39", "S40"}),
+    "S42": frozenset({"S02", "S05", "S24", "S36", "S37", "S40", "S49", "S51"}),
+    "S45": frozenset({"S02", "S40", "S42", "S44"}), "S46": frozenset({"S24", "S48"}),
+    "S47": frozenset({"S46"}), "S49": frozenset({"S05", "S19", "S48"}),
+    "S50": frozenset({"S49", "S51"}),
+}
+
 
 def _base(logical_id: str) -> list[SchemaItem]:
     if logical_id == "S01":
@@ -103,24 +206,28 @@ def _base(logical_id: str) -> list[SchemaItem]:
             sa.Column("registry_revision", sa.BigInteger(), nullable=False, server_default="0"),
             sa.CheckConstraint("id = 1 AND registry_revision >= 0", name="ck_s51_singleton"),
         ]
+    global_relation = logical_id in GLOBAL_RELATIONS
+    required = REQUIRED_FIELDS.get(logical_id, frozenset())
     result: list[SchemaItem] = [
         sa.Column("id", _uuid(), primary_key=True, server_default=sa.text("gen_random_uuid()")),
-        sa.Column("subject_id", _uuid(), nullable=False),
         sa.Column("recorded_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("transaction_timestamp()")),
         sa.Column("known_at", sa.DateTime(timezone=True)),
-        sa.Column("effective_at", sa.DateTime(timezone=True)),
+        sa.Column("effective_at", sa.DateTime(timezone=True), nullable="effective_at" not in required),
         sa.Column("content_schema_version", sa.Integer(), nullable=False, server_default="1"),
-        sa.Column("content_hash", sa.Text()),
+        sa.Column("content_hash", sa.Text(), nullable="content_hash" not in required),
         sa.Column("hash_scheme_version", sa.Integer(), nullable=False, server_default="1"),
         sa.Column("revision", sa.BigInteger(), nullable=False, server_default="1"),
-        sa.Column("status", sa.Text()),
+        sa.Column("status", sa.Text(), nullable="status" not in required),
         sa.Column("typed_payload", postgresql.JSONB(), nullable=False, server_default=sa.text("'{}'::jsonb")),
-        sa.UniqueConstraint("subject_id", "id", name=f"uq_{logical_id.lower()}_subject_id"),
         sa.CheckConstraint("content_schema_version > 0 AND hash_scheme_version > 0 AND revision > 0", name=f"ck_{logical_id.lower()}_versions"),
     ]
-    result.extend(sa.Column(name, sa.Text()) for name in KEY_FIELDS.get(logical_id, ()))
-    result.extend(sa.Column(name, sa.BigInteger()) for name in COUNTER_FIELDS.get(logical_id, ()))
-    result.extend(sa.Column(name, sa.DateTime(timezone=True)) for name in TIME_FIELDS.get(logical_id, ()))
+    if not global_relation:
+        result.insert(1, sa.Column("subject_id", _uuid(), nullable=False))
+        result.append(sa.UniqueConstraint("subject_id", "id", name=f"uq_{logical_id.lower()}_subject_id"))
+    result.extend(sa.Column(name, sa.Text(), nullable=name not in required) for name in KEY_FIELDS.get(logical_id, ()))
+    result.extend(sa.Column(name, sa.BigInteger(), nullable=name not in required) for name in COUNTER_FIELDS.get(logical_id, ()))
+    result.extend(sa.Column(name, sa.DateTime(timezone=True), nullable=name not in required) for name in TIME_FIELDS.get(logical_id, ()))
+    result.extend(sa.Column(name, sa.Date(), nullable=name not in required) for name in DATE_FIELDS.get(logical_id, ()))
     return result
 
 
@@ -132,14 +239,71 @@ def build_metadata() -> sa.MetaData:
         if relation.logical_id not in {"S01", "S51"}:
             for dependency in relation.dependencies:
                 target_name = next(row.table_name for row in LOGICAL_RELATIONS if row.logical_id == dependency)
+                required = dependency in REQUIRED_DEPENDENCIES.get(relation.logical_id, frozenset())
+                target_is_global = dependency in GLOBAL_RELATIONS or dependency == "S51"
+                source_is_global = relation.logical_id in GLOBAL_RELATIONS
                 if dependency == "S01":
                     items.append(sa.ForeignKeyConstraint(["subject_id"], [f"{SCHEMA}.{target_name}.subject_id"], name=f"fk_{relation.logical_id.lower()}_{dependency.lower()}"))
                 elif dependency == "S51":
-                    items.extend((sa.Column("registry_state_id", sa.SmallInteger()), sa.ForeignKeyConstraint(["registry_state_id"], [f"{SCHEMA}.{target_name}.id"], name=f"fk_{relation.logical_id.lower()}_{dependency.lower()}")))
+                    items.extend((sa.Column("registry_state_id", sa.SmallInteger(), nullable=not required), sa.ForeignKeyConstraint(["registry_state_id"], [f"{SCHEMA}.{target_name}.id"], name=f"fk_{relation.logical_id.lower()}_{dependency.lower()}")))
+                elif source_is_global or target_is_global:
+                    ref = f"ref_{dependency.lower()}_id"
+                    items.extend((sa.Column(ref, _uuid(), nullable=not required), sa.ForeignKeyConstraint([ref], [f"{SCHEMA}.{target_name}.id"], name=f"fk_{relation.logical_id.lower()}_{dependency.lower()}")))
                 else:
                     ref = f"ref_{dependency.lower()}_id"
-                    items.extend((sa.Column(ref, _uuid()), sa.ForeignKeyConstraint(["subject_id", ref], [f"{SCHEMA}.{target_name}.subject_id", f"{SCHEMA}.{target_name}.id"], name=f"fk_{relation.logical_id.lower()}_{dependency.lower()}")))
-        tables[relation.logical_id] = sa.Table(relation.table_name, metadata, *items, comment=f"{relation.logical_id} frozen logical relation")
+                    items.extend((sa.Column(ref, _uuid(), nullable=not required), sa.ForeignKeyConstraint(["subject_id", ref], [f"{SCHEMA}.{target_name}.subject_id", f"{SCHEMA}.{target_name}.id"], name=f"fk_{relation.logical_id.lower()}_{dependency.lower()}")))
+        natural_key = NATURAL_KEYS.get(relation.logical_id)
+        if natural_key:
+            items.append(sa.UniqueConstraint(*natural_key, name=f"uq_{relation.table_name}_natural"))
+        if relation.logical_id == "S09":
+            items.extend(
+                (
+                    sa.CheckConstraint("source_revision IS NOT NULL OR observation_key IS NOT NULL", name="ck_s09_source_identity"),
+                    sa.CheckConstraint("command_authority = 'NONE'", name="ck_s09_no_command_authority"),
+                )
+            )
+        elif relation.logical_id == "S15":
+            items.extend(
+                (
+                    sa.CheckConstraint("status IN ('BUILDING','READY','SEALED','STALE','ABANDONED')", name="ck_s15_status"),
+                    sa.CheckConstraint("storage_mode IN ('FULL','DELTA')", name="ck_s15_storage_mode"),
+                )
+            )
+        elif relation.logical_id == "S16":
+            items.append(sa.CheckConstraint("member_operation IN ('SET','REMOVE')", name="ck_s16_member_operation"))
+        elif relation.logical_id == "S42":
+            items.append(sa.CheckConstraint("valid_until > valid_from", name="ck_s42_validity_interval"))
+        elif relation.logical_id == "S49":
+            items.append(sa.CheckConstraint("valid_until IS NULL OR valid_until > valid_from", name="ck_s49_validity_interval"))
+        table = sa.Table(relation.table_name, metadata, *items, comment=f"{relation.logical_id} frozen logical relation")
+        tables[relation.logical_id] = table
+        if relation.logical_id == "S09":
+            sa.Index(
+                "uq_s09_provider_revision",
+                table.c.subject_id,
+                table.c.source_connection_identity,
+                table.c.source_object_type,
+                table.c.source_object_identity,
+                table.c.source_revision,
+                unique=True,
+                postgresql_where=table.c.source_revision.is_not(None),
+            )
+            sa.Index(
+                "uq_s09_observation_key",
+                table.c.subject_id,
+                table.c.source_connection_identity,
+                table.c.observation_key,
+                unique=True,
+                postgresql_where=table.c.source_revision.is_(None),
+            )
+        elif relation.logical_id == "S45":
+            sa.Index(
+                "uq_s45_one_start",
+                table.c.subject_id,
+                table.c.ref_s44_id,
+                unique=True,
+                postgresql_where=table.c.binding_kind == "START",
+            )
 
     for reference in DEFERRED_REFERENCES:
         source, target = tables[reference.source], tables[reference.target]
