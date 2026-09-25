@@ -48,9 +48,8 @@ BEGIN
   END LOOP;
 
   SELECT count(*) INTO unsafe_memberships
-  FROM pg_auth_members memberships
-  JOIN pg_roles parent_role ON parent_role.oid = memberships.roleid
-  JOIN pg_roles member_role ON member_role.oid = memberships.member
+  FROM pg_roles parent_role
+  CROSS JOIN pg_roles member_role
   WHERE parent_role.rolname = ANY(ARRAY[
           'kl_migration_owner', 'kl_writer_safety_registry', 'kl_application',
           'kl_auditor', 'kl_trusted_admin'
@@ -58,7 +57,9 @@ BEGIN
     AND member_role.rolname = ANY(ARRAY[
           'kl_migration_owner', 'kl_writer_safety_registry', 'kl_application',
           'kl_auditor', 'kl_trusted_admin'
-        ]);
+        ])
+    AND parent_role.oid <> member_role.oid
+    AND pg_has_role(member_role.oid, parent_role.oid, 'MEMBER');
   IF unsafe_memberships <> 0 THEN
     RAISE EXCEPTION 'KL_SAFETY_REGISTRY_ROLE_PREFLIGHT_PROTECTED_MEMBERSHIP';
   END IF;
@@ -85,6 +86,15 @@ BEGIN
         OR memberships.inherit_option
         OR memberships.admin_option
       )
+  )
+     OR EXISTS (
+    SELECT 1
+    FROM pg_roles reachable_role
+    WHERE reachable_role.rolname <> session_user
+      AND reachable_role.rolname NOT IN (
+        'kl_migration_owner', 'kl_writer_safety_registry', 'pg_database_owner'
+      )
+      AND pg_has_role(session_user, reachable_role.rolname, 'SET')
   ) THEN
     RAISE EXCEPTION 'KL_SAFETY_REGISTRY_ROLE_PREFLIGHT_DEPLOYER_MEMBERSHIP';
   END IF;

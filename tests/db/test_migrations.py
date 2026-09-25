@@ -351,6 +351,30 @@ def test_safety_registry_role_preflight_fails_before_object_changes() -> None:
         assert_preflight_failure(urls)
         admin.execute("REVOKE kl_application FROM kl_auditor")
 
+        admin.execute(
+            "CREATE ROLE kl072_membership_bridge NOLOGIN NOSUPERUSER NOCREATEDB "
+            "NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS"
+        )
+        admin.execute(
+            "GRANT kl_application TO kl072_membership_bridge "
+            "WITH ADMIN FALSE, INHERIT FALSE, SET TRUE"
+        )
+        admin.execute(
+            "GRANT kl072_membership_bridge TO kl_auditor "
+            "WITH ADMIN FALSE, INHERIT FALSE, SET TRUE"
+        )
+        assert_preflight_failure(urls)
+        admin.execute("REVOKE kl072_membership_bridge FROM kl_auditor")
+        admin.execute("REVOKE kl_application FROM kl072_membership_bridge")
+
+        admin.execute(
+            "GRANT kl072_membership_bridge TO kl_migration_owner "
+            "WITH ADMIN FALSE, INHERIT FALSE, SET TRUE"
+        )
+        assert_preflight_failure(urls)
+        admin.execute("REVOKE kl072_membership_bridge FROM kl_migration_owner")
+        admin.execute("DROP ROLE kl072_membership_bridge")
+
         for owner in ("kl_migration_owner", "kl_writer_safety_registry"):
             admin.execute(f"REVOKE {owner} FROM kl_migration_deployer")
             assert_preflight_failure(urls)
