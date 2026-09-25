@@ -6,7 +6,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, TypeVar
-from uuid import UUID, uuid4
+from uuid import UUID
 
 import psycopg
 from psycopg import Connection, Cursor
@@ -14,20 +14,38 @@ from psycopg.pq import TransactionStatus
 
 from kineticloop.contracts.commands import RevokeArtifact
 from kineticloop.contracts.safety_registry import (
-    T6_COMMANDS,
-    T7_COMMANDS,
     RegistryDenialCode,
     RegistryDenied,
     RegistryEligibility,
-    RegistryGateTimeoutError,
     revocation_payload_hash,
 )
-from kineticloop.identity import ActorRole
 
-SYSTEM_SCOPE = "system"
 _T = TypeVar("_T")
 Mutation = Callable[[Cursor[Any], int], _T]
 StopMutation = Callable[[Cursor[Any]], _T]
+
+_SHARED_ROUTINES = {
+    "PublishManifest": "registry_guard_publish_manifest",
+    "CommitBundle": "registry_guard_commit_bundle",
+    "Reauthorize": "registry_guard_reauthorize",
+    "StartSession": "registry_guard_start_session",
+    "ResumeSession": "registry_guard_resume_session",
+    "ContinueSession": "registry_guard_continue_session",
+}
+
+_DATABASE_DENIALS = {
+    "KL_REGISTRY_UNAVAILABLE": RegistryDenialCode.REGISTRY_UNAVAILABLE,
+    "KL_REGISTRY_TIMEOUT": RegistryDenialCode.REGISTRY_TIMEOUT,
+    "KL_REGISTRY_STALE": RegistryDenialCode.REGISTRY_STALE,
+    "KL_REGISTRY_ARTIFACT_UNKNOWN": RegistryDenialCode.ARTIFACT_UNKNOWN,
+    "KL_REGISTRY_ARTIFACT_REVOKED": RegistryDenialCode.ARTIFACT_REVOKED,
+    "KL_REGISTRY_ARTIFACT_EXPIRED": RegistryDenialCode.ARTIFACT_EXPIRED,
+    "KL_REGISTRY_VALIDITY_UNDEFINED": RegistryDenialCode.VALIDITY_UNDEFINED,
+    "KL_REGISTRY_DEPENDENCY_INCOMPLETE": RegistryDenialCode.DEPENDENCY_INCOMPLETE,
+    "KL_REGISTRY_AUTHORIZATION_INELIGIBLE": RegistryDenialCode.AUTHORIZATION_INELIGIBLE,
+    "KL_REGISTRY_IDEMPOTENCY_CONFLICT": RegistryDenialCode.IDEMPOTENCY_CONFLICT,
+    "KL_REGISTRY_COMMAND_NOT_AUTHORIZED": RegistryDenialCode.COMMAND_NOT_AUTHORIZED,
+}
 
 
 @dataclass(frozen=True, slots=True)
@@ -56,118 +74,12 @@ def _set_lock_timeout(cursor: Cursor[Any], lock_timeout_ms: int) -> None:
     cursor.execute("SELECT set_config('lock_timeout', %s, true)", (f"{lock_timeout_ms}ms",))
 
 
-def _gate_timeout(error: psycopg.Error) -> RegistryGateTimeoutError:
-    return RegistryGateTimeoutError("SafetyRegistry gate acquisition timed out")
-
-
-def _acquire_shared_gate(cursor: Cursor[Any], lock_timeout_ms: int) -> int:
-    _set_lock_timeout(cursor, lock_timeout_ms)
-    try:
-        cursor.execute(
-            """
-            SELECT registry_revision
-              FROM safety_registry_state
-             WHERE registry_scope = %s
-             FOR SHARE
-            """,
-            (SYSTEM_SCOPE,),
-        )
-    except (psycopg.errors.LockNotAvailable, psycopg.errors.QueryCanceled) as error:
-        raise _gate_timeout(error) from error
-    row = cursor.fetchone()
-    if row is None:
-        raise RegistryDenied(RegistryDenialCode.REGISTRY_UNAVAILABLE)
-    return int(row[0])
-
-
-def _acquire_exclusive_gate(cursor: Cursor[Any], lock_timeout_ms: int) -> int:
-    _set_lock_timeout(cursor, lock_timeout_ms)
-    try:
-        cursor.execute(
-            """
-            SELECT registry_revision
-              FROM safety_registry_state
-             WHERE registry_scope = %s
-             FOR UPDATE
-            """,
-            (SYSTEM_SCOPE,),
-        )
-    except (psycopg.errors.LockNotAvailable, psycopg.errors.QueryCanceled) as error:
-        raise _gate_timeout(error) from error
-    row = cursor.fetchone()
-    if row is None:
-        raise RegistryDenied(RegistryDenialCode.REGISTRY_UNAVAILABLE)
-    return int(row[0])
-
-
-def _lock_subject_and_check_authorization(
-    cursor: Cursor[Any], eligibility: RegistryEligibility
-) -> datetime:
-    cursor.execute(
-        """
-        SELECT t6_issuance_eligible, t7_execution_eligible, authorization_valid_until
-          FROM subject_coordination
-         WHERE subject_id = %s
-         FOR UPDATE
-        """,
-        (UUID(eligibility.subject_id),),
-    )
-    row = cursor.fetchone()
-    if row is None:
-        raise RegistryDenied(RegistryDenialCode.AUTHORIZATION_INELIGIBLE)
-    t6_eligible, t7_eligible, authorization_valid_until = row
-    cursor.execute("SELECT clock_timestamp()")
-    time_row = cursor.fetchone()
-    if time_row is None:
-        raise RegistryDenied(RegistryDenialCode.REGISTRY_UNAVAILABLE)
-    authoritative_now = time_row[0]
-    if eligibility.command in T6_COMMANDS and not t6_eligible:
-        raise RegistryDenied(RegistryDenialCode.AUTHORIZATION_INELIGIBLE)
-    if eligibility.command in T7_COMMANDS and (
-        not t7_eligible
-        or authorization_valid_until is None
-        or authorization_valid_until <= authoritative_now
-    ):
-        raise RegistryDenied(RegistryDenialCode.AUTHORIZATION_INELIGIBLE)
-    return authoritative_now
-
-
-def _check_artifact_closure(
-    cursor: Cursor[Any], eligibility: RegistryEligibility, authoritative_now: datetime
-) -> None:
-    artifact_ids = tuple(UUID(value) for value in eligibility.artifact_ids)
-    cursor.execute(
-        """
-        SELECT artifact_id, dependency_ids, valid_from, valid_until
-          FROM safety_artifacts
-         WHERE artifact_id = ANY(%s)
-        """,
-        (list(artifact_ids),),
-    )
-    artifacts = {row[0]: row for row in cursor.fetchall()}
-    if set(artifacts) != set(artifact_ids):
-        raise RegistryDenied(RegistryDenialCode.ARTIFACT_UNKNOWN)
-
-    closure = set(artifact_ids)
-    for _, dependency_ids, valid_from, valid_until in artifacts.values():
-        if dependency_ids is None or not set(dependency_ids).issubset(closure):
-            raise RegistryDenied(RegistryDenialCode.DEPENDENCY_INCOMPLETE)
-        if valid_from is None or valid_until is None:
-            raise RegistryDenied(RegistryDenialCode.VALIDITY_UNDEFINED)
-        if authoritative_now < valid_from or authoritative_now >= valid_until:
-            raise RegistryDenied(RegistryDenialCode.ARTIFACT_EXPIRED)
-
-    cursor.execute(
-        """
-        SELECT artifact_id
-          FROM artifact_revocation_events
-         WHERE artifact_id = ANY(%s)
-         LIMIT 1
-        """,
-        (list(artifact_ids),),
-    )
-    if cursor.fetchone() is not None:
-        raise RegistryDenied(RegistryDenialCode.ARTIFACT_REVOKED)
+def _database_denial(error: psycopg.Error) -> RegistryDenied | None:
+    message = str(error)
+    for marker, code in _DATABASE_DENIALS.items():
+        if marker in message:
+            return RegistryDenied(code)
+    return None
 
 
 def execute_shared_registry_command(
@@ -184,21 +96,31 @@ def execute_shared_registry_command(
     try:
         with connection.transaction():
             cursor = connection.cursor()
-            revision = _acquire_shared_gate(cursor, lock_timeout_ms)
-            if revision < eligibility.minimum_registry_revision:
-                raise RegistryDenied(RegistryDenialCode.REGISTRY_STALE)
-            authoritative_now = _lock_subject_and_check_authorization(cursor, eligibility)
-            _check_artifact_closure(cursor, eligibility, authoritative_now)
+            routine = _SHARED_ROUTINES[eligibility.command.value]
+            cursor.execute(
+                f"SELECT kineticloop.{routine}(%s, %s, %s, %s)",
+                (
+                    UUID(eligibility.subject_id),
+                    [UUID(value) for value in eligibility.artifact_ids],
+                    eligibility.minimum_registry_revision,
+                    lock_timeout_ms,
+                ),
+            )
+            row = cursor.fetchone()
+            if row is None:
+                raise RegistryDenied(RegistryDenialCode.REGISTRY_UNAVAILABLE)
+            revision = int(row[0])
             mutation_started = True
             return mutation(cursor, revision)
-    except RegistryGateTimeoutError as error:
-        raise RegistryDenied(RegistryDenialCode.REGISTRY_TIMEOUT) from error
-    except psycopg.OperationalError as error:
+    except psycopg.Error as error:
+        denial = _database_denial(error)
+        if denial is not None and not mutation_started:
+            raise denial from error
+        if isinstance(error, (psycopg.errors.LockNotAvailable, psycopg.errors.QueryCanceled)):
+            raise RegistryDenied(RegistryDenialCode.REGISTRY_TIMEOUT) from error
         if mutation_started:
             raise
         raise RegistryDenied(RegistryDenialCode.REGISTRY_UNAVAILABLE) from error
-
-
 def revoke_artifact(
     connection: Connection[Any],
     command: RevokeArtifact,
@@ -209,8 +131,6 @@ def revoke_artifact(
 ) -> RevocationResult:
     """Execute T2-GLOBAL; the successful transaction commit is linearization."""
 
-    if command.actor.role is not ActorRole.ADMIN:
-        raise RegistryDenied(RegistryDenialCode.COMMAND_NOT_AUTHORIZED)
     if effective_at.tzinfo is None or effective_at.utcoffset() is None:
         raise ValueError("effective_at must be timezone-aware")
     if not reason_code:
@@ -221,118 +141,46 @@ def revoke_artifact(
         raise RegistryDenied(RegistryDenialCode.IDEMPOTENCY_CONFLICT)
 
     _require_idle_connection(connection)
-    with connection.transaction():
-        cursor = connection.cursor()
-        current_revision = _acquire_exclusive_gate(cursor, lock_timeout_ms)
-
-        cursor.execute(
-            """
-            SELECT request_hash, revocation_id, registry_revision, artifact_id,
-                   effective_at, recorded_at
-              FROM registry_management_receipts
-             WHERE command_key = %s
-            """,
-            (command.idempotency_key,),
-        )
-        receipt = cursor.fetchone()
-        if receipt is not None:
-            if receipt[0] != command.request_hash:
-                raise RegistryDenied(RegistryDenialCode.IDEMPOTENCY_CONFLICT)
+    try:
+        with connection.transaction():
+            cursor = connection.cursor()
+            cursor.execute(
+                """
+                SELECT revocation_id, registry_revision, artifact_id,
+                       effective_at, recorded_at
+                FROM kineticloop.registry_revoke_artifact(
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s
+                )
+                """,
+                (
+                    UUID(command.artifact_id),
+                    command.artifact_content_hash,
+                    effective_at,
+                    reason_code,
+                    command.revocation_payload_hash,
+                    command.idempotency_key,
+                    command.request_hash,
+                    UUID(command.causation_incident_id),
+                    lock_timeout_ms,
+                ),
+            )
+            row = cursor.fetchone()
+            if row is None:
+                raise RegistryDenied(RegistryDenialCode.REGISTRY_UNAVAILABLE)
             return RevocationResult(
-                revocation_id=str(receipt[1]),
-                registry_revision=int(receipt[2]),
-                artifact_id=str(receipt[3]),
-                effective_at=receipt[4],
-                recorded_at=receipt[5],
+                revocation_id=str(row[0]),
+                registry_revision=int(row[1]),
+                artifact_id=str(row[2]),
+                effective_at=row[3],
+                recorded_at=row[4],
             )
-
-        artifact_id = UUID(command.artifact_id)
-        cursor.execute(
-            "SELECT content_hash FROM safety_artifacts WHERE artifact_id = %s",
-            (artifact_id,),
-        )
-        artifact = cursor.fetchone()
-        if artifact is None or artifact[0] != command.artifact_content_hash:
-            raise RegistryDenied(RegistryDenialCode.ARTIFACT_UNKNOWN)
-        cursor.execute(
-            "SELECT 1 FROM artifact_revocation_events WHERE artifact_id = %s LIMIT 1",
-            (artifact_id,),
-        )
-        if cursor.fetchone() is not None:
-            raise RegistryDenied(RegistryDenialCode.ARTIFACT_REVOKED)
-
-        revocation_id = uuid4()
-        registry_revision = current_revision + 1
-        cursor.execute(
-            """
-            INSERT INTO artifact_revocation_events (
-                revocation_id, artifact_id, registry_revision, effective_at, reason_code,
-                operator_identity, command_key, request_hash, causation_incident_id
-            )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            RETURNING recorded_at
-            """,
-            (
-                revocation_id,
-                artifact_id,
-                registry_revision,
-                effective_at,
-                reason_code,
-                UUID(command.actor.identity_id),
-                command.idempotency_key,
-                command.request_hash,
-                UUID(command.causation_incident_id),
-            ),
-        )
-        recorded_row = cursor.fetchone()
-        assert recorded_row is not None
-        recorded_at = recorded_row[0]
-        cursor.execute(
-            """
-            UPDATE safety_registry_state
-               SET registry_revision = %s, last_revocation_id = %s
-             WHERE registry_scope = %s
-            """,
-            (registry_revision, revocation_id, SYSTEM_SCOPE),
-        )
-        cursor.execute(
-            """
-            INSERT INTO registry_management_receipts (
-                command_key, request_hash, revocation_id, registry_revision,
-                artifact_id, effective_at, recorded_at
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """,
-            (
-                command.idempotency_key,
-                command.request_hash,
-                revocation_id,
-                registry_revision,
-                artifact_id,
-                effective_at,
-                recorded_at,
-            ),
-        )
-        cursor.execute(
-            """
-            INSERT INTO registry_audit_events (event_id, revocation_id, operator_identity)
-            VALUES (%s, %s, %s)
-            """,
-            (uuid4(), revocation_id, UUID(command.actor.identity_id)),
-        )
-        cursor.execute(
-            """
-            INSERT INTO registry_outbox (delivery_id, revocation_id)
-            VALUES (%s, %s)
-            """,
-            (uuid4(), revocation_id),
-        )
-        return RevocationResult(
-            revocation_id=str(revocation_id),
-            registry_revision=registry_revision,
-            artifact_id=command.artifact_id,
-            effective_at=effective_at,
-            recorded_at=recorded_at,
-        )
+    except psycopg.Error as error:
+        denial = _database_denial(error)
+        if denial is not None:
+            raise denial from error
+        if isinstance(error, (psycopg.errors.LockNotAvailable, psycopg.errors.QueryCanceled)):
+            raise RegistryDenied(RegistryDenialCode.REGISTRY_TIMEOUT) from error
+        raise
 
 
 def execute_stop_without_registry(
@@ -349,7 +197,8 @@ def execute_stop_without_registry(
         cursor = connection.cursor()
         _set_lock_timeout(cursor, lock_timeout_ms)
         cursor.execute(
-            "SELECT subject_id FROM subject_coordination WHERE subject_id = %s FOR UPDATE",
+            "SELECT subject_id FROM kineticloop.user_decision_state "
+            "WHERE subject_id = %s FOR UPDATE",
             (UUID(subject_id),),
         )
         if cursor.fetchone() is None:

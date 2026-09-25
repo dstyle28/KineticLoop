@@ -1,7 +1,26 @@
 # SafetyRegistry shared/exclusive gate contract
 
 This contract materializes frozen S49--S51 coordination without changing Protocol or DB
-semantics. It is a lock/gate API and task-local PostgreSQL fixture, not a migration.
+semantics. The production repository executes only the narrow command routines installed by
+the SafetyRegistry successor migration; PostgreSQL tests use the migrated schema rather than
+fixture-local S01/S49/S50/S51 definitions.
+
+## Deployment and role boundary
+
+An empty deployment is intentionally two phase. An externally provisioned
+`kl_cluster_bootstrap` session applies only the immutable KL-013 baseline, disconnects, and an
+external administrator hands every baseline schema object to NOLOGIN `kl_migration_owner`.
+A new NOSUPERUSER/NOCREATEROLE `kl_migration_deployer` session, with only SET membership in
+`kl_migration_owner` and `kl_writer_safety_registry`, applies the successor. Its first action is
+a fail-closed catalog preflight over the owner, application, audit, trusted-admin, and deployer
+roles. The successor contains no cluster-role or role-membership DDL.
+
+All S01--S51 tables, sequences, and non-command guards remain owned by
+`kl_migration_owner`. The six command-specific shared-gate routines are executable only by
+`kl_application`; the non-overloaded revoke routine is executable only by NOLOGIN
+`kl_trusted_admin`. Those seven fixed-search-path SECURITY DEFINER routines are owned by
+NOLOGIN `kl_writer_safety_registry`. Runtime login roles receive external membership in the
+execution roles but cannot SET either owner role or issue direct S49/S50/S51 DML.
 
 ## Command boundary and order
 
@@ -40,8 +59,9 @@ deterministic registry denial; the caller must reconcile through the command's i
 
 ## Global revoke
 
-`RevokeArtifact` requires the trusted admin role and acquires S51 with `FOR UPDATE`. It never
-reads or locks S01. In the same T2-GLOBAL transaction it appends S50, advances S51, and writes
+`RevokeArtifact` requires database-session membership in `kl_trusted_admin` and acquires S51
+with `FOR UPDATE`. It never reads or locks S01. In the same T2-GLOBAL transaction it appends
+S50, advances S51, and writes
 the management receipt, audit event, and outbox identity. The successful commit—not
 `effective_at`—is the execution linearization point. `effective_at` remains audit metadata,
 so a future value does not schedule eligibility and a past value does not rewrite historical
@@ -52,6 +72,10 @@ The effecting `effective_at` and `reason_code` values must match the command's c
 after the exclusive gate. A repeated command key and request hash
 returns the stored original result; reusing the key with another hash is rejected. Any insert
 failure rolls back every T2-GLOBAL effect.
+
+The routine persists `session_user` as the management operator. Caller-supplied actor identity
+or capability fields are never database authorization inputs and cannot replace the
+session-bound trusted-admin membership check.
 
 ## Commands outside the gate
 
