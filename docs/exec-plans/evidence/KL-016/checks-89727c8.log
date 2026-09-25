@@ -1,0 +1,52 @@
+task_identity: harness-backlog-v0.2/KL-016
+tested_commit: 89727c8d0f47bc21a4f1def8e1c509f0e8af5e72
+database_namespace: kl_tmp_5b7de83f2835 / kl_tmp_5b7de83f2835_test
+integration_basis: origin/master@2b5f8c594ea3f74b042dd53657d8f14f1e54e49f
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_shared_gate_command_matrix_fails_closed
+.                                                                        [100%]
+1 passed in 4.62s
+ORACLE PASS: all six gated commands prove shared S51 before S01, post-wait DB time,
+current registration/closure/validity/revocation and applicable eligibility; unknown,
+incomplete, undefined, future, expired, stale, timeout, unavailable and authorization-denied
+states produce zero protected mutation. Unknown commit outcome is not relabeled as denial.
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_reauthorize_shared_gate_precedes_s01_and_fails_closed
+.                                                                        [100%]
+1 passed in 0.86s
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_continue_session_rechecks_shared_gate_and_fails_closed
+.                                                                        [100%]
+1 passed in 1.96s
+ORACLE PASS: ContinueSession denies when authorization expires while waiting on S01.
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_exclusive_global_gate_serializes
+.                                                                        [100%]
+1 passed in 0.62s
+ORACLE PASS: real protected shared mutation and exclusive revoke prove both legal commit orders.
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_revoke_artifact_atomic_linearization_and_idempotency
+.                                                                        [100%]
+1 passed in 0.80s
+ORACLE PASS: atomic rollback, payload binding, immediate commit authority, immutable history,
+sequential and concurrent same-key replay, concurrent different-hash conflict, and lost-ACK
+recovery each preserve exactly one S50/S51/receipt/audit/outbox result.
+
+$ uv run pytest -q tests/unit/contracts/test_safety_registry.py::test_registry_unavailable_or_timeout_denies
+.                                                                        [100%]
+1 passed in 0.07s
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_global_revoke_never_locks_s01
+.                                                                        [100%]
+1 passed in 0.81s
+
+$ uv run pytest -q tests/unit/contracts/test_safety_registry.py::test_stop_has_no_registry_dependency
+.                                                                        [100%]
+1 passed in 0.08s
+
+$ uv run pytest -q tests/db/test_safety_registry.py tests/db/test_lifecycle.py
+..............                                                           [100%]
+14 passed in 6.40s
+
+$ uv run kl check-harness
+HARNESS_CHECK_PASS tasks=68 active=66

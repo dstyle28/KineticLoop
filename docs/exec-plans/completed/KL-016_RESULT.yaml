@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-016
 display_task_id: KL-016
 task_definition_version: v0.2
 base_commit: 6bb5b07b155cbd66a005788e0b66978e8711a6e4
-tested_commit: ff91b4389dcb6fc37063957030eb83c2272c68e9
+tested_commit: 89727c8d0f47bc21a4f1def8e1c509f0e8af5e72
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -19,43 +19,43 @@ commands_run:
   - check_id: shared_gate_command_matrix_fails_closed
     command: uv run pytest -q tests/db/test_safety_registry.py::test_shared_gate_command_matrix_fails_closed
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-ff91b43.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-89727c8.log
   - check_id: reauthorize_shared_gate_precedes_s01_and_fails_closed
     command: uv run pytest -q tests/db/test_safety_registry.py::test_reauthorize_shared_gate_precedes_s01_and_fails_closed
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-ff91b43.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-89727c8.log
   - check_id: continue_session_rechecks_shared_gate_and_fails_closed
     command: uv run pytest -q tests/db/test_safety_registry.py::test_continue_session_rechecks_shared_gate_and_fails_closed
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-ff91b43.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-89727c8.log
   - check_id: exclusive_global_gate_serializes
     command: uv run pytest -q tests/db/test_safety_registry.py::test_exclusive_global_gate_serializes
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-ff91b43.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-89727c8.log
   - check_id: revoke_artifact_atomic_linearization_and_idempotency
     command: uv run pytest -q tests/db/test_safety_registry.py::test_revoke_artifact_atomic_linearization_and_idempotency
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-ff91b43.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-89727c8.log
   - check_id: registry_unavailable_or_timeout_denies
     command: uv run pytest -q tests/unit/contracts/test_safety_registry.py::test_registry_unavailable_or_timeout_denies
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-ff91b43.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-89727c8.log
   - check_id: global_revoke_never_locks_s01
     command: uv run pytest -q tests/db/test_safety_registry.py::test_global_revoke_never_locks_s01
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-ff91b43.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-89727c8.log
   - check_id: stop_has_no_registry_dependency
     command: uv run pytest -q tests/unit/contracts/test_safety_registry.py::test_stop_has_no_registry_dependency
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-ff91b43.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-89727c8.log
   - check_id: safety_registry_db_regressions_pass
     command: uv run pytest -q tests/db/test_safety_registry.py tests/db/test_lifecycle.py
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-ff91b43.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-89727c8.log
   - check_id: harness_validation_passes
     command: uv run kl check-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-ff91b43.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-89727c8.log
 requirements_covered: []
 files_changed:
   - docs/contracts/safety_registry.md
@@ -74,6 +74,7 @@ files_changed:
   - docs/exec-plans/evidence/KL-016/checks-d8f67ed.log
   - docs/exec-plans/evidence/KL-016/checks-9cf71ff.log
   - docs/exec-plans/evidence/KL-016/checks-ff91b43.log
+  - docs/exec-plans/evidence/KL-016/checks-89727c8.log
   - docs/exec-plans/completed/KL-016_RESULT.yaml
 decisions:
   - Use PostgreSQL FOR SHARE / FOR UPDATE on the singleton S51 system row as the logical shared/exclusive gate.
@@ -93,6 +94,7 @@ decisions:
   - Propagate mutation and commit OperationalError as unknown outcomes; only pre-mutation registry failures become deterministic denials.
   - Bind effective_at and reason_code to the strict command's canonical revocation_payload_hash.
   - Prove both shared-first and revoke-first serialization orders, concurrent same-key replay, different-hash conflict, and commit-success/ACK-loss reconciliation in real PostgreSQL.
+  - Merge current master before final verification so checks and reviews bind to the actual integration candidate.
 known_limitations:
   - KL-016 intentionally uses a task-local minimal PostgreSQL fixture and adds no migration; concrete production DDL remains owned by its downstream schema task.
   - Gate tail-latency and writer-priority load testing remain outside this task's functional concurrency contract.
