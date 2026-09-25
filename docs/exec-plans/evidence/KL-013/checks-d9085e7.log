@@ -1,0 +1,51 @@
+task_identity: harness-backlog-v0.2/KL-013
+tested_commit: d9085e713caa5cdffcfac65898a59031379a5653
+database_namespace: kl_a365_8ca5f7134a29 / kl_a365_8ca5f7134a29_test
+
+$ uv run alembic heads
+76fd67f76bd4 (head)
+ORACLE PASS: exactly one Alembic head revision is present.
+
+$ uv run pytest -q tests/db/test_migrations.py::test_empty_db_upgrade_head
+.                                                                        [100%]
+1 passed in 2.41s
+ORACLE PASS: an isolated empty PostgreSQL database upgraded to revision 76fd67f76bd4,
+materialized all baseline relations, and seeded the S51 singleton.
+
+$ uv run pytest -q tests/db/test_migrations.py::test_logical_inventory_complete
+.                                                                        [100%]
+1 passed in 2.36s
+ORACLE PASS: S01-S51 are each materialized exactly once, S49/S50 have a true global
+namespace, all four closed S14 typed children exist, and S47 has same-subject target-typed
+edges to S14 and S20.
+
+$ uv run pytest -q tests/db/test_migrations.py::test_fk_order_matches_topology
+.                                                                        [100%]
+1 passed in 2.05s
+ORACLE PASS: every KL-010 base dependency is created after its target, and the migrated
+catalog contains exactly the declared base plus deferred-authority FK inventory.
+
+$ uv run pytest -q tests/db/test_migrations.py::test_immutable_history_materialized
+.                                                                        [100%]
+1 passed in 2.21s
+ORACLE PASS: every immutable logical/typed/edge relation has a mutation-rejection
+trigger; ordinary application SQL cannot directly rewrite S05; the NOLOGIN owner can
+append but has neither UPDATE nor DELETE.
+
+$ uv run pytest -q tests/db/test_migrations.py::test_database_rebuild_is_deterministic
+.                                                                        [100%]
+1 passed in 3.84s
+ORACLE PASS: two isolated empty-database upgrades produced the same catalog signature
+over columns, constraints, and non-internal triggers.
+
+$ uv run pytest -q tests/db/test_migrations.py tests/db/test_immutability.py tests/db/test_lifecycle.py
+..................                                                       [100%]
+18 passed in 25.75s
+ORACLE PASS: the real-PostgreSQL suite additionally rejects duplicate frozen natural
+identities and incomplete S42 authority, reconciles adversarial role attributes and
+memberships, proves the idempotent SECURITY DEFINER boundary, serializes S16 insertion
+against sealing, rejects READY-member reparenting, and completes downgrade/re-upgrade.
+
+$ uv run kl check-harness
+HARNESS_CHECK_PASS tasks=68 active=66
+ORACLE PASS: harness validation passed with the remediated SHA-bound result contract.
