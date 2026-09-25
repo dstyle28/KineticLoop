@@ -1,0 +1,62 @@
+task_identity: harness-backlog-v0.2/KL-012
+display_task_id: KL-012
+task_definition_version: v0.2
+base_commit: bac21cf6a920859c74e3906383626557b379e758
+tested_commit: d46fc3f57af3fbd55cdfc306c1e46afa8cfb3f38
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Added a complete deny-by-default S01-S51 permission matrix, stable per-relation
+  command-owner roles, generated PostgreSQL grants, immutable-history triggers,
+  guarded owned transitions, and a real isolated-PostgreSQL fixture. Ordinary
+  application SQL is read-only, immutable command owners are append-only, no
+  runtime role receives DELETE, and build/mutable UPDATE remains owner-scoped and
+  subject to lifecycle guards.
+commands_run:
+  - check_id: permission_matrix_enforced
+    command: uv run pytest -q tests/unit/persistence/test_immutability.py::test_permission_matrix_enforced
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-d46fc3f.log
+  - check_id: update_delete_rejected
+    command: uv run pytest -q tests/db/test_immutability.py::test_update_delete_rejected
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-d46fc3f.log
+  - check_id: owned_transition_only
+    command: uv run pytest -q tests/db/test_immutability.py::test_owned_transition_only
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-d46fc3f.log
+  - check_id: direct_sql_bypass_rejected
+    command: uv run pytest -q tests/db/test_immutability.py::test_direct_sql_bypass_rejected
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-d46fc3f.log
+  - check_id: immutable_history_db_regressions_pass
+    command: uv run pytest -q tests/db/test_immutability.py tests/db/test_lifecycle.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-d46fc3f.log
+  - check_id: harness_validation_passes
+    command: uv run kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-d46fc3f.log
+requirements_covered: []
+files_changed:
+  - docs/contracts/immutable_history_permissions.md
+  - src/kineticloop/persistence/__init__.py
+  - src/kineticloop/persistence/immutability.py
+  - tests/unit/persistence/test_immutability.py
+  - tests/db/test_immutability.py
+  - tests/fixtures/db/immutable_history/fixture.sql
+  - docs/exec-plans/evidence/KL-012/checks-d46fc3f.log
+  - docs/exec-plans/completed/KL-012_RESULT.yaml
+decisions:
+  - Ordinary application and audit roles are read-only; each frozen relation has one stable command-owner role.
+  - I-class command owners receive append-only INSERT, while M/B/B-to-I owners receive guarded UPDATE; no runtime cell receives DELETE.
+  - S15 and S16 remain explicitly build-to-immutable so downstream DDL must close their write gates at READY or parent READY/SEALED.
+  - Privileged migration ownership and privacy erasure remain separate reviewed capabilities and are never runtime convenience bypasses.
+known_limitations:
+  - KL-013 owns full baseline PostgreSQL DDL and installation of these grants and lifecycle triggers on every physical table and typed child relation.
+  - This task proves permission and transition enforcement on a minimal real-PostgreSQL fixture; it does not claim product requirement PASS.
+follow_up_tasks:
+  - KL-013 must materialize the matrix across the complete physical schema without weakening unique-writer or immutable-history guards.
+spec_change_request: null

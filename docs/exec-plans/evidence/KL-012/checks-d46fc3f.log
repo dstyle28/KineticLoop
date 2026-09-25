@@ -1,0 +1,66 @@
+KL-012 required check evidence
+tested_commit=d46fc3f57af3fbd55cdfc306c1e46afa8cfb3f38
+base_commit=bac21cf6a920859c74e3906383626557b379e758
+compose_project=kl_3334_ecce81ddcb00
+database=kl_3334_ecce81ddcb00_test
+
+check_id=permission_matrix_enforced
+command=uv run pytest -q tests/unit/persistence/test_immutability.py::test_permission_matrix_enforced
+result=PASS
+oracle=The named test passed for all 51 relations and every application/auditor/command-owner permission cell.
+output:
+.                                                                        [100%]
+1 passed in 0.01s
+
+check_id=update_delete_rejected
+command=uv run pytest -q tests/db/test_immutability.py::test_update_delete_rejected
+result=PASS
+oracle=The named PostgreSQL test passed; immutable rows rejected UPDATE and DELETE through both grants and the trigger defense.
+output:
+.                                                                        [100%]
+1 passed in 0.94s
+
+check_id=owned_transition_only
+command=uv run pytest -q tests/db/test_immutability.py::test_owned_transition_only
+result=PASS
+oracle=The named PostgreSQL test passed; the application role was denied and only the command owner completed the allowed OPEN-to-SEALED transition.
+output:
+.                                                                        [100%]
+1 passed in 0.88s
+
+check_id=direct_sql_bypass_rejected
+command=uv run pytest -q tests/db/test_immutability.py::test_direct_sql_bypass_rejected
+result=PASS
+oracle=The named PostgreSQL test passed; direct INSERT and trigger-disable attempts by the application role were rejected.
+output:
+.                                                                        [100%]
+1 passed in 0.68s
+
+check_id=immutable_history_db_regressions_pass
+command=uv run pytest -q tests/db/test_immutability.py tests/db/test_lifecycle.py
+result=PASS
+oracle=The command exited 0 against the isolated PostgreSQL namespace.
+output:
+.........                                                                [100%]
+9 passed in 2.31s
+
+check_id=harness_validation_passes
+command=uv run kl check-harness
+result=PASS
+oracle=The command exited 0 and printed HARNESS_CHECK_PASS.
+output:
+HARNESS_CHECK_PASS tasks=68 active=66
+
+additional_preflight=PASS
+commands:
+- uv run kl lint
+- uv run kl typecheck
+- uv run kl test-unit
+- uv run pytest -q tests/db
+- uv run kl test-harness
+output_summary:
+- lint: All checks passed
+- typecheck: Success, no issues found in 60 source files
+- unit: 143 passed
+- database: 62 passed
+- harness: 127 passed
