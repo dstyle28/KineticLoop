@@ -1,0 +1,85 @@
+change_identity: harness-governance-v0.1/HG-018
+display_change_id: HG-018
+base_commit: 033cc3361d77a5d9853c940a7d50cb3abeef9743
+tested_commit: 5aa9679268030d159f6472d2efacad9a7ae0dfc9
+change_status: PASS
+summary: >-
+  Refine only KL-013 so its Alembic baseline owns the minimal production
+  SafetyRegistry repository adaptation and must prove the real KL-016 shared-gate
+  and RevokeArtifact paths against an empty database upgraded to the frozen migrated
+  S01/S02/S03/S04/S49/S50/S51 schema, including seeded global S51 behavior and the
+  immutable, idempotent, capability-bound S50 record.
+packets_refined:
+  - KL-013
+files_changed:
+  - CURRENT_DOCUMENT_INDEX.json
+  - HARNESS_DOCUMENT_MANIFEST.json
+  - KineticLoop_Harness_Backlog_v0.2.json
+  - KineticLoop_Harness_Traceability_v0.3.json
+  - docs/exec-plans/active/KL-013.md
+  - docs/exec-plans/evidence/HG-018/checks.log
+  - docs/exec-plans/governance/HG-018.yaml
+checks_run:
+  - check_id: governance_schema_valid
+    command: Validate HG-018.yaml against HARNESS_CHANGE.schema.json.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: kl013_projection_valid
+    command: Validate exact KL-013 backlog, traceability, and packet projection equality.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: safety_registry_migration_contract_exact
+    command: >-
+      Verify KL-013 owns the production SafetyRegistry repository path and its exact
+      empty-upgrade production integration command/oracle.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: harness_structure_valid
+    command: PYTHONPATH="$PWD/src" .venv/bin/kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: harness_validator_tests_pass
+    command: PYTHONPATH="$PWD/src" .venv/bin/pytest -q tests/harness/test_validator.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: lint_passes
+    command: PYTHONPATH="$PWD/src" .venv/bin/ruff check .
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: typecheck_passes
+    command: >-
+      MYPY_CACHE_DIR=/private/tmp/hg-018-mypy PYTHONPATH="$PWD/src"
+      .venv/bin/mypy src tools tests
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: full_suite_passes
+    command: PYTHONPATH="$PWD/src" .venv/bin/pytest -q
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: governance_scope_exact
+    command: Verify every protected-base-to-tested path matches the HG-018 governance allowlist.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: diff_clean
+    command: >-
+      git diff --check 033cc3361d77a5d9853c940a7d50cb3abeef9743
+      5aa9679268030d159f6472d2efacad9a7ae0dfc9
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: frozen_baseline_unchanged
+    command: >-
+      git diff --exit-code 033cc3361d77a5d9853c940a7d50cb3abeef9743
+      5aa9679268030d159f6472d2efacad9a7ae0dfc9 -- FROZEN_BASELINE.json
+      04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
+      05_KineticLoop_Protocol_v1.2_FROZEN.md
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+  - >-
+    KL-013 remains NOT_STARTED; this governance change makes the future integration
+    implementation and oracle enforceable but does not claim that task check has run.
+  - >-
+    HG-018 requires fresh GENERAL, PROTOCOL, and DB_CONCURRENCY reviews bound to the
+    governance head before merge; no review artifact is part of this requested branch.
