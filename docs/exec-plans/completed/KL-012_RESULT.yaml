@@ -2,43 +2,43 @@ task_identity: harness-backlog-v0.2/KL-012
 display_task_id: KL-012
 task_definition_version: v0.2
 base_commit: bac21cf6a920859c74e3906383626557b379e758
-tested_commit: d46fc3f57af3fbd55cdfc306c1e46afa8cfb3f38
+tested_commit: a8ee2f815250a17aa1668f5e09f4c69a6a5fa16c
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
 integration_status: UNMERGED
 summary: >-
-  Added a complete deny-by-default S01-S51 permission matrix, stable per-relation
-  command-owner roles, generated PostgreSQL grants, immutable-history triggers,
-  guarded owned transitions, and a real isolated-PostgreSQL fixture. Ordinary
-  application SQL is read-only, immutable command owners are append-only, no
-  runtime role receives DELETE, and build/mutable UPDATE remains owner-scoped and
-  subject to lifecycle guards.
+  Added a complete deny-by-default S01-S51 permission matrix with command-scoped
+  non-login writer roles, operation-specific split ownership, full cross-role ACL
+  reconciliation, machine-readable transaction/lifecycle guards, immutable-history
+  triggers, and a real isolated-PostgreSQL fixture. Ordinary application SQL is
+  read-only, immutable writers are append-only, no runtime role receives DELETE,
+  and build/mutable UPDATE remains owner-scoped and guard-bound.
 commands_run:
   - check_id: permission_matrix_enforced
     command: uv run pytest -q tests/unit/persistence/test_immutability.py::test_permission_matrix_enforced
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-012/checks-d46fc3f.log
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-a8ee2f8.log
   - check_id: update_delete_rejected
     command: uv run pytest -q tests/db/test_immutability.py::test_update_delete_rejected
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-012/checks-d46fc3f.log
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-a8ee2f8.log
   - check_id: owned_transition_only
     command: uv run pytest -q tests/db/test_immutability.py::test_owned_transition_only
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-012/checks-d46fc3f.log
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-a8ee2f8.log
   - check_id: direct_sql_bypass_rejected
     command: uv run pytest -q tests/db/test_immutability.py::test_direct_sql_bypass_rejected
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-012/checks-d46fc3f.log
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-a8ee2f8.log
   - check_id: immutable_history_db_regressions_pass
     command: uv run pytest -q tests/db/test_immutability.py tests/db/test_lifecycle.py
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-012/checks-d46fc3f.log
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-a8ee2f8.log
   - check_id: harness_validation_passes
     command: uv run kl check-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-012/checks-d46fc3f.log
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-a8ee2f8.log
 requirements_covered: []
 files_changed:
   - docs/contracts/immutable_history_permissions.md
@@ -48,9 +48,13 @@ files_changed:
   - tests/db/test_immutability.py
   - tests/fixtures/db/immutable_history/fixture.sql
   - docs/exec-plans/evidence/KL-012/checks-d46fc3f.log
+  - docs/exec-plans/evidence/KL-012/checks-a8ee2f8.log
   - docs/exec-plans/completed/KL-012_RESULT.yaml
 decisions:
-  - Ordinary application and audit roles are read-only; each frozen relation has one stable command-owner role.
+  - Ordinary application and audit roles are read-only; non-login command principals own narrow SECURITY DEFINER entrypoints rather than runtime DML connections.
+  - Shared atomic writers use one role across their frozen relation set, while split owners such as S04 origin INSERT and dispatcher UPDATE receive operation-specific grants.
+  - ACL reconciliation revokes every concrete runtime/writer role before granting each exact cell, preventing stale cross-owner privileges.
+  - Every relation declares machine-readable entrypoint requirements, with relation-specific transaction, lock, lifecycle, fence, registry, outbox, and evaluation guards where required.
   - I-class command owners receive append-only INSERT, while M/B/B-to-I owners receive guarded UPDATE; no runtime cell receives DELETE.
   - S15 and S16 remain explicitly build-to-immutable so downstream DDL must close their write gates at READY or parent READY/SEALED.
   - Privileged migration ownership and privacy erasure remain separate reviewed capabilities and are never runtime convenience bypasses.
