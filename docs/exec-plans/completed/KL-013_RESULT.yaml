@@ -1,0 +1,77 @@
+task_identity: harness-backlog-v0.2/KL-013
+display_task_id: KL-013
+task_definition_version: v0.2
+base_commit: 033cc3361d77a5d9853c940a7d50cb3abeef9743
+tested_commit: f2416f1e269447439cfc2861c7446c24bd61b6f4
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Added one static Alembic baseline revision for the complete frozen S01-S51 logical
+  inventory, including dependency-first base creation, deferred authority pointers,
+  closed typed S14 children, target-typed S47 replay edges, the S51 singleton,
+  deny-by-default runtime grants, immutable-history triggers, and factset lifecycle
+  write gates. Empty isolated PostgreSQL databases rebuild deterministically and the
+  ordinary application role cannot directly rewrite immutable semantic history.
+commands_run:
+  - check_id: single_migration_head
+    command: uv run alembic heads
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-f2416f1.log
+  - check_id: empty_db_upgrade_head
+    command: uv run pytest -q tests/db/test_migrations.py::test_empty_db_upgrade_head
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-f2416f1.log
+  - check_id: logical_inventory_complete
+    command: uv run pytest -q tests/db/test_migrations.py::test_logical_inventory_complete
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-f2416f1.log
+  - check_id: fk_order_matches_topology
+    command: uv run pytest -q tests/db/test_migrations.py::test_fk_order_matches_topology
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-f2416f1.log
+  - check_id: immutable_history_materialized
+    command: uv run pytest -q tests/db/test_migrations.py::test_immutable_history_materialized
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-f2416f1.log
+  - check_id: database_rebuild_is_deterministic
+    command: uv run pytest -q tests/db/test_migrations.py::test_database_rebuild_is_deterministic
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-f2416f1.log
+  - check_id: migration_db_regressions_pass
+    command: uv run pytest -q tests/db/test_migrations.py tests/db/test_immutability.py tests/db/test_lifecycle.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-f2416f1.log
+  - check_id: harness_validation_passes
+    command: uv run kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-f2416f1.log
+requirements_covered: []
+files_changed:
+  - pyproject.toml
+  - uv.lock
+  - alembic.ini
+  - migrations/README.md
+  - migrations/env.py
+  - migrations/script.py.mako
+  - migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py
+  - src/kineticloop/persistence/metadata.py
+  - tests/db/test_migrations.py
+  - docs/exec-plans/evidence/KL-013/checks-f2416f1.log
+  - docs/exec-plans/completed/KL-013_RESULT.yaml
+decisions:
+  - Keep the frozen logical relation inventory one-to-one with physical tables in the kineticloop schema and identify every table with its S01-S51 comment.
+  - Materialize KL-010 base edges as same-subject composite foreign keys and add authority pointers only after all base relations exist.
+  - Keep the KL-011 child inventory closed to four typed relations with explicit state/value/unit/provenance checks and no prescription reference.
+  - Reconcile every migrated table against PUBLIC and every runtime role before granting the exact KL-012 cells; application and audit remain SELECT-only and writer roles remain NOLOGIN/NOINHERIT.
+  - Install defense-in-depth mutation triggers on all immutable logical tables, typed fact children, and replay edges, with separate build-to-immutable gates for S15 and S16.
+  - Keep SafetyRegistry as an independent seeded singleton and add no command routine that could bypass the frozen S51/S01 ordering contract.
+  - Freeze table creation in a static initial revision; current SQLAlchemy metadata remains the reviewed schema declaration for later migrations.
+known_limitations:
+  - Command-specific SECURITY DEFINER routines and repository transaction implementations remain owned by their downstream command tasks; this baseline exposes no application write routine.
+  - PostgreSQL roles are cluster-scoped and are created idempotently; downgrade removes task-owned schema objects but intentionally does not drop shared role identities that another isolated database may use.
+  - This task proves schema inventory, rebuild, topology, and history protection only and claims no product requirement PASS.
+follow_up_tasks:
+  - Run fresh SHA-bound GENERAL, PROTOCOL, and DB_CONCURRENCY independent reviews on the reviewable head.
+spec_change_request: null
