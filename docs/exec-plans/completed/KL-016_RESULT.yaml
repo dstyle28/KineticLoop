@@ -1,0 +1,82 @@
+task_identity: harness-backlog-v0.2/KL-016
+display_task_id: KL-016
+task_definition_version: v0.2
+base_commit: 6bb5b07b155cbd66a005788e0b66978e8711a6e4
+tested_commit: af49f4bdd83853bf01f649d43797afef4c2e9f66
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Implemented the frozen SafetyRegistry shared/exclusive gate as a PostgreSQL lock API:
+  T3/T6/T7 acquire shared S51 before S01 and re-read bounded current artifact,
+  transitive-dependency, validity, revocation, and command-appropriate authorization
+  eligibility before mutation. T2-GLOBAL RevokeArtifact acquires exclusive S51 without
+  S01 and atomically appends revocation, advances registry revision, and writes its
+  management receipt, audit event, and outbox. Real PostgreSQL interleavings prove
+  ordering, fail-closed behavior, commit linearization, idempotency, and STOP independence.
+commands_run:
+  - check_id: shared_gate_command_matrix_fails_closed
+    command: uv run pytest -q tests/db/test_safety_registry.py::test_shared_gate_command_matrix_fails_closed
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-af49f4b.log
+  - check_id: reauthorize_shared_gate_precedes_s01_and_fails_closed
+    command: uv run pytest -q tests/db/test_safety_registry.py::test_reauthorize_shared_gate_precedes_s01_and_fails_closed
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-af49f4b.log
+  - check_id: continue_session_rechecks_shared_gate_and_fails_closed
+    command: uv run pytest -q tests/db/test_safety_registry.py::test_continue_session_rechecks_shared_gate_and_fails_closed
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-af49f4b.log
+  - check_id: exclusive_global_gate_serializes
+    command: uv run pytest -q tests/db/test_safety_registry.py::test_exclusive_global_gate_serializes
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-af49f4b.log
+  - check_id: revoke_artifact_atomic_linearization_and_idempotency
+    command: uv run pytest -q tests/db/test_safety_registry.py::test_revoke_artifact_atomic_linearization_and_idempotency
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-af49f4b.log
+  - check_id: registry_unavailable_or_timeout_denies
+    command: uv run pytest -q tests/unit/contracts/test_safety_registry.py::test_registry_unavailable_or_timeout_denies
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-af49f4b.log
+  - check_id: global_revoke_never_locks_s01
+    command: uv run pytest -q tests/db/test_safety_registry.py::test_global_revoke_never_locks_s01
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-af49f4b.log
+  - check_id: stop_has_no_registry_dependency
+    command: uv run pytest -q tests/unit/contracts/test_safety_registry.py::test_stop_has_no_registry_dependency
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-af49f4b.log
+  - check_id: safety_registry_db_regressions_pass
+    command: uv run pytest -q tests/db/test_safety_registry.py tests/db/test_lifecycle.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-af49f4b.log
+  - check_id: harness_validation_passes
+    command: uv run kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-af49f4b.log
+requirements_covered: []
+files_changed:
+  - docs/contracts/safety_registry.md
+  - pyproject.toml
+  - uv.lock
+  - src/kineticloop/contracts/safety_registry.py
+  - src/kineticloop/persistence/safety_registry.py
+  - tests/unit/contracts/test_safety_registry.py
+  - tests/db/test_safety_registry.py
+  - docs/exec-plans/evidence/KL-016/checks-af49f4b.log
+  - docs/exec-plans/completed/KL-016_RESULT.yaml
+decisions:
+  - Use PostgreSQL FOR SHARE / FOR UPDATE on the singleton S51 system row as the logical shared/exclusive gate.
+  - Keep the authoritative transaction at READ COMMITTED and perform every eligibility read in statements after gate acquisition.
+  - Represent stale registry authority as current revision below a caller-required minimum; unrelated higher revisions do not invalidate authorization.
+  - Require callers to supply the complete bounded immutable artifact closure and reject missing registered dependencies.
+  - Treat successful T2-GLOBAL commit as authority; effective_at remains audit metadata only.
+  - Keep STOP on a separate S01-first entrypoint with no S51 read or lock.
+known_limitations:
+  - KL-016 intentionally uses a task-local minimal PostgreSQL fixture and adds no migration; concrete production DDL remains owned by its downstream schema task.
+  - Gate tail-latency and writer-priority load testing remain outside this task's functional concurrency contract.
+follow_up_tasks:
+  - Run fresh SHA-bound GENERAL, PROTOCOL, and DB_CONCURRENCY independent reviews.
+spec_change_request: null
