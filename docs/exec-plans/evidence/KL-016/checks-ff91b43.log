@@ -1,0 +1,59 @@
+task_identity: harness-backlog-v0.2/KL-016
+tested_commit: ff91b4389dcb6fc37063957030eb83c2272c68e9
+database_namespace: kl_tmp_5b7de83f2835 / kl_tmp_5b7de83f2835_test
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_shared_gate_command_matrix_fails_closed
+.                                                                        [100%]
+1 passed in 6.74s
+ORACLE PASS: Each gated command proved shared S51 before S01, post-wait database time,
+current registration and complete dependency closure, defined/current validity, current
+revocation, applicable T6/T7 eligibility, successful guarded mutation, and zero mutation for
+revoke, expiry, future validity, unknown artifact, incomplete closure, undefined validity,
+stale revision, timeout, unavailable registry, and authorization denial. START additionally
+proved artifact expiry across both S51 and S01 waits, and commit failure remained unknown.
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_reauthorize_shared_gate_precedes_s01_and_fails_closed
+.                                                                        [100%]
+1 passed in 0.89s
+ORACLE PASS: Reauthorize proved S51-before-S01 and fail-closed revoked, issuance-ineligible,
+expired, stale, timeout, and unavailable paths before mutation.
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_continue_session_rechecks_shared_gate_and_fails_closed
+.                                                                        [100%]
+1 passed in 2.00s
+ORACLE PASS: ContinueSession rechecked S51, S01, current authorization and database time;
+authorization expiring while blocked on S01 denied before mutation, as did revoked, expired,
+stale, timeout, and unavailable states.
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_exclusive_global_gate_serializes
+.                                                                        [100%]
+1 passed in 0.70s
+ORACLE PASS: Exclusive revoke waited for a real gated shared command through its protected
+mutation commit, and shared admission waited for exclusive revoke, proving both commit orders.
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_revoke_artifact_atomic_linearization_and_idempotency
+.                                                                        [100%]
+1 passed in 0.85s
+ORACLE PASS: Failure injection rolled back S50/S51/receipt/audit/outbox; future effective_at
+denied immediately after commit without rewriting history; side metadata was hash-bound;
+sequential replay, concurrent same-key replay, concurrent different-hash conflict, and
+commit-success/lost-ACK retry each produced exactly one atomic result.
+
+$ uv run pytest -q tests/unit/contracts/test_safety_registry.py::test_registry_unavailable_or_timeout_denies
+.                                                                        [100%]
+1 passed in 0.08s
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_global_revoke_never_locks_s01
+.                                                                        [100%]
+1 passed in 0.63s
+
+$ uv run pytest -q tests/unit/contracts/test_safety_registry.py::test_stop_has_no_registry_dependency
+.                                                                        [100%]
+1 passed in 0.07s
+
+$ uv run pytest -q tests/db/test_safety_registry.py tests/db/test_lifecycle.py
+..............                                                           [100%]
+14 passed in 6.69s
+
+$ uv run kl check-harness
+HARNESS_CHECK_PASS tasks=68 active=66
