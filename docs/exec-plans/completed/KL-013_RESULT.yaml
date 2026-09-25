@@ -1,0 +1,75 @@
+task_identity: harness-backlog-v0.2/KL-013
+display_task_id: KL-013
+task_definition_version: v0.2
+base_commit: 033cc3361d77a5d9853c940a7d50cb3abeef9743
+tested_commit: 051eb7b877650c62e5b44a33acdb242b75dd4b4c
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Added the single-head Alembic baseline for the complete frozen S01-S51 logical
+  inventory, including same-subject dependency foreign keys, deferred authority
+  pointers, closed typed S14 child relations, typed S47 source-reference edges,
+  command-owner ACLs, immutable-history triggers, and S15/S16 lifecycle write gates.
+  Empty isolated PostgreSQL databases rebuild deterministically, and the ordinary
+  application role cannot rewrite immutable semantic history.
+commands_run:
+  - check_id: single_migration_head
+    command: uv run alembic heads
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-051eb7b.log
+  - check_id: empty_db_upgrade_head
+    command: uv run pytest -q tests/db/test_migrations.py::test_empty_db_upgrade_head
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-051eb7b.log
+  - check_id: logical_inventory_complete
+    command: uv run pytest -q tests/db/test_migrations.py::test_logical_inventory_complete
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-051eb7b.log
+  - check_id: fk_order_matches_topology
+    command: uv run pytest -q tests/db/test_migrations.py::test_fk_order_matches_topology
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-051eb7b.log
+  - check_id: immutable_history_materialized
+    command: uv run pytest -q tests/db/test_migrations.py::test_immutable_history_materialized
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-051eb7b.log
+  - check_id: database_rebuild_is_deterministic
+    command: uv run pytest -q tests/db/test_migrations.py::test_database_rebuild_is_deterministic
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-051eb7b.log
+  - check_id: migration_db_regressions_pass
+    command: uv run pytest -q tests/db/test_migrations.py tests/db/test_immutability.py tests/db/test_lifecycle.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-051eb7b.log
+  - check_id: harness_validation_passes
+    command: uv run kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-051eb7b.log
+requirements_covered: []
+files_changed:
+  - alembic.ini
+  - migrations/env.py
+  - migrations/script.py.mako
+  - migrations/versions/20260924_0001_baseline.py
+  - pyproject.toml
+  - uv.lock
+  - src/kineticloop/persistence/metadata.py
+  - tests/db/test_migrations.py
+  - docs/exec-plans/evidence/KL-013/checks-051eb7b.log
+  - docs/exec-plans/completed/KL-013_RESULT.yaml
+decisions:
+  - Use the KL-010 physical topology as the sole base-table creation and dependency order.
+  - Materialize every user-scoped reference as a composite subject-and-identity foreign key so cross-subject references fail in PostgreSQL.
+  - Materialize the KL-011 four-relation typed fact-child plan with closed value states, zero-versus-missing checks, units, and mandatory S09/S10/S13 field provenance.
+  - Bind each typed fact child to the parent revision's stable fact identity as part of the same-subject composite foreign key.
+  - Materialize S47 polymorphic source revisions as the two required target-typed S14 and S20 child-edge tables rather than an open reference payload.
+  - Reconcile KL-012 runtime ACLs deny-by-default and add defense-in-depth immutable triggers to every immutable base and child table.
+  - Preserve cluster-scoped NOLOGIN roles across downgrade because isolated worktree databases share one PostgreSQL cluster and another database may still use those roles.
+known_limitations:
+  - This baseline installs storage constraints and command-owner privileges; downstream tasks still own concrete SECURITY DEFINER command routines and transaction implementations beyond the KL-012 materialized guards.
+  - No product requirement status is claimed; requirements_covered remains empty as declared by the packet.
+follow_up_tasks:
+  - Run fresh SHA-bound GENERAL, PROTOCOL, and DB_CONCURRENCY independent reviews.
+spec_change_request: null

@@ -1,0 +1,30 @@
+
+$ uv run alembic heads
+20260924_0001 (head)
+
+$ uv run pytest -q tests/db/test_migrations.py::test_empty_db_upgrade_head
+.                                                                        [100%]
+1 passed in 1.57s
+
+$ uv run pytest -q tests/db/test_migrations.py::test_logical_inventory_complete
+.                                                                        [100%]
+1 passed in 1.51s
+
+$ uv run pytest -q tests/db/test_migrations.py::test_fk_order_matches_topology
+.                                                                        [100%]
+1 passed in 1.49s
+
+$ uv run pytest -q tests/db/test_migrations.py::test_immutable_history_materialized
+.                                                                        [100%]
+1 passed in 1.69s
+
+$ uv run pytest -q tests/db/test_migrations.py::test_database_rebuild_is_deterministic
+.                                                                        [100%]
+1 passed in 2.88s
+
+$ uv run pytest -q tests/db/test_migrations.py tests/db/test_immutability.py tests/db/test_lifecycle.py
+..............                                                           [100%]
+14 passed in 7.09s
+
+$ uv run kl check-harness
+HARNESS_CHECK_PASS tasks=68 active=66
