@@ -25,11 +25,12 @@ name and cannot be changed by a caller.
 | T8 | `SettleCall`, `MarkUnknown`, `ReapIntent`; `CancelIntent` may also execute at T8 |
 
 Every subject command carries exactly one canonical `subject_id`, no explicit
-global scope, a trusted authenticated actor with a role-derived capability, a
-client idempotency key, a request hash, and command-specific immutable basis
-fields. Registry commands carry no fabricated subject: their scope is exactly
-`global:safety-registry`, and their actor must have the authenticated admin
-capability.
+global scope, the merged three-field role-identity wire value, a client
+idempotency key, a request hash, and command-specific immutable basis fields.
+Capabilities and trust assertions are never accepted on the command wire; the
+coarse capability is derived from the service-bound role. Registry commands
+carry no fabricated subject: their scope is exactly
+`global:safety-registry`, and their actor must derive the admin capability.
 
 T2 input decisions, factset build/seal, and T3 publication bind the input
 frontier as an explicit `*_input_frontier_hash` SHA-256 value. The frontier is
@@ -41,6 +42,15 @@ T2-GLOBAL, and projection/tool/evidence preparation cannot be serialized as the
 corresponding atomic T transaction. `IssueAuthorization`,
 `InvalidateAuthorization`, `RecordSnapshot`, `AdvanceAttempt`, and
 `CancelUndispatched` remain internal owner operations and have no public model.
+
+Worker-produced T5/T6 preparation writes bind intent, attempt, current request
+revision, lease owner, fence, lease expiry, and expected RUNNING status. Their
+domain payloads also carry the immutable S33–S37 result identities and hashes:
+tool scope/coverage, typed proposal dependencies, Fitness-to-Demand basis,
+resolver coverage/consistency, and the validation certificate's proposal,
+demand, resolver, policy, epoch, and execution-head bindings. Owners still read
+authoritative lease time and state under the frozen locks; these fields do not
+replace those guards.
 
 Production subject commands require the production subject scope and actor.
 `TEST_ONLY` is accepted only by the real T6 and T7 command models, requires a
@@ -58,3 +68,5 @@ public command plus `CommandRejected`. Historical T6/T7 success includes a
 separate current-eligibility value; it is not a new authorization. A replayed
 `PermitDispatchSuccess` can never grant another provider send. T1 receipt
 success explicitly does not claim that a protective T2 action was applied.
+Lease acquisition and renewal results return the authoritative owner, newly
+committed fence token, and bounded lease expiry required by subsequent writes.

@@ -21,7 +21,7 @@ from pydantic import (
     model_validator,
 )
 
-from kineticloop.identity import ActorRole, Capability
+from kineticloop.identity import ActorRole, Capability, RoleIdentity
 from kineticloop.primitives import canonical_json
 
 CanonicalId = Annotated[
@@ -56,28 +56,30 @@ class TransactionBoundary(StrEnum):
 
 
 class TrustedActor(BaseModel):
-    """A service-authenticated identity with a capability derived from its role."""
+    """The merged role-identity wire shape, with no caller-asserted authority."""
 
-    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+    model_config = ConfigDict(
+        extra="forbid", frozen=True, strict=True, serialize_by_alias=True
+    )
 
+    wire_schema: Literal["kineticloop-role-identity-v1"] = Field(alias="schema")
     identity_id: CanonicalId
     role: ActorRole
-    capability: Capability
-    authenticated_by: CanonicalId
-    authentication_event_id: CanonicalId
-    trusted: Literal[True]
 
-    @model_validator(mode="after")
-    def capability_must_be_role_derived(self) -> TrustedActor:
-        expected = {
+    @property
+    def capability(self) -> Capability:
+        """Derive the coarse capability from the merged immutable role matrix."""
+
+        return {
             ActorRole.SUBJECT: Capability.ACT_AS_PRODUCTION_SUBJECT,
             ActorRole.TEST: Capability.RUN_TEST_SIMULATION,
             ActorRole.ADMIN: Capability.ADMINISTER_PRODUCTION,
             ActorRole.EVALUATION: Capability.RUN_ISOLATED_EVALUATION,
         }[self.role]
-        if self.capability is not expected:
-            raise ValueError("actor capability must be derived from the authenticated role")
-        return self
+
+    @property
+    def role_identity(self) -> RoleIdentity:
+        return RoleIdentity(identity_id=self.identity_id, role=self.role)
 
 
 class ProductionScope(BaseModel):
@@ -410,51 +412,133 @@ class PermitDispatch(SubjectCommand):
     expected_fence: NonNegativeInt
 
 
-class RecordToolResult(SubjectCommand):
+class WorkerPreparationCommand(SubjectCommand):
+    """Stale-worker basis required for every shared workflow preparation write."""
+
+    intent_id: CanonicalId
+    attempt_id: CanonicalId
+    expected_request_revision: PositiveInt
+    expected_owner_id: CanonicalId
+    expected_fence: NonNegativeInt
+    expected_lease_expires_at: NonEmpty
+    expected_intent_status: Literal["RUNNING"]
+
+
+class RecordToolResult(WorkerPreparationCommand):
     command_kind: Literal["RecordToolResult"]
     boundary: Literal[TransactionBoundary.T5_PREPARATION]
-    attempt_id: CanonicalId
     operation_slot: NonEmpty
-    artifact_version: NonEmpty
+    tool_result_id: CanonicalId
     snapshot_id: CanonicalId
+    tool_name: NonEmpty
+    tool_version: NonEmpty
+    artifact_version: NonEmpty
+    arguments_hash: Sha256
+    query_scope_window_hash: Sha256
+    input_revision_refs_hash: Sha256
     result_hash: Sha256
+    coverage: Literal["COMPLETE_FOR_POLICY", "PARTIAL", "UNKNOWN"]
+    truncation_status: Literal["NOT_TRUNCATED", "TRUNCATED"]
+    trust_class: NonEmpty
 
 
-class RecordProposal(SubjectCommand):
+class RecordProposal(WorkerPreparationCommand):
     command_kind: Literal["RecordProposal"]
     boundary: Literal[TransactionBoundary.T5_PREPARATION]
-    attempt_id: CanonicalId
     operation_slot: NonEmpty
+    proposal_id: CanonicalId
+    proposal_family_id: CanonicalId
+    proposal_revision: PositiveInt
+    snapshot_id: CanonicalId
+    proposal_kind: Literal["FITNESS", "NUTRITION", "BLUEPRINT"]
     artifact_version: NonEmpty
+    producer_artifact_id: CanonicalId
     proposal_hash: Sha256
+    citations_hash: Sha256
+    parent_proposal_id: CanonicalId | None = None
+    fitness_proposal_id: CanonicalId | None = None
+    fitness_proposal_hash: Sha256 | None = None
+    demand_feature_id: CanonicalId | None = None
+    demand_feature_hash: Sha256 | None = None
+    manifest_id: CanonicalId | None = None
+    policy_id: CanonicalId | None = None
+
+    @model_validator(mode="after")
+    def nutrition_dependencies_are_typed(self) -> RecordProposal:
+        dependencies = (
+            self.fitness_proposal_id,
+            self.fitness_proposal_hash,
+            self.demand_feature_id,
+            self.demand_feature_hash,
+            self.manifest_id,
+            self.policy_id,
+        )
+        if self.proposal_kind == "NUTRITION" and any(value is None for value in dependencies):
+            raise ValueError("NUTRITION proposals require Fitness, Demand, Manifest, and policy")
+        if self.proposal_kind != "NUTRITION" and any(value is not None for value in dependencies):
+            raise ValueError("cross-domain proposal dependencies belong only to NUTRITION")
+        return self
 
 
-class RecordDemandFeatures(SubjectCommand):
+class RecordDemandFeatures(WorkerPreparationCommand):
     command_kind: Literal["RecordDemandFeatures"]
     boundary: Literal[TransactionBoundary.T5_PREPARATION]
-    attempt_id: CanonicalId
     operation_slot: NonEmpty
+    demand_feature_id: CanonicalId
+    fitness_proposal_id: CanonicalId
+    fitness_proposal_hash: Sha256
+    method_version: NonEmpty
     artifact_version: NonEmpty
+    feature_payload_hash: Sha256
     demand_features_hash: Sha256
+    semantic_classes_hash: Sha256
+    estimate_intervals_hash: Sha256
+    window_basis_hash: Sha256
 
 
-class ResolveEvidence(SubjectCommand):
+class ResolveEvidence(WorkerPreparationCommand):
     command_kind: Literal["ResolveEvidence"]
     boundary: Literal[TransactionBoundary.T6_PREPARATION]
+    resolution_id: CanonicalId
     action_id: CanonicalId
+    action_type: NonEmpty
+    action_parameters_hash: Sha256
+    exercise_identity_id: CanonicalId
     manifest_id: CanonicalId
     policy_id: CanonicalId
+    resolver_version: NonEmpty
+    supporting_events_hash: Sha256
+    contradicting_events_hash: Sha256
+    superseded_or_retracted_items_hash: Sha256
+    event_association_status: NonEmpty
+    coverage: Literal["COMPLETE_FOR_POLICY", "PARTIAL", "UNKNOWN"]
+    consistency: Literal["CONSISTENT", "CONFLICTED", "UNRESOLVED"]
+    query_scope_window_hash: Sha256
+    source_watermarks_hash: Sha256
+    truncation_status: Literal["NOT_TRUNCATED", "TRUNCATED"]
     execution_basis_event_id: CanonicalId
     basis_fingerprint: Sha256
+    resolution_expires_at: NonEmpty
 
 
-class RecordValidation(SubjectCommand):
+class RecordValidation(WorkerPreparationCommand):
     command_kind: Literal["RecordValidation"]
     boundary: Literal[TransactionBoundary.T6_PREPARATION]
+    validation_id: CanonicalId
     action_id: CanonicalId
     manifest_id: CanonicalId
-    policy_id: CanonicalId
+    expected_authorization_epoch: NonNegativeInt
+    proposal_hashes: tuple[Sha256, ...]
+    demand_features_hash: Sha256
+    resolver_results_hash: Sha256
+    policy_bundle_id: CanonicalId
     execution_basis_event_id: CanonicalId
+    execution_head_revisions_hash: Sha256
+    validation_status: Literal["PASS", "FAIL", "REVIEW"]
+    validation_codes: tuple[NonEmpty, ...]
+    valid_until: NonEmpty
+    validator_artifact_id: CanonicalId
+    validator_artifact_version: NonEmpty
     validation_basis_fingerprint: Sha256
 
 

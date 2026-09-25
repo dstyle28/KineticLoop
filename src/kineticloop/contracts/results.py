@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from typing import Literal, get_args
 
-from pydantic import BaseModel, ConfigDict, StringConstraints, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 from typing_extensions import Annotated
 
 from kineticloop.contracts.commands import PUBLIC_COMMAND_BY_KIND, CanonicalId, Sha256
@@ -13,6 +13,7 @@ from kineticloop.contracts.errors import ErrorCode
 from kineticloop.primitives import canonical_json
 
 NonEmpty = Annotated[str, StringConstraints(min_length=1)]
+NonNegativeInt = Annotated[int, Field(ge=0)]
 
 
 class StrictResult(BaseModel):
@@ -131,10 +132,16 @@ class CancelIntentSuccess(StrictResult):
 
 class AcquireLeaseSuccess(StrictResult):
     command_kind: Literal["AcquireLease"]
+    owner_id: CanonicalId
+    fence_token: NonNegativeInt
+    lease_expires_at: NonEmpty
 
 
 class RenewLeaseSuccess(StrictResult):
     command_kind: Literal["RenewLease"]
+    owner_id: CanonicalId
+    fence_token: NonNegativeInt
+    lease_expires_at: NonEmpty
 
 
 class ReserveCallSuccess(StrictResult):

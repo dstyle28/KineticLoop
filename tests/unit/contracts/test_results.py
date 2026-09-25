@@ -38,6 +38,12 @@ def result_payload(model: Any) -> dict[str, object]:
             payload[name] = get_args(field.annotation)[0]
         elif field.annotation is bool:
             payload[name] = True
+        elif name.endswith("_id"):
+            payload[name] = ID
+        elif name == "fence_token":
+            payload[name] = 1
+        elif name == "lease_expires_at":
+            payload[name] = "2026-09-24T16:05:00.000000Z"
         else:
             raise AssertionError(f"unhandled result field {name}")
     return payload
@@ -89,3 +95,20 @@ def test_dispatch_replay_never_grants_second_provider_send() -> None:
 
     payload["provider_send_allowed"] = False
     assert PermitDispatchSuccess.model_validate(payload).provider_send_allowed is False
+
+
+@pytest.mark.parametrize("kind", ["AcquireLease", "RenewLease"])
+def test_lease_results_return_fencing_authority(kind: str) -> None:
+    model: Any = PUBLIC_SUCCESS_RESULT_BY_KIND[kind]
+    payload = result_payload(model)
+    result = model.model_validate(payload)
+    assert result.owner_id == ID
+    assert result.fence_token == 1
+    assert result.lease_expires_at
+    assert parse_result(result.to_canonical_json()) == result
+
+    for field_name in ("owner_id", "fence_token", "lease_expires_at"):
+        invalid = payload.copy()
+        invalid.pop(field_name)
+        with pytest.raises(ValidationError):
+            model.model_validate(invalid)
