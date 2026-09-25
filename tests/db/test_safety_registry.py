@@ -488,6 +488,52 @@ def test_shared_gate_command_matrix_fails_closed(db_urls: dict[str, str]) -> Non
             )
 
 
+def test_direct_sql_null_lock_timeout_fails_closed_without_mutation(
+    db_urls: dict[str, str],
+) -> None:
+    with connect(db_urls["application"]) as application:
+        with pytest.raises(
+            psycopg.errors.RaiseException,
+            match="KL_REGISTRY_INVALID_LOCK_TIMEOUT",
+        ):
+            application.execute(
+                "SELECT kineticloop.registry_guard_start_session(%s,%s,0,NULL)",
+                (UUID(SUBJECT_ID), [UUID(ARTIFACT_ID), UUID(DEPENDENCY_ID)]),
+            )
+        application.rollback()
+
+    with connect(db_urls["trusted_admin"]) as trusted:
+        with pytest.raises(
+            psycopg.errors.RaiseException,
+            match="KL_REGISTRY_INVALID_ARGUMENT",
+        ):
+            trusted.execute(
+                "SELECT * FROM kineticloop.registry_revoke_artifact("
+                "%s,%s,%s,%s,%s,%s,%s,%s,NULL)",
+                (
+                    UUID(ARTIFACT_ID),
+                    CONTENT_HASH,
+                    NOW,
+                    "EMERGENCY",
+                    revocation_payload_hash(
+                        effective_at=NOW, reason_code="EMERGENCY"
+                    ),
+                    "null-lock-timeout",
+                    "d" * 64,
+                    UUID(INCIDENT_ID),
+                ),
+            )
+        trusted.rollback()
+
+    assert mutation_count(db_urls["admin"]) == 0
+    assert registry_counts(db_urls["admin"]) == (0, 0, 0, 0)
+    with connect(db_urls["admin"]) as admin:
+        assert admin.execute(
+            "SELECT registry_revision,last_revocation_id "
+            "FROM kineticloop.safety_registry_state WHERE id=1"
+        ).fetchone() == (0, None)
+
+
 def test_migrated_schema_rejects_undefined_artifact_validity(
     db_urls: dict[str, str],
 ) -> None:

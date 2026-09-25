@@ -182,7 +182,7 @@ DECLARE
   active_policy_bundle_id uuid;
   authoritative_now timestamptz;
 BEGIN
-  IF p_lock_timeout_ms <= 0 THEN
+  IF p_lock_timeout_ms IS NULL OR p_lock_timeout_ms <= 0 THEN
     RAISE EXCEPTION 'KL_REGISTRY_INVALID_LOCK_TIMEOUT';
   END IF;
   IF p_artifact_ids IS NULL OR cardinality(p_artifact_ids) = 0
@@ -293,7 +293,7 @@ BEGIN
     RAISE EXCEPTION 'KL_REGISTRY_COMMAND_NOT_AUTHORIZED';
   END IF;
   canonical_reason_code := normalize(p_reason_code, NFC);
-  IF p_lock_timeout_ms <= 0 OR p_effective_at IS NULL
+  IF p_lock_timeout_ms IS NULL OR p_lock_timeout_ms <= 0 OR p_effective_at IS NULL
      OR p_reason_code IS NULL OR btrim(p_reason_code) = ''
      OR p_command_key IS NULL OR btrim(p_command_key) = ''
      OR p_request_hash IS NULL OR p_request_hash !~ '^[0-9a-f]{64}$'
