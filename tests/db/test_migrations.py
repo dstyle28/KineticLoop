@@ -55,7 +55,7 @@ def test_empty_db_upgrade_head(migrated_database: DatabaseLifecycle) -> None:
     assert migrated_database.execute_sql(
         "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace "
         "WHERE n.nspname='kineticloop' AND c.relkind='r';"
-    ) == str(len(LOGICAL_RELATIONS) + len(FACT_CHILD_PLANS) + 2)
+    ) == str(len(LOGICAL_RELATIONS) + len(FACT_CHILD_PLANS) + 4)
     assert migrated_database.execute_sql(
         "SELECT registry_revision FROM kineticloop.safety_registry_state WHERE id=1;"
     ) == "0"
@@ -109,7 +109,13 @@ def test_fk_order_matches_topology(migrated_database: DatabaseLifecycle) -> None
         f"fk_{reference.source.lower()}_{reference.target.lower()}_{reference.field}"
         for reference in DEFERRED_REFERENCES
     }
-    assert actual_names == base_names | deferred_names
+    supplemental_names = {
+        "fk_s49_dependency_artifact",
+        "fk_s49_dependency_target",
+        "fk_s42_closure_authorization",
+        "fk_s42_closure_artifact",
+    }
+    assert actual_names == base_names | deferred_names | supplemental_names
 
     for reference in DEFERRED_REFERENCES:
         assert reference.target in RELATION_BY_ID
@@ -123,6 +129,8 @@ def test_immutable_history_materialized(migrated_database: DatabaseLifecycle) ->
     } | {plan.table_name for plan in FACT_CHILD_PLANS.values()} | {
         "replay_artifact_fact_revision_sources",
         "replay_artifact_mapping_revision_sources",
+        "safety_artifact_dependencies",
+        "authorization_artifact_closure",
     }
     guarded = set(
         migrated_database.execute_sql(
@@ -182,7 +190,125 @@ def test_frozen_natural_keys_and_authorization_basis(
     ) == "0"
 
 
-def test_role_reconciliation_and_security_definer_entrypoint() -> None:
+def test_registry_and_authorization_authority_is_materialized(
+    migrated_database: DatabaseLifecycle,
+) -> None:
+    subject = "00000000-0000-0000-0000-000000000040"
+    policy = migrated_database.execute_sql(
+        "INSERT INTO kineticloop.policy_bundles"
+        "(subject_id,policy_namespace,policy_version,content_hash) VALUES "
+        f"('{subject}','registry-test','1','policy-hash') RETURNING id;"
+    ).splitlines()[0]
+    release = migrated_database.execute_sql(
+        "INSERT INTO kineticloop.evaluation_releases"
+        "(subject_id,release_namespace,release_version) VALUES "
+        f"('{subject}','registry-test','1') RETURNING id;"
+    ).splitlines()[0]
+    artifact = migrated_database.execute_sql(
+        "INSERT INTO kineticloop.safety_artifacts"
+        "(artifact_kind,artifact_identity,artifact_version,content_hash,validity_kind,valid_from,valid_until,ref_s05_id) VALUES "
+        f"('POLICY_BUNDLE','policy-artifact','1','artifact-hash','BOUNDED',transaction_timestamp(),transaction_timestamp() + interval '1 day','{policy}') "
+        "RETURNING id;"
+    ).splitlines()[0]
+    dependency = migrated_database.execute_sql(
+        "INSERT INTO kineticloop.safety_artifacts"
+        "(artifact_kind,artifact_identity,artifact_version,content_hash,validity_kind,valid_from,valid_until,ref_s48_id) VALUES "
+        f"('EVALUATION_RELEASE','release-artifact','1','release-hash','BOUNDED',transaction_timestamp(),transaction_timestamp() + interval '1 day','{release}') "
+        "RETURNING id;"
+    ).splitlines()[0]
+    migrated_database.execute_sql(
+        "INSERT INTO kineticloop.safety_artifact_dependencies"
+        f"(artifact_id,dependency_artifact_id) VALUES ('{artifact}','{dependency}');"
+    )
+    with pytest.raises(DatabaseLifecycleError, match="ck_s49_exact_typed_binding"):
+        migrated_database.execute_sql(
+            "INSERT INTO kineticloop.safety_artifacts"
+            "(artifact_kind,artifact_identity,artifact_version,content_hash,validity_kind,valid_from,valid_until,ref_s48_id) VALUES "
+            f"('POLICY_BUNDLE','wrong-binding','1','wrong-hash','BOUNDED',transaction_timestamp(),transaction_timestamp() + interval '1 day','{release}');"
+        )
+    migrated_database.execute_sql(
+        "INSERT INTO kineticloop.artifact_revocation_events"
+        "(management_command_identity,reason_code,revocation_payload_hash,effective_at,"
+        "registry_revision,ref_s49_id,registry_state_id) VALUES "
+        f"('revoke-1','TEST','payload-1',transaction_timestamp(),1,'{artifact}',1);"
+    )
+    with pytest.raises(DatabaseLifecycleError, match="uq_s50_registry_revision"):
+        migrated_database.execute_sql(
+            "INSERT INTO kineticloop.artifact_revocation_events"
+            "(management_command_identity,reason_code,revocation_payload_hash,effective_at,"
+            "registry_revision,ref_s49_id,registry_state_id) VALUES "
+            f"('revoke-2','TEST','payload-2',transaction_timestamp(),1,'{dependency}',1);"
+        )
+    required_columns = {
+        "artifact_dependency_closure_hash",
+        "validity_certificate",
+    }
+    assert set(
+        migrated_database.execute_sql(
+            "SELECT column_name FROM information_schema.columns "
+            "WHERE table_schema='kineticloop' AND table_name='authorization_issuances' "
+            "AND is_nullable='NO' ORDER BY column_name;"
+        ).splitlines()
+    ).issuperset(required_columns)
+    assert migrated_database.execute_sql(
+        "SELECT count(*) FROM pg_constraint WHERE connamespace='kineticloop'::regnamespace "
+        "AND conname IN ('uq_s39_commit_receipt','uq_authorization_events_natural',"
+        "'ck_s43_target_xor','ck_s43_cause_present');"
+    ) == "4"
+
+
+def test_typed_fact_child_rejects_wrong_parent_kind(
+    migrated_database: DatabaseLifecycle,
+) -> None:
+    subject = "00000000-0000-0000-0000-000000000050"
+    evidence = migrated_database.execute_sql(
+        "INSERT INTO kineticloop.evidence_revisions"
+        "(subject_id,source_connection_identity,source_object_type,source_object_identity,"
+        "source_revision,trust_class,source_class,command_authority) VALUES "
+        f"('{subject}','source','record','object','1','TRUSTED','PROVIDER','NONE') RETURNING id;"
+    ).splitlines()[0]
+    assertion = migrated_database.execute_sql(
+        "INSERT INTO kineticloop.candidate_assertions"
+        "(subject_id,assertion_family_identity,ref_s09_id) VALUES "
+        f"('{subject}','assertion-family','{evidence}') RETURNING id;"
+    ).splitlines()[0]
+    policy = migrated_database.execute_sql(
+        "INSERT INTO kineticloop.policy_bundles"
+        "(subject_id,policy_namespace,policy_version,content_hash) VALUES "
+        f"('{subject}','fact-test','1','fact-policy') RETURNING id;"
+    ).splitlines()[0]
+    admission = migrated_database.execute_sql(
+        "INSERT INTO kineticloop.admission_decisions"
+        "(subject_id,action_scope,ref_s05_id,ref_s09_id,ref_s10_id) VALUES "
+        f"('{subject}','FACT','{policy}','{evidence}','{assertion}') RETURNING id;"
+    ).splitlines()[0]
+    event = migrated_database.execute_sql(
+        "INSERT INTO kineticloop.underlying_events(subject_id,event_identity) VALUES "
+        f"('{subject}','event-1') RETURNING id;"
+    ).splitlines()[0]
+    fact = migrated_database.execute_sql(
+        "INSERT INTO kineticloop.canonical_fact_revisions"
+        "(subject_id,stable_fact_identity,fact_kind,fact_revision,ref_s10_id,ref_s11_id,ref_s13_id) VALUES "
+        f"('{subject}','fact-1','WORKOUT_ACTUAL',1,'{assertion}','{event}','{admission}') RETURNING id;"
+    ).splitlines()[0]
+    with pytest.raises(DatabaseLifecycleError, match="KL_FACT_CHILD_PARENT_KIND_MISMATCH"):
+        migrated_database.execute_sql(
+            "INSERT INTO kineticloop.canonical_fact_nutrition_intakes("
+            "subject_id,fact_revision_id,stable_fact_id,intake_item_id,"
+            "nutrient_identity_state,nutrient_identity_value,"
+            "nutrient_identity_evidence_revision_id,nutrient_identity_assertion_id,"
+            "nutrient_identity_admission_decision_id,nutrient_identity_source_locator,"
+            "consumed_amount_state,consumed_amount_evidence_revision_id,"
+            "consumed_amount_assertion_id,consumed_amount_admission_decision_id,"
+            "consumed_amount_source_locator) VALUES ("
+            f"'{subject}','{fact}','00000000-0000-0000-0000-000000000051',"
+            "'00000000-0000-0000-0000-000000000052','ACTUAL','protein',"
+            f"'{evidence}','{assertion}','{admission}','source:nutrient','UNKNOWN',"
+            f"'{evidence}','{assertion}','{admission}','source:amount');"
+        )
+
+
+def test_role_reconciliation_and_no_application_write_bypass() -> None:
     lifecycle = DatabaseLifecycle(ROOT)
     lifecycle.reset()
     lifecycle.execute_sql(
@@ -213,24 +339,8 @@ def test_role_reconciliation_and_security_definer_entrypoint() -> None:
         "WHERE parent.rolname IN (" + role_list + ") OR member.rolname IN (" + role_list + ");"
     ) == "0"
     assert lifecycle.execute_sql(
-        "SELECT prosecdef::text||':'||rolname FROM pg_proc "
-        "JOIN pg_roles ON pg_roles.oid=pg_proc.proowner "
-        "WHERE pg_proc.oid='kineticloop.publish_policy_bundle(uuid,text,text,text,jsonb)'::regprocedure;"
-    ) == "true:kl_writer_policy_registry"
-    published = lifecycle.execute_sql(
-        "SET ROLE kl_application; SELECT kineticloop.publish_policy_bundle("
-        "'00000000-0000-0000-0000-000000000020','safe','1','hash-1','{}'::jsonb);"
-    )
-    assert published
-    assert lifecycle.execute_sql(
-        "SET ROLE kl_application; SELECT kineticloop.publish_policy_bundle("
-        "'00000000-0000-0000-0000-000000000020','safe','1','hash-1','{}'::jsonb);"
-    ) == published
-    with pytest.raises(DatabaseLifecycleError, match="KL_IDEMPOTENCY_CONFLICT"):
-        lifecycle.execute_sql(
-            "SET ROLE kl_application; SELECT kineticloop.publish_policy_bundle("
-            "'00000000-0000-0000-0000-000000000020','safe','1','different','{}'::jsonb);"
-        )
+        "SELECT to_regprocedure('kineticloop.publish_policy_bundle(uuid,text,text,text,jsonb)') IS NULL;"
+    ) == "t"
     with pytest.raises(DatabaseLifecycleError, match="permission denied"):
         lifecycle.execute_sql(
             "SET ROLE kl_application; INSERT INTO kineticloop.policy_bundles"

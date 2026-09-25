@@ -54,11 +54,11 @@ KEY_FIELDS: dict[str, tuple[str, ...]] = {
     "S37": ("result", "validator_artifact"), "S38": ("calendar_policy", "day_lifecycle"),
     "S39": ("generation_mode",), "S40": ("prescription_identity", "prescription_kind"),
     "S41": ("member_kind", "session_slot"),
-    "S42": ("bound_content_hash", "scope", "issuance_reason"),
-    "S43": ("event_kind", "scope"), "S44": ("session_identity", "origin", "lifecycle"),
+    "S42": ("bound_content_hash", "scope", "issuance_reason", "artifact_dependency_closure_hash"),
+    "S43": ("event_kind", "scope", "causation_key"), "S44": ("session_identity", "origin", "lifecycle"),
     "S45": ("binding_kind", "execution_scope"), "S46": ("replay_mode", "input_selection_hash"),
     "S47": ("artifact_kind", "artifact_hash"), "S48": ("release_namespace", "release_version", "release_status"),
-    "S49": ("artifact_kind", "artifact_identity", "artifact_version"),
+    "S49": ("artifact_kind", "artifact_identity", "artifact_version", "validity_kind", "timeless_approval_policy", "timeless_approval_reason"),
     "S50": ("management_command_identity", "reason_code", "revocation_payload_hash"),
 }
 
@@ -73,7 +73,7 @@ COUNTER_FIELDS: dict[str, tuple[str, ...]] = {
     "S32": ("transition_revision",), "S38": ("head_revision",), "S39": ("revision_no",),
     "S40": ("prescription_revision",), "S41": ("member_order",),
     "S42": ("registry_revision_at_issue",), "S43": ("invalidated_epoch",),
-    "S44": ("execution_revision",), "S45": ("binding_revision",),
+    "S44": ("execution_revision",), "S45": ("binding_revision",), "S50": ("registry_revision",),
 }
 
 TIME_FIELDS: dict[str, tuple[str, ...]] = {
@@ -137,6 +137,7 @@ NATURAL_KEYS: dict[str, tuple[str, ...]] = {
     "S40": ("subject_id", "prescription_identity", "prescription_revision"),
     "S41": ("subject_id", "ref_s39_id", "member_kind", "session_slot"),
     "S42": ("subject_id", "ref_s02_id", "ref_s40_id", "scope"),
+    "S43": ("subject_id", "causation_key"),
     "S44": ("subject_id", "session_identity"),
     "S45": ("subject_id", "ref_s44_id", "binding_revision"),
     "S46": ("subject_id", "id"),
@@ -163,12 +164,12 @@ REQUIRED_FIELDS.update(
         "S29": REQUIRED_FIELDS["S29"] | {"status", "captured_epoch", "fence_token"},
         "S31": REQUIRED_FIELDS["S31"] | {"status", "settlement_revision"},
         "S37": REQUIRED_FIELDS["S37"] | {"result", "valid_until"},
-        "S42": REQUIRED_FIELDS["S42"] | {"bound_content_hash", "valid_from", "valid_until", "registry_revision_at_issue"},
+        "S42": REQUIRED_FIELDS["S42"] | {"bound_content_hash", "artifact_dependency_closure_hash", "valid_from", "valid_until", "registry_revision_at_issue"},
         "S44": REQUIRED_FIELDS["S44"] | {"origin", "lifecycle", "execution_revision"},
         "S45": REQUIRED_FIELDS["S45"] | {"binding_kind", "accepted_at", "execution_scope"},
         "S46": REQUIRED_FIELDS["S46"] | {"replay_mode", "knowledge_cutoff", "status"},
-        "S49": REQUIRED_FIELDS["S49"] | {"content_hash", "valid_from", "valid_until"},
-        "S50": REQUIRED_FIELDS["S50"] | {"reason_code", "revocation_payload_hash", "effective_at"},
+        "S49": (REQUIRED_FIELDS["S49"] - {"timeless_approval_policy", "timeless_approval_reason"}) | {"content_hash", "valid_from", "validity_kind"},
+        "S50": REQUIRED_FIELDS["S50"] | {"reason_code", "revocation_payload_hash", "effective_at", "registry_revision"},
     }
 )
 
@@ -186,7 +187,7 @@ REQUIRED_DEPENDENCIES: dict[str, frozenset[str]] = {
     "S40": frozenset({"S34", "S49"}), "S41": frozenset({"S39", "S40"}),
     "S42": frozenset({"S02", "S05", "S24", "S36", "S37", "S40", "S49", "S51"}),
     "S45": frozenset({"S02", "S40", "S42", "S44"}), "S46": frozenset({"S24", "S48"}),
-    "S47": frozenset({"S46"}), "S49": frozenset({"S05", "S19", "S48"}),
+    "S47": frozenset({"S46"}),
     "S50": frozenset({"S49", "S51"}),
 }
 
@@ -228,6 +229,8 @@ def _base(logical_id: str) -> list[SchemaItem]:
     result.extend(sa.Column(name, sa.BigInteger(), nullable=name not in required) for name in COUNTER_FIELDS.get(logical_id, ()))
     result.extend(sa.Column(name, sa.DateTime(timezone=True), nullable=name not in required) for name in TIME_FIELDS.get(logical_id, ()))
     result.extend(sa.Column(name, sa.Date(), nullable=name not in required) for name in DATE_FIELDS.get(logical_id, ()))
+    if logical_id == "S42":
+        result.append(sa.Column("validity_certificate", postgresql.JSONB(), nullable=False))
     return result
 
 
@@ -273,8 +276,44 @@ def build_metadata() -> sa.MetaData:
             items.append(sa.CheckConstraint("member_operation IN ('SET','REMOVE')", name="ck_s16_member_operation"))
         elif relation.logical_id == "S42":
             items.append(sa.CheckConstraint("valid_until > valid_from", name="ck_s42_validity_interval"))
+        elif relation.logical_id == "S43":
+            items.extend(
+                (
+                    sa.CheckConstraint(
+                        "(ref_s42_id IS NOT NULL)::int + (invalidated_epoch IS NOT NULL)::int = 1",
+                        name="ck_s43_target_xor",
+                    ),
+                    sa.CheckConstraint(
+                        "ref_s02_id IS NOT NULL OR ref_s13_id IS NOT NULL OR ref_s17_id IS NOT NULL",
+                        name="ck_s43_cause_present",
+                    ),
+                )
+            )
         elif relation.logical_id == "S49":
-            items.append(sa.CheckConstraint("valid_until IS NULL OR valid_until > valid_from", name="ck_s49_validity_interval"))
+            items.extend(
+                (
+                    sa.CheckConstraint(
+                        "(validity_kind = 'BOUNDED' AND valid_until > valid_from AND timeless_approval_policy IS NULL AND timeless_approval_reason IS NULL) OR "
+                        "(validity_kind = 'TIMELESS' AND valid_until IS NULL AND btrim(timeless_approval_policy) <> '' AND btrim(timeless_approval_reason) <> '')",
+                        name="ck_s49_validity_spec",
+                    ),
+                    sa.CheckConstraint(
+                        "(artifact_kind = 'POLICY_BUNDLE' AND ref_s05_id IS NOT NULL AND ref_s19_id IS NULL AND ref_s48_id IS NULL) OR "
+                        "(artifact_kind = 'EXERCISE_CATALOG' AND ref_s05_id IS NULL AND ref_s19_id IS NOT NULL AND ref_s48_id IS NULL) OR "
+                        "(artifact_kind = 'EVALUATION_RELEASE' AND ref_s05_id IS NULL AND ref_s19_id IS NULL AND ref_s48_id IS NOT NULL)",
+                        name="ck_s49_exact_typed_binding",
+                    ),
+                )
+            )
+        elif relation.logical_id == "S50":
+            items.extend(
+                (
+                    sa.CheckConstraint("registry_revision > 0", name="ck_s50_registry_revision"),
+                    sa.UniqueConstraint("registry_revision", name="uq_s50_registry_revision"),
+                )
+            )
+        elif relation.logical_id == "S39":
+            items.append(sa.UniqueConstraint("subject_id", "ref_s02_id", name="uq_s39_commit_receipt"))
         table = sa.Table(relation.table_name, metadata, *items, comment=f"{relation.logical_id} frozen logical relation")
         tables[relation.logical_id] = table
         if relation.logical_id == "S09":
@@ -356,6 +395,35 @@ def build_metadata() -> sa.MetaData:
             sa.ForeignKeyConstraint(["subject_id", "replay_artifact_id"], [s47.c.subject_id, s47.c.id]),
             sa.ForeignKeyConstraint(["subject_id", "source_revision_id"], [target.c.subject_id, target.c.id]),
             sa.PrimaryKeyConstraint("subject_id", "replay_artifact_id", "source_revision_id"), comment=f"S47 source edge to {target_id}")
+
+    s42, s49 = tables["S42"], tables["S49"]
+    sa.Table(
+        "safety_artifact_dependencies",
+        metadata,
+        sa.Column("artifact_id", _uuid(), nullable=False),
+        sa.Column("dependency_artifact_id", _uuid(), nullable=False),
+        sa.ForeignKeyConstraint(["artifact_id"], [s49.c.id], name="fk_s49_dependency_artifact"),
+        sa.ForeignKeyConstraint(["dependency_artifact_id"], [s49.c.id], name="fk_s49_dependency_target"),
+        sa.PrimaryKeyConstraint("artifact_id", "dependency_artifact_id"),
+        sa.CheckConstraint("artifact_id <> dependency_artifact_id", name="ck_s49_dependency_not_self"),
+        comment="Normalized closed S49 declared dependency edge",
+    )
+    sa.Table(
+        "authorization_artifact_closure",
+        metadata,
+        sa.Column("subject_id", _uuid(), nullable=False),
+        sa.Column("authorization_id", _uuid(), nullable=False),
+        sa.Column("artifact_id", _uuid(), nullable=False),
+        sa.Column("artifact_revision", sa.BigInteger(), nullable=False),
+        sa.Column("valid_from", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("valid_until", sa.DateTime(timezone=True)),
+        sa.ForeignKeyConstraint(["subject_id", "authorization_id"], [s42.c.subject_id, s42.c.id], name="fk_s42_closure_authorization"),
+        sa.ForeignKeyConstraint(["artifact_id"], [s49.c.id], name="fk_s42_closure_artifact"),
+        sa.PrimaryKeyConstraint("subject_id", "authorization_id", "artifact_id"),
+        sa.CheckConstraint("artifact_revision > 0", name="ck_s42_closure_revision"),
+        sa.CheckConstraint("valid_until IS NULL OR valid_until > valid_from", name="ck_s42_closure_validity"),
+        comment="Materialized S42 artifact dependency closure",
+    )
     return metadata
 
 

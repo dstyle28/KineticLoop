@@ -1,7 +1,8 @@
 """frozen S01-S51 baseline"""
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
+
 revision = '76fd67f76bd4'
 down_revision = None
 branch_labels = None
@@ -58,7 +59,9 @@ TABLE_GRANTS = (
     ('replay_artifacts','immutable','kl_writer_replay_service','SELECT, INSERT'),
     ('evaluation_releases','immutable','kl_writer_release_evaluation_service','SELECT, INSERT'),
     ('safety_artifacts','immutable','kl_writer_safety_registry','SELECT, INSERT'),
+    ('safety_artifact_dependencies','immutable','kl_writer_safety_registry','SELECT, INSERT'),
     ('artifact_revocation_events','immutable','kl_writer_safety_registry','SELECT, INSERT'),
+    ('authorization_artifact_closure','immutable','kl_writer_authorization_service','SELECT, INSERT'),
     ('safety_registry_state','mutable','kl_writer_safety_registry','SELECT, INSERT, UPDATE'),
 )
 
@@ -112,6 +115,7 @@ NATURAL_KEYS = {
     'prescription_revisions': ('subject_id','prescription_identity','prescription_revision'),
     'bundle_prescription_members': ('subject_id','ref_s39_id','member_kind','session_slot'),
     'authorization_issuances': ('subject_id','ref_s02_id','ref_s40_id','scope'),
+    'authorization_events': ('subject_id','causation_key'),
     'workout_sessions': ('subject_id','session_identity'),
     'execution_bindings': ('subject_id','ref_s44_id','binding_revision'),
     'replay_runs': ('subject_id','id'),
@@ -137,12 +141,12 @@ REQUIRED_COLUMNS.update({
     'planning_attempts': REQUIRED_COLUMNS['planning_attempts'] | {'status','captured_epoch','fence_token'},
     'call_reservations': REQUIRED_COLUMNS['call_reservations'] | {'status','settlement_revision'},
     'validation_results': REQUIRED_COLUMNS['validation_results'] | {'result','valid_until'},
-    'authorization_issuances': REQUIRED_COLUMNS['authorization_issuances'] | {'bound_content_hash','valid_from','valid_until','registry_revision_at_issue'},
+    'authorization_issuances': REQUIRED_COLUMNS['authorization_issuances'] | {'bound_content_hash','artifact_dependency_closure_hash','validity_certificate','valid_from','valid_until','registry_revision_at_issue'},
     'workout_sessions': REQUIRED_COLUMNS['workout_sessions'] | {'origin','lifecycle','execution_revision'},
     'execution_bindings': REQUIRED_COLUMNS['execution_bindings'] | {'binding_kind','accepted_at','execution_scope'},
     'replay_runs': REQUIRED_COLUMNS['replay_runs'] | {'replay_mode','knowledge_cutoff','status'},
-    'safety_artifacts': REQUIRED_COLUMNS['safety_artifacts'] | {'content_hash','valid_from','valid_until'},
-    'artifact_revocation_events': REQUIRED_COLUMNS['artifact_revocation_events'] | {'reason_code','revocation_payload_hash','effective_at'},
+    'safety_artifacts': REQUIRED_COLUMNS['safety_artifacts'] | {'content_hash','valid_from','validity_kind'},
+    'artifact_revocation_events': REQUIRED_COLUMNS['artifact_revocation_events'] | {'reason_code','revocation_payload_hash','effective_at','registry_revision'},
 })
 
 REQUIRED_REFS = {
@@ -163,7 +167,6 @@ REQUIRED_REFS = {
     'authorization_issuances': ('ref_s02_id','ref_s05_id','ref_s24_id','ref_s36_id','ref_s37_id','ref_s40_id','ref_s49_id','registry_state_id'),
     'execution_bindings': ('ref_s02_id','ref_s40_id','ref_s42_id','ref_s44_id'),
     'replay_runs': ('ref_s24_id','ref_s48_id'), 'replay_artifacts': ('ref_s46_id',),
-    'safety_artifacts': ('ref_s05_id','ref_s19_id','ref_s48_id'),
     'artifact_revocation_events': ('ref_s49_id','registry_state_id'),
 }
 
@@ -196,6 +199,13 @@ def _install_integrity_constraints() -> None:
     op.add_column('daily_plan_heads', sa.Column('local_date', sa.Date()), schema='kineticloop')
     op.add_column('daily_bundle_revisions', sa.Column('local_date', sa.Date()), schema='kineticloop')
     op.add_column('artifact_revocation_events', sa.Column('management_command_identity', sa.Text()), schema='kineticloop')
+    op.add_column('artifact_revocation_events', sa.Column('registry_revision', sa.BigInteger()), schema='kineticloop')
+    op.add_column('safety_artifacts', sa.Column('validity_kind', sa.Text()), schema='kineticloop')
+    op.add_column('safety_artifacts', sa.Column('timeless_approval_policy', sa.Text()), schema='kineticloop')
+    op.add_column('safety_artifacts', sa.Column('timeless_approval_reason', sa.Text()), schema='kineticloop')
+    op.add_column('authorization_issuances', sa.Column('artifact_dependency_closure_hash', sa.Text()), schema='kineticloop')
+    op.add_column('authorization_issuances', sa.Column('validity_certificate', postgresql.JSONB()), schema='kineticloop')
+    op.add_column('authorization_events', sa.Column('causation_key', sa.Text()), schema='kineticloop')
 
     for table, columns in REQUIRED_REFS.items():
         REQUIRED_COLUMNS.setdefault(table, set()).update(columns)
@@ -210,8 +220,59 @@ def _install_integrity_constraints() -> None:
     op.create_index('uq_s09_provider_revision', 'evidence_revisions', ['subject_id','source_connection_identity','source_object_type','source_object_identity','source_revision'], unique=True, schema='kineticloop', postgresql_where=sa.text('source_revision IS NOT NULL'))
     op.create_index('uq_s09_observation_key', 'evidence_revisions', ['subject_id','source_connection_identity','observation_key'], unique=True, schema='kineticloop', postgresql_where=sa.text('source_revision IS NULL'))
     op.create_check_constraint('ck_s42_validity_interval', 'authorization_issuances', 'valid_until > valid_from', schema='kineticloop')
-    op.create_check_constraint('ck_s49_validity_interval', 'safety_artifacts', 'valid_until IS NULL OR valid_until > valid_from', schema='kineticloop')
+    op.create_check_constraint(
+        'ck_s49_validity_spec', 'safety_artifacts',
+        "(validity_kind = 'BOUNDED' AND valid_until > valid_from AND timeless_approval_policy IS NULL AND timeless_approval_reason IS NULL) OR "
+        "(validity_kind = 'TIMELESS' AND valid_until IS NULL AND btrim(timeless_approval_policy) <> '' AND btrim(timeless_approval_reason) <> '')",
+        schema='kineticloop',
+    )
+    op.create_check_constraint(
+        'ck_s49_exact_typed_binding', 'safety_artifacts',
+        "(artifact_kind = 'POLICY_BUNDLE' AND ref_s05_id IS NOT NULL AND ref_s19_id IS NULL AND ref_s48_id IS NULL) OR "
+        "(artifact_kind = 'EXERCISE_CATALOG' AND ref_s05_id IS NULL AND ref_s19_id IS NOT NULL AND ref_s48_id IS NULL) OR "
+        "(artifact_kind = 'EVALUATION_RELEASE' AND ref_s05_id IS NULL AND ref_s19_id IS NULL AND ref_s48_id IS NOT NULL)",
+        schema='kineticloop',
+    )
+    op.create_check_constraint('ck_s50_registry_revision', 'artifact_revocation_events', 'registry_revision > 0', schema='kineticloop')
+    op.create_unique_constraint('uq_s50_registry_revision', 'artifact_revocation_events', ['registry_revision'], schema='kineticloop')
+    op.create_unique_constraint('uq_s39_commit_receipt', 'daily_bundle_revisions', ['subject_id','ref_s02_id'], schema='kineticloop')
+    op.create_check_constraint(
+        'ck_s43_target_xor', 'authorization_events',
+        '(ref_s42_id IS NOT NULL)::int + (invalidated_epoch IS NOT NULL)::int = 1',
+        schema='kineticloop',
+    )
+    op.create_check_constraint(
+        'ck_s43_cause_present', 'authorization_events',
+        'ref_s02_id IS NOT NULL OR ref_s13_id IS NOT NULL OR ref_s17_id IS NOT NULL',
+        schema='kineticloop',
+    )
     op.create_index('uq_s45_one_start', 'execution_bindings', ['subject_id','ref_s44_id'], unique=True, schema='kineticloop', postgresql_where=sa.text("binding_kind = 'START'"))
+
+    op.create_table(
+        'safety_artifact_dependencies',
+        sa.Column('artifact_id', sa.Uuid(as_uuid=False), nullable=False),
+        sa.Column('dependency_artifact_id', sa.Uuid(as_uuid=False), nullable=False),
+        sa.ForeignKeyConstraint(['artifact_id'], ['kineticloop.safety_artifacts.id'], name='fk_s49_dependency_artifact'),
+        sa.ForeignKeyConstraint(['dependency_artifact_id'], ['kineticloop.safety_artifacts.id'], name='fk_s49_dependency_target'),
+        sa.PrimaryKeyConstraint('artifact_id', 'dependency_artifact_id'),
+        sa.CheckConstraint('artifact_id <> dependency_artifact_id', name='ck_s49_dependency_not_self'),
+        schema='kineticloop', comment='Normalized closed S49 declared dependency edge',
+    )
+    op.create_table(
+        'authorization_artifact_closure',
+        sa.Column('subject_id', sa.Uuid(as_uuid=False), nullable=False),
+        sa.Column('authorization_id', sa.Uuid(as_uuid=False), nullable=False),
+        sa.Column('artifact_id', sa.Uuid(as_uuid=False), nullable=False),
+        sa.Column('artifact_revision', sa.BigInteger(), nullable=False),
+        sa.Column('valid_from', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('valid_until', sa.DateTime(timezone=True), nullable=True),
+        sa.ForeignKeyConstraint(['subject_id','authorization_id'], ['kineticloop.authorization_issuances.subject_id','kineticloop.authorization_issuances.id'], name='fk_s42_closure_authorization'),
+        sa.ForeignKeyConstraint(['artifact_id'], ['kineticloop.safety_artifacts.id'], name='fk_s42_closure_artifact'),
+        sa.PrimaryKeyConstraint('subject_id', 'authorization_id', 'artifact_id'),
+        sa.CheckConstraint('artifact_revision > 0', name='ck_s42_closure_revision'),
+        sa.CheckConstraint('valid_until IS NULL OR valid_until > valid_from', name='ck_s42_closure_validity'),
+        schema='kineticloop', comment='Materialized S42 artifact dependency closure',
+    )
 
 
 def _install_protections() -> None:
@@ -256,6 +317,32 @@ def _install_protections() -> None:
         op.execute(f"GRANT SELECT, INSERT ON TABLE kineticloop.{table} TO kl_writer_canonical_fact_service")
     for table in REPLAY_EDGE_TABLES:
         op.execute(f"GRANT SELECT, INSERT ON TABLE kineticloop.{table} TO kl_writer_replay_service")
+
+    op.execute("""
+        CREATE FUNCTION kineticloop.enforce_fact_child_parent_kind()
+        RETURNS trigger LANGUAGE plpgsql SET search_path = pg_catalog AS $body$
+        DECLARE parent_kind text;
+        BEGIN
+          SELECT fact_kind INTO parent_kind
+          FROM kineticloop.canonical_fact_revisions
+          WHERE subject_id = NEW.subject_id AND id = NEW.fact_revision_id
+          FOR KEY SHARE;
+          IF parent_kind IS DISTINCT FROM TG_ARGV[0] THEN
+            RAISE EXCEPTION 'KL_FACT_CHILD_PARENT_KIND_MISMATCH' USING ERRCODE = '23514';
+          END IF;
+          RETURN NEW;
+        END $body$
+    """)
+    for table, fact_kind in (
+        ('canonical_fact_strength_sets', 'WORKOUT_ACTUAL'),
+        ('canonical_fact_cardio_bouts', 'WORKOUT_ACTUAL'),
+        ('canonical_fact_health_observations', 'HEALTH_OBSERVATION'),
+        ('canonical_fact_nutrition_intakes', 'NUTRITION_INTAKE'),
+    ):
+        op.execute(
+            f"CREATE TRIGGER {table}_parent_kind BEFORE INSERT OR UPDATE ON kineticloop.{table} "
+            f"FOR EACH ROW EXECUTE FUNCTION kineticloop.enforce_fact_child_parent_kind('{fact_kind}')"
+        )
 
     op.execute("""
         CREATE FUNCTION kineticloop.reject_immutable_history_mutation()
@@ -313,34 +400,6 @@ def _install_protections() -> None:
         END $body$
     """)
     op.execute("CREATE TRIGGER factset_member_write_gate BEFORE INSERT OR UPDATE OR DELETE ON kineticloop.factset_members FOR EACH ROW EXECUTE FUNCTION kineticloop.guard_factset_member_mutation()")
-    op.execute("""
-        CREATE FUNCTION kineticloop.publish_policy_bundle(
-          p_subject_id uuid, p_namespace text, p_version text,
-          p_content_hash text, p_typed_payload jsonb
-        ) RETURNS uuid
-        LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog AS $body$
-        DECLARE published_id uuid; existing_hash text;
-        BEGIN
-          INSERT INTO kineticloop.policy_bundles(
-            subject_id, policy_namespace, policy_version, content_hash, typed_payload
-          ) VALUES (
-            p_subject_id, p_namespace, p_version, p_content_hash, p_typed_payload
-          ) ON CONFLICT ON CONSTRAINT uq_policy_bundles_natural DO NOTHING
-          RETURNING id INTO published_id;
-          IF published_id IS NOT NULL THEN RETURN published_id; END IF;
-          SELECT id, content_hash INTO published_id, existing_hash
-          FROM kineticloop.policy_bundles
-          WHERE subject_id=p_subject_id AND policy_namespace=p_namespace AND policy_version=p_version;
-          IF existing_hash IS DISTINCT FROM p_content_hash THEN
-            RAISE EXCEPTION 'KL_IDEMPOTENCY_CONFLICT' USING ERRCODE = '23505';
-          END IF;
-          RETURN published_id;
-        END $body$
-    """)
-    op.execute("ALTER FUNCTION kineticloop.publish_policy_bundle(uuid,text,text,text,jsonb) OWNER TO kl_writer_policy_registry")
-    op.execute("REVOKE ALL ON FUNCTION kineticloop.publish_policy_bundle(uuid,text,text,text,jsonb) FROM PUBLIC")
-    op.execute("GRANT EXECUTE ON FUNCTION kineticloop.publish_policy_bundle(uuid,text,text,text,jsonb) TO kl_application")
-
 def upgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
     op.execute('CREATE SCHEMA kineticloop')
@@ -1941,6 +2000,8 @@ def downgrade() -> None:
         ('user_decision_state','fk_s01_s15_current_factset_id'),
     ):
         op.drop_constraint(constraint, table, schema='kineticloop', type_='foreignkey')
+    op.drop_table('authorization_artifact_closure', schema='kineticloop')
+    op.drop_table('safety_artifact_dependencies', schema='kineticloop')
     op.drop_table('execution_bindings', schema='kineticloop')
     op.drop_table('bundle_prescription_members', schema='kineticloop')
     op.drop_table('authorization_events', schema='kineticloop')
@@ -1998,7 +2059,7 @@ def downgrade() -> None:
     op.drop_table('evidence_revisions', schema='kineticloop')
     op.drop_table('evaluation_releases', schema='kineticloop')
     op.drop_table('command_receipts', schema='kineticloop')
-    op.execute('DROP FUNCTION kineticloop.publish_policy_bundle(uuid,text,text,text,jsonb)')
+    op.execute('DROP FUNCTION kineticloop.enforce_fact_child_parent_kind()')
     op.execute('DROP FUNCTION kineticloop.guard_factset_member_mutation()')
     op.execute('DROP FUNCTION kineticloop.guard_factset_revision_mutation()')
     op.execute('DROP FUNCTION kineticloop.reject_immutable_history_mutation()')
