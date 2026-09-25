@@ -1,0 +1,29 @@
+$ uv run pytest -q tests/db/test_safety_registry.py::test_shared_gate_command_matrix_fails_closed
+.                                                                        [100%]
+1 passed in 4.43s
+$ uv run pytest -q tests/db/test_safety_registry.py::test_reauthorize_shared_gate_precedes_s01_and_fails_closed
+.                                                                        [100%]
+1 passed in 0.85s
+$ uv run pytest -q tests/db/test_safety_registry.py::test_continue_session_rechecks_shared_gate_and_fails_closed
+.                                                                        [100%]
+1 passed in 0.84s
+$ uv run pytest -q tests/db/test_safety_registry.py::test_exclusive_global_gate_serializes
+.                                                                        [100%]
+1 passed in 0.60s
+$ uv run pytest -q tests/db/test_safety_registry.py::test_revoke_artifact_atomic_linearization_and_idempotency
+.                                                                        [100%]
+1 passed in 0.67s
+$ uv run pytest -q tests/unit/contracts/test_safety_registry.py::test_registry_unavailable_or_timeout_denies
+.                                                                        [100%]
+1 passed in 0.07s
+$ uv run pytest -q tests/db/test_safety_registry.py::test_global_revoke_never_locks_s01
+.                                                                        [100%]
+1 passed in 0.60s
+$ uv run pytest -q tests/unit/contracts/test_safety_registry.py::test_stop_has_no_registry_dependency
+.                                                                        [100%]
+1 passed in 0.07s
+$ uv run pytest -q tests/db/test_safety_registry.py tests/db/test_lifecycle.py
+..............                                                           [100%]
+14 passed in 5.44s
+$ uv run kl check-harness
+HARNESS_CHECK_PASS tasks=68 active=66
