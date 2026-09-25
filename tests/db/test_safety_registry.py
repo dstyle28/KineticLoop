@@ -18,8 +18,6 @@ from kineticloop.contracts.safety_registry import (
     RegistryDenialCode,
     RegistryDenied,
     RegistryEligibility,
-    RegistryUnavailableError,
-    fail_closed_registry_check,
 )
 from kineticloop.db.lifecycle import DatabaseLifecycle
 from kineticloop.identity import ActorRole
@@ -459,7 +457,29 @@ def assert_timeout_before_subject(database_url: str, command: RegistryCommand) -
     assert mutation_count(database_url) == 0
 
 
-def test_shared_gate_command_matrix_fails_closed(db_url: str) -> None:
+def assert_registry_unavailable_without_mutation(
+    database_url: str,
+    command: RegistryCommand,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    clear_state(database_url)
+
+    def unavailable(_cursor: Any, _lock_timeout_ms: int) -> int:
+        raise psycopg.OperationalError("injected registry unavailability")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(
+            "kineticloop.persistence.safety_registry._acquire_shared_gate",
+            unavailable,
+        )
+        assert_denied_without_mutation(
+            database_url, command, RegistryDenialCode.REGISTRY_UNAVAILABLE
+        )
+
+
+def test_shared_gate_command_matrix_fails_closed(
+    db_url: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
     for command in RegistryCommand:
         run_waiting_shared_then_revoke(db_url, command)
 
@@ -537,13 +557,7 @@ def test_shared_gate_command_matrix_fails_closed(db_url: str) -> None:
 
         assert_timeout_before_subject(db_url, command)
 
-        clear_state(db_url)
-        with pytest.raises(RegistryDenied) as unavailable:
-            fail_closed_registry_check(
-                lambda: (_ for _ in ()).throw(RegistryUnavailableError())
-            )
-        assert unavailable.value.code is RegistryDenialCode.REGISTRY_UNAVAILABLE
-        assert mutation_count(db_url) == 0
+        assert_registry_unavailable_without_mutation(db_url, command, monkeypatch)
 
         if command is not RegistryCommand.PUBLISH_MANIFEST:
             eligibility_column = (
@@ -560,7 +574,9 @@ def test_shared_gate_command_matrix_fails_closed(db_url: str) -> None:
             )
 
 
-def test_reauthorize_shared_gate_precedes_s01_and_fails_closed(db_url: str) -> None:
+def test_reauthorize_shared_gate_precedes_s01_and_fails_closed(
+    db_url: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
     run_waiting_shared_then_revoke(db_url, RegistryCommand.REAUTHORIZE)
     clear_state(db_url)
     with psycopg.connect(db_url, autocommit=True) as connection:
@@ -587,12 +603,14 @@ def test_reauthorize_shared_gate_precedes_s01_and_fails_closed(db_url: str) -> N
         RegistryDenialCode.REGISTRY_STALE,
         minimum_registry_revision=1,
     )
-    with pytest.raises(RegistryDenied) as unavailable:
-        fail_closed_registry_check(lambda: (_ for _ in ()).throw(RegistryUnavailableError()))
-    assert unavailable.value.code is RegistryDenialCode.REGISTRY_UNAVAILABLE
+    assert_registry_unavailable_without_mutation(
+        db_url, RegistryCommand.REAUTHORIZE, monkeypatch
+    )
 
 
-def test_continue_session_rechecks_shared_gate_and_fails_closed(db_url: str) -> None:
+def test_continue_session_rechecks_shared_gate_and_fails_closed(
+    db_url: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
     run_waiting_shared_then_revoke(db_url, RegistryCommand.CONTINUE_SESSION)
     clear_state(db_url)
     with psycopg.connect(db_url, autocommit=True) as connection:
@@ -622,9 +640,9 @@ def test_continue_session_rechecks_shared_gate_and_fails_closed(db_url: str) -> 
         RegistryDenialCode.REGISTRY_STALE,
         minimum_registry_revision=1,
     )
-    with pytest.raises(RegistryDenied) as unavailable:
-        fail_closed_registry_check(lambda: (_ for _ in ()).throw(RegistryUnavailableError()))
-    assert unavailable.value.code is RegistryDenialCode.REGISTRY_UNAVAILABLE
+    assert_registry_unavailable_without_mutation(
+        db_url, RegistryCommand.CONTINUE_SESSION, monkeypatch
+    )
 
 
 def revoke_command(*, key: str = "revoke-1", request_hash: str = "d" * 64) -> RevokeArtifact:
