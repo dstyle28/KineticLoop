@@ -1,0 +1,90 @@
+HG-018 KL-072 governance validation
+base_commit=5f90b07a35e6ffe19e45bbf183e7b912c6f952c5
+tested_commit=e41b130efd77b499e25ada0619550416da39baaf
+protected_base_context=HG-019 and the KL-013 integration record are present at base_commit
+
+governance_schema_valid: PASS
+  HARNESS_CHANGE.schema.json validates docs/exec-plans/governance/HG-018.yaml.
+
+fresh_follow_up_projection_exact: PASS
+  KL-072 is a fresh NOT_STARTED, ENFORCEABLE M2 task with no result, review, or
+  integration artifact. Its backlog identity, traceability projection, packet,
+  shared-hotspot flag, resources, write paths, command/transaction impact map,
+  exact checks, and GENERAL/PROTOCOL/DB_CONCURRENCY/SECURITY_DATA_BOUNDARY review
+  union agree. KL-017 and KL-018 preserve their existing definitions and now
+  depend on KL-072. The plan and routing place KL-072 after KL-013/KL-016 and
+  before those downstream tasks.
+
+completed_task_immutability: PASS
+  docs/exec-plans/active/KL-013.md and
+  docs/exec-plans/completed/KL-013_RESULT.yaml are byte-identical to protected
+  base 5f90b07a35e6ffe19e45bbf183e7b912c6f952c5. HG-018 adds no retroactive
+  obligation to the completed task and preserves its integrated HG-019 state.
+
+historical_m1_closure_unchanged: PASS
+  docs/exec-plans/milestones/M1.json is byte-identical to protected base.
+
+new_task_governance_guards_pass: PASS
+  PYTHONPATH="$PWD/src" /private/tmp/hg018-venv/bin/pytest -q
+  tests/harness/test_validator.py -k
+  'allows_new_follow_up_task_identity or new_task_must_start_not_started or
+  new_task_cannot_arrive_with_review_artifact or
+  rejects_retroactive_completed_task_refinement' -p no:cacheprovider
+  4 passed, 102 deselected in 4.47s.
+  The positive fixture admits a clean follow-up identity. Negative fixtures
+  reject READY admission, pre-existing review artifacts, and changes to a task
+  that has a result at the protected base.
+
+harness_structure_valid: PASS
+  PYTHONPATH="$PWD/src" /private/tmp/hg018-venv/bin/kl check-harness
+  HARNESS_CHECK_PASS tasks=69 active=67
+
+harness_tests_pass: PASS
+  PYTHONPATH="$PWD/src" PYTEST_ADDOPTS='-p no:cacheprovider'
+  /private/tmp/hg018-venv/bin/kl test-harness
+  131 passed in 208.06s.
+
+unit_tests_pass: PASS
+  PYTHONPATH="$PWD/src" PYTEST_ADDOPTS='-p no:cacheprovider'
+  /private/tmp/hg018-venv/bin/kl test-unit
+  169 passed in 22.48s.
+
+full_suite_passes: PASS
+  PYTHONPATH="$PWD/src" PYTEST_ADDOPTS='-p no:cacheprovider'
+  /private/tmp/hg018-venv/bin/pytest -q
+  381 passed in 272.06s.
+
+typecheck_passes: PASS
+  MYPY_CACHE_DIR=/private/tmp/hg018-final-mypy-cache PYTHONPATH="$PWD/src"
+  /private/tmp/hg018-venv/bin/mypy src tools/harness tools/db tests
+  Success: no issues found in 72 source files.
+
+lint_passes: PASS
+  RUFF_CACHE_DIR=/private/tmp/hg018-final-ruff-cache PYTHONPATH="$PWD/src"
+  /private/tmp/hg018-venv/bin/ruff check src tools tests
+  All checks passed!
+
+governance_scope_exact: PASS
+  The protected-base-to-tested change set is exactly the 12 implementation,
+  authority-projection, validator, and regression-test paths declared by
+  HG-018 before the two bookkeeping files are appended. KL-072 is the only new
+  task identity; KL-017 and KL-018 are the only existing task definitions
+  refined. The final declared file set adds only this evidence file and the
+  HG-018 governance record.
+
+diff_clean: PASS
+  git diff --check 5f90b07a35e6ffe19e45bbf183e7b912c6f952c5
+  e41b130efd77b499e25ada0619550416da39baaf
+  No output.
+
+frozen_baseline_unchanged: PASS
+  git diff --exit-code 5f90b07a35e6ffe19e45bbf183e7b912c6f952c5
+  e41b130efd77b499e25ada0619550416da39baaf -- FROZEN_BASELINE.json
+  04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
+  05_KineticLoop_Protocol_v1.2_FROZEN.md
+  No output.
+
+No Frozen Protocol/DB semantic, M1 closure, completed KL-013 packet/result, or
+merged KL-013 integration bookkeeping is changed. KL-072 remains unimplemented;
+this governance change only creates its executable task contract and downstream
+ordering.
