@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import threading
 import time
 from collections.abc import Iterator
@@ -30,6 +32,7 @@ from kineticloop.persistence.safety_registry import (
     execute_stop_without_registry,
     revoke_artifact,
 )
+from kineticloop.primitives.times import canonical_utc
 
 ROOT = Path(__file__).parents[2]
 _MIGRATION_TEST_SPEC = spec_from_file_location(
@@ -102,7 +105,7 @@ def seed(
         connection.execute(
             "CREATE TABLE public.domain_mutations ("
             "mutation_id bigserial PRIMARY KEY, command_kind text NOT NULL, "
-            "registry_revision bigint, subject_id uuid NOT NULL)"
+            "registry_revision bigint, subject_id uuid NOT NULL, protected_at timestamptz)"
         )
         connection.execute("ALTER TABLE public.domain_mutations OWNER TO kl_application_login")
         connection.execute("GRANT INSERT ON public.domain_mutations TO kl_stop_login")
@@ -654,6 +657,11 @@ def test_exclusive_global_gate_serializes(db_urls: dict[str, str]) -> None:
         result_id = mutate(RegistryCommand.START_SESSION)(cursor, registry_revision)
         mutation_entered.set()
         assert allow_commit.wait(timeout=5)
+        cursor.execute(
+            "UPDATE public.domain_mutations SET protected_at=clock_timestamp() "
+            "WHERE mutation_id=%s",
+            (result_id,),
+        )
         return result_id
 
     def shared_worker() -> None:
@@ -693,6 +701,14 @@ def test_exclusive_global_gate_serializes(db_urls: dict[str, str]) -> None:
     assert shared_outcome["result"] == 1
     assert isinstance(revoke_outcome["result"], RevocationResult)
     assert mutation_count(db_urls["admin"]) == 1
+    with connect(db_urls["admin"]) as observer:
+        ordering = observer.execute(
+            "SELECT mutation.protected_at, revocation.recorded_at "
+            "FROM public.domain_mutations mutation "
+            "CROSS JOIN kineticloop.artifact_revocation_events revocation"
+        ).fetchone()
+        assert ordering is not None
+        assert ordering[0] is not None and ordering[0] <= ordering[1]
 
 
 def registry_counts(admin_url: str) -> tuple[int, int, int, int]:
@@ -820,8 +836,11 @@ def test_revoke_artifact_atomic_linearization_and_idempotency(
 
 
 class CommitUnknownTransaction:
-    def __init__(self, transaction: Any) -> None:
+    def __init__(
+        self, transaction: Any, error_type: type[psycopg.Error]
+    ) -> None:
         self.transaction = transaction
+        self.error_type = error_type
 
     def __enter__(self) -> Any:
         return self.transaction.__enter__()
@@ -829,31 +848,40 @@ class CommitUnknownTransaction:
     def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any) -> bool:
         result = self.transaction.__exit__(exc_type, exc_value, traceback)
         if exc_type is None:
-            raise psycopg.OperationalError("injected unknown commit outcome")
+            raise self.error_type("injected unknown commit outcome")
         return bool(result)
 
 
 class CommitUnknownConnection:
-    def __init__(self, connection: Connection[Any]) -> None:
+    def __init__(
+        self,
+        connection: Connection[Any],
+        error_type: type[psycopg.Error] = psycopg.OperationalError,
+    ) -> None:
         self.connection = connection
+        self.error_type = error_type
 
     @property
     def info(self) -> Any:
         return self.connection.info
 
     def transaction(self) -> CommitUnknownTransaction:
-        return CommitUnknownTransaction(self.connection.transaction())
+        return CommitUnknownTransaction(self.connection.transaction(), self.error_type)
 
     def cursor(self) -> Any:
         return self.connection.cursor()
 
 
+@pytest.mark.parametrize(
+    "error_type",
+    (psycopg.OperationalError, psycopg.errors.QueryCanceled, psycopg.errors.LockNotAvailable),
+)
 def test_shared_command_ack_loss_propagates_unknown_outcome(
-    db_urls: dict[str, str],
+    db_urls: dict[str, str], error_type: type[psycopg.Error],
 ) -> None:
     with connect(db_urls["application"]) as raw:
-        wrapped: Any = CommitUnknownConnection(raw)
-        with pytest.raises(psycopg.OperationalError, match="unknown commit outcome"):
+        wrapped: Any = CommitUnknownConnection(raw, error_type)
+        with pytest.raises(error_type, match="unknown commit outcome"):
             execute_shared_registry_command(
                 wrapped,
                 eligibility(RegistryCommand.START_SESSION),
@@ -862,10 +890,16 @@ def test_shared_command_ack_loss_propagates_unknown_outcome(
     assert mutation_count(db_urls["admin"]) == 1
 
 
-def test_revoke_ack_loss_reconciles_by_command_key(db_urls: dict[str, str]) -> None:
+@pytest.mark.parametrize(
+    "error_type",
+    (psycopg.OperationalError, psycopg.errors.QueryCanceled, psycopg.errors.LockNotAvailable),
+)
+def test_revoke_ack_loss_reconciles_by_command_key(
+    db_urls: dict[str, str], error_type: type[psycopg.Error]
+) -> None:
     with connect(db_urls["trusted_admin"]) as raw:
-        wrapped: Any = CommitUnknownConnection(raw)
-        with pytest.raises(psycopg.OperationalError, match="unknown commit outcome"):
+        wrapped: Any = CommitUnknownConnection(raw, error_type)
+        with pytest.raises(error_type, match="unknown commit outcome"):
             revoke_artifact(wrapped, revoke_command(), effective_at=NOW, reason_code="EMERGENCY")
     assert registry_counts(db_urls["admin"]) == (1, 1, 1, 1)
     with connect(db_urls["trusted_admin"]) as connection:
@@ -900,6 +934,49 @@ def test_direct_sql_revoke_rejects_unbound_payload_hash(
             "SELECT registry_revision,last_revocation_id "
             "FROM kineticloop.safety_registry_state WHERE id=1"
         ).fetchone() == (0, None)
+
+    decomposed_reason = "Cafe\u0301"
+    noncanonical_payload = json.dumps(
+        {
+            "effective_at": canonical_utc(NOW),
+            "reason_code": decomposed_reason,
+        },
+        ensure_ascii=False,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    noncanonical_hash = hashlib.sha256(noncanonical_payload).hexdigest()
+    canonical_hash = revocation_payload_hash(
+        effective_at=NOW, reason_code=decomposed_reason
+    )
+    assert noncanonical_hash != canonical_hash
+    with connect(db_urls["trusted_admin"]) as trusted:
+        with pytest.raises(psycopg.errors.RaiseException, match="KL_REGISTRY_INVALID_ARGUMENT"):
+            invoke_revoke_sql(
+                trusted, key="unicode-revoke", reason_code=decomposed_reason,
+                payload_hash=noncanonical_hash,
+            )
+        trusted.rollback()
+        row = invoke_revoke_sql(
+            trusted, key="unicode-revoke", reason_code=decomposed_reason,
+            payload_hash=canonical_hash,
+        )
+        assert row is not None
+        trusted.commit()
+        with pytest.raises(psycopg.errors.RaiseException, match="KL_REGISTRY_INVALID_ARGUMENT"):
+            trusted.execute(
+                "SELECT * FROM kineticloop.registry_revoke_artifact("
+                "%s,%s,%s,%s,%s,%s,NULL,%s,5000)",
+                (
+                    UUID(ARTIFACT_ID), CONTENT_HASH, NOW, decomposed_reason,
+                    canonical_hash, "unicode-revoke", UUID(INCIDENT_ID),
+                ),
+            )
+        trusted.rollback()
+    assert registry_counts(db_urls["admin"]) == (1, 1, 1, 1)
+    with connect(db_urls["admin"]) as admin:
+        assert admin.execute(
+            "SELECT reason_code FROM kineticloop.artifact_revocation_events"
+        ).fetchone() == ("Caf\u00e9",)
 
 
 def test_global_revoke_never_locks_s01(db_urls: dict[str, str]) -> None:

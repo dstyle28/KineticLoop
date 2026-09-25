@@ -113,13 +113,13 @@ def execute_shared_registry_command(
             mutation_started = True
             return mutation(cursor, revision)
     except psycopg.Error as error:
+        if mutation_started:
+            raise
         denial = _database_denial(error)
-        if denial is not None and not mutation_started:
+        if denial is not None:
             raise denial from error
         if isinstance(error, (psycopg.errors.LockNotAvailable, psycopg.errors.QueryCanceled)):
             raise RegistryDenied(RegistryDenialCode.REGISTRY_TIMEOUT) from error
-        if mutation_started:
-            raise
         raise RegistryDenied(RegistryDenialCode.REGISTRY_UNAVAILABLE) from error
 def revoke_artifact(
     connection: Connection[Any],
@@ -141,6 +141,7 @@ def revoke_artifact(
         raise RegistryDenied(RegistryDenialCode.IDEMPOTENCY_CONFLICT)
 
     _require_idle_connection(connection)
+    revoke_completed = False
     try:
         with connection.transaction():
             cursor = connection.cursor()
@@ -167,6 +168,7 @@ def revoke_artifact(
             row = cursor.fetchone()
             if row is None:
                 raise RegistryDenied(RegistryDenialCode.REGISTRY_UNAVAILABLE)
+            revoke_completed = True
             return RevocationResult(
                 revocation_id=str(row[0]),
                 registry_revision=int(row[1]),
@@ -175,6 +177,8 @@ def revoke_artifact(
                 recorded_at=row[4],
             )
     except psycopg.Error as error:
+        if revoke_completed:
+            raise
         denial = _database_denial(error)
         if denial is not None:
             raise denial from error

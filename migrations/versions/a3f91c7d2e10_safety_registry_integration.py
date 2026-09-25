@@ -273,18 +273,22 @@ DECLARE
   new_revision bigint;
   new_recorded_at timestamptz;
   new_delivery_id uuid;
+  canonical_reason_code text;
 BEGIN
   IF NOT pg_has_role(session_user, 'kl_trusted_admin', 'MEMBER') THEN
     RAISE EXCEPTION 'KL_REGISTRY_COMMAND_NOT_AUTHORIZED';
   END IF;
+  canonical_reason_code := normalize(p_reason_code, NFC);
   IF p_lock_timeout_ms <= 0 OR p_effective_at IS NULL
      OR p_reason_code IS NULL OR btrim(p_reason_code) = ''
+     OR p_command_key IS NULL OR btrim(p_command_key) = ''
+     OR p_request_hash IS NULL OR p_request_hash !~ '^[0-9a-f]{64}$'
      OR p_revocation_payload_hash IS NULL
      OR p_revocation_payload_hash IS DISTINCT FROM encode(
        sha256(convert_to(
          '{"effective_at":"'
          || to_char(p_effective_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')
-         || '","reason_code":' || to_json(p_reason_code)::text || '}',
+         || '","reason_code":' || to_json(canonical_reason_code)::text || '}',
          'UTF8'
        )),
        'hex'
@@ -304,7 +308,7 @@ BEGIN
   FROM kineticloop.registry_management_receipts AS receipt
   WHERE receipt.command_key = p_command_key;
   IF FOUND THEN
-    IF stored_receipt.request_hash <> p_request_hash THEN
+    IF stored_receipt.request_hash IS DISTINCT FROM p_request_hash THEN
       RAISE EXCEPTION 'KL_REGISTRY_IDEMPOTENCY_CONFLICT';
     END IF;
     RETURN QUERY SELECT stored_receipt.revocation_id, stored_receipt.registry_revision,
@@ -329,17 +333,18 @@ BEGIN
   new_revocation_id := gen_random_uuid();
   new_revision := current_revision + 1;
   new_delivery_id := gen_random_uuid();
+  new_recorded_at := clock_timestamp();
   INSERT INTO kineticloop.artifact_revocation_events (
-    id, content_hash, reason_code, revocation_payload_hash, effective_at,
+    id, content_hash, reason_code, revocation_payload_hash, effective_at, recorded_at,
     management_command_identity, registry_revision, ref_s49_id, registry_state_id,
     operator_identity, command_key, request_hash, causation_incident_id,
     outbox_delivery_id
   ) VALUES (
-    new_revocation_id, p_artifact_content_hash, p_reason_code,
-    p_revocation_payload_hash, p_effective_at, p_command_key, new_revision,
+    new_revocation_id, p_artifact_content_hash, canonical_reason_code,
+    p_revocation_payload_hash, p_effective_at, new_recorded_at, p_command_key, new_revision,
     p_artifact_id, 1, session_user, p_command_key, p_request_hash,
     p_causation_incident_id, new_delivery_id
-  ) RETURNING artifact_revocation_events.recorded_at INTO new_recorded_at;
+  );
 
   UPDATE kineticloop.safety_registry_state
   SET registry_revision = new_revision, last_revocation_id = new_revocation_id
