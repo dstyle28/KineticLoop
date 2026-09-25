@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-013
 display_task_id: KL-013
 task_definition_version: v0.2
 base_commit: 033cc3361d77a5d9853c940a7d50cb3abeef9743
-tested_commit: d9085e713caa5cdffcfac65898a59031379a5653
+tested_commit: b0c5d4abd7ecffb98088a8245cc8dea1ccdea2f5
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -12,43 +12,44 @@ summary: >-
   inventory, including dependency-first base creation, deferred authority pointers,
   closed typed S14 children, target-typed S47 replay edges, the S51 singleton,
   frozen natural identities and authority-basis constraints, global S49/S50 registry
-  identity, deny-by-default runtime grants, an idempotent SECURITY DEFINER boundary,
-  immutable-history triggers, and serialized factset lifecycle write gates. Empty
+  identity, normalized S49 dependency and S42 closure edges, deny-by-default runtime
+  grants, typed-child parent-kind guards, immutable-history triggers, and serialized
+  factset lifecycle write gates. Empty
   isolated PostgreSQL databases rebuild deterministically and reversibly, and the
   ordinary application role cannot directly rewrite immutable semantic history.
 commands_run:
   - check_id: single_migration_head
     command: uv run alembic heads
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-013/checks-d9085e7.log
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-b0c5d4a.log
   - check_id: empty_db_upgrade_head
     command: uv run pytest -q tests/db/test_migrations.py::test_empty_db_upgrade_head
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-013/checks-d9085e7.log
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-b0c5d4a.log
   - check_id: logical_inventory_complete
     command: uv run pytest -q tests/db/test_migrations.py::test_logical_inventory_complete
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-013/checks-d9085e7.log
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-b0c5d4a.log
   - check_id: fk_order_matches_topology
     command: uv run pytest -q tests/db/test_migrations.py::test_fk_order_matches_topology
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-013/checks-d9085e7.log
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-b0c5d4a.log
   - check_id: immutable_history_materialized
     command: uv run pytest -q tests/db/test_migrations.py::test_immutable_history_materialized
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-013/checks-d9085e7.log
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-b0c5d4a.log
   - check_id: database_rebuild_is_deterministic
     command: uv run pytest -q tests/db/test_migrations.py::test_database_rebuild_is_deterministic
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-013/checks-d9085e7.log
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-b0c5d4a.log
   - check_id: migration_db_regressions_pass
     command: uv run pytest -q tests/db/test_migrations.py tests/db/test_immutability.py tests/db/test_lifecycle.py
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-013/checks-d9085e7.log
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-b0c5d4a.log
   - check_id: harness_validation_passes
     command: uv run kl check-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-013/checks-d9085e7.log
+    evidence_ref: docs/exec-plans/evidence/KL-013/checks-b0c5d4a.log
 requirements_covered: []
 files_changed:
   - pyproject.toml
@@ -62,6 +63,7 @@ files_changed:
   - tests/db/test_migrations.py
   - docs/exec-plans/evidence/KL-013/checks-f2416f1.log
   - docs/exec-plans/evidence/KL-013/checks-d9085e7.log
+  - docs/exec-plans/evidence/KL-013/checks-b0c5d4a.log
   - docs/exec-plans/completed/KL-013_RESULT.yaml
 decisions:
   - Keep the frozen logical relation inventory one-to-one with physical tables in the kineticloop schema and identify every table with its S01-S51 comment.
@@ -71,12 +73,16 @@ decisions:
   - Install defense-in-depth mutation triggers on all immutable logical tables, typed fact children, and replay edges, with separate build-to-immutable gates for S15 and S16.
   - Keep SafetyRegistry as an independent seeded singleton and add no command routine that could bypass the frozen S51/S01 ordering contract.
   - Keep S49/S50 in the global registry namespace without fabricated subject identity, and require S42 to bind its complete manifest, policy, evidence, validation, prescription, artifact and S51 basis.
+  - Materialize S49 declared dependencies and each S42 issuance artifact closure as closed normalized foreign-key edges; bind each S49 row to exactly one type-appropriate S05, S19, or S48 root.
+  - Store S49 bounded-versus-TIMELESS validity explicitly, requiring approval policy and reason for TIMELESS artifacts, and make S50 registry revision a positive unique identity.
+  - Enforce frozen S39 commit-receipt and S43 causation idempotency in the database, including closed mutually exclusive S43 event targets.
+  - Validate each typed S14 child against its parent fact kind under a database row lock so child tables cannot reinterpret another fact family.
   - Materialize frozen natural identities as non-null database unique constraints so retries and concurrent writers cannot bypass idempotency in application code.
-  - Reconcile every runtime role's security attributes and memberships on upgrade, and expose application mutation only through the narrow idempotent policy publication routine until downstream command owners install their own reviewed entrypoints.
+  - Reconcile every runtime role's security attributes and memberships on upgrade, and expose no generic application mutation routine; downstream command-owner tasks install authenticated, capability-bound entrypoints.
   - Serialize S16 writes with S15 lifecycle transitions by locking both old and new parents and rejecting mutation once either parent is no longer BUILDING.
   - Freeze table creation in a static initial revision; current SQLAlchemy metadata remains the reviewed schema declaration for later migrations.
 known_limitations:
-  - Command-specific SECURITY DEFINER routines beyond the baseline policy-publication proof and repository transaction implementations remain owned by their downstream command tasks.
+  - Command-specific authenticated SECURITY DEFINER routines and repository transaction implementations remain owned by their downstream command tasks; this baseline intentionally exposes no caller-selected subject mutation routine.
   - PostgreSQL roles are cluster-scoped and are created idempotently; downgrade removes task-owned schema objects but intentionally does not drop shared role identities that another isolated database may use.
   - This task proves schema inventory, rebuild, topology, and history protection only and claims no product requirement PASS.
 follow_up_tasks:
