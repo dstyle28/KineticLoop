@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-016
 display_task_id: KL-016
 task_definition_version: v0.2
 base_commit: 6bb5b07b155cbd66a005788e0b66978e8711a6e4
-tested_commit: 8de378d2dca163417d143593b26fa6e8ef6f1bfa
+tested_commit: 80083f875e6ab25928162949cb5a5cd33c55ea70
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -19,43 +19,43 @@ commands_run:
   - check_id: shared_gate_command_matrix_fails_closed
     command: uv run pytest -q tests/db/test_safety_registry.py::test_shared_gate_command_matrix_fails_closed
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-8de378d.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-80083f8.log
   - check_id: reauthorize_shared_gate_precedes_s01_and_fails_closed
     command: uv run pytest -q tests/db/test_safety_registry.py::test_reauthorize_shared_gate_precedes_s01_and_fails_closed
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-8de378d.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-80083f8.log
   - check_id: continue_session_rechecks_shared_gate_and_fails_closed
     command: uv run pytest -q tests/db/test_safety_registry.py::test_continue_session_rechecks_shared_gate_and_fails_closed
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-8de378d.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-80083f8.log
   - check_id: exclusive_global_gate_serializes
     command: uv run pytest -q tests/db/test_safety_registry.py::test_exclusive_global_gate_serializes
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-8de378d.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-80083f8.log
   - check_id: revoke_artifact_atomic_linearization_and_idempotency
     command: uv run pytest -q tests/db/test_safety_registry.py::test_revoke_artifact_atomic_linearization_and_idempotency
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-8de378d.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-80083f8.log
   - check_id: registry_unavailable_or_timeout_denies
     command: uv run pytest -q tests/unit/contracts/test_safety_registry.py::test_registry_unavailable_or_timeout_denies
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-8de378d.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-80083f8.log
   - check_id: global_revoke_never_locks_s01
     command: uv run pytest -q tests/db/test_safety_registry.py::test_global_revoke_never_locks_s01
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-8de378d.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-80083f8.log
   - check_id: stop_has_no_registry_dependency
     command: uv run pytest -q tests/unit/contracts/test_safety_registry.py::test_stop_has_no_registry_dependency
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-8de378d.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-80083f8.log
   - check_id: safety_registry_db_regressions_pass
     command: uv run pytest -q tests/db/test_safety_registry.py tests/db/test_lifecycle.py
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-8de378d.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-80083f8.log
   - check_id: harness_validation_passes
     command: uv run kl check-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-016/checks-8de378d.log
+    evidence_ref: docs/exec-plans/evidence/KL-016/checks-80083f8.log
 requirements_covered: []
 files_changed:
   - docs/contracts/safety_registry.md
@@ -67,6 +67,7 @@ files_changed:
   - tests/db/test_safety_registry.py
   - docs/exec-plans/evidence/KL-016/checks-af49f4b.log
   - docs/exec-plans/evidence/KL-016/checks-8de378d.log
+  - docs/exec-plans/evidence/KL-016/checks-80083f8.log
   - docs/exec-plans/completed/KL-016_RESULT.yaml
 decisions:
   - Use PostgreSQL FOR SHARE / FOR UPDATE on the singleton S51 system row as the logical shared/exclusive gate.
@@ -76,6 +77,7 @@ decisions:
   - Treat successful T2-GLOBAL commit as authority; effective_at remains audit metadata only.
   - Keep STOP on a separate S01-first entrypoint with no S51 read or lock.
   - Read authoritative PostgreSQL time only after S51 and S01 are held; do not accept caller-captured time for authorization or artifact validity.
+  - Issue the authoritative clock read in a separate statement after the S01 locking statement returns, so time cannot be captured before an S01 lock wait.
   - Require an idle connection and own the top-level transaction through commit so no helper can return while an outer transaction retains S51 or reverses lock order.
 known_limitations:
   - KL-016 intentionally uses a task-local minimal PostgreSQL fixture and adds no migration; concrete production DDL remains owned by its downstream schema task.
