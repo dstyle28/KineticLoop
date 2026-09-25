@@ -1475,6 +1475,12 @@ class ValidatorTests(unittest.TestCase):
         self.check(1, 'governance-write-scope:HG-999:README.md',
                    '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
+    def test_ci_governance_allows_current_project_plan_refinement(self):
+        plan = self.root / v.PROJECT_PLAN
+        plan.write_text(plan.read_text() + '\nGovernance fixture refinement.\n')
+        self.governance_change()
+        self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
     def test_ci_governance_rejects_task_review_without_integration(self):
         self.review(self.base)
         self.governance_change()

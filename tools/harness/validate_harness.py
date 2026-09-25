@@ -12,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 BACKLOG = 'KineticLoop_Harness_Backlog_v0.2.json'
 TRACEABILITY = 'KineticLoop_Harness_Traceability_v0.3.json'
+PROJECT_PLAN = '06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md'
 M1_CLOSURE_TRACEABILITY_TASK_FIELDS = (
     'task_identity',
     'id',
@@ -564,6 +565,7 @@ def governance_record_paths(change_id):
 
 def governance_allowed_patterns(change_id):
     return [
+        PROJECT_PLAN,
         BACKLOG,
         TRACEABILITY,
         INDEX,
