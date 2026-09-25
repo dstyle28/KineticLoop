@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime
 from enum import StrEnum
 from typing import TypeVar
 
@@ -57,7 +56,6 @@ class RegistryEligibility:
     command: RegistryCommand
     subject_id: str
     artifact_ids: tuple[str, ...]
-    observed_at: datetime
     minimum_registry_revision: int = 0
 
     def __post_init__(self) -> None:
@@ -68,8 +66,6 @@ class RegistryEligibility:
             raise ValueError("artifact_ids must be unique")
         for artifact_id in self.artifact_ids:
             canonical_id(artifact_id)
-        if self.observed_at.tzinfo is None or self.observed_at.utcoffset() is None:
-            raise ValueError("observed_at must be timezone-aware")
         if self.minimum_registry_revision < 0:
             raise ValueError("minimum_registry_revision cannot be negative")
 

@@ -10,6 +10,7 @@ from uuid import UUID, uuid4
 
 import psycopg
 from psycopg import Connection, Cursor
+from psycopg.pq import TransactionStatus
 
 from kineticloop.contracts.commands import RevokeArtifact
 from kineticloop.contracts.safety_registry import (
@@ -35,6 +36,17 @@ class RevocationResult:
     artifact_id: str
     effective_at: datetime
     recorded_at: datetime
+
+
+class RegistryTransactionStateError(RuntimeError):
+    """The command owner requires an idle connection and owns the top-level commit."""
+
+
+def _require_idle_connection(connection: Connection[Any]) -> None:
+    if connection.info.transaction_status is not TransactionStatus.IDLE:
+        raise RegistryTransactionStateError(
+            "SafetyRegistry command owners require an idle connection"
+        )
 
 
 def _set_lock_timeout(cursor: Cursor[Any], lock_timeout_ms: int) -> None:
@@ -89,10 +101,11 @@ def _acquire_exclusive_gate(cursor: Cursor[Any], lock_timeout_ms: int) -> int:
 
 def _lock_subject_and_check_authorization(
     cursor: Cursor[Any], eligibility: RegistryEligibility
-) -> None:
+) -> datetime:
     cursor.execute(
         """
-        SELECT t6_issuance_eligible, t7_execution_eligible, authorization_valid_until
+        SELECT t6_issuance_eligible, t7_execution_eligible, authorization_valid_until,
+               clock_timestamp()
           FROM subject_coordination
          WHERE subject_id = %s
          FOR UPDATE
@@ -102,18 +115,21 @@ def _lock_subject_and_check_authorization(
     row = cursor.fetchone()
     if row is None:
         raise RegistryDenied(RegistryDenialCode.AUTHORIZATION_INELIGIBLE)
-    t6_eligible, t7_eligible, authorization_valid_until = row
+    t6_eligible, t7_eligible, authorization_valid_until, authoritative_now = row
     if eligibility.command in T6_COMMANDS and not t6_eligible:
         raise RegistryDenied(RegistryDenialCode.AUTHORIZATION_INELIGIBLE)
     if eligibility.command in T7_COMMANDS and (
         not t7_eligible
         or authorization_valid_until is None
-        or authorization_valid_until <= eligibility.observed_at
+        or authorization_valid_until <= authoritative_now
     ):
         raise RegistryDenied(RegistryDenialCode.AUTHORIZATION_INELIGIBLE)
+    return authoritative_now
 
 
-def _check_artifact_closure(cursor: Cursor[Any], eligibility: RegistryEligibility) -> None:
+def _check_artifact_closure(
+    cursor: Cursor[Any], eligibility: RegistryEligibility, authoritative_now: datetime
+) -> None:
     artifact_ids = tuple(UUID(value) for value in eligibility.artifact_ids)
     cursor.execute(
         """
@@ -133,7 +149,7 @@ def _check_artifact_closure(cursor: Cursor[Any], eligibility: RegistryEligibilit
             raise RegistryDenied(RegistryDenialCode.DEPENDENCY_INCOMPLETE)
         if valid_from is None or valid_until is None:
             raise RegistryDenied(RegistryDenialCode.VALIDITY_UNDEFINED)
-        if eligibility.observed_at < valid_from or eligibility.observed_at >= valid_until:
+        if authoritative_now < valid_from or authoritative_now >= valid_until:
             raise RegistryDenied(RegistryDenialCode.ARTIFACT_EXPIRED)
 
     cursor.execute(
@@ -158,14 +174,15 @@ def execute_shared_registry_command(
 ) -> _T:
     """Run T3/T6/T7 as S51 shared -> S01 -> fresh bounded guards -> mutation."""
 
+    _require_idle_connection(connection)
     try:
         with connection.transaction():
             cursor = connection.cursor()
             revision = _acquire_shared_gate(cursor, lock_timeout_ms)
             if revision < eligibility.minimum_registry_revision:
                 raise RegistryDenied(RegistryDenialCode.REGISTRY_STALE)
-            _lock_subject_and_check_authorization(cursor, eligibility)
-            _check_artifact_closure(cursor, eligibility)
+            authoritative_now = _lock_subject_and_check_authorization(cursor, eligibility)
+            _check_artifact_closure(cursor, eligibility, authoritative_now)
             return mutation(cursor, revision)
     except RegistryGateTimeoutError as error:
         raise RegistryDenied(RegistryDenialCode.REGISTRY_TIMEOUT) from error
@@ -190,6 +207,7 @@ def revoke_artifact(
     if not reason_code:
         raise ValueError("reason_code must be non-empty")
 
+    _require_idle_connection(connection)
     with connection.transaction():
         cursor = connection.cursor()
         current_revision = _acquire_exclusive_gate(cursor, lock_timeout_ms)
@@ -313,6 +331,7 @@ def execute_stop_without_registry(
 ) -> _T:
     """Run STOP from S01 directly; this function never reads or locks S51."""
 
+    _require_idle_connection(connection)
     with connection.transaction():
         cursor = connection.cursor()
         _set_lock_timeout(cursor, lock_timeout_ms)

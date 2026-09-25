@@ -24,6 +24,7 @@ from kineticloop.contracts.safety_registry import (
 from kineticloop.db.lifecycle import DatabaseLifecycle
 from kineticloop.identity import ActorRole
 from kineticloop.persistence.safety_registry import (
+    RegistryTransactionStateError,
     RevocationResult,
     execute_shared_registry_command,
     execute_stop_without_registry,
@@ -200,7 +201,6 @@ def eligibility(
         command=command,
         subject_id=SUBJECT_ID,
         artifact_ids=(ARTIFACT_ID, DEPENDENCY_ID),
-        observed_at=NOW,
         minimum_registry_revision=minimum_registry_revision,
     )
 
@@ -318,6 +318,42 @@ def run_waiting_shared_then_revoke(database_url: str, command: RegistryCommand) 
     assert mutation_count(database_url) == 0
 
 
+def run_waiting_shared_then_expire(database_url: str, command: RegistryCommand) -> None:
+    clear_state(database_url)
+    blocker = connect(database_url, name=f"expiry-blocker-{command.value}")
+    blocker.execute(
+        "SELECT registry_revision FROM safety_registry_state "
+        "WHERE registry_scope='system' FOR UPDATE"
+    )
+    outcome: dict[str, object] = {}
+    app_name = f"expiry-shared-{command.value}"
+
+    def worker() -> None:
+        try:
+            with connect(database_url, name=app_name) as connection:
+                execute_shared_registry_command(
+                    connection, eligibility(command), mutate(command), lock_timeout_ms=5_000
+                )
+        except BaseException as error:
+            outcome["error"] = error
+
+    thread = threading.Thread(target=worker)
+    thread.start()
+    wait_until_blocked(database_url, app_name)
+    blocker.execute(
+        "UPDATE safety_artifacts "
+        "SET valid_until = clock_timestamp() - interval '1 second'"
+    )
+    blocker.commit()
+    blocker.close()
+    thread.join(timeout=5)
+    assert not thread.is_alive()
+    error = outcome.get("error")
+    assert isinstance(error, RegistryDenied)
+    assert error.code is RegistryDenialCode.ARTIFACT_EXPIRED
+    assert mutation_count(database_url) == 0
+
+
 def assert_denied_without_mutation(
     database_url: str,
     command: RegistryCommand,
@@ -357,6 +393,9 @@ def assert_timeout_before_subject(database_url: str, command: RegistryCommand) -
 def test_shared_gate_command_matrix_fails_closed(db_url: str) -> None:
     for command in RegistryCommand:
         run_waiting_shared_then_revoke(db_url, command)
+
+        if command is RegistryCommand.START_SESSION:
+            run_waiting_shared_then_expire(db_url, command)
 
         clear_state(db_url)
         with connect(db_url) as connection:
@@ -695,3 +734,38 @@ def test_stop_has_no_registry_dependency(db_url: str) -> None:
     registry_holder.rollback()
     registry_holder.close()
     assert mutation_count(db_url) == 1
+
+
+def test_command_owners_reject_nested_transactions(db_url: str) -> None:
+    clear_state(db_url)
+    with connect(db_url) as connection:
+        connection.execute("SELECT 1")
+        with pytest.raises(RegistryTransactionStateError, match="idle connection"):
+            execute_shared_registry_command(
+                connection,
+                eligibility(RegistryCommand.START_SESSION),
+                mutate(RegistryCommand.START_SESSION),
+            )
+        connection.rollback()
+
+    with connect(db_url) as connection:
+        connection.execute("SELECT 1")
+        with pytest.raises(RegistryTransactionStateError, match="idle connection"):
+            revoke_artifact(
+                connection,
+                revoke_command(),
+                effective_at=NOW,
+                reason_code="EMERGENCY",
+            )
+        connection.rollback()
+
+    with connect(db_url) as connection:
+        connection.execute("SELECT 1")
+        with pytest.raises(RegistryTransactionStateError, match="idle connection"):
+            execute_stop_without_registry(
+                connection, SUBJECT_ID, lambda cursor: None
+            )
+        connection.rollback()
+
+    assert mutation_count(db_url) == 0
+    assert table_counts(db_url) == (0, 0, 0, 0, 1)

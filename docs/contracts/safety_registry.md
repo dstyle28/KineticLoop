@@ -18,14 +18,20 @@ transaction:
 
 The connection uses PostgreSQL's default `READ COMMITTED` isolation. A shared-gate statement
 that waits behind an exclusive holder therefore locks and returns the newly committed S51
-row, and all eligibility reads occur in later statements. Pre-gate snapshots and caches are
-not accepted. A supplied minimum revision rejects a demonstrably stale authority, while a
-higher unrelated current revision does not invalidate an otherwise eligible authorization.
+row, and all eligibility reads occur in later statements. After S51 and S01 are held, the
+owner reads authoritative database time and uses it for authorization and artifact validity;
+caller-captured time, pre-gate snapshots, and caches are not accepted. A supplied minimum
+revision rejects a demonstrably stale authority, while a higher unrelated current revision
+does not invalidate an otherwise eligible authorization.
 
 Registry absence and bounded lock timeout are denials. The gate is held until transaction
 commit, so a global revoke cannot linearize between eligibility checking and the protected
 mutation. No network, model, historical scan, or dependency-closure construction belongs in
 this API; the caller supplies a complete, bounded closure of immutable identities.
+
+Every helper requires an idle PostgreSQL connection and owns the top-level transaction through
+commit. Invocation inside an existing transaction is rejected, so the API cannot return while
+S51 remains held in an outer transaction or allow a caller to reverse the S51-before-S01 order.
 
 ## Global revoke
 
