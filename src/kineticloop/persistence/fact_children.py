@@ -47,6 +47,23 @@ class FactValueState(StrEnum):
     PARSE_FAILED = "PARSE_FAILED"
 
 
+@unique
+class FactFieldType(StrEnum):
+    """Closed scalar types for physical child value columns."""
+
+    TEXT = "TEXT"
+    NONNEGATIVE_INTEGER = "NONNEGATIVE_INTEGER"
+    NONNEGATIVE_DECIMAL = "NONNEGATIVE_DECIMAL"
+
+
+@unique
+class UnitPolicy(StrEnum):
+    """Whether a field's physical unit column may or must be populated."""
+
+    FORBIDDEN = "FORBIDDEN"
+    REQUIRED_WHEN_ACTUAL = "REQUIRED_WHEN_ACTUAL"
+
+
 ScalarValue: TypeAlias = Decimal | str | bool
 
 
@@ -121,6 +138,67 @@ class ProvenancedFactValue:
 
 
 @dataclass(frozen=True, slots=True)
+class FactFieldSpec:
+    """One closed, physically materializable child-field shape.
+
+    A value row has a non-null state column and four non-null provenance columns.
+    ``value_nullable`` describes only the typed value column: it is nullable exactly
+    when the field permits a non-ACTUAL state.
+    """
+
+    name: str
+    value_type: FactFieldType
+    allowed_states: tuple[FactValueState, ...]
+    value_nullable: bool
+    unit_policy: UnitPolicy
+    provenance_required: bool = True
+    cardinality: str = "EXACTLY_ONE_PER_CHILD_ROW"
+
+    def __post_init__(self) -> None:
+        _required_text(self.name, "field name")
+        if not self.allowed_states or FactValueState.ACTUAL not in self.allowed_states:
+            raise FactChildContractError("field states must include ACTUAL")
+        if len(set(self.allowed_states)) != len(self.allowed_states):
+            raise FactChildContractError("field states must be unique")
+        permits_missing = any(state is not FactValueState.ACTUAL for state in self.allowed_states)
+        if self.value_nullable != permits_missing:
+            raise FactChildContractError("value nullability must match allowed non-ACTUAL states")
+        if not self.provenance_required:
+            raise FactChildContractError("every declared fact child field requires provenance")
+        if self.cardinality != "EXACTLY_ONE_PER_CHILD_ROW":
+            raise FactChildContractError("fact child fields require exactly-one row cardinality")
+
+
+ALL_VALUE_STATES: tuple[FactValueState, ...] = tuple(FactValueState)
+ACTUAL_ONLY: tuple[FactValueState, ...] = (FactValueState.ACTUAL,)
+
+
+def _identity_field(name: str) -> FactFieldSpec:
+    return FactFieldSpec(
+        name=name,
+        value_type=FactFieldType.TEXT,
+        allowed_states=ACTUAL_ONLY,
+        value_nullable=False,
+        unit_policy=UnitPolicy.FORBIDDEN,
+    )
+
+
+def _measured_field(
+    name: str,
+    value_type: FactFieldType,
+    *,
+    unit_policy: UnitPolicy,
+) -> FactFieldSpec:
+    return FactFieldSpec(
+        name=name,
+        value_type=value_type,
+        allowed_states=ALL_VALUE_STATES,
+        value_nullable=True,
+        unit_policy=unit_policy,
+    )
+
+
+@dataclass(frozen=True, slots=True)
 class FactChildPlan:
     """Physical relation shape consumed later by the DDL task."""
 
@@ -129,8 +207,10 @@ class FactChildPlan:
     parent_relation: str
     fact_kind: FactKind
     child_identity_field: str
-    typed_fields: tuple[str, ...]
+    fields: tuple[FactFieldSpec, ...]
     parent_key: tuple[str, str]
+    revision_unique_key: tuple[str, str, str]
+    correction_identity_key: tuple[str, str, str]
     provenance_roots: tuple[str, ...]
     writer: str
     transaction: str
@@ -140,8 +220,21 @@ class FactChildPlan:
             raise FactChildContractError("fact children must be owned by S14")
         if self.parent_key != ("subject_id", "fact_revision_id"):
             raise FactChildContractError("fact children require a same-subject S14 parent key")
-        if not self.typed_fields or len(set(self.typed_fields)) != len(self.typed_fields):
+        field_names = tuple(field.name for field in self.fields)
+        if not field_names or len(set(field_names)) != len(field_names):
             raise FactChildContractError("typed fields must be non-empty and unique")
+        if self.revision_unique_key != (
+            "subject_id",
+            "fact_revision_id",
+            self.child_identity_field,
+        ):
+            raise FactChildContractError("child rows require revision-scoped uniqueness")
+        if self.correction_identity_key != (
+            "subject_id",
+            "stable_fact_id",
+            self.child_identity_field,
+        ):
+            raise FactChildContractError("corrections require a stable child identity key")
         if self.provenance_roots != ("S09", "S10", "S13"):
             raise FactChildContractError("field provenance must bind evidence, assertion, and admission")
         if self.writer != "CanonicalFactService.AcceptFactRevision" or self.transaction != "T2-IN":
@@ -156,8 +249,22 @@ FACT_CHILD_PLANS = MappingProxyType(
             parent_relation="S14",
             fact_kind=FactKind.WORKOUT_ACTUAL,
             child_identity_field="set_id",
-            typed_fields=("exercise_identity", "repetitions", "load"),
+            fields=(
+                _identity_field("exercise_identity"),
+                _measured_field(
+                    "repetitions",
+                    FactFieldType.NONNEGATIVE_INTEGER,
+                    unit_policy=UnitPolicy.FORBIDDEN,
+                ),
+                _measured_field(
+                    "load",
+                    FactFieldType.NONNEGATIVE_DECIMAL,
+                    unit_policy=UnitPolicy.REQUIRED_WHEN_ACTUAL,
+                ),
+            ),
             parent_key=("subject_id", "fact_revision_id"),
+            revision_unique_key=("subject_id", "fact_revision_id", "set_id"),
+            correction_identity_key=("subject_id", "stable_fact_id", "set_id"),
             provenance_roots=("S09", "S10", "S13"),
             writer="CanonicalFactService.AcceptFactRevision",
             transaction="T2-IN",
@@ -168,8 +275,22 @@ FACT_CHILD_PLANS = MappingProxyType(
             parent_relation="S14",
             fact_kind=FactKind.WORKOUT_ACTUAL,
             child_identity_field="bout_id",
-            typed_fields=("activity_identity", "duration", "distance"),
+            fields=(
+                _identity_field("activity_identity"),
+                _measured_field(
+                    "duration",
+                    FactFieldType.NONNEGATIVE_DECIMAL,
+                    unit_policy=UnitPolicy.REQUIRED_WHEN_ACTUAL,
+                ),
+                _measured_field(
+                    "distance",
+                    FactFieldType.NONNEGATIVE_DECIMAL,
+                    unit_policy=UnitPolicy.REQUIRED_WHEN_ACTUAL,
+                ),
+            ),
             parent_key=("subject_id", "fact_revision_id"),
+            revision_unique_key=("subject_id", "fact_revision_id", "bout_id"),
+            correction_identity_key=("subject_id", "stable_fact_id", "bout_id"),
             provenance_roots=("S09", "S10", "S13"),
             writer="CanonicalFactService.AcceptFactRevision",
             transaction="T2-IN",
@@ -180,8 +301,17 @@ FACT_CHILD_PLANS = MappingProxyType(
             parent_relation="S14",
             fact_kind=FactKind.HEALTH_OBSERVATION,
             child_identity_field="observation_id",
-            typed_fields=("metric_identity", "observed_value"),
+            fields=(
+                _identity_field("metric_identity"),
+                _measured_field(
+                    "observed_value",
+                    FactFieldType.NONNEGATIVE_DECIMAL,
+                    unit_policy=UnitPolicy.REQUIRED_WHEN_ACTUAL,
+                ),
+            ),
             parent_key=("subject_id", "fact_revision_id"),
+            revision_unique_key=("subject_id", "fact_revision_id", "observation_id"),
+            correction_identity_key=("subject_id", "stable_fact_id", "observation_id"),
             provenance_roots=("S09", "S10", "S13"),
             writer="CanonicalFactService.AcceptFactRevision",
             transaction="T2-IN",
@@ -192,8 +322,17 @@ FACT_CHILD_PLANS = MappingProxyType(
             parent_relation="S14",
             fact_kind=FactKind.NUTRITION_INTAKE,
             child_identity_field="intake_item_id",
-            typed_fields=("nutrient_identity", "consumed_amount"),
+            fields=(
+                _identity_field("nutrient_identity"),
+                _measured_field(
+                    "consumed_amount",
+                    FactFieldType.NONNEGATIVE_DECIMAL,
+                    unit_policy=UnitPolicy.REQUIRED_WHEN_ACTUAL,
+                ),
+            ),
             parent_key=("subject_id", "fact_revision_id"),
+            revision_unique_key=("subject_id", "fact_revision_id", "intake_item_id"),
+            correction_identity_key=("subject_id", "stable_fact_id", "intake_item_id"),
             provenance_roots=("S09", "S10", "S13"),
             writer="CanonicalFactService.AcceptFactRevision",
             transaction="T2-IN",
