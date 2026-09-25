@@ -25,8 +25,8 @@ def rejected(database: DatabaseLifecycle, sql: str, marker: str) -> None:
 
 def test_update_delete_rejected(database: DatabaseLifecycle) -> None:
     database.execute_sql(
-        "SET ROLE kl012_history_writer; "
-        "INSERT INTO kl012_fixture.immutable_history(content) VALUES ('original');"
+        "SET ROLE kl012_application; "
+        "SELECT kl012_fixture.append_immutable_history('original');"
     )
     rejected(
         database,
@@ -127,7 +127,25 @@ def test_direct_sql_bypass_rejected(database: DatabaseLifecycle) -> None:
         "ALTER TABLE kl012_fixture.immutable_history DISABLE TRIGGER ALL;",
         "must be owner",
     )
+    rejected(
+        database,
+        "SET SESSION AUTHORIZATION kl012_application; SET ROLE kl012_history_writer;",
+        "permission denied to set role",
+    )
     assert database.execute_sql("SELECT count(*) FROM kl012_fixture.immutable_history;") == "0"
+    assert database.execute_sql(
+        "SELECT prosecdef || ':' || rolname "
+        "FROM pg_proc JOIN pg_roles ON pg_roles.oid = pg_proc.proowner "
+        "WHERE pg_proc.oid = "
+        "'kl012_fixture.append_immutable_history(text)'::regprocedure;"
+    ) == "true:kl012_history_writer"
+    assert database.execute_sql(
+        "SELECT has_function_privilege('kl012_application', "
+        "'kl012_fixture.append_immutable_history(text)', 'EXECUTE');"
+    ) == "t"
+    assert database.execute_sql(
+        "SELECT pg_has_role('kl012_application', 'kl012_history_writer', 'MEMBER');"
+    ) == "f"
 
     assert database.execute_sql(
         "SELECT has_table_privilege('kl012_outbox_dispatcher', "

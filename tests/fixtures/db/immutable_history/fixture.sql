@@ -45,6 +45,30 @@ GRANT SELECT ON TABLE kl012_fixture.immutable_history TO kl012_application;
 GRANT SELECT, INSERT ON TABLE kl012_fixture.immutable_history TO kl012_history_writer;
 GRANT USAGE, SELECT ON SEQUENCE kl012_fixture.immutable_history_history_id_seq
     TO kl012_history_writer;
+GRANT CREATE ON SCHEMA kl012_fixture TO kl012_history_writer;
+
+CREATE FUNCTION kl012_fixture.append_immutable_history(new_content text)
+RETURNS bigint
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog
+AS $function$
+DECLARE
+    inserted_id bigint;
+BEGIN
+    INSERT INTO kl012_fixture.immutable_history(content)
+    VALUES (new_content)
+    RETURNING history_id INTO inserted_id;
+    RETURN inserted_id;
+END;
+$function$;
+
+ALTER FUNCTION kl012_fixture.append_immutable_history(text)
+    OWNER TO kl012_history_writer;
+REVOKE CREATE ON SCHEMA kl012_fixture FROM kl012_history_writer;
+REVOKE ALL ON FUNCTION kl012_fixture.append_immutable_history(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION kl012_fixture.append_immutable_history(text)
+    TO kl012_application;
 
 CREATE TABLE kl012_fixture.owned_transitions (
     entity_id bigint PRIMARY KEY,

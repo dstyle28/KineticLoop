@@ -1,9 +1,12 @@
 from kineticloop.persistence.immutability import (
+    COMMAND_ENTRYPOINTS,
+    ENTRYPOINT_BY_ID,
     PROTECTION_BY_ID,
     RELATION_PROTECTIONS,
     RUNTIME_ROLE_NAMES,
     DatabaseRole,
     GuardRequirement,
+    LockTarget,
     SqlPermission,
     StorageClass,
     permissions_for_role,
@@ -89,3 +92,42 @@ def test_lifecycle_guard_requirements_are_machine_readable() -> None:
     assert GuardRequirement.BUILD_WRITE_GATE in PROTECTION_BY_ID["S23"].guards
     assert GuardRequirement.EVALUATION_ISOLATION in PROTECTION_BY_ID["S46"].guards
     assert GuardRequirement.EVALUATION_ISOLATION in PROTECTION_BY_ID["S47"].guards
+
+
+def test_command_guards_bind_to_divergent_transaction_paths() -> None:
+    assert len(ENTRYPOINT_BY_ID) == len(COMMAND_ENTRYPOINTS)
+    for entrypoint in COMMAND_ENTRYPOINTS:
+        assert entrypoint.transaction_group
+        assert GuardRequirement.COMMAND_ENTRYPOINT in entrypoint.guards
+        for mutation in entrypoint.mutations:
+            writer_role = role_name_for(mutation.writer_principal)
+            assert mutation.permission in permissions_for_role(
+                PROTECTION_BY_ID[mutation.logical_id], writer_role
+            )
+
+    build = ENTRYPOINT_BY_ID["build_factset"]
+    seal = ENTRYPOINT_BY_ID["seal_factset"]
+    assert build.lock_order == (LockTarget.BUILD,)
+    assert LockTarget.USER not in build.lock_order
+    assert LockTarget.REGISTRY_SHARED not in build.lock_order
+    assert seal.lock_order == (LockTarget.USER, LockTarget.BUILD)
+
+    external = ENTRYPOINT_BY_ID["accept_external_execution"]
+    start = ENTRYPOINT_BY_ID["start_or_resume_session"]
+    assert external.lock_order == (LockTarget.USER,)
+    assert GuardRequirement.ACTUAL_FACT_ACCEPTANCE in external.guards
+    assert GuardRequirement.REGISTRY_GATE not in external.guards
+    assert start.lock_order == (
+        LockTarget.REGISTRY_SHARED,
+        LockTarget.USER,
+        LockTarget.EXECUTION,
+    )
+    assert GuardRequirement.CURRENT_AUTHORIZATION in start.guards
+    assert GuardRequirement.REGISTRY_GATE in start.guards
+
+    revoke = ENTRYPOINT_BY_ID["revoke_safety_artifact"]
+    assert revoke.lock_order == (LockTarget.REGISTRY_EXCLUSIVE,)
+    assert {
+        (mutation.logical_id, mutation.permission)
+        for mutation in revoke.mutations
+    } == {("S50", SqlPermission.INSERT), ("S51", SqlPermission.UPDATE)}

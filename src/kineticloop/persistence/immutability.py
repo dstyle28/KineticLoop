@@ -53,6 +53,17 @@ class GuardRequirement(StrEnum):
     PARENT_BUILD_WRITE_GATE = "parent_build_write_gate"
     EVALUATION_ISOLATION = "evaluation_isolation"
     OUTBOX_DELIVERY_ONLY = "outbox_delivery_only"
+    ACTUAL_FACT_ACCEPTANCE = "actual_fact_acceptance"
+    CURRENT_AUTHORIZATION = "current_authorization"
+
+
+class LockTarget(StrEnum):
+    REGISTRY_SHARED = "registry_shared"
+    REGISTRY_EXCLUSIVE = "registry_exclusive"
+    USER = "user"
+    BUILD = "build"
+    EXECUTION = "execution"
+    OUTBOX = "outbox"
 
 
 @dataclass(frozen=True, slots=True)
@@ -67,6 +78,25 @@ class RelationProtection:
     table_name: str
     storage_class: StorageClass
     writers: tuple[WriterGrant, ...]
+    guards: frozenset[GuardRequirement]
+
+
+@dataclass(frozen=True, slots=True)
+class CommandMutation:
+    logical_id: str
+    permission: SqlPermission
+    writer_principal: str
+
+
+@dataclass(frozen=True, slots=True)
+class CommandEntrypoint:
+    """Authoritative path-specific transaction/lock contract."""
+
+    command_id: str
+    principal: str
+    mutations: tuple[CommandMutation, ...]
+    transaction_group: str
+    lock_order: tuple[LockTarget, ...]
     guards: frozenset[GuardRequirement]
 
 
@@ -156,6 +186,153 @@ RELATION_PROTECTIONS: Final[tuple[RelationProtection, ...]] = (
     _protection("S49", StorageClass.IMMUTABLE, "safety_registry", GuardRequirement.REGISTRY_GATE),
     _protection("S50", StorageClass.IMMUTABLE, "safety_registry", GuardRequirement.REGISTRY_GATE, GuardRequirement.IDEMPOTENCY, GuardRequirement.SAME_TRANSACTION),
     _protection("S51", StorageClass.MUTABLE, "safety_registry", GuardRequirement.REGISTRY_GATE, GuardRequirement.LOCK_ORDER, GuardRequirement.SAME_TRANSACTION),
+)
+
+
+def _mutation(
+    logical_id: str,
+    permission: SqlPermission,
+    writer_principal: str,
+) -> CommandMutation:
+    return CommandMutation(logical_id, permission, writer_principal)
+
+
+# Relation ``guards`` above are an inventory aid only. These command-specific rows
+# are authoritative wherever paths over the same relation diverge. Downstream DDL
+# must never apply the union of relation guard tags to every command path.
+COMMAND_ENTRYPOINTS: Final[tuple[CommandEntrypoint, ...]] = (
+
+    CommandEntrypoint(
+        command_id="record_domain_event_with_outbox",
+        principal="originating_domain_command",
+        mutations=(
+            _mutation("S03", SqlPermission.INSERT, "originating_domain_command"),
+            _mutation("S04", SqlPermission.INSERT, "originating_domain_command"),
+        ),
+        transaction_group="domain_event_outbox",
+        lock_order=(),
+        guards=frozenset(
+            {GuardRequirement.COMMAND_ENTRYPOINT, GuardRequirement.SAME_TRANSACTION}
+        ),
+    ),
+    CommandEntrypoint(
+        command_id="dispatch_outbox_delivery",
+        principal="outbox_dispatcher",
+        mutations=(_mutation("S04", SqlPermission.UPDATE, "outbox_dispatcher"),),
+        transaction_group="outbox_delivery",
+        lock_order=(LockTarget.OUTBOX,),
+        guards=frozenset(
+            {
+                GuardRequirement.COMMAND_ENTRYPOINT,
+                GuardRequirement.OUTBOX_DELIVERY_ONLY,
+            }
+        ),
+    ),
+    CommandEntrypoint(
+        command_id="build_factset",
+        principal="canonical_view_service",
+        mutations=(
+            _mutation("S15", SqlPermission.INSERT, "canonical_view_service"),
+            _mutation("S15", SqlPermission.UPDATE, "canonical_view_service"),
+            _mutation("S16", SqlPermission.INSERT, "canonical_view_service"),
+            _mutation("S16", SqlPermission.UPDATE, "canonical_view_service"),
+        ),
+        transaction_group="factset_build",
+        lock_order=(LockTarget.BUILD,),
+        guards=frozenset(
+            {GuardRequirement.COMMAND_ENTRYPOINT, GuardRequirement.BUILD_WRITE_GATE}
+        ),
+    ),
+    CommandEntrypoint(
+        command_id="seal_factset",
+        principal="canonical_view_service",
+        mutations=(
+            _mutation("S15", SqlPermission.UPDATE, "canonical_view_service"),
+            _mutation("S01", SqlPermission.UPDATE, "decision_state_coordinator"),
+            _mutation("S03", SqlPermission.INSERT, "originating_domain_command"),
+            _mutation("S04", SqlPermission.INSERT, "originating_domain_command"),
+        ),
+        transaction_group="t2_seal",
+        lock_order=(LockTarget.USER, LockTarget.BUILD),
+        guards=frozenset(
+            {
+                GuardRequirement.COMMAND_ENTRYPOINT,
+                GuardRequirement.BUILD_WRITE_GATE,
+                GuardRequirement.USER_COORDINATION,
+                GuardRequirement.SAME_TRANSACTION,
+            }
+        ),
+    ),
+    CommandEntrypoint(
+        command_id="accept_external_execution",
+        principal="execution_service",
+        mutations=(
+            _mutation("S14", SqlPermission.INSERT, "canonical_fact_service"),
+            _mutation("S44", SqlPermission.INSERT, "execution_service"),
+            _mutation("S44", SqlPermission.UPDATE, "execution_service"),
+            _mutation("S03", SqlPermission.INSERT, "originating_domain_command"),
+            _mutation("S04", SqlPermission.INSERT, "originating_domain_command"),
+        ),
+        transaction_group="t2_external_execution",
+        lock_order=(LockTarget.USER,),
+        guards=frozenset(
+            {
+                GuardRequirement.COMMAND_ENTRYPOINT,
+                GuardRequirement.ACTUAL_FACT_ACCEPTANCE,
+                GuardRequirement.USER_COORDINATION,
+                GuardRequirement.SAME_TRANSACTION,
+            }
+        ),
+    ),
+    CommandEntrypoint(
+        command_id="start_or_resume_session",
+        principal="execution_service",
+        mutations=(
+            _mutation("S01", SqlPermission.UPDATE, "decision_state_coordinator"),
+            _mutation("S44", SqlPermission.INSERT, "execution_service"),
+            _mutation("S44", SqlPermission.UPDATE, "execution_service"),
+            _mutation("S45", SqlPermission.INSERT, "execution_service"),
+            _mutation("S03", SqlPermission.INSERT, "originating_domain_command"),
+            _mutation("S04", SqlPermission.INSERT, "originating_domain_command"),
+        ),
+        transaction_group="t7_start_resume",
+        lock_order=(
+            LockTarget.REGISTRY_SHARED,
+            LockTarget.USER,
+            LockTarget.EXECUTION,
+        ),
+        guards=frozenset(
+            {
+                GuardRequirement.COMMAND_ENTRYPOINT,
+                GuardRequirement.REGISTRY_GATE,
+                GuardRequirement.CURRENT_AUTHORIZATION,
+                GuardRequirement.USER_COORDINATION,
+                GuardRequirement.SAME_TRANSACTION,
+            }
+        ),
+    ),
+    CommandEntrypoint(
+        command_id="revoke_safety_artifact",
+        principal="safety_registry",
+        mutations=(
+            _mutation("S50", SqlPermission.INSERT, "safety_registry"),
+            _mutation("S51", SqlPermission.UPDATE, "safety_registry"),
+        ),
+        transaction_group="t2_global_revoke",
+        lock_order=(LockTarget.REGISTRY_EXCLUSIVE,),
+        guards=frozenset(
+            {
+                GuardRequirement.COMMAND_ENTRYPOINT,
+                GuardRequirement.REGISTRY_GATE,
+                GuardRequirement.IDEMPOTENCY,
+                GuardRequirement.SAME_TRANSACTION,
+            }
+        ),
+    ),
+)
+
+ENTRYPOINT_BY_ID: Final[Mapping[str, CommandEntrypoint]] = MappingProxyType(
+    {entrypoint.command_id: entrypoint for entrypoint in COMMAND_ENTRYPOINTS}
 )
 
 PROTECTION_BY_ID: Final[Mapping[str, RelationProtection]] = MappingProxyType(

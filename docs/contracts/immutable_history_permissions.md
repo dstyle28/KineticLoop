@@ -47,10 +47,15 @@ build relations validate old state, new state, revision/fence expectations, and 
 command's T1–T8 transaction guards. A trigger is not allowed to call a model,
 network service, or acquire locks contrary to the frozen order.
 
-Every relation carries machine-readable guard requirements. These identify command
-entrypoint, same-transaction, idempotency, user coordination, registry gate, lock
-order, revision/fence, lifecycle/build gate, outbox-only, and evaluation-isolation
-obligations. Grants are incomplete unless the listed guards are materialized.
+Relation rows carry a conservative inventory of possible guard requirements, but
+that union is not an executable command contract and must never be applied to every
+path. Authoritative `COMMAND_ENTRYPOINTS` bind command identity, orchestrating
+principal, each touched relation/operation and its writer principal, atomic group,
+ordered locks, and path-specific guards. They explicitly keep S15 build work on the
+build lock while SealFactset takes user → build, and keep T2 external-execution fact
+acceptance independent of the registry while T7 START/RESUME takes registry-shared
+→ user → execution and checks current authorization. Grants are incomplete unless
+the applicable entrypoint contract is materialized.
 
 The KL-012 PostgreSQL fixture demonstrates the minimum enforcement shape:
 
@@ -59,7 +64,10 @@ The KL-012 PostgreSQL fixture demonstrates the minimum enforcement shape:
 3. only the transition owner can perform the declared `OPEN → SEALED` update;
 4. even that owner cannot reverse or reshape a sealed transition;
 5. the originating command can insert S04 but cannot update delivery metadata;
-6. OutboxDispatcher can perform the guarded delivery update but cannot insert S04.
+6. OutboxDispatcher can perform the guarded delivery update but cannot insert S04;
+7. the application appends immutable history only through an actual
+   `SECURITY DEFINER` routine owned by a NOLOGIN writer, cannot assume that role,
+   and cannot issue equivalent direct DML.
 
 The fixture is intentionally minimal. KL-013 owns full baseline DDL, including
 installing these grants and lifecycle guards on every physical table and typed child

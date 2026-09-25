@@ -1,12 +1,17 @@
 """Persistence contracts shared by schema and migration implementations."""
 
 from kineticloop.persistence.immutability import (
+    COMMAND_ENTRYPOINTS,
+    ENTRYPOINT_BY_ID,
     PROTECTION_BY_ID,
     RELATION_PROTECTIONS,
     RUNTIME_ROLE_NAMES,
     WRITER_ROLE_NAMES,
+    CommandEntrypoint,
+    CommandMutation,
     DatabaseRole,
     GuardRequirement,
+    LockTarget,
     RelationProtection,
     SqlPermission,
     StorageClass,
@@ -30,10 +35,15 @@ from kineticloop.persistence.schema_topology import (
 
 __all__ = [
     "AUTHORITY_ROOT_CONSTRAINTS",
+    "COMMAND_ENTRYPOINTS",
+    "CommandEntrypoint",
+    "CommandMutation",
     "DatabaseRole",
     "DEFERRED_REFERENCES",
+    "ENTRYPOINT_BY_ID",
     "GuardRequirement",
     "LOGICAL_RELATIONS",
+    "LockTarget",
     "POST_BASE_REFERENCE_PLANS",
     "PROTECTION_BY_ID",
     "RELATION_BY_ID",
