@@ -1,0 +1,57 @@
+task_identity: harness-backlog-v0.2/KL-011
+display_task_id: KL-011
+task_definition_version: v0.2
+base_commit: bac21cf6a920859c74e3906383626557b379e758
+tested_commit: 9aa6d7744a677bb72f14471d46dbcda6e433b5ec
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Defined a closed four-relation physical child plan beneath S14 for strength sets,
+  cardio bouts, health observations, and nutrition intake. Each child remains under
+  the CanonicalFactService T2-IN writer, uses a same-subject S14 parent key, preserves
+  field-level S09/S10/S13 provenance, and represents observed numeric zero separately
+  from unknown and other explicit missingness states without consulting prescriptions.
+commands_run:
+  - check_id: typed_fact_children_are_closed
+    command: uv run pytest -q tests/unit/persistence/test_fact_children.py::test_typed_fact_children_are_closed
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-011/checks-9aa6d77.log
+  - check_id: actual_unknown_zero_are_distinct
+    command: uv run pytest -q tests/unit/persistence/test_fact_children.py::test_actual_unknown_zero_are_distinct
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-011/checks-9aa6d77.log
+  - check_id: fact_child_provenance_is_mandatory
+    command: uv run pytest -q tests/unit/persistence/test_fact_children.py::test_fact_child_provenance_is_mandatory
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-011/checks-9aa6d77.log
+  - check_id: schema_topology_regression_passes
+    command: uv run pytest -q tests/unit/persistence/test_schema_topology.py tests/unit/persistence/test_fact_children.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-011/checks-9aa6d77.log
+  - check_id: harness_validation_passes
+    command: uv run kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-011/checks-9aa6d77.log
+requirements_covered: []
+files_changed:
+  - docs/contracts/canonical_fact_children.md
+  - src/kineticloop/persistence/fact_children.py
+  - tests/unit/persistence/test_fact_children.py
+  - docs/exec-plans/evidence/KL-011/checks-9aa6d77.log
+  - docs/exec-plans/completed/KL-011_RESULT.yaml
+decisions:
+  - Keep the KL-011 child inventory closed to the packet deliverable of strength, cardio, health, and nutrition relations.
+  - Keep BODY_MEASUREMENT and OUTCOME_OBSERVATION as valid frozen S14 union members without inventing unauthorized physical child shapes.
+  - Model zero as an ACTUAL typed value and model UNKNOWN, NOT_MEASURED, NOT_APPLICABLE, and PARSE_FAILED as explicit valueless states.
+  - Require field provenance to bind S09 evidence revision, S10 assertion, S13 admission decision, and a stable source locator.
+  - Preserve AcceptFactRevision as the sole writer and T2-IN as the atomic boundary for the S14 root and child rows.
+known_limitations:
+  - This task defines the physical contract only; KL-013 owns PostgreSQL DDL and constraints.
+  - Workout actual command behavior remains owned by downstream KL-031.
+follow_up_tasks:
+  - KL-013 must materialize the closed child tables and their same-subject, provenance, uniqueness, and state/value constraints.
+  - KL-031 must implement workout actual ingestion without planned-value completion or authorization backfill.
+  - Run fresh SHA-bound GENERAL, PROTOCOL, and DB_CONCURRENCY independent reviews.
+spec_change_request: null
