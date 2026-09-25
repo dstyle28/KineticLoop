@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-072
 display_task_id: KL-072
 task_definition_version: v0.2
 base_commit: 038d198c2f31a373a7be5fa950eb05ba4e6f7f94
-tested_commit: 06041e856a956fd10ee9afb21d4e5f2ace7d0f76
+tested_commit: 799180319924c959ace23e305479325802547e06
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -17,58 +17,60 @@ summary: >-
   SECURITY DEFINER routines are owned by kl_writer_safety_registry. Six shared-gate
   routines are executable only by kl_application and RevokeArtifact only by distinct
   kl_trusted_admin. The production repository now uses those migrated routines, and
-  revoke authorization plus operator identity derive from the authenticated database
-  session while S50 and companion immutable records preserve idempotency, incident,
-  audit, and outbox identities.
+  command-specific T6 and T7 routines now recheck migrated manifest or authorization
+  eligibility after S51 and S01, while revoke validates its canonical payload hash inside
+  the trusted SQL boundary. Revoke authorization plus operator identity derive from the
+  authenticated database session while S50 and companion immutable records preserve
+  idempotency, incident, audit, and outbox identities.
 commands_run:
   - check_id: baseline_migration_unchanged
     command: git diff --exit-code b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f HEAD -- migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-7991803.log
   - check_id: single_successor_migration_head
     command: uv run pytest -q tests/db/test_migrations.py::test_safety_registry_successor_migration_chain
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-7991803.log
   - check_id: successor_migration_contains_no_cluster_role_ddl
     command: uv run pytest -q tests/db/test_migrations.py::test_safety_registry_successor_contains_no_cluster_role_ddl
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-7991803.log
   - check_id: safety_registry_role_preflight_fails_before_object_changes
     command: uv run pytest -q tests/db/test_migrations.py::test_safety_registry_role_preflight_fails_before_object_changes
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-7991803.log
   - check_id: two_phase_empty_db_upgrade_head
     command: uv run pytest -q tests/db/test_migrations.py::test_two_phase_empty_db_upgrade_head
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-7991803.log
   - check_id: safety_registry_migrated_schema_integration
     command: uv run pytest -q tests/db/test_migrations.py::test_safety_registry_repository_integrates_with_migrated_schema
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-7991803.log
   - check_id: complete_safety_registry_suite_uses_migrated_schema
     command: uv run pytest -q tests/db/test_safety_registry.py
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-7991803.log
   - check_id: safety_registry_object_ownership_enforced
     command: uv run pytest -q tests/db/test_migrations.py::test_safety_registry_migrated_object_ownership
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-7991803.log
   - check_id: safety_registry_command_routine_privileges_enforced
     command: uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_command_routine_privileges
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-7991803.log
   - check_id: safety_registry_role_owner_boundary_enforced
     command: uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_role_owner_boundary
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-7991803.log
   - check_id: safety_registry_migrated_db_regressions_pass
     command: uv run pytest -q tests/db/test_migrations.py tests/db/test_safety_registry.py tests/db/test_immutability.py tests/db/test_lifecycle.py
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-7991803.log
   - check_id: harness_validation_passes
     command: uv run kl check-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-7991803.log
 requirements_covered: []
 files_changed:
   - docs/contracts/safety_registry.md
@@ -77,6 +79,7 @@ files_changed:
   - tests/db/test_migrations.py
   - tests/db/test_safety_registry.py
   - docs/exec-plans/evidence/KL-072/checks-06041e8.log
+  - docs/exec-plans/evidence/KL-072/checks-7991803.log
   - docs/exec-plans/completed/KL-072_RESULT.yaml
 decisions:
   - Keep the immutable KL-013 baseline byte-unchanged and express all integration DDL in one direct successor.
@@ -85,6 +88,8 @@ decisions:
   - Retain every S01-S51 table, sequence, and non-command guard under NOLOGIN kl_migration_owner ownership.
   - Use six non-overloaded command-specific shared-gate routines rather than a caller-selected generic command routine.
   - Bind RevokeArtifact execution to pg_has_role(session_user, kl_trusted_admin, MEMBER) and persist session_user as operator identity.
+  - Validate the canonical effective_at/reason_code revocation payload hash inside the directly executable SECURITY DEFINER boundary.
+  - Recheck migrated current-manifest eligibility for T6 and current S42/closure eligibility for T7 after the frozen S51-to-S01 lock sequence.
   - Keep T2-GLOBAL exclusive S51 coordination independent of S01 while shared commands retain S51-before-S01 ordering through transaction commit.
   - Preserve management receipt, audit-event, causation-incident, and outbox-delivery identities in immutable migrated companion relations linked to S50.
 known_limitations:
