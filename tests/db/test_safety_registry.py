@@ -246,6 +246,17 @@ def wait_until_blocked(database_url: str, application_name: str) -> None:
     raise AssertionError(f"{application_name} did not block on the registry gate")
 
 
+def wait_until_database_time(database_url: str, target: datetime) -> None:
+    deadline = time.monotonic() + 5
+    with psycopg.connect(database_url, autocommit=True) as observer:
+        while time.monotonic() < deadline:
+            row = observer.execute("SELECT clock_timestamp() >= %s", (target,)).fetchone()
+            if row is not None and row[0]:
+                return
+            time.sleep(0.02)
+    raise AssertionError(f"database clock did not reach {target.isoformat()}")
+
+
 def direct_revoke(blocker: Connection[Any], command_key: str) -> None:
     blocker.execute(
         """
@@ -364,6 +375,13 @@ def run_waiting_on_subject_then_expire(
         "WHERE subject_id = %s FOR UPDATE",
         (UUID(SUBJECT_ID),),
     )
+    expiry_row = blocker.execute(
+        "UPDATE safety_artifacts "
+        "SET valid_until = clock_timestamp() + interval '1 second' "
+        "RETURNING valid_until"
+    ).fetchone()
+    assert expiry_row is not None
+    expires_at = expiry_row[0]
     outcome: dict[str, object] = {}
     app_name = f"subject-expiry-shared-{command.value}"
 
@@ -379,10 +397,7 @@ def run_waiting_on_subject_then_expire(
     thread = threading.Thread(target=worker)
     thread.start()
     wait_until_blocked(database_url, app_name)
-    blocker.execute(
-        "UPDATE safety_artifacts "
-        "SET valid_until = clock_timestamp() - interval '1 second'"
-    )
+    wait_until_database_time(database_url, expires_at)
     blocker.commit()
     blocker.close()
     thread.join(timeout=5)
