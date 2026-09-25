@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any, Literal, get_args, get_origin
 
 import pytest
@@ -189,6 +190,7 @@ def test_strict_t1_t8_contract_matrix() -> None:
         assert command.model_config["extra"] == "forbid"
         assert command.model_config["frozen"] is True
         assert type(parse_command(command.to_canonical_json())) is model
+        assert type(parse_command(json.loads(command.to_canonical_json()))) is model
 
         extra = command.model_dump(mode="python") | {"unexpected": True}
         with pytest.raises(ValidationError):

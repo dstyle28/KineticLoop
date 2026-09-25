@@ -614,19 +614,15 @@ INTERNAL_ONLY_OPERATIONS = frozenset(
 def parse_command(payload: str | dict[str, object]) -> StrictCommand:
     """Parse exactly one public command using its closed command discriminator."""
 
-    serialized: str | None = None
     if isinstance(payload, str):
         payload = json.loads(payload, object_pairs_hook=_reject_duplicate_fields)
-        serialized = canonical_json(payload)
     if type(payload) is not dict:
         raise TypeError("command payload must be an object")
     kind = payload.get("command_kind")
     if type(kind) is not str or kind not in PUBLIC_COMMAND_BY_KIND:
         raise ValueError("unknown or internal-only command kind")
     adapter = TypeAdapter(PUBLIC_COMMAND_BY_KIND[kind])
-    if serialized is not None:
-        return adapter.validate_json(serialized)
-    return adapter.validate_python(payload)
+    return adapter.validate_json(canonical_json(payload))
 
 
 def _reject_duplicate_fields(pairs: list[tuple[str, object]]) -> dict[str, object]:

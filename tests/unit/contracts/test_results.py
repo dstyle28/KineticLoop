@@ -1,5 +1,6 @@
 """KL-014 typed result serialization and safety tests."""
 
+import json
 from typing import Any, Literal, get_args, get_origin
 
 import pytest
@@ -51,6 +52,7 @@ def test_command_result_roundtrip() -> None:
         result = model.model_validate(result_payload(model))
         assert result.command_kind == kind
         assert type(parse_result(result.to_canonical_json())) is model
+        assert type(parse_result(json.loads(result.to_canonical_json()))) is model
         with pytest.raises(ValidationError):
             model.model_validate(result.model_dump(mode="python") | {"extra": True})
 
@@ -64,6 +66,7 @@ def test_command_result_roundtrip() -> None:
         replayed=False,
     )
     assert parse_result(rejected.to_canonical_json()) == rejected
+    assert parse_result(json.loads(rejected.to_canonical_json())) == rejected
 
     with pytest.raises(ValidationError):
         CommandRejected(

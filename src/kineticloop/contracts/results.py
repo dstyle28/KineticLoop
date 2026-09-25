@@ -282,26 +282,21 @@ class CommandRejected(BaseModel):
 def parse_result(payload: str | dict[str, object]) -> StrictResult | CommandRejected:
     """Parse a strict typed result without accepting internal operation names."""
 
-    serialized: str | None = None
     if isinstance(payload, str):
         payload = json.loads(payload, object_pairs_hook=_reject_duplicate_fields)
-        serialized = canonical_json(payload)
     if type(payload) is not dict:
         raise TypeError("result payload must be an object")
+    serialized = canonical_json(payload)
     result_kind = payload.get("result_kind")
     if result_kind == "rejected":
-        if serialized is not None:
-            return CommandRejected.model_validate_json(serialized)
-        return CommandRejected.model_validate(payload)
+        return CommandRejected.model_validate_json(serialized)
     if result_kind != "success":
         raise ValueError("unknown result kind")
     command_kind = payload.get("command_kind")
     if type(command_kind) is not str or command_kind not in PUBLIC_SUCCESS_RESULT_BY_KIND:
         raise ValueError("unknown or internal-only command result kind")
     model = PUBLIC_SUCCESS_RESULT_BY_KIND[command_kind]
-    if serialized is not None:
-        return model.model_validate_json(serialized)
-    return model.model_validate(payload)
+    return model.model_validate_json(serialized)
 
 
 def _reject_duplicate_fields(pairs: list[tuple[str, object]]) -> dict[str, object]:
