@@ -34,6 +34,9 @@ this API; the caller supplies a complete, bounded closure of immutable identitie
 Every helper requires an idle PostgreSQL connection and owns the top-level transaction through
 commit. Invocation inside an existing transaction is rejected, so the API cannot return while
 S51 remains held in an outer transaction or allow a caller to reverse the S51-before-S01 order.
+Database failure before mutation is a fail-closed availability denial. A failure raised by the
+mutation or while committing is propagated as an unknown outcome and is never mislabeled as a
+deterministic registry denial; the caller must reconcile through the command's idempotency key.
 
 ## Global revoke
 
@@ -44,7 +47,9 @@ the management receipt, audit event, and outbox identity. The successful commitâ
 so a future value does not schedule eligibility and a past value does not rewrite historical
 authorization facts.
 
-The receipt is checked after the exclusive gate. A repeated command key and request hash
+The effecting `effective_at` and `reason_code` values must match the command's canonical
+`revocation_payload_hash`; neither is accepted as unhashed side input. The receipt is checked
+after the exclusive gate. A repeated command key and request hash
 returns the stored original result; reusing the key with another hash is rejected. Any insert
 failure rolls back every T2-GLOBAL effect.
 

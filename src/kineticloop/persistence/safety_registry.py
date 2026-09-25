@@ -20,6 +20,7 @@ from kineticloop.contracts.safety_registry import (
     RegistryDenied,
     RegistryEligibility,
     RegistryGateTimeoutError,
+    revocation_payload_hash,
 )
 from kineticloop.identity import ActorRole
 
@@ -179,6 +180,7 @@ def execute_shared_registry_command(
     """Run T3/T6/T7 as S51 shared -> S01 -> fresh bounded guards -> mutation."""
 
     _require_idle_connection(connection)
+    mutation_started = False
     try:
         with connection.transaction():
             cursor = connection.cursor()
@@ -187,10 +189,13 @@ def execute_shared_registry_command(
                 raise RegistryDenied(RegistryDenialCode.REGISTRY_STALE)
             authoritative_now = _lock_subject_and_check_authorization(cursor, eligibility)
             _check_artifact_closure(cursor, eligibility, authoritative_now)
+            mutation_started = True
             return mutation(cursor, revision)
     except RegistryGateTimeoutError as error:
         raise RegistryDenied(RegistryDenialCode.REGISTRY_TIMEOUT) from error
     except psycopg.OperationalError as error:
+        if mutation_started:
+            raise
         raise RegistryDenied(RegistryDenialCode.REGISTRY_UNAVAILABLE) from error
 
 
@@ -210,6 +215,10 @@ def revoke_artifact(
         raise ValueError("effective_at must be timezone-aware")
     if not reason_code:
         raise ValueError("reason_code must be non-empty")
+    if command.revocation_payload_hash != revocation_payload_hash(
+        effective_at=effective_at, reason_code=reason_code
+    ):
+        raise RegistryDenied(RegistryDenialCode.IDEMPOTENCY_CONFLICT)
 
     _require_idle_connection(connection)
     with connection.transaction():

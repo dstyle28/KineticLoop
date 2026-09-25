@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime
 from enum import StrEnum
 from typing import TypeVar
 
-from kineticloop.primitives import canonical_id
+from kineticloop.primitives import canonical_id, canonical_sha256, canonical_utc
 
 
 class RegistryCommand(StrEnum):
@@ -85,6 +86,16 @@ def command_requires_registry(command_kind: str) -> bool:
     """Return the closed frozen surface; STOP deliberately remains outside it."""
 
     return command_kind in {command.value for command in GATED_COMMANDS}
+
+
+def revocation_payload_hash(*, effective_at: datetime, reason_code: str) -> str:
+    """Bind all effecting revoke metadata carried beside the strict command."""
+
+    if not reason_code:
+        raise ValueError("reason_code must be non-empty")
+    return canonical_sha256(
+        {"effective_at": canonical_utc(effective_at), "reason_code": reason_code}
+    )
 
 
 _T = TypeVar("_T")

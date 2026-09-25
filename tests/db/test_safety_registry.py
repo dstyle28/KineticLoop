@@ -18,6 +18,7 @@ from kineticloop.contracts.safety_registry import (
     RegistryDenialCode,
     RegistryDenied,
     RegistryEligibility,
+    revocation_payload_hash,
 )
 from kineticloop.db.lifecycle import DatabaseLifecycle
 from kineticloop.identity import ActorRole
@@ -412,6 +413,49 @@ def run_waiting_on_subject_then_expire(
     assert mutation_count(database_url) == 0
 
 
+def run_waiting_on_subject_then_authorization_expires(database_url: str) -> None:
+    clear_state(database_url)
+    blocker = connect(database_url, name="authorization-expiry-blocker")
+    expiry_row = blocker.execute(
+        """
+        UPDATE subject_coordination
+           SET authorization_valid_until = clock_timestamp() + interval '1 second'
+         WHERE subject_id = %s
+        RETURNING authorization_valid_until
+        """,
+        (UUID(SUBJECT_ID),),
+    ).fetchone()
+    assert expiry_row is not None
+    expires_at = expiry_row[0]
+    outcome: dict[str, object] = {}
+    app_name = "authorization-expiry-continue"
+
+    def worker() -> None:
+        try:
+            with connect(database_url, name=app_name) as connection:
+                execute_shared_registry_command(
+                    connection,
+                    eligibility(RegistryCommand.CONTINUE_SESSION),
+                    mutate(RegistryCommand.CONTINUE_SESSION),
+                    lock_timeout_ms=5_000,
+                )
+        except BaseException as error:
+            outcome["error"] = error
+
+    thread = threading.Thread(target=worker)
+    thread.start()
+    wait_until_blocked(database_url, app_name)
+    wait_until_database_time(database_url, expires_at)
+    blocker.commit()
+    blocker.close()
+    thread.join(timeout=5)
+    assert not thread.is_alive()
+    error = outcome.get("error")
+    assert isinstance(error, RegistryDenied)
+    assert error.code is RegistryDenialCode.AUTHORIZATION_INELIGIBLE
+    assert mutation_count(database_url) == 0
+
+
 def assert_denied_without_mutation(
     database_url: str,
     command: RegistryCommand,
@@ -477,6 +521,48 @@ def assert_registry_unavailable_without_mutation(
         )
 
 
+class CommitUnknownTransaction:
+    def __init__(self, transaction: Any) -> None:
+        self._transaction = transaction
+
+    def __enter__(self) -> Any:
+        return self._transaction.__enter__()
+
+    def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any) -> bool:
+        result = self._transaction.__exit__(exc_type, exc_value, traceback)
+        if exc_type is None:
+            raise psycopg.OperationalError("injected unknown commit outcome")
+        return bool(result)
+
+
+class CommitUnknownConnection:
+    def __init__(self, connection: Connection[Any]) -> None:
+        self._connection = connection
+
+    @property
+    def info(self) -> Any:
+        return self._connection.info
+
+    def transaction(self) -> CommitUnknownTransaction:
+        return CommitUnknownTransaction(self._connection.transaction())
+
+    def cursor(self) -> Any:
+        return self._connection.cursor()
+
+
+def assert_unknown_commit_is_not_deterministic_denial(
+    database_url: str, command: RegistryCommand
+) -> None:
+    clear_state(database_url)
+    with connect(database_url) as connection:
+        unknown_connection: Any = CommitUnknownConnection(connection)
+        with pytest.raises(psycopg.OperationalError, match="unknown commit outcome"):
+            execute_shared_registry_command(
+                unknown_connection, eligibility(command), mutate(command)
+            )
+    assert mutation_count(database_url) == 1
+
+
 def test_shared_gate_command_matrix_fails_closed(
     db_url: str, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -486,6 +572,7 @@ def test_shared_gate_command_matrix_fails_closed(
         if command is RegistryCommand.START_SESSION:
             run_waiting_shared_then_expire(db_url, command)
             run_waiting_on_subject_then_expire(db_url, command)
+            assert_unknown_commit_is_not_deterministic_denial(db_url, command)
 
         clear_state(db_url)
         with connect(db_url) as connection:
@@ -612,6 +699,7 @@ def test_continue_session_rechecks_shared_gate_and_fails_closed(
     db_url: str, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     run_waiting_shared_then_revoke(db_url, RegistryCommand.CONTINUE_SESSION)
+    run_waiting_on_subject_then_authorization_expires(db_url)
     clear_state(db_url)
     with psycopg.connect(db_url, autocommit=True) as connection:
         connection.execute(
@@ -645,7 +733,13 @@ def test_continue_session_rechecks_shared_gate_and_fails_closed(
     )
 
 
-def revoke_command(*, key: str = "revoke-1", request_hash: str = "d" * 64) -> RevokeArtifact:
+def revoke_command(
+    *,
+    key: str = "revoke-1",
+    request_hash: str = "d" * 64,
+    effective_at: datetime = NOW,
+    reason_code: str = "EMERGENCY",
+) -> RevokeArtifact:
     return RevokeArtifact(
         schema_version="kineticloop-command-v1",
         command_kind="RevokeArtifact",
@@ -662,7 +756,9 @@ def revoke_command(*, key: str = "revoke-1", request_hash: str = "d" * 64) -> Re
         explicit_scope="global:safety-registry",
         artifact_id=ARTIFACT_ID,
         artifact_content_hash=CONTENT_HASH,
-        revocation_payload_hash="e" * 64,
+        revocation_payload_hash=revocation_payload_hash(
+            effective_at=effective_at, reason_code=reason_code
+        ),
         causation_incident_id=INCIDENT_ID,
     )
 
@@ -699,6 +795,73 @@ def test_exclusive_global_gate_serializes(db_url: str) -> None:
     result = outcome["result"]
     assert isinstance(result, RevocationResult)
     assert result.registry_revision == 1
+
+    # Opposite legal order: a real gated mutation retains shared S51 through commit,
+    # so revoke cannot linearize between its guard and protected write.
+    clear_state(db_url)
+    mutation_entered = threading.Event()
+    allow_mutation_commit = threading.Event()
+    shared_outcome: dict[str, object] = {}
+    revoke_outcome: dict[str, object] = {}
+
+    def held_mutation(cursor: Any, registry_revision: int) -> int:
+        cursor.execute(
+            """
+            INSERT INTO domain_mutations (command_kind, registry_revision, subject_id)
+            VALUES ('StartSession', %s, %s) RETURNING mutation_id
+            """,
+            (registry_revision, UUID(SUBJECT_ID)),
+        )
+        row = cursor.fetchone()
+        assert row is not None
+        mutation_entered.set()
+        assert allow_mutation_commit.wait(timeout=5)
+        return int(row[0])
+
+    def shared_worker() -> None:
+        try:
+            with connect(db_url, name="gated-mutation-first") as connection:
+                shared_outcome["result"] = execute_shared_registry_command(
+                    connection,
+                    eligibility(RegistryCommand.START_SESSION),
+                    held_mutation,
+                    lock_timeout_ms=5_000,
+                )
+        except BaseException as error:
+            shared_outcome["error"] = error
+
+    def revoke_worker() -> None:
+        try:
+            with connect(db_url, name="revoke-after-gated-mutation") as connection:
+                revoke_outcome["result"] = revoke_artifact(
+                    connection,
+                    revoke_command(),
+                    effective_at=NOW,
+                    reason_code="EMERGENCY",
+                    lock_timeout_ms=5_000,
+                )
+        except BaseException as error:
+            revoke_outcome["error"] = error
+
+    shared_thread = threading.Thread(target=shared_worker)
+    shared_thread.start()
+    assert mutation_entered.wait(timeout=5)
+    revoke_thread = threading.Thread(target=revoke_worker)
+    revoke_thread.start()
+    wait_until_blocked(db_url, "revoke-after-gated-mutation")
+    assert "result" not in revoke_outcome
+    allow_mutation_commit.set()
+    shared_thread.join(timeout=5)
+    revoke_thread.join(timeout=5)
+    assert not shared_thread.is_alive()
+    assert not revoke_thread.is_alive()
+    assert "error" not in shared_outcome
+    assert "error" not in revoke_outcome
+    assert shared_outcome["result"] == 1
+    later_revoke = revoke_outcome["result"]
+    assert isinstance(later_revoke, RevocationResult)
+    assert later_revoke.registry_revision == 1
+    assert mutation_count(db_url) == 1
 
 
 def table_counts(database_url: str) -> tuple[int, int, int, int, int]:
@@ -743,7 +906,7 @@ def test_revoke_artifact_atomic_linearization_and_idempotency(db_url: str) -> No
         with pytest.raises(psycopg.errors.RaiseException, match="injected outbox failure"):
             revoke_artifact(
                 connection,
-                revoke_command(),
+                revoke_command(effective_at=future_effective),
                 effective_at=future_effective,
                 reason_code="EMERGENCY",
             )
@@ -763,7 +926,7 @@ def test_revoke_artifact_atomic_linearization_and_idempotency(db_url: str) -> No
     with connect(db_url) as connection:
         first = revoke_artifact(
             connection,
-            revoke_command(),
+            revoke_command(effective_at=future_effective),
             effective_at=future_effective,
             reason_code="EMERGENCY",
         )
@@ -775,9 +938,9 @@ def test_revoke_artifact_atomic_linearization_and_idempotency(db_url: str) -> No
     with connect(db_url) as connection:
         replay = revoke_artifact(
             connection,
-            revoke_command(),
-            effective_at=NOW - timedelta(days=30),
-            reason_code="DIFFERENT_METADATA_IGNORED_ON_REPLAY",
+            revoke_command(effective_at=future_effective),
+            effective_at=future_effective,
+            reason_code="EMERGENCY",
         )
     assert replay == first
     assert table_counts(db_url) == (1, 1, 1, 1, 1)
@@ -786,11 +949,26 @@ def test_revoke_artifact_atomic_linearization_and_idempotency(db_url: str) -> No
         with pytest.raises(RegistryDenied) as conflict:
             revoke_artifact(
                 connection,
-                revoke_command(request_hash="f" * 64),
+                revoke_command(
+                    request_hash="f" * 64,
+                    effective_at=NOW,
+                    reason_code="CONFLICT",
+                ),
                 effective_at=NOW,
                 reason_code="CONFLICT",
             )
     assert conflict.value.code is RegistryDenialCode.IDEMPOTENCY_CONFLICT
+    assert table_counts(db_url) == (1, 1, 1, 1, 1)
+
+    with connect(db_url) as connection:
+        with pytest.raises(RegistryDenied) as unbound_metadata:
+            revoke_artifact(
+                connection,
+                revoke_command(effective_at=future_effective),
+                effective_at=NOW,
+                reason_code="EMERGENCY",
+            )
+    assert unbound_metadata.value.code is RegistryDenialCode.IDEMPOTENCY_CONFLICT
     assert table_counts(db_url) == (1, 1, 1, 1, 1)
 
     # A future effective_at never schedules permission: commit makes later admission deny now.
@@ -805,6 +983,94 @@ def test_revoke_artifact_atomic_linearization_and_idempotency(db_url: str) -> No
         assert authorization_row is not None
         authorized_at = authorization_row[0]
     assert authorized_at == NOW - timedelta(hours=1)
+
+    def race(commands: tuple[RevokeArtifact, RevokeArtifact]) -> tuple[list[object], list[object]]:
+        barrier = threading.Barrier(3)
+        results: list[object] = []
+        errors: list[object] = []
+
+        def worker(command: RevokeArtifact) -> None:
+            try:
+                with connect(db_url) as connection:
+                    barrier.wait(timeout=5)
+                    results.append(
+                        revoke_artifact(
+                            connection,
+                            command,
+                            effective_at=NOW,
+                            reason_code="EMERGENCY",
+                            lock_timeout_ms=5_000,
+                        )
+                    )
+            except BaseException as error:
+                errors.append(error)
+
+        threads = [threading.Thread(target=worker, args=(command,)) for command in commands]
+        for thread in threads:
+            thread.start()
+        barrier.wait(timeout=5)
+        for thread in threads:
+            thread.join(timeout=5)
+            assert not thread.is_alive()
+        return results, errors
+
+    # Two concurrent deliveries of the exact command serialize at exclusive S51 and
+    # return the one stored result without double-applying any T2-GLOBAL effect.
+    clear_state(db_url)
+    same_command = revoke_command(key="race-same")
+    same_results, same_errors = race((same_command, same_command))
+    assert same_errors == []
+    assert len(same_results) == 2
+    assert same_results[0] == same_results[1]
+    assert table_counts(db_url) == (1, 1, 1, 1, 1)
+
+    # Concurrent key reuse with different hashes produces one winner and one conflict.
+    clear_state(db_url)
+    different_results, different_errors = race(
+        (
+            revoke_command(key="race-conflict", request_hash="1" * 64),
+            revoke_command(key="race-conflict", request_hash="2" * 64),
+        )
+    )
+    assert len(different_results) == 1
+    assert len(different_errors) == 1
+    assert isinstance(different_errors[0], RegistryDenied)
+    assert different_errors[0].code is RegistryDenialCode.IDEMPOTENCY_CONFLICT
+    assert table_counts(db_url) == (1, 1, 1, 1, 1)
+
+    # Simulate a successful commit whose response is lost, then reconcile by retrying.
+    clear_state(db_url)
+    lost_ack_command = revoke_command(key="lost-ack")
+    with connect(db_url) as connection:
+        revoke_artifact(
+            connection,
+            lost_ack_command,
+            effective_at=NOW,
+            reason_code="EMERGENCY",
+        )
+    with connect(db_url) as connection:
+        recovered = revoke_artifact(
+            connection,
+            lost_ack_command,
+            effective_at=NOW,
+            reason_code="EMERGENCY",
+        )
+        receipt = connection.execute(
+            """
+            SELECT revocation_id, registry_revision, artifact_id, effective_at, recorded_at
+              FROM registry_management_receipts
+             WHERE command_key = 'lost-ack'
+            """
+        ).fetchone()
+        assert receipt is not None
+    assert recovered == RevocationResult(
+        revocation_id=str(receipt[0]),
+        registry_revision=int(receipt[1]),
+        artifact_id=str(receipt[2]),
+        effective_at=receipt[3],
+        recorded_at=receipt[4],
+    )
+    assert table_counts(db_url) == (1, 1, 1, 1, 1)
 
 
 def test_global_revoke_never_locks_s01(db_url: str) -> None:
