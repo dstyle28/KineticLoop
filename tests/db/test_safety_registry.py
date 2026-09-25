@@ -629,6 +629,13 @@ def table_counts(database_url: str) -> tuple[int, int, int, int, int]:
 
 
 def test_revoke_artifact_atomic_linearization_and_idempotency(db_url: str) -> None:
+    with connect(db_url) as connection:
+        future_row = connection.execute(
+            "SELECT clock_timestamp() + interval '7 days'"
+        ).fetchone()
+        assert future_row is not None
+        future_effective = future_row[0]
+
     with psycopg.connect(db_url, autocommit=True) as connection:
         connection.execute(
             """
@@ -647,7 +654,7 @@ def test_revoke_artifact_atomic_linearization_and_idempotency(db_url: str) -> No
             revoke_artifact(
                 connection,
                 revoke_command(),
-                effective_at=NOW + timedelta(days=7),
+                effective_at=future_effective,
                 reason_code="EMERGENCY",
             )
     assert table_counts(db_url) == (0, 0, 0, 0, 1)
@@ -663,7 +670,6 @@ def test_revoke_artifact_atomic_linearization_and_idempotency(db_url: str) -> No
         connection.execute("DROP TRIGGER fail_outbox ON registry_outbox")
         connection.execute("DROP FUNCTION fail_outbox()")
 
-    future_effective = NOW + timedelta(days=7)
     with connect(db_url) as connection:
         first = revoke_artifact(
             connection,
@@ -673,6 +679,7 @@ def test_revoke_artifact_atomic_linearization_and_idempotency(db_url: str) -> No
         )
     assert first.registry_revision == 1
     assert first.effective_at == future_effective
+    assert first.effective_at > first.recorded_at
     assert table_counts(db_url) == (1, 1, 1, 1, 1)
 
     with connect(db_url) as connection:
