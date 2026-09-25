@@ -95,6 +95,12 @@ def test_lifecycle_guard_requirements_are_machine_readable() -> None:
 
 
 def test_command_guards_bind_to_divergent_transaction_paths() -> None:
+    def mutation_shape(command_id: str) -> set[tuple[str, SqlPermission, str]]:
+        return {
+            (mutation.logical_id, mutation.permission, mutation.writer_principal)
+            for mutation in ENTRYPOINT_BY_ID[command_id].mutations
+        }
+
     assert len(ENTRYPOINT_BY_ID) == len(COMMAND_ENTRYPOINTS)
     for entrypoint in COMMAND_ENTRYPOINTS:
         assert entrypoint.transaction_group
@@ -105,6 +111,52 @@ def test_command_guards_bind_to_divergent_transaction_paths() -> None:
                 PROTECTION_BY_ID[mutation.logical_id], writer_role
             )
 
+    assert mutation_shape("record_domain_event_with_outbox") == {
+        ("S03", SqlPermission.INSERT, "originating_domain_command"),
+        ("S04", SqlPermission.INSERT, "originating_domain_command"),
+    }
+    assert mutation_shape("dispatch_outbox_delivery") == {
+        ("S04", SqlPermission.UPDATE, "outbox_dispatcher")
+    }
+    assert mutation_shape("build_factset") == {
+        ("S15", SqlPermission.INSERT, "canonical_view_service"),
+        ("S15", SqlPermission.UPDATE, "canonical_view_service"),
+        ("S16", SqlPermission.INSERT, "canonical_view_service"),
+        ("S16", SqlPermission.UPDATE, "canonical_view_service"),
+    }
+    assert mutation_shape("seal_factset") == {
+        ("S01", SqlPermission.UPDATE, "decision_state_coordinator"),
+        ("S02", SqlPermission.INSERT, "command_gateway"),
+        ("S02", SqlPermission.UPDATE, "command_gateway"),
+        ("S03", SqlPermission.INSERT, "originating_domain_command"),
+        ("S04", SqlPermission.INSERT, "originating_domain_command"),
+        ("S15", SqlPermission.UPDATE, "canonical_view_service"),
+    }
+    assert mutation_shape("accept_external_execution") == {
+        ("S01", SqlPermission.UPDATE, "decision_state_coordinator"),
+        ("S02", SqlPermission.INSERT, "command_gateway"),
+        ("S02", SqlPermission.UPDATE, "command_gateway"),
+        ("S03", SqlPermission.INSERT, "originating_domain_command"),
+        ("S04", SqlPermission.INSERT, "originating_domain_command"),
+        ("S14", SqlPermission.INSERT, "canonical_fact_service"),
+        ("S44", SqlPermission.INSERT, "execution_service"),
+        ("S44", SqlPermission.UPDATE, "execution_service"),
+    }
+    assert mutation_shape("start_or_resume_session") == {
+        ("S01", SqlPermission.UPDATE, "decision_state_coordinator"),
+        ("S02", SqlPermission.INSERT, "command_gateway"),
+        ("S02", SqlPermission.UPDATE, "command_gateway"),
+        ("S03", SqlPermission.INSERT, "originating_domain_command"),
+        ("S04", SqlPermission.INSERT, "originating_domain_command"),
+        ("S44", SqlPermission.INSERT, "execution_service"),
+        ("S44", SqlPermission.UPDATE, "execution_service"),
+        ("S45", SqlPermission.INSERT, "execution_service"),
+    }
+    assert mutation_shape("revoke_safety_artifact") == {
+        ("S50", SqlPermission.INSERT, "safety_registry"),
+        ("S51", SqlPermission.UPDATE, "safety_registry"),
+    }
+
     build = ENTRYPOINT_BY_ID["build_factset"]
     seal = ENTRYPOINT_BY_ID["seal_factset"]
     assert build.lock_order == (LockTarget.BUILD,)
@@ -114,7 +166,7 @@ def test_command_guards_bind_to_divergent_transaction_paths() -> None:
 
     external = ENTRYPOINT_BY_ID["accept_external_execution"]
     start = ENTRYPOINT_BY_ID["start_or_resume_session"]
-    assert external.lock_order == (LockTarget.USER,)
+    assert external.lock_order == (LockTarget.USER, LockTarget.EXECUTION)
     assert GuardRequirement.ACTUAL_FACT_ACCEPTANCE in external.guards
     assert GuardRequirement.REGISTRY_GATE not in external.guards
     assert start.lock_order == (
@@ -127,7 +179,3 @@ def test_command_guards_bind_to_divergent_transaction_paths() -> None:
 
     revoke = ENTRYPOINT_BY_ID["revoke_safety_artifact"]
     assert revoke.lock_order == (LockTarget.REGISTRY_EXCLUSIVE,)
-    assert {
-        (mutation.logical_id, mutation.permission)
-        for mutation in revoke.mutations
-    } == {("S50", SqlPermission.INSERT), ("S51", SqlPermission.UPDATE)}

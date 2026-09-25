@@ -249,6 +249,8 @@ COMMAND_ENTRYPOINTS: Final[tuple[CommandEntrypoint, ...]] = (
         mutations=(
             _mutation("S15", SqlPermission.UPDATE, "canonical_view_service"),
             _mutation("S01", SqlPermission.UPDATE, "decision_state_coordinator"),
+            _mutation("S02", SqlPermission.INSERT, "command_gateway"),
+            _mutation("S02", SqlPermission.UPDATE, "command_gateway"),
             _mutation("S03", SqlPermission.INSERT, "originating_domain_command"),
             _mutation("S04", SqlPermission.INSERT, "originating_domain_command"),
         ),
@@ -267,6 +269,9 @@ COMMAND_ENTRYPOINTS: Final[tuple[CommandEntrypoint, ...]] = (
         command_id="accept_external_execution",
         principal="execution_service",
         mutations=(
+            _mutation("S01", SqlPermission.UPDATE, "decision_state_coordinator"),
+            _mutation("S02", SqlPermission.INSERT, "command_gateway"),
+            _mutation("S02", SqlPermission.UPDATE, "command_gateway"),
             _mutation("S14", SqlPermission.INSERT, "canonical_fact_service"),
             _mutation("S44", SqlPermission.INSERT, "execution_service"),
             _mutation("S44", SqlPermission.UPDATE, "execution_service"),
@@ -274,7 +279,7 @@ COMMAND_ENTRYPOINTS: Final[tuple[CommandEntrypoint, ...]] = (
             _mutation("S04", SqlPermission.INSERT, "originating_domain_command"),
         ),
         transaction_group="t2_external_execution",
-        lock_order=(LockTarget.USER,),
+        lock_order=(LockTarget.USER, LockTarget.EXECUTION),
         guards=frozenset(
             {
                 GuardRequirement.COMMAND_ENTRYPOINT,
@@ -289,6 +294,8 @@ COMMAND_ENTRYPOINTS: Final[tuple[CommandEntrypoint, ...]] = (
         principal="execution_service",
         mutations=(
             _mutation("S01", SqlPermission.UPDATE, "decision_state_coordinator"),
+            _mutation("S02", SqlPermission.INSERT, "command_gateway"),
+            _mutation("S02", SqlPermission.UPDATE, "command_gateway"),
             _mutation("S44", SqlPermission.INSERT, "execution_service"),
             _mutation("S44", SqlPermission.UPDATE, "execution_service"),
             _mutation("S45", SqlPermission.INSERT, "execution_service"),
