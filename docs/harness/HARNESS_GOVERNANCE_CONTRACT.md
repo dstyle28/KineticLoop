@@ -12,6 +12,15 @@ the exact changed files and refined packets, and link every executed check to
 committed evidence. The selected governance record must have `change_status: PASS`;
 `BLOCKED` and `SPEC_CHANGE_REQUIRED` records are durable outcomes but cannot merge.
 
+A governance change may add a fresh follow-up task identity when newly discovered work
+cannot be imposed retroactively on a merged task. The new task must begin
+`NOT_STARTED`, have one complete enforceable packet and exact backlog/traceability
+projections, and have no result, review, or integration artifact. Its dependencies
+must preserve the already-merged work as historical input. A task definition that
+already has a result at the protected base is immutable: governance must create a
+new dependent task instead of changing its checks, scope, dependencies, or semantic
+claims.
+
 Governance changes may add a milestone schema at the repository root and milestone
 records under `docs/exec-plans/milestones/`. The schema is indexed as machine-readable
 authority; individual closure instances remain revision-bound records and are not

@@ -30,9 +30,10 @@ Packet refinement is a Harness governance change, not an implementation task. It
 - Wave B: after KL-010, KL-011, KL-012 and KL-016 may run concurrently except that
   dependency-lock writers remain serialized.
 - Wave C: KL-013.
-- Wave D: KL-017 and KL-018 may run concurrently.
+- Wave C2: KL-072 hardens the migrated SafetyRegistry runtime boundary.
+- Wave D: after KL-072, KL-017 and KL-018 may run concurrently.
 - Wave E: KL-015 and KL-055 may run concurrently.
 
 Dependency-lock writers start from latest merged master in this order:
-KL-014 → KL-016 → KL-013 → KL-055. Normal dependency checks still apply, and the
+KL-014 → KL-016 → KL-013 → KL-072 → KL-055. Normal dependency checks still apply, and the
 resource/write-path gate can further serialize a nominal wave.
