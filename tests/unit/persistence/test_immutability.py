@@ -162,17 +162,26 @@ def test_command_guards_bind_to_divergent_transaction_paths() -> None:
     assert build.lock_order == (LockTarget.BUILD,)
     assert LockTarget.USER not in build.lock_order
     assert LockTarget.REGISTRY_SHARED not in build.lock_order
-    assert seal.lock_order == (LockTarget.USER, LockTarget.BUILD)
+    assert seal.lock_order == (
+        LockTarget.USER,
+        LockTarget.BUILD,
+        LockTarget.RECEIPT,
+    )
 
     external = ENTRYPOINT_BY_ID["accept_external_execution"]
     start = ENTRYPOINT_BY_ID["start_or_resume_session"]
-    assert external.lock_order == (LockTarget.USER, LockTarget.EXECUTION)
+    assert external.lock_order == (
+        LockTarget.USER,
+        LockTarget.EXECUTION,
+        LockTarget.RECEIPT,
+    )
     assert GuardRequirement.ACTUAL_FACT_ACCEPTANCE in external.guards
     assert GuardRequirement.REGISTRY_GATE not in external.guards
     assert start.lock_order == (
         LockTarget.REGISTRY_SHARED,
         LockTarget.USER,
         LockTarget.EXECUTION,
+        LockTarget.RECEIPT,
     )
     assert GuardRequirement.CURRENT_AUTHORIZATION in start.guards
     assert GuardRequirement.REGISTRY_GATE in start.guards

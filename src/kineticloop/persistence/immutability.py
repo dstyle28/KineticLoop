@@ -64,6 +64,7 @@ class LockTarget(StrEnum):
     BUILD = "build"
     EXECUTION = "execution"
     OUTBOX = "outbox"
+    RECEIPT = "receipt"
 
 
 @dataclass(frozen=True, slots=True)
@@ -255,7 +256,7 @@ COMMAND_ENTRYPOINTS: Final[tuple[CommandEntrypoint, ...]] = (
             _mutation("S04", SqlPermission.INSERT, "originating_domain_command"),
         ),
         transaction_group="t2_seal",
-        lock_order=(LockTarget.USER, LockTarget.BUILD),
+        lock_order=(LockTarget.USER, LockTarget.BUILD, LockTarget.RECEIPT),
         guards=frozenset(
             {
                 GuardRequirement.COMMAND_ENTRYPOINT,
@@ -279,7 +280,7 @@ COMMAND_ENTRYPOINTS: Final[tuple[CommandEntrypoint, ...]] = (
             _mutation("S04", SqlPermission.INSERT, "originating_domain_command"),
         ),
         transaction_group="t2_external_execution",
-        lock_order=(LockTarget.USER, LockTarget.EXECUTION),
+        lock_order=(LockTarget.USER, LockTarget.EXECUTION, LockTarget.RECEIPT),
         guards=frozenset(
             {
                 GuardRequirement.COMMAND_ENTRYPOINT,
@@ -307,6 +308,7 @@ COMMAND_ENTRYPOINTS: Final[tuple[CommandEntrypoint, ...]] = (
             LockTarget.REGISTRY_SHARED,
             LockTarget.USER,
             LockTarget.EXECUTION,
+            LockTarget.RECEIPT,
         ),
         guards=frozenset(
             {

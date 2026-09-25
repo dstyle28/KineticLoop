@@ -53,10 +53,11 @@ path. Authoritative `COMMAND_ENTRYPOINTS` bind command identity, orchestrating
 principal, each touched relation/operation and its writer principal, atomic group,
 ordered locks, and path-specific guards. They explicitly keep S15 build work on the
 build lock while SealFactset takes user → build, and keep T2 external-execution fact
-acceptance independent of the registry while taking user → execution and atomically
+acceptance independent of the registry while taking user → execution → receipt and atomically
 advancing S01 execution basis. T7 START/RESUME takes registry-shared → user →
-execution and checks current authorization. T2-SEAL, T2 external execution, and T7
-also include their S02 receipt mutations in the same transaction. Grants are
+execution → receipt and checks current authorization. T2-SEAL takes user → build →
+receipt. These paths include their S02 receipt mutations in the same transaction,
+without acquiring a receipt unique key before S01. Grants are
 incomplete unless the applicable entrypoint contract is materialized.
 
 The KL-012 PostgreSQL fixture demonstrates the minimum enforcement shape:
