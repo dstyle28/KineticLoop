@@ -134,24 +134,25 @@ def seed(database_url: str) -> None:
                 """
                 INSERT INTO safety_artifacts
                     (artifact_id, content_hash, dependency_ids, valid_from, valid_until)
-                VALUES (%s, %s, %s, %s, %s), (%s, %s, %s, %s, %s)
+                VALUES
+                    (%s, %s, %s, clock_timestamp() - interval '1 day',
+                     clock_timestamp() + interval '30 days'),
+                    (%s, %s, %s, clock_timestamp() - interval '1 day',
+                     clock_timestamp() + interval '30 days')
                 """,
                 (
                     UUID(DEPENDENCY_ID),
                     "b" * 64,
                     [],
-                    NOW - timedelta(days=1),
-                    NOW + timedelta(days=30),
                     UUID(ARTIFACT_ID),
                     CONTENT_HASH,
                     [UUID(DEPENDENCY_ID)],
-                    NOW - timedelta(days=1),
-                    NOW + timedelta(days=30),
                 ),
             )
             connection.execute(
-                "INSERT INTO subject_coordination VALUES (%s, true, true, %s)",
-                (UUID(SUBJECT_ID), NOW + timedelta(days=1)),
+                "INSERT INTO subject_coordination VALUES "
+                "(%s, true, true, clock_timestamp() + interval '1 day')",
+                (UUID(SUBJECT_ID),),
             )
             connection.execute(
                 "INSERT INTO authorization_history VALUES (%s, %s, %s)",
@@ -179,18 +180,17 @@ def clear_state(database_url: str) -> None:
         connection.execute(
             """
             UPDATE safety_artifacts
-               SET valid_from = %s, valid_until = %s
-            """,
-            (NOW - timedelta(days=1), NOW + timedelta(days=30)),
+               SET valid_from = clock_timestamp() - interval '1 day',
+                   valid_until = clock_timestamp() + interval '30 days'
+            """
         )
         connection.execute(
             """
             UPDATE subject_coordination
                SET t6_issuance_eligible = true,
                    t7_execution_eligible = true,
-                   authorization_valid_until = %s
-            """,
-            (NOW + timedelta(days=1),),
+                   authorization_valid_until = clock_timestamp() + interval '1 day'
+            """
         )
 
 
