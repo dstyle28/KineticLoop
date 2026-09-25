@@ -1,0 +1,43 @@
+KL-012 write-scope-corrected required check evidence
+tested_commit=8568eb4175f89d7947ebe92118b78fae092f47c3
+base_commit=bac21cf6a920859c74e3906383626557b379e758
+compose_project=kl_3334_ecce81ddcb00
+database=kl_3334_ecce81ddcb00_test
+
+check_id=permission_matrix_enforced
+command=uv run pytest -q tests/unit/persistence/test_immutability.py::test_permission_matrix_enforced
+result=PASS
+output=. [100%]; 1 passed in 0.01s
+
+check_id=update_delete_rejected
+command=uv run pytest -q tests/db/test_immutability.py::test_update_delete_rejected
+result=PASS
+output=. [100%]; 1 passed in 0.95s
+
+check_id=owned_transition_only
+command=uv run pytest -q tests/db/test_immutability.py::test_owned_transition_only
+result=PASS
+output=. [100%]; 1 passed in 1.11s
+
+check_id=direct_sql_bypass_rejected
+command=uv run pytest -q tests/db/test_immutability.py::test_direct_sql_bypass_rejected
+result=PASS
+output=. [100%]; 1 passed in 1.10s
+
+check_id=immutable_history_db_regressions_pass
+command=uv run pytest -q tests/db/test_immutability.py tests/db/test_lifecycle.py
+result=PASS
+output=9 passed in 3.07s
+
+check_id=harness_validation_passes
+command=uv run kl check-harness
+result=PASS
+output=HARNESS_CHECK_PASS tasks=68 active=66
+
+oracles:
+- all 51 concrete role/table permission cells passed
+- immutable UPDATE/DELETE rejected through grants and triggers
+- owned and split S04 transitions enforced
+- application DML/ALTER and writer impersonation rejected
+- isolated PostgreSQL regressions exited 0
+- harness printed HARNESS_CHECK_PASS

@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-012
 display_task_id: KL-012
 task_definition_version: v0.2
 base_commit: bac21cf6a920859c74e3906383626557b379e758
-tested_commit: de2ed33ae61e191155915e0c332d0a3e6ba42412
+tested_commit: 8568eb4175f89d7947ebe92118b78fae092f47c3
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -19,31 +19,30 @@ commands_run:
   - check_id: permission_matrix_enforced
     command: uv run pytest -q tests/unit/persistence/test_immutability.py::test_permission_matrix_enforced
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-012/checks-de2ed33.log
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-8568eb4.log
   - check_id: update_delete_rejected
     command: uv run pytest -q tests/db/test_immutability.py::test_update_delete_rejected
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-012/checks-de2ed33.log
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-8568eb4.log
   - check_id: owned_transition_only
     command: uv run pytest -q tests/db/test_immutability.py::test_owned_transition_only
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-012/checks-de2ed33.log
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-8568eb4.log
   - check_id: direct_sql_bypass_rejected
     command: uv run pytest -q tests/db/test_immutability.py::test_direct_sql_bypass_rejected
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-012/checks-de2ed33.log
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-8568eb4.log
   - check_id: immutable_history_db_regressions_pass
     command: uv run pytest -q tests/db/test_immutability.py tests/db/test_lifecycle.py
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-012/checks-de2ed33.log
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-8568eb4.log
   - check_id: harness_validation_passes
     command: uv run kl check-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-012/checks-de2ed33.log
+    evidence_ref: docs/exec-plans/evidence/KL-012/checks-8568eb4.log
 requirements_covered: []
 files_changed:
   - docs/contracts/immutable_history_permissions.md
-  - src/kineticloop/persistence/__init__.py
   - src/kineticloop/persistence/immutability.py
   - tests/unit/persistence/test_immutability.py
   - tests/db/test_immutability.py
@@ -53,6 +52,7 @@ files_changed:
   - docs/exec-plans/evidence/KL-012/checks-0d56a0d.log
   - docs/exec-plans/evidence/KL-012/checks-64e4fe0.log
   - docs/exec-plans/evidence/KL-012/checks-de2ed33.log
+  - docs/exec-plans/evidence/KL-012/checks-8568eb4.log
   - docs/exec-plans/completed/KL-012_RESULT.yaml
 decisions:
   - Ordinary application and audit roles are read-only; non-login command principals own narrow SECURITY DEFINER entrypoints rather than runtime DML connections.
