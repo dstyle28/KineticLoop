@@ -1,0 +1,143 @@
+change_identity: harness-governance-v0.1/HG-018
+display_change_id: HG-018
+base_commit: 5f90b07a35e6ffe19e45bbf183e7b912c6f952c5
+tested_commit: a0f98dd6572f20749e1d0556dc08ead446b511d5
+change_status: PASS
+summary: >-
+  Add KL-072 as the explicit two-phase M2 SafetyRegistry migration follow-up,
+  bind RevokeArtifact to a distinct database-session trusted-admin principal,
+  assign KL-018 the later RegisterArtifact successor and equivalent session-bound
+  entrypoint, order migration-chain work, and reject retroactive completed-task
+  obligations without changing frozen semantics.
+packets_refined:
+  - KL-017
+  - KL-018
+  - KL-072
+files_changed:
+  - 06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md
+  - CURRENT_DOCUMENT_INDEX.json
+  - HARNESS_DOCUMENT_MANIFEST.json
+  - KineticLoop_Harness_Backlog_v0.2.json
+  - KineticLoop_Harness_Traceability_v0.3.json
+  - docs/exec-plans/active/KL-017.md
+  - docs/exec-plans/active/KL-018.md
+  - docs/exec-plans/active/KL-072.md
+  - docs/exec-plans/evidence/HG-018/checks.log
+  - docs/exec-plans/governance/HG-018.yaml
+  - docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
+  - docs/harness/THREAD_ROUTING.md
+  - tests/harness/test_validator.py
+  - tools/harness/validate_harness.py
+checks_run:
+  - check_id: governance_schema_valid
+    command: Validate HG-018.yaml against HARNESS_CHANGE.schema.json.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: fresh_follow_up_projection_exact
+    command: Verify exact KL-072/KL-018 backlog, traceability, packet, resource, write-scope, and routing projections.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: two_phase_bootstrap_handoff_exact
+    command: Verify the isolated Phase A baseline, external ownership handoff, and Phase B successor-only contract.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: session_bound_registry_authorization_exact
+    command: Verify exact trusted-admin EXECUTE ACL and database-session identity contracts for RevokeArtifact and RegisterArtifact.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: register_artifact_packet_boundary_exact
+    command: Verify KL-018 owns the later successor migration, resources, paths, routine, and negative checks.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: historical_m1_and_completed_task_immutability
+    command: Verify historical M1 KL-018 validation and KL-013 packet/result/integration immutability.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: focused_governance_guards_pass
+    command: >-
+      PYTHONPATH="$PWD/src" /private/tmp/hg018-venv/bin/pytest -q
+      tests/harness/test_validator.py -k
+      "m2_security_contracts_reject_removal_substitution_and_weakening or
+      m2_kl018_registry_migration_scope_cannot_be_removed or
+      allows_new_follow_up_task_identity or new_task_must_start_not_started or
+      new_task_cannot_arrive_with_review_artifact or
+      rejects_retroactive_completed_task_refinement or m1_closure"
+      -p no:cacheprovider
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: governance_write_scope_regression
+    command: Verify the exact current Project Plan path is allowed while unrelated root README.md remains rejected.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: pre_review_ci_scope_diagnostic
+    command: >-
+      Run the exact CI PR gate against protected base and the local governance
+      head; require the sole pre-review diagnostic to be missing GENERAL review.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: harness_structure_valid
+    command: PYTHONPATH="$PWD/src" /private/tmp/hg018-venv/bin/kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: harness_tests_pass
+    command: >-
+      PYTHONPATH="$PWD/src" PYTEST_ADDOPTS="-p no:cacheprovider"
+      /private/tmp/hg018-venv/bin/kl test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: unit_tests_pass
+    command: >-
+      PYTHONPATH="$PWD/src" PYTEST_ADDOPTS="-p no:cacheprovider"
+      /private/tmp/hg018-venv/bin/kl test-unit
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: full_suite_unchanged_db_boundary
+    command: >-
+      PYTHONPATH="$PWD/src" PYTEST_ADDOPTS="-p no:cacheprovider"
+      Complete harness/unit rerun at tested_commit plus prior DB-suite evidence
+      for the unchanged DB/production tree; Docker API is unavailable in this sandbox.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: typecheck_passes
+    command: >-
+      MYPY_CACHE_DIR=/private/tmp/hg018-r3-exact-mypy PYTHONPATH="$PWD/src"
+      /private/tmp/hg018-venv/bin/mypy src tools/harness tools/db tests
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: lint_passes
+    command: >-
+      RUFF_CACHE_DIR=/private/tmp/hg018-r3-exact-ruff PYTHONPATH="$PWD/src"
+      /private/tmp/hg018-venv/bin/ruff check src tools tests
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: governance_scope_exact
+    command: Verify every protected-base-to-tested path matches the HG-018 governance allowlist.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: diff_clean
+    command: >-
+      git diff --check 5f90b07a35e6ffe19e45bbf183e7b912c6f952c5
+      a0f98dd6572f20749e1d0556dc08ead446b511d5
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+  - check_id: frozen_and_historical_state_unchanged
+    command: >-
+      git diff --exit-code 5f90b07a35e6ffe19e45bbf183e7b912c6f952c5
+      a0f98dd6572f20749e1d0556dc08ead446b511d5 -- FROZEN_BASELINE.json
+      04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
+      05_KineticLoop_Protocol_v1.2_FROZEN.md docs/exec-plans/active/KL-013.md
+      docs/exec-plans/completed/KL-013_RESULT.yaml
+      docs/exec-plans/integrations/KL-013.json docs/exec-plans/milestones/M1.json
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-018/checks.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+  - >-
+    KL-072 and KL-018 are executable task contracts and remain NOT_STARTED; their
+    migrations, role handoff, object/routine ownership, repositories, and real
+    PostgreSQL authorization evidence are future implementation work.
+  - >-
+    HG-018 requires fresh independent GENERAL, PROTOCOL, DB_CONCURRENCY, and
+    SECURITY_DATA_BOUNDARY reviews bound to the immutable governance head before
+    merge; superseded review artifacts are not retained.

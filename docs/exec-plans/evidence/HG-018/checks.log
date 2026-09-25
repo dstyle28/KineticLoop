@@ -1,0 +1,138 @@
+HG-018 KL-072/KL-018 governance remediation validation
+base_commit=5f90b07a35e6ffe19e45bbf183e7b912c6f952c5
+tested_commit=a0f98dd6572f20749e1d0556dc08ead446b511d5
+protected_base_context=HG-019 and the KL-013 integration record are present at base_commit
+review_remediation=DB_CONCURRENCY blockers on immutable-baseline bootstrap, RegisterArtifact successor ownership, and session-bound registry administration
+
+governance_schema_valid: PASS
+  HARNESS_CHANGE.schema.json validates docs/exec-plans/governance/HG-018.yaml.
+
+fresh_follow_up_projection_exact: PASS
+  KL-072 remains a fresh NOT_STARTED, ENFORCEABLE M2 follow-up with no result,
+  review, or integration artifact. KL-018 remains NOT_STARTED and is refined as
+  the later artifact-registry migration owner. Backlog, traceability, packets,
+  plan, routing, resources, write paths, authority context, environments, exact
+  checks, and the GENERAL/PROTOCOL/DB_CONCURRENCY/SECURITY_DATA_BOUNDARY review
+  unions agree. KL-017 continues to depend on KL-072 and the exclusive
+  migration-chain routing serializes KL-018 before KL-017.
+
+two_phase_bootstrap_handoff_exact: PASS
+  KL-072 now requires an isolated Phase A that runs only the immutable KL-013
+  baseline under external kl_cluster_bootstrap with CREATEROLE, disconnects,
+  hands baseline objects to NOLOGIN kl_migration_owner, and provisions the exact
+  deployment memberships outside Alembic. Phase B reconnects through
+  NOSUPERUSER/NOCREATEROLE kl_migration_deployer, runs the role preflight first,
+  assumes the two NOLOGIN owner roles only for their declared object/routine
+  responsibilities, and applies only the KL-072 successor. Exact tests prohibit
+  cluster-role and protected-membership DDL in successor upgrade and downgrade.
+  No check claims the immutable baseline can run empty-to-head through one
+  non-CREATEROLE connection.
+
+session_bound_registry_authorization_exact: PASS
+  kl_trusted_admin is a distinct externally provisioned NOLOGIN execution role.
+  RevokeArtifact and RegisterArtifact SECURITY DEFINER routines authorize with
+  pg_has_role(session_user, kl_trusted_admin, MEMBER), derive persisted operator
+  identity from the authenticated database session, and grant EXECUTE only to
+  kl_trusted_admin. Direct-SQL USER, AGENT, generic application, audit, and
+  caller-asserted ADMIN/capability attempts must fail without registry, receipt,
+  event, or outbox mutation. Shared-gate routines remain separately executable
+  only by kl_application.
+
+register_artifact_packet_boundary_exact: PASS
+  KL-018 owns exactly one later `*_artifact_registry.py` successor after KL-072,
+  migration_chain and persistence_permissions, tests/db/test_migrations.py, and
+  the exact registry_register_artifact(uuid,text,text,uuid[],text,text,text,integer)
+  routine. Validator negatives reject removing the migration resources/paths or
+  weakening the chain, routine-ACL, or session-authority contracts.
+
+historical_m1_and_completed_task_immutability: PASS
+  The validator preserves the revision-bound historical KL-018 contract used by
+  the immutable M1 closure while enforcing the stronger current KL-018 contract.
+  KL-013 packet, result, and integration record plus M1.json are byte-identical
+  to protected base. No obligation is added retroactively to completed KL-013.
+
+governance_write_scope_regression: PASS
+  The governance allowlist names the exact current Project Plan path. A fixture
+  refinement of that path passes the PR gate, while an unrelated root README.md
+  write remains rejected as governance-write-scope:HG-999:README.md.
+
+pre_review_ci_scope_diagnostic: PASS
+  PYTHONPATH="$PWD/src" /private/tmp/hg018-venv/bin/kl check-harness
+  --ci-pr-base 5f90b07a35e6ffe19e45bbf183e7b912c6f952c5
+  --ci-pr-head HEAD
+  The exact PR gate reports only ci-general-review-missing:HG-018, as required
+  before fresh review. It no longer reports a governance-write-scope error for
+  06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md.
+
+focused_governance_guards_pass: PASS
+  PYTHONPATH="$PWD/src" /private/tmp/hg018-venv/bin/pytest -q
+  tests/harness/test_validator.py -k
+  "m2_security_contracts_reject_removal_substitution_and_weakening or
+  m2_kl018_registry_migration_scope_cannot_be_removed or
+  allows_new_follow_up_task_identity or new_task_must_start_not_started or
+  new_task_cannot_arrive_with_review_artifact or
+  rejects_retroactive_completed_task_refinement or m1_closure or
+  governance_allows_current_project_plan_refinement or
+  governance_rejects_undeclared_write"
+  -p no:cacheprovider
+  15 passed, 93 deselected in 58.63s.
+
+harness_structure_valid: PASS
+  PYTHONPATH="$PWD/src" /private/tmp/hg018-venv/bin/kl check-harness
+  HARNESS_CHECK_PASS tasks=69 active=67.
+
+harness_tests_pass: PASS
+  PYTHONPATH="$PWD/src" PYTEST_ADDOPTS="-p no:cacheprovider"
+  /private/tmp/hg018-venv/bin/kl test-harness
+  133 passed in 204.86s.
+
+unit_tests_pass: PASS
+  PYTHONPATH="$PWD/src" PYTEST_ADDOPTS="-p no:cacheprovider"
+  /private/tmp/hg018-venv/bin/kl test-unit
+  169 passed in 22.92s.
+
+full_suite_unchanged_db_boundary: PASS
+  The current tested revision reran the complete 133-test harness suite and
+  169-test unit suite. The full invocation passed 361 tests before 22 PostgreSQL
+  cases stopped solely because this execution sandbox denied Docker API access.
+  Those 81 DB tests passed at 611c6fea55688ab3cf309853c2b837a637a3d7a9,
+  and a0f98dd changes only validator/test/hash projections and artifact cleanup;
+  no DB, migration, production, or frozen path changed after that passing run.
+
+typecheck_passes: PASS
+  MYPY_CACHE_DIR=/private/tmp/hg018-r3-exact-mypy PYTHONPATH="$PWD/src"
+  /private/tmp/hg018-venv/bin/mypy src tools/harness tools/db tests
+  Success: no issues found in 72 source files.
+
+lint_passes: PASS
+  RUFF_CACHE_DIR=/private/tmp/hg018-r3-exact-ruff PYTHONPATH="$PWD/src"
+  /private/tmp/hg018-venv/bin/ruff check src tools tests
+  All checks passed!
+
+governance_scope_exact: PASS
+  The protected-base-to-tested change set is exactly the 12 declared governance
+  content, authority-projection, validator, and regression-test paths. KL-072 is
+  the only new task identity; KL-017 and KL-018 are the only existing task
+  definitions refined. The final bookkeeping suffix adds only this evidence file
+  and the HG-018 governance record.
+
+diff_clean: PASS
+  git diff --check 5f90b07a35e6ffe19e45bbf183e7b912c6f952c5
+  a0f98dd6572f20749e1d0556dc08ead446b511d5
+  No output.
+
+frozen_and_historical_state_unchanged: PASS
+  git diff --exit-code 5f90b07a35e6ffe19e45bbf183e7b912c6f952c5
+  a0f98dd6572f20749e1d0556dc08ead446b511d5 -- FROZEN_BASELINE.json
+  04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
+  05_KineticLoop_Protocol_v1.2_FROZEN.md
+  docs/exec-plans/active/KL-013.md
+  docs/exec-plans/completed/KL-013_RESULT.yaml
+  docs/exec-plans/integrations/KL-013.json
+  docs/exec-plans/milestones/M1.json
+  No output.
+
+No stale HG-018 review artifact remains. No Frozen Protocol/DB semantic,
+historical M1 closure, completed KL-013 packet/result/integration, or review
+artifact is changed. KL-072 and KL-018 remain unimplemented; this governance
+change creates their exact executable contracts and serialized ordering.
