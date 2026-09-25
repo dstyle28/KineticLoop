@@ -195,6 +195,13 @@ def _special_constraints(logical_id: str) -> list[sa.Constraint]:
                 sa.UniqueConstraint(
                     "subject_id", "fact_revision_id", "fact_kind", name="uq_fact_kind_parent"
                 ),
+                sa.UniqueConstraint(
+                    "subject_id",
+                    "fact_revision_id",
+                    "stable_fact_id",
+                    "fact_kind",
+                    name="uq_fact_child_parent",
+                ),
                 sa.CheckConstraint("revision >= 1", name="fact_revision_positive"),
                 sa.CheckConstraint(
                     "fact_kind IN ('WORKOUT_ACTUAL','HEALTH_OBSERVATION','NUTRITION_INTAKE','BODY_MEASUREMENT','OUTCOME_OBSERVATION')",
@@ -388,10 +395,11 @@ def _create_fact_child_tables(metadata: sa.MetaData) -> None:
         constraints: list[sa.Constraint] = [
             sa.PrimaryKeyConstraint("subject_id", "fact_revision_id", plan.child_identity_field),
             sa.ForeignKeyConstraint(
-                ["subject_id", "fact_revision_id", "fact_kind"],
+                ["subject_id", "fact_revision_id", "stable_fact_id", "fact_kind"],
                 [
                     "canonical_fact_revisions.subject_id",
                     "canonical_fact_revisions.fact_revision_id",
+                    "canonical_fact_revisions.stable_fact_id",
                     "canonical_fact_revisions.fact_kind",
                 ],
                 name=f"fk_{plan.table_name}_fact_revision_kind",
