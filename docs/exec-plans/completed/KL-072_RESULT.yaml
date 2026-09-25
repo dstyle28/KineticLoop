@@ -1,0 +1,96 @@
+task_identity: harness-backlog-v0.2/KL-072
+display_task_id: KL-072
+task_definition_version: v0.2
+base_commit: 038d198c2f31a373a7be5fa950eb05ba4e6f7f94
+tested_commit: 06041e856a956fd10ee9afb21d4e5f2ace7d0f76
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Added one cluster-role-DDL-free SafetyRegistry successor migration and an exact
+  external two-phase PostgreSQL deployment harness. Phase A applies the immutable
+  KL-013 baseline under kl_cluster_bootstrap, external administration hands all
+  schema objects to NOLOGIN kl_migration_owner, and a new NOSUPERUSER/NOCREATEROLE
+  deployer session performs fail-closed role preflight before applying Phase B.
+  Migrated objects remain migration-owner owned while seven narrow fixed-search-path
+  SECURITY DEFINER routines are owned by kl_writer_safety_registry. Six shared-gate
+  routines are executable only by kl_application and RevokeArtifact only by distinct
+  kl_trusted_admin. The production repository now uses those migrated routines, and
+  revoke authorization plus operator identity derive from the authenticated database
+  session while S50 and companion immutable records preserve idempotency, incident,
+  audit, and outbox identities.
+commands_run:
+  - check_id: baseline_migration_unchanged
+    command: git diff --exit-code b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f HEAD -- migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+  - check_id: single_successor_migration_head
+    command: uv run pytest -q tests/db/test_migrations.py::test_safety_registry_successor_migration_chain
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+  - check_id: successor_migration_contains_no_cluster_role_ddl
+    command: uv run pytest -q tests/db/test_migrations.py::test_safety_registry_successor_contains_no_cluster_role_ddl
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+  - check_id: safety_registry_role_preflight_fails_before_object_changes
+    command: uv run pytest -q tests/db/test_migrations.py::test_safety_registry_role_preflight_fails_before_object_changes
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+  - check_id: two_phase_empty_db_upgrade_head
+    command: uv run pytest -q tests/db/test_migrations.py::test_two_phase_empty_db_upgrade_head
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+  - check_id: safety_registry_migrated_schema_integration
+    command: uv run pytest -q tests/db/test_migrations.py::test_safety_registry_repository_integrates_with_migrated_schema
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+  - check_id: complete_safety_registry_suite_uses_migrated_schema
+    command: uv run pytest -q tests/db/test_safety_registry.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+  - check_id: safety_registry_object_ownership_enforced
+    command: uv run pytest -q tests/db/test_migrations.py::test_safety_registry_migrated_object_ownership
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+  - check_id: safety_registry_command_routine_privileges_enforced
+    command: uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_command_routine_privileges
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+  - check_id: safety_registry_role_owner_boundary_enforced
+    command: uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_role_owner_boundary
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+  - check_id: safety_registry_migrated_db_regressions_pass
+    command: uv run pytest -q tests/db/test_migrations.py tests/db/test_safety_registry.py tests/db/test_immutability.py tests/db/test_lifecycle.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+  - check_id: harness_validation_passes
+    command: uv run kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-072/checks-06041e8.log
+requirements_covered: []
+files_changed:
+  - docs/contracts/safety_registry.md
+  - migrations/versions/a3f91c7d2e10_safety_registry_integration.py
+  - src/kineticloop/persistence/safety_registry.py
+  - tests/db/test_migrations.py
+  - tests/db/test_safety_registry.py
+  - docs/exec-plans/evidence/KL-072/checks-06041e8.log
+  - docs/exec-plans/completed/KL-072_RESULT.yaml
+decisions:
+  - Keep the immutable KL-013 baseline byte-unchanged and express all integration DDL in one direct successor.
+  - Keep cluster-role bootstrap, memberships, and ownership handoff external to Alembic Phase B.
+  - Make the successor's catalog-only role preflight its first action and reject missing, elevated, inheriting, or cross-member protected roles before DDL.
+  - Retain every S01-S51 table, sequence, and non-command guard under NOLOGIN kl_migration_owner ownership.
+  - Use six non-overloaded command-specific shared-gate routines rather than a caller-selected generic command routine.
+  - Bind RevokeArtifact execution to pg_has_role(session_user, kl_trusted_admin, MEMBER) and persist session_user as operator identity.
+  - Keep T2-GLOBAL exclusive S51 coordination independent of S01 while shared commands retain S51-before-S01 ordering through transaction commit.
+  - Preserve management receipt, audit-event, causation-incident, and outbox-delivery identities in immutable migrated companion relations linked to S50.
+known_limitations:
+  - Cluster roles, deployment memberships, login credentials, database ownership changes, and the Phase A ownership handoff remain external deployment responsibilities by design.
+  - Downstream T3, T6, and T7 domain mutations remain owned by KL-017, KL-018, and later command-owner tasks; KL-072 installs only the registry gate and revoke entrypoints.
+  - No product requirement PASS is claimed; requirement-layer evidence remains independently NOT_RUN.
+follow_up_tasks:
+  - Run fresh SHA-bound GENERAL, PROTOCOL, DB_CONCURRENCY, and SECURITY_DATA_BOUNDARY independent reviews on the final reviewable head.
+spec_change_request: null
