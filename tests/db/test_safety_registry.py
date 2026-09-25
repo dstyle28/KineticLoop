@@ -37,6 +37,7 @@ ADMIN_ID = "00000000-0000-8000-8000-000000000002"
 ARTIFACT_ID = "00000000-0000-8000-8000-000000000003"
 DEPENDENCY_ID = "00000000-0000-8000-8000-000000000004"
 INCIDENT_ID = "00000000-0000-8000-8000-000000000005"
+MISSING_DEPENDENCY_ID = "00000000-0000-8000-8000-000000000007"
 CONTENT_HASH = "a" * 64
 NOW = datetime(2026, 9, 24, 18, tzinfo=UTC)
 
@@ -180,9 +181,14 @@ def clear_state(database_url: str) -> None:
         connection.execute(
             """
             UPDATE safety_artifacts
-               SET valid_from = clock_timestamp() - interval '1 day',
+               SET dependency_ids = CASE
+                       WHEN artifact_id = %s THEN ARRAY[%s]::uuid[]
+                       ELSE ARRAY[]::uuid[]
+                   END,
+                   valid_from = clock_timestamp() - interval '1 day',
                    valid_until = clock_timestamp() + interval '30 days'
-            """
+            """,
+            (UUID(ARTIFACT_ID), UUID(DEPENDENCY_ID)),
         )
         connection.execute(
             """
@@ -414,12 +420,21 @@ def assert_denied_without_mutation(
     expected: RegistryDenialCode,
     *,
     minimum_registry_revision: int = 0,
+    artifact_ids: tuple[str, ...] | None = None,
 ) -> None:
+    request = eligibility(command, minimum_registry_revision=minimum_registry_revision)
+    if artifact_ids is not None:
+        request = RegistryEligibility(
+            command=command,
+            subject_id=SUBJECT_ID,
+            artifact_ids=artifact_ids,
+            minimum_registry_revision=minimum_registry_revision,
+        )
     with connect(database_url) as connection:
         with pytest.raises(RegistryDenied) as denial:
             execute_shared_registry_command(
                 connection,
-                eligibility(command, minimum_registry_revision=minimum_registry_revision),
+                request,
                 mutate(command),
             )
     assert denial.value.code is expected
@@ -459,6 +474,48 @@ def test_shared_gate_command_matrix_fails_closed(db_url: str) -> None:
             )
         assert mutation_id == 1
         assert mutation_count(db_url) == 1
+
+        clear_state(db_url)
+        assert_denied_without_mutation(
+            db_url,
+            command,
+            RegistryDenialCode.ARTIFACT_UNKNOWN,
+            artifact_ids=(ARTIFACT_ID, DEPENDENCY_ID, MISSING_DEPENDENCY_ID),
+        )
+
+        clear_state(db_url)
+        with psycopg.connect(db_url, autocommit=True) as connection:
+            connection.execute(
+                "UPDATE safety_artifacts "
+                "SET dependency_ids = dependency_ids || %s::uuid "
+                "WHERE artifact_id = %s",
+                (UUID(MISSING_DEPENDENCY_ID), UUID(ARTIFACT_ID)),
+            )
+        assert_denied_without_mutation(
+            db_url, command, RegistryDenialCode.DEPENDENCY_INCOMPLETE
+        )
+
+        clear_state(db_url)
+        with psycopg.connect(db_url, autocommit=True) as connection:
+            connection.execute(
+                "UPDATE safety_artifacts SET valid_until = NULL WHERE artifact_id = %s",
+                (UUID(ARTIFACT_ID),),
+            )
+        assert_denied_without_mutation(
+            db_url, command, RegistryDenialCode.VALIDITY_UNDEFINED
+        )
+
+        clear_state(db_url)
+        with psycopg.connect(db_url, autocommit=True) as connection:
+            connection.execute(
+                "UPDATE safety_artifacts "
+                "SET valid_from = clock_timestamp() + interval '1 day' "
+                "WHERE artifact_id = %s",
+                (UUID(ARTIFACT_ID),),
+            )
+        assert_denied_without_mutation(
+            db_url, command, RegistryDenialCode.ARTIFACT_EXPIRED
+        )
 
         clear_state(db_url)
         with psycopg.connect(db_url, autocommit=True) as connection:
