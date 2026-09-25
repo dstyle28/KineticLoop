@@ -69,18 +69,22 @@ BEGIN
   IF (SELECT rolsuper OR rolcreaterole FROM pg_roles WHERE rolname = session_user) THEN
     RAISE EXCEPTION 'KL_SAFETY_REGISTRY_ROLE_PREFLIGHT_DEPLOYER_ELEVATED';
   END IF;
-  IF NOT pg_has_role(session_user, 'kl_migration_owner', 'SET')
-     OR NOT pg_has_role(session_user, 'kl_writer_safety_registry', 'SET') THEN
-    RAISE EXCEPTION 'KL_SAFETY_REGISTRY_ROLE_PREFLIGHT_DEPLOYER_MEMBERSHIP';
-  END IF;
-  IF EXISTS (
+  IF (SELECT count(*)
+      FROM pg_auth_members memberships
+      JOIN pg_roles member_role ON member_role.oid = memberships.member
+      WHERE member_role.rolname = session_user) <> 2
+     OR EXISTS (
     SELECT 1
     FROM pg_auth_members memberships
     JOIN pg_roles parent_role ON parent_role.oid = memberships.roleid
     JOIN pg_roles member_role ON member_role.oid = memberships.member
     WHERE member_role.rolname = session_user
-      AND parent_role.rolname NOT IN ('kl_migration_owner', 'kl_writer_safety_registry')
-      AND memberships.set_option
+      AND (
+        parent_role.rolname NOT IN ('kl_migration_owner', 'kl_writer_safety_registry')
+        OR NOT memberships.set_option
+        OR memberships.inherit_option
+        OR memberships.admin_option
+      )
   ) THEN
     RAISE EXCEPTION 'KL_SAFETY_REGISTRY_ROLE_PREFLIGHT_DEPLOYER_MEMBERSHIP';
   END IF;

@@ -504,6 +504,173 @@ def test_migrated_schema_rejects_undefined_artifact_validity(
     assert mutation_count(db_urls["admin"]) == 0
 
 
+@pytest.mark.parametrize(
+    "failed_predicate",
+    (
+        "current_manifest",
+        "active_policy",
+        "manifest_subject",
+        "manifest_policy",
+        "manifest_epoch",
+        "manifest_registry_revision",
+        "manifest_validity",
+        "manifest_primary_artifact",
+    ),
+)
+def test_t6_migrated_eligibility_predicates_fail_closed(
+    db_urls: dict[str, str], failed_predicate: str,
+) -> None:
+    with connect(db_urls["admin"]) as admin:
+        admin.execute("SET LOCAL session_replication_role=replica")
+        statements: dict[str, tuple[str, tuple[object, ...]]] = {
+            "current_manifest": (
+                "UPDATE kineticloop.user_decision_state SET current_manifest_id=%s",
+                (UUID(MISSING_ID),),
+            ),
+            "active_policy": (
+                "UPDATE kineticloop.user_decision_state SET active_policy_bundle_id=NULL",
+                (),
+            ),
+            "manifest_subject": (
+                "UPDATE kineticloop.decision_manifests SET subject_id=%s",
+                (UUID(MISSING_ID),),
+            ),
+            "manifest_policy": (
+                "UPDATE kineticloop.decision_manifests SET ref_s05_id=%s",
+                (UUID(MISSING_ID),),
+            ),
+            "manifest_epoch": (
+                "UPDATE kineticloop.decision_manifests SET captured_epoch=1",
+                (),
+            ),
+            "manifest_registry_revision": (
+                "UPDATE kineticloop.decision_manifests SET registry_revision_at_publish=1",
+                (),
+            ),
+            "manifest_validity": (
+                "UPDATE kineticloop.decision_manifests "
+                "SET valid_until=clock_timestamp()-interval '1 second'",
+                (),
+            ),
+            "manifest_primary_artifact": (
+                "UPDATE kineticloop.decision_manifests SET ref_s49_id=%s",
+                (UUID(MISSING_ID),),
+            ),
+        }
+        statement, parameters = statements[failed_predicate]
+        admin.execute(statement, parameters)
+        admin.commit()
+    assert_denied(
+        db_urls, RegistryCommand.COMMIT_BUNDLE,
+        RegistryDenialCode.AUTHORIZATION_INELIGIBLE,
+    )
+
+
+@pytest.mark.parametrize(
+    "failed_predicate",
+    (
+        "authorization_subject",
+        "authorization_not_yet_valid",
+        "authorization_expired",
+        "authorization_registry_revision",
+        "authorization_registry_state",
+        "authorization_primary_artifact",
+        "authorization_epoch",
+        "authorization_targeted_event",
+        "closure_missing",
+        "closure_extra",
+        "closure_subject",
+        "closure_not_yet_valid",
+        "closure_expired",
+    ),
+)
+def test_t7_migrated_eligibility_predicates_fail_closed(
+    db_urls: dict[str, str], failed_predicate: str,
+) -> None:
+    with connect(db_urls["admin"]) as admin:
+        admin.execute("SET LOCAL session_replication_role=replica")
+        statements: dict[str, tuple[str, tuple[object, ...]]] = {
+            "authorization_subject": (
+                "UPDATE kineticloop.authorization_issuances SET subject_id=%s",
+                (UUID(MISSING_ID),),
+            ),
+            "authorization_not_yet_valid": (
+                "UPDATE kineticloop.authorization_issuances "
+                "SET valid_from=clock_timestamp()+interval '1 day', "
+                "valid_until=clock_timestamp()+interval '2 days'",
+                (),
+            ),
+            "authorization_expired": (
+                "UPDATE kineticloop.authorization_issuances "
+                "SET valid_from=clock_timestamp()-interval '2 days', "
+                "valid_until=clock_timestamp()-interval '1 day'",
+                (),
+            ),
+            "authorization_registry_revision": (
+                "UPDATE kineticloop.authorization_issuances "
+                "SET registry_revision_at_issue=1",
+                (),
+            ),
+            "authorization_registry_state": (
+                "UPDATE kineticloop.authorization_issuances SET registry_state_id=2",
+                (),
+            ),
+            "authorization_primary_artifact": (
+                "UPDATE kineticloop.authorization_issuances SET ref_s49_id=%s",
+                (UUID(MISSING_ID),),
+            ),
+            "authorization_epoch": (
+                "UPDATE kineticloop.authorization_issuances "
+                "SET validity_certificate='{\"authorization_epoch\":1}'::jsonb",
+                (),
+            ),
+                "authorization_targeted_event": (
+                    "INSERT INTO kineticloop.authorization_events("
+                    "id,subject_id,event_kind,causation_key,ref_s42_id,ref_s02_id) "
+                    "VALUES (%s,%s,'REVOKED','targeted-test',%s,%s)",
+                    (
+                        UUID(MISSING_ID), UUID(SUBJECT_ID),
+                        UUID(AUTHORIZATION_ID), UUID(RECEIPT_ID),
+                    ),
+                ),
+            "closure_missing": (
+                "DELETE FROM kineticloop.authorization_artifact_closure "
+                "WHERE artifact_id=%s",
+                (UUID(DEPENDENCY_ID),),
+            ),
+            "closure_extra": (
+                "INSERT INTO kineticloop.authorization_artifact_closure("
+                "subject_id,authorization_id,artifact_id,artifact_revision,"
+                "valid_from,valid_until) VALUES (%s,%s,%s,1,"
+                "clock_timestamp()-interval '1 day',clock_timestamp()+interval '1 day')",
+                (UUID(SUBJECT_ID), UUID(AUTHORIZATION_ID), UUID(MISSING_ID)),
+            ),
+            "closure_subject": (
+                "UPDATE kineticloop.authorization_artifact_closure SET subject_id=%s",
+                (UUID(MISSING_ID),),
+            ),
+            "closure_not_yet_valid": (
+                "UPDATE kineticloop.authorization_artifact_closure "
+                "SET valid_from=clock_timestamp()+interval '1 day',"
+                "valid_until=clock_timestamp()+interval '2 days'",
+                (),
+            ),
+            "closure_expired": (
+                "UPDATE kineticloop.authorization_artifact_closure "
+                "SET valid_from=clock_timestamp()-interval '2 days',"
+                "valid_until=clock_timestamp()-interval '1 day'",
+                (),
+            ),
+        }
+        statement, parameters = statements[failed_predicate]
+        admin.execute(statement, parameters)
+        admin.commit()
+    assert_denied(
+        db_urls, RegistryCommand.START_SESSION,
+        RegistryDenialCode.AUTHORIZATION_INELIGIBLE,
+    )
+
+
 def test_reauthorize_shared_gate_precedes_s01_and_fails_closed(
     db_urls: dict[str, str],
 ) -> None:

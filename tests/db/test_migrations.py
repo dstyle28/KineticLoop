@@ -296,7 +296,8 @@ def catalog_fingerprint(admin_url: str) -> str:
               FROM pg_roles WHERE rolname = ANY(%s::text[])
               UNION ALL
               SELECT 'membership:' || parent.rolname || ':' || member.rolname || ':' ||
-                     membership.set_option::text || ':' || membership.inherit_option::text
+                     membership.set_option::text || ':' || membership.inherit_option::text || ':' ||
+                     membership.admin_option::text
               FROM pg_auth_members membership
               JOIN pg_roles parent ON parent.oid=membership.roleid
               JOIN pg_roles member ON member.oid=membership.member
@@ -354,6 +355,29 @@ def test_safety_registry_role_preflight_fails_before_object_changes() -> None:
             admin.execute(f"REVOKE {owner} FROM kl_migration_deployer")
             assert_preflight_failure(urls)
             admin.execute(f"GRANT {owner} TO kl_migration_deployer WITH INHERIT FALSE, SET TRUE")
+
+            for options in (
+                "ADMIN TRUE, INHERIT FALSE, SET TRUE",
+                "ADMIN FALSE, INHERIT TRUE, SET TRUE",
+                "ADMIN FALSE, INHERIT FALSE, SET FALSE",
+            ):
+                admin.execute(f"REVOKE {owner} FROM kl_migration_deployer")
+                admin.execute(
+                    f"GRANT {owner} TO kl_migration_deployer WITH {options}"
+                )
+                assert_preflight_failure(urls)
+                admin.execute(f"REVOKE {owner} FROM kl_migration_deployer")
+                admin.execute(
+                    f"GRANT {owner} TO kl_migration_deployer "
+                    "WITH ADMIN FALSE, INHERIT FALSE, SET TRUE"
+                )
+
+        admin.execute(
+            "GRANT kl_auditor TO kl_migration_deployer "
+            "WITH ADMIN FALSE, INHERIT FALSE, SET FALSE"
+        )
+        assert_preflight_failure(urls)
+        admin.execute("REVOKE kl_auditor FROM kl_migration_deployer")
 
     run_alembic(urls["deployer"], "head")
 
