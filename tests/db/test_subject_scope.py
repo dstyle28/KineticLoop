@@ -11,6 +11,7 @@ from uuid import UUID
 
 import psycopg
 import pytest
+from psycopg import sql
 
 from kineticloop.db.lifecycle import DatabaseLifecycle
 from kineticloop.identity import ActorRole, RoleIdentity
@@ -676,7 +677,8 @@ def _assert_s42_drift_access_is_closed(url: str, *, set_role: str | None = None)
             if set_role is not None:
                 scoped.execute(f"SET ROLE {set_role}")
             with pytest.raises(
-                psycopg.errors.InsufficientPrivilege, match="row-level security"
+                psycopg.errors.RaiseException,
+                match="KL_SUBJECT_SCOPE_DIRECT_DML_DENIED",
             ):
                 scoped.execute(
                     "INSERT INTO kineticloop.daily_plan_heads(subject_id,local_date) "
@@ -907,6 +909,111 @@ def test_force_rls_inventory_covers_all_protected_tables(
                 "replay_artifacts",
             ],),
         ).fetchone() == (5,)
+
+
+def test_bound_subject_cannot_remove_ddl_guards_after_set_role(
+    database_urls: dict[str, str],
+) -> None:
+    ddl_attempts = (
+        "ALTER TABLE kineticloop.daily_plan_heads DISABLE ROW LEVEL SECURITY",
+        "ALTER TABLE kineticloop.daily_plan_heads DISABLE TRIGGER subject_storage_scope",
+        "DROP POLICY subject_scope_select ON kineticloop.daily_plan_heads",
+        "DROP TRIGGER subject_storage_scope ON kineticloop.daily_plan_heads",
+        "DROP FUNCTION kineticloop.subject_scope_rls_allows(uuid,text,text,text)",
+        "DROP TABLE kineticloop.daily_plan_heads",
+    )
+    with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            "GRANT kl_migration_owner TO kl_test_subject_1_login "
+            "WITH INHERIT FALSE, SET TRUE"
+        )
+    try:
+        with psycopg.connect(database_urls["test"]) as scoped:
+            scoped.execute("SET ROLE kl_migration_owner")
+            assert scoped.execute(
+                "DELETE FROM kineticloop.subject_principal_bindings "
+                "WHERE principal_name=session_user"
+            ).rowcount == 1
+            with pytest.raises(
+                psycopg.errors.RaiseException,
+                match="KL_SUBJECT_SCOPE_DDL_DENIED",
+            ):
+                scoped.execute(
+                    "ALTER TABLE kineticloop.daily_plan_heads "
+                    "DISABLE ROW LEVEL SECURITY"
+                )
+            scoped.rollback()
+
+        for statement in ddl_attempts:
+            with psycopg.connect(database_urls["test"]) as scoped:
+                scoped.execute("SET ROLE kl_migration_owner")
+                with pytest.raises(
+                    psycopg.errors.RaiseException,
+                    match="KL_SUBJECT_SCOPE_DDL_DENIED",
+                ):
+                    scoped.execute(statement)
+
+        for statement in (
+            "ALTER EVENT TRIGGER kl_subject_scope_ddl_guard DISABLE",
+            "DROP EVENT TRIGGER kl_subject_scope_ddl_guard",
+        ):
+            with psycopg.connect(database_urls["test"]) as scoped:
+                scoped.execute("SET ROLE kl_migration_owner")
+                with pytest.raises(psycopg.errors.InsufficientPrivilege):
+                    scoped.execute(statement)
+
+        with psycopg.connect(database_urls["test"]) as scoped:
+            scoped.execute("SET ROLE kl_migration_owner")
+            with pytest.raises(
+                psycopg.errors.RaiseException,
+                match="KL_SUBJECT_SCOPE_DIRECT_DML_DENIED",
+            ):
+                scoped.execute(
+                    "INSERT INTO kineticloop.daily_plan_heads(subject_id,local_date) "
+                    "VALUES (%s,DATE '2026-10-04')",
+                    (UUID(PRODUCTION_SUBJECT),),
+                )
+
+        with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+            admin.execute(
+                "ALTER TABLE kineticloop.daily_plan_heads "
+                "OWNER TO kl_test_subject_1_login"
+            )
+        try:
+            with psycopg.connect(database_urls["test"]) as scoped:
+                with pytest.raises(
+                    psycopg.errors.RaiseException,
+                    match="KL_SUBJECT_SCOPE_DDL_DENIED",
+                ):
+                    scoped.execute(
+                        "ALTER TABLE kineticloop.daily_plan_heads "
+                        "DISABLE ROW LEVEL SECURITY"
+                    )
+        finally:
+            with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+                admin.execute(
+                    "ALTER TABLE kineticloop.daily_plan_heads "
+                    "OWNER TO kl_migration_owner"
+                )
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+            admin.execute("REVOKE kl_migration_owner FROM kl_test_subject_1_login")
+
+    with psycopg.connect(database_urls["admin"]) as admin:
+        assert admin.execute(
+            "SELECT subject_id FROM kineticloop.subject_principal_bindings "
+            "WHERE principal_name='kl_test_subject_1_login'"
+        ).fetchone() == (UUID(TEST_SUBJECT),)
+        assert admin.execute(
+            "SELECT relrowsecurity,relforcerowsecurity FROM pg_class relation "
+            "JOIN pg_namespace schema ON schema.oid=relation.relnamespace "
+            "WHERE schema.nspname='kineticloop' "
+            "AND relation.relname='daily_plan_heads'"
+        ).fetchone() == (True, True)
+        assert admin.execute(
+            "SELECT count(*) FROM kineticloop.daily_plan_heads "
+            "WHERE local_date=DATE '2026-10-04'"
+        ).fetchone() == (0,)
         assert admin.execute(
             "SELECT count(*) FROM pg_policy policy "
             "JOIN pg_class relation ON relation.oid=policy.polrelid "
@@ -922,6 +1029,125 @@ def test_force_rls_inventory_covers_all_protected_tables(
             "AND trigger.tgname='subject_storage_truncate' "
             "AND NOT trigger.tgisinternal"
         ).fetchone() == (5,)
+
+
+def test_bound_subject_ddl_guard_blocks_references_existence_oracles(
+    database_urls: dict[str, str],
+) -> None:
+    probe_table = "kl017_fk_probe"
+    with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+        database_row = admin.execute("SELECT current_database()").fetchone()
+        assert database_row is not None
+        database_name = database_row[0]
+        admin.execute(
+            "GRANT REFERENCES ON kineticloop.daily_plan_heads "
+            "TO kl_test_subject_1_login"
+        )
+        admin.execute(
+            sql.SQL("GRANT TEMPORARY ON DATABASE {} TO kl_test_subject_1_login").format(
+                sql.Identifier(database_name)
+            )
+        )
+        admin.execute(
+            "GRANT kl_migration_owner TO kl_test_subject_1_login "
+            "WITH INHERIT FALSE, SET TRUE"
+        )
+        admin.execute(f"CREATE TABLE kineticloop.{probe_table}(ref_s38 uuid)")
+        admin.execute(
+            f"ALTER TABLE kineticloop.{probe_table} OWNER TO kl_migration_owner"
+        )
+    try:
+        with psycopg.connect(database_urls["test"]) as scoped:
+            with pytest.raises(
+                psycopg.errors.RaiseException,
+                match="KL_SUBJECT_SCOPE_DDL_DENIED",
+            ):
+                scoped.execute(
+                    "CREATE TEMP TABLE kl017_fk_temp_probe("
+                    "ref_s38 uuid REFERENCES kineticloop.daily_plan_heads(id))"
+                )
+        with psycopg.connect(database_urls["test"]) as scoped:
+            scoped.execute("SET ROLE kl_migration_owner")
+            with pytest.raises(
+                psycopg.errors.RaiseException,
+                match="KL_SUBJECT_SCOPE_DDL_DENIED",
+            ):
+                scoped.execute(
+                    f"ALTER TABLE kineticloop.{probe_table} "
+                    "ADD CONSTRAINT fk_kl017_probe FOREIGN KEY(ref_s38) "
+                    "REFERENCES kineticloop.daily_plan_heads(id)"
+                )
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+            admin.execute(f"DROP TABLE IF EXISTS kineticloop.{probe_table}")
+            admin.execute("REVOKE kl_migration_owner FROM kl_test_subject_1_login")
+            admin.execute(
+                "REVOKE REFERENCES ON kineticloop.daily_plan_heads "
+                "FROM kl_test_subject_1_login"
+            )
+            admin.execute(
+                sql.SQL(
+                    "REVOKE TEMPORARY ON DATABASE {} FROM kl_test_subject_1_login"
+                ).format(sql.Identifier(database_name))
+            )
+
+
+def test_bound_subject_bypassrls_drift_cannot_write_protected_rows(
+    database_urls: dict[str, str],
+) -> None:
+    privileges = "SELECT,INSERT,UPDATE,DELETE"
+    with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+        original_status = admin.execute(
+            "SELECT status FROM kineticloop.daily_plan_heads WHERE id=%s",
+            (UUID(TEST_PLAN),),
+        ).fetchone()
+        assert original_status is not None
+        admin.execute("ALTER ROLE kl_test_subject_1_login BYPASSRLS")
+        admin.execute(
+            f"GRANT {privileges} ON kineticloop.daily_plan_heads "
+            "TO kl_test_subject_1_login"
+        )
+    try:
+        attempts = (
+            (
+                "INSERT INTO kineticloop.daily_plan_heads(subject_id,local_date) "
+                "VALUES (%s,DATE '2026-10-05')",
+                (UUID(PRODUCTION_SUBJECT),),
+            ),
+            (
+                "UPDATE kineticloop.daily_plan_heads SET status='BYPASS' "
+                "WHERE id=%s",
+                (UUID(TEST_PLAN),),
+            ),
+            (
+                "DELETE FROM kineticloop.daily_plan_heads WHERE id=%s",
+                (UUID(TEST_PLAN),),
+            ),
+        )
+        for statement, parameters in attempts:
+            with psycopg.connect(database_urls["test"]) as scoped:
+                with pytest.raises(
+                    psycopg.errors.RaiseException,
+                    match="KL_SUBJECT_SCOPE_DIRECT_DML_DENIED",
+                ):
+                    scoped.execute(statement, parameters)
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+            admin.execute(
+                f"REVOKE {privileges} ON kineticloop.daily_plan_heads "
+                "FROM kl_test_subject_1_login"
+            )
+            admin.execute("ALTER ROLE kl_test_subject_1_login NOBYPASSRLS")
+
+    with psycopg.connect(database_urls["admin"]) as admin:
+        assert admin.execute(
+            "SELECT count(*) FROM kineticloop.daily_plan_heads "
+            "WHERE local_date=DATE '2026-10-05'"
+        ).fetchone() == (0,)
+        assert admin.execute(
+            "SELECT status FROM kineticloop.daily_plan_heads WHERE id=%s",
+            (UUID(TEST_PLAN),),
+        ).fetchone() == original_status
 
 
 def test_subject_id_is_immutable_on_protected_updates(

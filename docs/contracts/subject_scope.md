@@ -38,7 +38,13 @@ S45, S46, and S47. When a subject-specific session acquires any direct or transi
 MEMBER or SET path to a `kl_writer_*` role, the runtime boundary rejects direct DML
 even after `SET ROLE`. Normal command-owner routines remain SECURITY DEFINER entry points and
 continue to perform their guarded writes without granting their writer identity to
-the subject session.
+the subject session. The row trigger itself is SECURITY INVOKER and passes its
+invoking `current_user` to the narrowly privileged RLS helper. This lets the trigger
+independently reject INSERT, UPDATE, and DELETE by a bound or canonically named
+subject session unless the row operation is executing under the table's exact
+command owner for the exact bound subject and namespace. It rejects every such
+session's TRUNCATE. The trigger still rejects these writes if an administrator later
+grants the login `BYPASSRLS`.
 
 All five protected tables enable and force row-level security. Every policy derives
 the bound subject and namespace from `session_user` and revalidates live role
@@ -49,6 +55,59 @@ bound subject, and writes additionally require `current_user` to be the table's
 exact command-owner role. Unbound reads are limited to the migration owner, the
 table's exact writer, auditors, and the SafetyRegistry writer's required S42 read.
 A statement-level `BEFORE TRUNCATE` trigger rejects every bound subject session.
+
+A database-wide `ddl_command_start` event trigger is an external cluster-bootstrap
+prerequisite. Its superuser-owned SECURITY DEFINER function checks the authenticated
+`session_user`, not `current_user`, and rejects all DDL from either a registered
+principal or a canonical subject-login name. The name check keeps the boundary
+closed if a subject reaches the migration owner and deletes or corrupts its binding
+before attempting DDL. It prevents that session from disabling RLS, changing or
+dropping policies and storage triggers, replacing guard functions, altering protected
+relations, or constructing a foreign-key existence oracle after a `REFERENCES` grant.
+The d4 migration verifies the enabled event, function signature, owner attributes,
+fixed search path, revoked PUBLIC execution, and exact function-body fingerprint
+before any object change.
+
+The cluster bootstrap superuser must install the guard after the frozen baseline
+ownership handoff and before upgrading past b6. The canonical installation is:
+
+```sql
+CREATE OR REPLACE FUNCTION public.kl_subject_scope_ddl_guard()
+RETURNS event_trigger LANGUAGE plpgsql SECURITY DEFINER
+SET search_path=pg_catalog,pg_temp AS $guard$
+DECLARE
+  bound_principal boolean;
+BEGIN
+  bound_principal := session_user ~
+    '^kl_(production|test|evaluation)_subject_[a-z0-9_]+_login$';
+  IF NOT bound_principal
+     AND to_regclass('kineticloop.subject_principal_bindings') IS NOT NULL
+  THEN
+    EXECUTE 'SELECT EXISTS (SELECT 1 FROM '
+      'kineticloop.subject_principal_bindings '
+      'WHERE principal_name=session_user)'
+      INTO bound_principal;
+  END IF;
+  IF bound_principal THEN
+    RAISE EXCEPTION 'KL_SUBJECT_SCOPE_DDL_DENIED';
+  END IF;
+END
+$guard$;
+REVOKE ALL ON FUNCTION public.kl_subject_scope_ddl_guard() FROM PUBLIC;
+CREATE EVENT TRIGGER kl_subject_scope_ddl_guard
+ON ddl_command_start EXECUTE FUNCTION public.kl_subject_scope_ddl_guard();
+```
+
+The external event trigger remains installed across a d4 downgrade. When the binding
+table is absent, the canonical subject-login check remains active and the metadata
+lookup is skipped; unbound deployer and cluster-admin sessions can perform the next
+upgrade. Event-trigger administration and ALTER ROLE remain superuser operations.
+Provisioning must never grant a subject principal `SUPERUSER` or `BYPASSRLS`.
+PostgreSQL intentionally bypasses SELECT policies for either attribute, so an
+administrator that grants one can read protected rows as that principal despite the
+row-write and DDL guards. Direct superuser data access is likewise outside this
+database boundary and belongs to trusted cluster administration and continuous role
+audit.
 
 Registration and protected writes take the same transaction-scoped advisory lock
 derived from the subject identifier. This serializes the first protected write with

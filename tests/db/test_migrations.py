@@ -51,6 +51,23 @@ ARTIFACT_REGISTRY_SUCCESSOR = ROOT / "migrations/versions/b6e4d8a1c927_artifact_
 SUBJECT_SCOPE_SUCCESSOR = ROOT / "migrations/versions/d4c1a9e7b203_subject_scope.py"
 
 ROLE_PASSWORD = "kl072-local-only"
+SUBJECT_SCOPE_DDL_GUARD_BODY = """DECLARE
+  bound_principal boolean;
+BEGIN
+  bound_principal := session_user ~
+    '^kl_(production|test|evaluation)_subject_[a-z0-9_]+_login$';
+  IF NOT bound_principal
+     AND to_regclass('kineticloop.subject_principal_bindings') IS NOT NULL
+  THEN
+    EXECUTE 'SELECT EXISTS (SELECT 1 FROM '
+      'kineticloop.subject_principal_bindings '
+      'WHERE principal_name=session_user)'
+      INTO bound_principal;
+  END IF;
+  IF bound_principal THEN
+    RAISE EXCEPTION 'KL_SUBJECT_SCOPE_DDL_DENIED';
+  END IF;
+END"""
 PROTECTED_ROLES = (
     "kl_migration_owner",
     "kl_writer_safety_registry",
@@ -220,6 +237,27 @@ def external_ownership_handoff(admin_url: str, database_name: str) -> None:
         connection.execute("GRANT SELECT ON public.alembic_version TO kl_migration_deployer")
 
 
+def provision_subject_scope_ddl_guard(admin_url: str) -> None:
+    """Install the superuser-owned DDL boundary required by KL-017."""
+
+    with psycopg.connect(admin_url, autocommit=True) as connection:
+        connection.execute(
+            "CREATE OR REPLACE FUNCTION public.kl_subject_scope_ddl_guard() "
+            "RETURNS event_trigger LANGUAGE plpgsql SECURITY DEFINER "
+            "SET search_path=pg_catalog,pg_temp AS $guard$\n"
+            + SUBJECT_SCOPE_DDL_GUARD_BODY
+            + "\n$guard$"
+        )
+        connection.execute(
+            "REVOKE ALL ON FUNCTION public.kl_subject_scope_ddl_guard() FROM PUBLIC"
+        )
+        connection.execute("DROP EVENT TRIGGER IF EXISTS kl_subject_scope_ddl_guard")
+        connection.execute(
+            "CREATE EVENT TRIGGER kl_subject_scope_ddl_guard "
+            "ON ddl_command_start EXECUTE FUNCTION public.kl_subject_scope_ddl_guard()"
+        )
+
+
 def bootstrap_two_phase(lifecycle: DatabaseLifecycle, *, head: bool = True) -> dict[str, str]:
     database = lifecycle.reset()
     admin_url = database.url
@@ -231,6 +269,7 @@ def bootstrap_two_phase(lifecycle: DatabaseLifecycle, *, head: bool = True) -> d
     bootstrap_url = role_url(admin_url, "kl_cluster_bootstrap")
     run_alembic(bootstrap_url, BASELINE_REVISION)
     external_ownership_handoff(admin_url, database.database_name)
+    provision_subject_scope_ddl_guard(admin_url)
     deployer_url = role_url(admin_url, "kl_migration_deployer")
     if head:
         run_alembic(deployer_url, "head")
@@ -401,6 +440,71 @@ def assert_subject_scope_preflight_failure(urls: dict[str, str]) -> None:
             "has_table_privilege('kl_application',"
             "'kineticloop.authorization_issuances','SELECT')"
         ).fetchone() == (None, True)
+
+
+def test_subject_scope_ddl_guard_inventory() -> None:
+    lifecycle = DatabaseLifecycle(ROOT)
+    urls = bootstrap_two_phase(lifecycle)
+    with psycopg.connect(urls["admin"]) as admin:
+        row = admin.execute(
+            "SELECT event_guard.evtname,event_guard.evtevent,event_guard.evtenabled,"
+            "schema.nspname,routine.proname,routine.pronargs,"
+            "routine.prorettype='event_trigger'::regtype,routine.prokind,"
+            "language.lanname,routine.provolatile,routine.proparallel,"
+            "routine.proleakproof,routine.prosecdef,"
+            "routine.proconfig,function_owner.rolsuper,trigger_owner.rolsuper,"
+            "routine.prosrc,"
+            "EXISTS (SELECT 1 FROM aclexplode(coalesce(routine.proacl,"
+            "acldefault('f',routine.proowner))) acl "
+            "WHERE acl.grantee=0 AND acl.privilege_type='EXECUTE') "
+            "FROM pg_event_trigger event_guard "
+            "JOIN pg_proc routine ON routine.oid=event_guard.evtfoid "
+            "JOIN pg_namespace schema ON schema.oid=routine.pronamespace "
+            "JOIN pg_language language ON language.oid=routine.prolang "
+            "JOIN pg_roles function_owner ON function_owner.oid=routine.proowner "
+            "JOIN pg_roles trigger_owner ON trigger_owner.oid=event_guard.evtowner "
+            "WHERE event_guard.evtname='kl_subject_scope_ddl_guard'"
+        ).fetchone()
+    assert row == (
+        "kl_subject_scope_ddl_guard",
+        "ddl_command_start",
+        "O",
+        "public",
+        "kl_subject_scope_ddl_guard",
+        0,
+        True,
+        "f",
+        "plpgsql",
+        "v",
+        "u",
+        False,
+        True,
+        ["search_path=pg_catalog, pg_temp"],
+        True,
+        True,
+        "\n" + SUBJECT_SCOPE_DDL_GUARD_BODY + "\n",
+        False,
+    )
+
+
+def test_subject_scope_preflight_requires_exact_external_ddl_guard() -> None:
+    lifecycle = DatabaseLifecycle(ROOT)
+    urls = bootstrap_two_phase(lifecycle, head=False)
+    run_alembic(urls["deployer"], ARTIFACT_REGISTRY_REVISION)
+    with psycopg.connect(urls["admin"], autocommit=True) as admin:
+        admin.execute("DROP EVENT TRIGGER kl_subject_scope_ddl_guard")
+    with pytest.raises(Exception, match="KL_SUBJECT_SCOPE_DDL_GUARD_MISSING"):
+        run_alembic(urls["deployer"], "head")
+    with psycopg.connect(urls["admin"]) as admin:
+        assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (
+            ARTIFACT_REGISTRY_REVISION,
+        )
+        assert admin.execute(
+            "SELECT to_regclass('kineticloop.subject_scopes')"
+        ).fetchone() == (None,)
+    provision_subject_scope_ddl_guard(urls["admin"])
+    run_alembic(urls["deployer"], "head")
+    assert lifecycle.execute_sql("SELECT version_num FROM alembic_version") == REVISION
 
 
 def test_subject_scope_preflight_rejects_writer_assumption_paths() -> None:
@@ -1228,6 +1332,20 @@ def test_upgrade_downgrade_roundtrip() -> None:
         )
         == "t"
     )
+    assert (
+        lifecycle.execute_sql(
+            "SELECT count(*) FROM pg_event_trigger "
+            "WHERE evtname='kl_subject_scope_ddl_guard' "
+            "AND evtevent='ddl_command_start' AND evtenabled='O'"
+        )
+        == "1"
+    )
+    with psycopg.connect(urls["test"], autocommit=True) as scoped:
+        with pytest.raises(
+            psycopg.errors.RaiseException,
+            match="KL_SUBJECT_SCOPE_DDL_DENIED",
+        ):
+            scoped.execute("CREATE TEMP TABLE kl017_downgrade_probe(id bigint)")
     run_alembic(urls["deployer"], "head")
     assert lifecycle.execute_sql("SELECT version_num FROM alembic_version") == REVISION
 

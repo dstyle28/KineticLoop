@@ -156,6 +156,40 @@ BEGIN
     END IF;
   END LOOP;
 
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_event_trigger event_guard
+    JOIN pg_proc routine ON routine.oid=event_guard.evtfoid
+    JOIN pg_namespace schema ON schema.oid=routine.pronamespace
+    JOIN pg_language language ON language.oid=routine.prolang
+    JOIN pg_roles function_owner ON function_owner.oid=routine.proowner
+    JOIN pg_roles trigger_owner ON trigger_owner.oid=event_guard.evtowner
+    WHERE event_guard.evtname='kl_subject_scope_ddl_guard'
+      AND event_guard.evtevent='ddl_command_start'
+      AND event_guard.evtenabled='O'
+      AND schema.nspname='public'
+      AND routine.proname='kl_subject_scope_ddl_guard'
+      AND routine.pronargs=0
+      AND routine.prorettype='event_trigger'::regtype
+      AND routine.prokind='f'
+      AND language.lanname='plpgsql'
+      AND routine.provolatile='v'
+      AND routine.proparallel='u'
+      AND NOT routine.proleakproof
+      AND routine.prosecdef
+      AND routine.proconfig=ARRAY['search_path=pg_catalog, pg_temp']::text[]
+      AND md5(routine.prosrc)='dfffd471dab1de3c77f6885072ea8f93'
+      AND function_owner.rolsuper
+      AND trigger_owner.rolsuper
+      AND NOT EXISTS (
+        SELECT 1
+        FROM aclexplode(coalesce(routine.proacl,acldefault('f',routine.proowner))) acl
+        WHERE acl.grantee=0 AND acl.privilege_type='EXECUTE'
+      )
+  ) THEN
+    RAISE EXCEPTION 'KL_SUBJECT_SCOPE_DDL_GUARD_MISSING';
+  END IF;
+
   IF session_user <> 'kl_migration_deployer'
      OR (SELECT rolsuper OR rolcreaterole FROM pg_roles WHERE rolname=session_user)
      OR (SELECT count(*)
@@ -410,18 +444,21 @@ $routine$
 GUARD_SQL = r"""
 CREATE FUNCTION kineticloop.enforce_subject_storage_scope() RETURNS trigger
 LANGUAGE plpgsql
-SECURITY DEFINER
+SECURITY INVOKER
 SET search_path = pg_catalog, kineticloop, pg_temp
 AS $guard$
 DECLARE
   subject_namespace text;
   isolated_policy uuid;
+  row_subject uuid;
+  trusted_cluster_admin boolean;
 BEGIN
+  SELECT rolsuper INTO trusted_cluster_admin
+  FROM pg_roles WHERE rolname=session_user;
   IF TG_OP='TRUNCATE' THEN
-    IF session_user ~ '^kl_(production|test|evaluation)_subject_[a-z0-9_]+_login$'
-       OR EXISTS (
-         SELECT 1 FROM kineticloop.subject_principal_bindings
-         WHERE principal_name=session_user
+    IF NOT coalesce(trusted_cluster_admin,false)
+       AND NOT kineticloop.subject_scope_rls_allows(
+         NULL,TG_TABLE_NAME,'DELETE',current_user::text
        )
     THEN
       RAISE EXCEPTION 'KL_SUBJECT_SCOPE_DIRECT_DML_DENIED';
@@ -431,17 +468,18 @@ BEGIN
   IF TG_OP='UPDATE' AND OLD.subject_id IS DISTINCT FROM NEW.subject_id THEN
     RAISE EXCEPTION 'KL_SUBJECT_SCOPE_SUBJECT_IMMUTABLE';
   END IF;
-  IF session_user ~ '^kl_(production|test|evaluation)_subject_[a-z0-9_]+_login$'
-     AND EXISTS (
-       SELECT 1 FROM pg_roles writer_role
-       WHERE writer_role.rolname LIKE 'kl_writer_%'
-         AND (pg_has_role(session_user,writer_role.rolname,'MEMBER')
-              OR pg_has_role(session_user,writer_role.rolname,'SET'))
+  row_subject := CASE WHEN TG_OP='DELETE' THEN OLD.subject_id ELSE NEW.subject_id END;
+  IF NOT coalesce(trusted_cluster_admin,false)
+     AND NOT kineticloop.subject_scope_rls_allows(
+       row_subject,TG_TABLE_NAME,TG_OP,current_user::text
      )
   THEN
     RAISE EXCEPTION 'KL_SUBJECT_SCOPE_DIRECT_DML_DENIED';
   END IF;
-  PERFORM pg_advisory_xact_lock(hashtextextended(NEW.subject_id::text, 17017));
+  IF TG_OP='DELETE' THEN
+    RETURN OLD;
+  END IF;
+  PERFORM pg_advisory_xact_lock(hashtextextended(row_subject::text, 17017));
   SELECT namespace,policy_id INTO subject_namespace,isolated_policy
   FROM kineticloop.subject_scopes WHERE subject_id=NEW.subject_id;
   subject_namespace := coalesce(subject_namespace,'PRODUCTION');
@@ -673,6 +711,11 @@ def upgrade() -> None:
         "kl_writer_safety_registry",
     ):
         op.execute(f"GRANT EXECUTE ON FUNCTION {rls_signature} TO {role}")
+    op.execute(
+        "GRANT SELECT ON kineticloop.subject_scopes TO "
+        "kl_writer_prescription_commit_service, kl_writer_authorization_service, "
+        "kl_writer_execution_service, kl_writer_replay_service"
+    )
     protected_tables = (
         "daily_plan_heads", "authorization_issuances", "execution_bindings",
         "replay_runs", "replay_artifacts",
@@ -702,7 +745,7 @@ def upgrade() -> None:
             "FOR DELETE USING (kineticloop.subject_scope_rls_allows("
             f"subject_id,'{table}','DELETE',current_user::text))"
         )
-        op.execute(f"CREATE TRIGGER subject_storage_scope BEFORE INSERT OR UPDATE ON kineticloop.{table} FOR EACH ROW EXECUTE FUNCTION kineticloop.enforce_subject_storage_scope()")
+        op.execute(f"CREATE TRIGGER subject_storage_scope BEFORE INSERT OR UPDATE OR DELETE ON kineticloop.{table} FOR EACH ROW EXECUTE FUNCTION kineticloop.enforce_subject_storage_scope()")
         op.execute(f"CREATE TRIGGER subject_storage_truncate BEFORE TRUNCATE ON kineticloop.{table} FOR EACH STATEMENT EXECUTE FUNCTION kineticloop.enforce_subject_storage_scope()")
     register_signature = "kineticloop.subject_scope_register(uuid,text,uuid,uuid,text)"
     lookup_signature = "kineticloop.subject_scope_lookup(text,uuid)"

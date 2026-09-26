@@ -1287,7 +1287,6 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
             "WHERE n.nspname='kineticloop' AND p.prosecdef ORDER BY p.proname"
         ).fetchall()
         assert [row[0] for row in rows] == [
-            "enforce_subject_storage_scope",
             "registry_guard_commit_bundle",
             "registry_guard_continue_session",
             "registry_guard_publish_manifest",
@@ -1305,7 +1304,6 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
             == (
                 "kl_migration_owner"
                 if row[0].startswith("subject_scope_")
-                or row[0] == "enforce_subject_storage_scope"
                 else "kl_writer_safety_registry"
             )
             for row in rows
@@ -1318,9 +1316,6 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
         assert all(row[5] is True for row in rows)
         for name, signature, _owner, _security, _config, _acl in rows:
             allowed_roles = (
-                ()
-                if name == "enforce_subject_storage_scope"
-                else
                 (
                     (
                         "kl_application",
@@ -1379,6 +1374,22 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
         )
         assert next(row[1] for row in rows if row[0] == "subject_scope_rls_allows") == (
             "subject_scope_rls_allows(uuid,text,text,text)"
+        )
+        assert connection.execute(
+            "SELECT p.oid::regprocedure::text,pg_get_userbyid(p.proowner),"
+            "p.prosecdef,p.proconfig,"
+            "NOT EXISTS (SELECT 1 FROM aclexplode(coalesce(p.proacl,"
+            "acldefault('f',p.proowner))) acl WHERE acl.grantee=0 "
+            "AND acl.privilege_type='EXECUTE') "
+            "FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace "
+            "WHERE n.nspname='kineticloop' "
+            "AND p.proname='enforce_subject_storage_scope'"
+        ).fetchone() == (
+            "enforce_subject_storage_scope()",
+            "kl_migration_owner",
+            False,
+            ["search_path=pg_catalog, kineticloop, pg_temp"],
+            True,
         )
 
     for url_key in ("application", "auditor", "user", "agent"):
