@@ -173,7 +173,7 @@ CREATE FUNCTION kineticloop.{name}(
 ) RETURNS bigint
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = pg_catalog
+SET search_path = pg_catalog, kineticloop, pg_temp
 AS $routine$
 DECLARE
   current_revision bigint;
@@ -277,7 +277,7 @@ CREATE FUNCTION kineticloop.registry_revoke_artifact(
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = pg_catalog
+SET search_path = pg_catalog, kineticloop, pg_temp
 AS $routine$
 DECLARE
   current_revision bigint;

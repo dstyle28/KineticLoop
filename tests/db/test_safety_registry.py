@@ -13,7 +13,7 @@ from uuid import UUID
 
 import psycopg
 import pytest
-from psycopg import Connection
+from psycopg import Connection, sql
 
 from kineticloop.contracts.commands import RevokeArtifact, TransactionBoundary, TrustedActor
 from kineticloop.contracts.safety_registry import (
@@ -1271,7 +1271,11 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
             "registry_revoke_artifact",
         ]
         assert all(row[2] == "kl_writer_safety_registry" for row in rows)
-        assert all(row[3] is True and row[4] == ["search_path=pg_catalog"] for row in rows)
+        assert all(
+            row[3] is True
+            and row[4] == ["search_path=pg_catalog, kineticloop, pg_temp"]
+            for row in rows
+        )
         assert all(row[5] is True for row in rows)
         for name, signature, _owner, _security, _config, _acl in rows:
             expected_role = (
@@ -1289,6 +1293,228 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
                     "SELECT has_function_privilege(%s,%s,'EXECUTE')",
                     (role, signature),
                 ).fetchone() == (False,)
+
+
+def create_hostile_temp_registry_objects(connection: Connection[Any]) -> None:
+    for relation in (
+        "user_decision_state",
+        "command_receipts",
+        "domain_events",
+        "outbox_deliveries",
+        "safety_artifacts",
+        "artifact_revocation_events",
+        "safety_registry_state",
+        "decision_manifests",
+        "authorization_issuances",
+        "authorization_events",
+        "authorization_artifact_closure",
+        "registry_management_receipts",
+        "registry_audit_events",
+        "registry_outbox",
+    ):
+        connection.execute(
+            sql.SQL("CREATE TEMP TABLE {} (hijacked text)").format(
+                sql.Identifier(relation)
+            )
+        )
+    connection.execute("CREATE DOMAIN pg_temp.uuid AS text")
+    connection.execute("CREATE DOMAIN pg_temp.timestamptz AS text")
+
+
+def assert_direct_dml_denied(connection: Connection[Any], relation: str) -> None:
+    column = connection.execute(
+        "SELECT attname FROM pg_attribute "
+        "WHERE attrelid=%s::regclass AND attnum>0 AND NOT attisdropped "
+        "ORDER BY attnum LIMIT 1",
+        (f"kineticloop.{relation}",),
+    ).fetchone()
+    assert column is not None
+    statements = (
+        sql.SQL("INSERT INTO {} SELECT * FROM {} WHERE false").format(
+            sql.Identifier("kineticloop", relation),
+            sql.Identifier("kineticloop", relation),
+        ),
+        sql.SQL("UPDATE {} SET {}={} WHERE false").format(
+            sql.Identifier("kineticloop", relation),
+            sql.Identifier(column[0]),
+            sql.Identifier(column[0]),
+        ),
+        sql.SQL("DELETE FROM {} WHERE false").format(
+            sql.Identifier("kineticloop", relation)
+        ),
+    )
+    for statement in statements:
+        with pytest.raises(psycopg.errors.InsufficientPrivilege):
+            connection.execute(statement)
+        connection.rollback()
+
+
+def test_migrated_registry_definer_search_path_and_schema_acl(
+    db_urls: dict[str, str],
+) -> None:
+    routine_names = (
+        "registry_guard_publish_manifest",
+        "registry_guard_commit_bundle",
+        "registry_guard_reauthorize",
+        "registry_guard_start_session",
+        "registry_guard_resume_session",
+        "registry_guard_continue_session",
+        "registry_revoke_artifact",
+    )
+    denied_schema_roles = (
+        "kl_application_login",
+        "kl_auditor_login",
+        "kl_trusted_admin_login",
+        "kl_application",
+        "kl_auditor",
+        "kl_trusted_admin",
+        "kl_writer_safety_registry",
+        "kl_cluster_bootstrap",
+        "kl_migration_deployer",
+    )
+    with connect(db_urls["admin"]) as admin:
+        assert admin.execute(
+            "SELECT pg_get_userbyid(nspowner) FROM pg_namespace "
+            "WHERE nspname='kineticloop'"
+        ).fetchone() == ("kl_migration_owner",)
+        for role in denied_schema_roles:
+            privilege = admin.execute(
+                "SELECT has_schema_privilege(%s,'kineticloop','CREATE')",
+                (role,),
+            ).fetchone()
+            assert privilege == (False,), role
+        assert admin.execute(
+            "SELECT NOT EXISTS (SELECT 1 FROM pg_namespace n, "
+            "LATERAL aclexplode(coalesce(n.nspacl,acldefault('n',n.nspowner))) acl "
+            "WHERE n.nspname='kineticloop' AND acl.grantee=0)"
+        ).fetchone() == (True,)
+
+        definitions = admin.execute(
+            "SELECT p.proname,p.proconfig,pg_get_functiondef(p.oid) "
+            "FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace "
+            "WHERE n.nspname='kineticloop' AND p.proname=ANY(%s) ORDER BY p.proname",
+            (list(routine_names),),
+        ).fetchall()
+        assert len(definitions) == len(routine_names)
+        for _name, config, definition in definitions:
+            assert config == ["search_path=pg_catalog, kineticloop, pg_temp"]
+            assert "EXECUTE " not in definition.upper()
+            for relation in (
+                "safety_registry_state",
+                "safety_artifacts",
+                "artifact_revocation_events",
+            ):
+                if relation in definition:
+                    assert f"kineticloop.{relation}" in definition
+
+    artifacts = [UUID(ARTIFACT_ID), UUID(DEPENDENCY_ID)]
+    with connect(db_urls["application"]) as application:
+        create_hostile_temp_registry_objects(application)
+        for name in routine_names[:-1]:
+            row = application.execute(
+                sql.SQL("SELECT kineticloop.{}(%s,%s,0,5000)").format(
+                    sql.Identifier(name)
+                ),
+                (UUID(SUBJECT_ID), artifacts),
+            ).fetchone()
+            assert row == (0,)
+        application.rollback()
+    with connect(db_urls["trusted_admin"]) as trusted:
+        create_hostile_temp_registry_objects(trusted)
+        assert invoke_revoke_sql(trusted, key="hostile-temp-revoke") is not None
+        trusted.rollback()
+    assert registry_counts(db_urls["admin"]) == (0, 0, 0, 0)
+
+    relations = (
+        "user_decision_state",
+        "command_receipts",
+        "domain_events",
+        "outbox_deliveries",
+        "safety_artifacts",
+        "artifact_revocation_events",
+        "safety_registry_state",
+    )
+    for url_key in ("application", "auditor", "trusted_admin"):
+        with connect(db_urls[url_key]) as runtime:
+            for relation in relations:
+                assert_direct_dml_denied(runtime, relation)
+    for role in ("kl_application", "kl_auditor", "kl_trusted_admin"):
+        with connect(db_urls["admin"]) as admin:
+            for relation in relations:
+                assert admin.execute(
+                    "SELECT has_table_privilege(%s,%s,'INSERT') OR "
+                    "has_table_privilege(%s,%s,'UPDATE') OR "
+                    "has_table_privilege(%s,%s,'DELETE')",
+                    (
+                        role,
+                        f"kineticloop.{relation}",
+                        role,
+                        f"kineticloop.{relation}",
+                        role,
+                        f"kineticloop.{relation}",
+                    ),
+                ).fetchone() == (False,)
+
+
+def test_migrated_registry_runtime_login_boundary(db_urls: dict[str, str]) -> None:
+    expected_memberships = {
+        "kl_application_login": "kl_application",
+        "kl_trusted_admin_login": "kl_trusted_admin",
+    }
+    protected_roles = (
+        "kl_migration_owner",
+        "kl_writer_safety_registry",
+        "kl_migration_deployer",
+        "kl_cluster_bootstrap",
+        "kl_auditor",
+    )
+    with connect(db_urls["admin"]) as admin:
+        for login, execution_role in expected_memberships.items():
+            attributes = admin.execute(
+                "SELECT rolcanlogin,rolsuper,rolcreatedb,rolcreaterole,rolinherit,"
+                "rolreplication,rolbypassrls FROM pg_roles WHERE rolname=%s",
+                (login,),
+            ).fetchone()
+            assert attributes == (True, False, False, False, True, False, False)
+            memberships = admin.execute(
+                "SELECT parent.rolname,m.admin_option,m.inherit_option,m.set_option "
+                "FROM pg_auth_members m JOIN pg_roles parent ON parent.oid=m.roleid "
+                "JOIN pg_roles member ON member.oid=m.member WHERE member.rolname=%s",
+                (login,),
+            ).fetchall()
+            assert memberships == [(execution_role, False, True, False)]
+            for protected in protected_roles:
+                assert admin.execute(
+                    "SELECT pg_has_role(%s,%s,'MEMBER')", (login, protected)
+                ).fetchone() == (False,)
+            assert admin.execute(
+                "SELECT (SELECT count(*) FROM pg_database WHERE datdba=%s::regrole) + "
+                "(SELECT count(*) FROM pg_namespace WHERE nspowner=%s::regrole) + "
+                "(SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace "
+                "WHERE n.nspname='kineticloop' AND c.relowner=%s::regrole) + "
+                "(SELECT count(*) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace "
+                "WHERE n.nspname='kineticloop' AND p.proowner=%s::regrole)",
+                (login, login, login, login),
+            ).fetchone() == (0,)
+
+    for url_key, login in (
+        ("application", "kl_application_login"),
+        ("trusted_admin", "kl_trusted_admin_login"),
+    ):
+        with connect(db_urls[url_key]) as runtime:
+            for statement in (
+                "ALTER ROLE kl_migration_owner LOGIN",
+                f"GRANT kl_migration_owner TO {login}",
+                f"REVOKE kl_migration_owner FROM {login}",
+                "SET ROLE kl_migration_owner",
+                "SET ROLE kl_writer_safety_registry",
+                "SET ROLE kl_migration_deployer",
+                "SET ROLE kl_cluster_bootstrap",
+                "SET SESSION AUTHORIZATION kl_migration_owner",
+            ):
+                with pytest.raises(psycopg.Error):
+                    runtime.execute(statement)
+                runtime.rollback()
 
 
 def test_migrated_registry_role_owner_boundary(db_urls: dict[str, str]) -> None:

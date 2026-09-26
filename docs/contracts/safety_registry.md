@@ -22,6 +22,14 @@ All S01--S51 tables, sequences, and non-command guards remain owned by
 NOLOGIN `kl_writer_safety_registry`. Runtime login roles receive external membership in the
 execution roles but cannot SET either owner role or issue direct S49/S50/S51 DML.
 
+Each command routine fixes its complete `search_path` to exactly `pg_catalog, kineticloop,
+pg_temp`, with the temporary schema explicit and last, and schema-qualifies every KineticLoop
+object reference. The `kineticloop` schema is owned by `kl_migration_owner`; PUBLIC and every
+runtime, execution, writer, bootstrap, and deployment role lack schema CREATE authority. After
+Phase A and the ownership handoff, the external bootstrap role is de-elevated. The application
+and trusted-admin logins retain exactly one inherited, non-SET, non-admin execution-role
+membership, own no migrated objects, and cannot administer or assume deployment or owner roles.
+
 ## Command boundary and order
 
 `PublishManifest`, `CommitBundle`, `Reauthorize`, `StartSession`, `ResumeSession`, and

@@ -91,6 +91,7 @@ def provision_external_roles(admin_url: str) -> None:
             "kl_migration_owner",
             "kl_trusted_admin",
             "kl_application_login",
+            "kl_auditor_login",
             "kl_stop_login",
             "kl_trusted_admin_login",
         }
@@ -127,6 +128,7 @@ def provision_external_roles(admin_url: str) -> None:
         for role in (
             "kl_migration_deployer",
             "kl_application_login",
+            "kl_auditor_login",
             "kl_stop_login",
             "kl_trusted_admin_login",
         ):
@@ -134,6 +136,8 @@ def provision_external_roles(admin_url: str) -> None:
                 f"ALTER ROLE {role} LOGIN PASSWORD '{ROLE_PASSWORD}' "
                 "NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS"
             )
+        for role in ("kl_application_login", "kl_auditor_login", "kl_trusted_admin_login"):
+            connection.execute(f"ALTER ROLE {role} INHERIT")
 
 
 def external_ownership_handoff(admin_url: str, database_name: str) -> None:
@@ -141,11 +145,18 @@ def external_ownership_handoff(admin_url: str, database_name: str) -> None:
         connection.execute("REASSIGN OWNED BY kl_cluster_bootstrap TO kl_migration_owner")
         connection.execute(f'ALTER DATABASE "{database_name}" OWNER TO kl_migration_owner')
         connection.execute(
+            "ALTER ROLE kl_cluster_bootstrap NOLOGIN NOSUPERUSER NOCREATEDB "
+            "NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS"
+        )
+        connection.execute(
             "GRANT kl_migration_owner, kl_writer_safety_registry "
             "TO kl_migration_deployer WITH INHERIT FALSE, SET TRUE"
         )
         connection.execute(
             "GRANT kl_application TO kl_application_login WITH INHERIT TRUE, SET FALSE"
+        )
+        connection.execute(
+            "GRANT kl_auditor TO kl_auditor_login WITH INHERIT TRUE, SET FALSE"
         )
         connection.execute(
             "GRANT kl_trusted_admin TO kl_trusted_admin_login WITH INHERIT TRUE, SET FALSE"
@@ -157,7 +168,7 @@ def external_ownership_handoff(admin_url: str, database_name: str) -> None:
         connection.execute(
             "GRANT CONNECT ON DATABASE " + f'"{database_name}"' + " TO "
             "kl_migration_deployer, kl_application_login, kl_stop_login, "
-            "kl_trusted_admin_login"
+            "kl_trusted_admin_login, kl_auditor_login"
         )
         connection.execute("GRANT SELECT ON public.alembic_version TO kl_migration_deployer")
 
@@ -181,6 +192,7 @@ def bootstrap_two_phase(lifecycle: DatabaseLifecycle, *, head: bool = True) -> d
         "bootstrap": bootstrap_url,
         "deployer": deployer_url,
         "application": role_url(admin_url, "kl_application_login"),
+        "auditor": role_url(admin_url, "kl_auditor_login"),
         "stop": role_url(admin_url, "kl_stop_login"),
         "trusted_admin": role_url(admin_url, "kl_trusted_admin_login"),
     }
@@ -258,11 +270,12 @@ def test_two_phase_empty_db_upgrade_head() -> None:
     lifecycle = DatabaseLifecycle(ROOT)
     urls = bootstrap_two_phase(lifecycle)
     assert lifecycle.execute_sql("SELECT version_num FROM alembic_version") == REVISION
-    with psycopg.connect(urls["bootstrap"]) as connection:
+    with psycopg.connect(urls["admin"]) as connection:
         row = connection.execute(
-            "SELECT rolcreaterole FROM pg_roles WHERE rolname=session_user"
+            "SELECT rolcanlogin,rolsuper,rolcreaterole FROM pg_roles "
+            "WHERE rolname='kl_cluster_bootstrap'"
         ).fetchone()
-        assert row == (True,)
+        assert row == (False, False, False)
     with psycopg.connect(urls["deployer"]) as connection:
         row = connection.execute(
             "SELECT rolsuper, rolcreaterole, "
