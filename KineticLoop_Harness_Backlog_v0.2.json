@@ -2001,7 +2001,8 @@
         "KL-007",
         "KL-008",
         "KL-013",
-        "KL-072"
+        "KL-072",
+        "KL-018"
       ],
       "commands": [],
       "transaction_boundaries": [
@@ -2059,13 +2060,15 @@
         "subject_isolation_e2e_passes",
         "subject_scope_db_regressions_pass",
         "single_migration_head",
-        "harness_validation_passes"
+        "harness_validation_passes",
+        "complete_db_suite_passes"
       ],
       "resource_keys": [
         "migration_chain",
         "authorization_core",
         "user_coordination",
         "persistence_permissions",
+        "registry_coordination",
         "security_data_boundary"
       ],
       "write_paths": [
@@ -2073,6 +2076,8 @@
         "migrations/versions/*_subject_scope.py",
         "src/kineticloop/persistence/subject_scope.py",
         "tests/db/test_subject_scope.py",
+        "tests/db/test_migrations.py",
+        "tests/db/test_safety_registry.py",
         "tests/e2e/test_subject_isolation.py",
         "tests/fixtures/db/subject_scope/**"
       ],
@@ -2133,6 +2138,11 @@
           "check_id": "harness_validation_passes",
           "command": "uv run kl check-harness",
           "pass_oracle": "Command exits 0 and prints HARNESS_CHECK_PASS."
+        },
+        {
+          "check_id": "complete_db_suite_passes",
+          "command": "uv run pytest -q tests/db",
+          "pass_oracle": "Command exits 0 with the complete PostgreSQL suite used by the db CI workflow passing, including successor-chain/head/bootstrap and closed role/SECURITY DEFINER inventory regressions affected by the KL-017 successor."
         }
       ],
       "evidence_paths": [
