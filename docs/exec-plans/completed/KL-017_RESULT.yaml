@@ -1,0 +1,90 @@
+task_identity: harness-backlog-v0.2/KL-017
+display_task_id: KL-017
+task_definition_version: v0.2
+base_commit: a2602123a539787ed2a6bed25b892109474d0395
+tested_commit: 9b2f14ec2449ab95bac1bfbe1da5a0f6f04a8dd1
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Added a real successor to the KL-018 migration head that isolates production,
+  test, and evaluation persistence by authenticated database principal and exact
+  subject. Subject-specific LOGIN principals are durably bound to one subject and
+  namespace, cannot acquire protected-object bypasses or any direct/transitive
+  kl_writer_* path, and are rejected by storage guards if runtime drift permits
+  direct DML or SET ROLE. Protected subject identifiers are immutable. Lookup
+  derives identity from session_user, and the application verifies every returned
+  kind, object, subject, and namespace before release. Existing production objects,
+  same-namespace foreign objects, and nonexistent objects share one non-disclosing
+  denial for both TEST and EVALUATION actors. Downgrade fails before DDL or ACL
+  change whenever any classification, principal binding, or protected row remains.
+commands_run:
+  - check_id: subject_namespace_isolation
+    command: uv run pytest -q tests/db/test_subject_scope.py::test_subject_namespace_isolation
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-9b2f14e.log
+  - check_id: cross_subject_denial_is_non_enumerating
+    command: uv run pytest -q tests/db/test_subject_scope.py::test_cross_subject_denial_is_non_enumerating
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-9b2f14e.log
+  - check_id: test_authorization_is_isolated
+    command: uv run pytest -q tests/db/test_subject_scope.py::test_test_authorization_is_isolated
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-9b2f14e.log
+  - check_id: evaluation_storage_is_isolated
+    command: uv run pytest -q tests/db/test_subject_scope.py::test_evaluation_storage_is_isolated
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-9b2f14e.log
+  - check_id: application_role_scope_enforced
+    command: uv run pytest -q tests/db/test_subject_scope.py::test_application_role_scope_enforced
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-9b2f14e.log
+  - check_id: subject_isolation_e2e_passes
+    command: uv run pytest -q tests/e2e/test_subject_isolation.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-9b2f14e.log
+  - check_id: subject_scope_db_regressions_pass
+    command: uv run pytest -q tests/db/test_subject_scope.py tests/db/test_migrations.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-9b2f14e.log
+  - check_id: single_migration_head
+    command: uv run alembic heads
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-9b2f14e.log
+  - check_id: harness_validation_passes
+    command: uv run kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-9b2f14e.log
+  - check_id: complete_db_suite_passes
+    command: uv run pytest -q tests/db
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-9b2f14e.log
+requirements_covered: []
+files_changed:
+  - docs/contracts/subject_scope.md
+  - migrations/versions/d4c1a9e7b203_subject_scope.py
+  - src/kineticloop/persistence/subject_scope.py
+  - tests/db/test_subject_scope.py
+  - tests/db/test_migrations.py
+  - tests/db/test_safety_registry.py
+  - tests/e2e/test_subject_isolation.py
+  - docs/exec-plans/evidence/KL-017/checks-9b2f14e.log
+  - docs/exec-plans/evidence/KL-017/ci-9b2f14e.log
+  - docs/exec-plans/completed/KL-017_RESULT.yaml
+decisions:
+  - Require an externally provisioned subject-specific LOGIN principal for each registered subject and bind it one-to-one to a subject and namespace by trusted-admin registration.
+  - Reject direct protected-table ACLs, protected-table or in-schema routine ownership, schema CREATE, effective protected-object bypasses, and every direct/transitive MEMBER or SET path to kl_writer_* during preflight or registration.
+  - Recheck writer reachability in the storage trigger and reject direct subject-session DML after SET ROLE while preserving legitimate SECURITY DEFINER command-owner writes.
+  - Make subject_id immutable on updates to S38, S42, S45, S46, and S47.
+  - Derive lookup identity only from session_user and validate the returned kind, object identifier, subject identifier, and namespace at the application boundary.
+  - Return SQL NULL for missing, cross-namespace, and same-namespace foreign objects and map every denial to SUBJECT_SCOPE_DENIED with BOUNDED_SCOPE_LOOKUP and one non-disclosing payload.
+  - Fail downgrade before any trigger, routine, table, or ACL change whenever any scope, principal binding, or protected S38/S42/S45/S46/S47 row exists.
+  - Preserve the frozen S51-before-S01 order and leave T6/T7 issuance to existing command owners; the new triggers add storage-boundary checks only.
+known_limitations:
+  - Cluster roles, subject-specific credentials, memberships, and ownership handoff remain external two-phase deployment responsibilities.
+  - Operators must retire all subject classifications, bindings, and protected S38/S42/S45/S46/S47 data before downgrade.
+  - No product requirement PASS or production auto-activation is claimed.
+follow_up_tasks:
+  - Run fresh SHA-bound GENERAL, PROTOCOL, DB_CONCURRENCY, and SECURITY_DATA_BOUNDARY independent reviews on the final reviewable head.
+spec_change_request: null
