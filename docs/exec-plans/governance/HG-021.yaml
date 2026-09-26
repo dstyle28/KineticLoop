@@ -1,0 +1,99 @@
+change_identity: harness-governance-v0.1/HG-021
+display_change_id: HG-021
+base_commit: 77cf294a467a0a54e0a32653f911a93760ad1e97
+tested_commit: c27613aec184900d5a24ff101325adc54c8c509f
+change_status: PASS
+summary: >-
+  Refine KL-018 after independent review so artifact registration has NULL-total
+  validity admission, revocable TIMELESS policy artifacts in the declared closure,
+  stable frozen public denials, mechanically bounded dense dependency traversal,
+  atomic timeout and injected-failure rollback evidence, an exact eight-routine
+  SafetyRegistry privilege regression, and a complete DB CI gate.
+packets_refined:
+  - KL-018
+files_changed:
+  - CURRENT_DOCUMENT_INDEX.json
+  - HARNESS_DOCUMENT_MANIFEST.json
+  - KineticLoop_Harness_Backlog_v0.2.json
+  - KineticLoop_Harness_Traceability_v0.3.json
+  - docs/exec-plans/active/KL-018.md
+  - docs/exec-plans/evidence/HG-021/checks.log
+  - docs/exec-plans/governance/HG-021.yaml
+  - tests/harness/test_validator.py
+  - tools/harness/validate_harness.py
+checks_run:
+  - check_id: governance_schema_valid
+    command: Validate HG-021.yaml against HARNESS_CHANGE.schema.json.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-021/checks.log
+  - check_id: kl018_projection_exact
+    command: Verify identical KL-018 checks, commands, pass oracles, deliverables, Definition of Done, write paths, and review types in backlog, traceability, and packet.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-021/checks.log
+  - check_id: validity_contract_null_total
+    command: Verify the pinned artifact_validity_is_null_total contract covers successor constraint hardening, TIMELESS and BOUNDED SQL NULL cases, frozen VALIDITY_UNDEFINED denial, and zero mutation.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-021/checks.log
+  - check_id: timeless_policy_dependency_contract_pinned
+    command: Verify TIMELESS approval policy is a pre-registered policy artifact fixed in the declared dependency closure and its revocation denies T3, T6, and T7 without bypass.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-021/checks.log
+  - check_id: persistence_denial_contract_stable
+    command: Verify the pinned adapter-level contract maps KL_REGISTRY_IMMUTABLE_ARTIFACT and S49 natural-identity conflicts to RegistryDenied(IMMUTABLE_ARTIFACT) without raw psycopg leakage or partial mutation.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-021/checks.log
+  - check_id: dense_closure_contract_bounded
+    command: Verify the pinned adversarial PostgreSQL contract requires a duplicate-suppressing bounded frontier and maps over-bound closure to frozen VALIDITY_UNDEFINED with zero mutation and no new public denial.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-021/checks.log
+  - check_id: failure_atomicity_contracts_pinned
+    command: Verify pinned lock-timeout and post-write injected-failure contracts require stable denial and complete S49/dependency/S51/receipt/event/outbox rollback.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-021/checks.log
+  - check_id: safety_registry_and_full_db_contracts_pinned
+    command: Verify the exact eight-routine SafetyRegistry privilege inventory and complete tests/db CI contracts are pinned, and tests/db/test_safety_registry.py is in KL-018 write scope.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-021/checks.log
+  - check_id: critical_contract_negative_guards_pass
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness/test_validator.py -k 'm2_security_contracts_reject_removal_substitution_and_weakening or m2_kl018_registry_migration_scope_cannot_be_removed' -p no:cacheprovider
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-021/checks.log
+  - check_id: validator_suite_passes
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness/test_validator.py -p no:cacheprovider
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-021/checks.log
+  - check_id: harness_suite_passes
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-021/checks.log
+  - check_id: harness_structure_valid
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-021/checks.log
+  - check_id: lint_passes
+    command: RUFF_CACHE_DIR=/private/tmp/hg021-ruff /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/ruff check tools/harness/validate_harness.py tests/harness/test_validator.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-021/checks.log
+  - check_id: governance_scope_exact
+    command: Verify the protected-base change set is exactly the nine declared HG-021 files.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-021/checks.log
+  - check_id: diff_clean
+    command: git diff --check 77cf294a467a0a54e0a32653f911a93760ad1e97 HEAD
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-021/checks.log
+  - check_id: frozen_state_unchanged
+    command: Verify Frozen Protocol, Frozen DB, and FROZEN_BASELINE.json are unchanged from the protected base.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-021/checks.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+  - >-
+    KL-018 remains NOT_STARTED in the protected repository state; HG-021 defines
+    implementation-time executable acceptance obligations and does not claim the
+    artifact-registry migration or PostgreSQL runtime evidence already exists.
+  - >-
+    HG-021 requires fresh independent GENERAL, PROTOCOL, DB_CONCURRENCY, and
+    SECURITY_DATA_BOUNDARY reviews bound to the immutable governance head before
+    merge; this change intentionally creates no review artifact.
