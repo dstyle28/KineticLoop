@@ -31,14 +31,17 @@ from kineticloop.persistence.schema_topology import (
     RELATION_BY_ID,
     topological_order,
 )
+from kineticloop.persistence.subject_scope import SUBJECT_SCOPE_DATABASE_ROLES
 
 ROOT = Path(__file__).parents[2]
 BASELINE_REVISION = "76fd67f76bd4"
 SAFETY_REGISTRY_REVISION = "a3f91c7d2e10"
-REVISION = "b6e4d8a1c927"
+ARTIFACT_REGISTRY_REVISION = "b6e4d8a1c927"
+REVISION = "d4c1a9e7b203"
 MIGRATION = ROOT / "migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py"
 SUCCESSOR = ROOT / "migrations/versions/a3f91c7d2e10_safety_registry_integration.py"
 ARTIFACT_REGISTRY_SUCCESSOR = ROOT / "migrations/versions/b6e4d8a1c927_artifact_registry.py"
+SUBJECT_SCOPE_SUCCESSOR = ROOT / "migrations/versions/d4c1a9e7b203_subject_scope.py"
 
 ROLE_PASSWORD = "kl072-local-only"
 PROTECTED_ROLES = (
@@ -87,6 +90,7 @@ def run_alembic_downgrade(database_url: str, revision: str) -> None:
 def provision_external_roles(admin_url: str) -> None:
     role_names = sorted(
         RUNTIME_ROLE_NAMES
+        | SUBJECT_SCOPE_DATABASE_ROLES
         | {
             "kl_cluster_bootstrap",
             "kl_migration_deployer",
@@ -98,6 +102,8 @@ def provision_external_roles(admin_url: str) -> None:
             "kl_trusted_admin_login",
             "kl_user_login",
             "kl_agent_login",
+            "kl_test_login",
+            "kl_evaluation_login",
         }
     )
     with psycopg.connect(admin_url, autocommit=True) as connection:
@@ -120,7 +126,11 @@ def provision_external_roles(admin_url: str) -> None:
             connection.execute(
                 sql.SQL("REVOKE {} FROM {}").format(sql.Identifier(parent), sql.Identifier(member))
             )
-        for role in sorted(RUNTIME_ROLE_NAMES | {"kl_migration_owner", "kl_trusted_admin"}):
+        for role in sorted(
+            RUNTIME_ROLE_NAMES
+            | SUBJECT_SCOPE_DATABASE_ROLES
+            | {"kl_migration_owner", "kl_trusted_admin"}
+        ):
             connection.execute(
                 f"ALTER ROLE {role} NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE "
                 "NOINHERIT NOREPLICATION NOBYPASSRLS"
@@ -137,6 +147,8 @@ def provision_external_roles(admin_url: str) -> None:
             "kl_trusted_admin_login",
             "kl_user_login",
             "kl_agent_login",
+            "kl_test_login",
+            "kl_evaluation_login",
         ):
             connection.execute(
                 f"ALTER ROLE {role} LOGIN PASSWORD '{ROLE_PASSWORD}' "
@@ -148,6 +160,8 @@ def provision_external_roles(admin_url: str) -> None:
             "kl_trusted_admin_login",
             "kl_user_login",
             "kl_agent_login",
+            "kl_test_login",
+            "kl_evaluation_login",
         ):
             connection.execute(f"ALTER ROLE {role} INHERIT")
 
@@ -172,6 +186,13 @@ def external_ownership_handoff(admin_url: str, database_name: str) -> None:
             "WITH INHERIT TRUE, SET FALSE"
         )
         connection.execute(
+            "GRANT kl_subject_test TO kl_test_login WITH INHERIT TRUE, SET FALSE"
+        )
+        connection.execute(
+            "GRANT kl_subject_evaluation TO kl_evaluation_login "
+            "WITH INHERIT TRUE, SET FALSE"
+        )
+        connection.execute(
             "GRANT kl_auditor TO kl_auditor_login WITH INHERIT TRUE, SET FALSE"
         )
         connection.execute(
@@ -184,7 +205,8 @@ def external_ownership_handoff(admin_url: str, database_name: str) -> None:
         connection.execute(
             "GRANT CONNECT ON DATABASE " + f'"{database_name}"' + " TO "
             "kl_migration_deployer, kl_application_login, kl_stop_login, "
-            "kl_trusted_admin_login, kl_auditor_login, kl_user_login, kl_agent_login"
+            "kl_trusted_admin_login, kl_auditor_login, kl_user_login, kl_agent_login, "
+            "kl_test_login, kl_evaluation_login"
         )
         connection.execute("GRANT SELECT ON public.alembic_version TO kl_migration_deployer")
 
@@ -213,6 +235,8 @@ def bootstrap_two_phase(lifecycle: DatabaseLifecycle, *, head: bool = True) -> d
         "trusted_admin": role_url(admin_url, "kl_trusted_admin_login"),
         "user": role_url(admin_url, "kl_user_login"),
         "agent": role_url(admin_url, "kl_agent_login"),
+        "test": role_url(admin_url, "kl_test_login"),
+        "evaluation": role_url(admin_url, "kl_evaluation_login"),
     }
 
 
@@ -232,7 +256,7 @@ def test_empty_db_upgrade_head(migrated_database: DatabaseLifecycle) -> None:
     assert migrated_database.execute_sql(
         "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace "
         "WHERE n.nspname='kineticloop' AND c.relkind='r';"
-    ) == str(len(LOGICAL_RELATIONS) + len(FACT_CHILD_PLANS) + 10)
+    ) == str(len(LOGICAL_RELATIONS) + len(FACT_CHILD_PLANS) + 11)
     assert (
         migrated_database.execute_sql(
             "SELECT registry_revision FROM kineticloop.safety_registry_state WHERE id=1;"
@@ -246,12 +270,14 @@ def test_safety_registry_successor_migration_chain() -> None:
     revisions = list(ScriptDirectory.from_config(config).walk_revisions())
     assert [revision.revision for revision in revisions] == [
         REVISION,
+        ARTIFACT_REGISTRY_REVISION,
         SAFETY_REGISTRY_REVISION,
         BASELINE_REVISION,
     ]
-    assert revisions[0].down_revision == SAFETY_REGISTRY_REVISION
-    assert revisions[1].down_revision == BASELINE_REVISION
-    assert revisions[2].down_revision is None
+    assert revisions[0].down_revision == ARTIFACT_REGISTRY_REVISION
+    assert revisions[1].down_revision == SAFETY_REGISTRY_REVISION
+    assert revisions[2].down_revision == BASELINE_REVISION
+    assert revisions[3].down_revision is None
     assert (
         MIGRATION.read_bytes()
         == (ROOT / "migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py").read_bytes()
@@ -263,11 +289,13 @@ def test_artifact_registry_successor_migration_chain() -> None:
     revisions = list(ScriptDirectory.from_config(config).walk_revisions())
     assert [revision.revision for revision in revisions] == [
         REVISION,
+        ARTIFACT_REGISTRY_REVISION,
         SAFETY_REGISTRY_REVISION,
         BASELINE_REVISION,
     ]
     assert len(ScriptDirectory.from_config(config).get_heads()) == 1
-    assert revisions[0].down_revision == SAFETY_REGISTRY_REVISION
+    assert revisions[0].down_revision == ARTIFACT_REGISTRY_REVISION
+    assert revisions[1].down_revision == SAFETY_REGISTRY_REVISION
 
     spec = spec_from_file_location("kl018_migration", ARTIFACT_REGISTRY_SUCCESSOR)
     assert spec is not None and spec.loader is not None
@@ -693,6 +721,7 @@ def test_fk_order_matches_topology(migrated_database: DatabaseLifecycle) -> None
         "fk_s49_dependency_target",
         "fk_s42_closure_authorization",
         "fk_s42_closure_artifact",
+        "fk_subject_scope_test_policy",
     }
     assert actual_names == base_names | deferred_names | supplemental_names
 

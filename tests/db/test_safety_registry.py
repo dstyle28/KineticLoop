@@ -84,49 +84,60 @@ def seed(
     expires_at: datetime | None = None,
     valid_from: datetime | None = None,
     authorization_expires_at: datetime | None = None,
+    reset: bool = True,
+    policy_namespace: str = "registry-test",
+    authorization_scope: str = "EXECUTION",
+    artifact_identity_suffix: str = "",
+    include_authorization: bool = True,
+    include_policy: bool = True,
 ) -> None:
     with psycopg.connect(admin_url, autocommit=True) as connection:
         seed_now = datetime.now(UTC)
         connection.execute("SET session_replication_role = replica")
-        connection.execute(
-            "TRUNCATE kineticloop.registry_outbox, kineticloop.registry_audit_events, "
-            "kineticloop.registry_management_receipts, kineticloop.artifact_revocation_events, "
-            "kineticloop.authorization_artifact_closure, kineticloop.authorization_issuances, "
-            "kineticloop.decision_manifests, "
-            "kineticloop.outbox_deliveries, kineticloop.domain_events, "
-            "kineticloop.command_receipts, "
-            "kineticloop.safety_artifact_dependencies, kineticloop.safety_artifacts, "
-            "kineticloop.user_decision_state, kineticloop.policy_bundles, "
-            "kineticloop.evaluation_releases CASCADE"
-        )
+        if reset:
+            connection.execute(
+                "TRUNCATE kineticloop.registry_outbox, kineticloop.registry_audit_events, "
+                "kineticloop.registry_management_receipts, kineticloop.artifact_revocation_events, "
+                "kineticloop.authorization_artifact_closure, kineticloop.authorization_issuances, "
+                "kineticloop.decision_manifests, "
+                "kineticloop.outbox_deliveries, kineticloop.domain_events, "
+                "kineticloop.command_receipts, "
+                "kineticloop.safety_artifact_dependencies, kineticloop.safety_artifacts, "
+                "kineticloop.user_decision_state, kineticloop.policy_bundles, "
+                "kineticloop.evaluation_releases CASCADE"
+            )
         connection.execute(
             "INSERT INTO kineticloop.safety_registry_state(id,registry_revision,last_revocation_id) "
             "VALUES (1,0,NULL) ON CONFLICT (id) DO UPDATE SET registry_revision=0, "
             "last_revocation_id=NULL"
         )
-        connection.execute("DROP TABLE IF EXISTS public.domain_mutations")
-        connection.execute(
-            "CREATE TABLE public.domain_mutations ("
-            "mutation_id bigserial PRIMARY KEY, command_kind text NOT NULL, "
-            "registry_revision bigint, subject_id uuid NOT NULL, protected_at timestamptz)"
-        )
-        connection.execute("ALTER TABLE public.domain_mutations OWNER TO kl_application_login")
-        connection.execute("GRANT INSERT ON public.domain_mutations TO kl_stop_login")
-        connection.execute(
-            "GRANT USAGE, SELECT ON SEQUENCE public.domain_mutations_mutation_id_seq "
-            "TO kl_stop_login"
-        )
-        connection.execute(
-            "INSERT INTO kineticloop.policy_bundles"
-            "(id,subject_id,policy_namespace,policy_version,content_hash) "
-            "VALUES (%s,%s,'registry-test','1','policy-hash')",
-            (UUID(POLICY_ID), UUID(SUBJECT_ID)),
-        )
+        if reset:
+            connection.execute("DROP TABLE IF EXISTS public.domain_mutations")
+            connection.execute(
+                "CREATE TABLE public.domain_mutations ("
+                "mutation_id bigserial PRIMARY KEY, command_kind text NOT NULL, "
+                "registry_revision bigint, subject_id uuid NOT NULL, protected_at timestamptz)"
+            )
+            connection.execute(
+                "ALTER TABLE public.domain_mutations OWNER TO kl_application_login"
+            )
+            connection.execute("GRANT INSERT ON public.domain_mutations TO kl_stop_login")
+            connection.execute(
+                "GRANT USAGE, SELECT ON SEQUENCE public.domain_mutations_mutation_id_seq "
+                "TO kl_stop_login"
+            )
+        if include_policy:
+            connection.execute(
+                "INSERT INTO kineticloop.policy_bundles"
+                "(id,subject_id,policy_namespace,policy_version,content_hash) "
+                "VALUES (%s,%s,%s,'1','policy-hash')",
+                (UUID(POLICY_ID), UUID(SUBJECT_ID), policy_namespace),
+            )
         connection.execute(
             "INSERT INTO kineticloop.evaluation_releases"
             "(id,subject_id,release_namespace,release_version) "
-            "VALUES (%s,%s,'registry-test','1')",
-            (UUID(RELEASE_ID), UUID(SUBJECT_ID)),
+            "VALUES (%s,%s,%s,'1')",
+            (UUID(RELEASE_ID), UUID(SUBJECT_ID), policy_namespace),
         )
         connection.execute(
             """
@@ -134,18 +145,20 @@ def seed(
               id, artifact_kind, artifact_identity, artifact_version, content_hash,
               validity_kind, valid_from, valid_until, ref_s05_id, ref_s48_id
             ) VALUES
-              (%s,'EVALUATION_RELEASE','dependency','1',%s,'BOUNDED',
+              (%s,'EVALUATION_RELEASE',%s,'1',%s,'BOUNDED',
                %s,%s,NULL,%s),
-              (%s,'POLICY_BUNDLE','artifact','1',%s,'BOUNDED',
+              (%s,'POLICY_BUNDLE',%s,'1',%s,'BOUNDED',
                %s,%s,%s,NULL)
             """,
             (
                 UUID(DEPENDENCY_ID),
+                f"dependency{artifact_identity_suffix}",
                 "b" * 64,
                 valid_from or seed_now - timedelta(days=1),
                 expires_at or seed_now + timedelta(days=30),
                 UUID(RELEASE_ID),
                 UUID(ARTIFACT_ID),
+                f"artifact{artifact_identity_suffix}",
                 CONTENT_HASH,
                 valid_from or seed_now - timedelta(days=1),
                 expires_at or seed_now + timedelta(days=30),
@@ -194,38 +207,39 @@ def seed(
                 UUID(POLICY_ID), UUID(ARTIFACT_ID),
             ),
         )
-        connection.execute(
-            """
-            INSERT INTO kineticloop.authorization_issuances(
+        if include_authorization:
+            connection.execute(
+                """
+                INSERT INTO kineticloop.authorization_issuances(
               id, subject_id, bound_content_hash, scope,
               artifact_dependency_closure_hash, registry_revision_at_issue,
               valid_from, valid_until, validity_certificate, ref_s02_id,
               ref_s05_id, ref_s24_id, ref_s36_id, ref_s37_id, ref_s40_id,
               ref_s49_id, registry_state_id
             ) VALUES (
-              %s,%s,'authorization-content','EXECUTION','closure-hash',0,
+              %s,%s,'authorization-content',%s,'closure-hash',0,
               %s,%s,'{"authorization_epoch": 0}'::jsonb,%s,%s,%s,%s,%s,%s,%s,1
             )
-            """,
-            (
-                UUID(AUTHORIZATION_ID), UUID(SUBJECT_ID),
-                seed_now - timedelta(days=1),
-                authorization_expires_at or seed_now + timedelta(days=1),
-                UUID(RECEIPT_ID), UUID(POLICY_ID), UUID(MANIFEST_ID),
-                UUID(POLICY_ID), UUID(POLICY_ID), UUID(POLICY_ID), UUID(ARTIFACT_ID),
-            ),
-        )
-        for artifact_id in (ARTIFACT_ID, DEPENDENCY_ID):
-            connection.execute(
-                "INSERT INTO kineticloop.authorization_artifact_closure"
-                "(subject_id,authorization_id,artifact_id,artifact_revision,valid_from,valid_until) "
-                "VALUES (%s,%s,%s,1,%s,%s)",
+                """,
                 (
-                    UUID(SUBJECT_ID), UUID(AUTHORIZATION_ID), UUID(artifact_id),
+                    UUID(AUTHORIZATION_ID), UUID(SUBJECT_ID), authorization_scope,
                     seed_now - timedelta(days=1),
                     authorization_expires_at or seed_now + timedelta(days=1),
+                    UUID(RECEIPT_ID), UUID(POLICY_ID), UUID(MANIFEST_ID),
+                    UUID(POLICY_ID), UUID(POLICY_ID), UUID(POLICY_ID), UUID(ARTIFACT_ID),
                 ),
             )
+            for artifact_id in (ARTIFACT_ID, DEPENDENCY_ID):
+                connection.execute(
+                    "INSERT INTO kineticloop.authorization_artifact_closure"
+                    "(subject_id,authorization_id,artifact_id,artifact_revision,valid_from,valid_until) "
+                    "VALUES (%s,%s,%s,1,%s,%s)",
+                    (
+                        UUID(SUBJECT_ID), UUID(AUTHORIZATION_ID), UUID(artifact_id),
+                        seed_now - timedelta(days=1),
+                        authorization_expires_at or seed_now + timedelta(days=1),
+                    ),
+                )
         connection.execute(
             "INSERT INTO kineticloop.user_decision_state"
             "(subject_id,authorization_epoch,current_manifest_id,active_policy_bundle_id) "
@@ -1267,6 +1281,7 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
             "WHERE n.nspname='kineticloop' AND p.prosecdef ORDER BY p.proname"
         ).fetchall()
         assert [row[0] for row in rows] == [
+            "enforce_subject_storage_scope",
             "registry_guard_commit_bundle",
             "registry_guard_continue_session",
             "registry_guard_publish_manifest",
@@ -1275,8 +1290,19 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
             "registry_guard_start_session",
             "registry_register_artifact",
             "registry_revoke_artifact",
+            "subject_scope_lookup",
+            "subject_scope_register",
         ]
-        assert all(row[2] == "kl_writer_safety_registry" for row in rows)
+        assert all(
+            row[2]
+            == (
+                "kl_migration_owner"
+                if row[0].startswith("subject_scope_")
+                or row[0] == "enforce_subject_storage_scope"
+                else "kl_writer_safety_registry"
+            )
+            for row in rows
+        )
         assert all(
             row[3] is True
             and row[4] == ["search_path=pg_catalog, kineticloop, pg_temp"]
@@ -1284,19 +1310,37 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
         )
         assert all(row[5] is True for row in rows)
         for name, signature, _owner, _security, _config, _acl in rows:
-            expected_role = (
-                "kl_trusted_admin"
-                if name in {"registry_register_artifact", "registry_revoke_artifact"}
-                else "kl_application"
+            allowed_roles = (
+                ()
+                if name == "enforce_subject_storage_scope"
+                else
+                ("kl_trusted_admin",)
+                if name in {
+                    "registry_register_artifact",
+                    "registry_revoke_artifact",
+                    "subject_scope_register",
+                }
+                else (
+                    ("kl_application", "kl_subject_test", "kl_subject_evaluation")
+                    if name == "subject_scope_lookup"
+                    else ("kl_application",)
+                )
             )
-            assert connection.execute(
-                "SELECT has_function_privilege(%s,%s,'EXECUTE')",
-                (expected_role, signature),
-            ).fetchone() == (True,)
-            denied_roles = (
-                ("kl_application", "kl_auditor", "kl_user_login", "kl_agent_login")
-                if name in {"registry_register_artifact", "registry_revoke_artifact"}
-                else ("kl_trusted_admin", "kl_auditor")
+            for role in allowed_roles:
+                assert connection.execute(
+                    "SELECT has_function_privilege(%s,%s,'EXECUTE')",
+                    (role, signature),
+                ).fetchone() == (True,)
+            denied_roles = tuple(
+                role
+                for role in (
+                    "kl_application",
+                    "kl_subject_test",
+                    "kl_subject_evaluation",
+                    "kl_trusted_admin",
+                    "kl_auditor",
+                )
+                if role not in allowed_roles
             )
             for role in denied_roles:
                 assert connection.execute(
@@ -1346,6 +1390,7 @@ def create_hostile_temp_registry_objects(connection: Connection[Any]) -> None:
         "registry_management_receipts",
         "registry_audit_events",
         "registry_outbox",
+        "subject_scopes",
     ):
         connection.execute(
             sql.SQL("CREATE TEMP TABLE {} (hijacked text)").format(
@@ -1406,6 +1451,10 @@ def test_migrated_registry_definer_search_path_and_schema_acl(
         "kl_writer_safety_registry",
         "kl_cluster_bootstrap",
         "kl_migration_deployer",
+        "kl_test_login",
+        "kl_evaluation_login",
+        "kl_subject_test",
+        "kl_subject_evaluation",
     )
     with connect(db_urls["admin"]) as admin:
         assert admin.execute(
@@ -1469,11 +1518,17 @@ def test_migrated_registry_definer_search_path_and_schema_acl(
         "artifact_revocation_events",
         "safety_registry_state",
     )
-    for url_key in ("application", "auditor", "trusted_admin"):
+    for url_key in ("application", "auditor", "trusted_admin", "test", "evaluation"):
         with connect(db_urls[url_key]) as runtime:
             for relation in relations:
                 assert_direct_dml_denied(runtime, relation)
-    for role in ("kl_application", "kl_auditor", "kl_trusted_admin"):
+    for role in (
+        "kl_application",
+        "kl_auditor",
+        "kl_trusted_admin",
+        "kl_subject_test",
+        "kl_subject_evaluation",
+    ):
         with connect(db_urls["admin"]) as admin:
             for relation in relations:
                 assert admin.execute(
@@ -1495,6 +1550,8 @@ def test_migrated_registry_runtime_login_boundary(db_urls: dict[str, str]) -> No
     expected_memberships = {
         "kl_application_login": "kl_application",
         "kl_trusted_admin_login": "kl_trusted_admin",
+        "kl_test_login": "kl_subject_test",
+        "kl_evaluation_login": "kl_subject_evaluation",
     }
     protected_roles = (
         "kl_migration_owner",
@@ -1502,6 +1559,8 @@ def test_migrated_registry_runtime_login_boundary(db_urls: dict[str, str]) -> No
         "kl_migration_deployer",
         "kl_cluster_bootstrap",
         "kl_auditor",
+        "kl_subject_test",
+        "kl_subject_evaluation",
     )
     with connect(db_urls["admin"]) as admin:
         for login, execution_role in expected_memberships.items():
@@ -1521,7 +1580,7 @@ def test_migrated_registry_runtime_login_boundary(db_urls: dict[str, str]) -> No
             for protected in protected_roles:
                 assert admin.execute(
                     "SELECT pg_has_role(%s,%s,'MEMBER')", (login, protected)
-                ).fetchone() == (False,)
+                ).fetchone() == (protected == execution_role,)
             assert admin.execute(
                 "SELECT (SELECT count(*) FROM pg_database WHERE datdba=%s::regrole) + "
                 "(SELECT count(*) FROM pg_namespace WHERE nspowner=%s::regrole) + "
@@ -1535,6 +1594,8 @@ def test_migrated_registry_runtime_login_boundary(db_urls: dict[str, str]) -> No
     for url_key, login in (
         ("application", "kl_application_login"),
         ("trusted_admin", "kl_trusted_admin_login"),
+        ("test", "kl_test_login"),
+        ("evaluation", "kl_evaluation_login"),
     ):
         with connect(db_urls[url_key]) as runtime:
             for statement in (
