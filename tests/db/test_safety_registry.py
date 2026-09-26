@@ -25,12 +25,18 @@ from kineticloop.contracts.safety_registry import (
 )
 from kineticloop.db.lifecycle import DatabaseLifecycle
 from kineticloop.identity import ActorRole
+from kineticloop.persistence.immutability import RUNTIME_ROLE_NAMES
 from kineticloop.persistence.safety_registry import (
     RegistryTransactionStateError,
     RevocationResult,
     execute_shared_registry_command,
     execute_stop_without_registry,
     revoke_artifact,
+)
+from kineticloop.persistence.subject_scope import (
+    EVALUATION_SUBJECT_LOGINS,
+    PRODUCTION_SUBJECT_LOGIN,
+    TEST_SUBJECT_LOGINS,
 )
 from kineticloop.primitives.times import canonical_utc
 
@@ -1353,6 +1359,12 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
         assert next(row[1] for row in rows if row[0] == "registry_register_artifact") == (
             registration_signature
         )
+        assert next(row[1] for row in rows if row[0] == "subject_scope_lookup") == (
+            "subject_scope_lookup(text,uuid)"
+        )
+        assert next(row[1] for row in rows if row[0] == "subject_scope_register") == (
+            "subject_scope_register(uuid,text,uuid,uuid,text)"
+        )
 
     for url_key in ("application", "auditor", "user", "agent"):
         with connect(db_urls[url_key]) as runtime:
@@ -1391,6 +1403,7 @@ def create_hostile_temp_registry_objects(connection: Connection[Any]) -> None:
         "registry_audit_events",
         "registry_outbox",
         "subject_scopes",
+        "subject_principal_bindings",
     ):
         connection.execute(
             sql.SQL("CREATE TEMP TABLE {} (hijacked text)").format(
@@ -1451,8 +1464,9 @@ def test_migrated_registry_definer_search_path_and_schema_acl(
         "kl_writer_safety_registry",
         "kl_cluster_bootstrap",
         "kl_migration_deployer",
-        "kl_test_login",
-        "kl_evaluation_login",
+        PRODUCTION_SUBJECT_LOGIN,
+        *TEST_SUBJECT_LOGINS,
+        *EVALUATION_SUBJECT_LOGINS,
         "kl_subject_test",
         "kl_subject_evaluation",
     )
@@ -1517,6 +1531,8 @@ def test_migrated_registry_definer_search_path_and_schema_acl(
         "safety_artifacts",
         "artifact_revocation_events",
         "safety_registry_state",
+        "subject_scopes",
+        "subject_principal_bindings",
     )
     for url_key in ("application", "auditor", "trusted_admin", "test", "evaluation"):
         with connect(db_urls[url_key]) as runtime:
@@ -1550,17 +1566,23 @@ def test_migrated_registry_runtime_login_boundary(db_urls: dict[str, str]) -> No
     expected_memberships = {
         "kl_application_login": "kl_application",
         "kl_trusted_admin_login": "kl_trusted_admin",
-        "kl_test_login": "kl_subject_test",
-        "kl_evaluation_login": "kl_subject_evaluation",
+        PRODUCTION_SUBJECT_LOGIN: "kl_application",
+        **{login: "kl_subject_test" for login in TEST_SUBJECT_LOGINS},
+        **{login: "kl_subject_evaluation" for login in EVALUATION_SUBJECT_LOGINS},
     }
-    protected_roles = (
-        "kl_migration_owner",
-        "kl_writer_safety_registry",
-        "kl_migration_deployer",
-        "kl_cluster_bootstrap",
-        "kl_auditor",
-        "kl_subject_test",
-        "kl_subject_evaluation",
+    protected_roles = tuple(
+        sorted(
+            RUNTIME_ROLE_NAMES
+            | {
+                "kl_migration_owner",
+                "kl_migration_deployer",
+                "kl_cluster_bootstrap",
+                "kl_auditor",
+                "kl_trusted_admin",
+                "kl_subject_test",
+                "kl_subject_evaluation",
+            }
+        )
     )
     with connect(db_urls["admin"]) as admin:
         for login, execution_role in expected_memberships.items():
@@ -1591,11 +1613,25 @@ def test_migrated_registry_runtime_login_boundary(db_urls: dict[str, str]) -> No
                 (login, login, login, login),
             ).fetchone() == (0,)
 
+        writer_roles = sorted(
+            role for role in RUNTIME_ROLE_NAMES if role.startswith("kl_writer_")
+        )
+        for login in (*TEST_SUBJECT_LOGINS, *EVALUATION_SUBJECT_LOGINS):
+            for writer_role in writer_roles:
+                assert admin.execute(
+                    "SELECT pg_has_role(%s,%s,'MEMBER'),"
+                    "pg_has_role(%s,%s,'SET')",
+                    (login, writer_role, login, writer_role),
+                ).fetchone() == (False, False)
+
     for url_key, login in (
         ("application", "kl_application_login"),
         ("trusted_admin", "kl_trusted_admin_login"),
-        ("test", "kl_test_login"),
-        ("evaluation", "kl_evaluation_login"),
+        ("production_subject", PRODUCTION_SUBJECT_LOGIN),
+        ("test", TEST_SUBJECT_LOGINS[0]),
+        ("test_2", TEST_SUBJECT_LOGINS[1]),
+        ("evaluation", EVALUATION_SUBJECT_LOGINS[0]),
+        ("evaluation_2", EVALUATION_SUBJECT_LOGINS[1]),
     ):
         with connect(db_urls[url_key]) as runtime:
             for statement in (

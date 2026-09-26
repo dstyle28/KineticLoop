@@ -18,6 +18,18 @@ EVALUATION_DATABASE_ROLE: Final = "kl_subject_evaluation"
 SUBJECT_SCOPE_DATABASE_ROLES: Final = frozenset(
     {TEST_DATABASE_ROLE, EVALUATION_DATABASE_ROLE}
 )
+PRODUCTION_SUBJECT_LOGIN: Final = "kl_production_subject_1_login"
+TEST_SUBJECT_LOGINS: Final = (
+    "kl_test_subject_1_login",
+    "kl_test_subject_2_login",
+)
+EVALUATION_SUBJECT_LOGINS: Final = (
+    "kl_evaluation_subject_1_login",
+    "kl_evaluation_subject_2_login",
+)
+SUBJECT_SCOPE_LOGIN_ROLES: Final = frozenset(
+    {PRODUCTION_SUBJECT_LOGIN, *TEST_SUBJECT_LOGINS, *EVALUATION_SUBJECT_LOGINS}
+)
 
 
 class SubjectNamespace(StrEnum):
@@ -132,8 +144,8 @@ def read_scoped_object(
 
     try:
         row = connection.execute(
-            "SELECT kineticloop.subject_scope_lookup(%s,%s,%s,%s)",
-            (namespace.value, target_subject, object_kind.value, target_object),
+            "SELECT kineticloop.subject_scope_lookup(%s,%s)",
+            (object_kind.value, target_object),
         ).fetchone()
     except psycopg.Error as error:
         if "KL_SUBJECT_SCOPE_ROLE_DENIED" in str(error):

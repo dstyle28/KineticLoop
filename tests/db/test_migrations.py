@@ -31,7 +31,13 @@ from kineticloop.persistence.schema_topology import (
     RELATION_BY_ID,
     topological_order,
 )
-from kineticloop.persistence.subject_scope import SUBJECT_SCOPE_DATABASE_ROLES
+from kineticloop.persistence.subject_scope import (
+    EVALUATION_SUBJECT_LOGINS,
+    PRODUCTION_SUBJECT_LOGIN,
+    SUBJECT_SCOPE_DATABASE_ROLES,
+    SUBJECT_SCOPE_LOGIN_ROLES,
+    TEST_SUBJECT_LOGINS,
+)
 
 ROOT = Path(__file__).parents[2]
 BASELINE_REVISION = "76fd67f76bd4"
@@ -91,6 +97,7 @@ def provision_external_roles(admin_url: str) -> None:
     role_names = sorted(
         RUNTIME_ROLE_NAMES
         | SUBJECT_SCOPE_DATABASE_ROLES
+        | SUBJECT_SCOPE_LOGIN_ROLES
         | {
             "kl_cluster_bootstrap",
             "kl_migration_deployer",
@@ -102,8 +109,6 @@ def provision_external_roles(admin_url: str) -> None:
             "kl_trusted_admin_login",
             "kl_user_login",
             "kl_agent_login",
-            "kl_test_login",
-            "kl_evaluation_login",
         }
     )
     with psycopg.connect(admin_url, autocommit=True) as connection:
@@ -147,8 +152,7 @@ def provision_external_roles(admin_url: str) -> None:
             "kl_trusted_admin_login",
             "kl_user_login",
             "kl_agent_login",
-            "kl_test_login",
-            "kl_evaluation_login",
+            *sorted(SUBJECT_SCOPE_LOGIN_ROLES),
         ):
             connection.execute(
                 f"ALTER ROLE {role} LOGIN PASSWORD '{ROLE_PASSWORD}' "
@@ -160,8 +164,7 @@ def provision_external_roles(admin_url: str) -> None:
             "kl_trusted_admin_login",
             "kl_user_login",
             "kl_agent_login",
-            "kl_test_login",
-            "kl_evaluation_login",
+            *sorted(SUBJECT_SCOPE_LOGIN_ROLES),
         ):
             connection.execute(f"ALTER ROLE {role} INHERIT")
 
@@ -186,12 +189,17 @@ def external_ownership_handoff(admin_url: str, database_name: str) -> None:
             "WITH INHERIT TRUE, SET FALSE"
         )
         connection.execute(
-            "GRANT kl_subject_test TO kl_test_login WITH INHERIT TRUE, SET FALSE"
-        )
-        connection.execute(
-            "GRANT kl_subject_evaluation TO kl_evaluation_login "
+            f"GRANT kl_application TO {PRODUCTION_SUBJECT_LOGIN} "
             "WITH INHERIT TRUE, SET FALSE"
         )
+        for login in TEST_SUBJECT_LOGINS:
+            connection.execute(
+                f"GRANT kl_subject_test TO {login} WITH INHERIT TRUE, SET FALSE"
+            )
+        for login in EVALUATION_SUBJECT_LOGINS:
+            connection.execute(
+                f"GRANT kl_subject_evaluation TO {login} WITH INHERIT TRUE, SET FALSE"
+            )
         connection.execute(
             "GRANT kl_auditor TO kl_auditor_login WITH INHERIT TRUE, SET FALSE"
         )
@@ -206,7 +214,7 @@ def external_ownership_handoff(admin_url: str, database_name: str) -> None:
             "GRANT CONNECT ON DATABASE " + f'"{database_name}"' + " TO "
             "kl_migration_deployer, kl_application_login, kl_stop_login, "
             "kl_trusted_admin_login, kl_auditor_login, kl_user_login, kl_agent_login, "
-            "kl_test_login, kl_evaluation_login"
+            + ", ".join(sorted(SUBJECT_SCOPE_LOGIN_ROLES))
         )
         connection.execute("GRANT SELECT ON public.alembic_version TO kl_migration_deployer")
 
@@ -235,8 +243,11 @@ def bootstrap_two_phase(lifecycle: DatabaseLifecycle, *, head: bool = True) -> d
         "trusted_admin": role_url(admin_url, "kl_trusted_admin_login"),
         "user": role_url(admin_url, "kl_user_login"),
         "agent": role_url(admin_url, "kl_agent_login"),
-        "test": role_url(admin_url, "kl_test_login"),
-        "evaluation": role_url(admin_url, "kl_evaluation_login"),
+        "production_subject": role_url(admin_url, PRODUCTION_SUBJECT_LOGIN),
+        "test": role_url(admin_url, TEST_SUBJECT_LOGINS[0]),
+        "test_2": role_url(admin_url, TEST_SUBJECT_LOGINS[1]),
+        "evaluation": role_url(admin_url, EVALUATION_SUBJECT_LOGINS[0]),
+        "evaluation_2": role_url(admin_url, EVALUATION_SUBJECT_LOGINS[1]),
     }
 
 
@@ -256,7 +267,7 @@ def test_empty_db_upgrade_head(migrated_database: DatabaseLifecycle) -> None:
     assert migrated_database.execute_sql(
         "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace "
         "WHERE n.nspname='kineticloop' AND c.relkind='r';"
-    ) == str(len(LOGICAL_RELATIONS) + len(FACT_CHILD_PLANS) + 11)
+    ) == str(len(LOGICAL_RELATIONS) + len(FACT_CHILD_PLANS) + 12)
     assert (
         migrated_database.execute_sql(
             "SELECT registry_revision FROM kineticloop.safety_registry_state WHERE id=1;"
@@ -366,6 +377,57 @@ def test_artifact_registry_upgrade_rejects_malformed_legacy_timeless_row() -> No
                 "SELECT count(*) FROM kineticloop.safety_artifacts "
                 "WHERE artifact_identity='legacy-malformed'"
             ).fetchone() == (1,)
+
+
+def assert_subject_scope_preflight_failure(urls: dict[str, str]) -> None:
+    with psycopg.connect(urls["admin"]) as admin:
+        before = admin.execute(
+            "SELECT version_num,(SELECT count(*) FROM pg_class c "
+            "JOIN pg_namespace n ON n.oid=c.relnamespace "
+            "WHERE n.nspname='kineticloop') FROM alembic_version"
+        ).fetchone()
+        assert before is not None
+    with pytest.raises(Exception, match="KL_SUBJECT_SCOPE_"):
+        run_alembic(urls["deployer"], "head")
+    with psycopg.connect(urls["admin"]) as admin:
+        assert admin.execute(
+            "SELECT version_num,(SELECT count(*) FROM pg_class c "
+            "JOIN pg_namespace n ON n.oid=c.relnamespace "
+            "WHERE n.nspname='kineticloop') FROM alembic_version"
+        ).fetchone() == before
+        assert admin.execute(
+            "SELECT to_regclass('kineticloop.subject_scopes'),"
+            "has_table_privilege('kl_application',"
+            "'kineticloop.authorization_issuances','SELECT')"
+        ).fetchone() == (None, True)
+
+
+def test_subject_scope_preflight_rejects_writer_assumption_paths() -> None:
+    lifecycle = DatabaseLifecycle(ROOT)
+    urls = bootstrap_two_phase(lifecycle, head=False)
+    run_alembic(urls["deployer"], ARTIFACT_REGISTRY_REVISION)
+    with psycopg.connect(urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            "GRANT kl_writer_authorization_service TO kl_test_subject_1_login "
+            "WITH INHERIT FALSE, SET TRUE"
+        )
+        assert_subject_scope_preflight_failure(urls)
+        admin.execute(
+            "REVOKE kl_writer_authorization_service FROM kl_test_subject_1_login"
+        )
+
+        admin.execute(
+            "GRANT kl_writer_replay_service TO kl_subject_evaluation "
+            "WITH INHERIT FALSE, SET TRUE"
+        )
+        assert_subject_scope_preflight_failure(urls)
+        admin.execute("REVOKE kl_writer_replay_service FROM kl_subject_evaluation")
+
+    run_alembic(urls["deployer"], "head")
+    with psycopg.connect(urls["admin"]) as admin:
+        assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (
+            REVISION,
+        )
 
 
 def test_safety_registry_successor_contains_no_cluster_role_ddl() -> None:
@@ -722,6 +784,7 @@ def test_fk_order_matches_topology(migrated_database: DatabaseLifecycle) -> None
         "fk_s42_closure_authorization",
         "fk_s42_closure_artifact",
         "fk_subject_scope_test_policy",
+        "fk_subject_principal_scope",
     }
     assert actual_names == base_names | deferred_names | supplemental_names
 

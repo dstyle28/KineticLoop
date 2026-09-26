@@ -11,18 +11,32 @@ subjects may write S46/S47 replay storage and cannot write S38/S42/S45. Producti
 subjects cannot write `TEST_ONLY` authorization or execution rows and cannot write
 evaluation storage.
 
-Runtime credentials inherit exactly one scope role. `kl_application` represents the
-production namespace, while `kl_subject_test` and `kl_subject_evaluation` represent
-the two non-production namespaces. These roles have no direct access to the five
-protected tables. `subject_scope_lookup` derives namespace from `session_user`, uses
-a fixed search path, and returns SQL NULL for both missing objects and objects outside
-that namespace. The application converts every NULL or role mismatch into the same
-`SUBJECT_SCOPE_DENIED` response and `BOUNDED_SCOPE_LOOKUP` timing class.
+Each runtime subject uses an externally provisioned LOGIN principal that inherits
+exactly one NOLOGIN scope role. `kl_application` represents the production namespace,
+while `kl_subject_test` and `kl_subject_evaluation` represent the two non-production
+namespaces. Trusted-admin registration records the LOGIN principal, exact subject,
+and namespace in `kineticloop.subject_principal_bindings`. A principal and a subject
+can each occur in only one binding. Subject principals cannot inherit or assume any
+`kl_writer_*` role, including `kl_writer_safety_registry`.
+
+Scope roles have no direct access to the five protected tables.
+`subject_scope_lookup` accepts only an object kind and object identifier. It derives
+the namespace and exact subject from `session_user`, rechecks the principal's sole
+scope membership and absence of writer paths, and filters the protected relation by
+the bound subject. It returns SQL NULL for missing objects and for objects belonging
+to any other subject, including another subject in the same namespace. The
+application converts every NULL or role mismatch into the same `SUBJECT_SCOPE_DENIED`
+response and `BOUNDED_SCOPE_LOOKUP` timing class.
 
 Registration and protected writes take the same transaction-scoped advisory lock
 derived from the subject identifier. This serializes the first protected write with
 namespace registration so an unregistered subject cannot be classified as production
 while a concurrent trusted-admin transaction is assigning TEST or EVALUATION scope.
+
+Downgrade fails before removing a trigger, function, table, or privilege whenever a
+TEST or EVALUATION scope or principal binding exists. Operators must explicitly
+retire isolated non-production state before restoring the predecessor's shared
+production read surface.
 
 The triggers are storage guards, not new T6/T7 command owners. They neither acquire
 S51/S01 nor issue authorization or execution bindings. Normal T6/T7 command routines

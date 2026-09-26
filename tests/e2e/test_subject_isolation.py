@@ -10,6 +10,7 @@ import psycopg
 from kineticloop.db.lifecycle import DatabaseLifecycle
 from kineticloop.identity import ActorRole, RoleIdentity
 from kineticloop.persistence.subject_scope import (
+    TEST_SUBJECT_LOGINS,
     ScopedObjectKind,
     SubjectScopeDenied,
     read_scoped_object,
@@ -46,8 +47,8 @@ def test_test_actor_cannot_observe_production_authorization_end_to_end() -> None
         )
     with psycopg.connect(urls["trusted_admin"], autocommit=True) as trusted:
         trusted.execute(
-            "SELECT kineticloop.subject_scope_register(%s,'TEST',%s,%s)",
-            (UUID(test_subject), policy_id, environment_id),
+            "SELECT kineticloop.subject_scope_register(%s,'TEST',%s,%s,%s)",
+            (UUID(test_subject), policy_id, environment_id, TEST_SUBJECT_LOGINS[0]),
         )
 
     actor = RoleIdentity(
@@ -55,6 +56,16 @@ def test_test_actor_cannot_observe_production_authorization_end_to_end() -> None
     )
     denials = []
     with psycopg.connect(urls["test"]) as scoped:
+        assert [
+            scoped.execute(
+                "SELECT kineticloop.subject_scope_lookup('S42',%s)",
+                (object_id,),
+            ).fetchone()
+            for object_id in (
+                authorization_id,
+                UUID("00000000-0000-8000-8000-000000000308"),
+            )
+        ] == [(None,), (None,)]
         for subject_id, object_id in (
             (str(production_subject), str(authorization_id)),
             (
