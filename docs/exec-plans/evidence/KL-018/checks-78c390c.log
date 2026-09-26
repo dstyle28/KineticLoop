@@ -1,0 +1,95 @@
+KL-018 exact packet validation
+tested_commit: 78c390c43fa4ebc39bdf86be0762031ea5b7cb94
+base_commit: 77cf294a467a0a54e0a32653f911a93760ad1e97
+date: 2026-09-26
+environment: isolated Compose project kl_2a8a_220eb9a2f7ab; external two-phase bootstrap; uv resolved from /private/tmp/kl001-bootstrap/bin with the populated KL-072 cache
+
+PASS artifact_registry_successor_migration_chain
+command: uv run pytest -q tests/db/test_migrations.py::test_artifact_registry_successor_migration_chain
+output: 1 passed in 2.41s
+oracle: one Alembic head; KL-018 directly follows a3f91c7d2e10; emitted upgrade/downgrade SQL contains no cluster-role, membership, ownership-handoff, or reassignment DDL; external non-superuser/non-CREATEROLE deployer upgrade succeeds.
+
+PASS artifact_identity_is_immutable
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_identity_is_immutable
+output: 1 passed in 2.53s
+oracle: exact replay returns the original registration while changed content and direct S49 update are rejected.
+
+PASS artifact_dependency_closure_required
+command: uv run pytest -q tests/unit/contracts/test_artifact_registry.py::test_artifact_dependency_closure_required
+output: 1 passed in 0.08s
+oracle: a complete transitive closure is accepted and an omitted transitive identity is rejected.
+
+PASS artifact_dependencies_must_be_pre_registered
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_dependencies_must_be_pre_registered
+output: 1 passed in 2.52s
+oracle: an unknown declared identity is rejected with zero registration mutation.
+
+PASS artifact_dependency_graph_is_acyclic
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_dependency_graph_is_acyclic
+output: 1 passed in 2.51s
+oracle: direct self-reference and a transitive cycle are rejected with zero registration mutation.
+
+PASS artifact_dependency_closure_is_bounded
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_dependency_closure_is_bounded
+output: 1 passed in 2.67s
+oracle: both the configured depth bound (16) and node bound (128) are enforced by PostgreSQL admission.
+
+PASS artifact_registration_requires_management_capability
+command: uv run pytest -q tests/unit/contracts/test_artifact_registry.py::test_artifact_registration_requires_management_capability
+output: 1 passed in 0.08s
+oracle: only a trusted ADMIN derives ADMINISTER_PRODUCTION; SUBJECT/TEST and caller-asserted capability are rejected before persistence.
+
+PASS artifact_registration_command_routine_privileges_enforced
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_registration_command_routine_privileges
+output: 1 passed in 2.50s
+oracle: exactly one non-overloaded registry_register_artifact(uuid,text,text,uuid[],text,text,text,integer) SECURITY DEFINER routine exists, owned by kl_writer_safety_registry with the fixed safe path and EXECUTE only for kl_trusted_admin.
+
+PASS artifact_registration_session_authority_enforced
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_registration_session_authority_enforced
+output: 1 passed in 2.54s
+oracle: USER, AGENT, generic application, and audit sessions cannot execute; no S49/S51/receipt/event/outbox mutation occurs; the trusted session persists kl_trusted_admin_login as operator.
+
+PASS artifact_registration_uses_exclusive_registry_gate
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_registration_uses_exclusive_registry_gate
+output: 1 passed in 2.55s
+oracle: a shared-gate command blocks behind uncommitted registration, S01 remains independently lockable, and S49/receipt/event/outbox become visible only after the atomic commit.
+
+PASS artifact_registration_direct_write_rejected
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_registration_direct_write_rejected
+output: 1 passed in 2.57s
+oracle: USER, AGENT, application, audit, and trusted-admin logins cannot directly write S49/S51 or assume the writer role; trusted registration succeeds only through the routine.
+
+PASS unregistered_or_revoked_artifact_denied
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_unregistered_or_revoked_artifact_denied
+output: 1 passed in 2.49s
+oracle: the migrated shared-gate command rejects absent and revoked identities.
+
+PASS t3_t6_t7_require_artifact_refs
+command: uv run pytest -q tests/unit/contracts/test_artifact_registry.py::test_t3_t6_t7_require_artifact_refs
+output: 1 passed in 0.08s
+oracle: T3, T6, and T7 reject empty or duplicate artifact closures and accept exact unique references.
+
+PASS artifact_registry_db_constraints_pass
+command: uv run pytest -q tests/db/test_artifact_registry.py tests/db/test_migrations.py
+output: 27 passed in 49.31s
+oracle: the complete packet-owned PostgreSQL migration, ACL, session authorization, gate/atomicity, identity, dependency, direct-write, rebuild, and downgrade suite passes.
+
+PASS artifact_contract_unit_suite_passes
+command: uv run pytest -q tests/unit/contracts/test_artifact_registry.py
+output: 3 passed in 0.09s
+oracle: every artifact contract test passes.
+
+PASS harness_validation_passes
+command: uv run kl check-harness
+output: HARNESS_CHECK_PASS tasks=69 active=67
+oracle: command exits zero and prints HARNESS_CHECK_PASS.
+
+Additional validation on the tested implementation:
+- PASS: uv run mypy src/kineticloop/contracts/artifacts.py src/kineticloop/persistence/artifact_registry.py (no issues)
+- PASS: uv run ruff check over all KL-018 Python write paths (all checks passed)
+- PASS: uv run pytest -q tests/unit/contracts/test_artifact_registry.py tests/unit/contracts/test_commands.py tests/unit/contracts/test_safety_registry.py (19 passed)
+- PASS: uv run pytest -q tests/db/test_migrations.py (18 passed)
+- PASS: uv run pytest -q tests/db/test_artifact_registry.py tests/unit/contracts/test_artifact_registry.py (12 passed)
+- LIMITATION: the broader pre-existing tests/db/test_safety_registry.py closed-list assertion expects exactly the seven KL-072 SECURITY DEFINER routines and reports the intentional KL-018 eighth routine as one failure (77 other aggregate tests passed). That test file is outside KL-018's declared write scope and was not changed.
+
+SPEC_CHANGE_REQUIRED: no
