@@ -665,6 +665,8 @@ class ValidatorTests(unittest.TestCase):
             ('KL-072', 'safety_registry_role_preflight_fails_before_object_changes'),
             ('KL-072', 'safety_registry_object_ownership_enforced'),
             ('KL-072', 'safety_registry_command_routine_privileges_enforced'),
+            ('KL-072', 'safety_registry_definer_search_path_and_schema_acl_enforced'),
+            ('KL-072', 'safety_registry_runtime_login_boundary_enforced'),
             ('KL-017', 'cross_subject_denial_is_non_enumerating'),
             ('KL-018', 'artifact_registry_successor_migration_chain'),
             ('KL-018', 'artifact_registration_command_routine_privileges_enforced'),
