@@ -465,6 +465,30 @@ def test_subject_scope_ddl_guard_inventory() -> None:
             "JOIN pg_roles trigger_owner ON trigger_owner.oid=event_guard.evtowner "
             "WHERE event_guard.evtname='kl_subject_scope_ddl_guard'"
         ).fetchone()
+        authority_inventory = admin.execute(
+            "SELECT kineticloop.subject_scope_inbound_fks_safe(),"
+            "(SELECT count(*) FROM pg_constraint inbound "
+            "JOIN pg_class target ON target.oid=inbound.confrelid "
+            "JOIN pg_namespace schema ON schema.oid=target.relnamespace "
+            "WHERE inbound.contype='f' AND schema.nspname='kineticloop' "
+            "AND target.relname=ANY(%s)),"
+            "(SELECT count(*) FROM pg_trigger trigger "
+            "JOIN pg_class relation ON relation.oid=trigger.tgrelid "
+            "JOIN pg_namespace schema ON schema.oid=relation.relnamespace "
+            "WHERE schema.nspname='kineticloop' "
+            "AND relation.relname IN ('subject_scopes',"
+            "'subject_principal_bindings') "
+            "AND trigger.tgname IN ('subject_authority_metadata_scope',"
+            "'subject_authority_metadata_truncate') "
+            "AND NOT trigger.tgisinternal) ",
+            ([
+                "daily_plan_heads",
+                "authorization_issuances",
+                "execution_bindings",
+                "replay_runs",
+                "replay_artifacts",
+            ],),
+        ).fetchone()
     assert row == (
         "kl_subject_scope_ddl_guard",
         "ddl_command_start",
@@ -485,6 +509,7 @@ def test_subject_scope_ddl_guard_inventory() -> None:
         "\n" + SUBJECT_SCOPE_DDL_GUARD_BODY + "\n",
         False,
     )
+    assert authority_inventory == (True, 8, 4)
 
 
 def test_subject_scope_preflight_requires_exact_external_ddl_guard() -> None:
@@ -505,6 +530,65 @@ def test_subject_scope_preflight_requires_exact_external_ddl_guard() -> None:
     provision_subject_scope_ddl_guard(urls["admin"])
     run_alembic(urls["deployer"], "head")
     assert lifecycle.execute_sql("SELECT version_num FROM alembic_version") == REVISION
+
+
+def test_subject_scope_preflight_rejects_legacy_external_inbound_fk() -> None:
+    lifecycle = DatabaseLifecycle(ROOT)
+    database = lifecycle.reset()
+    provision_external_roles(database.url)
+    with psycopg.connect(database.url, autocommit=True) as admin:
+        admin.execute(
+            f'ALTER DATABASE "{database.database_name}" OWNER TO kl_cluster_bootstrap'
+        )
+    bootstrap_url = role_url(database.url, "kl_cluster_bootstrap")
+    run_alembic(bootstrap_url, BASELINE_REVISION)
+    external_ownership_handoff(database.url, database.database_name)
+    with psycopg.connect(database.url, autocommit=True) as admin:
+        admin.execute(
+            "CREATE SCHEMA kl017_legacy_probe "
+            "AUTHORIZATION kl_test_subject_1_login"
+        )
+        admin.execute(
+            "GRANT USAGE ON SCHEMA kineticloop TO kl_test_subject_1_login"
+        )
+        admin.execute(
+            "GRANT REFERENCES ON kineticloop.daily_plan_heads "
+            "TO kl_test_subject_1_login"
+        )
+        admin.execute("SET ROLE kl_test_subject_1_login")
+        admin.execute(
+            "CREATE TABLE kl017_legacy_probe.s38_probe("
+            "subject_id uuid,plan_id uuid,"
+            "CONSTRAINT fk_kl017_legacy_s38 FOREIGN KEY(subject_id,plan_id) "
+            "REFERENCES kineticloop.daily_plan_heads(subject_id,id))"
+        )
+        admin.execute("RESET ROLE")
+        admin.execute(
+            "REVOKE REFERENCES ON kineticloop.daily_plan_heads "
+            "FROM kl_test_subject_1_login"
+        )
+        admin.execute(
+            "REVOKE USAGE ON SCHEMA kineticloop FROM kl_test_subject_1_login"
+        )
+    provision_subject_scope_ddl_guard(database.url)
+    deployer_url = role_url(database.url, "kl_migration_deployer")
+    run_alembic(deployer_url, ARTIFACT_REGISTRY_REVISION)
+
+    with pytest.raises(
+        Exception,
+        match="KL_SUBJECT_SCOPE_NONCANONICAL_INBOUND_FK",
+    ):
+        run_alembic(deployer_url, "head")
+    with psycopg.connect(database.url) as admin:
+        assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (
+            ARTIFACT_REGISTRY_REVISION,
+        )
+        assert admin.execute(
+            "SELECT to_regclass('kineticloop.subject_scopes'),"
+            "to_regclass('kl017_legacy_probe.s38_probe'),"
+            "has_table_privilege('kl_test_subject_1_login',"
+            "'kineticloop.daily_plan_heads','REFERENCES')"
+        ).fetchone() == (None, "kl017_legacy_probe.s38_probe", False)
 
 
 def test_subject_scope_preflight_rejects_writer_assumption_paths() -> None:

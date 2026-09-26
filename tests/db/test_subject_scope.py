@@ -930,10 +930,17 @@ def test_bound_subject_cannot_remove_ddl_guards_after_set_role(
     try:
         with psycopg.connect(database_urls["test"]) as scoped:
             scoped.execute("SET ROLE kl_migration_owner")
-            assert scoped.execute(
-                "DELETE FROM kineticloop.subject_principal_bindings "
-                "WHERE principal_name=session_user"
-            ).rowcount == 1
+            with pytest.raises(
+                psycopg.errors.RaiseException,
+                match="KL_SUBJECT_SCOPE_METADATA_DML_DENIED",
+            ):
+                scoped.execute(
+                    "DELETE FROM kineticloop.subject_principal_bindings "
+                    "WHERE principal_name=session_user"
+                )
+            scoped.rollback()
+        with psycopg.connect(database_urls["test"]) as scoped:
+            scoped.execute("SET ROLE kl_migration_owner")
             with pytest.raises(
                 psycopg.errors.RaiseException,
                 match="KL_SUBJECT_SCOPE_DDL_DENIED",
@@ -942,7 +949,6 @@ def test_bound_subject_cannot_remove_ddl_guards_after_set_role(
                     "ALTER TABLE kineticloop.daily_plan_heads "
                     "DISABLE ROW LEVEL SECURITY"
                 )
-            scoped.rollback()
 
         for statement in ddl_attempts:
             with psycopg.connect(database_urls["test"]) as scoped:
@@ -1148,6 +1154,240 @@ def test_bound_subject_bypassrls_drift_cannot_write_protected_rows(
             "SELECT status FROM kineticloop.daily_plan_heads WHERE id=%s",
             (UUID(TEST_PLAN),),
         ).fetchone() == original_status
+
+
+def test_authority_metadata_acl_membership_and_owner_drift_fail_closed(
+    database_urls: dict[str, str],
+) -> None:
+    metadata_tables = "kineticloop.subject_scopes,kineticloop.subject_principal_bindings"
+    privileges = "SELECT,INSERT,UPDATE,DELETE,TRUNCATE"
+    test_actor = RoleIdentity(
+        identity_id="00000000-0000-8000-8000-000000000225",
+        role=ActorRole.TEST,
+    )
+
+    def assert_lookup_is_non_enumerating() -> None:
+        denials = []
+        for object_id in (
+            TEST_AUTHORIZATION_2,
+            "00000000-0000-8000-8000-000000000299",
+        ):
+            with psycopg.connect(database_urls["test"]) as scoped:
+                with pytest.raises(SubjectScopeDenied) as caught:
+                    read_scoped_object(
+                        scoped,
+                        actor=test_actor,
+                        actor_subject_id=TEST_SUBJECT,
+                        target_subject_id=TEST_SUBJECT,
+                        object_kind=ScopedObjectKind.AUTHORIZATION_ISSUANCE,
+                        object_id=object_id,
+                    )
+                denials.append(caught.value.denial)
+        assert denials[0] == denials[1]
+        assert denials[0].code == "SUBJECT_SCOPE_DENIED"
+        assert denials[0].timing_class == "BOUNDED_SCOPE_LOOKUP"
+        assert dict(denials[0].payload) == {"error": "subject_scope_denied"}
+
+    def assert_registration_rejects_principal_drift() -> None:
+        with psycopg.connect(database_urls["trusted_admin"]) as trusted:
+            with pytest.raises(
+                psycopg.errors.RaiseException,
+                match="KL_SUBJECT_SCOPE_PRINCIPAL_INVALID",
+            ):
+                trusted.execute(
+                    "SELECT kineticloop.subject_scope_register(%s,'TEST',%s,%s,%s)",
+                    (
+                        UUID(TEST_SUBJECT),
+                        UUID(TEST_POLICY),
+                        UUID(TEST_ENVIRONMENT),
+                        TEST_SUBJECT_LOGINS[0],
+                    ),
+                )
+
+    def assert_metadata_mutations_are_denied(*, set_role: str | None = None) -> None:
+        attempts = (
+            (
+                "DELETE FROM kineticloop.subject_principal_bindings "
+                "WHERE principal_name=%s",
+                (TEST_SUBJECT_LOGINS[1],),
+            ),
+            (
+                "UPDATE kineticloop.subject_principal_bindings SET subject_id=%s "
+                "WHERE principal_name=%s",
+                (UUID(TEST_SUBJECT_2), TEST_SUBJECT_LOGINS[0]),
+            ),
+            (
+                "UPDATE kineticloop.subject_scopes SET policy_id=%s "
+                "WHERE subject_id=%s",
+                (UUID(TEST_POLICY_2), UUID(TEST_SUBJECT)),
+            ),
+            ("TRUNCATE kineticloop.subject_principal_bindings", ()),
+        )
+        for statement, parameters in attempts:
+            with psycopg.connect(database_urls["test"]) as scoped:
+                if set_role is not None:
+                    scoped.execute(f"SET ROLE {set_role}")
+                with pytest.raises(
+                    psycopg.errors.RaiseException,
+                    match="KL_SUBJECT_SCOPE_METADATA_DML_DENIED",
+                ):
+                    scoped.execute(statement, parameters)
+
+    with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            f"GRANT {privileges} ON {metadata_tables} TO kl_test_subject_1_login"
+        )
+    try:
+        assert_metadata_mutations_are_denied()
+        assert_lookup_is_non_enumerating()
+        assert_registration_rejects_principal_drift()
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+            admin.execute(
+                f"REVOKE {privileges} ON {metadata_tables} "
+                "FROM kl_test_subject_1_login"
+            )
+
+    bridge = "kl_subject_authority_acl_bridge"
+    with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            f"CREATE ROLE {bridge} NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE "
+            "NOINHERIT NOREPLICATION NOBYPASSRLS"
+        )
+        admin.execute(f"GRANT USAGE ON SCHEMA kineticloop TO {bridge}")
+        admin.execute(f"GRANT {privileges} ON {metadata_tables} TO {bridge}")
+        admin.execute(
+            f"GRANT {bridge} TO kl_test_subject_1_login "
+            "WITH INHERIT TRUE, SET TRUE"
+        )
+    try:
+        assert_metadata_mutations_are_denied()
+        assert_metadata_mutations_are_denied(set_role=bridge)
+        assert_lookup_is_non_enumerating()
+        assert_registration_rejects_principal_drift()
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+            admin.execute(f"REVOKE {bridge} FROM kl_test_subject_1_login")
+            admin.execute(f"REVOKE {privileges} ON {metadata_tables} FROM {bridge}")
+            admin.execute(f"REVOKE USAGE ON SCHEMA kineticloop FROM {bridge}")
+            admin.execute(f"DROP ROLE {bridge}")
+
+    with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            "ALTER TABLE kineticloop.subject_scopes "
+            "OWNER TO kl_test_subject_1_login"
+        )
+        admin.execute(
+            "ALTER TABLE kineticloop.subject_principal_bindings "
+            "OWNER TO kl_test_subject_1_login"
+        )
+    try:
+        assert_metadata_mutations_are_denied()
+        assert_lookup_is_non_enumerating()
+        assert_registration_rejects_principal_drift()
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+            admin.execute(
+                "ALTER TABLE kineticloop.subject_principal_bindings "
+                "OWNER TO kl_migration_owner"
+            )
+            admin.execute(
+                "ALTER TABLE kineticloop.subject_scopes OWNER TO kl_migration_owner"
+            )
+
+    with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            "GRANT kl_trusted_admin TO kl_test_subject_1_login "
+            "WITH INHERIT TRUE, SET TRUE"
+        )
+    try:
+        with psycopg.connect(database_urls["test"]) as scoped:
+            with pytest.raises(
+                psycopg.errors.RaiseException,
+                match="KL_SUBJECT_SCOPE_REGISTRATION_DENIED",
+            ):
+                scoped.execute(
+                    "SELECT kineticloop.subject_scope_register(%s,'TEST',%s,%s,%s)",
+                    (
+                        UUID(TEST_SUBJECT),
+                        UUID(TEST_POLICY),
+                        UUID(TEST_ENVIRONMENT),
+                        TEST_SUBJECT_LOGINS[0],
+                    ),
+                )
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+            admin.execute("REVOKE kl_trusted_admin FROM kl_test_subject_1_login")
+
+    with psycopg.connect(database_urls["admin"]) as admin:
+        assert admin.execute(
+            "SELECT principal_name,subject_id,namespace "
+            "FROM kineticloop.subject_principal_bindings "
+            "WHERE principal_name IN (%s,%s) ORDER BY principal_name",
+            (TEST_SUBJECT_LOGINS[0], TEST_SUBJECT_LOGINS[1]),
+        ).fetchall() == [
+            (TEST_SUBJECT_LOGINS[0], UUID(TEST_SUBJECT), "TEST"),
+            (TEST_SUBJECT_LOGINS[1], UUID(TEST_SUBJECT_2), "TEST"),
+        ]
+
+
+def test_noncanonical_inbound_fk_fails_registration_lookup_and_rls(
+    database_urls: dict[str, str],
+) -> None:
+    with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+        admin.execute("CREATE SCHEMA kl017_legacy_probe")
+        admin.execute(
+            "CREATE TABLE kl017_legacy_probe.s42_probe("
+            "subject_id uuid,authorization_id uuid,"
+            "CONSTRAINT fk_kl017_noncanonical_s42 FOREIGN KEY("
+            "subject_id,authorization_id) REFERENCES "
+            "kineticloop.authorization_issuances(subject_id,id))"
+        )
+        admin.execute(
+            "ALTER TABLE kl017_legacy_probe.s42_probe "
+            "OWNER TO kl_test_subject_1_login"
+        )
+    try:
+        with psycopg.connect(database_urls["trusted_admin"]) as trusted:
+            with pytest.raises(
+                psycopg.errors.RaiseException,
+                match="KL_SUBJECT_SCOPE_NONCANONICAL_INBOUND_FK",
+            ):
+                trusted.execute(
+                    "SELECT kineticloop.subject_scope_register(%s,'TEST',%s,%s,%s)",
+                    (
+                        UUID(TEST_SUBJECT),
+                        UUID(TEST_POLICY),
+                        UUID(TEST_ENVIRONMENT),
+                        TEST_SUBJECT_LOGINS[0],
+                    ),
+                )
+        with psycopg.connect(database_urls["test"]) as scoped:
+            with pytest.raises(
+                psycopg.errors.RaiseException,
+                match="KL_SUBJECT_SCOPE_ROLE_DENIED",
+            ):
+                scoped.execute(
+                    "SELECT kineticloop.subject_scope_lookup('S42',%s)",
+                    (UUID(TEST_AUTHORIZATION_2),),
+                )
+        with psycopg.connect(database_urls["test"]) as scoped:
+            assert scoped.execute(
+                "SELECT kineticloop.subject_scope_rls_allows("
+                "%s,'authorization_issuances','SELECT',current_user::text)",
+                (UUID(TEST_SUBJECT),),
+            ).fetchone() == (False,)
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+            admin.execute("DROP SCHEMA kl017_legacy_probe CASCADE")
+
+    with psycopg.connect(database_urls["test"]) as scoped:
+        restored_lookup = scoped.execute(
+            "SELECT kineticloop.subject_scope_lookup('S42',%s)",
+            (UUID(TEST_AUTHORIZATION),),
+        ).fetchone()
+        assert restored_lookup is not None
+        assert restored_lookup[0]["subject_id"] == TEST_SUBJECT
 
 
 def test_subject_id_is_immutable_on_protected_updates(

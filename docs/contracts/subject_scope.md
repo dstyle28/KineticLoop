@@ -18,9 +18,22 @@ namespaces. Trusted-admin registration records the LOGIN principal, exact subjec
 and namespace in `kineticloop.subject_principal_bindings`. A principal and a subject
 can each occur in only one binding. Subject principals cannot inherit or assume any
 `kl_writer_*` role, including `kl_writer_safety_registry`, and cannot hold a direct
-protected-table ACL, protected-table or in-schema routine ownership, or schema
-creation authority. Upgrade preflight rejects those bypasses before DDL. Registration
-rechecks them before persisting a binding.
+protected-table or authority-metadata ACL, protected-table or authority-metadata
+ownership, in-schema routine ownership, or schema creation authority. Upgrade
+preflight rejects those bypasses before DDL when the objects exist. Registration,
+lookup, RLS, and storage-write paths recheck direct and inherited authority over all
+five protected data tables plus `subject_scopes` and
+`subject_principal_bindings`.
+
+Only the externally provisioned `kl_trusted_admin_login` with its one exact inherited
+`kl_trusted_admin` membership may call registration. A canonical or already-bound
+subject session fails registration even if an administrator later grants it the
+trusted-admin role. SECURITY INVOKER row and statement triggers on both authority
+tables permit registration INSERTs only while the trusted-admin caller is executing
+inside the migration-owner SECURITY DEFINER routine. They reject subject-session
+INSERT, UPDATE, DELETE, and TRUNCATE under direct ACLs, inherited bridge ACLs,
+`SET ROLE`, ownership, or role-attribute drift. The database superuser remains the
+explicit operator path for retiring metadata before downgrade.
 
 Scope roles have no direct access to the five protected tables.
 `subject_scope_lookup` accepts only an object kind and object identifier. It derives
@@ -67,6 +80,15 @@ relations, or constructing a foreign-key existence oracle after a `REFERENCES` g
 The d4 migration verifies the enabled event, function signature, owner attributes,
 fixed search path, revoked PUBLIC execution, and exact function-body fingerprint
 before any object change.
+
+Foreign keys into S38, S42, S45, S46, or S47 are a closed inventory. Upgrade
+preflight uses `pg_constraint` and its `pg_depend` target dependencies to accept only
+the eight canonical in-schema, subject-keyed constraints. It rejects a legacy or
+external inbound foreign key before d4 changes any object, even if its creator's
+`REFERENCES` privilege was later revoked. Registration repeats the inventory check,
+and lookup and RLS fail closed if administrator drift adds a noncanonical inbound
+constraint after registration. This prevents referential-integrity probes from
+becoming a row-existence oracle outside the protected storage boundary.
 
 The cluster bootstrap superuser must install the guard after the frozen baseline
 ownership handoff and before upgrading past b6. The canonical installation is:

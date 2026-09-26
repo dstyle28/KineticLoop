@@ -1295,6 +1295,7 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
             "registry_guard_start_session",
             "registry_register_artifact",
             "registry_revoke_artifact",
+            "subject_scope_inbound_fks_safe",
             "subject_scope_lookup",
             "subject_scope_register",
             "subject_scope_rls_allows",
@@ -1316,6 +1317,9 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
         assert all(row[5] is True for row in rows)
         for name, signature, _owner, _security, _config, _acl in rows:
             allowed_roles = (
+                ()
+                if name == "subject_scope_inbound_fks_safe"
+                else
                 (
                     (
                         "kl_application",
@@ -1383,14 +1387,24 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
             "AND acl.privilege_type='EXECUTE') "
             "FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace "
             "WHERE n.nspname='kineticloop' "
-            "AND p.proname='enforce_subject_storage_scope'"
-        ).fetchone() == (
-            "enforce_subject_storage_scope()",
-            "kl_migration_owner",
-            False,
-            ["search_path=pg_catalog, kineticloop, pg_temp"],
-            True,
-        )
+            "AND p.proname IN ('enforce_subject_authority_metadata',"
+            "'enforce_subject_storage_scope') ORDER BY p.proname"
+        ).fetchall() == [
+            (
+                "enforce_subject_authority_metadata()",
+                "kl_migration_owner",
+                False,
+                ["search_path=pg_catalog, kineticloop, pg_temp"],
+                True,
+            ),
+            (
+                "enforce_subject_storage_scope()",
+                "kl_migration_owner",
+                False,
+                ["search_path=pg_catalog, kineticloop, pg_temp"],
+                True,
+            ),
+        ]
 
     for url_key in ("application", "auditor", "user", "agent"):
         with connect(db_urls[url_key]) as runtime:

@@ -102,7 +102,8 @@ BEGIN
          WHERE schema.nspname='kineticloop'
            AND protected.relname=ANY(ARRAY[
              'daily_plan_heads','authorization_issuances','execution_bindings',
-             'replay_runs','replay_artifacts'
+             'replay_runs','replay_artifacts','subject_scopes',
+             'subject_principal_bindings'
            ])
            AND protected.relowner=role_record.oid
        )
@@ -113,7 +114,8 @@ BEGIN
          WHERE schema.nspname='kineticloop'
            AND protected.relname=ANY(ARRAY[
              'daily_plan_heads','authorization_issuances','execution_bindings',
-             'replay_runs','replay_artifacts'
+             'replay_runs','replay_artifacts','subject_scopes',
+             'subject_principal_bindings'
            ])
            AND acl.grantee=role_record.oid
        )
@@ -151,10 +153,63 @@ BEGIN
            ])
            AND has_table_privilege(role_record.oid,protected.oid,'SELECT')
        )
+       OR EXISTS (
+         SELECT 1 FROM pg_class authority
+         JOIN pg_namespace schema ON schema.oid=authority.relnamespace
+         WHERE schema.nspname='kineticloop'
+           AND authority.relname=ANY(ARRAY[
+             'subject_scopes','subject_principal_bindings'
+           ])
+           AND has_table_privilege(
+             role_record.oid,authority.oid,
+             'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER'
+           )
+       )
     THEN
       RAISE EXCEPTION 'KL_SUBJECT_SCOPE_PRINCIPAL_OBJECT_BYPASS:%', role_name;
     END IF;
   END LOOP;
+
+  IF EXISTS (
+    SELECT 1
+    FROM pg_constraint inbound
+    JOIN pg_class source_relation ON source_relation.oid=inbound.conrelid
+    JOIN pg_namespace source_schema ON source_schema.oid=source_relation.relnamespace
+    JOIN pg_class target_relation ON target_relation.oid=inbound.confrelid
+    JOIN pg_namespace target_schema ON target_schema.oid=target_relation.relnamespace
+    WHERE inbound.contype='f'
+      AND target_schema.nspname='kineticloop'
+      AND target_relation.relname=ANY(ARRAY[
+        'daily_plan_heads','authorization_issuances','execution_bindings',
+        'replay_runs','replay_artifacts'
+      ])
+      AND EXISTS (
+        SELECT 1 FROM pg_depend dependency
+        WHERE dependency.classid='pg_constraint'::regclass
+          AND dependency.objid=inbound.oid
+          AND dependency.refclassid='pg_class'::regclass
+          AND dependency.refobjid=target_relation.oid
+          AND dependency.deptype='n'
+      )
+      AND concat_ws(
+        '|',source_schema.nspname,source_relation.relname,inbound.conname,
+        target_schema.nspname,target_relation.relname,
+        replace(pg_get_constraintdef(inbound.oid,false),'kineticloop.','')
+      ) <> ALL(ARRAY[
+        'kineticloop|authorization_artifact_closure|fk_s42_closure_authorization|kineticloop|authorization_issuances|FOREIGN KEY (subject_id, authorization_id) REFERENCES authorization_issuances(subject_id, id)',
+        'kineticloop|authorization_events|fk_s43_s42|kineticloop|authorization_issuances|FOREIGN KEY (subject_id, ref_s42_id) REFERENCES authorization_issuances(subject_id, id)',
+        'kineticloop|daily_bundle_revisions|fk_s39_s38|kineticloop|daily_plan_heads|FOREIGN KEY (subject_id, ref_s38_id) REFERENCES daily_plan_heads(subject_id, id)',
+        'kineticloop|execution_bindings|fk_s45_s42|kineticloop|authorization_issuances|FOREIGN KEY (subject_id, ref_s42_id) REFERENCES authorization_issuances(subject_id, id)',
+        'kineticloop|planning_intents|fk_s27_s42_result_authorization_id|kineticloop|authorization_issuances|FOREIGN KEY (subject_id, result_authorization_id) REFERENCES authorization_issuances(subject_id, id)',
+        'kineticloop|replay_artifact_fact_revision_sources|replay_artifact_fact_revision_subject_id_replay_artifact_i_fkey|kineticloop|replay_artifacts|FOREIGN KEY (subject_id, replay_artifact_id) REFERENCES replay_artifacts(subject_id, id)',
+        'kineticloop|replay_artifact_mapping_revision_sources|replay_artifact_mapping_revis_subject_id_replay_artifact_i_fkey|kineticloop|replay_artifacts|FOREIGN KEY (subject_id, replay_artifact_id) REFERENCES replay_artifacts(subject_id, id)',
+        'kineticloop|replay_artifacts|fk_s47_s46|kineticloop|replay_runs|FOREIGN KEY (subject_id, ref_s46_id) REFERENCES replay_runs(subject_id, id)'
+      ])
+  ) THEN
+    RAISE EXCEPTION 'KL_SUBJECT_SCOPE_NONCANONICAL_INBOUND_FK';
+  END IF;
+
+
 
   IF NOT EXISTS (
     SELECT 1
@@ -220,6 +275,52 @@ END
 $preflight$
 """
 
+INBOUND_FK_GUARD_SQL = r"""
+CREATE FUNCTION kineticloop.subject_scope_inbound_fks_safe() RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, kineticloop, pg_temp
+AS $guard$
+  SELECT NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint inbound
+    JOIN pg_class source_relation ON source_relation.oid=inbound.conrelid
+    JOIN pg_namespace source_schema ON source_schema.oid=source_relation.relnamespace
+    JOIN pg_class target_relation ON target_relation.oid=inbound.confrelid
+    JOIN pg_namespace target_schema ON target_schema.oid=target_relation.relnamespace
+    WHERE inbound.contype='f'
+      AND target_schema.nspname='kineticloop'
+      AND target_relation.relname=ANY(ARRAY[
+        'daily_plan_heads','authorization_issuances','execution_bindings',
+        'replay_runs','replay_artifacts'
+      ])
+      AND EXISTS (
+        SELECT 1 FROM pg_depend dependency
+        WHERE dependency.classid='pg_constraint'::regclass
+          AND dependency.objid=inbound.oid
+          AND dependency.refclassid='pg_class'::regclass
+          AND dependency.refobjid=target_relation.oid
+          AND dependency.deptype='n'
+      )
+      AND concat_ws(
+        '|',source_schema.nspname,source_relation.relname,inbound.conname,
+        target_schema.nspname,target_relation.relname,
+        replace(pg_get_constraintdef(inbound.oid,false),'kineticloop.','')
+      ) <> ALL(ARRAY[
+        'kineticloop|authorization_artifact_closure|fk_s42_closure_authorization|kineticloop|authorization_issuances|FOREIGN KEY (subject_id, authorization_id) REFERENCES authorization_issuances(subject_id, id)',
+        'kineticloop|authorization_events|fk_s43_s42|kineticloop|authorization_issuances|FOREIGN KEY (subject_id, ref_s42_id) REFERENCES authorization_issuances(subject_id, id)',
+        'kineticloop|daily_bundle_revisions|fk_s39_s38|kineticloop|daily_plan_heads|FOREIGN KEY (subject_id, ref_s38_id) REFERENCES daily_plan_heads(subject_id, id)',
+        'kineticloop|execution_bindings|fk_s45_s42|kineticloop|authorization_issuances|FOREIGN KEY (subject_id, ref_s42_id) REFERENCES authorization_issuances(subject_id, id)',
+        'kineticloop|planning_intents|fk_s27_s42_result_authorization_id|kineticloop|authorization_issuances|FOREIGN KEY (subject_id, result_authorization_id) REFERENCES authorization_issuances(subject_id, id)',
+        'kineticloop|replay_artifact_fact_revision_sources|replay_artifact_fact_revision_subject_id_replay_artifact_i_fkey|kineticloop|replay_artifacts|FOREIGN KEY (subject_id, replay_artifact_id) REFERENCES replay_artifacts(subject_id, id)',
+        'kineticloop|replay_artifact_mapping_revision_sources|replay_artifact_mapping_revis_subject_id_replay_artifact_i_fkey|kineticloop|replay_artifacts|FOREIGN KEY (subject_id, replay_artifact_id) REFERENCES replay_artifacts(subject_id, id)',
+        'kineticloop|replay_artifacts|fk_s47_s46|kineticloop|replay_runs|FOREIGN KEY (subject_id, ref_s46_id) REFERENCES replay_runs(subject_id, id)'
+      ])
+  )
+$guard$
+"""
+
 REGISTER_SQL = r"""
 CREATE FUNCTION kineticloop.subject_scope_register(
   p_subject_id uuid,
@@ -235,10 +336,31 @@ AS $routine$
 DECLARE
   existing_scope record;
   principal_role record;
+  caller_role record;
   expected_role text;
 BEGIN
-  IF NOT pg_has_role(session_user, 'kl_trusted_admin', 'MEMBER') THEN
+  SELECT * INTO caller_role FROM pg_roles WHERE rolname=session_user;
+  IF NOT FOUND OR session_user <> 'kl_trusted_admin_login'
+     OR session_user ~ '^kl_(production|test|evaluation)_subject_[a-z0-9_]+_login$'
+     OR NOT caller_role.rolcanlogin OR caller_role.rolsuper
+     OR caller_role.rolcreatedb OR caller_role.rolcreaterole
+     OR NOT caller_role.rolinherit OR caller_role.rolreplication
+     OR caller_role.rolbypassrls
+     OR (SELECT count(*) FROM pg_auth_members membership
+         WHERE membership.member=caller_role.oid) <> 1
+     OR NOT EXISTS (
+       SELECT 1 FROM pg_auth_members membership
+       JOIN pg_roles parent_role ON parent_role.oid=membership.roleid
+       WHERE membership.member=caller_role.oid
+         AND parent_role.rolname='kl_trusted_admin'
+         AND NOT membership.admin_option AND membership.inherit_option
+         AND NOT membership.set_option
+     )
+  THEN
     RAISE EXCEPTION 'KL_SUBJECT_SCOPE_REGISTRATION_DENIED';
+  END IF;
+  IF NOT kineticloop.subject_scope_inbound_fks_safe() THEN
+    RAISE EXCEPTION 'KL_SUBJECT_SCOPE_NONCANONICAL_INBOUND_FK';
   END IF;
   IF p_namespace NOT IN ('PRODUCTION','TEST','EVALUATION') THEN
     RAISE EXCEPTION 'KL_SUBJECT_SCOPE_INVALID';
@@ -286,7 +408,8 @@ BEGIN
        WHERE schema.nspname='kineticloop'
          AND protected.relname=ANY(ARRAY[
            'daily_plan_heads','authorization_issuances','execution_bindings',
-           'replay_runs','replay_artifacts'
+           'replay_runs','replay_artifacts','subject_scopes',
+           'subject_principal_bindings'
          ])
          AND (protected.relowner=principal_role.oid
               OR has_table_privilege(
@@ -377,41 +500,85 @@ DECLARE
   bound_subject uuid;
   bound_namespace text;
   expected_role text;
+  expected_namespace text;
   found_subject uuid;
+  principal_role record;
 BEGIN
-  SELECT binding.subject_id,binding.namespace INTO bound_subject,bound_namespace
-  FROM kineticloop.subject_principal_bindings AS binding
-  JOIN kineticloop.subject_scopes AS scope
-    ON scope.subject_id=binding.subject_id AND scope.namespace=binding.namespace
-  WHERE binding.principal_name=session_user;
-  IF NOT FOUND THEN
+  IF NOT kineticloop.subject_scope_inbound_fks_safe() THEN
     RAISE EXCEPTION 'KL_SUBJECT_SCOPE_ROLE_DENIED';
   END IF;
-  expected_role := CASE bound_namespace
+  expected_namespace := CASE
+    WHEN session_user ~ '^kl_production_subject_[a-z0-9_]+_login$' THEN 'PRODUCTION'
+    WHEN session_user ~ '^kl_test_subject_[a-z0-9_]+_login$' THEN 'TEST'
+    WHEN session_user ~ '^kl_evaluation_subject_[a-z0-9_]+_login$' THEN 'EVALUATION'
+    ELSE NULL
+  END;
+  expected_role := CASE expected_namespace
     WHEN 'PRODUCTION' THEN 'kl_application'
     WHEN 'TEST' THEN 'kl_subject_test'
     WHEN 'EVALUATION' THEN 'kl_subject_evaluation'
     ELSE NULL
   END;
+  SELECT * INTO principal_role FROM pg_roles WHERE rolname=session_user;
   IF expected_role IS NULL
+     OR NOT FOUND
+     OR NOT principal_role.rolcanlogin OR principal_role.rolsuper
+     OR principal_role.rolcreatedb OR principal_role.rolcreaterole
+     OR NOT principal_role.rolinherit OR principal_role.rolreplication
+     OR principal_role.rolbypassrls
      OR (SELECT count(*) FROM pg_auth_members membership
-         JOIN pg_roles member_role ON member_role.oid=membership.member
-         WHERE member_role.rolname=session_user) <> 1
+         WHERE membership.member=principal_role.oid) <> 1
      OR NOT EXISTS (
        SELECT 1 FROM pg_auth_members membership
        JOIN pg_roles parent_role ON parent_role.oid=membership.roleid
-       JOIN pg_roles member_role ON member_role.oid=membership.member
-       WHERE member_role.rolname=session_user AND parent_role.rolname=expected_role
+       WHERE membership.member=principal_role.oid
+         AND parent_role.rolname=expected_role
          AND NOT membership.admin_option AND membership.inherit_option
          AND NOT membership.set_option
      )
      OR EXISTS (
-       SELECT 1 FROM pg_roles writer_role
-       WHERE writer_role.rolname LIKE 'kl_writer_%'
-         AND (pg_has_role(session_user,writer_role.rolname,'MEMBER')
-              OR pg_has_role(session_user,writer_role.rolname,'SET'))
+       SELECT 1 FROM pg_roles reachable_role
+       WHERE reachable_role.oid<>principal_role.oid
+         AND reachable_role.rolname<>expected_role
+         AND (pg_has_role(principal_role.oid,reachable_role.oid,'MEMBER')
+              OR pg_has_role(principal_role.oid,reachable_role.oid,'SET'))
+     )
+     OR EXISTS (
+       SELECT 1 FROM pg_class protected
+       JOIN pg_namespace schema ON schema.oid=protected.relnamespace
+       WHERE schema.nspname='kineticloop'
+         AND protected.relname=ANY(ARRAY[
+           'daily_plan_heads','authorization_issuances','execution_bindings',
+           'replay_runs','replay_artifacts','subject_scopes',
+           'subject_principal_bindings'
+         ])
+         AND (protected.relowner=principal_role.oid
+              OR has_table_privilege(
+                principal_role.oid,protected.oid,
+                'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER'
+              ))
+     )
+     OR EXISTS (
+       SELECT 1 FROM pg_namespace schema
+       WHERE schema.nspname='kineticloop'
+         AND (schema.nspowner=principal_role.oid
+              OR has_schema_privilege(principal_role.oid,schema.oid,'CREATE'))
+     )
+     OR EXISTS (
+       SELECT 1 FROM pg_proc routine
+       JOIN pg_namespace schema ON schema.oid=routine.pronamespace
+       WHERE schema.nspname='kineticloop' AND routine.proowner=principal_role.oid
      )
   THEN
+    RAISE EXCEPTION 'KL_SUBJECT_SCOPE_ROLE_DENIED';
+  END IF;
+  SELECT binding.subject_id,binding.namespace INTO bound_subject,bound_namespace
+  FROM kineticloop.subject_principal_bindings AS binding
+  JOIN kineticloop.subject_scopes AS scope
+    ON scope.subject_id=binding.subject_id AND scope.namespace=binding.namespace
+  WHERE binding.principal_name=session_user
+    AND binding.namespace=expected_namespace;
+  IF NOT FOUND THEN
     RAISE EXCEPTION 'KL_SUBJECT_SCOPE_ROLE_DENIED';
   END IF;
   IF bound_namespace='EVALUATION' AND p_object_kind NOT IN ('S46','S47')
@@ -511,6 +678,37 @@ END
 $guard$
 """
 
+AUTHORITY_GUARD_SQL = r"""
+CREATE FUNCTION kineticloop.enforce_subject_authority_metadata() RETURNS trigger
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kineticloop, pg_temp
+AS $guard$
+DECLARE
+  trusted_cluster_admin boolean;
+BEGIN
+  SELECT rolsuper INTO trusted_cluster_admin
+  FROM pg_roles WHERE rolname=session_user;
+  IF coalesce(trusted_cluster_admin,false) THEN
+    IF TG_OP='DELETE' THEN
+      RETURN OLD;
+    ELSIF TG_OP='TRUNCATE' THEN
+      RETURN NULL;
+    END IF;
+    RETURN NEW;
+  END IF;
+  IF session_user ~ '^kl_(production|test|evaluation)_subject_[a-z0-9_]+_login$'
+     OR current_user <> 'kl_migration_owner'
+     OR NOT pg_has_role(session_user,'kl_trusted_admin','MEMBER')
+     OR TG_OP <> 'INSERT'
+  THEN
+    RAISE EXCEPTION 'KL_SUBJECT_SCOPE_METADATA_DML_DENIED';
+  END IF;
+  RETURN NEW;
+END
+$guard$
+"""
+
 RLS_GUARD_SQL = r"""
 CREATE FUNCTION kineticloop.subject_scope_rls_allows(
   p_subject_id uuid,
@@ -542,19 +740,21 @@ BEGIN
   THEN
     RETURN false;
   END IF;
+  IF NOT kineticloop.subject_scope_inbound_fks_safe() THEN
+    RETURN false;
+  END IF;
 
-  SELECT principal.subject_id,principal.namespace
-    INTO binding
-  FROM kineticloop.subject_principal_bindings AS principal
-  JOIN kineticloop.subject_scopes AS scope
-    ON scope.subject_id=principal.subject_id
-   AND scope.namespace=principal.namespace
-  WHERE principal.principal_name=session_user;
-  IF NOT FOUND THEN
-    IF session_user ~ '^kl_(production|test|evaluation)_subject_[a-z0-9_]+_login$'
-    THEN
-      RETURN false;
-    END IF;
+  SELECT * INTO principal_role FROM pg_roles WHERE rolname=session_user;
+  expected_scope_role := CASE
+    WHEN session_user ~ '^kl_production_subject_[a-z0-9_]+_login$'
+      THEN 'kl_application'
+    WHEN session_user ~ '^kl_test_subject_[a-z0-9_]+_login$'
+      THEN 'kl_subject_test'
+    WHEN session_user ~ '^kl_evaluation_subject_[a-z0-9_]+_login$'
+      THEN 'kl_subject_evaluation'
+    ELSE NULL
+  END;
+  IF expected_scope_role IS NULL THEN
     IF p_operation='SELECT' THEN
       RETURN p_effective_role IN ('kl_migration_owner',expected_writer)
         OR pg_has_role(p_effective_role,'kl_auditor','MEMBER')
@@ -563,16 +763,7 @@ BEGIN
     END IF;
     RETURN p_effective_role=expected_writer;
   END IF;
-
-  SELECT * INTO principal_role FROM pg_roles WHERE rolname=session_user;
-  expected_scope_role := CASE binding.namespace
-    WHEN 'PRODUCTION' THEN 'kl_application'
-    WHEN 'TEST' THEN 'kl_subject_test'
-    WHEN 'EVALUATION' THEN 'kl_subject_evaluation'
-    ELSE NULL
-  END;
-  IF expected_scope_role IS NULL
-     OR NOT FOUND
+  IF NOT FOUND
      OR NOT principal_role.rolcanlogin OR principal_role.rolsuper
      OR principal_role.rolcreatedb OR principal_role.rolcreaterole
      OR NOT principal_role.rolinherit OR principal_role.rolreplication
@@ -600,7 +791,8 @@ BEGIN
        WHERE schema.nspname='kineticloop'
          AND protected.relname=ANY(ARRAY[
            'daily_plan_heads','authorization_issuances','execution_bindings',
-           'replay_runs','replay_artifacts'
+           'replay_runs','replay_artifacts','subject_scopes',
+           'subject_principal_bindings'
          ])
          AND (protected.relowner=principal_role.oid
               OR has_table_privilege(
@@ -620,6 +812,21 @@ BEGIN
        WHERE schema.nspname='kineticloop' AND routine.proowner=principal_role.oid
      )
   THEN
+    RETURN false;
+  END IF;
+  SELECT principal.subject_id,principal.namespace
+    INTO binding
+  FROM kineticloop.subject_principal_bindings AS principal
+  JOIN kineticloop.subject_scopes AS scope
+    ON scope.subject_id=principal.subject_id
+   AND scope.namespace=principal.namespace
+  WHERE principal.principal_name=session_user
+    AND principal.namespace=CASE expected_scope_role
+      WHEN 'kl_application' THEN 'PRODUCTION'
+      WHEN 'kl_subject_test' THEN 'TEST'
+      WHEN 'kl_subject_evaluation' THEN 'EVALUATION'
+    END;
+  IF NOT FOUND THEN
     RETURN false;
   END IF;
 
@@ -694,12 +901,22 @@ def upgrade() -> None:
         "kineticloop.subject_principal_bindings TO kl_auditor"
     )
     op.execute("REVOKE SELECT ON kineticloop.daily_plan_heads, kineticloop.authorization_issuances, kineticloop.execution_bindings, kineticloop.replay_runs, kineticloop.replay_artifacts FROM kl_application")
+    op.execute(INBOUND_FK_GUARD_SQL)
     op.execute(REGISTER_SQL)
     op.execute(LOOKUP_SQL)
     op.execute(GUARD_SQL)
+    op.execute(AUTHORITY_GUARD_SQL)
     op.execute(RLS_GUARD_SQL)
     op.execute(
         "REVOKE ALL ON FUNCTION kineticloop.enforce_subject_storage_scope() FROM PUBLIC"
+    )
+    op.execute(
+        "REVOKE ALL ON FUNCTION "
+        "kineticloop.enforce_subject_authority_metadata() FROM PUBLIC"
+    )
+    op.execute(
+        "REVOKE ALL ON FUNCTION "
+        "kineticloop.subject_scope_inbound_fks_safe() FROM PUBLIC"
     )
     rls_signature = "kineticloop.subject_scope_rls_allows(uuid,text,text,text)"
     op.execute(f"REVOKE ALL ON FUNCTION {rls_signature} FROM PUBLIC")
@@ -720,6 +937,18 @@ def upgrade() -> None:
         "daily_plan_heads", "authorization_issuances", "execution_bindings",
         "replay_runs", "replay_artifacts",
     )
+    for table in ("subject_scopes", "subject_principal_bindings"):
+        op.execute(
+            f"CREATE TRIGGER subject_authority_metadata_scope "
+            f"BEFORE INSERT OR UPDATE OR DELETE ON kineticloop.{table} "
+            "FOR EACH ROW EXECUTE FUNCTION "
+            "kineticloop.enforce_subject_authority_metadata()"
+        )
+        op.execute(
+            f"CREATE TRIGGER subject_authority_metadata_truncate "
+            f"BEFORE TRUNCATE ON kineticloop.{table} FOR EACH STATEMENT "
+            "EXECUTE FUNCTION kineticloop.enforce_subject_authority_metadata()"
+        )
     for table in protected_tables:
         op.execute(f"ALTER TABLE kineticloop.{table} ENABLE ROW LEVEL SECURITY")
         op.execute(f"ALTER TABLE kineticloop.{table} FORCE ROW LEVEL SECURITY")
@@ -766,6 +995,13 @@ def downgrade() -> None:
     for table in (*protected_tables, "subject_scopes", "subject_principal_bindings"):
         op.execute(f"LOCK TABLE kineticloop.{table} IN ACCESS EXCLUSIVE MODE")
     op.execute(DOWNGRADE_DATA_PREFLIGHT_SQL)
+    for table in ("subject_scopes", "subject_principal_bindings"):
+        op.execute(
+            f"DROP TRIGGER subject_authority_metadata_truncate ON kineticloop.{table}"
+        )
+        op.execute(
+            f"DROP TRIGGER subject_authority_metadata_scope ON kineticloop.{table}"
+        )
     for table in protected_tables:
         op.execute(f"DROP TRIGGER subject_storage_truncate ON kineticloop.{table}")
         op.execute(f"DROP TRIGGER subject_storage_scope ON kineticloop.{table}")
@@ -774,9 +1010,11 @@ def downgrade() -> None:
         op.execute(f"ALTER TABLE kineticloop.{table} NO FORCE ROW LEVEL SECURITY")
         op.execute(f"ALTER TABLE kineticloop.{table} DISABLE ROW LEVEL SECURITY")
     op.execute("DROP FUNCTION kineticloop.enforce_subject_storage_scope()")
+    op.execute("DROP FUNCTION kineticloop.enforce_subject_authority_metadata()")
     op.execute("DROP FUNCTION kineticloop.subject_scope_rls_allows(uuid,text,text,text)")
     op.execute("DROP FUNCTION kineticloop.subject_scope_lookup(text,uuid)")
     op.execute("DROP FUNCTION kineticloop.subject_scope_register(uuid,text,uuid,uuid,text)")
+    op.execute("DROP FUNCTION kineticloop.subject_scope_inbound_fks_safe()")
     op.execute("GRANT SELECT ON kineticloop.daily_plan_heads, kineticloop.authorization_issuances, kineticloop.execution_bindings, kineticloop.replay_runs, kineticloop.replay_artifacts TO kl_application")
     op.execute(
         "REVOKE USAGE ON SCHEMA kineticloop FROM kl_subject_test, kl_subject_evaluation"
