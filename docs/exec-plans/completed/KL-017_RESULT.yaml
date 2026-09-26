@@ -1,0 +1,90 @@
+task_identity: harness-backlog-v0.2/KL-017
+display_task_id: KL-017
+task_definition_version: v0.2
+base_commit: a2602123a539787ed2a6bed25b892109474d0395
+tested_commit: 6def0f9b16f87af32ecbf21c972a32428465099d
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Isolated production, test, and evaluation persistence by authenticated database
+  principal and exact subject. All five protected tables now force row-level
+  security. Bound subject sessions revalidate their durable binding, namespace,
+  role graph, ACLs, ownership, and schema/routine authority on every protected
+  access. Reads expose only the exact subject; writes additionally require the
+  table's exact current_user command owner while session_user remains safely bound.
+  Statement-level truncate guards and row triggers close direct DML. Downgrade
+  obtains fixed-order transaction-held locks across S38/S42/S45/S46/S47 and scope
+  metadata before scanning, so registration or writes cannot enter between the
+  empty-state decision and guard removal.
+commands_run:
+  - check_id: subject_namespace_isolation
+    command: uv run pytest -q tests/db/test_subject_scope.py::test_subject_namespace_isolation
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-6def0f9.log
+  - check_id: cross_subject_denial_is_non_enumerating
+    command: uv run pytest -q tests/db/test_subject_scope.py::test_cross_subject_denial_is_non_enumerating
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-6def0f9.log
+  - check_id: test_authorization_is_isolated
+    command: uv run pytest -q tests/db/test_subject_scope.py::test_test_authorization_is_isolated
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-6def0f9.log
+  - check_id: evaluation_storage_is_isolated
+    command: uv run pytest -q tests/db/test_subject_scope.py::test_evaluation_storage_is_isolated
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-6def0f9.log
+  - check_id: application_role_scope_enforced
+    command: uv run pytest -q tests/db/test_subject_scope.py::test_application_role_scope_enforced
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-6def0f9.log
+  - check_id: subject_isolation_e2e_passes
+    command: uv run pytest -q tests/e2e/test_subject_isolation.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-6def0f9.log
+  - check_id: subject_scope_db_regressions_pass
+    command: uv run pytest -q tests/db/test_subject_scope.py tests/db/test_migrations.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-6def0f9.log
+  - check_id: single_migration_head
+    command: uv run alembic heads
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-6def0f9.log
+  - check_id: harness_validation_passes
+    command: uv run kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-6def0f9.log
+  - check_id: complete_db_suite_passes
+    command: uv run pytest -q tests/db
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-6def0f9.log
+requirements_covered: []
+files_changed:
+  - docs/contracts/subject_scope.md
+  - migrations/versions/d4c1a9e7b203_subject_scope.py
+  - src/kineticloop/persistence/subject_scope.py
+  - tests/db/test_subject_scope.py
+  - tests/db/test_migrations.py
+  - tests/db/test_safety_registry.py
+  - tests/e2e/test_subject_isolation.py
+  - docs/exec-plans/evidence/KL-017/checks-6def0f9.log
+  - docs/exec-plans/evidence/KL-017/ci-6def0f9.log
+  - docs/exec-plans/completed/KL-017_RESULT.yaml
+decisions:
+  - Force RLS on S38, S42, S45, S46, and S47 with separate SELECT, INSERT, UPDATE, and DELETE policies backed by one fixed-search-path SECURITY DEFINER policy helper.
+  - Revalidate the bound session_user principal's safe attributes, sole scope membership, complete reachable-role graph, protected ACLs and ownership, schema CREATE, and in-schema routine ownership at access time.
+  - Require the exact per-table writer as current_user for bound-session DML, preserving clean SECURITY DEFINER command owners while denying direct ACL, bridge-role, writer, migration-owner, ownership, and SET ROLE drift.
+  - Restrict unbound RLS reads to the migration owner, exact table writer, auditor membership, and the SafetyRegistry writer's required S42 read.
+  - Reject bound-subject TRUNCATE through statement-level BEFORE TRUNCATE triggers and retain row-level namespace, classification, and subject immutability guards.
+  - Acquire registration ACCESS SHARE and downgrade ACCESS EXCLUSIVE locks in the global order S38, S42, S45, S46, S47, subject scopes, principal bindings; hold downgrade locks through destructive DDL.
+  - Fail downgrade before DDL or ACL change whenever any scope, binding, or protected row remains, including state committed by a transaction that was active when downgrade began.
+  - Preserve frozen S51-before-S01 and T6/T7 command-owner semantics; RLS and triggers enforce storage boundaries only.
+known_limitations:
+  - Cluster roles, subject credentials, memberships, and ownership handoff remain external two-phase deployment responsibilities.
+  - FORCE RLS denies ordinary access after accidental table-owner drift, but PostgreSQL table owners can issue DDL to disable RLS. Ownership changes therefore remain a trusted deployment boundary and must not be delegated to subject principals.
+  - Operators must retire all classifications, bindings, and protected S38/S42/S45/S46/S47 data before downgrade.
+  - No product requirement PASS or production auto-activation is claimed.
+follow_up_tasks:
+  - Run fresh SHA-bound GENERAL, PROTOCOL, DB_CONCURRENCY, and SECURITY_DATA_BOUNDARY independent reviews on the final reviewable head.
+spec_change_request: null

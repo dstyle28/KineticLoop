@@ -1,0 +1,32 @@
+KL-017 exact packet checks after fourth SECURITY_DATA_BOUNDARY remediation
+tested_commit: 6def0f9b16f87af32ecbf21c972a32428465099d
+
+$ uv run pytest -q tests/db/test_subject_scope.py::test_subject_namespace_isolation
+1 passed in 2.74s
+$ uv run pytest -q tests/db/test_subject_scope.py::test_cross_subject_denial_is_non_enumerating
+1 passed in 2.66s
+$ uv run pytest -q tests/db/test_subject_scope.py::test_test_authorization_is_isolated
+1 passed in 2.71s
+$ uv run pytest -q tests/db/test_subject_scope.py::test_evaluation_storage_is_isolated
+1 passed in 2.57s
+$ uv run pytest -q tests/db/test_subject_scope.py::test_application_role_scope_enforced
+1 passed in 2.64s
+$ uv run pytest -q tests/e2e/test_subject_isolation.py
+1 passed in 2.47s
+$ uv run pytest -q tests/db/test_subject_scope.py tests/db/test_migrations.py
+38 passed in 62.98s
+$ uv run alembic heads
+d4c1a9e7b203 (head)
+$ uv run kl check-harness
+HARNESS_CHECK_PASS tasks=69 active=67
+$ uv run pytest -q tests/db
+158 passed in 98.94s
+
+Focused security coverage included by the complete DB result:
+- post-registration direct ACL and inherited bridge-role SELECT/INSERT/UPDATE/DELETE/TRUNCATE denial;
+- writer, migration-owner, table-owner, and SET ROLE drift denial under FORCE RLS;
+- exact-writer SECURITY DEFINER own-subject success and same-namespace foreign denial;
+- forced-RLS, policy, helper-routine, and truncate-trigger closed inventories;
+- concurrent registration and protected-write downgrade interleavings.
+
+ALL_EXACT_CHECKS_PASS
