@@ -1,0 +1,130 @@
+KL-018 exact packet validation
+base_commit: 2100f5998ae428112f90205647882280bce48809
+tested_commit: b2eb57894dfb906db1ddfcb6fd490c59b03acb6b
+date: 2026-09-26
+environment: isolated PostgreSQL namespace kl_2a8a_220eb9a2f7ab; external two-phase bootstrap; non-superuser migration deployer; session-bound trusted-admin login
+
+=== artifact_registry_successor_migration_chain ===
+command: uv run pytest -q tests/db/test_migrations.py::test_artifact_registry_successor_migration_chain
+.                                                                        [100%]
+1 passed in 2.55s
+=== artifact_identity_is_immutable ===
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_identity_is_immutable
+.                                                                        [100%]
+1 passed in 2.37s
+=== artifact_dependency_closure_required ===
+command: uv run pytest -q tests/unit/contracts/test_artifact_registry.py::test_artifact_dependency_closure_required
+.                                                                        [100%]
+1 passed in 0.10s
+=== artifact_dependencies_must_be_pre_registered ===
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_dependencies_must_be_pre_registered
+.                                                                        [100%]
+1 passed in 2.41s
+=== artifact_dependency_graph_is_acyclic ===
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_dependency_graph_is_acyclic
+.                                                                        [100%]
+1 passed in 2.43s
+=== artifact_dependency_closure_is_bounded ===
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_dependency_closure_is_bounded
+.                                                                        [100%]
+1 passed in 2.63s
+=== artifact_registration_requires_management_capability ===
+command: uv run pytest -q tests/unit/contracts/test_artifact_registry.py::test_artifact_registration_requires_management_capability
+.                                                                        [100%]
+1 passed in 0.09s
+=== artifact_registration_command_routine_privileges_enforced ===
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_registration_command_routine_privileges
+.                                                                        [100%]
+1 passed in 2.43s
+=== artifact_registration_session_authority_enforced ===
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_registration_session_authority_enforced
+.                                                                        [100%]
+1 passed in 2.45s
+=== artifact_registration_uses_exclusive_registry_gate ===
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_registration_uses_exclusive_registry_gate
+.                                                                        [100%]
+1 passed in 2.44s
+=== artifact_registration_direct_write_rejected ===
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_registration_direct_write_rejected
+.                                                                        [100%]
+1 passed in 2.43s
+=== unregistered_or_revoked_artifact_denied ===
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_unregistered_or_revoked_artifact_denied
+.                                                                        [100%]
+1 passed in 2.41s
+=== t3_t6_t7_require_artifact_refs ===
+command: uv run pytest -q tests/unit/contracts/test_artifact_registry.py::test_t3_t6_t7_require_artifact_refs
+.                                                                        [100%]
+1 passed in 0.09s
+=== artifact_validity_is_null_total ===
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_validity_is_null_total
+.                                                                        [100%]
+1 passed in 2.91s
+=== artifact_timeless_policy_is_registered_dependency ===
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_timeless_policy_is_registered_dependency
+.                                                                        [100%]
+1 passed in 2.61s
+=== artifact_persistence_denials_are_stable ===
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_repository_maps_immutable_and_natural_identity_conflicts
+.                                                                        [100%]
+1 passed in 2.43s
+=== artifact_dependency_dense_graph_is_bounded ===
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_dependency_dense_graph_is_bounded
+.                                                                        [100%]
+1 passed in 2.65s
+=== artifact_registration_lock_timeout_is_atomic ===
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_registration_lock_timeout_is_atomic
+.                                                                        [100%]
+1 passed in 2.57s
+=== artifact_registration_post_write_failure_is_atomic ===
+command: uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_registration_post_write_failure_is_atomic
+.                                                                        [100%]
+1 passed in 2.40s
+=== artifact_registration_safety_registry_privilege_regression ===
+command: uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_command_routine_privileges
+.                                                                        [100%]
+1 passed in 2.42s
+=== complete_db_suite_passes ===
+command: uv run pytest -q tests/db
+........................................................................ [ 51%]
+...................................................................      [100%]
+139 passed in 79.69s (0:01:19)
+=== artifact_registry_db_constraints_pass ===
+command: uv run pytest -q tests/db/test_artifact_registry.py tests/db/test_migrations.py
+...................................                                      [100%]
+35 passed in 52.70s
+=== artifact_contract_unit_suite_passes ===
+command: uv run pytest -q tests/unit/contracts/test_artifact_registry.py
+...                                                                      [100%]
+3 passed in 0.08s
+=== harness_validation_passes ===
+command: uv run kl check-harness
+HARNESS_CHECK_PASS tasks=69 active=67
+
+=== supplemental_validation ===
+PASS uv run kl test-unit
+output: 172 passed in 16.28s (one managed-worktree pytest cache warning)
+PASS uv run kl lint
+output: All checks passed!
+PASS uv run kl typecheck
+output: Success: no issues found in 76 source files
+PASS uv run python tools/harness/validate_harness.py --protected-base 2100f5998ae428112f90205647882280bce48809 --task-id KL-018
+output: HARNESS_CHECK_PASS tasks=69 active=67
+PASS git diff --check 2100f5998ae428112f90205647882280bce48809 b2eb57894dfb906db1ddfcb6fd490c59b03acb6b
+PASS frozen-authority diff
+output: frozen Protocol, frozen DB, FROZEN_BASELINE.json, KL-013 baseline migration, and KL-072 successor are unchanged from base_commit
+
+=== oracle_verification ===
+PASS: the successor is the single Alembic head after KL-072, contains no cluster-role DDL, and upgrades and downgrades through the external non-superuser deployment path.
+PASS: identity replay with changed content and natural-identity conflicts return IMMUTABLE_ARTIFACT without partial mutation or raw psycopg leakage.
+PASS: unknown dependencies and binding roots return ARTIFACT_UNKNOWN; invalid input shape, duplicate/self/cyclic/incomplete dependencies, kind-binding mismatch, and over-bound closure return VALIDITY_UNDEFINED.
+PASS: contract construction rejects duplicate dependencies, a self-cycle, and artifact-kind/binding mismatch before persistence.
+PASS: registration uses the exclusive S51 gate without S01, derives database authority and operator identity from the trusted-admin session, and prevents direct writes or owner-role assumption.
+PASS: validity predicates and the S49 constraint are NULL-total for BOUNDED and TIMELESS rows.
+PASS: TIMELESS policy is a canonical pre-registered POLICY or POLICY_BUNDLE explicit dependency; malformed legacy TIMELESS rows deterministically fail successor upgrade and remain ineligible.
+PASS: T3 requires the actual current S24 manifest artifact root and matching exact closure digest, so an unrelated healthy closure cannot substitute after policy revocation; policy-only revocation denies T3, T6, and T7 before mutation.
+PASS: dense duplicate-suppressing traversal accepts 128 nodes and 960 edges within the timeout; 129 nodes fail with VALIDITY_UNDEFINED and zero mutation.
+PASS: S51 lock timeout and an injected post-S49-write failure both roll back S49, dependency edges, S51, receipt, event, and outbox changes.
+PASS: the migrated privilege inventory contains exactly eight approved SECURITY DEFINER routines with fixed search_path, expected writer ownership, PUBLIC denial, and inverse runtime denial.
+
+SPEC_CHANGE_REQUIRED: no
