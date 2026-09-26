@@ -672,6 +672,14 @@ class ValidatorTests(unittest.TestCase):
             ('KL-018', 'artifact_registration_command_routine_privileges_enforced'),
             ('KL-018', 'artifact_registration_session_authority_enforced'),
             ('KL-018', 'artifact_identity_is_immutable'),
+            ('KL-018', 'artifact_validity_is_null_total'),
+            ('KL-018', 'artifact_timeless_policy_is_registered_dependency'),
+            ('KL-018', 'artifact_persistence_denials_are_stable'),
+            ('KL-018', 'artifact_dependency_dense_graph_is_bounded'),
+            ('KL-018', 'artifact_registration_lock_timeout_is_atomic'),
+            ('KL-018', 'artifact_registration_post_write_failure_is_atomic'),
+            ('KL-018', 'artifact_registration_safety_registry_privilege_regression'),
+            ('KL-018', 'complete_db_suite_passes'),
             ('KL-055', 'provider_subject_source_binding_is_trusted'),
         ]
         original_packets = {
@@ -747,7 +755,8 @@ class ValidatorTests(unittest.TestCase):
                 ('resource_keys', 'migration_chain'),
                 ('resource_keys', 'persistence_permissions'),
                 ('write_paths', 'migrations/versions/*_artifact_registry.py'),
-                ('write_paths', 'tests/db/test_migrations.py')):
+                ('write_paths', 'tests/db/test_migrations.py'),
+                ('write_paths', 'tests/db/test_safety_registry.py')):
             backlog = copy.deepcopy(original)
             task = next(item for item in backlog['tasks'] if item['id'] == 'KL-018')
             task[field].remove(value)
