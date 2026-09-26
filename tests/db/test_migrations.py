@@ -34,9 +34,11 @@ from kineticloop.persistence.schema_topology import (
 
 ROOT = Path(__file__).parents[2]
 BASELINE_REVISION = "76fd67f76bd4"
-REVISION = "a3f91c7d2e10"
+SAFETY_REGISTRY_REVISION = "a3f91c7d2e10"
+REVISION = "b6e4d8a1c927"
 MIGRATION = ROOT / "migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py"
 SUCCESSOR = ROOT / "migrations/versions/a3f91c7d2e10_safety_registry_integration.py"
+ARTIFACT_REGISTRY_SUCCESSOR = ROOT / "migrations/versions/b6e4d8a1c927_artifact_registry.py"
 
 ROLE_PASSWORD = "kl072-local-only"
 PROTECTED_ROLES = (
@@ -94,6 +96,8 @@ def provision_external_roles(admin_url: str) -> None:
             "kl_auditor_login",
             "kl_stop_login",
             "kl_trusted_admin_login",
+            "kl_user_login",
+            "kl_agent_login",
         }
     )
     with psycopg.connect(admin_url, autocommit=True) as connection:
@@ -131,12 +135,20 @@ def provision_external_roles(admin_url: str) -> None:
             "kl_auditor_login",
             "kl_stop_login",
             "kl_trusted_admin_login",
+            "kl_user_login",
+            "kl_agent_login",
         ):
             connection.execute(
                 f"ALTER ROLE {role} LOGIN PASSWORD '{ROLE_PASSWORD}' "
                 "NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS"
             )
-        for role in ("kl_application_login", "kl_auditor_login", "kl_trusted_admin_login"):
+        for role in (
+            "kl_application_login",
+            "kl_auditor_login",
+            "kl_trusted_admin_login",
+            "kl_user_login",
+            "kl_agent_login",
+        ):
             connection.execute(f"ALTER ROLE {role} INHERIT")
 
 
@@ -156,6 +168,10 @@ def external_ownership_handoff(admin_url: str, database_name: str) -> None:
             "GRANT kl_application TO kl_application_login WITH INHERIT TRUE, SET FALSE"
         )
         connection.execute(
+            "GRANT kl_application TO kl_user_login, kl_agent_login "
+            "WITH INHERIT TRUE, SET FALSE"
+        )
+        connection.execute(
             "GRANT kl_auditor TO kl_auditor_login WITH INHERIT TRUE, SET FALSE"
         )
         connection.execute(
@@ -168,7 +184,7 @@ def external_ownership_handoff(admin_url: str, database_name: str) -> None:
         connection.execute(
             "GRANT CONNECT ON DATABASE " + f'"{database_name}"' + " TO "
             "kl_migration_deployer, kl_application_login, kl_stop_login, "
-            "kl_trusted_admin_login, kl_auditor_login"
+            "kl_trusted_admin_login, kl_auditor_login, kl_user_login, kl_agent_login"
         )
         connection.execute("GRANT SELECT ON public.alembic_version TO kl_migration_deployer")
 
@@ -195,6 +211,8 @@ def bootstrap_two_phase(lifecycle: DatabaseLifecycle, *, head: bool = True) -> d
         "auditor": role_url(admin_url, "kl_auditor_login"),
         "stop": role_url(admin_url, "kl_stop_login"),
         "trusted_admin": role_url(admin_url, "kl_trusted_admin_login"),
+        "user": role_url(admin_url, "kl_user_login"),
+        "agent": role_url(admin_url, "kl_agent_login"),
     }
 
 
@@ -214,7 +232,7 @@ def test_empty_db_upgrade_head(migrated_database: DatabaseLifecycle) -> None:
     assert migrated_database.execute_sql(
         "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace "
         "WHERE n.nspname='kineticloop' AND c.relkind='r';"
-    ) == str(len(LOGICAL_RELATIONS) + len(FACT_CHILD_PLANS) + 7)
+    ) == str(len(LOGICAL_RELATIONS) + len(FACT_CHILD_PLANS) + 10)
     assert (
         migrated_database.execute_sql(
             "SELECT registry_revision FROM kineticloop.safety_registry_state WHERE id=1;"
@@ -226,13 +244,100 @@ def test_empty_db_upgrade_head(migrated_database: DatabaseLifecycle) -> None:
 def test_safety_registry_successor_migration_chain() -> None:
     config = Config(ROOT / "alembic.ini")
     revisions = list(ScriptDirectory.from_config(config).walk_revisions())
-    assert [revision.revision for revision in revisions] == [REVISION, BASELINE_REVISION]
-    assert revisions[0].down_revision == BASELINE_REVISION
-    assert revisions[1].down_revision is None
+    assert [revision.revision for revision in revisions] == [
+        REVISION,
+        SAFETY_REGISTRY_REVISION,
+        BASELINE_REVISION,
+    ]
+    assert revisions[0].down_revision == SAFETY_REGISTRY_REVISION
+    assert revisions[1].down_revision == BASELINE_REVISION
+    assert revisions[2].down_revision is None
     assert (
         MIGRATION.read_bytes()
         == (ROOT / "migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py").read_bytes()
     )
+
+
+def test_artifact_registry_successor_migration_chain() -> None:
+    config = Config(ROOT / "alembic.ini")
+    revisions = list(ScriptDirectory.from_config(config).walk_revisions())
+    assert [revision.revision for revision in revisions] == [
+        REVISION,
+        SAFETY_REGISTRY_REVISION,
+        BASELINE_REVISION,
+    ]
+    assert len(ScriptDirectory.from_config(config).get_heads()) == 1
+    assert revisions[0].down_revision == SAFETY_REGISTRY_REVISION
+
+    spec = spec_from_file_location("kl018_migration", ARTIFACT_REGISTRY_SUCCESSOR)
+    assert spec is not None and spec.loader is not None
+    migration = module_from_spec(spec)
+    spec.loader.exec_module(migration)
+    statements: list[str] = []
+    with patch.object(migration.op, "execute", side_effect=lambda sql: statements.append(str(sql))):
+        migration.upgrade()
+        migration.downgrade()
+    emitted = "\n".join(statements)
+    forbidden = (
+        r"\bCREATE\s+(?:ROLE|USER)\b",
+        r"\bALTER\s+(?:ROLE|USER)\b",
+        r"\bDROP\s+(?:ROLE|USER)\b",
+        r"\bREASSIGN\s+OWNED\b",
+        r"\bGRANT\s+\w+\s+TO\s+\w+\s+WITH\s+(?:ADMIN|SET|INHERIT)\b",
+        r"\bREVOKE\s+\w+\s+FROM\s+\w+\b",
+    )
+    assert statements[0].strip().startswith("DO $preflight$")
+    for pattern in forbidden:
+        assert re.search(pattern, emitted, flags=re.IGNORECASE) is None
+
+    lifecycle = DatabaseLifecycle(ROOT)
+    urls = bootstrap_two_phase(lifecycle)
+    with psycopg.connect(urls["deployer"]) as connection:
+        assert connection.execute(
+            "SELECT rolsuper, rolcreaterole FROM pg_roles WHERE rolname=session_user"
+        ).fetchone() == (False, False)
+
+
+def test_artifact_registry_upgrade_rejects_malformed_legacy_timeless_row() -> None:
+    lifecycle = DatabaseLifecycle(ROOT)
+    urls = bootstrap_two_phase(lifecycle, head=False)
+    run_alembic(urls["deployer"], SAFETY_REGISTRY_REVISION)
+    with psycopg.connect(urls["admin"], autocommit=True) as admin:
+        policy_id = admin.execute(
+            "INSERT INTO kineticloop.policy_bundles("
+            "subject_id,policy_namespace,policy_version,content_hash) "
+            "VALUES (%s,'legacy-timeless','1','legacy-policy') RETURNING id",
+            (UUID("00000000-0000-8000-8000-000000000190"),),
+        ).fetchone()
+        assert policy_id is not None
+        admin.execute(
+            "INSERT INTO kineticloop.safety_artifacts("
+            "id,artifact_kind,artifact_identity,artifact_version,content_hash,"
+            "validity_kind,valid_from,valid_until,timeless_approval_policy,"
+            "timeless_approval_reason,ref_s05_id) VALUES ("
+            "%s,'POLICY_BUNDLE','legacy-malformed','1',%s,'TIMELESS',"
+            "clock_timestamp(),NULL,'legacy-noncanonical-policy','legacy reason',%s)",
+            (
+                UUID("00000000-0000-8000-8000-000000000191"),
+                "9" * 64,
+                policy_id[0],
+            ),
+        )
+
+    for _attempt in range(2):
+        with pytest.raises(
+            Exception,
+            match="KL_ARTIFACT_REGISTRY_LEGACY_TIMELESS_INVALID",
+        ):
+            run_alembic(urls["deployer"], "head")
+        with psycopg.connect(urls["admin"]) as admin:
+            assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (
+                SAFETY_REGISTRY_REVISION,
+            )
+            assert admin.execute(
+                "SELECT count(*) FROM kineticloop.safety_artifacts "
+                "WHERE artifact_identity='legacy-malformed'"
+            ).fetchone() == (1,)
 
 
 def test_safety_registry_successor_contains_no_cluster_role_ddl() -> None:
@@ -439,6 +544,7 @@ def test_safety_registry_migrated_object_ownership() -> None:
         WHERE n.nspname='kineticloop'
           AND p.proname NOT LIKE 'registry_guard_%'
           AND p.proname <> 'registry_revoke_artifact'
+          AND p.proname <> 'registry_register_artifact'
           AND pg_get_userbyid(p.proowner) <> 'kl_migration_owner'
         ORDER BY 1
         """
@@ -610,6 +716,9 @@ def test_immutable_history_materialized(migrated_database: DatabaseLifecycle) ->
             "registry_management_receipts",
             "registry_audit_events",
             "registry_outbox",
+            "registry_artifact_receipts",
+            "artifact_registration_events",
+            "artifact_registration_outbox",
         }
     )
     guarded = set(
