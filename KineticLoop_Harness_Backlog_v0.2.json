@@ -2180,9 +2180,11 @@
         "later artifact-registry successor migration",
         "exact trusted-admin RegisterArtifact SECURITY DEFINER entrypoint",
         "artifact identity API and dependency admission",
-        "session-bound authorization and direct-SQL negative evidence"
+        "session-bound authorization and direct-SQL negative evidence",
+        "bounded dense-closure traversal, revocable TIMELESS policy dependency, stable adapter denials, and atomic failure evidence",
+        "synchronized SafetyRegistry privilege inventory and complete DB CI evidence"
       ],
-      "definition_of_done": "after merged KL-072, one later cluster-role-DDL-free successor installs exactly one registry_register_artifact SECURITY DEFINER entrypoint owned by NOLOGIN kl_writer_safety_registry and executable only by distinct NOLOGIN kl_trusted_admin; database authorization and persisted operator identity derive from the authenticated session rather than caller identity/capability; direct S49/S51 DML and owner-role assumption remain denied; and model/prompt/tool/runtime/policy artifacts have immutable identities with complete, pre-registered, acyclic, bounded dependency closure before use",
+      "definition_of_done": "after merged KL-072, one later cluster-role-DDL-free successor installs exactly one registry_register_artifact SECURITY DEFINER entrypoint owned by NOLOGIN kl_writer_safety_registry and executable only by distinct NOLOGIN kl_trusted_admin; database authorization and persisted operator identity derive from the authenticated session rather than caller identity/capability; direct S49/S51 DML and owner-role assumption remain denied; model/prompt/tool/runtime/policy artifacts have immutable identities with complete, pre-registered, acyclic, mechanically bounded dependency closure before use; dense over-bound closure fails with frozen VALIDITY_UNDEFINED and no new public denial; TIMELESS approval policy is a pre-registered policy artifact fixed in the declared dependency closure whose revocation denies T3/T6/T7 with no bypass; incomplete validity, immutable/natural-identity conflicts, lock timeout, and injected post-write failure all fail with stable public denials and zero partial mutation; and the complete PostgreSQL CI suite, including the exact eight-routine SafetyRegistry privilege inventory, passes",
       "entry_conditions": [
         "M1 closure PASS: docs/exec-plans/milestones/M1.json"
       ],
@@ -2219,6 +2221,14 @@
         "artifact_registration_direct_write_rejected",
         "unregistered_or_revoked_artifact_denied",
         "t3_t6_t7_require_artifact_refs",
+        "artifact_validity_is_null_total",
+        "artifact_timeless_policy_is_registered_dependency",
+        "artifact_persistence_denials_are_stable",
+        "artifact_dependency_dense_graph_is_bounded",
+        "artifact_registration_lock_timeout_is_atomic",
+        "artifact_registration_post_write_failure_is_atomic",
+        "artifact_registration_safety_registry_privilege_regression",
+        "complete_db_suite_passes",
         "artifact_registry_db_constraints_pass",
         "artifact_contract_unit_suite_passes",
         "harness_validation_passes"
@@ -2236,7 +2246,8 @@
         "src/kineticloop/persistence/artifact_registry.py",
         "tests/unit/contracts/test_artifact_registry.py",
         "tests/db/test_artifact_registry.py",
-        "tests/db/test_migrations.py"
+        "tests/db/test_migrations.py",
+        "tests/db/test_safety_registry.py"
       ],
       "review_requirements": [
         "GENERAL",
@@ -2319,6 +2330,46 @@
           "check_id": "t3_t6_t7_require_artifact_refs",
           "command": "uv run pytest -q tests/unit/contracts/test_artifact_registry.py::test_t3_t6_t7_require_artifact_refs",
           "pass_oracle": "The named test proves T3, T6, and T7 contracts require exact artifact references."
+        },
+        {
+          "check_id": "artifact_validity_is_null_total",
+          "command": "uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_validity_is_null_total",
+          "pass_oracle": "The named direct-SQL PostgreSQL test proves the successor hardens the S49 validity constraint and routine predicates into NULL-total truth checks: omitted, JSON null, blank, and one-sided TIMELESS approval policy/reason, plus missing or non-increasing BOUNDED valid_until, each return the frozen VALIDITY_UNDEFINED denial before mutation; every denial leaves S49, dependency edges, receipt, event, and outbox rows unchanged, while valid BOUNDED input and TIMELESS input backed by an explicit registered policy artifact proceed to the separate closure and revocation checks."
+        },
+        {
+          "check_id": "artifact_timeless_policy_is_registered_dependency",
+          "command": "uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_timeless_policy_is_registered_dependency",
+          "pass_oracle": "The named PostgreSQL registration and use-path test proves a TIMELESS approval policy is a canonical pre-registered POLICY or POLICY_BUNDLE artifact identity, is explicitly present in the target artifact declared dependency edges and complete transitive closure, and cannot be omitted or substituted: missing or malformed policy binding returns VALIDITY_UNDEFINED, an unknown policy returns ARTIFACT_UNKNOWN, and a policy absent from the declared closure returns VALIDITY_UNDEFINED, all before mutation. After valid registration, revoking only that policy through the frozen T2-GLOBAL path makes PublishManifest (T3), CommitBundle/Reauthorize (T6), and StartSession/ResumeSession/ContinueSession (T7) each return ARTIFACT_REVOKED before domain, authorization, session, receipt, event, or outbox mutation even while the target artifact and every other dependency remain registered and valid."
+        },
+        {
+          "check_id": "artifact_persistence_denials_are_stable",
+          "command": "uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_repository_maps_immutable_and_natural_identity_conflicts",
+          "pass_oracle": "The named adapter-level PostgreSQL test invokes the public persistence command owner and proves both KL_REGISTRY_IMMUTABLE_ARTIFACT and the S49 natural-identity uniqueness conflict are translated to RegistryDenied(IMMUTABLE_ARTIFACT), never leak raw psycopg exceptions, and roll back all attempted S49, dependency-edge, receipt, event, and outbox mutation."
+        },
+        {
+          "check_id": "artifact_dependency_dense_graph_is_bounded",
+          "command": "uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_dependency_dense_graph_is_bounded",
+          "pass_oracle": "The named adversarial PostgreSQL test builds a dense acyclic dependency graph near the configured node and depth bounds and proves registration uses a mechanically bounded, duplicate-suppressing frontier rather than path enumeration: traversal terminates within a test-enforced statement timeout, deterministically accepts a complete in-bound closure, and rejects an over-bound closure with the existing frozen VALIDITY_UNDEFINED denial because admissible closure validity cannot be established within the bound, leaving zero registration mutation and introducing no new public denial code."
+        },
+        {
+          "check_id": "artifact_registration_lock_timeout_is_atomic",
+          "command": "uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_registration_lock_timeout_is_atomic",
+          "pass_oracle": "The named concurrent PostgreSQL test holds the exclusive S51 registry gate, invokes the public persistence command owner with a bounded lock timeout, receives stable RegistryDenied(REGISTRY_TIMEOUT), and proves the timed-out transaction leaves S49, dependency edges, S51, receipt, event, and outbox state byte-for-byte/count-for-count unchanged."
+        },
+        {
+          "check_id": "artifact_registration_post_write_failure_is_atomic",
+          "command": "uv run pytest -q tests/db/test_artifact_registry.py::test_artifact_registration_post_write_failure_is_atomic",
+          "pass_oracle": "The named PostgreSQL test injects a test-local failure after the first registration write but before receipt/event/outbox completion, with no production bypass, and proves the top-level command transaction rolls back S49, dependency edges, S51, receipt, event, and outbox state completely and returns no success result."
+        },
+        {
+          "check_id": "artifact_registration_safety_registry_privilege_regression",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_command_routine_privileges",
+          "pass_oracle": "The existing closed SafetyRegistry privilege regression is updated for the KL-018 successor and passes while asserting exactly eight approved non-overloaded SECURITY DEFINER routines, including the exact registry_register_artifact(uuid,text,text,uuid[],text,text,text,integer) signature, NOLOGIN kl_writer_safety_registry ownership, fixed safe search_path, PUBLIC denial, admin-only EXECUTE, and inverse execution denial for every other runtime principal."
+        },
+        {
+          "check_id": "complete_db_suite_passes",
+          "command": "uv run pytest -q tests/db",
+          "pass_oracle": "Command exits 0 with the complete PostgreSQL suite used by the db CI workflow passing, including the closed SafetyRegistry privileged-routine inventory and all KL-018 artifact-registry migration, admission, rollback, concurrency, and persistence-adapter regressions."
         },
         {
           "check_id": "artifact_registry_db_constraints_pass",
