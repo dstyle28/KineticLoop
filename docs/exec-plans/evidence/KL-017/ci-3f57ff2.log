@@ -1,0 +1,31 @@
+KL-017 full CI, frozen-authority, and write-scope regressions
+tested_commit: 3f57ff2f945b6fbe3fadb6ce895a6d5a33526b6f
+
+$ uv run kl lint
+All checks passed!
+
+$ uv run kl typecheck
+Success: no issues found in 79 source files
+
+$ uv run kl test-unit
+172 passed in 19.16s
+
+$ uv run kl test-harness
+134 passed in 177.56s
+
+$ uv run kl check-harness --protected-base a2602123a539787ed2a6bed25b892109474d0395 --task-id KL-017
+HARNESS_CHECK_PASS tasks=69 active=67
+
+$ git diff --exit-code a2602123a539787ed2a6bed25b892109474d0395 -- 05_KineticLoop_Protocol_v1.2_FROZEN.md 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md FROZEN_BASELINE.json CURRENT_DOCUMENT_INDEX.json
+exit 0; frozen authority diff empty
+
+Focused fifth-remediation regressions at the final implementation:
+- exact external event-trigger inventory and missing-guard preflight
+- binding deletion followed by SET ROLE migration-owner DDL denial
+- RLS/policy/trigger/function/relation guard-removal denial
+- direct and SET ROLE REFERENCES/FK existence-oracle DDL denial
+- BYPASSRLS direct INSERT/UPDATE/DELETE denial
+- external guard persistence and safe behavior across downgrade
+- legitimate exact-writer SECURITY DEFINER command-owner path
+
+FULL_CI_FROZEN_SCOPE_REGRESSIONS_PASS
