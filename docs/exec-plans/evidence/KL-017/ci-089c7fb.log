@@ -1,0 +1,51 @@
+KL-017 full CI regressions
+tested_commit: 089c7fb0250310021a648d599cee72c48549271c
+$ uv run kl lint
+All checks passed!
+$ uv run kl typecheck
+Success: no issues found in 79 source files
+$ uv run kl test-unit
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/davetian/.codex/worktrees/kl017/KineticLoop
+configfile: pyproject.toml
+collected 172 items
+
+tests/unit/config/test_secret_loader.py .                                [  0%]
+tests/unit/contracts/test_artifact_registry.py ...                       [  2%]
+tests/unit/contracts/test_commands.py ..............                     [ 10%]
+tests/unit/contracts/test_errors.py .                                    [ 11%]
+tests/unit/contracts/test_receipts.py ........................           [ 25%]
+tests/unit/contracts/test_results.py .....                               [ 27%]
+tests/unit/contracts/test_safety_registry.py ..                          [ 29%]
+tests/unit/contracts/test_shadow.py ...                                  [ 30%]
+tests/unit/identity/test_roles.py .............                          [ 38%]
+tests/unit/persistence/test_fact_children.py ...                         [ 40%]
+tests/unit/persistence/test_immutability.py ....                         [ 42%]
+tests/unit/persistence/test_schema_topology.py .......                   [ 46%]
+tests/unit/primitives/test_canonical.py ...........                      [ 52%]
+tests/unit/primitives/test_hashes.py ........                            [ 57%]
+tests/unit/primitives/test_ids.py .........                              [ 62%]
+tests/unit/primitives/test_times.py .......................              [ 76%]
+tests/unit/security/test_redaction.py .................................. [ 95%]
+...                                                                      [ 97%]
+tests/unit/security/test_synthetic_fixtures.py .                         [ 98%]
+tests/unit/test_cli.py ...                                               [100%]
+
+============================= 172 passed in 16.20s =============================
+$ uv run kl test-harness
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/davetian/.codex/worktrees/kl017/KineticLoop
+configfile: pyproject.toml
+collected 134 items
+
+tests/harness/acceptance/test_registry.py .....                          [  3%]
+tests/harness/document_index/test_current_document_index.py .......      [  8%]
+tests/harness/document_index/test_evidence_manifest.py .......           [ 14%]
+tests/harness/document_index/test_historical_task_map.py ......          [ 18%]
+tests/harness/test_validator.py ........................................ [ 48%]
+.....................................................................    [100%]
+
+======================= 134 passed in 162.34s (0:02:42) ========================
+FULL_CI_REGRESSIONS_PASS
