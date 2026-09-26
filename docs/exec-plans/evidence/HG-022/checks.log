@@ -1,0 +1,41 @@
+HG-022 KL-017 successor-scope validation evidence
+date: 2026-09-26
+protected_base: 8d93fbd603a71c02c4b291194843b2cfb35e1078
+tested_commit: b7b45e670a756684b40b6a403bcaad7501d98eda
+
+PASS governance scope and frozen-state protection
+- HG-022 refines KL-017 only.
+- The protected-base change set is restricted to the nine files declared in HG-022.
+- Frozen Protocol, Frozen DB, and FROZEN_BASELINE.json are unchanged.
+- No product implementation, migration, completed task result, review, or integration artifact is changed.
+
+PASS synchronized KL-017 projections
+- Backlog, traceability, and packet carry identical dependencies, ordered check contracts, resource keys, write paths, deliverables, Definition of Done, and review requirements.
+- KL-018 is a hard dependency, so KL-017 begins from the merged artifact-registry migration head.
+- All nine protected-base KL-017 check contracts remain byte-for-byte identical and in their original order.
+- complete_db_suite_passes is the sole additional task check and runs `uv run pytest -q tests/db` as supplemental regression evidence.
+
+PASS shared successor and privilege inventories
+- tests/db/test_migrations.py is in KL-017 write scope because it contains the closed successor-chain, single-head, and empty-database bootstrap inventories that a real KL-017 successor must update.
+- tests/db/test_safety_registry.py is in KL-017 write scope because it contains the closed role and SECURITY DEFINER routine inventories that a real KL-017 authorization successor must update.
+- registry_coordination is in KL-017 resource scope to serialize its shared test_safety_registry.py writes with KL-016; migration_chain and persistence_permissions already serialize the KL-018 overlap.
+- The pinned complete-db oracle requires the db CI surface to pass together, including both shared closed inventories, without adding a new product or frozen semantic claim.
+
+PASS canonical contract pin and negative guards
+- complete_db_suite_passes: d2817afbc8d3369de8f81ac185dae69176d64b715714d532059f1f5ceb59f4b6
+- Focused validator regression: 9 passed, 100 deselected in 63.39s.
+- Removal of KL-018, registry_coordination, either shared test write path, or the complete-db check is rejected.
+- Removal, command substitution, oracle weakening, and coordinated projection weakening of the complete-db contract are rejected.
+- Historical M1 KL-017 validation remains bound to its original contract and does not acquire HG-022 retroactively.
+
+PASS complete validation
+- Validator suite: 109 passed in 190.01s.
+- Harness suite: 134 passed in 189.98s.
+- Harness structure: HARNESS_CHECK_PASS tasks=69 active=67.
+- Ruff: All checks passed.
+- JSON syntax and package/index hashes are valid.
+- git diff --check passed.
+
+The harness suite emitted one cache-only warning because the managed worktree could not create `.pytest_cache`. It did not affect collection, execution, or the 134/134 PASS result.
+
+No review artifacts were created. Independent reviews must bind to the immutable HG-022 governance head.
