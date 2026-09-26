@@ -67,6 +67,7 @@ EVALUATION_RELEASE = "00000000-0000-8000-8000-000000000232"
 EVALUATION_MANIFEST_2 = "00000000-0000-8000-8000-000000000431"
 EVALUATION_RELEASE_2 = "00000000-0000-8000-8000-000000000432"
 TEST_PLAN = "00000000-0000-8000-8000-000000000433"
+TEST_PLAN_2 = "00000000-0000-8000-8000-000000000434"
 
 
 def configure_seed_ids(
@@ -195,6 +196,12 @@ def seed(urls: dict[str, str]) -> None:
         artifact_identity_suffix="-test-2",
         include_policy=False,
     )
+    with psycopg.connect(urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            "INSERT INTO kineticloop.daily_plan_heads(id,subject_id,local_date) "
+            "VALUES (%s,%s,DATE '2026-09-27')",
+            (UUID(TEST_PLAN_2), UUID(TEST_SUBJECT_2)),
+        )
     configure_seed_ids(
         subject_id=EVALUATION_SUBJECT,
         authorization_id="00000000-0000-8000-8000-000000000230",
@@ -616,19 +623,305 @@ def test_runtime_writer_membership_drift_is_denied(
         )
     try:
         with psycopg.connect(database_urls["evaluation"]) as scoped:
-            with pytest.raises(
-                psycopg.errors.RaiseException,
-                match="KL_SUBJECT_SCOPE_DIRECT_DML_DENIED",
-            ):
-                scoped.execute(
-                    "UPDATE kineticloop.replay_runs SET status='BYPASSED' "
-                    "WHERE id=%s",
-                    (UUID(EVALUATION_RUN),),
-                )
+            updated = scoped.execute(
+                "UPDATE kineticloop.replay_runs SET status='BYPASSED' WHERE id=%s",
+                (UUID(EVALUATION_RUN),),
+            )
+            assert updated.rowcount == 0
             scoped.rollback()
     finally:
         with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
             admin.execute("REVOKE kl_writer_replay_service FROM kl_subject_evaluation")
+
+
+def _assert_s42_drift_access_is_closed(url: str, *, set_role: str | None = None) -> None:
+    with psycopg.connect(url) as scoped:
+        if set_role is not None:
+            scoped.execute(f"SET ROLE {set_role}")
+        assert scoped.execute(
+            "SELECT id FROM kineticloop.authorization_issuances "
+            "WHERE id IN (%s,%s,%s)",
+            (
+                UUID(TEST_AUTHORIZATION),
+                UUID(TEST_AUTHORIZATION_2),
+                UUID(PRODUCTION_AUTHORIZATION),
+            ),
+        ).fetchall() == []
+        assert scoped.execute(
+            "UPDATE kineticloop.authorization_issuances "
+            "SET bound_content_hash='drift-update' WHERE id IN (%s,%s,%s)",
+            (
+                UUID(TEST_AUTHORIZATION),
+                UUID(TEST_AUTHORIZATION_2),
+                UUID(PRODUCTION_AUTHORIZATION),
+            ),
+        ).rowcount == 0
+        assert scoped.execute(
+            "DELETE FROM kineticloop.authorization_issuances "
+            "WHERE id IN (%s,%s,%s)",
+            (
+                UUID(TEST_AUTHORIZATION),
+                UUID(TEST_AUTHORIZATION_2),
+                UUID(PRODUCTION_AUTHORIZATION),
+            ),
+        ).rowcount == 0
+        scoped.rollback()
+
+    for day, subject_id in (
+        ("2026-10-01", TEST_SUBJECT),
+        ("2026-10-02", TEST_SUBJECT_2),
+        ("2026-10-03", PRODUCTION_SUBJECT),
+    ):
+        with psycopg.connect(url) as scoped:
+            if set_role is not None:
+                scoped.execute(f"SET ROLE {set_role}")
+            with pytest.raises(
+                psycopg.errors.InsufficientPrivilege, match="row-level security"
+            ):
+                scoped.execute(
+                    "INSERT INTO kineticloop.daily_plan_heads(subject_id,local_date) "
+                    "VALUES (%s,%s)",
+                    (UUID(subject_id), day),
+                )
+
+    with psycopg.connect(url) as scoped:
+        if set_role is not None:
+            scoped.execute(f"SET ROLE {set_role}")
+        with pytest.raises(
+            psycopg.errors.RaiseException,
+            match="KL_SUBJECT_SCOPE_DIRECT_DML_DENIED",
+        ):
+            scoped.execute("TRUNCATE kineticloop.execution_bindings")
+
+
+def test_force_rls_blocks_post_registration_privilege_drift(
+    database_urls: dict[str, str],
+) -> None:
+    privileges = "SELECT,INSERT,UPDATE,DELETE,TRUNCATE"
+
+    with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            f"GRANT {privileges} ON kineticloop.authorization_issuances "
+            "TO kl_test_subject_1_login"
+        )
+        admin.execute(
+            "GRANT TRUNCATE ON kineticloop.execution_bindings "
+            "TO kl_test_subject_1_login"
+        )
+        admin.execute(
+            "GRANT INSERT ON kineticloop.daily_plan_heads "
+            "TO kl_test_subject_1_login"
+        )
+    try:
+        _assert_s42_drift_access_is_closed(database_urls["test"])
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+            admin.execute(
+                f"REVOKE {privileges} ON kineticloop.authorization_issuances "
+                "FROM kl_test_subject_1_login"
+            )
+            admin.execute(
+                "REVOKE TRUNCATE ON kineticloop.execution_bindings "
+                "FROM kl_test_subject_1_login"
+            )
+            admin.execute(
+                "REVOKE INSERT ON kineticloop.daily_plan_heads "
+                "FROM kl_test_subject_1_login"
+            )
+
+    bridge = "kl_subject_scope_acl_bridge"
+    with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            f"CREATE ROLE {bridge} NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE "
+            "NOINHERIT NOREPLICATION NOBYPASSRLS"
+        )
+        admin.execute(
+            f"GRANT {privileges} ON kineticloop.authorization_issuances TO {bridge}"
+        )
+        admin.execute(f"GRANT USAGE ON SCHEMA kineticloop TO {bridge}")
+        admin.execute(
+            "GRANT EXECUTE ON FUNCTION "
+            "kineticloop.subject_scope_rls_allows(uuid,text,text,text) "
+            f"TO {bridge}"
+        )
+        admin.execute(
+            f"GRANT TRUNCATE ON kineticloop.execution_bindings TO {bridge}"
+        )
+        admin.execute(f"GRANT INSERT ON kineticloop.daily_plan_heads TO {bridge}")
+        admin.execute(
+            f"GRANT {bridge} TO kl_test_subject_1_login "
+            "WITH INHERIT TRUE, SET TRUE"
+        )
+    try:
+        _assert_s42_drift_access_is_closed(database_urls["test"])
+        _assert_s42_drift_access_is_closed(database_urls["test"], set_role=bridge)
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+            admin.execute(f"REVOKE {bridge} FROM kl_test_subject_1_login")
+            admin.execute(
+                f"REVOKE {privileges} ON kineticloop.authorization_issuances "
+                f"FROM {bridge}"
+            )
+            admin.execute(
+                f"REVOKE TRUNCATE ON kineticloop.execution_bindings FROM {bridge}"
+            )
+            admin.execute(
+                f"REVOKE INSERT ON kineticloop.daily_plan_heads FROM {bridge}"
+            )
+            admin.execute(
+                "REVOKE EXECUTE ON FUNCTION "
+                "kineticloop.subject_scope_rls_allows(uuid,text,text,text) "
+                f"FROM {bridge}"
+            )
+            admin.execute(f"REVOKE USAGE ON SCHEMA kineticloop FROM {bridge}")
+            admin.execute(f"DROP ROLE {bridge}")
+
+    with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            "ALTER TABLE kineticloop.authorization_issuances "
+            "OWNER TO kl_test_subject_1_login"
+        )
+        admin.execute(
+            "ALTER TABLE kineticloop.execution_bindings "
+            "OWNER TO kl_test_subject_1_login"
+        )
+        admin.execute(
+            "ALTER TABLE kineticloop.daily_plan_heads "
+            "OWNER TO kl_test_subject_1_login"
+        )
+    try:
+        _assert_s42_drift_access_is_closed(database_urls["test"])
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+            admin.execute(
+                "ALTER TABLE kineticloop.authorization_issuances "
+                "OWNER TO kl_migration_owner"
+            )
+            admin.execute(
+                "ALTER TABLE kineticloop.execution_bindings "
+                "OWNER TO kl_migration_owner"
+            )
+            admin.execute(
+                "ALTER TABLE kineticloop.daily_plan_heads "
+                "OWNER TO kl_migration_owner"
+            )
+
+    with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            "GRANT kl_migration_owner TO kl_test_subject_1_login "
+            "WITH INHERIT FALSE, SET TRUE"
+        )
+    try:
+        _assert_s42_drift_access_is_closed(
+            database_urls["test"], set_role="kl_migration_owner"
+        )
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+            admin.execute("REVOKE kl_migration_owner FROM kl_test_subject_1_login")
+
+    with psycopg.connect(database_urls["admin"]) as admin:
+        assert admin.execute(
+            "SELECT count(*) FROM kineticloop.authorization_issuances "
+            "WHERE id IN (%s,%s,%s)",
+            (
+                UUID(TEST_AUTHORIZATION),
+                UUID(TEST_AUTHORIZATION_2),
+                UUID(PRODUCTION_AUTHORIZATION),
+            ),
+        ).fetchone() == (3,)
+        assert admin.execute(
+            "SELECT count(*) FROM kineticloop.daily_plan_heads "
+            "WHERE local_date BETWEEN DATE '2026-10-01' AND DATE '2026-10-03'"
+        ).fetchone() == (0,)
+
+
+def test_force_rls_preserves_security_definer_command_owner(
+    database_urls: dict[str, str],
+) -> None:
+    function_signature = "kineticloop.kl017_test_update_plan(uuid,text)"
+    with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            "GRANT CREATE ON SCHEMA kineticloop "
+            "TO kl_writer_prescription_commit_service"
+        )
+        admin.execute("SET ROLE kl_writer_prescription_commit_service")
+        admin.execute(
+            "CREATE FUNCTION kineticloop.kl017_test_update_plan("
+            "p_plan_id uuid,p_status text) RETURNS bigint "
+            "LANGUAGE plpgsql SECURITY DEFINER "
+            "SET search_path=pg_catalog,kineticloop,pg_temp AS $routine$ "
+            "DECLARE affected bigint; BEGIN "
+            "UPDATE kineticloop.daily_plan_heads SET status=p_status "
+            "WHERE id=p_plan_id; GET DIAGNOSTICS affected=ROW_COUNT; "
+            "RETURN affected; END $routine$"
+        )
+        admin.execute("RESET ROLE")
+        admin.execute(
+            "REVOKE CREATE ON SCHEMA kineticloop "
+            "FROM kl_writer_prescription_commit_service"
+        )
+        admin.execute(f"REVOKE ALL ON FUNCTION {function_signature} FROM PUBLIC")
+        admin.execute(
+            f"GRANT EXECUTE ON FUNCTION {function_signature} TO kl_subject_test"
+        )
+    try:
+        with psycopg.connect(database_urls["test"]) as scoped:
+            assert scoped.execute(
+                "SELECT kineticloop.kl017_test_update_plan(%s,'RLS_OWNER_OK')",
+                (UUID(TEST_PLAN),),
+            ).fetchone() == (1,)
+            assert scoped.execute(
+                "SELECT kineticloop.kl017_test_update_plan(%s,'RLS_CROSS_SUBJECT')",
+                (UUID(TEST_PLAN_2),),
+            ).fetchone() == (0,)
+            scoped.commit()
+        with psycopg.connect(database_urls["admin"]) as admin:
+            assert admin.execute(
+                "SELECT status FROM kineticloop.daily_plan_heads WHERE id=%s",
+                (UUID(TEST_PLAN),),
+            ).fetchone() == ("RLS_OWNER_OK",)
+            assert admin.execute(
+                "SELECT status FROM kineticloop.daily_plan_heads WHERE id=%s",
+                (UUID(TEST_PLAN_2),),
+            ).fetchone() == (None,)
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+            admin.execute(f"DROP FUNCTION {function_signature}")
+
+
+def test_force_rls_inventory_covers_all_protected_tables(
+    database_urls: dict[str, str],
+) -> None:
+    with psycopg.connect(database_urls["admin"]) as admin:
+        assert admin.execute(
+            "SELECT count(*) FROM pg_class relation "
+            "JOIN pg_namespace schema ON schema.oid=relation.relnamespace "
+            "WHERE schema.nspname='kineticloop' "
+            "AND relation.relname=ANY(%s) "
+            "AND relation.relrowsecurity AND relation.relforcerowsecurity",
+            ([
+                "daily_plan_heads",
+                "authorization_issuances",
+                "execution_bindings",
+                "replay_runs",
+                "replay_artifacts",
+            ],),
+        ).fetchone() == (5,)
+        assert admin.execute(
+            "SELECT count(*) FROM pg_policy policy "
+            "JOIN pg_class relation ON relation.oid=policy.polrelid "
+            "JOIN pg_namespace schema ON schema.oid=relation.relnamespace "
+            "WHERE schema.nspname='kineticloop' "
+            "AND policy.polname LIKE 'subject_scope_%'"
+        ).fetchone() == (20,)
+        assert admin.execute(
+            "SELECT count(*) FROM pg_trigger trigger "
+            "JOIN pg_class relation ON relation.oid=trigger.tgrelid "
+            "JOIN pg_namespace schema ON schema.oid=relation.relnamespace "
+            "WHERE schema.nspname='kineticloop' "
+            "AND trigger.tgname='subject_storage_truncate' "
+            "AND NOT trigger.tgisinternal"
+        ).fetchone() == (5,)
 
 
 def test_subject_id_is_immutable_on_protected_updates(

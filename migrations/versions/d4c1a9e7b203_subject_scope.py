@@ -274,6 +274,11 @@ BEGIN
   THEN
     RAISE EXCEPTION 'KL_SUBJECT_SCOPE_PRINCIPAL_INVALID';
   END IF;
+  LOCK TABLE kineticloop.daily_plan_heads IN ACCESS SHARE MODE;
+  LOCK TABLE kineticloop.authorization_issuances IN ACCESS SHARE MODE;
+  LOCK TABLE kineticloop.execution_bindings IN ACCESS SHARE MODE;
+  LOCK TABLE kineticloop.replay_runs IN ACCESS SHARE MODE;
+  LOCK TABLE kineticloop.replay_artifacts IN ACCESS SHARE MODE;
   PERFORM pg_advisory_xact_lock(hashtextextended(p_subject_id::text, 17017));
 
   SELECT * INTO existing_scope FROM kineticloop.subject_scopes
@@ -412,6 +417,17 @@ DECLARE
   subject_namespace text;
   isolated_policy uuid;
 BEGIN
+  IF TG_OP='TRUNCATE' THEN
+    IF session_user ~ '^kl_(production|test|evaluation)_subject_[a-z0-9_]+_login$'
+       OR EXISTS (
+         SELECT 1 FROM kineticloop.subject_principal_bindings
+         WHERE principal_name=session_user
+       )
+    THEN
+      RAISE EXCEPTION 'KL_SUBJECT_SCOPE_DIRECT_DML_DENIED';
+    END IF;
+    RETURN NULL;
+  END IF;
   IF TG_OP='UPDATE' AND OLD.subject_id IS DISTINCT FROM NEW.subject_id THEN
     RAISE EXCEPTION 'KL_SUBJECT_SCOPE_SUBJECT_IMMUTABLE';
   END IF;
@@ -457,9 +473,137 @@ END
 $guard$
 """
 
+RLS_GUARD_SQL = r"""
+CREATE FUNCTION kineticloop.subject_scope_rls_allows(
+  p_subject_id uuid,
+  p_table_name text,
+  p_operation text,
+  p_effective_role text
+) RETURNS boolean
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, kineticloop, pg_temp
+AS $policy$
+DECLARE
+  binding record;
+  principal_role record;
+  expected_scope_role text;
+  expected_writer text;
+BEGIN
+  expected_writer := CASE p_table_name
+    WHEN 'daily_plan_heads' THEN 'kl_writer_prescription_commit_service'
+    WHEN 'authorization_issuances' THEN 'kl_writer_authorization_service'
+    WHEN 'execution_bindings' THEN 'kl_writer_execution_service'
+    WHEN 'replay_runs' THEN 'kl_writer_replay_service'
+    WHEN 'replay_artifacts' THEN 'kl_writer_replay_service'
+    ELSE NULL
+  END;
+  IF expected_writer IS NULL
+     OR p_operation NOT IN ('SELECT','INSERT','UPDATE','DELETE')
+  THEN
+    RETURN false;
+  END IF;
+
+  SELECT principal.subject_id,principal.namespace
+    INTO binding
+  FROM kineticloop.subject_principal_bindings AS principal
+  JOIN kineticloop.subject_scopes AS scope
+    ON scope.subject_id=principal.subject_id
+   AND scope.namespace=principal.namespace
+  WHERE principal.principal_name=session_user;
+  IF NOT FOUND THEN
+    IF session_user ~ '^kl_(production|test|evaluation)_subject_[a-z0-9_]+_login$'
+    THEN
+      RETURN false;
+    END IF;
+    IF p_operation='SELECT' THEN
+      RETURN p_effective_role IN ('kl_migration_owner',expected_writer)
+        OR pg_has_role(p_effective_role,'kl_auditor','MEMBER')
+        OR p_table_name='authorization_issuances'
+           AND p_effective_role='kl_writer_safety_registry';
+    END IF;
+    RETURN p_effective_role=expected_writer;
+  END IF;
+
+  SELECT * INTO principal_role FROM pg_roles WHERE rolname=session_user;
+  expected_scope_role := CASE binding.namespace
+    WHEN 'PRODUCTION' THEN 'kl_application'
+    WHEN 'TEST' THEN 'kl_subject_test'
+    WHEN 'EVALUATION' THEN 'kl_subject_evaluation'
+    ELSE NULL
+  END;
+  IF expected_scope_role IS NULL
+     OR NOT FOUND
+     OR NOT principal_role.rolcanlogin OR principal_role.rolsuper
+     OR principal_role.rolcreatedb OR principal_role.rolcreaterole
+     OR NOT principal_role.rolinherit OR principal_role.rolreplication
+     OR principal_role.rolbypassrls
+     OR (SELECT count(*) FROM pg_auth_members membership
+         WHERE membership.member=principal_role.oid) <> 1
+     OR NOT EXISTS (
+       SELECT 1 FROM pg_auth_members membership
+       JOIN pg_roles parent_role ON parent_role.oid=membership.roleid
+       WHERE membership.member=principal_role.oid
+         AND parent_role.rolname=expected_scope_role
+         AND NOT membership.admin_option AND membership.inherit_option
+         AND NOT membership.set_option
+     )
+     OR EXISTS (
+       SELECT 1 FROM pg_roles reachable_role
+       WHERE reachable_role.oid<>principal_role.oid
+         AND reachable_role.rolname<>expected_scope_role
+         AND (pg_has_role(principal_role.oid,reachable_role.oid,'MEMBER')
+              OR pg_has_role(principal_role.oid,reachable_role.oid,'SET'))
+     )
+     OR EXISTS (
+       SELECT 1 FROM pg_class protected
+       JOIN pg_namespace schema ON schema.oid=protected.relnamespace
+       WHERE schema.nspname='kineticloop'
+         AND protected.relname=ANY(ARRAY[
+           'daily_plan_heads','authorization_issuances','execution_bindings',
+           'replay_runs','replay_artifacts'
+         ])
+         AND (protected.relowner=principal_role.oid
+              OR has_table_privilege(
+                principal_role.oid,protected.oid,
+                'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER'
+              ))
+     )
+     OR EXISTS (
+       SELECT 1 FROM pg_namespace schema
+       WHERE schema.nspname='kineticloop'
+         AND (schema.nspowner=principal_role.oid
+              OR has_schema_privilege(principal_role.oid,schema.oid,'CREATE'))
+     )
+     OR EXISTS (
+       SELECT 1 FROM pg_proc routine
+       JOIN pg_namespace schema ON schema.oid=routine.pronamespace
+       WHERE schema.nspname='kineticloop' AND routine.proowner=principal_role.oid
+     )
+  THEN
+    RETURN false;
+  END IF;
+
+  IF binding.subject_id IS DISTINCT FROM p_subject_id
+     OR binding.namespace='EVALUATION'
+        AND p_table_name NOT IN ('replay_runs','replay_artifacts')
+     OR binding.namespace IN ('PRODUCTION','TEST')
+        AND p_table_name NOT IN (
+          'daily_plan_heads','authorization_issuances','execution_bindings'
+        )
+  THEN
+    RETURN false;
+  END IF;
+  RETURN p_operation='SELECT' OR p_effective_role=expected_writer;
+END
+$policy$
+"""
+
 DOWNGRADE_DATA_PREFLIGHT_SQL = """
 DO $downgrade_preflight$
 BEGIN
+  PERFORM pg_advisory_xact_lock(hashtextextended('KL-017-downgrade-preflight',17017));
   IF EXISTS (SELECT 1 FROM kineticloop.subject_scopes)
      OR EXISTS (SELECT 1 FROM kineticloop.subject_principal_bindings)
      OR EXISTS (SELECT 1 FROM kineticloop.daily_plan_heads)
@@ -515,11 +659,51 @@ def upgrade() -> None:
     op.execute(REGISTER_SQL)
     op.execute(LOOKUP_SQL)
     op.execute(GUARD_SQL)
+    op.execute(RLS_GUARD_SQL)
     op.execute(
         "REVOKE ALL ON FUNCTION kineticloop.enforce_subject_storage_scope() FROM PUBLIC"
     )
-    for table in ("daily_plan_heads", "authorization_issuances", "execution_bindings", "replay_runs", "replay_artifacts"):
+    rls_signature = "kineticloop.subject_scope_rls_allows(uuid,text,text,text)"
+    op.execute(f"REVOKE ALL ON FUNCTION {rls_signature} FROM PUBLIC")
+    for role in (
+        "kl_migration_owner", "kl_application", "kl_auditor", "kl_trusted_admin",
+        "kl_subject_test", "kl_subject_evaluation",
+        "kl_writer_prescription_commit_service", "kl_writer_authorization_service",
+        "kl_writer_execution_service", "kl_writer_replay_service",
+        "kl_writer_safety_registry",
+    ):
+        op.execute(f"GRANT EXECUTE ON FUNCTION {rls_signature} TO {role}")
+    protected_tables = (
+        "daily_plan_heads", "authorization_issuances", "execution_bindings",
+        "replay_runs", "replay_artifacts",
+    )
+    for table in protected_tables:
+        op.execute(f"ALTER TABLE kineticloop.{table} ENABLE ROW LEVEL SECURITY")
+        op.execute(f"ALTER TABLE kineticloop.{table} FORCE ROW LEVEL SECURITY")
+        op.execute(
+            f"CREATE POLICY subject_scope_select ON kineticloop.{table} "
+            "FOR SELECT USING (kineticloop.subject_scope_rls_allows("
+            f"subject_id,'{table}','SELECT',current_user::text))"
+        )
+        op.execute(
+            f"CREATE POLICY subject_scope_insert ON kineticloop.{table} "
+            "FOR INSERT WITH CHECK (kineticloop.subject_scope_rls_allows("
+            f"subject_id,'{table}','INSERT',current_user::text))"
+        )
+        op.execute(
+            f"CREATE POLICY subject_scope_update ON kineticloop.{table} "
+            "FOR UPDATE USING (kineticloop.subject_scope_rls_allows("
+            f"subject_id,'{table}','UPDATE',current_user::text)) "
+            "WITH CHECK (kineticloop.subject_scope_rls_allows("
+            f"subject_id,'{table}','UPDATE',current_user::text))"
+        )
+        op.execute(
+            f"CREATE POLICY subject_scope_delete ON kineticloop.{table} "
+            "FOR DELETE USING (kineticloop.subject_scope_rls_allows("
+            f"subject_id,'{table}','DELETE',current_user::text))"
+        )
         op.execute(f"CREATE TRIGGER subject_storage_scope BEFORE INSERT OR UPDATE ON kineticloop.{table} FOR EACH ROW EXECUTE FUNCTION kineticloop.enforce_subject_storage_scope()")
+        op.execute(f"CREATE TRIGGER subject_storage_truncate BEFORE TRUNCATE ON kineticloop.{table} FOR EACH STATEMENT EXECUTE FUNCTION kineticloop.enforce_subject_storage_scope()")
     register_signature = "kineticloop.subject_scope_register(uuid,text,uuid,uuid,text)"
     lookup_signature = "kineticloop.subject_scope_lookup(text,uuid)"
     op.execute(f"REVOKE ALL ON FUNCTION {register_signature} FROM PUBLIC")
@@ -532,10 +716,22 @@ def upgrade() -> None:
 def downgrade() -> None:
     op.execute(PREFLIGHT_SQL)
     op.execute("SET LOCAL ROLE kl_migration_owner")
+    protected_tables = (
+        "daily_plan_heads", "authorization_issuances", "execution_bindings",
+        "replay_runs", "replay_artifacts",
+    )
+    for table in (*protected_tables, "subject_scopes", "subject_principal_bindings"):
+        op.execute(f"LOCK TABLE kineticloop.{table} IN ACCESS EXCLUSIVE MODE")
     op.execute(DOWNGRADE_DATA_PREFLIGHT_SQL)
-    for table in ("daily_plan_heads", "authorization_issuances", "execution_bindings", "replay_runs", "replay_artifacts"):
+    for table in protected_tables:
+        op.execute(f"DROP TRIGGER subject_storage_truncate ON kineticloop.{table}")
         op.execute(f"DROP TRIGGER subject_storage_scope ON kineticloop.{table}")
+        for operation in ("select", "insert", "update", "delete"):
+            op.execute(f"DROP POLICY subject_scope_{operation} ON kineticloop.{table}")
+        op.execute(f"ALTER TABLE kineticloop.{table} NO FORCE ROW LEVEL SECURITY")
+        op.execute(f"ALTER TABLE kineticloop.{table} DISABLE ROW LEVEL SECURITY")
     op.execute("DROP FUNCTION kineticloop.enforce_subject_storage_scope()")
+    op.execute("DROP FUNCTION kineticloop.subject_scope_rls_allows(uuid,text,text,text)")
     op.execute("DROP FUNCTION kineticloop.subject_scope_lookup(text,uuid)")
     op.execute("DROP FUNCTION kineticloop.subject_scope_register(uuid,text,uuid,uuid,text)")
     op.execute("GRANT SELECT ON kineticloop.daily_plan_heads, kineticloop.authorization_issuances, kineticloop.execution_bindings, kineticloop.replay_runs, kineticloop.replay_artifacts TO kl_application")

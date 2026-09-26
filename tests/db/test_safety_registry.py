@@ -1298,6 +1298,7 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
             "registry_revoke_artifact",
             "subject_scope_lookup",
             "subject_scope_register",
+            "subject_scope_rls_allows",
         ]
         assert all(
             row[2]
@@ -1320,11 +1321,22 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
                 ()
                 if name == "enforce_subject_storage_scope"
                 else
-                ("kl_trusted_admin",)
+                (
+                    (
+                        "kl_application",
+                        "kl_subject_test",
+                        "kl_subject_evaluation",
+                        "kl_trusted_admin",
+                        "kl_auditor",
+                    )
+                    if name == "subject_scope_rls_allows"
+                    else ("kl_trusted_admin",)
+                )
                 if name in {
                     "registry_register_artifact",
                     "registry_revoke_artifact",
                     "subject_scope_register",
+                    "subject_scope_rls_allows",
                 }
                 else (
                     ("kl_application", "kl_subject_test", "kl_subject_evaluation")
@@ -1364,6 +1376,9 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
         )
         assert next(row[1] for row in rows if row[0] == "subject_scope_register") == (
             "subject_scope_register(uuid,text,uuid,uuid,text)"
+        )
+        assert next(row[1] for row in rows if row[0] == "subject_scope_rls_allows") == (
+            "subject_scope_rls_allows(uuid,text,text,text)"
         )
 
     for url_key in ("application", "auditor", "user", "agent"):

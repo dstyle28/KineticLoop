@@ -35,10 +35,20 @@ subject identifier, and namespace exactly match its authenticated actor and requ
 
 The storage trigger makes `subject_id` immutable on every UPDATE across S38, S42,
 S45, S46, and S47. When a subject-specific session acquires any direct or transitive
-MEMBER or SET path to a `kl_writer_*` role, the trigger rejects direct DML even after
-`SET ROLE`. Normal command-owner routines remain SECURITY DEFINER entry points and
+MEMBER or SET path to a `kl_writer_*` role, the runtime boundary rejects direct DML
+even after `SET ROLE`. Normal command-owner routines remain SECURITY DEFINER entry points and
 continue to perform their guarded writes without granting their writer identity to
 the subject session.
+
+All five protected tables enable and force row-level security. Every policy derives
+the bound subject and namespace from `session_user` and revalidates live role
+attributes, the sole scope membership, all reachable roles, protected-object ACLs
+and ownership, schema creation, and in-schema routine ownership. Bound principals
+can never use drifted table privileges directly: reads are restricted to the exact
+bound subject, and writes additionally require `current_user` to be the table's
+exact command-owner role. Unbound reads are limited to the migration owner, the
+table's exact writer, auditors, and the SafetyRegistry writer's required S42 read.
+A statement-level `BEFORE TRUNCATE` trigger rejects every bound subject session.
 
 Registration and protected writes take the same transaction-scoped advisory lock
 derived from the subject identifier. This serializes the first protected write with
@@ -50,6 +60,13 @@ any scope row, principal binding, or S38/S42/S45/S46/S47 row exists. Removing
 classification metadata cannot make retained data downgrade-safe. Operators must
 explicitly retire all classified state and protected data before restoring the
 predecessor's shared production read surface.
+
+The downgrade acquires transaction-held `ACCESS EXCLUSIVE` locks in the global order
+S38, S42, S45, S46, S47, subject scopes, then principal bindings before checking
+emptiness. Registration first takes `ACCESS SHARE` locks on the five protected
+tables in the same order. A concurrent protected write or registration therefore
+finishes before the downgrade scan, or waits until the complete downgrade commits;
+it cannot enter between the scan and guard removal.
 
 The triggers are storage guards, not new T6/T7 command owners. They neither acquire
 S51/S01 nor issue authorization or execution bindings. Normal T6/T7 command routines

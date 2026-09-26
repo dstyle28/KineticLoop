@@ -5,6 +5,7 @@ import re
 from concurrent.futures import ThreadPoolExecutor
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
+from typing import Any
 from unittest.mock import patch
 from urllib.parse import quote, urlsplit, urlunsplit
 from uuid import UUID
@@ -474,6 +475,85 @@ def test_subject_scope_preflight_rejects_principal_object_bypasses() -> None:
             "JOIN pg_namespace n ON n.oid=c.relnamespace "
             "WHERE n.nspname='kineticloop' AND c.relname='daily_plan_heads'"
         ).fetchone() == (False, False, "kl_migration_owner")
+
+
+def test_subject_scope_downgrade_locks_serialize_registration_and_writes() -> None:
+    lifecycle = DatabaseLifecycle(ROOT)
+
+    def assert_downgrade_waits_and_fails(
+        urls: dict[str, str], blocking_connection: psycopg.Connection[Any]
+    ) -> None:
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(
+                run_alembic_downgrade, urls["deployer"], ARTIFACT_REGISTRY_REVISION
+            )
+            with pytest.raises(TimeoutError):
+                future.result(timeout=0.3)
+            blocking_connection.commit()
+            with pytest.raises(Exception, match="KL_SUBJECT_SCOPE_DOWNGRADE_SCOPED_STATE"):
+                future.result(timeout=10)
+        with psycopg.connect(urls["admin"]) as admin:
+            assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (
+                REVISION,
+            )
+            assert admin.execute(
+                "SELECT count(*) FROM pg_trigger trigger "
+                "JOIN pg_class relation ON relation.oid=trigger.tgrelid "
+                "JOIN pg_namespace schema ON schema.oid=relation.relnamespace "
+                "WHERE schema.nspname='kineticloop' "
+                "AND trigger.tgname IN "
+                "('subject_storage_scope','subject_storage_truncate') "
+                "AND NOT trigger.tgisinternal"
+            ).fetchone() == (10,)
+            assert admin.execute(
+                "SELECT count(*) FROM pg_class relation "
+                "JOIN pg_namespace schema ON schema.oid=relation.relnamespace "
+                "WHERE schema.nspname='kineticloop' "
+                "AND relation.relname=ANY(%s) "
+                "AND relation.relrowsecurity AND relation.relforcerowsecurity",
+                ([
+                    "daily_plan_heads",
+                    "authorization_issuances",
+                    "execution_bindings",
+                    "replay_runs",
+                    "replay_artifacts",
+                ],),
+            ).fetchone() == (5,)
+
+    urls = bootstrap_two_phase(lifecycle)
+    registration = psycopg.connect(urls["trusted_admin"])
+    try:
+        registration.execute(
+            "SELECT kineticloop.subject_scope_register("
+            "%s,'PRODUCTION',NULL,NULL,%s)",
+            (
+                UUID("00000000-0000-8000-8000-000000000280"),
+                PRODUCTION_SUBJECT_LOGIN,
+            ),
+        )
+        assert_downgrade_waits_and_fails(urls, registration)
+    finally:
+        registration.close()
+
+    urls = bootstrap_two_phase(lifecycle)
+    write_subject = UUID("00000000-0000-8000-8000-000000000281")
+    with psycopg.connect(urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            "INSERT INTO kineticloop.user_decision_state(subject_id,authorization_epoch) "
+            "VALUES (%s,0)",
+            (write_subject,),
+        )
+    writing = psycopg.connect(urls["admin"])
+    try:
+        writing.execute("SET ROLE kl_writer_prescription_commit_service")
+        writing.execute(
+            "INSERT INTO kineticloop.daily_plan_heads(subject_id,local_date) "
+            "VALUES (%s,DATE '2026-09-28')",
+            (write_subject,),
+        )
+        assert_downgrade_waits_and_fails(urls, writing)
+    finally:
+        writing.close()
 
 
 def test_safety_registry_successor_contains_no_cluster_role_ddl() -> None:
