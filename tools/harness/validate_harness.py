@@ -108,6 +108,14 @@ M2_REQUIRED_CHECK_IDS = {
         't3_t6_t7_require_artifact_refs',
         'artifact_registry_db_constraints_pass',
         'artifact_contract_unit_suite_passes',
+        'artifact_validity_is_null_total',
+        'artifact_timeless_policy_is_registered_dependency',
+        'artifact_persistence_denials_are_stable',
+        'artifact_dependency_dense_graph_is_bounded',
+        'artifact_registration_lock_timeout_is_atomic',
+        'artifact_registration_post_write_failure_is_atomic',
+        'artifact_registration_safety_registry_privilege_regression',
+        'complete_db_suite_passes',
     },
     'KL-055': {
         'provider_subject_source_binding_is_trusted',
@@ -229,6 +237,14 @@ M2_CRITICAL_CONTRACT_DIGESTS = {
         't3_t6_t7_require_artifact_refs': 'b4ef957a9ee368b6e074fa04ab340490904927371239ab0f42244ad22f5c4d6e',
         'artifact_registry_db_constraints_pass': '1e20c4a67b42583177a1175ebb86fc0ddd370a50256b56f56c5a4c1e7def31fb',
         'artifact_contract_unit_suite_passes': 'b63c11a97dbcc7b9ee50590bceb7841d5d08aae30b1042d85f98d6301174e934',
+        'artifact_validity_is_null_total': '1e5934aedb85f773768f800e529a109952dce44d3895691e7329da51da3b566b',
+        'artifact_timeless_policy_is_registered_dependency': '3ec0ce43558c22345c347312aae9fb85dce5a083405142f42a809e875f7e8743',
+        'artifact_persistence_denials_are_stable': '337104968a84b1e522659aeb2e9cfb755a05ce637a64a3210eecf9d7260d379f',
+        'artifact_dependency_dense_graph_is_bounded': '0a75079f107813f3f21078e82d35c6bc568cd5f6810b8137dd5780b19729198d',
+        'artifact_registration_lock_timeout_is_atomic': '99ef0ba4580989d953e45e00e54b9d6d7f6b2fced3c5f96cf21614d939e5e89b',
+        'artifact_registration_post_write_failure_is_atomic': 'e1c9e30faf89313ea32a608df635836d89c9f206ca0b927ee16616776812ae10',
+        'artifact_registration_safety_registry_privilege_regression': '36b43e170c7c766e11382a4c429b0fb94967db88aabf33e86b3ef953c36a0d9f',
+        'complete_db_suite_passes': '12f8a9f03fdd1117803e5bbc1de8e614014f2ffab173b4142850d4770ac32464',
         'harness_validation_passes': '2dbb33f46e379c228225cd02bc8afdf39689c54008b8ca7b1b019e0d2c4139bf',
     },
     'KL-055': {
@@ -1408,7 +1424,8 @@ def task_definition_errors(
                         task.get('resource_keys', []))
                     or 'migrations/versions/*_artifact_registry.py' not in task.get(
                         'write_paths', [])
-                    or 'tests/db/test_migrations.py' not in task.get('write_paths', []))):
+                    or 'tests/db/test_migrations.py' not in task.get('write_paths', [])
+                    or 'tests/db/test_safety_registry.py' not in task.get('write_paths', []))):
                 errors.append('m2-kl018-registry-migration-scope')
             if name == 'KL-015':
                 if task.get('invariant_ids') != KL015_REQUIRED_INVARIANT_IDS:

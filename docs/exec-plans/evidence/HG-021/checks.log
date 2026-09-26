@@ -1,0 +1,69 @@
+HG-021 KL-018 contract-hardening validation evidence
+date: 2026-09-26
+protected_base: 77cf294a467a0a54e0a32653f911a93760ad1e97
+tested_commit: c27613aec184900d5a24ff101325adc54c8c509f
+
+PASS governance scope and frozen-state protection
+- HG-021 refines KL-018 only.
+- The protected-base change set is restricted to the nine files declared in HG-021.
+- Frozen Protocol, Frozen DB, and FROZEN_BASELINE.json are unchanged.
+- No product implementation, migration, completed task result, review, or integration artifact is changed.
+
+PASS synchronized KL-018 projections
+- Backlog, traceability, and packet carry identical ordered check contracts.
+- Deliverables, Definition of Done, write paths, review requirements, resources, and prerequisites remain synchronized.
+- tests/db/test_safety_registry.py is now an enforceable KL-018 write path so its closed privileged-routine inventory can be updated with the eighth approved SECURITY DEFINER routine.
+
+PASS NULL-total validity contract
+- artifact_validity_is_null_total requires successor constraint and routine predicates that cannot pass through SQL UNKNOWN.
+- Missing, JSON-null, blank, and one-sided TIMELESS policy/reason are rejected with the frozen VALIDITY_UNDEFINED denial and zero S49/dependency/receipt/event/outbox mutation.
+- Missing or non-increasing BOUNDED valid_until is rejected on the same fail-closed boundary.
+- No new public denial is introduced.
+
+PASS revocable TIMELESS policy dependency contract
+- artifact_timeless_policy_is_registered_dependency requires the approval policy to be a canonical, pre-registered POLICY or POLICY_BUNDLE artifact.
+- The policy artifact must be explicit in declared dependency edges and the complete transitive closure; missing/malformed, unknown, and omitted-from-closure cases use existing frozen VALIDITY_UNDEFINED or ARTIFACT_UNKNOWN denials before mutation.
+- Revoking only that policy through T2-GLOBAL must make T3 PublishManifest, T6 CommitBundle/Reauthorize, and T7 StartSession/ResumeSession/ContinueSession return frozen ARTIFACT_REVOKED before any domain or audit mutation.
+- The registered target and every other dependency remain valid in the negative fixture, proving there is no direct-root-only or policy-omission bypass.
+
+PASS stable persistence-denial contract
+- artifact_persistence_denials_are_stable requires adapter-level coverage through the public command owner.
+- KL_REGISTRY_IMMUTABLE_ARTIFACT and S49 natural-identity uniqueness conflicts both map to RegistryDenied(IMMUTABLE_ARTIFACT).
+- Raw psycopg exceptions and partial registration side effects are forbidden.
+
+PASS bounded dense-closure contract
+- artifact_dependency_dense_graph_is_bounded requires an adversarial PostgreSQL dense-DAG fixture near node/depth limits.
+- The traversal must use a duplicate-suppressing bounded frontier instead of enumerating every dependency path.
+- The fixture enforces bounded execution, deterministic in-bound admission, and deterministic over-bound VALIDITY_UNDEFINED with zero mutation; this uses the frozen meaning that admissible closure validity cannot be established and introduces no new public denial code.
+
+PASS atomic failure contracts
+- artifact_registration_lock_timeout_is_atomic requires stable REGISTRY_TIMEOUT through the persistence adapter and complete rollback while S51 is contended.
+- artifact_registration_post_write_failure_is_atomic requires a test-local post-first-write failure, no production bypass, no success result, and complete rollback of S49, dependency edges, S51, receipt, event, and outbox state.
+
+PASS SafetyRegistry privilege and full DB CI contracts
+- artifact_registration_safety_registry_privilege_regression binds the existing closed privilege inventory to exactly eight approved non-overloaded routines, including the exact RegisterArtifact signature, owner, search_path, PUBLIC denial, admin-only EXECUTE, and inverse runtime denial.
+- complete_db_suite_passes runs the same complete tests/db surface as the db CI workflow; KL-018 cannot pass while that workflow is knowingly red.
+
+PASS canonical contract pins and negative guards
+- artifact_validity_is_null_total: 1e5934aedb85f773768f800e529a109952dce44d3895691e7329da51da3b566b
+- artifact_timeless_policy_is_registered_dependency: 3ec0ce43558c22345c347312aae9fb85dce5a083405142f42a809e875f7e8743
+- artifact_persistence_denials_are_stable: 337104968a84b1e522659aeb2e9cfb755a05ce637a64a3210eecf9d7260d379f
+- artifact_dependency_dense_graph_is_bounded: 0a75079f107813f3f21078e82d35c6bc568cd5f6810b8137dd5780b19729198d
+- artifact_registration_lock_timeout_is_atomic: 99ef0ba4580989d953e45e00e54b9d6d7f6b2fced3c5f96cf21614d939e5e89b
+- artifact_registration_post_write_failure_is_atomic: e1c9e30faf89313ea32a608df635836d89c9f206ca0b927ee16616776812ae10
+- artifact_registration_safety_registry_privilege_regression: 36b43e170c7c766e11382a4c429b0fb94967db88aabf33e86b3ef953c36a0d9f
+- complete_db_suite_passes: 12f8a9f03fdd1117803e5bbc1de8e614014f2ffab173b4142850d4770ac32464
+- Focused validator regression: 2 passed, 106 deselected in 4.06s.
+- Removal, command substitution, oracle weakening, coordinated projection weakening, and removal of the SafetyRegistry test write path are rejected, including the TIMELESS policy closure/revocation contract.
+
+PASS complete validation
+- Validator suite: 108 passed in 193.62s.
+- Harness suite: 133 passed in 193.60s.
+- Harness structure: HARNESS_CHECK_PASS tasks=69 active=67.
+- Ruff: All checks passed.
+- JSON syntax, package hashes, index hashes, and packet projections are valid.
+- git diff --check passed.
+
+The harness suite emitted one cache-only warning because the sandboxed worktree could not create .pytest_cache. It did not affect collection, execution, or the 133/133 PASS result.
+
+No review artifacts were created. Independent reviews must bind to the immutable HG-021 governance head.
