@@ -96,6 +96,64 @@ BEGIN
     THEN
       RAISE EXCEPTION 'KL_SUBJECT_SCOPE_PRINCIPAL_MEMBERSHIP:%', role_name;
     END IF;
+    IF EXISTS (
+         SELECT 1 FROM pg_class protected
+         JOIN pg_namespace schema ON schema.oid=protected.relnamespace
+         WHERE schema.nspname='kineticloop'
+           AND protected.relname=ANY(ARRAY[
+             'daily_plan_heads','authorization_issuances','execution_bindings',
+             'replay_runs','replay_artifacts'
+           ])
+           AND protected.relowner=role_record.oid
+       )
+       OR EXISTS (
+         SELECT 1 FROM pg_class protected
+         JOIN pg_namespace schema ON schema.oid=protected.relnamespace
+         CROSS JOIN LATERAL aclexplode(protected.relacl) acl
+         WHERE schema.nspname='kineticloop'
+           AND protected.relname=ANY(ARRAY[
+             'daily_plan_heads','authorization_issuances','execution_bindings',
+             'replay_runs','replay_artifacts'
+           ])
+           AND acl.grantee=role_record.oid
+       )
+       OR EXISTS (
+         SELECT 1 FROM pg_namespace schema
+         WHERE schema.nspname='kineticloop'
+           AND (schema.nspowner=role_record.oid
+                OR has_schema_privilege(role_record.oid,schema.oid,'CREATE'))
+       )
+       OR EXISTS (
+         SELECT 1 FROM pg_proc routine
+         JOIN pg_namespace schema ON schema.oid=routine.pronamespace
+         WHERE schema.nspname='kineticloop' AND routine.proowner=role_record.oid
+       )
+       OR EXISTS (
+         SELECT 1 FROM pg_class protected
+         JOIN pg_namespace schema ON schema.oid=protected.relnamespace
+         WHERE schema.nspname='kineticloop'
+           AND protected.relname=ANY(ARRAY[
+             'daily_plan_heads','authorization_issuances','execution_bindings',
+             'replay_runs','replay_artifacts'
+           ])
+           AND has_table_privilege(
+             role_record.oid,protected.oid,
+             'INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER'
+           )
+       )
+       OR expected_role <> 'kl_application' AND EXISTS (
+         SELECT 1 FROM pg_class protected
+         JOIN pg_namespace schema ON schema.oid=protected.relnamespace
+         WHERE schema.nspname='kineticloop'
+           AND protected.relname=ANY(ARRAY[
+             'daily_plan_heads','authorization_issuances','execution_bindings',
+             'replay_runs','replay_artifacts'
+           ])
+           AND has_table_privilege(role_record.oid,protected.oid,'SELECT')
+       )
+    THEN
+      RAISE EXCEPTION 'KL_SUBJECT_SCOPE_PRINCIPAL_OBJECT_BYPASS:%', role_name;
+    END IF;
   END LOOP;
 
   IF session_user <> 'kl_migration_deployer'
@@ -187,6 +245,31 @@ BEGIN
        WHERE writer_role.rolname LIKE 'kl_writer_%'
          AND (pg_has_role(principal_role.oid,writer_role.oid,'MEMBER')
               OR pg_has_role(principal_role.oid,writer_role.oid,'SET'))
+     )
+     OR EXISTS (
+       SELECT 1 FROM pg_class protected
+       JOIN pg_namespace schema ON schema.oid=protected.relnamespace
+       WHERE schema.nspname='kineticloop'
+         AND protected.relname=ANY(ARRAY[
+           'daily_plan_heads','authorization_issuances','execution_bindings',
+           'replay_runs','replay_artifacts'
+         ])
+         AND (protected.relowner=principal_role.oid
+              OR has_table_privilege(
+                principal_role.oid,protected.oid,
+                'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER'
+              ))
+     )
+     OR EXISTS (
+       SELECT 1 FROM pg_namespace schema
+       WHERE schema.nspname='kineticloop'
+         AND (schema.nspowner=principal_role.oid
+              OR has_schema_privilege(principal_role.oid,schema.oid,'CREATE'))
+     )
+     OR EXISTS (
+       SELECT 1 FROM pg_proc routine
+       JOIN pg_namespace schema ON schema.oid=routine.pronamespace
+       WHERE schema.nspname='kineticloop' AND routine.proowner=principal_role.oid
      )
   THEN
     RAISE EXCEPTION 'KL_SUBJECT_SCOPE_PRINCIPAL_INVALID';
@@ -309,7 +392,12 @@ BEGIN
   IF found_subject IS NULL THEN
     RETURN NULL;
   END IF;
-  RETURN jsonb_build_object('kind',p_object_kind,'object_id',p_object_id::text,'subject_id',found_subject::text);
+  RETURN jsonb_build_object(
+    'kind',p_object_kind,
+    'object_id',p_object_id::text,
+    'subject_id',found_subject::text,
+    'namespace',bound_namespace
+  );
 END
 $routine$
 """
@@ -324,6 +412,19 @@ DECLARE
   subject_namespace text;
   isolated_policy uuid;
 BEGIN
+  IF TG_OP='UPDATE' AND OLD.subject_id IS DISTINCT FROM NEW.subject_id THEN
+    RAISE EXCEPTION 'KL_SUBJECT_SCOPE_SUBJECT_IMMUTABLE';
+  END IF;
+  IF session_user ~ '^kl_(production|test|evaluation)_subject_[a-z0-9_]+_login$'
+     AND EXISTS (
+       SELECT 1 FROM pg_roles writer_role
+       WHERE writer_role.rolname LIKE 'kl_writer_%'
+         AND (pg_has_role(session_user,writer_role.rolname,'MEMBER')
+              OR pg_has_role(session_user,writer_role.rolname,'SET'))
+     )
+  THEN
+    RAISE EXCEPTION 'KL_SUBJECT_SCOPE_DIRECT_DML_DENIED';
+  END IF;
   PERFORM pg_advisory_xact_lock(hashtextextended(NEW.subject_id::text, 17017));
   SELECT namespace,policy_id INTO subject_namespace,isolated_policy
   FROM kineticloop.subject_scopes WHERE subject_id=NEW.subject_id;
@@ -359,14 +460,15 @@ $guard$
 DOWNGRADE_DATA_PREFLIGHT_SQL = """
 DO $downgrade_preflight$
 BEGIN
-  IF EXISTS (
-    SELECT 1 FROM kineticloop.subject_scopes
-    WHERE namespace IN ('TEST','EVALUATION')
-  ) OR EXISTS (
-    SELECT 1 FROM kineticloop.subject_principal_bindings
-    WHERE namespace IN ('TEST','EVALUATION')
-  ) THEN
-    RAISE EXCEPTION 'KL_SUBJECT_SCOPE_DOWNGRADE_NONPRODUCTION_STATE';
+  IF EXISTS (SELECT 1 FROM kineticloop.subject_scopes)
+     OR EXISTS (SELECT 1 FROM kineticloop.subject_principal_bindings)
+     OR EXISTS (SELECT 1 FROM kineticloop.daily_plan_heads)
+     OR EXISTS (SELECT 1 FROM kineticloop.authorization_issuances)
+     OR EXISTS (SELECT 1 FROM kineticloop.execution_bindings)
+     OR EXISTS (SELECT 1 FROM kineticloop.replay_runs)
+     OR EXISTS (SELECT 1 FROM kineticloop.replay_artifacts)
+  THEN
+    RAISE EXCEPTION 'KL_SUBJECT_SCOPE_DOWNGRADE_SCOPED_STATE';
   END IF;
 END
 $downgrade_preflight$

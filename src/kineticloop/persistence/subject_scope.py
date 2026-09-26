@@ -100,6 +100,7 @@ class ScopedObject:
     kind: ScopedObjectKind
     object_id: str
     subject_id: str
+    namespace: SubjectNamespace
 
 
 def namespace_for_actor(actor: RoleIdentity) -> SubjectNamespace:
@@ -154,8 +155,24 @@ def read_scoped_object(
     if row is None or row[0] is None:
         raise SubjectScopeDenied
     payload = row[0]
+    try:
+        returned_kind = ScopedObjectKind(payload["kind"])
+        returned_object = _canonical_uuid(payload["object_id"], "returned object_id")
+        returned_subject = _canonical_uuid(payload["subject_id"], "returned subject_id")
+        returned_namespace = SubjectNamespace(payload["namespace"])
+    except (KeyError, TypeError, ValueError) as error:
+        raise SubjectScopeDenied from error
+    if (
+        returned_kind is not object_kind
+        or returned_object != target_object
+        or returned_subject != actor_subject
+        or returned_subject != target_subject
+        or returned_namespace is not namespace
+    ):
+        raise SubjectScopeDenied
     return ScopedObject(
-        kind=ScopedObjectKind(payload["kind"]),
-        object_id=payload["object_id"],
-        subject_id=payload["subject_id"],
+        kind=returned_kind,
+        object_id=str(returned_object),
+        subject_id=str(returned_subject),
+        namespace=returned_namespace,
     )

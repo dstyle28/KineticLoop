@@ -17,7 +17,10 @@ while `kl_subject_test` and `kl_subject_evaluation` represent the two non-produc
 namespaces. Trusted-admin registration records the LOGIN principal, exact subject,
 and namespace in `kineticloop.subject_principal_bindings`. A principal and a subject
 can each occur in only one binding. Subject principals cannot inherit or assume any
-`kl_writer_*` role, including `kl_writer_safety_registry`.
+`kl_writer_*` role, including `kl_writer_safety_registry`, and cannot hold a direct
+protected-table ACL, protected-table or in-schema routine ownership, or schema
+creation authority. Upgrade preflight rejects those bypasses before DDL. Registration
+rechecks them before persisting a binding.
 
 Scope roles have no direct access to the five protected tables.
 `subject_scope_lookup` accepts only an object kind and object identifier. It derives
@@ -26,17 +29,27 @@ scope membership and absence of writer paths, and filters the protected relation
 the bound subject. It returns SQL NULL for missing objects and for objects belonging
 to any other subject, including another subject in the same namespace. The
 application converts every NULL or role mismatch into the same `SUBJECT_SCOPE_DENIED`
-response and `BOUNDED_SCOPE_LOOKUP` timing class.
+response and `BOUNDED_SCOPE_LOOKUP` timing class. Before releasing a successful
+lookup, the application also verifies that the returned kind, object identifier,
+subject identifier, and namespace exactly match its authenticated actor and request.
+
+The storage trigger makes `subject_id` immutable on every UPDATE across S38, S42,
+S45, S46, and S47. When a subject-specific session acquires any direct or transitive
+MEMBER or SET path to a `kl_writer_*` role, the trigger rejects direct DML even after
+`SET ROLE`. Normal command-owner routines remain SECURITY DEFINER entry points and
+continue to perform their guarded writes without granting their writer identity to
+the subject session.
 
 Registration and protected writes take the same transaction-scoped advisory lock
 derived from the subject identifier. This serializes the first protected write with
 namespace registration so an unregistered subject cannot be classified as production
 while a concurrent trusted-admin transaction is assigning TEST or EVALUATION scope.
 
-Downgrade fails before removing a trigger, function, table, or privilege whenever a
-TEST or EVALUATION scope or principal binding exists. Operators must explicitly
-retire isolated non-production state before restoring the predecessor's shared
-production read surface.
+Downgrade fails before removing a trigger, function, table, or privilege whenever
+any scope row, principal binding, or S38/S42/S45/S46/S47 row exists. Removing
+classification metadata cannot make retained data downgrade-safe. Operators must
+explicitly retire all classified state and protected data before restoring the
+predecessor's shared production read surface.
 
 The triggers are storage guards, not new T6/T7 command owners. They neither acquire
 S51/S01 nor issue authorization or execution bindings. Normal T6/T7 command routines

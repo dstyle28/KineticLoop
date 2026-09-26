@@ -430,6 +430,52 @@ def test_subject_scope_preflight_rejects_writer_assumption_paths() -> None:
         )
 
 
+def test_subject_scope_preflight_rejects_principal_object_bypasses() -> None:
+    lifecycle = DatabaseLifecycle(ROOT)
+    urls = bootstrap_two_phase(lifecycle, head=False)
+    run_alembic(urls["deployer"], ARTIFACT_REGISTRY_REVISION)
+    with psycopg.connect(urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            "GRANT SELECT ON kineticloop.authorization_issuances "
+            "TO kl_test_subject_1_login"
+        )
+        assert_subject_scope_preflight_failure(urls)
+        admin.execute(
+            "REVOKE SELECT ON kineticloop.authorization_issuances "
+            "FROM kl_test_subject_1_login"
+        )
+
+        admin.execute("GRANT CREATE ON SCHEMA kineticloop TO kl_evaluation_subject_1_login")
+        assert_subject_scope_preflight_failure(urls)
+        admin.execute(
+            "REVOKE CREATE ON SCHEMA kineticloop FROM kl_evaluation_subject_1_login"
+        )
+
+        admin.execute(
+            "ALTER TABLE kineticloop.daily_plan_heads "
+            "OWNER TO kl_test_subject_1_login"
+        )
+        assert_subject_scope_preflight_failure(urls)
+        admin.execute(
+            "ALTER TABLE kineticloop.daily_plan_heads OWNER TO kl_migration_owner"
+        )
+
+    run_alembic(urls["deployer"], "head")
+    with psycopg.connect(urls["admin"]) as admin:
+        assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (
+            REVISION,
+        )
+        assert admin.execute(
+            "SELECT has_table_privilege('kl_test_subject_1_login',"
+            "'kineticloop.authorization_issuances','SELECT'),"
+            "has_schema_privilege('kl_evaluation_subject_1_login',"
+            "'kineticloop','CREATE'),"
+            "pg_get_userbyid(c.relowner) FROM pg_class c "
+            "JOIN pg_namespace n ON n.oid=c.relnamespace "
+            "WHERE n.nspname='kineticloop' AND c.relname='daily_plan_heads'"
+        ).fetchone() == (False, False, "kl_migration_owner")
+
+
 def test_safety_registry_successor_contains_no_cluster_role_ddl() -> None:
     spec = spec_from_file_location("kl072_migration", SUCCESSOR)
     assert spec is not None and spec.loader is not None

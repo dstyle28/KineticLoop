@@ -6,7 +6,7 @@ from collections.abc import Iterator
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from typing import Any
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from uuid import UUID
 
 import psycopg
@@ -66,6 +66,7 @@ EVALUATION_MANIFEST = "00000000-0000-8000-8000-000000000231"
 EVALUATION_RELEASE = "00000000-0000-8000-8000-000000000232"
 EVALUATION_MANIFEST_2 = "00000000-0000-8000-8000-000000000431"
 EVALUATION_RELEASE_2 = "00000000-0000-8000-8000-000000000432"
+TEST_PLAN = "00000000-0000-8000-8000-000000000433"
 
 
 def configure_seed_ids(
@@ -174,6 +175,12 @@ def seed(urls: dict[str, str]) -> None:
         artifact_identity_suffix="-test",
         include_policy=False,
     )
+    with psycopg.connect(urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            "INSERT INTO kineticloop.daily_plan_heads(id,subject_id,local_date) "
+            "VALUES (%s,%s,DATE '2026-09-26')",
+            (UUID(TEST_PLAN), UUID(TEST_SUBJECT)),
+        )
     configure_seed_ids(
         subject_id=TEST_SUBJECT_2,
         authorization_id=TEST_AUTHORIZATION_2,
@@ -336,6 +343,31 @@ def test_cross_subject_denial_is_non_enumerating(database_urls: dict[str, str]) 
                         object_id=object_id,
                     )
                 denials.append(caught.value.denial)
+            production_results = [
+                scoped.execute(
+                    "SELECT kineticloop.subject_scope_lookup('S42',%s)",
+                    (UUID(object_id),),
+                ).fetchone()
+                for object_id in (
+                    PRODUCTION_AUTHORIZATION,
+                    "00000000-0000-8000-8000-000000000299",
+                )
+            ]
+            assert production_results == [(None,), (None,)]
+            for subject_id, object_id in (
+                (PRODUCTION_SUBJECT, PRODUCTION_AUTHORIZATION),
+                (UNKNOWN_SUBJECT, "00000000-0000-8000-8000-000000000299"),
+            ):
+                with pytest.raises(SubjectScopeDenied) as caught:
+                    read_scoped_object(
+                        scoped,
+                        actor=actor,
+                        actor_subject_id=actor_subject,
+                        target_subject_id=subject_id,
+                        object_kind=ScopedObjectKind.AUTHORIZATION_ISSUANCE,
+                        object_id=object_id,
+                    )
+                denials.append(caught.value.denial)
     assert all(denial == denials[0] for denial in denials)
     assert denials[0].code == "SUBJECT_SCOPE_DENIED"
     assert denials[0].timing_class == "BOUNDED_SCOPE_LOOKUP"
@@ -350,6 +382,8 @@ def test_cross_subject_denial_is_non_enumerating(database_urls: dict[str, str]) 
         TEST_AUTHORIZATION_2,
         EVALUATION_ARTIFACT,
         EVALUATION_ARTIFACT_2,
+        PRODUCTION_SUBJECT,
+        PRODUCTION_AUTHORIZATION,
     ):
         assert forbidden not in serialized
 
@@ -464,6 +498,7 @@ def test_application_role_scope_enforced(database_urls: dict[str, str]) -> None:
                 object_id=object_id,
             )
             assert result.subject_id == subject_id
+            assert result.namespace.value == namespace_for_actor(actor).value
             assert namespace_for_actor(actor).value in {
                 "PRODUCTION",
                 "TEST",
@@ -483,6 +518,50 @@ def test_application_role_scope_enforced(database_urls: dict[str, str]) -> None:
                 object_kind=ScopedObjectKind.AUTHORIZATION_ISSUANCE,
                 object_id=TEST_AUTHORIZATION,
             )
+
+    with psycopg.connect(database_urls["test_2"]) as wrong_subject_connection:
+        with pytest.raises(SubjectScopeDenied) as mismatch:
+            read_scoped_object(
+                wrong_subject_connection,
+                actor=test_actor,
+                actor_subject_id=TEST_SUBJECT,
+                target_subject_id=TEST_SUBJECT,
+                object_kind=ScopedObjectKind.AUTHORIZATION_ISSUANCE,
+                object_id=TEST_AUTHORIZATION,
+            )
+        assert dict(mismatch.value.denial.payload) == {"error": "subject_scope_denied"}
+
+
+def test_application_wrapper_rejects_forged_database_identity() -> None:
+    actor = RoleIdentity(
+        identity_id="00000000-0000-8000-8000-000000000224", role=ActorRole.TEST
+    )
+    base_payload = {
+        "kind": "S42",
+        "object_id": TEST_AUTHORIZATION,
+        "subject_id": TEST_SUBJECT,
+        "namespace": "TEST",
+    }
+    for field, forged_value in (
+        ("kind", "S38"),
+        ("object_id", PRODUCTION_AUTHORIZATION),
+        ("subject_id", TEST_SUBJECT_2),
+        ("namespace", "PRODUCTION"),
+    ):
+        connection: Any = MagicMock()
+        connection.execute.return_value.fetchone.return_value = (
+            {**base_payload, field: forged_value},
+        )
+        with pytest.raises(SubjectScopeDenied) as denied:
+            read_scoped_object(
+                connection,
+                actor=actor,
+                actor_subject_id=TEST_SUBJECT,
+                target_subject_id=TEST_SUBJECT,
+                object_kind=ScopedObjectKind.AUTHORIZATION_ISSUANCE,
+                object_id=TEST_AUTHORIZATION,
+            )
+        assert dict(denied.value.denial.payload) == {"error": "subject_scope_denied"}
 
 
 def test_runtime_writer_membership_drift_is_denied(
@@ -510,11 +589,76 @@ def test_runtime_writer_membership_drift_is_denied(
             assert dict(denied.value.denial.payload) == {
                 "error": "subject_scope_denied"
             }
+            scoped.rollback()
+            scoped.execute("SET ROLE kl_writer_authorization_service")
+            with pytest.raises(
+                psycopg.errors.RaiseException,
+                match="KL_SUBJECT_SCOPE_DIRECT_DML_DENIED",
+            ):
+                scoped.execute(
+                    "INSERT INTO kineticloop.authorization_issuances("
+                    "subject_id,bound_content_hash,scope,valid_from,valid_until) "
+                    "VALUES (%s,'direct-bypass','TEST_ONLY',clock_timestamp(),"
+                    "clock_timestamp()+interval '1 day')",
+                    (UUID(TEST_SUBJECT),),
+                )
+            scoped.rollback()
     finally:
         with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
             admin.execute(
                 "REVOKE kl_writer_authorization_service FROM kl_test_subject_1_login"
             )
+
+    with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            "GRANT kl_writer_replay_service TO kl_subject_evaluation "
+            "WITH INHERIT TRUE, SET TRUE"
+        )
+    try:
+        with psycopg.connect(database_urls["evaluation"]) as scoped:
+            with pytest.raises(
+                psycopg.errors.RaiseException,
+                match="KL_SUBJECT_SCOPE_DIRECT_DML_DENIED",
+            ):
+                scoped.execute(
+                    "UPDATE kineticloop.replay_runs SET status='BYPASSED' "
+                    "WHERE id=%s",
+                    (UUID(EVALUATION_RUN),),
+                )
+            scoped.rollback()
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+            admin.execute("REVOKE kl_writer_replay_service FROM kl_subject_evaluation")
+
+
+def test_subject_id_is_immutable_on_protected_updates(
+    database_urls: dict[str, str],
+) -> None:
+    attempts = (
+        ("daily_plan_heads", TEST_PLAN, TEST_SUBJECT_2),
+        ("daily_plan_heads", TEST_PLAN, PRODUCTION_SUBJECT),
+        ("replay_runs", EVALUATION_RUN, EVALUATION_SUBJECT_2),
+        ("replay_runs", EVALUATION_RUN, PRODUCTION_SUBJECT),
+    )
+    with psycopg.connect(database_urls["admin"]) as admin:
+        for table, object_id, replacement_subject in attempts:
+            with pytest.raises(
+                psycopg.errors.RaiseException,
+                match="KL_SUBJECT_SCOPE_SUBJECT_IMMUTABLE",
+            ):
+                admin.execute(
+                    f"UPDATE kineticloop.{table} SET subject_id=%s WHERE id=%s",
+                    (UUID(replacement_subject), UUID(object_id)),
+                )
+            admin.rollback()
+        assert admin.execute(
+            "SELECT subject_id FROM kineticloop.daily_plan_heads WHERE id=%s",
+            (UUID(TEST_PLAN),),
+        ).fetchone() == (UUID(TEST_SUBJECT),)
+        assert admin.execute(
+            "SELECT subject_id FROM kineticloop.replay_runs WHERE id=%s",
+            (UUID(EVALUATION_RUN),),
+        ).fetchone() == (UUID(EVALUATION_SUBJECT),)
 
 
 def test_shared_namespace_login_cannot_become_subject_principal(
@@ -537,6 +681,49 @@ def test_shared_namespace_login_cannot_become_subject_principal(
             "SELECT count(*) FROM kineticloop.subject_scopes WHERE subject_id=%s",
             (subject_id,),
         ).fetchone() == (0,)
+
+
+def test_principal_with_protected_object_bypass_cannot_register(
+    database_urls: dict[str, str],
+) -> None:
+    with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            "GRANT SELECT ON kineticloop.authorization_issuances "
+            "TO kl_test_subject_1_login"
+        )
+    try:
+        with psycopg.connect(database_urls["trusted_admin"]) as trusted:
+            with pytest.raises(
+                psycopg.errors.RaiseException,
+                match="KL_SUBJECT_SCOPE_PRINCIPAL_INVALID",
+            ):
+                trusted.execute(
+                    "SELECT kineticloop.subject_scope_register(%s,'TEST',%s,%s,%s)",
+                    (
+                        UUID(TEST_SUBJECT),
+                        UUID(TEST_POLICY),
+                        UUID(TEST_ENVIRONMENT),
+                        TEST_SUBJECT_LOGINS[0],
+                    ),
+                )
+            trusted.rollback()
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as admin:
+            admin.execute(
+                "REVOKE SELECT ON kineticloop.authorization_issuances "
+                "FROM kl_test_subject_1_login"
+            )
+
+    with psycopg.connect(database_urls["trusted_admin"]) as trusted:
+        trusted.execute(
+            "SELECT kineticloop.subject_scope_register(%s,'TEST',%s,%s,%s)",
+            (
+                UUID(TEST_SUBJECT),
+                UUID(TEST_POLICY),
+                UUID(TEST_ENVIRONMENT),
+                TEST_SUBJECT_LOGINS[0],
+            ),
+        )
 
 
 def test_subject_registration_serializes_with_first_storage_write(
@@ -567,11 +754,34 @@ def test_subject_registration_serializes_with_first_storage_write(
 def test_populated_downgrade_fails_before_guard_or_acl_changes(
     database_urls: dict[str, str],
 ) -> None:
-    with pytest.raises(
-        Exception, match="KL_SUBJECT_SCOPE_DOWNGRADE_NONPRODUCTION_STATE"
-    ):
-        run_alembic_downgrade(database_urls["deployer"], ARTIFACT_REGISTRY_REVISION)
+    def assert_failed_without_changes(urls: dict[str, str]) -> None:
+        with pytest.raises(
+            Exception, match="KL_SUBJECT_SCOPE_DOWNGRADE_SCOPED_STATE"
+        ):
+            run_alembic_downgrade(urls["deployer"], ARTIFACT_REGISTRY_REVISION)
+        with psycopg.connect(urls["admin"]) as admin:
+            assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (
+                REVISION,
+            )
+            assert admin.execute(
+                "SELECT count(*) FROM pg_trigger trigger "
+                "JOIN pg_class relation ON relation.oid=trigger.tgrelid "
+                "JOIN pg_namespace namespace ON namespace.oid=relation.relnamespace "
+                "WHERE namespace.nspname='kineticloop' "
+                "AND trigger.tgname='subject_storage_scope' "
+                "AND NOT trigger.tgisinternal"
+            ).fetchone() == (5,)
+            assert admin.execute(
+                "SELECT to_regprocedure("
+                "'kineticloop.subject_scope_lookup(text,uuid)') IS NOT NULL"
+            ).fetchone() == (True,)
+            assert admin.execute(
+                "SELECT has_table_privilege('kl_application',"
+                "'kineticloop.authorization_issuances','SELECT')"
+            ).fetchone() == (False,)
 
+    # Non-production classifications and rows are never silently declassified.
+    assert_failed_without_changes(database_urls)
     with psycopg.connect(database_urls["admin"]) as admin:
         assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (
             REVISION,
@@ -584,28 +794,64 @@ def test_populated_downgrade_fails_before_guard_or_acl_changes(
             "SELECT count(*) FROM kineticloop.subject_principal_bindings "
             "WHERE namespace IN ('TEST','EVALUATION')"
         ).fetchone() == (4,)
-        assert admin.execute(
-            "SELECT count(*) FROM pg_trigger trigger "
-            "JOIN pg_class relation ON relation.oid=trigger.tgrelid "
-            "JOIN pg_namespace namespace ON namespace.oid=relation.relnamespace "
-            "WHERE namespace.nspname='kineticloop' "
-            "AND trigger.tgname='subject_storage_scope' AND NOT trigger.tgisinternal"
-        ).fetchone() == (5,)
-        assert admin.execute(
-            "SELECT to_regprocedure('kineticloop.subject_scope_lookup(text,uuid)') "
-            "IS NOT NULL"
-        ).fetchone() == (True,)
-        assert admin.execute(
-            "SELECT has_table_privilege('kl_application',"
-            "'kineticloop.authorization_issuances','SELECT')"
-        ).fetchone() == (False,)
-
     with psycopg.connect(database_urls["test"]) as scoped:
         row = scoped.execute(
             "SELECT kineticloop.subject_scope_lookup('S42',%s)",
             (UUID(TEST_AUTHORIZATION),),
         ).fetchone()
         assert row is not None and row[0]["subject_id"] == TEST_SUBJECT
+
+    # A production binding alone also prevents the SELECT grant from returning.
+    urls = bootstrap_two_phase(DatabaseLifecycle(ROOT))
+    production_only_subject = UUID("00000000-0000-8000-8000-000000000270")
+    with psycopg.connect(urls["trusted_admin"]) as trusted:
+        trusted.execute(
+            "SELECT kineticloop.subject_scope_register("
+            "%s,'PRODUCTION',NULL,NULL,%s)",
+            (production_only_subject, PRODUCTION_SUBJECT_LOGIN),
+        )
+        trusted.commit()
+    assert_failed_without_changes(urls)
+    with psycopg.connect(urls["admin"]) as admin:
+        assert admin.execute(
+            "SELECT namespace FROM kineticloop.subject_scopes WHERE subject_id=%s",
+            (production_only_subject,),
+        ).fetchone() == ("PRODUCTION",)
+        assert admin.execute(
+            "SELECT subject_id FROM kineticloop.subject_principal_bindings "
+            "WHERE principal_name=%s",
+            (PRODUCTION_SUBJECT_LOGIN,),
+        ).fetchone() == (production_only_subject,)
+
+    # Deleting classification metadata cannot make retained production data safe.
+    urls = bootstrap_two_phase(DatabaseLifecycle(ROOT))
+    configure_seed_ids(
+        subject_id=PRODUCTION_SUBJECT,
+        authorization_id=PRODUCTION_AUTHORIZATION,
+        policy_id=_SAFETY.POLICY_ID,
+        start=0x560,
+    )
+    _SAFETY.seed(urls["admin"])
+    with psycopg.connect(urls["trusted_admin"]) as trusted:
+        trusted.execute(
+            "SELECT kineticloop.subject_scope_register("
+            "%s,'PRODUCTION',NULL,NULL,%s)",
+            (UUID(PRODUCTION_SUBJECT), PRODUCTION_SUBJECT_LOGIN),
+        )
+        trusted.commit()
+    with psycopg.connect(urls["admin"], autocommit=True) as admin:
+        admin.execute("DELETE FROM kineticloop.subject_principal_bindings")
+        admin.execute("DELETE FROM kineticloop.subject_scopes")
+        assert admin.execute(
+            "SELECT (SELECT count(*) FROM kineticloop.subject_scopes),"
+            "(SELECT count(*) FROM kineticloop.subject_principal_bindings),"
+            "(SELECT count(*) FROM kineticloop.authorization_issuances)"
+        ).fetchone() == (0, 0, 1)
+    assert_failed_without_changes(urls)
+    with psycopg.connect(urls["admin"]) as admin:
+        assert admin.execute(
+            "SELECT count(*) FROM kineticloop.authorization_issuances"
+        ).fetchone() == (1,)
 
 
 def test_subject_scope_successor_is_cluster_role_ddl_free() -> None:
