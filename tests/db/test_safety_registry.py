@@ -57,6 +57,9 @@ EVENT_ID = "00000000-0000-8000-8000-00000000000d"
 OUTBOX_ID = "00000000-0000-8000-8000-00000000000e"
 CONTENT_HASH = "a" * 64
 NOW = datetime(2026, 9, 24, 18, tzinfo=UTC)
+ARTIFACT_CLOSURE_HASH = hashlib.sha256(
+    ",".join(sorted((ARTIFACT_ID, DEPENDENCY_ID))).encode()
+).hexdigest()
 
 
 @pytest.fixture(scope="module")
@@ -178,12 +181,14 @@ def seed(
             """
             INSERT INTO kineticloop.decision_manifests(
               id, subject_id, manifest_hash, generation, captured_epoch,
-              registry_revision_at_publish, valid_until, ref_s05_id, ref_s06_id,
+              dependency_closure_hash, registry_revision_at_publish, valid_until,
+              ref_s05_id, ref_s06_id,
               ref_s15_id, ref_s23_id, ref_s49_id, registry_state_id
-            ) VALUES (%s,%s,'manifest-hash',1,0,0,%s,%s,%s,%s,%s,%s,1)
+            ) VALUES (%s,%s,'manifest-hash',1,0,%s,0,%s,%s,%s,%s,%s,%s,1)
             """,
             (
                 UUID(MANIFEST_ID), UUID(SUBJECT_ID),
+                ARTIFACT_CLOSURE_HASH,
                 authorization_expires_at or seed_now + timedelta(days=1),
                 UUID(POLICY_ID), UUID(POLICY_ID), UUID(POLICY_ID),
                 UUID(POLICY_ID), UUID(ARTIFACT_ID),

@@ -96,12 +96,34 @@ class ArtifactRegistration:
     validity: ArtifactValiditySpec
 
     def __post_init__(self) -> None:
-        if not self.artifact_identity or not self.artifact_version:
+        if not self.artifact_identity.strip() or not self.artifact_version.strip():
             raise ValueError("artifact identity and version must be non-empty")
-        if self.command.validity_spec_hash != self.validity.sha256():
-            raise ValueError("validity_spec_hash does not bind the supplied validity spec")
         if self.command.artifact_kind not in set(ArtifactKind):
             raise ValueError("unsupported artifact kind")
+        if len(set(self.command.dependency_ids)) != len(self.command.dependency_ids):
+            raise ArtifactDependencyError("dependency identities must be unique")
+        if self.command.artifact_id in self.command.dependency_ids:
+            raise ArtifactDependencyError("artifact cannot depend on itself")
+        expected_binding = {
+            ArtifactKind.MODEL: ArtifactBindingKind.EVALUATION_RELEASE,
+            ArtifactKind.PROMPT: ArtifactBindingKind.EVALUATION_RELEASE,
+            ArtifactKind.RUNTIME: ArtifactBindingKind.EVALUATION_RELEASE,
+            ArtifactKind.TOOL: ArtifactBindingKind.EXERCISE_CATALOG,
+            ArtifactKind.POLICY: ArtifactBindingKind.POLICY_BUNDLE,
+        }[ArtifactKind(self.command.artifact_kind)]
+        if self.validity.binding_kind is not expected_binding:
+            raise ValueError("artifact kind and validity binding kind do not match")
+        if self.command.validity_spec_hash != self.validity.sha256():
+            raise ValueError("validity_spec_hash does not bind the supplied validity spec")
+        if self.validity.validity_kind == "TIMELESS":
+            policy_id = self.validity.timeless_approval_policy
+            if policy_id is None:
+                raise ValueError("TIMELESS validity requires approval policy")
+            canonical_id(policy_id)
+            if policy_id not in self.command.dependency_ids:
+                raise ArtifactDependencyError(
+                    "TIMELESS approval policy must be an explicit dependency"
+                )
 
 
 def validate_complete_dependency_closure(

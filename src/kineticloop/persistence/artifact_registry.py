@@ -37,7 +37,10 @@ class ArtifactRegistryDenialCode(StrEnum):
 _DATABASE_DENIALS = {
     "KL_REGISTRY_COMMAND_NOT_AUTHORIZED": RegistryDenialCode.COMMAND_NOT_AUTHORIZED,
     "KL_REGISTRY_ARTIFACT_UNKNOWN": RegistryDenialCode.ARTIFACT_UNKNOWN,
-    "KL_REGISTRY_DEPENDENCY_INCOMPLETE": RegistryDenialCode.DEPENDENCY_INCOMPLETE,
+    "KL_REGISTRY_DEPENDENCY_INCOMPLETE": RegistryDenialCode.VALIDITY_UNDEFINED,
+    "KL_REGISTRY_DEPENDENCY_CYCLE": RegistryDenialCode.VALIDITY_UNDEFINED,
+    "KL_REGISTRY_DEPENDENCY_BOUND_EXCEEDED": RegistryDenialCode.VALIDITY_UNDEFINED,
+    "KL_REGISTRY_INVALID_ARGUMENT": RegistryDenialCode.VALIDITY_UNDEFINED,
     "KL_REGISTRY_VALIDITY_UNDEFINED": RegistryDenialCode.VALIDITY_UNDEFINED,
     "KL_REGISTRY_UNAVAILABLE": RegistryDenialCode.REGISTRY_UNAVAILABLE,
     "KL_REGISTRY_TIMEOUT": RegistryDenialCode.REGISTRY_TIMEOUT,
@@ -96,4 +99,22 @@ def register_artifact(
         for marker, denial in _DATABASE_DENIALS.items():
             if marker in message:
                 raise RegistryDenied(cast(RegistryDenialCode, denial)) from error
+        if isinstance(error, psycopg.errors.UniqueViolation):
+            raise RegistryDenied(
+                cast(
+                    RegistryDenialCode,
+                    ArtifactRegistryDenialCode.IMMUTABLE_ARTIFACT,
+                )
+            ) from error
+        if isinstance(error, psycopg.errors.ForeignKeyViolation):
+            raise RegistryDenied(RegistryDenialCode.ARTIFACT_UNKNOWN) from error
+        if isinstance(
+            error,
+            (
+                psycopg.errors.CheckViolation,
+                psycopg.errors.InvalidTextRepresentation,
+                psycopg.errors.NotNullViolation,
+            ),
+        ):
+            raise RegistryDenied(RegistryDenialCode.VALIDITY_UNDEFINED) from error
         raise

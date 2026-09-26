@@ -298,6 +298,48 @@ def test_artifact_registry_successor_migration_chain() -> None:
         ).fetchone() == (False, False)
 
 
+def test_artifact_registry_upgrade_rejects_malformed_legacy_timeless_row() -> None:
+    lifecycle = DatabaseLifecycle(ROOT)
+    urls = bootstrap_two_phase(lifecycle, head=False)
+    run_alembic(urls["deployer"], SAFETY_REGISTRY_REVISION)
+    with psycopg.connect(urls["admin"], autocommit=True) as admin:
+        policy_id = admin.execute(
+            "INSERT INTO kineticloop.policy_bundles("
+            "subject_id,policy_namespace,policy_version,content_hash) "
+            "VALUES (%s,'legacy-timeless','1','legacy-policy') RETURNING id",
+            (UUID("00000000-0000-8000-8000-000000000190"),),
+        ).fetchone()
+        assert policy_id is not None
+        admin.execute(
+            "INSERT INTO kineticloop.safety_artifacts("
+            "id,artifact_kind,artifact_identity,artifact_version,content_hash,"
+            "validity_kind,valid_from,valid_until,timeless_approval_policy,"
+            "timeless_approval_reason,ref_s05_id) VALUES ("
+            "%s,'POLICY_BUNDLE','legacy-malformed','1',%s,'TIMELESS',"
+            "clock_timestamp(),NULL,'legacy-noncanonical-policy','legacy reason',%s)",
+            (
+                UUID("00000000-0000-8000-8000-000000000191"),
+                "9" * 64,
+                policy_id[0],
+            ),
+        )
+
+    for _attempt in range(2):
+        with pytest.raises(
+            Exception,
+            match="KL_ARTIFACT_REGISTRY_LEGACY_TIMELESS_INVALID",
+        ):
+            run_alembic(urls["deployer"], "head")
+        with psycopg.connect(urls["admin"]) as admin:
+            assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (
+                SAFETY_REGISTRY_REVISION,
+            )
+            assert admin.execute(
+                "SELECT count(*) FROM kineticloop.safety_artifacts "
+                "WHERE artifact_identity='legacy-malformed'"
+            ).fetchone() == (1,)
+
+
 def test_safety_registry_successor_contains_no_cluster_role_ddl() -> None:
     spec = spec_from_file_location("kl072_migration", SUCCESSOR)
     assert spec is not None and spec.loader is not None

@@ -88,6 +88,190 @@ END
 $preflight$
 """
 
+LEGACY_TIMELESS_PREFLIGHT_SQL = r"""
+DO $legacy_timeless$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM kineticloop.safety_artifacts AS artifact
+    WHERE artifact.validity_kind = 'TIMELESS'
+      AND (
+        artifact.timeless_approval_policy IS NULL
+        OR artifact.timeless_approval_policy !~
+          '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+        OR CASE
+          WHEN artifact.timeless_approval_policy ~
+            '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+          THEN NOT EXISTS (
+            SELECT 1
+            FROM kineticloop.safety_artifacts AS policy
+            JOIN kineticloop.safety_artifact_dependencies AS edge
+              ON edge.artifact_id = artifact.id
+             AND edge.dependency_artifact_id = policy.id
+            WHERE policy.id = artifact.timeless_approval_policy::uuid
+              AND policy.artifact_kind IN ('POLICY', 'POLICY_BUNDLE')
+          )
+          ELSE true
+        END
+      )
+  ) THEN
+    RAISE EXCEPTION 'KL_ARTIFACT_REGISTRY_LEGACY_TIMELESS_INVALID';
+  END IF;
+END
+$legacy_timeless$
+"""
+
+
+def _publish_guard_sql(*, hardened: bool) -> str:
+    declarations = """
+  manifest_artifact_id uuid;
+  stored_closure_hash text;
+""" if hardened else ""
+    manifest_lookup = """
+  SELECT manifest.ref_s49_id, manifest.dependency_closure_hash
+    INTO manifest_artifact_id, stored_closure_hash
+  FROM kineticloop.decision_manifests AS manifest
+  WHERE manifest.id = current_manifest_id
+    AND manifest.subject_id = p_subject_id
+    AND manifest.ref_s05_id = active_policy_bundle_id
+    AND manifest.captured_epoch = current_authorization_epoch
+    AND manifest.registry_revision_at_publish <= current_revision
+    AND manifest.valid_until > authoritative_now;
+  IF NOT FOUND OR manifest_artifact_id IS NULL OR stored_closure_hash IS NULL THEN
+    RAISE EXCEPTION 'KL_REGISTRY_AUTHORIZATION_INELIGIBLE';
+  END IF;
+""" if hardened else ""
+    closure_binding = """
+  IF NOT manifest_artifact_id = ANY(p_artifact_ids)
+     OR stored_closure_hash IS DISTINCT FROM (
+       SELECT encode(
+         sha256(convert_to(string_agg(value::text, ',' ORDER BY value), 'UTF8')),
+         'hex'
+       )
+       FROM unnest(p_artifact_ids) AS supplied(value)
+     ) THEN
+    RAISE EXCEPTION 'KL_REGISTRY_DEPENDENCY_INCOMPLETE';
+  END IF;
+""" if hardened else ""
+    timeless_guard = r"""
+  IF EXISTS (
+    SELECT 1
+    FROM kineticloop.safety_artifacts AS artifact
+    WHERE artifact.id = ANY(p_artifact_ids)
+      AND artifact.validity_kind = 'TIMELESS'
+      AND (
+        artifact.timeless_approval_policy IS NULL
+        OR artifact.timeless_approval_policy !~
+          '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+        OR CASE
+          WHEN artifact.timeless_approval_policy ~
+            '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+          THEN NOT EXISTS (
+            SELECT 1
+            FROM kineticloop.safety_artifacts AS policy
+            JOIN kineticloop.safety_artifact_dependencies AS edge
+              ON edge.artifact_id = artifact.id
+             AND edge.dependency_artifact_id = policy.id
+            WHERE policy.id = artifact.timeless_approval_policy::uuid
+              AND policy.artifact_kind IN ('POLICY', 'POLICY_BUNDLE')
+              AND policy.id = ANY(p_artifact_ids)
+          )
+          ELSE true
+        END
+      )
+  ) THEN
+    RAISE EXCEPTION 'KL_REGISTRY_VALIDITY_UNDEFINED';
+  END IF;
+""" if hardened else ""
+    return f"""
+CREATE OR REPLACE FUNCTION kineticloop.registry_guard_publish_manifest(
+  p_subject_id uuid,
+  p_artifact_ids uuid[],
+  p_minimum_registry_revision bigint,
+  p_lock_timeout_ms integer
+) RETURNS bigint
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, kineticloop, pg_temp
+AS $routine$
+DECLARE
+  current_revision bigint;
+  current_authorization_epoch bigint;
+  current_manifest_id uuid;
+  active_policy_bundle_id uuid;
+  authoritative_now timestamptz;
+{declarations}BEGIN
+  IF p_lock_timeout_ms IS NULL OR p_lock_timeout_ms <= 0 THEN
+    RAISE EXCEPTION 'KL_REGISTRY_INVALID_LOCK_TIMEOUT';
+  END IF;
+  IF p_artifact_ids IS NULL OR cardinality(p_artifact_ids) = 0
+     OR cardinality(p_artifact_ids) <> (
+       SELECT count(DISTINCT value) FROM unnest(p_artifact_ids) AS supplied(value)
+     ) THEN
+    RAISE EXCEPTION 'KL_REGISTRY_DEPENDENCY_INCOMPLETE';
+  END IF;
+  PERFORM set_config('lock_timeout', p_lock_timeout_ms::text || 'ms', true);
+  SELECT state.registry_revision INTO current_revision
+  FROM kineticloop.safety_registry_state AS state
+  WHERE state.id = 1
+  FOR SHARE;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'KL_REGISTRY_UNAVAILABLE';
+  END IF;
+  IF current_revision < p_minimum_registry_revision THEN
+    RAISE EXCEPTION 'KL_REGISTRY_STALE';
+  END IF;
+  SELECT subject_state.authorization_epoch, subject_state.current_manifest_id,
+         subject_state.active_policy_bundle_id
+    INTO current_authorization_epoch, current_manifest_id, active_policy_bundle_id
+  FROM kineticloop.user_decision_state AS subject_state
+  WHERE subject_state.subject_id = p_subject_id
+  FOR UPDATE;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'KL_REGISTRY_AUTHORIZATION_INELIGIBLE';
+  END IF;
+  authoritative_now := clock_timestamp();
+{manifest_lookup}  IF (SELECT count(*) FROM kineticloop.safety_artifacts AS artifact
+      WHERE artifact.id = ANY(p_artifact_ids)) <> cardinality(p_artifact_ids) THEN
+    RAISE EXCEPTION 'KL_REGISTRY_ARTIFACT_UNKNOWN';
+  END IF;
+{closure_binding}  IF EXISTS (
+    SELECT 1 FROM kineticloop.safety_artifact_dependencies AS dependency
+    WHERE dependency.artifact_id = ANY(p_artifact_ids)
+      AND NOT dependency.dependency_artifact_id = ANY(p_artifact_ids)
+  ) THEN
+    RAISE EXCEPTION 'KL_REGISTRY_DEPENDENCY_INCOMPLETE';
+  END IF;
+  IF EXISTS (
+    SELECT 1 FROM kineticloop.safety_artifacts AS artifact
+    WHERE artifact.id = ANY(p_artifact_ids)
+      AND (artifact.valid_from IS NULL OR artifact.validity_kind IS NULL
+        OR (artifact.validity_kind = 'BOUNDED' AND artifact.valid_until IS NULL))
+  ) THEN
+    RAISE EXCEPTION 'KL_REGISTRY_VALIDITY_UNDEFINED';
+  END IF;
+{timeless_guard}  IF EXISTS (
+    SELECT 1 FROM kineticloop.safety_artifacts AS artifact
+    WHERE artifact.id = ANY(p_artifact_ids)
+      AND (authoritative_now < artifact.valid_from
+        OR (artifact.valid_until IS NOT NULL AND authoritative_now >= artifact.valid_until))
+  ) THEN
+    RAISE EXCEPTION 'KL_REGISTRY_ARTIFACT_EXPIRED';
+  END IF;
+  IF EXISTS (
+    SELECT 1 FROM kineticloop.artifact_revocation_events AS revocation
+    WHERE revocation.ref_s49_id = ANY(p_artifact_ids)
+  ) THEN
+    RAISE EXCEPTION 'KL_REGISTRY_ARTIFACT_REVOKED';
+  END IF;
+  RETURN current_revision;
+EXCEPTION
+  WHEN lock_not_available OR query_canceled THEN
+    RAISE EXCEPTION 'KL_REGISTRY_TIMEOUT';
+END
+$routine$
+"""
+
 REGISTER_ROUTINE_SQL = f"""
 CREATE FUNCTION kineticloop.registry_register_artifact(
   p_artifact_id uuid,
@@ -145,7 +329,7 @@ BEGIN
      OR cardinality(p_dependency_ids) <> (
        SELECT count(DISTINCT value) FROM unnest(p_dependency_ids) AS supplied(value)
      ) THEN
-    RAISE EXCEPTION 'KL_REGISTRY_INVALID_ARGUMENT';
+    RAISE EXCEPTION 'KL_REGISTRY_VALIDITY_UNDEFINED';
   END IF;
   BEGIN
     validity := p_validity_spec::jsonb;
@@ -185,7 +369,7 @@ BEGIN
     OR (p_artifact_kind IN ('MODEL', 'PROMPT', 'RUNTIME', 'EVALUATION_RELEASE')
         AND binding_kind = 'EVALUATION_RELEASE')
   ) THEN
-    RAISE EXCEPTION 'KL_REGISTRY_INVALID_ARGUMENT';
+    RAISE EXCEPTION 'KL_REGISTRY_VALIDITY_UNDEFINED';
   END IF;
   policy_id := CASE WHEN binding_kind = 'POLICY_BUNDLE' THEN binding_id END;
   catalog_id := CASE WHEN binding_kind = 'EXERCISE_CATALOG' THEN binding_id END;
@@ -234,7 +418,7 @@ BEGIN
   END IF;
 
   IF p_artifact_id = ANY(p_dependency_ids) THEN
-    RAISE EXCEPTION 'KL_REGISTRY_DEPENDENCY_CYCLE';
+    RAISE EXCEPTION 'KL_REGISTRY_VALIDITY_UNDEFINED';
   END IF;
   IF (SELECT count(*) FROM kineticloop.safety_artifacts
       WHERE id = ANY(p_dependency_ids)) <> cardinality(p_dependency_ids) THEN
@@ -264,7 +448,7 @@ BEGIN
     WHERE edge.artifact_id = ANY(p_dependency_ids)
       AND NOT edge.dependency_artifact_id = ANY(p_dependency_ids)
   ) THEN
-    RAISE EXCEPTION 'KL_REGISTRY_DEPENDENCY_INCOMPLETE';
+    RAISE EXCEPTION 'KL_REGISTRY_VALIDITY_UNDEFINED';
   END IF;
 
   WITH RECURSIVE walk(node_id, depth) AS (
@@ -293,7 +477,7 @@ BEGIN
   SELECT EXISTS (SELECT 1 FROM reach WHERE origin_id = node_id)
     INTO cycle_found;
   IF cycle_found IS TRUE THEN
-    RAISE EXCEPTION 'KL_REGISTRY_DEPENDENCY_CYCLE';
+    RAISE EXCEPTION 'KL_REGISTRY_VALIDITY_UNDEFINED';
   END IF;
   IF dependency_count > {MAX_DEPENDENCY_NODES}
      OR maximum_depth > {MAX_DEPENDENCY_DEPTH} THEN
@@ -339,6 +523,10 @@ EXCEPTION
     RAISE EXCEPTION 'KL_REGISTRY_TIMEOUT';
   WHEN unique_violation THEN
     RAISE EXCEPTION 'KL_REGISTRY_IMMUTABLE_ARTIFACT';
+  WHEN foreign_key_violation THEN
+    RAISE EXCEPTION 'KL_REGISTRY_ARTIFACT_UNKNOWN';
+  WHEN check_violation OR not_null_violation OR invalid_text_representation THEN
+    RAISE EXCEPTION 'KL_REGISTRY_VALIDITY_UNDEFINED';
 END
 $routine$
 """
@@ -348,6 +536,7 @@ def upgrade() -> None:
     # Catalog-only role validation must precede every object change.
     op.execute(PREFLIGHT_SQL)
     op.execute("SET LOCAL ROLE kl_migration_owner")
+    op.execute(LEGACY_TIMELESS_PREFLIGHT_SQL)
     op.execute("ALTER TABLE kineticloop.safety_artifacts DROP CONSTRAINT ck_s49_exact_typed_binding")
     op.execute("ALTER TABLE kineticloop.safety_artifacts DROP CONSTRAINT ck_s49_validity_spec")
     op.execute("""
@@ -357,6 +546,8 @@ def upgrade() -> None:
             AND timeless_approval_policy IS NULL AND timeless_approval_reason IS NULL)
           OR (validity_kind = 'TIMELESS' AND valid_until IS NULL
             AND btrim(timeless_approval_policy) <> ''
+            AND timeless_approval_policy ~
+              '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
             AND btrim(timeless_approval_reason) <> '')
         ) IS TRUE)
     """)
@@ -426,6 +617,7 @@ def upgrade() -> None:
     )
     op.execute("GRANT CREATE ON SCHEMA kineticloop TO kl_writer_safety_registry")
     op.execute("SET LOCAL ROLE kl_writer_safety_registry")
+    op.execute(_publish_guard_sql(hardened=True))
     op.execute(REGISTER_ROUTINE_SQL)
     signature = (
         "kineticloop.registry_register_artifact("
@@ -439,12 +631,16 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.execute(PREFLIGHT_SQL)
+    op.execute("SET LOCAL ROLE kl_migration_owner")
+    op.execute("GRANT CREATE ON SCHEMA kineticloop TO kl_writer_safety_registry")
     op.execute("SET LOCAL ROLE kl_writer_safety_registry")
+    op.execute(_publish_guard_sql(hardened=False))
     op.execute(
         "DROP FUNCTION kineticloop.registry_register_artifact("
         "uuid,text,text,uuid[],text,text,text,integer)"
     )
     op.execute("SET LOCAL ROLE kl_migration_owner")
+    op.execute("REVOKE CREATE ON SCHEMA kineticloop FROM kl_writer_safety_registry")
     op.execute("DROP TABLE kineticloop.artifact_registration_outbox")
     op.execute("DROP TABLE kineticloop.artifact_registration_events")
     op.execute("DROP TABLE kineticloop.registry_artifact_receipts")

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import threading
 import time
@@ -111,13 +112,14 @@ def registration_contract(
     dependencies: tuple[str, ...] = (_SAFETY.ARTIFACT_ID, _SAFETY.DEPENDENCY_ID),
     identity: str = "planner-model",
     version: str = "1",
+    binding_id: str = _SAFETY.RELEASE_ID,
 ) -> ArtifactRegistration:
     validity = ArtifactValiditySpec(
         validity_kind="BOUNDED",
         valid_from=VALIDITY_NOW - timedelta(days=1),
         valid_until=VALIDITY_NOW + timedelta(days=30),
         binding_kind=ArtifactBindingKind.EVALUATION_RELEASE,
-        binding_id=_SAFETY.RELEASE_ID,
+        binding_id=binding_id,
     )
     command = RegisterArtifact.model_validate(
         {
@@ -158,12 +160,13 @@ def invoke_register(
     content_hash: str = "c" * 64,
     dependencies: tuple[str, ...] = (_SAFETY.ARTIFACT_ID, _SAFETY.DEPENDENCY_ID),
     spec: str | None = None,
+    artifact_kind: str = "MODEL",
 ) -> tuple[Any, ...] | None:
     return connection.execute(
         "SELECT * FROM kineticloop.registry_register_artifact(%s,%s,%s,%s,%s,%s,%s,%s)",
         (
             UUID(artifact_id),
-            "MODEL",
+            artifact_kind,
             content_hash,
             [UUID(value) for value in dependencies],
             "planner-model",
@@ -206,6 +209,10 @@ def registry_snapshot(admin_url: str) -> tuple[Any, ...]:
         return tuple(row)
 
 
+def closure_hash(*artifact_ids: str) -> str:
+    return hashlib.sha256(",".join(sorted(artifact_ids)).encode()).hexdigest()
+
+
 def test_artifact_identity_is_immutable(db_urls: dict[str, str]) -> None:
     with connect(db_urls["trusted_admin"]) as trusted:
         first = invoke_register(trusted)
@@ -244,7 +251,9 @@ def test_artifact_dependencies_must_be_pre_registered(db_urls: dict[str, str]) -
 
 def test_artifact_dependency_graph_is_acyclic(db_urls: dict[str, str]) -> None:
     with connect(db_urls["trusted_admin"]) as trusted:
-        with pytest.raises(psycopg.errors.RaiseException, match="KL_REGISTRY_DEPENDENCY_CYCLE"):
+        with pytest.raises(
+            psycopg.errors.RaiseException, match="KL_REGISTRY_VALIDITY_UNDEFINED"
+        ):
             invoke_register(trusted, dependencies=(NEW_ARTIFACT_ID,))
         trusted.rollback()
 
@@ -256,7 +265,9 @@ def test_artifact_dependency_graph_is_acyclic(db_urls: dict[str, str]) -> None:
         )
         admin.commit()
     with connect(db_urls["trusted_admin"]) as trusted:
-        with pytest.raises(psycopg.errors.RaiseException, match="KL_REGISTRY_DEPENDENCY_CYCLE"):
+        with pytest.raises(
+            psycopg.errors.RaiseException, match="KL_REGISTRY_VALIDITY_UNDEFINED"
+        ):
             invoke_register(trusted)
         trusted.rollback()
     assert registration_counts(db_urls["admin"]) == (0, 0, 0, 0)
@@ -571,6 +582,22 @@ def test_artifact_timeless_policy_is_registered_dependency(
     with connect(db_urls["trusted_admin"]) as trusted:
         assert invoke_register(trusted, spec=timeless_validity_spec()) is not None
         trusted.commit()
+        with connect(db_urls["admin"]) as admin:
+            admin.execute("SET LOCAL session_replication_role=replica")
+            admin.execute(
+                "UPDATE kineticloop.decision_manifests "
+                "SET ref_s49_id=%s,dependency_closure_hash=%s WHERE id=%s",
+                (
+                    UUID(NEW_ARTIFACT_ID),
+                    closure_hash(
+                        NEW_ARTIFACT_ID,
+                        _SAFETY.ARTIFACT_ID,
+                        _SAFETY.DEPENDENCY_ID,
+                    ),
+                    UUID(_SAFETY.MANIFEST_ID),
+                ),
+            )
+            admin.commit()
         revoke_at = datetime.now(UTC)
         assert trusted.execute(
             "SELECT * FROM kineticloop.registry_revoke_artifact("
@@ -597,6 +624,21 @@ def test_artifact_timeless_policy_is_registered_dependency(
         UUID(_SAFETY.ARTIFACT_ID),
         UUID(_SAFETY.DEPENDENCY_ID),
     ]
+    with connect(db_urls["application"]) as application:
+        with pytest.raises(
+            psycopg.errors.RaiseException,
+            match="KL_REGISTRY_DEPENDENCY_INCOMPLETE",
+        ):
+            application.execute(
+                "SELECT kineticloop.registry_guard_publish_manifest(%s,%s,0,1000)",
+                (
+                    UUID(_SAFETY.SUBJECT_ID),
+                    [UUID(_SAFETY.DEPENDENCY_ID)],
+                ),
+            )
+        application.rollback()
+    assert registry_snapshot(db_urls["admin"]) == before_denials
+
     for routine in (
         "registry_guard_publish_manifest",
         "registry_guard_commit_bundle",
@@ -646,6 +688,66 @@ def test_artifact_repository_maps_immutable_and_natural_identity_conflicts(
             )
     assert natural_conflict.value.code is ArtifactRegistryDenialCode.IMMUTABLE_ARTIFACT
     assert registry_snapshot(db_urls["admin"]) == expected
+
+
+def test_artifact_repository_normalizes_public_input_denials(
+    db_urls: dict[str, str],
+) -> None:
+    initial = registry_snapshot(db_urls["admin"])
+    with connect(db_urls["trusted_admin"]) as trusted:
+        with pytest.raises(RegistryDenied) as unknown_root:
+            register_artifact(
+                trusted,
+                registration_contract(
+                    binding_id="00000000-0000-8000-8000-00000000ffff"
+                ),
+            )
+    assert unknown_root.value.code is RegistryDenialCode.ARTIFACT_UNKNOWN
+    assert registry_snapshot(db_urls["admin"]) == initial
+
+    with connect(db_urls["trusted_admin"]) as trusted:
+        with pytest.raises(RegistryDenied) as incomplete:
+            register_artifact(
+                trusted,
+                registration_contract(dependencies=(_SAFETY.ARTIFACT_ID,)),
+            )
+    assert incomplete.value.code is RegistryDenialCode.VALIDITY_UNDEFINED
+    assert registry_snapshot(db_urls["admin"]) == initial
+
+    with connect(db_urls["admin"]) as admin:
+        admin.execute(
+            "INSERT INTO kineticloop.safety_artifact_dependencies"
+            "(artifact_id,dependency_artifact_id) VALUES (%s,%s)",
+            (UUID(_SAFETY.DEPENDENCY_ID), UUID(_SAFETY.ARTIFACT_ID)),
+        )
+        admin.commit()
+    cycle_state = registry_snapshot(db_urls["admin"])
+    with connect(db_urls["trusted_admin"]) as trusted:
+        with pytest.raises(RegistryDenied) as cycle:
+            register_artifact(trusted, registration_contract())
+    assert cycle.value.code is RegistryDenialCode.VALIDITY_UNDEFINED
+    assert registry_snapshot(db_urls["admin"]) == cycle_state
+
+    _SAFETY.seed(db_urls["admin"])
+    direct_state = registry_snapshot(db_urls["admin"])
+    direct_cases: tuple[tuple[tuple[str, ...], str], ...] = (
+        ((NEW_ARTIFACT_ID,), "MODEL"),
+        ((_SAFETY.ARTIFACT_ID, _SAFETY.ARTIFACT_ID), "MODEL"),
+        ((_SAFETY.ARTIFACT_ID, _SAFETY.DEPENDENCY_ID), "POLICY"),
+    )
+    for dependencies, artifact_kind in direct_cases:
+        with connect(db_urls["trusted_admin"]) as trusted:
+            with pytest.raises(
+                psycopg.errors.RaiseException,
+                match="KL_REGISTRY_VALIDITY_UNDEFINED",
+            ):
+                invoke_register(
+                    trusted,
+                    dependencies=dependencies,
+                    artifact_kind=artifact_kind,
+                )
+            trusted.rollback()
+        assert registry_snapshot(db_urls["admin"]) == direct_state
 
 
 def test_artifact_dependency_dense_graph_is_bounded(db_urls: dict[str, str]) -> None:

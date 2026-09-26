@@ -23,13 +23,16 @@ TRANSITIVE_ID = "00000000-0000-8000-8000-000000000004"
 RELEASE_ID = "00000000-0000-8000-8000-000000000005"
 
 
-def validity() -> ArtifactValiditySpec:
+def validity(
+    *,
+    binding_kind: ArtifactBindingKind = ArtifactBindingKind.EVALUATION_RELEASE,
+) -> ArtifactValiditySpec:
     now = datetime(2026, 9, 26, tzinfo=UTC)
     return ArtifactValiditySpec(
         validity_kind="BOUNDED",
         valid_from=now,
         valid_until=now + timedelta(days=30),
-        binding_kind=ArtifactBindingKind.EVALUATION_RELEASE,
+        binding_kind=binding_kind,
         binding_id=RELEASE_ID,
     )
 
@@ -73,11 +76,40 @@ def test_artifact_registration_requires_management_capability() -> None:
             RegisterArtifact.model_validate(registration_payload(role=role))
 
     asserted = registration_payload()
-    asserted_actor = dict(asserted["actor"])  # type: ignore[arg-type]
+    asserted_actor = asserted["actor"]
+    assert isinstance(asserted_actor, dict)
     asserted_actor["capability"] = "ADMINISTER_PRODUCTION"
     asserted["actor"] = asserted_actor
     with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
         RegisterArtifact.model_validate(asserted)
+
+    duplicate_payload = registration_payload()
+    duplicate_payload["dependency_ids"] = (DEPENDENCY_ID, DEPENDENCY_ID)
+    with pytest.raises(ArtifactDependencyError, match="unique"):
+        ArtifactRegistration(
+            command=RegisterArtifact.model_validate(duplicate_payload),
+            artifact_identity="planner-model",
+            artifact_version="1",
+            validity=validity(),
+        )
+
+    self_cycle_payload = registration_payload()
+    self_cycle_payload["dependency_ids"] = (ARTIFACT_ID,)
+    with pytest.raises(ArtifactDependencyError, match="itself"):
+        ArtifactRegistration(
+            command=RegisterArtifact.model_validate(self_cycle_payload),
+            artifact_identity="planner-model",
+            artifact_version="1",
+            validity=validity(),
+        )
+
+    with pytest.raises(ValueError, match="do not match"):
+        ArtifactRegistration(
+            command=command,
+            artifact_identity="planner-model",
+            artifact_version="1",
+            validity=validity(binding_kind=ArtifactBindingKind.POLICY_BUNDLE),
+        )
 
 
 def test_artifact_dependency_closure_required() -> None:

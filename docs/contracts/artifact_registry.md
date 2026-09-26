@@ -19,7 +19,11 @@ of identities already present in S49. A TIMELESS approval names a canonical UUID
 pre-registered `POLICY` or `POLICY_BUNDLE` artifact; that identity must be an explicit member
 of the declared closure, so its later T2-GLOBAL revocation denies T3, T6, and T7. Omitted,
 JSON-null, blank, one-sided, or non-increasing validity fields fail with
-`VALIDITY_UNDEFINED`; the successor also makes the S49 validity check NULL-total.
+`VALIDITY_UNDEFINED`; the successor also makes the S49 validity check NULL-total. Before it
+installs that constraint, upgrade performs a deterministic preflight over legacy TIMELESS
+rows and aborts if any approval policy is not a canonical registered `POLICY` or
+`POLICY_BUNDLE` connected by an explicit dependency edge. A malformed legacy row therefore
+cannot become eligible merely because the successor was installed.
 
 The closure must be unique, acyclic, no more than 128 nodes, and no more than 16 edges deep.
 SQL verifies it with bounded duplicate-suppressing traversal, so dense DAGs do not cause path
@@ -39,5 +43,12 @@ Runtime application, audit, user, and agent sessions receive no direct S49/S51 D
 assume the owner role, and cannot execute RegisterArtifact.
 
 T3, T6, and T7 continue to require exact artifact references and use the shared S51 routines.
-Unknown, expired, or revoked identities remain fail-closed. Registration adds no production
-auto-activation and makes no product-requirement PASS claim.
+For T3, the registry guard loads the subject's current S24 manifest root and closure digest,
+requires that root in the caller-supplied complete closure, and compares S24's digest with the
+deterministic digest of those exact supplied identities before evaluating every member. The
+caller therefore cannot substitute an unrelated healthy closure, and SQL does not construct
+the closure inside the coordination transaction. At use time, every TIMELESS member is
+checked again for its canonical registered policy dependency inside that exact closure;
+revoking only that policy denies T3, T6, and T7 before mutation. Unknown, expired, or revoked
+identities remain fail-closed. Registration adds no production auto-activation and makes no
+product-requirement PASS claim.
