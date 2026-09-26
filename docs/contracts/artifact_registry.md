@@ -15,14 +15,26 @@ Registration takes the singleton S51 row `FOR UPDATE` and holds that exclusive g
 commit. It never reads or locks S01. Under the gate it admits only immutable MODEL, PROMPT,
 TOOL, RUNTIME, or POLICY identity/version/content tuples with an exact S05, S19, or S48 root,
 defined BOUNDED or explicitly approved TIMELESS validity, and an explicitly complete closure
-of identities already present in S49. The closure must be unique, acyclic, no more than 128
-nodes, and no more than 16 edges deep. Closure construction and external work remain outside
-the transaction; SQL independently verifies the submitted closure before admission.
+of identities already present in S49. A TIMELESS approval names a canonical UUID for a
+pre-registered `POLICY` or `POLICY_BUNDLE` artifact; that identity must be an explicit member
+of the declared closure, so its later T2-GLOBAL revocation denies T3, T6, and T7. Omitted,
+JSON-null, blank, one-sided, or non-increasing validity fields fail with
+`VALIDITY_UNDEFINED`; the successor also makes the S49 validity check NULL-total.
+
+The closure must be unique, acyclic, no more than 128 nodes, and no more than 16 edges deep.
+SQL verifies it with bounded duplicate-suppressing traversal, so dense DAGs do not cause path
+enumeration. A closure whose validity cannot be established within either bound fails with
+the frozen `VALIDITY_UNDEFINED` denial and no registration mutation. Closure construction and
+external work remain outside the transaction; SQL independently verifies the submitted
+closure before admission.
 
 Successful first admission atomically appends S49, normalized dependency edges, a management
 receipt, an audit event, and an outbox row. Exact replay returns the original registration;
 reuse of an artifact identity with different identity, version, content, dependency, binding,
-or validity is rejected. Existing immutable-history triggers reject S49/dependency mutation.
+or validity is rejected. Both an existing artifact-id conflict and the S49 natural-identity
+unique conflict surface as stable `IMMUTABLE_ARTIFACT` domain denials. Lock timeout and any
+failure after the first S49 write roll back S49, dependency edges, receipt, audit event, and
+outbox together. Existing immutable-history triggers reject S49/dependency mutation.
 Runtime application, audit, user, and agent sessions receive no direct S49/S51 DML, cannot
 assume the owner role, and cannot execute RegisterArtifact.
 

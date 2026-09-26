@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
+from enum import StrEnum
+from typing import Any, cast
 from uuid import UUID
 
 import psycopg
@@ -27,6 +28,12 @@ class ArtifactRegistryTransactionStateError(RuntimeError):
     """RegisterArtifact must own its top-level transaction through commit."""
 
 
+class ArtifactRegistryDenialCode(StrEnum):
+    """RegisterArtifact-specific frozen public denials."""
+
+    IMMUTABLE_ARTIFACT = "IMMUTABLE_ARTIFACT"
+
+
 _DATABASE_DENIALS = {
     "KL_REGISTRY_COMMAND_NOT_AUTHORIZED": RegistryDenialCode.COMMAND_NOT_AUTHORIZED,
     "KL_REGISTRY_ARTIFACT_UNKNOWN": RegistryDenialCode.ARTIFACT_UNKNOWN,
@@ -34,6 +41,7 @@ _DATABASE_DENIALS = {
     "KL_REGISTRY_VALIDITY_UNDEFINED": RegistryDenialCode.VALIDITY_UNDEFINED,
     "KL_REGISTRY_UNAVAILABLE": RegistryDenialCode.REGISTRY_UNAVAILABLE,
     "KL_REGISTRY_TIMEOUT": RegistryDenialCode.REGISTRY_TIMEOUT,
+    "KL_REGISTRY_IMMUTABLE_ARTIFACT": ArtifactRegistryDenialCode.IMMUTABLE_ARTIFACT,
 }
 
 
@@ -87,5 +95,5 @@ def register_artifact(
         message = str(error)
         for marker, denial in _DATABASE_DENIALS.items():
             if marker in message:
-                raise RegistryDenied(denial) from error
+                raise RegistryDenied(cast(RegistryDenialCode, denial)) from error
         raise

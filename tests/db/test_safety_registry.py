@@ -1268,6 +1268,7 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
             "registry_guard_reauthorize",
             "registry_guard_resume_session",
             "registry_guard_start_session",
+            "registry_register_artifact",
             "registry_revoke_artifact",
         ]
         assert all(row[2] == "kl_writer_safety_registry" for row in rows)
@@ -1279,20 +1280,49 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
         assert all(row[5] is True for row in rows)
         for name, signature, _owner, _security, _config, _acl in rows:
             expected_role = (
-                "kl_trusted_admin" if name == "registry_revoke_artifact" else "kl_application"
-            )
-            denied_role = (
-                "kl_application" if name == "registry_revoke_artifact" else "kl_trusted_admin"
+                "kl_trusted_admin"
+                if name in {"registry_register_artifact", "registry_revoke_artifact"}
+                else "kl_application"
             )
             assert connection.execute(
                 "SELECT has_function_privilege(%s,%s,'EXECUTE')",
                 (expected_role, signature),
             ).fetchone() == (True,)
-            for role in (denied_role, "kl_auditor"):
+            denied_roles = (
+                ("kl_application", "kl_auditor", "kl_user_login", "kl_agent_login")
+                if name in {"registry_register_artifact", "registry_revoke_artifact"}
+                else ("kl_trusted_admin", "kl_auditor")
+            )
+            for role in denied_roles:
                 assert connection.execute(
                     "SELECT has_function_privilege(%s,%s,'EXECUTE')",
                     (role, signature),
                 ).fetchone() == (False,)
+        registration_signature = (
+            "registry_register_artifact(uuid,text,text,uuid[],text,text,text,integer)"
+        )
+        assert next(row[1] for row in rows if row[0] == "registry_register_artifact") == (
+            registration_signature
+        )
+
+    for url_key in ("application", "auditor", "user", "agent"):
+        with connect(db_urls[url_key]) as runtime:
+            with pytest.raises(psycopg.errors.InsufficientPrivilege):
+                runtime.execute(
+                    "SELECT kineticloop.registry_register_artifact("
+                    "%s,%s,%s,%s,%s,%s,%s,%s)",
+                    (
+                        UUID(MISSING_ID),
+                        "MODEL",
+                        "f" * 64,
+                        [],
+                        "denied",
+                        "1",
+                        "{}",
+                        100,
+                    ),
+                )
+            runtime.rollback()
 
 
 def create_hostile_temp_registry_objects(connection: Connection[Any]) -> None:

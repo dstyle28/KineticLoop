@@ -115,6 +115,7 @@ DECLARE
   valid_from timestamptz;
   valid_until timestamptz;
   approval_policy text;
+  approval_policy_id uuid;
   approval_reason text;
   binding_kind text;
   binding_id uuid;
@@ -158,16 +159,25 @@ BEGIN
   EXCEPTION WHEN OTHERS THEN
     RAISE EXCEPTION 'KL_REGISTRY_VALIDITY_UNDEFINED';
   END;
-  IF validity_kind IS NULL OR valid_from IS NULL OR binding_kind IS NULL OR binding_id IS NULL
+  IF validity_kind IS NULL OR btrim(validity_kind) = ''
+     OR valid_from IS NULL OR binding_kind IS NULL OR btrim(binding_kind) = ''
+     OR binding_id IS NULL
      OR coalesce((validity ->> 'closure_complete')::boolean, false) IS NOT TRUE
-     OR NOT (
+     OR NOT ((
        (validity_kind = 'BOUNDED' AND valid_until > valid_from
         AND approval_policy IS NULL AND approval_reason IS NULL)
        OR
        (validity_kind = 'TIMELESS' AND valid_until IS NULL
         AND btrim(approval_policy) <> '' AND btrim(approval_reason) <> '')
-     ) THEN
+     ) IS TRUE) THEN
     RAISE EXCEPTION 'KL_REGISTRY_VALIDITY_UNDEFINED';
+  END IF;
+  IF validity_kind = 'TIMELESS' THEN
+    BEGIN
+      approval_policy_id := approval_policy::uuid;
+    EXCEPTION WHEN OTHERS THEN
+      RAISE EXCEPTION 'KL_REGISTRY_VALIDITY_UNDEFINED';
+    END;
   END IF;
   IF NOT (
     (p_artifact_kind IN ('POLICY', 'POLICY_BUNDLE') AND binding_kind = 'POLICY_BUNDLE')
@@ -231,7 +241,22 @@ BEGIN
     RAISE EXCEPTION 'KL_REGISTRY_ARTIFACT_UNKNOWN';
   END IF;
   IF cardinality(p_dependency_ids) > {MAX_DEPENDENCY_NODES} THEN
-    RAISE EXCEPTION 'KL_REGISTRY_DEPENDENCY_BOUND_EXCEEDED';
+    RAISE EXCEPTION 'KL_REGISTRY_VALIDITY_UNDEFINED';
+  END IF;
+  IF validity_kind = 'TIMELESS' THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM kineticloop.safety_artifacts AS policy
+      WHERE policy.id = approval_policy_id
+    ) THEN
+      RAISE EXCEPTION 'KL_REGISTRY_ARTIFACT_UNKNOWN';
+    END IF;
+    IF NOT EXISTS (
+      SELECT 1 FROM kineticloop.safety_artifacts AS policy
+      WHERE policy.id = approval_policy_id
+        AND policy.artifact_kind IN ('POLICY', 'POLICY_BUNDLE')
+    ) OR NOT (approval_policy_id = ANY(p_dependency_ids)) THEN
+      RAISE EXCEPTION 'KL_REGISTRY_VALIDITY_UNDEFINED';
+    END IF;
   END IF;
   IF EXISTS (
     SELECT 1
@@ -242,27 +267,37 @@ BEGIN
     RAISE EXCEPTION 'KL_REGISTRY_DEPENDENCY_INCOMPLETE';
   END IF;
 
-  WITH RECURSIVE walk(root_id, node_id, depth, path, cycle) AS (
-    SELECT supplied.value, supplied.value, 0, ARRAY[supplied.value], false
+  WITH RECURSIVE walk(node_id, depth) AS (
+    SELECT supplied.value, 0
     FROM unnest(p_dependency_ids) AS supplied(value)
-    UNION ALL
-    SELECT walk.root_id, edge.dependency_artifact_id, walk.depth + 1,
-      walk.path || edge.dependency_artifact_id,
-      edge.dependency_artifact_id = ANY(walk.path)
+    UNION
+    SELECT edge.dependency_artifact_id, walk.depth + 1
     FROM walk
     JOIN kineticloop.safety_artifact_dependencies AS edge
       ON edge.artifact_id = walk.node_id
-    WHERE NOT walk.cycle AND walk.depth < {MAX_DEPENDENCY_DEPTH + 1}
+    WHERE walk.depth < {MAX_DEPENDENCY_DEPTH + 1}
   )
-  SELECT count(DISTINCT node_id), coalesce(max(depth), 0), bool_or(cycle)
-    INTO dependency_count, maximum_depth, cycle_found
+  SELECT count(DISTINCT node_id), coalesce(max(depth), 0)
+    INTO dependency_count, maximum_depth
   FROM walk;
-  IF cycle_found THEN
+  WITH RECURSIVE reach(origin_id, node_id) AS (
+    SELECT edge.artifact_id, edge.dependency_artifact_id
+    FROM kineticloop.safety_artifact_dependencies AS edge
+    WHERE edge.artifact_id = ANY(p_dependency_ids)
+    UNION
+    SELECT reach.origin_id, edge.dependency_artifact_id
+    FROM reach
+    JOIN kineticloop.safety_artifact_dependencies AS edge
+      ON edge.artifact_id = reach.node_id
+  )
+  SELECT EXISTS (SELECT 1 FROM reach WHERE origin_id = node_id)
+    INTO cycle_found;
+  IF cycle_found IS TRUE THEN
     RAISE EXCEPTION 'KL_REGISTRY_DEPENDENCY_CYCLE';
   END IF;
   IF dependency_count > {MAX_DEPENDENCY_NODES}
      OR maximum_depth > {MAX_DEPENDENCY_DEPTH} THEN
-    RAISE EXCEPTION 'KL_REGISTRY_DEPENDENCY_BOUND_EXCEEDED';
+    RAISE EXCEPTION 'KL_REGISTRY_VALIDITY_UNDEFINED';
   END IF;
 
   new_registered_at := clock_timestamp();
@@ -302,6 +337,8 @@ BEGIN
 EXCEPTION
   WHEN lock_not_available OR query_canceled THEN
     RAISE EXCEPTION 'KL_REGISTRY_TIMEOUT';
+  WHEN unique_violation THEN
+    RAISE EXCEPTION 'KL_REGISTRY_IMMUTABLE_ARTIFACT';
 END
 $routine$
 """
@@ -312,6 +349,17 @@ def upgrade() -> None:
     op.execute(PREFLIGHT_SQL)
     op.execute("SET LOCAL ROLE kl_migration_owner")
     op.execute("ALTER TABLE kineticloop.safety_artifacts DROP CONSTRAINT ck_s49_exact_typed_binding")
+    op.execute("ALTER TABLE kineticloop.safety_artifacts DROP CONSTRAINT ck_s49_validity_spec")
+    op.execute("""
+        ALTER TABLE kineticloop.safety_artifacts
+        ADD CONSTRAINT ck_s49_validity_spec CHECK ((
+          (validity_kind = 'BOUNDED' AND valid_until > valid_from
+            AND timeless_approval_policy IS NULL AND timeless_approval_reason IS NULL)
+          OR (validity_kind = 'TIMELESS' AND valid_until IS NULL
+            AND btrim(timeless_approval_policy) <> ''
+            AND btrim(timeless_approval_reason) <> '')
+        ) IS TRUE)
+    """)
     op.execute("""
         ALTER TABLE kineticloop.safety_artifacts
         ADD CONSTRAINT ck_s49_exact_typed_binding CHECK (
@@ -401,6 +449,17 @@ def downgrade() -> None:
     op.execute("DROP TABLE kineticloop.artifact_registration_events")
     op.execute("DROP TABLE kineticloop.registry_artifact_receipts")
     op.execute("ALTER TABLE kineticloop.safety_artifacts DROP CONSTRAINT ck_s49_exact_typed_binding")
+    op.execute("ALTER TABLE kineticloop.safety_artifacts DROP CONSTRAINT ck_s49_validity_spec")
+    op.execute("""
+        ALTER TABLE kineticloop.safety_artifacts
+        ADD CONSTRAINT ck_s49_validity_spec CHECK (
+          (validity_kind = 'BOUNDED' AND valid_until > valid_from
+            AND timeless_approval_policy IS NULL AND timeless_approval_reason IS NULL)
+          OR (validity_kind = 'TIMELESS' AND valid_until IS NULL
+            AND btrim(timeless_approval_policy) <> ''
+            AND btrim(timeless_approval_reason) <> '')
+        )
+    """)
     op.execute("""
         ALTER TABLE kineticloop.safety_artifacts
         ADD CONSTRAINT ck_s49_exact_typed_binding CHECK (
