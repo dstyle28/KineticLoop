@@ -1,13 +1,20 @@
 from __future__ import annotations
 
 import os
+import re
 from concurrent.futures import ThreadPoolExecutor
+from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
+from unittest.mock import patch
+from urllib.parse import quote, urlsplit, urlunsplit
+from uuid import UUID
 
 import psycopg
 import pytest
 from alembic import command
 from alembic.config import Config
+from alembic.script import ScriptDirectory
+from psycopg import sql
 
 from kineticloop.db.lifecycle import DatabaseLifecycle, DatabaseLifecycleError
 from kineticloop.persistence.fact_children import FACT_CHILD_PLANS
@@ -26,21 +33,173 @@ from kineticloop.persistence.schema_topology import (
 )
 
 ROOT = Path(__file__).parents[2]
-REVISION = "76fd67f76bd4"
+BASELINE_REVISION = "76fd67f76bd4"
+REVISION = "a3f91c7d2e10"
 MIGRATION = ROOT / "migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py"
+SUCCESSOR = ROOT / "migrations/versions/a3f91c7d2e10_safety_registry_integration.py"
+
+ROLE_PASSWORD = "kl072-local-only"
+PROTECTED_ROLES = (
+    "kl_migration_owner",
+    "kl_writer_safety_registry",
+    "kl_application",
+    "kl_auditor",
+    "kl_trusted_admin",
+)
 
 
-def upgrade_empty(lifecycle: DatabaseLifecycle) -> None:
-    connection = lifecycle.reset()
+def role_url(admin_url: str, role: str) -> str:
+    parsed = urlsplit(admin_url)
+    hostname = parsed.hostname or "127.0.0.1"
+    if ":" in hostname:
+        hostname = f"[{hostname}]"
+    port = f":{parsed.port}" if parsed.port is not None else ""
+    netloc = f"{quote(role)}:{quote(ROLE_PASSWORD)}@{hostname}{port}"
+    return urlunsplit((parsed.scheme, netloc, parsed.path, parsed.query, parsed.fragment))
+
+
+def run_alembic(database_url: str, revision: str) -> None:
     previous = os.environ.get("DATABASE_URL")
-    os.environ["DATABASE_URL"] = connection.url
+    os.environ["DATABASE_URL"] = database_url
     try:
-        command.upgrade(Config(ROOT / "alembic.ini"), "head")
+        command.upgrade(Config(ROOT / "alembic.ini"), revision)
     finally:
         if previous is None:
             os.environ.pop("DATABASE_URL", None)
         else:
             os.environ["DATABASE_URL"] = previous
+
+
+def run_alembic_downgrade(database_url: str, revision: str) -> None:
+    previous = os.environ.get("DATABASE_URL")
+    os.environ["DATABASE_URL"] = database_url
+    try:
+        command.downgrade(Config(ROOT / "alembic.ini"), revision)
+    finally:
+        if previous is None:
+            os.environ.pop("DATABASE_URL", None)
+        else:
+            os.environ["DATABASE_URL"] = previous
+
+
+def provision_external_roles(admin_url: str) -> None:
+    role_names = sorted(
+        RUNTIME_ROLE_NAMES
+        | {
+            "kl_cluster_bootstrap",
+            "kl_migration_deployer",
+            "kl_migration_owner",
+            "kl_trusted_admin",
+            "kl_application_login",
+            "kl_auditor_login",
+            "kl_stop_login",
+            "kl_trusted_admin_login",
+        }
+    )
+    with psycopg.connect(admin_url, autocommit=True) as connection:
+        for role in PROTECTED_ROLES:
+            connection.execute(f"DROP ROLE IF EXISTS {role}_missing_test")
+        for role in role_names:
+            connection.execute(
+                f"DO $role$ BEGIN CREATE ROLE {role}; "
+                "EXCEPTION WHEN duplicate_object THEN NULL; END $role$"
+            )
+        memberships = connection.execute(
+            "SELECT parent.rolname parent_name, member.rolname member_name "
+            "FROM pg_auth_members membership "
+            "JOIN pg_roles parent ON parent.oid=membership.roleid "
+            "JOIN pg_roles member ON member.oid=membership.member "
+            "WHERE parent.rolname = ANY(%s::text[]) OR member.rolname = ANY(%s::text[])",
+            (role_names, role_names),
+        ).fetchall()
+        for parent, member in memberships:
+            connection.execute(
+                sql.SQL("REVOKE {} FROM {}").format(sql.Identifier(parent), sql.Identifier(member))
+            )
+        for role in sorted(RUNTIME_ROLE_NAMES | {"kl_migration_owner", "kl_trusted_admin"}):
+            connection.execute(
+                f"ALTER ROLE {role} NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE "
+                "NOINHERIT NOREPLICATION NOBYPASSRLS"
+            )
+        connection.execute(
+            f"ALTER ROLE kl_cluster_bootstrap LOGIN PASSWORD '{ROLE_PASSWORD}' "
+            "SUPERUSER NOCREATEDB CREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS"
+        )
+        for role in (
+            "kl_migration_deployer",
+            "kl_application_login",
+            "kl_auditor_login",
+            "kl_stop_login",
+            "kl_trusted_admin_login",
+        ):
+            connection.execute(
+                f"ALTER ROLE {role} LOGIN PASSWORD '{ROLE_PASSWORD}' "
+                "NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS"
+            )
+        for role in ("kl_application_login", "kl_auditor_login", "kl_trusted_admin_login"):
+            connection.execute(f"ALTER ROLE {role} INHERIT")
+
+
+def external_ownership_handoff(admin_url: str, database_name: str) -> None:
+    with psycopg.connect(admin_url, autocommit=True) as connection:
+        connection.execute("REASSIGN OWNED BY kl_cluster_bootstrap TO kl_migration_owner")
+        connection.execute(f'ALTER DATABASE "{database_name}" OWNER TO kl_migration_owner')
+        connection.execute(
+            "ALTER ROLE kl_cluster_bootstrap NOLOGIN NOSUPERUSER NOCREATEDB "
+            "NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS"
+        )
+        connection.execute(
+            "GRANT kl_migration_owner, kl_writer_safety_registry "
+            "TO kl_migration_deployer WITH INHERIT FALSE, SET TRUE"
+        )
+        connection.execute(
+            "GRANT kl_application TO kl_application_login WITH INHERIT TRUE, SET FALSE"
+        )
+        connection.execute(
+            "GRANT kl_auditor TO kl_auditor_login WITH INHERIT TRUE, SET FALSE"
+        )
+        connection.execute(
+            "GRANT kl_trusted_admin TO kl_trusted_admin_login WITH INHERIT TRUE, SET FALSE"
+        )
+        connection.execute(
+            "GRANT kl_writer_decision_state_coordinator TO kl_stop_login "
+            "WITH INHERIT TRUE, SET FALSE"
+        )
+        connection.execute(
+            "GRANT CONNECT ON DATABASE " + f'"{database_name}"' + " TO "
+            "kl_migration_deployer, kl_application_login, kl_stop_login, "
+            "kl_trusted_admin_login, kl_auditor_login"
+        )
+        connection.execute("GRANT SELECT ON public.alembic_version TO kl_migration_deployer")
+
+
+def bootstrap_two_phase(lifecycle: DatabaseLifecycle, *, head: bool = True) -> dict[str, str]:
+    database = lifecycle.reset()
+    admin_url = database.url
+    provision_external_roles(admin_url)
+    with psycopg.connect(admin_url, autocommit=True) as connection:
+        connection.execute(
+            f'ALTER DATABASE "{database.database_name}" OWNER TO kl_cluster_bootstrap'
+        )
+    bootstrap_url = role_url(admin_url, "kl_cluster_bootstrap")
+    run_alembic(bootstrap_url, BASELINE_REVISION)
+    external_ownership_handoff(admin_url, database.database_name)
+    deployer_url = role_url(admin_url, "kl_migration_deployer")
+    if head:
+        run_alembic(deployer_url, "head")
+    return {
+        "admin": admin_url,
+        "bootstrap": bootstrap_url,
+        "deployer": deployer_url,
+        "application": role_url(admin_url, "kl_application_login"),
+        "auditor": role_url(admin_url, "kl_auditor_login"),
+        "stop": role_url(admin_url, "kl_stop_login"),
+        "trusted_admin": role_url(admin_url, "kl_trusted_admin_login"),
+    }
+
+
+def upgrade_empty(lifecycle: DatabaseLifecycle) -> None:
+    bootstrap_two_phase(lifecycle)
 
 
 @pytest.fixture()
@@ -55,10 +214,318 @@ def test_empty_db_upgrade_head(migrated_database: DatabaseLifecycle) -> None:
     assert migrated_database.execute_sql(
         "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace "
         "WHERE n.nspname='kineticloop' AND c.relkind='r';"
-    ) == str(len(LOGICAL_RELATIONS) + len(FACT_CHILD_PLANS) + 4)
-    assert migrated_database.execute_sql(
-        "SELECT registry_revision FROM kineticloop.safety_registry_state WHERE id=1;"
-    ) == "0"
+    ) == str(len(LOGICAL_RELATIONS) + len(FACT_CHILD_PLANS) + 7)
+    assert (
+        migrated_database.execute_sql(
+            "SELECT registry_revision FROM kineticloop.safety_registry_state WHERE id=1;"
+        )
+        == "0"
+    )
+
+
+def test_safety_registry_successor_migration_chain() -> None:
+    config = Config(ROOT / "alembic.ini")
+    revisions = list(ScriptDirectory.from_config(config).walk_revisions())
+    assert [revision.revision for revision in revisions] == [REVISION, BASELINE_REVISION]
+    assert revisions[0].down_revision == BASELINE_REVISION
+    assert revisions[1].down_revision is None
+    assert (
+        MIGRATION.read_bytes()
+        == (ROOT / "migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py").read_bytes()
+    )
+
+
+def test_safety_registry_successor_contains_no_cluster_role_ddl() -> None:
+    spec = spec_from_file_location("kl072_migration", SUCCESSOR)
+    assert spec is not None and spec.loader is not None
+    migration = module_from_spec(spec)
+    spec.loader.exec_module(migration)
+    statements: list[str] = []
+    with patch.object(migration.op, "execute", side_effect=lambda sql: statements.append(str(sql))):
+        migration.upgrade()
+        migration.downgrade()
+    emitted = "\n".join(statements)
+    forbidden = (
+        r"\bCREATE\s+(?:ROLE|USER)\b",
+        r"\bALTER\s+(?:ROLE|USER)\b",
+        r"\bDROP\s+(?:ROLE|USER)\b",
+        r"\bREASSIGN\s+OWNED\b",
+        r"\bGRANT\s+\w+\s+TO\s+\w+\s+WITH\s+(?:ADMIN|SET|INHERIT)\b",
+        r"\bREVOKE\s+\w+\s+FROM\s+\w+\b",
+    )
+    assert statements[0].strip().startswith("DO $preflight$")
+    for pattern in forbidden:
+        assert re.search(pattern, emitted, flags=re.IGNORECASE) is None
+
+    lifecycle = DatabaseLifecycle(ROOT)
+    urls = bootstrap_two_phase(lifecycle)
+    with psycopg.connect(urls["deployer"]) as connection:
+        row = connection.execute(
+            "SELECT rolsuper, rolcreaterole FROM pg_roles WHERE rolname=session_user"
+        ).fetchone()
+        assert row == (False, False)
+
+
+def test_two_phase_empty_db_upgrade_head() -> None:
+    lifecycle = DatabaseLifecycle(ROOT)
+    urls = bootstrap_two_phase(lifecycle)
+    assert lifecycle.execute_sql("SELECT version_num FROM alembic_version") == REVISION
+    with psycopg.connect(urls["admin"]) as connection:
+        row = connection.execute(
+            "SELECT rolcanlogin,rolsuper,rolcreaterole FROM pg_roles "
+            "WHERE rolname='kl_cluster_bootstrap'"
+        ).fetchone()
+        assert row == (False, False, False)
+    with psycopg.connect(urls["deployer"]) as connection:
+        row = connection.execute(
+            "SELECT rolsuper, rolcreaterole, "
+            "pg_has_role(session_user,'kl_migration_owner','SET'), "
+            "pg_has_role(session_user,'kl_writer_safety_registry','SET') "
+            "FROM pg_roles WHERE rolname=session_user"
+        ).fetchone()
+        assert row == (False, False, True, True)
+
+
+def catalog_fingerprint(admin_url: str) -> str:
+    with psycopg.connect(admin_url) as connection:
+        row = connection.execute(
+            """
+            WITH catalog_rows AS (
+              SELECT 'version:' || version_num AS value FROM alembic_version
+              UNION ALL
+              SELECT 'class:' || c.oid::regclass::text || ':' || c.relkind::text || ':' ||
+                     pg_get_userbyid(c.relowner) || ':' || coalesce(c.relacl::text, '')
+              FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+              WHERE n.nspname='kineticloop'
+              UNION ALL
+              SELECT 'proc:' || p.oid::regprocedure::text || ':' ||
+                     pg_get_userbyid(p.proowner) || ':' || coalesce(p.proacl::text, '')
+              FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+              WHERE n.nspname='kineticloop'
+              UNION ALL
+              SELECT 'role:' || rolname || ':' || rolcanlogin::text || ':' || rolsuper::text || ':' ||
+                     rolcreatedb::text || ':' || rolcreaterole::text || ':' || rolinherit::text || ':' ||
+                     rolreplication::text || ':' || rolbypassrls::text
+              FROM pg_roles WHERE rolname = ANY(%s::text[])
+              UNION ALL
+              SELECT 'membership:' || parent.rolname || ':' || member.rolname || ':' ||
+                     membership.set_option::text || ':' || membership.inherit_option::text || ':' ||
+                     membership.admin_option::text
+              FROM pg_auth_members membership
+              JOIN pg_roles parent ON parent.oid=membership.roleid
+              JOIN pg_roles member ON member.oid=membership.member
+              WHERE parent.rolname = ANY(%s::text[]) OR member.rolname = ANY(%s::text[])
+            ) SELECT md5(string_agg(value, E'\n' ORDER BY value)) FROM catalog_rows
+            """,
+            (list(PROTECTED_ROLES), list(PROTECTED_ROLES), list(PROTECTED_ROLES)),
+        ).fetchone()
+        assert row is not None
+        return str(row[0])
+
+
+def assert_preflight_failure(urls: dict[str, str]) -> None:
+    before = catalog_fingerprint(urls["admin"])
+    with pytest.raises(Exception, match="KL_SAFETY_REGISTRY_ROLE_PREFLIGHT"):
+        run_alembic(urls["deployer"], "head")
+    assert catalog_fingerprint(urls["admin"]) == before
+    with psycopg.connect(urls["admin"]) as connection:
+        assert connection.execute("SELECT version_num FROM alembic_version").fetchone() == (
+            BASELINE_REVISION,
+        )
+
+
+def test_safety_registry_role_preflight_fails_before_object_changes() -> None:
+    lifecycle = DatabaseLifecycle(ROOT)
+    urls = bootstrap_two_phase(lifecycle, head=False)
+    admin_url = urls["admin"]
+    with psycopg.connect(admin_url, autocommit=True) as admin:
+        for role in PROTECTED_ROLES:
+            renamed = role + "_missing_test"
+            admin.execute(f"ALTER ROLE {role} RENAME TO {renamed}")
+            assert_preflight_failure(urls)
+            admin.execute(f"ALTER ROLE {renamed} RENAME TO {role}")
+
+        attributes = (
+            ("LOGIN", "NOLOGIN"),
+            ("SUPERUSER", "NOSUPERUSER"),
+            ("CREATEDB", "NOCREATEDB"),
+            ("CREATEROLE", "NOCREATEROLE"),
+            ("INHERIT", "NOINHERIT"),
+            ("REPLICATION", "NOREPLICATION"),
+            ("BYPASSRLS", "NOBYPASSRLS"),
+        )
+        for role in PROTECTED_ROLES:
+            for unsafe, safe in attributes:
+                admin.execute(f"ALTER ROLE {role} {unsafe}")
+                assert_preflight_failure(urls)
+                admin.execute(f"ALTER ROLE {role} {safe}")
+
+        admin.execute("GRANT kl_application TO kl_auditor")
+        assert_preflight_failure(urls)
+        admin.execute("REVOKE kl_application FROM kl_auditor")
+
+        admin.execute(
+            "CREATE ROLE kl072_membership_bridge NOLOGIN NOSUPERUSER NOCREATEDB "
+            "NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS"
+        )
+        admin.execute(
+            "GRANT kl_application TO kl072_membership_bridge "
+            "WITH ADMIN FALSE, INHERIT FALSE, SET TRUE"
+        )
+        admin.execute(
+            "GRANT kl072_membership_bridge TO kl_auditor "
+            "WITH ADMIN FALSE, INHERIT FALSE, SET TRUE"
+        )
+        assert_preflight_failure(urls)
+        admin.execute("REVOKE kl072_membership_bridge FROM kl_auditor")
+        admin.execute("REVOKE kl_application FROM kl072_membership_bridge")
+
+        admin.execute(
+            "GRANT kl072_membership_bridge TO kl_migration_owner "
+            "WITH ADMIN FALSE, INHERIT FALSE, SET TRUE"
+        )
+        assert_preflight_failure(urls)
+        admin.execute("REVOKE kl072_membership_bridge FROM kl_migration_owner")
+        admin.execute("DROP ROLE kl072_membership_bridge")
+
+        for owner in ("kl_migration_owner", "kl_writer_safety_registry"):
+            admin.execute(f"REVOKE {owner} FROM kl_migration_deployer")
+            assert_preflight_failure(urls)
+            admin.execute(f"GRANT {owner} TO kl_migration_deployer WITH INHERIT FALSE, SET TRUE")
+
+            for options in (
+                "ADMIN TRUE, INHERIT FALSE, SET TRUE",
+                "ADMIN FALSE, INHERIT TRUE, SET TRUE",
+                "ADMIN FALSE, INHERIT FALSE, SET FALSE",
+            ):
+                admin.execute(f"REVOKE {owner} FROM kl_migration_deployer")
+                admin.execute(
+                    f"GRANT {owner} TO kl_migration_deployer WITH {options}"
+                )
+                assert_preflight_failure(urls)
+                admin.execute(f"REVOKE {owner} FROM kl_migration_deployer")
+                admin.execute(
+                    f"GRANT {owner} TO kl_migration_deployer "
+                    "WITH ADMIN FALSE, INHERIT FALSE, SET TRUE"
+                )
+
+        admin.execute(
+            "GRANT kl_auditor TO kl_migration_deployer "
+            "WITH ADMIN FALSE, INHERIT FALSE, SET FALSE"
+        )
+        assert_preflight_failure(urls)
+        admin.execute("REVOKE kl_auditor FROM kl_migration_deployer")
+
+    run_alembic(urls["deployer"], "head")
+
+
+def test_safety_registry_migrated_object_ownership() -> None:
+    lifecycle = DatabaseLifecycle(ROOT)
+    bootstrap_two_phase(lifecycle)
+    wrong_owners = lifecycle.execute_sql(
+        """
+        SELECT c.oid::regclass::text || ':' || pg_get_userbyid(c.relowner)
+        FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+        WHERE n.nspname='kineticloop' AND c.relkind IN ('r','S')
+          AND pg_get_userbyid(c.relowner) <> 'kl_migration_owner'
+        ORDER BY 1
+        """
+    )
+    assert wrong_owners == ""
+    wrong_functions = lifecycle.execute_sql(
+        """
+        SELECT p.oid::regprocedure::text || ':' || pg_get_userbyid(p.proowner)
+        FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+        WHERE n.nspname='kineticloop'
+          AND p.proname NOT LIKE 'registry_guard_%'
+          AND p.proname <> 'registry_revoke_artifact'
+          AND pg_get_userbyid(p.proowner) <> 'kl_migration_owner'
+        ORDER BY 1
+        """
+    )
+    assert wrong_functions == ""
+    assert (
+        lifecycle.execute_sql(
+            "SELECT rolcanlogin OR rolsuper OR rolcreatedb OR rolcreaterole OR rolinherit "
+            "OR rolreplication OR rolbypassrls FROM pg_roles "
+            "WHERE rolname='kl_migration_owner'"
+        )
+        == "f"
+    )
+
+
+def test_safety_registry_repository_integrates_with_migrated_schema() -> None:
+    support_spec = spec_from_file_location(
+        "kl072_safety_test_support", ROOT / "tests/db/test_safety_registry.py"
+    )
+    assert support_spec is not None and support_spec.loader is not None
+    support = module_from_spec(support_spec)
+    support_spec.loader.exec_module(support)
+
+    lifecycle = DatabaseLifecycle(ROOT)
+    urls = bootstrap_two_phase(lifecycle)
+    support.seed(urls["admin"])
+    with psycopg.connect(urls["application"]) as application:
+        assert (
+            support.execute_shared_registry_command(
+                application,
+                support.eligibility(support.RegistryCommand.START_SESSION),
+                support.mutate(support.RegistryCommand.START_SESSION),
+            )
+            == 1
+        )
+    with psycopg.connect(urls["trusted_admin"]) as trusted_admin:
+        first = support.revoke_artifact(
+            trusted_admin,
+            support.revoke_command(),
+            effective_at=support.NOW,
+            reason_code="EMERGENCY",
+        )
+    with psycopg.connect(urls["trusted_admin"]) as trusted_admin:
+        replay = support.revoke_artifact(
+            trusted_admin,
+            support.revoke_command(),
+            effective_at=support.NOW,
+            reason_code="EMERGENCY",
+        )
+    assert replay == first
+    with psycopg.connect(urls["trusted_admin"]) as trusted_admin:
+        with pytest.raises(support.RegistryDenied) as denial:
+            support.revoke_artifact(
+                trusted_admin,
+                support.revoke_command(request_hash="f" * 64),
+                effective_at=support.NOW,
+                reason_code="EMERGENCY",
+            )
+    assert denial.value.code is support.RegistryDenialCode.IDEMPOTENCY_CONFLICT
+    with psycopg.connect(urls["admin"]) as admin:
+        row = admin.execute(
+            "SELECT s.registry_revision, r.operator_identity, r.command_key, "
+            "r.request_hash, r.causation_incident_id, r.outbox_delivery_id "
+            "FROM kineticloop.safety_registry_state s "
+            "JOIN kineticloop.artifact_revocation_events r "
+            "ON r.id=s.last_revocation_id WHERE s.id=1"
+        ).fetchone()
+        assert row is not None
+        assert row[:5] == (
+            1,
+            "kl_trusted_admin_login",
+            "revoke-1",
+            "d" * 64,
+            UUID(support.INCIDENT_ID),
+        )
+        assert row[5] is not None
+        migrated_rows = admin.execute(
+            "SELECT "
+            "(SELECT count(*) FROM kineticloop.user_decision_state),"
+            "(SELECT count(*) FROM kineticloop.command_receipts),"
+            "(SELECT count(*) FROM kineticloop.domain_events),"
+            "(SELECT count(*) FROM kineticloop.outbox_deliveries),"
+            "(SELECT count(*) FROM kineticloop.safety_artifacts),"
+            "(SELECT count(*) FROM kineticloop.artifact_revocation_events),"
+            "(SELECT registry_revision FROM kineticloop.safety_registry_state WHERE id=1)"
+        ).fetchone()
+        assert migrated_rows == (1, 1, 1, 1, 2, 1, 1)
 
 
 def test_logical_inventory_complete(migrated_database: DatabaseLifecycle) -> None:
@@ -71,15 +538,21 @@ def test_logical_inventory_complete(migrated_database: DatabaseLifecycle) -> Non
     assert {row.split()[0] for row in rows} == {f"S{number:02d}" for number in range(1, 52)}
     assert len(rows) == 51
     for plan in FACT_CHILD_PLANS.values():
-        assert migrated_database.execute_sql(
-            "SELECT to_regclass('kineticloop." + plan.table_name + "') IS NOT NULL;"
-        ) == "t"
-    assert migrated_database.execute_sql(
-        "SELECT count(*) FROM pg_constraint con JOIN pg_namespace n ON n.oid=con.connamespace "
-        "WHERE n.nspname='kineticloop' AND con.contype='f' "
-        "AND con.conrelid IN ('kineticloop.replay_artifact_fact_revision_sources'::regclass, "
-        "'kineticloop.replay_artifact_mapping_revision_sources'::regclass);"
-    ) == "4"
+        assert (
+            migrated_database.execute_sql(
+                "SELECT to_regclass('kineticloop." + plan.table_name + "') IS NOT NULL;"
+            )
+            == "t"
+        )
+    assert (
+        migrated_database.execute_sql(
+            "SELECT count(*) FROM pg_constraint con JOIN pg_namespace n ON n.oid=con.connamespace "
+            "WHERE n.nspname='kineticloop' AND con.contype='f' "
+            "AND con.conrelid IN ('kineticloop.replay_artifact_fact_revision_sources'::regclass, "
+            "'kineticloop.replay_artifact_mapping_revision_sources'::regclass);"
+        )
+        == "4"
+    )
 
 
 def test_fk_order_matches_topology(migrated_database: DatabaseLifecycle) -> None:
@@ -122,16 +595,23 @@ def test_fk_order_matches_topology(migrated_database: DatabaseLifecycle) -> None
 
 
 def test_immutable_history_materialized(migrated_database: DatabaseLifecycle) -> None:
-    immutable_tables = {
-        protection.table_name
-        for protection in PROTECTION_BY_ID.values()
-        if protection.storage_class is StorageClass.IMMUTABLE
-    } | {plan.table_name for plan in FACT_CHILD_PLANS.values()} | {
-        "replay_artifact_fact_revision_sources",
-        "replay_artifact_mapping_revision_sources",
-        "safety_artifact_dependencies",
-        "authorization_artifact_closure",
-    }
+    immutable_tables = (
+        {
+            protection.table_name
+            for protection in PROTECTION_BY_ID.values()
+            if protection.storage_class is StorageClass.IMMUTABLE
+        }
+        | {plan.table_name for plan in FACT_CHILD_PLANS.values()}
+        | {
+            "replay_artifact_fact_revision_sources",
+            "replay_artifact_mapping_revision_sources",
+            "safety_artifact_dependencies",
+            "authorization_artifact_closure",
+            "registry_management_receipts",
+            "registry_audit_events",
+            "registry_outbox",
+        }
+    )
     guarded = set(
         migrated_database.execute_sql(
             "SELECT c.relname FROM pg_trigger t JOIN pg_class c ON c.oid=t.tgrelid "
@@ -153,15 +633,16 @@ def test_immutable_history_materialized(migrated_database: DatabaseLifecycle) ->
             "UPDATE kineticloop.policy_bundles SET policy_version='2';"
         )
     with pytest.raises(DatabaseLifecycleError, match="KL_IMMUTABLE_HISTORY_MUTATION_REJECTED"):
-        migrated_database.execute_sql(
-            "UPDATE kineticloop.policy_bundles SET policy_version='2';"
-        )
+        migrated_database.execute_sql("UPDATE kineticloop.policy_bundles SET policy_version='2';")
     policy_writer = role_name_for(PROTECTION_BY_ID["S05"].writers[0].principal)
-    assert migrated_database.execute_sql(
-        f"SELECT has_table_privilege('{policy_writer}', 'kineticloop.policy_bundles', 'INSERT') "
-        f"AND NOT has_table_privilege('{policy_writer}', 'kineticloop.policy_bundles', 'UPDATE') "
-        f"AND NOT pg_has_role('{DatabaseRole.APPLICATION.value}', '{policy_writer}', 'MEMBER');"
-    ) == "t"
+    assert (
+        migrated_database.execute_sql(
+            f"SELECT has_table_privilege('{policy_writer}', 'kineticloop.policy_bundles', 'INSERT') "
+            f"AND NOT has_table_privilege('{policy_writer}', 'kineticloop.policy_bundles', 'UPDATE') "
+            f"AND NOT pg_has_role('{DatabaseRole.APPLICATION.value}', '{policy_writer}', 'MEMBER');"
+        )
+        == "t"
+    )
 
 
 def test_frozen_natural_keys_and_authorization_basis(
@@ -183,11 +664,14 @@ def test_frozen_natural_keys_and_authorization_basis(
             "('00000000-0000-0000-0000-000000000010','bound','START',"
             "transaction_timestamp(), transaction_timestamp() + interval '1 hour', 0);"
         )
-    assert migrated_database.execute_sql(
-        "SELECT count(*) FROM information_schema.columns WHERE table_schema='kineticloop' "
-        "AND table_name IN ('safety_artifacts','artifact_revocation_events') "
-        "AND column_name='subject_id';"
-    ) == "0"
+    assert (
+        migrated_database.execute_sql(
+            "SELECT count(*) FROM information_schema.columns WHERE table_schema='kineticloop' "
+            "AND table_name IN ('safety_artifacts','artifact_revocation_events') "
+            "AND column_name='subject_id';"
+        )
+        == "0"
+    )
 
 
 def test_registry_and_authorization_authority_is_materialized(
@@ -250,11 +734,14 @@ def test_registry_and_authorization_authority_is_materialized(
             "AND is_nullable='NO' ORDER BY column_name;"
         ).splitlines()
     ).issuperset(required_columns)
-    assert migrated_database.execute_sql(
-        "SELECT count(*) FROM pg_constraint WHERE connamespace='kineticloop'::regnamespace "
-        "AND conname IN ('uq_s39_commit_receipt','uq_authorization_events_natural',"
-        "'ck_s43_target_xor','ck_s43_cause_present');"
-    ) == "4"
+    assert (
+        migrated_database.execute_sql(
+            "SELECT count(*) FROM pg_constraint WHERE connamespace='kineticloop'::regnamespace "
+            "AND conname IN ('uq_s39_commit_receipt','uq_authorization_events_natural',"
+            "'ck_s43_target_xor','ck_s43_cause_present');"
+        )
+        == "4"
+    )
 
 
 def test_typed_fact_child_rejects_wrong_parent_kind(
@@ -310,43 +797,39 @@ def test_typed_fact_child_rejects_wrong_parent_kind(
 
 def test_role_reconciliation_and_no_application_write_bypass() -> None:
     lifecycle = DatabaseLifecycle(ROOT)
-    lifecycle.reset()
-    lifecycle.execute_sql(
-        "ALTER ROLE kl_writer_policy_registry LOGIN SUPERUSER INHERIT BYPASSRLS; "
-        "GRANT kl_writer_policy_registry TO kl_application;"
-    )
-    connection = lifecycle.connection()
-    previous = os.environ.get("DATABASE_URL")
-    os.environ["DATABASE_URL"] = connection.url
-    try:
-        command.upgrade(Config(ROOT / "alembic.ini"), "head")
-    finally:
-        if previous is None:
-            os.environ.pop("DATABASE_URL", None)
-        else:
-            os.environ["DATABASE_URL"] = previous
+    urls = bootstrap_two_phase(lifecycle)
 
     role_list = ",".join(f"'{role}'" for role in sorted(RUNTIME_ROLE_NAMES))
-    assert lifecycle.execute_sql(
-        "SELECT count(*) FROM pg_roles WHERE rolname IN (" + role_list + ") "
-        "AND (rolcanlogin OR rolsuper OR rolinherit OR rolcreaterole OR rolcreatedb "
-        "OR rolreplication OR rolbypassrls);"
-    ) == "0"
-    assert lifecycle.execute_sql(
-        "SELECT count(*) FROM pg_auth_members memberships "
-        "JOIN pg_roles parent ON parent.oid=memberships.roleid "
-        "JOIN pg_roles member ON member.oid=memberships.member "
-        "WHERE parent.rolname IN (" + role_list + ") OR member.rolname IN (" + role_list + ");"
-    ) == "0"
-    assert lifecycle.execute_sql(
-        "SELECT to_regprocedure('kineticloop.publish_policy_bundle(uuid,text,text,text,jsonb)') IS NULL;"
-    ) == "t"
-    with pytest.raises(DatabaseLifecycleError, match="permission denied"):
+    assert (
         lifecycle.execute_sql(
-            "SET ROLE kl_application; INSERT INTO kineticloop.policy_bundles"
-            "(subject_id,policy_namespace,policy_version,content_hash) VALUES "
-            "('00000000-0000-0000-0000-000000000020','bypass','1','hash-2');"
+            "SELECT count(*) FROM pg_roles WHERE rolname IN (" + role_list + ") "
+            "AND (rolcanlogin OR rolsuper OR rolinherit OR rolcreaterole OR rolcreatedb "
+            "OR rolreplication OR rolbypassrls);"
         )
+        == "0"
+    )
+    assert (
+        lifecycle.execute_sql(
+                "SELECT count(*) FROM pg_auth_members memberships "
+                "JOIN pg_roles parent ON parent.oid=memberships.roleid "
+                "JOIN pg_roles member ON member.oid=memberships.member "
+                "WHERE parent.rolname IN (" + role_list + ") AND member.rolname IN (" + role_list + ");"
+        )
+        == "0"
+    )
+    assert (
+        lifecycle.execute_sql(
+            "SELECT to_regprocedure('kineticloop.publish_policy_bundle(uuid,text,text,text,jsonb)') IS NULL;"
+        )
+        == "t"
+    )
+    with psycopg.connect(urls["application"]) as application:
+        with pytest.raises(psycopg.errors.InsufficientPrivilege):
+            application.execute(
+                "INSERT INTO kineticloop.policy_bundles"
+                "(subject_id,policy_namespace,policy_version,content_hash) VALUES "
+                "('00000000-0000-0000-0000-000000000020','bypass','1','hash-2')"
+            )
 
 
 def test_factset_member_seal_serializes_and_old_parent_is_guarded(
@@ -384,10 +867,13 @@ def test_factset_member_seal_serializes_and_old_parent_is_guarded(
         insert_connection.commit()
         future.result(timeout=5)
     insert_connection.close()
-    assert migrated_database.execute_sql(
-        f"SELECT status||':'||(SELECT count(*) FROM kineticloop.factset_members "
-        f"WHERE ref_s15_id='{parent}') FROM kineticloop.factset_revisions WHERE id='{parent}';"
-    ) == "READY:1"
+    assert (
+        migrated_database.execute_sql(
+            f"SELECT status||':'||(SELECT count(*) FROM kineticloop.factset_members "
+            f"WHERE ref_s15_id='{parent}') FROM kineticloop.factset_revisions WHERE id='{parent}';"
+        )
+        == "READY:1"
+    )
 
     building_parent = migrated_database.execute_sql(
         "INSERT INTO kineticloop.factset_revisions"
@@ -406,19 +892,17 @@ def test_factset_member_seal_serializes_and_old_parent_is_guarded(
 
 def test_upgrade_downgrade_roundtrip() -> None:
     lifecycle = DatabaseLifecycle(ROOT)
-    upgrade_empty(lifecycle)
-    previous = os.environ.get("DATABASE_URL")
-    os.environ["DATABASE_URL"] = lifecycle.connection().url
-    try:
-        config = Config(ROOT / "alembic.ini")
-        command.downgrade(config, "base")
-        assert lifecycle.execute_sql("SELECT to_regnamespace('kineticloop') IS NULL;") == "t"
-        command.upgrade(config, "head")
-    finally:
-        if previous is None:
-            os.environ.pop("DATABASE_URL", None)
-        else:
-            os.environ["DATABASE_URL"] = previous
+    urls = bootstrap_two_phase(lifecycle)
+    run_alembic_downgrade(urls["deployer"], BASELINE_REVISION)
+    assert lifecycle.execute_sql("SELECT version_num FROM alembic_version") == BASELINE_REVISION
+    assert (
+        lifecycle.execute_sql(
+            "SELECT to_regclass('kineticloop.registry_management_receipts') IS NULL"
+        )
+        == "t"
+    )
+    run_alembic(urls["deployer"], "head")
+    assert lifecycle.execute_sql("SELECT version_num FROM alembic_version") == REVISION
 
 
 def schema_signature(lifecycle: DatabaseLifecycle) -> str:

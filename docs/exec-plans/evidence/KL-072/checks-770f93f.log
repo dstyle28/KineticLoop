@@ -1,0 +1,80 @@
+KL-072 final verification evidence after complete review remediation
+tested_commit: 770f93f59644a4bc2162697fa4076fe7d8206be6
+executed_at: 2026-09-25 America/Los_Angeles
+environment: isolated worktree Docker Compose namespace kl_e44f_502d0a722547
+uv_resolution: /private/tmp/kl001-bootstrap/bin was prepended to PATH because uv was not globally installed
+
+check_id: baseline_migration_unchanged
+command: git diff --exit-code b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f HEAD -- migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py
+result: PASS
+output: exit 0; no diff
+
+check_id: single_successor_migration_head
+command: uv run pytest -q tests/db/test_migrations.py::test_safety_registry_successor_migration_chain
+result: PASS
+output: 1 passed in 0.15s
+
+check_id: successor_migration_contains_no_cluster_role_ddl
+command: uv run pytest -q tests/db/test_migrations.py::test_safety_registry_successor_contains_no_cluster_role_ddl
+result: PASS
+output: 1 passed in 2.20s
+
+check_id: safety_registry_role_preflight_fails_before_object_changes
+command: uv run pytest -q tests/db/test_migrations.py::test_safety_registry_role_preflight_fails_before_object_changes
+result: PASS
+output: 1 passed in 4.40s; covers missing roles, unsafe role attributes, protected cross-memberships, missing deployer memberships, ADMIN/INHERIT/SET option violations, and any extra deployer membership
+
+check_id: two_phase_empty_db_upgrade_head
+command: uv run pytest -q tests/db/test_migrations.py::test_two_phase_empty_db_upgrade_head
+result: PASS
+output: 1 passed in 2.11s
+
+check_id: safety_registry_migrated_schema_integration
+command: uv run pytest -q tests/db/test_migrations.py::test_safety_registry_repository_integrates_with_migrated_schema
+result: PASS
+output: 1 passed in 2.38s
+
+check_id: complete_safety_registry_suite_uses_migrated_schema
+command: uv run pytest -q tests/db/test_safety_registry.py
+result: PASS
+output: 39 passed in 23.51s
+
+check_id: safety_registry_object_ownership_enforced
+command: uv run pytest -q tests/db/test_migrations.py::test_safety_registry_migrated_object_ownership
+result: PASS
+output: 1 passed in 2.60s
+
+check_id: safety_registry_command_routine_privileges_enforced
+command: uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_command_routine_privileges
+result: PASS
+output: 1 passed in 2.35s
+
+check_id: safety_registry_role_owner_boundary_enforced
+command: uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_role_owner_boundary
+result: PASS
+output: 1 passed in 2.36s
+
+check_id: safety_registry_migrated_db_regressions_pass
+command: uv run pytest -q tests/db/test_migrations.py tests/db/test_safety_registry.py tests/db/test_immutability.py tests/db/test_lifecycle.py
+result: PASS
+output: 65 passed in 66.66s
+
+check_id: harness_validation_passes
+command: uv run kl check-harness
+result: PASS
+output: HARNESS_CHECK_PASS tasks=69 active=67
+
+supplemental_static_checks:
+  - command: uv run ruff check migrations/versions/a3f91c7d2e10_safety_registry_integration.py src/kineticloop/persistence/safety_registry.py tests/db/test_migrations.py tests/db/test_safety_registry.py
+    result: PASS
+    output: All checks passed!
+  - command: uv run mypy src/kineticloop/persistence/safety_registry.py tests/db/test_migrations.py tests/db/test_safety_registry.py
+    result: PASS
+    output: Success: no issues found in 3 source files
+
+oracle_notes:
+  - All oracle notes in checks-31f8473.log remain covered.
+  - The Phase-B preflight now requires exactly two direct deployer memberships: kl_migration_owner and kl_writer_safety_registry, each with SET true, INHERIT false, and ADMIN false. Catalog-fingerprint negatives prove every option violation and extra membership fails before successor changes.
+  - Eight T6 negatives independently falsify current manifest identity, active policy, manifest subject, policy binding, captured epoch, registry revision, validity, and primary artifact predicates.
+  - Thirteen T7 negatives independently falsify authorization subject, lower/upper validity, registry revision/state, primary artifact, certificate epoch, targeted S43 invalidation, and S42 closure completeness, exactness, subject, lower validity, and upper validity predicates.
+  - Every negative returns AUTHORIZATION_INELIGIBLE before the protected mutation; the full suite retains all lock, replay, atomicity, timeout, ACK-loss, role, spoof-resistance, and STOP-independence assertions.

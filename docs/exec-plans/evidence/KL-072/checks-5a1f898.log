@@ -1,0 +1,52 @@
+KL-072 exact verification evidence
+tested_commit: 5a1f898fe0bbb2a9893718f8a34965653f9421e0
+date: 2026-09-25
+
+$ git diff --exit-code b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f HEAD -- migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py
+PASS (exit 0, no diff)
+
+$ uv run pytest -q tests/db/test_migrations.py::test_safety_registry_successor_migration_chain
+1 passed in 0.17s
+
+$ uv run pytest -q tests/db/test_migrations.py::test_safety_registry_successor_contains_no_cluster_role_ddl
+1 passed in 2.32s
+
+$ uv run pytest -q tests/db/test_migrations.py::test_safety_registry_role_preflight_fails_before_object_changes
+1 passed in 4.81s
+
+$ uv run pytest -q tests/db/test_migrations.py::test_two_phase_empty_db_upgrade_head
+1 passed in 2.30s
+
+$ uv run pytest -q tests/db/test_migrations.py::test_safety_registry_repository_integrates_with_migrated_schema
+1 passed in 2.49s
+
+$ uv run pytest -q tests/db/test_safety_registry.py
+40 passed in 25.20s
+
+$ uv run pytest -q tests/db/test_migrations.py::test_safety_registry_migrated_object_ownership
+1 passed in 2.69s
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_command_routine_privileges
+1 passed in 2.52s
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_role_owner_boundary
+1 passed in 2.52s
+
+$ uv run pytest -q tests/db/test_migrations.py tests/db/test_safety_registry.py tests/db/test_immutability.py tests/db/test_lifecycle.py
+66 passed in 68.13s
+
+$ uv run kl check-harness
+HARNESS_CHECK_PASS tasks=69 active=67
+
+Supplemental checks:
+$ uv run ruff check .
+All checks passed!
+
+$ uv run mypy src tests/db/test_migrations.py tests/db/test_safety_registry.py
+Success: no issues found in 36 source files
+
+Review remediation verified by the complete real-PostgreSQL suite:
+- Both shared-gate and exclusive revoke SECURITY DEFINER routines reject a NULL
+  lock timeout before set_config or protected state access.
+- Direct-SQL regressions prove zero domain, S50, S51, receipt, audit, or outbox
+  mutation for NULL lock timeout inputs.

@@ -1,16 +1,19 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import threading
 import time
 from collections.abc import Iterator
 from datetime import UTC, datetime, timedelta
+from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from typing import Any
 from uuid import UUID
 
 import psycopg
 import pytest
-from psycopg import Connection
+from psycopg import Connection, sql
 
 from kineticloop.contracts.commands import RevokeArtifact, TransactionBoundary, TrustedActor
 from kineticloop.contracts.safety_registry import (
@@ -29,231 +32,274 @@ from kineticloop.persistence.safety_registry import (
     execute_stop_without_registry,
     revoke_artifact,
 )
+from kineticloop.primitives.times import canonical_utc
 
 ROOT = Path(__file__).parents[2]
+_MIGRATION_TEST_SPEC = spec_from_file_location(
+    "kl072_test_migrations", ROOT / "tests/db/test_migrations.py"
+)
+assert _MIGRATION_TEST_SPEC is not None and _MIGRATION_TEST_SPEC.loader is not None
+_MIGRATION_TESTS = module_from_spec(_MIGRATION_TEST_SPEC)
+_MIGRATION_TEST_SPEC.loader.exec_module(_MIGRATION_TESTS)
+bootstrap_two_phase: Any = _MIGRATION_TESTS.bootstrap_two_phase
 SUBJECT_ID = "00000000-0000-8000-8000-000000000001"
-ADMIN_ID = "00000000-0000-8000-8000-000000000002"
+CALLER_ADMIN_ID = "00000000-0000-8000-8000-000000000002"
 ARTIFACT_ID = "00000000-0000-8000-8000-000000000003"
 DEPENDENCY_ID = "00000000-0000-8000-8000-000000000004"
 INCIDENT_ID = "00000000-0000-8000-8000-000000000005"
-MISSING_DEPENDENCY_ID = "00000000-0000-8000-8000-000000000007"
+MISSING_ID = "00000000-0000-8000-8000-000000000007"
+POLICY_ID = "00000000-0000-8000-8000-000000000008"
+RELEASE_ID = "00000000-0000-8000-8000-000000000009"
+MANIFEST_ID = "00000000-0000-8000-8000-00000000000a"
+AUTHORIZATION_ID = "00000000-0000-8000-8000-00000000000b"
+RECEIPT_ID = "00000000-0000-8000-8000-00000000000c"
+EVENT_ID = "00000000-0000-8000-8000-00000000000d"
+OUTBOX_ID = "00000000-0000-8000-8000-00000000000e"
 CONTENT_HASH = "a" * 64
 NOW = datetime(2026, 9, 24, 18, tzinfo=UTC)
 
-SCHEMA_SQL = """
-CREATE TABLE safety_registry_state (
-    registry_scope text PRIMARY KEY,
-    registry_revision bigint NOT NULL CHECK (registry_revision >= 0),
-    last_revocation_id uuid
-);
-CREATE TABLE safety_artifacts (
-    artifact_id uuid PRIMARY KEY,
-    content_hash text NOT NULL,
-    dependency_ids uuid[] NOT NULL,
-    valid_from timestamptz,
-    valid_until timestamptz
-);
-CREATE TABLE artifact_revocation_events (
-    revocation_id uuid PRIMARY KEY,
-    artifact_id uuid NOT NULL REFERENCES safety_artifacts(artifact_id),
-    registry_revision bigint NOT NULL UNIQUE,
-    effective_at timestamptz NOT NULL,
-    recorded_at timestamptz NOT NULL DEFAULT clock_timestamp(),
-    reason_code text NOT NULL,
-    operator_identity uuid NOT NULL,
-    command_key text NOT NULL UNIQUE,
-    request_hash text NOT NULL,
-    causation_incident_id uuid NOT NULL
-);
-CREATE TABLE registry_management_receipts (
-    command_key text PRIMARY KEY,
-    request_hash text NOT NULL,
-    revocation_id uuid NOT NULL UNIQUE,
-    registry_revision bigint NOT NULL,
-    artifact_id uuid NOT NULL,
-    effective_at timestamptz NOT NULL,
-    recorded_at timestamptz NOT NULL
-);
-CREATE TABLE registry_audit_events (
-    event_id uuid PRIMARY KEY,
-    revocation_id uuid NOT NULL UNIQUE,
-    operator_identity uuid NOT NULL
-);
-CREATE TABLE registry_outbox (
-    delivery_id uuid PRIMARY KEY,
-    revocation_id uuid NOT NULL UNIQUE
-);
-CREATE TABLE subject_coordination (
-    subject_id uuid PRIMARY KEY,
-    t6_issuance_eligible boolean NOT NULL,
-    t7_execution_eligible boolean NOT NULL,
-    authorization_valid_until timestamptz
-);
-CREATE TABLE domain_mutations (
-    mutation_id bigserial PRIMARY KEY,
-    command_kind text NOT NULL,
-    registry_revision bigint,
-    subject_id uuid NOT NULL
-);
-CREATE TABLE authorization_history (
-    authorization_id uuid PRIMARY KEY,
-    authorized_at timestamptz NOT NULL,
-    artifact_id uuid NOT NULL
-);
-"""
-
 
 @pytest.fixture(scope="module")
-def database_url() -> Iterator[str]:
+def database_urls() -> Iterator[dict[str, str]]:
     lifecycle = DatabaseLifecycle(ROOT)
-    connection = lifecycle.reset(timeout_seconds=90)
-    yield connection.url
+    yield bootstrap_two_phase(lifecycle)
 
 
 @pytest.fixture
-def db_url(database_url: str) -> str:
-    with psycopg.connect(database_url, autocommit=True) as connection:
-        connection.execute("DROP SCHEMA public CASCADE")
-        connection.execute("CREATE SCHEMA public")
-        connection.execute(SCHEMA_SQL)
-    seed(database_url)
-    return database_url
+def db_urls(database_urls: dict[str, str]) -> dict[str, str]:
+    seed(database_urls["admin"])
+    return database_urls
 
 
-def connect(database_url: str, *, name: str = "kl016-test") -> Connection[Any]:
-    return psycopg.connect(database_url, application_name=name)
+def connect(url: str, *, name: str = "kl072-test") -> Connection[Any]:
+    return psycopg.connect(url, application_name=name)
 
 
-def seed(database_url: str) -> None:
-    with connect(database_url) as connection:
-        with connection.transaction():
-            connection.execute(
-                "INSERT INTO safety_registry_state VALUES ('system', 0, NULL)"
-            )
-            connection.execute(
-                """
-                INSERT INTO safety_artifacts
-                    (artifact_id, content_hash, dependency_ids, valid_from, valid_until)
-                VALUES
-                    (%s, %s, %s, clock_timestamp() - interval '1 day',
-                     clock_timestamp() + interval '30 days'),
-                    (%s, %s, %s, clock_timestamp() - interval '1 day',
-                     clock_timestamp() + interval '30 days')
-                """,
-                (
-                    UUID(DEPENDENCY_ID),
-                    "b" * 64,
-                    [],
-                    UUID(ARTIFACT_ID),
-                    CONTENT_HASH,
-                    [UUID(DEPENDENCY_ID)],
-                ),
-            )
-            connection.execute(
-                "INSERT INTO subject_coordination VALUES "
-                "(%s, true, true, clock_timestamp() + interval '1 day')",
-                (UUID(SUBJECT_ID),),
-            )
-            connection.execute(
-                "INSERT INTO authorization_history VALUES (%s, %s, %s)",
-                (
-                    UUID("00000000-0000-8000-8000-000000000006"),
-                    NOW - timedelta(hours=1),
-                    UUID(ARTIFACT_ID),
-                ),
-            )
-
-
-def clear_state(database_url: str) -> None:
-    with psycopg.connect(database_url, autocommit=True) as connection:
-        connection.execute("TRUNCATE registry_outbox, registry_audit_events")
+def seed(
+    admin_url: str,
+    *,
+    expires_at: datetime | None = None,
+    valid_from: datetime | None = None,
+    authorization_expires_at: datetime | None = None,
+) -> None:
+    with psycopg.connect(admin_url, autocommit=True) as connection:
+        seed_now = datetime.now(UTC)
+        connection.execute("SET session_replication_role = replica")
         connection.execute(
-            "TRUNCATE registry_management_receipts, artifact_revocation_events"
+            "TRUNCATE kineticloop.registry_outbox, kineticloop.registry_audit_events, "
+            "kineticloop.registry_management_receipts, kineticloop.artifact_revocation_events, "
+            "kineticloop.authorization_artifact_closure, kineticloop.authorization_issuances, "
+            "kineticloop.decision_manifests, "
+            "kineticloop.outbox_deliveries, kineticloop.domain_events, "
+            "kineticloop.command_receipts, "
+            "kineticloop.safety_artifact_dependencies, kineticloop.safety_artifacts, "
+            "kineticloop.user_decision_state, kineticloop.policy_bundles, "
+            "kineticloop.evaluation_releases CASCADE"
         )
-        connection.execute("TRUNCATE domain_mutations RESTART IDENTITY")
         connection.execute(
-            """
-            UPDATE safety_registry_state
-               SET registry_revision = 0, last_revocation_id = NULL
-            """
+            "INSERT INTO kineticloop.safety_registry_state(id,registry_revision,last_revocation_id) "
+            "VALUES (1,0,NULL) ON CONFLICT (id) DO UPDATE SET registry_revision=0, "
+            "last_revocation_id=NULL"
+        )
+        connection.execute("DROP TABLE IF EXISTS public.domain_mutations")
+        connection.execute(
+            "CREATE TABLE public.domain_mutations ("
+            "mutation_id bigserial PRIMARY KEY, command_kind text NOT NULL, "
+            "registry_revision bigint, subject_id uuid NOT NULL, protected_at timestamptz)"
+        )
+        connection.execute("ALTER TABLE public.domain_mutations OWNER TO kl_application_login")
+        connection.execute("GRANT INSERT ON public.domain_mutations TO kl_stop_login")
+        connection.execute(
+            "GRANT USAGE, SELECT ON SEQUENCE public.domain_mutations_mutation_id_seq "
+            "TO kl_stop_login"
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.policy_bundles"
+            "(id,subject_id,policy_namespace,policy_version,content_hash) "
+            "VALUES (%s,%s,'registry-test','1','policy-hash')",
+            (UUID(POLICY_ID), UUID(SUBJECT_ID)),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.evaluation_releases"
+            "(id,subject_id,release_namespace,release_version) "
+            "VALUES (%s,%s,'registry-test','1')",
+            (UUID(RELEASE_ID), UUID(SUBJECT_ID)),
         )
         connection.execute(
             """
-            UPDATE safety_artifacts
-               SET dependency_ids = CASE
-                       WHEN artifact_id = %s THEN ARRAY[%s]::uuid[]
-                       ELSE ARRAY[]::uuid[]
-                   END,
-                   valid_from = clock_timestamp() - interval '1 day',
-                   valid_until = clock_timestamp() + interval '30 days'
+            INSERT INTO kineticloop.safety_artifacts(
+              id, artifact_kind, artifact_identity, artifact_version, content_hash,
+              validity_kind, valid_from, valid_until, ref_s05_id, ref_s48_id
+            ) VALUES
+              (%s,'EVALUATION_RELEASE','dependency','1',%s,'BOUNDED',
+               %s,%s,NULL,%s),
+              (%s,'POLICY_BUNDLE','artifact','1',%s,'BOUNDED',
+               %s,%s,%s,NULL)
             """,
+            (
+                UUID(DEPENDENCY_ID),
+                "b" * 64,
+                valid_from or seed_now - timedelta(days=1),
+                expires_at or seed_now + timedelta(days=30),
+                UUID(RELEASE_ID),
+                UUID(ARTIFACT_ID),
+                CONTENT_HASH,
+                valid_from or seed_now - timedelta(days=1),
+                expires_at or seed_now + timedelta(days=30),
+                UUID(POLICY_ID),
+            ),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.safety_artifact_dependencies"
+            "(artifact_id,dependency_artifact_id) VALUES (%s,%s)",
             (UUID(ARTIFACT_ID), UUID(DEPENDENCY_ID)),
         )
         connection.execute(
-            """
-            UPDATE subject_coordination
-               SET t6_issuance_eligible = true,
-                   t7_execution_eligible = true,
-                   authorization_valid_until = clock_timestamp() + interval '1 day'
-            """
+            "INSERT INTO kineticloop.command_receipts("
+            "id,subject_id,status,command_kind,client_key,actor_scope,request_hash) "
+            "VALUES (%s,%s,'SUCCEEDED','IssueAuthorization','seed-authorization',"
+            "'subject','seed-request-hash')",
+            (UUID(RECEIPT_ID), UUID(SUBJECT_ID)),
         )
+        connection.execute(
+            "INSERT INTO kineticloop.domain_events("
+            "id,subject_id,aggregate_type,aggregate_identity,event_type,"
+            "aggregate_revision,ref_s02_id) "
+            "VALUES (%s,%s,'Authorization','seed-authorization','AuthorizationIssued',1,%s)",
+            (UUID(EVENT_ID), UUID(SUBJECT_ID), UUID(RECEIPT_ID)),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.outbox_deliveries("
+            "id,subject_id,destination,delivery_status,attempt_count,ref_s03_id) "
+            "VALUES (%s,%s,'authorization-events','PENDING',0,%s)",
+            (UUID(OUTBOX_ID), UUID(SUBJECT_ID), UUID(EVENT_ID)),
+        )
+        connection.execute(
+            """
+            INSERT INTO kineticloop.decision_manifests(
+              id, subject_id, manifest_hash, generation, captured_epoch,
+              registry_revision_at_publish, valid_until, ref_s05_id, ref_s06_id,
+              ref_s15_id, ref_s23_id, ref_s49_id, registry_state_id
+            ) VALUES (%s,%s,'manifest-hash',1,0,0,%s,%s,%s,%s,%s,%s,1)
+            """,
+            (
+                UUID(MANIFEST_ID), UUID(SUBJECT_ID),
+                authorization_expires_at or seed_now + timedelta(days=1),
+                UUID(POLICY_ID), UUID(POLICY_ID), UUID(POLICY_ID),
+                UUID(POLICY_ID), UUID(ARTIFACT_ID),
+            ),
+        )
+        connection.execute(
+            """
+            INSERT INTO kineticloop.authorization_issuances(
+              id, subject_id, bound_content_hash, scope,
+              artifact_dependency_closure_hash, registry_revision_at_issue,
+              valid_from, valid_until, validity_certificate, ref_s02_id,
+              ref_s05_id, ref_s24_id, ref_s36_id, ref_s37_id, ref_s40_id,
+              ref_s49_id, registry_state_id
+            ) VALUES (
+              %s,%s,'authorization-content','EXECUTION','closure-hash',0,
+              %s,%s,'{"authorization_epoch": 0}'::jsonb,%s,%s,%s,%s,%s,%s,%s,1
+            )
+            """,
+            (
+                UUID(AUTHORIZATION_ID), UUID(SUBJECT_ID),
+                seed_now - timedelta(days=1),
+                authorization_expires_at or seed_now + timedelta(days=1),
+                UUID(RECEIPT_ID), UUID(POLICY_ID), UUID(MANIFEST_ID),
+                UUID(POLICY_ID), UUID(POLICY_ID), UUID(POLICY_ID), UUID(ARTIFACT_ID),
+            ),
+        )
+        for artifact_id in (ARTIFACT_ID, DEPENDENCY_ID):
+            connection.execute(
+                "INSERT INTO kineticloop.authorization_artifact_closure"
+                "(subject_id,authorization_id,artifact_id,artifact_revision,valid_from,valid_until) "
+                "VALUES (%s,%s,%s,1,%s,%s)",
+                (
+                    UUID(SUBJECT_ID), UUID(AUTHORIZATION_ID), UUID(artifact_id),
+                    seed_now - timedelta(days=1),
+                    authorization_expires_at or seed_now + timedelta(days=1),
+                ),
+            )
+        connection.execute(
+            "INSERT INTO kineticloop.user_decision_state"
+            "(subject_id,authorization_epoch,current_manifest_id,active_policy_bundle_id) "
+            "VALUES (%s,0,%s,%s)",
+            (UUID(SUBJECT_ID), UUID(MANIFEST_ID), UUID(POLICY_ID)),
+        )
+        connection.execute("SET session_replication_role = origin")
 
 
 def eligibility(
-    command: RegistryCommand, *, minimum_registry_revision: int = 0
+    command: RegistryCommand,
+    *,
+    minimum_revision: int = 0,
+    artifact_ids: tuple[str, ...] = (ARTIFACT_ID, DEPENDENCY_ID),
 ) -> RegistryEligibility:
     return RegistryEligibility(
         command=command,
         subject_id=SUBJECT_ID,
-        artifact_ids=(ARTIFACT_ID, DEPENDENCY_ID),
-        minimum_registry_revision=minimum_registry_revision,
+        artifact_ids=artifact_ids,
+        minimum_registry_revision=minimum_revision,
     )
 
 
 def mutate(command: RegistryCommand) -> Any:
     def operation(cursor: Any, registry_revision: int) -> int:
         cursor.execute(
-            """
-            INSERT INTO domain_mutations (command_kind, registry_revision, subject_id)
-            VALUES (%s, %s, %s)
-            RETURNING mutation_id
-            """,
+            "INSERT INTO public.domain_mutations(command_kind,registry_revision,subject_id) "
+            "VALUES (%s,%s,%s) RETURNING mutation_id",
             (command.value, registry_revision, UUID(SUBJECT_ID)),
         )
-        return int(cursor.fetchone()[0])
+        row = cursor.fetchone()
+        assert row is not None
+        return int(row[0])
 
     return operation
 
 
-def mutation_count(database_url: str) -> int:
-    with connect(database_url) as connection:
-        row = connection.execute("SELECT count(*) FROM domain_mutations").fetchone()
+def mutation_count(admin_url: str) -> int:
+    with connect(admin_url) as connection:
+        row = connection.execute("SELECT count(*) FROM public.domain_mutations").fetchone()
         assert row is not None
         return int(row[0])
 
 
-def wait_until_blocked(database_url: str, application_name: str) -> None:
+def assert_denied(
+    urls: dict[str, str],
+    command_kind: RegistryCommand,
+    code: RegistryDenialCode,
+    *,
+    request: RegistryEligibility | None = None,
+) -> None:
+    with connect(urls["application"]) as connection:
+        with pytest.raises(RegistryDenied) as denial:
+            execute_shared_registry_command(
+                connection, request or eligibility(command_kind), mutate(command_kind)
+            )
+    assert denial.value.code is code
+    assert mutation_count(urls["admin"]) == 0
+
+
+def wait_until_blocked(admin_url: str, application_name: str) -> None:
     deadline = time.monotonic() + 5
-    with connect(database_url) as observer:
+    with connect(admin_url) as observer:
         while time.monotonic() < deadline:
             row = observer.execute(
-                """
-                SELECT cardinality(pg_blocking_pids(pid))
-                  FROM pg_stat_activity
-                 WHERE application_name = %s AND state <> 'idle'
-                """,
+                "SELECT cardinality(pg_blocking_pids(pid)) FROM pg_stat_activity "
+                "WHERE application_name=%s AND state<>'idle'",
                 (application_name,),
             ).fetchone()
             observer.rollback()
             if row is not None and row[0] > 0:
                 return
             time.sleep(0.02)
-    raise AssertionError(f"{application_name} did not block on the registry gate")
+    raise AssertionError(f"{application_name} did not block")
 
 
-def wait_until_database_time(database_url: str, target: datetime) -> None:
+def wait_until_database_time(admin_url: str, target: datetime) -> None:
     deadline = time.monotonic() + 5
-    with psycopg.connect(database_url, autocommit=True) as observer:
+    with psycopg.connect(admin_url, autocommit=True) as observer:
         while time.monotonic() < deadline:
             row = observer.execute("SELECT clock_timestamp() >= %s", (target,)).fetchone()
             if row is not None and row[0]:
@@ -262,181 +308,41 @@ def wait_until_database_time(database_url: str, target: datetime) -> None:
     raise AssertionError(f"database clock did not reach {target.isoformat()}")
 
 
-def direct_revoke(blocker: Connection[Any], command_key: str) -> None:
-    blocker.execute(
-        """
-        INSERT INTO artifact_revocation_events (
-            revocation_id, artifact_id, registry_revision, effective_at, reason_code,
-            operator_identity, command_key, request_hash, causation_incident_id
-        ) VALUES (%s, %s, 1, %s, 'TEST', %s, %s, %s, %s)
-        """,
+def invoke_revoke_sql(
+    connection: Connection[Any],
+    *,
+    key: str,
+    request_hash: str = "d" * 64,
+    effective_at: datetime = NOW,
+    reason_code: str = "EMERGENCY",
+    payload_hash: str | None = None,
+) -> Any:
+    return connection.execute(
+        "SELECT * FROM kineticloop.registry_revoke_artifact(%s,%s,%s,%s,%s,%s,%s,%s,5000)",
         (
-            UUID("00000000-0000-8000-8000-000000000010"),
-            UUID(ARTIFACT_ID),
-            NOW,
-            UUID(ADMIN_ID),
-            command_key,
-            "c" * 64,
-            UUID(INCIDENT_ID),
+            UUID(ARTIFACT_ID), CONTENT_HASH, effective_at, reason_code,
+            payload_hash or revocation_payload_hash(
+                effective_at=effective_at, reason_code=reason_code
+            ),
+            key, request_hash, UUID(INCIDENT_ID),
         ),
-    )
-    blocker.execute(
-        """
-        UPDATE safety_registry_state
-           SET registry_revision = 1,
-               last_revocation_id = %s
-         WHERE registry_scope = 'system'
-        """,
-        (UUID("00000000-0000-8000-8000-000000000010"),),
-    )
+    ).fetchone()
 
 
-def assert_subject_unlocked(database_url: str) -> None:
-    with connect(database_url) as observer:
-        observer.execute("SET LOCAL lock_timeout = '100ms'")
-        observer.execute(
-            "SELECT subject_id FROM subject_coordination WHERE subject_id = %s FOR UPDATE",
-            (UUID(SUBJECT_ID),),
-        )
-        observer.rollback()
-
-
-def run_waiting_shared_then_revoke(database_url: str, command: RegistryCommand) -> None:
-    clear_state(database_url)
-    blocker = connect(database_url, name=f"blocker-{command.value}")
-    blocker.execute(
-        "SELECT registry_revision FROM safety_registry_state WHERE registry_scope='system' FOR UPDATE"
-    )
-    outcome: dict[str, object] = {}
-    app_name = f"shared-{command.value}"
-
-    def worker() -> None:
-        try:
-            with connect(database_url, name=app_name) as connection:
-                execute_shared_registry_command(
-                    connection, eligibility(command), mutate(command), lock_timeout_ms=5_000
-                )
-        except BaseException as error:
-            outcome["error"] = error
-
-    thread = threading.Thread(target=worker)
-    thread.start()
-    wait_until_blocked(database_url, app_name)
-    assert_subject_unlocked(database_url)
-    direct_revoke(blocker, f"direct-{command.value}")
-    blocker.commit()
-    blocker.close()
-    thread.join(timeout=5)
-    assert not thread.is_alive()
-    error = outcome.get("error")
-    assert isinstance(error, RegistryDenied)
-    assert error.code is RegistryDenialCode.ARTIFACT_REVOKED
-    assert mutation_count(database_url) == 0
-
-
-def run_waiting_shared_then_expire(database_url: str, command: RegistryCommand) -> None:
-    clear_state(database_url)
-    blocker = connect(database_url, name=f"expiry-blocker-{command.value}")
-    blocker.execute(
-        "SELECT registry_revision FROM safety_registry_state "
-        "WHERE registry_scope='system' FOR UPDATE"
-    )
-    outcome: dict[str, object] = {}
-    app_name = f"expiry-shared-{command.value}"
-
-    def worker() -> None:
-        try:
-            with connect(database_url, name=app_name) as connection:
-                execute_shared_registry_command(
-                    connection, eligibility(command), mutate(command), lock_timeout_ms=5_000
-                )
-        except BaseException as error:
-            outcome["error"] = error
-
-    thread = threading.Thread(target=worker)
-    thread.start()
-    wait_until_blocked(database_url, app_name)
-    blocker.execute(
-        "UPDATE safety_artifacts "
-        "SET valid_until = clock_timestamp() - interval '1 second'"
-    )
-    blocker.commit()
-    blocker.close()
-    thread.join(timeout=5)
-    assert not thread.is_alive()
-    error = outcome.get("error")
-    assert isinstance(error, RegistryDenied)
-    assert error.code is RegistryDenialCode.ARTIFACT_EXPIRED
-    assert mutation_count(database_url) == 0
-
-
-def run_waiting_on_subject_then_expire(
-    database_url: str, command: RegistryCommand
+def run_revoke_first_then_shared_denies(
+    urls: dict[str, str], command_kind: RegistryCommand
 ) -> None:
-    clear_state(database_url)
-    blocker = connect(database_url, name=f"subject-expiry-blocker-{command.value}")
-    blocker.execute(
-        "SELECT subject_id FROM subject_coordination "
-        "WHERE subject_id = %s FOR UPDATE",
-        (UUID(SUBJECT_ID),),
-    )
-    expiry_row = blocker.execute(
-        "UPDATE safety_artifacts "
-        "SET valid_until = clock_timestamp() + interval '1 second' "
-        "RETURNING valid_until"
-    ).fetchone()
-    assert expiry_row is not None
-    expires_at = expiry_row[0]
+    seed(urls["admin"])
+    blocker = connect(urls["trusted_admin"], name=f"revoke-first-{command_kind.value}")
+    assert invoke_revoke_sql(blocker, key=f"revoke-first-{command_kind.value}") is not None
     outcome: dict[str, object] = {}
-    app_name = f"subject-expiry-shared-{command.value}"
+    app_name = f"shared-after-revoke-{command_kind.value}"
 
     def worker() -> None:
         try:
-            with connect(database_url, name=app_name) as connection:
+            with connect(urls["application"], name=app_name) as connection:
                 execute_shared_registry_command(
-                    connection, eligibility(command), mutate(command), lock_timeout_ms=5_000
-                )
-        except BaseException as error:
-            outcome["error"] = error
-
-    thread = threading.Thread(target=worker)
-    thread.start()
-    wait_until_blocked(database_url, app_name)
-    wait_until_database_time(database_url, expires_at)
-    blocker.commit()
-    blocker.close()
-    thread.join(timeout=5)
-    assert not thread.is_alive()
-    error = outcome.get("error")
-    assert isinstance(error, RegistryDenied)
-    assert error.code is RegistryDenialCode.ARTIFACT_EXPIRED
-    assert mutation_count(database_url) == 0
-
-
-def run_waiting_on_subject_then_authorization_expires(database_url: str) -> None:
-    clear_state(database_url)
-    blocker = connect(database_url, name="authorization-expiry-blocker")
-    expiry_row = blocker.execute(
-        """
-        UPDATE subject_coordination
-           SET authorization_valid_until = clock_timestamp() + interval '1 second'
-         WHERE subject_id = %s
-        RETURNING authorization_valid_until
-        """,
-        (UUID(SUBJECT_ID),),
-    ).fetchone()
-    assert expiry_row is not None
-    expires_at = expiry_row[0]
-    outcome: dict[str, object] = {}
-    app_name = "authorization-expiry-continue"
-
-    def worker() -> None:
-        try:
-            with connect(database_url, name=app_name) as connection:
-                execute_shared_registry_command(
-                    connection,
-                    eligibility(RegistryCommand.CONTINUE_SESSION),
-                    mutate(RegistryCommand.CONTINUE_SESSION),
+                    connection, eligibility(command_kind), mutate(command_kind),
                     lock_timeout_ms=5_000,
                 )
         except BaseException as error:
@@ -444,293 +350,22 @@ def run_waiting_on_subject_then_authorization_expires(database_url: str) -> None
 
     thread = threading.Thread(target=worker)
     thread.start()
-    wait_until_blocked(database_url, app_name)
-    wait_until_database_time(database_url, expires_at)
+    wait_until_blocked(urls["admin"], app_name)
+    with connect(urls["admin"]) as observer:
+        observer.execute("SET LOCAL lock_timeout='100ms'")
+        observer.execute(
+            "SELECT subject_id FROM kineticloop.user_decision_state "
+            "WHERE subject_id=%s FOR UPDATE",
+            (UUID(SUBJECT_ID),),
+        )
     blocker.commit()
     blocker.close()
     thread.join(timeout=5)
     assert not thread.is_alive()
     error = outcome.get("error")
     assert isinstance(error, RegistryDenied)
-    assert error.code is RegistryDenialCode.AUTHORIZATION_INELIGIBLE
-    assert mutation_count(database_url) == 0
-
-
-def assert_denied_without_mutation(
-    database_url: str,
-    command: RegistryCommand,
-    expected: RegistryDenialCode,
-    *,
-    minimum_registry_revision: int = 0,
-    artifact_ids: tuple[str, ...] | None = None,
-) -> None:
-    request = eligibility(command, minimum_registry_revision=minimum_registry_revision)
-    if artifact_ids is not None:
-        request = RegistryEligibility(
-            command=command,
-            subject_id=SUBJECT_ID,
-            artifact_ids=artifact_ids,
-            minimum_registry_revision=minimum_registry_revision,
-        )
-    with connect(database_url) as connection:
-        with pytest.raises(RegistryDenied) as denial:
-            execute_shared_registry_command(
-                connection,
-                request,
-                mutate(command),
-            )
-    assert denial.value.code is expected
-    assert mutation_count(database_url) == 0
-
-
-def assert_timeout_before_subject(database_url: str, command: RegistryCommand) -> None:
-    clear_state(database_url)
-    blocker = connect(database_url)
-    blocker.execute(
-        "SELECT registry_revision FROM safety_registry_state WHERE registry_scope='system' FOR UPDATE"
-    )
-    with connect(database_url) as connection:
-        with pytest.raises(RegistryDenied) as denial:
-            execute_shared_registry_command(
-                connection, eligibility(command), mutate(command), lock_timeout_ms=50
-            )
-    assert denial.value.code is RegistryDenialCode.REGISTRY_TIMEOUT
-    assert_subject_unlocked(database_url)
-    blocker.rollback()
-    blocker.close()
-    assert mutation_count(database_url) == 0
-
-
-def assert_registry_unavailable_without_mutation(
-    database_url: str,
-    command: RegistryCommand,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    clear_state(database_url)
-
-    def unavailable(_cursor: Any, _lock_timeout_ms: int) -> int:
-        raise psycopg.OperationalError("injected registry unavailability")
-
-    with monkeypatch.context() as patch:
-        patch.setattr(
-            "kineticloop.persistence.safety_registry._acquire_shared_gate",
-            unavailable,
-        )
-        assert_denied_without_mutation(
-            database_url, command, RegistryDenialCode.REGISTRY_UNAVAILABLE
-        )
-
-
-class CommitUnknownTransaction:
-    def __init__(self, transaction: Any) -> None:
-        self._transaction = transaction
-
-    def __enter__(self) -> Any:
-        return self._transaction.__enter__()
-
-    def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any) -> bool:
-        result = self._transaction.__exit__(exc_type, exc_value, traceback)
-        if exc_type is None:
-            raise psycopg.OperationalError("injected unknown commit outcome")
-        return bool(result)
-
-
-class CommitUnknownConnection:
-    def __init__(self, connection: Connection[Any]) -> None:
-        self._connection = connection
-
-    @property
-    def info(self) -> Any:
-        return self._connection.info
-
-    def transaction(self) -> CommitUnknownTransaction:
-        return CommitUnknownTransaction(self._connection.transaction())
-
-    def cursor(self) -> Any:
-        return self._connection.cursor()
-
-
-def assert_unknown_commit_is_not_deterministic_denial(
-    database_url: str, command: RegistryCommand
-) -> None:
-    clear_state(database_url)
-    with connect(database_url) as connection:
-        unknown_connection: Any = CommitUnknownConnection(connection)
-        with pytest.raises(psycopg.OperationalError, match="unknown commit outcome"):
-            execute_shared_registry_command(
-                unknown_connection, eligibility(command), mutate(command)
-            )
-    assert mutation_count(database_url) == 1
-
-
-def test_shared_gate_command_matrix_fails_closed(
-    db_url: str, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    for command in RegistryCommand:
-        run_waiting_shared_then_revoke(db_url, command)
-
-        if command is RegistryCommand.START_SESSION:
-            run_waiting_shared_then_expire(db_url, command)
-            run_waiting_on_subject_then_expire(db_url, command)
-            assert_unknown_commit_is_not_deterministic_denial(db_url, command)
-
-        clear_state(db_url)
-        with connect(db_url) as connection:
-            mutation_id = execute_shared_registry_command(
-                connection, eligibility(command), mutate(command)
-            )
-        assert mutation_id == 1
-        assert mutation_count(db_url) == 1
-
-        clear_state(db_url)
-        assert_denied_without_mutation(
-            db_url,
-            command,
-            RegistryDenialCode.ARTIFACT_UNKNOWN,
-            artifact_ids=(ARTIFACT_ID, DEPENDENCY_ID, MISSING_DEPENDENCY_ID),
-        )
-
-        clear_state(db_url)
-        with psycopg.connect(db_url, autocommit=True) as connection:
-            connection.execute(
-                "UPDATE safety_artifacts "
-                "SET dependency_ids = dependency_ids || %s::uuid "
-                "WHERE artifact_id = %s",
-                (UUID(MISSING_DEPENDENCY_ID), UUID(ARTIFACT_ID)),
-            )
-        assert_denied_without_mutation(
-            db_url, command, RegistryDenialCode.DEPENDENCY_INCOMPLETE
-        )
-
-        clear_state(db_url)
-        with psycopg.connect(db_url, autocommit=True) as connection:
-            connection.execute(
-                "UPDATE safety_artifacts SET valid_until = NULL WHERE artifact_id = %s",
-                (UUID(ARTIFACT_ID),),
-            )
-        assert_denied_without_mutation(
-            db_url, command, RegistryDenialCode.VALIDITY_UNDEFINED
-        )
-
-        clear_state(db_url)
-        with psycopg.connect(db_url, autocommit=True) as connection:
-            connection.execute(
-                "UPDATE safety_artifacts "
-                "SET valid_from = clock_timestamp() + interval '1 day' "
-                "WHERE artifact_id = %s",
-                (UUID(ARTIFACT_ID),),
-            )
-        assert_denied_without_mutation(
-            db_url, command, RegistryDenialCode.ARTIFACT_EXPIRED
-        )
-
-        clear_state(db_url)
-        with psycopg.connect(db_url, autocommit=True) as connection:
-            connection.execute(
-                "UPDATE safety_artifacts SET valid_until = %s WHERE artifact_id = %s",
-                (NOW, UUID(ARTIFACT_ID)),
-            )
-        assert_denied_without_mutation(
-            db_url, command, RegistryDenialCode.ARTIFACT_EXPIRED
-        )
-
-        clear_state(db_url)
-        assert_denied_without_mutation(
-            db_url,
-            command,
-            RegistryDenialCode.REGISTRY_STALE,
-            minimum_registry_revision=1,
-        )
-
-        assert_timeout_before_subject(db_url, command)
-
-        assert_registry_unavailable_without_mutation(db_url, command, monkeypatch)
-
-        if command is not RegistryCommand.PUBLISH_MANIFEST:
-            eligibility_column = (
-                "t6_issuance_eligible"
-                if command in {RegistryCommand.COMMIT_BUNDLE, RegistryCommand.REAUTHORIZE}
-                else "t7_execution_eligible"
-            )
-            with psycopg.connect(db_url, autocommit=True) as connection:
-                connection.execute(
-                    f"UPDATE subject_coordination SET {eligibility_column} = false"
-                )
-            assert_denied_without_mutation(
-                db_url, command, RegistryDenialCode.AUTHORIZATION_INELIGIBLE
-            )
-
-
-def test_reauthorize_shared_gate_precedes_s01_and_fails_closed(
-    db_url: str, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    run_waiting_shared_then_revoke(db_url, RegistryCommand.REAUTHORIZE)
-    clear_state(db_url)
-    with psycopg.connect(db_url, autocommit=True) as connection:
-        connection.execute(
-            "UPDATE subject_coordination SET t6_issuance_eligible = false"
-        )
-    assert_denied_without_mutation(
-        db_url, RegistryCommand.REAUTHORIZE, RegistryDenialCode.AUTHORIZATION_INELIGIBLE
-    )
-    assert_timeout_before_subject(db_url, RegistryCommand.REAUTHORIZE)
-    clear_state(db_url)
-    with psycopg.connect(db_url, autocommit=True) as connection:
-        connection.execute(
-            "UPDATE safety_artifacts SET valid_until = %s WHERE artifact_id = %s",
-            (NOW, UUID(ARTIFACT_ID)),
-        )
-    assert_denied_without_mutation(
-        db_url, RegistryCommand.REAUTHORIZE, RegistryDenialCode.ARTIFACT_EXPIRED
-    )
-    clear_state(db_url)
-    assert_denied_without_mutation(
-        db_url,
-        RegistryCommand.REAUTHORIZE,
-        RegistryDenialCode.REGISTRY_STALE,
-        minimum_registry_revision=1,
-    )
-    assert_registry_unavailable_without_mutation(
-        db_url, RegistryCommand.REAUTHORIZE, monkeypatch
-    )
-
-
-def test_continue_session_rechecks_shared_gate_and_fails_closed(
-    db_url: str, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    run_waiting_shared_then_revoke(db_url, RegistryCommand.CONTINUE_SESSION)
-    run_waiting_on_subject_then_authorization_expires(db_url)
-    clear_state(db_url)
-    with psycopg.connect(db_url, autocommit=True) as connection:
-        connection.execute(
-            "UPDATE subject_coordination SET authorization_valid_until = %s",
-            (NOW,),
-        )
-    assert_denied_without_mutation(
-        db_url,
-        RegistryCommand.CONTINUE_SESSION,
-        RegistryDenialCode.AUTHORIZATION_INELIGIBLE,
-    )
-    assert_timeout_before_subject(db_url, RegistryCommand.CONTINUE_SESSION)
-    clear_state(db_url)
-    with psycopg.connect(db_url, autocommit=True) as connection:
-        connection.execute(
-            "UPDATE safety_artifacts SET valid_until = %s WHERE artifact_id = %s",
-            (NOW, UUID(ARTIFACT_ID)),
-        )
-    assert_denied_without_mutation(
-        db_url, RegistryCommand.CONTINUE_SESSION, RegistryDenialCode.ARTIFACT_EXPIRED
-    )
-    clear_state(db_url)
-    assert_denied_without_mutation(
-        db_url,
-        RegistryCommand.CONTINUE_SESSION,
-        RegistryDenialCode.REGISTRY_STALE,
-        minimum_registry_revision=1,
-    )
-    assert_registry_unavailable_without_mutation(
-        db_url, RegistryCommand.CONTINUE_SESSION, monkeypatch
-    )
+    assert error.code is RegistryDenialCode.ARTIFACT_REVOKED
+    assert mutation_count(urls["admin"]) == 0
 
 
 def revoke_command(
@@ -747,7 +382,7 @@ def revoke_command(
         command_id="00000000-0000-8000-8000-000000000007",
         actor=TrustedActor(
             schema="kineticloop-role-identity-v1",
-            identity_id=ADMIN_ID,
+            identity_id=CALLER_ADMIN_ID,
             role=ActorRole.ADMIN,
         ),
         idempotency_key=key,
@@ -763,16 +398,444 @@ def revoke_command(
     )
 
 
-def test_exclusive_global_gate_serializes(db_url: str) -> None:
-    shared = connect(db_url)
-    shared.execute(
-        "SELECT registry_revision FROM safety_registry_state WHERE registry_scope='system' FOR SHARE"
+def test_shared_gate_command_matrix_fails_closed(db_urls: dict[str, str]) -> None:
+    for command_kind in RegistryCommand:
+        run_revoke_first_then_shared_denies(db_urls, command_kind)
+        seed(db_urls["admin"])
+        with connect(db_urls["application"]) as connection:
+            assert (
+                execute_shared_registry_command(
+                    connection, eligibility(command_kind), mutate(command_kind)
+                )
+                == 1
+            )
+        assert mutation_count(db_urls["admin"]) == 1
+
+        seed(db_urls["admin"])
+        assert_denied(
+            db_urls,
+            command_kind,
+            RegistryDenialCode.ARTIFACT_UNKNOWN,
+            request=eligibility(
+                command_kind, artifact_ids=(ARTIFACT_ID, DEPENDENCY_ID, MISSING_ID)
+            ),
+        )
+        seed(db_urls["admin"])
+        assert_denied(
+            db_urls,
+            command_kind,
+            RegistryDenialCode.DEPENDENCY_INCOMPLETE,
+            request=eligibility(command_kind, artifact_ids=(ARTIFACT_ID,)),
+        )
+        seed(db_urls["admin"], expires_at=datetime.now(UTC) - timedelta(seconds=1))
+        assert_denied(db_urls, command_kind, RegistryDenialCode.ARTIFACT_EXPIRED)
+        seed(db_urls["admin"], valid_from=datetime.now(UTC) + timedelta(days=1))
+        assert_denied(db_urls, command_kind, RegistryDenialCode.ARTIFACT_EXPIRED)
+        seed(db_urls["admin"])
+        assert_denied(
+            db_urls,
+            command_kind,
+            RegistryDenialCode.REGISTRY_STALE,
+            request=eligibility(command_kind, minimum_revision=1),
+        )
+        seed(db_urls["admin"])
+        with connect(db_urls["admin"]) as blocker:
+            blocker.execute(
+                "SELECT registry_revision FROM kineticloop.safety_registry_state "
+                "WHERE id=1 FOR UPDATE"
+            )
+            with connect(db_urls["application"]) as connection:
+                with pytest.raises(RegistryDenied) as denial:
+                    execute_shared_registry_command(
+                        connection,
+                        eligibility(command_kind),
+                        mutate(command_kind),
+                        lock_timeout_ms=50,
+                    )
+            assert denial.value.code is RegistryDenialCode.REGISTRY_TIMEOUT
+            blocker.rollback()
+        seed(db_urls["admin"])
+        with connect(db_urls["admin"]) as admin:
+            admin.execute("SET LOCAL session_replication_role = replica")
+            admin.execute("DELETE FROM kineticloop.safety_registry_state WHERE id=1")
+            admin.commit()
+        assert_denied(db_urls, command_kind, RegistryDenialCode.REGISTRY_UNAVAILABLE)
+        with connect(db_urls["admin"]) as admin:
+            admin.execute(
+                "INSERT INTO kineticloop.safety_registry_state(id,registry_revision) VALUES (1,0)"
+            )
+            admin.commit()
+        seed(db_urls["admin"])
+        with connect(db_urls["admin"]) as admin:
+            admin.execute(
+                "DELETE FROM kineticloop.user_decision_state WHERE subject_id=%s",
+                (UUID(SUBJECT_ID),),
+            )
+            admin.commit()
+        assert_denied(db_urls, command_kind, RegistryDenialCode.AUTHORIZATION_INELIGIBLE)
+
+        if command_kind is not RegistryCommand.PUBLISH_MANIFEST:
+            seed(db_urls["admin"])
+            with connect(db_urls["admin"]) as admin:
+                admin.execute(
+                    "UPDATE kineticloop.user_decision_state "
+                    "SET authorization_epoch=authorization_epoch+1 WHERE subject_id=%s",
+                    (UUID(SUBJECT_ID),),
+                )
+                admin.commit()
+            assert_denied(
+                db_urls, command_kind, RegistryDenialCode.AUTHORIZATION_INELIGIBLE
+            )
+
+
+def test_direct_sql_null_lock_timeout_fails_closed_without_mutation(
+    db_urls: dict[str, str],
+) -> None:
+    with connect(db_urls["application"]) as application:
+        with pytest.raises(
+            psycopg.errors.RaiseException,
+            match="KL_REGISTRY_INVALID_LOCK_TIMEOUT",
+        ):
+            application.execute(
+                "SELECT kineticloop.registry_guard_start_session(%s,%s,0,NULL)",
+                (UUID(SUBJECT_ID), [UUID(ARTIFACT_ID), UUID(DEPENDENCY_ID)]),
+            )
+        application.rollback()
+
+    with connect(db_urls["trusted_admin"]) as trusted:
+        with pytest.raises(
+            psycopg.errors.RaiseException,
+            match="KL_REGISTRY_INVALID_ARGUMENT",
+        ):
+            trusted.execute(
+                "SELECT * FROM kineticloop.registry_revoke_artifact("
+                "%s,%s,%s,%s,%s,%s,%s,%s,NULL)",
+                (
+                    UUID(ARTIFACT_ID),
+                    CONTENT_HASH,
+                    NOW,
+                    "EMERGENCY",
+                    revocation_payload_hash(
+                        effective_at=NOW, reason_code="EMERGENCY"
+                    ),
+                    "null-lock-timeout",
+                    "d" * 64,
+                    UUID(INCIDENT_ID),
+                ),
+            )
+        trusted.rollback()
+
+    assert mutation_count(db_urls["admin"]) == 0
+    assert registry_counts(db_urls["admin"]) == (0, 0, 0, 0)
+    with connect(db_urls["admin"]) as admin:
+        assert admin.execute(
+            "SELECT registry_revision,last_revocation_id "
+            "FROM kineticloop.safety_registry_state WHERE id=1"
+        ).fetchone() == (0, None)
+
+
+def test_migrated_schema_rejects_undefined_artifact_validity(
+    db_urls: dict[str, str],
+) -> None:
+    with connect(db_urls["admin"]) as admin:
+        admin.execute("SET LOCAL session_replication_role=replica")
+        with pytest.raises(psycopg.errors.NotNullViolation):
+            admin.execute(
+                "INSERT INTO kineticloop.safety_artifacts("
+                "id,artifact_kind,artifact_identity,artifact_version,content_hash,"
+                "validity_kind,valid_from) VALUES (%s,'POLICY_BUNDLE','undefined','1',%s,NULL,NULL)",
+                (UUID(MISSING_ID), "f" * 64),
+            )
+        admin.rollback()
+    assert mutation_count(db_urls["admin"]) == 0
+
+
+@pytest.mark.parametrize(
+    "failed_predicate",
+    (
+        "current_manifest",
+        "active_policy",
+        "manifest_subject",
+        "manifest_policy",
+        "manifest_epoch",
+        "manifest_registry_revision",
+        "manifest_validity",
+        "manifest_primary_artifact",
+    ),
+)
+def test_t6_migrated_eligibility_predicates_fail_closed(
+    db_urls: dict[str, str], failed_predicate: str,
+) -> None:
+    with connect(db_urls["admin"]) as admin:
+        admin.execute("SET LOCAL session_replication_role=replica")
+        statements: dict[str, tuple[str, tuple[object, ...]]] = {
+            "current_manifest": (
+                "UPDATE kineticloop.user_decision_state SET current_manifest_id=%s",
+                (UUID(MISSING_ID),),
+            ),
+            "active_policy": (
+                "UPDATE kineticloop.user_decision_state SET active_policy_bundle_id=NULL",
+                (),
+            ),
+            "manifest_subject": (
+                "UPDATE kineticloop.decision_manifests SET subject_id=%s",
+                (UUID(MISSING_ID),),
+            ),
+            "manifest_policy": (
+                "UPDATE kineticloop.decision_manifests SET ref_s05_id=%s",
+                (UUID(MISSING_ID),),
+            ),
+            "manifest_epoch": (
+                "UPDATE kineticloop.decision_manifests SET captured_epoch=1",
+                (),
+            ),
+            "manifest_registry_revision": (
+                "UPDATE kineticloop.decision_manifests SET registry_revision_at_publish=1",
+                (),
+            ),
+            "manifest_validity": (
+                "UPDATE kineticloop.decision_manifests "
+                "SET valid_until=clock_timestamp()-interval '1 second'",
+                (),
+            ),
+            "manifest_primary_artifact": (
+                "UPDATE kineticloop.decision_manifests SET ref_s49_id=%s",
+                (UUID(MISSING_ID),),
+            ),
+        }
+        statement, parameters = statements[failed_predicate]
+        admin.execute(statement, parameters)
+        admin.commit()
+    assert_denied(
+        db_urls, RegistryCommand.COMMIT_BUNDLE,
+        RegistryDenialCode.AUTHORIZATION_INELIGIBLE,
+    )
+
+
+@pytest.mark.parametrize(
+    "failed_predicate",
+    (
+        "authorization_subject",
+        "authorization_not_yet_valid",
+        "authorization_expired",
+        "authorization_registry_revision",
+        "authorization_registry_state",
+        "authorization_primary_artifact",
+        "authorization_epoch",
+        "authorization_targeted_event",
+        "closure_missing",
+        "closure_extra",
+        "closure_subject",
+        "closure_not_yet_valid",
+        "closure_expired",
+    ),
+)
+def test_t7_migrated_eligibility_predicates_fail_closed(
+    db_urls: dict[str, str], failed_predicate: str,
+) -> None:
+    with connect(db_urls["admin"]) as admin:
+        admin.execute("SET LOCAL session_replication_role=replica")
+        statements: dict[str, tuple[str, tuple[object, ...]]] = {
+            "authorization_subject": (
+                "UPDATE kineticloop.authorization_issuances SET subject_id=%s",
+                (UUID(MISSING_ID),),
+            ),
+            "authorization_not_yet_valid": (
+                "UPDATE kineticloop.authorization_issuances "
+                "SET valid_from=clock_timestamp()+interval '1 day', "
+                "valid_until=clock_timestamp()+interval '2 days'",
+                (),
+            ),
+            "authorization_expired": (
+                "UPDATE kineticloop.authorization_issuances "
+                "SET valid_from=clock_timestamp()-interval '2 days', "
+                "valid_until=clock_timestamp()-interval '1 day'",
+                (),
+            ),
+            "authorization_registry_revision": (
+                "UPDATE kineticloop.authorization_issuances "
+                "SET registry_revision_at_issue=1",
+                (),
+            ),
+            "authorization_registry_state": (
+                "UPDATE kineticloop.authorization_issuances SET registry_state_id=2",
+                (),
+            ),
+            "authorization_primary_artifact": (
+                "UPDATE kineticloop.authorization_issuances SET ref_s49_id=%s",
+                (UUID(MISSING_ID),),
+            ),
+            "authorization_epoch": (
+                "UPDATE kineticloop.authorization_issuances "
+                "SET validity_certificate='{\"authorization_epoch\":1}'::jsonb",
+                (),
+            ),
+                "authorization_targeted_event": (
+                    "INSERT INTO kineticloop.authorization_events("
+                    "id,subject_id,event_kind,causation_key,ref_s42_id,ref_s02_id) "
+                    "VALUES (%s,%s,'REVOKED','targeted-test',%s,%s)",
+                    (
+                        UUID(MISSING_ID), UUID(SUBJECT_ID),
+                        UUID(AUTHORIZATION_ID), UUID(RECEIPT_ID),
+                    ),
+                ),
+            "closure_missing": (
+                "DELETE FROM kineticloop.authorization_artifact_closure "
+                "WHERE artifact_id=%s",
+                (UUID(DEPENDENCY_ID),),
+            ),
+            "closure_extra": (
+                "INSERT INTO kineticloop.authorization_artifact_closure("
+                "subject_id,authorization_id,artifact_id,artifact_revision,"
+                "valid_from,valid_until) VALUES (%s,%s,%s,1,"
+                "clock_timestamp()-interval '1 day',clock_timestamp()+interval '1 day')",
+                (UUID(SUBJECT_ID), UUID(AUTHORIZATION_ID), UUID(MISSING_ID)),
+            ),
+            "closure_subject": (
+                "UPDATE kineticloop.authorization_artifact_closure SET subject_id=%s",
+                (UUID(MISSING_ID),),
+            ),
+            "closure_not_yet_valid": (
+                "UPDATE kineticloop.authorization_artifact_closure "
+                "SET valid_from=clock_timestamp()+interval '1 day',"
+                "valid_until=clock_timestamp()+interval '2 days'",
+                (),
+            ),
+            "closure_expired": (
+                "UPDATE kineticloop.authorization_artifact_closure "
+                "SET valid_from=clock_timestamp()-interval '2 days',"
+                "valid_until=clock_timestamp()-interval '1 day'",
+                (),
+            ),
+        }
+        statement, parameters = statements[failed_predicate]
+        admin.execute(statement, parameters)
+        admin.commit()
+    assert_denied(
+        db_urls, RegistryCommand.START_SESSION,
+        RegistryDenialCode.AUTHORIZATION_INELIGIBLE,
+    )
+
+
+def test_reauthorize_shared_gate_precedes_s01_and_fails_closed(
+    db_urls: dict[str, str],
+) -> None:
+    blocker = connect(db_urls["admin"], name="exclusive-before-reauthorize")
+    blocker.execute(
+        "SELECT registry_revision FROM kineticloop.safety_registry_state WHERE id=1 FOR UPDATE"
     )
     outcome: dict[str, object] = {}
 
     def worker() -> None:
         try:
-            with connect(db_url, name="exclusive-revoke") as connection:
+            with connect(db_urls["application"], name="waiting-reauthorize") as connection:
+                outcome["result"] = execute_shared_registry_command(
+                    connection,
+                    eligibility(RegistryCommand.REAUTHORIZE),
+                    mutate(RegistryCommand.REAUTHORIZE),
+                    lock_timeout_ms=5_000,
+                )
+        except BaseException as error:
+            outcome["error"] = error
+
+    thread = threading.Thread(target=worker)
+    thread.start()
+    wait_until_blocked(db_urls["admin"], "waiting-reauthorize")
+    with connect(db_urls["admin"]) as observer:
+        observer.execute("SET LOCAL lock_timeout='100ms'")
+        observer.execute(
+            "SELECT subject_id FROM kineticloop.user_decision_state WHERE subject_id=%s FOR UPDATE",
+            (UUID(SUBJECT_ID),),
+        )
+    blocker.rollback()
+    blocker.close()
+    thread.join(timeout=5)
+    assert not thread.is_alive()
+    assert outcome.get("result") == 1
+
+
+def test_continue_session_rechecks_shared_gate_and_fails_closed(
+    db_urls: dict[str, str],
+) -> None:
+    seed(db_urls["admin"], expires_at=datetime.now(UTC) + timedelta(milliseconds=400))
+    subject_lock = connect(db_urls["admin"], name="subject-expiry-blocker")
+    subject_lock.execute(
+        "SELECT subject_id FROM kineticloop.user_decision_state WHERE subject_id=%s FOR UPDATE",
+        (UUID(SUBJECT_ID),),
+    )
+    outcome: dict[str, object] = {}
+
+    def worker() -> None:
+        try:
+            with connect(db_urls["application"], name="continue-after-expiry") as connection:
+                execute_shared_registry_command(
+                    connection,
+                    eligibility(RegistryCommand.CONTINUE_SESSION),
+                    mutate(RegistryCommand.CONTINUE_SESSION),
+                    lock_timeout_ms=5_000,
+                )
+        except BaseException as error:
+            outcome["error"] = error
+
+    thread = threading.Thread(target=worker)
+    thread.start()
+    wait_until_blocked(db_urls["admin"], "continue-after-expiry")
+    time.sleep(0.5)
+    subject_lock.commit()
+    subject_lock.close()
+    thread.join(timeout=5)
+    error = outcome.get("error")
+    assert isinstance(error, RegistryDenied)
+    assert error.code is RegistryDenialCode.ARTIFACT_EXPIRED
+    assert mutation_count(db_urls["admin"]) == 0
+
+    authorization_expiry = datetime.now(UTC) + timedelta(milliseconds=400)
+    seed(db_urls["admin"], authorization_expires_at=authorization_expiry)
+    subject_lock = connect(db_urls["admin"], name="subject-authorization-expiry-blocker")
+    subject_lock.execute(
+        "SELECT subject_id FROM kineticloop.user_decision_state "
+        "WHERE subject_id=%s FOR UPDATE",
+        (UUID(SUBJECT_ID),),
+    )
+    outcome = {}
+
+    def authorization_worker() -> None:
+        try:
+            with connect(db_urls["application"], name="continue-after-auth-expiry") as connection:
+                execute_shared_registry_command(
+                    connection,
+                    eligibility(RegistryCommand.CONTINUE_SESSION),
+                    mutate(RegistryCommand.CONTINUE_SESSION),
+                    lock_timeout_ms=5_000,
+                )
+        except BaseException as error:
+            outcome["error"] = error
+
+    thread = threading.Thread(target=authorization_worker)
+    thread.start()
+    wait_until_blocked(db_urls["admin"], "continue-after-auth-expiry")
+    wait_until_database_time(db_urls["admin"], authorization_expiry)
+    subject_lock.commit()
+    subject_lock.close()
+    thread.join(timeout=5)
+    assert not thread.is_alive()
+    error = outcome.get("error")
+    assert isinstance(error, RegistryDenied)
+    assert error.code is RegistryDenialCode.AUTHORIZATION_INELIGIBLE
+    assert mutation_count(db_urls["admin"]) == 0
+
+
+def test_exclusive_global_gate_serializes(db_urls: dict[str, str]) -> None:
+    shared = connect(db_urls["application"], name="held-shared")
+    shared.execute(
+        "SELECT kineticloop.registry_guard_start_session(%s,%s,0,5000)",
+        (UUID(SUBJECT_ID), [UUID(ARTIFACT_ID), UUID(DEPENDENCY_ID)]),
+    )
+    outcome: dict[str, object] = {}
+
+    def worker() -> None:
+        try:
+            with connect(db_urls["trusted_admin"], name="exclusive-revoke") as connection:
                 outcome["result"] = revoke_artifact(
                     connection,
                     revoke_command(),
@@ -785,42 +848,38 @@ def test_exclusive_global_gate_serializes(db_url: str) -> None:
 
     thread = threading.Thread(target=worker)
     thread.start()
-    wait_until_blocked(db_url, "exclusive-revoke")
+    time.sleep(0.1)
+    assert "error" not in outcome, repr(outcome.get("error"))
+    wait_until_blocked(db_urls["admin"], "exclusive-revoke")
     assert "result" not in outcome
     shared.commit()
     shared.close()
     thread.join(timeout=5)
-    assert not thread.is_alive()
-    assert "error" not in outcome
+    assert not thread.is_alive() and "error" not in outcome
     result = outcome["result"]
     assert isinstance(result, RevocationResult)
     assert result.registry_revision == 1
 
-    # Opposite legal order: a real gated mutation retains shared S51 through commit,
-    # so revoke cannot linearize between its guard and protected write.
-    clear_state(db_url)
+    seed(db_urls["admin"])
     mutation_entered = threading.Event()
-    allow_mutation_commit = threading.Event()
+    allow_commit = threading.Event()
     shared_outcome: dict[str, object] = {}
     revoke_outcome: dict[str, object] = {}
 
     def held_mutation(cursor: Any, registry_revision: int) -> int:
-        cursor.execute(
-            """
-            INSERT INTO domain_mutations (command_kind, registry_revision, subject_id)
-            VALUES ('StartSession', %s, %s) RETURNING mutation_id
-            """,
-            (registry_revision, UUID(SUBJECT_ID)),
-        )
-        row = cursor.fetchone()
-        assert row is not None
+        result_id = mutate(RegistryCommand.START_SESSION)(cursor, registry_revision)
         mutation_entered.set()
-        assert allow_mutation_commit.wait(timeout=5)
-        return int(row[0])
+        assert allow_commit.wait(timeout=5)
+        cursor.execute(
+            "UPDATE public.domain_mutations SET protected_at=clock_timestamp() "
+            "WHERE mutation_id=%s",
+            (result_id,),
+        )
+        return result_id
 
     def shared_worker() -> None:
         try:
-            with connect(db_url, name="gated-mutation-first") as connection:
+            with connect(db_urls["application"], name="protected-mutation-first") as connection:
                 shared_outcome["result"] = execute_shared_registry_command(
                     connection,
                     eligibility(RegistryCommand.START_SESSION),
@@ -832,13 +891,10 @@ def test_exclusive_global_gate_serializes(db_url: str) -> None:
 
     def revoke_worker() -> None:
         try:
-            with connect(db_url, name="revoke-after-gated-mutation") as connection:
+            with connect(db_urls["trusted_admin"], name="revoke-after-protected-mutation") as connection:
                 revoke_outcome["result"] = revoke_artifact(
-                    connection,
-                    revoke_command(),
-                    effective_at=NOW,
-                    reason_code="EMERGENCY",
-                    lock_timeout_ms=5_000,
+                    connection, revoke_command(), effective_at=NOW,
+                    reason_code="EMERGENCY", lock_timeout_ms=5_000,
                 )
         except BaseException as error:
             revoke_outcome["error"] = error
@@ -848,141 +904,102 @@ def test_exclusive_global_gate_serializes(db_url: str) -> None:
     assert mutation_entered.wait(timeout=5)
     revoke_thread = threading.Thread(target=revoke_worker)
     revoke_thread.start()
-    wait_until_blocked(db_url, "revoke-after-gated-mutation")
+    wait_until_blocked(db_urls["admin"], "revoke-after-protected-mutation")
     assert "result" not in revoke_outcome
-    allow_mutation_commit.set()
+    allow_commit.set()
     shared_thread.join(timeout=5)
     revoke_thread.join(timeout=5)
-    assert not shared_thread.is_alive()
-    assert not revoke_thread.is_alive()
-    assert "error" not in shared_outcome
-    assert "error" not in revoke_outcome
+    assert not shared_thread.is_alive() and not revoke_thread.is_alive()
+    assert "error" not in shared_outcome and "error" not in revoke_outcome
     assert shared_outcome["result"] == 1
-    later_revoke = revoke_outcome["result"]
-    assert isinstance(later_revoke, RevocationResult)
-    assert later_revoke.registry_revision == 1
-    assert mutation_count(db_url) == 1
+    assert isinstance(revoke_outcome["result"], RevocationResult)
+    assert mutation_count(db_urls["admin"]) == 1
+    with connect(db_urls["admin"]) as observer:
+        ordering = observer.execute(
+            "SELECT mutation.protected_at, revocation.recorded_at "
+            "FROM public.domain_mutations mutation "
+            "CROSS JOIN kineticloop.artifact_revocation_events revocation"
+        ).fetchone()
+        assert ordering is not None
+        assert ordering[0] is not None and ordering[0] <= ordering[1]
 
 
-def table_counts(database_url: str) -> tuple[int, int, int, int, int]:
-    with connect(database_url) as connection:
-        counts: list[int] = []
-        for table in (
-            "artifact_revocation_events",
-            "registry_management_receipts",
-            "registry_audit_events",
-            "registry_outbox",
-            "authorization_history",
-        ):
-            row = connection.execute(f"SELECT count(*) FROM {table}").fetchone()
-            assert row is not None
-            counts.append(int(row[0]))
-        assert len(counts) == 5
-        return counts[0], counts[1], counts[2], counts[3], counts[4]
+def registry_counts(admin_url: str) -> tuple[int, int, int, int]:
+    with connect(admin_url) as connection:
+        row = connection.execute(
+            "SELECT (SELECT count(*) FROM kineticloop.artifact_revocation_events),"
+            "(SELECT count(*) FROM kineticloop.registry_management_receipts),"
+            "(SELECT count(*) FROM kineticloop.registry_audit_events),"
+            "(SELECT count(*) FROM kineticloop.registry_outbox)"
+        ).fetchone()
+        assert row is not None
+        return int(row[0]), int(row[1]), int(row[2]), int(row[3])
 
 
-def test_revoke_artifact_atomic_linearization_and_idempotency(db_url: str) -> None:
-    with connect(db_url) as connection:
-        future_row = connection.execute(
+def test_revoke_artifact_atomic_linearization_and_idempotency(
+    db_urls: dict[str, str],
+) -> None:
+    with connect(db_urls["admin"]) as admin:
+        future_row = admin.execute(
             "SELECT clock_timestamp() + interval '7 days'"
         ).fetchone()
         assert future_row is not None
         future_effective = future_row[0]
-
-    with psycopg.connect(db_url, autocommit=True) as connection:
-        connection.execute(
-            """
-            CREATE FUNCTION fail_outbox() RETURNS trigger LANGUAGE plpgsql AS $$
-            BEGIN RAISE EXCEPTION 'injected outbox failure'; END $$
-            """
+        historical_authorization = admin.execute(
+            "SELECT id,valid_from,valid_until FROM kineticloop.authorization_issuances "
+            "WHERE id=%s", (UUID(AUTHORIZATION_ID),)
+        ).fetchone()
+        assert historical_authorization is not None
+    with psycopg.connect(db_urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            "CREATE FUNCTION public.fail_registry_outbox() RETURNS trigger "
+            "LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'injected outbox failure'; END $$"
         )
-        connection.execute(
-            """
-            CREATE TRIGGER fail_outbox BEFORE INSERT ON registry_outbox
-            FOR EACH ROW EXECUTE FUNCTION fail_outbox()
-            """
+        admin.execute(
+            "CREATE TRIGGER fail_registry_outbox BEFORE INSERT ON kineticloop.registry_outbox "
+            "FOR EACH ROW EXECUTE FUNCTION public.fail_registry_outbox()"
         )
-    with connect(db_url) as connection:
+    with connect(db_urls["trusted_admin"]) as connection:
         with pytest.raises(psycopg.errors.RaiseException, match="injected outbox failure"):
             revoke_artifact(
-                connection,
-                revoke_command(effective_at=future_effective),
-                effective_at=future_effective,
-                reason_code="EMERGENCY",
+                connection, revoke_command(effective_at=future_effective),
+                effective_at=future_effective, reason_code="EMERGENCY"
             )
-    assert table_counts(db_url) == (0, 0, 0, 0, 1)
-    with connect(db_url) as connection:
-        revision_row = connection.execute(
-            "SELECT registry_revision FROM safety_registry_state"
-        ).fetchone()
-        assert revision_row is not None
-        revision = revision_row[0]
-    assert revision == 0
-
-    with psycopg.connect(db_url, autocommit=True) as connection:
-        connection.execute("DROP TRIGGER fail_outbox ON registry_outbox")
-        connection.execute("DROP FUNCTION fail_outbox()")
-
-    with connect(db_url) as connection:
+    assert registry_counts(db_urls["admin"]) == (0, 0, 0, 0)
+    with psycopg.connect(db_urls["admin"], autocommit=True) as admin:
+        admin.execute("DROP TRIGGER fail_registry_outbox ON kineticloop.registry_outbox")
+        admin.execute("DROP FUNCTION public.fail_registry_outbox()")
+    with connect(db_urls["trusted_admin"]) as connection:
         first = revoke_artifact(
-            connection,
-            revoke_command(effective_at=future_effective),
-            effective_at=future_effective,
-            reason_code="EMERGENCY",
+            connection, revoke_command(effective_at=future_effective),
+            effective_at=future_effective, reason_code="EMERGENCY"
         )
     assert first.registry_revision == 1
     assert first.effective_at == future_effective
     assert first.effective_at > first.recorded_at
-    assert table_counts(db_url) == (1, 1, 1, 1, 1)
-
-    with connect(db_url) as connection:
+    assert registry_counts(db_urls["admin"]) == (1, 1, 1, 1)
+    with connect(db_urls["trusted_admin"]) as connection:
         replay = revoke_artifact(
-            connection,
-            revoke_command(effective_at=future_effective),
-            effective_at=future_effective,
-            reason_code="EMERGENCY",
+            connection, revoke_command(effective_at=future_effective),
+            effective_at=future_effective, reason_code="EMERGENCY"
         )
     assert replay == first
-    assert table_counts(db_url) == (1, 1, 1, 1, 1)
-
-    with connect(db_url) as connection:
-        with pytest.raises(RegistryDenied) as conflict:
+    with connect(db_urls["trusted_admin"]) as connection:
+        with pytest.raises(RegistryDenied) as denial:
             revoke_artifact(
                 connection,
-                revoke_command(
-                    request_hash="f" * 64,
-                    effective_at=NOW,
-                    reason_code="CONFLICT",
-                ),
-                effective_at=NOW,
-                reason_code="CONFLICT",
-            )
-    assert conflict.value.code is RegistryDenialCode.IDEMPOTENCY_CONFLICT
-    assert table_counts(db_url) == (1, 1, 1, 1, 1)
-
-    with connect(db_url) as connection:
-        with pytest.raises(RegistryDenied) as unbound_metadata:
-            revoke_artifact(
-                connection,
-                revoke_command(effective_at=future_effective),
-                effective_at=NOW,
+                revoke_command(request_hash="f" * 64, effective_at=future_effective),
+                effective_at=future_effective,
                 reason_code="EMERGENCY",
             )
-    assert unbound_metadata.value.code is RegistryDenialCode.IDEMPOTENCY_CONFLICT
-    assert table_counts(db_url) == (1, 1, 1, 1, 1)
-
-    # A future effective_at never schedules permission: commit makes later admission deny now.
-    assert_denied_without_mutation(
-        db_url, RegistryCommand.START_SESSION, RegistryDenialCode.ARTIFACT_REVOKED
-    )
-    # The immutable authorization history predating commit is not rewritten.
-    with connect(db_url) as connection:
-        authorization_row = connection.execute(
-            "SELECT authorized_at FROM authorization_history"
-        ).fetchone()
-        assert authorization_row is not None
-        authorized_at = authorization_row[0]
-    assert authorized_at == NOW - timedelta(hours=1)
+    assert denial.value.code is RegistryDenialCode.IDEMPOTENCY_CONFLICT
+    assert registry_counts(db_urls["admin"]) == (1, 1, 1, 1)
+    assert_denied(db_urls, RegistryCommand.START_SESSION, RegistryDenialCode.ARTIFACT_REVOKED)
+    with connect(db_urls["admin"]) as admin:
+        assert admin.execute(
+            "SELECT id,valid_from,valid_until FROM kineticloop.authorization_issuances "
+            "WHERE id=%s", (UUID(AUTHORIZATION_ID),)
+        ).fetchone() == historical_authorization
 
     def race(commands: tuple[RevokeArtifact, RevokeArtifact]) -> tuple[list[object], list[object]]:
         barrier = threading.Barrier(3)
@@ -991,15 +1008,12 @@ def test_revoke_artifact_atomic_linearization_and_idempotency(db_url: str) -> No
 
         def worker(command: RevokeArtifact) -> None:
             try:
-                with connect(db_url) as connection:
+                with connect(db_urls["trusted_admin"]) as connection:
                     barrier.wait(timeout=5)
                     results.append(
                         revoke_artifact(
-                            connection,
-                            command,
-                            effective_at=NOW,
-                            reason_code="EMERGENCY",
-                            lock_timeout_ms=5_000,
+                            connection, command, effective_at=NOW,
+                            reason_code="EMERGENCY", lock_timeout_ms=5_000,
                         )
                     )
             except BaseException as error:
@@ -1014,161 +1028,574 @@ def test_revoke_artifact_atomic_linearization_and_idempotency(db_url: str) -> No
             assert not thread.is_alive()
         return results, errors
 
-    # Two concurrent deliveries of the exact command serialize at exclusive S51 and
-    # return the one stored result without double-applying any T2-GLOBAL effect.
-    clear_state(db_url)
-    same_command = revoke_command(key="race-same")
-    same_results, same_errors = race((same_command, same_command))
+    seed(db_urls["admin"])
+    same = revoke_command(key="race-same")
+    same_results, same_errors = race((same, same))
     assert same_errors == []
-    assert len(same_results) == 2
-    assert same_results[0] == same_results[1]
-    assert table_counts(db_url) == (1, 1, 1, 1, 1)
+    assert len(same_results) == 2 and same_results[0] == same_results[1]
+    assert registry_counts(db_urls["admin"]) == (1, 1, 1, 1)
 
-    # Concurrent key reuse with different hashes produces one winner and one conflict.
-    clear_state(db_url)
-    different_results, different_errors = race(
+    seed(db_urls["admin"])
+    conflict_results, conflict_errors = race(
         (
             revoke_command(key="race-conflict", request_hash="1" * 64),
             revoke_command(key="race-conflict", request_hash="2" * 64),
         )
     )
-    assert len(different_results) == 1
-    assert len(different_errors) == 1
-    assert isinstance(different_errors[0], RegistryDenied)
-    assert different_errors[0].code is RegistryDenialCode.IDEMPOTENCY_CONFLICT
-    assert table_counts(db_url) == (1, 1, 1, 1, 1)
+    assert len(conflict_results) == 1 and len(conflict_errors) == 1
+    assert isinstance(conflict_errors[0], RegistryDenied)
+    assert conflict_errors[0].code is RegistryDenialCode.IDEMPOTENCY_CONFLICT
+    assert registry_counts(db_urls["admin"]) == (1, 1, 1, 1)
 
-    # Simulate a successful commit whose response is lost, then reconcile by retrying.
-    clear_state(db_url)
-    lost_ack_command = revoke_command(key="lost-ack")
-    with connect(db_url) as connection:
-        revoke_artifact(
-            connection,
-            lost_ack_command,
-            effective_at=NOW,
-            reason_code="EMERGENCY",
-        )
-    with connect(db_url) as connection:
+
+class CommitUnknownTransaction:
+    def __init__(
+        self, transaction: Any, error_type: type[psycopg.Error]
+    ) -> None:
+        self.transaction = transaction
+        self.error_type = error_type
+
+    def __enter__(self) -> Any:
+        return self.transaction.__enter__()
+
+    def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any) -> bool:
+        result = self.transaction.__exit__(exc_type, exc_value, traceback)
+        if exc_type is None:
+            raise self.error_type("injected unknown commit outcome")
+        return bool(result)
+
+
+class CommitUnknownConnection:
+    def __init__(
+        self,
+        connection: Connection[Any],
+        error_type: type[psycopg.Error] = psycopg.OperationalError,
+    ) -> None:
+        self.connection = connection
+        self.error_type = error_type
+
+    @property
+    def info(self) -> Any:
+        return self.connection.info
+
+    def transaction(self) -> CommitUnknownTransaction:
+        return CommitUnknownTransaction(self.connection.transaction(), self.error_type)
+
+    def cursor(self) -> Any:
+        return self.connection.cursor()
+
+
+@pytest.mark.parametrize(
+    "error_type",
+    (psycopg.OperationalError, psycopg.errors.QueryCanceled, psycopg.errors.LockNotAvailable),
+)
+def test_shared_command_ack_loss_propagates_unknown_outcome(
+    db_urls: dict[str, str], error_type: type[psycopg.Error],
+) -> None:
+    with connect(db_urls["application"]) as raw:
+        wrapped: Any = CommitUnknownConnection(raw, error_type)
+        with pytest.raises(error_type, match="unknown commit outcome"):
+            execute_shared_registry_command(
+                wrapped,
+                eligibility(RegistryCommand.START_SESSION),
+                mutate(RegistryCommand.START_SESSION),
+            )
+    assert mutation_count(db_urls["admin"]) == 1
+
+
+@pytest.mark.parametrize(
+    "error_type",
+    (psycopg.OperationalError, psycopg.errors.QueryCanceled, psycopg.errors.LockNotAvailable),
+)
+def test_revoke_ack_loss_reconciles_by_command_key(
+    db_urls: dict[str, str], error_type: type[psycopg.Error]
+) -> None:
+    with connect(db_urls["trusted_admin"]) as raw:
+        wrapped: Any = CommitUnknownConnection(raw, error_type)
+        with pytest.raises(error_type, match="unknown commit outcome"):
+            revoke_artifact(wrapped, revoke_command(), effective_at=NOW, reason_code="EMERGENCY")
+    assert registry_counts(db_urls["admin"]) == (1, 1, 1, 1)
+    with connect(db_urls["trusted_admin"]) as connection:
         recovered = revoke_artifact(
-            connection,
-            lost_ack_command,
-            effective_at=NOW,
-            reason_code="EMERGENCY",
+            connection, revoke_command(), effective_at=NOW, reason_code="EMERGENCY"
         )
-        receipt = connection.execute(
-            """
-            SELECT revocation_id, registry_revision, artifact_id, effective_at, recorded_at
-              FROM registry_management_receipts
-             WHERE command_key = 'lost-ack'
-            """
-        ).fetchone()
-        assert receipt is not None
-    assert recovered == RevocationResult(
-        revocation_id=str(receipt[0]),
-        registry_revision=int(receipt[1]),
-        artifact_id=str(receipt[2]),
-        effective_at=receipt[3],
-        recorded_at=receipt[4],
+    assert recovered.registry_revision == 1
+
+
+def test_direct_sql_revoke_rejects_unbound_payload_hash(
+    db_urls: dict[str, str],
+) -> None:
+    with connect(db_urls["trusted_admin"]) as trusted:
+        with pytest.raises(psycopg.errors.RaiseException, match="KL_REGISTRY_INVALID_ARGUMENT"):
+            invoke_revoke_sql(
+                trusted, key="forged-payload", payload_hash="f" * 64
+            )
+        trusted.rollback()
+        with pytest.raises(psycopg.errors.RaiseException, match="KL_REGISTRY_INVALID_ARGUMENT"):
+            trusted.execute(
+                "SELECT * FROM kineticloop.registry_revoke_artifact("
+                "%s,%s,%s,%s,NULL,%s,%s,%s,5000)",
+                (
+                    UUID(ARTIFACT_ID), CONTENT_HASH, NOW, "EMERGENCY",
+                    "null-payload", "d" * 64, UUID(INCIDENT_ID),
+                ),
+            )
+        trusted.rollback()
+    assert registry_counts(db_urls["admin"]) == (0, 0, 0, 0)
+    with connect(db_urls["admin"]) as admin:
+        assert admin.execute(
+            "SELECT registry_revision,last_revocation_id "
+            "FROM kineticloop.safety_registry_state WHERE id=1"
+        ).fetchone() == (0, None)
+
+    decomposed_reason = "Cafe\u0301"
+    noncanonical_payload = json.dumps(
+        {
+            "effective_at": canonical_utc(NOW),
+            "reason_code": decomposed_reason,
+        },
+        ensure_ascii=False,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    noncanonical_hash = hashlib.sha256(noncanonical_payload).hexdigest()
+    canonical_hash = revocation_payload_hash(
+        effective_at=NOW, reason_code=decomposed_reason
     )
-    assert table_counts(db_url) == (1, 1, 1, 1, 1)
+    assert noncanonical_hash != canonical_hash
+    with connect(db_urls["trusted_admin"]) as trusted:
+        with pytest.raises(psycopg.errors.RaiseException, match="KL_REGISTRY_INVALID_ARGUMENT"):
+            invoke_revoke_sql(
+                trusted, key="unicode-revoke", reason_code=decomposed_reason,
+                payload_hash=noncanonical_hash,
+            )
+        trusted.rollback()
+        row = invoke_revoke_sql(
+            trusted, key="unicode-revoke", reason_code=decomposed_reason,
+            payload_hash=canonical_hash,
+        )
+        assert row is not None
+        trusted.commit()
+        with pytest.raises(psycopg.errors.RaiseException, match="KL_REGISTRY_INVALID_ARGUMENT"):
+            trusted.execute(
+                "SELECT * FROM kineticloop.registry_revoke_artifact("
+                "%s,%s,%s,%s,%s,%s,NULL,%s,5000)",
+                (
+                    UUID(ARTIFACT_ID), CONTENT_HASH, NOW, decomposed_reason,
+                    canonical_hash, "unicode-revoke", UUID(INCIDENT_ID),
+                ),
+            )
+        trusted.rollback()
+    assert registry_counts(db_urls["admin"]) == (1, 1, 1, 1)
+    with connect(db_urls["admin"]) as admin:
+        assert admin.execute(
+            "SELECT reason_code FROM kineticloop.artifact_revocation_events"
+        ).fetchone() == ("Caf\u00e9",)
 
 
-def test_global_revoke_never_locks_s01(db_url: str) -> None:
-    subject_holder = connect(db_url)
-    subject_holder.execute(
-        "SELECT subject_id FROM subject_coordination WHERE subject_id = %s FOR UPDATE",
+def test_global_revoke_never_locks_s01(db_urls: dict[str, str]) -> None:
+    blocker = connect(db_urls["admin"], name="held-s01")
+    blocker.execute(
+        "SELECT subject_id FROM kineticloop.user_decision_state WHERE subject_id=%s FOR UPDATE",
         (UUID(SUBJECT_ID),),
     )
-    outcome: dict[str, object] = {}
-
-    def worker() -> None:
-        try:
-            with connect(db_url, name="revoke-no-s01") as connection:
-                outcome["result"] = revoke_artifact(
-                    connection,
-                    revoke_command(),
-                    effective_at=NOW,
-                    reason_code="EMERGENCY",
-                    lock_timeout_ms=250,
-                )
-        except BaseException as error:
-            outcome["error"] = error
-
-    thread = threading.Thread(target=worker)
-    thread.start()
-    thread.join(timeout=2)
-    assert not thread.is_alive(), "global revoke waited on S01"
-    assert "error" not in outcome
-    subject_holder.rollback()
-    subject_holder.close()
-
-
-def test_stop_has_no_registry_dependency(db_url: str) -> None:
-    registry_holder = connect(db_url)
-    registry_holder.execute(
-        "SELECT registry_revision FROM safety_registry_state WHERE registry_scope='system' FOR UPDATE"
-    )
-    outcome: dict[str, object] = {}
-
-    def stop_mutation(cursor: Any) -> int:
-        cursor.execute(
-            """
-            INSERT INTO domain_mutations (command_kind, subject_id)
-            VALUES ('STOP', %s) RETURNING mutation_id
-            """,
-            (UUID(SUBJECT_ID),),
+    with connect(db_urls["trusted_admin"]) as connection:
+        result = revoke_artifact(
+            connection,
+            revoke_command(),
+            effective_at=NOW,
+            reason_code="EMERGENCY",
+            lock_timeout_ms=200,
         )
-        return int(cursor.fetchone()[0])
-
-    def worker() -> None:
-        try:
-            with connect(db_url, name="stop-no-registry") as connection:
-                outcome["result"] = execute_stop_without_registry(
-                    connection, SUBJECT_ID, stop_mutation, lock_timeout_ms=250
-                )
-        except BaseException as error:
-            outcome["error"] = error
-
-    thread = threading.Thread(target=worker)
-    thread.start()
-    thread.join(timeout=2)
-    assert not thread.is_alive(), "STOP waited on S51"
-    assert "error" not in outcome
-    registry_holder.rollback()
-    registry_holder.close()
-    assert mutation_count(db_url) == 1
+    blocker.rollback()
+    blocker.close()
+    assert result.registry_revision == 1
 
 
-def test_command_owners_reject_nested_transactions(db_url: str) -> None:
-    clear_state(db_url)
-    with connect(db_url) as connection:
+def test_stop_has_no_registry_dependency(db_urls: dict[str, str]) -> None:
+    blocker = connect(db_urls["admin"])
+    blocker.execute(
+        "SELECT registry_revision FROM kineticloop.safety_registry_state WHERE id=1 FOR UPDATE"
+    )
+    def stop_mutation(cursor: Any) -> int:
+        cursor.execute("SELECT 1")
+        row = cursor.fetchone()
+        assert row is not None
+        return int(row[0])
+
+    with connect(db_urls["stop"]) as connection:
+        result = execute_stop_without_registry(
+            connection,
+            SUBJECT_ID,
+            stop_mutation,
+            lock_timeout_ms=100,
+        )
+    blocker.rollback()
+    blocker.close()
+    assert result == 1
+
+
+def test_command_owners_reject_nested_transactions(db_urls: dict[str, str]) -> None:
+    with connect(db_urls["application"]) as connection:
         connection.execute("SELECT 1")
-        with pytest.raises(RegistryTransactionStateError, match="idle connection"):
+        with pytest.raises(RegistryTransactionStateError):
             execute_shared_registry_command(
                 connection,
                 eligibility(RegistryCommand.START_SESSION),
                 mutate(RegistryCommand.START_SESSION),
             )
         connection.rollback()
-
-    with connect(db_url) as connection:
+    with connect(db_urls["trusted_admin"]) as connection:
         connection.execute("SELECT 1")
-        with pytest.raises(RegistryTransactionStateError, match="idle connection"):
-            revoke_artifact(
-                connection,
-                revoke_command(),
-                effective_at=NOW,
-                reason_code="EMERGENCY",
+        with pytest.raises(RegistryTransactionStateError):
+            revoke_artifact(connection, revoke_command(), effective_at=NOW, reason_code="EMERGENCY")
+
+
+def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -> None:
+    with connect(db_urls["admin"]) as connection:
+        rows = connection.execute(
+            "SELECT p.proname, p.oid::regprocedure::text, "
+            "pg_get_userbyid(p.proowner), p.prosecdef, p.proconfig, "
+            "NOT EXISTS (SELECT 1 FROM aclexplode(coalesce(p.proacl, "
+            "acldefault('f',p.proowner))) acl WHERE acl.grantee=0 "
+            "AND acl.privilege_type='EXECUTE') "
+            "FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace "
+            "WHERE n.nspname='kineticloop' AND p.prosecdef ORDER BY p.proname"
+        ).fetchall()
+        assert [row[0] for row in rows] == [
+            "registry_guard_commit_bundle",
+            "registry_guard_continue_session",
+            "registry_guard_publish_manifest",
+            "registry_guard_reauthorize",
+            "registry_guard_resume_session",
+            "registry_guard_start_session",
+            "registry_revoke_artifact",
+        ]
+        assert all(row[2] == "kl_writer_safety_registry" for row in rows)
+        assert all(
+            row[3] is True
+            and row[4] == ["search_path=pg_catalog, kineticloop, pg_temp"]
+            for row in rows
+        )
+        assert all(row[5] is True for row in rows)
+        for name, signature, _owner, _security, _config, _acl in rows:
+            expected_role = (
+                "kl_trusted_admin" if name == "registry_revoke_artifact" else "kl_application"
             )
+            denied_role = (
+                "kl_application" if name == "registry_revoke_artifact" else "kl_trusted_admin"
+            )
+            assert connection.execute(
+                "SELECT has_function_privilege(%s,%s,'EXECUTE')",
+                (expected_role, signature),
+            ).fetchone() == (True,)
+            for role in (denied_role, "kl_auditor"):
+                assert connection.execute(
+                    "SELECT has_function_privilege(%s,%s,'EXECUTE')",
+                    (role, signature),
+                ).fetchone() == (False,)
+
+
+def create_hostile_temp_registry_objects(connection: Connection[Any]) -> None:
+    for relation in (
+        "user_decision_state",
+        "command_receipts",
+        "domain_events",
+        "outbox_deliveries",
+        "safety_artifacts",
+        "artifact_revocation_events",
+        "safety_registry_state",
+        "decision_manifests",
+        "authorization_issuances",
+        "authorization_events",
+        "authorization_artifact_closure",
+        "registry_management_receipts",
+        "registry_audit_events",
+        "registry_outbox",
+    ):
+        connection.execute(
+            sql.SQL("CREATE TEMP TABLE {} (hijacked text)").format(
+                sql.Identifier(relation)
+            )
+        )
+    connection.execute("CREATE DOMAIN pg_temp.uuid AS text")
+    connection.execute("CREATE DOMAIN pg_temp.timestamptz AS text")
+
+
+def assert_direct_dml_denied(connection: Connection[Any], relation: str) -> None:
+    column = connection.execute(
+        "SELECT attname FROM pg_attribute "
+        "WHERE attrelid=%s::regclass AND attnum>0 AND NOT attisdropped "
+        "ORDER BY attnum LIMIT 1",
+        (f"kineticloop.{relation}",),
+    ).fetchone()
+    assert column is not None
+    statements = (
+        sql.SQL("INSERT INTO {} SELECT * FROM {} WHERE false").format(
+            sql.Identifier("kineticloop", relation),
+            sql.Identifier("kineticloop", relation),
+        ),
+        sql.SQL("UPDATE {} SET {}={} WHERE false").format(
+            sql.Identifier("kineticloop", relation),
+            sql.Identifier(column[0]),
+            sql.Identifier(column[0]),
+        ),
+        sql.SQL("DELETE FROM {} WHERE false").format(
+            sql.Identifier("kineticloop", relation)
+        ),
+    )
+    for statement in statements:
+        with pytest.raises(psycopg.errors.InsufficientPrivilege):
+            connection.execute(statement)
         connection.rollback()
 
-    with connect(db_url) as connection:
-        connection.execute("SELECT 1")
-        with pytest.raises(RegistryTransactionStateError, match="idle connection"):
-            execute_stop_without_registry(
-                connection, SUBJECT_ID, lambda cursor: None
-            )
-        connection.rollback()
 
-    assert mutation_count(db_url) == 0
-    assert table_counts(db_url) == (0, 0, 0, 0, 1)
+def test_migrated_registry_definer_search_path_and_schema_acl(
+    db_urls: dict[str, str],
+) -> None:
+    routine_names = (
+        "registry_guard_publish_manifest",
+        "registry_guard_commit_bundle",
+        "registry_guard_reauthorize",
+        "registry_guard_start_session",
+        "registry_guard_resume_session",
+        "registry_guard_continue_session",
+        "registry_revoke_artifact",
+    )
+    denied_schema_roles = (
+        "kl_application_login",
+        "kl_auditor_login",
+        "kl_trusted_admin_login",
+        "kl_application",
+        "kl_auditor",
+        "kl_trusted_admin",
+        "kl_writer_safety_registry",
+        "kl_cluster_bootstrap",
+        "kl_migration_deployer",
+    )
+    with connect(db_urls["admin"]) as admin:
+        assert admin.execute(
+            "SELECT pg_get_userbyid(nspowner) FROM pg_namespace "
+            "WHERE nspname='kineticloop'"
+        ).fetchone() == ("kl_migration_owner",)
+        for role in denied_schema_roles:
+            privilege = admin.execute(
+                "SELECT has_schema_privilege(%s,'kineticloop','CREATE')",
+                (role,),
+            ).fetchone()
+            assert privilege == (False,), role
+        assert admin.execute(
+            "SELECT NOT EXISTS (SELECT 1 FROM pg_namespace n, "
+            "LATERAL aclexplode(coalesce(n.nspacl,acldefault('n',n.nspowner))) acl "
+            "WHERE n.nspname='kineticloop' AND acl.grantee=0)"
+        ).fetchone() == (True,)
+
+        definitions = admin.execute(
+            "SELECT p.proname,p.proconfig,pg_get_functiondef(p.oid) "
+            "FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace "
+            "WHERE n.nspname='kineticloop' AND p.proname=ANY(%s) ORDER BY p.proname",
+            (list(routine_names),),
+        ).fetchall()
+        assert len(definitions) == len(routine_names)
+        for _name, config, definition in definitions:
+            assert config == ["search_path=pg_catalog, kineticloop, pg_temp"]
+            assert "EXECUTE " not in definition.upper()
+            for relation in (
+                "safety_registry_state",
+                "safety_artifacts",
+                "artifact_revocation_events",
+            ):
+                if relation in definition:
+                    assert f"kineticloop.{relation}" in definition
+
+    artifacts = [UUID(ARTIFACT_ID), UUID(DEPENDENCY_ID)]
+    with connect(db_urls["application"]) as application:
+        create_hostile_temp_registry_objects(application)
+        for name in routine_names[:-1]:
+            row = application.execute(
+                sql.SQL("SELECT kineticloop.{}(%s,%s,0,5000)").format(
+                    sql.Identifier(name)
+                ),
+                (UUID(SUBJECT_ID), artifacts),
+            ).fetchone()
+            assert row == (0,)
+        application.rollback()
+    with connect(db_urls["trusted_admin"]) as trusted:
+        create_hostile_temp_registry_objects(trusted)
+        assert invoke_revoke_sql(trusted, key="hostile-temp-revoke") is not None
+        trusted.rollback()
+    assert registry_counts(db_urls["admin"]) == (0, 0, 0, 0)
+
+    relations = (
+        "user_decision_state",
+        "command_receipts",
+        "domain_events",
+        "outbox_deliveries",
+        "safety_artifacts",
+        "artifact_revocation_events",
+        "safety_registry_state",
+    )
+    for url_key in ("application", "auditor", "trusted_admin"):
+        with connect(db_urls[url_key]) as runtime:
+            for relation in relations:
+                assert_direct_dml_denied(runtime, relation)
+    for role in ("kl_application", "kl_auditor", "kl_trusted_admin"):
+        with connect(db_urls["admin"]) as admin:
+            for relation in relations:
+                assert admin.execute(
+                    "SELECT has_table_privilege(%s,%s,'INSERT') OR "
+                    "has_table_privilege(%s,%s,'UPDATE') OR "
+                    "has_table_privilege(%s,%s,'DELETE')",
+                    (
+                        role,
+                        f"kineticloop.{relation}",
+                        role,
+                        f"kineticloop.{relation}",
+                        role,
+                        f"kineticloop.{relation}",
+                    ),
+                ).fetchone() == (False,)
+
+
+def test_migrated_registry_runtime_login_boundary(db_urls: dict[str, str]) -> None:
+    expected_memberships = {
+        "kl_application_login": "kl_application",
+        "kl_trusted_admin_login": "kl_trusted_admin",
+    }
+    protected_roles = (
+        "kl_migration_owner",
+        "kl_writer_safety_registry",
+        "kl_migration_deployer",
+        "kl_cluster_bootstrap",
+        "kl_auditor",
+    )
+    with connect(db_urls["admin"]) as admin:
+        for login, execution_role in expected_memberships.items():
+            attributes = admin.execute(
+                "SELECT rolcanlogin,rolsuper,rolcreatedb,rolcreaterole,rolinherit,"
+                "rolreplication,rolbypassrls FROM pg_roles WHERE rolname=%s",
+                (login,),
+            ).fetchone()
+            assert attributes == (True, False, False, False, True, False, False)
+            memberships = admin.execute(
+                "SELECT parent.rolname,m.admin_option,m.inherit_option,m.set_option "
+                "FROM pg_auth_members m JOIN pg_roles parent ON parent.oid=m.roleid "
+                "JOIN pg_roles member ON member.oid=m.member WHERE member.rolname=%s",
+                (login,),
+            ).fetchall()
+            assert memberships == [(execution_role, False, True, False)]
+            for protected in protected_roles:
+                assert admin.execute(
+                    "SELECT pg_has_role(%s,%s,'MEMBER')", (login, protected)
+                ).fetchone() == (False,)
+            assert admin.execute(
+                "SELECT (SELECT count(*) FROM pg_database WHERE datdba=%s::regrole) + "
+                "(SELECT count(*) FROM pg_namespace WHERE nspowner=%s::regrole) + "
+                "(SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace "
+                "WHERE n.nspname='kineticloop' AND c.relowner=%s::regrole) + "
+                "(SELECT count(*) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace "
+                "WHERE n.nspname='kineticloop' AND p.proowner=%s::regrole)",
+                (login, login, login, login),
+            ).fetchone() == (0,)
+
+    for url_key, login in (
+        ("application", "kl_application_login"),
+        ("trusted_admin", "kl_trusted_admin_login"),
+    ):
+        with connect(db_urls[url_key]) as runtime:
+            for statement in (
+                "ALTER ROLE kl_migration_owner LOGIN",
+                f"GRANT kl_migration_owner TO {login}",
+                f"REVOKE kl_migration_owner FROM {login}",
+                "SET ROLE kl_migration_owner",
+                "SET ROLE kl_writer_safety_registry",
+                "SET ROLE kl_migration_deployer",
+                "SET ROLE kl_cluster_bootstrap",
+                "SET SESSION AUTHORIZATION kl_migration_owner",
+            ):
+                with pytest.raises(psycopg.Error):
+                    runtime.execute(statement)
+                runtime.rollback()
+
+
+def test_migrated_registry_role_owner_boundary(db_urls: dict[str, str]) -> None:
+    with connect(db_urls["application"]) as application:
+        for sql_text in (
+            "SET ROLE kl_migration_owner",
+            "SET ROLE kl_writer_safety_registry",
+            "UPDATE kineticloop.safety_registry_state SET registry_revision=99 WHERE id=1",
+        ):
+            with pytest.raises(psycopg.Error):
+                application.execute(sql_text)
+            application.rollback()
+        with pytest.raises(psycopg.Error):
+            application.execute(
+                "SELECT * FROM kineticloop.registry_revoke_artifact(%s,%s,%s,%s,%s,%s,%s,%s,1000)",
+                (
+                    UUID(ARTIFACT_ID),
+                    CONTENT_HASH,
+                    NOW,
+                    "EMERGENCY",
+                    revocation_payload_hash(effective_at=NOW, reason_code="EMERGENCY"),
+                    "caller-asserted-admin",
+                    "e" * 64,
+                    UUID(INCIDENT_ID),
+                ),
+            )
+        application.rollback()
+    assert registry_counts(db_urls["admin"]) == (0, 0, 0, 0)
+
+    revoke_signature = (
+        "kineticloop.registry_revoke_artifact("
+        "uuid,text,timestamp with time zone,text,text,text,text,uuid,integer)"
+    )
+    with psycopg.connect(db_urls["admin"], autocommit=True) as admin:
+        admin.execute(f"GRANT EXECUTE ON FUNCTION {revoke_signature} TO kl_stop_login")
+    try:
+        with connect(db_urls["stop"]) as stop:
+            with pytest.raises(
+                psycopg.errors.RaiseException,
+                match="KL_REGISTRY_COMMAND_NOT_AUTHORIZED",
+            ):
+                invoke_revoke_sql(stop, key="unauthorized-direct-execute")
+            stop.rollback()
+    finally:
+        with psycopg.connect(db_urls["admin"], autocommit=True) as admin:
+            admin.execute(f"REVOKE EXECUTE ON FUNCTION {revoke_signature} FROM kl_stop_login")
+    assert registry_counts(db_urls["admin"]) == (0, 0, 0, 0)
+
+    denied_writes = (
+        "UPDATE kineticloop.safety_registry_state SET registry_revision=99 WHERE id=1",
+        "INSERT INTO kineticloop.safety_artifacts("
+        "id,artifact_kind,artifact_identity,artifact_version,content_hash,validity_kind,valid_from) "
+        "VALUES ('00000000-0000-8000-8000-0000000000ff','POLICY_BUNDLE','forged','1',"
+        "'forged','TIMELESS',clock_timestamp())",
+        "INSERT INTO kineticloop.artifact_revocation_events("
+        "id,effective_at,management_command_identity,reason_code,revocation_payload_hash,"
+        "registry_revision,ref_s49_id,registry_state_id) VALUES ("
+        "'00000000-0000-8000-8000-0000000000fe',clock_timestamp(),'forged','forged',"
+        "'forged',99,'00000000-0000-8000-8000-000000000003',1)",
+    )
+    for role_url in (db_urls["application"], db_urls["trusted_admin"], db_urls["stop"]):
+        with connect(role_url) as runtime:
+            for statement in denied_writes:
+                with pytest.raises(psycopg.errors.InsufficientPrivilege):
+                    runtime.execute(statement)
+                runtime.rollback()
+    assert registry_counts(db_urls["admin"]) == (0, 0, 0, 0)
+
+    with connect(db_urls["trusted_admin"]) as trusted:
+        result = revoke_artifact(
+            trusted, revoke_command(), effective_at=NOW, reason_code="EMERGENCY"
+        )
+    assert result.registry_revision == 1
+    with connect(db_urls["admin"]) as admin:
+        row = admin.execute(
+            "SELECT operator_identity,command_key,request_hash,causation_incident_id,"
+            "outbox_delivery_id FROM kineticloop.artifact_revocation_events"
+        ).fetchone()
+        assert row is not None
+        assert row[0] == "kl_trusted_admin_login"
+        assert row[1] == "revoke-1"
+        assert row[2] == "d" * 64
+        assert row[3] == UUID(INCIDENT_ID)
+        assert row[4] is not None

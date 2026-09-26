@@ -1,0 +1,67 @@
+KL-072 expanded protected-base verification evidence
+tested_commit: 200ae79165fb7efc403aca4b2111c43eb64c5075
+date: 2026-09-25
+
+$ git diff --exit-code b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f HEAD -- migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py
+PASS (exit 0, no diff)
+
+$ uv run pytest -q tests/db/test_migrations.py::test_safety_registry_successor_migration_chain
+1 passed in 0.12s
+
+$ uv run pytest -q tests/db/test_migrations.py::test_safety_registry_successor_contains_no_cluster_role_ddl
+1 passed in 2.18s
+
+$ uv run pytest -q tests/db/test_migrations.py::test_safety_registry_role_preflight_fails_before_object_changes
+1 passed in 4.81s
+
+$ uv run pytest -q tests/db/test_migrations.py::test_two_phase_empty_db_upgrade_head
+1 passed in 2.34s
+
+$ uv run pytest -q tests/db/test_migrations.py::test_safety_registry_repository_integrates_with_migrated_schema
+1 passed in 2.50s
+
+$ uv run pytest -q tests/db/test_safety_registry.py
+42 passed in 25.84s
+
+$ uv run pytest -q tests/db/test_migrations.py::test_safety_registry_migrated_object_ownership
+1 passed in 2.69s
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_command_routine_privileges
+1 passed in 2.42s
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_definer_search_path_and_schema_acl
+1 passed in 2.60s
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_runtime_login_boundary
+1 passed in 2.47s
+
+$ uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_role_owner_boundary
+1 passed in 2.48s
+
+$ uv run pytest -q tests/db/test_migrations.py tests/db/test_safety_registry.py tests/db/test_immutability.py tests/db/test_lifecycle.py
+68 passed in 68.75s
+
+The first post-merge harness invocation correctly failed because the committed task result
+still named the superseded 12-check contract. After adding the two protected-base checks and
+rebinding this result to the exact tested commit, the required harness command was rerun.
+
+$ uv run kl check-harness
+HARNESS_CHECK_PASS tasks=69 active=67
+
+Supplemental checks:
+$ uv run ruff check .
+All checks passed!
+
+$ uv run mypy src tests/db/test_migrations.py tests/db/test_safety_registry.py
+Success: no issues found in 36 source files
+
+Expanded security oracles:
+- Every command routine has the exact singleton proconfig value
+  search_path=pg_catalog, kineticloop, pg_temp; KineticLoop objects are qualified,
+  dynamic SQL is absent, and hostile temporary relation/type collisions do not hijack calls.
+- kineticloop remains migration-owner owned; PUBLIC and non-owner principals have no schema
+  CREATE grant, and runtime logins plus execution roles cannot directly mutate S01/S02/S03/
+  S04/S49/S50/S51.
+- The Phase-A bootstrap is de-elevated after ownership handoff. Application and trusted-admin
+  logins have exact safe attributes, exactly one inherited non-SET/non-admin execution-role
+  membership, no migrated ownership, and no owner/deployer/bootstrap administration path.
