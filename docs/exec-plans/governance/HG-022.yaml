@@ -1,0 +1,86 @@
+change_identity: harness-governance-v0.1/HG-022
+display_change_id: HG-022
+base_commit: 8d93fbd603a71c02c4b291194843b2cfb35e1078
+tested_commit: b7b45e670a756684b40b6a403bcaad7501d98eda
+change_status: PASS
+summary: >-
+  Make KL-017 executable after merged KL-018 by adding the hard dependency and
+  the migration and SafetyRegistry regression write paths, preserving every
+  existing exact check contract, and requiring the complete database suite as
+  supplemental successor-chain and privilege-inventory evidence.
+packets_refined:
+  - KL-017
+files_changed:
+  - CURRENT_DOCUMENT_INDEX.json
+  - HARNESS_DOCUMENT_MANIFEST.json
+  - KineticLoop_Harness_Backlog_v0.2.json
+  - KineticLoop_Harness_Traceability_v0.3.json
+  - docs/exec-plans/active/KL-017.md
+  - docs/exec-plans/evidence/HG-022/checks.log
+  - docs/exec-plans/governance/HG-022.yaml
+  - tests/harness/test_validator.py
+  - tools/harness/validate_harness.py
+checks_run:
+  - check_id: governance_schema_valid
+    command: Validate HG-022.yaml against HARNESS_CHANGE.schema.json.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-022/checks.log
+  - check_id: kl017_projection_exact
+    command: Verify identical KL-017 dependencies, checks, commands, pass oracles, resource keys, write paths, deliverables, Definition of Done, and review types in backlog, traceability, and packet.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-022/checks.log
+  - check_id: existing_check_contracts_preserved
+    command: Verify all nine protected-base KL-017 check contracts remain byte-for-byte identical and in their original order.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-022/checks.log
+  - check_id: successor_scope_exact
+    command: Verify KL-018 is a hard dependency and KL-017 owns tests/db/test_migrations.py, tests/db/test_safety_registry.py, and the registry_coordination lock required by the shared write scope.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-022/checks.log
+  - check_id: complete_db_regression_contract_pinned
+    command: Verify the additional complete_db_suite_passes contract runs the complete tests/db CI surface and binds successor-chain/head/bootstrap plus closed role and SECURITY DEFINER inventory regressions.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-022/checks.log
+  - check_id: focused_governance_guards_pass
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness/test_validator.py -k 'm2_kl017_successor_migration_scope_cannot_be_removed or m2_security_contracts_reject_removal_substitution_and_weakening or m1_closure' -p no:cacheprovider
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-022/checks.log
+  - check_id: validator_suite_passes
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness/test_validator.py -p no:cacheprovider
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-022/checks.log
+  - check_id: harness_suite_passes
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-022/checks.log
+  - check_id: harness_structure_valid
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-022/checks.log
+  - check_id: lint_passes
+    command: RUFF_CACHE_DIR=/private/tmp/hg022-ruff /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/ruff check tools/harness/validate_harness.py tests/harness/test_validator.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-022/checks.log
+  - check_id: governance_scope_exact
+    command: Verify the protected-base change set is exactly the nine files declared by HG-022.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-022/checks.log
+  - check_id: diff_clean
+    command: git diff --check 8d93fbd603a71c02c4b291194843b2cfb35e1078 HEAD
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-022/checks.log
+  - check_id: frozen_state_unchanged
+    command: Verify Frozen Protocol, Frozen DB, and FROZEN_BASELINE.json are unchanged from the protected base.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-022/checks.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+  - >-
+    KL-017 remains NOT_STARTED; HG-022 defines implementation-time migration and
+    regression obligations and does not claim that subject-isolation code,
+    migrations, or PostgreSQL evidence already exist.
+  - >-
+    HG-022 requires fresh independent GENERAL, PROTOCOL, DB_CONCURRENCY, and
+    SECURITY_DATA_BOUNDARY reviews bound to the immutable governance head before
+    merge; this change intentionally creates no review artifact.

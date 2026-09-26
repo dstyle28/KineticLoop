@@ -91,6 +91,7 @@ M2_REQUIRED_CHECK_IDS = {
     },
     'KL-017': {
         'cross_subject_denial_is_non_enumerating',
+        'complete_db_suite_passes',
     },
     'KL-018': {
         'artifact_registry_successor_migration_chain',
@@ -141,6 +142,17 @@ M1_CLOSURE_KL018_REQUIRED_CHECK_IDS = {
     'artifact_registration_requires_management_capability',
     'artifact_registration_uses_exclusive_registry_gate',
     'artifact_registration_direct_write_rejected',
+}
+M1_CLOSURE_KL017_REQUIRED_CHECK_IDS = {
+    'cross_subject_denial_is_non_enumerating',
+}
+M1_CLOSURE_KL017_CRITICAL_CONTRACT_DIGESTS = {
+    'subject_namespace_isolation': 'f4372d9ad4ad1395f9fbf07611ba68813e0c46de01249de56e312f3731f7e2ff',
+    'test_authorization_is_isolated': 'f89d192eedb9c346bcaa7ef047a859e8c0cb6d462e42d018e2a5b0e6ae5392ab',
+    'evaluation_storage_is_isolated': 'e3b35eaae47e664a203bf700ce4f28a796e7787226faf92146673ce2b80015e6',
+    'application_role_scope_enforced': 'a1b2c42c5c8aed9e3caa1ad43404aabde2d449a2fe0a6294637449977baad975',
+    'subject_isolation_e2e_passes': '2c6c1aed417611a457c2eda86771cb0a8dee38db398311f940b7b3c7b5b775f1',
+    'cross_subject_denial_is_non_enumerating': 'a1a5fccddd0d93ee54ff8f118732452c977ce234439593acefb1a32a27089bd4',
 }
 M1_CLOSURE_KL018_CRITICAL_CONTRACT_DIGESTS = {
     'artifact_identity_is_immutable': '5a5d6976957b081e045743ba114df6e8aebf782c4cc66123026dafbee59456eb',
@@ -220,6 +232,7 @@ M2_CRITICAL_CONTRACT_DIGESTS = {
         'application_role_scope_enforced': 'a1b2c42c5c8aed9e3caa1ad43404aabde2d449a2fe0a6294637449977baad975',
         'subject_isolation_e2e_passes': '2c6c1aed417611a457c2eda86771cb0a8dee38db398311f940b7b3c7b5b775f1',
         'cross_subject_denial_is_non_enumerating': 'a1a5fccddd0d93ee54ff8f118732452c977ce234439593acefb1a32a27089bd4',
+        'complete_db_suite_passes': 'd2817afbc8d3369de8f81ac185dae69176d64b715714d532059f1f5ceb59f4b6',
     },
     'KL-018': {
         'artifact_registry_successor_migration_chain': '330fc8082d050d343039e4664acdabcd8375969bb8b08657c83f9b73e65873ba',
@@ -1404,7 +1417,9 @@ def task_definition_errors(
                     'entry_conditions', []):
                 errors.append('m2-entry-condition:' + name)
             required_checks = (
-                M1_CLOSURE_KL018_REQUIRED_CHECK_IDS
+                M1_CLOSURE_KL017_REQUIRED_CHECK_IDS
+                if historical_m1_closure and name == 'KL-017'
+                else M1_CLOSURE_KL018_REQUIRED_CHECK_IDS
                 if historical_m1_closure and name == 'KL-018'
                 else M2_REQUIRED_CHECK_IDS.get(name, set())
             )
@@ -1427,6 +1442,12 @@ def task_definition_errors(
                     or 'tests/db/test_migrations.py' not in task.get('write_paths', [])
                     or 'tests/db/test_safety_registry.py' not in task.get('write_paths', []))):
                 errors.append('m2-kl018-registry-migration-scope')
+            if (name == 'KL-017' and not historical_m1_closure and (
+                    'KL-018' not in task.get('depends_on', [])
+                    or 'registry_coordination' not in task.get('resource_keys', [])
+                    or 'tests/db/test_migrations.py' not in task.get('write_paths', [])
+                    or 'tests/db/test_safety_registry.py' not in task.get('write_paths', []))):
+                errors.append('m2-kl017-successor-migration-scope')
             if name == 'KL-015':
                 if task.get('invariant_ids') != KL015_REQUIRED_INVARIANT_IDS:
                     errors.append('m2-kl015-frozen-impact:invariants')
@@ -1439,7 +1460,9 @@ def task_definition_errors(
                 if isinstance(item, dict)
             }
             critical_contracts = (
-                M1_CLOSURE_KL018_CRITICAL_CONTRACT_DIGESTS
+                M1_CLOSURE_KL017_CRITICAL_CONTRACT_DIGESTS
+                if historical_m1_closure and name == 'KL-017'
+                else M1_CLOSURE_KL018_CRITICAL_CONTRACT_DIGESTS
                 if historical_m1_closure and name == 'KL-018'
                 else M2_CRITICAL_CONTRACT_DIGESTS.get(name, {})
             )

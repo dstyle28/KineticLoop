@@ -668,6 +668,7 @@ class ValidatorTests(unittest.TestCase):
             ('KL-072', 'safety_registry_definer_search_path_and_schema_acl_enforced'),
             ('KL-072', 'safety_registry_runtime_login_boundary_enforced'),
             ('KL-017', 'cross_subject_denial_is_non_enumerating'),
+            ('KL-017', 'complete_db_suite_passes'),
             ('KL-018', 'artifact_registry_successor_migration_chain'),
             ('KL-018', 'artifact_registration_command_routine_privileges_enforced'),
             ('KL-018', 'artifact_registration_session_authority_enforced'),
@@ -762,6 +763,21 @@ class ValidatorTests(unittest.TestCase):
             task[field].remove(value)
             dump(backlog_path, backlog)
             self.check(1, 'm2-kl018-registry-migration-scope')
+        dump(backlog_path, original)
+
+    def test_m2_kl017_successor_migration_scope_cannot_be_removed(self):
+        backlog_path = self.root / v.BACKLOG
+        original = json.loads(backlog_path.read_text())
+        for field, value in (
+                ('depends_on', 'KL-018'),
+                ('resource_keys', 'registry_coordination'),
+                ('write_paths', 'tests/db/test_migrations.py'),
+                ('write_paths', 'tests/db/test_safety_registry.py')):
+            backlog = copy.deepcopy(original)
+            task = next(item for item in backlog['tasks'] if item['id'] == 'KL-017')
+            task[field].remove(value)
+            dump(backlog_path, backlog)
+            self.check(1, 'm2-kl017-successor-migration-scope')
         dump(backlog_path, original)
 
     def test_manifest_claimed_m1_closure_cannot_be_missing(self):
