@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-015
 display_task_id: KL-015
 task_definition_version: v0.2
 base_commit: 21ec0b508959d8ce24dfe1a0e4d59a0820394068
-tested_commit: 17c0a967d5312c999104ccf02ae1f0734bfb3664
+tested_commit: 1f7b6f203c7031858943dcdfedf1b03f5be2fad5
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -26,83 +26,83 @@ commands_run:
   - check_id: transaction_owner_matrix_complete
     command: uv run pytest -q tests/unit/persistence/test_transactions.py::test_transaction_owner_matrix_complete
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: catalog_mapping_and_release_owner_boundaries_complete
     command: uv run pytest -q tests/unit/persistence/test_transactions.py::test_catalog_mapping_and_release_owner_boundaries_complete
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: registry_lease_required_for_publish_commit_and_session_entry
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_registry_lease_required_for_publish_commit_and_session_entry
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: preparation_work_stays_outside_coordination_locks
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_preparation_work_stays_outside_coordination_locks
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: factset_build_stays_outside_subject_coordination
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_factset_build_stays_outside_subject_coordination
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: subject_guard_required
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_subject_guard_required
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: complete_frozen_lock_order_enforced
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_complete_frozen_lock_order_enforced
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: multi_key_lock_order_is_stable
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_multi_key_lock_order_is_stable
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: reverse_lock_order_is_rejected
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: receipt_before_s01_is_rejected
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_receipt_before_s01_is_rejected
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: artifact_identity_required
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_artifact_identity_required
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: direct_write_bypass_rejected
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_direct_write_bypass_rejected
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: event_outbox_atomicity_enforced
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_event_outbox_atomicity_enforced
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: outbox_dispatcher_does_not_lock_subject_guard
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_outbox_dispatcher_does_not_lock_subject_guard
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: stale_fence_commit_is_rejected
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_stale_fence_commit_is_rejected
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: dispatch_first_winner_and_replay_non_resend
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_dispatch_first_winner_and_replay_non_resend
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: ack_loss_replay_preserves_natural_uniqueness
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_ack_loss_replay_preserves_natural_uniqueness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: t6_ack_loss_replay_returns_same_issuance
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_ack_loss_replay_returns_same_issuance
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: transaction_db_conformance_passes
     command: uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
   - check_id: harness_validation_passes
     command: uv run kl check-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-17c0a96.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
 requirements_covered: []
 files_changed:
   - docs/contracts/repository_transactions.md
@@ -114,8 +114,8 @@ files_changed:
   - docs/exec-plans/evidence/KL-015/checks-c281e6a.log
   - docs/exec-plans/evidence/KL-015/regression-acb3563.log
   - docs/exec-plans/evidence/KL-015/regression-c281e6a.log
-  - docs/exec-plans/evidence/KL-015/checks-17c0a96.log
-  - docs/exec-plans/evidence/KL-015/regression-17c0a96.log
+  - docs/exec-plans/evidence/KL-015/checks-1f7b6f2.log
+  - docs/exec-plans/evidence/KL-015/regression-1f7b6f2.log
   - docs/exec-plans/completed/KL-015_RESULT.yaml
 decisions:
   - Give every public command surface exactly one repository owner; T6CommitCoordinator is the single atomic database owner for the PrescriptionCommitService and AuthorizationService CommitBundle boundary.
@@ -131,14 +131,17 @@ decisions:
   - Bind factset-build capability to command identity; BeginBuild and CompleteFactset receive S15 only, while WriteCandidate receives S15 and S16.
   - Store the complete successful outcome in S02 so ACK-loss replay returns the same S39/S40/S41/S42/S43 identities and cannot repeat head, terminal-intent, event, outbox, reservation, closure, or operation effects.
   - Make live fenced commands prove the exact locked intent's current owner, token, live lease, status, request and attempt; make AcquireLease persist a future deadline-bounded lease and make ReapIntent atomically terminate the exact expired S27/S29 chain.
-  - Bind T6 inserted references to one exact current intent/request/attempt/validation chain; persist the locked S38 head as nullable first-head parent metadata, materialize the verified S49 closure, condition supersession on a prior bundle authorization, and update S01.execution_basis_event_id to the same-transaction S03 event.
-  - Require S42 issuance reason and a server-computed validity certificate containing authorization epoch, method version, artifact/manifest/resolution/validation/request/policy/calendar dependency identities, their bounded minimum expiry, and a deterministic closure digest bound to the acquired registry revision.
+  - Bind T6 inserted references to one exact current intent/request/attempt/validation chain; persist the locked S38 head as nullable first-head parent metadata, materialize the verified S49 and manifest-projection closure, bind supersession to the exact prior and replacement authorization scope/current receipt/cause, and update S01.execution_basis_event_id to the same-transaction S03 event.
+  - Require S42 issuance reason and a server-computed validity certificate containing authorization epoch, fixed method version, artifact/manifest/projection/resolution/validation/request/policy/calendar dependency identities, their bounded minimum expiry, an authoritative issuance time, and a deterministic closure digest bound to the acquired registry revision.
   - Derive artifact closure revision from the immutable database revision rather than parsing the semantic artifact version, and bound T6 authorization validity by every finite leased-artifact expiry plus explicit policy TTL and calendar validity.
-  - Bind T6 to the exact current RUNNING attempt, fence, manifest, epoch, validation, resolution, intent, and head; reject cross-wiring among multiple locked aggregates and require exact completion updates.
-  - Expose T2-IN S43 invalidation capability in the same atomic owner, bind its cause to the command's inserted decision/control and its invalidated epoch exactly to the atomic S01 epoch advance.
-  - Require T7 to revalidate the exact prescription/authorization pair including non-revocation, registry revision/state, leased artifact root, complete live artifact closure, scope, content, epoch, and current bundle membership; only START/RESUME append S45 and all T7 historical replay is non-executable.
+  - Bind T6 to the exact current COMMIT_READY attempt, fence, manifest, epoch, validation, resolution, intent, and head; reject cross-wiring among multiple locked aggregates and require exact completion updates.
+  - Require T2 input admission to change the frontier, controls to bind same-command S17/S18, actual-execution decisions to advance the execution basis, seal to bind exact S15/S01 state, and invalidation S43 to bind the current receipt, event kind, scope, and cause.
+  - Require T3 publication to bind the single READY S23 build and exact current epoch/frontier/policy/program/factset, publish the next generation with same-command S25 dependencies, and advance S01/S23 to those exact identities.
+  - Permit T4 to create a new root intent while binding S28/S29 and terminal updates to the exact new-or-locked chain, current epoch, and manifest.
+  - Require T7 to revalidate the exact prescription/authorization pair including non-revocation, registry revision/state, leased artifact root, complete live artifact closure, scope, content, epoch, and current bundle membership; enforce START/RESUME/CONTINUE lifecycle prerequisites and exact session revision transitions, only START/RESUME append S45, and all T7 historical replay is non-executable.
   - Allow the initial AcquireLease CAS from an unowned NULL-owner/NULL-expiry intent while retaining monotonic fencing and future deadline-bounded expiry; Reauthorize requires only its actual frozen lock surfaces.
-  - Commit PermitDispatch's S31 transition with S02/S03/S04, require its ref_s27_id and dispatch fence to match the verified live intent/fence, and return executable permission only to the first RESERVED-to-DISPATCH_INTENT winner; every replay is non-sendable.
+  - Bind ReserveCall's S31/S32 to its exact verified live intent/attempt, commit PermitDispatch's S31/S32 transition with S02/S03/S04, require its ref_s27_id and dispatch fence to match the verified live intent/fence, and return executable permission only to the first RESERVED-to-DISPATCH_INTENT winner; every replay is non-sendable.
+  - Make ReapIntent verify and terminate every requested expired S27/S29 chain without requiring an unrelated reservation lock.
   - Keep OutboxDispatcher limited to an isolated S04 claim and require business work to enter later as a new idempotent command after row-lock release.
 known_limitations:
   - These are transaction and repository guard interfaces; downstream command tasks still own their domain-specific guard predicates and mutations within the declared capabilities.
