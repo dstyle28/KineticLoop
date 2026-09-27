@@ -15,6 +15,7 @@ from enum import IntEnum, StrEnum
 from types import MappingProxyType
 from typing import Any, TypeVar
 from uuid import UUID
+from weakref import WeakKeyDictionary
 
 from psycopg import Connection, Cursor, sql
 from psycopg.pq import TransactionStatus
@@ -25,6 +26,16 @@ from kineticloop.persistence.schema_topology import LOGICAL_RELATIONS
 _T = TypeVar("_T")
 
 _LOGICAL_TABLES = {row.logical_id: row.table_name for row in LOGICAL_RELATIONS}
+_CURSORS: WeakKeyDictionary[object, Cursor[Any]] = WeakKeyDictionary()
+
+
+def _cursor(owner: object) -> Cursor[Any]:
+    """Return internal DB state without placing a cursor on callback capabilities."""
+
+    try:
+        return _CURSORS[owner]
+    except KeyError as error:  # pragma: no cover - defensive lifetime invariant
+        raise TransactionStateError("repository capability is no longer active") from error
 
 
 class RepositoryTransactionError(RuntimeError):
@@ -157,6 +168,119 @@ CATALOG_RELEASE_BOUNDARIES: Mapping[str, Mapping[str, Any]] = MappingProxyType(
 )
 
 
+# Column authority is command-specific and fail-closed.  Adding a logical table to
+# OwnerSpec does not by itself grant arbitrary column writes on that table.
+_MUTATION_COLUMNS: Mapping[
+    str, Mapping[tuple[str, str], frozenset[str]]
+] = MappingProxyType(
+    {
+        "ReceiveEvidence": {
+            ("S09", "insert"): frozenset(
+                {
+                    "id",
+                    "subject_id",
+                    "source_connection_identity",
+                    "source_object_type",
+                    "source_object_identity",
+                    "source_revision",
+                    "trust_class",
+                    "source_class",
+                    "command_authority",
+                }
+            )
+        },
+        "DecideAdmission": {
+            ("S01", "update"): frozenset(
+                {"authorization_epoch", "input_frontier_hash"}
+            )
+        },
+        "PublishManifest": {
+            ("S01", "update"): frozenset(
+                {"decision_generation", "current_manifest_id"}
+            ),
+            ("S23", "update"): frozenset({"status", "captured_epoch"}),
+        },
+        "AdmitOrReviseIntent": {
+            ("S27", "update"): frozenset({"status", "typed_payload"})
+        },
+        "AcquireLease": {
+            ("S27", "update"): frozenset(
+                {"status", "typed_payload", "lease_owner", "fence_token", "lease_expires_at"}
+            )
+        },
+        "SettleCall": {
+            ("S27", "update"): frozenset({"status", "typed_payload"}),
+            ("S31", "update"): frozenset(
+                {"status", "settlement_revision", "typed_payload"}
+            ),
+        },
+        "PermitDispatch": {
+            ("S31", "update"): frozenset({"status", "typed_payload"})
+        },
+        "StartSession": {
+            ("S44", "update"): frozenset(
+                {"lifecycle", "execution_revision", "typed_payload"}
+            )
+        },
+        "CommitBundle": {
+            ("S27", "update"): frozenset(
+                {"status", "result_bundle_revision_id", "result_authorization_id"}
+            ),
+            ("S29", "update"): frozenset({"status", "completed_at"}),
+            ("S38", "update"): frozenset(
+                {"head_revision", "current_bundle_revision_id"}
+            ),
+            ("S39", "insert"): frozenset(
+                {
+                    "id", "subject_id", "local_date", "revision_no", "generation_mode",
+                    "ref_s02_id", "ref_s24_id", "ref_s27_id", "ref_s29_id",
+                    "ref_s37_id", "ref_s38_id",
+                }
+            ),
+            ("S40", "insert"): frozenset(
+                {
+                    "id", "subject_id", "prescription_identity", "prescription_kind",
+                    "prescription_revision", "ref_s34_id", "ref_s49_id",
+                }
+            ),
+            ("S41", "insert"): frozenset(
+                {
+                    "id", "subject_id", "member_kind", "session_slot", "member_order",
+                    "ref_s39_id", "ref_s40_id",
+                }
+            ),
+            ("S42", "insert"): frozenset(
+                {
+                    "id", "subject_id", "bound_content_hash", "scope", "issuance_reason",
+                    "artifact_dependency_closure_hash", "registry_revision_at_issue",
+                    "valid_from", "valid_until", "validity_certificate", "ref_s02_id",
+                    "ref_s05_id", "ref_s24_id", "ref_s36_id", "ref_s37_id",
+                    "ref_s40_id", "ref_s49_id", "registry_state_id",
+                }
+            ),
+            ("S43", "insert"): frozenset(
+                {
+                    "id", "subject_id", "event_kind", "scope", "causation_key",
+                    "ref_s42_id", "ref_s02_id",
+                }
+            ),
+        },
+        "RecordProjection": {
+            ("S21", "update"): frozenset({"projection_revision", "typed_payload"})
+        },
+        "BeginBuild": {
+            ("S15", "update"): frozenset({"status", "member_revision"})
+        },
+        "WriteCandidate": {
+            ("S15", "update"): frozenset({"member_revision"}),
+        },
+        "CompleteFactset": {
+            ("S15", "update"): frozenset({"status", "member_revision"})
+        },
+    }
+)
+
+
 @dataclass(frozen=True, slots=True)
 class ArtifactIdentity:
     artifact_id: UUID
@@ -187,17 +311,28 @@ class EventWrite:
 class RestrictedSqlSession:
     """Structured DML without arbitrary SQL, cursor, connection, or lock escape."""
 
-    __slots__ = ("__allowed_logical_ids", "__cursor", "__subject_id")
+    __slots__ = (
+        "__allowed_logical_ids",
+        "__command_kind",
+        "__locked_ids",
+        "__subject_id",
+        "__weakref__",
+    )
 
     def __init__(
         self,
         cursor: Cursor[Any],
         allowed_logical_ids: Sequence[str],
         subject_id: UUID | None,
+        *,
+        command_kind: str,
+        locked_ids: Mapping[str, frozenset[UUID]] | None = None,
     ):
-        self.__cursor = cursor
+        _CURSORS[self] = cursor
         self.__allowed_logical_ids = frozenset(allowed_logical_ids)
         self.__subject_id = subject_id
+        self.__command_kind = command_kind
+        self.__locked_ids = MappingProxyType(dict(locked_ids or {}))
 
     def _table(self, logical_id: str) -> str:
         if logical_id not in self.__allowed_logical_ids or logical_id not in _LOGICAL_TABLES:
@@ -220,14 +355,16 @@ class RestrictedSqlSession:
         table = self._table(logical_id)
         items = self._items(values, "insert values")
         self._require_subject_predicate(logical_id, dict(items), "insert values")
+        self._require_columns(logical_id, "insert", dict(items))
         statement = sql.SQL("INSERT INTO {}.{} ({}) VALUES ({})").format(
             sql.Identifier("kineticloop"),
             sql.Identifier(table),
             sql.SQL(",").join(sql.Identifier(name) for name, _ in items),
             sql.SQL(",").join(sql.Placeholder() for _ in items),
         )
-        self.__cursor.execute(statement, tuple(value for _, value in items))
-        return self.__cursor.rowcount
+        cursor = _cursor(self)
+        cursor.execute(statement, tuple(value for _, value in items))
+        return cursor.rowcount
 
     def update(
         self,
@@ -247,6 +384,8 @@ class RestrictedSqlSession:
             raise StatementRejected(
                 "update values cannot change the authenticated transaction subject"
             )
+        self._require_columns(logical_id, "update", assignment_values)
+        self._require_locked_identity(logical_id, dict(predicates))
         statement = sql.SQL("UPDATE {}.{} SET {} WHERE {}").format(
             sql.Identifier("kineticloop"),
             sql.Identifier(table),
@@ -259,12 +398,49 @@ class RestrictedSqlSession:
                 for name, _ in predicates
             ),
         )
-        self.__cursor.execute(
+        cursor = _cursor(self)
+        cursor.execute(
             statement,
             tuple(value for _, value in assignments)
             + tuple(value for _, value in predicates),
         )
-        return self.__cursor.rowcount
+        return cursor.rowcount
+
+    def _require_columns(
+        self, logical_id: str, operation: str, values: Mapping[str, Any]
+    ) -> None:
+        allowed = _MUTATION_COLUMNS.get(self.__command_kind, {}).get(
+            (logical_id, operation), frozenset()
+        )
+        requested = frozenset(values)
+        if not requested or not requested <= allowed:
+            raise StatementRejected(
+                f"{self.__command_kind} cannot {operation} columns "
+                f"{sorted(requested - allowed)} on {logical_id}"
+            )
+
+    def _require_locked_identity(
+        self, logical_id: str, predicates: Mapping[str, Any]
+    ) -> None:
+        lock_name = {
+            "S27": "planning_intents",
+            "S31": "call_reservations",
+            "S38": "daily_plan_heads",
+            "S44": "workout_sessions",
+            "S15": "factset_revisions",
+            "S23": "manifest_builds",
+            "S29": "planning_attempts",
+            "S37": "validation_results",
+        }.get(logical_id)
+        if lock_name is None:
+            return
+        object_id = predicates.get("id")
+        if object_id is None or object_id not in self.__locked_ids.get(
+            lock_name, frozenset()
+        ):
+            raise GuardRequired(
+                f"{logical_id} mutation requires its exact row lock before S02"
+            )
 
     def _require_subject_predicate(
         self, logical_id: str, values: Mapping[str, Any], label: str
@@ -277,24 +453,29 @@ class RestrictedSqlSession:
             )
 
     def relation_locks(self) -> frozenset[str]:
-        self.__cursor.execute(
+        cursor = _cursor(self)
+        cursor.execute(
             "SELECT c.relname FROM pg_locks l JOIN pg_class c ON c.oid=l.relation "
             "JOIN pg_namespace n ON n.oid=c.relnamespace WHERE l.pid=pg_backend_pid() "
             "AND n.nspname='kineticloop' AND l.granted"
         )
-        return frozenset(str(row[0]) for row in self.__cursor.fetchall())
+        return frozenset(str(row[0]) for row in cursor.fetchall())
 
 
 class RepositoryTransaction:
     """One command-owned transaction with monotonic lock acquisition."""
 
     __slots__ = (
-        "__cursor",
+        "__weakref__",
         "_last_aggregate_rank",
         "_last_stage",
+        "_leased_artifacts",
+        "_locked_ids",
         "_registry",
         "_subject",
         "_trace",
+        "_verified_artifacts",
+        "_verified_fences",
         "command_kind",
         "spec",
         "subject_id",
@@ -305,7 +486,7 @@ class RepositoryTransaction:
             self.spec = TRANSACTION_OWNER_MATRIX[command_kind]
         except KeyError as error:
             raise ValueError(f"unknown command owner surface: {command_kind}") from error
-        self.__cursor = cursor
+        _CURSORS[self] = cursor
         self.command_kind = command_kind
         self.subject_id = subject_id
         self._last_stage = 0
@@ -313,6 +494,10 @@ class RepositoryTransaction:
         self._subject = False
         self._trace: list[tuple[LockStage, str]] = []
         self._last_aggregate_rank = -1
+        self._locked_ids: dict[str, set[UUID]] = {}
+        self._leased_artifacts: frozenset[UUID] = frozenset()
+        self._verified_artifacts: set[UUID] = set()
+        self._verified_fences: set[UUID] = set()
 
     @property
     def lock_trace(self) -> tuple[tuple[LockStage, str], ...]:
@@ -347,15 +532,16 @@ class RepositoryTransaction:
             "ResumeSession": "registry_guard_resume_session",
             "ContinueSession": "registry_guard_continue_session",
         }[self.command_kind]
-        self.__cursor.execute(
+        _cursor(self).execute(
             f"SELECT kineticloop.{routine}(%s,%s,%s,%s)",
             (self.subject_id, list(artifact_ids), minimum_revision, lock_timeout_ms),
         )
-        row = self.__cursor.fetchone()
+        row = _cursor(self).fetchone()
         if row is None:
             raise GuardRequired("registry lease was not acquired")
         # The merged guard routine acquires S51 then S01 in the same transaction.
         self._registry = True
+        self._leased_artifacts = frozenset(artifact_ids)
         self._subject = True
         self._last_stage = LockStage.SUBJECT
         self._trace.extend(
@@ -367,12 +553,12 @@ class RepositoryTransaction:
         if self.subject_id is None:
             raise GuardRequired("subject guard requires a subject")
         self._advance(LockStage.SUBJECT)
-        self.__cursor.execute(
+        _cursor(self).execute(
             "SELECT subject_id FROM kineticloop.user_decision_state "
             "WHERE subject_id=%s FOR UPDATE",
             (self.subject_id,),
         )
-        if self.__cursor.fetchone() is None:
+        if _cursor(self).fetchone() is None:
             raise GuardRequired("subject coordination row does not exist")
         self._subject = True
         self._trace.append((LockStage.SUBJECT, "S01"))
@@ -389,19 +575,26 @@ class RepositoryTransaction:
 
     def lock_quota_buckets(self, keys: Sequence[tuple[str, datetime, datetime]]) -> None:
         self._require_subject()
+        if "S30" not in self.spec.mutation_surfaces:
+            raise GuardRequired(f"{self.command_kind} cannot lock inapplicable S30")
         self._advance(LockStage.QUOTA)
+        if not keys:
+            raise GuardRequired("quota lock requires at least one exact key")
         for quota_kind, window_start, window_end in sorted(set(keys)):
-            self.__cursor.execute(
+            _cursor(self).execute(
                 "SELECT id FROM kineticloop.planning_quota_buckets "
                 "WHERE subject_id=%s AND quota_kind=%s AND window_start=%s "
                 "AND window_end=%s ORDER BY id FOR UPDATE",
                 (self.subject_id, quota_kind, window_start, window_end),
             )
-            rows = self.__cursor.fetchall()
+            rows = _cursor(self).fetchall()
             if not rows:
                 raise GuardRequired("quota bucket does not exist")
             self._trace.append(
                 (LockStage.QUOTA, f"S30:{quota_kind}:{window_start}:{window_end}")
+            )
+            self._locked_ids.setdefault("planning_quota_buckets", set()).update(
+                UUID(str(row[0])) for row in rows
             )
 
     def lock_intents(self, intent_ids: Sequence[UUID]) -> None:
@@ -416,16 +609,21 @@ class RepositoryTransaction:
 
     def lock_daily_head(self, local_date: Any) -> None:
         self._require_subject()
+        if "S38" not in self.spec.mutation_surfaces:
+            raise GuardRequired(f"{self.command_kind} cannot lock inapplicable S38")
         self._advance(LockStage.DAILY_HEAD)
-        self.__cursor.execute(
+        _cursor(self).execute(
             "SELECT id FROM kineticloop.daily_plan_heads "
             "WHERE subject_id=%s AND local_date=%s FOR UPDATE",
             (self.subject_id, local_date),
         )
-        rows = self.__cursor.fetchall()
+        rows = _cursor(self).fetchall()
         if not rows:
             raise GuardRequired("daily head does not exist")
         self._trace.append((LockStage.DAILY_HEAD, f"S38:{local_date}"))
+        self._locked_ids.setdefault("daily_plan_heads", set()).update(
+            UUID(str(row[0])) for row in rows
+        )
 
     def lock_execution(self, session_ids: Sequence[UUID]) -> None:
         self._require_subject()
@@ -434,13 +632,15 @@ class RepositoryTransaction:
 
     def lock_receipt(self, command_kind: str, client_key: str, actor_scope: str) -> None:
         self._require_receipt_guard()
+        if command_kind != self.command_kind:
+            raise GuardRequired("receipt command kind must match its repository owner")
         self._advance(LockStage.RECEIPT)
-        self.__cursor.execute(
+        _cursor(self).execute(
             "SELECT id FROM kineticloop.command_receipts WHERE subject_id=%s "
             "AND command_kind=%s AND client_key=%s AND actor_scope=%s FOR UPDATE",
             (self.subject_id, command_kind, client_key, actor_scope),
         )
-        self.__cursor.fetchall()
+        _cursor(self).fetchall()
         self._trace.append(
             (LockStage.RECEIPT, f"S02:{actor_scope}:{command_kind}:{client_key}")
         )
@@ -468,34 +668,42 @@ class RepositoryTransaction:
         self._lock_ids(table, object_ids)
 
     def _lock_ids(self, table: str, object_ids: Sequence[UUID]) -> None:
-        for object_id in sorted(set(object_ids), key=str):
-            self.__cursor.execute(
+        ids = tuple(sorted(set(object_ids), key=str))
+        if not ids:
+            raise GuardRequired(f"{table} lock requires at least one exact row")
+        logical = {
+            "planning_intents": "S27",
+            "call_reservations": "S31",
+            "workout_sessions": "S44",
+            "factset_revisions": "S15",
+            "manifest_builds": "S23",
+            "planning_attempts": "S29",
+            "validation_results": "S37",
+        }[table]
+        if logical not in self.spec.mutation_surfaces and not (
+            self.command_kind == "CommitBundle" and logical == "S37"
+        ):
+            raise GuardRequired(f"{self.command_kind} cannot lock inapplicable {logical}")
+        for object_id in ids:
+            _cursor(self).execute(
                 f"SELECT id FROM kineticloop.{table} "
                 "WHERE subject_id=%s AND id=%s FOR UPDATE",
                 (self.subject_id, object_id),
             )
-            if self.__cursor.fetchone() is None:
+            if _cursor(self).fetchone() is None:
                 raise GuardRequired(f"{table} row does not exist")
             stage = {
                 "planning_intents": LockStage.INTENT,
                 "call_reservations": LockStage.RESERVATION,
                 "workout_sessions": LockStage.EXECUTION,
             }.get(table, LockStage.AGGREGATE)
-            logical = {
-                "planning_intents": "S27",
-                "call_reservations": "S31",
-                "workout_sessions": "S44",
-                "factset_revisions": "S15",
-                "manifest_builds": "S23",
-                "planning_attempts": "S29",
-                "validation_results": "S37",
-            }[table]
             self._trace.append((stage, f"{logical}:{object_id}"))
+            self._locked_ids.setdefault(table, set()).add(object_id)
 
     def require_artifact(self, identity: ArtifactIdentity) -> None:
         if not self._registry:
             raise GuardRequired("artifact consumption requires the shared registry lease")
-        self.__cursor.execute(
+        _cursor(self).execute(
             "SELECT 1 FROM kineticloop.safety_artifacts WHERE id=%s "
             "AND artifact_kind=%s AND artifact_identity=%s AND artifact_version=%s "
             "AND content_hash=%s",
@@ -507,8 +715,11 @@ class RepositoryTransaction:
                 identity.content_hash,
             ),
         )
-        if self.__cursor.fetchone() is None:
+        if _cursor(self).fetchone() is None:
             raise ArtifactIdentityRequired("exact registered artifact identity is required")
+        if identity.artifact_id not in self._leased_artifacts:
+            raise ArtifactIdentityRequired("artifact identity was not included in the lease")
+        self._verified_artifacts.add(identity.artifact_id)
 
     def require_current_fence(
         self,
@@ -519,16 +730,17 @@ class RepositoryTransaction:
         expected_status: str = "RUNNING",
     ) -> None:
         self._require_subject()
-        if self._last_stage < LockStage.INTENT:
-            raise GuardRequired("intent must be locked before checking fence")
-        self.__cursor.execute(
+        if intent_id not in self._locked_ids.get("planning_intents", set()):
+            raise GuardRequired("exact intent must be locked before checking fence")
+        _cursor(self).execute(
             "SELECT 1 FROM kineticloop.planning_intents WHERE subject_id=%s AND id=%s "
             "AND lease_owner=%s AND fence_token=%s AND status=%s "
             "AND lease_expires_at > clock_timestamp()",
             (self.subject_id, intent_id, owner_id, fence, expected_status),
         )
-        if self.__cursor.fetchone() is None:
+        if _cursor(self).fetchone() is None:
             raise FenceLost("stale owner/fence cannot commit")
+        self._verified_fences.add(intent_id)
 
     def permit_dispatch(
         self,
@@ -541,17 +753,17 @@ class RepositoryTransaction:
         fence: int,
     ) -> DispatchPermit:
         self._require_subject()
-        if self._last_stage < LockStage.RESERVATION:
-            raise GuardRequired("reservation must be locked before dispatch transition")
+        if reservation_id not in self._locked_ids.get("call_reservations", set()):
+            raise GuardRequired("exact reservation must be locked before dispatch transition")
 
         def transition(session: RestrictedSqlSession) -> Mapping[str, Any]:
-            self.__cursor.execute(
+            _cursor(self).execute(
                 "SELECT status, dispatch_fence, typed_payload "
                 "FROM kineticloop.call_reservations "
                 "WHERE subject_id=%s AND id=%s",
                 (self.subject_id, reservation_id),
             )
-            row = self.__cursor.fetchone()
+            row = _cursor(self).fetchone()
             if row is None or int(row[1] or 0) != fence:
                 raise DispatchNotPermitted("reservation or fence mismatch")
             if row[0] != "RESERVED":
@@ -590,19 +802,21 @@ class RepositoryTransaction:
         aggregate_locks: Mapping[str, Sequence[UUID]] | None = None,
     ) -> tuple[Mapping[str, Any], bool]:
         self._require_receipt_guard()
+        self._require_command_locks(aggregate_locks or {})
         self.lock_receipt(self.command_kind, client_key, actor_scope)
-        self.__cursor.execute(
+        _cursor(self).execute(
             "SELECT request_hash,status,typed_payload FROM kineticloop.command_receipts "
             "WHERE subject_id=%s AND actor_scope=%s AND command_kind=%s AND client_key=%s",
             (self.subject_id, actor_scope, self.command_kind, client_key),
         )
-        prior = self.__cursor.fetchone()
+        prior = _cursor(self).fetchone()
         if prior is not None:
             if prior[0] != request_hash:
                 raise IdempotencyConflict("command key request hash mismatch")
             if prior[1] != "SUCCEEDED" or "outcome" not in prior[2]:
                 raise IdempotencyConflict("command key has no durable successful outcome")
             return dict(prior[2]["outcome"]), True
+        self._require_fence_guard()
         for table in sorted(
             aggregate_locks or (),
             key={
@@ -613,7 +827,7 @@ class RepositoryTransaction:
             }.__getitem__,
         ):
             self.lock_remaining(table, (aggregate_locks or {})[table])
-        self.__cursor.execute(
+        _cursor(self).execute(
             "INSERT INTO kineticloop.command_receipts"
             "(id,subject_id,status,command_kind,client_key,actor_scope,request_hash) "
             "VALUES (%s,%s,'IN_PROGRESS',%s,%s,%s,%s)",
@@ -622,34 +836,90 @@ class RepositoryTransaction:
         outcome = dict(
             mutation(
                 RestrictedSqlSession(
-                    self.__cursor, self.spec.mutation_surfaces, self.subject_id
+                    _cursor(self),
+                    self.spec.mutation_surfaces,
+                    self.subject_id,
+                    command_kind=self.command_kind,
+                    locked_ids={
+                        table: frozenset(ids)
+                        for table, ids in self._locked_ids.items()
+                    },
                 )
             )
         )
-        self.__cursor.execute(
+        _cursor(self).execute(
             "INSERT INTO kineticloop.domain_events"
             "(id,subject_id,aggregate_type,aggregate_identity,event_type,aggregate_revision,ref_s02_id) "
             "VALUES (%s,%s,%s,%s,%s,%s,%s)",
             (event.event_id, self.subject_id, event.aggregate_type, event.aggregate_identity, event.event_type, event.aggregate_revision, receipt_id),
         )
-        self.__cursor.execute(
+        _cursor(self).execute(
             "INSERT INTO kineticloop.outbox_deliveries"
             "(id,subject_id,destination,delivery_status,attempt_count,ref_s03_id) "
             "VALUES (%s,%s,%s,'PENDING',0,%s)",
             (event.outbox_id, self.subject_id, event.destination, event.event_id),
         )
-        self.__cursor.execute(
+        _cursor(self).execute(
             "UPDATE kineticloop.command_receipts SET status='SUCCEEDED',typed_payload=%s "
             "WHERE id=%s AND subject_id=%s",
             (Jsonb({"outcome": outcome}), receipt_id, self.subject_id),
         )
         return outcome, False
 
+    def _require_command_locks(
+        self, aggregate_locks: Mapping[str, Sequence[UUID]]
+    ) -> None:
+        required = {
+            "S30": "planning_quota_buckets",
+            "S27": "planning_intents",
+            "S31": "call_reservations",
+            "S38": "daily_plan_heads",
+            "S44": "workout_sessions",
+        }
+        for logical_id, table in required.items():
+            if logical_id in self.spec.mutation_surfaces and not self._locked_ids.get(table):
+                raise GuardRequired(
+                    f"{self.command_kind} requires an applicable {logical_id} row lock"
+                )
+        required_aggregates = {
+            "PublishManifest": {"manifest_builds"},
+            "SealFactset": {"factset_revisions"},
+            "CommitBundle": {"planning_attempts", "validation_results"},
+        }.get(self.command_kind, set())
+        if not required_aggregates <= set(aggregate_locks):
+            raise GuardRequired(
+                f"{self.command_kind} requires aggregate locks "
+                f"{sorted(required_aggregates)}"
+            )
+    def _require_fence_guard(self) -> None:
+        if self.command_kind in {
+            "RenewLease",
+            "ReserveCall",
+            "PermitDispatch",
+            "CommitBundle",
+            "Reauthorize",
+            "ReapIntent",
+        }:
+            locked_intents = self._locked_ids.get("planning_intents", set())
+            if not locked_intents or not locked_intents <= self._verified_fences:
+                raise GuardRequired(
+                    f"{self.command_kind} requires current fence validation for every intent"
+                )
+
+    def locked_identity(self, table: str, object_id: UUID) -> bool:
+        """Report whether the exact applicable row guard is held."""
+
+        return object_id in self._locked_ids.get(table, set())
+
     def finish(self) -> None:
         if self.spec.registry_required and not self._registry:
             raise GuardRequired(f"{self.command_kind} requires a shared S51 registry lease")
         if self.spec.subject_guard_required and not self._subject:
             raise GuardRequired(f"{self.command_kind} requires the S01 subject guard")
+        if self._registry and self._verified_artifacts != set(self._leased_artifacts):
+            raise ArtifactIdentityRequired(
+                "every leased artifact requires exact kind/identity/version/hash validation"
+            )
 
 
 def execute_command(
@@ -685,7 +955,10 @@ def execute_preparation(
     with connection.transaction():
         return operation(
             RestrictedSqlSession(
-                connection.cursor(), specification.mutation_surfaces, subject_id
+                connection.cursor(),
+                specification.mutation_surfaces,
+                subject_id,
+                command_kind=command_kind,
             )
         )
 
@@ -714,7 +987,13 @@ def execute_factset_build(
         if cursor.fetchone() is None:
             raise GuardRequired("factset build does not exist")
         return operation(
-            RestrictedSqlSession(cursor, specification.mutation_surfaces, subject_id)
+            RestrictedSqlSession(
+                cursor,
+                specification.mutation_surfaces,
+                subject_id,
+                command_kind=command_kind,
+                locked_ids={"factset_revisions": frozenset({build_id})},
+            )
         )
 
 

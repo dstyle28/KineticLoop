@@ -6,9 +6,11 @@ network, model, resolver, projection, or bulk-build work.
 
 Every owner receives a fresh idle PostgreSQL connection and owns the outer commit.
 Callbacks never receive that connection, a raw cursor, or an arbitrary SQL execution
-method. They receive structured `insert` and `update` operations only after the
-required guards; schema/table identifiers are generated from the owner's logical-table
-capability and columns are quoted by psycopg. Preparation and build sessions have
+method. Cursor state is held outside the callback capability object. Callbacks receive
+structured `insert` and `update` operations only after the required guards;
+schema/table identifiers are generated from the owner's logical-table capability,
+each command has an explicit fail-closed column allowlist, and columns are quoted by
+psycopg. Preparation and build sessions have
 separate narrower capabilities, so they cannot express S51/S01 access through the
 shared interface.
 For subject commands, the interface enforces this monotonic sequence:
@@ -18,13 +20,17 @@ For subject commands, the interface enforces this monotonic sequence:
 Requests for multiple quota, intent, reservation, execution, or remaining aggregate
 rows are canonicalized and locked in stable key/UUID order. Any later-to-earlier
 request fails locally before issuing SQL. Receipt competition is unavailable until
-S01 is held, so a command cannot win or wait on a receipt and then wait for S01.
+S01 and every applicable pre-receipt row are held, so a command cannot win or wait on
+a receipt and then acquire an earlier lock implicitly through DML. Mutations of
+S27/S31/S38/S44 and remaining aggregates must name an ID already locked by the same
+command; empty, unrelated, and command-inapplicable lock requests fail closed.
 
 PublishManifest, CommitBundle, Reauthorize, StartSession, ResumeSession, and
 ContinueSession must call the merged SafetyRegistry command-specific guard. That
 routine obtains shared S51 and then S01, revalidates the exact bounded artifact
 closure, and returns the protected registry revision. Artifact consumers must also
-match the registered artifact ID, kind, identity, version, and content hash.
+match the registered artifact ID, kind, identity, version, and content hash for every
+leased artifact before commit; UUID-only eligibility is not sufficient.
 
 The preparation interface exposes only subject-bound structured mutations.
 RecordProjection, BuildManifest, ResolveEvidence, RecordValidation, and T5 worker
@@ -38,12 +44,19 @@ complete successful outcome in the receipt. Structured mutations must bind the
 authenticated transaction subject. The state mutation, S03 event, S04 outbox row, and
 successful receipt outcome commit in one transaction. ACK-loss replay returns that
 exact outcome without rerunning the mutation. Database natural keys remain the last
-line of defense.
+line of defense. Fenced commands must validate the current owner, token, live lease,
+and status for every locked intent before a first mutation; a successful S02 replay
+may return the already-committed terminal outcome without re-running that guard.
 
 `T6CommitCoordinator` is the one repository owner for CommitBundle. It is the atomic
 database boundary jointly required by PrescriptionCommitService and
 AuthorizationService; neither service receives a partial S39/S40/S41 or S42 commit
 interface.
+The T6 commit path atomically inserts S39/S40/S41/S42 and the supersession event,
+switches S38 to the exact new bundle revision, records S27's bundle and authorization
+results, marks S29 COMMITTED, and persists S02/S03/S04. ACK-loss replay returns those
+same durable identities without repeating any head, terminal, supersession, event, or
+outbox transition.
 
 PermitDispatch locks S01, S27, then S31 and atomically commits its S02 receipt, S03
 event, and S04 outbox row with the state transition. Only the first
