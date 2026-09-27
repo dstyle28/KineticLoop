@@ -1,0 +1,53 @@
+{
+  "check_id": "m2_regression_suite_passes",
+  "status": "PASS",
+  "tested_commit": "307428e8b2ba5a67daed09104655b85b467f78aa",
+  "commands": [
+    "uv run pytest -q -p no:cacheprovider",
+    "uv run kl check-harness"
+  ],
+  "executions": [
+    {
+      "command": "uv run pytest -q -p no:cacheprovider",
+      "exit_code": 0,
+      "tested_commit": "307428e8b2ba5a67daed09104655b85b467f78aa",
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-023/pytest-307428e.log",
+        "sha256": "750610e6c0d11078d9703158f400ca2ac3af0988a384d7d32b720c51f6a7a981"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-023/junit-307428e.xml",
+        "sha256": "6716c4788761a1d3c7108b1d11cba3a07f078c6e7969afe09fe396b3339c4dd1"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-023/collection-307428e.json",
+        "sha256": "2199e9d6078ed3b9db1cf1c665e713ac6e2724a4a25191fcb922269b7857d85b"
+      }
+    },
+    {
+      "command": "uv run kl check-harness",
+      "exit_code": 0,
+      "tested_commit": "307428e8b2ba5a67daed09104655b85b467f78aa",
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-023/harness-307428e.log",
+        "sha256": "95124f9bbc97b4b02655620405916f7ace9b2aaeb794b02e7040d40137bae63f"
+      }
+    }
+  ],
+  "execution_environment": {
+    "UV_CACHE_DIR": "/private/tmp/hg023-uv",
+    "PYTHONPATH": "$PWD/src",
+    "uv_executable": "/private/tmp/kl001-bootstrap/bin/uv",
+    "pytest_addopts": "--junitxml=$PWD/docs/exec-plans/evidence/HG-023/junit-307428e.xml",
+    "database_namespace": "kl_8591_15d8c31902a2",
+    "docker_access": "normal require_escalated approval"
+  },
+  "failed_attempt_record": {
+    "path": "docs/exec-plans/evidence/HG-023/environment-failure-307428e.json",
+    "sha256": "120e8b1e3cfaaa2e02eac7f90f717edd2e9d7981a363b9472d1c1819633354a3"
+  },
+  "failure_junit": {
+    "path": "docs/exec-plans/evidence/HG-023/junit-307428e-sandbox-denied.xml",
+    "sha256": "ccec6c74295631946d35e07ab63d39989bff4f18ae6f9a5506f336cb9f8fd6c6"
+  }
+}

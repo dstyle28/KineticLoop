@@ -1,0 +1,10 @@
+{
+  "tested_commit": "307428e8b2ba5a67daed09104655b85b467f78aa",
+  "command": "uv run pytest -q -p no:cacheprovider",
+  "exit_code": 1,
+  "result": "FAIL",
+  "summary": "16 failed, 395 passed, 136 errors in 230.26s; database setup could not connect to the Docker API because of filesystem sandbox permissions.",
+  "junit": "docs/exec-plans/evidence/HG-023/junit-307428e-sandbox-denied.xml",
+  "stdout_retention": "Tool stdout was truncated; it is not represented as complete raw stdout. The unmodified generated JUnit report is retained in full.",
+  "disposition": "Request normal sandbox escalation and rerun the unchanged command against the same committed implementation. This failed attempt is not PASS evidence."
+}
