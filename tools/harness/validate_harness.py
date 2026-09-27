@@ -47,6 +47,38 @@ MANIFEST = 'HARNESS_DOCUMENT_MANIFEST.json'
 GOVERNANCE_SCHEMA = 'HARNESS_CHANGE.schema.json'
 INTEGRATION_SCHEMA = 'INTEGRATION_RECORD.schema.json'
 MILESTONE_CLOSURE_SCHEMA = 'MILESTONE_CLOSURE.schema.json'
+EMERGENCY_GOVERNANCE_TASK = {'HG-024': 'KL-073'}
+HG024_EMERGENCY_SCOPE_PATTERNS = [
+    'docs/exec-plans/completed/KL-073_RESULT.yaml',
+    'docs/exec-plans/evidence/KL-073/**',
+    'docs/exec-plans/reviews/KL-073/**',
+    'tests/db/test_transaction_interfaces.py',
+]
+HG024_ONE_TIME_BASE_ABSENT_PATHS = [
+    'docs/exec-plans/active/KL-073.md',
+    'docs/exec-plans/completed/KL-073_RESULT.yaml',
+    'docs/exec-plans/completed/KL-073_RESULT.json',
+    'docs/exec-plans/governance/HG-024.yaml',
+    'docs/exec-plans/governance/HG-024.json',
+]
+HG024_ALLOWED_PATTERNS = [
+    PROJECT_PLAN,
+    BACKLOG,
+    TRACEABILITY,
+    INDEX,
+    MANIFEST,
+    'docs/exec-plans/active/KL-073.md',
+    'docs/exec-plans/completed/KL-073_RESULT.yaml',
+    'docs/exec-plans/evidence/HG-024/**',
+    'docs/exec-plans/evidence/KL-073/**',
+    'docs/exec-plans/governance/HG-024.yaml',
+    'docs/exec-plans/reviews/HG-024/**',
+    'docs/exec-plans/reviews/KL-073/**',
+    'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md',
+    'tests/db/test_transaction_interfaces.py',
+    'tests/harness/test_validator.py',
+    'tools/harness/validate_harness.py',
+]
 M1_TASK_IDS = {f'KL-{number:03d}' for number in range(1, 10)}
 M1_CLOSURE_M2_TASK_IDS = {
     'KL-010', 'KL-011', 'KL-012', 'KL-013', 'KL-014',
@@ -54,7 +86,7 @@ M1_CLOSURE_M2_TASK_IDS = {
 }
 # Current M2 may grow through later governance without rewriting the historical M1
 # closure revision that proved the original refinement set.
-M2_REFINED_TASK_IDS = M1_CLOSURE_M2_TASK_IDS | {'KL-072'}
+M2_REFINED_TASK_IDS = M1_CLOSURE_M2_TASK_IDS | {'KL-072', 'KL-073'}
 M2_TASK_IDS = M2_REFINED_TASK_IDS
 M2_REGRESSION_COMMANDS = [
     'uv run pytest -q -p no:cacheprovider',
@@ -91,6 +123,15 @@ M2_EXIT_TASK_CHECKS = {
     },
 }
 M2_REQUIRED_CHECK_IDS = {
+    'KL-073': {
+        'fixed_wall_clock_fixture_removed',
+        'blocked_regression_cases_pass',
+        'expired_and_stale_negative_cases_preserved',
+        'transaction_interface_suite_passes',
+        'complete_db_suite_passes',
+        'full_repository_regression_passes',
+        'harness_validation_passes',
+    },
     'KL-072': {
         'baseline_migration_unchanged',
         'single_successor_migration_head',
@@ -374,7 +415,7 @@ M1_CLEAN_START_RELEVANT_PATHS = [
 ]
 M2_REQUIRED_DB_REVIEWS = {
     'KL-010', 'KL-011', 'KL-012', 'KL-013', 'KL-014',
-    'KL-015', 'KL-016', 'KL-017', 'KL-018', 'KL-072',
+    'KL-015', 'KL-016', 'KL-017', 'KL-018', 'KL-072', 'KL-073',
 }
 
 
@@ -633,6 +674,8 @@ def governance_record_paths(change_id):
 
 
 def governance_allowed_patterns(change_id):
+    if change_id == 'HG-024':
+        return HG024_ALLOWED_PATTERNS
     return [
         PROJECT_PLAN,
         BACKLOG,
@@ -655,6 +698,14 @@ def governance_allowed_patterns(change_id):
         'tests/harness/**',
         'tools/harness/**',
     ]
+
+
+def emergency_governance_task_pair(task_ids, change_ids):
+    """Return the sole approved governance/task repair pair; reject every variant."""
+    if len(task_ids) != 1 or len(change_ids) != 1:
+        return None
+    change_id, task_id = next(iter(change_ids)), next(iter(task_ids))
+    return (change_id, task_id) if EMERGENCY_GOVERNANCE_TASK.get(change_id) == task_id else None
 
 
 def traceability_projection(task, fields=TRACEABILITY_TASK_FIELDS):
@@ -702,10 +753,11 @@ def configure_ci_merge_gate(root, args):
     if resolve(root, 'HEAD') != head:
         raise ValueError('ci-head-not-checked-out')
     git(root, 'merge-base', '--is-ancestor', base, head)
+    changed = changed_paths(root, base, head)
     task_candidates = []
     governance_candidates = []
     review_candidates = []
-    for path in changed_paths(root, base, head):
+    for path in changed:
         match = re.fullmatch(r'docs/exec-plans/completed/(KL-[0-9]{3}[A-Z]?)_RESULT\.(?:yaml|json)', path)
         if match:
             task_candidates.append(match.group(1))
@@ -719,9 +771,16 @@ def configure_ci_merge_gate(root, args):
     if not task_ids and not change_ids and len(set(review_candidates)) == 1:
         change_ids = set(review_candidates)
         args.governance_review_only = True
-    if (len(task_ids), len(change_ids)) not in ((1, 0), (0, 1)):
+    emergency_pair = emergency_governance_task_pair(task_ids, change_ids)
+    emergency_task_id = emergency_pair[1] if emergency_pair else None
+    emergency_scope_used = any(
+        matches(path, HG024_EMERGENCY_SCOPE_PATTERNS) for path in changed
+    )
+    if 'HG-024' in change_ids and emergency_scope_used and emergency_pair is None:
+        raise ValueError('ci-emergency-pair-required:HG-024:KL-073')
+    if (len(task_ids), len(change_ids)) not in ((1, 0), (0, 1)) and emergency_task_id is None:
         raise ValueError(f'ci-change-record-count:task={len(task_ids)},governance={len(change_ids)}')
-    selected = next(iter(task_ids or change_ids))
+    selected = next(iter(change_ids)) if emergency_task_id else next(iter(task_ids or change_ids))
     review_path = root / 'docs/exec-plans/reviews' / selected / 'GENERAL.json'
     if not review_path.is_file():
         raise ValueError('ci-general-review-missing:' + selected)
@@ -729,7 +788,23 @@ def configure_ci_merge_gate(root, args):
     if not isinstance(review, dict) or not isinstance(review.get('reviewed_head_sha'), str):
         raise ValueError('ci-general-review-invalid:' + selected)
     args.protected_base = base
-    if task_ids:
+    if emergency_task_id:
+        for path in HG024_ONE_TIME_BASE_ABSENT_PATHS:
+            if subprocess.run(
+                    ['git', 'cat-file', '-e', base + ':' + path], cwd=root,
+                    capture_output=True).returncode == 0:
+                raise ValueError('ci-emergency-already-consumed:' + path)
+        task_review_path = root / 'docs/exec-plans/reviews' / emergency_task_id / 'GENERAL.json'
+        if not task_review_path.is_file():
+            raise ValueError('ci-general-review-missing:' + emergency_task_id)
+        task_review = load_artifact(task_review_path)
+        if (not isinstance(task_review, dict)
+                or task_review.get('reviewed_head_sha') != review['reviewed_head_sha']):
+            raise ValueError('ci-emergency-reviewed-head-mismatch:' + selected)
+        args.governance_change_id = selected
+        args.governance_reviewed_head = review['reviewed_head_sha']
+        args.emergency_task_id = emergency_task_id
+    elif task_ids:
         args.task_id = selected
         args.reviewed_head = review['reviewed_head_sha']
     else:
@@ -739,14 +814,16 @@ def configure_ci_merge_gate(root, args):
 
 def suffix_errors(
         root, start, end, task_id, kind, scope_patterns=None,
-        allow_unrelated_merges=False):
+        allow_unrelated_merges=False, allowed_patterns=None):
     """Require ancestry and check every bookkeeping commit, including reverted changes."""
     errors = []
     try:
         start, end = resolve(root, start), resolve(root, end)
         git(root, 'merge-base', '--is-ancestor', start, end)
         commits = git(root, 'rev-list', '--reverse', start + '..' + end).decode().splitlines()
-        allowed = review_patterns(task_id) if kind == 'review' else result_paths(task_id) + [evidence_pattern(task_id)]
+        allowed = (allowed_patterns if allowed_patterns is not None
+                   else review_patterns(task_id) if kind == 'review'
+                   else result_paths(task_id) + [evidence_pattern(task_id)])
         for commit in commits:
             parents = git(root, 'rev-list', '--parents', '-n', '1', commit).decode().split()[1:]
             if len(parents) != 1 and not allow_unrelated_merges:
@@ -778,8 +855,16 @@ def governance_suffix_errors(root, start, end, change_id, kind):
         start, end = resolve(root, start), resolve(root, end)
         git(root, 'merge-base', '--is-ancestor', start, end)
         commits = git(root, 'rev-list', '--reverse', start + '..' + end).decode().splitlines()
-        allowed = (review_patterns(change_id) if kind == 'review'
-                   else governance_record_paths(change_id) + [evidence_pattern(change_id)])
+        emergency_task_id = EMERGENCY_GOVERNANCE_TASK.get(change_id)
+        allowed = (
+            review_patterns(change_id) + review_patterns(emergency_task_id)
+            if kind == 'review' and emergency_task_id
+            else review_patterns(change_id)
+            if kind == 'review'
+            else governance_record_paths(change_id) + [evidence_pattern(change_id)]
+            + (result_paths(emergency_task_id) + [evidence_pattern(emergency_task_id)]
+               if emergency_task_id else [])
+        )
         for commit in commits:
             parents = git(root, 'rev-list', '--parents', '-n', '1', commit).decode().split()[1:]
             if len(parents) != 1:
@@ -2082,6 +2167,11 @@ def validate(root, args):
                     governance_changed = set(changed_paths(root, governance_base, reviewed))
                     governance_target = None
                     governance_protected = protected_paths
+                if (change_id == 'HG-024'
+                        and any(matches(path, HG024_EMERGENCY_SCOPE_PATTERNS)
+                                for path in governance_changed)
+                        and getattr(args, 'emergency_task_id', None) != 'KL-073'):
+                    errors.append('governance-emergency-pair-required:HG-024:KL-073')
                 for path in sorted(changed):
                     allowed = (review_patterns(change_id) if review_only
                                else governance_allowed_patterns(change_id))
@@ -2122,9 +2212,10 @@ def validate(root, args):
                 }
                 changed_task_reviews = set(changed_task_review_types)
                 for task_id in sorted(changed_task_reviews - changed_integrations):
-                    errors.append(
-                        'governance-task-review-without-integration:'
-                        + change_id + ':' + task_id)
+                    if EMERGENCY_GOVERNANCE_TASK.get(change_id) != task_id:
+                        errors.append(
+                            'governance-task-review-without-integration:'
+                            + change_id + ':' + task_id)
                 for task_id in sorted(changed_task_reviews & changed_integrations):
                     integration_path = f'docs/exec-plans/integrations/{task_id}.json'
                     if subprocess.run(
@@ -2214,8 +2305,10 @@ def validate(root, args):
                         )
                         if task.get('status') != 'NOT_STARTED':
                             errors.append('governance-new-task-status:' + task_id)
-                        if any(matches(path, task_artifact_patterns)
-                               for path in governance_changed):
+                        emergency_task = EMERGENCY_GOVERNANCE_TASK.get(change_id) == task_id
+                        if (not emergency_task and any(
+                                matches(path, task_artifact_patterns)
+                                for path in governance_changed)):
                             errors.append('governance-new-task-artifact:' + task_id)
                         if task.get('packet_refinement') == 'ENFORCEABLE':
                             observed.add(task_id)
@@ -2319,6 +2412,48 @@ def validate(root, args):
             }
             if not required <= types:
                 errors.append('governance-required-reviews-not-pass:' + change_id)
+        emergency_task_id = getattr(args, 'emergency_task_id', None)
+        if emergency_task_id:
+            task = tasks.get(emergency_task_id)
+            result = results.get(emergency_task_id)
+            if not task or not result:
+                errors.append('emergency-task-result-missing:' + emergency_task_id)
+            else:
+                result_path, result_obj = result
+                try:
+                    if git(
+                            root, 'show', reviewed + ':'
+                            + str(result_path.relative_to(root))) != result_path.read_bytes():
+                        errors.append('emergency-task-result-not-bound:' + emergency_task_id)
+                    if result_obj['task_status'] != 'PASS':
+                        errors.append('emergency-task-result-not-pass:' + emergency_task_id)
+                    tested = resolve(root, result_obj['tested_commit'])
+                    git(root, 'merge-base', '--is-ancestor', tested, reviewed)
+                    emergency_suffix = (
+                        result_paths(emergency_task_id)
+                        + [evidence_pattern(emergency_task_id)]
+                        + governance_record_paths(change_id)
+                        + [evidence_pattern(change_id)]
+                    )
+                    errors.extend(suffix_errors(
+                        root, tested, reviewed, emergency_task_id, 'tested',
+                        allowed_patterns=emergency_suffix))
+                    for command in result_obj['commands_run']:
+                        ref = command.get('evidence_ref')
+                        if (ref and git(root, 'show', reviewed + ':' + ref)
+                                != (root / ref).read_bytes()):
+                            errors.append('emergency-task-evidence-not-bound:' + ref)
+                except ValueError as ex:
+                    errors.append('emergency-task-revision:' + str(ex))
+                task_reviews = [
+                    review for _, review, review_task in reviews
+                    if review_task['id'] == emergency_task_id
+                    and review['status'] == 'PASS'
+                    and resolve(root, review['reviewed_head_sha']) == reviewed
+                ]
+                review_types = {review['review_type'] for review in task_reviews}
+                if not set(task['review_requirements']) <= review_types:
+                    errors.append('emergency-task-reviews-not-pass:' + emergency_task_id)
     return errors, len(tasks), sum(t['status'] != 'SUPERSEDED' for t in tasks.values())
 
 

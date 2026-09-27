@@ -1,0 +1,128 @@
+KL-073 exact check evidence
+task_identity: harness-backlog-v0.2/KL-073
+base_commit: 974aad909a32ca00ccaa3a02a79a0cec32599583
+tested_commit: f473e0485b13fc72a55ad7f4c8f186941848a522
+isolated_postgresql_namespace: kl_1df8_b0725908f55d
+
+Execution environment for uv commands:
+PATH prepended with /private/tmp/kl001-bootstrap/bin
+PYTHONPATH=$PWD/src
+UV_CACHE_DIR=/private/tmp/kl001-uv-cache
+UV_PROJECT_ENVIRONMENT=/private/tmp/kl017-venv
+UV_NO_SYNC=1
+
+ENVIRONMENT_PREPARATION_FAILURE blocked_regression_cases_pass
+semantic_packet_command: uv run pytest -q tests/db/test_transaction_interfaces.py -k 'reverse_lock_order_is_rejected or event_outbox_atomicity_enforced or stale_fence_commit_is_rejected or ack_loss_replay_preserves_natural_uniqueness'
+runtime_environment_difference: PYTHONPATH was omitted from this first invocation.
+exit_code: 2
+stdout:
+
+==================================== ERRORS ====================================
+___________ ERROR collecting tests/db/test_transaction_interfaces.py ___________
+ImportError while importing test module '/Users/davetian/.codex/worktrees/1df8/KineticLoop/tests/db/test_transaction_interfaces.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/db/test_transaction_interfaces.py:16: in <module>
+    from kineticloop.db.lifecycle import DatabaseLifecycle
+E   ModuleNotFoundError: No module named 'kineticloop'
+=========================== short test summary info ============================
+ERROR tests/db/test_transaction_interfaces.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.11s
+disposition: No tests ran and no source changed. PYTHONPATH was then configured as
+runtime environment only, and the unchanged semantic packet command was rerun in
+the same isolated namespace and passed as recorded below.
+
+PASS fixed_wall_clock_fixture_removed
+command: ! rg -n '\bNOW\b|datetime\.now\(UTC\)' tests/db/test_transaction_interfaces.py && rg -n 'def _database_timestamp|clock_timestamp\(\)' tests/db/test_transaction_interfaces.py
+exit_code: 0
+stdout:
+102:def _database_timestamp(connection: Any, *, offset: timedelta = timedelta()) -> datetime:
+105:            "SELECT clock_timestamp() + %s::interval",
+294:            "clock_timestamp()+interval '1 day',clock_timestamp()+interval '2 days'),"
+296:            "clock_timestamp()+interval '1 day',clock_timestamp()+interval '2 days')",
+362:            "jsonb_build_object('calendar_valid_until',(clock_timestamp()+interval '2 days')::text))",
+445:            "VALUES (%s,%s,'PLAN','params','v1','basis',clock_timestamp()+interval '1 day',%s,%s)",
+452:            "VALUES (%s,%s,'PASS','validator',clock_timestamp()+interval '1 day',1,"
+461:            "clock_timestamp(),%s)",
+497:            "VALUES (%s,%s,'EXPOSURE','projection-basis',clock_timestamp(),"
+498:            "clock_timestamp()+interval '18 hours',1)",
+1499:                "lease_expires_at=clock_timestamp()+interval '1 day' WHERE id=%s",
+1646:            "lease_expires_at=clock_timestamp()-interval '1 minute' WHERE id=%s",
+1893:            "lease_expires_at=clock_timestamp()+interval '1 day' WHERE id=%s",
+2156:            "fence_token=20,lease_expires_at=clock_timestamp()+interval '1 hour',"
+2157:            "deadline=clock_timestamp()+interval '2 days' WHERE id=%s",
+2385:            "UPDATE kineticloop.planning_intents SET lease_expires_at=clock_timestamp()-interval '1 minute' "
+2585:            "lease_expires_at=clock_timestamp()+interval '1 day',"
+2814:            "UPDATE kineticloop.validation_results SET valid_until=clock_timestamp()-interval '1 minute' "
+2824:            "UPDATE kineticloop.validation_results SET valid_until=clock_timestamp()+interval '1 day',"
+2923:            "UPDATE kineticloop.safety_artifacts SET valid_until=clock_timestamp()-interval '1 minute' "
+3059:            "fence_token=9,lease_expires_at=clock_timestamp()+interval '1 day',"
+3101:            "lease_expires_at=clock_timestamp()+interval '1 day',"
+3113:            "valid_until=clock_timestamp()+interval '1 day',ref_s03_id=%s WHERE id=%s",
+oracle: No process-clock or suite-start timestamp supplies lease/deadline truth;
+database-clock-relative setup remains explicit, while fixed quota keys are separate.
+
+PASS blocked_regression_cases_pass
+command: uv run pytest -q tests/db/test_transaction_interfaces.py -k 'reverse_lock_order_is_rejected or event_outbox_atomicity_enforced or stale_fence_commit_is_rejected or ack_loss_replay_preserves_natural_uniqueness'
+exit_code: 0
+stdout:
+.................                                                        [100%]
+17 passed, 31 deselected in 3.31s
+oracle: All cases in the blocked failure surface reach and pass their intended
+lock-order, atomicity, stale-fence, and ACK-loss assertions.
+
+PASS expired_and_stale_negative_cases_preserved
+command: uv run pytest -q tests/db/test_transaction_interfaces.py -k 'expired or stale or fence or deadline'
+exit_code: 0
+stdout:
+..                                                                       [100%]
+2 passed, 46 deselected in 2.56s
+oracle: Deliberately expired and stale fixtures remain negative and database-clock-relative.
+
+PASS transaction_interface_suite_passes
+command: uv run pytest -q tests/db/test_transaction_interfaces.py
+exit_code: 0
+stdout:
+................................................                         [100%]
+48 passed in 4.79s
+oracle: The complete transaction-interface suite passes without production changes.
+
+PASS complete_db_suite_passes
+command: uv run pytest -q tests/db
+exit_code: 0
+stdout:
+........................................................................ [ 33%]
+........................................................................ [ 67%]
+......................................................................   [100%]
+214 passed in 105.01s (0:01:45)
+oracle: The complete PostgreSQL test surface passes in one isolated namespace.
+
+PASS full_repository_regression_passes
+command: uv run pytest -q -p no:cacheprovider
+environment_addition: PYTEST_ADDOPTS=--junitxml=$PWD/docs/exec-plans/evidence/KL-073/full-repository-junit.xml
+exit_code: 0
+stdout:
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 39%]
+........................................................................ [ 53%]
+........................................................................ [ 66%]
+........................................................................ [ 79%]
+........................................................................ [ 93%]
+.....................................                                    [100%]
+- generated xml file: /Users/davetian/.codex/worktrees/1df8/KineticLoop/docs/exec-plans/evidence/KL-073/full-repository-junit.xml -
+541 passed in 310.85s (0:05:10)
+junit_sha256: 7e250f0922ee545f79dc46253a44b4a060026f33f1ca531628ceff39b6fc1597
+oracle: The full repository regression passes with zero failures; the complete
+machine-readable JUnit artifact is committed beside this log.
+
+PASS harness_validation_passes
+command: uv run kl check-harness
+exit_code: 0
+stdout:
+HARNESS_CHECK_PASS tasks=70 active=68
+oracle: Harness structure and task projections validate at tested_commit.
