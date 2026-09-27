@@ -56,8 +56,8 @@ M1_CLOSURE_M2_TASK_IDS = {
 M2_REFINED_TASK_IDS = M1_CLOSURE_M2_TASK_IDS | {'KL-072'}
 M2_TASK_IDS = M2_REFINED_TASK_IDS
 M2_REGRESSION_COMMANDS = [
-    'PYTHONPATH="$PWD/src" uv run pytest -q -p no:cacheprovider',
-    'PYTHONPATH="$PWD/src" uv run kl check-harness',
+    'PYTHONPATH="$PWD/src" /private/tmp/kl001-bootstrap/bin/uv run pytest -q -p no:cacheprovider',
+    'PYTHONPATH="$PWD/src" /private/tmp/kl001-bootstrap/bin/uv run kl check-harness',
 ]
 M2_REQUIRED_CHECK_IDS = {
     'KL-072': {
