@@ -10,9 +10,10 @@ method. Cursor state is held outside the callback capability object. Callbacks r
 structured `insert` and `update` operations only after the required guards;
 schema/table identifiers are generated from the owner's logical-table capability,
 each command has an explicit fail-closed column allowlist, and columns are quoted by
-psycopg. Preparation and build sessions have
-separate narrower capabilities, so they cannot express S51/S01 access through the
-shared interface.
+psycopg. Preparation and build sessions have separate narrower capabilities, so they
+cannot express S51/S01 access through the shared interface. The generic command entry
+point rejects PREPARATION, BUILD, and external owners; those owners cannot relabel
+their work to obtain coordination.
 For subject commands, the interface enforces this monotonic sequence:
 
 `S51 (when required) → S01 → S30 → S27 → S31 → S38 → S44 → S02 → remaining aggregate rows`.
@@ -38,25 +39,39 @@ preparation cannot request coordination locks through it or address another subj
 Factset build commands have a separate subject-bound interface which locks only their
 S15 build; sealing remains a T2-SEAL owner operation that starts at S01.
 
-Durable command execution locks S01 before S02, then locks declared remaining
+Durable first execution locks S01 before S02, then locks declared remaining
 aggregate rows in canonical table/key order, compares the request hash, and saves the
 complete successful outcome in the receipt. Structured mutations must bind the
 authenticated transaction subject. The state mutation, S03 event, S04 outbox row, and
-successful receipt outcome commit in one transaction. ACK-loss replay returns that
-exact outcome without rerunning the mutation. Database natural keys remain the last
-line of defense. Fenced commands must validate the current owner, token, live lease,
-and status for every locked intent before a first mutation; a successful S02 replay
-may return the already-committed terminal outcome without re-running that guard.
+successful receipt outcome commit in one transaction. ACK-loss replay uses a distinct
+read-only receipt entry point which takes only S01 then S02 (only the natural-key
+advisory/S02 guard for T1). It returns the exact historical result without reacquiring
+registry, work, artifact, or live-fence guards, so later revocation cannot erase a
+committed outcome. Current eligibility is a separate decision. A missing successful
+receipt and a request-hash conflict remain distinct failures. T1 serializes a missing
+natural receipt key with a transaction advisory lock before admitting evidence.
+Database natural keys remain the last line of defense.
+
+Lease-aware owners prove a command-specific basis for every locked intent:
+AcquireLease proves the exact prior owner/token compare-and-swap basis, live worker
+commands prove owner/token/status/unexpired lease, and ReapIntent proves the exact
+expired/deadline basis. PermitDispatch additionally requires the reservation's
+`ref_s27_id` and dispatch fence to match that verified live intent and token.
 
 `T6CommitCoordinator` is the one repository owner for CommitBundle. It is the atomic
 database boundary jointly required by PrescriptionCommitService and
 AuthorizationService; neither service receives a partial S39/S40/S41 or S42 commit
 interface.
-The T6 commit path atomically inserts S39/S40/S41/S42 and the supersession event,
+The T6 commit path binds every inserted reference to the exact locked or same-command
+inserted row. It records the prior locked S38 revision as S39's parent, inserts
+S39/S40/S41/S42, materializes the exact verified S49 closure for S42, and links the
+supersession through the prior bundle member/prescription/authorization chain. It
 switches S38 to the exact new bundle revision, records S27's bundle and authorization
-results, marks S29 COMMITTED, and persists S02/S03/S04. ACK-loss replay returns those
-same durable identities without repeating any head, terminal, supersession, event, or
-outbox transition.
+results, marks S29 COMMITTED, points S01's execution basis to the same-transaction S03
+event, and persists S02/S03/S04. S42 carries an issuance reason, authorization epoch,
+method version, registry revision, dependency identities, and deterministic closure
+digest. ACK-loss replay returns those same durable identities without repeating any
+head, terminal, supersession, event, outbox, or closure transition.
 
 PermitDispatch locks S01, S27, then S31 and atomically commits its S02 receipt, S03
 event, and S04 outbox row with the state transition. Only the first

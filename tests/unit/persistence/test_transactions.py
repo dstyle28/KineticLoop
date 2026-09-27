@@ -5,6 +5,7 @@ from typing import get_args
 from kineticloop.contracts.commands import PUBLIC_COMMAND_MODELS
 from kineticloop.persistence.transactions import (
     CATALOG_RELEASE_BOUNDARIES,
+    MUTATION_CAPABILITY_MATRIX,
     TRANSACTION_OWNER_MATRIX,
     Boundary,
 )
@@ -21,9 +22,7 @@ def test_transaction_owner_matrix_complete() -> None:
         assert specification.owner
         assert "+" not in specification.owner
         assert specification.mutation_surfaces
-        assert len(set(specification.mutation_surfaces)) == len(
-            specification.mutation_surfaces
-        )
+        assert len(set(specification.mutation_surfaces)) == len(specification.mutation_surfaces)
     assert {
         command
         for command, specification in TRANSACTION_OWNER_MATRIX.items()
@@ -36,6 +35,18 @@ def test_transaction_owner_matrix_complete() -> None:
         "ResumeSession",
         "ContinueSession",
     }
+
+
+def test_every_public_owner_has_explicit_non_infrastructure_dml_capabilities() -> None:
+    assert set(MUTATION_CAPABILITY_MATRIX) == set(TRANSACTION_OWNER_MATRIX)
+    for command_kind, specification in TRANSACTION_OWNER_MATRIX.items():
+        rules = MUTATION_CAPABILITY_MATRIX[command_kind]
+        assert rules, command_kind
+        for (logical_id, operation), columns in rules.items():
+            assert logical_id in specification.mutation_surfaces
+            assert logical_id not in {"S02", "S03", "S04"}
+            assert operation in {"insert", "update"}
+            assert columns
 
 
 def test_catalog_mapping_and_release_owner_boundaries_complete() -> None:
