@@ -640,7 +640,6 @@ def create_provider_context(
         {
             "provider_id": public_config.provider_id,
             "endpoint": public_config.endpoint,
-            "required_secret_names": list(public_config.required_secret_names),
         },
         provider_id=provider_id,
     )
