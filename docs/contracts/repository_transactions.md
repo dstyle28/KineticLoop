@@ -26,17 +26,19 @@ routine obtains shared S51 and then S01, revalidates the exact bounded artifact
 closure, and returns the protected registry revision. Artifact consumers must also
 match the registered artifact ID, kind, identity, version, and content hash.
 
-The preparation interface intentionally exposes only a cursor. RecordProjection,
-BuildManifest, ResolveEvidence, RecordValidation, and T5 worker preparation cannot
-request coordination locks through it. Factset build commands have a separate
-interface which locks only their S15 build; sealing remains a T2-SEAL owner operation
-that starts at S01.
+The preparation interface exposes only subject-bound structured mutations.
+RecordProjection, BuildManifest, ResolveEvidence, RecordValidation, and T5 worker
+preparation cannot request coordination locks through it or address another subject.
+Factset build commands have a separate subject-bound interface which locks only their
+S15 build; sealing remains a T2-SEAL owner operation that starts at S01.
 
-Durable command execution locks S01 before S02, compares the request hash, and saves
-the complete successful outcome in the receipt. The state mutation, S03 event, S04
-outbox row, and successful receipt outcome commit in one transaction. ACK-loss replay
-returns that exact outcome without rerunning the mutation. Database natural keys remain
-the last line of defense.
+Durable command execution locks S01 before S02, then locks declared remaining
+aggregate rows in canonical table/key order, compares the request hash, and saves the
+complete successful outcome in the receipt. Structured mutations must bind the
+authenticated transaction subject. The state mutation, S03 event, S04 outbox row, and
+successful receipt outcome commit in one transaction. ACK-loss replay returns that
+exact outcome without rerunning the mutation. Database natural keys remain the last
+line of defense.
 
 `T6CommitCoordinator` is the one repository owner for CommitBundle. It is the atomic
 database boundary jointly required by PrescriptionCommitService and

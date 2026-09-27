@@ -187,11 +187,17 @@ class EventWrite:
 class RestrictedSqlSession:
     """Structured DML without arbitrary SQL, cursor, connection, or lock escape."""
 
-    __slots__ = ("__allowed_logical_ids", "__cursor")
+    __slots__ = ("__allowed_logical_ids", "__cursor", "__subject_id")
 
-    def __init__(self, cursor: Cursor[Any], allowed_logical_ids: Sequence[str]):
+    def __init__(
+        self,
+        cursor: Cursor[Any],
+        allowed_logical_ids: Sequence[str],
+        subject_id: UUID | None,
+    ):
         self.__cursor = cursor
         self.__allowed_logical_ids = frozenset(allowed_logical_ids)
+        self.__subject_id = subject_id
 
     def _table(self, logical_id: str) -> str:
         if logical_id not in self.__allowed_logical_ids or logical_id not in _LOGICAL_TABLES:
@@ -213,6 +219,7 @@ class RestrictedSqlSession:
     def insert(self, logical_id: str, values: Mapping[str, Any]) -> int:
         table = self._table(logical_id)
         items = self._items(values, "insert values")
+        self._require_subject_predicate(logical_id, dict(items), "insert values")
         statement = sql.SQL("INSERT INTO {}.{} ({}) VALUES ({})").format(
             sql.Identifier("kineticloop"),
             sql.Identifier(table),
@@ -231,6 +238,15 @@ class RestrictedSqlSession:
         table = self._table(logical_id)
         assignments = self._items(values, "update values")
         predicates = self._items(where, "update predicates")
+        self._require_subject_predicate(logical_id, dict(predicates), "update predicates")
+        assignment_values = dict(assignments)
+        if (
+            "subject_id" in assignment_values
+            and assignment_values["subject_id"] != self.__subject_id
+        ):
+            raise StatementRejected(
+                "update values cannot change the authenticated transaction subject"
+            )
         statement = sql.SQL("UPDATE {}.{} SET {} WHERE {}").format(
             sql.Identifier("kineticloop"),
             sql.Identifier(table),
@@ -249,6 +265,16 @@ class RestrictedSqlSession:
             + tuple(value for _, value in predicates),
         )
         return self.__cursor.rowcount
+
+    def _require_subject_predicate(
+        self, logical_id: str, values: Mapping[str, Any], label: str
+    ) -> None:
+        if logical_id in {"S49", "S50", "S51"}:
+            return
+        if self.__subject_id is None or values.get("subject_id") != self.__subject_id:
+            raise StatementRejected(
+                f"{label} must bind the authenticated transaction subject"
+            )
 
     def relation_locks(self) -> frozenset[str]:
         self.__cursor.execute(
@@ -561,6 +587,7 @@ class RepositoryTransaction:
         request_hash: str,
         mutation: Callable[[RestrictedSqlSession], Mapping[str, Any]],
         event: EventWrite,
+        aggregate_locks: Mapping[str, Sequence[UUID]] | None = None,
     ) -> tuple[Mapping[str, Any], bool]:
         self._require_receipt_guard()
         self.lock_receipt(self.command_kind, client_key, actor_scope)
@@ -576,6 +603,16 @@ class RepositoryTransaction:
             if prior[1] != "SUCCEEDED" or "outcome" not in prior[2]:
                 raise IdempotencyConflict("command key has no durable successful outcome")
             return dict(prior[2]["outcome"]), True
+        for table in sorted(
+            aggregate_locks or (),
+            key={
+                "factset_revisions": 10,
+                "manifest_builds": 20,
+                "planning_attempts": 30,
+                "validation_results": 40,
+            }.__getitem__,
+        ):
+            self.lock_remaining(table, (aggregate_locks or {})[table])
         self.__cursor.execute(
             "INSERT INTO kineticloop.command_receipts"
             "(id,subject_id,status,command_kind,client_key,actor_scope,request_hash) "
@@ -583,7 +620,11 @@ class RepositoryTransaction:
             (receipt_id, self.subject_id, self.command_kind, client_key, actor_scope, request_hash),
         )
         outcome = dict(
-            mutation(RestrictedSqlSession(self.__cursor, self.spec.mutation_surfaces))
+            mutation(
+                RestrictedSqlSession(
+                    self.__cursor, self.spec.mutation_surfaces, self.subject_id
+                )
+            )
         )
         self.__cursor.execute(
             "INSERT INTO kineticloop.domain_events"
@@ -631,6 +672,7 @@ def execute_command(
 def execute_preparation(
     connection: Connection[Any],
     command_kind: str,
+    subject_id: UUID,
     operation: Callable[[RestrictedSqlSession], _T],
 ) -> _T:
     """Run external/model preparation in an independent transaction with no coordination API."""
@@ -642,7 +684,9 @@ def execute_preparation(
         raise GuardRequired("command is not a preparation owner")
     with connection.transaction():
         return operation(
-            RestrictedSqlSession(connection.cursor(), specification.mutation_surfaces)
+            RestrictedSqlSession(
+                connection.cursor(), specification.mutation_surfaces, subject_id
+            )
         )
 
 
@@ -670,7 +714,7 @@ def execute_factset_build(
         if cursor.fetchone() is None:
             raise GuardRequired("factset build does not exist")
         return operation(
-            RestrictedSqlSession(cursor, specification.mutation_surfaces)
+            RestrictedSqlSession(cursor, specification.mutation_surfaces, subject_id)
         )
 
 

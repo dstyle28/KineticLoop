@@ -237,7 +237,7 @@ def test_preparation_work_stays_outside_coordination_locks(
     for command in ("RecordProjection", "BuildManifest", "ResolveEvidence", "RecordValidation"):
         with psycopg.connect(database_urls["admin"]) as connection:
             observed = execute_preparation(
-                connection, command, lambda session: session.relation_locks()
+                connection, command, SUBJECT, lambda session: session.relation_locks()
             )
         assert "safety_registry_state" not in observed, command
         assert "user_decision_state" not in observed, command
@@ -246,6 +246,7 @@ def test_preparation_work_stays_outside_coordination_locks(
                 execute_preparation(
                     connection,
                     command,
+                    SUBJECT,
                     lambda session: session.update(
                         "S01",
                         {"decision_generation": 1},
@@ -296,6 +297,38 @@ def test_subject_guard_required(database_urls: dict[str, str]) -> None:
                 "AdmitOrReviseIntent",
                 SUBJECT,
                 lambda tx: tx.lock_intents((INTENT,)),
+            )
+        with pytest.raises(StatementRejected, match="authenticated transaction subject"):
+            execute_preparation(
+                connection,
+                "RecordProjection",
+                SUBJECT,
+                lambda session: session.update(
+                    "S21",
+                    {"projection_revision": 2},
+                    {
+                        "id": UUID("00000000-0000-8000-8000-000000015021"),
+                        "subject_id": UUID("00000000-0000-8000-8000-000000015999"),
+                    },
+                ),
+            )
+        with pytest.raises(StatementRejected, match="cannot change"):
+            execute_preparation(
+                connection,
+                "RecordProjection",
+                SUBJECT,
+                lambda session: session.update(
+                    "S21",
+                    {
+                        "subject_id": UUID(
+                            "00000000-0000-8000-8000-000000015999"
+                        )
+                    },
+                    {
+                        "id": UUID("00000000-0000-8000-8000-000000015021"),
+                        "subject_id": SUBJECT,
+                    },
+                ),
             )
 
 
@@ -520,6 +553,25 @@ def test_event_outbox_atomicity_enforced(
             tx.acquire_registry_lease(_registry_ids())
         elif tx.spec.subject_guard_required:
             tx.lock_subject()
+        if command in {"AdmitOrReviseIntent", "AcquireLease", "SettleCall"}:
+            tx.lock_intents((INTENT,))
+        elif command == "CommitBundle":
+            tx.lock_intents((INTENT,))
+            tx.lock_reservations((RESERVATION_2,))
+            tx.lock_daily_head(date(2026, 9, 26))
+        elif command == "StartSession":
+            tx.lock_daily_head(date(2026, 9, 26))
+            tx.lock_execution((SESSION,))
+
+    def aggregate_locks() -> Mapping[str, tuple[UUID, ...]] | None:
+        if command == "PublishManifest":
+            return {"manifest_builds": (MANIFEST_BUILD,)}
+        if command == "CommitBundle":
+            return {
+                "planning_attempts": (ATTEMPT,),
+                "validation_results": (VALIDATION,),
+            }
+        return None
 
     def operation(tx: RepositoryTransaction) -> None:
         acquire_guards(tx)
@@ -535,6 +587,7 @@ def test_event_outbox_atomicity_enforced(
             request_hash="atomic-hash",
             mutation=fail,
             event=event,
+            aggregate_locks=aggregate_locks(),
         )
 
     with psycopg.connect(database_urls["admin"]) as connection:
@@ -595,6 +648,7 @@ def test_event_outbox_atomicity_enforced(
             request_hash="atomic-success-hash",
             mutation=mutate,
             event=success_event,
+            aggregate_locks=aggregate_locks(),
         )
 
     with psycopg.connect(database_urls["admin"]) as connection:
@@ -960,6 +1014,10 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
                 request_hash="t6-ack-loss-hash",
                 mutation=mutation,
                 event=event,
+                aggregate_locks={
+                    "planning_attempts": (ATTEMPT,),
+                    "validation_results": (VALIDATION,),
+                },
             )
 
         with psycopg.connect(database_urls["admin"]) as connection:
