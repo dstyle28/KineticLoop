@@ -1,7 +1,7 @@
 change_identity: harness-governance-v0.1/HG-023
 display_change_id: HG-023
 base_commit: 7623c20bb267a39b8d02c29845b4ee054714d2b1
-tested_commit: 32455ed6b3bf2e19dfd5a40bdf603ae3a262f430
+tested_commit: 32455ed4e1af93475e5598d254f95ada1a80cec0
 change_status: BLOCKED
 summary: >-
   Prepared formal M2 closure validation and the ten missing M2 integration
@@ -13,6 +13,7 @@ files_changed:
   - HARNESS_DOCUMENT_MANIFEST.json
   - MILESTONE_CLOSURE.schema.json
   - docs/exec-plans/evidence/HG-023/checks-32455ed.log
+  - docs/exec-plans/evidence/HG-023/closure-remediation-plan.md
   - docs/exec-plans/evidence/HG-023/full-regression-32455ed.log
   - docs/exec-plans/governance/HG-023.yaml
   - docs/exec-plans/integrations/KL-010.json
@@ -28,14 +29,6 @@ files_changed:
   - tests/harness/test_validator.py
   - tools/harness/validate_harness.py
 checks_run:
-  - check_id: integration_records_semantically_valid
-    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
-    result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-023/checks-32455ed.log
-  - check_id: validator_suite_passes
-    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness/test_validator.py -p no:cacheprovider
-    result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-023/checks-32455ed.log
   - check_id: exact_harness_validation_passes
     command: UV_CACHE_DIR=/private/tmp/hg023-uv PYTHONPATH="$PWD/src" /private/tmp/kl001-bootstrap/bin/uv run kl check-harness
     result: PASS

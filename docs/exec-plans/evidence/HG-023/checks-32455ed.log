@@ -1,5 +1,10 @@
 HG-023 governance checks
-tested_commit: 32455ed6b3bf2e19dfd5a40bdf603ae3a262f430
+tested_commit: 32455ed4e1af93475e5598d254f95ada1a80cec0
+record_type: manually transcribed execution summary, not a raw stdout capture
+revision_note: The integration and 112-test validator checks below ran before
+  932026d was committed; they are exploratory worktree checks, not evidence that
+  those exact commands ran on 32455ed. Only exact_harness_validation_passes and
+  the full regression are bound to 32455ed. Closure requires fresh committed logs.
 
 PASS integration_records_semantically_valid
 command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness

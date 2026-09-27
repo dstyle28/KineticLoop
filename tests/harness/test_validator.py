@@ -404,6 +404,69 @@ class ValidatorTests(unittest.TestCase):
         })
         self.check(1, 'milestone-schema:M2.json:')
 
+    def test_m2_closure_cannot_hide_by_omitting_or_changing_identity(self):
+        for record in ({}, {'display_milestone_id': 'UNKNOWN'}, []):
+            dump(self.root / 'docs/exec-plans/milestones/M2.json', record)
+            self.check(1, 'milestone-schema:M2.json:')
+
+    def test_unknown_milestone_file_rejected(self):
+        dump(self.root / 'docs/exec-plans/milestones/unknown.json', {})
+        self.check(1, 'milestone-unsupported-record:unknown.json')
+
+    def test_m2_regression_requires_real_outputs_and_unskipped_db_cases(self):
+        paths = {
+            'pytest': 'docs/exec-plans/evidence/HG-023/pytest.log',
+            'harness': 'docs/exec-plans/evidence/HG-023/harness.log',
+            'junit': 'docs/exec-plans/evidence/HG-023/junit.xml',
+        }
+        self.put(paths['pytest'], '5 passed in 1.0s\n')
+        self.put(paths['harness'], 'HARNESS_CHECK_PASS tasks=69 active=67\n')
+        cases = [
+            ('tests.db.test_migrations', 'test_empty_db_upgrade_head'),
+            *[('tests.db.test_transaction_interfaces', name) for name in (
+                'test_reverse_lock_order_is_rejected', 'test_event_outbox_atomicity_enforced',
+                'test_stale_fence_commit_is_rejected',
+                'test_ack_loss_replay_preserves_natural_uniqueness',
+            )],
+        ]
+        junit = '<testsuites><testsuite>' + ''.join(
+            f'<testcase classname="{cls}" name="{name}"/>' for cls, name in cases
+        ) + '</testsuite></testsuites>'
+        self.put(paths['junit'], junit)
+        revision = self.commit('fixture execution evidence')
+
+        def ref(name):
+            return {'path': paths[name], 'sha256': v.sha(self.root / paths[name])}
+
+        payload = {'tested_commit': self.base, 'executions': [
+            {'command': v.M2_REGRESSION_COMMANDS[0], 'exit_code': 0,
+             'tested_commit': self.base, 'stdout': ref('pytest'), 'junit': ref('junit')},
+            {'command': v.M2_REGRESSION_COMMANDS[1], 'exit_code': 0,
+             'tested_commit': self.base, 'stdout': ref('harness')},
+        ]}
+        self.assertEqual(v.m2_execution_evidence_errors(self.root, payload, revision), [])
+        for variant in ('exit', 'missing-output', 'unbound', 'no-executions'):
+            mutated = copy.deepcopy(payload)
+            if variant == 'exit':
+                mutated['executions'][0]['exit_code'] = 1
+            elif variant == 'missing-output':
+                mutated['executions'][0].pop('stdout')
+            elif variant == 'unbound':
+                mutated['executions'][0]['tested_commit'] = 'a' * 40
+            else:
+                mutated.pop('executions')
+            self.assertTrue(v.m2_execution_evidence_errors(self.root, mutated, revision))
+        for report in (
+                junit.replace('/>', '><skipped/></testcase>', 1),
+                junit.replace('/>', '><failure/></testcase>', 1),
+                '<testsuites><testsuite/></testsuites>',
+                '<testsuites><testcase classname="tests.unit" name="only_unit"/></testsuites>'):
+            self.put(paths['junit'], report)
+            revision = self.commit('fixture invalid report')
+            mutated = copy.deepcopy(payload)
+            mutated['executions'][0]['junit'] = ref('junit')
+            self.assertTrue(v.m2_execution_evidence_errors(self.root, mutated, revision))
+
     def test_m2_schema_requires_exact_task_count_and_exit_check_vocabulary(self):
         from jsonschema import Draft202012Validator
 
@@ -428,6 +491,7 @@ class ValidatorTests(unittest.TestCase):
                     'm2_task_integrations_valid',
                     'm2_regression_suite_passes',
                     'frozen_authority_and_requirement_claims_preserved',
+                    *v.M2_EXIT_TASK_CHECKS,
                 )
             ],
             'historical_model_evidence': {

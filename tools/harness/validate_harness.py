@@ -7,6 +7,7 @@ import json
 import re
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -56,11 +57,37 @@ M1_CLOSURE_M2_TASK_IDS = {
 M2_REFINED_TASK_IDS = M1_CLOSURE_M2_TASK_IDS | {'KL-072'}
 M2_TASK_IDS = M2_REFINED_TASK_IDS
 M2_REGRESSION_COMMANDS = [
-    'UV_CACHE_DIR=/private/tmp/hg023-uv PYTHONPATH="$PWD/src" '
-    '/private/tmp/kl001-bootstrap/bin/uv run pytest -q -p no:cacheprovider',
-    'UV_CACHE_DIR=/private/tmp/hg023-uv PYTHONPATH="$PWD/src" '
-    '/private/tmp/kl001-bootstrap/bin/uv run kl check-harness',
+    'uv run pytest -q -p no:cacheprovider',
+    'uv run kl check-harness',
 ]
+M2_EXIT_TASK_CHECKS = {
+    'schema_rebuild_from_zero': {
+        'KL-013': {'empty_db_upgrade_head', 'database_rebuild_is_deterministic'},
+        'KL-072': {'two_phase_empty_db_upgrade_head'},
+        'KL-017': {'single_migration_head', 'complete_db_suite_passes'},
+    },
+    'migration_dependency_graph_documented': {
+        'KL-010': {'fk_dependency_graph_is_acyclic', 'authority_roots_precede_dependents'},
+        'KL-013': {'fk_order_matches_topology'},
+    },
+    'no_writer_bypasses_owner_subject_guard': {
+        'KL-012': {'owned_transition_only', 'direct_sql_bypass_rejected'},
+        'KL-015': {'transaction_owner_matrix_complete', 'subject_guard_required',
+                   'direct_write_bypass_rejected'},
+        'KL-017': {'subject_namespace_isolation', 'application_role_scope_enforced'},
+        'KL-072': {'safety_registry_object_ownership_enforced',
+                   'safety_registry_runtime_login_boundary_enforced'},
+    },
+    'shadow_registry_gates_precede_affected_contracts': {
+        'KL-014': {'shadow_and_test_scope_fail_closed'},
+        'KL-015': {'registry_lease_required_for_publish_commit_and_session_entry',
+                   'complete_frozen_lock_order_enforced'},
+        'KL-016': {'shared_gate_command_matrix_fails_closed',
+                   'exclusive_global_gate_serializes', 'stop_has_no_registry_dependency'},
+        'KL-017': {'test_authorization_is_isolated', 'evaluation_storage_is_isolated'},
+        'KL-072': {'safety_registry_migrated_schema_integration'},
+    },
+}
 M2_REQUIRED_CHECK_IDS = {
     'KL-072': {
         'baseline_migration_unchanged',
@@ -1377,6 +1404,15 @@ def m2_milestone_closure_errors(
         task['id'] for task in evaluated_backlog['tasks']
         if task['milestone'] == 'M2' and task['status'] != 'SUPERSEDED'
     }
+    try:
+        m1 = load_artifact_at_revision(root, 'docs/exec-plans/milestones/M1.json', evaluated)
+        errors.extend('milestone-m2-prerequisite:' + issue for issue in milestone_closure_errors(
+            root, m1, schema, integration_schema, result_schema, review_schema,
+            evaluated_backlog, evaluated_tasks))
+        if not is_ancestor(root, m1['evaluated_commit'], evaluated):
+            errors.append('milestone-m2-prerequisite:unreachable')
+    except (ValueError, OSError, KeyError, TypeError):
+        errors.append('milestone-m2-prerequisite:missing-or-invalid')
     declared_ids = [item['display_task_id'] for item in closure['integrations']]
     if active_m2 != M2_TASK_IDS or set(declared_ids) != active_m2 or len(
             declared_ids) != len(set(declared_ids)):
@@ -1413,13 +1449,51 @@ def m2_milestone_closure_errors(
         'm2_task_integrations_valid',
         'm2_regression_suite_passes',
         'frozen_authority_and_requirement_claims_preserved',
-    }
+    } | set(M2_EXIT_TASK_CHECKS)
     exit_ids = [item['check_id'] for item in closure['exit_checks']]
     if set(exit_ids) != expected_exit_checks or len(exit_ids) != len(set(exit_ids)):
         errors.append('milestone-exit-check-set:M2')
     evidence_by_check = {
         item['check_id']: item['evidence'] for item in closure['exit_checks']
     }
+    for exit_id, task_checks in M2_EXIT_TASK_CHECKS.items():
+        expected_evidence = set()
+        try:
+            for task_id, check_ids in task_checks.items():
+                record = load_artifact_at_revision(
+                    root, f'docs/exec-plans/integrations/{task_id}.json', evaluated)
+                reviewed = resolve(root, record['reviewed_head_sha'])
+                paths = result_paths_at_revision(root, task_id, reviewed)
+                if len(paths) != 1:
+                    raise ValueError('result-representation')
+                result = load_artifact_at_revision(root, paths[0], reviewed)
+                commands = {item['check_id']: item for item in result['commands_run']}
+                for check_id in check_ids:
+                    command = commands[check_id]
+                    if command['result'] != 'PASS':
+                        raise ValueError('task-check-not-pass')
+                    expected_evidence.add((command['evidence_ref'], reviewed))
+            declared = [(item['path'], item['revision'])
+                        for item in evidence_by_check.get(exit_id, [])]
+            if set(declared) != expected_evidence or len(declared) != len(set(declared)):
+                errors.append('milestone-exit-task-evidence:' + exit_id)
+        except (ValueError, OSError, KeyError, TypeError):
+            errors.append('milestone-exit-task-evidence:' + exit_id)
+    # Gate constructors prove their checks before their own merge through the
+    # integration chain. Their merged boundaries must precede KL-015 use.
+    try:
+        consumer = load_artifact_at_revision(
+            root, 'docs/exec-plans/integrations/KL-015.json', evaluated)
+        consumer_result = load_artifact_at_revision(
+            root, result_paths_at_revision(root, 'KL-015', consumer['reviewed_head_sha'])[0],
+            consumer['reviewed_head_sha'])
+        for prerequisite in ('KL-014', 'KL-016', 'KL-017', 'KL-072'):
+            gate = load_artifact_at_revision(
+                root, f'docs/exec-plans/integrations/{prerequisite}.json', evaluated)
+            if not is_ancestor(root, gate['merge_commit'], consumer_result['tested_commit']):
+                errors.append('milestone-gate-order:' + prerequisite + ':KL-015')
+    except (ValueError, OSError, KeyError, TypeError, IndexError):
+        errors.append('milestone-gate-order:invalid-chain')
     for exit_check in closure['exit_checks']:
         if exit_check['result'] != 'PASS':
             errors.append('milestone-exit-check-failed:' + exit_check['check_id'])
@@ -1447,7 +1521,7 @@ def m2_milestone_closure_errors(
         f'docs/exec-plans/integrations/{task_id}.json' for task_id in M2_TASK_IDS
     }
     if integration_paths != expected_integration_paths or any(
-            resolve(root, item['revision']) != evaluated
+            item['revision'] != evaluated
             for item in evidence_by_check.get('m2_task_integrations_valid', [])):
         errors.append('milestone-exit-evidence-semantic:m2_task_integrations_valid')
 
@@ -1463,13 +1537,13 @@ def m2_milestone_closure_errors(
             revision = resolve(root, evidence['revision'])
             payload = load_artifact_at_revision(root, evidence['path'], revision)
             tested = resolve(root, payload.get('tested_commit', ''))
+            errors.extend(m2_execution_evidence_errors(root, payload, revision))
             if (revision != evaluated
                     or payload.get('check_id') != 'm2_regression_suite_passes'
                     or payload.get('commands') != M2_REGRESSION_COMMANDS
                     or payload.get('status') != 'PASS'
                     or not is_ancestor(root, tested, evaluated)
-                    or any(path != evidence['path']
-                           for path in changed_paths(root, tested, evaluated))):
+                    or governance_suffix_errors(root, tested, evaluated, 'HG-023', 'tested')):
                 errors.append('milestone-exit-evidence-oracle:m2_regression_suite_passes')
         except (ValueError, OSError, KeyError, TypeError):
             errors.append('milestone-exit-evidence-oracle:m2_regression_suite_passes')
@@ -1478,10 +1552,66 @@ def m2_milestone_closure_errors(
         'frozen_authority_and_requirement_claims_preserved', [])
     if ({item['path'] for item in authority_records}
             != {'FROZEN_BASELINE.json', 'CURRENT_REQUIREMENT_SET.json'}
-            or any(resolve(root, item['revision']) != evaluated for item in authority_records)):
+            or any(item['revision'] != evaluated for item in authority_records)):
         errors.append(
             'milestone-exit-evidence-semantic:'
             'frozen_authority_and_requirement_claims_preserved')
+    return errors
+
+
+def m2_execution_evidence_errors(root, payload, revision):
+    """Require retained successful executions, including real DB test collection."""
+    prefix = 'milestone-regression-execution:'
+    runs = payload.get('executions', []) if isinstance(payload, dict) else []
+    if not isinstance(runs, list) or len(runs) != len(M2_REGRESSION_COMMANDS):
+        return [prefix + 'command-set']
+    errors = []
+    for command, run in zip(M2_REGRESSION_COMMANDS, runs):
+        if (not isinstance(run, dict) or run.get('command') != command
+                or run.get('exit_code') != 0
+                or run.get('tested_commit') != payload.get('tested_commit')):
+            errors.append(prefix + 'failed-or-unbound-command')
+            continue
+        try:
+            log = run['stdout']
+            if (not relative_path(log['path'])
+                    or not matches(log['path'], [evidence_pattern('HG-023')])
+                    or blob_sha_at_revision(root, log['path'], revision) != log['sha256']):
+                raise ValueError('stdout-binding')
+            output = git(root, 'show', revision + ':' + log['path']).decode()
+            if not output.strip():
+                raise ValueError('empty-stdout')
+            if command == M2_REGRESSION_COMMANDS[1]:
+                if 'HARNESS_CHECK_PASS' not in output or 'HARNESS_CHECK_FAIL' in output:
+                    raise ValueError('harness-oracle')
+                continue
+            report = run['junit']
+            if (not relative_path(report['path'])
+                    or not matches(report['path'], [evidence_pattern('HG-023')])
+                    or blob_sha_at_revision(root, report['path'], revision) != report['sha256']):
+                raise ValueError('junit-binding')
+            tree = ET.fromstring(git(root, 'show', revision + ':' + report['path']))
+            cases = list(tree.iter('testcase'))
+            if not cases or any(
+                    list(case.iter(tag)) for case in cases
+                    for tag in ('failure', 'error', 'skipped')):
+                raise ValueError('failed-skipped-or-empty-tests')
+            names = {(case.get('classname', ''), case.get('name', '').split('[')[0])
+                     for case in cases}
+            required_cases = {
+                ('tests.db.test_migrations', 'test_empty_db_upgrade_head'),
+                ('tests.db.test_transaction_interfaces', 'test_reverse_lock_order_is_rejected'),
+                ('tests.db.test_transaction_interfaces', 'test_event_outbox_atomicity_enforced'),
+                ('tests.db.test_transaction_interfaces', 'test_stale_fence_commit_is_rejected'),
+                ('tests.db.test_transaction_interfaces',
+                 'test_ack_loss_replay_preserves_natural_uniqueness'),
+            }
+            if not required_cases <= names:
+                raise ValueError('missing-db-coverage')
+            if not re.search(r'\b[1-9][0-9]* passed\b', output):
+                raise ValueError('pytest-oracle')
+        except (ValueError, OSError, KeyError, TypeError, ET.ParseError) as ex:
+            errors.append(prefix + str(ex))
     return errors
 
 
@@ -1715,8 +1845,12 @@ def validate(root, args):
         for path in sorted(milestone_dir.glob('*.json')):
             record = load_artifact(path)
             milestone_id = record.get('display_milestone_id') if isinstance(record, dict) else None
-            if milestone_id in milestone_records:
+            if path.stem in milestone_records:
+                milestone_records[path.stem].append((path, record))
+            elif milestone_id in milestone_records:
                 milestone_records[milestone_id].append((path, record))
+            else:
+                errors.append('milestone-unsupported-record:' + path.name)
     if not milestone_records['M1']:
         m1_closure_valid = False
     elif len(milestone_records['M1']) != 1:
