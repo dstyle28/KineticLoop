@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import threading
 from collections.abc import Iterator, Mapping
 from datetime import UTC, date, datetime, timedelta
@@ -20,6 +19,7 @@ from kineticloop.persistence.transactions import (
     EventWrite,
     FenceLost,
     GuardRequired,
+    IdempotencyConflict,
     LockOrderViolation,
     LockStage,
     ReplayNotFound,
@@ -56,7 +56,9 @@ INTENT = UUID("00000000-0000-8000-8000-000000015027")
 INTENT_2 = UUID("00000000-0000-8000-8000-000000015127")
 REQUEST_RECEIPT = UUID("00000000-0000-8000-8000-000000015002")
 REQUEST = UUID("00000000-0000-8000-8000-000000015028")
+REQUEST_2 = UUID("00000000-0000-8000-8000-000000015128")
 ATTEMPT = UUID("00000000-0000-8000-8000-000000015029")
+ATTEMPT_2 = UUID("00000000-0000-8000-8000-000000015129")
 QUOTA = UUID("00000000-0000-8000-8000-000000015030")
 RESERVATION = UUID("00000000-0000-8000-8000-000000015031")
 RESERVATION_2 = UUID("00000000-0000-8000-8000-000000015131")
@@ -113,10 +115,32 @@ def _seed_transaction_rows(admin_url: str) -> None:
             (REQUEST, SUBJECT, REQUEST_RECEIPT, INTENT),
         )
         connection.execute(
+            "INSERT INTO kineticloop.planning_request_revisions"
+            "(id,subject_id,request_revision,constraint_fingerprint,normalization_version,"
+            "ref_s02_id,ref_s27_id) VALUES (%s,%s,1,'constraint-2','v1',%s,%s)",
+            (REQUEST_2, SUBJECT, REQUEST_RECEIPT, INTENT_2),
+        )
+        connection.execute(
             "INSERT INTO kineticloop.planning_attempts"
             "(id,subject_id,attempt_no,status,captured_epoch,fence_token,ref_s24_id,"
             "ref_s27_id,ref_s28_id) VALUES (%s,%s,1,'RUNNING',0,7,%s,%s,%s)",
             (ATTEMPT, SUBJECT, MANIFEST, INTENT, REQUEST),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.planning_attempts"
+            "(id,subject_id,attempt_no,status,captured_epoch,fence_token,ref_s24_id,"
+            "ref_s27_id,ref_s28_id) VALUES (%s,%s,1,'RUNNING',0,7,%s,%s,%s)",
+            (ATTEMPT_2, SUBJECT, MANIFEST, INTENT_2, REQUEST_2),
+        )
+        connection.execute(
+            "UPDATE kineticloop.planning_intents SET "
+            "current_request_revision_id=%s,current_attempt_id=%s WHERE id=%s",
+            (REQUEST, ATTEMPT, INTENT),
+        )
+        connection.execute(
+            "UPDATE kineticloop.planning_intents SET "
+            "current_request_revision_id=%s,current_attempt_id=%s WHERE id=%s",
+            (REQUEST_2, ATTEMPT_2, INTENT_2),
         )
         connection.execute(
             "INSERT INTO kineticloop.planning_quota_buckets"
@@ -305,6 +329,26 @@ def test_factset_build_stays_outside_subject_coordination(
                     "S16",
                     {"member_operation": "SET"},
                     {"subject_id": SUBJECT},
+                ),
+            )
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(GuardRequired, match="exact locked row"):
+            execute_factset_build(
+                connection,
+                "WriteCandidate",
+                SUBJECT,
+                FACTSET,
+                lambda session: session.insert(
+                    "S16",
+                    {
+                        "id": UUID("00000000-0000-8000-8000-000000015916"),
+                        "subject_id": SUBJECT,
+                        "ref_s15_id": UUID("00000000-0000-8000-8000-000000015915"),
+                        "member_operation": "SET",
+                        "logical_member_key": "wrong-build",
+                        "member_kind": "FACT",
+                        "action_scope": "CURRENT",
+                    },
                 ),
             )
 
@@ -516,7 +560,12 @@ def test_reverse_lock_order_is_rejected(
             tx.lock_subject()
             tx.lock_intents((INTENT,))
             tx.require_lease_acquisition_basis(
-                INTENT, expected_owner_id="worker-a", expected_fence=7
+                INTENT,
+                expected_owner_id="worker-a",
+                expected_fence=7,
+                new_owner_id="worker-a",
+                new_fence=8,
+                expected_request_revision=1,
             )
 
             def mutate_wrong_identity(session: Any) -> Mapping[str, Any]:
@@ -586,6 +635,33 @@ def test_direct_write_bypass_rejected(database_urls: dict[str, str]) -> None:
                 (INTENT,),
             )
 
+    def wrong_quota(tx: RepositoryTransaction) -> None:
+        tx.lock_subject()
+        tx.lock_quota_buckets((("DAILY", NOW, NOW + timedelta(days=1)),))
+        tx.lock_intents((INTENT,))
+        tx.idempotent_outcome(
+            receipt_id=UUID("00000000-0000-8000-8000-000000015962"),
+            actor_scope="subject",
+            client_key="wrong-quota",
+            request_hash="wrong-quota-hash",
+            mutation=lambda session: (
+                session.update(
+                    "S30",
+                    {"admitted_count": 2},
+                    {
+                        "subject_id": SUBJECT,
+                        "id": UUID("00000000-0000-8000-8000-000000015930"),
+                    },
+                ),
+                {"unexpected": True},
+            )[1],
+            event=_event(0x15963),
+        )
+
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(GuardRequired, match="exact row lock"):
+            execute_command(connection, "AdmitOrReviseIntent", SUBJECT, wrong_quota)
+
 
 @pytest.mark.parametrize(
     ("command", "tag"),
@@ -634,11 +710,18 @@ def test_event_outbox_atomicity_enforced(
                 {"captured_epoch": 1},
                 {"id": MANIFEST_BUILD, "subject_id": SUBJECT},
             )
-        elif command in {
-            "AdmitOrReviseIntent",
-            "AcquireLease",
-            "SettleCall",
-        }:
+        elif command == "AcquireLease":
+            session.update(
+                "S27",
+                {
+                    "lease_owner": "worker-a",
+                    "fence_token": 8,
+                    "lease_expires_at": NOW + timedelta(days=1),
+                    "typed_payload": psycopg.types.json.Jsonb({"atomic": command}),
+                },
+                {"id": INTENT, "subject_id": SUBJECT},
+            )
+        elif command in {"AdmitOrReviseIntent", "SettleCall"}:
             session.update(
                 "S27",
                 {"typed_payload": psycopg.types.json.Jsonb({"atomic": command})},
@@ -670,7 +753,12 @@ def test_event_outbox_atomicity_enforced(
             tx.lock_intents((INTENT,))
             if command == "AcquireLease":
                 tx.require_lease_acquisition_basis(
-                    INTENT, expected_owner_id="worker-a", expected_fence=7
+                    INTENT,
+                    expected_owner_id="worker-a",
+                    expected_fence=7,
+                    new_owner_id="worker-a",
+                    new_fence=8,
+                    expected_request_revision=1,
                 )
             else:
                 tx.lock_reservations((RESERVATION_2,))
@@ -678,7 +766,13 @@ def test_event_outbox_atomicity_enforced(
             tx.lock_intents((INTENT,))
             tx.lock_reservations((RESERVATION_2,))
             tx.lock_daily_head(date(2026, 9, 26))
-            tx.require_current_fence(INTENT, owner_id="worker-a", fence=7)
+            tx.require_current_fence(
+                INTENT,
+                owner_id="worker-a",
+                fence=7,
+                expected_request_revision=1,
+                expected_attempt_id=ATTEMPT,
+            )
         elif command == "StartSession":
             tx.lock_daily_head(date(2026, 9, 26))
             tx.lock_execution((SESSION,))
@@ -708,6 +802,9 @@ def test_event_outbox_atomicity_enforced(
             mutation=fail,
             event=event,
             aggregate_locks=aggregate_locks(),
+            source_identity_key=(
+                f"{SUBJECT}:ReceiveEvidence:TEST:object:1" if command == "ReceiveEvidence" else None
+            ),
         )
 
     with psycopg.connect(database_urls["admin"]) as connection:
@@ -756,6 +853,9 @@ def test_event_outbox_atomicity_enforced(
             "SELECT count(*) FROM kineticloop.outbox_deliveries WHERE id=%s", (event.outbox_id,)
         ).fetchone() == (0,)
 
+    if command in {"CommitBundle", "StartSession"}:
+        return
+
     success_receipt = UUID(f"00000000-0000-8000-8000-{tag + 0x1000:012x}")
     success_event = _event(tag + 0x1001)
 
@@ -769,6 +869,9 @@ def test_event_outbox_atomicity_enforced(
             mutation=mutate,
             event=success_event,
             aggregate_locks=aggregate_locks(),
+            source_identity_key=(
+                f"{SUBJECT}:ReceiveEvidence:TEST:object:1" if command == "ReceiveEvidence" else None
+            ),
         )
 
     with psycopg.connect(database_urls["admin"]) as connection:
@@ -799,9 +902,16 @@ def test_event_outbox_atomicity_enforced(
                 "UPDATE kineticloop.manifest_builds SET captured_epoch=0 WHERE id=%s",
                 (MANIFEST_BUILD,),
             )
-        elif command in {"AdmitOrReviseIntent", "AcquireLease", "SettleCall"}:
+        elif command in {"AdmitOrReviseIntent", "SettleCall"}:
             connection.execute(
                 "UPDATE kineticloop.planning_intents SET typed_payload='{}' WHERE id=%s",
+                (INTENT,),
+            )
+        elif command == "AcquireLease":
+            connection.execute(
+                "UPDATE kineticloop.planning_intents SET typed_payload='{}',"
+                "lease_owner='worker-a',fence_token=7,"
+                "lease_expires_at=clock_timestamp()+interval '1 day' WHERE id=%s",
                 (INTENT,),
             )
         elif command == "CommitBundle":
@@ -845,7 +955,7 @@ def test_stale_fence_commit_is_rejected(database_urls: dict[str, str]) -> None:
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
         connection.execute(
             "UPDATE kineticloop.planning_intents SET lease_owner='worker-a',fence_token=7,"
-            "lease_expires_at=clock_timestamp()+interval '1 day' WHERE id=%s",
+            "lease_expires_at=clock_timestamp()-interval '1 minute' WHERE id=%s",
             (INTENT,),
         )
 
@@ -862,7 +972,12 @@ def test_stale_fence_commit_is_rejected(database_urls: dict[str, str]) -> None:
                     tx.lock_subject()
                     tx.lock_intents((INTENT,))
                     tx.require_lease_acquisition_basis(
-                        INTENT, expected_owner_id="worker-a", expected_fence=7
+                        INTENT,
+                        expected_owner_id="worker-a",
+                        expected_fence=7,
+                        new_owner_id="worker-b",
+                        new_fence=8,
+                        expected_request_revision=1,
                     )
                     takeover_ready.set()
                     assert release_takeover.wait(timeout=5)
@@ -901,7 +1016,13 @@ def test_stale_fence_commit_is_rejected(database_urls: dict[str, str]) -> None:
                 def operation(tx: RepositoryTransaction) -> None:
                     tx.lock_subject()
                     tx.lock_intents((INTENT,))
-                    tx.require_current_fence(INTENT, owner_id="worker-a", fence=7)
+                    tx.require_current_fence(
+                        INTENT,
+                        owner_id="worker-a",
+                        fence=7,
+                        expected_request_revision=1,
+                        expected_attempt_id=ATTEMPT,
+                    )
 
                 with pytest.raises(FenceLost):
                     execute_command(connection, "ReserveCall", SUBJECT, operation)
@@ -919,6 +1040,61 @@ def test_stale_fence_commit_is_rejected(database_urls: dict[str, str]) -> None:
     assert not takeover_thread.is_alive() and not stale_thread.is_alive()
     assert not errors
 
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "UPDATE kineticloop.planning_intents SET status='FOUND_VALID_PLAN',"
+            "lease_expires_at=%s,deadline=%s WHERE id=%s",
+            (NOW - timedelta(minutes=1), NOW + timedelta(days=2), INTENT),
+        )
+        connection.execute("SET session_replication_role=origin")
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(FenceLost):
+            execute_command(
+                connection,
+                "ReapIntent",
+                SUBJECT,
+                lambda tx: (
+                    tx.lock_subject(),
+                    tx.lock_intents((INTENT,)),
+                    tx.require_reaper_basis(
+                        INTENT,
+                        owner_id="worker-b",
+                        fence=8,
+                        expected_deadline=NOW + timedelta(days=2),
+                        expected_request_revision=1,
+                    ),
+                ),
+            )
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute(
+            "UPDATE kineticloop.planning_intents SET status='RUNNING',deadline=%s WHERE id=%s",
+            (NOW - timedelta(minutes=1), INTENT),
+        )
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(FenceLost):
+            execute_command(
+                connection,
+                "ReapIntent",
+                SUBJECT,
+                lambda tx: (
+                    tx.lock_subject(),
+                    tx.lock_intents((INTENT,)),
+                    tx.require_reaper_basis(
+                        INTENT,
+                        owner_id="worker-b",
+                        fence=8,
+                        expected_deadline=NOW - timedelta(minutes=2),
+                        expected_request_revision=1,
+                    ),
+                ),
+            )
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute(
+            "UPDATE kineticloop.planning_intents SET deadline=%s,lease_expires_at=%s WHERE id=%s",
+            (NOW + timedelta(days=2), NOW + timedelta(days=1), INTENT),
+        )
+
 
 def test_dispatch_first_winner_and_replay_non_resend(database_urls: dict[str, str]) -> None:
     permit_receipt = UUID("00000000-0000-8000-8000-000000015502")
@@ -930,12 +1106,79 @@ def test_dispatch_first_winner_and_replay_non_resend(database_urls: dict[str, st
             "lease_expires_at=clock_timestamp()+interval '1 day' WHERE id=%s",
             (INTENT,),
         )
+        connection.execute(
+            "UPDATE kineticloop.planning_intents SET deadline=%s WHERE id=%s",
+            (NOW - timedelta(minutes=1), INTENT),
+        )
+
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(FenceLost):
+            execute_command(
+                connection,
+                "PermitDispatch",
+                SUBJECT,
+                lambda tx: (
+                    tx.lock_subject(),
+                    tx.lock_intents((INTENT,)),
+                    tx.require_current_fence(
+                        INTENT,
+                        owner_id="worker-dispatch",
+                        fence=10,
+                        expected_request_revision=1,
+                        expected_attempt_id=ATTEMPT,
+                    ),
+                ),
+            )
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute(
+            "UPDATE kineticloop.planning_intents SET deadline=%s WHERE id=%s",
+            (NOW + timedelta(days=2), INTENT),
+        )
+        connection.execute(
+            "UPDATE kineticloop.call_reservations SET ref_s29_id=%s WHERE id=%s",
+            (ATTEMPT_2, RESERVATION),
+        )
+
+    def stale_attempt(tx: RepositoryTransaction) -> Any:
+        tx.lock_subject()
+        tx.lock_intents((INTENT,))
+        tx.lock_reservations((RESERVATION,))
+        tx.require_current_fence(
+            INTENT,
+            owner_id="worker-dispatch",
+            fence=10,
+            expected_request_revision=1,
+            expected_attempt_id=ATTEMPT,
+        )
+        return tx.permit_dispatch(
+            RESERVATION,
+            permit_key="stale-attempt",
+            request_hash="stale-attempt-hash",
+            receipt_id=UUID("00000000-0000-8000-8000-000000015522"),
+            event=_event(0x15523),
+            fence=10,
+        )
+
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(DispatchNotPermitted):
+            execute_command(connection, "PermitDispatch", SUBJECT, stale_attempt)
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute(
+            "UPDATE kineticloop.call_reservations SET ref_s29_id=%s WHERE id=%s",
+            (ATTEMPT, RESERVATION),
+        )
 
     def permit(tx: RepositoryTransaction, permit_key: str) -> Any:
         tx.lock_subject()
         tx.lock_intents((INTENT,))
         tx.lock_reservations((RESERVATION,))
-        tx.require_current_fence(INTENT, owner_id="worker-dispatch", fence=10)
+        tx.require_current_fence(
+            INTENT,
+            owner_id="worker-dispatch",
+            fence=10,
+            expected_request_revision=1,
+            expected_attempt_id=ATTEMPT,
+        )
         return tx.permit_dispatch(
             RESERVATION,
             permit_key=permit_key,
@@ -982,6 +1225,17 @@ def test_dispatch_first_winner_and_replay_non_resend(database_urls: dict[str, st
         )
     assert not replay.sendable and replay.replayed
     with psycopg.connect(database_urls["admin"]) as connection:
+        historical_permit = replay_outcome(
+            connection,
+            "PermitDispatch",
+            SUBJECT,
+            actor_scope="subject",
+            client_key="permit-1",
+            request_hash="hash-permit-1",
+        )
+    assert historical_permit["sendable"] is False
+    assert historical_permit["replayed"] is True
+    with psycopg.connect(database_urls["admin"]) as connection:
         for table, object_id in (
             ("command_receipts", permit_receipt),
             ("domain_events", permit_event.event_id),
@@ -999,7 +1253,13 @@ def test_dispatch_first_winner_and_replay_non_resend(database_urls: dict[str, st
                 tx.lock_subject()
                 tx.lock_intents((INTENT,))
                 tx.lock_reservations((RESERVATION,))
-                tx.require_current_fence(INTENT, owner_id="worker-dispatch", fence=10)
+                tx.require_current_fence(
+                    INTENT,
+                    owner_id="worker-dispatch",
+                    fence=10,
+                    expected_request_revision=1,
+                    expected_attempt_id=ATTEMPT,
+                )
                 return tx.permit_dispatch(
                     RESERVATION,
                     permit_key="permit-2",
@@ -1026,6 +1286,12 @@ def test_ack_loss_replay_preserves_natural_uniqueness(database_urls: dict[str, s
     receipt = UUID("00000000-0000-8000-8000-000000015302")
     event = _event(0x15303)
     runs = 0
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute(
+            "UPDATE kineticloop.planning_intents SET lease_expires_at=clock_timestamp()-interval '1 minute' "
+            "WHERE id=%s",
+            (INTENT_2,),
+        )
 
     def invoke() -> tuple[Mapping[str, Any], bool]:
         nonlocal runs
@@ -1034,7 +1300,12 @@ def test_ack_loss_replay_preserves_natural_uniqueness(database_urls: dict[str, s
             tx.lock_subject()
             tx.lock_intents((INTENT_2,))
             tx.require_lease_acquisition_basis(
-                INTENT_2, expected_owner_id="worker-a", expected_fence=7
+                INTENT_2,
+                expected_owner_id="worker-a",
+                expected_fence=7,
+                new_owner_id="worker-ack",
+                new_fence=8,
+                expected_request_revision=1,
             )
 
             def mutation(session: Any) -> Mapping[str, Any]:
@@ -1113,14 +1384,12 @@ def test_ack_loss_replay_preserves_natural_uniqueness(database_urls: dict[str, s
 
     # Missing S02 rows are serialized by the T1 natural idempotency key before
     # either contender may admit evidence or publish S03/S04.
-    t1_receipt = UUID("00000000-0000-8000-8000-000000015802")
     evidence_id = UUID("00000000-0000-8000-8000-000000015809")
-    t1_event = _event(0x15803)
     barrier = threading.Barrier(2)
     t1_outcomes: list[tuple[Mapping[str, Any], bool]] = []
     t1_errors: list[BaseException] = []
 
-    def receive() -> None:
+    def receive(index: int) -> None:
         try:
             barrier.wait(timeout=5)
             with psycopg.connect(database_urls["admin"]) as connection:
@@ -1144,12 +1413,13 @@ def test_ack_loss_replay_preserves_natural_uniqueness(database_urls: dict[str, s
                         return {"evidence_id": str(evidence_id)}
 
                     return tx.idempotent_outcome(
-                        receipt_id=t1_receipt,
+                        receipt_id=UUID(f"00000000-0000-8000-8000-{0x15802 + index:012x}"),
                         actor_scope="subject",
-                        client_key="same-t1-key",
+                        client_key=f"different-client-key-{index}",
                         request_hash="same-t1-hash",
                         mutation=mutation,
-                        event=t1_event,
+                        event=_event(0x15803 + index * 2),
+                        source_identity_key=f"{SUBJECT}:t1-race:TEST:same-object:1",
                     )
 
                 t1_outcomes.append(
@@ -1158,13 +1428,13 @@ def test_ack_loss_replay_preserves_natural_uniqueness(database_urls: dict[str, s
         except BaseException as error:
             t1_errors.append(error)
 
-    contenders = [threading.Thread(target=receive) for _ in range(2)]
+    contenders = [threading.Thread(target=receive, args=(index,)) for index in range(2)]
     for contender in contenders:
         contender.start()
     for contender in contenders:
         contender.join(timeout=5)
-    assert not t1_errors
-    assert sum(replayed for _, replayed in t1_outcomes) == 1
+    assert len(t1_outcomes) == 1 and not t1_outcomes[0][1]
+    assert len(t1_errors) == 1 and isinstance(t1_errors[0], IdempotencyConflict)
     with psycopg.connect(database_urls["admin"]) as connection:
         assert connection.execute(
             "SELECT count(*) FROM kineticloop.evidence_revisions WHERE id=%s",
@@ -1220,17 +1490,27 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
         )
         connection.execute("SET session_replication_role=origin")
 
-    def invoke() -> tuple[Mapping[str, Any], bool]:
+    def invoke(
+        superseded_authorization: UUID = UUID(_SAFETY.AUTHORIZATION_ID),
+    ) -> tuple[Mapping[str, Any], bool]:
         def operation(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
             registry_revision = _acquire_registry(tx)
+            artifact_dependencies = tx.artifact_certificate_dependencies()
+            closure_digest = tx.artifact_closure_digest()
+            closure_valid_until = tx.artifact_closure_valid_until()
             tx.lock_intents((INTENT,))
             tx.lock_reservations((RESERVATION_2,))
             tx.lock_daily_head(date(2026, 9, 26))
-            tx.require_current_fence(INTENT, owner_id="worker-t6", fence=9)
+            tx.require_current_fence(
+                INTENT,
+                owner_id="worker-t6",
+                fence=9,
+                expected_request_revision=1,
+                expected_attempt_id=ATTEMPT,
+            )
 
             def mutation(session: Any) -> Mapping[str, Any]:
                 nonlocal runs
-                runs += 1
                 session.insert(
                     "S39",
                     {
@@ -1239,9 +1519,7 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
                         "local_date": date(2026, 9, 26),
                         "revision_no": 2,
                         "generation_mode": "AI_GENERATED_CURRENT",
-                        "typed_payload": psycopg.types.json.Jsonb(
-                            {"parent_revision_id": str(OLD_BUNDLE)}
-                        ),
+                        "parent_revision_id": OLD_BUNDLE,
                         "ref_s02_id": receipt,
                         "ref_s24_id": MANIFEST,
                         "ref_s27_id": INTENT,
@@ -1258,6 +1536,7 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
                         "prescription_identity": "prescription-1",
                         "prescription_kind": "WORKOUT",
                         "prescription_revision": 1,
+                        "content_hash": "content",
                         "ref_s34_id": PROPOSAL,
                         "ref_s49_id": ARTIFACT,
                     },
@@ -1282,22 +1561,16 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
                         "bound_content_hash": "content",
                         "scope": "PRODUCTION",
                         "issuance_reason": "AI_PLAN",
-                        "artifact_dependency_closure_hash": hashlib.sha256(
-                            ",".join(sorted(map(str, _registry_ids()))).encode()
-                        ).hexdigest(),
+                        "artifact_dependency_closure_hash": closure_digest,
                         "registry_revision_at_issue": registry_revision,
                         "valid_from": NOW,
-                        "valid_until": NOW + timedelta(days=1),
+                        "valid_until": closure_valid_until,
                         "validity_certificate": psycopg.types.json.Jsonb(
                             {
-                                "authorization_epoch": 0,
+                                "authorization_epoch": tx.authorization_epoch,
                                 "method_version": "kl015-v1",
-                                "closure_digest": hashlib.sha256(
-                                    ",".join(sorted(map(str, _registry_ids()))).encode()
-                                ).hexdigest(),
-                                "dependencies": [
-                                    str(item) for item in sorted(_registry_ids(), key=str)
-                                ],
+                                "closure_digest": closure_digest,
+                                "dependencies": list(artifact_dependencies),
                             }
                         ),
                         "ref_s02_id": receipt,
@@ -1319,7 +1592,7 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
                         "event_kind": "SUPERSEDED",
                         "scope": "PRODUCTION",
                         "causation_key": "t6-ack-loss",
-                        "ref_s42_id": UUID(_SAFETY.AUTHORIZATION_ID),
+                        "ref_s42_id": superseded_authorization,
                         "ref_s02_id": receipt,
                     },
                 )
@@ -1347,6 +1620,7 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
                     {"status": "COMMITTED", "completed_at": NOW},
                     {"id": ATTEMPT, "subject_id": SUBJECT},
                 )
+                runs += 1
                 return {
                     "receipt_id": str(receipt),
                     "bundle_revision_id": str(BUNDLE),
@@ -1376,6 +1650,38 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
         pass
 
     first: Mapping[str, Any]
+    with pytest.raises(GuardRequired, match="prior locked head"):
+        invoke(UUID("00000000-0000-8000-8000-000000015942"))
+
+    def partial_commit(tx: RepositoryTransaction) -> None:
+        _acquire_registry(tx)
+        tx.lock_intents((INTENT,))
+        tx.lock_reservations((RESERVATION_2,))
+        tx.lock_daily_head(date(2026, 9, 26))
+        tx.require_current_fence(
+            INTENT,
+            owner_id="worker-t6",
+            fence=9,
+            expected_request_revision=1,
+            expected_attempt_id=ATTEMPT,
+        )
+        tx.idempotent_outcome(
+            receipt_id=UUID("00000000-0000-8000-8000-000000015952"),
+            actor_scope="subject",
+            client_key="partial-t6",
+            request_hash="partial-t6-hash",
+            mutation=lambda session: {"partial": True},
+            event=_event(0x15953),
+            aggregate_locks={
+                "planning_attempts": (ATTEMPT,),
+                "validation_results": (VALIDATION,),
+            },
+        )
+
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(GuardRequired, match="exactly one S39"):
+            execute_command(connection, "CommitBundle", SUBJECT, partial_commit)
+
     with pytest.raises(CommitAcknowledgementLost):
         committed, replayed = invoke()
         assert not replayed

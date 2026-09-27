@@ -47,6 +47,19 @@ def test_every_public_owner_has_explicit_non_infrastructure_dml_capabilities() -
             assert logical_id not in {"S02", "S03", "S04"}
             assert operation in {"insert", "update"}
             assert columns
+    assert MUTATION_CAPABILITY_MATRIX["RenewLease"][("S27", "update")] == {
+        "lease_expires_at",
+        "typed_payload",
+    }
+    assert MUTATION_CAPABILITY_MATRIX["PermitDispatch"][("S31", "update")] == {
+        "status",
+        "typed_payload",
+    }
+    assert "session_identity" not in MUTATION_CAPABILITY_MATRIX["StartSession"][("S44", "update")]
+    for command in ("StartSession", "ResumeSession", "ContinueSession"):
+        assert MUTATION_CAPABILITY_MATRIX[command][("S01", "update")] == {
+            "execution_basis_event_id"
+        }
 
 
 def test_catalog_mapping_and_release_owner_boundaries_complete() -> None:

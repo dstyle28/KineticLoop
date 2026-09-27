@@ -9,6 +9,7 @@ durable idempotent outcomes, atomic event/outbox writes, and isolated outbox cla
 from __future__ import annotations
 
 import hashlib
+import json
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import datetime
@@ -29,6 +30,27 @@ _T = TypeVar("_T")
 
 _LOGICAL_TABLES = {row.logical_id: row.table_name for row in LOGICAL_RELATIONS}
 _CURSORS: WeakKeyDictionary[object, Cursor[Any]] = WeakKeyDictionary()
+
+
+def evidence_source_identity_key(values: Mapping[str, Any]) -> str:
+    """Canonical T1 uniqueness key: subject/source object plus one reliable revision."""
+
+    revision = values.get("source_revision")
+    observation = values.get("observation_key")
+    if (revision is None) == (observation is None):
+        raise GuardRequired("T1 requires exactly one reliable source revision identity")
+    return (
+        ":".join(
+            str(values.get(field))
+            for field in (
+                "subject_id",
+                "source_connection_identity",
+                "source_object_type",
+                "source_object_identity",
+            )
+        )
+        + f":{revision if revision is not None else observation}"
+    )
 
 
 def _cursor(owner: object) -> Cursor[Any]:
@@ -360,7 +382,7 @@ _MUTATION_COLUMNS: Mapping[str, Mapping[tuple[str, str], frozenset[str]]] = Mapp
                     "local_date",
                     "revision_no",
                     "generation_mode",
-                    "typed_payload",
+                    "parent_revision_id",
                     "ref_s02_id",
                     "ref_s24_id",
                     "ref_s27_id",
@@ -376,6 +398,8 @@ _MUTATION_COLUMNS: Mapping[str, Mapping[tuple[str, str], frozenset[str]]] = Mapp
                     "prescription_identity",
                     "prescription_kind",
                     "prescription_revision",
+                    "content_hash",
+                    "typed_payload",
                     "ref_s34_id",
                     "ref_s49_id",
                 }
@@ -494,7 +518,70 @@ for _command, _operations in _COMMAND_OPERATIONS.items():
     _rules = _mutation_columns.setdefault(_command, {})
     for _operation, _logical_ids in _operations.items():
         for _logical_id in _logical_ids:
-            _rules.setdefault((_logical_id, _operation), _all_columns(_logical_id))
+            if _operation == "insert":
+                # An append owner supplies the complete immutable row. Mutable tables
+                # never inherit columns: their command-specific fields are declared below.
+                _rules.setdefault((_logical_id, _operation), _all_columns(_logical_id))
+
+_UPDATE_COLUMNS: Mapping[str, Mapping[str, frozenset[str]]] = {
+    "ApplyControl": {"S18": frozenset({"status", "head_revision", "ref_s17_id", "typed_payload"})},
+    "ClearControl": {"S18": frozenset({"status", "head_revision", "ref_s17_id", "typed_payload"})},
+    "CompleteReportedWorkout": {
+        "S44": frozenset(
+            {"lifecycle", "execution_revision", "completed_at", "ref_s14_id", "typed_payload"}
+        )
+    },
+    "SealFactset": {"S15": frozenset({"status", "sealed_at", "typed_payload"})},
+    "RevokeArtifact": {"S51": frozenset({"registry_revision", "last_revocation_id"})},
+    "BuildManifest": {
+        "S23": frozenset(
+            {"status", "captured_epoch", "captured_input_frontier", "error_code", "typed_payload"}
+        )
+    },
+    "AdmitOrReviseIntent": {
+        "S27": frozenset(
+            {"status", "current_request_revision_id", "current_attempt_id", "typed_payload"}
+        ),
+        "S30": frozenset({"admitted_count", "typed_payload"}),
+    },
+    "CancelIntent": {
+        "S27": frozenset({"status", "lease_owner", "lease_expires_at", "typed_payload"}),
+        "S31": frozenset({"status", "settlement_revision", "typed_payload"}),
+    },
+    "AcquireLease": {
+        "S27": frozenset(
+            {"status", "lease_owner", "fence_token", "lease_expires_at", "typed_payload"}
+        ),
+        "S29": frozenset({"status", "fence_token", "started_at", "typed_payload"}),
+    },
+    "RenewLease": {
+        "S27": frozenset({"lease_expires_at", "typed_payload"}),
+        "S29": frozenset({"typed_payload"}),
+    },
+    "ReserveCall": {"S27": frozenset({"typed_payload"})},
+    "Reauthorize": {
+        "S27": frozenset({"status", "result_authorization_id", "typed_payload"}),
+        "S29": frozenset({"status", "completed_at", "typed_payload"}),
+    },
+    "ResumeSession": {
+        "S44": frozenset({"lifecycle", "execution_revision", "started_at", "typed_payload"})
+    },
+    "ContinueSession": {"S44": frozenset({"lifecycle", "execution_revision", "typed_payload"})},
+    "MarkUnknown": {
+        "S27": frozenset({"typed_payload"}),
+        "S31": frozenset({"status", "settlement_revision", "typed_payload"}),
+    },
+    "ReapIntent": {
+        "S27": frozenset(
+            {"status", "lease_owner", "lease_expires_at", "stale_restart_count", "typed_payload"}
+        ),
+        "S29": frozenset({"status", "failure_code", "completed_at", "typed_payload"}),
+        "S31": frozenset({"status", "settlement_revision", "typed_payload"}),
+    },
+}
+for _command, _tables in _UPDATE_COLUMNS.items():
+    for _logical_id, _columns in _tables.items():
+        _mutation_columns[_command][(_logical_id, "update")] = _columns
 
 # S01 field ownership is narrower than table ownership and must never inherit the
 # generic table column set above.
@@ -514,6 +601,9 @@ _S01_UPDATE_COLUMNS: Mapping[str, frozenset[str]] = {
     "PublishManifest": frozenset({"decision_generation", "current_manifest_id"}),
     "CommitBundle": frozenset({"execution_basis_event_id"}),
     "Reauthorize": frozenset({"execution_basis_event_id"}),
+    "StartSession": frozenset({"execution_basis_event_id"}),
+    "ResumeSession": frozenset({"execution_basis_event_id"}),
+    "ContinueSession": frozenset({"execution_basis_event_id"}),
 }
 for _command, _columns in _S01_UPDATE_COLUMNS.items():
     _mutation_columns[_command][("S01", "update")] = _columns
@@ -562,9 +652,15 @@ class RestrictedSqlSession:
         "__locked_ids",
         "__receipt_id",
         "__registry_revision",
+        "__source_identity_key",
         "__subject_id",
         "__verified_artifacts",
+        "__verified_fences",
         "__closure_authorizations",
+        "__coordination_context",
+        "__artifact_details",
+        "__inserted_values",
+        "__updated_values",
         "__weakref__",
     )
 
@@ -581,6 +677,10 @@ class RestrictedSqlSession:
         event_id: UUID | None = None,
         registry_revision: int | None = None,
         head_bundles: Mapping[UUID, UUID | None] | None = None,
+        source_identity_key: str | None = None,
+        verified_fences: Mapping[UUID, tuple[int, str, object | None]] | None = None,
+        artifact_details: Mapping[UUID, Mapping[str, Any]] | None = None,
+        coordination_context: Mapping[str, Any] | None = None,
     ):
         _CURSORS[self] = cursor
         self.__allowed_logical_ids = frozenset(allowed_logical_ids)
@@ -592,7 +692,15 @@ class RestrictedSqlSession:
         self.__event_id = event_id
         self.__registry_revision = registry_revision
         self.__head_bundles = MappingProxyType(dict(head_bundles or {}))
+        self.__source_identity_key = source_identity_key
+        self.__verified_fences = MappingProxyType(dict(verified_fences or {}))
+        self.__artifact_details = MappingProxyType(
+            {key: MappingProxyType(dict(value)) for key, value in (artifact_details or {}).items()}
+        )
+        self.__coordination_context = MappingProxyType(dict(coordination_context or {}))
         self.__inserted_ids: dict[str, set[UUID]] = {}
+        self.__inserted_values: dict[str, dict[UUID, Mapping[str, Any]]] = {}
+        self.__updated_values: dict[str, list[Mapping[str, Any]]] = {}
         self.__closure_authorizations: set[UUID] = set()
 
     def _table(self, logical_id: str) -> str:
@@ -614,11 +722,36 @@ class RestrictedSqlSession:
 
     def insert(self, logical_id: str, values: Mapping[str, Any]) -> int:
         table = self._table(logical_id)
-        items = self._items(values, "insert values")
-        self._require_subject_predicate(logical_id, dict(items), "insert values")
-        item_values = dict(items)
-        self._require_columns(logical_id, "insert", item_values)
-        self._require_insert_bindings(logical_id, item_values)
+        capability_values = dict(values)
+        database_values = dict(values)
+        if logical_id == "S39" and "parent_revision_id" in database_values:
+            parent = database_values.pop("parent_revision_id")
+            database_values["typed_payload"] = Jsonb({"parent_revision_id": str(parent)})
+        items = self._items(database_values, "insert values")
+        self._require_subject_predicate(logical_id, capability_values, "insert values")
+        self._require_columns(logical_id, "insert", capability_values)
+        self._require_insert_bindings(logical_id, capability_values)
+        if logical_id == "S09":
+            natural_key = evidence_source_identity_key(capability_values)
+            if natural_key != self.__source_identity_key:
+                raise GuardRequired("S09 must bind the advisory-locked source identity")
+            cursor = _cursor(self)
+            cursor.execute(
+                "SELECT 1 FROM kineticloop.evidence_revisions WHERE subject_id=%s "
+                "AND source_connection_identity=%s AND source_object_type=%s "
+                "AND source_object_identity=%s AND source_revision IS NOT DISTINCT FROM %s "
+                "AND observation_key IS NOT DISTINCT FROM %s",
+                (
+                    capability_values["subject_id"],
+                    capability_values["source_connection_identity"],
+                    capability_values["source_object_type"],
+                    capability_values["source_object_identity"],
+                    capability_values.get("source_revision"),
+                    capability_values.get("observation_key"),
+                ),
+            )
+            if cursor.fetchone() is not None:
+                raise IdempotencyConflict("source evidence identity already exists")
         statement = sql.SQL("INSERT INTO {}.{} ({}) VALUES ({})").format(
             sql.Identifier("kineticloop"),
             sql.Identifier(table),
@@ -627,9 +760,12 @@ class RestrictedSqlSession:
         )
         cursor = _cursor(self)
         cursor.execute(statement, tuple(value for _, value in items))
-        inserted_id = item_values.get("id")
+        inserted_id = capability_values.get("id")
         if cursor.rowcount == 1 and isinstance(inserted_id, UUID):
             self.__inserted_ids.setdefault(logical_id, set()).add(inserted_id)
+            self.__inserted_values.setdefault(logical_id, {})[inserted_id] = MappingProxyType(
+                dict(capability_values)
+            )
         return cursor.rowcount
 
     def update(
@@ -670,6 +806,10 @@ class RestrictedSqlSession:
             statement,
             tuple(value for _, value in assignments) + tuple(value for _, value in predicates),
         )
+        if cursor.rowcount == 1:
+            self.__updated_values.setdefault(logical_id, []).append(
+                MappingProxyType({**dict(predicates), **assignment_values})
+            )
         return cursor.rowcount
 
     def _require_columns(self, logical_id: str, operation: str, values: Mapping[str, Any]) -> None:
@@ -699,26 +839,52 @@ class RestrictedSqlSession:
             "ref_s29_id": ("planning_attempts",),
             "ref_s37_id": ("validation_results",),
             "ref_s38_id": ("daily_plan_heads",),
+            "ref_s31_id": ("call_reservations",),
+            "ref_s44_id": ("workout_sessions",),
+            "ref_s15_id": ("factset_revisions",),
         }
         for field, (lock_name,) in references.items():
             referenced = values.get(field)
-            if referenced is not None and referenced not in self.__locked_ids.get(
-                lock_name, frozenset()
+            # Preparation rows may cite immutable workflow inputs without taking
+            # coordination locks. Transactional/build owners must bind guarded FKs.
+            requires_lock = self.__command_kind not in {
+                "RecordCandidate",
+                "RecordToolResult",
+                "RecordProposal",
+                "RecordDemandFeatures",
+                "ResolveEvidence",
+                "RecordValidation",
+            }
+            if field == "ref_s29_id" and self.__command_kind not in {
+                "CommitBundle",
+                "Reauthorize",
+            }:
+                requires_lock = False
+            if (
+                requires_lock
+                and referenced is not None
+                and referenced not in self.__locked_ids.get(lock_name, frozenset())
             ):
                 raise GuardRequired(f"{logical_id}.{field} must bind an exact locked row")
         artifact_id = values.get("ref_s49_id")
-        if artifact_id is not None and artifact_id not in self.__verified_artifacts:
+        if (
+            artifact_id is not None
+            and self.__verified_artifacts
+            and artifact_id not in self.__verified_artifacts
+        ):
             raise ArtifactIdentityRequired(
                 f"{logical_id}.ref_s49_id must bind a leased and verified artifact"
             )
         if "ref_s02_id" in values and values["ref_s02_id"] != self.__receipt_id:
             raise StatementRejected(f"{logical_id}.ref_s02_id must bind the current receipt")
         if logical_id == "S39":
-            parent = self._json_value(values.get("typed_payload", {})).get("parent_revision_id")
+            parent = values.get("parent_revision_id")
             head_id = values.get("ref_s38_id")
             expected = self.__head_bundles.get(head_id) if isinstance(head_id, UUID) else None
-            if expected is None or parent != str(expected):
+            if expected is None or parent != expected:
                 raise GuardRequired("S39 must name the locked head revision as its parent")
+            if values.get("ref_s24_id") != self.__coordination_context.get("current_manifest_id"):
+                raise GuardRequired("S39 must bind the current locked manifest")
         if logical_id == "S41":
             if values.get("ref_s39_id") not in self.__inserted_ids.get("S39", set()):
                 raise GuardRequired("S41 must bind the S39 inserted by this command")
@@ -748,22 +914,91 @@ class RestrictedSqlSession:
                     )
             if values.get("registry_revision_at_issue") != self.__registry_revision:
                 raise GuardRequired("S42 must bind the acquired registry revision")
+            if values.get("ref_s24_id") != self.__coordination_context.get("current_manifest_id"):
+                raise GuardRequired("S42 must bind the current locked manifest")
+            if values.get("ref_s05_id") != self.__coordination_context.get(
+                "active_policy_bundle_id"
+            ):
+                raise GuardRequired("S42 must bind the active locked policy")
+            prescription_id = values.get("ref_s40_id")
+            prescription = (
+                self.__inserted_values.get("S40", {}).get(prescription_id)
+                if isinstance(prescription_id, UUID)
+                else None
+            )
+            if self.__command_kind == "CommitBundle" and (
+                prescription is None
+                or not prescription.get("content_hash")
+                or values.get("bound_content_hash") != prescription.get("content_hash")
+            ):
+                raise GuardRequired("S42 bound content must equal the inserted S40 content hash")
+            _cursor(self).execute(
+                "SELECT ref_s05_id,ref_s24_id,ref_s28_id,ref_s29_id,ref_s34_id,ref_s36_id "
+                "FROM kineticloop.validation_results WHERE subject_id=%s AND id=%s",
+                (self.__subject_id, values.get("ref_s37_id")),
+            )
+            validation = _cursor(self).fetchone()
+            if (
+                validation is None
+                or (
+                    values.get("ref_s05_id"),
+                    values.get("ref_s24_id"),
+                    self.__coordination_context.get("verified_request_id"),
+                    next(iter(self.__locked_ids.get("planning_attempts", frozenset())), None),
+                    prescription.get("ref_s34_id") if prescription else None,
+                    values.get("ref_s36_id"),
+                )
+                != validation
+            ):
+                raise GuardRequired("S42 inputs must equal the locked validation basis")
             certificate = self._json_value(values.get("validity_certificate", {}))
             required = {"authorization_epoch", "method_version", "closure_digest", "dependencies"}
             if not isinstance(certificate, dict) or not required <= set(certificate):
                 raise StatementRejected("S42 validity_certificate is incomplete")
-            dependencies = {UUID(item) for item in certificate["dependencies"]}
-            if dependencies != set(self.__verified_artifacts):
+            expected_dependencies = [
+                dict(self.__artifact_details[artifact_id])
+                for artifact_id in sorted(self.__verified_artifacts, key=str)
+            ]
+            if certificate["dependencies"] != expected_dependencies:
                 raise ArtifactIdentityRequired(
-                    "S42 certificate dependencies must equal the verified lease closure"
+                    "S42 certificate dependencies must equal exact verified artifact proofs"
                 )
             expected_digest = hashlib.sha256(
-                ",".join(sorted(map(str, dependencies))).encode()
+                json.dumps(expected_dependencies, sort_keys=True, separators=(",", ":")).encode()
             ).hexdigest()
             if certificate["closure_digest"] != expected_digest:
                 raise ArtifactIdentityRequired("S42 certificate closure digest mismatch")
             if values.get("artifact_dependency_closure_hash") != expected_digest:
                 raise ArtifactIdentityRequired("S42 closure hash mismatch")
+            if certificate["authorization_epoch"] != self.__coordination_context.get(
+                "authorization_epoch"
+            ):
+                raise GuardRequired("S42 certificate epoch must equal locked S01")
+            bounded_until = [
+                detail["valid_until"]
+                for detail in expected_dependencies
+                if detail["valid_until"] is not None
+            ]
+            authorization_valid_until = values.get("valid_until")
+            if (
+                not bounded_until
+                or not isinstance(authorization_valid_until, datetime)
+                or authorization_valid_until.isoformat() != min(bounded_until)
+            ):
+                raise ArtifactIdentityRequired("S42 valid_until must equal closure minimum")
+        if logical_id == "S43" and self.__command_kind == "CommitBundle":
+            prior_heads = [value for value in self.__head_bundles.values() if value is not None]
+            _cursor(self).execute(
+                "SELECT 1 FROM kineticloop.bundle_prescription_members member "
+                "JOIN kineticloop.authorization_issuances issuance "
+                "ON issuance.subject_id=member.subject_id "
+                "AND issuance.ref_s40_id=member.ref_s40_id "
+                "WHERE member.subject_id=%s AND member.ref_s39_id=ANY(%s) "
+                "AND issuance.id=%s",
+                (self.__subject_id, prior_heads, values.get("ref_s42_id")),
+            )
+            if _cursor(self).fetchone() is None:
+                raise GuardRequired("S43 must supersede the authorization on the prior locked head")
 
     def _require_update_bindings(
         self,
@@ -775,6 +1010,15 @@ class RestrictedSqlSession:
             if values["current_bundle_revision_id"] not in self.__inserted_ids.get("S39", set()):
                 raise GuardRequired("S38 head must point to this command's inserted S39")
         if logical_id == "S27":
+            object_id = predicates.get("id")
+            if self.__command_kind == "AcquireLease" and "fence_token" in values:
+                verified = (
+                    self.__verified_fences.get(object_id) if isinstance(object_id, UUID) else None
+                )
+                if verified is None or verified[:2] != (values["fence_token"], "CAS"):
+                    raise FenceLost("AcquireLease mutation must use the verified new fence")
+                if values.get("lease_owner") != verified[2]:
+                    raise FenceLost("AcquireLease mutation must use the verified new owner")
             if "result_bundle_revision_id" in values and values[
                 "result_bundle_revision_id"
             ] not in self.__inserted_ids.get("S39", set()):
@@ -800,17 +1044,20 @@ class RestrictedSqlSession:
         if ids != self.__verified_artifacts:
             raise ArtifactIdentityRequired("materialized closure must equal verified artifacts")
         for artifact_id in sorted(ids, key=str):
+            detail = self.__artifact_details[artifact_id]
             _cursor(self).execute(
                 "INSERT INTO kineticloop.authorization_artifact_closure"
                 "(subject_id,authorization_id,artifact_id,artifact_revision,valid_from,valid_until) "
-                "SELECT %s,%s,id,GREATEST(%s,1),valid_from,valid_until "
-                "FROM kineticloop.safety_artifacts "
-                "WHERE id=%s",
+                "VALUES (%s,%s,%s,%s,%s,%s)",
                 (
                     self.__subject_id,
                     authorization_id,
-                    self.__registry_revision,
                     artifact_id,
+                    detail["artifact_revision"],
+                    datetime.fromisoformat(str(detail["valid_from"])),
+                    datetime.fromisoformat(str(detail["valid_until"]))
+                    if detail["valid_until"] is not None
+                    else None,
                 ),
             )
             if _cursor(self).rowcount != 1:
@@ -824,6 +1071,45 @@ class RestrictedSqlSession:
                 raise ArtifactIdentityRequired(
                     "every inserted authorization requires its exact materialized closure"
                 )
+        if self.__command_kind == "CommitBundle":
+            for logical_id in ("S39", "S40", "S41", "S42", "S43"):
+                if len(self.__inserted_ids.get(logical_id, set())) != 1:
+                    raise GuardRequired(f"CommitBundle requires exactly one {logical_id} insert")
+            required_updates = {
+                "S01": lambda row: row.get("execution_basis_event_id") == self.__event_id,
+                "S38": lambda row: (
+                    row.get("current_bundle_revision_id") in self.__inserted_ids["S39"]
+                ),
+                "S27": lambda row: (
+                    row.get("status") == "FOUND_VALID_PLAN"
+                    and row.get("result_bundle_revision_id") in self.__inserted_ids["S39"]
+                    and row.get("result_authorization_id") in self.__inserted_ids["S42"]
+                ),
+                "S29": lambda row: row.get("status") == "COMMITTED",
+            }
+            for logical_id, predicate in required_updates.items():
+                if not any(predicate(row) for row in self.__updated_values.get(logical_id, [])):
+                    raise GuardRequired(f"CommitBundle requires its mandatory {logical_id} update")
+        if self.__command_kind in {"StartSession", "ResumeSession", "ContinueSession"}:
+            if not any(
+                row.get("execution_basis_event_id") == self.__event_id
+                for row in self.__updated_values.get("S01", [])
+            ):
+                raise GuardRequired(f"{self.__command_kind} must advance S01 execution basis")
+        if self.__command_kind == "AcquireLease":
+            if not any(
+                isinstance(row.get("id"), UUID)
+                and self.__verified_fences.get(row["id"])
+                == (row.get("fence_token"), "CAS", row.get("lease_owner"))
+                for row in self.__updated_values.get("S27", [])
+            ):
+                raise GuardRequired("AcquireLease must persist its verified owner and new fence")
+        if self.__command_kind == "ReapIntent":
+            if not any(
+                row.get("status") in {"FAILED", "CANCELLED", "SEARCH_BUDGET_EXHAUSTED"}
+                for row in self.__updated_values.get("S27", [])
+            ):
+                raise GuardRequired("ReapIntent must persist an eligible terminal transition")
 
     def _require_locked_identity(self, logical_id: str, predicates: Mapping[str, Any]) -> None:
         lock_name = {
@@ -835,6 +1121,7 @@ class RestrictedSqlSession:
             "S23": "manifest_builds",
             "S29": "planning_attempts",
             "S37": "validation_results",
+            "S30": "planning_quota_buckets",
         }.get(logical_id)
         if lock_name is None:
             return
@@ -869,6 +1156,8 @@ class RepositoryTransaction:
         "_last_stage",
         "_leased_artifacts",
         "_head_bundles",
+        "_artifact_details",
+        "_coordination_context",
         "_locked_ids",
         "_registry",
         "_registry_revision",
@@ -897,9 +1186,11 @@ class RepositoryTransaction:
         self._locked_ids: dict[str, set[UUID]] = {}
         self._leased_artifacts: frozenset[UUID] = frozenset()
         self._verified_artifacts: set[UUID] = set()
-        self._verified_fences: dict[UUID, tuple[int, str]] = {}
+        self._verified_fences: dict[UUID, tuple[int, str, object | None]] = {}
         self._registry_revision: int | None = None
         self._head_bundles: dict[UUID, UUID | None] = {}
+        self._artifact_details: dict[UUID, Mapping[str, Any]] = {}
+        self._coordination_context: dict[str, Any] = {}
 
     @property
     def lock_trace(self) -> tuple[tuple[LockStage, str], ...]:
@@ -948,6 +1239,21 @@ class RepositoryTransaction:
         self._subject = True
         self._last_stage = LockStage.SUBJECT
         self._trace.extend(((LockStage.REGISTRY, "S51"), (LockStage.SUBJECT, "S01")))
+        _cursor(self).execute(
+            "SELECT current_manifest_id,active_policy_bundle_id,authorization_epoch,"
+            "execution_basis_event_id FROM kineticloop.user_decision_state "
+            "WHERE subject_id=%s",
+            (self.subject_id,),
+        )
+        context = _cursor(self).fetchone()
+        if context is None:
+            raise GuardRequired("subject coordination context disappeared")
+        self._coordination_context = {
+            "current_manifest_id": context[0],
+            "active_policy_bundle_id": context[1],
+            "authorization_epoch": int(context[2]),
+            "execution_basis_event_id": context[3],
+        }
         return self._registry_revision
 
     def lock_subject(self) -> None:
@@ -1033,13 +1339,23 @@ class RepositoryTransaction:
         self._advance(LockStage.EXECUTION)
         self._lock_ids("workout_sessions", session_ids)
 
-    def lock_receipt(self, command_kind: str, client_key: str, actor_scope: str) -> None:
+    def lock_receipt(
+        self,
+        command_kind: str,
+        client_key: str,
+        actor_scope: str,
+        *,
+        natural_identity_key: str | None = None,
+    ) -> None:
         self._require_receipt_guard()
         if command_kind != self.command_kind:
             raise GuardRequired("receipt command kind must match its repository owner")
         self._advance(LockStage.RECEIPT)
         if self.spec.boundary is Boundary.T1:
-            key = f"{self.subject_id}:{actor_scope}:{command_kind}:{client_key}"
+            key = (
+                natural_identity_key
+                or f"{self.subject_id}:{actor_scope}:{command_kind}:{client_key}"
+            )
             _cursor(self).execute("SELECT pg_advisory_xact_lock(hashtextextended(%s,0))", (key,))
         _cursor(self).execute(
             "SELECT id FROM kineticloop.command_receipts WHERE subject_id=%s "
@@ -1107,7 +1423,9 @@ class RepositoryTransaction:
         if not self._registry:
             raise GuardRequired("artifact consumption requires the shared registry lease")
         _cursor(self).execute(
-            "SELECT 1 FROM kineticloop.safety_artifacts WHERE id=%s "
+            "SELECT artifact_kind,artifact_identity,artifact_version,content_hash,"
+            "validity_kind,valid_from,valid_until,timeless_approval_policy,"
+            "timeless_approval_reason FROM kineticloop.safety_artifacts WHERE id=%s "
             "AND artifact_kind=%s AND artifact_identity=%s AND artifact_version=%s "
             "AND content_hash=%s",
             (
@@ -1118,11 +1436,65 @@ class RepositoryTransaction:
                 identity.content_hash,
             ),
         )
-        if _cursor(self).fetchone() is None:
+        row = _cursor(self).fetchone()
+        if row is None:
             raise ArtifactIdentityRequired("exact registered artifact identity is required")
         if identity.artifact_id not in self._leased_artifacts:
             raise ArtifactIdentityRequired("artifact identity was not included in the lease")
         self._verified_artifacts.add(identity.artifact_id)
+        try:
+            artifact_revision = int(identity.artifact_version)
+        except ValueError as error:
+            raise ArtifactIdentityRequired(
+                "artifact version must expose an immutable revision"
+            ) from error
+        if artifact_revision <= 0:
+            raise ArtifactIdentityRequired("artifact revision must be positive")
+        self._artifact_details[identity.artifact_id] = MappingProxyType(
+            {
+                "artifact_id": str(identity.artifact_id),
+                "artifact_kind": row[0],
+                "artifact_identity": row[1],
+                "artifact_version": row[2],
+                "content_hash": row[3],
+                "artifact_revision": artifact_revision,
+                "validity_kind": row[4],
+                "valid_from": row[5].isoformat(),
+                "valid_until": row[6].isoformat() if row[6] is not None else None,
+                "timeless_approval_policy": row[7],
+                "timeless_approval_reason": row[8],
+            }
+        )
+
+    def artifact_certificate_dependencies(self) -> tuple[Mapping[str, Any], ...]:
+        if set(self._artifact_details) != set(self._verified_artifacts):
+            raise ArtifactIdentityRequired("artifact proof set is incomplete")
+        return tuple(
+            dict(self._artifact_details[artifact_id])
+            for artifact_id in sorted(self._verified_artifacts, key=str)
+        )
+
+    def artifact_closure_digest(self) -> str:
+        dependencies = self.artifact_certificate_dependencies()
+        return hashlib.sha256(
+            json.dumps(dependencies, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+
+    def artifact_closure_valid_until(self) -> datetime:
+        values = [
+            datetime.fromisoformat(str(item["valid_until"]))
+            for item in self.artifact_certificate_dependencies()
+            if item["valid_until"] is not None
+        ]
+        if not values:
+            raise ArtifactIdentityRequired("bounded authorization requires a bounded artifact")
+        return min(values)
+
+    @property
+    def authorization_epoch(self) -> int:
+        if not self._registry:
+            raise GuardRequired("authorization epoch requires registry/subject guard")
+        return int(self._coordination_context["authorization_epoch"])
 
     def require_current_fence(
         self,
@@ -1130,23 +1502,46 @@ class RepositoryTransaction:
         *,
         owner_id: str,
         fence: int,
-        expected_status: str = "RUNNING",
+        expected_request_revision: int,
+        expected_attempt_id: UUID,
     ) -> None:
         self._require_subject()
         if intent_id not in self._locked_ids.get("planning_intents", set()):
             raise GuardRequired("exact intent must be locked before checking fence")
         _cursor(self).execute(
-            "SELECT 1 FROM kineticloop.planning_intents WHERE subject_id=%s AND id=%s "
-            "AND lease_owner=%s AND fence_token=%s AND status=%s "
-            "AND lease_expires_at > clock_timestamp()",
-            (self.subject_id, intent_id, owner_id, fence, expected_status),
+            "SELECT request.id FROM kineticloop.planning_intents intent "
+            "JOIN kineticloop.planning_request_revisions request "
+            "ON request.subject_id=intent.subject_id "
+            "AND request.id=intent.current_request_revision_id "
+            "WHERE intent.subject_id=%s AND intent.id=%s "
+            "AND intent.lease_owner=%s AND intent.fence_token=%s "
+            "AND intent.status='RUNNING' AND intent.lease_expires_at > clock_timestamp() "
+            "AND intent.deadline > clock_timestamp() "
+            "AND request.request_revision=%s AND intent.current_attempt_id=%s",
+            (
+                self.subject_id,
+                intent_id,
+                owner_id,
+                fence,
+                expected_request_revision,
+                expected_attempt_id,
+            ),
         )
-        if _cursor(self).fetchone() is None:
+        verified_request = _cursor(self).fetchone()
+        if verified_request is None:
             raise FenceLost("stale owner/fence cannot commit")
-        self._verified_fences[intent_id] = (fence, "LIVE")
+        self._coordination_context["verified_request_id"] = verified_request[0]
+        self._verified_fences[intent_id] = (fence, "LIVE", expected_attempt_id)
 
     def require_lease_acquisition_basis(
-        self, intent_id: UUID, *, expected_owner_id: str, expected_fence: int
+        self,
+        intent_id: UUID,
+        *,
+        expected_owner_id: str,
+        expected_fence: int,
+        new_owner_id: str,
+        new_fence: int,
+        expected_request_revision: int,
     ) -> None:
         """Prove the exact prior lease state used by an AcquireLease CAS."""
 
@@ -1155,16 +1550,42 @@ class RepositoryTransaction:
             raise GuardRequired("lease acquisition basis is exclusive to AcquireLease")
         if intent_id not in self._locked_ids.get("planning_intents", set()):
             raise GuardRequired("exact intent must be locked before lease acquisition")
+        if new_fence <= expected_fence:
+            raise FenceLost("new lease fence must be strictly monotonic")
         _cursor(self).execute(
-            "SELECT 1 FROM kineticloop.planning_intents WHERE subject_id=%s AND id=%s "
-            "AND lease_owner=%s AND fence_token=%s",
-            (self.subject_id, intent_id, expected_owner_id, expected_fence),
+            "SELECT 1 FROM kineticloop.planning_intents intent "
+            "JOIN kineticloop.planning_request_revisions request "
+            "ON request.subject_id=intent.subject_id "
+            "AND request.id=intent.current_request_revision_id "
+            "WHERE intent.subject_id=%s AND intent.id=%s "
+            "AND intent.lease_owner=%s AND intent.fence_token=%s "
+            "AND intent.status IN ('PENDING','RUNNING') "
+            "AND intent.deadline > clock_timestamp() "
+            "AND (intent.lease_expires_at <= clock_timestamp() "
+            "OR intent.lease_owner=%s) "
+            "AND request.request_revision=%s",
+            (
+                self.subject_id,
+                intent_id,
+                expected_owner_id,
+                expected_fence,
+                new_owner_id,
+                expected_request_revision,
+            ),
         )
         if _cursor(self).fetchone() is None:
             raise FenceLost("lease acquisition compare-and-swap basis was lost")
-        self._verified_fences[intent_id] = (expected_fence, "CAS")
+        self._verified_fences[intent_id] = (new_fence, "CAS", new_owner_id)
 
-    def require_reaper_basis(self, intent_id: UUID, *, owner_id: str, fence: int) -> None:
+    def require_reaper_basis(
+        self,
+        intent_id: UUID,
+        *,
+        owner_id: str,
+        fence: int,
+        expected_deadline: datetime,
+        expected_request_revision: int,
+    ) -> None:
         """Prove the exact expired/deadline basis used by ReapIntent."""
 
         self._require_subject()
@@ -1173,14 +1594,29 @@ class RepositoryTransaction:
         if intent_id not in self._locked_ids.get("planning_intents", set()):
             raise GuardRequired("exact intent must be locked before reaping")
         _cursor(self).execute(
-            "SELECT 1 FROM kineticloop.planning_intents WHERE subject_id=%s AND id=%s "
-            "AND lease_owner=%s AND fence_token=%s "
-            "AND (lease_expires_at <= clock_timestamp() OR deadline <= clock_timestamp())",
-            (self.subject_id, intent_id, owner_id, fence),
+            "SELECT 1 FROM kineticloop.planning_intents intent "
+            "JOIN kineticloop.planning_request_revisions request "
+            "ON request.subject_id=intent.subject_id "
+            "AND request.id=intent.current_request_revision_id "
+            "WHERE intent.subject_id=%s AND intent.id=%s "
+            "AND intent.lease_owner=%s AND intent.fence_token=%s "
+            "AND intent.status IN ('PENDING','RUNNING') "
+            "AND intent.deadline IS NOT DISTINCT FROM %s "
+            "AND request.request_revision=%s "
+            "AND (intent.lease_expires_at <= clock_timestamp() "
+            "OR intent.deadline <= clock_timestamp())",
+            (
+                self.subject_id,
+                intent_id,
+                owner_id,
+                fence,
+                expected_deadline,
+                expected_request_revision,
+            ),
         )
         if _cursor(self).fetchone() is None:
             raise FenceLost("intent is not owned by the expected expired lease")
-        self._verified_fences[intent_id] = (fence, "EXPIRED")
+        self._verified_fences[intent_id] = (fence, "EXPIRED", None)
 
     def permit_dispatch(
         self,
@@ -1198,7 +1634,7 @@ class RepositoryTransaction:
 
         def transition(session: RestrictedSqlSession) -> Mapping[str, Any]:
             _cursor(self).execute(
-                "SELECT status, dispatch_fence, typed_payload, ref_s27_id "
+                "SELECT status, dispatch_fence, typed_payload, ref_s27_id, ref_s29_id "
                 "FROM kineticloop.call_reservations "
                 "WHERE subject_id=%s AND id=%s",
                 (self.subject_id, reservation_id),
@@ -1208,7 +1644,8 @@ class RepositoryTransaction:
                 row is None
                 or int(row[1] or 0) != fence
                 or row[3] not in self._verified_fences
-                or self._verified_fences[row[3]] != (fence, "LIVE")
+                or self._verified_fences[row[3]][:2] != (fence, "LIVE")
+                or self._verified_fences[row[3]][2] != row[4]
             ):
                 raise DispatchNotPermitted("reservation or fence mismatch")
             if row[0] != "RESERVED":
@@ -1248,10 +1685,18 @@ class RepositoryTransaction:
         mutation: Callable[[RestrictedSqlSession], Mapping[str, Any]],
         event: EventWrite,
         aggregate_locks: Mapping[str, Sequence[UUID]] | None = None,
+        source_identity_key: str | None = None,
     ) -> tuple[Mapping[str, Any], bool]:
         self._require_receipt_guard()
         self._require_command_locks(aggregate_locks or {})
-        self.lock_receipt(self.command_kind, client_key, actor_scope)
+        if self.spec.boundary is Boundary.T1 and source_identity_key is None:
+            raise GuardRequired("T1 first execution requires its source identity key")
+        self.lock_receipt(
+            self.command_kind,
+            client_key,
+            actor_scope,
+            natural_identity_key=source_identity_key,
+        )
         _cursor(self).execute(
             "SELECT request_hash,status,typed_payload FROM kineticloop.command_receipts "
             "WHERE subject_id=%s AND actor_scope=%s AND command_kind=%s AND client_key=%s",
@@ -1312,6 +1757,10 @@ class RepositoryTransaction:
             event_id=event.event_id,
             registry_revision=self._registry_revision,
             head_bundles=self._head_bundles,
+            source_identity_key=source_identity_key,
+            verified_fences=self._verified_fences,
+            artifact_details=self._artifact_details,
+            coordination_context=self._coordination_context,
         )
         outcome = dict(mutation(session))
         session.validate_completion()
@@ -1359,7 +1808,7 @@ class RepositoryTransaction:
         if mode is not None:
             locked_intents = self._locked_ids.get("planning_intents", set())
             if not locked_intents or any(
-                self._verified_fences.get(intent_id, (None, None))[1] != mode
+                self._verified_fences.get(intent_id, (None, None, None))[1] != mode
                 for intent_id in locked_intents
             ):
                 raise GuardRequired(
@@ -1441,7 +1890,10 @@ def replay_outcome(
             raise IdempotencyConflict("command key request hash mismatch")
         if prior[1] != "SUCCEEDED" or "outcome" not in prior[2]:
             raise ReplayNotFound("durable successful outcome does not exist")
-        return dict(prior[2]["outcome"])
+        outcome = dict(prior[2]["outcome"])
+        if command_kind == "PermitDispatch":
+            outcome.update({"sendable": False, "replayed": True})
+        return outcome
 
 
 def execute_preparation(
