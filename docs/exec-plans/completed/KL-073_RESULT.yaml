@@ -1,0 +1,66 @@
+task_identity: harness-backlog-v0.2/KL-073
+display_task_id: KL-073
+task_definition_version: v0.2
+base_commit: 974aad909a32ca00ccaa3a02a79a0cec32599583
+tested_commit: f473e0485b13fc72a55ad7f4c8f186941848a522
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Replaced the decaying module-level wall-clock basis in the KL-015 PostgreSQL
+  transaction-interface tests with fresh database-clock-relative timestamps at
+  each lease or deadline setup/operation. Exact lease expiry and deadline values
+  are carried from the database read into both guards and mutations. Deliberately
+  expired leases, elapsed deadlines, stale owners, and stale fences remain negative.
+  Fixed quota-window keys and non-comparative completion records remain explicitly
+  separate from live lease/deadline truth. No production code, migration, frozen
+  authority, lease/fence predicate, transaction boundary, or authorization meaning
+  changed.
+commands_run:
+  - check_id: fixed_wall_clock_fixture_removed
+    command: "! rg -n '\\bNOW\\b|datetime\\.now\\(UTC\\)' tests/db/test_transaction_interfaces.py && rg -n 'def _database_timestamp|clock_timestamp\\(\\)' tests/db/test_transaction_interfaces.py"
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-073/checks.log
+  - check_id: blocked_regression_cases_pass
+    command: "uv run pytest -q tests/db/test_transaction_interfaces.py -k 'reverse_lock_order_is_rejected or event_outbox_atomicity_enforced or stale_fence_commit_is_rejected or ack_loss_replay_preserves_natural_uniqueness'"
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-073/checks.log
+  - check_id: expired_and_stale_negative_cases_preserved
+    command: "uv run pytest -q tests/db/test_transaction_interfaces.py -k 'expired or stale or fence or deadline'"
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-073/checks.log
+  - check_id: transaction_interface_suite_passes
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-073/checks.log
+  - check_id: complete_db_suite_passes
+    command: uv run pytest -q tests/db
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-073/checks.log
+  - check_id: full_repository_regression_passes
+    command: uv run pytest -q -p no:cacheprovider
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-073/checks.log
+  - check_id: harness_validation_passes
+    command: uv run kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-073/checks.log
+requirements_covered: []
+files_changed:
+  - tests/db/test_transaction_interfaces.py
+  - docs/exec-plans/evidence/KL-073/checks.log
+  - docs/exec-plans/evidence/KL-073/full-repository-junit.xml
+  - docs/exec-plans/completed/KL-073_RESULT.yaml
+decisions:
+  - Preserve the fixed quota-window basis because it is a deterministic key, not lease/deadline truth.
+  - Read PostgreSQL clock_timestamp() immediately before each live lease/deadline operation and carry the exact value through its guard and mutation.
+  - Express stale and expired setup relative to PostgreSQL time so negative assertions remain stable across calendar dates and long sessions.
+  - Keep all production transaction, fencing, authorization, and persistence code byte-unchanged.
+known_limitations:
+  - The initial focused-test invocation omitted the repository PYTHONPATH and failed during collection; the exact command was rerun successfully after environment correction, and no test or source mutation occurred during the failed attempt.
+  - This task PASS does not claim product requirement PASS, HG-023 closure, M2 closure, review PASS, CI PASS, MERGED state, or production auto-activation readiness.
+follow_up_tasks:
+  - Obtain fresh SHA-bound GENERAL, PROTOCOL, and DB_CONCURRENCY reviews on the immutable result head.
+  - Resume HG-023 only after KL-073 merges and its integration record is available.
+spec_change_request: null
