@@ -251,6 +251,24 @@ def database_urls() -> Iterator[dict[str, str]]:
 def _seed_transaction_rows(admin_url: str) -> None:
     with psycopg.connect(admin_url, autocommit=True) as connection:
         connection.execute("SET session_replication_role=replica")
+        manifest_artifact_basis = _manifest_candidate_payload(connection)
+        connection.execute(
+            "UPDATE kineticloop.decision_manifests SET typed_payload=%s WHERE id=%s",
+            (
+                psycopg.types.json.Jsonb(
+                    {
+                        "artifact_closure_ids": manifest_artifact_basis[
+                            "artifact_closure_ids"
+                        ],
+                        "artifact_root_ids": manifest_artifact_basis["artifact_root_ids"],
+                        "artifact_dependency_closure_hash": manifest_artifact_basis[
+                            "artifact_dependency_closure_hash"
+                        ],
+                    }
+                ),
+                MANIFEST,
+            ),
+        )
         connection.execute(
             "INSERT INTO kineticloop.command_receipts"
             "(id,subject_id,status,command_kind,client_key,actor_scope,request_hash) "
@@ -2704,6 +2722,31 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
 
     first: Mapping[str, Any]
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        manifest_payload = connection.execute(
+            "SELECT typed_payload FROM kineticloop.decision_manifests WHERE id=%s",
+            (MANIFEST,),
+        ).fetchone()[0]
+        incomplete_manifest_payload = dict(manifest_payload)
+        incomplete_manifest_payload["artifact_closure_ids"] = [str(ARTIFACT)]
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "UPDATE kineticloop.decision_manifests SET typed_payload=%s WHERE id=%s",
+            (psycopg.types.json.Jsonb(incomplete_manifest_payload), MANIFEST),
+        )
+        connection.execute("SET session_replication_role=origin")
+    try:
+        with pytest.raises(ArtifactIdentityRequired, match="current manifest artifact closure"):
+            invoke()
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "UPDATE kineticloop.decision_manifests SET typed_payload=%s WHERE id=%s",
+                (psycopg.types.json.Jsonb(manifest_payload), MANIFEST),
+            )
+            connection.execute("SET session_replication_role=origin")
+
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
         connection.execute("SET session_replication_role=replica")
         connection.execute(
             "UPDATE kineticloop.validation_results SET valid_until=clock_timestamp()-interval '1 minute' "
@@ -2979,6 +3022,7 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
 def test_reauthorize_requires_atomic_intent_success(database_urls: dict[str, str]) -> None:
     issuance = UUID("00000000-0000-8000-8000-000000015742")
     receipt = UUID("00000000-0000-8000-8000-000000015743")
+    foreign_policy = UUID("00000000-0000-8000-8000-000000015749")
     event = _event(0x15744)
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
         execution_basis = connection.execute(
@@ -3093,6 +3137,51 @@ def test_reauthorize_requires_atomic_intent_success(database_urls: dict[str, str
         with psycopg.connect(database_urls["admin"]) as connection:
             return execute_command(connection, "Reauthorize", SUBJECT, operation)
 
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "INSERT INTO kineticloop.policy_bundles"
+            "(id,subject_id,policy_namespace,policy_version,content_hash) "
+            "VALUES (%s,%s,'kl015-cross-policy','1','cross-policy') "
+            "ON CONFLICT (id) DO NOTHING",
+            (foreign_policy, SUBJECT),
+        )
+        connection.execute(
+            "UPDATE kineticloop.evidence_resolutions SET ref_s05_id=%s WHERE id=%s",
+            (foreign_policy, RESOLUTION),
+        )
+        connection.execute("SET session_replication_role=origin")
+    try:
+        with pytest.raises(GuardRequired, match="current PASS validation basis"):
+            invoke("FOUND_VALID_PLAN")
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "UPDATE kineticloop.evidence_resolutions SET ref_s05_id=%s WHERE id=%s",
+                (POLICY, RESOLUTION),
+            )
+            connection.execute("SET session_replication_role=origin")
+
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "UPDATE kineticloop.planning_intents SET local_date=DATE '2026-09-27' WHERE id=%s",
+            (INTENT,),
+        )
+        connection.execute("SET session_replication_role=origin")
+    try:
+        with pytest.raises(GuardRequired, match="head day"):
+            invoke("FOUND_VALID_PLAN")
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "UPDATE kineticloop.planning_intents SET local_date=DATE '2026-09-26' WHERE id=%s",
+                (INTENT,),
+            )
+            connection.execute("SET session_replication_role=origin")
+
     with pytest.raises(GuardRequired, match="mandatory S27 update"):
         invoke("RUNNING")
     outcome, replayed = invoke("FOUND_VALID_PLAN")
@@ -3187,6 +3276,27 @@ def test_t3_rejects_incomplete_or_crosswired_ready_candidate(
             connection.execute(
                 "UPDATE kineticloop.manifest_builds SET typed_payload=%s WHERE id=%s",
                 (psycopg.types.json.Jsonb(payload), MANIFEST_BUILD),
+            )
+            connection.execute("SET session_replication_role=origin")
+
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "UPDATE kineticloop.projection_dependencies SET ref_s05_id=NULL "
+            "WHERE id=%s",
+            (PROJECTION_POLICY_DEPENDENCY,),
+        )
+        connection.execute("SET session_replication_role=origin")
+    try:
+        with pytest.raises(GuardRequired, match="dependency basis is incomplete"):
+            attempt()
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "UPDATE kineticloop.projection_dependencies SET ref_s05_id=%s "
+                "WHERE id=%s",
+                (POLICY, PROJECTION_POLICY_DEPENDENCY),
             )
             connection.execute("SET session_replication_role=origin")
 
@@ -3570,6 +3680,17 @@ def test_t7_exact_session_and_t3_publication_guards(database_urls: dict[str, str
             aggregate_locks={"manifest_builds": (MANIFEST_BUILD,)},
         )
 
+    # T3 authenticates the READY candidate closure under S51 -> S01. It must not
+    # require an outgoing current Manifest during bootstrap publication.
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "UPDATE kineticloop.user_decision_state SET current_manifest_id=NULL "
+            "WHERE subject_id=%s",
+            (SUBJECT,),
+        )
+        connection.execute("SET session_replication_role=origin")
+
     with psycopg.connect(database_urls["admin"]) as connection:
         with pytest.raises(GuardRequired, match="exact guarded T3"):
             execute_command(connection, "PublishManifest", SUBJECT, crosswired_publish)
@@ -3577,3 +3698,100 @@ def test_t7_exact_session_and_t3_publication_guards(database_urls: dict[str, str
     with psycopg.connect(database_urls["admin"]) as connection:
         outcome, replayed = execute_command(connection, "PublishManifest", SUBJECT, publish)
     assert not replayed and outcome["manifest_id"] == str(manifest)
+    with psycopg.connect(database_urls["admin"]) as connection:
+        assert connection.execute(
+            "SELECT typed_payload->'artifact_root_ids',"
+            "typed_payload->'artifact_closure_ids' FROM kineticloop.decision_manifests "
+            "WHERE id=%s",
+            (manifest,),
+        ).fetchone() == ([str(ARTIFACT)], sorted((str(ARTIFACT), str(DEPENDENCY))))
+
+    next_build = UUID("00000000-0000-8000-8000-000000015864")
+    next_manifest = UUID("00000000-0000-8000-8000-000000015865")
+    next_binding = UUID("00000000-0000-8000-8000-000000015866")
+    next_receipt = UUID("00000000-0000-8000-8000-000000015867")
+    next_event = _event(0x15868)
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        next_candidate = _manifest_candidate_payload(connection)
+        next_candidate["manifest_hash"] = "manifest-hash-3"
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "INSERT INTO kineticloop.manifest_builds"
+            "(id,subject_id,build_identity,status,captured_epoch,captured_input_frontier,"
+            "ref_s05_id,ref_s06_id,ref_s15_id,ref_s21_id,typed_payload) "
+            "VALUES (%s,%s,'manifest-build-3','READY',0,'frontier-1',%s,%s,%s,%s,%s)",
+            (
+                next_build,
+                SUBJECT,
+                POLICY,
+                POLICY,
+                FACTSET,
+                PROJECTION,
+                psycopg.types.json.Jsonb(next_candidate),
+            ),
+        )
+        connection.execute("SET session_replication_role=origin")
+
+    def publish_next(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
+        registry_revision = _acquire_registry(tx)
+
+        def mutation(session: Any) -> Mapping[str, Any]:
+            session.insert(
+                "S24",
+                {
+                    "id": next_manifest,
+                    "subject_id": SUBJECT,
+                    "generation": 3,
+                    "manifest_hash": "manifest-hash-3",
+                    "input_frontier_hash": "frontier-1",
+                    "captured_epoch": 0,
+                    "dependency_closure_hash": session.publication_dependency_digest(),
+                    "valid_until": session.publication_valid_until(),
+                    "registry_revision_at_publish": registry_revision,
+                    "registry_state_id": 1,
+                    "ref_s05_id": POLICY,
+                    "ref_s06_id": POLICY,
+                    "ref_s15_id": FACTSET,
+                    "ref_s23_id": next_build,
+                    "ref_s49_id": ARTIFACT,
+                },
+            )
+            session.insert(
+                "S25",
+                {
+                    "id": next_binding,
+                    "subject_id": SUBJECT,
+                    "projection_role": "EXPOSURE",
+                    "unavailable_reason": None,
+                    "validated_basis_hash": "projection-basis",
+                    "ref_s21_id": PROJECTION,
+                    "ref_s24_id": next_manifest,
+                },
+            )
+            session.update(
+                "S01",
+                {"decision_generation": 3, "current_manifest_id": next_manifest},
+                {"subject_id": SUBJECT},
+            )
+            session.update(
+                "S23",
+                {"status": "PUBLISHED"},
+                {"id": next_build, "subject_id": SUBJECT},
+            )
+            return {"manifest_id": str(next_manifest)}
+
+        return tx.idempotent_outcome(
+            receipt_id=next_receipt,
+            actor_scope="subject",
+            client_key="exact-t3-consecutive-publish",
+            request_hash="exact-t3-consecutive-publish-hash",
+            mutation=mutation,
+            event=next_event,
+            aggregate_locks={"manifest_builds": (next_build,)},
+        )
+
+    with psycopg.connect(database_urls["admin"]) as connection:
+        outcome, replayed = execute_command(
+            connection, "PublishManifest", SUBJECT, publish_next
+        )
+    assert not replayed and outcome["manifest_id"] == str(next_manifest)

@@ -66,6 +66,14 @@ time, whose registry revision is not from the future, which has no targeted S43 
 and whose migrated S42 closure contains every supplied S49 identity with current validity.
 These registry predicates do not replace the remaining downstream T6/T7 command-owner guards.
 
+T3 differs from T6/T7 because it creates the next current Manifest. Its shared-gate routine
+therefore locks S51 then S01 and validates the caller-supplied candidate artifact closure
+without requiring an outgoing current S24. The T3 command owner, while both locks remain held,
+must bind that exact leased closure to the single READY build, validate every declared root,
+persist the full root and closure identities in the new immutable S24, and atomically advance
+the S01 pointer. This permits bootstrap, policy/release transitions, and consecutive
+publications without treating the previous Manifest as authority for the incoming closure.
+
 Every helper requires an idle PostgreSQL connection and owns the top-level transaction through
 commit. Invocation inside an existing transaction is rejected, so the API cannot return while
 S51 remains held in an outer transaction or allow a caller to reverse the S51-before-S01 order.

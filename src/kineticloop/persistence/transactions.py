@@ -840,6 +840,20 @@ class RestrictedSqlSession:
         table = self._table(logical_id)
         capability_values = dict(values)
         database_values = dict(values)
+        if logical_id == "S24" and self.__command_kind == "PublishManifest":
+            database_values["typed_payload"] = Jsonb(
+                {
+                    "artifact_closure_ids": self.__coordination_context.get(
+                        "publication_artifact_closure_ids", []
+                    ),
+                    "artifact_root_ids": self.__coordination_context.get(
+                        "publication_artifact_root_ids", []
+                    ),
+                    "artifact_dependency_closure_hash": self.__coordination_context.get(
+                        "publication_artifact_closure_hash"
+                    ),
+                }
+            )
         if logical_id == "S39" and "parent_revision_id" in database_values:
             parent = database_values.pop("parent_revision_id")
             database_values["typed_payload"] = Jsonb(
@@ -2434,7 +2448,7 @@ class RepositoryTransaction:
             "resolution.id,resolution.revision,resolution.resolution_expires_at,"
             "validation.id,validation.revision,validation.valid_until,validation.result,"
             "request.id,request.request_revision,intent.deadline,head.id,head.local_date,"
-            "clock_timestamp() "
+            "clock_timestamp(),manifest.typed_payload "
             "FROM kineticloop.planning_intents intent "
             "JOIN kineticloop.planning_request_revisions request "
             "ON request.subject_id=intent.subject_id AND request.id=intent.current_request_revision_id "
@@ -2454,6 +2468,7 @@ class RepositoryTransaction:
             "AND attempt.ref_s24_id=%s AND attempt.captured_epoch=%s "
             "AND manifest.captured_epoch=%s "
             "AND resolution.ref_s24_id=manifest.id "
+            "AND resolution.ref_s05_id=%s "
             "AND validation.ref_s24_id=manifest.id "
             "AND validation.ref_s36_id=resolution.id "
             "AND validation.ref_s28_id=request.id "
@@ -2469,11 +2484,30 @@ class RepositoryTransaction:
                 self._coordination_context.get("current_manifest_id"),
                 self._coordination_context.get("authorization_epoch"),
                 self._coordination_context.get("authorization_epoch"),
+                self._coordination_context.get("active_policy_bundle_id"),
             ),
         )
         row = _cursor(self).fetchone()
         if row is None or row[9] != "PASS":
             raise GuardRequired("authorization requires a current PASS validation basis")
+        if row[14] != self._coordination_context.get("verified_intent_local_date"):
+            raise GuardRequired("authorization head day must equal the verified intent day")
+        manifest_payload = dict(row[16] or {})
+        manifest_closure = manifest_payload.get("artifact_closure_ids")
+        manifest_roots = manifest_payload.get("artifact_root_ids")
+        verified_artifacts = sorted(str(item) for item in self._verified_artifacts)
+        if (
+            manifest_closure != verified_artifacts
+            or not isinstance(manifest_closure, list)
+            or not isinstance(manifest_roots, list)
+            or not manifest_roots
+            or not set(manifest_roots).issubset(set(manifest_closure))
+            or manifest_payload.get("artifact_dependency_closure_hash")
+            != self.artifact_closure_digest()
+        ):
+            raise ArtifactIdentityRequired(
+                "T6 registry lease must equal the current manifest artifact closure"
+            )
         now = row[15]
         _cursor(self).execute(
             "SELECT revision,typed_payload FROM kineticloop.policy_bundles WHERE id=%s",
@@ -2806,11 +2840,23 @@ class RepositoryTransaction:
             or actual_signatures != expected_signatures
             or member_facts != facts
             or any(
-                (item["policy"] and item["policy"] != str(build[3]))
-                or (item["program"] and item["program"] != str(build[4]))
-                or (item["factset"] and item["factset"] != str(build[5]))
-                or (item["catalog"] and item["catalog"] != str(build[10]))
-                or (item["mapping"] and item["mapping"] != str(build[9]))
+                (item["kind"] == "POLICY" and item["policy"] != str(build[3]))
+                or (item["kind"] == "PROGRAM" and item["program"] != str(build[4]))
+                or (item["kind"] == "FACTSET" and item["factset"] != str(build[5]))
+                or (
+                    item["kind"] == "CATALOG"
+                    and (build[10] is None or item["catalog"] != str(build[10]))
+                )
+                or (
+                    item["kind"] == "MAPPING"
+                    and (build[9] is None or item["mapping"] != str(build[9]))
+                )
+                or (item["kind"] == "FACT" and item["fact"] is None)
+                or (item["policy"] is not None and item["policy"] != str(build[3]))
+                or (item["program"] is not None and item["program"] != str(build[4]))
+                or (item["factset"] is not None and item["factset"] != str(build[5]))
+                or (item["catalog"] is not None and item["catalog"] != str(build[10]))
+                or (item["mapping"] is not None and item["mapping"] != str(build[9]))
                 for item in dependency_rows
             )
         ):
@@ -2882,6 +2928,9 @@ class RepositoryTransaction:
         self._coordination_context["publication_valid_until"] = valid_until
         self._coordination_context["publication_manifest_hash"] = candidate["manifest_hash"]
         self._coordination_context["publication_primary_artifact_id"] = UUID(candidate_root_ids[0])
+        self._coordination_context["publication_artifact_closure_ids"] = candidate_closure_ids
+        self._coordination_context["publication_artifact_root_ids"] = candidate_root_ids
+        self._coordination_context["publication_artifact_closure_hash"] = artifact_digest
         self._coordination_context["publication_projections"] = {
             item["role"]: {
                 "id": UUID(item["id"]),

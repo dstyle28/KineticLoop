@@ -44,7 +44,8 @@ ROOT = Path(__file__).parents[2]
 BASELINE_REVISION = "76fd67f76bd4"
 SAFETY_REGISTRY_REVISION = "a3f91c7d2e10"
 ARTIFACT_REGISTRY_REVISION = "b6e4d8a1c927"
-REVISION = "d4c1a9e7b203"
+SUBJECT_SCOPE_REVISION = "d4c1a9e7b203"
+REVISION = "e7a2c4f91d60"
 MIGRATION = ROOT / "migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py"
 SUCCESSOR = ROOT / "migrations/versions/a3f91c7d2e10_safety_registry_integration.py"
 ARTIFACT_REGISTRY_SUCCESSOR = ROOT / "migrations/versions/b6e4d8a1c927_artifact_registry.py"
@@ -321,14 +322,16 @@ def test_safety_registry_successor_migration_chain() -> None:
     revisions = list(ScriptDirectory.from_config(config).walk_revisions())
     assert [revision.revision for revision in revisions] == [
         REVISION,
+        SUBJECT_SCOPE_REVISION,
         ARTIFACT_REGISTRY_REVISION,
         SAFETY_REGISTRY_REVISION,
         BASELINE_REVISION,
     ]
-    assert revisions[0].down_revision == ARTIFACT_REGISTRY_REVISION
-    assert revisions[1].down_revision == SAFETY_REGISTRY_REVISION
-    assert revisions[2].down_revision == BASELINE_REVISION
-    assert revisions[3].down_revision is None
+    assert revisions[0].down_revision == SUBJECT_SCOPE_REVISION
+    assert revisions[1].down_revision == ARTIFACT_REGISTRY_REVISION
+    assert revisions[2].down_revision == SAFETY_REGISTRY_REVISION
+    assert revisions[3].down_revision == BASELINE_REVISION
+    assert revisions[4].down_revision is None
     assert (
         MIGRATION.read_bytes()
         == (ROOT / "migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py").read_bytes()
@@ -340,13 +343,15 @@ def test_artifact_registry_successor_migration_chain() -> None:
     revisions = list(ScriptDirectory.from_config(config).walk_revisions())
     assert [revision.revision for revision in revisions] == [
         REVISION,
+        SUBJECT_SCOPE_REVISION,
         ARTIFACT_REGISTRY_REVISION,
         SAFETY_REGISTRY_REVISION,
         BASELINE_REVISION,
     ]
     assert len(ScriptDirectory.from_config(config).get_heads()) == 1
-    assert revisions[0].down_revision == ARTIFACT_REGISTRY_REVISION
-    assert revisions[1].down_revision == SAFETY_REGISTRY_REVISION
+    assert revisions[0].down_revision == SUBJECT_SCOPE_REVISION
+    assert revisions[1].down_revision == ARTIFACT_REGISTRY_REVISION
+    assert revisions[2].down_revision == SAFETY_REGISTRY_REVISION
 
     spec = spec_from_file_location("kl018_migration", ARTIFACT_REGISTRY_SUCCESSOR)
     assert spec is not None and spec.loader is not None
