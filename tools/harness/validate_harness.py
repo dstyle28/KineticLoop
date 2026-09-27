@@ -1626,6 +1626,23 @@ def m2_execution_evidence_errors(root, payload, revision):
                     or not isinstance(nodeids, list) or not nodeids
                     or len(nodeids) != len(set(nodeids))):
                 raise ValueError('invalid-collection')
+            collection_log = collected['stdout']
+            if (not relative_path(collection_log['path'])
+                    or not matches(collection_log['path'], [evidence_pattern('HG-023')])
+                    or blob_sha_at_revision(root, collection_log['path'], revision)
+                    != collection_log['sha256']):
+                raise ValueError('collection-stdout-binding')
+            collection_output = git(
+                root, 'show', revision + ':' + collection_log['path']).decode()
+            raw_nodeids = [line for line in collection_output.splitlines()
+                          if re.match(r'^tests/[^\s]+\.py::', line)]
+            collected_counts = re.findall(
+                r'^([1-9][0-9]*) tests? collected in ', collection_output, re.M)
+            if (raw_nodeids != nodeids or len(collected_counts) != 1
+                    or int(collected_counts[0]) != len(nodeids)
+                    or re.search(r'\b[1-9][0-9]* (?:deselected|errors?|skipped)\b',
+                                 collection_output, re.I)):
+                raise ValueError('collection-stdout-oracle')
             expected_cases = set()
             for nodeid in nodeids:
                 components = nodeid.split('::')

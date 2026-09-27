@@ -419,8 +419,9 @@ class ValidatorTests(unittest.TestCase):
             'harness': 'docs/exec-plans/evidence/HG-023/harness.log',
             'junit': 'docs/exec-plans/evidence/HG-023/junit.xml',
             'collection': 'docs/exec-plans/evidence/HG-023/collection.json',
+            'collection_stdout': 'docs/exec-plans/evidence/HG-023/collection.log',
         }
-        self.put(paths['pytest'], '5 passed in 1.0s\n')
+        self.put(paths['pytest'], '6 passed in 1.0s\n')
         self.put(paths['harness'], 'HARNESS_CHECK_PASS tasks=69 active=67\n')
         cases = [
             ('tests.db.test_migrations', 'test_empty_db_upgrade_head'),
@@ -429,15 +430,20 @@ class ValidatorTests(unittest.TestCase):
                 'test_stale_fence_commit_is_rejected',
                 'test_ack_loss_replay_preserves_natural_uniqueness',
             )],
+            ('tests.unit.test_example', 'test_additional_case'),
         ]
         junit = '<testsuites><testsuite>' + ''.join(
             f'<testcase classname="{cls}" name="{name}"/>' for cls, name in cases
         ) + '</testsuite></testsuites>'
         self.put(paths['junit'], junit)
+        nodeids = [cls.replace('.', '/') + '.py::' + name for cls, name in cases]
+        self.put(paths['collection_stdout'], '\n'.join(nodeids) + '\n\n6 tests collected in 0.1s\n')
         dump(self.root / paths['collection'], {
             'command': 'uv run pytest --collect-only -q', 'exit_code': 0,
             'tested_commit': self.base,
-            'nodeids': [cls.replace('.', '/') + '.py::' + name for cls, name in cases],
+            'nodeids': nodeids,
+            'stdout': {'path': paths['collection_stdout'],
+                       'sha256': v.sha(self.root / paths['collection_stdout'])},
         })
         revision = self.commit('fixture execution evidence')
 
@@ -473,6 +479,21 @@ class ValidatorTests(unittest.TestCase):
             mutated = copy.deepcopy(payload)
             mutated['executions'][0]['junit'] = ref('junit')
             self.assertTrue(v.m2_execution_evidence_errors(self.root, mutated, revision))
+
+        # Cutting both derived reports must not hide a collected test.
+        collection = v.load_artifact(self.root / paths['collection'])
+        collection['nodeids'].pop()
+        dump(self.root / paths['collection'], collection)
+        self.put(paths['junit'], junit.replace(
+            '<testcase classname="tests.unit.test_example" name="test_additional_case"/>', ''))
+        self.put(paths['pytest'], '5 passed in 1.0s\n')
+        revision = self.commit('crop collection and junit together')
+        mutated = copy.deepcopy(payload)
+        mutated['executions'][0].update({
+            'collection': ref('collection'), 'junit': ref('junit'), 'stdout': ref('pytest'),
+        })
+        self.assertIn('milestone-regression-execution:collection-stdout-oracle',
+                      v.m2_execution_evidence_errors(self.root, mutated, revision))
 
     def test_m2_schema_requires_exact_task_count_and_exit_check_vocabulary(self):
         from jsonschema import Draft202012Validator
