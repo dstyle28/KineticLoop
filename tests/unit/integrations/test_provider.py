@@ -24,7 +24,6 @@ from kineticloop.integrations.provider import (
     EvidenceLineage,
     ProviderContractError,
     ProviderId,
-    ProviderSourceStatus,
     RawProviderObservation,
     SourceClass,
     StreamId,
@@ -32,10 +31,12 @@ from kineticloop.integrations.provider import (
     TrustClass,
     TrustedProviderBinding,
     build_evidence_envelope,
+    build_provider_source_status,
     create_provider_context,
     parse_evidence_envelope_json,
     safe_adapter_failure,
     validate_adapter_output,
+    validate_provider_source_status,
     validate_receive_evidence_binding,
 )
 from kineticloop.security.synthetic import load_synthetic_fixture
@@ -243,13 +244,19 @@ def test_server_assigns_known_at() -> None:
     built = build_evidence_envelope(context(), observation(), server_now=lambda: NOW)
     assert built.known_at == NOW
     assert built.observed_at == OBSERVED
+    adapter_forged = built.model_copy(update={"known_at": "1999-01-01T00:00:00.000000Z"})
+    received = validate_adapter_output(context(), (adapter_forged,), server_now=lambda: NOW)
+    assert received[0].known_at == NOW
+    assert "1999-01-01" not in received[0].to_canonical_json()
 
 
 def test_provider_has_no_fact_or_command_authority() -> None:
     built = envelope()
     assert built.command_authority == "NONE"
     provider_context = context()
-    assert validate_adapter_output(provider_context, (built,)) == (built,)
+    assert validate_adapter_output(
+        provider_context, (built,), server_now=lambda: NOW
+    ) == (built,)
     for forged in (
         {"canonical_fact": True},
         {"command_kind": "AdvanceProgression"},
@@ -257,7 +264,7 @@ def test_provider_has_no_fact_or_command_authority() -> None:
         {"authorization": "AUTHORIZED"},
     ):
         with pytest.raises(ProviderContractError, match="ADAPTER_OUTPUT_NOT_EVIDENCE"):
-            validate_adapter_output(provider_context, (forged,))
+            validate_adapter_output(provider_context, (forged,), server_now=lambda: NOW)
     with pytest.raises(ValidationError):
         EvidenceEnvelope.model_validate(
             built.model_dump(mode="python") | {"command_authority": "PROVIDER"}
@@ -273,12 +280,24 @@ def test_provider_has_no_fact_or_command_authority() -> None:
         ),
     ):
         with pytest.raises(ProviderContractError):
-            validate_adapter_output(provider_context, (forged_envelope,))
+            validate_adapter_output(
+                provider_context, (forged_envelope,), server_now=lambda: NOW
+            )
 
     forged_extra = built.model_copy()
     forged_extra.__dict__["canonical_fact"] = {"sets": 3}
     with pytest.raises(ProviderContractError, match="INVALID_EVIDENCE_ENVELOPE"):
-        validate_adapter_output(provider_context, (forged_extra,))
+        validate_adapter_output(provider_context, (forged_extra,), server_now=lambda: NOW)
+
+    forged_lineage = built.model_copy(
+        update={
+            "lineage": built.lineage.model_copy(
+                update={"root_provider_id": ProviderId("OURA")}
+            )
+        }
+    )
+    with pytest.raises(ProviderContractError, match="INVALID_EVIDENCE_ENVELOPE"):
+        validate_adapter_output(provider_context, (forged_lineage,), server_now=lambda: NOW)
 
     forged_authority = built.model_copy(update={"command_authority": "PROVIDER"})
     with pytest.raises(ProviderContractError, match="INVALID_EVIDENCE_ENVELOPE"):
@@ -344,10 +363,9 @@ def test_provider_credentials_do_not_cross_evidence_or_diagnostic_boundary(
 
 
 def test_transport_health_differs_from_coverage() -> None:
-    connected_partial = ProviderSourceStatus(
-        schema_version="kineticloop-provider-source-status-v1",
-        provider_id=ProviderId("HEVY"),
-        stream_id=StreamId("HEVY_STRENGTH"),
+    provider_context = context()
+    connected_partial = build_provider_source_status(
+        provider_context,
         connection_status=ConnectionStatus.CONNECTED,
         coverage=EvidenceCoverage.PARTIAL,
         last_success_at=NOW,
@@ -361,6 +379,40 @@ def test_transport_health_differs_from_coverage() -> None:
     assert connected_partial.connection_status is ConnectionStatus.CONNECTED
     assert connected_partial.coverage is EvidenceCoverage.PARTIAL
     assert connected_partial.partial_scope_or_permission_ambiguity is True
+    assert connected_partial.source_watermark is not None
+    assert connected_partial.source_watermark.startswith("sha256:")
+    assert "provider-cursor-17" not in connected_partial.model_dump_json()
+    assert "provider-cursor-17" not in repr(connected_partial)
+    assert validate_provider_source_status(provider_context, connected_partial) == connected_partial
+
+    encoded = quote(SECRET, safe="")
+    for raw_watermark, error_code in (
+        (SECRET, None),
+        (encoded, None),
+        (None, SECRET),
+        (None, encoded),
+    ):
+        with pytest.raises((ProviderContractError, ValidationError)):
+            build_provider_source_status(
+                provider_context,
+                connection_status=ConnectionStatus.DEGRADED,
+                coverage=EvidenceCoverage.UNKNOWN,
+                last_success_at=None,
+                last_attempt_at=NOW,
+                source_watermark=raw_watermark,
+                coverage_start=None,
+                coverage_end=None,
+                partial_scope_or_permission_ambiguity=True,
+                last_error_code=error_code,
+            )
+
+    for field, secret in (("source_watermark", SECRET), ("last_error_code", SECRET)):
+        forged = connected_partial.model_copy(update={field: secret})
+        assert SECRET not in repr(forged)
+        assert SECRET not in str(forged)
+        assert SECRET not in forged.model_dump_json()
+        with pytest.raises(ProviderContractError, match="ADAPTER_STATUS_INVALID"):
+            validate_provider_source_status(provider_context, forged)
 
 
 def test_provider_contract_is_hermetic(tmp_path: Path) -> None:

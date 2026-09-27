@@ -23,10 +23,12 @@ from kineticloop.integrations.provider import (
     TrustClass,
     TrustedProviderBinding,
     build_evidence_envelope,
+    build_provider_source_status,
     create_provider_context,
     parse_evidence_envelope_json,
     safe_adapter_failure,
     validate_adapter_output,
+    validate_provider_source_status,
     validate_receive_evidence_binding,
 )
 
@@ -53,9 +55,11 @@ __all__ = [
     "TrustClass",
     "TrustedProviderBinding",
     "build_evidence_envelope",
+    "build_provider_source_status",
     "create_provider_context",
     "parse_evidence_envelope_json",
     "safe_adapter_failure",
     "validate_adapter_output",
+    "validate_provider_source_status",
     "validate_receive_evidence_binding",
 ]

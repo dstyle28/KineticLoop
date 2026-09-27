@@ -15,11 +15,18 @@ from enum import StrEnum
 from typing import Any, Literal, Protocol, SupportsIndex, cast
 from urllib.parse import unquote
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    ValidationError,
+    field_serializer,
+    model_validator,
+)
 from pydantic_core import core_schema
 
 from kineticloop.config.secrets import ProviderSecrets, PublicProviderConfig
-from kineticloop.primitives import canonical_json, canonical_sha256, canonical_utc
+from kineticloop.primitives import canonical_json, canonical_sha256, canonical_utc, sha256_bytes
 from kineticloop.security.redaction import Redactor
 
 _CANONICAL_UUID = re.compile(
@@ -30,6 +37,8 @@ _PROVIDER_ID = re.compile(r"^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*$")
 _STREAM_ID = re.compile(r"^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*$")
 _OBJECT_TYPE = re.compile(r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$")
 _VERSION = re.compile(r"^[a-z0-9][a-z0-9._-]{0,63}$")
+_WATERMARK_HASH = re.compile(r"^sha256:[0-9a-f]{64}$")
+_ERROR_CODE = re.compile(r"^[A-Z][A-Z0-9_]{0,63}$")
 _SENSITIVE_KEY = re.compile(
     r"(?:^|[_ .-])(?:access[_ .-]?token|api[_ .-]?key|authorization|client[_ .-]?secret|"
     r"cookie|credential(?:s)?|password|refresh[_ .-]?token|secret|token)(?:$|[_ .-])",
@@ -307,6 +316,8 @@ class EvidenceEnvelope(BaseModel):
             raise ValueError("controlled_blob_reference is not canonical")
         _canonical_version(self.content_schema_version, "content_schema_version")
         _canonical_version(self.adapter_version, "adapter_version")
+        if self.lineage.root_provider_id != self.provider_id:
+            raise ValueError("lineage root provider must match envelope provider")
         return self
 
     def to_canonical_json(self) -> str:
@@ -337,7 +348,43 @@ class ProviderSourceStatus(BaseModel):
             value = getattr(self, label)
             if value is not None:
                 _canonical_time(value, label)
+        if self.source_watermark is not None and (
+            type(self.source_watermark) is not str
+            or _WATERMARK_HASH.fullmatch(self.source_watermark) is None
+        ):
+            raise ValueError("source_watermark must be a one-way diagnostic hash")
+        if self.last_error_code is not None and (
+            type(self.last_error_code) is not str
+            or _ERROR_CODE.fullmatch(self.last_error_code) is None
+            or _contains_sensitive_shape(self.last_error_code)
+        ):
+            raise ValueError("last_error_code must be a credential-free canonical code")
         return self
+
+    def __repr__(self) -> str:
+        return (
+            "ProviderSourceStatus("
+            f"provider_id={self.provider_id!s}, stream_id={self.stream_id!s}, "
+            f"connection_status={self.connection_status.value}, coverage={self.coverage.value}, "
+            "source_watermark=<redacted>, last_error_code=<redacted>)"
+        )
+
+    def __str__(self) -> str:
+        return repr(self)
+
+    @field_serializer("source_watermark")
+    def serialize_source_watermark(self, value: str | None) -> str | None:
+        if value is None or _WATERMARK_HASH.fullmatch(value) is not None:
+            return value
+        return "<redacted>"
+
+    @field_serializer("last_error_code")
+    def serialize_last_error_code(self, value: str | None) -> str | None:
+        if value is None:
+            return None
+        if _ERROR_CODE.fullmatch(value) is not None and not _contains_sensitive_shape(value):
+            return value
+        return "PROVIDER_ERROR_REDACTED"
 
 
 class ProviderBatch(BaseModel):
@@ -451,15 +498,23 @@ def _revalidate_evidence_envelope(value: object) -> EvidenceEnvelope:
 
 
 def validate_adapter_output(
-    context: ProviderExecutionContext, value: object
+    context: ProviderExecutionContext,
+    value: object,
+    *,
+    server_now: Callable[[], datetime | str],
 ) -> tuple[EvidenceEnvelope, ...]:
-    """Revalidate, bind, and credential-scan every adapter evidence output."""
+    """Revalidate and bind adapter output, then assign trusted receive time."""
 
     if type(value) is not tuple:
         raise ProviderContractError("ADAPTER_OUTPUT_NOT_EVIDENCE")
+    known_at = _trusted_server_time(server_now, provider_id=str(context.binding.provider_id))
     validated: list[EvidenceEnvelope] = []
     for item in cast(tuple[object, ...], value):
         envelope = _revalidate_evidence_envelope(item)
+        if envelope.lineage.root_provider_id != context.binding.provider_id:
+            raise ProviderContractError(
+                "LINEAGE_PROVIDER_MISMATCH", provider_id=str(context.binding.provider_id)
+            )
         validate_receive_evidence_binding(
             envelope,
             context.binding,
@@ -469,7 +524,10 @@ def validate_adapter_output(
         context.credential_guard.reject_credentials(
             envelope.model_dump(mode="json"), provider_id=str(context.binding.provider_id)
         )
-        validated.append(envelope)
+        server_envelope = EvidenceEnvelope.model_validate(
+            envelope.model_dump(mode="python") | {"known_at": known_at}
+        )
+        validated.append(server_envelope)
     return tuple(validated)
 
 
@@ -483,6 +541,18 @@ def _decoded_forms(value: str) -> tuple[str, ...]:
         forms.append(decoded)
         current = decoded
     return tuple(forms)
+
+
+def _contains_sensitive_shape(value: str) -> bool:
+    for form in _decoded_forms(value):
+        if _SENSITIVE_KEY.search(form):
+            return True
+        lowered = form.casefold()
+        if "authorization:" in lowered or "authorization=" in lowered:
+            return True
+        if re.search(r"[a-z][a-z0-9+.-]*://[^/@\s]+:[^/@\s]+@", form, re.I):
+            return True
+    return False
 
 
 def _walk(value: object, *, depth: int = 0) -> Sequence[tuple[str | None, str]]:
@@ -653,6 +723,111 @@ def create_provider_context(
     )
 
 
+def _trusted_server_time(
+    server_now: Callable[[], datetime | str], *, provider_id: str
+) -> str:
+    invalid_time = False
+    known_at: str | None = None
+    try:
+        known_at = canonical_utc(server_now())
+    except Exception:
+        invalid_time = True
+    if invalid_time or known_at is None:
+        raise ProviderContractError("SERVER_TIME_UNAVAILABLE", provider_id=provider_id)
+    return known_at
+
+
+def build_provider_source_status(
+    context: ProviderExecutionContext,
+    *,
+    connection_status: ConnectionStatus,
+    coverage: EvidenceCoverage,
+    last_success_at: str | None,
+    last_attempt_at: str | None,
+    source_watermark: str | None,
+    coverage_start: str | None,
+    coverage_end: str | None,
+    partial_scope_or_permission_ambiguity: bool,
+    last_error_code: str | None,
+) -> ProviderSourceStatus:
+    """Build a credential-safe status; raw cursor material never enters diagnostics."""
+
+    provider_id = str(context.binding.provider_id)
+    context.credential_guard.reject_credentials(
+        {
+            "source_watermark": source_watermark,
+            "last_error_code": last_error_code,
+        },
+        provider_id=provider_id,
+    )
+    watermark_hash = (
+        f"sha256:{sha256_bytes(source_watermark.encode('utf-8'))}"
+        if source_watermark is not None
+        else None
+    )
+    return ProviderSourceStatus(
+        schema_version="kineticloop-provider-source-status-v1",
+        provider_id=context.binding.provider_id,
+        stream_id=context.binding.stream_id,
+        connection_status=connection_status,
+        coverage=coverage,
+        last_success_at=last_success_at,
+        last_attempt_at=last_attempt_at,
+        source_watermark=watermark_hash,
+        coverage_start=coverage_start,
+        coverage_end=coverage_end,
+        partial_scope_or_permission_ambiguity=partial_scope_or_permission_ambiguity,
+        last_error_code=last_error_code,
+    )
+
+
+def validate_provider_source_status(
+    context: ProviderExecutionContext, value: object
+) -> ProviderSourceStatus:
+    """Revalidate adapter status and bind it to the authenticated provider stream."""
+
+    if type(value) is not ProviderSourceStatus:
+        raise ProviderContractError("ADAPTER_STATUS_INVALID")
+    status = cast(ProviderSourceStatus, value)
+    if set(status.__dict__) != set(ProviderSourceStatus.model_fields) or status.__pydantic_extra__:
+        raise ProviderContractError("ADAPTER_STATUS_INVALID")
+    raw_watermark = status.__dict__.get("source_watermark")
+    raw_error_code = status.__dict__.get("last_error_code")
+    if raw_watermark is not None and (
+        type(raw_watermark) is not str or _WATERMARK_HASH.fullmatch(raw_watermark) is None
+    ):
+        raise ProviderContractError("ADAPTER_STATUS_INVALID")
+    if raw_error_code is not None and (
+        type(raw_error_code) is not str
+        or _ERROR_CODE.fullmatch(raw_error_code) is None
+        or _contains_sensitive_shape(raw_error_code)
+    ):
+        raise ProviderContractError("ADAPTER_STATUS_INVALID")
+    invalid = False
+    validated: ProviderSourceStatus | None = None
+    raw: dict[str, Any] | None = None
+    try:
+        raw = status.model_dump(mode="json", warnings="error")
+        validated = ProviderSourceStatus.model_validate_json(
+            json.dumps(raw, ensure_ascii=False, separators=(",", ":"))
+        )
+    except (TypeError, ValueError, ValidationError):
+        invalid = True
+    if invalid or validated is None or raw is None:
+        raise ProviderContractError("ADAPTER_STATUS_INVALID")
+    if (
+        validated.provider_id != context.binding.provider_id
+        or validated.stream_id != context.binding.stream_id
+    ):
+        raise ProviderContractError(
+            "PROVIDER_IDENTITY_MISMATCH", provider_id=str(context.binding.provider_id)
+        )
+    context.credential_guard.reject_credentials(
+        raw, provider_id=str(context.binding.provider_id)
+    )
+    return validated
+
+
 def build_evidence_envelope(
     context: ProviderExecutionContext,
     observation: RawProviderObservation,
@@ -667,14 +842,7 @@ def build_evidence_envelope(
     context.credential_guard.reject_credentials(
         observation.model_dump(mode="python"), provider_id=provider_id
     )
-    invalid_time = False
-    known_at: str | None = None
-    try:
-        known_at = canonical_utc(server_now())
-    except Exception:
-        invalid_time = True
-    if invalid_time or known_at is None:
-        raise ProviderContractError("SERVER_TIME_UNAVAILABLE", provider_id=provider_id)
+    known_at = _trusted_server_time(server_now, provider_id=provider_id)
     payload_hash = canonical_sha256(observation.payload) if observation.payload is not None else None
     envelope = EvidenceEnvelope(
         schema_version="kineticloop-evidence-envelope-v1",
@@ -770,9 +938,11 @@ __all__ = [
     "TrustClass",
     "TrustedProviderBinding",
     "build_evidence_envelope",
+    "build_provider_source_status",
     "create_provider_context",
     "parse_evidence_envelope_json",
     "safe_adapter_failure",
     "validate_adapter_output",
+    "validate_provider_source_status",
     "validate_receive_evidence_binding",
 ]

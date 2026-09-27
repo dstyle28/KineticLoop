@@ -69,6 +69,12 @@ validator before it can be used by an adapter contract test.
 `DISABLED`. `coverage` is an independent field. A connected source can therefore be
 partial or unknown, and a transport outage does not turn missing evidence into zero.
 Watermarks are provider-specific identities rather than universal time.
+The diagnostic status factory runs raw cursor/error inputs through the context's
+credential guard, stores only a one-way SHA-256 watermark token and a bounded
+canonical error code, and redacts these fields from the default representation.
+Serialized valid status values therefore contain no raw provider cursor or error
+message. Runtime status validation rechecks the closed model, provider/stream
+binding, and credential boundary before exposure.
 
 ## Adapter interface
 
@@ -76,8 +82,9 @@ Watermarks are provider-specific identities rather than universal time.
 fetch, bounded reconciliation, and normalization to `EvidenceEnvelope` values.
 The runtime `validate_adapter_output` boundary reserializes and strictly revalidates
 each returned model, rejects unvalidated Pydantic construction or mutation, rechecks
-the trusted subject/source binding, and rescans every serialized field with the
-context's credential guard.
+the trusted subject/source binding and lineage root, rescans every serialized field
+with the context's credential guard, and replaces any adapter-supplied `known_at`
+with the trusted server clock at that receive boundary.
 `ProviderBatch`, `BackfillResult`, and `ReconciliationResult` are also strict,
 immutable contracts. Implementations receive their explicit execution context from
 the caller; network clients and credential stores are outside this module and must
