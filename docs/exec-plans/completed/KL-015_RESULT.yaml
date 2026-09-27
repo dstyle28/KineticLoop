@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-015
 display_task_id: KL-015
 task_definition_version: v0.2
 base_commit: 21ec0b508959d8ce24dfe1a0e4d59a0820394068
-tested_commit: 247054a00d2c31ab9c56422cadf646f1f01547a0
+tested_commit: 0cacada6c54ce01abd692568a8728622800089ce
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -31,83 +31,83 @@ commands_run:
   - check_id: transaction_owner_matrix_complete
     command: uv run pytest -q tests/unit/persistence/test_transactions.py::test_transaction_owner_matrix_complete
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: catalog_mapping_and_release_owner_boundaries_complete
     command: uv run pytest -q tests/unit/persistence/test_transactions.py::test_catalog_mapping_and_release_owner_boundaries_complete
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: registry_lease_required_for_publish_commit_and_session_entry
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_registry_lease_required_for_publish_commit_and_session_entry
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: preparation_work_stays_outside_coordination_locks
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_preparation_work_stays_outside_coordination_locks
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: factset_build_stays_outside_subject_coordination
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_factset_build_stays_outside_subject_coordination
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: subject_guard_required
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_subject_guard_required
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: complete_frozen_lock_order_enforced
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_complete_frozen_lock_order_enforced
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: multi_key_lock_order_is_stable
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_multi_key_lock_order_is_stable
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: reverse_lock_order_is_rejected
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: receipt_before_s01_is_rejected
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_receipt_before_s01_is_rejected
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: artifact_identity_required
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_artifact_identity_required
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: direct_write_bypass_rejected
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_direct_write_bypass_rejected
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: event_outbox_atomicity_enforced
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_event_outbox_atomicity_enforced
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: outbox_dispatcher_does_not_lock_subject_guard
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_outbox_dispatcher_does_not_lock_subject_guard
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: stale_fence_commit_is_rejected
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_stale_fence_commit_is_rejected
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: dispatch_first_winner_and_replay_non_resend
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_dispatch_first_winner_and_replay_non_resend
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: ack_loss_replay_preserves_natural_uniqueness
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_ack_loss_replay_preserves_natural_uniqueness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: t6_ack_loss_replay_returns_same_issuance
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_ack_loss_replay_returns_same_issuance
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: transaction_db_conformance_passes
     command: uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
   - check_id: harness_validation_passes
     command: uv run kl check-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-247054a.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-0cacada.log
 requirements_covered: []
 files_changed:
   - docs/contracts/repository_transactions.md
@@ -123,8 +123,8 @@ files_changed:
   - docs/exec-plans/evidence/KL-015/checks-c281e6a.log
   - docs/exec-plans/evidence/KL-015/regression-acb3563.log
   - docs/exec-plans/evidence/KL-015/regression-c281e6a.log
-  - docs/exec-plans/evidence/KL-015/checks-247054a.log
-  - docs/exec-plans/evidence/KL-015/regression-247054a.log
+  - docs/exec-plans/evidence/KL-015/checks-0cacada.log
+  - docs/exec-plans/evidence/KL-015/regression-0cacada.log
   - docs/exec-plans/completed/KL-015_RESULT.yaml
 decisions:
   - Give every public command surface exactly one repository owner; T6CommitCoordinator is the single atomic database owner for the PrescriptionCommitService and AuthorizationService CommitBundle boundary.
@@ -158,6 +158,7 @@ decisions:
   - Persist the full declared artifact roots, transitive closure identities, and artifact-only closure digest in immutable S24 typed payload; require every T6 lease to equal that Manifest closure so no independent root can be omitted from S42/T7 enforcement.
   - Require every required S22 dependency kind to carry its authoritative FK, bind S36 to the active policy, and require the locked S38 local date to equal the verified intent date for both CommitBundle and Reauthorize.
   - Anchor T3 artifact admission to the S49 artifact bound to active S05, derive the activated S48 release set through its registered dependency graph, and reject every foreign S05/S19/S48 binding or root before publication.
+  - Require candidate artifact roots to equal the graph roots of the verified closure, reject promotion of transitive dependencies, and require an exact S19-bound artifact whenever the sealed mapping selects a catalog.
   - Freeze the READY S23 dependency-basis hash, exact required projection bindings, full artifact closure, declared roots, and closure hash; T3 requires positive plus collection/absence S22 coverage and recomputes the candidate basis before publication.
   - Derive every T2 invalidation scope from the active policy's command classification and every T6 issuance scope from the active policy's exact S36 action mapping; caller-selected scopes fail closed.
   - Derive the complete T3 role inventory and dependency signatures from the active policy, require collection/absence, engine, factset, policy, program, and applicable catalog/mapping dependencies per role, and prove each S14 dependency is an active member of the current SEALED S15.
