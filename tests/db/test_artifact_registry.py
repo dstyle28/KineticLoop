@@ -625,13 +625,17 @@ def test_artifact_timeless_policy_is_registered_dependency(
         UUID(_SAFETY.DEPENDENCY_ID),
     ]
     with connect(db_urls["application"]) as application:
-        assert application.execute(
-            "SELECT kineticloop.registry_guard_publish_manifest(%s,%s,0,1000)",
-            (
-                UUID(_SAFETY.SUBJECT_ID),
-                [UUID(_SAFETY.DEPENDENCY_ID)],
-            ),
-        ).fetchone() == (1,)
+        with pytest.raises(
+            psycopg.errors.RaiseException,
+            match="KL_REGISTRY_DEPENDENCY_INCOMPLETE",
+        ):
+            application.execute(
+                "SELECT kineticloop.registry_guard_publish_manifest(%s,%s,0,1000)",
+                (
+                    UUID(_SAFETY.SUBJECT_ID),
+                    [UUID(_SAFETY.DEPENDENCY_ID)],
+                ),
+            )
         application.rollback()
     assert registry_snapshot(db_urls["admin"]) == before_denials
 

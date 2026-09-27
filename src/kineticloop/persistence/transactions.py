@@ -2093,24 +2093,31 @@ class RepositoryTransaction:
         if self.subject_id is None or not artifact_ids:
             raise GuardRequired("registry lease requires subject and exact artifact identities")
         self._advance(LockStage.REGISTRY)
-        routine = {
-            "PublishManifest": "registry_guard_publish_manifest",
-            "CommitBundle": "registry_guard_commit_bundle",
-            "Reauthorize": "registry_guard_reauthorize",
-            "StartSession": "registry_guard_start_session",
-            "ResumeSession": "registry_guard_resume_session",
-            "ContinueSession": "registry_guard_continue_session",
-        }[self.command_kind]
-        _cursor(self).execute(
-            f"SELECT kineticloop.{routine}(%s,%s,%s,%s)",
-            (self.subject_id, list(artifact_ids), minimum_revision, lock_timeout_ms),
-        )
-        row = _cursor(self).fetchone()
-        if row is None:
-            raise GuardRequired("registry lease was not acquired")
-        # The merged guard routine acquires S51 then S01 in the same transaction.
+        if self.command_kind == "PublishManifest":
+            revision = self._acquire_publish_candidate_registry_lease(
+                artifact_ids,
+                minimum_revision=minimum_revision,
+                lock_timeout_ms=lock_timeout_ms,
+            )
+        else:
+            routine = {
+                "CommitBundle": "registry_guard_commit_bundle",
+                "Reauthorize": "registry_guard_reauthorize",
+                "StartSession": "registry_guard_start_session",
+                "ResumeSession": "registry_guard_resume_session",
+                "ContinueSession": "registry_guard_continue_session",
+            }[self.command_kind]
+            _cursor(self).execute(
+                f"SELECT kineticloop.{routine}(%s,%s,%s,%s)",
+                (self.subject_id, list(artifact_ids), minimum_revision, lock_timeout_ms),
+            )
+            row = _cursor(self).fetchone()
+            if row is None:
+                raise GuardRequired("registry lease was not acquired")
+            revision = int(row[0])
+        # The command-specific gate acquires S51 then S01 in the same transaction.
         self._registry = True
-        self._registry_revision = int(row[0])
+        self._registry_revision = revision
         self._leased_artifacts = frozenset(artifact_ids)
         self._subject = True
         self._last_stage = LockStage.SUBJECT
@@ -2137,6 +2144,99 @@ class RepositoryTransaction:
             "decision_generation": int(context[7]),
         }
         return self._registry_revision
+
+    def _acquire_publish_candidate_registry_lease(
+        self,
+        artifact_ids: Sequence[UUID],
+        *,
+        minimum_revision: int,
+        lock_timeout_ms: int,
+    ) -> int:
+        """Lock S51 then S01 and validate the incoming T3 artifact closure."""
+
+        if lock_timeout_ms <= 0:
+            raise GuardRequired("registry lock timeout must be positive")
+        supplied = tuple(artifact_ids)
+        if len(supplied) != len(set(supplied)):
+            raise GuardRequired("registry artifact closure contains duplicate identities")
+        _cursor(self).execute(
+            "SELECT set_config('lock_timeout',%s,true)",
+            (f"{lock_timeout_ms}ms",),
+        )
+        _cursor(self).execute(
+            "SELECT registry_revision,clock_timestamp() "
+            "FROM kineticloop.safety_registry_state WHERE id=1 FOR SHARE"
+        )
+        state = _cursor(self).fetchone()
+        if state is None:
+            raise GuardRequired("safety registry state is unavailable")
+        revision, authoritative_now = int(state[0]), state[1]
+        if revision < minimum_revision:
+            raise GuardRequired("safety registry revision is stale")
+        _cursor(self).execute(
+            "SELECT 1 FROM kineticloop.user_decision_state "
+            "WHERE subject_id=%s FOR UPDATE",
+            (self.subject_id,),
+        )
+        if _cursor(self).fetchone() is None:
+            raise GuardRequired("subject is ineligible for Manifest publication")
+        _cursor(self).execute(
+            "SELECT id,artifact_kind,validity_kind,valid_from,valid_until,"
+            "timeless_approval_policy FROM kineticloop.safety_artifacts "
+            "WHERE id=ANY(%s)",
+            (list(supplied),),
+        )
+        rows = _cursor(self).fetchall()
+        if len(rows) != len(supplied):
+            raise GuardRequired("registry artifact identity is unknown")
+        artifacts = {UUID(str(row[0])): row for row in rows}
+        _cursor(self).execute(
+            "SELECT artifact_id,dependency_artifact_id "
+            "FROM kineticloop.safety_artifact_dependencies WHERE artifact_id=ANY(%s)",
+            (list(supplied),),
+        )
+        dependencies = {
+            (UUID(str(row[0])), UUID(str(row[1]))) for row in _cursor(self).fetchall()
+        }
+        supplied_set = set(supplied)
+        if any(dependency not in supplied_set for _, dependency in dependencies):
+            raise GuardRequired("registry artifact dependency closure is incomplete")
+        for artifact_id, row in artifacts.items():
+            kind, validity_kind, valid_from, valid_until, approval = row[1:]
+            if (
+                valid_from is None
+                or validity_kind not in {"BOUNDED", "TIMELESS"}
+                or (validity_kind == "BOUNDED" and valid_until is None)
+            ):
+                raise GuardRequired("registry artifact validity is undefined")
+            if authoritative_now < valid_from or (
+                valid_until is not None and authoritative_now >= valid_until
+            ):
+                raise GuardRequired("registry artifact is outside its validity window")
+            if validity_kind == "TIMELESS":
+                try:
+                    policy_id = UUID(str(approval))
+                except (TypeError, ValueError) as error:
+                    raise GuardRequired(
+                        "timeless registry artifact lacks an approval policy"
+                    ) from error
+                policy = artifacts.get(policy_id)
+                if (
+                    policy is None
+                    or policy[1] not in {"POLICY", "POLICY_BUNDLE"}
+                    or (artifact_id, policy_id) not in dependencies
+                ):
+                    raise GuardRequired(
+                        "timeless registry artifact approval policy is not in its closure"
+                    )
+        _cursor(self).execute(
+            "SELECT 1 FROM kineticloop.artifact_revocation_events "
+            "WHERE ref_s49_id=ANY(%s) LIMIT 1",
+            (list(supplied),),
+        )
+        if _cursor(self).fetchone() is not None:
+            raise GuardRequired("registry artifact is revoked")
+        return revision
 
     def lock_subject(self) -> None:
         if not self.spec.subject_guard_required:
