@@ -30,6 +30,7 @@ _T = TypeVar("_T")
 
 _LOGICAL_TABLES = {row.logical_id: row.table_name for row in LOGICAL_RELATIONS}
 _CURSORS: WeakKeyDictionary[object, Cursor[Any]] = WeakKeyDictionary()
+_REQUIRED_MANIFEST_PROJECTION_ROLES = frozenset({"EXPOSURE"})
 
 
 def evidence_source_identity_key(values: Mapping[str, Any]) -> str:
@@ -219,10 +220,10 @@ TRANSACTION_OWNER_MATRIX: Mapping[str, OwnerSpec] = MappingProxyType(
             "PlanningWorkflowService", Boundary.T8, ("S01", "S27", "S31", "S02", "S03", "S04")
         ),
         "AcquireLease": OwnerSpec(
-            "PlanningWorkflowService", Boundary.T5, ("S01", "S27", "S29", "S02", "S03", "S04")
+            "PlanningWorkflowService", Boundary.T5, ("S01", "S27", "S02", "S03", "S04")
         ),
         "RenewLease": OwnerSpec(
-            "PlanningWorkflowService", Boundary.T5, ("S01", "S27", "S29", "S02", "S03", "S04")
+            "PlanningWorkflowService", Boundary.T5, ("S01", "S27", "S02", "S03", "S04")
         ),
         "ReserveCall": OwnerSpec(
             "CallLedgerService", Boundary.T5, ("S01", "S27", "S31", "S32", "S02", "S03", "S04")
@@ -1013,6 +1014,21 @@ class RestrictedSqlSession:
             raise GuardRequired("T3 publication validity was not prepared")
         return value
 
+    def settlement_transition(self) -> Mapping[str, Any]:
+        basis = self.__coordination_context.get("settlement_basis")
+        if self.__command_kind not in {"SettleCall", "MarkUnknown"} or not isinstance(
+            basis, dict
+        ):
+            raise GuardRequired("T8 settlement transition was not prepared under lock")
+        return {
+            "reservation_id": basis["reservation_id"],
+            "intent_id": basis["intent_id"],
+            "source_status": basis["source_status"],
+            "target_status": basis["target_status"],
+            "next_revision": basis["next_revision"],
+            "occurred_at": basis["occurred_at"],
+        }
+
     def factset_sealed_at(self) -> datetime:
         value = self.__coordination_context.get("seal_timestamp")
         if not isinstance(value, datetime):
@@ -1095,6 +1111,18 @@ class RestrictedSqlSession:
                 or values.get("revision_no") != head_basis.get("head_revision", -1) + 1
             ):
                 raise GuardRequired("S39 day and revision must advance the exact locked head")
+            if values.get("ref_s24_id") != self.__coordination_context.get("current_manifest_id"):
+                raise GuardRequired("S39 must bind the current locked manifest")
+            if values.get("ref_s29_id") != self.__coordination_context.get("verified_attempt_id"):
+                raise GuardRequired("S39 must bind the current verified attempt")
+            if values.get("ref_s27_id") != self.__coordination_context.get("verified_intent_id"):
+                raise GuardRequired("S39 must bind the current verified intent")
+            if values.get("ref_s37_id") != self.__coordination_context.get(
+                "authorization_validation_id"
+            ):
+                raise GuardRequired("S39 must bind the prepared validation")
+            if values.get("ref_s38_id") != self.__coordination_context.get("authorization_head_id"):
+                raise GuardRequired("S39 must bind the prepared daily head")
         if logical_id == "S15" and self.__command_kind == "BeginBuild":
             expected = self.__coordination_context.get("factset_begin", {})
             payload = self._json_value(values.get("typed_payload", {}))
@@ -1110,18 +1138,30 @@ class RestrictedSqlSession:
                 or payload != expected.get("typed_payload")
             ):
                 raise GuardRequired("BeginBuild must create the exact captured BUILDING basis")
-            if values.get("ref_s24_id") != self.__coordination_context.get("current_manifest_id"):
-                raise GuardRequired("S39 must bind the current locked manifest")
-            if values.get("ref_s29_id") != self.__coordination_context.get("verified_attempt_id"):
-                raise GuardRequired("S39 must bind the current verified attempt")
-            if values.get("ref_s27_id") != self.__coordination_context.get("verified_intent_id"):
-                raise GuardRequired("S39 must bind the current verified intent")
-            if values.get("ref_s37_id") != self.__coordination_context.get(
-                "authorization_validation_id"
+        if logical_id == "S23" and self.__command_kind == "BuildManifest":
+            candidate = self._json_value(values.get("typed_payload", {}))
+            bindings = candidate.get("projection_bindings")
+            closure = candidate.get("artifact_closure_ids")
+            roots = candidate.get("artifact_root_ids")
+            if values.get("status") == "READY" and (
+                not candidate.get("manifest_hash")
+                or not candidate.get("dependency_basis_hash")
+                or not candidate.get("artifact_dependency_closure_hash")
+                or not isinstance(bindings, list)
+                or any(not isinstance(item, Mapping) for item in bindings)
+                or {item.get("role") for item in bindings if isinstance(item, Mapping)}
+                != _REQUIRED_MANIFEST_PROJECTION_ROLES
+                or len(bindings) != len(_REQUIRED_MANIFEST_PROJECTION_ROLES)
+                or bindings[0].get("id") != str(values.get("ref_s21_id"))
+                or not isinstance(closure, list)
+                or not closure
+                or any(not isinstance(item, str) for item in closure)
+                or not isinstance(roots, list)
+                or not roots
+                or any(not isinstance(item, str) for item in roots)
+                or not set(roots).issubset(set(closure))
             ):
-                raise GuardRequired("S39 must bind the prepared validation")
-            if values.get("ref_s38_id") != self.__coordination_context.get("authorization_head_id"):
-                raise GuardRequired("S39 must bind the prepared daily head")
+                raise GuardRequired("READY S23 must freeze its complete candidate basis")
         if logical_id == "S24":
             publication_expected: Mapping[str, Any] = {
                 "generation": self.__coordination_context.get("publication_generation"),
@@ -1148,14 +1188,19 @@ class RestrictedSqlSession:
             ] != self.__coordination_context.get("publication_valid_until"):
                 raise GuardRequired("S24 validity must equal the guarded dependency minimum")
         if logical_id == "S25":
-            expected_binding = self.__coordination_context.get("publication_projection")
+            expected_bindings = self.__coordination_context.get("publication_projections", {})
+            role = values.get("projection_role")
+            expected_binding = expected_bindings.get(role)
             if (
                 values.get("ref_s24_id") not in self.__inserted_ids.get("S24", set())
                 or expected_binding is None
                 or values.get("ref_s21_id") != expected_binding.get("id")
-                or values.get("projection_role") != expected_binding.get("role")
                 or values.get("validated_basis_hash") != expected_binding.get("basis_hash")
                 or values.get("unavailable_reason") is not None
+                or any(
+                    inserted.get("projection_role") == role
+                    for inserted in self.__inserted_values.get("S25", {}).values()
+                )
             ):
                 raise GuardRequired("S25 must bind the exact guarded projection role and basis")
         if logical_id == "S18" and self.__command_kind in {"ApplyControl", "ClearControl"}:
@@ -1359,13 +1404,16 @@ class RestrictedSqlSession:
             and TRANSACTION_OWNER_MATRIX[self.__command_kind].boundary is Boundary.T2_IN
         ):
             invalidated_epoch = values.get("invalidated_epoch")
+            scope = values.get("scope")
             if (
                 not isinstance(invalidated_epoch, int)
                 or invalidated_epoch != int(self.__coordination_context["authorization_epoch"]) + 1
                 or values.get("ref_s42_id") is not None
                 or values.get("event_kind") != "EPOCH_INVALIDATED"
                 or values.get("ref_s02_id") != self.__receipt_id
-                or values.get("scope") != self.__coordination_context.get("invalidation_scope")
+                or not isinstance(scope, str)
+                or not scope.strip()
+                or scope != self.__coordination_context.get("invalidation_scope")
                 or values.get("causation_key")
                 != self.__coordination_context.get("command_causation_key")
             ):
@@ -1666,11 +1714,19 @@ class RestrictedSqlSession:
                 if not any(predicate(row) for row in self.__updated_values.get(logical_id, [])):
                     raise GuardRequired(f"Reauthorize requires its mandatory {logical_id} update")
         if self.__command_kind == "PublishManifest":
+            expected_roles = set(
+                self.__coordination_context.get("publication_projections", {})
+            )
+            inserted_roles = {
+                row.get("projection_role")
+                for row in self.__inserted_values.get("S25", {}).values()
+            }
             if (
                 len(self.__inserted_ids.get("S24", set())) != 1
-                or len(self.__inserted_ids.get("S25", set())) != 1
+                or inserted_roles != expected_roles
+                or len(self.__inserted_ids.get("S25", set())) != len(expected_roles)
             ):
-                raise GuardRequired("PublishManifest requires one exact guarded S24/S25 basis")
+                raise GuardRequired("PublishManifest requires the complete exact guarded S24/S25 basis")
         if self.__command_kind in {
             "DecideAssociation",
             "DecideAdmission",
@@ -2563,8 +2619,16 @@ class RepositoryTransaction:
         ):
             raise GuardRequired("manifest build is stale or not bound to the current S01 basis")
         candidate = dict(build[7] or {})
-        if not candidate.get("manifest_hash"):
-            raise GuardRequired("READY manifest build is missing its frozen candidate hash")
+        required_candidate_fields = {
+            "manifest_hash",
+            "dependency_basis_hash",
+            "artifact_dependency_closure_hash",
+            "artifact_closure_ids",
+            "artifact_root_ids",
+            "projection_bindings",
+        }
+        if not required_candidate_fields.issubset(candidate):
+            raise GuardRequired("READY manifest build is missing its frozen candidate basis")
         _cursor(self).execute(
             "SELECT dependency_kind,dependency_semantic_key,collection_signature,ref_s05_id,"
             "ref_s06_id,ref_s14_id,ref_s15_id,ref_s19_id,ref_s20_id "
@@ -2586,27 +2650,71 @@ class RepositoryTransaction:
             }
             for row in _cursor(self).fetchall()
         ]
-        if any(
+        has_positive_dependency = any(
+            any(
+                item[field] is not None
+                for field in ("policy", "program", "fact", "factset", "catalog", "mapping")
+            )
+            for item in dependency_rows
+        )
+        has_collection_dependency = any(bool(item["collection"]) for item in dependency_rows)
+        if (
+            not dependency_rows
+            or not has_positive_dependency
+            or not has_collection_dependency
+            or any(
             (item["policy"] and item["policy"] != str(build[3]))
             or (item["program"] and item["program"] != str(build[4]))
             or (item["factset"] and item["factset"] != str(build[5]))
             or (item["catalog"] and item["catalog"] != str(build[10]))
             or (item["mapping"] and item["mapping"] != str(build[9]))
             for item in dependency_rows
+            )
         ):
-            raise GuardRequired("projection dependency basis is stale or cross-wired")
+            raise GuardRequired("projection dependency basis is incomplete, stale, or cross-wired")
         artifact_digest = self.artifact_closure_digest()
         dependency_basis = {
             "projection_id": str(build[6]),
             "projection_role": build[11],
             "validated_basis_hash": build[12],
             "dependencies": dependency_rows,
-            "artifact_closure_hash": artifact_digest,
             "catalog_id": str(build[10]) if build[10] else None,
             "mapping_id": str(build[9]) if build[9] else None,
         }
-        dependency_digest = hashlib.sha256(
+        dependency_basis_hash = hashlib.sha256(
             json.dumps(dependency_basis, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+        expected_projection_bindings = [
+            {"id": str(build[6]), "role": build[11], "basis_hash": build[12]}
+        ]
+        candidate_projection_bindings = candidate.get("projection_bindings")
+        verified_artifact_ids = sorted(str(item) for item in self._verified_artifacts)
+        candidate_closure_ids = candidate.get("artifact_closure_ids")
+        candidate_root_ids = candidate.get("artifact_root_ids")
+        if (
+            candidate.get("dependency_basis_hash") != dependency_basis_hash
+            or candidate.get("artifact_dependency_closure_hash") != artifact_digest
+            or candidate_closure_ids != verified_artifact_ids
+            or not isinstance(candidate_closure_ids, list)
+            or any(not isinstance(item, str) for item in candidate_closure_ids)
+            or not isinstance(candidate_root_ids, list)
+            or not candidate_root_ids
+            or any(not isinstance(item, str) for item in candidate_root_ids)
+            or not set(candidate_root_ids).issubset(set(verified_artifact_ids))
+            or candidate_projection_bindings != expected_projection_bindings
+            or {item["role"] for item in expected_projection_bindings}
+            != _REQUIRED_MANIFEST_PROJECTION_ROLES
+        ):
+            raise GuardRequired("READY manifest candidate does not match its verified full closure")
+        dependency_digest = hashlib.sha256(
+            json.dumps(
+                {
+                    "dependency_basis_hash": dependency_basis_hash,
+                    "artifact_dependency_closure_hash": artifact_digest,
+                },
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
         ).hexdigest()
         valid_until = min(build[13], self.artifact_closure_valid_until())
         if valid_until <= build[14]:
@@ -2620,13 +2728,13 @@ class RepositoryTransaction:
         self._coordination_context["publication_dependency_digest"] = dependency_digest
         self._coordination_context["publication_valid_until"] = valid_until
         self._coordination_context["publication_manifest_hash"] = candidate["manifest_hash"]
-        self._coordination_context["publication_primary_artifact_id"] = min(
-            self._verified_artifacts, key=str
-        )
-        self._coordination_context["publication_projection"] = {
-            "id": build[6],
-            "role": build[11],
-            "basis_hash": build[12],
+        self._coordination_context["publication_primary_artifact_id"] = UUID(candidate_root_ids[0])
+        self._coordination_context["publication_projections"] = {
+            item["role"]: {
+                "id": UUID(item["id"]),
+                "basis_hash": item["basis_hash"],
+            }
+            for item in expected_projection_bindings
         }
 
     def _prepare_factset_seal(self, basis: Mapping[str, Any] | None) -> None:
@@ -2646,6 +2754,7 @@ class RepositoryTransaction:
         if row is None or row[0] != "READY" or basis is None:
             raise GuardRequired("SealFactset requires the exact locked READY factset")
         payload = dict(row[4] or {})
+        member_count = payload.get("member_count")
         certificate_basis = {
             "method_version": "kl015-v1",
             "factset_id": str(factset_id),
@@ -2654,6 +2763,7 @@ class RepositoryTransaction:
             "captured_epoch": payload.get("captured_epoch"),
             "completed_member_revision": row[2],
             "membership_digest": row[3],
+            "member_count": member_count,
         }
         certificate = hashlib.sha256(
             json.dumps(certificate_basis, sort_keys=True, separators=(",", ":")).encode()
@@ -2664,12 +2774,19 @@ class RepositoryTransaction:
             "captured_epoch": self._coordination_context.get("authorization_epoch"),
             "completed_member_revision": row[2],
             "membership_digest": row[3],
+            "member_count": member_count,
             "completion_identity": payload.get("completion_identity"),
             "completion_certificate": certificate,
         }
         if (
             not row[3]
+            or not isinstance(member_count, int)
+            or member_count < 0
             or row[1] != row[2]
+            or payload.get("captured_input_frontier")
+            != self._coordination_context.get("input_frontier_hash")
+            or payload.get("captured_epoch")
+            != self._coordination_context.get("authorization_epoch")
             or payload.get("completion_certificate") != certificate
             or any(basis.get(key) != value for key, value in expected.items())
         ):
@@ -2698,18 +2815,25 @@ class RepositoryTransaction:
         row = _cursor(self).fetchone()
         if row is None or row[0] != intent_id or row[1] is None or row[5] != intent_id:
             raise GuardRequired("settlement reservation must bind the exact locked intent/attempt")
-        target = "SETTLED" if self.command_kind == "SettleCall" else "OUTCOME_UNKNOWN"
-        allowed_sources = (
-            {"DISPATCH_INTENT", "DISPATCHED", "OUTCOME_UNKNOWN"}
-            if self.command_kind == "SettleCall"
-            else {"DISPATCH_INTENT", "DISPATCHED"}
+        expected_transition = self._coordination_context.get("expected_transition")
+        expected_sources = {
+            "SettleCall": {"DISPATCH_INTENT": "DISPATCH_INTENT", "UNKNOWN": "OUTCOME_UNKNOWN"},
+            "MarkUnknown": {"DISPATCH_INTENT": "DISPATCH_INTENT"},
+        }
+        expected_source = (
+            expected_sources[self.command_kind].get(expected_transition)
+            if isinstance(expected_transition, str)
+            else None
         )
+        if expected_source is None or row[2] != expected_source:
+            raise GuardRequired("settlement expected transition does not match locked reservation")
+        target = "SETTLED" if self.command_kind == "SettleCall" else "OUTCOME_UNKNOWN"
         self._coordination_context["settlement_basis"] = {
             "reservation_id": reservation_id,
             "intent_id": intent_id,
             "attempt_id": row[1],
             "source_status": row[2],
-            "allowed": row[2] in allowed_sources,
+            "allowed": True,
             "target_status": target,
             "next_revision": int(row[3] or 0) + 1,
             "occurred_at": row[4],
@@ -2988,12 +3112,17 @@ class RepositoryTransaction:
         authorization_basis: Mapping[str, Any] | None = None,
         invalidation_scope: str | None = None,
         factset_seal_basis: Mapping[str, Any] | None = None,
+        expected_transition: str | None = None,
     ) -> tuple[Mapping[str, Any], bool]:
         self._require_receipt_guard()
         self._require_command_locks(aggregate_locks or {})
         self._coordination_context["command_causation_key"] = client_key
-        if invalidation_scope is not None:
+        if self.spec.boundary is Boundary.T2_IN:
+            if not isinstance(invalidation_scope, str) or not invalidation_scope.strip():
+                raise GuardRequired("T2 invalidation requires a nonempty canonical scope")
             self._coordination_context["invalidation_scope"] = invalidation_scope
+        if self.command_kind in {"SettleCall", "MarkUnknown"}:
+            self._coordination_context["expected_transition"] = expected_transition
         self._prepare_settlement_basis()
         if self.spec.boundary is Boundary.T1 and source_identity_key is None:
             raise GuardRequired("T1 first execution requires its source identity key")
@@ -3258,9 +3387,27 @@ def execute_factset_build(
     specification = TRANSACTION_OWNER_MATRIX.get(command_kind)
     if specification is None or specification.boundary is not Boundary.BUILD:
         raise GuardRequired("command is not a factset-build owner")
+    basis = dict(factset_build_basis or {})
+    if command_kind == "BeginBuild":
+        # Capture validation is intentionally a separate short read transaction.  It
+        # proves the caller's basis is current without carrying S01 coordination into
+        # the potentially longer build-creation transaction.
+        with connection.transaction():
+            snapshot = connection.execute(
+                "SELECT input_frontier_hash,authorization_epoch,active_program_id,"
+                "active_policy_bundle_id FROM kineticloop.user_decision_state "
+                "WHERE subject_id=%s",
+                (subject_id,),
+            ).fetchone()
+        if snapshot is None or (
+            basis.get("captured_input_frontier") != snapshot[0]
+            or basis.get("captured_epoch") != snapshot[1]
+            or basis.get("program_revision_id") != snapshot[2]
+            or basis.get("policy_id") != snapshot[3]
+        ):
+            raise GuardRequired("BeginBuild basis does not match the current committed S01 basis")
     with connection.transaction():
         cursor = connection.cursor()
-        basis = dict(factset_build_basis or {})
         context: dict[str, Any] = {}
         locked: Mapping[str, frozenset[UUID]] = {}
         if command_kind == "BeginBuild":
@@ -3315,8 +3462,16 @@ def execute_factset_build(
                 "typed_payload": dict(row[2] or {}),
             }
             if command_kind == "CompleteFactset":
-                if not basis.get("membership_digest") or not basis.get("completion_identity"):
-                    raise GuardRequired("CompleteFactset requires digest and completion identity")
+                member_count = basis.get("member_count")
+                if (
+                    not basis.get("membership_digest")
+                    or not basis.get("completion_identity")
+                    or not isinstance(member_count, int)
+                    or member_count < 0
+                ):
+                    raise GuardRequired(
+                        "CompleteFactset requires digest, count, and completion identity"
+                    )
                 certificate_basis = {
                     "method_version": "kl015-v1",
                     "factset_id": str(build_id),
@@ -3327,6 +3482,7 @@ def execute_factset_build(
                     "captured_epoch": build_context["typed_payload"].get("captured_epoch"),
                     "completed_member_revision": build_context["member_revision"],
                     "membership_digest": basis["membership_digest"],
+                    "member_count": member_count,
                 }
                 certificate = hashlib.sha256(
                     json.dumps(certificate_basis, sort_keys=True, separators=(",", ":")).encode()
@@ -3335,7 +3491,7 @@ def execute_factset_build(
                 build_context["completion_payload"] = {
                     **build_context["typed_payload"],
                     "completion_identity": basis["completion_identity"],
-                    "member_count": basis.get("member_count"),
+                    "member_count": member_count,
                     "completion_certificate": certificate,
                 }
             context["factset_build"] = build_context

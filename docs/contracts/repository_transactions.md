@@ -42,7 +42,11 @@ Factset build commands have a separate subject-bound interface: BeginBuild creat
 exact BUILDING basis, each WriteCandidate advances one member revision with one S16
 member, and CompleteFactset freezes the digest, closed member revision, and versioned
 completion certificate. Sealing remains a T2-SEAL owner operation that starts at S01
-and revalidates that full completion basis, captured frontier, and epoch.
+and revalidates that full completion basis, nonnegative member count, captured
+frontier, and epoch. BeginBuild validates its captured basis in a preceding short
+read transaction so the build transaction itself never carries an S01 lock. Every
+T2-IN invalidation requires a nonempty canonical scope, and where the command writes
+the cause record the barrier scope must equal that same-command cause scope.
 
 Durable first execution locks S01 before S02, then locks declared remaining
 aggregate rows in canonical table/key order, compares the request hash, and saves the
@@ -72,8 +76,9 @@ an S31 bound to the verified live intent/attempt and a same-command S32 transiti
 PermitDispatch additionally requires the reservation's `ref_s27_id` and dispatch
 fence to match that verified live intent and token, advances its settlement revision,
 and appends the corresponding S32 transition.
-AcquireLease and RenewLease expose no generic S29 mutation capability; attempt
-progression remains owned by the exact guarded attempt workflow.
+AcquireLease and RenewLease expose neither generic S29 mutation nor arbitrary S29
+aggregate-lock capability; attempt progression remains owned by the exact guarded
+attempt workflow.
 
 `T6CommitCoordinator` is the one repository owner for CommitBundle. It is the atomic
 database boundary jointly required by PrescriptionCommitService and
@@ -109,12 +114,17 @@ single READY S15 build's closed revision, digest, certificate, captured frontier
 epoch to the exact current S01 pointer and SEALED state.
 
 T3 publication locks and publishes the single READY S23 build whose captured epoch,
-frontier, policy, program, and factset equal current S01. S24 is the next generation
-and binds the exact SEALED factset, projection role/basis, catalog/mapping selection,
-artifact closure digest, manifest hash, registry state/revision, frontier, and bounded
-validity. S25 is the complete same-command projection binding set; S01 and S23 must
-advance to exactly those published identities. T4 admits either a new or locked intent and binds S28/S29
-to that exact chain, current epoch, and current manifest.
+frontier, policy, program, and factset equal current S01. The READY candidate freezes
+its dependency-basis hash, exact required projection-role bindings, full artifact
+closure, declared artifact roots, and artifact-closure hash. Publication requires
+both positive and collection/absence S22 dependencies, recomputes the complete basis,
+and rejects any missing, extra, stale, or caller-selected replacement closure. S24 is
+the next generation and binds the exact SEALED factset, projection roles/bases,
+catalog/mapping selection, artifact closure digest, manifest hash, registry
+state/revision, frontier, and bounded validity. S25 is the complete same-command
+projection binding set; S01 and S23 must advance to exactly those published identities.
+T4 admits either a new or locked intent and binds S28/S29 to that exact chain, current
+epoch, and current manifest.
 
 T7 START requires a READY/PLANNED session with no prior START; RESUME requires PAUSED
 with a prior START; CONTINUE requires IN_PROGRESS with a prior START. START and RESUME
@@ -131,8 +141,10 @@ event, and S04 outbox row with the state transition. Only the first
 key receives the durable permit with `sendable=false`. The physical provider request
 occurs after commit.
 SettleCall and MarkUnknown prepare one exact locked S27/S31/attempt transition,
-enforce the frozen source/target state and next settlement revision, and bind one S32
-event to that same reservation, revision, server time, and receipt identity.
+compare the command's explicit expected transition to the locked S31 source state,
+enforce the frozen target state and next settlement revision, and bind one S32 event
+to that same reservation, revision, server time, and receipt identity. A contender
+blocked behind another settlement must re-read S31 and fail its stale expectation.
 Outbox claiming is an isolated S04 transaction with no S01 or business mutation
 callback. Consumers release the outbox row before invoking a new idempotent command.
 

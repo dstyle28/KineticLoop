@@ -83,22 +83,106 @@ FACTSET_MEMBER_TEST = UUID("00000000-0000-8000-8000-000000015116")
 MANIFEST_BUILD = UUID("00000000-0000-8000-8000-000000015023")
 PROJECTION = UUID("00000000-0000-8000-8000-000000015021")
 PROJECTION_BINDING = UUID("00000000-0000-8000-8000-000000015025")
+PROJECTION_DEPENDENCY = UUID("00000000-0000-8000-8000-000000015022")
+PROJECTION_COLLECTION_DEPENDENCY = UUID("00000000-0000-8000-8000-000000015122")
 NOW = datetime(2026, 9, 26, 12, tzinfo=UTC)
 
 
-def _completion_certificate(factset_id: UUID, member_revision: int, membership_digest: str) -> str:
+def _completion_certificate(
+    factset_id: UUID,
+    member_revision: int,
+    membership_digest: str,
+    member_count: int,
+    *,
+    captured_input_frontier: str = "frontier-1",
+    captured_epoch: int = 0,
+) -> str:
     basis = {
         "method_version": "kl015-v1",
         "factset_id": str(factset_id),
         "subject_id": str(SUBJECT),
-        "captured_input_frontier": "frontier-1",
-        "captured_epoch": 0,
+        "captured_input_frontier": captured_input_frontier,
+        "captured_epoch": captured_epoch,
         "completed_member_revision": member_revision,
         "membership_digest": membership_digest,
+        "member_count": member_count,
     }
     return hashlib.sha256(
         json.dumps(basis, sort_keys=True, separators=(",", ":")).encode()
     ).hexdigest()
+
+
+def _manifest_candidate_payload(connection: Any) -> dict[str, Any]:
+    artifact_rows = connection.execute(
+        "SELECT id,artifact_kind,artifact_identity,artifact_version,content_hash,revision,"
+        "validity_kind,valid_from,valid_until,timeless_approval_policy,"
+        "timeless_approval_reason FROM kineticloop.safety_artifacts WHERE id=ANY(%s) ORDER BY id",
+        ([ARTIFACT, DEPENDENCY],),
+    ).fetchall()
+    artifact_details = [
+        {
+            "artifact_id": str(row[0]),
+            "artifact_kind": row[1],
+            "artifact_identity": row[2],
+            "artifact_version": row[3],
+            "content_hash": row[4],
+            "artifact_revision": row[5],
+            "validity_kind": row[6],
+            "valid_from": row[7].isoformat(),
+            "valid_until": row[8].isoformat() if row[8] is not None else None,
+            "timeless_approval_policy": row[9],
+            "timeless_approval_reason": row[10],
+        }
+        for row in artifact_rows
+    ]
+    artifact_digest = hashlib.sha256(
+        json.dumps(artifact_details, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    dependencies = [
+        {
+            "kind": "COLLECTION",
+            "key": "admitted-facts",
+            "collection": "all-admitted-v1",
+            "policy": None,
+            "program": None,
+            "fact": None,
+            "factset": str(FACTSET),
+            "catalog": None,
+            "mapping": None,
+        },
+        {
+            "kind": "FACTSET",
+            "key": "current-factset",
+            "collection": None,
+            "policy": None,
+            "program": None,
+            "fact": None,
+            "factset": str(FACTSET),
+            "catalog": None,
+            "mapping": None,
+        },
+    ]
+    dependency_basis = {
+        "projection_id": str(PROJECTION),
+        "projection_role": "EXPOSURE",
+        "validated_basis_hash": "projection-basis",
+        "dependencies": dependencies,
+        "catalog_id": None,
+        "mapping_id": None,
+    }
+    dependency_basis_hash = hashlib.sha256(
+        json.dumps(dependency_basis, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    return {
+        "manifest_hash": "manifest-hash-2",
+        "dependency_basis_hash": dependency_basis_hash,
+        "artifact_dependency_closure_hash": artifact_digest,
+        "artifact_closure_ids": sorted((str(ARTIFACT), str(DEPENDENCY))),
+        "artifact_root_ids": [str(ARTIFACT)],
+        "projection_bindings": [
+            {"id": str(PROJECTION), "role": "EXPOSURE", "basis_hash": "projection-basis"}
+        ],
+    }
 
 
 @pytest.fixture(scope="module")
@@ -253,7 +337,7 @@ def _seed_transaction_rows(admin_url: str) -> None:
                         "completion_identity": "seed-completion",
                         "member_count": 0,
                         "completion_certificate": _completion_certificate(
-                            FACTSET, 0, "factset-digest"
+                            FACTSET, 0, "factset-digest", 0
                         ),
                     }
                 ),
@@ -285,6 +369,23 @@ def _seed_transaction_rows(admin_url: str) -> None:
             (PROJECTION_BINDING, SUBJECT, PROJECTION, MANIFEST),
         )
         connection.execute(
+            "INSERT INTO kineticloop.projection_dependencies"
+            "(id,subject_id,dependency_kind,dependency_semantic_key,collection_signature,"
+            "ref_s15_id,ref_s21_id) VALUES "
+            "(%s,%s,'FACTSET','current-factset',NULL,%s,%s),"
+            "(%s,%s,'COLLECTION','admitted-facts','all-admitted-v1',%s,%s)",
+            (
+                PROJECTION_DEPENDENCY,
+                SUBJECT,
+                FACTSET,
+                PROJECTION,
+                PROJECTION_COLLECTION_DEPENDENCY,
+                SUBJECT,
+                FACTSET,
+                PROJECTION,
+            ),
+        )
+        connection.execute(
             "INSERT INTO kineticloop.manifest_builds"
             "(id,subject_id,build_identity,status,captured_epoch,captured_input_frontier,"
             "ref_s05_id,ref_s06_id,ref_s15_id,ref_s21_id,typed_payload) "
@@ -296,7 +397,7 @@ def _seed_transaction_rows(admin_url: str) -> None:
                 POLICY,
                 FACTSET,
                 PROJECTION,
-                psycopg.types.json.Jsonb({"manifest_hash": "manifest-hash-2"}),
+                psycopg.types.json.Jsonb(_manifest_candidate_payload(connection)),
             ),
         )
         connection.execute("SET session_replication_role=origin")
@@ -479,8 +580,9 @@ def test_factset_build_stays_outside_subject_coordination(
                 "membership_digest": "build-test-digest",
                 "completion_identity": "build-test-completion",
                 "completion_certificate": _completion_certificate(
-                    FACTSET_BUILD_TEST, 1, "build-test-digest"
+                    FACTSET_BUILD_TEST, 1, "build-test-digest", 1
                 ),
+                "member_count": 1,
             },
         )
 
@@ -516,6 +618,61 @@ def test_factset_build_stays_outside_subject_coordination(
     with psycopg.connect(database_urls["admin"]) as connection:
         with pytest.raises(GuardRequired, match="completion basis"):
             execute_command(connection, "SealFactset", SUBJECT, stale_seal)
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        original_payload = connection.execute(
+            "SELECT typed_payload FROM kineticloop.factset_revisions WHERE id=%s",
+            (FACTSET_BUILD_TEST,),
+        ).fetchone()[0]
+        stale_payload = dict(original_payload)
+        stale_payload["captured_input_frontier"] = "frontier-stale"
+        stale_payload["completion_certificate"] = _completion_certificate(
+            FACTSET_BUILD_TEST,
+            1,
+            "build-test-digest",
+            1,
+            captured_input_frontier="frontier-stale",
+        )
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "UPDATE kineticloop.factset_revisions SET typed_payload=%s WHERE id=%s",
+            (psycopg.types.json.Jsonb(stale_payload), FACTSET_BUILD_TEST),
+        )
+        connection.execute("SET session_replication_role=origin")
+
+    def stale_stored_basis(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
+        tx.lock_subject()
+        return tx.idempotent_outcome(
+            receipt_id=UUID("00000000-0000-8000-8000-000000015119"),
+            actor_scope="subject",
+            client_key="stale-stored-factset-basis",
+            request_hash="stale-stored-factset-basis-hash",
+            mutation=lambda session: {"unexpected": True},
+            event=_event(0x15120),
+            aggregate_locks={"factset_revisions": (FACTSET_BUILD_TEST,)},
+            factset_seal_basis={
+                "factset_id": FACTSET_BUILD_TEST,
+                "captured_input_frontier": "frontier-1",
+                "captured_epoch": 0,
+                "completed_member_revision": 1,
+                "membership_digest": "build-test-digest",
+                "completion_identity": "build-test-completion",
+                "completion_certificate": stale_payload["completion_certificate"],
+                "member_count": 1,
+            },
+        )
+
+    try:
+        with psycopg.connect(database_urls["admin"]) as connection:
+            with pytest.raises(GuardRequired, match="completion basis"):
+                execute_command(connection, "SealFactset", SUBJECT, stale_stored_basis)
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "UPDATE kineticloop.factset_revisions SET typed_payload=%s WHERE id=%s",
+                (psycopg.types.json.Jsonb(original_payload), FACTSET_BUILD_TEST),
+            )
+            connection.execute("SET session_replication_role=origin")
     with psycopg.connect(database_urls["admin"]) as connection:
         with pytest.raises((GuardRequired, StatementRejected)):
             execute_factset_build(
@@ -878,6 +1035,12 @@ def test_direct_write_bypass_rejected(database_urls: dict[str, str]) -> None:
 def test_event_outbox_atomicity_enforced(
     database_urls: dict[str, str], command: str, tag: int
 ) -> None:
+    if command == "SettleCall":
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute(
+                "UPDATE kineticloop.call_reservations SET status='DISPATCH_INTENT' WHERE id=%s",
+                (RESERVATION_2,),
+            )
     receipt = UUID(f"00000000-0000-8000-8000-{tag:012x}")
     event = _event(tag + 1)
 
@@ -1016,6 +1179,8 @@ def test_event_outbox_atomicity_enforced(
                 if command == "CommitBundle"
                 else None
             ),
+            invalidation_scope="EXECUTION" if command == "DecideAdmission" else None,
+            expected_transition="DISPATCH_INTENT" if command == "SettleCall" else None,
         )
 
     with psycopg.connect(database_urls["admin"]) as connection:
@@ -1746,6 +1911,7 @@ def test_t8_settlement_rejects_crosswired_intent_reservation(
                             request_hash="crosswired-settlement-hash",
                             mutation=lambda session: {"unexpected": True},
                             event=_event(0x15563),
+                            expected_transition="DISPATCH_INTENT",
                         ),
                     ),
                 )
@@ -1757,6 +1923,219 @@ def test_t8_settlement_rejects_crosswired_intent_reservation(
                 (INTENT, ATTEMPT, RESERVATION_2),
             )
             connection.execute("SET session_replication_role=origin")
+
+
+@pytest.mark.parametrize(
+    "command",
+    (
+        "DecideAssociation",
+        "DecideAdmission",
+        "AcceptFactRevision",
+        "ApplyControl",
+        "ClearControl",
+        "ApproveChange",
+        "ActivateApprovedProgram",
+        "RecordActualExecution",
+        "CompleteReportedWorkout",
+    ),
+)
+def test_t2_invalidation_scope_is_mandatory(
+    database_urls: dict[str, str], command: str
+) -> None:
+    def operation(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
+        tx.lock_subject()
+        if command == "CompleteReportedWorkout":
+            tx.lock_execution((SESSION,))
+        return tx.idempotent_outcome(
+            receipt_id=UUID("00000000-0000-8000-8000-000000015570"),
+            actor_scope="subject",
+            client_key=f"missing-scope-{command}",
+            request_hash=f"missing-scope-{command}-hash",
+            mutation=lambda session: {"unexpected": True},
+            event=_event(0x15571),
+        )
+
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(GuardRequired, match="nonempty canonical scope"):
+            execute_command(connection, command, SUBJECT, operation)
+
+
+def test_lease_commands_reject_arbitrary_attempt_locks(database_urls: dict[str, str]) -> None:
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute(
+            "UPDATE kineticloop.planning_intents SET status='RUNNING',lease_owner='lease-test',"
+            "fence_token=20,lease_expires_at=clock_timestamp()+interval '1 hour',"
+            "deadline=clock_timestamp()+interval '2 days' WHERE id=%s",
+            (INTENT,),
+        )
+
+    def operation(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
+        tx.lock_subject()
+        tx.lock_intents((INTENT,))
+        tx.require_lease_acquisition_basis(
+            INTENT,
+            expected_owner_id="lease-test",
+            expected_fence=20,
+            new_owner_id="lease-test",
+            new_fence=21,
+            new_lease_expires_at=datetime.now(UTC) + timedelta(days=1),
+            expected_request_revision=1,
+        )
+        return tx.idempotent_outcome(
+            receipt_id=UUID("00000000-0000-8000-8000-000000015572"),
+            actor_scope="subject",
+            client_key="lease-arbitrary-attempt-lock",
+            request_hash="lease-arbitrary-attempt-lock-hash",
+            mutation=lambda session: {"unexpected": True},
+            event=_event(0x15573),
+            aggregate_locks={"planning_attempts": (ATTEMPT,)},
+        )
+
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(GuardRequired, match="inapplicable S29"):
+            execute_command(connection, "AcquireLease", SUBJECT, operation)
+
+
+def test_t8_expected_transition_is_exact(database_urls: dict[str, str]) -> None:
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute(
+            "UPDATE kineticloop.call_reservations SET status='DISPATCH_INTENT' WHERE id=%s",
+            (RESERVATION_2,),
+        )
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(GuardRequired, match="expected transition"):
+            execute_command(
+                connection,
+                "SettleCall",
+                SUBJECT,
+                lambda tx: (
+                    tx.lock_subject(),
+                    tx.lock_intents((INTENT,)),
+                    tx.lock_reservations((RESERVATION_2,)),
+                    tx.idempotent_outcome(
+                        receipt_id=UUID("00000000-0000-8000-8000-000000015574"),
+                        actor_scope="subject",
+                        client_key="stale-settlement-transition",
+                        request_hash="stale-settlement-transition-hash",
+                        mutation=lambda session: {"unexpected": True},
+                        event=_event(0x15575),
+                        expected_transition="UNKNOWN",
+                    ),
+                ),
+            )
+
+
+def test_t8_stale_contender_rechecks_after_locked_transition(
+    database_urls: dict[str, str],
+) -> None:
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute(
+            "UPDATE kineticloop.call_reservations SET status='DISPATCH_INTENT',"
+            "settlement_revision=0 WHERE id=%s",
+            (RESERVATION_2,),
+        )
+    first_has_subject = threading.Event()
+    release_first = threading.Event()
+    errors: list[BaseException] = []
+
+    def mark_unknown() -> None:
+        try:
+            def operation(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
+                tx.lock_subject()
+                first_has_subject.set()
+                assert release_first.wait(timeout=5)
+                tx.lock_intents((INTENT,))
+                tx.lock_reservations((RESERVATION_2,))
+
+                def mutation(session: Any) -> Mapping[str, Any]:
+                    transition = session.settlement_transition()
+                    session.insert(
+                        "S32",
+                        {
+                            "id": UUID("00000000-0000-8000-8000-000000015576"),
+                            "subject_id": SUBJECT,
+                            "event_type": transition["target_status"],
+                            "transition_revision": transition["next_revision"],
+                            "receipt_identity": "mark-unknown-first",
+                            "occurred_at": transition["occurred_at"],
+                            "ref_s31_id": RESERVATION_2,
+                        },
+                    )
+                    session.update(
+                        "S31",
+                        {
+                            "status": transition["target_status"],
+                            "settlement_revision": transition["next_revision"],
+                        },
+                        {"id": RESERVATION_2, "subject_id": SUBJECT},
+                    )
+                    session.update(
+                        "S27",
+                        {"typed_payload": psycopg.types.json.Jsonb({"unknown": True})},
+                        {"id": INTENT, "subject_id": SUBJECT},
+                    )
+                    return {"status": transition["target_status"]}
+
+                return tx.idempotent_outcome(
+                    receipt_id=UUID("00000000-0000-8000-8000-000000015577"),
+                    actor_scope="subject",
+                    client_key="mark-unknown-first",
+                    request_hash="mark-unknown-first-hash",
+                    mutation=mutation,
+                    event=_event(0x15578),
+                    expected_transition="DISPATCH_INTENT",
+                )
+
+            with psycopg.connect(database_urls["admin"]) as connection:
+                execute_command(connection, "MarkUnknown", SUBJECT, operation)
+        except BaseException as error:
+            errors.append(error)
+
+    stale_errors: list[BaseException] = []
+
+    def stale_settle() -> None:
+        try:
+            with psycopg.connect(database_urls["admin"]) as connection:
+                execute_command(
+                    connection,
+                    "SettleCall",
+                    SUBJECT,
+                    lambda tx: (
+                        tx.lock_subject(),
+                        tx.lock_intents((INTENT,)),
+                        tx.lock_reservations((RESERVATION_2,)),
+                        tx.idempotent_outcome(
+                            receipt_id=UUID("00000000-0000-8000-8000-000000015579"),
+                            actor_scope="subject",
+                            client_key="stale-after-unknown",
+                            request_hash="stale-after-unknown-hash",
+                            mutation=lambda session: {"unexpected": True},
+                            event=_event(0x15580),
+                            expected_transition="DISPATCH_INTENT",
+                        ),
+                    ),
+                )
+        except BaseException as error:
+            stale_errors.append(error)
+
+    first = threading.Thread(target=mark_unknown)
+    first.start()
+    assert first_has_subject.wait(timeout=5)
+    stale = threading.Thread(target=stale_settle)
+    stale.start()
+    release_first.set()
+    first.join(timeout=5)
+    stale.join(timeout=5)
+    assert not first.is_alive() and not stale.is_alive()
+    assert not errors
+    assert len(stale_errors) == 1
+    assert isinstance(stale_errors[0], GuardRequired)
+    assert "expected transition" in str(stale_errors[0])
+    with psycopg.connect(database_urls["admin"]) as connection:
+        assert connection.execute(
+            "SELECT status,settlement_revision FROM kineticloop.call_reservations WHERE id=%s",
+            (RESERVATION_2,),
+        ).fetchone() == ("OUTCOME_UNKNOWN", 1)
 
 
 def test_ack_loss_replay_preserves_natural_uniqueness(database_urls: dict[str, str]) -> None:
@@ -1982,6 +2361,7 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
         parent_revision: UUID | None = OLD_BUNDLE,
         include_supersession: bool = True,
         revision_override: int | None = None,
+        manifest_override: UUID = MANIFEST,
     ) -> tuple[Mapping[str, Any], bool]:
         def operation(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
             registry_revision = _acquire_registry(tx)
@@ -2023,7 +2403,7 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
                         "generation_mode": "AI_GENERATED_CURRENT",
                         "parent_revision_id": parent_revision,
                         "ref_s02_id": receipt,
-                        "ref_s24_id": MANIFEST,
+                        "ref_s24_id": manifest_override,
                         "ref_s27_id": INTENT,
                         "ref_s29_id": ATTEMPT,
                         "ref_s37_id": VALIDATION,
@@ -2193,6 +2573,8 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
         invoke(UUID("00000000-0000-8000-8000-000000015942"))
     with pytest.raises(GuardRequired, match="day and revision"):
         invoke(revision_override=99)
+    with pytest.raises(GuardRequired, match="current locked manifest"):
+        invoke(manifest_override=UUID("00000000-0000-8000-8000-000000015999"))
 
     def partial_commit(tx: RepositoryTransaction) -> None:
         _acquire_registry(tx)
@@ -2402,6 +2784,79 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
             "SELECT count(*) FROM kineticloop.authorization_events WHERE id=%s",
             (SUPERSESSION,),
         ).fetchone() == (0,)
+
+
+def test_t3_rejects_incomplete_or_crosswired_ready_candidate(
+    database_urls: dict[str, str],
+) -> None:
+    def attempt() -> None:
+        def operation(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
+            _acquire_registry(tx)
+            return tx.idempotent_outcome(
+                receipt_id=UUID("00000000-0000-8000-8000-000000015810"),
+                actor_scope="subject",
+                client_key="invalid-ready-candidate",
+                request_hash="invalid-ready-candidate-hash",
+                mutation=lambda session: {"unexpected": True},
+                event=_event(0x15811),
+                aggregate_locks={"manifest_builds": (MANIFEST_BUILD,)},
+            )
+
+        with psycopg.connect(database_urls["admin"]) as connection:
+            execute_command(connection, "PublishManifest", SUBJECT, operation)
+
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "DELETE FROM kineticloop.projection_dependencies WHERE ref_s21_id=%s",
+            (PROJECTION,),
+        )
+        connection.execute("SET session_replication_role=origin")
+    try:
+        with pytest.raises(GuardRequired, match="dependency basis is incomplete"):
+            attempt()
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "INSERT INTO kineticloop.projection_dependencies"
+                "(id,subject_id,dependency_kind,dependency_semantic_key,collection_signature,"
+                "ref_s15_id,ref_s21_id) VALUES "
+                "(%s,%s,'FACTSET','current-factset',NULL,%s,%s),"
+                "(%s,%s,'COLLECTION','admitted-facts','all-admitted-v1',%s,%s)",
+                (
+                    PROJECTION_DEPENDENCY,
+                    SUBJECT,
+                    FACTSET,
+                    PROJECTION,
+                    PROJECTION_COLLECTION_DEPENDENCY,
+                    SUBJECT,
+                    FACTSET,
+                    PROJECTION,
+                ),
+            )
+            payload = connection.execute(
+                "SELECT typed_payload FROM kineticloop.manifest_builds WHERE id=%s",
+                (MANIFEST_BUILD,),
+            ).fetchone()[0]
+            wrong_payload = dict(payload)
+            wrong_payload["artifact_closure_ids"] = [str(ARTIFACT)]
+            connection.execute(
+                "UPDATE kineticloop.manifest_builds SET typed_payload=%s WHERE id=%s",
+                (psycopg.types.json.Jsonb(wrong_payload), MANIFEST_BUILD),
+            )
+            connection.execute("SET session_replication_role=origin")
+    try:
+        with pytest.raises(GuardRequired, match="verified full closure"):
+            attempt()
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "UPDATE kineticloop.manifest_builds SET typed_payload=%s WHERE id=%s",
+                (psycopg.types.json.Jsonb(payload), MANIFEST_BUILD),
+            )
+            connection.execute("SET session_replication_role=origin")
 
 
 def test_t7_exact_session_and_t3_publication_guards(database_urls: dict[str, str]) -> None:
