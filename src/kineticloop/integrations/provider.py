@@ -15,7 +15,7 @@ from enum import StrEnum
 from typing import Any, Literal, Protocol, SupportsIndex, cast
 from urllib.parse import unquote
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 from pydantic_core import core_schema
 
 from kineticloop.config.secrets import ProviderSecrets, PublicProviderConfig
@@ -401,23 +401,76 @@ def parse_evidence_envelope_json(value: str) -> EvidenceEnvelope:
 
     if type(value) is not str:
         raise TypeError("evidence envelope JSON must be a string")
+    malformed = False
+    payload: object | None = None
     try:
         payload = json.loads(value, object_pairs_hook=_reject_duplicate_json_keys)
     except ProviderContractError:
         raise
-    except (UnicodeError, json.JSONDecodeError) as error:
-        raise ProviderContractError("INVALID_ENVELOPE_JSON") from error
-    return EvidenceEnvelope.model_validate_json(
-        json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-    )
+    except (UnicodeError, json.JSONDecodeError):
+        malformed = True
+    if malformed or payload is None:
+        raise ProviderContractError("INVALID_ENVELOPE_JSON")
+    invalid = False
+    parsed: EvidenceEnvelope | None = None
+    try:
+        parsed = EvidenceEnvelope.model_validate_json(
+            json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+        )
+    except (TypeError, ValueError, ValidationError):
+        invalid = True
+    if invalid or parsed is None:
+        raise ProviderContractError("INVALID_EVIDENCE_ENVELOPE")
+    return parsed
 
 
-def validate_adapter_output(value: object) -> tuple[EvidenceEnvelope, ...]:
-    """Accept only an exact immutable tuple of evidence envelopes from adapters."""
-
-    if type(value) is not tuple or any(type(item) is not EvidenceEnvelope for item in value):
+def _revalidate_evidence_envelope(value: object) -> EvidenceEnvelope:
+    if type(value) is not EvidenceEnvelope:
         raise ProviderContractError("ADAPTER_OUTPUT_NOT_EVIDENCE")
-    return value
+    envelope = cast(EvidenceEnvelope, value)
+    if set(envelope.__dict__) != set(EvidenceEnvelope.model_fields):
+        raise ProviderContractError("INVALID_EVIDENCE_ENVELOPE")
+    if envelope.__pydantic_extra__:
+        raise ProviderContractError("INVALID_EVIDENCE_ENVELOPE")
+
+    invalid = False
+    validated: EvidenceEnvelope | None = None
+    raw: dict[str, Any] | None = None
+    try:
+        raw = envelope.model_dump(mode="json", warnings="error")
+        validated = EvidenceEnvelope.model_validate_json(
+            json.dumps(raw, ensure_ascii=False, separators=(",", ":"))
+        )
+    except (TypeError, ValueError, ValidationError):
+        invalid = True
+    if invalid or validated is None or raw is None:
+        raise ProviderContractError("INVALID_EVIDENCE_ENVELOPE")
+    if validated.to_canonical_json() != canonical_json(raw):
+        raise ProviderContractError("INVALID_EVIDENCE_ENVELOPE")
+    return validated
+
+
+def validate_adapter_output(
+    context: ProviderExecutionContext, value: object
+) -> tuple[EvidenceEnvelope, ...]:
+    """Revalidate, bind, and credential-scan every adapter evidence output."""
+
+    if type(value) is not tuple:
+        raise ProviderContractError("ADAPTER_OUTPUT_NOT_EVIDENCE")
+    validated: list[EvidenceEnvelope] = []
+    for item in cast(tuple[object, ...], value):
+        envelope = _revalidate_evidence_envelope(item)
+        validate_receive_evidence_binding(
+            envelope,
+            context.binding,
+            command_subject_id=context.binding.subject_id,
+            command_source_connection_id=context.binding.source_connection_id,
+        )
+        context.credential_guard.reject_credentials(
+            envelope.model_dump(mode="json"), provider_id=str(context.binding.provider_id)
+        )
+        validated.append(envelope)
+    return tuple(validated)
 
 
 def _decoded_forms(value: str) -> tuple[str, ...]:
@@ -443,6 +496,8 @@ def _walk(value: object, *, depth: int = 0) -> Sequence[tuple[str | None, str]]:
     elif type(value) is dict:
         for key, member in cast(dict[object, object], value).items():
             key_text = key if type(key) is str else "<non-string-key>"
+            if _SENSITIVE_KEY.search(key_text):
+                raise ProviderContractError("CREDENTIAL_BOUNDARY")
             if type(member) is str:
                 found.append((key_text, member))
             else:
@@ -613,10 +668,14 @@ def build_evidence_envelope(
     context.credential_guard.reject_credentials(
         observation.model_dump(mode="python"), provider_id=provider_id
     )
+    invalid_time = False
+    known_at: str | None = None
     try:
         known_at = canonical_utc(server_now())
-    except Exception as error:
-        raise ProviderContractError("SERVER_TIME_UNAVAILABLE", provider_id=provider_id) from error
+    except Exception:
+        invalid_time = True
+    if invalid_time or known_at is None:
+        raise ProviderContractError("SERVER_TIME_UNAVAILABLE", provider_id=provider_id)
     payload_hash = canonical_sha256(observation.payload) if observation.payload is not None else None
     envelope = EvidenceEnvelope(
         schema_version="kineticloop-evidence-envelope-v1",
@@ -654,6 +713,7 @@ def validate_receive_evidence_binding(
 ) -> None:
     """Validate the owner handoff with one non-enumerating mismatch result."""
 
+    envelope = _revalidate_evidence_envelope(envelope)
     expected = (
         binding.subject_id,
         str(binding.provider_id),
@@ -675,9 +735,14 @@ def safe_adapter_failure(context: ProviderExecutionContext, error: BaseException
     """Return a fixed safe failure while retaining provider and failure class context."""
 
     context.credential_guard.reject_credentials(error, provider_id=str(context.binding.provider_id))
-    safe = context.safe_diagnostic(error)
     failure_class = type(error).__name__
+    context.credential_guard.reject_credentials(
+        failure_class, provider_id=str(context.binding.provider_id)
+    )
+    safe = context.safe_diagnostic(error)
     del safe
+    if re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,63}", failure_class) is None:
+        failure_class = "UNKNOWN"
     return ProviderContractError(
         f"ADAPTER_FAILURE_{failure_class.upper()}", provider_id=str(context.binding.provider_id)
     )

@@ -248,7 +248,8 @@ def test_server_assigns_known_at() -> None:
 def test_provider_has_no_fact_or_command_authority() -> None:
     built = envelope()
     assert built.command_authority == "NONE"
-    assert validate_adapter_output((built,)) == (built,)
+    provider_context = context()
+    assert validate_adapter_output(provider_context, (built,)) == (built,)
     for forged in (
         {"canonical_fact": True},
         {"command_kind": "AdvanceProgression"},
@@ -256,10 +257,36 @@ def test_provider_has_no_fact_or_command_authority() -> None:
         {"authorization": "AUTHORIZED"},
     ):
         with pytest.raises(ProviderContractError, match="ADAPTER_OUTPUT_NOT_EVIDENCE"):
-            validate_adapter_output((forged,))
+            validate_adapter_output(provider_context, (forged,))
     with pytest.raises(ValidationError):
         EvidenceEnvelope.model_validate(
             built.model_dump(mode="python") | {"command_authority": "PROVIDER"}
+        )
+
+    for forged_envelope in (
+        built.model_copy(update={"command_authority": "PROVIDER"}),
+        built.model_copy(update={"subject_id": FOREIGN_SUBJECT_ID}),
+        built.model_copy(update={"source_connection_id": FOREIGN_SOURCE_CONNECTION_ID}),
+        built.model_copy(update={"source_object_id": SECRET}),
+        EvidenceEnvelope.model_construct(
+            **(built.model_dump(mode="python") | {"command_authority": "PROVIDER"})
+        ),
+    ):
+        with pytest.raises(ProviderContractError):
+            validate_adapter_output(provider_context, (forged_envelope,))
+
+    forged_extra = built.model_copy()
+    forged_extra.__dict__["canonical_fact"] = {"sets": 3}
+    with pytest.raises(ProviderContractError, match="INVALID_EVIDENCE_ENVELOPE"):
+        validate_adapter_output(provider_context, (forged_extra,))
+
+    forged_authority = built.model_copy(update={"command_authority": "PROVIDER"})
+    with pytest.raises(ProviderContractError, match="INVALID_EVIDENCE_ENVELOPE"):
+        validate_receive_evidence_binding(
+            forged_authority,
+            binding(),
+            command_subject_id=SUBJECT_ID,
+            command_source_connection_id=SOURCE_CONNECTION_ID,
         )
 
 

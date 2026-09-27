@@ -74,6 +74,10 @@ Watermarks are provider-specific identities rather than universal time.
 
 `ProviderAdapter` exposes only connection status, initial backfill, incremental
 fetch, bounded reconciliation, and normalization to `EvidenceEnvelope` values.
+The runtime `validate_adapter_output` boundary reserializes and strictly revalidates
+each returned model, rejects unvalidated Pydantic construction or mutation, rechecks
+the trusted subject/source binding, and rescans every serialized field with the
+context's credential guard.
 `ProviderBatch`, `BackfillResult`, and `ReconciliationResult` are also strict,
 immutable contracts. Implementations receive their explicit execution context from
 the caller; network clients and credential stores are outside this module and must
