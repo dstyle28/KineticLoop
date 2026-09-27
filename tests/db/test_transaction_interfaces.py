@@ -95,7 +95,18 @@ OUTSIDE_EVIDENCE = UUID("00000000-0000-8000-8000-000000015509")
 OUTSIDE_CANDIDATE = UUID("00000000-0000-8000-8000-000000015510")
 OUTSIDE_EVENT = UUID("00000000-0000-8000-8000-000000015511")
 OUTSIDE_ADMISSION = UUID("00000000-0000-8000-8000-000000015513")
-NOW = datetime(2026, 9, 26, 12, tzinfo=UTC)
+QUOTA_WINDOW_START = datetime(2026, 9, 26, 12, tzinfo=UTC)
+COMPLETION_RECORDED_AT = datetime(2026, 9, 26, 12, tzinfo=UTC)
+
+
+def _database_timestamp(connection: Any, *, offset: timedelta = timedelta()) -> datetime:
+    with connection.transaction():
+        row = connection.execute(
+            "SELECT clock_timestamp() + %s::interval",
+            (offset,),
+        ).fetchone()
+    assert row is not None
+    return row[0]
 
 
 def _completion_certificate(
@@ -327,12 +338,12 @@ def _seed_transaction_rows(admin_url: str) -> None:
             (
                 QUOTA,
                 SUBJECT,
-                NOW,
-                NOW + timedelta(days=1),
+                QUOTA_WINDOW_START,
+                QUOTA_WINDOW_START + timedelta(days=1),
                 POLICY,
                 SUBJECT,
-                NOW,
-                NOW + timedelta(days=30),
+                QUOTA_WINDOW_START,
+                QUOTA_WINDOW_START + timedelta(days=30),
                 POLICY,
             ),
         )
@@ -904,7 +915,9 @@ def test_complete_frozen_lock_order_enforced(database_urls: dict[str, str]) -> N
 
     def t4(tx: RepositoryTransaction) -> None:
         tx.lock_subject()
-        tx.lock_quota_buckets((("DAILY", NOW, NOW + timedelta(days=1)),))
+        tx.lock_quota_buckets(
+            (("DAILY", QUOTA_WINDOW_START, QUOTA_WINDOW_START + timedelta(days=1)),)
+        )
         tx.lock_intents((INTENT,))
         tx.lock_receipt("AdmitOrReviseIntent", "lock-order-t4", "subject")
         traces.append(tx.lock_trace)
@@ -939,14 +952,16 @@ def test_complete_frozen_lock_order_enforced(database_urls: dict[str, str]) -> N
             tx = RepositoryTransaction(connection.cursor(), "CommitBundle", SUBJECT)
             tx.lock_subject()
             with pytest.raises(GuardRequired, match="inapplicable S30"):
-                tx.lock_quota_buckets((("DAILY", NOW, NOW + timedelta(days=1)),))
+                tx.lock_quota_buckets(
+                    (("DAILY", QUOTA_WINDOW_START, QUOTA_WINDOW_START + timedelta(days=1)),)
+                )
 
 
 def test_multi_key_lock_order_is_stable(database_urls: dict[str, str]) -> None:
     traces: list[tuple[tuple[LockStage, str], ...]] = []
     quota_keys = (
-        ("DAILY", NOW, NOW + timedelta(days=1)),
-        ("MONTHLY", NOW, NOW + timedelta(days=30)),
+        ("DAILY", QUOTA_WINDOW_START, QUOTA_WINDOW_START + timedelta(days=1)),
+        ("MONTHLY", QUOTA_WINDOW_START, QUOTA_WINDOW_START + timedelta(days=30)),
     )
     for quotas, intents, reservations in (
         (quota_keys, (INTENT, INTENT_2), (RESERVATION, RESERVATION_2)),
@@ -1003,7 +1018,9 @@ def test_reverse_lock_order_is_rejected(
             tx.lock_subject()
             actions = {
                 "subject": tx.lock_subject,
-                "quota": lambda: tx.lock_quota_buckets((("DAILY", NOW, NOW + timedelta(days=1)),)),
+                "quota": lambda: tx.lock_quota_buckets(
+                    (("DAILY", QUOTA_WINDOW_START, QUOTA_WINDOW_START + timedelta(days=1)),)
+                ),
                 "intent": lambda: tx.lock_intents((INTENT,)),
                 "reservation": lambda: tx.lock_reservations((RESERVATION,)),
                 "daily": lambda: tx.lock_daily_head(date(2026, 9, 26)),
@@ -1038,7 +1055,9 @@ def test_reverse_lock_order_is_rejected(
 
             def incomplete_new_root(tx: RepositoryTransaction) -> None:
                 tx.lock_subject()
-                tx.lock_quota_buckets((("DAILY", NOW, NOW + timedelta(days=1)),))
+                tx.lock_quota_buckets(
+                    (("DAILY", QUOTA_WINDOW_START, QUOTA_WINDOW_START + timedelta(days=1)),)
+                )
                 tx.idempotent_outcome(
                     receipt_id=UUID("00000000-0000-8000-8000-000000015702"),
                     actor_scope="subject",
@@ -1051,6 +1070,7 @@ def test_reverse_lock_order_is_rejected(
             with pytest.raises(GuardRequired, match="T4 requires"):
                 execute_command(connection, "AdmitOrReviseIntent", SUBJECT, incomplete_new_root)
     with psycopg.connect(database_urls["admin"]) as connection:
+        lease_expires_at = _database_timestamp(connection, offset=timedelta(days=1))
 
         def wrong_identity(tx: RepositoryTransaction) -> None:
             tx.lock_subject()
@@ -1061,7 +1081,7 @@ def test_reverse_lock_order_is_rejected(
                 expected_fence=7,
                 new_owner_id="worker-a",
                 new_fence=8,
-                new_lease_expires_at=NOW + timedelta(days=1),
+                new_lease_expires_at=lease_expires_at,
                 expected_request_revision=1,
             )
 
@@ -1134,7 +1154,9 @@ def test_direct_write_bypass_rejected(database_urls: dict[str, str]) -> None:
 
     def wrong_quota(tx: RepositoryTransaction) -> None:
         tx.lock_subject()
-        tx.lock_quota_buckets((("DAILY", NOW, NOW + timedelta(days=1)),))
+        tx.lock_quota_buckets(
+            (("DAILY", QUOTA_WINDOW_START, QUOTA_WINDOW_START + timedelta(days=1)),)
+        )
         tx.lock_intents((INTENT,))
         tx.idempotent_outcome(
             receipt_id=UUID("00000000-0000-8000-8000-000000015962"),
@@ -1184,6 +1206,11 @@ def test_event_outbox_atomicity_enforced(
             )
     receipt = UUID(f"00000000-0000-8000-8000-{tag:012x}")
     event = _event(tag + 1)
+    lease_expires_at: datetime | None = None
+
+    def acquired_lease_expiry() -> datetime:
+        assert lease_expires_at is not None
+        return lease_expires_at
 
     def mutate(session: Any) -> Mapping[str, Any]:
         if command == "ReceiveEvidence":
@@ -1220,7 +1247,7 @@ def test_event_outbox_atomicity_enforced(
                     "status": "RUNNING",
                     "lease_owner": "worker-a",
                     "fence_token": 8,
-                    "lease_expires_at": NOW + timedelta(days=1),
+                    "lease_expires_at": acquired_lease_expiry(),
                     "typed_payload": psycopg.types.json.Jsonb({"atomic": command}),
                 },
                 {"id": INTENT, "subject_id": SUBJECT},
@@ -1251,7 +1278,9 @@ def test_event_outbox_atomicity_enforced(
         elif tx.spec.subject_guard_required:
             tx.lock_subject()
         if command == "AdmitOrReviseIntent":
-            tx.lock_quota_buckets((("DAILY", NOW, NOW + timedelta(days=1)),))
+            tx.lock_quota_buckets(
+                (("DAILY", QUOTA_WINDOW_START, QUOTA_WINDOW_START + timedelta(days=1)),)
+            )
             tx.lock_intents((INTENT,))
         elif command in {"AcquireLease", "SettleCall"}:
             tx.lock_intents((INTENT,))
@@ -1262,7 +1291,7 @@ def test_event_outbox_atomicity_enforced(
                     expected_fence=7,
                     new_owner_id="worker-a",
                     new_fence=8,
-                    new_lease_expires_at=NOW + timedelta(days=1),
+                    new_lease_expires_at=acquired_lease_expiry(),
                     expected_request_revision=1,
                 )
             else:
@@ -1324,6 +1353,8 @@ def test_event_outbox_atomicity_enforced(
         )
 
     with psycopg.connect(database_urls["admin"]) as connection:
+        if command == "AcquireLease":
+            lease_expires_at = _database_timestamp(connection, offset=timedelta(days=1))
         with pytest.raises(RuntimeError, match="failure injection"):
             execute_command(connection, command, SUBJECT, operation)
     with psycopg.connect(database_urls["admin"]) as connection:
@@ -1624,6 +1655,7 @@ def test_stale_fence_commit_is_rejected(database_urls: dict[str, str]) -> None:
     def takeover() -> None:
         try:
             with psycopg.connect(database_urls["admin"]) as connection:
+                lease_expires_at = _database_timestamp(connection, offset=timedelta(days=1))
 
                 def acquire(tx: RepositoryTransaction) -> None:
                     tx.lock_subject()
@@ -1634,7 +1666,7 @@ def test_stale_fence_commit_is_rejected(database_urls: dict[str, str]) -> None:
                         expected_fence=7,
                         new_owner_id="worker-b",
                         new_fence=8,
-                        new_lease_expires_at=NOW + timedelta(days=1),
+                        new_lease_expires_at=lease_expires_at,
                         expected_request_revision=1,
                     )
                     takeover_ready.set()
@@ -1647,7 +1679,7 @@ def test_stale_fence_commit_is_rejected(database_urls: dict[str, str]) -> None:
                                 "status": "RUNNING",
                                 "lease_owner": "worker-b",
                                 "fence_token": 8,
-                                "lease_expires_at": NOW + timedelta(days=1),
+                                "lease_expires_at": lease_expires_at,
                             },
                             {"subject_id": SUBJECT, "id": INTENT},
                         )
@@ -1700,11 +1732,13 @@ def test_stale_fence_commit_is_rejected(database_urls: dict[str, str]) -> None:
     assert not errors
 
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        stale_lease = _database_timestamp(connection, offset=-timedelta(minutes=1))
+        future_deadline = _database_timestamp(connection, offset=timedelta(days=2))
         connection.execute("SET session_replication_role=replica")
         connection.execute(
             "UPDATE kineticloop.planning_intents SET status='FOUND_VALID_PLAN',"
             "lease_expires_at=%s,deadline=%s WHERE id=%s",
-            (NOW - timedelta(minutes=1), NOW + timedelta(days=2), INTENT),
+            (stale_lease, future_deadline, INTENT),
         )
         connection.execute("SET session_replication_role=origin")
     with psycopg.connect(database_urls["admin"]) as connection:
@@ -1720,16 +1754,17 @@ def test_stale_fence_commit_is_rejected(database_urls: dict[str, str]) -> None:
                         INTENT,
                         owner_id="worker-b",
                         fence=8,
-                        expected_deadline=NOW + timedelta(days=2),
+                        expected_deadline=future_deadline,
                         expected_request_revision=1,
                         expected_attempt_id=ATTEMPT,
                     ),
                 ),
             )
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        expired_deadline = _database_timestamp(connection, offset=-timedelta(minutes=1))
         connection.execute(
             "UPDATE kineticloop.planning_intents SET status='RUNNING',deadline=%s WHERE id=%s",
-            (NOW - timedelta(minutes=1), INTENT),
+            (expired_deadline, INTENT),
         )
     with psycopg.connect(database_urls["admin"]) as connection:
         with pytest.raises(FenceLost):
@@ -1744,23 +1779,27 @@ def test_stale_fence_commit_is_rejected(database_urls: dict[str, str]) -> None:
                         INTENT,
                         owner_id="worker-b",
                         fence=8,
-                        expected_deadline=NOW - timedelta(minutes=2),
+                        expected_deadline=expired_deadline - timedelta(minutes=1),
                         expected_request_revision=1,
                         expected_attempt_id=ATTEMPT,
                     ),
                 ),
             )
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        future_deadline = _database_timestamp(connection, offset=timedelta(days=2))
+        live_lease = _database_timestamp(connection, offset=timedelta(days=1))
         connection.execute(
             "UPDATE kineticloop.planning_intents SET deadline=%s,lease_expires_at=%s WHERE id=%s",
-            (NOW + timedelta(days=2), NOW + timedelta(days=1), INTENT),
+            (future_deadline, live_lease, INTENT),
         )
 
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        reap_deadline = _database_timestamp(connection, offset=timedelta(days=2))
+        expired_lease = _database_timestamp(connection, offset=-timedelta(minutes=1))
         connection.execute(
             "UPDATE kineticloop.planning_intents SET status='RUNNING',"
             "deadline=%s,lease_expires_at=%s,current_attempt_id=%s WHERE id=%s",
-            (NOW + timedelta(days=2), NOW - timedelta(minutes=1), ATTEMPT, INTENT),
+            (reap_deadline, expired_lease, ATTEMPT, INTENT),
         )
 
     def reap(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
@@ -1771,7 +1810,7 @@ def test_stale_fence_commit_is_rejected(database_urls: dict[str, str]) -> None:
             INTENT,
             owner_id="worker-b",
             fence=8,
-            expected_deadline=NOW + timedelta(days=2),
+            expected_deadline=reap_deadline,
             expected_request_revision=1,
             expected_attempt_id=ATTEMPT,
         )
@@ -1779,12 +1818,16 @@ def test_stale_fence_commit_is_rejected(database_urls: dict[str, str]) -> None:
         def mutation(session: Any) -> Mapping[str, Any]:
             session.update(
                 "S27",
-                {"status": "FAILED", "lease_expires_at": NOW - timedelta(minutes=1)},
+                {"status": "FAILED", "lease_expires_at": expired_lease},
                 {"id": INTENT, "subject_id": SUBJECT},
             )
             session.update(
                 "S29",
-                {"status": "FAILED", "failure_code": "LEASE_EXPIRED", "completed_at": NOW},
+                {
+                    "status": "FAILED",
+                    "failure_code": "LEASE_EXPIRED",
+                    "completed_at": COMPLETION_RECORDED_AT,
+                },
                 {"id": ATTEMPT, "subject_id": SUBJECT},
             )
             return {"intent_id": str(INTENT), "status": "FAILED"}
@@ -1804,10 +1847,12 @@ def test_stale_fence_commit_is_rejected(database_urls: dict[str, str]) -> None:
     assert not replayed and reaped["status"] == "FAILED"
 
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        reset_deadline = _database_timestamp(connection, offset=timedelta(days=2))
+        reset_lease = _database_timestamp(connection, offset=timedelta(days=1))
         connection.execute(
             "UPDATE kineticloop.planning_intents SET status='RUNNING',lease_owner='worker-a',"
             "fence_token=7,deadline=%s,lease_expires_at=%s WHERE id=%s",
-            (NOW + timedelta(days=2), NOW + timedelta(days=1), INTENT),
+            (reset_deadline, reset_lease, INTENT),
         )
         connection.execute(
             "UPDATE kineticloop.planning_attempts SET status='RUNNING',failure_code=NULL,"
@@ -1841,6 +1886,7 @@ def test_dispatch_first_winner_and_replay_non_resend(database_urls: dict[str, st
     permit_receipt = UUID("00000000-0000-8000-8000-000000015502")
     permit_event = _event(0x15503)
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        expired_deadline = _database_timestamp(connection, offset=-timedelta(minutes=1))
         connection.execute(
             "UPDATE kineticloop.planning_intents "
             "SET status='RUNNING',lease_owner='worker-dispatch',fence_token=10,"
@@ -1849,7 +1895,7 @@ def test_dispatch_first_winner_and_replay_non_resend(database_urls: dict[str, st
         )
         connection.execute(
             "UPDATE kineticloop.planning_intents SET deadline=%s WHERE id=%s",
-            (NOW - timedelta(minutes=1), INTENT),
+            (expired_deadline, INTENT),
         )
 
     with psycopg.connect(database_urls["admin"]) as connection:
@@ -1871,9 +1917,10 @@ def test_dispatch_first_winner_and_replay_non_resend(database_urls: dict[str, st
                 ),
             )
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        future_deadline = _database_timestamp(connection, offset=timedelta(days=2))
         connection.execute(
             "UPDATE kineticloop.planning_intents SET deadline=%s WHERE id=%s",
-            (NOW + timedelta(days=2), INTENT),
+            (future_deadline, INTENT),
         )
         connection.execute(
             "UPDATE kineticloop.call_reservations SET ref_s29_id=%s WHERE id=%s",
@@ -2111,29 +2158,31 @@ def test_lease_commands_reject_arbitrary_attempt_locks(database_urls: dict[str, 
             (INTENT,),
         )
 
-    def operation(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
-        tx.lock_subject()
-        tx.lock_intents((INTENT,))
-        tx.require_lease_acquisition_basis(
-            INTENT,
-            expected_owner_id="lease-test",
-            expected_fence=20,
-            new_owner_id="lease-test",
-            new_fence=21,
-            new_lease_expires_at=datetime.now(UTC) + timedelta(days=1),
-            expected_request_revision=1,
-        )
-        return tx.idempotent_outcome(
-            receipt_id=UUID("00000000-0000-8000-8000-000000015572"),
-            actor_scope="subject",
-            client_key="lease-arbitrary-attempt-lock",
-            request_hash="lease-arbitrary-attempt-lock-hash",
-            mutation=lambda session: {"unexpected": True},
-            event=_event(0x15573),
-            aggregate_locks={"planning_attempts": (ATTEMPT,)},
-        )
-
     with psycopg.connect(database_urls["admin"]) as connection:
+        lease_expires_at = _database_timestamp(connection, offset=timedelta(days=1))
+
+        def operation(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
+            tx.lock_subject()
+            tx.lock_intents((INTENT,))
+            tx.require_lease_acquisition_basis(
+                INTENT,
+                expected_owner_id="lease-test",
+                expected_fence=20,
+                new_owner_id="lease-test",
+                new_fence=21,
+                new_lease_expires_at=lease_expires_at,
+                expected_request_revision=1,
+            )
+            return tx.idempotent_outcome(
+                receipt_id=UUID("00000000-0000-8000-8000-000000015572"),
+                actor_scope="subject",
+                client_key="lease-arbitrary-attempt-lock",
+                request_hash="lease-arbitrary-attempt-lock-hash",
+                mutation=lambda session: {"unexpected": True},
+                event=_event(0x15573),
+                aggregate_locks={"planning_attempts": (ATTEMPT,)},
+            )
+
         with pytest.raises(GuardRequired, match="inapplicable S29"):
             execute_command(connection, "AcquireLease", SUBJECT, operation)
 
@@ -2340,46 +2389,47 @@ def test_ack_loss_replay_preserves_natural_uniqueness(database_urls: dict[str, s
 
     def invoke() -> tuple[Mapping[str, Any], bool]:
         nonlocal runs
-
-        def operation(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
-            tx.lock_subject()
-            tx.lock_intents((INTENT_2,))
-            tx.require_lease_acquisition_basis(
-                INTENT_2,
-                expected_owner_id="worker-a",
-                expected_fence=7,
-                new_owner_id="worker-ack",
-                new_fence=8,
-                new_lease_expires_at=NOW + timedelta(days=1),
-                expected_request_revision=1,
-            )
-
-            def mutation(session: Any) -> Mapping[str, Any]:
-                nonlocal runs
-                runs += 1
-                session.update(
-                    "S27",
-                    {
-                        "status": "RUNNING",
-                        "typed_payload": psycopg.types.json.Jsonb({"committed": True}),
-                        "lease_owner": "worker-ack",
-                        "fence_token": 8,
-                        "lease_expires_at": NOW + timedelta(days=1),
-                    },
-                    {"id": INTENT_2, "subject_id": SUBJECT},
-                )
-                return {"intent_id": str(INTENT_2), "status": "COMMITTED"}
-
-            return tx.idempotent_outcome(
-                receipt_id=receipt,
-                actor_scope="subject",
-                client_key="ack-loss",
-                request_hash="ack-loss-hash",
-                mutation=mutation,
-                event=event,
-            )
-
         with psycopg.connect(database_urls["admin"]) as connection:
+            lease_expires_at = _database_timestamp(connection, offset=timedelta(days=1))
+
+            def operation(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
+                tx.lock_subject()
+                tx.lock_intents((INTENT_2,))
+                tx.require_lease_acquisition_basis(
+                    INTENT_2,
+                    expected_owner_id="worker-a",
+                    expected_fence=7,
+                    new_owner_id="worker-ack",
+                    new_fence=8,
+                    new_lease_expires_at=lease_expires_at,
+                    expected_request_revision=1,
+                )
+
+                def mutation(session: Any) -> Mapping[str, Any]:
+                    nonlocal runs
+                    runs += 1
+                    session.update(
+                        "S27",
+                        {
+                            "status": "RUNNING",
+                            "typed_payload": psycopg.types.json.Jsonb({"committed": True}),
+                            "lease_owner": "worker-ack",
+                            "fence_token": 8,
+                            "lease_expires_at": lease_expires_at,
+                        },
+                        {"id": INTENT_2, "subject_id": SUBJECT},
+                    )
+                    return {"intent_id": str(INTENT_2), "status": "COMMITTED"}
+
+                return tx.idempotent_outcome(
+                    receipt_id=receipt,
+                    actor_scope="subject",
+                    client_key="ack-loss",
+                    request_hash="ack-loss-hash",
+                    mutation=mutation,
+                    event=event,
+                )
+
             return execute_command(connection, "AcquireLease", SUBJECT, operation)
 
     class CommitAcknowledgementLost(ConnectionError):
@@ -2692,7 +2742,7 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
                 )
                 session.update(
                     "S29",
-                    {"status": "COMMITTED", "completed_at": NOW},
+                    {"status": "COMMITTED", "completed_at": COMPLETION_RECORDED_AT},
                     {"id": ATTEMPT, "subject_id": SUBJECT},
                 )
                 runs += 1
@@ -2967,7 +3017,7 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
         assert connection.execute(
             "SELECT status,completed_at FROM kineticloop.planning_attempts WHERE id=%s",
             (ATTEMPT,),
-        ).fetchone() == ("COMMITTED", NOW)
+        ).fetchone() == ("COMMITTED", COMPLETION_RECORDED_AT)
         assert connection.execute(
             "SELECT count(*) FROM kineticloop.daily_bundle_revisions WHERE id IN (%s,%s)",
             (OLD_BUNDLE, BUNDLE),
@@ -3124,7 +3174,7 @@ def test_reauthorize_requires_atomic_intent_success(database_urls: dict[str, str
                 )
                 session.update(
                     "S29",
-                    {"status": "COMMITTED", "completed_at": NOW},
+                    {"status": "COMMITTED", "completed_at": COMPLETION_RECORDED_AT},
                     {"id": ATTEMPT, "subject_id": SUBJECT},
                 )
                 return {"authorization_id": str(issuance)}

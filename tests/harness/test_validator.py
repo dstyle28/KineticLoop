@@ -11,6 +11,7 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest import mock
 
 import yaml
@@ -213,6 +214,30 @@ class ValidatorTests(unittest.TestCase):
         return self.persist_governance_change(
             change_id, tested, [task_id], task.get('review_requirements', []),
             change_status)
+
+    def emergency_candidate(self, *, include_task_review=True,
+                            task_reviewed_head=None):
+        record_path = self.root / 'docs/exec-plans/governance/HG-024.yaml'
+        record = yaml.safe_load((ROOT / 'docs/exec-plans/governance/HG-024.yaml').read_text())
+        record['summary'] += ' emergency fixture'
+        self.save_result(record_path, record)
+        self.put(
+            'docs/exec-plans/completed/KL-073_RESULT.yaml',
+            'task_identity: harness-backlog-v0.2/KL-073\n',
+        )
+        reviewed = self.commit('stage HG-024 and KL-073 emergency pair')
+        self.governance_review('HG-024', reviewed)
+        if include_task_review:
+            dump(self.root / 'docs/exec-plans/reviews/KL-073/GENERAL.json', {
+                'task_identity': 'harness-backlog-v0.2/KL-073',
+                'reviewed_head_sha': task_reviewed_head or reviewed,
+                'review_type': 'GENERAL',
+                'review_contract_version': 'v0.2',
+                'status': 'PASS',
+                'findings': [],
+            })
+        self.commit('persist emergency reviews')
+        return reviewed
 
     def refine_task(self, task_id='KL-008'):
         backlog_path = self.root / v.BACKLOG
@@ -1104,6 +1129,90 @@ class ValidatorTests(unittest.TestCase):
     def test_ci_governance_merge_gate_binds_record_and_reviews(self):
         self.governance_change()
         self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_emergency_governance_task_pair_is_identity_exact(self):
+        self.assertEqual(
+            v.emergency_governance_task_pair({'KL-073'}, {'HG-024'}),
+            ('HG-024', 'KL-073'),
+        )
+        for tasks, changes in (
+                ({'KL-072'}, {'HG-024'}),
+                ({'KL-073'}, {'HG-023'}),
+                ({'KL-073', 'KL-072'}, {'HG-024'}),
+                ({'KL-073'}, {'HG-024', 'HG-023'}),
+                (set(), {'HG-024'}),
+                ({'KL-073'}, set())):
+            self.assertIsNone(v.emergency_governance_task_pair(tasks, changes))
+
+    def test_hg024_emergency_scope_is_closed_and_non_generalizable(self):
+        allowed = set(v.governance_allowed_patterns('HG-024'))
+        self.assertIn('tests/db/test_transaction_interfaces.py', allowed)
+        self.assertIn('docs/exec-plans/completed/KL-073_RESULT.yaml', allowed)
+        self.assertIn('docs/exec-plans/evidence/KL-073/**', allowed)
+        self.assertIn('docs/exec-plans/reviews/KL-073/**', allowed)
+        self.assertNotIn('tests/db/**', allowed)
+        self.assertNotIn('docs/exec-plans/completed/**', allowed)
+        self.assertNotIn('docs/exec-plans/evidence/KL-*/**', allowed)
+        self.assertNotIn('src/**', allowed)
+        self.assertNotEqual(
+            v.governance_allowed_patterns('HG-025'),
+            v.governance_allowed_patterns('HG-024'),
+        )
+
+    def test_ci_hg024_implementation_scope_requires_exact_mixed_pair(self):
+        self.put('tests/db/test_transaction_interfaces.py', '# emergency fixture\n')
+        record_path = self.root / 'docs/exec-plans/governance/HG-024.yaml'
+        record = yaml.safe_load((ROOT / 'docs/exec-plans/governance/HG-024.yaml').read_text())
+        record['summary'] += ' governance-only escape fixture'
+        self.save_result(record_path, record)
+        self.commit('attempt HG-024 implementation without KL-073 result')
+        self.check(
+            1,
+            'ci-emergency-pair-required:HG-024:KL-073',
+            '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD',
+        )
+
+    def test_ci_future_task_can_modify_transaction_test_without_hg024_candidate(self):
+        self.put('tests/db/test_transaction_interfaces.py', '# future task fixture\n')
+        tested = self.commit('future task changes transaction test')
+        self.result(tested=tested)
+        reviewed = self.commit('record future task result')
+        self.review(reviewed)
+        args = SimpleNamespace(ci_pr_base=self.base, ci_pr_head='HEAD')
+        v.configure_ci_merge_gate(self.root, args)
+        self.assertEqual(args.task_id, 'KL-001')
+        self.assertEqual(args.reviewed_head, reviewed)
+
+    def test_ci_hg024_emergency_pair_is_one_time_at_protected_base(self):
+        self.emergency_candidate()
+        self.check(
+            1,
+            'ci-emergency-already-consumed:docs/exec-plans/active/KL-073.md',
+            '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD',
+        )
+
+    def test_ci_hg024_exact_pair_binds_both_general_reviews_to_one_head(self):
+        reviewed = self.emergency_candidate()
+        args = SimpleNamespace(ci_pr_base=self.base, ci_pr_head='HEAD')
+        with mock.patch.object(v, 'HG024_ONE_TIME_BASE_ABSENT_PATHS', []):
+            v.configure_ci_merge_gate(self.root, args)
+        self.assertEqual(args.governance_change_id, 'HG-024')
+        self.assertEqual(args.emergency_task_id, 'KL-073')
+        self.assertEqual(args.governance_reviewed_head, reviewed)
+
+    def test_ci_hg024_exact_pair_rejects_missing_or_stale_task_review(self):
+        self.emergency_candidate(include_task_review=False)
+        args = SimpleNamespace(ci_pr_base=self.base, ci_pr_head='HEAD')
+        with mock.patch.object(v, 'HG024_ONE_TIME_BASE_ABSENT_PATHS', []):
+            with self.assertRaisesRegex(ValueError, 'ci-general-review-missing:KL-073'):
+                v.configure_ci_merge_gate(self.root, args)
+
+        self.git('reset', '--hard', self.base)
+        self.emergency_candidate(task_reviewed_head=self.base)
+        args = SimpleNamespace(ci_pr_base=self.base, ci_pr_head='HEAD')
+        with mock.patch.object(v, 'HG024_ONE_TIME_BASE_ABSENT_PATHS', []):
+            with self.assertRaisesRegex(ValueError, 'ci-emergency-reviewed-head-mismatch:HG-024'):
+                v.configure_ci_merge_gate(self.root, args)
 
 
     def test_ci_governance_allows_new_follow_up_task_identity(self):

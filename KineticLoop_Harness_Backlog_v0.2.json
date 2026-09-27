@@ -6574,8 +6574,8 @@
       "check_contracts": [
         {
           "check_id": "fixed_wall_clock_fixture_removed",
-          "command": "rg -n 'NOW = datetime\\(2026, 9, 26|datetime\\(2026, 9, 26' tests/db/test_transaction_interfaces.py; test $? -eq 1",
-          "pass_oracle": "The fixed 2026-09-26 wall-clock basis is absent. Every positive lease/deadline comparison that production evaluates with PostgreSQL time obtains a fresh database-clock-relative basis at the point of setup or operation; exact expected values are read back from the database when needed, so no module-import or suite-start timestamp can decay during a long run."
+        "command": "! rg -n '\\bNOW\\b|datetime\\.now\\(UTC\\)' tests/db/test_transaction_interfaces.py && rg -n 'def _database_timestamp|clock_timestamp\\(\\)' tests/db/test_transaction_interfaces.py",
+        "pass_oracle": "No process-clock or suite-start timestamp supplies lease/deadline truth. Every positive lease/deadline comparison that production evaluates with PostgreSQL time obtains a fresh database-clock-relative basis at the point of setup or operation; exact expected values are carried from that database read when needed, so a long run cannot decay the fixture. Fixed calendar values remain permitted only for non-time-sensitive keys such as quota windows and completion records."
         },
         {
           "check_id": "blocked_regression_cases_pass",
