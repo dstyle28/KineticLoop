@@ -167,4 +167,7 @@ selection is explicit in the sealed factset. Releases are written only by
 `ReleaseEvaluationService.RecordRelease`, outside live T1–T8; production activation is
 the T2 user-activation entry. T3 consumes the exact immutable S19/S20 identities in its
 sealed basis and the already activated exact S48 release/policy. It cannot adopt or
-activate them.
+activate them. The active S05-bound registered policy artifact anchors the admissible
+artifact graph: every S48-bound artifact in the candidate closure must name a release
+reachable from that policy artifact, every S05/S19 binding must equal the active policy
+and selected catalog, and every declared root must belong to that exact checked closure.

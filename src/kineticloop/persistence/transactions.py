@@ -326,6 +326,39 @@ CATALOG_RELEASE_BOUNDARIES: Mapping[str, Mapping[str, Any]] = MappingProxyType(
 )
 
 
+def artifact_bindings_match_activation(
+    bindings: Sequence[tuple[UUID, UUID | None, UUID | None, UUID | None]],
+    *,
+    root_ids: set[UUID],
+    active_policy_id: UUID,
+    selected_catalog_id: UUID | None,
+    active_release_ids: set[UUID],
+) -> bool:
+    """Return whether an S49 closure is wholly bound to the activated T3 basis."""
+
+    binding_ids = {artifact_id for artifact_id, *_ in bindings}
+    if (
+        not bindings
+        or not root_ids
+        or not root_ids <= binding_ids
+        or not active_release_ids
+        or not any(policy_id == active_policy_id for _, policy_id, _, _ in bindings)
+        or not any(release_id in active_release_ids for *_, release_id in bindings)
+    ):
+        return False
+    for _artifact_id, policy_id, catalog_id, release_id in bindings:
+        populated = sum(value is not None for value in (policy_id, catalog_id, release_id))
+        if populated != 1:
+            return False
+        if policy_id is not None and policy_id != active_policy_id:
+            return False
+        if catalog_id is not None and catalog_id != selected_catalog_id:
+            return False
+        if release_id is not None and release_id not in active_release_ids:
+            return False
+    return True
+
+
 # Column authority is command-specific and fail-closed.  Adding a logical table to
 # OwnerSpec does not by itself grant arbitrary column writes on that table.
 _MUTATION_COLUMNS: Mapping[str, Mapping[tuple[str, str], frozenset[str]]] = MappingProxyType(
@@ -2902,6 +2935,37 @@ class RepositoryTransaction:
             or candidate_projection_bindings != expected_projection_bindings
         ):
             raise GuardRequired("READY manifest candidate does not match its verified full closure")
+        _cursor(self).execute(
+            "WITH RECURSIVE active_policy_closure(artifact_id) AS ("
+            "SELECT artifact.id FROM kineticloop.safety_artifacts artifact "
+            "WHERE artifact.id=ANY(%s) AND artifact.ref_s05_id=%s "
+            "UNION SELECT edge.dependency_artifact_id "
+            "FROM active_policy_closure closure "
+            "JOIN kineticloop.safety_artifact_dependencies edge "
+            "ON edge.artifact_id=closure.artifact_id) "
+            "SELECT DISTINCT artifact.ref_s48_id "
+            "FROM active_policy_closure closure "
+            "JOIN kineticloop.safety_artifacts artifact ON artifact.id=closure.artifact_id "
+            "WHERE artifact.ref_s48_id IS NOT NULL",
+            (sorted(self._verified_artifacts, key=str), build[3]),
+        )
+        active_release_ids = {row[0] for row in _cursor(self).fetchall()}
+        _cursor(self).execute(
+            "SELECT id,ref_s05_id,ref_s19_id,ref_s48_id "
+            "FROM kineticloop.safety_artifacts WHERE id=ANY(%s) ORDER BY id",
+            (sorted(self._verified_artifacts, key=str),),
+        )
+        artifact_bindings = list(_cursor(self).fetchall())
+        if not artifact_bindings_match_activation(
+            artifact_bindings,
+            root_ids={UUID(item) for item in candidate_root_ids},
+            active_policy_id=build[3],
+            selected_catalog_id=build[10],
+            active_release_ids=active_release_ids,
+        ):
+            raise GuardRequired(
+                "manifest artifact bindings do not match the activated policy/release basis"
+            )
         dependency_digest = hashlib.sha256(
             json.dumps(
                 {

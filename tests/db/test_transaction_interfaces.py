@@ -3300,6 +3300,31 @@ def test_t3_rejects_incomplete_or_crosswired_ready_candidate(
             )
             connection.execute("SET session_replication_role=origin")
 
+    # A registered S48 artifact is not activated merely because the caller adds
+    # it to the candidate closure. It must remain reachable from the artifact
+    # bound to the active S05 policy.
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "DELETE FROM kineticloop.safety_artifact_dependencies "
+            "WHERE artifact_id=%s AND dependency_artifact_id=%s",
+            (ARTIFACT, DEPENDENCY),
+        )
+        connection.execute("SET session_replication_role=origin")
+    try:
+        with pytest.raises(GuardRequired, match="activated policy/release basis"):
+            attempt()
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "INSERT INTO kineticloop.safety_artifact_dependencies"
+                "(artifact_id,dependency_artifact_id) VALUES (%s,%s) "
+                "ON CONFLICT DO NOTHING",
+                (ARTIFACT, DEPENDENCY),
+            )
+            connection.execute("SET session_replication_role=origin")
+
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
         policy_payload = connection.execute(
             "SELECT typed_payload FROM kineticloop.policy_bundles WHERE id=%s",

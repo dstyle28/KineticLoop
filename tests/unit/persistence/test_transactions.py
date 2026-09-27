@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import get_args
+from uuid import UUID
 
 from kineticloop.contracts.commands import PUBLIC_COMMAND_MODELS
 from kineticloop.persistence.transactions import (
@@ -8,6 +9,7 @@ from kineticloop.persistence.transactions import (
     MUTATION_CAPABILITY_MATRIX,
     TRANSACTION_OWNER_MATRIX,
     Boundary,
+    artifact_bindings_match_activation,
 )
 
 
@@ -99,3 +101,28 @@ def test_catalog_mapping_and_release_owner_boundaries_complete() -> None:
     assert "S19" not in publish.mutation_surfaces
     assert "S20" not in publish.mutation_surfaces
     assert "S48" not in publish.mutation_surfaces
+    active_policy = UUID("00000000-0000-8000-8000-000000000501")
+    active_release = UUID("00000000-0000-8000-8000-000000000548")
+    foreign_release = UUID("00000000-0000-8000-8000-000000000549")
+    policy_artifact = UUID("00000000-0000-8000-8000-000000000591")
+    release_artifact = UUID("00000000-0000-8000-8000-000000000592")
+    assert artifact_bindings_match_activation(
+        [
+            (policy_artifact, active_policy, None, None),
+            (release_artifact, None, None, active_release),
+        ],
+        root_ids={policy_artifact},
+        active_policy_id=active_policy,
+        selected_catalog_id=None,
+        active_release_ids={active_release},
+    )
+    assert not artifact_bindings_match_activation(
+        [
+            (policy_artifact, active_policy, None, None),
+            (release_artifact, None, None, foreign_release),
+        ],
+        root_ids={policy_artifact, release_artifact},
+        active_policy_id=active_policy,
+        selected_catalog_id=None,
+        active_release_ids={active_release},
+    )

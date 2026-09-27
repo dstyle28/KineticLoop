@@ -71,7 +71,9 @@ therefore locks S51 then S01 and validates the caller-supplied candidate artifac
 without requiring an outgoing current S24. The T3 command owner, while both locks remain held,
 must bind that exact leased closure to the single READY build, validate every declared root,
 persist the full root and closure identities in the new immutable S24, and atomically advance
-the S01 pointer. This permits bootstrap, policy/release transitions, and consecutive
+the S01 pointer. The registered artifact bound to active S05 anchors the selected graph;
+S48-bound artifacts must name releases reachable from that policy artifact and any S19-bound
+artifact must equal the selected catalog. This permits bootstrap, policy/release transitions, and consecutive
 publications without treating the previous Manifest as authority for the incoming closure.
 
 Every helper requires an idle PostgreSQL connection and owns the top-level transaction through
