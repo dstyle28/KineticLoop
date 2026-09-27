@@ -38,8 +38,11 @@ leased artifact before commit; UUID-only eligibility is not sufficient.
 The preparation interface exposes only subject-bound structured mutations.
 RecordProjection, BuildManifest, ResolveEvidence, RecordValidation, and T5 worker
 preparation cannot request coordination locks through it or address another subject.
-Factset build commands have a separate subject-bound interface which locks only their
-S15 build; sealing remains a T2-SEAL owner operation that starts at S01.
+Factset build commands have a separate subject-bound interface: BeginBuild creates the
+exact BUILDING basis, each WriteCandidate advances one member revision with one S16
+member, and CompleteFactset freezes the digest, closed member revision, and versioned
+completion certificate. Sealing remains a T2-SEAL owner operation that starts at S01
+and revalidates that full completion basis, captured frontier, and epoch.
 
 Durable first execution locks S01 before S02, then locks declared remaining
 aggregate rows in canonical table/key order, compares the request hash, and saves the
@@ -69,6 +72,8 @@ an S31 bound to the verified live intent/attempt and a same-command S32 transiti
 PermitDispatch additionally requires the reservation's `ref_s27_id` and dispatch
 fence to match that verified live intent and token, advances its settlement revision,
 and appends the corresponding S32 transition.
+AcquireLease and RenewLease expose no generic S29 mutation capability; attempt
+progression remains owned by the exact guarded attempt workflow.
 
 `T6CommitCoordinator` is the one repository owner for CommitBundle. It is the atomic
 database boundary jointly required by PrescriptionCommitService and
@@ -77,7 +82,9 @@ interface.
 The T6 commit path binds every inserted reference to one exact verified
 intent/request/attempt/validation chain and to the locked or same-command inserted
 row. The attempt must be COMMIT_READY and bind the current S24 and current S01 epoch.
-It records the locked S38 revision as S39's parent, allowing null only for the
+The verified intent, locked S38, and S39 must name the same local day, and S39/S38
+must advance the locked head revision by exactly one. It records the locked S38
+revision as S39's parent, allowing null only for the
 first head, inserts S39/S40/S41/S42, materializes the exact verified S49 closure for
 S42, and links supersession through the prior bundle member/prescription/authorization
 chain only when a prior head exists. Supersession binds the old and replacement
@@ -98,12 +105,15 @@ append an S17 event and a same-command S18 state row. Actual-execution decisions
 advance S01's execution basis to their same-transaction S03 event. T2-IN owners can
 append an `EPOCH_INVALIDATED` S43 bound to the current receipt and cause in the same
 command as their decision and S01 epoch/frontier change. Factset sealing binds the
-single READY S15 build to the exact current S01 factset pointer and SEALED state.
+single READY S15 build's closed revision, digest, certificate, captured frontier, and
+epoch to the exact current S01 pointer and SEALED state.
 
 T3 publication locks and publishes the single READY S23 build whose captured epoch,
 frontier, policy, program, and factset equal current S01. S24 is the next generation
-and S25 dependencies bind that same-command S24; S01 and S23 must advance to exactly
-those published identities. T4 admits either a new or locked intent and binds S28/S29
+and binds the exact SEALED factset, projection role/basis, catalog/mapping selection,
+artifact closure digest, manifest hash, registry state/revision, frontier, and bounded
+validity. S25 is the complete same-command projection binding set; S01 and S23 must
+advance to exactly those published identities. T4 admits either a new or locked intent and binds S28/S29
 to that exact chain, current epoch, and current manifest.
 
 T7 START requires a READY/PLANNED session with no prior START; RESUME requires PAUSED
@@ -111,13 +121,18 @@ with a prior START; CONTINUE requires IN_PROGRESS with a prior START. START and 
 revalidate and append S45 for the exact current prescription/authorization pair;
 CONTINUE revalidates the pair but cannot append S45. Every command advances the exact
 session to IN_PROGRESS with revision +1 and advances S01's execution basis with its
-same-transaction S03 event. A historical replay is explicitly non-executable.
+same-transaction S03 event. START/RESUME S45 binds the validated execution scope,
+database eligibility time, and next binding revision. A historical replay is
+explicitly non-executable.
 
 PermitDispatch locks S01, S27, then S31 and atomically commits its S02 receipt, S03
 event, and S04 outbox row with the state transition. Only the first
 `RESERVED → DISPATCH_INTENT` winner receives `sendable=true`; replay of the same permit
 key receives the durable permit with `sendable=false`. The physical provider request
 occurs after commit.
+SettleCall and MarkUnknown prepare one exact locked S27/S31/attempt transition,
+enforce the frozen source/target state and next settlement revision, and bind one S32
+event to that same reservation, revision, server time, and receipt identity.
 Outbox claiming is an isolated S04 transaction with no S01 or business mutation
 callback. Consumers release the outbox row before invoking a new idempotent command.
 

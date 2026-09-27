@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import threading
 from collections.abc import Iterator, Mapping
 from datetime import UTC, date, datetime, timedelta
@@ -76,10 +78,27 @@ DEMAND = UUID("00000000-0000-8000-8000-000000015035")
 RESOLUTION = UUID("00000000-0000-8000-8000-000000015036")
 VALIDATION = UUID("00000000-0000-8000-8000-000000015037")
 FACTSET = UUID("00000000-0000-8000-8000-000000015015")
+FACTSET_BUILD_TEST = UUID("00000000-0000-8000-8000-000000015115")
+FACTSET_MEMBER_TEST = UUID("00000000-0000-8000-8000-000000015116")
 MANIFEST_BUILD = UUID("00000000-0000-8000-8000-000000015023")
 PROJECTION = UUID("00000000-0000-8000-8000-000000015021")
 PROJECTION_BINDING = UUID("00000000-0000-8000-8000-000000015025")
 NOW = datetime(2026, 9, 26, 12, tzinfo=UTC)
+
+
+def _completion_certificate(factset_id: UUID, member_revision: int, membership_digest: str) -> str:
+    basis = {
+        "method_version": "kl015-v1",
+        "factset_id": str(factset_id),
+        "subject_id": str(SUBJECT),
+        "captured_input_frontier": "frontier-1",
+        "captured_epoch": 0,
+        "completed_member_revision": member_revision,
+        "membership_digest": membership_digest,
+    }
+    return hashlib.sha256(
+        json.dumps(basis, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
 
 
 @pytest.fixture(scope="module")
@@ -216,9 +235,29 @@ def _seed_transaction_rows(admin_url: str) -> None:
         )
         connection.execute(
             "INSERT INTO kineticloop.factset_revisions"
-            "(id,subject_id,factset_identity,status,storage_mode,member_revision) "
-            "VALUES (%s,%s,'build-1','BUILDING','FULL',0)",
-            (FACTSET, SUBJECT),
+            "(id,subject_id,factset_identity,status,storage_mode,member_revision,"
+            "completed_member_revision,membership_digest,sealed_at,typed_payload) "
+            "VALUES (%s,%s,'build-1','SEALED','FULL',0,0,'factset-digest',"
+            "clock_timestamp(),%s)",
+            (
+                FACTSET,
+                SUBJECT,
+                psycopg.types.json.Jsonb(
+                    {
+                        "basis_version": "kl015-v1",
+                        "captured_input_frontier": "frontier-1",
+                        "captured_epoch": 0,
+                        "program_revision_id": str(POLICY),
+                        "policy_id": str(POLICY),
+                        "mapping_revision_id": None,
+                        "completion_identity": "seed-completion",
+                        "member_count": 0,
+                        "completion_certificate": _completion_certificate(
+                            FACTSET, 0, "factset-digest"
+                        ),
+                    }
+                ),
+            ),
         )
         connection.execute(
             "INSERT INTO kineticloop.program_versions"
@@ -248,9 +287,17 @@ def _seed_transaction_rows(admin_url: str) -> None:
         connection.execute(
             "INSERT INTO kineticloop.manifest_builds"
             "(id,subject_id,build_identity,status,captured_epoch,captured_input_frontier,"
-            "ref_s05_id,ref_s06_id,ref_s15_id) "
-            "VALUES (%s,%s,'manifest-build','READY',0,'frontier-1',%s,%s,%s)",
-            (MANIFEST_BUILD, SUBJECT, POLICY, POLICY, FACTSET),
+            "ref_s05_id,ref_s06_id,ref_s15_id,ref_s21_id,typed_payload) "
+            "VALUES (%s,%s,'manifest-build','READY',0,'frontier-1',%s,%s,%s,%s,%s)",
+            (
+                MANIFEST_BUILD,
+                SUBJECT,
+                POLICY,
+                POLICY,
+                FACTSET,
+                PROJECTION,
+                psycopg.types.json.Jsonb({"manifest_hash": "manifest-hash-2"}),
+            ),
         )
         connection.execute("SET session_replication_role=origin")
 
@@ -343,23 +390,139 @@ def test_factset_build_stays_outside_subject_coordination(
         with psycopg.connect(database_urls["admin"]) as connection:
             with pytest.raises(GuardRequired, match="isolated"):
                 execute_command(connection, command, SUBJECT, lambda tx: tx.lock_subject())
-        with psycopg.connect(database_urls["admin"]) as connection:
-            observed = execute_factset_build(
-                connection,
-                command,
-                SUBJECT,
-                FACTSET,
-                lambda session: session.relation_locks(),
-            )
-        assert "factset_revisions" in observed, command
-        assert "user_decision_state" not in observed, command
+    begin_basis = {
+        "build_identity": "build-interface-test",
+        "captured_input_frontier": "frontier-1",
+        "captured_epoch": 0,
+        "program_revision_id": POLICY,
+        "policy_id": POLICY,
+        "mapping_revision_id": None,
+        "storage_mode": "FULL",
+    }
+
+    def begin(session: Any) -> tuple[str, ...]:
+        session.insert(
+            "S15",
+            {
+                "id": FACTSET_BUILD_TEST,
+                "subject_id": SUBJECT,
+                "factset_identity": "build-interface-test",
+                "status": "BUILDING",
+                "storage_mode": "FULL",
+                "member_revision": 0,
+                "completed_member_revision": None,
+                "membership_digest": None,
+                "ref_s20_id": None,
+                "typed_payload": psycopg.types.json.Jsonb(session.factset_build_payload()),
+            },
+        )
+        return session.relation_locks()
+
     with psycopg.connect(database_urls["admin"]) as connection:
-        with pytest.raises(StatementRejected):
+        observed = execute_factset_build(
+            connection,
+            "BeginBuild",
+            SUBJECT,
+            FACTSET_BUILD_TEST,
+            begin,
+            factset_build_basis=begin_basis,
+        )
+    assert "factset_revisions" in observed
+    assert "user_decision_state" not in observed
+
+    def write(session: Any) -> tuple[str, ...]:
+        session.insert(
+            "S16",
+            {
+                "id": FACTSET_MEMBER_TEST,
+                "subject_id": SUBJECT,
+                "logical_member_key": "member-1",
+                "member_kind": "FACT",
+                "member_operation": "SET",
+                "action_scope": "CURRENT",
+                "ref_s15_id": FACTSET_BUILD_TEST,
+            },
+        )
+        session.update(
+            "S15",
+            {"member_revision": 1},
+            {"id": FACTSET_BUILD_TEST, "subject_id": SUBJECT},
+        )
+        return session.relation_locks()
+
+    with psycopg.connect(database_urls["admin"]) as connection:
+        observed = execute_factset_build(
+            connection,
+            "WriteCandidate",
+            SUBJECT,
+            FACTSET_BUILD_TEST,
+            write,
+            factset_build_basis={"expected_member_revision": 0},
+        )
+    assert "factset_revisions" in observed and "user_decision_state" not in observed
+
+    def stale_seal(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
+        tx.lock_subject()
+        return tx.idempotent_outcome(
+            receipt_id=UUID("00000000-0000-8000-8000-000000015117"),
+            actor_scope="subject",
+            client_key="stale-factset-seal",
+            request_hash="stale-factset-seal-hash",
+            mutation=lambda session: {"unexpected": True},
+            event=_event(0x15118),
+            aggregate_locks={"factset_revisions": (FACTSET_BUILD_TEST,)},
+            factset_seal_basis={
+                "factset_id": FACTSET_BUILD_TEST,
+                "captured_input_frontier": "wrong-frontier",
+                "captured_epoch": 0,
+                "completed_member_revision": 1,
+                "membership_digest": "build-test-digest",
+                "completion_identity": "build-test-completion",
+                "completion_certificate": _completion_certificate(
+                    FACTSET_BUILD_TEST, 1, "build-test-digest"
+                ),
+            },
+        )
+
+    def complete(session: Any) -> tuple[str, ...]:
+        session.update(
+            "S15",
+            {
+                "status": "READY",
+                "member_revision": 1,
+                "completed_member_revision": 1,
+                "membership_digest": "build-test-digest",
+                "typed_payload": psycopg.types.json.Jsonb(session.factset_completion_payload()),
+            },
+            {"id": FACTSET_BUILD_TEST, "subject_id": SUBJECT},
+        )
+        return session.relation_locks()
+
+    with psycopg.connect(database_urls["admin"]) as connection:
+        observed = execute_factset_build(
+            connection,
+            "CompleteFactset",
+            SUBJECT,
+            FACTSET_BUILD_TEST,
+            complete,
+            factset_build_basis={
+                "expected_member_revision": 1,
+                "membership_digest": "build-test-digest",
+                "completion_identity": "build-test-completion",
+                "member_count": 1,
+            },
+        )
+    assert "factset_revisions" in observed and "user_decision_state" not in observed
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(GuardRequired, match="completion basis"):
+            execute_command(connection, "SealFactset", SUBJECT, stale_seal)
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises((GuardRequired, StatementRejected)):
             execute_factset_build(
                 connection,
                 "CompleteFactset",
                 SUBJECT,
-                FACTSET,
+                FACTSET_BUILD_TEST,
                 lambda session: session.update(
                     "S16",
                     {"member_operation": "SET"},
@@ -367,12 +530,12 @@ def test_factset_build_stays_outside_subject_coordination(
                 ),
             )
     with psycopg.connect(database_urls["admin"]) as connection:
-        with pytest.raises(GuardRequired, match="exact locked row"):
+        with pytest.raises(GuardRequired):
             execute_factset_build(
                 connection,
                 "WriteCandidate",
                 SUBJECT,
-                FACTSET,
+                FACTSET_BUILD_TEST,
                 lambda session: session.insert(
                     "S16",
                     {
@@ -1555,6 +1718,47 @@ def test_dispatch_first_winner_and_replay_non_resend(database_urls: dict[str, st
         ).fetchone() == (0,)
 
 
+def test_t8_settlement_rejects_crosswired_intent_reservation(
+    database_urls: dict[str, str],
+) -> None:
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "UPDATE kineticloop.call_reservations SET ref_s27_id=%s,ref_s29_id=%s WHERE id=%s",
+            (INTENT_2, ATTEMPT_2, RESERVATION_2),
+        )
+        connection.execute("SET session_replication_role=origin")
+    try:
+        with psycopg.connect(database_urls["admin"]) as connection:
+            with pytest.raises(GuardRequired, match="exact locked intent/attempt"):
+                execute_command(
+                    connection,
+                    "SettleCall",
+                    SUBJECT,
+                    lambda tx: (
+                        tx.lock_subject(),
+                        tx.lock_intents((INTENT,)),
+                        tx.lock_reservations((RESERVATION_2,)),
+                        tx.idempotent_outcome(
+                            receipt_id=UUID("00000000-0000-8000-8000-000000015562"),
+                            actor_scope="subject",
+                            client_key="crosswired-settlement",
+                            request_hash="crosswired-settlement-hash",
+                            mutation=lambda session: {"unexpected": True},
+                            event=_event(0x15563),
+                        ),
+                    ),
+                )
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "UPDATE kineticloop.call_reservations SET ref_s27_id=%s,ref_s29_id=%s WHERE id=%s",
+                (INTENT, ATTEMPT, RESERVATION_2),
+            )
+            connection.execute("SET session_replication_role=origin")
+
+
 def test_ack_loss_replay_preserves_natural_uniqueness(database_urls: dict[str, str]) -> None:
     receipt = UUID("00000000-0000-8000-8000-000000015302")
     event = _event(0x15303)
@@ -1777,6 +1981,7 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
         *,
         parent_revision: UUID | None = OLD_BUNDLE,
         include_supersession: bool = True,
+        revision_override: int | None = None,
     ) -> tuple[Mapping[str, Any], bool]:
         def operation(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
             registry_revision = _acquire_registry(tx)
@@ -1793,6 +1998,7 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
 
             def mutation(session: Any) -> Mapping[str, Any]:
                 nonlocal runs
+                new_revision = revision_override or (1 if parent_revision is None else 2)
                 artifact_dependencies = session.authorization_certificate_dependencies()
                 closure_digest = session.authorization_closure_digest()
                 authorization_valid_from = session.authorization_valid_from()
@@ -1813,7 +2019,7 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
                         "id": BUNDLE,
                         "subject_id": SUBJECT,
                         "local_date": date(2026, 9, 26),
-                        "revision_no": 2,
+                        "revision_no": new_revision,
                         "generation_mode": "AI_GENERATED_CURRENT",
                         "parent_revision_id": parent_revision,
                         "ref_s02_id": receipt,
@@ -1900,7 +2106,10 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
                 )
                 session.update(
                     "S38",
-                    {"head_revision": 2, "current_bundle_revision_id": BUNDLE},
+                    {
+                        "head_revision": new_revision,
+                        "current_bundle_revision_id": BUNDLE,
+                    },
                     {"id": DAILY_HEAD, "subject_id": SUBJECT},
                 )
                 session.update(
@@ -1982,6 +2191,8 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
         connection.execute("SET session_replication_role=origin")
     with pytest.raises(GuardRequired, match="prior locked head"):
         invoke(UUID("00000000-0000-8000-8000-000000015942"))
+    with pytest.raises(GuardRequired, match="day and revision"):
+        invoke(revision_override=99)
 
     def partial_commit(tx: RepositoryTransaction) -> None:
         _acquire_registry(tx)
@@ -2152,6 +2363,8 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
             ("outbox_deliveries", event.outbox_id),
             ("domain_events", event.event_id),
             ("command_receipts", receipt),
+            ("bundle_prescription_members", OLD_BUNDLE_MEMBER),
+            ("daily_bundle_revisions", OLD_BUNDLE),
         ):
             connection.execute(f"DELETE FROM kineticloop.{table} WHERE id=%s", (object_id,))
         connection.execute(
@@ -2261,8 +2474,8 @@ def test_t7_exact_session_and_t3_publication_guards(database_urls: dict[str, str
                     "id": binding,
                     "subject_id": SUBJECT,
                     "binding_kind": "START",
-                    "binding_revision": 1,
-                    "accepted_at": NOW,
+                    "binding_revision": session.execution_binding_revision(),
+                    "accepted_at": session.execution_binding_accepted_at(),
                     "execution_scope": "EXECUTION",
                     "ref_s02_id": start_receipt,
                     "ref_s40_id": prescription_id,
@@ -2290,6 +2503,47 @@ def test_t7_exact_session_and_t3_publication_guards(database_urls: dict[str, str
             mutation=mutation,
             event=start_event,
         )
+
+    def crosswired_start(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
+        _acquire_registry(tx)
+        tx.lock_daily_head(date(2026, 9, 26))
+        tx.lock_execution((SESSION,))
+        tx.require_execution_authorization(
+            prescription_id=prescription_id,
+            authorization_id=authorization_id,
+            execution_scope="EXECUTION",
+        )
+
+        def mutation(session: Any) -> Mapping[str, Any]:
+            session.insert(
+                "S45",
+                {
+                    "id": UUID("00000000-0000-8000-8000-000000015855"),
+                    "subject_id": SUBJECT,
+                    "binding_kind": "START",
+                    "binding_revision": session.execution_binding_revision(),
+                    "accepted_at": session.execution_binding_accepted_at(),
+                    "execution_scope": "WRONG_SCOPE",
+                    "ref_s02_id": UUID("00000000-0000-8000-8000-000000015856"),
+                    "ref_s40_id": prescription_id,
+                    "ref_s42_id": authorization_id,
+                    "ref_s44_id": SESSION,
+                },
+            )
+            return {"unexpected": True}
+
+        return tx.idempotent_outcome(
+            receipt_id=UUID("00000000-0000-8000-8000-000000015856"),
+            actor_scope="subject",
+            client_key="crosswired-t7-scope",
+            request_hash="crosswired-t7-scope-hash",
+            mutation=mutation,
+            event=_event(0x15857),
+        )
+
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(GuardRequired, match="scope, time, and revision"):
+            execute_command(connection, "StartSession", SUBJECT, crosswired_start)
 
     with psycopg.connect(database_urls["admin"]) as connection:
         outcome, replayed = execute_command(connection, "StartSession", SUBJECT, start)
@@ -2325,8 +2579,8 @@ def test_t7_exact_session_and_t3_publication_guards(database_urls: dict[str, str
                     "manifest_hash": "manifest-hash-2",
                     "input_frontier_hash": "frontier-1",
                     "captured_epoch": 0,
-                    "dependency_closure_hash": "manifest-closure-2",
-                    "valid_until": NOW + timedelta(days=1),
+                    "dependency_closure_hash": session.publication_dependency_digest(),
+                    "valid_until": session.publication_valid_until(),
                     "registry_revision_at_publish": registry_revision,
                     "registry_state_id": 1,
                     "ref_s05_id": POLICY,
@@ -2369,6 +2623,46 @@ def test_t7_exact_session_and_t3_publication_guards(database_urls: dict[str, str
             event=publish_event,
             aggregate_locks={"manifest_builds": (MANIFEST_BUILD,)},
         )
+
+    def crosswired_publish(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
+        registry_revision = _acquire_registry(tx)
+
+        def mutation(session: Any) -> Mapping[str, Any]:
+            session.insert(
+                "S24",
+                {
+                    "id": UUID("00000000-0000-8000-8000-000000015834"),
+                    "subject_id": SUBJECT,
+                    "generation": 2,
+                    "manifest_hash": "manifest-hash-2",
+                    "input_frontier_hash": "wrong-frontier",
+                    "captured_epoch": 0,
+                    "dependency_closure_hash": session.publication_dependency_digest(),
+                    "valid_until": session.publication_valid_until(),
+                    "registry_revision_at_publish": registry_revision,
+                    "registry_state_id": 1,
+                    "ref_s05_id": POLICY,
+                    "ref_s06_id": POLICY,
+                    "ref_s15_id": FACTSET,
+                    "ref_s23_id": MANIFEST_BUILD,
+                    "ref_s49_id": ARTIFACT,
+                },
+            )
+            return {"unexpected": True}
+
+        return tx.idempotent_outcome(
+            receipt_id=UUID("00000000-0000-8000-8000-000000015836"),
+            actor_scope="subject",
+            client_key="crosswired-t3-frontier",
+            request_hash="crosswired-t3-frontier-hash",
+            mutation=mutation,
+            event=_event(0x15837),
+            aggregate_locks={"manifest_builds": (MANIFEST_BUILD,)},
+        )
+
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(GuardRequired, match="exact guarded T3"):
+            execute_command(connection, "PublishManifest", SUBJECT, crosswired_publish)
 
     with psycopg.connect(database_urls["admin"]) as connection:
         outcome, replayed = execute_command(connection, "PublishManifest", SUBJECT, publish)

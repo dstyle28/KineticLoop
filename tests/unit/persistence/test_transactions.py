@@ -51,6 +51,8 @@ def test_every_public_owner_has_explicit_non_infrastructure_dml_capabilities() -
         "lease_expires_at",
         "typed_payload",
     }
+    assert ("S29", "update") not in MUTATION_CAPABILITY_MATRIX["AcquireLease"]
+    assert ("S29", "update") not in MUTATION_CAPABILITY_MATRIX["RenewLease"]
     assert MUTATION_CAPABILITY_MATRIX["PermitDispatch"][("S31", "update")] == {
         "status",
         "settlement_revision",
