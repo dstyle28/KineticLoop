@@ -1,0 +1,70 @@
+HG-024 KL-073 governance evidence
+protected_base: 7623c20bb267a39b8d02c29845b4ee054714d2b1
+tested_commit: 7b985462aed23ce86acbe5faa27b57aff3be93a1
+
+PASS identity_allocation_unique
+oracle: HG-023 is reserved by the blocked M2 closure work; no HG-024 or KL-073
+identity, packet, result, review, integration, or history artifact existed at the
+protected base. HG-024 creates only the governance record and KL-073 creates only a
+NOT_STARTED packet/backlog/traceability definition.
+
+PASS diagnosis_read_only_verified
+command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected --maxfail=1 -p no:cacheprovider
+oracle: In the worktree-specific PostgreSQL namespace kl_1df8_b0725908f55d, the
+quota-subject case failed before its expected GuardRequired assertion. The traceback
+ended at RepositoryTransaction.require_lease_acquisition_basis with
+FenceLost("lease acquisition compare-and-swap basis was lost"). The test supplied
+NOW + timedelta(days=1), while the production predicate compared both the intent
+deadline and requested expiry to PostgreSQL clock_timestamp(). Source inspection
+confirmed tests/db/test_transaction_interfaces.py defines NOW as
+datetime(2026, 9, 26, 12, tzinfo=UTC). No product or test file was edited.
+
+PASS follow_up_projection_exact
+oracle: KL-073 is NOT_STARTED and depends on merged KL-015. Its packet, backlog, and
+traceability projections agree on the seven exact checks, transaction_interfaces
+resource, sole implementation write path tests/db/test_transaction_interfaces.py,
+isolated PostgreSQL environment, and GENERAL/PROTOCOL/DB_CONCURRENCY reviews.
+
+PASS clock_relative_acceptance_boundary_exact
+oracle: Positive lease/deadline fixtures must obtain fresh PostgreSQL-relative time
+close to each operation and read back exact values when asserted. Explicit stale and
+expired negatives remain PostgreSQL-clock-relative. The contract forbids moving the
+date forward, using process-start time, sleeps, skips, xfails, widened assertions, or
+production lease changes.
+
+PASS regression_evidence_required
+oracle: KL-073 must pass the ten HG-023 failure cases, the focused expired/stale/fence
+surface, the complete transaction-interface suite, all tests/db, and the full
+repository regression. Focused success cannot substitute for genuine full-suite
+replacement evidence consumable by resumed HG-023.
+
+PASS harness_structure_valid
+command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
+oracle: HARNESS_CHECK_PASS tasks=70 active=68.
+
+PASS harness_tests_pass
+command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-harness
+oracle: 134 passed in 162.18s.
+
+PASS unit_tests_pass
+command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-unit
+oracle: 186 passed in 18.92s.
+
+PASS lint_and_typecheck_pass
+command: RUFF_CACHE_DIR=/private/tmp/hg024-ruff PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl lint && MYPY_CACHE_DIR=/private/tmp/hg024-mypy PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl typecheck
+oracle: Ruff reports All checks passed; mypy reports Success with no issues in 85 source files.
+
+PASS frozen_and_completed_state_unchanged
+oracle: Frozen Protocol, Frozen DB, FROZEN_BASELINE.json, the KL-015 packet, result,
+reviews, evidence, integration/history artifacts, product code, migrations, and tests
+are byte-unchanged from the protected base.
+
+PASS governance_scope_exact
+oracle: The protected-base-to-tested change set is exactly the Project Plan projection,
+current index, delivery manifest, backlog, traceability, and the new KL-073 packet.
+The governance bookkeeping suffix adds only this evidence and HG-024 record before
+fresh independent reviews.
+
+PASS product_requirement_and_closure_not_claimed
+oracle: KL-073 begins NOT_STARTED. No product requirement PASS, M2 closure PASS,
+implementation result, review, or integration artifact is created by HG-024.

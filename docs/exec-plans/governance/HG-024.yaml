@@ -1,0 +1,80 @@
+change_identity: harness-governance-v0.1/HG-024
+display_change_id: HG-024
+base_commit: 7623c20bb267a39b8d02c29845b4ee054714d2b1
+tested_commit: 7b985462aed23ce86acbe5faa27b57aff3be93a1
+change_status: PASS
+summary: >-
+  Add KL-073 as a narrow follow-up to merged KL-015 for database-clock-relative
+  PostgreSQL transaction fixtures, preserving intentional expired and stale
+  negatives and requiring focused, database-wide, and full-repository regression
+  evidence without changing production lease semantics or completed KL-015 state.
+packets_refined:
+  - KL-073
+files_changed:
+  - 06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md
+  - CURRENT_DOCUMENT_INDEX.json
+  - HARNESS_DOCUMENT_MANIFEST.json
+  - KineticLoop_Harness_Backlog_v0.2.json
+  - KineticLoop_Harness_Traceability_v0.3.json
+  - docs/exec-plans/active/KL-073.md
+  - docs/exec-plans/evidence/HG-024/checks.log
+  - docs/exec-plans/governance/HG-024.yaml
+checks_run:
+  - check_id: identity_allocation_unique
+    command: Verify HG-023 is reserved and HG-024/KL-073 are unused across current task, governance, result, review, integration, and history identities.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/checks.log
+  - check_id: diagnosis_read_only_verified
+    command: Reproduce one HG-023 failure against the worktree-isolated PostgreSQL namespace and inspect its source/production predicate without editing product or tests.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/checks.log
+  - check_id: follow_up_projection_exact
+    command: Verify exact KL-073 packet, backlog, traceability, dependency, resource, write-scope, environment, and review projections.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/checks.log
+  - check_id: clock_relative_acceptance_boundary_exact
+    command: Verify live and expired/stale fixtures are database-clock-relative and all fixed-date, process-start, sleep, skip, assertion-weakening, and production-semantic shortcuts are forbidden.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/checks.log
+  - check_id: regression_evidence_required
+    command: Verify KL-073 requires the ten blocked cases, focused negative surface, complete transaction and DB suites, and fresh full-repository regression evidence.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/checks.log
+  - check_id: harness_structure_valid
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/checks.log
+  - check_id: harness_tests_pass
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/checks.log
+  - check_id: unit_tests_pass
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-unit
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/checks.log
+  - check_id: lint_and_typecheck_pass
+    command: Run the repository lint and typecheck entrypoints with isolated caches.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/checks.log
+  - check_id: frozen_and_completed_state_unchanged
+    command: Verify Frozen authority, FROZEN_BASELINE.json, completed KL-015 state, product code, migrations, and tests are unchanged from the protected base.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/checks.log
+  - check_id: governance_scope_exact
+    command: Verify protected-base-to-tested files equal the six definition files and the bookkeeping suffix contains only HG-024 evidence and record files.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/checks.log
+  - check_id: product_requirement_and_closure_not_claimed
+    command: Verify KL-073 remains NOT_STARTED and HG-024 creates no product requirement PASS, M2 closure, result, review, or integration artifact.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/checks.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+  - >-
+    KL-073 remains NOT_STARTED. HG-024 defines the repair and evidence contract but
+    does not modify tests or claim the ten failures are fixed.
+  - >-
+    HG-024 requires fresh independent GENERAL, PROTOCOL, and DB_CONCURRENCY reviews
+    bound to the immutable governance head before merge; this change intentionally
+    creates no review artifact in its tested revision.
