@@ -1,0 +1,51 @@
+KL-055 post-review-remediation packet and supplemental validation
+base_commit: 21ec0b508959d8ce24dfe1a0e4d59a0820394068
+tested_commit: 613612190920b6ce85dd5591f05e31da51d1bac3
+date: 2026-09-26
+environment: explicit in-memory synthetic provider secrets; provider credential variables absent; network denied in the hermetic subprocess; project uv environment synchronized from the locked dependency graph
+
+=== packet_checks ===
+command: uv run pytest -q tests/unit/integrations/test_provider.py::test_provider_and_stream_ids_are_canonical
+result: PASS (1 passed)
+command: uv run pytest -q tests/unit/integrations/test_provider.py::test_provider_subject_source_binding_is_trusted
+result: PASS (1 passed)
+command: uv run pytest -q tests/unit/integrations/test_provider.py::test_evidence_provenance_and_times_required
+result: PASS (1 passed)
+command: uv run pytest -q tests/unit/integrations/test_provider.py::test_evidence_envelope_closed_s09_schema
+result: PASS (1 passed)
+command: uv run pytest -q tests/unit/integrations/test_provider.py::test_server_assigns_known_at
+result: PASS (1 passed)
+command: uv run pytest -q tests/unit/integrations/test_provider.py::test_provider_has_no_fact_or_command_authority
+result: PASS (1 passed)
+oracle: empty provider_revision and whitespace stable_observation_key are rejected by both validate_adapter_output and the exported validate_receive_evidence_binding T1 handoff
+command: uv run pytest -q tests/unit/integrations/test_provider.py::test_provider_credentials_do_not_cross_evidence_or_diagnostic_boundary
+result: PASS (1 passed)
+command: uv run pytest -q tests/unit/integrations/test_provider.py::test_transport_health_differs_from_coverage
+result: PASS (1 passed)
+command: uv run pytest -q tests/unit/integrations/test_provider.py::test_provider_contract_is_hermetic
+result: PASS (1 passed)
+command: uv run pytest -q tests/unit/integrations/test_provider.py::test_provider_fixtures_pass_hardened_synthetic_guard
+result: PASS (1 passed)
+command: uv run pytest -q tests/unit/integrations/test_provider.py::test_synthetic_provider_fixtures_pass
+result: PASS (1 passed)
+command: uv run pytest -q tests/unit/integrations tests/unit/security tests/unit/config
+result: PASS (50 passed)
+command: uv run kl check-harness
+result: PASS (HARNESS_CHECK_PASS tasks=69 active=67)
+
+=== supplemental_validation ===
+command: uv run kl lint
+result: PASS (All checks passed!)
+command: MYPY_CACHE_DIR=/private/tmp/kl055-r2-tested-mypy uv run kl typecheck
+result: PASS (Success: no issues found in 82 source files)
+command: uv run kl test-unit
+result: PASS (183 passed in 19.66s)
+command: uv run kl test-harness
+result: PASS (134 passed in 188.21s)
+
+=== oracle_verification ===
+PASS: canonical provider/stream, trusted subject/source, provenance/time, closed S09, server known_at, non-authority, credential, health/coverage, hermetic, and synthetic fixture oracles all hold.
+PASS: selected provider revision or stable observation identity is exact-string and nonblank at both raw observation and EvidenceEnvelope boundaries.
+PASS: the exported T1 handoff requires the trusted execution context, returns a newly validated envelope timestamped from its sealed server clock, and never returns the untrusted input envelope.
+
+SPEC_CHANGE_REQUIRED: no

@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-055
 display_task_id: KL-055
 task_definition_version: v0.2
 base_commit: 21ec0b508959d8ce24dfe1a0e4d59a0820394068
-tested_commit: ad9fe52d5495023b616032f4d02625758e02e727
+tested_commit: 613612190920b6ce85dd5591f05e31da51d1bac3
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -14,7 +14,8 @@ summary: >-
   lineage root, command authority, or known_at; the exported T1 receive handoff
   requires the trusted execution context and returns a newly validated envelope
   timestamped from its sealed server clock, while every binding mismatch fails with
-  one non-enumerating SUBJECT_MISMATCH. An explicit credential guard
+  one non-enumerating SUBJECT_MISMATCH. Envelope source revision/observation identity
+  is also required to be nonblank through both adapter-output and T1 handoffs. An explicit credential guard
   rejects raw, encoded, nested, URL, exception, and adapter-failure credential paths,
   while the common adapter interface remains hermetic and can emit only evidence.
   Transport health remains separate from coverage; status diagnostics retain only
@@ -24,55 +25,55 @@ commands_run:
   - check_id: provider_and_stream_ids_are_canonical
     command: uv run pytest -q tests/unit/integrations/test_provider.py::test_provider_and_stream_ids_are_canonical
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-055/checks-ad9fe52.log
+    evidence_ref: docs/exec-plans/evidence/KL-055/checks-6136121.log
   - check_id: provider_subject_source_binding_is_trusted
     command: uv run pytest -q tests/unit/integrations/test_provider.py::test_provider_subject_source_binding_is_trusted
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-055/checks-ad9fe52.log
+    evidence_ref: docs/exec-plans/evidence/KL-055/checks-6136121.log
   - check_id: evidence_provenance_and_times_required
     command: uv run pytest -q tests/unit/integrations/test_provider.py::test_evidence_provenance_and_times_required
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-055/checks-ad9fe52.log
+    evidence_ref: docs/exec-plans/evidence/KL-055/checks-6136121.log
   - check_id: evidence_envelope_closed_s09_schema
     command: uv run pytest -q tests/unit/integrations/test_provider.py::test_evidence_envelope_closed_s09_schema
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-055/checks-ad9fe52.log
+    evidence_ref: docs/exec-plans/evidence/KL-055/checks-6136121.log
   - check_id: server_assigns_known_at
     command: uv run pytest -q tests/unit/integrations/test_provider.py::test_server_assigns_known_at
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-055/checks-ad9fe52.log
+    evidence_ref: docs/exec-plans/evidence/KL-055/checks-6136121.log
   - check_id: provider_has_no_fact_or_command_authority
     command: uv run pytest -q tests/unit/integrations/test_provider.py::test_provider_has_no_fact_or_command_authority
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-055/checks-ad9fe52.log
+    evidence_ref: docs/exec-plans/evidence/KL-055/checks-6136121.log
   - check_id: provider_credentials_do_not_cross_evidence_or_diagnostic_boundary
     command: uv run pytest -q tests/unit/integrations/test_provider.py::test_provider_credentials_do_not_cross_evidence_or_diagnostic_boundary
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-055/checks-ad9fe52.log
+    evidence_ref: docs/exec-plans/evidence/KL-055/checks-6136121.log
   - check_id: transport_health_differs_from_coverage
     command: uv run pytest -q tests/unit/integrations/test_provider.py::test_transport_health_differs_from_coverage
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-055/checks-ad9fe52.log
+    evidence_ref: docs/exec-plans/evidence/KL-055/checks-6136121.log
   - check_id: provider_contract_is_hermetic
     command: uv run pytest -q tests/unit/integrations/test_provider.py::test_provider_contract_is_hermetic
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-055/checks-ad9fe52.log
+    evidence_ref: docs/exec-plans/evidence/KL-055/checks-6136121.log
   - check_id: provider_fixtures_pass_hardened_synthetic_guard
     command: uv run pytest -q tests/unit/integrations/test_provider.py::test_provider_fixtures_pass_hardened_synthetic_guard
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-055/checks-ad9fe52.log
+    evidence_ref: docs/exec-plans/evidence/KL-055/checks-6136121.log
   - check_id: synthetic_provider_fixtures_pass
     command: uv run pytest -q tests/unit/integrations/test_provider.py::test_synthetic_provider_fixtures_pass
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-055/checks-ad9fe52.log
+    evidence_ref: docs/exec-plans/evidence/KL-055/checks-6136121.log
   - check_id: provider_security_regressions_pass
     command: uv run pytest -q tests/unit/integrations tests/unit/security tests/unit/config
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-055/checks-ad9fe52.log
+    evidence_ref: docs/exec-plans/evidence/KL-055/checks-6136121.log
   - check_id: harness_validation_passes
     command: uv run kl check-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-055/checks-ad9fe52.log
+    evidence_ref: docs/exec-plans/evidence/KL-055/checks-6136121.log
 requirements_covered: []
 files_changed:
   - docs/contracts/provider_evidence.md
@@ -82,12 +83,14 @@ files_changed:
   - tests/fixtures/synthetic/providers/hevy-provider-contract.json
   - docs/exec-plans/evidence/KL-055/checks-a422624.log
   - docs/exec-plans/evidence/KL-055/checks-ad9fe52.log
+  - docs/exec-plans/evidence/KL-055/checks-6136121.log
   - docs/exec-plans/completed/KL-055_RESULT.yaml
 decisions:
   - Keep ProviderId and StreamId as distinct bounded canonical tokens and preserve exact provider/stream identity in every envelope.
   - Attach subject, source connection, source/trust classes, and adapter version only from an explicit trusted server binding, never provider payload fields.
   - Require lineage root provider identity to equal the trusted binding and envelope provider identity.
   - Require exactly one provider revision or stable observation key and exactly one canonical payload hash or controlled blob reference.
+  - Require the selected provider revision or stable observation key to be a nonblank exact string in both raw observations and closed S09 envelopes.
   - Seal the trusted server clock into ProviderExecutionContext; require that context at the exported ReceiveEvidence handoff; return a newly validated envelope whose known_at is assigned there; and keep observed_at/effective_at as separate provider evidence times.
   - Fix command_authority to NONE and validate adapter output at runtime as an exact immutable tuple of EvidenceEnvelope values.
   - Reuse the merged KL-009 explicit secret source and redaction boundary, with a sealed guard that rejects registered and credential-shaped raw or bounded percent-decoded content before hashing or serialization.
