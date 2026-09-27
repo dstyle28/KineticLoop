@@ -169,9 +169,15 @@ def _seed_transaction_rows(admin_url: str) -> None:
         )
         connection.execute(
             "INSERT INTO kineticloop.daily_plan_heads"
-            "(id,subject_id,local_date,calendar_policy,day_lifecycle,head_revision) "
-            "VALUES (%s,%s,DATE '2026-09-26','UTC','ACTIVE',0)",
+            "(id,subject_id,local_date,calendar_policy,day_lifecycle,head_revision,typed_payload) "
+            "VALUES (%s,%s,DATE '2026-09-26','UTC','ACTIVE',0,"
+            "jsonb_build_object('calendar_valid_until',(clock_timestamp()+interval '2 days')::text))",
             (DAILY_HEAD, SUBJECT),
+        )
+        connection.execute(
+            "UPDATE kineticloop.policy_bundles SET typed_payload="
+            "jsonb_build_object('max_authorization_ttl_seconds',86400) WHERE id=%s",
+            (POLICY,),
         )
         connection.execute(
             "INSERT INTO kineticloop.workout_sessions"
@@ -1665,6 +1671,12 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
             "lease_expires_at=clock_timestamp()+interval '1 day',"
             "result_bundle_revision_id=NULL,result_authorization_id=NULL WHERE id=%s",
             (INTENT,),
+        )
+        connection.execute(
+            "UPDATE kineticloop.planning_attempts SET status='RUNNING',fence_token=9,"
+            "ref_s24_id=%s,captured_epoch=(SELECT authorization_epoch "
+            "FROM kineticloop.user_decision_state WHERE subject_id=%s) WHERE id=%s",
+            (MANIFEST, SUBJECT, ATTEMPT),
         )
         connection.execute("SET session_replication_role=origin")
 
