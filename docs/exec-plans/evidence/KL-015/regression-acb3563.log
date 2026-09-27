@@ -1,0 +1,90 @@
+KL-015 supplemental regression checks
+tested_commit=acb356355dc3243ffce056644de32471938f9ccd
+
+[01] $ uv run pytest -q tests/db
+........................................................................ [ 36%]
+........................................................................ [ 73%]
+...................................................                      [100%]
+195 passed in 97.60s (0:01:37)
+
+exit_code=0
+
+[02] $ uv run kl test-unit
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/davetian/.codex/worktrees/kl015/KineticLoop
+configfile: pyproject.toml
+collected 174 items
+
+tests/unit/config/test_secret_loader.py .                                [  0%]
+tests/unit/contracts/test_artifact_registry.py ...                       [  2%]
+tests/unit/contracts/test_commands.py ..............                     [ 10%]
+tests/unit/contracts/test_errors.py .                                    [ 10%]
+tests/unit/contracts/test_receipts.py ........................           [ 24%]
+tests/unit/contracts/test_results.py .....                               [ 27%]
+tests/unit/contracts/test_safety_registry.py ..                          [ 28%]
+tests/unit/contracts/test_shadow.py ...                                  [ 30%]
+tests/unit/identity/test_roles.py .............                          [ 37%]
+tests/unit/persistence/test_fact_children.py ...                         [ 39%]
+tests/unit/persistence/test_immutability.py ....                         [ 41%]
+tests/unit/persistence/test_schema_topology.py .......                   [ 45%]
+tests/unit/persistence/test_transactions.py ..                           [ 47%]
+tests/unit/primitives/test_canonical.py ...........                      [ 53%]
+tests/unit/primitives/test_hashes.py ........                            [ 58%]
+tests/unit/primitives/test_ids.py .........                              [ 63%]
+tests/unit/primitives/test_times.py .......................              [ 76%]
+tests/unit/security/test_redaction.py .................................. [ 95%]
+...                                                                      [ 97%]
+tests/unit/security/test_synthetic_fixtures.py .                         [ 98%]
+tests/unit/test_cli.py ...                                               [100%]
+
+============================= 174 passed in 15.63s =============================
+
+exit_code=0
+
+[03] $ uv run kl test-harness
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/davetian/.codex/worktrees/kl015/KineticLoop
+configfile: pyproject.toml
+collected 134 items
+
+tests/harness/acceptance/test_registry.py .....                          [  3%]
+tests/harness/document_index/test_current_document_index.py .......      [  8%]
+tests/harness/document_index/test_evidence_manifest.py .......           [ 14%]
+tests/harness/document_index/test_historical_task_map.py ......          [ 18%]
+tests/harness/test_validator.py ........................................ [ 48%]
+.....................................................................    [100%]
+
+======================= 134 passed in 154.65s (0:02:34) ========================
+
+exit_code=0
+
+[04] $ uv run kl lint
+All checks passed!
+
+exit_code=0
+
+[05] $ uv run kl typecheck
+Success: no issues found in 82 source files
+
+exit_code=0
+
+frozen_sha256 DOC-PROTOCOL-V1.2 05_KineticLoop_Protocol_v1.2_FROZEN.md
+expected=00bf3eb2e0e2e00867d114b42e147a2341d98454f08629c849ebf0b4c0c4916c
+actual=00bf3eb2e0e2e00867d114b42e147a2341d98454f08629c849ebf0b4c0c4916c
+result=PASS
+
+frozen_sha256 DOC-DB-V0.2 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
+expected=2158a80bdc0e16eaf9c2cd835f704bdc2f346565dc35cb0c1fc1a8c00a1b8eda
+actual=2158a80bdc0e16eaf9c2cd835f704bdc2f346565dc35cb0c1fc1a8c00a1b8eda
+result=PASS
+
+write_scope
+docs/contracts/repository_transactions.md
+docs/exec-plans/evidence/KL-015/checks-c96798c.log
+docs/exec-plans/evidence/KL-015/regression-c96798c.log
+src/kineticloop/persistence/transactions.py
+tests/db/test_transaction_interfaces.py
+tests/unit/persistence/test_transactions.py
+result=PASS

@@ -1,0 +1,45 @@
+KL-015 exact packet checks
+tested_commit=09ea01827dbeb7f95927845b5d4234150f6ae6cd
+
+[01] uv run pytest -q tests/unit/persistence/test_transactions.py::test_transaction_owner_matrix_complete
+PASS: 1 passed
+[02] uv run pytest -q tests/unit/persistence/test_transactions.py::test_catalog_mapping_and_release_owner_boundaries_complete
+PASS: 1 passed
+[03] uv run pytest -q tests/db/test_transaction_interfaces.py::test_registry_lease_required_for_publish_commit_and_session_entry
+PASS: 1 passed
+[04] uv run pytest -q tests/db/test_transaction_interfaces.py::test_preparation_work_stays_outside_coordination_locks
+PASS: 1 passed
+[05] uv run pytest -q tests/db/test_transaction_interfaces.py::test_factset_build_stays_outside_subject_coordination
+PASS: 1 passed
+[06] uv run pytest -q tests/db/test_transaction_interfaces.py::test_subject_guard_required
+PASS: 1 passed
+[07] uv run pytest -q tests/db/test_transaction_interfaces.py::test_complete_frozen_lock_order_enforced
+PASS: 1 passed
+[08] uv run pytest -q tests/db/test_transaction_interfaces.py::test_multi_key_lock_order_is_stable
+PASS: 1 passed
+[09] uv run pytest -q tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected
+PASS: 7 passed
+[10] uv run pytest -q tests/db/test_transaction_interfaces.py::test_receipt_before_s01_is_rejected
+PASS: 1 passed
+[11] uv run pytest -q tests/db/test_transaction_interfaces.py::test_artifact_identity_required
+PASS: 1 passed
+[12] uv run pytest -q tests/db/test_transaction_interfaces.py::test_direct_write_bypass_rejected
+PASS: 1 passed
+[13] uv run pytest -q tests/db/test_transaction_interfaces.py::test_event_outbox_atomicity_enforced
+PASS: 8 passed
+[14] uv run pytest -q tests/db/test_transaction_interfaces.py::test_outbox_dispatcher_does_not_lock_subject_guard
+PASS: 1 passed
+[15] uv run pytest -q tests/db/test_transaction_interfaces.py::test_stale_fence_commit_is_rejected
+PASS: 1 passed; real two-connection takeover-versus-stale-commit interleaving
+[16] uv run pytest -q tests/db/test_transaction_interfaces.py::test_dispatch_first_winner_and_replay_non_resend
+PASS: 1 passed; isolated two-contender race
+[17] uv run pytest -q tests/db/test_transaction_interfaces.py::test_ack_loss_replay_preserves_natural_uniqueness
+PASS: 1 passed
+[18] uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_ack_loss_replay_returns_same_issuance
+PASS: 1 passed; S38 pointer/head, S27 results, S29 COMMITTED, prior bundle, S39-S43 and S02-S04 verified
+[19] uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py
+PASS: 31 passed in 3.12s
+[20] uv run kl check-harness
+PASS: HARNESS_CHECK_PASS tasks=69 active=67
+
+exit_code=0 for every command

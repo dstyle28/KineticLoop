@@ -1,0 +1,63 @@
+KL-015 exact packet checks
+tested_commit=c96798c39616410fca87ea6655bc805e8db45b86
+
+[01] $ uv run pytest -q tests/unit/persistence/test_transactions.py::test_transaction_owner_matrix_complete
+1 passed in 0.16s
+exit_code=0
+[02] $ uv run pytest -q tests/unit/persistence/test_transactions.py::test_catalog_mapping_and_release_owner_boundaries_complete
+1 passed in 0.11s
+exit_code=0
+[03] $ uv run pytest -q tests/db/test_transaction_interfaces.py::test_registry_lease_required_for_publish_commit_and_session_entry
+1 passed in 2.58s
+exit_code=0
+[04] $ uv run pytest -q tests/db/test_transaction_interfaces.py::test_preparation_work_stays_outside_coordination_locks
+1 passed in 2.63s
+exit_code=0
+[05] $ uv run pytest -q tests/db/test_transaction_interfaces.py::test_factset_build_stays_outside_subject_coordination
+1 passed in 2.35s
+exit_code=0
+[06] $ uv run pytest -q tests/db/test_transaction_interfaces.py::test_subject_guard_required
+1 passed in 2.30s
+exit_code=0
+[07] $ uv run pytest -q tests/db/test_transaction_interfaces.py::test_complete_frozen_lock_order_enforced
+1 passed in 2.32s
+exit_code=0
+[08] $ uv run pytest -q tests/db/test_transaction_interfaces.py::test_multi_key_lock_order_is_stable
+1 passed in 2.35s
+exit_code=0
+[09] $ uv run pytest -q tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected
+7 passed in 2.47s
+exit_code=0
+[10] $ uv run pytest -q tests/db/test_transaction_interfaces.py::test_receipt_before_s01_is_rejected
+1 passed in 2.33s
+exit_code=0
+[11] $ uv run pytest -q tests/db/test_transaction_interfaces.py::test_artifact_identity_required
+1 passed in 2.30s
+exit_code=0
+[12] $ uv run pytest -q tests/db/test_transaction_interfaces.py::test_direct_write_bypass_rejected
+1 passed in 2.30s
+exit_code=0
+[13] $ uv run pytest -q tests/db/test_transaction_interfaces.py::test_event_outbox_atomicity_enforced
+8 passed in 2.63s
+exit_code=0
+[14] $ uv run pytest -q tests/db/test_transaction_interfaces.py::test_outbox_dispatcher_does_not_lock_subject_guard
+1 passed in 2.30s
+exit_code=0
+[15] $ uv run pytest -q tests/db/test_transaction_interfaces.py::test_stale_fence_commit_is_rejected
+1 passed in 2.32s
+exit_code=0
+[16] $ uv run pytest -q tests/db/test_transaction_interfaces.py::test_dispatch_first_winner_and_replay_non_resend
+1 passed in 2.35s
+exit_code=0
+[17] $ uv run pytest -q tests/db/test_transaction_interfaces.py::test_ack_loss_replay_preserves_natural_uniqueness
+1 passed in 2.32s
+exit_code=0
+[18] $ uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_ack_loss_replay_returns_same_issuance
+1 passed in 2.32s
+exit_code=0
+[19] $ uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py
+31 passed in 3.12s
+exit_code=0
+[20] $ uv run kl check-harness
+HARNESS_CHECK_PASS tasks=69 active=67
+exit_code=0

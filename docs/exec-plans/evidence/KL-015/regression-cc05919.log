@@ -1,0 +1,22 @@
+KL-015 regression evidence
+tested_commit=cc059195ec683730a7225bbf40f55a53658453a6
+
+uv run ruff check .
+PASS: All checks passed!
+
+uv run mypy src
+PASS: Success: no issues found in 38 source files
+
+uv run kl test-unit
+PASS: 175 passed in 16.49s
+
+uv run pytest -q tests/db
+PASS: 195 passed in 102.33s
+
+uv run pytest -q tests/db/test_transaction_interfaces.py
+PASS: 29 passed in 3.65s
+
+uv run kl check-harness
+PASS: HARNESS_CHECK_PASS tasks=69 active=67
+
+All database checks used the isolated PostgreSQL namespace kl_3ab0_f5f2ea859c7e.

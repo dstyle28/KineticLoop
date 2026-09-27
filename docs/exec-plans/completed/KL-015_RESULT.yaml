@@ -1,0 +1,182 @@
+task_identity: harness-backlog-v0.2/KL-015
+display_task_id: KL-015
+task_definition_version: v0.2
+base_commit: 21ec0b508959d8ce24dfe1a0e4d59a0820394068
+tested_commit: cdc6243de229ab55a66b8c01c7aa7b9abba4ead2
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Added the shared repository transaction harness for all 39 public command
+  surfaces. Each command has one repository owner, owns one outer PostgreSQL
+  transaction, and receives only structured, owner-scoped mutation operations after
+  its required guards. The interface enforces the frozen S51-to-S01-to-S30-to-S27-
+  to-S31-to-S38-to-S44-to-S02-to-aggregate order, stable multi-key ordering across
+  the whole transaction, exact artifact identity, current lease/fence authority,
+  atomic S02/S03/S04 outcomes, non-sendable dispatch replay, ACK-loss replay, and an
+  S01-free outbox dispatcher. Historical replay uses a receipt-only path and remains
+  available after current artifacts become unavailable. Preparation and command-specific factset-build
+  capabilities cannot express coordination access or out-of-scope writes. Real
+  PostgreSQL failure and interleaving tests cover T1-T8 commit/rollback atomicity,
+  stale fences, opposing key order, concurrent T1 missing-receipt admission, first
+  dispatch winner with atomic event/outbox, and complete durable T6 issuance,
+  normalized artifact closure, prior-bundle supersession, and replay. T3 now admits
+  the incoming READY candidate closure under S51 then S01 without depending on an
+  outgoing Manifest, persists every declared root and transitive identity in S24,
+  and supports bootstrap and consecutive publication. T6 requires its leased
+  artifacts to equal that immutable Manifest closure and binds resolution policy,
+  intent day, and daily head exactly.
+commands_run:
+  - check_id: transaction_owner_matrix_complete
+    command: uv run pytest -q tests/unit/persistence/test_transactions.py::test_transaction_owner_matrix_complete
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: catalog_mapping_and_release_owner_boundaries_complete
+    command: uv run pytest -q tests/unit/persistence/test_transactions.py::test_catalog_mapping_and_release_owner_boundaries_complete
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: registry_lease_required_for_publish_commit_and_session_entry
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_registry_lease_required_for_publish_commit_and_session_entry
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: preparation_work_stays_outside_coordination_locks
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_preparation_work_stays_outside_coordination_locks
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: factset_build_stays_outside_subject_coordination
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_factset_build_stays_outside_subject_coordination
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: subject_guard_required
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_subject_guard_required
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: complete_frozen_lock_order_enforced
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_complete_frozen_lock_order_enforced
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: multi_key_lock_order_is_stable
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_multi_key_lock_order_is_stable
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: reverse_lock_order_is_rejected
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: receipt_before_s01_is_rejected
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_receipt_before_s01_is_rejected
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: artifact_identity_required
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_artifact_identity_required
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: direct_write_bypass_rejected
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_direct_write_bypass_rejected
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: event_outbox_atomicity_enforced
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_event_outbox_atomicity_enforced
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: outbox_dispatcher_does_not_lock_subject_guard
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_outbox_dispatcher_does_not_lock_subject_guard
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: stale_fence_commit_is_rejected
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_stale_fence_commit_is_rejected
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: dispatch_first_winner_and_replay_non_resend
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_dispatch_first_winner_and_replay_non_resend
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: ack_loss_replay_preserves_natural_uniqueness
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_ack_loss_replay_preserves_natural_uniqueness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: t6_ack_loss_replay_returns_same_issuance
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_ack_loss_replay_returns_same_issuance
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: transaction_db_conformance_passes
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - check_id: harness_validation_passes
+    command: uv run kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+requirements_covered: []
+files_changed:
+  - docs/contracts/repository_transactions.md
+  - src/kineticloop/persistence/transactions.py
+  - tests/unit/persistence/test_transactions.py
+  - tests/db/test_transaction_interfaces.py
+  - docs/exec-plans/evidence/KL-015/checks-c96798c.log
+  - docs/exec-plans/evidence/KL-015/regression-c96798c.log
+  - docs/exec-plans/evidence/KL-015/checks-c281e6a.log
+  - docs/exec-plans/evidence/KL-015/regression-acb3563.log
+  - docs/exec-plans/evidence/KL-015/regression-c281e6a.log
+  - docs/exec-plans/evidence/KL-015/checks-0cacada.log
+  - docs/exec-plans/evidence/KL-015/regression-0cacada.log
+  - docs/exec-plans/evidence/KL-015/checks-8516a86.log
+  - docs/exec-plans/evidence/KL-015/regression-8516a86.log
+  - docs/exec-plans/evidence/KL-015/checks-85acbd4.log
+  - docs/exec-plans/evidence/KL-015/regression-85acbd4.log
+  - docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+  - docs/exec-plans/evidence/KL-015/regression-d238cdd.log
+  - docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
+  - docs/exec-plans/evidence/KL-015/regression-ae6cdc6.log
+  - docs/exec-plans/evidence/KL-015/checks-cdc6243.log
+  - docs/exec-plans/evidence/KL-015/regression-cdc6243.log
+  - docs/exec-plans/completed/KL-015_RESULT.yaml
+decisions:
+  - Give every public command surface exactly one repository owner; T6CommitCoordinator is the single atomic database owner for the PrescriptionCommitService and AuthorizationService CommitBundle boundary.
+  - Expose no raw SQL, cursor, or connection to callbacks; structured insert/update operations generate identifiers from the owner's logical-table capability and quote columns mechanically.
+  - Keep cursor state outside callback capability objects and require literal fail-closed command/table/operation column allowlists that do not auto-adopt future schema columns or expose server-owned known/recorded timestamps, so table access cannot widen field ownership such as T2 writing T3-owned S01 decision_generation.
+  - Bind every non-global structured insert/update to the authenticated transaction subject and reject subject reassignment, including preparation and factset-build capabilities.
+  - Require every applicable pre-receipt lock and bind S27/S31/S38/S44/aggregate DML to the exact row identity already locked by that command; reject empty, unrelated, repeated, reverse, and command-inapplicable acquisitions.
+  - Reject repeated acquisitions of a lock stage and require strictly increasing remaining-aggregate table ranks, so stable order holds across the complete transaction rather than only within one method call.
+  - Acquire declared remaining aggregate locks only after the S02 receipt lock on first execution; use a separate receipt-only historical replay entry point so replay never reacquires registry, work, artifact, or current-fence guards and cannot repeat mutations.
+  - Treat frozen T1 raw source receipt admission as the sole subject-command exception to S01, serialize a missing T1 natural receipt key with a transaction advisory lock, and forbid any later reverse acquisition of S01.
+  - Reuse the merged command-specific SafetyRegistry routines so T3, T6, and T7 obtain S51 then S01 and revalidate exact artifact closure before mutation.
+  - Require exact kind, identity, version, and content hash validation for every leased artifact before commit; UUID-only registry eligibility never completes an artifact-consuming command.
+  - Bind factset-build capability to command identity; BeginBuild creates the captured BUILDING S15 basis, WriteCandidate atomically adds one S16 and advances one member revision, CompleteFactset freezes the closed revision/digest/certificate, and T2-SEAL revalidates that exact basis against current S01.
+  - Store the complete successful outcome in S02 so ACK-loss replay returns the same S39/S40/S41/S42/S43 identities and cannot repeat head, terminal-intent, event, outbox, reservation, closure, or operation effects.
+  - Make live fenced commands prove the exact locked intent's current owner, token, live lease, status, request and attempt; make AcquireLease persist a future deadline-bounded lease and make ReapIntent atomically terminate the exact expired S27/S29 chain.
+  - Bind T6 inserted references to one exact current intent/request/attempt/validation chain; require intent/S38/S39 day equality and an exact next head revision, persist the locked S38 head as nullable first-head parent metadata, materialize the verified S49 and manifest-projection closure, bind supersession to the exact prior and replacement authorization scope/current receipt/cause, and update S01.execution_basis_event_id to the same-transaction S03 event.
+  - Require S42 issuance reason and a server-computed validity certificate containing authorization epoch, fixed method version, artifact/manifest/projection/resolution/validation/request/policy/calendar dependency identities, their bounded minimum expiry, an authoritative issuance time, and a deterministic closure digest bound to the acquired registry revision.
+  - Derive artifact closure revision from the immutable database revision rather than parsing the semantic artifact version, and bound T6 authorization validity by every finite leased-artifact expiry plus explicit policy TTL and calendar validity.
+  - Bind T6 to the exact current COMMIT_READY attempt, fence, manifest, epoch, validation, resolution, intent, and head; reject cross-wiring among multiple locked aggregates and require exact completion updates.
+  - Require T2 input admission to change the frontier, controls to bind same-command S17/S18, actual-execution decisions to advance the execution basis, seal to bind exact S15/S01 state, and invalidation S43 to bind the current receipt, event kind, scope, and cause.
+  - Require T3 publication to bind the single READY S23 build, current SEALED factset, exact epoch/frontier/policy/program, verified projection role/basis and S22 dependencies, artifact closure digest, catalog/mapping identities, manifest hash, registry state, and bounded validity; publish the next generation with the exact same-command S25 set and advance S01/S23 to those identities.
+  - Permit T4 to create a new root intent while binding S28/S29 and terminal updates to the exact new-or-locked chain, current epoch, and manifest.
+  - Require T7 to revalidate the exact prescription/authorization pair including non-revocation, registry revision/state, leased artifact root, complete live artifact closure, scope, content, epoch, and current bundle membership; enforce START/RESUME/CONTINUE lifecycle prerequisites and exact session revision transitions, bind S45 to the validated scope/server time/next binding revision, only START/RESUME append S45, and make all T7 historical replay non-executable.
+  - Allow the initial AcquireLease CAS from an unowned NULL-owner/NULL-expiry intent while retaining monotonic fencing and future deadline-bounded expiry; Reauthorize requires only its actual frozen lock surfaces.
+  - Bind ReserveCall's S31/S32 to its exact verified live intent/attempt, commit PermitDispatch's S31/S32 transition with S02/S03/S04, require its ref_s27_id and dispatch fence to match the verified live intent/fence, and return executable permission only to the first RESERVED-to-DISPATCH_INTENT winner; every replay is non-sendable.
+  - Bind SettleCall and MarkUnknown to one exact locked S27/S31/S29 chain and require the frozen source/target state, next settlement revision, and same-reservation S32 event; remove generic S29 callback mutation from AcquireLease and RenewLease.
+  - Require each settlement command's explicit expected transition to equal the locked S31 source state, expose only the server-prepared transition basis to its mutation callback, and reject stale contenders after a preceding transition commits.
+  - Remove S29 from AcquireLease/RenewLease lock capabilities as well as their mutation capabilities, so lease commands cannot block unrelated attempts.
+  - Require every T2-IN invalidation to carry a nonempty canonical scope, require CompleteFactset to freeze a nonnegative member count in its certificate, and compare the stored READY captured frontier/epoch directly to current S01 during seal.
+  - Correct the T3 shared registry gate so it locks S51 then S01 and validates the incoming candidate artifact closure without requiring an outgoing current Manifest; this preserves bootstrap, policy/release transition, and consecutive publication semantics while retaining fail-closed validity and revocation checks.
+  - Persist the full declared artifact roots, transitive closure identities, and artifact-only closure digest in immutable S24 typed payload; require every T6 lease to equal that Manifest closure so no independent root can be omitted from S42/T7 enforcement.
+  - Require every required S22 dependency kind to carry its authoritative FK, bind S36 to the active policy, and require the locked S38 local date to equal the verified intent date for both CommitBundle and Reauthorize.
+  - Anchor T3 artifact admission to the S49 artifact bound to active S05, derive the activated S48 release set through its registered dependency graph, and reject every foreign S05/S19/S48 binding or root before publication.
+  - Require candidate artifact roots to equal the graph roots of the verified closure, reject promotion of transitive dependencies, and require an exact S19-bound artifact whenever the sealed mapping selects a catalog.
+  - Freeze the READY S23 dependency-basis hash, exact required projection bindings, full artifact closure, declared roots, and closure hash; T3 requires positive plus collection/absence S22 coverage and recomputes the candidate basis before publication.
+  - Derive every T2 invalidation scope from the active policy's command classification and every T6 issuance scope from the active policy's exact S36 action mapping; caller-selected scopes fail closed.
+  - Derive the complete T3 role inventory and dependency signatures from the active policy, require collection/absence, engine, factset, policy, program, and applicable catalog/mapping dependencies per role, and prove each S14 dependency is an active member of the current SEALED S15.
+  - Bind T6 validation to the exact S35 named by its S34 proposal, include that demand revision in the validity certificate, and reject crosswired demand features.
+  - Remove S31 from CommitBundle because reservations are T5/T8 state; a T6 command cannot acquire an unrelated reservation lock.
+  - Require both CommitBundle and Reauthorize to atomically persist S27 FOUND_VALID_PLAN, S29 COMMITTED, the new S42, and S02/S03/S04; a result reference without terminal success is rejected.
+  - Require ContinueSession to revalidate the exact prescription, authorization, and scope in the latest START/RESUME S45 binding for its locked session; unlike START/RESUME it cannot silently substitute a valid pair because it cannot append a replacement binding.
+  - Make ReapIntent verify and terminate every requested expired S27/S29 chain without requiring an unrelated reservation lock.
+  - Keep OutboxDispatcher limited to an isolated S04 claim and require business work to enter later as a new idempotent command after row-lock release.
+known_limitations:
+  - These are transaction and repository guard interfaces; downstream command tasks still own their domain-specific guard predicates and mutations within the declared capabilities.
+  - The tests use isolated synthetic subjects, policies, artifacts, and command outcomes and claim no product requirement PASS or production auto-activation readiness.
+follow_up_tasks:
+  - Run fresh SHA-bound GENERAL, PROTOCOL, and DB_CONCURRENCY independent reviews on the reviewable result head.
+spec_change_request: null
