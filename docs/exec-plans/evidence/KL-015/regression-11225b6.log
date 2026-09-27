@@ -1,0 +1,20 @@
+tested_commit=11225b67b7ba23dd6e36d408e2d35e8d920dbd23
+isolated_postgresql_namespace=kl_3ab0_f5f2ea859c7e
+
+uv run ruff check .
+PASS: All checks passed!
+
+uv run mypy src
+PASS: Success: no issues found in 38 source files
+
+uv run kl test-unit
+PASS: 175 passed in 19.41s
+
+uv run pytest -q tests/db
+PASS: 198 passed in 100.93s
+
+uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py
+PASS: 35 passed in 3.75s
+
+uv run kl check-harness
+PASS: HARNESS_CHECK_PASS tasks=69 active=67
