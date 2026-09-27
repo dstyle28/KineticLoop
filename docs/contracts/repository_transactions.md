@@ -170,4 +170,6 @@ sealed basis and the already activated exact S48 release/policy. It cannot adopt
 activate them. The active S05-bound registered policy artifact anchors the admissible
 artifact graph: every S48-bound artifact in the candidate closure must name a release
 reachable from that policy artifact, every S05/S19 binding must equal the active policy
-and selected catalog, and every declared root must belong to that exact checked closure.
+and selected catalog, and the declared root set must equal the closure nodes with no
+incoming dependency edge from another closure node. A transitive dependency cannot be
+promoted into an extra root.

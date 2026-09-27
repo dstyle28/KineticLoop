@@ -101,19 +101,55 @@ def test_catalog_mapping_and_release_owner_boundaries_complete() -> None:
     assert "S19" not in publish.mutation_surfaces
     assert "S20" not in publish.mutation_surfaces
     assert "S48" not in publish.mutation_surfaces
+    for rules in MUTATION_CAPABILITY_MATRIX.values():
+        assert all(logical_id not in {"S19", "S20", "S48"} for logical_id, _ in rules)
+    assert MUTATION_CAPABILITY_MATRIX["ActivateApprovedProgram"][("S01", "update")] == {
+        "active_program_id",
+        "active_policy_bundle_id",
+        "authorization_epoch",
+    }
+    for command, rules in MUTATION_CAPABILITY_MATRIX.items():
+        if command != "ActivateApprovedProgram" and ("S01", "update") in rules:
+            assert "active_policy_bundle_id" not in rules[("S01", "update")]
     active_policy = UUID("00000000-0000-8000-8000-000000000501")
     active_release = UUID("00000000-0000-8000-8000-000000000548")
     foreign_release = UUID("00000000-0000-8000-8000-000000000549")
+    selected_catalog = UUID("00000000-0000-8000-8000-000000000519")
     policy_artifact = UUID("00000000-0000-8000-8000-000000000591")
     release_artifact = UUID("00000000-0000-8000-8000-000000000592")
+    catalog_artifact = UUID("00000000-0000-8000-8000-000000000593")
     assert artifact_bindings_match_activation(
         [
             (policy_artifact, active_policy, None, None),
             (release_artifact, None, None, active_release),
         ],
         root_ids={policy_artifact},
+        expected_root_ids={policy_artifact},
         active_policy_id=active_policy,
         selected_catalog_id=None,
+        active_release_ids={active_release},
+    )
+    assert artifact_bindings_match_activation(
+        [
+            (policy_artifact, active_policy, None, None),
+            (release_artifact, None, None, active_release),
+            (catalog_artifact, None, selected_catalog, None),
+        ],
+        root_ids={policy_artifact, catalog_artifact},
+        expected_root_ids={policy_artifact, catalog_artifact},
+        active_policy_id=active_policy,
+        selected_catalog_id=selected_catalog,
+        active_release_ids={active_release},
+    )
+    assert not artifact_bindings_match_activation(
+        [
+            (policy_artifact, active_policy, None, None),
+            (release_artifact, None, None, active_release),
+        ],
+        root_ids={policy_artifact},
+        expected_root_ids={policy_artifact},
+        active_policy_id=active_policy,
+        selected_catalog_id=selected_catalog,
         active_release_ids={active_release},
     )
     assert not artifact_bindings_match_activation(
@@ -122,6 +158,18 @@ def test_catalog_mapping_and_release_owner_boundaries_complete() -> None:
             (release_artifact, None, None, foreign_release),
         ],
         root_ids={policy_artifact, release_artifact},
+        expected_root_ids={policy_artifact},
+        active_policy_id=active_policy,
+        selected_catalog_id=None,
+        active_release_ids={active_release},
+    )
+    assert not artifact_bindings_match_activation(
+        [
+            (policy_artifact, active_policy, None, None),
+            (release_artifact, None, None, active_release),
+        ],
+        root_ids={policy_artifact, release_artifact},
+        expected_root_ids={policy_artifact},
         active_policy_id=active_policy,
         selected_catalog_id=None,
         active_release_ids={active_release},

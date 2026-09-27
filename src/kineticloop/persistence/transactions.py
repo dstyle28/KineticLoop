@@ -330,6 +330,7 @@ def artifact_bindings_match_activation(
     bindings: Sequence[tuple[UUID, UUID | None, UUID | None, UUID | None]],
     *,
     root_ids: set[UUID],
+    expected_root_ids: set[UUID],
     active_policy_id: UUID,
     selected_catalog_id: UUID | None,
     active_release_ids: set[UUID],
@@ -340,10 +341,15 @@ def artifact_bindings_match_activation(
     if (
         not bindings
         or not root_ids
-        or not root_ids <= binding_ids
+        or root_ids != expected_root_ids
+        or not expected_root_ids <= binding_ids
         or not active_release_ids
         or not any(policy_id == active_policy_id for _, policy_id, _, _ in bindings)
         or not any(release_id in active_release_ids for *_, release_id in bindings)
+        or (
+            selected_catalog_id is not None
+            and not any(catalog_id == selected_catalog_id for _, _, catalog_id, _ in bindings)
+        )
     ):
         return False
     for _artifact_id, policy_id, catalog_id, release_id in bindings:
@@ -2956,9 +2962,21 @@ class RepositoryTransaction:
             (sorted(self._verified_artifacts, key=str),),
         )
         artifact_bindings = list(_cursor(self).fetchall())
+        _cursor(self).execute(
+            "SELECT DISTINCT dependency_artifact_id "
+            "FROM kineticloop.safety_artifact_dependencies "
+            "WHERE artifact_id=ANY(%s) AND dependency_artifact_id=ANY(%s)",
+            (
+                sorted(self._verified_artifacts, key=str),
+                sorted(self._verified_artifacts, key=str),
+            ),
+        )
+        non_root_artifact_ids = {row[0] for row in _cursor(self).fetchall()}
+        expected_root_ids = set(self._verified_artifacts) - non_root_artifact_ids
         if not artifact_bindings_match_activation(
             artifact_bindings,
             root_ids={UUID(item) for item in candidate_root_ids},
+            expected_root_ids=expected_root_ids,
             active_policy_id=build[3],
             selected_catalog_id=build[10],
             active_release_ids=active_release_ids,

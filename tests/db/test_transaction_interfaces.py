@@ -3326,6 +3326,155 @@ def test_t3_rejects_incomplete_or_crosswired_ready_candidate(
             connection.execute("SET session_replication_role=origin")
 
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        extra_root_payload = dict(payload)
+        extra_root_payload["artifact_root_ids"] = [str(ARTIFACT), str(DEPENDENCY)]
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "UPDATE kineticloop.manifest_builds SET typed_payload=%s WHERE id=%s",
+            (psycopg.types.json.Jsonb(extra_root_payload), MANIFEST_BUILD),
+        )
+        connection.execute("SET session_replication_role=origin")
+    try:
+        with pytest.raises(GuardRequired, match="activated policy/release basis"):
+            attempt()
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "UPDATE kineticloop.manifest_builds SET typed_payload=%s WHERE id=%s",
+                (psycopg.types.json.Jsonb(payload), MANIFEST_BUILD),
+            )
+            connection.execute("SET session_replication_role=origin")
+
+    catalog = UUID("00000000-0000-8000-8000-000000015819")
+    mapping = UUID("00000000-0000-8000-8000-000000015820")
+    catalog_dependency = UUID("00000000-0000-8000-8000-000000015821")
+    mapping_dependency = UUID("00000000-0000-8000-8000-000000015822")
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        selected_policy_payload = connection.execute(
+            "SELECT typed_payload FROM kineticloop.policy_bundles WHERE id=%s",
+            (POLICY,),
+        ).fetchone()[0]
+        catalog_policy_payload = dict(selected_policy_payload)
+        exposure = dict(
+            selected_policy_payload["manifest_projection_requirements"]["EXPOSURE"]
+        )
+        exposure["dependencies"] = [
+            *exposure["dependencies"],
+            {"kind": "CATALOG", "key": "selected-catalog", "collection": None},
+            {"kind": "MAPPING", "key": "selected-mapping", "collection": None},
+        ]
+        catalog_policy_payload["manifest_projection_requirements"] = {"EXPOSURE": exposure}
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "INSERT INTO kineticloop.exercise_catalog_revisions"
+            "(id,subject_id,catalog_namespace,exercise_identity,catalog_revision) "
+            "VALUES (%s,%s,'kl015','exercise',1)",
+            (catalog, SUBJECT),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.exercise_mapping_decisions"
+            "(id,subject_id,mapping_family_identity,source_exercise_identity,mapping_scope,"
+            "ref_s19_id) VALUES (%s,%s,'kl015-map','exercise','SUBJECT',%s)",
+            (mapping, SUBJECT, catalog),
+        )
+        connection.execute(
+            "UPDATE kineticloop.factset_revisions SET ref_s20_id=%s WHERE id=%s",
+            (mapping, FACTSET),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.projection_dependencies"
+            "(id,subject_id,dependency_kind,dependency_semantic_key,ref_s19_id,ref_s21_id) "
+            "VALUES (%s,%s,'CATALOG','selected-catalog',%s,%s)",
+            (catalog_dependency, SUBJECT, catalog, PROJECTION),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.projection_dependencies"
+            "(id,subject_id,dependency_kind,dependency_semantic_key,ref_s20_id,ref_s21_id) "
+            "VALUES (%s,%s,'MAPPING','selected-mapping',%s,%s)",
+            (mapping_dependency, SUBJECT, mapping, PROJECTION),
+        )
+        connection.execute(
+            "UPDATE kineticloop.policy_bundles SET typed_payload=%s WHERE id=%s",
+            (psycopg.types.json.Jsonb(catalog_policy_payload), POLICY),
+        )
+        rows = connection.execute(
+            "SELECT dependency_kind,dependency_semantic_key,collection_signature,"
+            "ref_s05_id,ref_s06_id,ref_s14_id,ref_s15_id,ref_s19_id,ref_s20_id "
+            "FROM kineticloop.projection_dependencies WHERE ref_s21_id=%s "
+            "ORDER BY dependency_kind,dependency_semantic_key,id",
+            (PROJECTION,),
+        ).fetchall()
+        catalog_dependencies = [
+            {
+                "projection_id": str(PROJECTION),
+                "kind": row[0],
+                "key": row[1],
+                "collection": row[2],
+                "policy": str(row[3]) if row[3] else None,
+                "program": str(row[4]) if row[4] else None,
+                "fact": str(row[5]) if row[5] else None,
+                "factset": str(row[6]) if row[6] else None,
+                "catalog": str(row[7]) if row[7] else None,
+                "mapping": str(row[8]) if row[8] else None,
+            }
+            for row in rows
+        ]
+        catalog_basis = {
+            "projections": [
+                {
+                    "id": str(PROJECTION),
+                    "role": "EXPOSURE",
+                    "projection_kind": "EXPOSURE",
+                    "validated_basis_hash": "projection-basis",
+                    "dependencies": catalog_dependencies,
+                }
+            ],
+            "catalog_id": str(catalog),
+            "mapping_id": str(mapping),
+        }
+        catalog_candidate = dict(payload)
+        catalog_candidate["dependency_basis_hash"] = hashlib.sha256(
+            json.dumps(catalog_basis, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+        connection.execute(
+            "UPDATE kineticloop.manifest_builds SET typed_payload=%s WHERE id=%s",
+            (psycopg.types.json.Jsonb(catalog_candidate), MANIFEST_BUILD),
+        )
+        connection.execute("SET session_replication_role=origin")
+    try:
+        with pytest.raises(GuardRequired, match="activated policy/release basis"):
+            attempt()
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "UPDATE kineticloop.manifest_builds SET typed_payload=%s WHERE id=%s",
+                (psycopg.types.json.Jsonb(payload), MANIFEST_BUILD),
+            )
+            connection.execute(
+                "UPDATE kineticloop.policy_bundles SET typed_payload=%s WHERE id=%s",
+                (psycopg.types.json.Jsonb(selected_policy_payload), POLICY),
+            )
+            connection.execute(
+                "UPDATE kineticloop.factset_revisions SET ref_s20_id=NULL WHERE id=%s",
+                (FACTSET,),
+            )
+            connection.execute(
+                "DELETE FROM kineticloop.projection_dependencies WHERE id=ANY(%s)",
+                ([catalog_dependency, mapping_dependency],),
+            )
+            connection.execute(
+                "DELETE FROM kineticloop.exercise_mapping_decisions WHERE id=%s",
+                (mapping,),
+            )
+            connection.execute(
+                "DELETE FROM kineticloop.exercise_catalog_revisions WHERE id=%s",
+                (catalog,),
+            )
+            connection.execute("SET session_replication_role=origin")
+
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
         policy_payload = connection.execute(
             "SELECT typed_payload FROM kineticloop.policy_bundles WHERE id=%s",
             (POLICY,),
