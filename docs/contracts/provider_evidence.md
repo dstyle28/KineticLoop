@@ -23,10 +23,13 @@ source connection, source/trust classes, and adapter version. Provider payloads
 contain none of those binding fields. `build_evidence_envelope` always copies them
 from the trusted binding.
 
-Before the T1 owner writes S09, `validate_receive_evidence_binding` compares the
-envelope, registry binding, command subject, and command source connection. Every
+At the T1 owner handoff, `validate_receive_evidence_binding` accepts the trusted
+`ProviderExecutionContext`, compares the envelope, registry binding, command
+subject, and command source connection, and returns a newly validated envelope
+whose `known_at` is replaced from the server clock sealed into that context. Every
 mismatch produces only `SUBJECT_MISMATCH`; it does not identify whether another
-subject or connection exists.
+subject or connection exists. Callers persist the returned envelope, never the
+untrusted input envelope.
 
 ## Closed S09 envelope
 
@@ -84,7 +87,8 @@ The runtime `validate_adapter_output` boundary reserializes and strictly revalid
 each returned model, rejects unvalidated Pydantic construction or mutation, rechecks
 the trusted subject/source binding and lineage root, rescans every serialized field
 with the context's credential guard, and replaces any adapter-supplied `known_at`
-with the server clock sealed into that trusted context at the receive boundary.
+by using the actual T1 handoff, which returns evidence timestamped from the server
+clock sealed into that trusted context.
 `ProviderBatch`, `BackfillResult`, and `ReconciliationResult` are also strict,
 immutable contracts. Implementations receive their explicit execution context from
 the caller; network clients and credential stores are outside this module and must

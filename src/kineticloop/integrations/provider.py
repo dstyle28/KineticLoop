@@ -505,7 +505,6 @@ def validate_adapter_output(
 
     if type(value) is not tuple:
         raise ProviderContractError("ADAPTER_OUTPUT_NOT_EVIDENCE")
-    known_at = context.trusted_known_at()
     validated: list[EvidenceEnvelope] = []
     for item in cast(tuple[object, ...], value):
         envelope = _revalidate_evidence_envelope(item)
@@ -513,17 +512,11 @@ def validate_adapter_output(
             raise ProviderContractError(
                 "LINEAGE_PROVIDER_MISMATCH", provider_id=str(context.binding.provider_id)
             )
-        validate_receive_evidence_binding(
+        server_envelope = validate_receive_evidence_binding(
+            context,
             envelope,
-            context.binding,
             command_subject_id=context.binding.subject_id,
             command_source_connection_id=context.binding.source_connection_id,
-        )
-        context.credential_guard.reject_credentials(
-            envelope.model_dump(mode="json"), provider_id=str(context.binding.provider_id)
-        )
-        server_envelope = EvidenceEnvelope.model_validate(
-            envelope.model_dump(mode="python") | {"known_at": known_at}
         )
         validated.append(server_envelope)
     return tuple(validated)
@@ -890,15 +883,18 @@ def build_evidence_envelope(
 
 
 def validate_receive_evidence_binding(
+    context: ProviderExecutionContext,
     envelope: EvidenceEnvelope,
-    binding: TrustedProviderBinding,
     *,
     command_subject_id: str,
     command_source_connection_id: str,
-) -> None:
-    """Validate the owner handoff with one non-enumerating mismatch result."""
+) -> EvidenceEnvelope:
+    """Validate the T1 owner handoff and return server-timestamped evidence."""
 
+    if type(context) is not ProviderExecutionContext:
+        raise ProviderContractError("INVALID_PROVIDER_CONTEXT")
     envelope = _revalidate_evidence_envelope(envelope)
+    binding = context.binding
     expected = (
         binding.subject_id,
         str(binding.provider_id),
@@ -914,6 +910,14 @@ def validate_receive_evidence_binding(
     command = (command_subject_id, command_source_connection_id)
     if received != expected or command != (binding.subject_id, binding.source_connection_id):
         raise SubjectMismatchError()
+    provider_id = str(binding.provider_id)
+    context.credential_guard.reject_credentials(
+        envelope.model_dump(mode="json"), provider_id=provider_id
+    )
+    return EvidenceEnvelope.model_validate(
+        envelope.model_dump(mode="python")
+        | {"known_at": context.trusted_known_at()}
+    )
 
 
 def safe_adapter_failure(context: ProviderExecutionContext, error: BaseException) -> ProviderContractError:

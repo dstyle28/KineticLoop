@@ -127,12 +127,13 @@ def test_provider_subject_source_binding_is_trusted() -> None:
     built = envelope()
     assert built.subject_id == SUBJECT_ID
     assert built.source_connection_id == SOURCE_CONNECTION_ID
-    validate_receive_evidence_binding(
+    received = validate_receive_evidence_binding(
+        context(),
         built,
-        binding(),
         command_subject_id=SUBJECT_ID,
         command_source_connection_id=SOURCE_CONNECTION_ID,
     )
+    assert received == built
 
     for command_subject, command_source in (
         (FOREIGN_SUBJECT_ID, SOURCE_CONNECTION_ID),
@@ -140,8 +141,8 @@ def test_provider_subject_source_binding_is_trusted() -> None:
     ):
         with pytest.raises(SubjectMismatchError) as captured:
             validate_receive_evidence_binding(
+                context(),
                 built,
-                binding(),
                 command_subject_id=command_subject,
                 command_source_connection_id=command_source,
             )
@@ -152,8 +153,8 @@ def test_provider_subject_source_binding_is_trusted() -> None:
     foreign_envelope = built.model_copy(update={"subject_id": FOREIGN_SUBJECT_ID})
     with pytest.raises(SubjectMismatchError):
         validate_receive_evidence_binding(
+            context(),
             foreign_envelope,
-            binding(),
             command_subject_id=SUBJECT_ID,
             command_source_connection_id=SOURCE_CONNECTION_ID,
         )
@@ -245,6 +246,15 @@ def test_server_assigns_known_at() -> None:
     assert built.known_at == NOW
     assert built.observed_at == OBSERVED
     adapter_forged = built.model_copy(update={"known_at": "1999-01-01T00:00:00.000000Z"})
+    handoff_received = validate_receive_evidence_binding(
+        context(),
+        adapter_forged,
+        command_subject_id=SUBJECT_ID,
+        command_source_connection_id=SOURCE_CONNECTION_ID,
+    )
+    assert handoff_received.known_at == NOW
+    assert adapter_forged.known_at == "1999-01-01T00:00:00.000000Z"
+    assert "1999-01-01" not in handoff_received.to_canonical_json()
     received = validate_adapter_output(context(), (adapter_forged,))
     assert received[0].known_at == NOW
     assert "1999-01-01" not in received[0].to_canonical_json()
@@ -298,8 +308,8 @@ def test_provider_has_no_fact_or_command_authority() -> None:
     forged_authority = built.model_copy(update={"command_authority": "PROVIDER"})
     with pytest.raises(ProviderContractError, match="INVALID_EVIDENCE_ENVELOPE"):
         validate_receive_evidence_binding(
+            context(),
             forged_authority,
-            binding(),
             command_subject_id=SUBJECT_ID,
             command_source_connection_id=SOURCE_CONNECTION_ID,
         )
