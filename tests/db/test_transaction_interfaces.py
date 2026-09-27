@@ -758,10 +758,12 @@ def test_factset_build_stays_outside_subject_coordination(
         with pytest.raises(GuardRequired, match="completion basis"):
             execute_command(connection, "SealFactset", SUBJECT, stale_seal)
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
-        original_payload = connection.execute(
+        original_payload_row = connection.execute(
             "SELECT typed_payload FROM kineticloop.factset_revisions WHERE id=%s",
             (FACTSET_BUILD_TEST,),
-        ).fetchone()[0]
+        ).fetchone()
+        assert original_payload_row is not None
+        original_payload = original_payload_row[0]
         stale_payload = dict(original_payload)
         stale_payload["captured_input_frontier"] = "frontier-stale"
         stale_payload["completion_certificate"] = _completion_certificate(
@@ -1378,7 +1380,7 @@ def test_event_outbox_atomicity_enforced(
                     command,
                     SUBJECT,
                     lambda tx: (
-                        acquire_guards(tx),
+                        acquire_guards(tx),  # type: ignore[func-returns-value]
                         tx.idempotent_outcome(
                             receipt_id=partial_receipt,
                             actor_scope="subject",
@@ -1712,9 +1714,9 @@ def test_stale_fence_commit_is_rejected(database_urls: dict[str, str]) -> None:
                 "ReapIntent",
                 SUBJECT,
                 lambda tx: (
-                    tx.lock_subject(),
-                    tx.lock_intents((INTENT,)),
-                    tx.require_reaper_basis(
+                    tx.lock_subject(),  # type: ignore[func-returns-value]
+                    tx.lock_intents((INTENT,)),  # type: ignore[func-returns-value]
+                    tx.require_reaper_basis(  # type: ignore[func-returns-value]
                         INTENT,
                         owner_id="worker-b",
                         fence=8,
@@ -1736,9 +1738,9 @@ def test_stale_fence_commit_is_rejected(database_urls: dict[str, str]) -> None:
                 "ReapIntent",
                 SUBJECT,
                 lambda tx: (
-                    tx.lock_subject(),
-                    tx.lock_intents((INTENT,)),
-                    tx.require_reaper_basis(
+                    tx.lock_subject(),  # type: ignore[func-returns-value]
+                    tx.lock_intents((INTENT,)),  # type: ignore[func-returns-value]
+                    tx.require_reaper_basis(  # type: ignore[func-returns-value]
                         INTENT,
                         owner_id="worker-b",
                         fence=8,
@@ -1822,9 +1824,9 @@ def test_dispatch_first_winner_and_replay_non_resend(database_urls: dict[str, st
                 "SettleCall",
                 SUBJECT,
                 lambda tx: (
-                    tx.lock_subject(),
-                    tx.lock_intents((INTENT,)),
-                    tx.lock_reservations((RESERVATION,)),
+                    tx.lock_subject(),  # type: ignore[func-returns-value]
+                    tx.lock_intents((INTENT,)),  # type: ignore[func-returns-value]
+                    tx.lock_reservations((RESERVATION,)),  # type: ignore[func-returns-value]
                     tx.permit_dispatch(
                         RESERVATION,
                         permit_key="wrong-owner",
@@ -1857,9 +1859,9 @@ def test_dispatch_first_winner_and_replay_non_resend(database_urls: dict[str, st
                 "PermitDispatch",
                 SUBJECT,
                 lambda tx: (
-                    tx.lock_subject(),
-                    tx.lock_intents((INTENT,)),
-                    tx.require_current_fence(
+                    tx.lock_subject(),  # type: ignore[func-returns-value]
+                    tx.lock_intents((INTENT,)),  # type: ignore[func-returns-value]
+                    tx.require_current_fence(  # type: ignore[func-returns-value]
                         INTENT,
                         owner_id="worker-dispatch",
                         fence=10,
@@ -2039,9 +2041,11 @@ def test_t8_settlement_rejects_crosswired_intent_reservation(
                     "SettleCall",
                     SUBJECT,
                     lambda tx: (
-                        tx.lock_subject(),
-                        tx.lock_intents((INTENT,)),
-                        tx.lock_reservations((RESERVATION_2,)),
+                        tx.lock_subject(),  # type: ignore[func-returns-value]
+                        tx.lock_intents((INTENT,)),  # type: ignore[func-returns-value]
+                        tx.lock_reservations(  # type: ignore[func-returns-value]
+                            (RESERVATION_2,)
+                        ),
                         tx.idempotent_outcome(
                             receipt_id=UUID("00000000-0000-8000-8000-000000015562"),
                             actor_scope="subject",
@@ -2144,7 +2148,7 @@ def test_t2_invalidation_scope_must_match_active_policy(
                 "DecideAssociation",
                 SUBJECT,
                 lambda tx: (
-                    tx.lock_subject(),
+                    tx.lock_subject(),  # type: ignore[func-returns-value]
                     tx.idempotent_outcome(
                         receipt_id=UUID("00000000-0000-8000-8000-000000015573"),
                         actor_scope="subject",
@@ -2169,8 +2173,10 @@ def test_commit_bundle_rejects_inapplicable_reservation_lock(
                 SUBJECT,
                 lambda tx: (
                     _acquire_registry(tx),
-                    tx.lock_intents((INTENT,)),
-                    tx.lock_reservations((RESERVATION_2,)),
+                    tx.lock_intents((INTENT,)),  # type: ignore[func-returns-value]
+                    tx.lock_reservations(  # type: ignore[func-returns-value]
+                        (RESERVATION_2,)
+                    ),
                 ),
             )
 
@@ -2188,9 +2194,11 @@ def test_t8_expected_transition_is_exact(database_urls: dict[str, str]) -> None:
                 "SettleCall",
                 SUBJECT,
                 lambda tx: (
-                    tx.lock_subject(),
-                    tx.lock_intents((INTENT,)),
-                    tx.lock_reservations((RESERVATION_2,)),
+                    tx.lock_subject(),  # type: ignore[func-returns-value]
+                    tx.lock_intents((INTENT,)),  # type: ignore[func-returns-value]
+                    tx.lock_reservations(  # type: ignore[func-returns-value]
+                        (RESERVATION_2,)
+                    ),
                     tx.idempotent_outcome(
                         receipt_id=UUID("00000000-0000-8000-8000-000000015574"),
                         actor_scope="subject",
@@ -2280,9 +2288,11 @@ def test_t8_stale_contender_rechecks_after_locked_transition(
                     "SettleCall",
                     SUBJECT,
                     lambda tx: (
-                        tx.lock_subject(),
-                        tx.lock_intents((INTENT,)),
-                        tx.lock_reservations((RESERVATION_2,)),
+                        tx.lock_subject(),  # type: ignore[func-returns-value]
+                        tx.lock_intents((INTENT,)),  # type: ignore[func-returns-value]
+                        tx.lock_reservations(  # type: ignore[func-returns-value]
+                            (RESERVATION_2,)
+                        ),
                         tx.idempotent_outcome(
                             receipt_id=UUID("00000000-0000-8000-8000-000000015579"),
                             actor_scope="subject",
@@ -2722,10 +2732,12 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
 
     first: Mapping[str, Any]
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
-        manifest_payload = connection.execute(
+        manifest_payload_row = connection.execute(
             "SELECT typed_payload FROM kineticloop.decision_manifests WHERE id=%s",
             (MANIFEST,),
-        ).fetchone()[0]
+        ).fetchone()
+        assert manifest_payload_row is not None
+        manifest_payload = manifest_payload_row[0]
         incomplete_manifest_payload = dict(manifest_payload)
         incomplete_manifest_payload["artifact_closure_ids"] = [str(ARTIFACT)]
         connection.execute("SET session_replication_role=replica")
@@ -3025,11 +3037,13 @@ def test_reauthorize_requires_atomic_intent_success(database_urls: dict[str, str
     foreign_policy = UUID("00000000-0000-8000-8000-000000015749")
     event = _event(0x15744)
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
-        execution_basis = connection.execute(
+        execution_basis_row = connection.execute(
             "SELECT execution_basis_event_id FROM kineticloop.user_decision_state "
             "WHERE subject_id=%s",
             (SUBJECT,),
-        ).fetchone()[0]
+        ).fetchone()
+        assert execution_basis_row is not None
+        execution_basis = execution_basis_row[0]
         connection.execute("SET session_replication_role=replica")
         connection.execute(
             "UPDATE kineticloop.planning_intents SET status='RUNNING',"
@@ -3256,10 +3270,12 @@ def test_t3_rejects_incomplete_or_crosswired_ready_candidate(
                     PROJECTION,
                 ),
             )
-            payload = connection.execute(
+            payload_row = connection.execute(
                 "SELECT typed_payload FROM kineticloop.manifest_builds WHERE id=%s",
                 (MANIFEST_BUILD,),
-            ).fetchone()[0]
+            ).fetchone()
+            assert payload_row is not None
+            payload = payload_row[0]
             wrong_payload = dict(payload)
             wrong_payload["artifact_closure_ids"] = [str(ARTIFACT)]
             connection.execute(
@@ -3351,10 +3367,12 @@ def test_t3_rejects_incomplete_or_crosswired_ready_candidate(
     catalog_dependency = UUID("00000000-0000-8000-8000-000000015821")
     mapping_dependency = UUID("00000000-0000-8000-8000-000000015822")
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
-        selected_policy_payload = connection.execute(
+        selected_policy_payload_row = connection.execute(
             "SELECT typed_payload FROM kineticloop.policy_bundles WHERE id=%s",
             (POLICY,),
-        ).fetchone()[0]
+        ).fetchone()
+        assert selected_policy_payload_row is not None
+        selected_policy_payload = selected_policy_payload_row[0]
         catalog_policy_payload = dict(selected_policy_payload)
         exposure = dict(
             selected_policy_payload["manifest_projection_requirements"]["EXPOSURE"]
@@ -3475,10 +3493,12 @@ def test_t3_rejects_incomplete_or_crosswired_ready_candidate(
             connection.execute("SET session_replication_role=origin")
 
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
-        policy_payload = connection.execute(
+        policy_payload_row = connection.execute(
             "SELECT typed_payload FROM kineticloop.policy_bundles WHERE id=%s",
             (POLICY,),
-        ).fetchone()[0]
+        ).fetchone()
+        assert policy_payload_row is not None
+        policy_payload = policy_payload_row[0]
         extra_role_policy = dict(policy_payload)
         extra_role_policy["manifest_projection_requirements"] = {
             **policy_payload["manifest_projection_requirements"],
@@ -3750,8 +3770,10 @@ def test_t7_exact_session_and_t3_publication_guards(database_urls: dict[str, str
                 SUBJECT,
                 lambda tx: (
                     _acquire_registry(tx),
-                    tx.lock_daily_head(date(2026, 9, 26)),
-                    tx.lock_execution((SESSION,)),
+                    tx.lock_daily_head(  # type: ignore[func-returns-value]
+                        date(2026, 9, 26)
+                    ),
+                    tx.lock_execution((SESSION,)),  # type: ignore[func-returns-value]
                 ),
             )
 
