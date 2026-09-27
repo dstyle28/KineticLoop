@@ -3620,6 +3620,9 @@ def test_t3_rejects_incomplete_or_crosswired_ready_candidate(
 
 def test_t7_exact_session_and_t3_publication_guards(database_urls: dict[str, str]) -> None:
     authorization_id = UUID(_SAFETY.AUTHORIZATION_ID)
+    alternate_prescription = UUID("00000000-0000-8000-8000-000000015901")
+    alternate_authorization = UUID("00000000-0000-8000-8000-000000015902")
+    alternate_member = UUID("00000000-0000-8000-8000-000000015903")
     t7_bundle = UUID("00000000-0000-8000-8000-000000015839")
     t7_member = UUID("00000000-0000-8000-8000-000000015841")
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
@@ -3661,6 +3664,38 @@ def test_t7_exact_session_and_t3_publication_guards(database_urls: dict[str, str
             "(id,subject_id,member_kind,session_slot,member_order,ref_s39_id,ref_s40_id) "
             "VALUES (%s,%s,'PRESCRIPTION','t7',1,%s,%s) ON CONFLICT (id) DO NOTHING",
             (t7_member, SUBJECT, t7_bundle, prescription_id),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.prescription_revisions"
+            "(id,subject_id,prescription_identity,prescription_kind,prescription_revision,"
+            "content_hash,ref_s34_id,ref_s49_id) "
+            "VALUES (%s,%s,'t7-alternate','WORKOUT',1,%s,%s,%s)",
+            (alternate_prescription, SUBJECT, content_hash, PROPOSAL, ARTIFACT),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.bundle_prescription_members"
+            "(id,subject_id,member_kind,session_slot,member_order,ref_s39_id,ref_s40_id) "
+            "VALUES (%s,%s,'PRESCRIPTION','t7-alternate',2,%s,%s)",
+            (alternate_member, SUBJECT, t7_bundle, alternate_prescription),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.authorization_issuances("
+            "id,subject_id,bound_content_hash,scope,artifact_dependency_closure_hash,"
+            "registry_revision_at_issue,valid_from,valid_until,validity_certificate,"
+            "ref_s02_id,ref_s05_id,ref_s24_id,ref_s36_id,ref_s37_id,ref_s40_id,"
+            "ref_s49_id,registry_state_id) "
+            "SELECT %s,subject_id,bound_content_hash,scope,artifact_dependency_closure_hash,"
+            "registry_revision_at_issue,valid_from,valid_until,validity_certificate,"
+            "ref_s02_id,ref_s05_id,ref_s24_id,ref_s36_id,ref_s37_id,%s,"
+            "ref_s49_id,registry_state_id FROM kineticloop.authorization_issuances WHERE id=%s",
+            (alternate_authorization, alternate_prescription, authorization_id),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.authorization_artifact_closure"
+            "(subject_id,authorization_id,artifact_id,artifact_revision,valid_from,valid_until) "
+            "SELECT subject_id,%s,artifact_id,artifact_revision,valid_from,valid_until "
+            "FROM kineticloop.authorization_artifact_closure WHERE authorization_id=%s",
+            (alternate_authorization, authorization_id),
         )
         connection.execute(
             "UPDATE kineticloop.daily_plan_heads SET current_bundle_revision_id=%s WHERE id=%s",
@@ -3762,6 +3797,26 @@ def test_t7_exact_session_and_t3_publication_guards(database_urls: dict[str, str
     with psycopg.connect(database_urls["admin"]) as connection:
         outcome, replayed = execute_command(connection, "StartSession", SUBJECT, start)
     assert not replayed and outcome["binding_id"] == str(binding)
+
+    def substituted_continue(tx: RepositoryTransaction) -> None:
+        _acquire_registry(tx)
+        tx.lock_daily_head(date(2026, 9, 26))
+        tx.lock_execution((SESSION,))
+        tx.require_execution_authorization(
+            prescription_id=alternate_prescription,
+            authorization_id=alternate_authorization,
+            execution_scope="EXECUTION",
+        )
+
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(GuardRequired, match="latest START/RESUME binding"):
+            execute_command(
+                connection,
+                "ContinueSession",
+                SUBJECT,
+                substituted_continue,
+            )
+
     with psycopg.connect(database_urls["admin"]) as connection:
         with pytest.raises(GuardRequired, match="lifecycle or repeated START"):
             execute_command(

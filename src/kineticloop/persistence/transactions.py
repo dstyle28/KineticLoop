@@ -3192,6 +3192,20 @@ class RepositoryTransaction:
         if _cursor(self).fetchone() is None:
             raise GuardRequired("exact T7 prescription/authorization is not executable")
         session_id = self._coordination_context.get("execution_session_id")
+        if self.command_kind == "ContinueSession":
+            _cursor(self).execute(
+                "SELECT ref_s40_id,ref_s42_id,execution_scope "
+                "FROM kineticloop.execution_bindings "
+                "WHERE subject_id=%s AND ref_s44_id=%s "
+                "AND binding_kind IN ('START','RESUME') "
+                "ORDER BY binding_revision DESC,id DESC LIMIT 1",
+                (self.subject_id, session_id),
+            )
+            current_binding = _cursor(self).fetchone()
+            if current_binding != (prescription_id, authorization_id, execution_scope):
+                raise GuardRequired(
+                    "ContinueSession must preserve the latest START/RESUME binding"
+                )
         _cursor(self).execute(
             "SELECT clock_timestamp(),COALESCE(MAX(binding_revision),0)+1 "
             "FROM kineticloop.execution_bindings WHERE subject_id=%s AND ref_s44_id=%s",

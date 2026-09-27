@@ -134,7 +134,8 @@ epoch, and current manifest.
 T7 START requires a READY/PLANNED session with no prior START; RESUME requires PAUSED
 with a prior START; CONTINUE requires IN_PROGRESS with a prior START. START and RESUME
 revalidate and append S45 for the exact current prescription/authorization pair;
-CONTINUE revalidates the pair but cannot append S45. Every command advances the exact
+CONTINUE revalidates the pair but cannot append S45, so its pair and scope must equal
+the latest START/RESUME S45 binding for the locked session. Every command advances the exact
 session to IN_PROGRESS with revision +1 and advances S01's execution basis with its
 same-transaction S03 event. START/RESUME S45 binds the validated execution scope,
 database eligibility time, and next binding revision. A historical replay is
