@@ -1,0 +1,48 @@
+HG-023 final governance verification
+protected_base: 097af4aa90b0a9d1bad957b35b5df93cdd3092d2
+tested_commit: d28551e390cc67e51015e1a37e82a1279bb20e83
+The output blocks below retain the command tool's stdout verbatim. Empty stdout is explicitly counted as zero characters.
+
+PASS full_repository_regression_passes
+command: UV_CACHE_DIR=/private/tmp/hg023-uv PYTHONPATH="$PWD/src" PYTEST_ADDOPTS="--junitxml=$PWD/docs/exec-plans/evidence/HG-023/junit-d28551e.xml" /private/tmp/kl001-bootstrap/bin/uv run pytest -q -p no:cacheprovider
+exit_code: 0
+stdout_characters: 796
+stdout:
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 39%]
+........................................................................ [ 52%]
+........................................................................ [ 65%]
+........................................................................ [ 78%]
+........................................................................ [ 92%]
+...........................................                              [100%]
+- generated xml file: /Users/davetian/.codex/worktrees/8591/KineticLoop/docs/exec-plans/evidence/HG-023/junit-d28551e.xml -
+547 passed in 346.03s (0:05:46)
+
+PASS exact_harness_validation_passes
+command: UV_CACHE_DIR=/private/tmp/hg023-uv PYTHONPATH="$PWD/src" /private/tmp/kl001-bootstrap/bin/uv run kl check-harness
+exit_code: 0
+stdout_characters: 38
+stdout:
+HARNESS_CHECK_PASS tasks=70 active=68
+
+PASS lint_passes
+command: UV_CACHE_DIR=/private/tmp/hg023-uv /private/tmp/kl001-bootstrap/bin/uv run kl lint
+exit_code: 0
+stdout_characters: 19
+stdout:
+All checks passed!
+
+PASS typecheck_passes
+command: UV_CACHE_DIR=/private/tmp/hg023-uv /private/tmp/kl001-bootstrap/bin/uv run kl typecheck
+exit_code: 0
+stdout_characters: 44
+stdout:
+Success: no issues found in 85 source files
+
+PASS frozen_and_requirement_state_unchanged
+command: git diff --exit-code 097af4aa90b0a9d1bad957b35b5df93cdd3092d2 HEAD -- 05_KineticLoop_Protocol_v1.2_FROZEN.md 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md FROZEN_BASELINE.json CURRENT_REQUIREMENT_SET.json
+exit_code: 0
+stdout_characters: 0
+stdout:
+
