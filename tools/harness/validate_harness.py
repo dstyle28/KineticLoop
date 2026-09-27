@@ -79,6 +79,8 @@ M2_EXIT_TASK_CHECKS = {
                    'safety_registry_runtime_login_boundary_enforced'},
     },
     'shadow_registry_gates_precede_affected_contracts': {
+        'KL-008': {'real_data_shadow_forbids_live_head_issuance_binding',
+                   'test_only_scope_requires_isolation'},
         'KL-014': {'shadow_and_test_scope_fail_closed'},
         'KL-015': {'registry_lease_required_for_publish_commit_and_session_entry',
                    'complete_frozen_lock_order_enforced'},
@@ -1482,6 +1484,16 @@ def m2_milestone_closure_errors(
     # Gate constructors prove their checks before their own merge through the
     # integration chain. Their merged boundaries must precede KL-015 use.
     try:
+        shadow = load_artifact_at_revision(
+            root, 'docs/exec-plans/integrations/KL-008.json', evaluated)
+        for task_id in ('KL-014', 'KL-015', 'KL-017'):
+            affected = load_artifact_at_revision(
+                root, f'docs/exec-plans/integrations/{task_id}.json', evaluated)
+            affected_result = load_artifact_at_revision(
+                root, result_paths_at_revision(root, task_id, affected['reviewed_head_sha'])[0],
+                affected['reviewed_head_sha'])
+            if not is_ancestor(root, shadow['merge_commit'], affected_result['tested_commit']):
+                errors.append('milestone-gate-order:KL-008:' + task_id)
         consumer = load_artifact_at_revision(
             root, 'docs/exec-plans/integrations/KL-015.json', evaluated)
         consumer_result = load_artifact_at_revision(
@@ -1598,6 +1610,29 @@ def m2_execution_evidence_errors(root, payload, revision):
                 raise ValueError('failed-skipped-or-empty-tests')
             names = {(case.get('classname', ''), case.get('name', '').split('[')[0])
                      for case in cases}
+            collection = run['collection']
+            if (not relative_path(collection['path'])
+                    or not matches(collection['path'], [evidence_pattern('HG-023')])
+                    or blob_sha_at_revision(root, collection['path'], revision)
+                    != collection['sha256']):
+                raise ValueError('collection-binding')
+            collected = load_artifact_at_revision(root, collection['path'], revision)
+            nodeids = collected['nodeids']
+            if (collected.get('command') != 'uv run pytest --collect-only -q'
+                    or collected.get('exit_code') != 0
+                    or collected.get('tested_commit') != payload['tested_commit']
+                    or not isinstance(nodeids, list) or not nodeids
+                    or len(nodeids) != len(set(nodeids))):
+                raise ValueError('invalid-collection')
+            expected_cases = set()
+            for nodeid in nodeids:
+                components = nodeid.split('::')
+                expected_cases.add((
+                    '.'.join([components[0].removesuffix('.py').replace('/', '.'),
+                              *components[1:-1]]), components[-1]))
+            actual_cases = [(case.get('classname', ''), case.get('name', '')) for case in cases]
+            if set(actual_cases) != expected_cases or len(actual_cases) != len(expected_cases):
+                raise ValueError('incomplete-or-duplicate-collection')
             required_cases = {
                 ('tests.db.test_migrations', 'test_empty_db_upgrade_head'),
                 ('tests.db.test_transaction_interfaces', 'test_reverse_lock_order_is_rejected'),
@@ -1608,7 +1643,10 @@ def m2_execution_evidence_errors(root, payload, revision):
             }
             if not required_cases <= names:
                 raise ValueError('missing-db-coverage')
-            if not re.search(r'\b[1-9][0-9]* passed\b', output):
+            summaries = re.findall(r'\b([1-9][0-9]*) passed\b', output)
+            if (not summaries or int(summaries[-1]) != len(cases)
+                    or re.search(r'\b[1-9][0-9]* (?:failed|skipped|errors?|deselected|xfailed|xpassed)\b',
+                                 output, re.I)):
                 raise ValueError('pytest-oracle')
         except (ValueError, OSError, KeyError, TypeError, ET.ParseError) as ex:
             errors.append(prefix + str(ex))

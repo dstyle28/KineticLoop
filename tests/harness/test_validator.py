@@ -418,6 +418,7 @@ class ValidatorTests(unittest.TestCase):
             'pytest': 'docs/exec-plans/evidence/HG-023/pytest.log',
             'harness': 'docs/exec-plans/evidence/HG-023/harness.log',
             'junit': 'docs/exec-plans/evidence/HG-023/junit.xml',
+            'collection': 'docs/exec-plans/evidence/HG-023/collection.json',
         }
         self.put(paths['pytest'], '5 passed in 1.0s\n')
         self.put(paths['harness'], 'HARNESS_CHECK_PASS tasks=69 active=67\n')
@@ -433,6 +434,11 @@ class ValidatorTests(unittest.TestCase):
             f'<testcase classname="{cls}" name="{name}"/>' for cls, name in cases
         ) + '</testsuite></testsuites>'
         self.put(paths['junit'], junit)
+        dump(self.root / paths['collection'], {
+            'command': 'uv run pytest --collect-only -q', 'exit_code': 0,
+            'tested_commit': self.base,
+            'nodeids': [cls.replace('.', '/') + '.py::' + name for cls, name in cases],
+        })
         revision = self.commit('fixture execution evidence')
 
         def ref(name):
@@ -444,6 +450,7 @@ class ValidatorTests(unittest.TestCase):
             {'command': v.M2_REGRESSION_COMMANDS[1], 'exit_code': 0,
              'tested_commit': self.base, 'stdout': ref('harness')},
         ]}
+        payload['executions'][0]['collection'] = ref('collection')
         self.assertEqual(v.m2_execution_evidence_errors(self.root, payload, revision), [])
         for variant in ('exit', 'missing-output', 'unbound', 'no-executions'):
             mutated = copy.deepcopy(payload)
