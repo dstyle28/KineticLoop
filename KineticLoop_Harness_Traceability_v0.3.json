@@ -3692,6 +3692,119 @@
       "packet_refinement": "ENFORCEABLE",
       "status": "NOT_STARTED",
       "shared_hotspot": true
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-073",
+      "id": "KL-073",
+      "milestone": "M2",
+      "depends_on": [
+        "KL-015"
+      ],
+      "conditional_depends_on": [],
+      "commands": [
+        "AcquireLease",
+        "RenewLease",
+        "CommitBundle",
+        "SettleCall",
+        "MarkOutcomeUnknown"
+      ],
+      "transaction_boundaries": [
+        "T1",
+        "T2-GLOBAL",
+        "T2-SUBJECT",
+        "T3",
+        "T4",
+        "T5",
+        "T6",
+        "T7",
+        "T8"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-12",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S27",
+        "S30",
+        "S31",
+        "S38",
+        "S44",
+        "S51"
+      ],
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "fixed_wall_clock_fixture_removed",
+        "blocked_regression_cases_pass",
+        "expired_and_stale_negative_cases_preserved",
+        "transaction_interface_suite_passes",
+        "complete_db_suite_passes",
+        "full_repository_regression_passes",
+        "harness_validation_passes"
+      ],
+      "check_contracts": [
+        {
+          "check_id": "fixed_wall_clock_fixture_removed",
+          "command": "rg -n 'NOW = datetime\\(2026, 9, 26|datetime\\(2026, 9, 26' tests/db/test_transaction_interfaces.py; test $? -eq 1",
+          "pass_oracle": "The fixed 2026-09-26 wall-clock basis is absent. Every positive lease/deadline comparison that production evaluates with PostgreSQL time obtains a fresh database-clock-relative basis at the point of setup or operation; exact expected values are read back from the database when needed, so no module-import or suite-start timestamp can decay during a long run."
+        },
+        {
+          "check_id": "blocked_regression_cases_pass",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py -k 'reverse_lock_order_is_rejected or event_outbox_atomicity_enforced or stale_fence_commit_is_rejected or ack_loss_replay_preserves_natural_uniqueness'",
+          "pass_oracle": "All ten cases reported by HG-023 pass against a fresh isolated PostgreSQL namespace and reach their intended lock-order, event/outbox atomicity, stale-fence, and ACK-loss replay assertions rather than failing early in AcquireLease with FenceLost."
+        },
+        {
+          "check_id": "expired_and_stale_negative_cases_preserved",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py -k 'expired or stale or fence or deadline'",
+          "pass_oracle": "The focused negative surface passes with deliberately expired leases, elapsed deadlines, wrong owners, and stale fences still expressed relative to PostgreSQL clock_timestamp(); the repair does not convert negative cases into live leases or weaken a FenceLost expectation."
+        },
+        {
+          "check_id": "transaction_interface_suite_passes",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py",
+          "pass_oracle": "The complete KL-015 PostgreSQL transaction-interface suite passes in one isolated namespace, preserving frozen lock order, lease/fence guards, command receipt idempotency, event/outbox atomicity, rollback, retry, and ACK-loss replay behavior."
+        },
+        {
+          "check_id": "complete_db_suite_passes",
+          "command": "uv run pytest -q tests/db",
+          "pass_oracle": "The complete PostgreSQL test surface passes in one isolated namespace with no calendar-dependent lease or deadline failure and no regression to migration, permissions, immutable-history, lifecycle, registry, or transaction semantics."
+        },
+        {
+          "check_id": "full_repository_regression_passes",
+          "command": "uv run pytest -q -p no:cacheprovider",
+          "pass_oracle": "The same full-repository regression class that blocked HG-023 passes with zero failures, providing genuine replacement evidence rather than relying only on a focused rerun."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Command exits 0 and prints HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-073/**"
+      ],
+      "resource_keys": [
+        "transaction_interfaces"
+      ],
+      "write_paths": [
+        "tests/db/test_transaction_interfaces.py"
+      ],
+      "write_paths_status": "ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "DB_CONCURRENCY"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED",
+      "shared_hotspot": true
     }
   ]
 }
