@@ -5,11 +5,12 @@ repository command owners. It does not make domain decisions and does not perfor
 network, model, resolver, projection, or bulk-build work.
 
 Every owner receives a fresh idle PostgreSQL connection and owns the outer commit.
-Callbacks never receive that connection or a raw cursor. They receive a buffered,
-capability-scoped SQL session only after the required guards: it rejects transaction
-control, explicit/advisory lock SQL, multiple statements, and every table outside the
-declared owner surface. Preparation and build sessions have separate narrower table
-capabilities, so they cannot reach S51/S01 through the shared interface.
+Callbacks never receive that connection, a raw cursor, or an arbitrary SQL execution
+method. They receive structured `insert` and `update` operations only after the
+required guards; schema/table identifiers are generated from the owner's logical-table
+capability and columns are quoted by psycopg. Preparation and build sessions have
+separate narrower capabilities, so they cannot express S51/S01 access through the
+shared interface.
 For subject commands, the interface enforces this monotonic sequence:
 
 `S51 (when required) → S01 → S30 → S27 → S31 → S38 → S44 → S02 → remaining aggregate rows`.
@@ -42,9 +43,11 @@ database boundary jointly required by PrescriptionCommitService and
 AuthorizationService; neither service receives a partial S39/S40/S41 or S42 commit
 interface.
 
-PermitDispatch locks S01, S27, then S31. Only the first `RESERVED → DISPATCH_INTENT`
-winner receives `sendable=true`; replay of the same permit key receives the durable
-permit with `sendable=false`. The physical provider request occurs after commit.
+PermitDispatch locks S01, S27, then S31 and atomically commits its S02 receipt, S03
+event, and S04 outbox row with the state transition. Only the first
+`RESERVED → DISPATCH_INTENT` winner receives `sendable=true`; replay of the same permit
+key receives the durable permit with `sendable=false`. The physical provider request
+occurs after commit.
 Outbox claiming is an isolated S04 transaction with no S01 or business mutation
 callback. Consumers release the outbox row before invoking a new idempotent command.
 

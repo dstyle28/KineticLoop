@@ -60,7 +60,9 @@ RESERVATION_2 = UUID("00000000-0000-8000-8000-000000015131")
 DAILY_HEAD = UUID("00000000-0000-8000-8000-000000015038")
 BUNDLE = UUID("00000000-0000-8000-8000-000000015039")
 PRESCRIPTION = UUID("00000000-0000-8000-8000-000000015040")
+BUNDLE_MEMBER = UUID("00000000-0000-8000-8000-000000015041")
 ISSUANCE = UUID("00000000-0000-8000-8000-000000015042")
+SUPERSESSION = UUID("00000000-0000-8000-8000-000000015043")
 SESSION = UUID("00000000-0000-8000-8000-000000015044")
 PROPOSAL = UUID("00000000-0000-8000-8000-000000015034")
 DEMAND = UUID("00000000-0000-8000-8000-000000015035")
@@ -244,8 +246,10 @@ def test_preparation_work_stays_outside_coordination_locks(
                 execute_preparation(
                     connection,
                     command,
-                    lambda session: session.execute(
-                        "SELECT subject_id FROM kineticloop.user_decision_state FOR UPDATE"
+                    lambda session: session.update(
+                        "S01",
+                        {"decision_generation": 1},
+                        {"subject_id": SUBJECT},
                     ),
                 )
 
@@ -257,6 +261,7 @@ def test_factset_build_stays_outside_subject_coordination(
         with psycopg.connect(database_urls["admin"]) as connection:
             observed = execute_factset_build(
                 connection,
+                command,
                 SUBJECT,
                 FACTSET,
                 lambda session: session.relation_locks(),
@@ -267,12 +272,13 @@ def test_factset_build_stays_outside_subject_coordination(
         with pytest.raises(StatementRejected):
             execute_factset_build(
                 connection,
+                "CompleteFactset",
                 SUBJECT,
                 FACTSET,
-                lambda session: session.execute(
-                    "UPDATE kineticloop.user_decision_state "
-                    "SET decision_generation=decision_generation+1 WHERE subject_id=%s",
-                    (SUBJECT,),
+                lambda session: session.update(
+                    "S16",
+                    {"member_operation": "SET"},
+                    {"subject_id": SUBJECT},
                 ),
             )
 
@@ -388,6 +394,13 @@ def test_reverse_lock_order_is_rejected(
         with connection.transaction():
             tx = RepositoryTransaction(connection.cursor(), "AdmitOrReviseIntent", SUBJECT)
             tx.lock_subject()
+            tx.lock_intents((INTENT_2,))
+            with pytest.raises(LockOrderViolation):
+                tx.lock_intents((INTENT,))
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with connection.transaction():
+            tx = RepositoryTransaction(connection.cursor(), "AdmitOrReviseIntent", SUBJECT)
+            tx.lock_subject()
             tx.lock_remaining("validation_results", (VALIDATION,))
             with pytest.raises(LockOrderViolation):
                 tx.lock_remaining("factset_revisions", (FACTSET,))
@@ -452,48 +465,53 @@ def test_event_outbox_atomicity_enforced(
 
     def mutate(session: Any) -> Mapping[str, Any]:
         if command == "ReceiveEvidence":
-            session.execute(
-                "INSERT INTO kineticloop.evidence_revisions"
-                "(id,subject_id,source_connection_identity,source_object_type,"
-                "source_object_identity,source_revision,trust_class,source_class,"
-                "command_authority) VALUES (%s,%s,%s,'TEST','object','1',"
-                "'SOURCE_REPORTED','TEST','NONE')",
-                (UUID(f"00000000-0000-8000-8000-{tag + 9:012x}"), SUBJECT, command),
+            session.insert(
+                "S09",
+                {
+                    "id": UUID(f"00000000-0000-8000-8000-{tag + 9:012x}"),
+                    "subject_id": SUBJECT,
+                    "source_connection_identity": command,
+                    "source_object_type": "TEST",
+                    "source_object_identity": "object",
+                    "source_revision": "1",
+                    "trust_class": "SOURCE_REPORTED",
+                    "source_class": "TEST",
+                    "command_authority": "NONE",
+                },
             )
         elif command == "DecideAdmission":
-            session.execute(
-                "UPDATE kineticloop.user_decision_state "
-                "SET decision_generation=decision_generation+1 WHERE subject_id=%s",
-                (SUBJECT,),
+            session.update(
+                "S01",
+                {"decision_generation": 1},
+                {"subject_id": SUBJECT},
             )
         elif command == "PublishManifest":
-            session.execute(
-                "UPDATE kineticloop.manifest_builds SET captured_epoch=captured_epoch+1 "
-                "WHERE id=%s AND subject_id=%s",
-                (MANIFEST_BUILD, SUBJECT),
+            session.update(
+                "S23",
+                {"captured_epoch": 1},
+                {"id": MANIFEST_BUILD, "subject_id": SUBJECT},
             )
         elif command in {
             "AdmitOrReviseIntent",
             "AcquireLease",
             "SettleCall",
         }:
-            session.execute(
-                "UPDATE kineticloop.planning_intents SET typed_payload=%s "
-                "WHERE id=%s AND subject_id=%s",
-                (psycopg.types.json.Jsonb({"atomic": command}), INTENT, SUBJECT),
+            session.update(
+                "S27",
+                {"typed_payload": psycopg.types.json.Jsonb({"atomic": command})},
+                {"id": INTENT, "subject_id": SUBJECT},
             )
         elif command == "CommitBundle":
-            session.execute(
-                "UPDATE kineticloop.daily_plan_heads SET head_revision=head_revision+1 "
-                "WHERE id=%s AND subject_id=%s",
-                (DAILY_HEAD, SUBJECT),
+            session.update(
+                "S38",
+                {"head_revision": 1},
+                {"id": DAILY_HEAD, "subject_id": SUBJECT},
             )
         else:
-            session.execute(
-                "UPDATE kineticloop.workout_sessions "
-                "SET execution_revision=execution_revision+1 "
-                "WHERE id=%s AND subject_id=%s",
-                (SESSION, SUBJECT),
+            session.update(
+                "S44",
+                {"execution_revision": 1},
+                {"id": SESSION, "subject_id": SUBJECT},
             )
         return {"command": command}
 
@@ -668,11 +686,21 @@ def test_stale_fence_commit_is_rejected(database_urls: dict[str, str]) -> None:
 
 
 def test_dispatch_first_winner_and_replay_non_resend(database_urls: dict[str, str]) -> None:
+    permit_receipt = UUID("00000000-0000-8000-8000-000000015502")
+    permit_event = _event(0x15503)
+
     def permit(tx: RepositoryTransaction, permit_key: str) -> Any:
         tx.lock_subject()
         tx.lock_intents((INTENT,))
         tx.lock_reservations((RESERVATION,))
-        return tx.permit_dispatch(RESERVATION, permit_key=permit_key, fence=7)
+        return tx.permit_dispatch(
+            RESERVATION,
+            permit_key=permit_key,
+            request_hash=f"hash-{permit_key}",
+            receipt_id=permit_receipt,
+            event=permit_event,
+            fence=7,
+        )
 
     barrier = threading.Barrier(2)
     outcomes: list[Any] = []
@@ -711,13 +739,43 @@ def test_dispatch_first_winner_and_replay_non_resend(database_urls: dict[str, st
         )
     assert not replay.sendable and replay.replayed
     with psycopg.connect(database_urls["admin"]) as connection:
+        for table, object_id in (
+            ("command_receipts", permit_receipt),
+            ("domain_events", permit_event.event_id),
+            ("outbox_deliveries", permit_event.outbox_id),
+        ):
+            assert connection.execute(
+                f"SELECT count(*) FROM kineticloop.{table} WHERE id=%s", (object_id,)
+            ).fetchone() == (1,)
+    with psycopg.connect(database_urls["admin"]) as connection:
         with pytest.raises(DispatchNotPermitted):
+            second_receipt = UUID("00000000-0000-8000-8000-000000015512")
+            second_event = _event(0x15513)
+
+            def conflicting(tx: RepositoryTransaction) -> Any:
+                tx.lock_subject()
+                tx.lock_intents((INTENT,))
+                tx.lock_reservations((RESERVATION,))
+                return tx.permit_dispatch(
+                    RESERVATION,
+                    permit_key="permit-2",
+                    request_hash="hash-permit-2",
+                    receipt_id=second_receipt,
+                    event=second_event,
+                    fence=7,
+                )
+
             execute_command(
                 connection,
                 "PermitDispatch",
                 SUBJECT,
-                lambda tx: permit(tx, "permit-2"),
+                conflicting,
             )
+    with psycopg.connect(database_urls["admin"]) as connection:
+        assert connection.execute(
+            "SELECT count(*) FROM kineticloop.command_receipts WHERE id=%s",
+            (second_receipt,),
+        ).fetchone() == (0,)
 
 
 def test_ack_loss_replay_preserves_natural_uniqueness(database_urls: dict[str, str]) -> None:
@@ -732,12 +790,13 @@ def test_ack_loss_replay_preserves_natural_uniqueness(database_urls: dict[str, s
             tx.lock_subject()
             tx.lock_intents((INTENT_2,))
 
-            def mutation(cursor: Any) -> Mapping[str, Any]:
+            def mutation(session: Any) -> Mapping[str, Any]:
                 nonlocal runs
                 runs += 1
-                cursor.execute(
-                    "UPDATE kineticloop.planning_intents SET typed_payload=%s WHERE id=%s",
-                    (psycopg.types.json.Jsonb({"committed": True}), INTENT_2),
+                session.update(
+                    "S27",
+                    {"typed_payload": psycopg.types.json.Jsonb({"committed": True})},
+                    {"id": INTENT_2, "subject_id": SUBJECT},
                 )
                 return {"intent_id": str(INTENT_2), "status": "COMMITTED"}
 
@@ -798,35 +857,100 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
             tx.lock_reservations((RESERVATION_2,))
             tx.lock_daily_head(date(2026, 9, 26))
 
-            def mutation(cursor: Any) -> Mapping[str, Any]:
+            def mutation(session: Any) -> Mapping[str, Any]:
                 nonlocal runs
                 runs += 1
-                cursor.execute(
-                    "INSERT INTO kineticloop.daily_bundle_revisions"
-                    "(id,subject_id,local_date,revision_no,generation_mode,ref_s02_id,"
-                    "ref_s24_id,ref_s27_id,ref_s29_id,ref_s37_id,ref_s38_id) "
-                    "VALUES (%s,%s,DATE '2026-09-26',1,'AI_GENERATED_CURRENT',%s,%s,%s,%s,%s,%s)",
-                    (BUNDLE, SUBJECT, receipt, MANIFEST, INTENT, ATTEMPT, VALIDATION, DAILY_HEAD),
+                session.insert(
+                    "S39",
+                    {
+                        "id": BUNDLE,
+                        "subject_id": SUBJECT,
+                        "local_date": date(2026, 9, 26),
+                        "revision_no": 1,
+                        "generation_mode": "AI_GENERATED_CURRENT",
+                        "ref_s02_id": receipt,
+                        "ref_s24_id": MANIFEST,
+                        "ref_s27_id": INTENT,
+                        "ref_s29_id": ATTEMPT,
+                        "ref_s37_id": VALIDATION,
+                        "ref_s38_id": DAILY_HEAD,
+                    },
                 )
-                cursor.execute(
-                    "INSERT INTO kineticloop.prescription_revisions"
-                    "(id,subject_id,prescription_identity,prescription_kind,prescription_revision,"
-                    "ref_s34_id,ref_s49_id) VALUES (%s,%s,'prescription-1','WORKOUT',1,%s,%s)",
-                    (PRESCRIPTION, SUBJECT, PROPOSAL, ARTIFACT),
+                session.insert(
+                    "S40",
+                    {
+                        "id": PRESCRIPTION,
+                        "subject_id": SUBJECT,
+                        "prescription_identity": "prescription-1",
+                        "prescription_kind": "WORKOUT",
+                        "prescription_revision": 1,
+                        "ref_s34_id": PROPOSAL,
+                        "ref_s49_id": ARTIFACT,
+                    },
                 )
-                cursor.execute(
-                    "INSERT INTO kineticloop.authorization_issuances"
-                    "(id,subject_id,bound_content_hash,scope,artifact_dependency_closure_hash,"
-                    "registry_revision_at_issue,valid_from,valid_until,validity_certificate,"
-                    "ref_s02_id,ref_s05_id,ref_s24_id,ref_s36_id,ref_s37_id,ref_s40_id,"
-                    "ref_s49_id,registry_state_id) VALUES (%s,%s,'content','PRODUCTION','closure',0,"
-                    "clock_timestamp(),clock_timestamp()+interval '1 day','{}',%s,%s,%s,%s,%s,%s,%s,1)",
-                    (ISSUANCE, SUBJECT, receipt, POLICY, MANIFEST, RESOLUTION, VALIDATION, PRESCRIPTION, ARTIFACT),
+                session.insert(
+                    "S41",
+                    {
+                        "id": BUNDLE_MEMBER,
+                        "subject_id": SUBJECT,
+                        "member_kind": "PRESCRIPTION",
+                        "session_slot": "primary",
+                        "member_order": 1,
+                        "ref_s39_id": BUNDLE,
+                        "ref_s40_id": PRESCRIPTION,
+                    },
+                )
+                session.insert(
+                    "S42",
+                    {
+                        "id": ISSUANCE,
+                        "subject_id": SUBJECT,
+                        "bound_content_hash": "content",
+                        "scope": "PRODUCTION",
+                        "artifact_dependency_closure_hash": "closure",
+                        "registry_revision_at_issue": 0,
+                        "valid_from": NOW,
+                        "valid_until": NOW + timedelta(days=1),
+                        "validity_certificate": psycopg.types.json.Jsonb({}),
+                        "ref_s02_id": receipt,
+                        "ref_s05_id": POLICY,
+                        "ref_s24_id": MANIFEST,
+                        "ref_s36_id": RESOLUTION,
+                        "ref_s37_id": VALIDATION,
+                        "ref_s40_id": PRESCRIPTION,
+                        "ref_s49_id": ARTIFACT,
+                        "registry_state_id": 1,
+                    },
+                )
+                session.insert(
+                    "S43",
+                    {
+                        "id": SUPERSESSION,
+                        "subject_id": SUBJECT,
+                        "event_kind": "SUPERSEDED",
+                        "scope": "PRODUCTION",
+                        "causation_key": "t6-ack-loss",
+                        "ref_s42_id": UUID(_SAFETY.AUTHORIZATION_ID),
+                        "ref_s02_id": receipt,
+                    },
+                )
+                session.update(
+                    "S38",
+                    {"head_revision": 1},
+                    {"id": DAILY_HEAD, "subject_id": SUBJECT},
+                )
+                session.update(
+                    "S27",
+                    {"status": "FOUND_VALID_PLAN"},
+                    {"id": INTENT, "subject_id": SUBJECT},
                 )
                 return {
                     "receipt_id": str(receipt),
                     "bundle_revision_id": str(BUNDLE),
+                    "prescription_id": str(PRESCRIPTION),
+                    "bundle_member_id": str(BUNDLE_MEMBER),
                     "authorization_issuance_id": str(ISSUANCE),
+                    "supersession_id": str(SUPERSESSION),
                 }
 
             return tx.idempotent_outcome(
@@ -859,6 +983,14 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
         assert connection.execute(
             "SELECT count(*) FROM kineticloop.authorization_issuances WHERE id=%s", (ISSUANCE,)
         ).fetchone() == (1,)
+        assert connection.execute(
+            "SELECT count(*) FROM kineticloop.prescription_revisions WHERE id=%s",
+            (PRESCRIPTION,),
+        ).fetchone() == (1,)
+        assert connection.execute(
+            "SELECT count(*) FROM kineticloop.bundle_prescription_members WHERE id=%s",
+            (BUNDLE_MEMBER,),
+        ).fetchone() == (1,)
         for table, object_id in (
             ("command_receipts", receipt),
             ("domain_events", event.event_id),
@@ -868,9 +1000,16 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
                 f"SELECT count(*) FROM kineticloop.{table} WHERE id=%s", (object_id,)
             ).fetchone() == (1,)
         assert connection.execute(
-            "SELECT count(*) FROM kineticloop.authorization_events WHERE subject_id=%s",
-            (SUBJECT,),
-        ).fetchone() == (0,)
+            "SELECT count(*) FROM kineticloop.authorization_events WHERE id=%s",
+            (SUPERSESSION,),
+        ).fetchone() == (1,)
+        assert connection.execute(
+            "SELECT head_revision FROM kineticloop.daily_plan_heads WHERE id=%s",
+            (DAILY_HEAD,),
+        ).fetchone() == (1,)
+        assert connection.execute(
+            "SELECT status FROM kineticloop.planning_intents WHERE id=%s", (INTENT,)
+        ).fetchone() == ("FOUND_VALID_PLAN",)
         assert connection.execute(
             "SELECT count(*) FROM kineticloop.call_reservations "
             "WHERE id IN (%s,%s)",

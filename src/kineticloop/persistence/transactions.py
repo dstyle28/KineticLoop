@@ -8,7 +8,6 @@ durable idempotent outcomes, atomic event/outbox writes, and isolated outbox cla
 
 from __future__ import annotations
 
-import re
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import datetime
@@ -17,7 +16,7 @@ from types import MappingProxyType
 from typing import Any, TypeVar
 from uuid import UUID
 
-from psycopg import Connection, Cursor
+from psycopg import Connection, Cursor, sql
 from psycopg.pq import TransactionStatus
 from psycopg.types.json import Jsonb
 
@@ -26,12 +25,6 @@ from kineticloop.persistence.schema_topology import LOGICAL_RELATIONS
 _T = TypeVar("_T")
 
 _LOGICAL_TABLES = {row.logical_id: row.table_name for row in LOGICAL_RELATIONS}
-_QUALIFIED_TABLE = re.compile(r"\bkineticloop\.([a-z][a-z0-9_]*)\b", re.IGNORECASE)
-_LOCK_SQL = re.compile(
-    r"\b(?:FOR\s+(?:UPDATE|SHARE|NO\s+KEY\s+UPDATE|KEY\s+SHARE)|LOCK\s+TABLE|"
-    r"pg_(?:try_)?advisory|BEGIN|COMMIT|ROLLBACK|SAVEPOINT|SET\s+TRANSACTION)\b",
-    re.IGNORECASE,
-)
 
 
 class RepositoryTransactionError(RuntimeError):
@@ -142,7 +135,7 @@ TRANSACTION_OWNER_MATRIX: Mapping[str, OwnerSpec] = MappingProxyType(
         "RecordDemandFeatures": OwnerSpec("DemandFeatureService", Boundary.PREPARATION, ("S35",), subject_guard_required=False),
         "ResolveEvidence": OwnerSpec("EvidenceResolver", Boundary.PREPARATION, ("S36",), subject_guard_required=False),
         "RecordValidation": OwnerSpec("ValidationService", Boundary.PREPARATION, ("S37",), subject_guard_required=False),
-        "CommitBundle": OwnerSpec("T6CommitCoordinator", Boundary.T6, ("S51", "S01", "S27", "S31", "S38", "S39", "S40", "S41", "S42", "S29", "S02", "S03", "S04"), registry_required=True),
+        "CommitBundle": OwnerSpec("T6CommitCoordinator", Boundary.T6, ("S51", "S01", "S27", "S31", "S38", "S39", "S40", "S41", "S42", "S43", "S29", "S02", "S03", "S04"), registry_required=True),
         "Reauthorize": OwnerSpec("AuthorizationService", Boundary.T6, ("S51", "S01", "S27", "S31", "S38", "S42", "S29", "S02", "S03", "S04"), registry_required=True),
         "StartSession": OwnerSpec("ExecutionService", Boundary.T7, ("S51", "S01", "S38", "S44", "S45", "S02", "S03", "S04"), registry_required=True),
         "ResumeSession": OwnerSpec("ExecutionService", Boundary.T7, ("S51", "S01", "S38", "S44", "S45", "S02", "S03", "S04"), registry_required=True),
@@ -191,49 +184,71 @@ class EventWrite:
     outbox_id: UUID
 
 
-class StatementResult:
-    """Buffered result which cannot expose the underlying connection or cursor."""
-
-    __slots__ = ("__rows",)
-
-    def __init__(self, rows: Sequence[tuple[Any, ...]]):
-        self.__rows = tuple(rows)
-
-    def fetchone(self) -> tuple[Any, ...] | None:
-        return self.__rows[0] if self.__rows else None
-
-    def fetchall(self) -> list[tuple[Any, ...]]:
-        return list(self.__rows)
-
-
 class RestrictedSqlSession:
-    """Capability-scoped SQL without cursor/connection or coordination-lock escape."""
+    """Structured DML without arbitrary SQL, cursor, connection, or lock escape."""
 
-    __slots__ = ("__allowed_tables", "__cursor")
+    __slots__ = ("__allowed_logical_ids", "__cursor")
 
     def __init__(self, cursor: Cursor[Any], allowed_logical_ids: Sequence[str]):
         self.__cursor = cursor
-        self.__allowed_tables = frozenset(
-            _LOGICAL_TABLES[logical_id]
-            for logical_id in allowed_logical_ids
-            if logical_id in _LOGICAL_TABLES
-        )
+        self.__allowed_logical_ids = frozenset(allowed_logical_ids)
 
-    def execute(
-        self, statement: str, parameters: Sequence[Any] | None = None
-    ) -> StatementResult:
-        normalized = statement.strip()
-        if ";" in normalized.rstrip(";") or _LOCK_SQL.search(normalized):
-            raise StatementRejected("callback SQL cannot control transactions or locks")
-        referenced = {name.lower() for name in _QUALIFIED_TABLE.findall(normalized)}
-        if not referenced or not referenced.issubset(self.__allowed_tables):
+    def _table(self, logical_id: str) -> str:
+        if logical_id not in self.__allowed_logical_ids or logical_id not in _LOGICAL_TABLES:
             raise StatementRejected(
-                f"callback SQL tables {sorted(referenced)} exceed capability "
-                f"{sorted(self.__allowed_tables)}"
+                f"logical table {logical_id} exceeds capability "
+                f"{sorted(self.__allowed_logical_ids)}"
             )
-        self.__cursor.execute(statement, parameters)
-        rows = self.__cursor.fetchall() if self.__cursor.description is not None else []
-        return StatementResult(rows)
+        return _LOGICAL_TABLES[logical_id]
+
+    @staticmethod
+    def _items(values: Mapping[str, Any], label: str) -> tuple[tuple[str, Any], ...]:
+        if not values:
+            raise ValueError(f"{label} cannot be empty")
+        items = tuple(sorted(values.items()))
+        if any(not name or not name.replace("_", "").isalnum() for name, _ in items):
+            raise ValueError(f"{label} contains an invalid column")
+        return items
+
+    def insert(self, logical_id: str, values: Mapping[str, Any]) -> int:
+        table = self._table(logical_id)
+        items = self._items(values, "insert values")
+        statement = sql.SQL("INSERT INTO {}.{} ({}) VALUES ({})").format(
+            sql.Identifier("kineticloop"),
+            sql.Identifier(table),
+            sql.SQL(",").join(sql.Identifier(name) for name, _ in items),
+            sql.SQL(",").join(sql.Placeholder() for _ in items),
+        )
+        self.__cursor.execute(statement, tuple(value for _, value in items))
+        return self.__cursor.rowcount
+
+    def update(
+        self,
+        logical_id: str,
+        values: Mapping[str, Any],
+        where: Mapping[str, Any],
+    ) -> int:
+        table = self._table(logical_id)
+        assignments = self._items(values, "update values")
+        predicates = self._items(where, "update predicates")
+        statement = sql.SQL("UPDATE {}.{} SET {} WHERE {}").format(
+            sql.Identifier("kineticloop"),
+            sql.Identifier(table),
+            sql.SQL(",").join(
+                sql.SQL("{}={}").format(sql.Identifier(name), sql.Placeholder())
+                for name, _ in assignments
+            ),
+            sql.SQL(" AND ").join(
+                sql.SQL("{}={}").format(sql.Identifier(name), sql.Placeholder())
+                for name, _ in predicates
+            ),
+        )
+        self.__cursor.execute(
+            statement,
+            tuple(value for _, value in assignments)
+            + tuple(value for _, value in predicates),
+        )
+        return self.__cursor.rowcount
 
     def relation_locks(self) -> frozenset[str]:
         self.__cursor.execute(
@@ -279,8 +294,8 @@ class RepositoryTransaction:
 
         return tuple(self._trace)
 
-    def _advance(self, stage: LockStage) -> None:
-        if stage < self._last_stage:
+    def _advance(self, stage: LockStage, *, allow_equal: bool = False) -> None:
+        if stage < self._last_stage or (stage == self._last_stage and not allow_equal):
             raise LockOrderViolation(
                 f"{stage.name} cannot follow {LockStage(self._last_stage).name}"
             )
@@ -406,7 +421,7 @@ class RepositoryTransaction:
 
     def lock_remaining(self, table: str, object_ids: Sequence[UUID]) -> None:
         self._require_subject()
-        self._advance(LockStage.AGGREGATE)
+        self._advance(LockStage.AGGREGATE, allow_equal=True)
         allowed = {
             "factset_revisions",
             "manifest_builds",
@@ -421,7 +436,7 @@ class RepositoryTransaction:
             "planning_attempts": 30,
             "validation_results": 40,
         }[table]
-        if rank < self._last_aggregate_rank:
+        if rank <= self._last_aggregate_rank:
             raise LockOrderViolation("remaining aggregate table order is not stable")
         self._last_aggregate_rank = rank
         self._lock_ids(table, object_ids)
@@ -489,30 +504,53 @@ class RepositoryTransaction:
         if self.__cursor.fetchone() is None:
             raise FenceLost("stale owner/fence cannot commit")
 
-    def permit_dispatch(self, reservation_id: UUID, *, permit_key: str, fence: int) -> DispatchPermit:
+    def permit_dispatch(
+        self,
+        reservation_id: UUID,
+        *,
+        permit_key: str,
+        request_hash: str,
+        receipt_id: UUID,
+        event: EventWrite,
+        fence: int,
+    ) -> DispatchPermit:
         self._require_subject()
         if self._last_stage < LockStage.RESERVATION:
             raise GuardRequired("reservation must be locked before dispatch transition")
-        self.__cursor.execute(
-            "SELECT status, dispatch_fence, typed_payload FROM kineticloop.call_reservations "
-            "WHERE subject_id=%s AND id=%s FOR UPDATE",
-            (self.subject_id, reservation_id),
+
+        def transition(session: RestrictedSqlSession) -> Mapping[str, Any]:
+            self.__cursor.execute(
+                "SELECT status, dispatch_fence, typed_payload "
+                "FROM kineticloop.call_reservations "
+                "WHERE subject_id=%s AND id=%s",
+                (self.subject_id, reservation_id),
+            )
+            row = self.__cursor.fetchone()
+            if row is None or int(row[1] or 0) != fence:
+                raise DispatchNotPermitted("reservation or fence mismatch")
+            if row[0] != "RESERVED":
+                raise DispatchNotPermitted("only RESERVED may become DISPATCH_INTENT")
+            payload = dict(row[2] or {})
+            payload["permit_key"] = permit_key
+            if session.update(
+                "S31",
+                {"status": "DISPATCH_INTENT", "typed_payload": Jsonb(payload)},
+                {"subject_id": self.subject_id, "id": reservation_id},
+            ) != 1:
+                raise DispatchNotPermitted("reservation transition was not durable")
+            return {"reservation_id": str(reservation_id), "permit_key": permit_key}
+
+        outcome, replayed = self.idempotent_outcome(
+            receipt_id=receipt_id,
+            actor_scope="subject",
+            client_key=permit_key,
+            request_hash=request_hash,
+            mutation=transition,
+            event=event,
         )
-        row = self.__cursor.fetchone()
-        if row is None or int(row[1] or 0) != fence:
-            raise DispatchNotPermitted("reservation or fence mismatch")
-        payload = dict(row[2] or {})
-        if row[0] == "DISPATCH_INTENT" and payload.get("permit_key") == permit_key:
-            return DispatchPermit(reservation_id, sendable=False, replayed=True)
-        if row[0] != "RESERVED":
-            raise DispatchNotPermitted("only RESERVED may become DISPATCH_INTENT")
-        payload["permit_key"] = permit_key
-        self.__cursor.execute(
-            "UPDATE kineticloop.call_reservations SET status='DISPATCH_INTENT', "
-            "typed_payload=%s WHERE subject_id=%s AND id=%s",
-            (Jsonb(payload), self.subject_id, reservation_id),
-        )
-        return DispatchPermit(reservation_id, sendable=True, replayed=False)
+        if outcome.get("reservation_id") != str(reservation_id):
+            raise DispatchNotPermitted("durable permit outcome is inconsistent")
+        return DispatchPermit(reservation_id, sendable=not replayed, replayed=replayed)
 
     def idempotent_outcome(
         self,
@@ -610,6 +648,7 @@ def execute_preparation(
 
 def execute_factset_build(
     connection: Connection[Any],
+    command_kind: str,
     subject_id: UUID,
     build_id: UUID,
     operation: Callable[[RestrictedSqlSession], _T],
@@ -618,6 +657,9 @@ def execute_factset_build(
 
     if connection.info.transaction_status is not TransactionStatus.IDLE:
         raise TransactionStateError("factset build requires an idle connection")
+    specification = TRANSACTION_OWNER_MATRIX.get(command_kind)
+    if specification is None or specification.boundary is not Boundary.BUILD:
+        raise GuardRequired("command is not a factset-build owner")
     with connection.transaction():
         cursor = connection.cursor()
         cursor.execute(
@@ -627,7 +669,9 @@ def execute_factset_build(
         )
         if cursor.fetchone() is None:
             raise GuardRequired("factset build does not exist")
-        return operation(RestrictedSqlSession(cursor, ("S15", "S16")))
+        return operation(
+            RestrictedSqlSession(cursor, specification.mutation_surfaces)
+        )
 
 
 def claim_outbox(
