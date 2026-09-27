@@ -73,7 +73,7 @@ def context(*, endpoint: str = "https://api.hevyapp.com/v1") -> Any:
         config,
         MappingSecretSource({"HEVY_API_KEY": SECRET}),
     )
-    return create_provider_context(binding(), config, secrets)
+    return create_provider_context(binding(), config, secrets, server_now=lambda: NOW)
 
 
 def observation(*, payload: Any = None) -> RawProviderObservation:
@@ -101,7 +101,7 @@ def observation(*, payload: Any = None) -> RawProviderObservation:
 
 
 def envelope() -> EvidenceEnvelope:
-    return build_evidence_envelope(context(), observation(), server_now=lambda: NOW)
+    return build_evidence_envelope(context(), observation())
 
 
 def test_provider_and_stream_ids_are_canonical() -> None:
@@ -241,11 +241,11 @@ def test_server_assigns_known_at() -> None:
         RawProviderObservation.model_validate(
             observation().model_dump(mode="python") | {"known_at": "1999-01-01T00:00:00.000000Z"}
         )
-    built = build_evidence_envelope(context(), observation(), server_now=lambda: NOW)
+    built = build_evidence_envelope(context(), observation())
     assert built.known_at == NOW
     assert built.observed_at == OBSERVED
     adapter_forged = built.model_copy(update={"known_at": "1999-01-01T00:00:00.000000Z"})
-    received = validate_adapter_output(context(), (adapter_forged,), server_now=lambda: NOW)
+    received = validate_adapter_output(context(), (adapter_forged,))
     assert received[0].known_at == NOW
     assert "1999-01-01" not in received[0].to_canonical_json()
 
@@ -254,9 +254,7 @@ def test_provider_has_no_fact_or_command_authority() -> None:
     built = envelope()
     assert built.command_authority == "NONE"
     provider_context = context()
-    assert validate_adapter_output(
-        provider_context, (built,), server_now=lambda: NOW
-    ) == (built,)
+    assert validate_adapter_output(provider_context, (built,)) == (built,)
     for forged in (
         {"canonical_fact": True},
         {"command_kind": "AdvanceProgression"},
@@ -264,7 +262,7 @@ def test_provider_has_no_fact_or_command_authority() -> None:
         {"authorization": "AUTHORIZED"},
     ):
         with pytest.raises(ProviderContractError, match="ADAPTER_OUTPUT_NOT_EVIDENCE"):
-            validate_adapter_output(provider_context, (forged,), server_now=lambda: NOW)
+            validate_adapter_output(provider_context, (forged,))
     with pytest.raises(ValidationError):
         EvidenceEnvelope.model_validate(
             built.model_dump(mode="python") | {"command_authority": "PROVIDER"}
@@ -280,14 +278,12 @@ def test_provider_has_no_fact_or_command_authority() -> None:
         ),
     ):
         with pytest.raises(ProviderContractError):
-            validate_adapter_output(
-                provider_context, (forged_envelope,), server_now=lambda: NOW
-            )
+            validate_adapter_output(provider_context, (forged_envelope,))
 
     forged_extra = built.model_copy()
     forged_extra.__dict__["canonical_fact"] = {"sets": 3}
     with pytest.raises(ProviderContractError, match="INVALID_EVIDENCE_ENVELOPE"):
-        validate_adapter_output(provider_context, (forged_extra,), server_now=lambda: NOW)
+        validate_adapter_output(provider_context, (forged_extra,))
 
     forged_lineage = built.model_copy(
         update={
@@ -297,7 +293,7 @@ def test_provider_has_no_fact_or_command_authority() -> None:
         }
     )
     with pytest.raises(ProviderContractError, match="INVALID_EVIDENCE_ENVELOPE"):
-        validate_adapter_output(provider_context, (forged_lineage,), server_now=lambda: NOW)
+        validate_adapter_output(provider_context, (forged_lineage,))
 
     forged_authority = built.model_copy(update={"command_authority": "PROVIDER"})
     with pytest.raises(ProviderContractError, match="INVALID_EVIDENCE_ENVELOPE"):
@@ -330,7 +326,7 @@ def test_provider_credentials_do_not_cross_evidence_or_diagnostic_boundary(
         {"url": f"https://synthetic:{SECRET}@provider.invalid/workout"},
     ):
         with pytest.raises(ProviderContractError) as captured:
-            build_evidence_envelope(context(), observation(payload=payload), server_now=lambda: NOW)
+            build_evidence_envelope(context(), observation(payload=payload))
         assert SECRET not in str(captured.value)
         assert encoded not in str(captured.value)
 
@@ -460,13 +456,11 @@ observation = RawProviderObservation(
         upstream_object_ids=("synthetic-workout-1",), forwarded=False,
     ), content_schema_version="hevy-workout-v1",
 )
-context = create_provider_context(binding, config, secrets)
-first = build_evidence_envelope(
-    context, observation, server_now=lambda: "2026-09-26T12:30:00.000000Z"
+context = create_provider_context(
+    binding, config, secrets, server_now=lambda: "2026-09-26T12:30:00.000000Z"
 )
-second = build_evidence_envelope(
-    context, observation, server_now=lambda: "2026-09-26T12:30:00.000000Z"
-)
+first = build_evidence_envelope(context, observation)
+second = build_evidence_envelope(context, observation)
 assert first.to_canonical_json() == second.to_canonical_json()
 print("HERMETIC_PROVIDER_PASS")
 """.strip(),

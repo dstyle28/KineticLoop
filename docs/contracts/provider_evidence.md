@@ -84,7 +84,7 @@ The runtime `validate_adapter_output` boundary reserializes and strictly revalid
 each returned model, rejects unvalidated Pydantic construction or mutation, rechecks
 the trusted subject/source binding and lineage root, rescans every serialized field
 with the context's credential guard, and replaces any adapter-supplied `known_at`
-with the trusted server clock at that receive boundary.
+with the server clock sealed into that trusted context at the receive boundary.
 `ProviderBatch`, `BackfillResult`, and `ReconciliationResult` are also strict,
 immutable contracts. Implementations receive their explicit execution context from
 the caller; network clients and credential stores are outside this module and must

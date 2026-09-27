@@ -500,14 +500,12 @@ def _revalidate_evidence_envelope(value: object) -> EvidenceEnvelope:
 def validate_adapter_output(
     context: ProviderExecutionContext,
     value: object,
-    *,
-    server_now: Callable[[], datetime | str],
 ) -> tuple[EvidenceEnvelope, ...]:
     """Revalidate and bind adapter output, then assign trusted receive time."""
 
     if type(value) is not tuple:
         raise ProviderContractError("ADAPTER_OUTPUT_NOT_EVIDENCE")
-    known_at = _trusted_server_time(server_now, provider_id=str(context.binding.provider_id))
+    known_at = context.trusted_known_at()
     validated: list[EvidenceEnvelope] = []
     for item in cast(tuple[object, ...], value):
         envelope = _revalidate_evidence_envelope(item)
@@ -644,7 +642,13 @@ class CredentialGuard:
 class ProviderExecutionContext:
     """Explicit provider context; no ambient environment or network lookup occurs."""
 
-    __slots__ = ("__binding", "__credential_guard", "__public_config", "__redactor")
+    __slots__ = (
+        "__binding",
+        "__credential_guard",
+        "__public_config",
+        "__redactor",
+        "__server_now",
+    )
 
     def __init__(
         self,
@@ -653,11 +657,13 @@ class ProviderExecutionContext:
         public_config: PublicProviderConfig,
         credential_guard: CredentialGuard,
         redactor: Redactor,
+        server_now: Callable[[], datetime | str],
     ) -> None:
         self.__binding = binding
         self.__public_config = public_config
         self.__credential_guard = credential_guard
         self.__redactor = redactor
+        self.__server_now = server_now
 
     def __init_subclass__(cls, **kwargs: object) -> None:
         del cls, kwargs
@@ -684,6 +690,13 @@ class ProviderExecutionContext:
     def safe_diagnostic(self, value: object) -> object:
         return self.__redactor.redact(value)
 
+    def trusted_known_at(self) -> str:
+        """Read the server-owned clock sealed into this trusted context."""
+
+        return _trusted_server_time(
+            self.__server_now, provider_id=str(self.__binding.provider_id)
+        )
+
     def __reduce__(self) -> str | tuple[Any, ...]:
         raise TypeError("ProviderExecutionContext cannot be serialized")
 
@@ -699,11 +712,14 @@ def create_provider_context(
     binding: TrustedProviderBinding,
     public_config: PublicProviderConfig,
     secrets: ProviderSecrets,
+    *,
+    server_now: Callable[[], datetime | str],
 ) -> ProviderExecutionContext:
     """Build an explicit credential-safe context without reading ambient state."""
 
     provider_id = str(binding.provider_id)
     guard = CredentialGuard.from_provider_secrets(secrets)
+    guard.reject_credentials(binding.model_dump(mode="json"))
     if public_config.provider_id != provider_id or secrets.provider_id != provider_id:
         raise ProviderContractError("PROVIDER_IDENTITY_MISMATCH", provider_id=provider_id)
     guard.reject_credentials(
@@ -713,6 +729,9 @@ def create_provider_context(
         },
         provider_id=provider_id,
     )
+    guard.reject_credentials(
+        list(public_config.required_secret_names), provider_id=provider_id
+    )
     return ProviderExecutionContext(
         binding=binding,
         public_config=public_config,
@@ -720,6 +739,7 @@ def create_provider_context(
         redactor=Redactor(
             secrets=tuple(secrets.secret(name) for name in secrets.names)
         ),
+        server_now=server_now,
     )
 
 
@@ -831,8 +851,6 @@ def validate_provider_source_status(
 def build_evidence_envelope(
     context: ProviderExecutionContext,
     observation: RawProviderObservation,
-    *,
-    server_now: Callable[[], datetime | str],
 ) -> EvidenceEnvelope:
     """Attach the trusted binding and server time to provider-owned observation data."""
 
@@ -842,7 +860,7 @@ def build_evidence_envelope(
     context.credential_guard.reject_credentials(
         observation.model_dump(mode="python"), provider_id=provider_id
     )
-    known_at = _trusted_server_time(server_now, provider_id=provider_id)
+    known_at = context.trusted_known_at()
     payload_hash = canonical_sha256(observation.payload) if observation.payload is not None else None
     envelope = EvidenceEnvelope(
         schema_version="kineticloop-evidence-envelope-v1",
