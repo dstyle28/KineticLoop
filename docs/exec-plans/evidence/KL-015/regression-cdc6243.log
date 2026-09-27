@@ -1,0 +1,20 @@
+tested_commit=cdc6243de229ab55a66b8c01c7aa7b9abba4ead2
+isolated_postgresql_namespace=kl_3ab0_f5f2ea859c7e
+
+uv run kl lint
+PASS: All checks passed!
+
+uv run kl typecheck
+PASS: Success: no issues found in 85 source files
+
+uv run pytest -q tests/unit
+PASS: 186 passed in 17.16s
+
+uv run pytest -q tests/db
+PASS: 214 passed in 101.10s
+
+uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py
+PASS: 51 passed in 4.36s
+
+uv run kl check-harness
+PASS: HARNESS_CHECK_PASS tasks=69 active=67
