@@ -1,0 +1,60 @@
+change_identity: harness-governance-v0.1/HG-023
+display_change_id: HG-023
+base_commit: 7623c20bb267a39b8d02c29845b4ee054714d2b1
+tested_commit: 32455ed6b3bf2e19dfd5a40bdf603ae3a262f430
+change_status: BLOCKED
+summary: >-
+  Prepared formal M2 closure validation and the ten missing M2 integration
+  records, but did not emit a PASS milestone closure because a fresh full
+  regression found ten time-decayed KL-015 transaction-test failures.
+packets_refined: []
+files_changed:
+  - CURRENT_DOCUMENT_INDEX.json
+  - HARNESS_DOCUMENT_MANIFEST.json
+  - MILESTONE_CLOSURE.schema.json
+  - docs/exec-plans/evidence/HG-023/checks-32455ed.log
+  - docs/exec-plans/evidence/HG-023/full-regression-32455ed.log
+  - docs/exec-plans/governance/HG-023.yaml
+  - docs/exec-plans/integrations/KL-010.json
+  - docs/exec-plans/integrations/KL-011.json
+  - docs/exec-plans/integrations/KL-012.json
+  - docs/exec-plans/integrations/KL-014.json
+  - docs/exec-plans/integrations/KL-015.json
+  - docs/exec-plans/integrations/KL-016.json
+  - docs/exec-plans/integrations/KL-017.json
+  - docs/exec-plans/integrations/KL-018.json
+  - docs/exec-plans/integrations/KL-055.json
+  - docs/exec-plans/integrations/KL-072.json
+  - tests/harness/test_validator.py
+  - tools/harness/validate_harness.py
+checks_run:
+  - check_id: integration_records_semantically_valid
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-023/checks-32455ed.log
+  - check_id: validator_suite_passes
+    command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness/test_validator.py -p no:cacheprovider
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-023/checks-32455ed.log
+  - check_id: exact_harness_validation_passes
+    command: UV_CACHE_DIR=/private/tmp/hg023-uv PYTHONPATH="$PWD/src" /private/tmp/kl001-bootstrap/bin/uv run kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-023/checks-32455ed.log
+  - check_id: frozen_state_unchanged
+    command: Verify Frozen Protocol, Frozen DB, and FROZEN_BASELINE.json are unchanged from the protected base.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-023/checks-32455ed.log
+  - check_id: product_requirement_pass_not_claimed
+    command: Verify no product requirement PASS or milestone PASS is inferred from task PASS.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-023/checks-32455ed.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+  - >-
+    M2 remains open. The fresh suite fails because KL-015 database tests use a
+    fixed 2026-09-26 clock basis that has expired relative to PostgreSQL
+    clock_timestamp() on 2026-09-27.
+  - >-
+    No M2.json PASS closure, independent governance review, PR, or merge was
+    produced because the mandatory regression evidence is not PASS.

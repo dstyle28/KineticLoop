@@ -1,0 +1,24 @@
+HG-023 governance checks
+tested_commit: 32455ed6b3bf2e19dfd5a40bdf603ae3a262f430
+
+PASS integration_records_semantically_valid
+command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/kl check-harness
+oracle: HARNESS_CHECK_PASS tasks=69 active=67 after adding the ten missing M2 integration records.
+
+PASS validator_suite_passes
+command: PYTHONPATH="$PWD/src" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness/test_validator.py -p no:cacheprovider
+oracle: 112 passed in 183.02s.
+
+PASS exact_harness_validation_passes
+command: UV_CACHE_DIR=/private/tmp/hg023-uv PYTHONPATH="$PWD/src" /private/tmp/kl001-bootstrap/bin/uv run kl check-harness
+oracle: HARNESS_CHECK_PASS tasks=69 active=67.
+
+PASS frozen_state_unchanged
+oracle: 05_KineticLoop_Protocol_v1.2_FROZEN.md, 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md, and FROZEN_BASELINE.json are unchanged from 7623c20bb267a39b8d02c29845b4ee054714d2b1.
+
+PASS product_requirement_pass_not_claimed
+oracle: No product requirement PASS is inferred from any task result or integration record; no milestone PASS record was emitted.
+
+FAIL m2_regression_suite_passes
+evidence: docs/exec-plans/evidence/HG-023/full-regression-32455ed.log
+oracle: 527 passed, 10 failed; the M2 closure gate remains unsatisfied.
