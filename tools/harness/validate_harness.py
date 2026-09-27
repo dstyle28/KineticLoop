@@ -1460,6 +1460,8 @@ def m2_milestone_closure_errors(
     }
     for exit_id, task_checks in M2_EXIT_TASK_CHECKS.items():
         expected_evidence = set()
+        if exit_id == 'migration_dependency_graph_documented':
+            expected_evidence.add(('docs/contracts/physical_schema_topology.md', evaluated))
         try:
             for task_id, check_ids in task_checks.items():
                 record = load_artifact_at_revision(
