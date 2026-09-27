@@ -1,0 +1,32 @@
+HG-023 M2 closure verification
+tested_commit: 32455ed4e1af93475e5598d254f95ada1a80cec0
+record_type: manually transcribed execution summary, not a raw stdout capture
+command: UV_CACHE_DIR=/private/tmp/hg023-uv PYTHONPATH="$PWD/src" /private/tmp/kl001-bootstrap/bin/uv run pytest -q -p no:cacheprovider
+result: FAIL
+summary: 527 passed, 10 failed in 314.03s
+
+Failed tests:
+- tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected[quota-subject]
+- tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected[intent-quota]
+- tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected[reservation-intent]
+- tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected[daily-reservation]
+- tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected[execution-daily]
+- tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected[receipt-execution]
+- tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected[aggregate-receipt]
+- tests/db/test_transaction_interfaces.py::test_event_outbox_atomicity_enforced[AcquireLease-86608]
+- tests/db/test_transaction_interfaces.py::test_stale_fence_commit_is_rejected
+- tests/db/test_transaction_interfaces.py::test_ack_loss_replay_preserves_natural_uniqueness
+
+Shared failure cause:
+- tests/db/test_transaction_interfaces.py fixes NOW at 2026-09-26 12:00 UTC.
+- The suite ran on 2026-09-27 against PostgreSQL clock_timestamp().
+- Lease acquisition supplies NOW + one day while the seeded intent deadline and
+  runtime predicates are evaluated against the later database clock.
+- require_lease_acquisition_basis therefore raises FenceLost("lease acquisition
+  compare-and-swap basis was lost") before the intended assertions.
+
+Closure consequence:
+- m2_regression_suite_passes is not PASS.
+- M2 closure cannot be emitted without weakening the gate or fabricating evidence.
+- Remediation belongs to the completed KL-015 implementation/test surface and is
+  outside this governance-only change.

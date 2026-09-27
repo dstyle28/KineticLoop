@@ -12,6 +12,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any
 from unittest import mock
 
 import yaml
@@ -53,7 +54,7 @@ class ValidatorTests(unittest.TestCase):
             + [entry['path'] for entry in index['documents'] + index['machine_readable']]
         )
         for name in dict.fromkeys(names):
-            if name == 'docs/exec-plans/milestones/M1.json':
+            if name.startswith('docs/exec-plans/milestones/'):
                 # Generic fixtures deliberately have no closure; READY-specific
                 # tests exercise the fail-closed admission rule.
                 continue
@@ -64,7 +65,7 @@ class ValidatorTests(unittest.TestCase):
         fixture_manifest = json.loads(fixture_manifest_path.read_text())
         fixture_manifest['files'] = [
             entry for entry in fixture_manifest['files']
-            if entry['path'] != 'docs/exec-plans/milestones/M1.json'
+            if not entry['path'].startswith('docs/exec-plans/milestones/')
         ]
         dump(fixture_manifest_path, fixture_manifest)
         # Governance scenarios need a pending refinement regardless of the live
@@ -416,6 +417,150 @@ class ValidatorTests(unittest.TestCase):
         dump(self.root / 'docs/exec-plans/milestones/M1.json', fixture)
         dump(self.root / 'docs/exec-plans/milestones/M1-copy.json', fixture)
         self.check(1, 'milestone-closure-count:M1:2')
+
+    def test_duplicate_m2_closure_rejected(self):
+        fixture = {'display_milestone_id': 'M2'}
+        dump(self.root / 'docs/exec-plans/milestones/M2.json', fixture)
+        dump(self.root / 'docs/exec-plans/milestones/M2-copy.json', fixture)
+        self.check(1, 'milestone-closure-count:M2:2')
+
+    def test_malformed_m2_closure_discovery_rejected(self):
+        dump(self.root / 'docs/exec-plans/milestones/M2.json', {
+            'display_milestone_id': 'M2',
+        })
+        self.check(1, 'milestone-schema:M2.json:')
+
+    def test_m2_closure_cannot_hide_by_omitting_or_changing_identity(self):
+        records: tuple[object, ...] = ({}, {'display_milestone_id': 'UNKNOWN'}, [])
+        for record in records:
+            dump(self.root / 'docs/exec-plans/milestones/M2.json', record)
+            self.check(1, 'milestone-schema:M2.json:')
+
+    def test_unknown_milestone_file_rejected(self):
+        dump(self.root / 'docs/exec-plans/milestones/unknown.json', {})
+        self.check(1, 'milestone-unsupported-record:unknown.json')
+
+    def test_m2_regression_requires_real_outputs_and_unskipped_db_cases(self):
+        paths = {
+            'pytest': 'docs/exec-plans/evidence/HG-023/pytest.log',
+            'harness': 'docs/exec-plans/evidence/HG-023/harness.log',
+            'junit': 'docs/exec-plans/evidence/HG-023/junit.xml',
+            'collection': 'docs/exec-plans/evidence/HG-023/collection.json',
+            'collection_stdout': 'docs/exec-plans/evidence/HG-023/collection.log',
+        }
+        self.put(paths['pytest'], '6 passed in 1.0s\n')
+        self.put(paths['harness'], 'HARNESS_CHECK_PASS tasks=69 active=67\n')
+        cases = [
+            ('tests.db.test_migrations', 'test_empty_db_upgrade_head'),
+            *[('tests.db.test_transaction_interfaces', name) for name in (
+                'test_reverse_lock_order_is_rejected', 'test_event_outbox_atomicity_enforced',
+                'test_stale_fence_commit_is_rejected',
+                'test_ack_loss_replay_preserves_natural_uniqueness',
+            )],
+            ('tests.unit.test_example', 'test_additional_case'),
+        ]
+        junit = '<testsuites><testsuite>' + ''.join(
+            f'<testcase classname="{cls}" name="{name}"/>' for cls, name in cases
+        ) + '</testsuite></testsuites>'
+        self.put(paths['junit'], junit)
+        nodeids = [cls.replace('.', '/') + '.py::' + name for cls, name in cases]
+        self.put(paths['collection_stdout'], '\n'.join(nodeids) + '\n\n6 tests collected in 0.1s\n')
+        dump(self.root / paths['collection'], {
+            'command': 'uv run pytest --collect-only -q', 'exit_code': 0,
+            'tested_commit': self.base,
+            'nodeids': nodeids,
+            'stdout': {'path': paths['collection_stdout'],
+                       'sha256': v.sha(self.root / paths['collection_stdout'])},
+        })
+        revision = self.commit('fixture execution evidence')
+
+        def ref(name):
+            return {'path': paths[name], 'sha256': v.sha(self.root / paths[name])}
+
+        payload = {'tested_commit': self.base, 'executions': [
+            {'command': v.M2_REGRESSION_COMMANDS[0], 'exit_code': 0,
+             'tested_commit': self.base, 'stdout': ref('pytest'), 'junit': ref('junit')},
+            {'command': v.M2_REGRESSION_COMMANDS[1], 'exit_code': 0,
+             'tested_commit': self.base, 'stdout': ref('harness')},
+        ]}
+        payload['executions'][0]['collection'] = ref('collection')
+        self.assertEqual(v.m2_execution_evidence_errors(self.root, payload, revision), [])
+        for variant in ('exit', 'missing-output', 'unbound', 'no-executions'):
+            mutated = copy.deepcopy(payload)
+            if variant == 'exit':
+                mutated['executions'][0]['exit_code'] = 1
+            elif variant == 'missing-output':
+                mutated['executions'][0].pop('stdout')
+            elif variant == 'unbound':
+                mutated['executions'][0]['tested_commit'] = 'a' * 40
+            else:
+                mutated.pop('executions')
+            self.assertTrue(v.m2_execution_evidence_errors(self.root, mutated, revision))
+        for report in (
+                junit.replace('/>', '><skipped/></testcase>', 1),
+                junit.replace('/>', '><failure/></testcase>', 1),
+                '<testsuites><testsuite/></testsuites>',
+                '<testsuites><testcase classname="tests.unit" name="only_unit"/></testsuites>'):
+            self.put(paths['junit'], report)
+            revision = self.commit('fixture invalid report')
+            mutated = copy.deepcopy(payload)
+            mutated['executions'][0]['junit'] = ref('junit')
+            self.assertTrue(v.m2_execution_evidence_errors(self.root, mutated, revision))
+
+        # Cutting both derived reports must not hide a collected test.
+        collection = v.load_artifact(self.root / paths['collection'])
+        collection['nodeids'].pop()
+        dump(self.root / paths['collection'], collection)
+        self.put(paths['junit'], junit.replace(
+            '<testcase classname="tests.unit.test_example" name="test_additional_case"/>', ''))
+        self.put(paths['pytest'], '5 passed in 1.0s\n')
+        revision = self.commit('crop collection and junit together')
+        mutated = copy.deepcopy(payload)
+        mutated['executions'][0].update({
+            'collection': ref('collection'), 'junit': ref('junit'), 'stdout': ref('pytest'),
+        })
+        self.assertIn('milestone-regression-execution:collection-stdout-oracle',
+                      v.m2_execution_evidence_errors(self.root, mutated, revision))
+
+    def test_m2_schema_requires_exact_task_count_and_exit_check_vocabulary(self):
+        from jsonschema import Draft202012Validator
+
+        schema = Draft202012Validator(v.load_artifact(ROOT / v.MILESTONE_CLOSURE_SCHEMA))
+        integration = {
+            'task_identity': 'harness-backlog-v0.2/KL-010',
+            'display_task_id': 'KL-010',
+            'integration_record': 'docs/exec-plans/integrations/KL-010.json',
+            'sha256': 'a' * 64,
+        }
+        closure: dict[str, Any] = {
+            'milestone_identity': 'harness-backlog-v0.2/M2',
+            'display_milestone_id': 'M2',
+            'closure_status': 'PASS',
+            'evaluated_commit': 'a' * 40,
+            'integrations': [copy.deepcopy(integration) for _ in range(12)],
+            'exit_checks': [
+                {'check_id': check_id, 'result': 'PASS', 'evidence': [{
+                    'path': 'evidence.json', 'revision': 'a' * 40, 'sha256': 'b' * 64,
+                }]}
+                for check_id in (
+                    'm2_task_integrations_valid',
+                    'm2_regression_suite_passes',
+                    'frozen_authority_and_requirement_claims_preserved',
+                    *v.M2_EXIT_TASK_CHECKS,
+                )
+            ],
+            'historical_model_evidence': {
+                'status': 'UNVERIFIED_HISTORICAL_DECLARATION',
+                'independently_reproducible_protocol_model': False,
+            },
+            'product_requirement_pass_claims': [],
+        }
+        self.assertFalse(list(schema.iter_errors(closure)))
+        closure['integrations'].pop()
+        self.assertTrue(list(schema.iter_errors(closure)))
+        closure['integrations'].append(copy.deepcopy(integration))
+        closure['exit_checks'][0]['check_id'] = 'generic_pass'
+        self.assertTrue(list(schema.iter_errors(closure)))
 
     def test_m2_check_contract_missing_duplicate_and_generic_rejected(self):
         backlog_path = self.root / v.BACKLOG
