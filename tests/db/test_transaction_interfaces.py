@@ -902,12 +902,19 @@ def test_stale_fence_commit_is_rejected(database_urls: dict[str, str]) -> None:
 def test_dispatch_first_winner_and_replay_non_resend(database_urls: dict[str, str]) -> None:
     permit_receipt = UUID("00000000-0000-8000-8000-000000015502")
     permit_event = _event(0x15503)
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute(
+            "UPDATE kineticloop.planning_intents "
+            "SET status='RUNNING',lease_owner='worker-dispatch',fence_token=10,"
+            "lease_expires_at=clock_timestamp()+interval '1 day' WHERE id=%s",
+            (INTENT,),
+        )
 
     def permit(tx: RepositoryTransaction, permit_key: str) -> Any:
         tx.lock_subject()
         tx.lock_intents((INTENT,))
         tx.lock_reservations((RESERVATION,))
-        tx.require_current_fence(INTENT, owner_id="worker-b", fence=8)
+        tx.require_current_fence(INTENT, owner_id="worker-dispatch", fence=10)
         return tx.permit_dispatch(
             RESERVATION,
             permit_key=permit_key,
@@ -971,7 +978,9 @@ def test_dispatch_first_winner_and_replay_non_resend(database_urls: dict[str, st
                 tx.lock_subject()
                 tx.lock_intents((INTENT,))
                 tx.lock_reservations((RESERVATION,))
-                tx.require_current_fence(INTENT, owner_id="worker-b", fence=8)
+                tx.require_current_fence(
+                    INTENT, owner_id="worker-dispatch", fence=10
+                )
                 return tx.permit_dispatch(
                     RESERVATION,
                     permit_key="permit-2",
