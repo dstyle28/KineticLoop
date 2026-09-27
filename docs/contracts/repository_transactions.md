@@ -53,7 +53,9 @@ committed outcome. Current eligibility is a separate decision. A missing success
 receipt and a request-hash conflict remain distinct failures. T1 serializes a missing
 natural receipt key with a transaction advisory lock before admitting evidence. Both
 source-revision and observation-key identities are supported, exactly one is required,
-and the inserted S09 identity must match the advisory-locked source identity.
+and the inserted S09 identity must match the advisory-locked database natural key:
+subject/connection/type/object/revision for a source revision, or
+subject/connection/observation for an observation key.
 Database natural keys remain the last line of defense.
 
 Lease-aware owners prove a command-specific basis for every locked intent:
@@ -62,8 +64,11 @@ commands prove owner/token/status/unexpired lease, and ReapIntent proves the exa
 expired/deadline/current-attempt basis. Acquisition persists RUNNING plus the exact
 new owner, larger token, and future lease expiry bounded by the intent deadline;
 renewal must extend the live lease without crossing that deadline. Reaping atomically
-terminates the exact current S27/S29 chain. PermitDispatch additionally requires the reservation's
-`ref_s27_id` and dispatch fence to match that verified live intent and token.
+terminates every exact current S27/S29 chain named by the command. ReserveCall creates
+an S31 bound to the verified live intent/attempt and a same-command S32 transition.
+PermitDispatch additionally requires the reservation's `ref_s27_id` and dispatch
+fence to match that verified live intent and token, advances its settlement revision,
+and appends the corresponding S32 transition.
 
 `T6CommitCoordinator` is the one repository owner for CommitBundle. It is the atomic
 database boundary jointly required by PrescriptionCommitService and
@@ -71,25 +76,42 @@ AuthorizationService; neither service receives a partial S39/S40/S41 or S42 comm
 interface.
 The T6 commit path binds every inserted reference to one exact verified
 intent/request/attempt/validation chain and to the locked or same-command inserted
-row. It records the locked S38 revision as S39's parent, allowing null only for the
+row. The attempt must be COMMIT_READY and bind the current S24 and current S01 epoch.
+It records the locked S38 revision as S39's parent, allowing null only for the
 first head, inserts S39/S40/S41/S42, materializes the exact verified S49 closure for
 S42, and links supersession through the prior bundle member/prescription/authorization
-chain only when a prior head exists. It
+chain only when a prior head exists. Supersession binds the old and replacement
+authorization scope, current receipt, event kind, and causation key. It
 switches S38 to the exact new bundle revision, records S27's bundle and authorization
 results, marks S29 COMMITTED, points S01's execution basis to the same-transaction S03
 event, and persists S02/S03/S04. S37 must remain PASS, unexpired, and match the locked
 policy, manifest, request, attempt, proposal, resolution, and prior execution basis.
 S42 carries an issuance reason, authorization epoch, method version, registry revision,
 and a deterministic certificate over artifact, manifest, resolution, validation,
-request, policy, and calendar identities. Its server-computed expiry is their bounded
+request, policy, calendar, and manifest-projection identities. Its issuance time,
+method version, and expiry are server-owned; expiry is the dependency bounded
 minimum or a shorter requested end. ACK-loss replay returns those same durable identities without repeating any
 head, terminal, supersession, event, outbox, or closure transition.
 
-T2-IN owners can append S43 invalidation in the same command as their decision and S01
-epoch/frontier change. T7 START and RESUME revalidate and append S45 for the exact
-current prescription/authorization pair; CONTINUE revalidates the pair but cannot
-append S45. Every T7 command advances S01's execution basis with its S03 event, and a
-historical replay is explicitly non-executable.
+T2 input-admission owners must change the S01 input frontier. Control owners must
+append an S17 event and a same-command S18 state row. Actual-execution decisions must
+advance S01's execution basis to their same-transaction S03 event. T2-IN owners can
+append an `EPOCH_INVALIDATED` S43 bound to the current receipt and cause in the same
+command as their decision and S01 epoch/frontier change. Factset sealing binds the
+single READY S15 build to the exact current S01 factset pointer and SEALED state.
+
+T3 publication locks and publishes the single READY S23 build whose captured epoch,
+frontier, policy, program, and factset equal current S01. S24 is the next generation
+and S25 dependencies bind that same-command S24; S01 and S23 must advance to exactly
+those published identities. T4 admits either a new or locked intent and binds S28/S29
+to that exact chain, current epoch, and current manifest.
+
+T7 START requires a READY/PLANNED session with no prior START; RESUME requires PAUSED
+with a prior START; CONTINUE requires IN_PROGRESS with a prior START. START and RESUME
+revalidate and append S45 for the exact current prescription/authorization pair;
+CONTINUE revalidates the pair but cannot append S45. Every command advances the exact
+session to IN_PROGRESS with revision +1 and advances S01's execution basis with its
+same-transaction S03 event. A historical replay is explicitly non-executable.
 
 PermitDispatch locks S01, S27, then S31 and atomically commits its S02 receipt, S03
 event, and S04 outbox row with the state transition. Only the first

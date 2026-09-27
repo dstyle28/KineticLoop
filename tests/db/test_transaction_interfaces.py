@@ -77,6 +77,8 @@ RESOLUTION = UUID("00000000-0000-8000-8000-000000015036")
 VALIDATION = UUID("00000000-0000-8000-8000-000000015037")
 FACTSET = UUID("00000000-0000-8000-8000-000000015015")
 MANIFEST_BUILD = UUID("00000000-0000-8000-8000-000000015023")
+PROJECTION = UUID("00000000-0000-8000-8000-000000015021")
+PROJECTION_BINDING = UUID("00000000-0000-8000-8000-000000015025")
 NOW = datetime(2026, 9, 26, 12, tzinfo=UTC)
 
 
@@ -123,13 +125,13 @@ def _seed_transaction_rows(admin_url: str) -> None:
         connection.execute(
             "INSERT INTO kineticloop.planning_attempts"
             "(id,subject_id,attempt_no,status,captured_epoch,fence_token,ref_s24_id,"
-            "ref_s27_id,ref_s28_id) VALUES (%s,%s,1,'RUNNING',0,7,%s,%s,%s)",
+            "ref_s27_id,ref_s28_id) VALUES (%s,%s,1,'COMMIT_READY',0,7,%s,%s,%s)",
             (ATTEMPT, SUBJECT, MANIFEST, INTENT, REQUEST),
         )
         connection.execute(
             "INSERT INTO kineticloop.planning_attempts"
             "(id,subject_id,attempt_no,status,captured_epoch,fence_token,ref_s24_id,"
-            "ref_s27_id,ref_s28_id) VALUES (%s,%s,1,'RUNNING',0,7,%s,%s,%s)",
+            "ref_s27_id,ref_s28_id) VALUES (%s,%s,1,'COMMIT_READY',0,7,%s,%s,%s)",
             (ATTEMPT_2, SUBJECT, MANIFEST, INTENT_2, REQUEST_2),
         )
         connection.execute(
@@ -219,10 +221,36 @@ def _seed_transaction_rows(admin_url: str) -> None:
             (FACTSET, SUBJECT),
         )
         connection.execute(
+            "INSERT INTO kineticloop.program_versions"
+            "(id,subject_id,program_identity,program_revision) "
+            "VALUES (%s,%s,'program-1',1) ON CONFLICT (id) DO NOTHING",
+            (POLICY, SUBJECT),
+        )
+        connection.execute(
+            "UPDATE kineticloop.user_decision_state SET current_factset_id=%s,"
+            "active_program_id=%s,decision_generation=1,"
+            "input_frontier_hash='frontier-1' WHERE subject_id=%s",
+            (FACTSET, POLICY, SUBJECT),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.projection_versions"
+            "(id,subject_id,projection_kind,input_basis_hash,computed_at,valid_until,revision) "
+            "VALUES (%s,%s,'EXPOSURE','projection-basis',clock_timestamp(),"
+            "clock_timestamp()+interval '18 hours',1)",
+            (PROJECTION, SUBJECT),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.manifest_projection_bindings"
+            "(id,subject_id,projection_role,validated_basis_hash,ref_s21_id,ref_s24_id) "
+            "VALUES (%s,%s,'EXPOSURE','projection-basis',%s,%s)",
+            (PROJECTION_BINDING, SUBJECT, PROJECTION, MANIFEST),
+        )
+        connection.execute(
             "INSERT INTO kineticloop.manifest_builds"
-            "(id,subject_id,build_identity,status,captured_epoch) "
-            "VALUES (%s,%s,'manifest-build','READY',0)",
-            (MANIFEST_BUILD, SUBJECT),
+            "(id,subject_id,build_identity,status,captured_epoch,captured_input_frontier,"
+            "ref_s05_id,ref_s06_id,ref_s15_id) "
+            "VALUES (%s,%s,'manifest-build','READY',0,'frontier-1',%s,%s,%s)",
+            (MANIFEST_BUILD, SUBJECT, POLICY, POLICY, FACTSET),
         )
         connection.execute("SET session_replication_role=origin")
 
@@ -545,22 +573,22 @@ def test_reverse_lock_order_is_rejected(
             tx.lock_remaining("validation_results", (VALIDATION,))
             with pytest.raises(LockOrderViolation):
                 tx.lock_remaining("factset_revisions", (FACTSET,))
-    with psycopg.connect(database_urls["admin"]) as connection:
+        with psycopg.connect(database_urls["admin"]) as connection:
 
-        def missing_intent_lock(tx: RepositoryTransaction) -> None:
-            tx.lock_subject()
-            tx.lock_quota_buckets((("DAILY", NOW, NOW + timedelta(days=1)),))
-            with pytest.raises(GuardRequired, match="applicable S27"):
+            def incomplete_new_root(tx: RepositoryTransaction) -> None:
+                tx.lock_subject()
+                tx.lock_quota_buckets((("DAILY", NOW, NOW + timedelta(days=1)),))
                 tx.idempotent_outcome(
                     receipt_id=UUID("00000000-0000-8000-8000-000000015702"),
                     actor_scope="subject",
-                    client_key="missing-intent-lock",
-                    request_hash="missing-intent-lock",
+                    client_key="incomplete-new-root",
+                    request_hash="incomplete-new-root",
                     mutation=lambda session: {"unexpected": True},
                     event=_event(0x15703),
                 )
 
-        execute_command(connection, "AdmitOrReviseIntent", SUBJECT, missing_intent_lock)
+            with pytest.raises(GuardRequired, match="T4 requires"):
+                execute_command(connection, "AdmitOrReviseIntent", SUBJECT, incomplete_new_root)
     with psycopg.connect(database_urls["admin"]) as connection:
 
         def wrong_identity(tx: RepositoryTransaction) -> None:
@@ -715,7 +743,7 @@ def test_event_outbox_atomicity_enforced(
         elif command == "PublishManifest":
             session.update(
                 "S23",
-                {"captured_epoch": 1},
+                {"status": "PUBLISHED"},
                 {"id": MANIFEST_BUILD, "subject_id": SUBJECT},
             )
         elif command == "AcquireLease":
@@ -745,7 +773,7 @@ def test_event_outbox_atomicity_enforced(
         else:
             session.update(
                 "S44",
-                {"execution_revision": 1},
+                {"lifecycle": "IN_PROGRESS", "execution_revision": 1},
                 {"id": SESSION, "subject_id": SUBJECT},
             )
         return {"command": command}
@@ -1012,7 +1040,7 @@ def test_t1_observation_key_identity_is_supported(database_urls: dict[str, str])
             request_hash="observation-key-hash",
             mutation=mutation,
             event=_event(0x15821),
-            source_identity_key=(f"{SUBJECT}:t1-observation:TEST:observation-object:observed-at-1"),
+            source_identity_key=f"{SUBJECT}:t1-observation:observed-at-1",
         )
 
     with psycopg.connect(database_urls["admin"]) as connection:
@@ -1021,6 +1049,70 @@ def test_t1_observation_key_identity_is_supported(database_urls: dict[str, str])
         )
     assert not observation_replayed
     assert observation_outcome["evidence_id"] == str(observation_evidence)
+
+    barrier = threading.Barrier(2)
+    outcomes: list[Mapping[str, Any]] = []
+    errors: list[BaseException] = []
+
+    def contender(tag: int, object_identity: str) -> None:
+        evidence_id = UUID(f"00000000-0000-8000-8000-{tag:012x}")
+
+        def operation(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
+            def mutation(session: Any) -> Mapping[str, Any]:
+                session.insert(
+                    "S09",
+                    {
+                        "id": evidence_id,
+                        "subject_id": SUBJECT,
+                        "source_connection_identity": "t1-observation-race",
+                        "source_object_type": "TEST",
+                        "source_object_identity": object_identity,
+                        "observation_key": "same-database-observation-key",
+                        "trust_class": "TEST_ONLY",
+                        "source_class": "TEST",
+                        "command_authority": "NONE",
+                    },
+                )
+                return {"evidence_id": str(evidence_id)}
+
+            return tx.idempotent_outcome(
+                receipt_id=UUID(f"00000000-0000-8000-8000-{tag + 10:012x}"),
+                actor_scope="subject",
+                client_key=f"observation-race-{tag}",
+                request_hash=f"observation-race-hash-{tag}",
+                mutation=mutation,
+                event=_event(tag + 20),
+                source_identity_key=(
+                    f"{SUBJECT}:t1-observation-race:same-database-observation-key"
+                ),
+            )
+
+        try:
+            barrier.wait(timeout=5)
+            with psycopg.connect(database_urls["admin"]) as connection:
+                outcome, _ = execute_command(connection, "ReceiveEvidence", SUBJECT, operation)
+                outcomes.append(outcome)
+        except BaseException as error:
+            errors.append(error)
+
+    threads = [
+        threading.Thread(target=contender, args=(0x15830, "object-a")),
+        threading.Thread(target=contender, args=(0x15840, "object-b")),
+    ]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=5)
+    assert all(not thread.is_alive() for thread in threads)
+    assert len(outcomes) == 1
+    assert len(errors) == 1 and isinstance(errors[0], IdempotencyConflict)
+    assert not isinstance(errors[0], psycopg.errors.UniqueViolation)
+    with psycopg.connect(database_urls["admin"]) as connection:
+        assert connection.execute(
+            "SELECT count(*) FROM kineticloop.evidence_revisions "
+            "WHERE source_connection_identity='t1-observation-race' "
+            "AND observation_key='same-database-observation-key'"
+        ).fetchone() == (1,)
 
 
 def test_outbox_dispatcher_does_not_lock_subject_guard(
@@ -1673,7 +1765,7 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
             (INTENT,),
         )
         connection.execute(
-            "UPDATE kineticloop.planning_attempts SET status='RUNNING',fence_token=9,"
+            "UPDATE kineticloop.planning_attempts SET status='COMMIT_READY',fence_token=9,"
             "ref_s24_id=%s,captured_epoch=(SELECT authorization_epoch "
             "FROM kineticloop.user_decision_state WHERE subject_id=%s) WHERE id=%s",
             (MANIFEST, SUBJECT, ATTEMPT),
@@ -1703,6 +1795,7 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
                 nonlocal runs
                 artifact_dependencies = session.authorization_certificate_dependencies()
                 closure_digest = session.authorization_closure_digest()
+                authorization_valid_from = session.authorization_valid_from()
                 closure_valid_until = session.authorization_valid_until()
                 dependency_kinds = {item.get("dependency_kind") for item in artifact_dependencies}
                 assert {
@@ -1712,6 +1805,7 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
                     "REQUEST",
                     "POLICY",
                     "CALENDAR",
+                    "PROJECTION",
                 } <= dependency_kinds
                 session.insert(
                     "S39",
@@ -1761,11 +1855,11 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
                         "id": ISSUANCE,
                         "subject_id": SUBJECT,
                         "bound_content_hash": "content",
-                        "scope": "PRODUCTION",
+                        "scope": "EXECUTION",
                         "issuance_reason": "AI_PLAN",
                         "artifact_dependency_closure_hash": closure_digest,
                         "registry_revision_at_issue": registry_revision,
-                        "valid_from": NOW,
+                        "valid_from": authorization_valid_from,
                         "valid_until": closure_valid_until,
                         "validity_certificate": psycopg.types.json.Jsonb(
                             {
@@ -1793,7 +1887,7 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
                             "id": SUPERSESSION,
                             "subject_id": SUBJECT,
                             "event_kind": "SUPERSEDED",
-                            "scope": "PRODUCTION",
+                            "scope": "EXECUTION",
                             "causation_key": "t6-ack-loss",
                             "ref_s42_id": superseded_authorization,
                             "ref_s02_id": receipt,
@@ -2077,7 +2171,8 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
             (INTENT,),
         )
         connection.execute(
-            "UPDATE kineticloop.planning_attempts SET status='RUNNING',completed_at=NULL WHERE id=%s",
+            "UPDATE kineticloop.planning_attempts SET status='COMMIT_READY',completed_at=NULL "
+            "WHERE id=%s",
             (ATTEMPT,),
         )
         connection.execute("SET session_replication_role=origin")
@@ -2094,3 +2189,187 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
             "SELECT count(*) FROM kineticloop.authorization_events WHERE id=%s",
             (SUPERSESSION,),
         ).fetchone() == (0,)
+
+
+def test_t7_exact_session_and_t3_publication_guards(database_urls: dict[str, str]) -> None:
+    authorization_id = UUID(_SAFETY.AUTHORIZATION_ID)
+    t7_bundle = UUID("00000000-0000-8000-8000-000000015839")
+    t7_member = UUID("00000000-0000-8000-8000-000000015841")
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        authorization = connection.execute(
+            "SELECT ref_s40_id,bound_content_hash FROM kineticloop.authorization_issuances "
+            "WHERE id=%s",
+            (authorization_id,),
+        ).fetchone()
+        assert authorization is not None
+        prescription_id, content_hash = authorization
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "INSERT INTO kineticloop.prescription_revisions"
+            "(id,subject_id,prescription_identity,prescription_kind,prescription_revision,"
+            "content_hash,ref_s34_id,ref_s49_id) "
+            "VALUES (%s,%s,'t7-seed','WORKOUT',1,%s,%s,%s) "
+            "ON CONFLICT (id) DO NOTHING",
+            (prescription_id, SUBJECT, content_hash, PROPOSAL, ARTIFACT),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.daily_bundle_revisions"
+            "(id,subject_id,local_date,revision_no,generation_mode,ref_s02_id,ref_s24_id,"
+            "ref_s27_id,ref_s29_id,ref_s37_id,ref_s38_id) "
+            "VALUES (%s,%s,DATE '2026-09-26',99,'T7_SEED',%s,%s,%s,%s,%s,%s) "
+            "ON CONFLICT (id) DO NOTHING",
+            (
+                t7_bundle,
+                SUBJECT,
+                UUID("00000000-0000-8000-8000-000000015838"),
+                MANIFEST,
+                INTENT,
+                ATTEMPT,
+                VALIDATION,
+                DAILY_HEAD,
+            ),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.bundle_prescription_members"
+            "(id,subject_id,member_kind,session_slot,member_order,ref_s39_id,ref_s40_id) "
+            "VALUES (%s,%s,'PRESCRIPTION','t7',1,%s,%s) ON CONFLICT (id) DO NOTHING",
+            (t7_member, SUBJECT, t7_bundle, prescription_id),
+        )
+        connection.execute(
+            "UPDATE kineticloop.daily_plan_heads SET current_bundle_revision_id=%s WHERE id=%s",
+            (t7_bundle, DAILY_HEAD),
+        )
+        connection.execute("SET session_replication_role=origin")
+    binding = UUID("00000000-0000-8000-8000-000000015845")
+    start_receipt = UUID("00000000-0000-8000-8000-000000015846")
+    start_event = _event(0x15847)
+
+    def start(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
+        _acquire_registry(tx)
+        tx.lock_daily_head(date(2026, 9, 26))
+        tx.lock_execution((SESSION,))
+        tx.require_execution_authorization(
+            prescription_id=prescription_id,
+            authorization_id=authorization_id,
+            execution_scope="EXECUTION",
+        )
+
+        def mutation(session: Any) -> Mapping[str, Any]:
+            session.insert(
+                "S45",
+                {
+                    "id": binding,
+                    "subject_id": SUBJECT,
+                    "binding_kind": "START",
+                    "binding_revision": 1,
+                    "accepted_at": NOW,
+                    "execution_scope": "EXECUTION",
+                    "ref_s02_id": start_receipt,
+                    "ref_s40_id": prescription_id,
+                    "ref_s42_id": authorization_id,
+                    "ref_s44_id": SESSION,
+                },
+            )
+            session.update(
+                "S44",
+                {"lifecycle": "IN_PROGRESS", "execution_revision": 1},
+                {"id": SESSION, "subject_id": SUBJECT},
+            )
+            session.update(
+                "S01",
+                {"execution_basis_event_id": start_event.event_id},
+                {"subject_id": SUBJECT},
+            )
+            return {"binding_id": str(binding)}
+
+        return tx.idempotent_outcome(
+            receipt_id=start_receipt,
+            actor_scope="subject",
+            client_key="exact-t7-start",
+            request_hash="exact-t7-start-hash",
+            mutation=mutation,
+            event=start_event,
+        )
+
+    with psycopg.connect(database_urls["admin"]) as connection:
+        outcome, replayed = execute_command(connection, "StartSession", SUBJECT, start)
+    assert not replayed and outcome["binding_id"] == str(binding)
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(GuardRequired, match="lifecycle or repeated START"):
+            execute_command(
+                connection,
+                "StartSession",
+                SUBJECT,
+                lambda tx: (
+                    _acquire_registry(tx),
+                    tx.lock_daily_head(date(2026, 9, 26)),
+                    tx.lock_execution((SESSION,)),
+                ),
+            )
+
+    manifest = UUID("00000000-0000-8000-8000-000000015824")
+    manifest_binding = UUID("00000000-0000-8000-8000-000000015825")
+    publish_receipt = UUID("00000000-0000-8000-8000-000000015826")
+    publish_event = _event(0x15827)
+
+    def publish(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
+        registry_revision = _acquire_registry(tx)
+
+        def mutation(session: Any) -> Mapping[str, Any]:
+            session.insert(
+                "S24",
+                {
+                    "id": manifest,
+                    "subject_id": SUBJECT,
+                    "generation": 2,
+                    "manifest_hash": "manifest-hash-2",
+                    "input_frontier_hash": "frontier-1",
+                    "captured_epoch": 0,
+                    "dependency_closure_hash": "manifest-closure-2",
+                    "valid_until": NOW + timedelta(days=1),
+                    "registry_revision_at_publish": registry_revision,
+                    "registry_state_id": 1,
+                    "ref_s05_id": POLICY,
+                    "ref_s06_id": POLICY,
+                    "ref_s15_id": FACTSET,
+                    "ref_s23_id": MANIFEST_BUILD,
+                    "ref_s49_id": ARTIFACT,
+                },
+            )
+            session.insert(
+                "S25",
+                {
+                    "id": manifest_binding,
+                    "subject_id": SUBJECT,
+                    "projection_role": "EXPOSURE",
+                    "unavailable_reason": None,
+                    "validated_basis_hash": "projection-basis",
+                    "ref_s21_id": PROJECTION,
+                    "ref_s24_id": manifest,
+                },
+            )
+            session.update(
+                "S01",
+                {"decision_generation": 2, "current_manifest_id": manifest},
+                {"subject_id": SUBJECT},
+            )
+            session.update(
+                "S23",
+                {"status": "PUBLISHED"},
+                {"id": MANIFEST_BUILD, "subject_id": SUBJECT},
+            )
+            return {"manifest_id": str(manifest)}
+
+        return tx.idempotent_outcome(
+            receipt_id=publish_receipt,
+            actor_scope="subject",
+            client_key="exact-t3-publish",
+            request_hash="exact-t3-publish-hash",
+            mutation=mutation,
+            event=publish_event,
+            aggregate_locks={"manifest_builds": (MANIFEST_BUILD,)},
+        )
+
+    with psycopg.connect(database_urls["admin"]) as connection:
+        outcome, replayed = execute_command(connection, "PublishManifest", SUBJECT, publish)
+    assert not replayed and outcome["manifest_id"] == str(manifest)

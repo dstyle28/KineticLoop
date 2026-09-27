@@ -53,6 +53,7 @@ def test_every_public_owner_has_explicit_non_infrastructure_dml_capabilities() -
     }
     assert MUTATION_CAPABILITY_MATRIX["PermitDispatch"][("S31", "update")] == {
         "status",
+        "settlement_revision",
         "typed_payload",
     }
     assert "session_identity" not in MUTATION_CAPABILITY_MATRIX["StartSession"][("S44", "update")]
