@@ -1,0 +1,33 @@
+KL-017 full CI, frozen-authority, and write-scope regressions
+tested_commit: eb617291e58dcaa99b7873096ada0e08dc7f6f26
+
+$ uv run kl lint
+All checks passed!
+
+$ uv run kl typecheck
+Success: no issues found in 79 source files
+
+$ uv run kl test-unit
+172 passed in 20.35s
+
+$ uv run kl test-harness
+134 passed in 172.24s
+
+$ uv run kl check-harness --protected-base a2602123a539787ed2a6bed25b892109474d0395 --task-id KL-017
+HARNESS_CHECK_PASS tasks=69 active=67
+
+$ git diff --exit-code a2602123a539787ed2a6bed25b892109474d0395 -- 05_KineticLoop_Protocol_v1.2_FROZEN.md 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md FROZEN_BASELINE.json CURRENT_DOCUMENT_INDEX.json
+exit 0; frozen authority diff empty
+
+Focused sixth-remediation regressions at the final implementation:
+- direct, inherited, SET ROLE, and owner-drift authority-metadata reads return no rows
+- authority-metadata INSERT, UPDATE, DELETE, and TRUNCATE remain mechanically blocked
+- binding deletion/rebinding cannot expose a same-namespace foreign authorization
+- registration rejects canonical subject callers granted trusted-admin membership
+- registration rejects drift in the exact trusted-admin login's reachable role graph
+- lookup, registration, and protected-row RLS fail closed on metadata ACL/ownership drift
+- upgrade and registration reject noncanonical inbound foreign keys to S38/S42/S45/S46/S47
+- the closed inventory retains exactly eight canonical subject-keyed inbound foreign keys
+- both authority tables force RLS with eight closed policies and four write triggers
+
+FULL_CI_FROZEN_SCOPE_REGRESSIONS_PASS
