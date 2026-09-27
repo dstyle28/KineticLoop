@@ -1,0 +1,30 @@
+KL-015 supplemental regression checks
+tested_commit=65f5c8dece5108e9e935865816bb94ffb938c0fb
+
+[01] uv run pytest -q tests/db
+PASS: 195 passed in 102.58s
+
+[02] uv run kl test-unit
+PASS: 175 passed in 16.47s
+
+[03] uv run kl test-harness
+PASS: 134 passed in 164.39s
+
+[04] uv run kl lint
+PASS: All checks passed
+
+[05] uv run kl typecheck
+PASS: Success: no issues found in 82 source files
+
+[06] frozen authority hashes
+PASS DOC-PROTOCOL-V1.2 expected=actual=00bf3eb2e0e2e00867d114b42e147a2341d98454f08629c849ebf0b4c0c4916c
+PASS DOC-DB-V0.2 expected=actual=2158a80bdc0e16eaf9c2cd835f704bdc2f346565dc35cb0c1fc1a8c00a1b8eda
+
+[07] write scope
+PASS:
+docs/contracts/repository_transactions.md
+docs/exec-plans/evidence/KL-015/**
+docs/exec-plans/completed/KL-015_RESULT.yaml
+src/kineticloop/persistence/transactions.py
+tests/db/test_transaction_interfaces.py
+tests/unit/persistence/test_transactions.py
