@@ -45,8 +45,10 @@ completion certificate. Sealing remains a T2-SEAL owner operation that starts at
 and revalidates that full completion basis, nonnegative member count, captured
 frontier, and epoch. BeginBuild validates its captured basis in a preceding short
 read transaction so the build transaction itself never carries an S01 lock. Every
-T2-IN invalidation requires a nonempty canonical scope, and where the command writes
-the cause record the barrier scope must equal that same-command cause scope.
+T2-IN invalidation requires the command-specific canonical scope declared by the
+active policy; free-form or missing classifications fail closed. Where the command
+writes the cause record, the barrier scope must also equal that same-command cause
+scope.
 
 Durable first execution locks S01 before S02, then locks declared remaining
 aggregate rows in canonical table/key order, compares the request hash, and saves the
@@ -115,10 +117,13 @@ epoch to the exact current S01 pointer and SEALED state.
 
 T3 publication locks and publishes the single READY S23 build whose captured epoch,
 frontier, policy, program, and factset equal current S01. The READY candidate freezes
-its dependency-basis hash, exact required projection-role bindings, full artifact
-closure, declared artifact roots, and artifact-closure hash. Publication requires
-both positive and collection/absence S22 dependencies, recomputes the complete basis,
-and rejects any missing, extra, stale, or caller-selected replacement closure. S24 is
+its dependency-basis hash, the active-policy required projection-role bindings, full
+artifact closure, declared artifact roots, and artifact-closure hash. Publication
+requires each role's exact active-policy dependency signature, including collection/
+absence, engine, factset, policy, program, and applicable mapping/catalog bases. Any
+S14 dependency must be an active S16 member of the current SEALED S15. Publication
+recomputes the complete basis and rejects any missing, extra, stale, or caller-selected
+replacement closure. S24 is
 the next generation and binds the exact SEALED factset, projection roles/bases,
 catalog/mapping selection, artifact closure digest, manifest hash, registry
 state/revision, frontier, and bounded validity. S25 is the complete same-command
@@ -147,6 +152,13 @@ to that same reservation, revision, server time, and receipt identity. A contend
 blocked behind another settlement must re-read S31 and fail its stale expectation.
 Outbox claiming is an isolated S04 transaction with no S01 or business mutation
 callback. Consumers release the outbox row before invoking a new idempotent command.
+
+T6 derives the issuance scope from the active policy's mapping for the exact S36
+action type; S42 cannot select a scope. The locked S37 must bind the exact S35 named by
+its S34 proposal, and the validity certificate includes that demand identity. Neither
+CommitBundle nor Reauthorize may commit without S27 `FOUND_VALID_PLAN`, S29
+`COMMITTED`, and the new S42 in the same transaction. CommitBundle does not acquire an
+unrelated S31 reservation lock because reservations are T5/T8 state.
 
 Exercise catalog revisions are written only by
 `ExerciseCatalogService.PublishRevision`; adoption is T2 classification/invalidation.

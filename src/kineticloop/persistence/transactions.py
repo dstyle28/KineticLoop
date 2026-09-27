@@ -30,7 +30,6 @@ _T = TypeVar("_T")
 
 _LOGICAL_TABLES = {row.logical_id: row.table_name for row in LOGICAL_RELATIONS}
 _CURSORS: WeakKeyDictionary[object, Cursor[Any]] = WeakKeyDictionary()
-_REQUIRED_MANIFEST_PROJECTION_ROLES = frozenset({"EXPOSURE"})
 
 
 def evidence_source_identity_key(values: Mapping[str, Any]) -> str:
@@ -253,7 +252,6 @@ TRANSACTION_OWNER_MATRIX: Mapping[str, OwnerSpec] = MappingProxyType(
                 "S51",
                 "S01",
                 "S27",
-                "S31",
                 "S38",
                 "S39",
                 "S40",
@@ -1143,6 +1141,22 @@ class RestrictedSqlSession:
             bindings = candidate.get("projection_bindings")
             closure = candidate.get("artifact_closure_ids")
             roots = candidate.get("artifact_root_ids")
+            _cursor(self).execute(
+                "SELECT typed_payload FROM kineticloop.policy_bundles "
+                "WHERE subject_id=%s AND id=%s",
+                (self.__subject_id, values.get("ref_s05_id")),
+            )
+            policy = _cursor(self).fetchone()
+            if policy is None:
+                raise GuardRequired("BuildManifest policy lacks projection requirements")
+            try:
+                required_roles = set(
+                    (policy[0] or {})["manifest_projection_requirements"]
+                )
+            except (KeyError, TypeError) as error:
+                raise GuardRequired(
+                    "BuildManifest policy lacks projection requirements"
+                ) from error
             if values.get("status") == "READY" and (
                 not candidate.get("manifest_hash")
                 or not candidate.get("dependency_basis_hash")
@@ -1150,9 +1164,9 @@ class RestrictedSqlSession:
                 or not isinstance(bindings, list)
                 or any(not isinstance(item, Mapping) for item in bindings)
                 or {item.get("role") for item in bindings if isinstance(item, Mapping)}
-                != _REQUIRED_MANIFEST_PROJECTION_ROLES
-                or len(bindings) != len(_REQUIRED_MANIFEST_PROJECTION_ROLES)
-                or bindings[0].get("id") != str(values.get("ref_s21_id"))
+                != required_roles
+                or len(bindings) != len(required_roles)
+                or str(values.get("ref_s21_id")) not in {item.get("id") for item in bindings}
                 or not isinstance(closure, list)
                 or not closure
                 or any(not isinstance(item, str) for item in closure)
@@ -1294,6 +1308,8 @@ class RestrictedSqlSession:
                 "active_policy_bundle_id"
             ):
                 raise GuardRequired("S42 must bind the active locked policy")
+            if values.get("scope") != self.__coordination_context.get("authorization_scope"):
+                raise GuardRequired("S42 scope must equal the policy-derived resolution scope")
             if values.get("ref_s37_id") != self.__coordination_context.get(
                 "authorization_validation_id"
             ) or values.get("ref_s36_id") != self.__coordination_context.get(
@@ -1317,8 +1333,8 @@ class RestrictedSqlSession:
             ):
                 raise GuardRequired("S42 bound content must equal the inserted S40 content hash")
             _cursor(self).execute(
-                "SELECT ref_s05_id,ref_s24_id,ref_s28_id,ref_s29_id,ref_s34_id,ref_s36_id,"
-                "result,valid_until,ref_s03_id "
+                "SELECT ref_s05_id,ref_s24_id,ref_s28_id,ref_s29_id,ref_s34_id,ref_s35_id,"
+                "ref_s36_id,result,valid_until,ref_s03_id "
                 "FROM kineticloop.validation_results WHERE subject_id=%s AND id=%s",
                 (self.__subject_id, values.get("ref_s37_id")),
             )
@@ -1331,6 +1347,7 @@ class RestrictedSqlSession:
                     self.__coordination_context.get("verified_request_id"),
                     self.__coordination_context.get("verified_attempt_id"),
                     prescription.get("ref_s34_id") if prescription else None,
+                    self.__coordination_context.get("authorization_demand_id"),
                     values.get("ref_s36_id"),
                     "PASS",
                     self.__coordination_context.get("validation_valid_until"),
@@ -1703,6 +1720,7 @@ class RestrictedSqlSession:
                 "S01": lambda row: row.get("execution_basis_event_id") == self.__event_id,
                 "S27": lambda row: (
                     row.get("id") == self.__coordination_context.get("verified_intent_id")
+                    and row.get("status") == "FOUND_VALID_PLAN"
                     and row.get("result_authorization_id") in self.__inserted_ids["S42"]
                 ),
                 "S29": lambda row: (
@@ -2463,12 +2481,35 @@ class RepositoryTransaction:
         )
         policy = _cursor(self).fetchone()
         _cursor(self).execute(
+            "SELECT resolution.action_type,validation.ref_s35_id,validation.ref_s34_id,"
+            "demand.ref_s34_id,demand.revision,proposal.demand_feature_id "
+            "FROM kineticloop.validation_results validation "
+            "JOIN kineticloop.evidence_resolutions resolution "
+            "ON resolution.subject_id=validation.subject_id "
+            "AND resolution.id=validation.ref_s36_id "
+            "JOIN kineticloop.prescription_demand_features demand "
+            "ON demand.subject_id=validation.subject_id AND demand.id=validation.ref_s35_id "
+            "JOIN kineticloop.proposal_revisions proposal "
+            "ON proposal.subject_id=validation.subject_id AND proposal.id=validation.ref_s34_id "
+            "WHERE validation.subject_id=%s AND validation.id=%s",
+            (self.subject_id, validation_id),
+        )
+        demand_basis = _cursor(self).fetchone()
+        _cursor(self).execute(
             "SELECT typed_payload FROM kineticloop.daily_plan_heads WHERE subject_id=%s AND id=%s",
             (self.subject_id, head_id),
         )
         calendar = _cursor(self).fetchone()
-        if policy is None or calendar is None:
-            raise GuardRequired("policy and calendar authorization bounds must exist")
+        if (
+            policy is None
+            or calendar is None
+            or demand_basis is None
+            or demand_basis[1] is None
+            or demand_basis[2] is None
+            or demand_basis[2] != demand_basis[3]
+            or demand_basis[1] != demand_basis[5]
+        ):
+            raise GuardRequired("policy, demand, and calendar authorization bounds must exist")
         _cursor(self).execute(
             "SELECT projection.id,projection.revision,projection.valid_until,binding.projection_role "
             "FROM kineticloop.manifest_projection_bindings binding "
@@ -2485,7 +2526,11 @@ class RepositoryTransaction:
         ):
             raise GuardRequired("all manifest projections require live explicit validity")
         try:
-            policy_ttl = int((policy[1] or {})["max_authorization_ttl_seconds"])
+            policy_payload = dict(policy[1] or {})
+            policy_ttl = int(policy_payload["max_authorization_ttl_seconds"])
+            authorization_scope = policy_payload["authorization_action_scopes"][demand_basis[0]]
+            if not isinstance(authorization_scope, str) or not authorization_scope.strip():
+                raise ValueError("authorization scope must be nonempty")
             calendar_end = datetime.fromisoformat(str((calendar[0] or {})["calendar_valid_until"]))
         except (KeyError, TypeError, ValueError) as error:
             raise GuardRequired("policy TTL and calendar validity must be explicit") from error
@@ -2537,6 +2582,12 @@ class RepositoryTransaction:
                     "valid_until": row[8].isoformat(),
                 },
                 {
+                    "dependency_kind": "DEMAND_FEATURE",
+                    "identity": str(demand_basis[1]),
+                    "revision": demand_basis[4],
+                    "proposal_id": str(demand_basis[2]),
+                },
+                {
                     "dependency_kind": "REQUEST",
                     "identity": str(row[10]),
                     "revision": row[11],
@@ -2575,6 +2626,8 @@ class RepositoryTransaction:
         self._coordination_context["validation_valid_until"] = row[8]
         self._coordination_context["authorization_validation_id"] = validation_id
         self._coordination_context["authorization_resolution_id"] = resolution_id
+        self._coordination_context["authorization_demand_id"] = demand_basis[1]
+        self._coordination_context["authorization_scope"] = authorization_scope
         self._coordination_context["authorization_head_id"] = head_id
         return tuple(dependencies), digest, valid_until
 
@@ -2591,12 +2644,9 @@ class RepositoryTransaction:
             "SELECT build.status,build.captured_epoch,build.captured_input_frontier,"
             "build.ref_s05_id,build.ref_s06_id,build.ref_s15_id,build.ref_s21_id,"
             "build.typed_payload,factset.status,factset.ref_s20_id,mapping.ref_s19_id,"
-            "projection.projection_kind,projection.input_basis_hash,projection.valid_until,"
             "clock_timestamp() FROM kineticloop.manifest_builds build "
             "JOIN kineticloop.factset_revisions factset "
             "ON factset.subject_id=build.subject_id AND factset.id=build.ref_s15_id "
-            "JOIN kineticloop.projection_versions projection "
-            "ON projection.subject_id=build.subject_id AND projection.id=build.ref_s21_id "
             "LEFT JOIN kineticloop.exercise_mapping_decisions mapping "
             "ON mapping.subject_id=factset.subject_id AND mapping.id=factset.ref_s20_id "
             "WHERE build.subject_id=%s AND build.id=%s",
@@ -2612,10 +2662,6 @@ class RepositoryTransaction:
             or build[5] != self._coordination_context.get("current_factset_id")
             or build[6] is None
             or build[8] != "SEALED"
-            or not build[11]
-            or not build[12]
-            or not isinstance(build[13], datetime)
-            or build[13] <= build[14]
         ):
             raise GuardRequired("manifest build is stale or not bound to the current S01 basis")
         candidate = dict(build[7] or {})
@@ -2629,65 +2675,171 @@ class RepositoryTransaction:
         }
         if not required_candidate_fields.issubset(candidate):
             raise GuardRequired("READY manifest build is missing its frozen candidate basis")
+        candidate_projection_bindings = candidate.get("projection_bindings")
+        if not isinstance(candidate_projection_bindings, list) or any(
+            not isinstance(item, Mapping) for item in candidate_projection_bindings
+        ):
+            raise GuardRequired("READY manifest candidate has malformed projection bindings")
         _cursor(self).execute(
-            "SELECT dependency_kind,dependency_semantic_key,collection_signature,ref_s05_id,"
-            "ref_s06_id,ref_s14_id,ref_s15_id,ref_s19_id,ref_s20_id "
-            "FROM kineticloop.projection_dependencies WHERE subject_id=%s AND ref_s21_id=%s "
-            "ORDER BY dependency_kind,dependency_semantic_key,id",
-            (self.subject_id, build[6]),
+            "SELECT typed_payload FROM kineticloop.policy_bundles "
+            "WHERE subject_id=%s AND id=%s",
+            (self.subject_id, build[3]),
         )
-        dependency_rows = [
-            {
-                "kind": row[0],
-                "key": row[1],
-                "collection": row[2],
-                "policy": str(row[3]) if row[3] else None,
-                "program": str(row[4]) if row[4] else None,
-                "fact": str(row[5]) if row[5] else None,
-                "factset": str(row[6]) if row[6] else None,
-                "catalog": str(row[7]) if row[7] else None,
-                "mapping": str(row[8]) if row[8] else None,
+        policy = _cursor(self).fetchone()
+        if policy is None:
+            raise GuardRequired("active policy lacks manifest projection requirements")
+        try:
+            requirements = dict((policy[0] or {})["manifest_projection_requirements"])
+        except (KeyError, TypeError) as error:
+            raise GuardRequired("active policy lacks manifest projection requirements") from error
+        if not requirements or any(
+            not isinstance(requirement, Mapping)
+            or not isinstance(requirement.get("dependencies"), list)
+            for requirement in requirements.values()
+        ):
+            raise GuardRequired("active policy has malformed manifest requirements")
+        mandatory_dependency_kinds = {"COLLECTION", "ENGINE", "FACTSET", "POLICY", "PROGRAM"}
+        if build[9] is not None:
+            mandatory_dependency_kinds.add("MAPPING")
+        if build[10] is not None:
+            mandatory_dependency_kinds.add("CATALOG")
+        if any(
+            not mandatory_dependency_kinds
+            <= {
+                item.get("kind")
+                for item in requirement["dependencies"]
+                if isinstance(item, Mapping)
             }
-            for row in _cursor(self).fetchall()
-        ]
-        has_positive_dependency = any(
-            any(
-                item[field] is not None
-                for field in ("policy", "program", "fact", "factset", "catalog", "mapping")
+            or not any(
+                isinstance(item, Mapping) and item.get("collection")
+                for item in requirement["dependencies"]
             )
-            for item in dependency_rows
+            for requirement in requirements.values()
+        ):
+            raise GuardRequired("active policy projection dependency signature is incomplete")
+        bindings_by_role = {
+            item.get("role"): item for item in candidate_projection_bindings
+        }
+        if (
+            not requirements
+            or len(bindings_by_role) != len(candidate_projection_bindings)
+            or set(bindings_by_role) != set(requirements)
+            or any(
+                not isinstance(item.get("id"), str)
+                or not isinstance(item.get("basis_hash"), str)
+                or not item.get("basis_hash")
+                for item in candidate_projection_bindings
+            )
+            or str(build[6]) not in {item["id"] for item in candidate_projection_bindings}
+        ):
+            raise GuardRequired("READY manifest roles must equal active-policy requirements")
+        try:
+            projection_ids = [UUID(item["id"]) for item in candidate_projection_bindings]
+        except ValueError as error:
+            raise GuardRequired("READY manifest projection identity is not canonical") from error
+        _cursor(self).execute(
+            "SELECT id,projection_kind,input_basis_hash,valid_until,revision "
+            "FROM kineticloop.projection_versions WHERE subject_id=%s AND id=ANY(%s)",
+            (self.subject_id, projection_ids),
         )
-        has_collection_dependency = any(bool(item["collection"]) for item in dependency_rows)
+        projections = {str(row[0]): row for row in _cursor(self).fetchall()}
+        if len(projections) != len(projection_ids) or any(
+            projections[item["id"]][1] != requirements[item["role"]].get("projection_kind")
+            or projections[item["id"]][2] != item["basis_hash"]
+            or not isinstance(projections[item["id"]][3], datetime)
+            or projections[item["id"]][3] <= build[11]
+            for item in candidate_projection_bindings
+        ):
+            raise GuardRequired("manifest projections do not match active-policy role bases")
+        _cursor(self).execute(
+            "SELECT ref_s21_id,dependency_kind,dependency_semantic_key,collection_signature,"
+            "ref_s05_id,ref_s06_id,ref_s14_id,ref_s15_id,ref_s19_id,ref_s20_id "
+            "FROM kineticloop.projection_dependencies WHERE subject_id=%s "
+            "AND ref_s21_id=ANY(%s) ORDER BY ref_s21_id,dependency_kind,dependency_semantic_key,id",
+            (self.subject_id, projection_ids),
+        )
+        dependency_rows: list[dict[str, Any]] = []
+        for row in _cursor(self).fetchall():
+            dependency_rows.append(
+                {
+                    "projection_id": str(row[0]),
+                    "kind": row[1],
+                    "key": row[2],
+                    "collection": row[3],
+                    "policy": str(row[4]) if row[4] else None,
+                    "program": str(row[5]) if row[5] else None,
+                    "fact": str(row[6]) if row[6] else None,
+                    "factset": str(row[7]) if row[7] else None,
+                    "catalog": str(row[8]) if row[8] else None,
+                    "mapping": str(row[9]) if row[9] else None,
+                }
+            )
+        actual_signatures = {
+            projection_id: {
+                (item["kind"], item["key"], item["collection"])
+                for item in dependency_rows
+                if item["projection_id"] == projection_id
+            }
+            for projection_id in projections
+        }
+        expected_signatures = {
+            bindings_by_role[role]["id"]: {
+                (item.get("kind"), item.get("key"), item.get("collection"))
+                for item in requirement.get("dependencies", [])
+                if isinstance(item, Mapping)
+            }
+            for role, requirement in requirements.items()
+        }
+        facts = {UUID(item["fact"]) for item in dependency_rows if item["fact"]}
+        if facts:
+            _cursor(self).execute(
+                "SELECT DISTINCT ref_s14_id FROM kineticloop.factset_members "
+                "WHERE subject_id=%s AND ref_s15_id=%s AND ref_s14_id=ANY(%s) "
+                "AND member_operation='SET'",
+                (self.subject_id, build[5], sorted(facts, key=str)),
+            )
+            member_facts = {row[0] for row in _cursor(self).fetchall()}
+        else:
+            member_facts = set()
         if (
             not dependency_rows
-            or not has_positive_dependency
-            or not has_collection_dependency
+            or actual_signatures != expected_signatures
+            or member_facts != facts
             or any(
-            (item["policy"] and item["policy"] != str(build[3]))
-            or (item["program"] and item["program"] != str(build[4]))
-            or (item["factset"] and item["factset"] != str(build[5]))
-            or (item["catalog"] and item["catalog"] != str(build[10]))
-            or (item["mapping"] and item["mapping"] != str(build[9]))
-            for item in dependency_rows
+                (item["policy"] and item["policy"] != str(build[3]))
+                or (item["program"] and item["program"] != str(build[4]))
+                or (item["factset"] and item["factset"] != str(build[5]))
+                or (item["catalog"] and item["catalog"] != str(build[10]))
+                or (item["mapping"] and item["mapping"] != str(build[9]))
+                for item in dependency_rows
             )
         ):
             raise GuardRequired("projection dependency basis is incomplete, stale, or cross-wired")
         artifact_digest = self.artifact_closure_digest()
         dependency_basis = {
-            "projection_id": str(build[6]),
-            "projection_role": build[11],
-            "validated_basis_hash": build[12],
-            "dependencies": dependency_rows,
+            "projections": [
+                {
+                    "id": item["id"],
+                    "role": item["role"],
+                    "projection_kind": projections[item["id"]][1],
+                    "validated_basis_hash": item["basis_hash"],
+                    "dependencies": [
+                        dependency
+                        for dependency in dependency_rows
+                        if dependency["projection_id"] == item["id"]
+                    ],
+                }
+                for item in sorted(candidate_projection_bindings, key=lambda item: item["role"])
+            ],
             "catalog_id": str(build[10]) if build[10] else None,
             "mapping_id": str(build[9]) if build[9] else None,
         }
         dependency_basis_hash = hashlib.sha256(
             json.dumps(dependency_basis, sort_keys=True, separators=(",", ":")).encode()
         ).hexdigest()
-        expected_projection_bindings = [
-            {"id": str(build[6]), "role": build[11], "basis_hash": build[12]}
-        ]
-        candidate_projection_bindings = candidate.get("projection_bindings")
+        expected_projection_bindings = sorted(
+            candidate_projection_bindings, key=lambda item: item["role"]
+        )
         verified_artifact_ids = sorted(str(item) for item in self._verified_artifacts)
         candidate_closure_ids = candidate.get("artifact_closure_ids")
         candidate_root_ids = candidate.get("artifact_root_ids")
@@ -2702,8 +2854,6 @@ class RepositoryTransaction:
             or any(not isinstance(item, str) for item in candidate_root_ids)
             or not set(candidate_root_ids).issubset(set(verified_artifact_ids))
             or candidate_projection_bindings != expected_projection_bindings
-            or {item["role"] for item in expected_projection_bindings}
-            != _REQUIRED_MANIFEST_PROJECTION_ROLES
         ):
             raise GuardRequired("READY manifest candidate does not match its verified full closure")
         dependency_digest = hashlib.sha256(
@@ -2716,8 +2866,11 @@ class RepositoryTransaction:
                 separators=(",", ":"),
             ).encode()
         ).hexdigest()
-        valid_until = min(build[13], self.artifact_closure_valid_until())
-        if valid_until <= build[14]:
+        valid_until = min(
+            *(projection[3] for projection in projections.values()),
+            self.artifact_closure_valid_until(),
+        )
+        if valid_until <= build[11]:
             raise GuardRequired("manifest dependency closure is expired")
         self._coordination_context["publication_build_id"] = build_id
         self._coordination_context["publication_generation"] = (
@@ -3120,7 +3273,25 @@ class RepositoryTransaction:
         if self.spec.boundary is Boundary.T2_IN:
             if not isinstance(invalidation_scope, str) or not invalidation_scope.strip():
                 raise GuardRequired("T2 invalidation requires a nonempty canonical scope")
-            self._coordination_context["invalidation_scope"] = invalidation_scope
+            _cursor(self).execute(
+                "SELECT typed_payload FROM kineticloop.policy_bundles "
+                "WHERE subject_id=%s AND id=%s",
+                (self.subject_id, self._coordination_context.get("active_policy_bundle_id")),
+            )
+            policy = _cursor(self).fetchone()
+            if policy is None:
+                raise GuardRequired(
+                    "T2 invalidation classification is absent from the active policy"
+                )
+            try:
+                canonical_scope = (policy[0] or {})["t2_invalidation_scopes"][self.command_kind]
+            except (KeyError, TypeError) as error:
+                raise GuardRequired(
+                    "T2 invalidation classification is absent from the active policy"
+                ) from error
+            if invalidation_scope != canonical_scope:
+                raise GuardRequired("T2 invalidation scope must equal active-policy classification")
+            self._coordination_context["invalidation_scope"] = canonical_scope
         if self.command_kind in {"SettleCall", "MarkUnknown"}:
             self._coordination_context["expected_transition"] = expected_transition
         self._prepare_settlement_basis()

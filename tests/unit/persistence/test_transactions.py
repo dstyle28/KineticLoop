@@ -55,6 +55,7 @@ def test_every_public_owner_has_explicit_non_infrastructure_dml_capabilities() -
     assert ("S29", "update") not in MUTATION_CAPABILITY_MATRIX["RenewLease"]
     assert "S29" not in TRANSACTION_OWNER_MATRIX["AcquireLease"].mutation_surfaces
     assert "S29" not in TRANSACTION_OWNER_MATRIX["RenewLease"].mutation_surfaces
+    assert "S31" not in TRANSACTION_OWNER_MATRIX["CommitBundle"].mutation_surfaces
     assert MUTATION_CAPABILITY_MATRIX["PermitDispatch"][("S31", "update")] == {
         "status",
         "settlement_revision",

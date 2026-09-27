@@ -75,6 +75,7 @@ SUPERSESSION = UUID("00000000-0000-8000-8000-000000015043")
 SESSION = UUID("00000000-0000-8000-8000-000000015044")
 PROPOSAL = UUID("00000000-0000-8000-8000-000000015034")
 DEMAND = UUID("00000000-0000-8000-8000-000000015035")
+DEMAND_2 = UUID("00000000-0000-8000-8000-000000015135")
 RESOLUTION = UUID("00000000-0000-8000-8000-000000015036")
 VALIDATION = UUID("00000000-0000-8000-8000-000000015037")
 FACTSET = UUID("00000000-0000-8000-8000-000000015015")
@@ -85,6 +86,15 @@ PROJECTION = UUID("00000000-0000-8000-8000-000000015021")
 PROJECTION_BINDING = UUID("00000000-0000-8000-8000-000000015025")
 PROJECTION_DEPENDENCY = UUID("00000000-0000-8000-8000-000000015022")
 PROJECTION_COLLECTION_DEPENDENCY = UUID("00000000-0000-8000-8000-000000015122")
+PROJECTION_POLICY_DEPENDENCY = UUID("00000000-0000-8000-8000-000000015222")
+PROJECTION_PROGRAM_DEPENDENCY = UUID("00000000-0000-8000-8000-000000015322")
+PROJECTION_ENGINE_DEPENDENCY = UUID("00000000-0000-8000-8000-000000015422")
+PROJECTION_OUTSIDE_FACT_DEPENDENCY = UUID("00000000-0000-8000-8000-000000015522")
+OUTSIDE_FACT = UUID("00000000-0000-8000-8000-000000015514")
+OUTSIDE_EVIDENCE = UUID("00000000-0000-8000-8000-000000015509")
+OUTSIDE_CANDIDATE = UUID("00000000-0000-8000-8000-000000015510")
+OUTSIDE_EVENT = UUID("00000000-0000-8000-8000-000000015511")
+OUTSIDE_ADMISSION = UUID("00000000-0000-8000-8000-000000015513")
 NOW = datetime(2026, 9, 26, 12, tzinfo=UTC)
 
 
@@ -140,6 +150,7 @@ def _manifest_candidate_payload(connection: Any) -> dict[str, Any]:
     ).hexdigest()
     dependencies = [
         {
+            "projection_id": str(PROJECTION),
             "kind": "COLLECTION",
             "key": "admitted-facts",
             "collection": "all-admitted-v1",
@@ -151,6 +162,7 @@ def _manifest_candidate_payload(connection: Any) -> dict[str, Any]:
             "mapping": None,
         },
         {
+            "projection_id": str(PROJECTION),
             "kind": "FACTSET",
             "key": "current-factset",
             "collection": None,
@@ -161,12 +173,54 @@ def _manifest_candidate_payload(connection: Any) -> dict[str, Any]:
             "catalog": None,
             "mapping": None,
         },
+        {
+            "projection_id": str(PROJECTION),
+            "kind": "ENGINE",
+            "key": "exposure-engine:v1",
+            "collection": None,
+            "policy": None,
+            "program": None,
+            "fact": None,
+            "factset": None,
+            "catalog": None,
+            "mapping": None,
+        },
+        {
+            "projection_id": str(PROJECTION),
+            "kind": "POLICY",
+            "key": "active-policy",
+            "collection": None,
+            "policy": str(POLICY),
+            "program": None,
+            "fact": None,
+            "factset": None,
+            "catalog": None,
+            "mapping": None,
+        },
+        {
+            "projection_id": str(PROJECTION),
+            "kind": "PROGRAM",
+            "key": "active-program",
+            "collection": None,
+            "policy": None,
+            "program": str(POLICY),
+            "fact": None,
+            "factset": None,
+            "catalog": None,
+            "mapping": None,
+        },
     ]
+    dependencies = sorted(dependencies, key=lambda item: (item["kind"], item["key"]))
     dependency_basis = {
-        "projection_id": str(PROJECTION),
-        "projection_role": "EXPOSURE",
-        "validated_basis_hash": "projection-basis",
-        "dependencies": dependencies,
+        "projections": [
+            {
+                "id": str(PROJECTION),
+                "role": "EXPOSURE",
+                "projection_kind": "EXPOSURE",
+                "validated_basis_hash": "projection-basis",
+                "dependencies": dependencies,
+            }
+        ],
         "catalog_id": None,
         "mapping_id": None,
     }
@@ -280,9 +334,62 @@ def _seed_transaction_rows(admin_url: str) -> None:
             (DAILY_HEAD, SUBJECT),
         )
         connection.execute(
-            "UPDATE kineticloop.policy_bundles SET typed_payload="
-            "jsonb_build_object('max_authorization_ttl_seconds',86400) WHERE id=%s",
-            (POLICY,),
+            "UPDATE kineticloop.policy_bundles SET typed_payload=%s WHERE id=%s",
+            (
+                psycopg.types.json.Jsonb(
+                    {
+                        "max_authorization_ttl_seconds": 86400,
+                        "authorization_action_scopes": {"PLAN": "EXECUTION"},
+                        "t2_invalidation_scopes": {
+                            command: "EXECUTION"
+                            for command in (
+                                "DecideAssociation",
+                                "DecideAdmission",
+                                "AcceptFactRevision",
+                                "ApplyControl",
+                                "ClearControl",
+                                "ApproveChange",
+                                "ActivateApprovedProgram",
+                                "RecordActualExecution",
+                                "CompleteReportedWorkout",
+                            )
+                        },
+                        "manifest_projection_requirements": {
+                            "EXPOSURE": {
+                                "projection_kind": "EXPOSURE",
+                                "dependencies": [
+                                    {
+                                        "kind": "COLLECTION",
+                                        "key": "admitted-facts",
+                                        "collection": "all-admitted-v1",
+                                    },
+                                    {
+                                        "kind": "FACTSET",
+                                        "key": "current-factset",
+                                        "collection": None,
+                                    },
+                                    {
+                                        "kind": "ENGINE",
+                                        "key": "exposure-engine:v1",
+                                        "collection": None,
+                                    },
+                                    {
+                                        "kind": "POLICY",
+                                        "key": "active-policy",
+                                        "collection": None,
+                                    },
+                                    {
+                                        "kind": "PROGRAM",
+                                        "key": "active-program",
+                                        "collection": None,
+                                    },
+                                ],
+                            }
+                        },
+                    }
+                ),
+                POLICY,
+            ),
         )
         connection.execute(
             "INSERT INTO kineticloop.workout_sessions"
@@ -292,9 +399,9 @@ def _seed_transaction_rows(admin_url: str) -> None:
         )
         connection.execute(
             "INSERT INTO kineticloop.proposal_revisions"
-            "(id,subject_id,proposal_family_identity,proposal_kind,producer_artifact,revision) "
-            "VALUES (%s,%s,'proposal-family','FITNESS','test',1)",
-            (PROPOSAL, SUBJECT),
+            "(id,subject_id,proposal_family_identity,proposal_kind,producer_artifact,revision,"
+            "demand_feature_id) VALUES (%s,%s,'proposal-family','FITNESS','test',1,%s)",
+            (PROPOSAL, SUBJECT, DEMAND),
         )
         connection.execute(
             "INSERT INTO kineticloop.prescription_demand_features"
@@ -371,9 +478,12 @@ def _seed_transaction_rows(admin_url: str) -> None:
         connection.execute(
             "INSERT INTO kineticloop.projection_dependencies"
             "(id,subject_id,dependency_kind,dependency_semantic_key,collection_signature,"
-            "ref_s15_id,ref_s21_id) VALUES "
-            "(%s,%s,'FACTSET','current-factset',NULL,%s,%s),"
-            "(%s,%s,'COLLECTION','admitted-facts','all-admitted-v1',%s,%s)",
+            "ref_s05_id,ref_s06_id,ref_s15_id,ref_s21_id) VALUES "
+            "(%s,%s,'FACTSET','current-factset',NULL,NULL,NULL,%s,%s),"
+            "(%s,%s,'COLLECTION','admitted-facts','all-admitted-v1',NULL,NULL,%s,%s),"
+            "(%s,%s,'POLICY','active-policy',NULL,%s,NULL,NULL,%s),"
+            "(%s,%s,'PROGRAM','active-program',NULL,NULL,%s,NULL,%s),"
+            "(%s,%s,'ENGINE','exposure-engine:v1',NULL,NULL,NULL,NULL,%s)",
             (
                 PROJECTION_DEPENDENCY,
                 SUBJECT,
@@ -382,6 +492,17 @@ def _seed_transaction_rows(admin_url: str) -> None:
                 PROJECTION_COLLECTION_DEPENDENCY,
                 SUBJECT,
                 FACTSET,
+                PROJECTION,
+                PROJECTION_POLICY_DEPENDENCY,
+                SUBJECT,
+                POLICY,
+                PROJECTION,
+                PROJECTION_PROGRAM_DEPENDENCY,
+                SUBJECT,
+                POLICY,
+                PROJECTION,
+                PROJECTION_ENGINE_DEPENDENCY,
+                SUBJECT,
                 PROJECTION,
             ),
         )
@@ -673,6 +794,7 @@ def test_factset_build_stays_outside_subject_coordination(
                 (psycopg.types.json.Jsonb(original_payload), FACTSET_BUILD_TEST),
             )
             connection.execute("SET session_replication_role=origin")
+
     with psycopg.connect(database_urls["admin"]) as connection:
         with pytest.raises((GuardRequired, StatementRejected)):
             execute_factset_build(
@@ -770,7 +892,6 @@ def test_complete_frozen_lock_order_enforced(database_urls: dict[str, str]) -> N
     def t6(tx: RepositoryTransaction) -> None:
         _acquire_registry(tx)
         tx.lock_intents((INTENT,))
-        tx.lock_reservations((RESERVATION,))
         tx.lock_daily_head(date(2026, 9, 26))
         tx.lock_receipt("CommitBundle", "lock-order-t6", "subject")
         tx.lock_remaining("planning_attempts", (ATTEMPT,))
@@ -792,7 +913,7 @@ def test_complete_frozen_lock_order_enforced(database_urls: dict[str, str]) -> N
         [stage for stage, _ in trace] == sorted(stage for stage, _ in trace) for trace in traces
     )
     observed = {label.split(":", 1)[0] for trace in traces for _, label in trace}
-    assert observed == {"S51", "S01", "S30", "S27", "S31", "S38", "S44", "S02", "S29", "S37"}
+    assert observed == {"S51", "S01", "S30", "S27", "S38", "S44", "S02", "S29", "S37"}
     with psycopg.connect(database_urls["admin"]) as connection:
         with connection.transaction():
             tx = RepositoryTransaction(connection.cursor(), "CommitBundle", SUBJECT)
@@ -1128,7 +1249,6 @@ def test_event_outbox_atomicity_enforced(
                 tx.lock_reservations((RESERVATION_2,))
         elif command == "CommitBundle":
             tx.lock_intents((INTENT,))
-            tx.lock_reservations((RESERVATION_2,))
             tx.lock_daily_head(date(2026, 9, 26))
             tx.require_current_fence(
                 INTENT,
@@ -1996,6 +2116,47 @@ def test_lease_commands_reject_arbitrary_attempt_locks(database_urls: dict[str, 
             execute_command(connection, "AcquireLease", SUBJECT, operation)
 
 
+def test_t2_invalidation_scope_must_match_active_policy(
+    database_urls: dict[str, str],
+) -> None:
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(GuardRequired, match="active-policy classification"):
+            execute_command(
+                connection,
+                "DecideAssociation",
+                SUBJECT,
+                lambda tx: (
+                    tx.lock_subject(),
+                    tx.idempotent_outcome(
+                        receipt_id=UUID("00000000-0000-8000-8000-000000015573"),
+                        actor_scope="subject",
+                        client_key="wrong-policy-invalidation-scope",
+                        request_hash="wrong-policy-invalidation-scope-hash",
+                        mutation=lambda session: {"unexpected": True},
+                        event=_event(0x15574),
+                        invalidation_scope="ARBITRARY",
+                    ),
+                ),
+            )
+
+
+def test_commit_bundle_rejects_inapplicable_reservation_lock(
+    database_urls: dict[str, str],
+) -> None:
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(GuardRequired, match="inapplicable S31"):
+            execute_command(
+                connection,
+                "CommitBundle",
+                SUBJECT,
+                lambda tx: (
+                    _acquire_registry(tx),
+                    tx.lock_intents((INTENT,)),
+                    tx.lock_reservations((RESERVATION_2,)),
+                ),
+            )
+
+
 def test_t8_expected_transition_is_exact(database_urls: dict[str, str]) -> None:
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
         connection.execute(
@@ -2362,11 +2523,11 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
         include_supersession: bool = True,
         revision_override: int | None = None,
         manifest_override: UUID = MANIFEST,
+        authorization_scope: str = "EXECUTION",
     ) -> tuple[Mapping[str, Any], bool]:
         def operation(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
             registry_revision = _acquire_registry(tx)
             tx.lock_intents((INTENT,))
-            tx.lock_reservations((RESERVATION_2,))
             tx.lock_daily_head(date(2026, 9, 26))
             tx.require_current_fence(
                 INTENT,
@@ -2441,7 +2602,7 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
                         "id": ISSUANCE,
                         "subject_id": SUBJECT,
                         "bound_content_hash": "content",
-                        "scope": "EXECUTION",
+                        "scope": authorization_scope,
                         "issuance_reason": "AI_PLAN",
                         "artifact_dependency_closure_hash": closure_digest,
                         "registry_revision_at_issue": registry_revision,
@@ -2575,11 +2736,40 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
         invoke(revision_override=99)
     with pytest.raises(GuardRequired, match="current locked manifest"):
         invoke(manifest_override=UUID("00000000-0000-8000-8000-000000015999"))
+    with pytest.raises(GuardRequired, match="policy-derived resolution scope"):
+        invoke(authorization_scope="CROSSWIRED")
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "INSERT INTO kineticloop.prescription_demand_features"
+            "(id,subject_id,method_version,feature_hash,basis_hash,ref_s34_id) "
+            "VALUES (%s,%s,'v1','feature-crosswire','basis-crosswire',%s)",
+            (DEMAND_2, SUBJECT, PROPOSAL),
+        )
+        connection.execute(
+            "UPDATE kineticloop.proposal_revisions SET demand_feature_id=%s WHERE id=%s",
+            (DEMAND_2, PROPOSAL),
+        )
+        connection.execute("SET session_replication_role=origin")
+    try:
+        with pytest.raises(GuardRequired, match="policy, demand, and calendar"):
+            invoke()
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "UPDATE kineticloop.proposal_revisions SET demand_feature_id=%s WHERE id=%s",
+                (DEMAND, PROPOSAL),
+            )
+            connection.execute(
+                "DELETE FROM kineticloop.prescription_demand_features WHERE id=%s",
+                (DEMAND_2,),
+            )
+            connection.execute("SET session_replication_role=origin")
 
     def partial_commit(tx: RepositoryTransaction) -> None:
         _acquire_registry(tx)
         tx.lock_intents((INTENT,))
-        tx.lock_reservations((RESERVATION_2,))
         tx.lock_daily_head(date(2026, 9, 26))
         tx.require_current_fence(
             INTENT,
@@ -2786,6 +2976,134 @@ def test_t6_ack_loss_replay_returns_same_issuance(database_urls: dict[str, str])
         ).fetchone() == (0,)
 
 
+def test_reauthorize_requires_atomic_intent_success(database_urls: dict[str, str]) -> None:
+    issuance = UUID("00000000-0000-8000-8000-000000015742")
+    receipt = UUID("00000000-0000-8000-8000-000000015743")
+    event = _event(0x15744)
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        execution_basis = connection.execute(
+            "SELECT execution_basis_event_id FROM kineticloop.user_decision_state "
+            "WHERE subject_id=%s",
+            (SUBJECT,),
+        ).fetchone()[0]
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "UPDATE kineticloop.planning_intents SET status='RUNNING',"
+            "lease_owner='worker-reauth',fence_token=11,"
+            "lease_expires_at=clock_timestamp()+interval '1 day',"
+            "result_authorization_id=NULL WHERE id=%s",
+            (INTENT,),
+        )
+        connection.execute(
+            "UPDATE kineticloop.planning_attempts SET status='COMMIT_READY',fence_token=11,"
+            "completed_at=NULL,captured_epoch=(SELECT authorization_epoch "
+            "FROM kineticloop.user_decision_state WHERE subject_id=%s) WHERE id=%s",
+            (SUBJECT, ATTEMPT),
+        )
+        connection.execute(
+            "UPDATE kineticloop.validation_results SET result='PASS',"
+            "valid_until=clock_timestamp()+interval '1 day',ref_s03_id=%s WHERE id=%s",
+            (execution_basis, VALIDATION),
+        )
+        connection.execute("SET session_replication_role=origin")
+
+    def invoke(status: str) -> tuple[Mapping[str, Any], bool]:
+        def operation(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
+            registry_revision = _acquire_registry(tx)
+            tx.lock_intents((INTENT,))
+            tx.lock_daily_head(date(2026, 9, 26))
+            tx.require_current_fence(
+                INTENT,
+                owner_id="worker-reauth",
+                fence=11,
+                expected_request_revision=1,
+                expected_attempt_id=ATTEMPT,
+            )
+
+            def mutation(session: Any) -> Mapping[str, Any]:
+                dependencies = session.authorization_certificate_dependencies()
+                closure_digest = session.authorization_closure_digest()
+                session.insert(
+                    "S42",
+                    {
+                        "id": issuance,
+                        "subject_id": SUBJECT,
+                        "bound_content_hash": "content",
+                        "scope": "EXECUTION",
+                        "issuance_reason": "REVALIDATION",
+                        "artifact_dependency_closure_hash": closure_digest,
+                        "registry_revision_at_issue": registry_revision,
+                        "valid_from": session.authorization_valid_from(),
+                        "valid_until": session.authorization_valid_until(),
+                        "validity_certificate": psycopg.types.json.Jsonb(
+                            {
+                                "authorization_epoch": tx.authorization_epoch,
+                                "method_version": "kl015-v1",
+                                "closure_digest": closure_digest,
+                                "dependencies": list(dependencies),
+                            }
+                        ),
+                        "ref_s02_id": receipt,
+                        "ref_s05_id": POLICY,
+                        "ref_s24_id": MANIFEST,
+                        "ref_s36_id": RESOLUTION,
+                        "ref_s37_id": VALIDATION,
+                        "ref_s40_id": PRESCRIPTION,
+                        "ref_s49_id": ARTIFACT,
+                        "registry_state_id": 1,
+                    },
+                )
+                session.insert_authorization_artifact_closure(issuance, _registry_ids())
+                session.update(
+                    "S01",
+                    {"execution_basis_event_id": event.event_id},
+                    {"subject_id": SUBJECT},
+                )
+                session.update(
+                    "S27",
+                    {"status": status, "result_authorization_id": issuance},
+                    {"id": INTENT, "subject_id": SUBJECT},
+                )
+                session.update(
+                    "S29",
+                    {"status": "COMMITTED", "completed_at": NOW},
+                    {"id": ATTEMPT, "subject_id": SUBJECT},
+                )
+                return {"authorization_id": str(issuance)}
+
+            return tx.idempotent_outcome(
+                receipt_id=receipt,
+                actor_scope="subject",
+                client_key="reauthorize-intent-success",
+                request_hash="reauthorize-intent-success-hash",
+                mutation=mutation,
+                event=event,
+                aggregate_locks={
+                    "planning_attempts": (ATTEMPT,),
+                    "validation_results": (VALIDATION,),
+                },
+                authorization_basis={
+                    "validation_id": VALIDATION,
+                    "resolution_id": RESOLUTION,
+                    "intent_id": INTENT,
+                    "head_id": DAILY_HEAD,
+                },
+            )
+
+        with psycopg.connect(database_urls["admin"]) as connection:
+            return execute_command(connection, "Reauthorize", SUBJECT, operation)
+
+    with pytest.raises(GuardRequired, match="mandatory S27 update"):
+        invoke("RUNNING")
+    outcome, replayed = invoke("FOUND_VALID_PLAN")
+    assert not replayed and outcome["authorization_id"] == str(issuance)
+    with psycopg.connect(database_urls["admin"]) as connection:
+        assert connection.execute(
+            "SELECT status,result_authorization_id FROM kineticloop.planning_intents WHERE id=%s",
+            (INTENT,),
+        ).fetchone() == ("FOUND_VALID_PLAN", issuance)
+
+
 def test_t3_rejects_incomplete_or_crosswired_ready_candidate(
     database_urls: dict[str, str],
 ) -> None:
@@ -2821,9 +3139,12 @@ def test_t3_rejects_incomplete_or_crosswired_ready_candidate(
             connection.execute(
                 "INSERT INTO kineticloop.projection_dependencies"
                 "(id,subject_id,dependency_kind,dependency_semantic_key,collection_signature,"
-                "ref_s15_id,ref_s21_id) VALUES "
-                "(%s,%s,'FACTSET','current-factset',NULL,%s,%s),"
-                "(%s,%s,'COLLECTION','admitted-facts','all-admitted-v1',%s,%s)",
+                "ref_s05_id,ref_s06_id,ref_s15_id,ref_s21_id) VALUES "
+                "(%s,%s,'FACTSET','current-factset',NULL,NULL,NULL,%s,%s),"
+                "(%s,%s,'COLLECTION','admitted-facts','all-admitted-v1',NULL,NULL,%s,%s),"
+                "(%s,%s,'POLICY','active-policy',NULL,%s,NULL,NULL,%s),"
+                "(%s,%s,'PROGRAM','active-program',NULL,NULL,%s,NULL,%s),"
+                "(%s,%s,'ENGINE','exposure-engine:v1',NULL,NULL,NULL,NULL,%s)",
                 (
                     PROJECTION_DEPENDENCY,
                     SUBJECT,
@@ -2832,6 +3153,17 @@ def test_t3_rejects_incomplete_or_crosswired_ready_candidate(
                     PROJECTION_COLLECTION_DEPENDENCY,
                     SUBJECT,
                     FACTSET,
+                    PROJECTION,
+                    PROJECTION_POLICY_DEPENDENCY,
+                    SUBJECT,
+                    POLICY,
+                    PROJECTION,
+                    PROJECTION_PROGRAM_DEPENDENCY,
+                    SUBJECT,
+                    POLICY,
+                    PROJECTION,
+                    PROJECTION_ENGINE_DEPENDENCY,
+                    SUBJECT,
                     PROJECTION,
                 ),
             )
@@ -2855,6 +3187,129 @@ def test_t3_rejects_incomplete_or_crosswired_ready_candidate(
             connection.execute(
                 "UPDATE kineticloop.manifest_builds SET typed_payload=%s WHERE id=%s",
                 (psycopg.types.json.Jsonb(payload), MANIFEST_BUILD),
+            )
+            connection.execute("SET session_replication_role=origin")
+
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        policy_payload = connection.execute(
+            "SELECT typed_payload FROM kineticloop.policy_bundles WHERE id=%s",
+            (POLICY,),
+        ).fetchone()[0]
+        extra_role_policy = dict(policy_payload)
+        extra_role_policy["manifest_projection_requirements"] = {
+            **policy_payload["manifest_projection_requirements"],
+            "RECOVERY": {
+                "projection_kind": "RECOVERY",
+                "dependencies": policy_payload["manifest_projection_requirements"]["EXPOSURE"][
+                    "dependencies"
+                ],
+            },
+        }
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "UPDATE kineticloop.policy_bundles SET typed_payload=%s WHERE id=%s",
+            (psycopg.types.json.Jsonb(extra_role_policy), POLICY),
+        )
+        connection.execute("SET session_replication_role=origin")
+    try:
+        with pytest.raises(GuardRequired, match="active-policy requirements"):
+            attempt()
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "UPDATE kineticloop.policy_bundles SET typed_payload=%s WHERE id=%s",
+                (psycopg.types.json.Jsonb(policy_payload), POLICY),
+            )
+            connection.execute("SET session_replication_role=origin")
+
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        fact_policy = dict(policy_payload)
+        exposure_requirement = dict(
+            policy_payload["manifest_projection_requirements"]["EXPOSURE"]
+        )
+        exposure_requirement["dependencies"] = [
+            *exposure_requirement["dependencies"],
+            {"kind": "FACT", "key": "outside-fact", "collection": None},
+        ]
+        fact_policy["manifest_projection_requirements"] = {
+            "EXPOSURE": exposure_requirement
+        }
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "INSERT INTO kineticloop.evidence_revisions"
+            "(id,subject_id,source_connection_identity,source_object_type,"
+            "source_object_identity,source_revision,trust_class,source_class,command_authority) "
+            "VALUES (%s,%s,'outside','TEST','outside','1','SOURCE_REPORTED','TEST','NONE')",
+            (OUTSIDE_EVIDENCE, SUBJECT),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.candidate_assertions"
+            "(id,subject_id,assertion_family_identity,predicate,value_state,ref_s09_id) "
+            "VALUES (%s,%s,'outside','outside','KNOWN',%s)",
+            (OUTSIDE_CANDIDATE, SUBJECT, OUTSIDE_EVIDENCE),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.underlying_events"
+            "(id,subject_id,event_identity,event_kind) VALUES (%s,%s,'outside','ACTUAL')",
+            (OUTSIDE_EVENT, SUBJECT),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.admission_decisions"
+            "(id,subject_id,action_scope,decision,ref_s05_id,ref_s09_id,ref_s10_id) "
+            "VALUES (%s,%s,'EXECUTION','ADMITTED',%s,%s,%s)",
+            (OUTSIDE_ADMISSION, SUBJECT, POLICY, OUTSIDE_EVIDENCE, OUTSIDE_CANDIDATE),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.canonical_fact_revisions"
+            "(id,subject_id,stable_fact_identity,fact_kind,fact_revision,ref_s10_id,"
+            "ref_s11_id,ref_s13_id) VALUES (%s,%s,'outside-fact','ACTUAL',1,%s,%s,%s)",
+            (OUTSIDE_FACT, SUBJECT, OUTSIDE_CANDIDATE, OUTSIDE_EVENT, OUTSIDE_ADMISSION),
+        )
+        connection.execute(
+            "INSERT INTO kineticloop.projection_dependencies"
+            "(id,subject_id,dependency_kind,dependency_semantic_key,ref_s14_id,ref_s21_id) "
+            "VALUES (%s,%s,'FACT','outside-fact',%s,%s)",
+            (PROJECTION_OUTSIDE_FACT_DEPENDENCY, SUBJECT, OUTSIDE_FACT, PROJECTION),
+        )
+        connection.execute(
+            "UPDATE kineticloop.policy_bundles SET typed_payload=%s WHERE id=%s",
+            (psycopg.types.json.Jsonb(fact_policy), POLICY),
+        )
+        connection.execute("SET session_replication_role=origin")
+    try:
+        with pytest.raises(GuardRequired, match="dependency basis is incomplete"):
+            attempt()
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "DELETE FROM kineticloop.projection_dependencies WHERE id=%s",
+                (PROJECTION_OUTSIDE_FACT_DEPENDENCY,),
+            )
+            connection.execute(
+                "DELETE FROM kineticloop.canonical_fact_revisions WHERE id=%s",
+                (OUTSIDE_FACT,),
+            )
+            connection.execute(
+                "DELETE FROM kineticloop.admission_decisions WHERE id=%s",
+                (OUTSIDE_ADMISSION,),
+            )
+            connection.execute(
+                "DELETE FROM kineticloop.candidate_assertions WHERE id=%s",
+                (OUTSIDE_CANDIDATE,),
+            )
+            connection.execute(
+                "DELETE FROM kineticloop.underlying_events WHERE id=%s",
+                (OUTSIDE_EVENT,),
+            )
+            connection.execute(
+                "DELETE FROM kineticloop.evidence_revisions WHERE id=%s",
+                (OUTSIDE_EVIDENCE,),
+            )
+            connection.execute(
+                "UPDATE kineticloop.policy_bundles SET typed_payload=%s WHERE id=%s",
+                (psycopg.types.json.Jsonb(policy_payload), POLICY),
             )
             connection.execute("SET session_replication_role=origin")
 
