@@ -23,7 +23,7 @@ from psycopg import Connection, Cursor, sql
 from psycopg.pq import TransactionStatus
 from psycopg.types.json import Jsonb
 
-from kineticloop.persistence.metadata import REQUIRED_FIELDS, metadata
+from kineticloop.persistence.metadata import REQUIRED_FIELDS
 from kineticloop.persistence.schema_topology import LOGICAL_RELATIONS
 
 _T = TypeVar("_T")
@@ -153,31 +153,31 @@ TRANSACTION_OWNER_MATRIX: Mapping[str, OwnerSpec] = MappingProxyType(
             "ExtractionService", Boundary.PREPARATION, ("S10",), subject_guard_required=False
         ),
         "DecideAssociation": OwnerSpec(
-            "EvidenceAssociationService", Boundary.T2_IN, ("S12", "S01", "S02", "S03", "S04")
+            "EvidenceAssociationService", Boundary.T2_IN, ("S12", "S43", "S01", "S02", "S03", "S04")
         ),
         "DecideAdmission": OwnerSpec(
-            "AdmissionService", Boundary.T2_IN, ("S13", "S01", "S02", "S03", "S04")
+            "AdmissionService", Boundary.T2_IN, ("S13", "S43", "S01", "S02", "S03", "S04")
         ),
         "AcceptFactRevision": OwnerSpec(
-            "CanonicalFactService", Boundary.T2_IN, ("S14", "S01", "S02", "S03", "S04")
+            "CanonicalFactService", Boundary.T2_IN, ("S14", "S43", "S01", "S02", "S03", "S04")
         ),
         "ApplyControl": OwnerSpec(
-            "ControlService", Boundary.T2_IN, ("S17", "S18", "S01", "S02", "S03", "S04")
+            "ControlService", Boundary.T2_IN, ("S17", "S18", "S43", "S01", "S02", "S03", "S04")
         ),
         "ClearControl": OwnerSpec(
-            "ControlService", Boundary.T2_IN, ("S17", "S18", "S01", "S02", "S03", "S04")
+            "ControlService", Boundary.T2_IN, ("S17", "S18", "S43", "S01", "S02", "S03", "S04")
         ),
         "ApproveChange": OwnerSpec(
-            "ProgramReviewService", Boundary.T2_IN, ("S08", "S01", "S02", "S03", "S04")
+            "ProgramReviewService", Boundary.T2_IN, ("S08", "S43", "S01", "S02", "S03", "S04")
         ),
         "ActivateApprovedProgram": OwnerSpec(
-            "ProgramService", Boundary.T2_IN, ("S06", "S01", "S02", "S03", "S04")
+            "ProgramService", Boundary.T2_IN, ("S06", "S43", "S01", "S02", "S03", "S04")
         ),
         "RecordActualExecution": OwnerSpec(
-            "CanonicalFactService", Boundary.T2_IN, ("S14", "S01", "S02", "S03", "S04")
+            "CanonicalFactService", Boundary.T2_IN, ("S14", "S43", "S01", "S02", "S03", "S04")
         ),
         "CompleteReportedWorkout": OwnerSpec(
-            "ExecutionService", Boundary.T2_IN, ("S44", "S14", "S01", "S02", "S03", "S04")
+            "ExecutionService", Boundary.T2_IN, ("S44", "S14", "S43", "S01", "S02", "S03", "S04")
         ),
         "BeginBuild": OwnerSpec(
             "CanonicalViewService", Boundary.BUILD, ("S15",), subject_guard_required=False
@@ -289,7 +289,7 @@ TRANSACTION_OWNER_MATRIX: Mapping[str, OwnerSpec] = MappingProxyType(
         "ContinueSession": OwnerSpec(
             "ExecutionService",
             Boundary.T7,
-            ("S51", "S01", "S38", "S44", "S45", "S02", "S03", "S04"),
+            ("S51", "S01", "S38", "S44", "S02", "S03", "S04"),
             registry_required=True,
         ),
         "SettleCall": OwnerSpec(
@@ -342,6 +342,7 @@ _MUTATION_COLUMNS: Mapping[str, Mapping[tuple[str, str], frozenset[str]]] = Mapp
                     "source_object_type",
                     "source_object_identity",
                     "source_revision",
+                    "observation_key",
                     "trust_class",
                     "source_class",
                     "command_authority",
@@ -461,9 +462,113 @@ _MUTATION_COLUMNS: Mapping[str, Mapping[tuple[str, str], frozenset[str]]] = Mapp
 )
 
 
-def _all_columns(logical_id: str) -> frozenset[str]:
-    table = _LOGICAL_TABLES[logical_id]
-    return frozenset(metadata.tables[f"kineticloop.{table}"].columns.keys())
+def _fields(names: str) -> frozenset[str]:
+    return frozenset(names.split())
+
+
+# Explicit append capabilities.  These are intentionally literals: a future schema
+# column must not silently become writable.  Database-generated known/recorded time
+# and revision provenance are never callback supplied.
+_INSERT_COLUMNS: Mapping[str, frozenset[str]] = MappingProxyType(
+    {
+        "S08": _fields(
+            "id subject_id approved_scope content_hash content_schema_version effective_at expires_at hash_scheme_version ref_s02_id ref_s05_id ref_s06_id ref_s07_id status typed_payload"
+        ),
+        "S09": _fields(
+            "id subject_id source_connection_identity source_object_type source_object_identity source_revision observation_key trust_class source_class command_authority content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S10": _fields(
+            "id subject_id assertion_family_identity predicate unit value_state ref_s09_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S12": _fields(
+            "id subject_id association_family_identity association_state ref_s09_id ref_s11_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S13": _fields(
+            "id subject_id action_scope decision ref_s05_id ref_s09_id ref_s10_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S14": _fields(
+            "id subject_id stable_fact_identity fact_kind fact_revision ref_s10_id ref_s11_id ref_s13_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S16": _fields(
+            "id subject_id logical_member_key member_kind member_operation action_scope ref_s12_id ref_s13_id ref_s14_id ref_s15_id ref_s20_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S17": _fields(
+            "id subject_id control_identity control_revision scope review_due_at ref_s02_id ref_s05_id ref_s09_id ref_s13_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S18": _fields(
+            "id subject_id control_identity execution_scope head_revision ref_s17_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S21": _fields(
+            "id subject_id projection_kind input_basis_hash computed_at valid_until content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S22": _fields(
+            "id subject_id dependency_kind dependency_semantic_key collection_signature ref_s05_id ref_s06_id ref_s14_id ref_s15_id ref_s19_id ref_s20_id ref_s21_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S23": _fields(
+            "id subject_id build_identity captured_epoch captured_input_frontier error_code ref_s05_id ref_s06_id ref_s15_id ref_s21_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S24": _fields(
+            "id subject_id generation manifest_hash input_frontier_hash captured_epoch dependency_closure_hash valid_until registry_revision_at_publish registry_state_id ref_s05_id ref_s06_id ref_s15_id ref_s19_id ref_s20_id ref_s23_id ref_s49_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S25": _fields(
+            "id subject_id projection_role unavailable_reason validated_basis_hash ref_s21_id ref_s24_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S27": _fields(
+            "id subject_id root_request_identity purpose local_date deadline current_request_revision_id current_attempt_id lease_owner lease_expires_at fence_token stale_restart_count result_bundle_revision_id result_authorization_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S28": _fields(
+            "id subject_id request_revision constraint_fingerprint normalization_version ref_s02_id ref_s27_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S29": _fields(
+            "id subject_id attempt_no snapshot_id captured_epoch fence_token started_at completed_at failure_code ref_s24_id ref_s27_id ref_s28_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S31": _fields(
+            "id subject_id operation_slot provider_request_identity config_fingerprint dispatch_owner dispatch_fence settlement_revision ref_s27_id ref_s29_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S32": _fields(
+            "id subject_id event_type transition_revision receipt_identity occurred_at ref_s31_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S33": _fields(
+            "id subject_id operation_slot tool_name tool_version arguments_hash result_hash trust_class ref_s26_id ref_s29_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S34": _fields(
+            "id subject_id proposal_family_identity proposal_kind producer_artifact demand_feature_id ref_s26_id ref_s29_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S35": _fields(
+            "id subject_id method_version feature_hash basis_hash ref_s34_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S36": _fields(
+            "id subject_id action_type action_parameters_hash resolver_version query_basis_hash resolution_expires_at ref_s05_id ref_s09_id ref_s12_id ref_s14_id ref_s24_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S37": _fields(
+            "id subject_id result validator_artifact valid_until ref_s03_id ref_s05_id ref_s24_id ref_s28_id ref_s29_id ref_s34_id ref_s35_id ref_s36_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S39": _fields(
+            "id subject_id local_date revision_no generation_mode parent_revision_id ref_s02_id ref_s24_id ref_s27_id ref_s29_id ref_s37_id ref_s38_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S40": _fields(
+            "id subject_id prescription_identity prescription_kind prescription_revision ref_s34_id ref_s49_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S41": _fields(
+            "id subject_id member_kind session_slot member_order ref_s39_id ref_s40_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S42": _fields(
+            "id subject_id bound_content_hash scope issuance_reason artifact_dependency_closure_hash registry_revision_at_issue valid_from valid_until validity_certificate ref_s02_id ref_s05_id ref_s24_id ref_s36_id ref_s37_id ref_s40_id ref_s49_id registry_state_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S43": _fields(
+            "id subject_id event_kind scope causation_key invalidated_epoch ref_s02_id ref_s13_id ref_s17_id ref_s42_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S45": _fields(
+            "id subject_id binding_kind binding_revision accepted_at execution_scope ref_s02_id ref_s40_id ref_s42_id ref_s44_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S49": _fields(
+            "id artifact_kind artifact_identity artifact_version validity_kind valid_from valid_until timeless_approval_policy timeless_approval_reason ref_s05_id ref_s19_id ref_s48_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+        "S50": _fields(
+            "id management_command_identity reason_code revocation_payload_hash registry_revision registry_state_id ref_s49_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
+        ),
+    }
+)
 
 
 # Every public owner has an explicit logical-table/operation capability.  Existing
@@ -471,15 +576,15 @@ def _all_columns(logical_id: str) -> frozenset[str]:
 _COMMAND_OPERATIONS: Mapping[str, Mapping[str, tuple[str, ...]]] = {
     "ReceiveEvidence": {"insert": ("S09",)},
     "RecordCandidate": {"insert": ("S10",)},
-    "DecideAssociation": {"insert": ("S12",), "update": ("S01",)},
-    "DecideAdmission": {"insert": ("S13",), "update": ("S01",)},
-    "AcceptFactRevision": {"insert": ("S14",), "update": ("S01",)},
-    "ApplyControl": {"insert": ("S17", "S18"), "update": ("S01", "S18")},
-    "ClearControl": {"insert": ("S17", "S18"), "update": ("S01", "S18")},
-    "ApproveChange": {"insert": ("S08",), "update": ("S01",)},
-    "ActivateApprovedProgram": {"update": ("S01",)},
-    "RecordActualExecution": {"insert": ("S14",), "update": ("S01",)},
-    "CompleteReportedWorkout": {"insert": ("S14",), "update": ("S01", "S44")},
+    "DecideAssociation": {"insert": ("S12", "S43"), "update": ("S01",)},
+    "DecideAdmission": {"insert": ("S13", "S43"), "update": ("S01",)},
+    "AcceptFactRevision": {"insert": ("S14", "S43"), "update": ("S01",)},
+    "ApplyControl": {"insert": ("S17", "S18", "S43"), "update": ("S01", "S18")},
+    "ClearControl": {"insert": ("S17", "S18", "S43"), "update": ("S01", "S18")},
+    "ApproveChange": {"insert": ("S08", "S43"), "update": ("S01",)},
+    "ActivateApprovedProgram": {"insert": ("S43",), "update": ("S01",)},
+    "RecordActualExecution": {"insert": ("S14", "S43"), "update": ("S01",)},
+    "CompleteReportedWorkout": {"insert": ("S14", "S43"), "update": ("S01", "S44")},
     "BeginBuild": {"update": ("S15",)},
     "WriteCandidate": {"insert": ("S16",), "update": ("S15",)},
     "CompleteFactset": {"update": ("S15",)},
@@ -507,7 +612,7 @@ _COMMAND_OPERATIONS: Mapping[str, Mapping[str, tuple[str, ...]]] = {
     "Reauthorize": {"insert": ("S42",), "update": ("S01", "S27", "S29", "S38")},
     "StartSession": {"insert": ("S45",), "update": ("S44",)},
     "ResumeSession": {"insert": ("S45",), "update": ("S44",)},
-    "ContinueSession": {"insert": ("S45",), "update": ("S44",)},
+    "ContinueSession": {"update": ("S44",)},
     "SettleCall": {"insert": ("S32",), "update": ("S27", "S31")},
     "MarkUnknown": {"insert": ("S32",), "update": ("S27", "S31")},
     "ReapIntent": {"update": ("S27", "S29", "S31")},
@@ -519,9 +624,13 @@ for _command, _operations in _COMMAND_OPERATIONS.items():
     for _operation, _logical_ids in _operations.items():
         for _logical_id in _logical_ids:
             if _operation == "insert":
-                # An append owner supplies the complete immutable row. Mutable tables
-                # never inherit columns: their command-specific fields are declared below.
-                _rules.setdefault((_logical_id, _operation), _all_columns(_logical_id))
+                try:
+                    columns = _INSERT_COLUMNS[_logical_id]
+                except KeyError as error:
+                    raise RuntimeError(
+                        f"missing explicit insert capability for {_logical_id}"
+                    ) from error
+                _rules.setdefault((_logical_id, _operation), columns)
 
 _UPDATE_COLUMNS: Mapping[str, Mapping[str, frozenset[str]]] = {
     "ApplyControl": {"S18": frozenset({"status", "head_revision", "ref_s17_id", "typed_payload"})},
@@ -726,7 +835,9 @@ class RestrictedSqlSession:
         database_values = dict(values)
         if logical_id == "S39" and "parent_revision_id" in database_values:
             parent = database_values.pop("parent_revision_id")
-            database_values["typed_payload"] = Jsonb({"parent_revision_id": str(parent)})
+            database_values["typed_payload"] = Jsonb(
+                {"parent_revision_id": str(parent) if parent is not None else None}
+            )
         items = self._items(database_values, "insert values")
         self._require_subject_predicate(logical_id, capability_values, "insert values")
         self._require_columns(logical_id, "insert", capability_values)
@@ -833,6 +944,27 @@ class RestrictedSqlSession:
     def _json_value(value: Any) -> Any:
         return getattr(value, "obj", value)
 
+    def authorization_certificate_dependencies(self) -> tuple[Mapping[str, Any], ...]:
+        dependencies = self.__coordination_context.get("authorization_dependencies")
+        if not dependencies:
+            raise GuardRequired("T6 authorization basis was not prepared under lock")
+        return tuple(dict(item) for item in dependencies)
+
+    def authorization_closure_digest(self) -> str:
+        return hashlib.sha256(
+            json.dumps(
+                self.authorization_certificate_dependencies(),
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
+        ).hexdigest()
+
+    def authorization_valid_until(self) -> datetime:
+        value = self.__coordination_context.get("authorization_valid_until")
+        if not isinstance(value, datetime):
+            raise GuardRequired("T6 authorization validity was not prepared under lock")
+        return value
+
     def _require_insert_bindings(self, logical_id: str, values: Mapping[str, Any]) -> None:
         references = {
             "ref_s27_id": ("planning_intents",),
@@ -881,22 +1013,29 @@ class RestrictedSqlSession:
             parent = values.get("parent_revision_id")
             head_id = values.get("ref_s38_id")
             expected = self.__head_bundles.get(head_id) if isinstance(head_id, UUID) else None
-            if expected is None or parent != expected:
+            if head_id not in self.__head_bundles or parent != expected:
                 raise GuardRequired("S39 must name the locked head revision as its parent")
             if values.get("ref_s24_id") != self.__coordination_context.get("current_manifest_id"):
                 raise GuardRequired("S39 must bind the current locked manifest")
+            if values.get("ref_s29_id") != self.__coordination_context.get("verified_attempt_id"):
+                raise GuardRequired("S39 must bind the current verified attempt")
         if logical_id == "S41":
             if values.get("ref_s39_id") not in self.__inserted_ids.get("S39", set()):
                 raise GuardRequired("S41 must bind the S39 inserted by this command")
             if values.get("ref_s40_id") not in self.__inserted_ids.get("S40", set()):
                 raise GuardRequired("S41 must bind the S40 inserted by this command")
         if logical_id == "S42":
+            prior_prescription: tuple[Any, ...] | None = None
             if self.__command_kind == "CommitBundle":
                 if values.get("ref_s40_id") not in self.__inserted_ids.get("S40", set()):
                     raise GuardRequired("S42 must bind the S40 inserted by this command")
             else:
                 _cursor(self).execute(
-                    "SELECT 1 FROM kineticloop.bundle_prescription_members member "
+                    "SELECT prescription.content_hash,prescription.ref_s34_id "
+                    "FROM kineticloop.bundle_prescription_members member "
+                    "JOIN kineticloop.prescription_revisions prescription "
+                    "ON prescription.subject_id=member.subject_id "
+                    "AND prescription.id=member.ref_s40_id "
                     "JOIN kineticloop.daily_plan_heads head "
                     "ON head.subject_id=member.subject_id "
                     "AND head.current_bundle_revision_id=member.ref_s39_id "
@@ -908,7 +1047,8 @@ class RestrictedSqlSession:
                         list(self.__locked_ids.get("daily_plan_heads", frozenset())),
                     ),
                 )
-                if _cursor(self).fetchone() is None:
+                prior_prescription = _cursor(self).fetchone()
+                if prior_prescription is None:
                     raise GuardRequired(
                         "reauthorization must bind a prescription on the locked current head"
                     )
@@ -926,14 +1066,19 @@ class RestrictedSqlSession:
                 if isinstance(prescription_id, UUID)
                 else None
             )
-            if self.__command_kind == "CommitBundle" and (
+            if self.__command_kind == "Reauthorize" and prior_prescription is not None:
+                prescription = MappingProxyType(
+                    {"content_hash": prior_prescription[0], "ref_s34_id": prior_prescription[1]}
+                )
+            if (
                 prescription is None
                 or not prescription.get("content_hash")
                 or values.get("bound_content_hash") != prescription.get("content_hash")
             ):
                 raise GuardRequired("S42 bound content must equal the inserted S40 content hash")
             _cursor(self).execute(
-                "SELECT ref_s05_id,ref_s24_id,ref_s28_id,ref_s29_id,ref_s34_id,ref_s36_id "
+                "SELECT ref_s05_id,ref_s24_id,ref_s28_id,ref_s29_id,ref_s34_id,ref_s36_id,"
+                "result,valid_until,ref_s03_id "
                 "FROM kineticloop.validation_results WHERE subject_id=%s AND id=%s",
                 (self.__subject_id, values.get("ref_s37_id")),
             )
@@ -944,9 +1089,12 @@ class RestrictedSqlSession:
                     values.get("ref_s05_id"),
                     values.get("ref_s24_id"),
                     self.__coordination_context.get("verified_request_id"),
-                    next(iter(self.__locked_ids.get("planning_attempts", frozenset())), None),
+                    self.__coordination_context.get("verified_attempt_id"),
                     prescription.get("ref_s34_id") if prescription else None,
                     values.get("ref_s36_id"),
+                    "PASS",
+                    self.__coordination_context.get("validation_valid_until"),
+                    self.__coordination_context.get("execution_basis_event_id"),
                 )
                 != validation
             ):
@@ -955,10 +1103,9 @@ class RestrictedSqlSession:
             required = {"authorization_epoch", "method_version", "closure_digest", "dependencies"}
             if not isinstance(certificate, dict) or not required <= set(certificate):
                 raise StatementRejected("S42 validity_certificate is incomplete")
-            expected_dependencies = [
-                dict(self.__artifact_details[artifact_id])
-                for artifact_id in sorted(self.__verified_artifacts, key=str)
-            ]
+            expected_dependencies = list(
+                self.__coordination_context.get("authorization_dependencies", ())
+            )
             if certificate["dependencies"] != expected_dependencies:
                 raise ArtifactIdentityRequired(
                     "S42 certificate dependencies must equal exact verified artifact proofs"
@@ -974,16 +1121,12 @@ class RestrictedSqlSession:
                 "authorization_epoch"
             ):
                 raise GuardRequired("S42 certificate epoch must equal locked S01")
-            bounded_until = [
-                detail["valid_until"]
-                for detail in expected_dependencies
-                if detail["valid_until"] is not None
-            ]
             authorization_valid_until = values.get("valid_until")
             if (
-                not bounded_until
+                not expected_dependencies
                 or not isinstance(authorization_valid_until, datetime)
-                or authorization_valid_until.isoformat() != min(bounded_until)
+                or authorization_valid_until
+                != self.__coordination_context.get("authorization_valid_until")
             ):
                 raise ArtifactIdentityRequired("S42 valid_until must equal closure minimum")
         if logical_id == "S43" and self.__command_kind == "CommitBundle":
@@ -999,6 +1142,17 @@ class RestrictedSqlSession:
             )
             if _cursor(self).fetchone() is None:
                 raise GuardRequired("S43 must supersede the authorization on the prior locked head")
+        if logical_id == "S45":
+            exact_pair = self.__coordination_context.get("execution_authorization")
+            if exact_pair != (values.get("ref_s40_id"), values.get("ref_s42_id")):
+                raise GuardRequired(
+                    "S45 must bind the exact revalidated prescription/authorization"
+                )
+            expected_kind = {"StartSession": "START", "ResumeSession": "RESUME"}.get(
+                self.__command_kind
+            )
+            if values.get("binding_kind") != expected_kind:
+                raise GuardRequired("S45 binding kind must match the T7 command")
 
     def _require_update_bindings(
         self,
@@ -1019,6 +1173,30 @@ class RestrictedSqlSession:
                     raise FenceLost("AcquireLease mutation must use the verified new fence")
                 if values.get("lease_owner") != verified[2]:
                     raise FenceLost("AcquireLease mutation must use the verified new owner")
+                expected_lease = self.__coordination_context.get("lease_targets", {}).get(object_id)
+                if (
+                    values.get("lease_expires_at") != expected_lease
+                    or values.get("status") != "RUNNING"
+                ):
+                    raise FenceLost(
+                        "AcquireLease must persist RUNNING with the verified new lease expiry"
+                    )
+            if self.__command_kind == "RenewLease" and "lease_expires_at" in values:
+                _cursor(self).execute(
+                    "SELECT lease_expires_at,deadline,clock_timestamp() "
+                    "FROM kineticloop.planning_intents WHERE subject_id=%s AND id=%s",
+                    (self.__subject_id, object_id),
+                )
+                lease_basis = _cursor(self).fetchone()
+                new_expiry = values["lease_expires_at"]
+                if (
+                    lease_basis is None
+                    or not isinstance(new_expiry, datetime)
+                    or new_expiry <= lease_basis[0]
+                    or new_expiry <= lease_basis[2]
+                    or new_expiry > lease_basis[1]
+                ):
+                    raise FenceLost("RenewLease expiry must extend the live lease within deadline")
             if "result_bundle_revision_id" in values and values[
                 "result_bundle_revision_id"
             ] not in self.__inserted_ids.get("S39", set()):
@@ -1072,10 +1250,16 @@ class RestrictedSqlSession:
                     "every inserted authorization requires its exact materialized closure"
                 )
         if self.__command_kind == "CommitBundle":
-            for logical_id in ("S39", "S40", "S41", "S42", "S43"):
+            for logical_id in ("S39", "S40", "S41", "S42"):
                 if len(self.__inserted_ids.get(logical_id, set())) != 1:
                     raise GuardRequired(f"CommitBundle requires exactly one {logical_id} insert")
-            required_updates = {
+            prior_exists = any(value is not None for value in self.__head_bundles.values())
+            required_s43 = 1 if prior_exists else 0
+            if len(self.__inserted_ids.get("S43", set())) != required_s43:
+                raise GuardRequired(
+                    "CommitBundle supersession count must match the locked prior head"
+                )
+            commit_updates = {
                 "S01": lambda row: row.get("execution_basis_event_id") == self.__event_id,
                 "S38": lambda row: (
                     row.get("current_bundle_revision_id") in self.__inserted_ids["S39"]
@@ -1085,31 +1269,121 @@ class RestrictedSqlSession:
                     and row.get("result_bundle_revision_id") in self.__inserted_ids["S39"]
                     and row.get("result_authorization_id") in self.__inserted_ids["S42"]
                 ),
-                "S29": lambda row: row.get("status") == "COMMITTED",
+                "S29": lambda row: (
+                    row.get("id") == self.__coordination_context.get("verified_attempt_id")
+                    and row.get("status") == "COMMITTED"
+                ),
             }
-            for logical_id, predicate in required_updates.items():
+            for logical_id, predicate in commit_updates.items():
                 if not any(predicate(row) for row in self.__updated_values.get(logical_id, [])):
                     raise GuardRequired(f"CommitBundle requires its mandatory {logical_id} update")
+        if self.__command_kind == "Reauthorize":
+            if len(self.__inserted_ids.get("S42", set())) != 1:
+                raise GuardRequired("Reauthorize requires exactly one new S42 issuance")
+            reauthorization_updates = {
+                "S01": lambda row: row.get("execution_basis_event_id") == self.__event_id,
+                "S27": lambda row: row.get("result_authorization_id") in self.__inserted_ids["S42"],
+                "S29": lambda row: (
+                    row.get("id") == self.__coordination_context.get("verified_attempt_id")
+                    and row.get("status") == "COMMITTED"
+                ),
+            }
+            for logical_id, predicate in reauthorization_updates.items():
+                if not any(predicate(row) for row in self.__updated_values.get(logical_id, [])):
+                    raise GuardRequired(f"Reauthorize requires its mandatory {logical_id} update")
         if self.__command_kind in {"StartSession", "ResumeSession", "ContinueSession"}:
+            if not self.__coordination_context.get("execution_authorization"):
+                raise GuardRequired(
+                    f"{self.__command_kind} must revalidate its exact prescription/authorization"
+                )
             if not any(
                 row.get("execution_basis_event_id") == self.__event_id
                 for row in self.__updated_values.get("S01", [])
             ):
                 raise GuardRequired(f"{self.__command_kind} must advance S01 execution basis")
+            if not any(row for row in self.__updated_values.get("S44", [])):
+                raise GuardRequired(f"{self.__command_kind} must update the locked S44")
+            required_bindings = 0 if self.__command_kind == "ContinueSession" else 1
+            if len(self.__inserted_ids.get("S45", set())) != required_bindings:
+                raise GuardRequired(
+                    f"{self.__command_kind} requires {required_bindings} new S45 binding(s)"
+                )
+        if self.__command_kind == "PermitDispatch" and not self.__coordination_context.get(
+            "dispatch_guard"
+        ):
+            raise GuardRequired("PermitDispatch must use the guarded first-winner transition")
         if self.__command_kind == "AcquireLease":
             if not any(
                 isinstance(row.get("id"), UUID)
                 and self.__verified_fences.get(row["id"])
                 == (row.get("fence_token"), "CAS", row.get("lease_owner"))
+                and row.get("status") == "RUNNING"
+                and row.get("lease_expires_at")
+                == self.__coordination_context.get("lease_targets", {}).get(row["id"])
                 for row in self.__updated_values.get("S27", [])
             ):
                 raise GuardRequired("AcquireLease must persist its verified owner and new fence")
         if self.__command_kind == "ReapIntent":
-            if not any(
-                row.get("status") in {"FAILED", "CANCELLED", "SEARCH_BUDGET_EXHAUSTED"}
+            reaped = [
+                row
                 for row in self.__updated_values.get("S27", [])
-            ):
+                if row.get("status") in {"FAILED", "CANCELLED", "SEARCH_BUDGET_EXHAUSTED"}
+            ]
+            attempt = self.__coordination_context.get("verified_attempt_id")
+            terminal_attempt = any(
+                row.get("id") == attempt
+                and row.get("status") in {"FAILED", "CANCELLED", "SEARCH_BUDGET_EXHAUSTED"}
+                for row in self.__updated_values.get("S29", [])
+            )
+            if not reaped or not terminal_attempt:
                 raise GuardRequired("ReapIntent must persist an eligible terminal transition")
+
+        required_inserts: Mapping[str, tuple[str, ...]] = {
+            "ReceiveEvidence": ("S09",),
+            "DecideAssociation": ("S12", "S43"),
+            "DecideAdmission": ("S13", "S43"),
+            "AcceptFactRevision": ("S14", "S43"),
+            "ApplyControl": ("S17", "S43"),
+            "ClearControl": ("S17", "S43"),
+            "ApproveChange": ("S08", "S43"),
+            "ActivateApprovedProgram": ("S43",),
+            "RecordActualExecution": ("S14", "S43"),
+            "CompleteReportedWorkout": ("S14", "S43"),
+            "PublishManifest": ("S24", "S25"),
+            "AdmitOrReviseIntent": ("S28", "S29"),
+            "ReserveCall": ("S31", "S32"),
+            "SettleCall": ("S32",),
+            "MarkUnknown": ("S32",),
+        }
+        for logical_id in required_inserts.get(self.__command_kind, ()):
+            if not self.__inserted_ids.get(logical_id):
+                raise GuardRequired(
+                    f"{self.__command_kind} requires a mandatory {logical_id} insert"
+                )
+        mandatory_updates: Mapping[str, tuple[str, ...]] = {
+            "DecideAssociation": ("S01",),
+            "DecideAdmission": ("S01",),
+            "AcceptFactRevision": ("S01",),
+            "ApplyControl": ("S01",),
+            "ClearControl": ("S01",),
+            "ApproveChange": ("S01",),
+            "ActivateApprovedProgram": ("S01",),
+            "RecordActualExecution": ("S01",),
+            "CompleteReportedWorkout": ("S01", "S44"),
+            "SealFactset": ("S01", "S15"),
+            "PublishManifest": ("S01", "S23"),
+            "AdmitOrReviseIntent": ("S27", "S30"),
+            "CancelIntent": ("S27",),
+            "RenewLease": ("S27",),
+            "ReserveCall": ("S27",),
+            "SettleCall": ("S27", "S31"),
+            "MarkUnknown": ("S27", "S31"),
+        }
+        for logical_id in mandatory_updates.get(self.__command_kind, ()):
+            if not self.__updated_values.get(logical_id):
+                raise GuardRequired(
+                    f"{self.__command_kind} requires a mandatory {logical_id} update"
+                )
 
     def _require_locked_identity(self, logical_id: str, predicates: Mapping[str, Any]) -> None:
         lock_name = {
@@ -1506,6 +1780,14 @@ class RepositoryTransaction:
         expected_attempt_id: UUID,
     ) -> None:
         self._require_subject()
+        if self.command_kind not in {
+            "RenewLease",
+            "ReserveCall",
+            "PermitDispatch",
+            "CommitBundle",
+            "Reauthorize",
+        }:
+            raise GuardRequired("current live fence is not available to this command owner")
         if intent_id not in self._locked_ids.get("planning_intents", set()):
             raise GuardRequired("exact intent must be locked before checking fence")
         _cursor(self).execute(
@@ -1531,7 +1813,168 @@ class RepositoryTransaction:
         if verified_request is None:
             raise FenceLost("stale owner/fence cannot commit")
         self._coordination_context["verified_request_id"] = verified_request[0]
+        self._coordination_context["verified_intent_id"] = intent_id
+        self._coordination_context["verified_attempt_id"] = expected_attempt_id
         self._verified_fences[intent_id] = (fence, "LIVE", expected_attempt_id)
+
+    def prepare_authorization_basis(
+        self,
+        *,
+        validation_id: UUID,
+        resolution_id: UUID,
+        intent_id: UUID,
+        head_id: UUID,
+        requested_valid_until: datetime | None = None,
+    ) -> tuple[tuple[Mapping[str, Any], ...], str, datetime]:
+        """Server-compute the complete bounded T6 certificate basis under held locks."""
+
+        if self.command_kind not in {"CommitBundle", "Reauthorize"}:
+            raise GuardRequired("authorization basis is exclusive to T6 owners")
+        if intent_id != self._coordination_context.get("verified_intent_id"):
+            raise GuardRequired("authorization basis must use the verified current intent")
+        if validation_id not in self._locked_ids.get("validation_results", set()):
+            raise GuardRequired("authorization basis requires the exact validation lock")
+        if head_id not in self._locked_ids.get("daily_plan_heads", set()):
+            raise GuardRequired("authorization basis requires the exact daily head lock")
+        _cursor(self).execute(
+            "SELECT manifest.id,manifest.revision,manifest.valid_until,"
+            "resolution.id,resolution.revision,resolution.resolution_expires_at,"
+            "validation.id,validation.revision,validation.valid_until,validation.result,"
+            "request.id,request.request_revision,intent.deadline,head.id,head.local_date,"
+            "clock_timestamp() "
+            "FROM kineticloop.planning_intents intent "
+            "JOIN kineticloop.planning_request_revisions request "
+            "ON request.subject_id=intent.subject_id AND request.id=intent.current_request_revision_id "
+            "JOIN kineticloop.validation_results validation "
+            "ON validation.subject_id=intent.subject_id AND validation.id=%s "
+            "JOIN kineticloop.evidence_resolutions resolution "
+            "ON resolution.subject_id=intent.subject_id AND resolution.id=%s "
+            "JOIN kineticloop.decision_manifests manifest "
+            "ON manifest.subject_id=intent.subject_id AND manifest.id=%s "
+            "JOIN kineticloop.daily_plan_heads head "
+            "ON head.subject_id=intent.subject_id AND head.id=%s "
+            "WHERE intent.subject_id=%s AND intent.id=%s",
+            (
+                validation_id,
+                resolution_id,
+                self._coordination_context.get("current_manifest_id"),
+                head_id,
+                self.subject_id,
+                intent_id,
+            ),
+        )
+        row = _cursor(self).fetchone()
+        if row is None or row[9] != "PASS":
+            raise GuardRequired("authorization requires a current PASS validation basis")
+        now = row[15]
+        bounded = (row[2], row[5], row[8], row[12])
+        if any(not isinstance(value, datetime) or value <= now for value in bounded):
+            raise GuardRequired("authorization basis contains an expired or undefined dependency")
+        valid_until = min(bounded)
+        if requested_valid_until is not None:
+            if requested_valid_until <= now:
+                raise GuardRequired("requested authorization end is already expired")
+            valid_until = min(valid_until, requested_valid_until)
+        dependencies = [
+            dict(self._artifact_details[artifact_id])
+            for artifact_id in sorted(self._verified_artifacts, key=str)
+        ]
+        dependencies.extend(
+            (
+                {
+                    "dependency_kind": "MANIFEST",
+                    "identity": str(row[0]),
+                    "revision": row[1],
+                    "valid_until": row[2].isoformat(),
+                },
+                {
+                    "dependency_kind": "EVIDENCE_RESOLUTION",
+                    "identity": str(row[3]),
+                    "revision": row[4],
+                    "valid_until": row[5].isoformat(),
+                },
+                {
+                    "dependency_kind": "VALIDATION",
+                    "identity": str(row[6]),
+                    "revision": row[7],
+                    "valid_until": row[8].isoformat(),
+                },
+                {
+                    "dependency_kind": "REQUEST",
+                    "identity": str(row[10]),
+                    "revision": row[11],
+                    "valid_until": row[12].isoformat(),
+                },
+                {
+                    "dependency_kind": "POLICY",
+                    "identity": str(self._coordination_context.get("active_policy_bundle_id")),
+                    "revision": self._coordination_context.get("authorization_epoch"),
+                    "valid_until": valid_until.isoformat(),
+                },
+                {
+                    "dependency_kind": "CALENDAR",
+                    "identity": str(row[13]),
+                    "revision": row[14].isoformat(),
+                    "valid_until": valid_until.isoformat(),
+                },
+            )
+        )
+        digest = hashlib.sha256(
+            json.dumps(dependencies, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+        self._coordination_context["authorization_dependencies"] = tuple(dependencies)
+        self._coordination_context["authorization_valid_until"] = valid_until
+        self._coordination_context["validation_valid_until"] = row[8]
+        return tuple(dependencies), digest, valid_until
+
+    def require_execution_authorization(
+        self,
+        *,
+        prescription_id: UUID,
+        authorization_id: UUID,
+        execution_scope: str,
+    ) -> None:
+        """Revalidate the exact P/A pair consumed by a T7 START/RESUME/CONTINUE."""
+
+        if self.command_kind not in {"StartSession", "ResumeSession", "ContinueSession"}:
+            raise GuardRequired("execution authorization is exclusive to T7 owners")
+        self._require_subject()
+        if not self._registry:
+            raise GuardRequired("T7 execution authorization requires the registry lease")
+        _cursor(self).execute(
+            "SELECT 1 FROM kineticloop.authorization_issuances issuance "
+            "JOIN kineticloop.prescription_revisions prescription "
+            "ON prescription.subject_id=issuance.subject_id "
+            "AND prescription.id=issuance.ref_s40_id "
+            "JOIN kineticloop.bundle_prescription_members member "
+            "ON member.subject_id=prescription.subject_id "
+            "AND member.ref_s40_id=prescription.id "
+            "JOIN kineticloop.daily_plan_heads head "
+            "ON head.subject_id=member.subject_id "
+            "AND head.current_bundle_revision_id=member.ref_s39_id "
+            "WHERE issuance.subject_id=%s AND issuance.id=%s "
+            "AND prescription.id=%s "
+            "AND issuance.bound_content_hash=prescription.content_hash "
+            "AND issuance.scope=%s "
+            "AND issuance.valid_from <= clock_timestamp() "
+            "AND issuance.valid_until > clock_timestamp() "
+            "AND (issuance.validity_certificate->>'authorization_epoch')::bigint=%s "
+            "AND head.id=ANY(%s)",
+            (
+                self.subject_id,
+                authorization_id,
+                prescription_id,
+                execution_scope,
+                self._coordination_context.get("authorization_epoch"),
+                list(self._locked_ids.get("daily_plan_heads", set())),
+            ),
+        )
+        if _cursor(self).fetchone() is None:
+            raise GuardRequired("exact T7 prescription/authorization is not executable")
+        self._coordination_context["execution_authorization"] = (
+            prescription_id,
+            authorization_id,
+        )
 
     def require_lease_acquisition_basis(
         self,
@@ -1541,6 +1984,7 @@ class RepositoryTransaction:
         expected_fence: int,
         new_owner_id: str,
         new_fence: int,
+        new_lease_expires_at: datetime,
         expected_request_revision: int,
     ) -> None:
         """Prove the exact prior lease state used by an AcquireLease CAS."""
@@ -1563,7 +2007,8 @@ class RepositoryTransaction:
             "AND intent.deadline > clock_timestamp() "
             "AND (intent.lease_expires_at <= clock_timestamp() "
             "OR intent.lease_owner=%s) "
-            "AND request.request_revision=%s",
+            "AND request.request_revision=%s "
+            "AND %s > clock_timestamp() AND %s <= intent.deadline",
             (
                 self.subject_id,
                 intent_id,
@@ -1571,11 +2016,14 @@ class RepositoryTransaction:
                 expected_fence,
                 new_owner_id,
                 expected_request_revision,
+                new_lease_expires_at,
+                new_lease_expires_at,
             ),
         )
         if _cursor(self).fetchone() is None:
             raise FenceLost("lease acquisition compare-and-swap basis was lost")
         self._verified_fences[intent_id] = (new_fence, "CAS", new_owner_id)
+        self._coordination_context.setdefault("lease_targets", {})[intent_id] = new_lease_expires_at
 
     def require_reaper_basis(
         self,
@@ -1585,6 +2033,7 @@ class RepositoryTransaction:
         fence: int,
         expected_deadline: datetime,
         expected_request_revision: int,
+        expected_attempt_id: UUID,
     ) -> None:
         """Prove the exact expired/deadline basis used by ReapIntent."""
 
@@ -1603,6 +2052,7 @@ class RepositoryTransaction:
             "AND intent.status IN ('PENDING','RUNNING') "
             "AND intent.deadline IS NOT DISTINCT FROM %s "
             "AND request.request_revision=%s "
+            "AND intent.current_attempt_id=%s "
             "AND (intent.lease_expires_at <= clock_timestamp() "
             "OR intent.deadline <= clock_timestamp())",
             (
@@ -1612,11 +2062,13 @@ class RepositoryTransaction:
                 fence,
                 expected_deadline,
                 expected_request_revision,
+                expected_attempt_id,
             ),
         )
         if _cursor(self).fetchone() is None:
             raise FenceLost("intent is not owned by the expected expired lease")
-        self._verified_fences[intent_id] = (fence, "EXPIRED", None)
+        self._coordination_context["verified_attempt_id"] = expected_attempt_id
+        self._verified_fences[intent_id] = (fence, "EXPIRED", expected_attempt_id)
 
     def permit_dispatch(
         self,
@@ -1629,6 +2081,8 @@ class RepositoryTransaction:
         fence: int,
     ) -> DispatchPermit:
         self._require_subject()
+        if self.command_kind != "PermitDispatch":
+            raise GuardRequired("dispatch permit is exclusive to PermitDispatch")
         if reservation_id not in self._locked_ids.get("call_reservations", set()):
             raise GuardRequired("exact reservation must be locked before dispatch transition")
 
@@ -1663,6 +2117,7 @@ class RepositoryTransaction:
                 raise DispatchNotPermitted("reservation transition was not durable")
             return {"reservation_id": str(reservation_id), "permit_key": permit_key}
 
+        self._coordination_context["dispatch_guard"] = reservation_id
         outcome, replayed = self.idempotent_outcome(
             receipt_id=receipt_id,
             actor_scope="subject",
@@ -1686,6 +2141,7 @@ class RepositoryTransaction:
         event: EventWrite,
         aggregate_locks: Mapping[str, Sequence[UUID]] | None = None,
         source_identity_key: str | None = None,
+        authorization_basis: Mapping[str, Any] | None = None,
     ) -> tuple[Mapping[str, Any], bool]:
         self._require_receipt_guard()
         self._require_command_locks(aggregate_locks or {})
@@ -1720,6 +2176,10 @@ class RepositoryTransaction:
             }.__getitem__,
         ):
             self.lock_remaining(table, (aggregate_locks or {})[table])
+        if self.command_kind in {"CommitBundle", "Reauthorize"}:
+            if authorization_basis is None:
+                raise GuardRequired("T6 requires a complete authorization validity basis")
+            self.prepare_authorization_basis(**authorization_basis)
         _cursor(self).execute(
             "INSERT INTO kineticloop.command_receipts"
             "(id,subject_id,status,command_kind,client_key,actor_scope,request_hash) "
@@ -1893,6 +2353,8 @@ def replay_outcome(
         outcome = dict(prior[2]["outcome"])
         if command_kind == "PermitDispatch":
             outcome.update({"sendable": False, "replayed": True})
+        if command_kind in {"StartSession", "ResumeSession", "ContinueSession"}:
+            outcome.update({"executable": False, "replayed": True})
         return outcome
 
 

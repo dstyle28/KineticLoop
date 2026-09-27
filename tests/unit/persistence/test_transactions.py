@@ -60,6 +60,12 @@ def test_every_public_owner_has_explicit_non_infrastructure_dml_capabilities() -
         assert MUTATION_CAPABILITY_MATRIX[command][("S01", "update")] == {
             "execution_basis_event_id"
         }
+    assert ("S45", "insert") not in MUTATION_CAPABILITY_MATRIX["ContinueSession"]
+    for rules in MUTATION_CAPABILITY_MATRIX.values():
+        for (logical_id, operation), columns in rules.items():
+            if operation == "insert":
+                assert "recorded_at" not in columns, logical_id
+                assert "known_at" not in columns, logical_id
 
 
 def test_catalog_mapping_and_release_owner_boundaries_complete() -> None:

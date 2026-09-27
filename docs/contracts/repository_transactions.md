@@ -10,7 +10,9 @@ method. Cursor state is held outside the callback capability object. Callbacks r
 structured `insert` and `update` operations only after the required guards;
 schema/table identifiers are generated from the owner's logical-table capability,
 each command has an explicit fail-closed column allowlist, and columns are quoted by
-psycopg. Preparation and build sessions have separate narrower capabilities, so they
+psycopg. Insert allowlists are literal rather than schema-derived, so future columns
+cannot silently become writable; database-generated known/recorded timestamps and
+revision provenance are never callback supplied. Preparation and build sessions have separate narrower capabilities, so they
 cannot express S51/S01 access through the shared interface. The generic command entry
 point rejects PREPARATION, BUILD, and external owners; those owners cannot relabel
 their work to obtain coordination.
@@ -49,29 +51,45 @@ advisory/S02 guard for T1). It returns the exact historical result without reacq
 registry, work, artifact, or live-fence guards, so later revocation cannot erase a
 committed outcome. Current eligibility is a separate decision. A missing successful
 receipt and a request-hash conflict remain distinct failures. T1 serializes a missing
-natural receipt key with a transaction advisory lock before admitting evidence.
+natural receipt key with a transaction advisory lock before admitting evidence. Both
+source-revision and observation-key identities are supported, exactly one is required,
+and the inserted S09 identity must match the advisory-locked source identity.
 Database natural keys remain the last line of defense.
 
 Lease-aware owners prove a command-specific basis for every locked intent:
 AcquireLease proves the exact prior owner/token compare-and-swap basis, live worker
 commands prove owner/token/status/unexpired lease, and ReapIntent proves the exact
-expired/deadline basis. PermitDispatch additionally requires the reservation's
+expired/deadline/current-attempt basis. Acquisition persists RUNNING plus the exact
+new owner, larger token, and future lease expiry bounded by the intent deadline;
+renewal must extend the live lease without crossing that deadline. Reaping atomically
+terminates the exact current S27/S29 chain. PermitDispatch additionally requires the reservation's
 `ref_s27_id` and dispatch fence to match that verified live intent and token.
 
 `T6CommitCoordinator` is the one repository owner for CommitBundle. It is the atomic
 database boundary jointly required by PrescriptionCommitService and
 AuthorizationService; neither service receives a partial S39/S40/S41 or S42 commit
 interface.
-The T6 commit path binds every inserted reference to the exact locked or same-command
-inserted row. It records the prior locked S38 revision as S39's parent, inserts
-S39/S40/S41/S42, materializes the exact verified S49 closure for S42, and links the
-supersession through the prior bundle member/prescription/authorization chain. It
+The T6 commit path binds every inserted reference to one exact verified
+intent/request/attempt/validation chain and to the locked or same-command inserted
+row. It records the locked S38 revision as S39's parent, allowing null only for the
+first head, inserts S39/S40/S41/S42, materializes the exact verified S49 closure for
+S42, and links supersession through the prior bundle member/prescription/authorization
+chain only when a prior head exists. It
 switches S38 to the exact new bundle revision, records S27's bundle and authorization
 results, marks S29 COMMITTED, points S01's execution basis to the same-transaction S03
-event, and persists S02/S03/S04. S42 carries an issuance reason, authorization epoch,
-method version, registry revision, dependency identities, and deterministic closure
-digest. ACK-loss replay returns those same durable identities without repeating any
+event, and persists S02/S03/S04. S37 must remain PASS, unexpired, and match the locked
+policy, manifest, request, attempt, proposal, resolution, and prior execution basis.
+S42 carries an issuance reason, authorization epoch, method version, registry revision,
+and a deterministic certificate over artifact, manifest, resolution, validation,
+request, policy, and calendar identities. Its server-computed expiry is their bounded
+minimum or a shorter requested end. ACK-loss replay returns those same durable identities without repeating any
 head, terminal, supersession, event, outbox, or closure transition.
+
+T2-IN owners can append S43 invalidation in the same command as their decision and S01
+epoch/frontier change. T7 START and RESUME revalidate and append S45 for the exact
+current prescription/authorization pair; CONTINUE revalidates the pair but cannot
+append S45. Every T7 command advances S01's execution basis with its S03 event, and a
+historical replay is explicitly non-executable.
 
 PermitDispatch locks S01, S27, then S31 and atomically commits its S02 receipt, S03
 event, and S04 outbox row with the state transition. Only the first
