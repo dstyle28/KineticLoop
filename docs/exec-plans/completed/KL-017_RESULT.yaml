@@ -1,0 +1,90 @@
+task_identity: harness-backlog-v0.2/KL-017
+display_task_id: KL-017
+task_definition_version: v0.2
+base_commit: a2602123a539787ed2a6bed25b892109474d0395
+tested_commit: eb617291e58dcaa99b7873096ada0e08dc7f6f26
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Isolated production, test, and evaluation persistence by authenticated database
+  principal and exact subject. FORCE RLS now protects the two authority-metadata
+  tables as well as the five subject data tables, so post-registration direct,
+  inherited, SET ROLE, ownership, and role-attribute drift cannot reveal or mutate
+  bindings. Registration requires the exact trusted-admin login shape, and upgrade,
+  registration, lookup, and RLS enforce a closed inventory of canonical inbound
+  foreign keys to S38/S42/S45/S46/S47.
+commands_run:
+  - check_id: subject_namespace_isolation
+    command: uv run pytest -q tests/db/test_subject_scope.py::test_subject_namespace_isolation
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-eb61729.log
+  - check_id: cross_subject_denial_is_non_enumerating
+    command: uv run pytest -q tests/db/test_subject_scope.py::test_cross_subject_denial_is_non_enumerating
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-eb61729.log
+  - check_id: test_authorization_is_isolated
+    command: uv run pytest -q tests/db/test_subject_scope.py::test_test_authorization_is_isolated
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-eb61729.log
+  - check_id: evaluation_storage_is_isolated
+    command: uv run pytest -q tests/db/test_subject_scope.py::test_evaluation_storage_is_isolated
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-eb61729.log
+  - check_id: application_role_scope_enforced
+    command: uv run pytest -q tests/db/test_subject_scope.py::test_application_role_scope_enforced
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-eb61729.log
+  - check_id: subject_isolation_e2e_passes
+    command: uv run pytest -q tests/e2e/test_subject_isolation.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-eb61729.log
+  - check_id: subject_scope_db_regressions_pass
+    command: uv run pytest -q tests/db/test_subject_scope.py tests/db/test_migrations.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-eb61729.log
+  - check_id: single_migration_head
+    command: uv run alembic heads
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-eb61729.log
+  - check_id: harness_validation_passes
+    command: uv run kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-eb61729.log
+  - check_id: complete_db_suite_passes
+    command: uv run pytest -q tests/db
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-017/checks-eb61729.log
+requirements_covered: []
+files_changed:
+  - docs/contracts/subject_scope.md
+  - migrations/versions/d4c1a9e7b203_subject_scope.py
+  - src/kineticloop/persistence/subject_scope.py
+  - tests/db/test_subject_scope.py
+  - tests/db/test_migrations.py
+  - tests/db/test_safety_registry.py
+  - tests/e2e/test_subject_isolation.py
+  - docs/exec-plans/evidence/KL-017/checks-eb61729.log
+  - docs/exec-plans/evidence/KL-017/ci-eb61729.log
+  - docs/exec-plans/completed/KL-017_RESULT.yaml
+decisions:
+  - Force RLS on subject_scopes and subject_principal_bindings with a catalog-only, fixed-search-path policy helper and closed role grants.
+  - Permit authority-metadata reads only for validated internal command owners and auditors; a subject principal with any authority ACL, ownership, or role-graph drift sees no rows.
+  - Retain SECURITY INVOKER row and statement triggers as the independent metadata write boundary, including TRUNCATE denial.
+  - Require the exact externally provisioned kl_trusted_admin_login with one inherited, non-SET, non-admin trusted-admin membership and no extra reachable roles for registration.
+  - Treat inbound foreign keys to S38, S42, S45, S46, and S47 as a closed inventory of eight canonical, subject-keyed constraints checked before upgrade and during registration, lookup, and RLS.
+  - Install one canonical superuser-owned ddl_command_start event trigger during external two-phase cluster bootstrap and require its exact enabled function inventory before d4 upgrade or downgrade.
+  - Bind DDL denial to authenticated session_user and the canonical subject-login name pattern, so deleting or corrupting a binding cannot enable SET ROLE DDL.
+  - Run protected row triggers as SECURITY INVOKER and pass invoking current_user to fixed-search-path SECURITY DEFINER helpers for exact command-owner, binding, subject, namespace, role-graph, ACL, ownership, and foreign-key validation.
+  - Force RLS on S38, S42, S45, S46, and S47 and retain INSERT, UPDATE, DELETE, and TRUNCATE trigger enforcement so BYPASSRLS never becomes a direct bound-subject write path.
+  - Acquire registration ACCESS SHARE and downgrade ACCESS EXCLUSIVE locks in the global order S38, S42, S45, S46, S47, subject scopes, principal bindings; hold downgrade locks through destructive DDL.
+  - Preserve frozen S51-before-S01 and T6/T7 command-owner semantics; the RLS, DML, DDL, metadata, and inbound-FK guards enforce persistence boundaries only.
+known_limitations:
+  - Cluster roles, subject credentials, memberships, ownership handoff, continuous role audit, and canonical superuser event-trigger installation remain external two-phase deployment responsibilities documented in docs/contracts/subject_scope.md.
+  - Subject principals must never receive SUPERUSER or BYPASSRLS. PostgreSQL cannot mediate SELECT after a cluster administrator grants either attribute; ALTER ROLE, event-trigger administration, and direct superuser data access remain trusted cluster-administration boundaries.
+  - Operators must retire all classifications, bindings, and protected S38/S42/S45/S46/S47 data before downgrade.
+  - No product requirement PASS or production auto-activation is claimed.
+follow_up_tasks:
+  - Run fresh SHA-bound GENERAL, PROTOCOL, DB_CONCURRENCY, and SECURITY_DATA_BOUNDARY independent reviews on the final reviewable head.
+spec_change_request: null

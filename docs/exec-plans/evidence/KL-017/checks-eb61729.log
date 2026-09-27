@@ -1,0 +1,34 @@
+KL-017 exact packet checks
+tested_commit: eb617291e58dcaa99b7873096ada0e08dc7f6f26
+
+$ uv run pytest -q tests/db/test_subject_scope.py::test_subject_namespace_isolation
+1 passed in 2.72s
+
+$ uv run pytest -q tests/db/test_subject_scope.py::test_cross_subject_denial_is_non_enumerating
+1 passed in 2.58s
+
+$ uv run pytest -q tests/db/test_subject_scope.py::test_test_authorization_is_isolated
+1 passed in 2.65s
+
+$ uv run pytest -q tests/db/test_subject_scope.py::test_evaluation_storage_is_isolated
+1 passed in 2.48s
+
+$ uv run pytest -q tests/db/test_subject_scope.py::test_application_role_scope_enforced
+1 passed in 2.57s
+
+$ uv run pytest -q tests/e2e/test_subject_isolation.py
+1 passed in 2.32s
+
+$ uv run pytest -q tests/db/test_subject_scope.py tests/db/test_migrations.py
+46 passed in 67.21s
+
+$ uv run alembic heads
+d4c1a9e7b203 (head)
+
+$ uv run kl check-harness
+HARNESS_CHECK_PASS tasks=69 active=67
+
+$ uv run pytest -q tests/db
+166 passed in 95.66s
+
+ALL_KL017_PACKET_CHECKS_PASS
