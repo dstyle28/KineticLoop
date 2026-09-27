@@ -52,7 +52,7 @@ class ValidatorTests(unittest.TestCase):
             + [entry['path'] for entry in index['documents'] + index['machine_readable']]
         )
         for name in dict.fromkeys(names):
-            if name == 'docs/exec-plans/milestones/M1.json':
+            if name.startswith('docs/exec-plans/milestones/'):
                 # Generic fixtures deliberately have no closure; READY-specific
                 # tests exercise the fail-closed admission rule.
                 continue
@@ -63,7 +63,7 @@ class ValidatorTests(unittest.TestCase):
         fixture_manifest = json.loads(fixture_manifest_path.read_text())
         fixture_manifest['files'] = [
             entry for entry in fixture_manifest['files']
-            if entry['path'] != 'docs/exec-plans/milestones/M1.json'
+            if not entry['path'].startswith('docs/exec-plans/milestones/')
         ]
         dump(fixture_manifest_path, fixture_manifest)
         # Governance scenarios need a pending refinement regardless of the live
