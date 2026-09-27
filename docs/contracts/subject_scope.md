@@ -28,12 +28,14 @@ five protected data tables plus `subject_scopes` and
 Only the externally provisioned `kl_trusted_admin_login` with its one exact inherited
 `kl_trusted_admin` membership may call registration. A canonical or already-bound
 subject session fails registration even if an administrator later grants it the
-trusted-admin role. SECURITY INVOKER row and statement triggers on both authority
-tables permit registration INSERTs only while the trusted-admin caller is executing
-inside the migration-owner SECURITY DEFINER routine. They reject subject-session
-INSERT, UPDATE, DELETE, and TRUNCATE under direct ACLs, inherited bridge ACLs,
-`SET ROLE`, ownership, or role-attribute drift. The database superuser remains the
-explicit operator path for retiring metadata before downgrade.
+trusted-admin role. Both authority tables enable and force row-level security. Their
+policies use a catalog-only SECURITY DEFINER helper to revalidate the authenticated
+session before permitting any row access. Bound subject sessions therefore see no
+authority rows under direct ACLs, inherited bridge ACLs, `SET ROLE`, ownership, or
+role-attribute drift. SECURITY INVOKER row and statement triggers provide a second
+write boundary and permit registration INSERTs only while the trusted-admin caller
+is executing inside the migration-owner SECURITY DEFINER routine. The database
+superuser remains the explicit operator path for retiring metadata before downgrade.
 
 Scope roles have no direct access to the five protected tables.
 `subject_scope_lookup` accepts only an object kind and object identifier. It derives

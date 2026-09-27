@@ -356,6 +356,13 @@ BEGIN
          AND NOT membership.admin_option AND membership.inherit_option
          AND NOT membership.set_option
      )
+     OR EXISTS (
+       SELECT 1 FROM pg_roles reachable_role
+       WHERE reachable_role.oid<>caller_role.oid
+         AND reachable_role.rolname<>'kl_trusted_admin'
+         AND (pg_has_role(caller_role.oid,reachable_role.oid,'MEMBER')
+              OR pg_has_role(caller_role.oid,reachable_role.oid,'SET'))
+     )
   THEN
     RAISE EXCEPTION 'KL_SUBJECT_SCOPE_REGISTRATION_DENIED';
   END IF;
@@ -709,6 +716,146 @@ END
 $guard$
 """
 
+AUTHORITY_RLS_GUARD_SQL = r"""
+CREATE FUNCTION kineticloop.subject_authority_metadata_allows(
+  p_table_name text,
+  p_operation text,
+  p_effective_role text
+) RETURNS boolean
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, kineticloop, pg_temp
+AS $policy$
+DECLARE
+  principal_role record;
+  expected_scope_role text;
+BEGIN
+  IF p_table_name NOT IN ('subject_scopes','subject_principal_bindings')
+     OR p_operation NOT IN ('SELECT','INSERT','UPDATE','DELETE')
+     OR NOT kineticloop.subject_scope_inbound_fks_safe()
+  THEN
+    RETURN false;
+  END IF;
+
+  SELECT * INTO principal_role FROM pg_roles WHERE rolname=session_user;
+  expected_scope_role := CASE
+    WHEN session_user ~ '^kl_production_subject_[a-z0-9_]+_login$'
+      THEN 'kl_application'
+    WHEN session_user ~ '^kl_test_subject_[a-z0-9_]+_login$'
+      THEN 'kl_subject_test'
+    WHEN session_user ~ '^kl_evaluation_subject_[a-z0-9_]+_login$'
+      THEN 'kl_subject_evaluation'
+    ELSE NULL
+  END;
+
+  IF expected_scope_role IS NULL THEN
+    IF p_operation='SELECT' THEN
+      RETURN p_effective_role='kl_migration_owner'
+        OR pg_has_role(p_effective_role,'kl_auditor','MEMBER')
+        OR p_table_name='subject_scopes'
+           AND p_effective_role IN (
+             'kl_writer_prescription_commit_service',
+             'kl_writer_authorization_service',
+             'kl_writer_execution_service',
+             'kl_writer_replay_service'
+           );
+    END IF;
+    IF p_operation='INSERT' THEN
+      RETURN session_user='kl_trusted_admin_login'
+        AND p_effective_role='kl_migration_owner'
+        AND FOUND
+        AND principal_role.rolcanlogin AND NOT principal_role.rolsuper
+        AND NOT principal_role.rolcreatedb AND NOT principal_role.rolcreaterole
+        AND principal_role.rolinherit AND NOT principal_role.rolreplication
+        AND NOT principal_role.rolbypassrls
+        AND (SELECT count(*) FROM pg_auth_members membership
+             WHERE membership.member=principal_role.oid)=1
+        AND EXISTS (
+          SELECT 1 FROM pg_auth_members membership
+          JOIN pg_roles parent_role ON parent_role.oid=membership.roleid
+          WHERE membership.member=principal_role.oid
+            AND parent_role.rolname='kl_trusted_admin'
+            AND NOT membership.admin_option AND membership.inherit_option
+            AND NOT membership.set_option
+        )
+        AND NOT EXISTS (
+          SELECT 1 FROM pg_roles reachable_role
+          WHERE reachable_role.oid<>principal_role.oid
+            AND reachable_role.rolname<>'kl_trusted_admin'
+            AND (pg_has_role(principal_role.oid,reachable_role.oid,'MEMBER')
+                 OR pg_has_role(principal_role.oid,reachable_role.oid,'SET'))
+        );
+    END IF;
+    RETURN false;
+  END IF;
+
+  IF NOT FOUND
+     OR NOT principal_role.rolcanlogin OR principal_role.rolsuper
+     OR principal_role.rolcreatedb OR principal_role.rolcreaterole
+     OR NOT principal_role.rolinherit OR principal_role.rolreplication
+     OR principal_role.rolbypassrls
+     OR (SELECT count(*) FROM pg_auth_members membership
+         WHERE membership.member=principal_role.oid) <> 1
+     OR NOT EXISTS (
+       SELECT 1 FROM pg_auth_members membership
+       JOIN pg_roles parent_role ON parent_role.oid=membership.roleid
+       WHERE membership.member=principal_role.oid
+         AND parent_role.rolname=expected_scope_role
+         AND NOT membership.admin_option AND membership.inherit_option
+         AND NOT membership.set_option
+     )
+     OR EXISTS (
+       SELECT 1 FROM pg_roles reachable_role
+       WHERE reachable_role.oid<>principal_role.oid
+         AND reachable_role.rolname<>expected_scope_role
+         AND (pg_has_role(principal_role.oid,reachable_role.oid,'MEMBER')
+              OR pg_has_role(principal_role.oid,reachable_role.oid,'SET'))
+     )
+     OR EXISTS (
+       SELECT 1 FROM pg_class protected
+       JOIN pg_namespace schema ON schema.oid=protected.relnamespace
+       WHERE schema.nspname='kineticloop'
+         AND protected.relname=ANY(ARRAY[
+           'daily_plan_heads','authorization_issuances','execution_bindings',
+           'replay_runs','replay_artifacts','subject_scopes',
+           'subject_principal_bindings'
+         ])
+         AND (protected.relowner=principal_role.oid
+              OR has_table_privilege(
+                principal_role.oid,protected.oid,
+                'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER'
+              ))
+     )
+     OR EXISTS (
+       SELECT 1 FROM pg_namespace schema
+       WHERE schema.nspname='kineticloop'
+         AND (schema.nspowner=principal_role.oid
+              OR has_schema_privilege(principal_role.oid,schema.oid,'CREATE'))
+     )
+     OR EXISTS (
+       SELECT 1 FROM pg_proc routine
+       JOIN pg_namespace schema ON schema.oid=routine.pronamespace
+       WHERE schema.nspname='kineticloop' AND routine.proowner=principal_role.oid
+     )
+  THEN
+    RETURN false;
+  END IF;
+
+  RETURN p_operation='SELECT'
+    AND (p_effective_role='kl_migration_owner'
+         OR pg_has_role(p_effective_role,'kl_auditor','MEMBER')
+         OR p_table_name='subject_scopes'
+            AND p_effective_role IN (
+              'kl_writer_prescription_commit_service',
+              'kl_writer_authorization_service',
+              'kl_writer_execution_service',
+              'kl_writer_replay_service'
+            ));
+END
+$policy$
+"""
+
 RLS_GUARD_SQL = r"""
 CREATE FUNCTION kineticloop.subject_scope_rls_allows(
   p_subject_id uuid,
@@ -906,6 +1053,7 @@ def upgrade() -> None:
     op.execute(LOOKUP_SQL)
     op.execute(GUARD_SQL)
     op.execute(AUTHORITY_GUARD_SQL)
+    op.execute(AUTHORITY_RLS_GUARD_SQL)
     op.execute(RLS_GUARD_SQL)
     op.execute(
         "REVOKE ALL ON FUNCTION kineticloop.enforce_subject_storage_scope() FROM PUBLIC"
@@ -918,6 +1066,17 @@ def upgrade() -> None:
         "REVOKE ALL ON FUNCTION "
         "kineticloop.subject_scope_inbound_fks_safe() FROM PUBLIC"
     )
+    authority_rls_signature = (
+        "kineticloop.subject_authority_metadata_allows(text,text,text)"
+    )
+    op.execute(f"REVOKE ALL ON FUNCTION {authority_rls_signature} FROM PUBLIC")
+    for role in (
+        "kl_migration_owner", "kl_application", "kl_auditor", "kl_trusted_admin",
+        "kl_subject_test", "kl_subject_evaluation",
+        "kl_writer_prescription_commit_service", "kl_writer_authorization_service",
+        "kl_writer_execution_service", "kl_writer_replay_service",
+    ):
+        op.execute(f"GRANT EXECUTE ON FUNCTION {authority_rls_signature} TO {role}")
     rls_signature = "kineticloop.subject_scope_rls_allows(uuid,text,text,text)"
     op.execute(f"REVOKE ALL ON FUNCTION {rls_signature} FROM PUBLIC")
     for role in (
@@ -948,6 +1107,31 @@ def upgrade() -> None:
             f"CREATE TRIGGER subject_authority_metadata_truncate "
             f"BEFORE TRUNCATE ON kineticloop.{table} FOR EACH STATEMENT "
             "EXECUTE FUNCTION kineticloop.enforce_subject_authority_metadata()"
+        )
+        op.execute(f"ALTER TABLE kineticloop.{table} ENABLE ROW LEVEL SECURITY")
+        op.execute(f"ALTER TABLE kineticloop.{table} FORCE ROW LEVEL SECURITY")
+        op.execute(
+            f"CREATE POLICY subject_authority_select ON kineticloop.{table} "
+            "FOR SELECT USING (kineticloop.subject_authority_metadata_allows("
+            f"'{table}','SELECT',current_user::text))"
+        )
+        op.execute(
+            f"CREATE POLICY subject_authority_insert ON kineticloop.{table} "
+            "FOR INSERT WITH CHECK ("
+            "kineticloop.subject_authority_metadata_allows("
+            f"'{table}','INSERT',current_user::text))"
+        )
+        op.execute(
+            f"CREATE POLICY subject_authority_update ON kineticloop.{table} "
+            "FOR UPDATE USING (kineticloop.subject_authority_metadata_allows("
+            f"'{table}','SELECT',current_user::text)) WITH CHECK ("
+            "kineticloop.subject_authority_metadata_allows("
+            f"'{table}','UPDATE',current_user::text))"
+        )
+        op.execute(
+            f"CREATE POLICY subject_authority_delete ON kineticloop.{table} "
+            "FOR DELETE USING (kineticloop.subject_authority_metadata_allows("
+            f"'{table}','DELETE',current_user::text))"
         )
     for table in protected_tables:
         op.execute(f"ALTER TABLE kineticloop.{table} ENABLE ROW LEVEL SECURITY")
@@ -996,6 +1180,12 @@ def downgrade() -> None:
         op.execute(f"LOCK TABLE kineticloop.{table} IN ACCESS EXCLUSIVE MODE")
     op.execute(DOWNGRADE_DATA_PREFLIGHT_SQL)
     for table in ("subject_scopes", "subject_principal_bindings"):
+        for operation in ("select", "insert", "update", "delete"):
+            op.execute(
+                f"DROP POLICY subject_authority_{operation} ON kineticloop.{table}"
+            )
+        op.execute(f"ALTER TABLE kineticloop.{table} NO FORCE ROW LEVEL SECURITY")
+        op.execute(f"ALTER TABLE kineticloop.{table} DISABLE ROW LEVEL SECURITY")
         op.execute(
             f"DROP TRIGGER subject_authority_metadata_truncate ON kineticloop.{table}"
         )
@@ -1011,6 +1201,9 @@ def downgrade() -> None:
         op.execute(f"ALTER TABLE kineticloop.{table} DISABLE ROW LEVEL SECURITY")
     op.execute("DROP FUNCTION kineticloop.enforce_subject_storage_scope()")
     op.execute("DROP FUNCTION kineticloop.enforce_subject_authority_metadata()")
+    op.execute(
+        "DROP FUNCTION kineticloop.subject_authority_metadata_allows(text,text,text)"
+    )
     op.execute("DROP FUNCTION kineticloop.subject_scope_rls_allows(uuid,text,text,text)")
     op.execute("DROP FUNCTION kineticloop.subject_scope_lookup(text,uuid)")
     op.execute("DROP FUNCTION kineticloop.subject_scope_register(uuid,text,uuid,uuid,text)")

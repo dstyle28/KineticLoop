@@ -480,7 +480,20 @@ def test_subject_scope_ddl_guard_inventory() -> None:
             "'subject_principal_bindings') "
             "AND trigger.tgname IN ('subject_authority_metadata_scope',"
             "'subject_authority_metadata_truncate') "
-            "AND NOT trigger.tgisinternal) ",
+            "AND NOT trigger.tgisinternal),"
+            "(SELECT count(*) FROM pg_class relation "
+            "JOIN pg_namespace schema ON schema.oid=relation.relnamespace "
+            "WHERE schema.nspname='kineticloop' "
+            "AND relation.relname IN ('subject_scopes',"
+            "'subject_principal_bindings') "
+            "AND relation.relrowsecurity AND relation.relforcerowsecurity),"
+            "(SELECT count(*) FROM pg_policy policy "
+            "JOIN pg_class relation ON relation.oid=policy.polrelid "
+            "JOIN pg_namespace schema ON schema.oid=relation.relnamespace "
+            "WHERE schema.nspname='kineticloop' "
+            "AND relation.relname IN ('subject_scopes',"
+            "'subject_principal_bindings') "
+            "AND policy.polname LIKE 'subject_authority_%%') ",
             ([
                 "daily_plan_heads",
                 "authorization_issuances",
@@ -509,7 +522,7 @@ def test_subject_scope_ddl_guard_inventory() -> None:
         "\n" + SUBJECT_SCOPE_DDL_GUARD_BODY + "\n",
         False,
     )
-    assert authority_inventory == (True, 8, 4)
+    assert authority_inventory == (True, 8, 4, 2, 8)
 
 
 def test_subject_scope_preflight_requires_exact_external_ddl_guard() -> None:

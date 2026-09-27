@@ -1295,6 +1295,7 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
             "registry_guard_start_session",
             "registry_register_artifact",
             "registry_revoke_artifact",
+            "subject_authority_metadata_allows",
             "subject_scope_inbound_fks_safe",
             "subject_scope_lookup",
             "subject_scope_register",
@@ -1304,7 +1305,7 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
             row[2]
             == (
                 "kl_migration_owner"
-                if row[0].startswith("subject_scope_")
+                if row[0].startswith(("subject_scope_", "subject_authority_"))
                 else "kl_writer_safety_registry"
             )
             for row in rows
@@ -1328,13 +1329,17 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
                         "kl_trusted_admin",
                         "kl_auditor",
                     )
-                    if name == "subject_scope_rls_allows"
+                    if name in {
+                        "subject_authority_metadata_allows",
+                        "subject_scope_rls_allows",
+                    }
                     else ("kl_trusted_admin",)
                 )
                 if name in {
                     "registry_register_artifact",
                     "registry_revoke_artifact",
                     "subject_scope_register",
+                    "subject_authority_metadata_allows",
                     "subject_scope_rls_allows",
                 }
                 else (
@@ -1379,6 +1384,9 @@ def test_migrated_registry_command_routine_privileges(db_urls: dict[str, str]) -
         assert next(row[1] for row in rows if row[0] == "subject_scope_rls_allows") == (
             "subject_scope_rls_allows(uuid,text,text,text)"
         )
+        assert next(
+            row[1] for row in rows if row[0] == "subject_authority_metadata_allows"
+        ) == "subject_authority_metadata_allows(text,text,text)"
         assert connection.execute(
             "SELECT p.oid::regprocedure::text,pg_get_userbyid(p.proowner),"
             "p.prosecdef,p.proconfig,"
