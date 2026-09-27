@@ -301,6 +301,12 @@ class EvidenceEnvelope(BaseModel):
             raise ValueError("source_object_type is not canonical")
         if not self.source_object_id.strip():
             raise ValueError("source_object_id must be non-blank")
+        for label, value in (
+            ("provider_revision", self.provider_revision),
+            ("stable_observation_key", self.stable_observation_key),
+        ):
+            if value is not None and (type(value) is not str or not value.strip()):
+                raise ValueError(f"{label} must be non-blank when present")
         if (self.provider_revision is None) == (self.stable_observation_key is None):
             raise ValueError("exactly one provider revision or stable observation key is required")
         _canonical_time(self.observed_at, "observed_at")

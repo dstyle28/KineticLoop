@@ -314,6 +314,22 @@ def test_provider_has_no_fact_or_command_authority() -> None:
             command_source_connection_id=SOURCE_CONNECTION_ID,
         )
 
+    for blank_identity in (
+        built.model_copy(update={"provider_revision": ""}),
+        built.model_copy(
+            update={"provider_revision": None, "stable_observation_key": "  "}
+        ),
+    ):
+        with pytest.raises(ProviderContractError, match="INVALID_EVIDENCE_ENVELOPE"):
+            validate_adapter_output(provider_context, (blank_identity,))
+        with pytest.raises(ProviderContractError, match="INVALID_EVIDENCE_ENVELOPE"):
+            validate_receive_evidence_binding(
+                provider_context,
+                blank_identity,
+                command_subject_id=SUBJECT_ID,
+                command_source_connection_id=SOURCE_CONNECTION_ID,
+            )
+
 
 def test_provider_credentials_do_not_cross_evidence_or_diagnostic_boundary(
     caplog: pytest.LogCaptureFixture,
