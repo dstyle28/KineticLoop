@@ -12,6 +12,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any
 from unittest import mock
 
 import yaml
@@ -430,7 +431,8 @@ class ValidatorTests(unittest.TestCase):
         self.check(1, 'milestone-schema:M2.json:')
 
     def test_m2_closure_cannot_hide_by_omitting_or_changing_identity(self):
-        for record in ({}, {'display_milestone_id': 'UNKNOWN'}, []):
+        records: tuple[object, ...] = ({}, {'display_milestone_id': 'UNKNOWN'}, [])
+        for record in records:
             dump(self.root / 'docs/exec-plans/milestones/M2.json', record)
             self.check(1, 'milestone-schema:M2.json:')
 
@@ -530,7 +532,7 @@ class ValidatorTests(unittest.TestCase):
             'integration_record': 'docs/exec-plans/integrations/KL-010.json',
             'sha256': 'a' * 64,
         }
-        closure = {
+        closure: dict[str, Any] = {
             'milestone_identity': 'harness-backlog-v0.2/M2',
             'display_milestone_id': 'M2',
             'closure_status': 'PASS',

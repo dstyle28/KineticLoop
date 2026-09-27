@@ -9,6 +9,7 @@ import subprocess
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 BACKLOG = 'KineticLoop_Harness_Backlog_v0.2.json'
@@ -1982,7 +1983,7 @@ def validate(root, args):
             raise ValueError('invalid-schema:' + kind + ':' + str(ex)) from ex
         schemas[kind] = Draft202012Validator(schema)
     milestone_dir = root / 'docs/exec-plans/milestones'
-    milestone_records = {'M1': [], 'M2': []}
+    milestone_records: dict[str, list[tuple[Path, Any]]] = {'M1': [], 'M2': []}
     if milestone_dir.exists():
         for path in sorted(milestone_dir.glob('*.json')):
             record = load_artifact(path)

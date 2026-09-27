@@ -1,0 +1,16 @@
+{
+  "tested_commit": "8fd850065795310e2f02144c5e44b1f63b4c4b33",
+  "typecheck": {
+    "command": "UV_CACHE_DIR=/private/tmp/hg023-uv /private/tmp/kl001-bootstrap/bin/uv run kl typecheck",
+    "exit_code": 1,
+    "stdout": "tools/harness/validate_harness.py:1985: error: Need type annotation for \"milestone_records\"  [var-annotated]\ntests/harness/test_validator.py:433: error: Need type annotation for \"record\"  [var-annotated]\ntests/harness/test_validator.py:557: error: \"Collection[Collection[str]]\" has no attribute \"pop\"  [attr-defined]\ntests/harness/test_validator.py:559: error: \"Collection[Collection[str]]\" has no attribute \"append\"  [attr-defined]\ntests/harness/test_validator.py:560: error: Value of type \"Collection[Collection[str]]\" is not indexable  [index]\nFound 5 errors in 2 files (checked 85 source files)\n"
+  },
+  "full_regression": {
+    "command": "uv run pytest -q -p no:cacheprovider",
+    "exit_code": 2,
+    "status": "INTERRUPTED_NOT_PASS",
+    "reason": "Stopped after typecheck failed so the annotations could be repaired before final verification.",
+    "junit": "docs/exec-plans/evidence/HG-023/junit-8fd8500.xml"
+  },
+  "disposition": "Neither the failed typecheck nor the interrupted regression is final PASS evidence. A new committed revision will be verified."
+}
