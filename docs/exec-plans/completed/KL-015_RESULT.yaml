@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-015
 display_task_id: KL-015
 task_definition_version: v0.2
 base_commit: 21ec0b508959d8ce24dfe1a0e4d59a0820394068
-tested_commit: d238cdd61d797914583f26b05c5cc1f104c5622e
+tested_commit: ae6cdc6032f2757d4c3aebfcc4f371b230093565
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -31,83 +31,83 @@ commands_run:
   - check_id: transaction_owner_matrix_complete
     command: uv run pytest -q tests/unit/persistence/test_transactions.py::test_transaction_owner_matrix_complete
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: catalog_mapping_and_release_owner_boundaries_complete
     command: uv run pytest -q tests/unit/persistence/test_transactions.py::test_catalog_mapping_and_release_owner_boundaries_complete
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: registry_lease_required_for_publish_commit_and_session_entry
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_registry_lease_required_for_publish_commit_and_session_entry
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: preparation_work_stays_outside_coordination_locks
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_preparation_work_stays_outside_coordination_locks
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: factset_build_stays_outside_subject_coordination
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_factset_build_stays_outside_subject_coordination
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: subject_guard_required
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_subject_guard_required
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: complete_frozen_lock_order_enforced
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_complete_frozen_lock_order_enforced
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: multi_key_lock_order_is_stable
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_multi_key_lock_order_is_stable
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: reverse_lock_order_is_rejected
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: receipt_before_s01_is_rejected
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_receipt_before_s01_is_rejected
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: artifact_identity_required
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_artifact_identity_required
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: direct_write_bypass_rejected
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_direct_write_bypass_rejected
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: event_outbox_atomicity_enforced
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_event_outbox_atomicity_enforced
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: outbox_dispatcher_does_not_lock_subject_guard
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_outbox_dispatcher_does_not_lock_subject_guard
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: stale_fence_commit_is_rejected
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_stale_fence_commit_is_rejected
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: dispatch_first_winner_and_replay_non_resend
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_dispatch_first_winner_and_replay_non_resend
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: ack_loss_replay_preserves_natural_uniqueness
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_ack_loss_replay_preserves_natural_uniqueness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: t6_ack_loss_replay_returns_same_issuance
     command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_ack_loss_replay_returns_same_issuance
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: transaction_db_conformance_passes
     command: uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
   - check_id: harness_validation_passes
     command: uv run kl check-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/KL-015/checks-d238cdd.log
+    evidence_ref: docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
 requirements_covered: []
 files_changed:
   - docs/contracts/repository_transactions.md
@@ -131,6 +131,8 @@ files_changed:
   - docs/exec-plans/evidence/KL-015/regression-85acbd4.log
   - docs/exec-plans/evidence/KL-015/checks-d238cdd.log
   - docs/exec-plans/evidence/KL-015/regression-d238cdd.log
+  - docs/exec-plans/evidence/KL-015/checks-ae6cdc6.log
+  - docs/exec-plans/evidence/KL-015/regression-ae6cdc6.log
   - docs/exec-plans/completed/KL-015_RESULT.yaml
 decisions:
   - Give every public command surface exactly one repository owner; T6CommitCoordinator is the single atomic database owner for the PrescriptionCommitService and AuthorizationService CommitBundle boundary.
@@ -171,6 +173,7 @@ decisions:
   - Bind T6 validation to the exact S35 named by its S34 proposal, include that demand revision in the validity certificate, and reject crosswired demand features.
   - Remove S31 from CommitBundle because reservations are T5/T8 state; a T6 command cannot acquire an unrelated reservation lock.
   - Require both CommitBundle and Reauthorize to atomically persist S27 FOUND_VALID_PLAN, S29 COMMITTED, the new S42, and S02/S03/S04; a result reference without terminal success is rejected.
+  - Require ContinueSession to revalidate the exact prescription, authorization, and scope in the latest START/RESUME S45 binding for its locked session; unlike START/RESUME it cannot silently substitute a valid pair because it cannot append a replacement binding.
   - Make ReapIntent verify and terminate every requested expired S27/S29 chain without requiring an unrelated reservation lock.
   - Keep OutboxDispatcher limited to an isolated S04 claim and require business work to enter later as a new idempotent command after row-lock release.
 known_limitations:
