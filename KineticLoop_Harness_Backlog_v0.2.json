@@ -6464,11 +6464,159 @@
         "docs/exec-plans/evidence/KL-072/**"
       ],
       "write_paths_status": "ENFORCEABLE"
+    },
+    {
+      "id": "KL-073",
+      "milestone": "M2",
+      "title": "Database-clock-relative transaction test fixtures",
+      "owner_role": "persistence",
+      "depends_on": [
+        "KL-015"
+      ],
+      "commands": [
+        "AcquireLease",
+        "RenewLease",
+        "CommitBundle",
+        "SettleCall",
+        "MarkOutcomeUnknown"
+      ],
+      "transaction_boundaries": [
+        "T1",
+        "T2-GLOBAL",
+        "T2-SUBJECT",
+        "T3",
+        "T4",
+        "T5",
+        "T6",
+        "T7",
+        "T8"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-12",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S27",
+        "S30",
+        "S31",
+        "S38",
+        "S44",
+        "S51"
+      ],
+      "required_test_layers": [
+        "DC",
+        "UNIT"
+      ],
+      "deliverables": [
+        "database-clock-relative positive lease and deadline fixtures",
+        "database-clock-relative expired and stale negative fixtures",
+        "focused evidence for the ten HG-023 failures and negative lease/fence surface",
+        "complete transaction-interface, database, and repository regression evidence"
+      ],
+      "definition_of_done": "tests/db/test_transaction_interfaces.py contains no fixed calendar date used as a lease/deadline truth source; live comparisons are based on fresh PostgreSQL time close to the operation and exact values are read back when asserted; intentionally expired leases, elapsed deadlines, stale owners, and stale fences remain negative; the ten HG-023 failures reach and pass their intended lock-order/atomicity/stale-fence/ACK-loss assertions; and the complete transaction, database, and repository suites pass without any production transaction or lease semantic change",
+      "entry_conditions": [
+        "M1 closure PASS: docs/exec-plans/milestones/M1.json",
+        "merged KL-015 result: docs/exec-plans/completed/KL-015_RESULT.yaml",
+        "isolated PostgreSQL namespace unique to this task"
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-073",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "docs/contracts/repository_transactions.md",
+        "docs/exec-plans/completed/KL-015_RESULT.yaml"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-073_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-073",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "fixed_wall_clock_fixture_removed",
+        "blocked_regression_cases_pass",
+        "expired_and_stale_negative_cases_preserved",
+        "transaction_interface_suite_passes",
+        "complete_db_suite_passes",
+        "full_repository_regression_passes",
+        "harness_validation_passes"
+      ],
+      "resource_keys": [
+        "transaction_interfaces"
+      ],
+      "write_paths": [
+        "tests/db/test_transaction_interfaces.py"
+      ],
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "DB_CONCURRENCY"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "check_contracts": [
+        {
+          "check_id": "fixed_wall_clock_fixture_removed",
+        "command": "! rg -n '\\bNOW\\b|datetime\\.now\\(UTC\\)' tests/db/test_transaction_interfaces.py && rg -n 'def _database_timestamp|clock_timestamp\\(\\)' tests/db/test_transaction_interfaces.py",
+        "pass_oracle": "No process-clock or suite-start timestamp supplies lease/deadline truth. Every positive lease/deadline comparison that production evaluates with PostgreSQL time obtains a fresh database-clock-relative basis at the point of setup or operation; exact expected values are carried from that database read when needed, so a long run cannot decay the fixture. Fixed calendar values remain permitted only for non-time-sensitive keys such as quota windows and completion records."
+        },
+        {
+          "check_id": "blocked_regression_cases_pass",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py -k 'reverse_lock_order_is_rejected or event_outbox_atomicity_enforced or stale_fence_commit_is_rejected or ack_loss_replay_preserves_natural_uniqueness'",
+          "pass_oracle": "All ten cases reported by HG-023 pass against a fresh isolated PostgreSQL namespace and reach their intended lock-order, event/outbox atomicity, stale-fence, and ACK-loss replay assertions rather than failing early in AcquireLease with FenceLost."
+        },
+        {
+          "check_id": "expired_and_stale_negative_cases_preserved",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py -k 'expired or stale or fence or deadline'",
+          "pass_oracle": "The focused negative surface passes with deliberately expired leases, elapsed deadlines, wrong owners, and stale fences still expressed relative to PostgreSQL clock_timestamp(); the repair does not convert negative cases into live leases or weaken a FenceLost expectation."
+        },
+        {
+          "check_id": "transaction_interface_suite_passes",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py",
+          "pass_oracle": "The complete KL-015 PostgreSQL transaction-interface suite passes in one isolated namespace, preserving frozen lock order, lease/fence guards, command receipt idempotency, event/outbox atomicity, rollback, retry, and ACK-loss replay behavior."
+        },
+        {
+          "check_id": "complete_db_suite_passes",
+          "command": "uv run pytest -q tests/db",
+          "pass_oracle": "The complete PostgreSQL test surface passes in one isolated namespace with no calendar-dependent lease or deadline failure and no regression to migration, permissions, immutable-history, lifecycle, registry, or transaction semantics."
+        },
+        {
+          "check_id": "full_repository_regression_passes",
+          "command": "uv run pytest -q -p no:cacheprovider",
+          "pass_oracle": "The same full-repository regression class that blocked HG-023 passes with zero failures, providing genuine replacement evidence rather than relying only on a focused rerun."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Command exits 0 and prints HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-073/**"
+      ],
+      "write_paths_status": "ENFORCEABLE"
     }
   ],
-  "task_count": 69,
+  "task_count": 70,
   "acceptance_requirement_set": "v1.2.2 + integration-v0.1",
   "task_namespace": "harness-backlog-v0.2",
   "requirement_set": "KINETICLOOP_HARNESS_REQSET_V1_2_2_INTEGRATION_V0_1",
-  "active_task_count": 67
+  "active_task_count": 68
 }

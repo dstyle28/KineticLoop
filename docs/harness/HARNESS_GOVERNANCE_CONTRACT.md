@@ -39,6 +39,19 @@ record from the protected-base diff. Mixing both PR types, changing an undeclare
 path, omitting a review, or changing implementation/governance content after review
 fails closed.
 
+One non-generalizable emergency repair is admitted for `HG-024` with `KL-073` only.
+That PR may contain both records solely to break the pre-existing database-CI
+deadlock caused by KL-015's calendar-decayed test clock. The validator binds the
+exact identities, the single implementation path
+`tests/db/test_transaction_interfaces.py`, the exact governance/packet/derived-hash
+files, and only the HG-024/KL-073 result, evidence, and review directories. It
+requires both records to bind the same reviewed implementation/result head, every
+KL-073 check to PASS with committed evidence, and the complete GENERAL, PROTOCOL,
+and DB_CONCURRENCY review sets for both identities. No production path, migration,
+Frozen authority, unrelated task artifact, wildcard database-test path, second
+governance ID, or second task ID is admitted. The exception is exhausted by these
+literal identities and cannot authorize any later mixed PR.
+
 An already-merged governance change that lacks its required review may use one
 review-only remediation PR. CI discovers exactly one existing governance change from
 changed files under `docs/exec-plans/reviews/<CHANGE_ID>/` and restricts the entire PR

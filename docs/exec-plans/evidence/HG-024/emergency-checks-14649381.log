@@ -1,0 +1,78 @@
+HG-024 + KL-073 one-time paired emergency evidence
+protected_base: 7623c20bb267a39b8d02c29845b4ee054714d2b1
+tested_commit: 14649381a72d48df7e02edf08d60e2db586aa72c
+
+AUTHORIZATION CONTEXT
+The main task 01a0e412-ccbe-7530-82dd-bf6962e2b751 proposed that PR #48 contain
+the KL-073 definition and database-clock fixture repair together, with one narrow
+Harness governance validation exception, independent reviews, and all required CI.
+The user replied verbatim: “可以你做吧”. This is approval for that concrete,
+one-time HG-024 + KL-073 plan only. It is not authorization for force/admin merge,
+skipping reviews or CI, broadening write scope, or reusing the exception later.
+
+PASS paired_identity_and_scope_exact
+oracle: The exception is literal HG-024 + KL-073 only. The exact implementation
+surface is tests/db/test_transaction_interfaces.py; governance machinery is limited
+to the enumerated HG024 allowlist. Generic tests/db/**, src/**, wildcard results,
+and unrelated evidence remain excluded.
+
+PASS one_time_protected_base_gate
+oracle: CI requires HG-024 and KL-073 result candidates together whenever HG-024
+touches the emergency implementation scope. It rejects a protected base already
+containing the KL-073 definition/result or HG-024 record, so the exception cannot
+be replayed after merge. Ordinary future task PRs can still modify the same test
+file when their own baseline task scope authorizes it and no HG-024 candidate exists.
+
+PASS shared_review_head_gate
+oracle: Both HG-024 and KL-073 require GENERAL reviews bound to the same reviewed
+head before CI configuration succeeds. The task's full GENERAL, PROTOCOL, and
+DB_CONCURRENCY set is subsequently checked against that same head.
+
+PASS harness_structure_valid
+command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
+stdout: HARNESS_CHECK_PASS tasks=70 active=68
+
+PASS harness_tests_pass
+command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+transcribed-stdout-summary: collected 141 items; 141 passed in 188.57s
+note: This is a faithful summary transcribed from the command output, not a raw
+stdout artifact. The run occurred at tested_commit and includes the validator tests.
+
+PASS unit_tests_pass
+command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+transcribed-stdout-summary: collected 186 items; 186 passed in 19.39s
+note: This is a faithful summary transcribed from the command output, not a raw
+stdout artifact. The run occurred at tested_commit.
+
+PASS lint_pass
+command: RUFF_CACHE_DIR=/private/tmp/hg024-ruff PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
+stdout: All checks passed!
+
+PASS typecheck_pass
+command: MYPY_CACHE_DIR=/private/tmp/hg024-mypy PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
+stdout: Success: no issues found in 85 source files
+
+PASS frozen_authority_and_production_unchanged
+oracle: DOC-PROTOCOL-V1.2, DOC-DB-V0.2, FROZEN_BASELINE.json, migrations,
+src/kineticloop production code, and completed KL-015 artifacts are unchanged from
+the protected base. The intended implementation delta is test-only; no lease,
+fence, authorization, or transaction production semantics changed.
+
+EXPLORATORY_PRECOMMIT negative_validator_regressions
+command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/pytest -q tests/harness/test_validator.py -k 'hg024 or emergency_governance_task_pair or future_task_can_modify_transaction_test'
+stdout: 7 passed, 109 deselected in 2.32s
+note: This run occurred before tested_commit and is retained only as exploratory
+history. It is not a formal PASS bound to 14649381a72d48df7e02edf08d60e2db586aa72c.
+The formal test-harness run above executed these committed cases at tested_commit.
+
+EXPLORATORY_PRECOMMIT complete_validator_regression
+command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/pytest -q tests/harness/test_validator.py
+stdout: 116 passed in 196.66s
+note: This run occurred before tested_commit and is retained only as exploratory
+history. It is not a formal PASS bound to 14649381a72d48df7e02edf08d60e2db586aa72c.
+The formal test-harness run above executed the complete committed validator suite.
+
+PASS state_claim_boundary
+oracle: This paired repair claims only HG-024 governance PASS and KL-073 task PASS
+after its own exact checks. It does not claim a product requirement PASS, HG-023
+closure, M2 closure, MERGED state, or production auto-activation.

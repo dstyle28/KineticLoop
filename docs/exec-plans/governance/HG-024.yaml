@@ -1,0 +1,81 @@
+change_identity: harness-governance-v0.1/HG-024
+display_change_id: HG-024
+base_commit: 7623c20bb267a39b8d02c29845b4ee054714d2b1
+tested_commit: 14649381a72d48df7e02edf08d60e2db586aa72c
+change_status: PASS
+summary: >-
+  Admit the user-approved, one-time HG-024 + KL-073 paired repair in PR #48:
+  preserve the exact KL-073 task definition, replace decaying transaction-test
+  wall-clock fixtures with database-clock-relative values, and enforce a literal,
+  non-reusable mixed governance/task CI gate without changing production semantics.
+packets_refined:
+  - KL-073
+files_changed:
+  - 06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md
+  - CURRENT_DOCUMENT_INDEX.json
+  - HARNESS_DOCUMENT_MANIFEST.json
+  - KineticLoop_Harness_Backlog_v0.2.json
+  - KineticLoop_Harness_Traceability_v0.3.json
+  - docs/exec-plans/active/KL-073.md
+  - docs/exec-plans/completed/KL-073_RESULT.yaml
+  - docs/exec-plans/evidence/HG-024/checks.log
+  - docs/exec-plans/evidence/HG-024/emergency-checks-14649381.log
+  - docs/exec-plans/evidence/KL-073/checks.log
+  - docs/exec-plans/evidence/KL-073/full-repository-junit.xml
+  - docs/exec-plans/governance/HG-024.yaml
+  - docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
+  - tests/db/test_transaction_interfaces.py
+  - tests/harness/test_validator.py
+  - tools/harness/validate_harness.py
+checks_run:
+  - check_id: paired_identity_and_scope_exact
+    command: Verify the emergency identity pair and exact allowlist, including rejection of generic implementation and artifact wildcards.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/emergency-checks-14649381.log
+  - check_id: one_time_protected_base_gate
+    command: Verify HG-024 implementation scope requires the exact KL-073 result candidate and all one-time artifacts are absent at the protected base.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/emergency-checks-14649381.log
+  - check_id: shared_review_head_gate
+    command: Verify HG-024 and KL-073 GENERAL reviews must bind to the same immutable reviewed head before CI admission.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/emergency-checks-14649381.log
+  - check_id: harness_structure_valid
+    command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/emergency-checks-14649381.log
+  - check_id: harness_tests_pass
+    command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/emergency-checks-14649381.log
+  - check_id: unit_tests_pass
+    command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/emergency-checks-14649381.log
+  - check_id: lint_pass
+    command: RUFF_CACHE_DIR=/private/tmp/hg024-ruff PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/emergency-checks-14649381.log
+  - check_id: typecheck_pass
+    command: MYPY_CACHE_DIR=/private/tmp/hg024-mypy PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/emergency-checks-14649381.log
+  - check_id: frozen_authority_and_production_unchanged
+    command: Compare protected base 7623c20bb267a39b8d02c29845b4ee054714d2b1 with tested commit 14649381a72d48df7e02edf08d60e2db586aa72c across frozen authority, FROZEN_BASELINE.json, migrations, production code, and completed KL-015 artifacts.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/emergency-checks-14649381.log
+  - check_id: state_claim_boundary
+    command: Verify the paired repair claims neither product requirement PASS, HG-023/M2 closure, MERGED state, nor production auto-activation.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-024/emergency-checks-14649381.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+  - >-
+    The exception is valid only for the concrete HG-024 + KL-073 pair whose
+    definition, result, and governance record are absent from the protected base.
+    It grants no future mixed-PR precedent and no force/admin merge authority.
+  - >-
+    KL-073 task PASS remains separate from product requirement PASS, HG-023/M2
+    closure, review PASS, CI PASS, and MERGED state. Those facts must be recorded
+    independently at their own immutable revisions.
