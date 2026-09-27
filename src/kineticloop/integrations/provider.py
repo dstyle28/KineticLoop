@@ -39,6 +39,9 @@ _OBJECT_TYPE = re.compile(r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$")
 _VERSION = re.compile(r"^[a-z0-9][a-z0-9._-]{0,63}$")
 _WATERMARK_HASH = re.compile(r"^sha256:[0-9a-f]{64}$")
 _ERROR_CODE = re.compile(r"^[A-Z][A-Z0-9_]{0,63}$")
+_BLOB_REFERENCE = re.compile(
+    r"^blob://[A-Za-z0-9][A-Za-z0-9._~:/?#\[\]@!$&'()*+,;=%-]{0,248}$"
+)
 _SENSITIVE_KEY = re.compile(
     r"(?:^|[_ .-])(?:access[_ .-]?token|api[_ .-]?key|authorization|client[_ .-]?secret|"
     r"cookie|credential(?:s)?|password|refresh[_ .-]?token|secret|token)(?:$|[_ .-])",
@@ -138,6 +141,16 @@ def _canonical_version(value: object, label: str) -> str:
 def _canonical_time(value: object, label: str) -> str:
     if type(value) is not str or canonical_utc(value) != value:
         raise ValueError(f"{label} must be canonical UTC")
+    return value
+
+
+def _canonical_blob_reference(value: object) -> str:
+    if (
+        type(value) is not str
+        or len(value) > 256
+        or _BLOB_REFERENCE.fullmatch(value) is None
+    ):
+        raise ValueError("controlled_blob_reference is not canonical")
     return value
 
 
@@ -257,12 +270,8 @@ class RawProviderObservation(BaseModel):
         _canonical_version(self.content_schema_version, "content_schema_version")
         if (self.payload is None) == (self.controlled_blob_reference is None):
             raise ValueError("exactly one payload or controlled blob reference is required")
-        if self.controlled_blob_reference is not None and (
-            type(self.controlled_blob_reference) is not str
-            or not self.controlled_blob_reference.startswith("blob://")
-            or len(self.controlled_blob_reference) > 256
-        ):
-            raise ValueError("controlled_blob_reference is not canonical")
+        if self.controlled_blob_reference is not None:
+            _canonical_blob_reference(self.controlled_blob_reference)
         return self
 
 
@@ -316,10 +325,8 @@ class EvidenceEnvelope(BaseModel):
             raise ValueError("exactly one payload hash or controlled blob reference is required")
         if self.payload_hash is not None:
             _canonical_hash(self.payload_hash, "payload_hash")
-        if self.controlled_blob_reference is not None and not self.controlled_blob_reference.startswith(
-            "blob://"
-        ):
-            raise ValueError("controlled_blob_reference is not canonical")
+        if self.controlled_blob_reference is not None:
+            _canonical_blob_reference(self.controlled_blob_reference)
         _canonical_version(self.content_schema_version, "content_schema_version")
         _canonical_version(self.adapter_version, "adapter_version")
         if self.lineage.root_provider_id != self.provider_id:
@@ -565,6 +572,7 @@ def _walk(value: object, *, depth: int = 0) -> Sequence[tuple[str | None, str]]:
             key_text = key if type(key) is str else "<non-string-key>"
             if _SENSITIVE_KEY.search(key_text):
                 raise ProviderContractError("CREDENTIAL_BOUNDARY")
+            found.append((None, key_text))
             if type(member) is str:
                 found.append((key_text, member))
             else:

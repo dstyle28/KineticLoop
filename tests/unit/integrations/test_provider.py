@@ -236,6 +236,31 @@ def test_evidence_envelope_closed_s09_schema() -> None:
     with pytest.raises(ValidationError, match="exactly one provider revision"):
         RawProviderObservation.model_validate(both_identities)
 
+    for invalid_blob_reference in ("blob://", "blob://   ", "blob:///"):
+        raw_blob = observation().model_dump(mode="python") | {
+            "payload": None,
+            "controlled_blob_reference": invalid_blob_reference,
+        }
+        with pytest.raises(ValidationError, match="controlled_blob_reference"):
+            RawProviderObservation.model_validate(raw_blob)
+
+        forged_blob = evidence.model_copy(
+            update={
+                "payload_hash": None,
+                "controlled_blob_reference": invalid_blob_reference,
+            }
+        )
+        provider_context = context()
+        with pytest.raises(ProviderContractError, match="INVALID_EVIDENCE_ENVELOPE"):
+            validate_adapter_output(provider_context, (forged_blob,))
+        with pytest.raises(ProviderContractError, match="INVALID_EVIDENCE_ENVELOPE"):
+            validate_receive_evidence_binding(
+                provider_context,
+                forged_blob,
+                command_subject_id=SUBJECT_ID,
+                command_source_connection_id=SOURCE_CONNECTION_ID,
+            )
+
 
 def test_server_assigns_known_at() -> None:
     with pytest.raises(ValidationError):
@@ -350,6 +375,8 @@ def test_provider_credentials_do_not_cross_evidence_or_diagnostic_boundary(
         {"nested": [f"token={SECRET}"]},
         {"nested": [encoded]},
         {"url": f"https://synthetic:{SECRET}@provider.invalid/workout"},
+        {SECRET: "credential-in-key"},
+        {"nested": {SECRET.replace("_", "%5F"): "encoded-credential-in-key"}},
     ):
         with pytest.raises(ProviderContractError) as captured:
             build_evidence_envelope(context(), observation(payload=payload))
