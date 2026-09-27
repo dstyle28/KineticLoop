@@ -54,6 +54,11 @@ M1_CLOSURE_M2_TASK_IDS = {
 # Current M2 may grow through later governance without rewriting the historical M1
 # closure revision that proved the original refinement set.
 M2_REFINED_TASK_IDS = M1_CLOSURE_M2_TASK_IDS | {'KL-072'}
+M2_TASK_IDS = M2_REFINED_TASK_IDS
+M2_REGRESSION_COMMANDS = [
+    'PYTHONPATH="$PWD/src" uv run pytest -q -p no:cacheprovider',
+    'PYTHONPATH="$PWD/src" uv run kl check-harness',
+]
 M2_REQUIRED_CHECK_IDS = {
     'KL-072': {
         'baseline_migration_unchanged',
@@ -1334,6 +1339,150 @@ def milestone_closure_errors(
     return errors
 
 
+def m2_milestone_closure_errors(
+        root, closure, schema, integration_schema, result_schema, review_schema, backlog, tasks):
+    """Validate M2 closure from integrated task evidence and a fresh full regression."""
+    errors = [
+        'milestone-schema:M2.json:' + issue.message
+        for issue in schema.iter_errors(closure)
+    ]
+    if errors:
+        return errors
+    if (closure['milestone_identity'] != 'harness-backlog-v0.2/M2'
+            or closure['display_milestone_id'] != 'M2'
+            or closure['closure_status'] != 'PASS'):
+        errors.append('milestone-identity-or-status:M2')
+    if closure['historical_model_evidence'] != {
+            'status': 'UNVERIFIED_HISTORICAL_DECLARATION',
+            'independently_reproducible_protocol_model': False,
+    }:
+        errors.append('milestone-model-evidence-overclaim:M2')
+    if closure['product_requirement_pass_claims']:
+        errors.append('milestone-product-requirement-overclaim:M2')
+    try:
+        evaluated = resolve(root, closure['evaluated_commit'])
+        head = resolve(root, 'HEAD')
+        if not is_ancestor(root, evaluated, head):
+            errors.append('milestone-evaluated-unreachable:M2')
+        evaluated_backlog = load_artifact_at_revision(root, BACKLOG, evaluated)
+        evaluated_task_errors, evaluated_tasks = task_definition_errors(
+            root, evaluated_backlog, evaluated)
+        errors.extend('milestone-task-contract:' + issue for issue in evaluated_task_errors)
+    except ValueError as ex:
+        return errors + ['milestone-evaluated-revision:M2:' + str(ex)]
+
+    active_m2 = {
+        task['id'] for task in evaluated_backlog['tasks']
+        if task['milestone'] == 'M2' and task['status'] != 'SUPERSEDED'
+    }
+    declared_ids = [item['display_task_id'] for item in closure['integrations']]
+    if active_m2 != M2_TASK_IDS or set(declared_ids) != active_m2 or len(
+            declared_ids) != len(set(declared_ids)):
+        errors.append('milestone-active-task-set:M2')
+    for item in closure['integrations']:
+        task_id = item['display_task_id']
+        expected_path = f'docs/exec-plans/integrations/{task_id}.json'
+        if (item['task_identity'] != f'harness-backlog-v0.2/{task_id}'
+                or item['integration_record'] != expected_path):
+            errors.append('milestone-integration-binding:' + task_id)
+            continue
+        try:
+            record = load_artifact_at_revision(root, expected_path, evaluated)
+            if item['sha256'] != blob_sha_at_revision(root, expected_path, evaluated):
+                errors.append('milestone-integration-hash:' + task_id)
+            if record.get('integration_status') != 'MERGED':
+                errors.append('milestone-integration-unmerged:' + task_id)
+            if (record.get('task_identity') != item['task_identity']
+                    or record.get('display_task_id') != task_id):
+                errors.append('milestone-integration-binding:' + task_id)
+            merge_commit = resolve(root, record.get('merge_commit', ''))
+            if not is_ancestor(root, merge_commit, evaluated):
+                errors.append('milestone-integration-unreachable:' + task_id)
+            integration_issues = integration_record_errors(
+                root, root / expected_path, record, integration_schema, result_schema,
+                review_schema, evaluated_tasks)
+            errors.extend(
+                'milestone-integration-invalid:' + task_id + ':' + issue
+                for issue in integration_issues)
+        except (ValueError, OSError, KeyError, TypeError) as ex:
+            errors.append('milestone-integration-invalid:' + task_id + ':' + str(ex))
+
+    expected_exit_checks = {
+        'm2_task_integrations_valid',
+        'm2_regression_suite_passes',
+        'frozen_authority_and_requirement_claims_preserved',
+    }
+    exit_ids = [item['check_id'] for item in closure['exit_checks']]
+    if set(exit_ids) != expected_exit_checks or len(exit_ids) != len(set(exit_ids)):
+        errors.append('milestone-exit-check-set:M2')
+    evidence_by_check = {
+        item['check_id']: item['evidence'] for item in closure['exit_checks']
+    }
+    for exit_check in closure['exit_checks']:
+        if exit_check['result'] != 'PASS':
+            errors.append('milestone-exit-check-failed:' + exit_check['check_id'])
+        if not exit_check['evidence']:
+            errors.append('milestone-exit-evidence-missing:' + exit_check['check_id'])
+        for evidence in exit_check['evidence']:
+            path = evidence['path']
+            if not relative_path(path):
+                errors.append('milestone-exit-evidence-path:' + exit_check['check_id'])
+                continue
+            try:
+                revision = resolve(root, evidence['revision'])
+                if not is_ancestor(root, revision, evaluated):
+                    errors.append('milestone-exit-evidence-unreachable:' + exit_check['check_id'])
+                if evidence['sha256'] != blob_sha_at_revision(root, path, revision):
+                    errors.append('milestone-exit-evidence-hash:' + exit_check['check_id'])
+            except ValueError as ex:
+                errors.append(
+                    'milestone-exit-evidence-missing:' + exit_check['check_id'] + ':' + str(ex))
+
+    integration_paths = {
+        item['path'] for item in evidence_by_check.get('m2_task_integrations_valid', [])
+    }
+    expected_integration_paths = {
+        f'docs/exec-plans/integrations/{task_id}.json' for task_id in M2_TASK_IDS
+    }
+    if integration_paths != expected_integration_paths or any(
+            resolve(root, item['revision']) != evaluated
+            for item in evidence_by_check.get('m2_task_integrations_valid', [])):
+        errors.append('milestone-exit-evidence-semantic:m2_task_integrations_valid')
+
+    regression_records = evidence_by_check.get('m2_regression_suite_passes', [])
+    if (len(regression_records) != 1
+            or not re.fullmatch(
+                r'docs/exec-plans/evidence/HG-023/m2-regression-[0-9a-f]{7,40}\.json',
+                regression_records[0]['path'])):
+        errors.append('milestone-exit-evidence-semantic:m2_regression_suite_passes')
+    else:
+        evidence = regression_records[0]
+        try:
+            revision = resolve(root, evidence['revision'])
+            payload = load_artifact_at_revision(root, evidence['path'], revision)
+            tested = resolve(root, payload.get('tested_commit', ''))
+            if (revision != evaluated
+                    or payload.get('check_id') != 'm2_regression_suite_passes'
+                    or payload.get('commands') != M2_REGRESSION_COMMANDS
+                    or payload.get('status') != 'PASS'
+                    or not is_ancestor(root, tested, evaluated)
+                    or any(path != evidence['path']
+                           for path in changed_paths(root, tested, evaluated))):
+                errors.append('milestone-exit-evidence-oracle:m2_regression_suite_passes')
+        except (ValueError, OSError, KeyError, TypeError):
+            errors.append('milestone-exit-evidence-oracle:m2_regression_suite_passes')
+
+    authority_records = evidence_by_check.get(
+        'frozen_authority_and_requirement_claims_preserved', [])
+    if ({item['path'] for item in authority_records}
+            != {'FROZEN_BASELINE.json', 'CURRENT_REQUIREMENT_SET.json'}
+            or any(resolve(root, item['revision']) != evaluated for item in authority_records)):
+        errors.append(
+            'milestone-exit-evidence-semantic:'
+            'frozen_authority_and_requirement_claims_preserved')
+    return errors
+
+
 def task_definition_errors(
         root, backlog, revision=None, *, historical_m1_closure=False):
     """Validate one revision's complete backlog, packet, resource and DAG state."""
@@ -1559,19 +1708,20 @@ def validate(root, args):
             raise ValueError('invalid-schema:' + kind + ':' + str(ex)) from ex
         schemas[kind] = Draft202012Validator(schema)
     milestone_dir = root / 'docs/exec-plans/milestones'
-    milestone_records = []
+    milestone_records = {'M1': [], 'M2': []}
     if milestone_dir.exists():
         for path in sorted(milestone_dir.glob('*.json')):
             record = load_artifact(path)
-            if isinstance(record, dict) and record.get('display_milestone_id') == 'M1':
-                milestone_records.append((path, record))
-    if not milestone_records:
+            milestone_id = record.get('display_milestone_id') if isinstance(record, dict) else None
+            if milestone_id in milestone_records:
+                milestone_records[milestone_id].append((path, record))
+    if not milestone_records['M1']:
         m1_closure_valid = False
-    elif len(milestone_records) != 1:
-        errors.append('milestone-closure-count:M1:' + str(len(milestone_records)))
+    elif len(milestone_records['M1']) != 1:
+        errors.append('milestone-closure-count:M1:' + str(len(milestone_records['M1'])))
         m1_closure_valid = False
     else:
-        closure_path, closure = milestone_records[0]
+        closure_path, closure = milestone_records['M1'][0]
         if closure_path.name != 'M1.json':
             errors.append('milestone-closure-path:M1:' + closure_path.name)
         closure_errors = milestone_closure_errors(
@@ -1579,6 +1729,15 @@ def validate(root, args):
             schemas['RESULT'], schemas['REVIEW'], backlog, tasks)
         errors.extend(closure_errors)
         m1_closure_valid = not closure_errors and closure_path.name == 'M1.json'
+    if len(milestone_records['M2']) > 1:
+        errors.append('milestone-closure-count:M2:' + str(len(milestone_records['M2'])))
+    elif milestone_records['M2']:
+        closure_path, closure = milestone_records['M2'][0]
+        if closure_path.name != 'M2.json':
+            errors.append('milestone-closure-path:M2:' + closure_path.name)
+        errors.extend(m2_milestone_closure_errors(
+            root, closure, schemas['MILESTONE'], schemas['INTEGRATION'],
+            schemas['RESULT'], schemas['REVIEW'], backlog, tasks))
     for task in tasks.values():
         if task['milestone'] == 'M2' and task['status'] == 'READY' and not m1_closure_valid:
             errors.append('ready-m1-closure-invalid:' + task['id'])

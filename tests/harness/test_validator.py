@@ -392,6 +392,57 @@ class ValidatorTests(unittest.TestCase):
         dump(self.root / 'docs/exec-plans/milestones/M1-copy.json', fixture)
         self.check(1, 'milestone-closure-count:M1:2')
 
+    def test_duplicate_m2_closure_rejected(self):
+        fixture = {'display_milestone_id': 'M2'}
+        dump(self.root / 'docs/exec-plans/milestones/M2.json', fixture)
+        dump(self.root / 'docs/exec-plans/milestones/M2-copy.json', fixture)
+        self.check(1, 'milestone-closure-count:M2:2')
+
+    def test_malformed_m2_closure_discovery_rejected(self):
+        dump(self.root / 'docs/exec-plans/milestones/M2.json', {
+            'display_milestone_id': 'M2',
+        })
+        self.check(1, 'milestone-schema:M2.json:')
+
+    def test_m2_schema_requires_exact_task_count_and_exit_check_vocabulary(self):
+        from jsonschema import Draft202012Validator
+
+        schema = Draft202012Validator(v.load_artifact(ROOT / v.MILESTONE_CLOSURE_SCHEMA))
+        integration = {
+            'task_identity': 'harness-backlog-v0.2/KL-010',
+            'display_task_id': 'KL-010',
+            'integration_record': 'docs/exec-plans/integrations/KL-010.json',
+            'sha256': 'a' * 64,
+        }
+        closure = {
+            'milestone_identity': 'harness-backlog-v0.2/M2',
+            'display_milestone_id': 'M2',
+            'closure_status': 'PASS',
+            'evaluated_commit': 'a' * 40,
+            'integrations': [copy.deepcopy(integration) for _ in range(11)],
+            'exit_checks': [
+                {'check_id': check_id, 'result': 'PASS', 'evidence': [{
+                    'path': 'evidence.json', 'revision': 'a' * 40, 'sha256': 'b' * 64,
+                }]}
+                for check_id in (
+                    'm2_task_integrations_valid',
+                    'm2_regression_suite_passes',
+                    'frozen_authority_and_requirement_claims_preserved',
+                )
+            ],
+            'historical_model_evidence': {
+                'status': 'UNVERIFIED_HISTORICAL_DECLARATION',
+                'independently_reproducible_protocol_model': False,
+            },
+            'product_requirement_pass_claims': [],
+        }
+        self.assertFalse(list(schema.iter_errors(closure)))
+        closure['integrations'].pop()
+        self.assertTrue(list(schema.iter_errors(closure)))
+        closure['integrations'].append(copy.deepcopy(integration))
+        closure['exit_checks'][0]['check_id'] = 'generic_pass'
+        self.assertTrue(list(schema.iter_errors(closure)))
+
     def test_m2_check_contract_missing_duplicate_and_generic_rejected(self):
         backlog_path = self.root / v.BACKLOG
         original = json.loads(backlog_path.read_text())
