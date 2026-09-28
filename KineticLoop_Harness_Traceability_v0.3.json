@@ -2573,10 +2573,42 @@
         "KL-051"
       ],
       "conditional_depends_on": [],
+      "commands": [
+        "ReceiveEvidence"
+      ],
+      "transaction_boundaries": [
+        "T1",
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-03",
+        "INV-16"
+      ],
+      "table_ids": [
+        "S09",
+        "S14"
+      ],
+      "context_files": [
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "12_KineticLoop_Integration_Spec_v0.1.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ],
+      "entry_conditions": [
+        "M5 entry gates satisfied"
+      ],
+      "environment_requirements": [],
+      "deliverables": [
+        "No Google Sheet migration implementation"
+      ],
+      "definition_of_done": "No implementation; traceability preserved. Use KL-051 and the current Integration Spec for Hevy historical workout backfill.",
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "task_scope_e2e_checks"
       ],
+      "check_contracts": null,
+      "evidence_paths": null,
       "resource_keys": [
         "migration_chain"
       ],
@@ -2595,7 +2627,8 @@
         "PROTOCOL"
       ],
       "packet_refinement": "MUST_REFINE_BEFORE_READY",
-      "status": "SUPERSEDED"
+      "status": "SUPERSEDED",
+      "shared_hotspot": false
     },
     {
       "task_identity": "harness-backlog-v0.2/KL-056",

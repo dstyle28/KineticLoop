@@ -265,7 +265,7 @@ class ValidatorTests(unittest.TestCase):
     def retire_task(self, task_id='KL-008', *, update_active_count=True,
                     preserve_requirement_mapping=True, replacement_mode='valid',
                     packet_replacement='KL-001', include_schedule_barrier=True,
-                    include_reason=True):
+                    include_reason=True, metadata_replacements=None):
         backlog_path = self.root / v.BACKLOG
         backlog = json.loads(backlog_path.read_text())
         task = next(item for item in backlog['tasks'] if item['id'] == task_id)
@@ -285,7 +285,10 @@ class ValidatorTests(unittest.TestCase):
                 'No implementation; traceability preserved by the explicit replacement.'
             ),
             'status': 'SUPERSEDED',
-            'superseded_by': replacements,
+            'superseded_by': (
+                replacements if metadata_replacements is None
+                else metadata_replacements
+            ),
             'disposition_reason': reason if include_reason else '',
         })
         if not preserve_requirement_mapping:
@@ -296,6 +299,11 @@ class ValidatorTests(unittest.TestCase):
         dump(backlog_path, backlog)
 
         packet = self.root / f'docs/exec-plans/active/{task_id}.md'
+        projected_replacements = (
+            packet_replacement if isinstance(packet_replacement, list)
+            else [] if packet_replacement is None
+            else [packet_replacement]
+        )
         packet.write_text(
             f'# {task_id} — SUPERSEDED\n\n'
             f'Task identity `{task["task_identity"]}` is traceability-only and '
@@ -303,7 +311,7 @@ class ValidatorTests(unittest.TestCase):
             + '## Disposition\n\n'
             + (f'Reason: {reason}\n\n' if include_reason else 'Reason: \n\n')
             + 'Replacement tasks:\n'
-            + (f'- {packet_replacement}\n' if packet_replacement else '')
+            + ''.join(f'- {replacement}\n' for replacement in projected_replacements)
         )
 
         traceability_path = self.root / v.TRACEABILITY
@@ -1558,6 +1566,39 @@ class ValidatorTests(unittest.TestCase):
         self.check(1, 'packet-superseded-replacements:' + task['id'],
                    '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
+    def test_ci_governance_retirement_rejects_structured_dependency_mismatch(self):
+        task = self.retire_task(
+            metadata_replacements=['KL-002'], packet_replacement='KL-002')
+        refresh(self.root)
+        tested = self.commit('retire task with mismatched structured replacement')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(1, 'governance-retirement-replacement:' + task['id'],
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_retirement_rejects_reordered_old_dependencies(self):
+        task_id = 'KL-008'
+        backlog = json.loads((self.root / v.BACKLOG).read_text())
+        old_task = next(item for item in backlog['tasks'] if item['id'] == task_id)
+        self.assertGreater(len(old_task['depends_on']), 1)
+        reordered = list(reversed(old_task['depends_on']))
+        task = self.retire_task(
+            replacement_mode='unchanged',
+            metadata_replacements=reordered,
+            packet_replacement=reordered,
+        )
+        backlog_path = self.root / v.BACKLOG
+        updated = json.loads(backlog_path.read_text())
+        updated_task = next(item for item in updated['tasks'] if item['id'] == task_id)
+        updated_task['depends_on'] = reordered
+        dump(backlog_path, updated)
+        refresh(self.root)
+        tested = self.commit('retire task with reordered old dependencies')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(1, 'governance-retirement-replacement:' + task['id'],
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
     def test_superseded_task_cannot_have_yaml_or_json_result(self):
         task_id = 'KL-053'
         backlog = json.loads((self.root / v.BACKLOG).read_text())
@@ -1631,6 +1672,19 @@ class ValidatorTests(unittest.TestCase):
         dump(traceability_path, traceability)
         refresh(self.root)
         tested = self.commit('attempt same-status superseded refinement')
+        self.persist_governance_change(
+            'HG-999', tested, [task_id], task['review_requirements'])
+        self.check(1, 'governance-modify-superseded-task:' + task_id,
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_rejects_packet_only_superseded_refinement(self):
+        task_id = 'KL-053'
+        backlog = json.loads((self.root / v.BACKLOG).read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == task_id)
+        packet = self.root / f'docs/exec-plans/active/{task_id}.md'
+        packet.write_text(packet.read_text() + '\nFabricated task PASS and implementation evidence.\n')
+        refresh(self.root)
+        tested = self.commit('attempt packet-only superseded refinement')
         self.persist_governance_change(
             'HG-999', tested, [task_id], task['review_requirements'])
         self.check(1, 'governance-modify-superseded-task:' + task_id,

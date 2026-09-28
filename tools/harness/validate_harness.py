@@ -2349,7 +2349,7 @@ def validate(root, args):
                             if task.get('status') != 'SUPERSEDED':
                                 errors.append(
                                     'governance-reactivate-superseded-task:' + task_id)
-                            elif task != old_task:
+                            else:
                                 errors.append(
                                     'governance-modify-superseded-task:' + task_id)
                         if retired:
@@ -2371,7 +2371,7 @@ def validate(root, args):
                             if (not isinstance(replacements, list)
                                     or not replacements
                                     or replacements != task.get('depends_on')
-                                    or replacements == old_task.get('depends_on')
+                                    or set(replacements) == set(old_task.get('depends_on', []))
                                     or len(replacements) != len(set(replacements))):
                                 errors.append(
                                     'governance-retirement-replacement:' + task_id)
