@@ -1,0 +1,87 @@
+KL-020 final required task checks after independent-review remediation
+tested_commit: 9162f5125b8e6eb8bf34eb0234a5c5889ddbd896
+database: kineticloop_kl020_b7ab4fa
+compose_project: kineticloop-kl020-b7ab4fa
+database_clock_fixture: PostgreSQL clock_timestamp()
+
+check_id: transaction_owner_matrix_remains_complete
+command: uv run pytest -q tests/unit/persistence/test_transactions.py::test_transaction_owner_matrix_complete
+exit_code: 0
+output:
+.                                                                        [100%]
+1 passed in 0.23s
+
+check_id: t2_t7_subject_commands_share_s01_linearization
+command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_t2_t7_subject_commands_share_s01_linearization
+exit_code: 0
+output:
+.                                                                        [100%]
+1 passed in 3.41s
+oracle_notes: >-
+  PostgreSQL pg_blocking_pids observed representative T2, T3, T4, T5, T6 and
+  T7 owners blocked behind the held subject S01 row. Registry-gated owners reached
+  S01 through S51. After the blocker committed a new epoch, T2 rejected a stale
+  invalidation scope, T3 rejected its stale Manifest candidate, T4 rejected its
+  missing quota guard, T5 rejected its stale lease CAS, and T6/T7 rejected current
+  registry authorization. T2-T5 directly observed the committed epoch; the T6/T7
+  database routines rejected the incompatible committed epoch. The blocker update
+  remained exact, every attempted S02/S03/S04 identity rolled back, and an
+  independent subject committed while the first subject remained blocked. All
+  worker statements and cleanup are bounded.
+
+check_id: concurrent_same_key_same_hash_replays_one_outcome
+command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_concurrent_same_key_same_hash_replays_one_outcome
+exit_code: 0
+output:
+.                                                                        [100%]
+1 passed in 2.78s
+oracle_notes: >-
+  PostgreSQL blocking observation proved the second caller waited behind S01. Both
+  callers received byte-equivalent stored outcomes, exactly one was replayed, the
+  mutation callback ran once, and exactly one S02, S03 and S04 identity persisted.
+
+check_id: concurrent_same_key_different_hash_rejects_conflict
+command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_concurrent_same_key_different_hash_rejects_conflict
+exit_code: 0
+output:
+.                                                                        [100%]
+1 passed in 2.57s
+oracle_notes: >-
+  PostgreSQL blocking observation proved the loser waited behind S01. The loser
+  raised IdempotencyConflict only after observing the committed SUCCEEDED receipt;
+  the mutation callback ran once and only the winning S02/S03/S04 identities exist.
+
+check_id: historical_replay_preserves_guard_boundary
+command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_historical_replay_preserves_guard_boundary
+exit_code: 0
+output:
+.                                                                        [100%]
+1 passed in 2.64s
+oracle_notes: >-
+  Historical T6 replay completed under a five-second statement/thread bound while
+  S27, S31, S38 and S44 were held FOR UPDATE by another transaction, proving replay
+  does not reacquire aggregate mutation guards. After current artifact validity and
+  intent lease/fence/status guards were made ineligible, historical S02 replay still
+  returned durable outcomes without rerunning mutation or guards. Hash mismatch
+  conflicted, new T6/T5 commands failed current guards, PermitDispatch replay was
+  non-sendable, and T7 replay was non-executable.
+
+check_id: receipt_lock_order_guards_remain_enforced
+command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_complete_frozen_lock_order_enforced tests/db/test_transaction_interfaces.py::test_multi_key_lock_order_is_stable tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected tests/db/test_transaction_interfaces.py::test_receipt_before_s01_is_rejected
+exit_code: 0
+output:
+..........                                                               [100%]
+10 passed in 2.91s
+
+check_id: transaction_interface_db_suite_passes
+command: uv run pytest -q tests/db/test_transaction_interfaces.py
+exit_code: 0
+output:
+....................................................                     [100%]
+52 passed in 5.23s
+
+check_id: harness_validation_passes
+command: uv run kl check-harness
+exit_code: 0
+output:
+HARNESS_CHECK_PASS tasks=70 active=67
