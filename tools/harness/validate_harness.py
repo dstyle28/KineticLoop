@@ -514,6 +514,34 @@ def packet_errors(task, text):
     if task['task_identity'] not in text:
         errors.append('packet-identity:' + name)
     if task['status'] == 'SUPERSEDED':
+        disposition_reason = task.get('disposition_reason')
+        superseded_by = task.get('superseded_by')
+        structured_retirement = disposition_reason is not None or superseded_by is not None
+        if structured_retirement:
+            scheduling_barriers = re.findall(
+                r'^Scheduling barrier: MUST NOT be scheduled\.$', text, re.M)
+            scheduling_valid = (
+                scheduling_barriers == ['Scheduling barrier: MUST NOT be scheduled.'])
+        else:
+            legacy_barrier = (
+                r'^Task identity `' + re.escape(task['task_identity'])
+                + r'` is traceability-only and MUST NOT be scheduled\.')
+            scheduling_valid = len(re.findall(legacy_barrier, text, re.M)) == 1
+        if not scheduling_valid:
+            errors.append('packet-superseded-schedulable:' + name)
+        if structured_retirement:
+            disposition = section(text, 'Disposition') or ''
+            if not isinstance(disposition_reason, str) or not disposition_reason.strip():
+                errors.append('packet-superseded-reason:' + name)
+            elif re.findall(r'^Reason: (.*)$', disposition, re.M) != [disposition_reason]:
+                errors.append('packet-superseded-reason:' + name)
+            replacements = re.findall(r'^- (KL-[0-9]{3}[A-Z]?)$', disposition, re.M)
+            if (not isinstance(superseded_by, list)
+                    or not superseded_by
+                    or replacements != superseded_by
+                    or len(replacements) != len(set(replacements))
+                    or len(superseded_by) != len(set(superseded_by))):
+                errors.append('packet-superseded-replacements:' + name)
         return errors
     if task['title'] not in text:
         errors.append('packet-title:' + name)
@@ -914,6 +942,8 @@ def evidence_exists(root, ref, revision=None):
 
 def semantic_result_errors(obj, task, root, evidence_revision=None):
     errors = []
+    if task.get('status') == 'SUPERSEDED':
+        errors.append('result-for-superseded-task')
     if obj['task_identity'] != task['task_identity'] or obj['display_task_id'] != task['id']:
         errors.append('result-task-identity')
     if obj['task_status'] == 'PASS' and obj['task_checks_status'] != 'PASS':
@@ -1766,6 +1796,12 @@ def task_definition_errors(
     identities = [task['task_identity'] for task in backlog['tasks']]
     if len(tasks) != len(backlog['tasks']) or len(identities) != len(set(identities)):
         errors.append('task-identity-duplicate')
+    if backlog.get('task_count') != len(backlog['tasks']):
+        errors.append('backlog-task-count')
+    active_task_count = sum(
+        task.get('status') != 'SUPERSEDED' for task in backlog['tasks'])
+    if backlog.get('active_task_count') != active_task_count:
+        errors.append('backlog-active-task-count')
     resource_path = 'docs/harness/RESOURCE_LOCKS.md'
     resource_text = (git(root, 'show', revision + ':' + resource_path).decode()
                      if revision else (root / resource_path).read_text())
@@ -2316,14 +2352,53 @@ def validate(root, args):
                     else:
                         if result_paths_at_revision(root, task_id, governance_base):
                             errors.append('governance-refine-completed-task:' + task_id)
-                        if ((old_task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY'
+                        retired = (
+                            old_task.get('status') == 'NOT_STARTED'
+                            and task.get('status') == 'SUPERSEDED'
+                        )
+                        if old_task.get('status') == 'SUPERSEDED':
+                            observed.add(task_id)
+                            if task.get('status') != 'SUPERSEDED':
+                                errors.append(
+                                    'governance-reactivate-superseded-task:' + task_id)
+                            else:
+                                errors.append(
+                                    'governance-modify-superseded-task:' + task_id)
+                        if retired:
+                            observed.add(task_id)
+                            retirement_fields = {
+                                'status', 'title', 'depends_on', 'deliverables',
+                                'definition_of_done', 'superseded_by',
+                                'disposition_reason',
+                            }
+                            changed_fields = {
+                                field for field in set(old_task) | set(task)
+                                if old_task.get(field) != task.get(field)
+                            }
+                            if not changed_fields <= retirement_fields:
+                                errors.append(
+                                    'governance-retirement-definition-scope:' + task_id)
+                            replacements = task.get('superseded_by')
+                            reason = task.get('disposition_reason')
+                            if (not isinstance(replacements, list)
+                                    or not replacements
+                                    or replacements != task.get('depends_on')
+                                    or set(replacements) == set(old_task.get('depends_on', []))
+                                    or len(replacements) != len(set(replacements))):
+                                errors.append(
+                                    'governance-retirement-replacement:' + task_id)
+                            if not isinstance(reason, str) or not reason.strip():
+                                errors.append(
+                                    'governance-retirement-reason:' + task_id)
+                        elif ((old_task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY'
                              and task.get('packet_refinement') != 'MUST_REFINE_BEFORE_READY')
                                 or (old_task != task and
                                     task.get('packet_refinement') == 'ENFORCEABLE')):
                             observed.add(task_id)
-                    if (task.get('write_paths_status') != 'ENFORCEABLE' or
+                    if (task.get('status') != 'SUPERSEDED' and (
+                            task.get('write_paths_status') != 'ENFORCEABLE' or
                             not task.get('write_paths') or
-                            any('TO_BE_REFINED' in path for path in task.get('write_paths', []))):
+                            any('TO_BE_REFINED' in path for path in task.get('write_paths', [])))):
                         errors.append('governance-refinement-incomplete:' + task_id)
                 changed_packets = {
                     Path(path).stem for path in governance_changed

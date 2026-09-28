@@ -1,0 +1,69 @@
+change_identity: harness-governance-v0.1/HG-025
+display_change_id: HG-025
+base_commit: 98242e56565febc091810612f1da71414544ba83
+tested_commit: 02d678b47b7a11bf8ebb7f6a3fa45331ccdd9b5b
+change_status: PASS
+summary: >-
+  Record the user's 2026-09-26 decision that every historical workout is already in
+  Hevy by retiring the unstarted Google Sheet migration task KL-035 as SUPERSEDED,
+  never PASS. Preserve its namespaced audit identity with exact reason/replacement
+  and full traceability projection to KL-051, reduce the active task count to 67, and
+  enforce fail-closed unstarted-task retirement without changing product requirement
+  state, frozen authority, migrations, production code, or retained provider work.
+packets_refined:
+  - KL-035
+files_changed:
+  - 06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md
+  - CURRENT_DOCUMENT_INDEX.json
+  - HARNESS_DOCUMENT_MANIFEST.json
+  - KineticLoop_Harness_Backlog_v0.2.json
+  - KineticLoop_Harness_Traceability_v0.3.json
+  - docs/exec-plans/active/KL-035.md
+  - docs/exec-plans/evidence/HG-025/checks-02d678b.log
+  - docs/exec-plans/governance/HG-025.yaml
+  - docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
+  - tests/harness/test_validator.py
+  - tools/harness/validate_harness.py
+checks_run:
+  - check_id: harness_tests_pass
+    command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-025/checks-02d678b.log
+  - check_id: unit_tests_pass
+    command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-025/checks-02d678b.log
+  - check_id: database_tests_pass
+    command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m pytest -q tests/db -p no:cacheprovider
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-025/checks-02d678b.log
+  - check_id: harness_structure_valid
+    command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-025/checks-02d678b.log
+  - check_id: lint_pass
+    command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-025/checks-02d678b.log
+  - check_id: typecheck_pass
+    command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-025/checks-02d678b.log
+  - check_id: frozen_and_retained_scope_unchanged
+    command: Compare the protected base to the tested commit across frozen authority, requirement and integration authority, migrations, and product source.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-025/checks-02d678b.log
+  - check_id: disposition_integrity
+    command: Verify KL-035 has no YAML/JSON result, review or integration artifact and claims only SUPERSEDED disposition.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-025/checks-02d678b.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+  - >-
+    KL-035 is retired only because the user confirmed all historical workouts are
+    already in Hevy. This is not evidence that KL-051, KL-052 or KL-056 has run or
+    that any related product requirement is PASS.
+  - >-
+    No product implementation, migration, frozen Protocol/DB authority, Evidence
+    Admission semantics, correction semantics or production activation state changes.

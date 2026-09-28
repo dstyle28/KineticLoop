@@ -21,6 +21,21 @@ already has a result at the protected base is immutable: governance must create 
 new dependent task instead of changing its checks, scope, dependencies, or semantic
 claims.
 
+A governance change may retire an unstarted task by changing `NOT_STARTED` to
+`SUPERSEDED`. Retirement is a disposition, never task PASS: it creates no task
+result or requirement evidence and removes the task from the active count. The
+governance change must preserve the task identity and requirement mapping, limit the
+definition edit to the status, title, replacement dependencies, structured
+`superseded_by` / `disposition_reason` metadata, deliverables and definition of done,
+and replace the active packet with a traceability-only packet. A new explicit
+retirement packet with structured disposition metadata must contain exactly one
+standalone `Scheduling barrier: MUST NOT be scheduled.` line; pre-existing historical
+supersessions retain their exact identity-bound scheduling sentence. `superseded_by`
+must be a non-empty exact, ordered and duplicate-free projection of changed
+replacement dependencies, and the packet must exactly project both it and the durable
+reason. Completed tasks are immutable. A `SUPERSEDED` task cannot have a result and
+cannot be reactivated or otherwise refined through ordinary governance.
+
 Governance changes may add a milestone schema at the repository root and milestone
 records under `docs/exec-plans/milestones/`. The schema is indexed as machine-readable
 authority; individual closure instances remain revision-bound records and are not
