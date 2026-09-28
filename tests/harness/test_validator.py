@@ -263,17 +263,30 @@ class ValidatorTests(unittest.TestCase):
         return task
 
     def retire_task(self, task_id='KL-008', *, update_active_count=True,
-                    preserve_requirement_mapping=True):
+                    preserve_requirement_mapping=True, replacement_mode='valid',
+                    packet_replacement='KL-001', include_schedule_barrier=True,
+                    include_reason=True):
         backlog_path = self.root / v.BACKLOG
         backlog = json.loads(backlog_path.read_text())
         task = next(item for item in backlog['tasks'] if item['id'] == task_id)
+        original_dependencies = list(task['depends_on'])
+        replacements = (
+            [] if replacement_mode == 'empty'
+            else original_dependencies if replacement_mode == 'unchanged'
+            else ['KL-999'] if replacement_mode == 'unknown'
+            else ['KL-001']
+        )
+        reason = 'The user approved this fixture retirement because replacement work exists.'
         task.update({
             'title': task['title'] + ' (retired by explicit user decision)',
+            'depends_on': replacements,
             'deliverables': ['No implementation for this retired fixture task'],
             'definition_of_done': (
                 'No implementation; traceability preserved by the explicit replacement.'
             ),
             'status': 'SUPERSEDED',
+            'superseded_by': replacements,
+            'disposition_reason': reason if include_reason else '',
         })
         if not preserve_requirement_mapping:
             task['requirements_covered'] = ['INT-A01@PU']
@@ -285,8 +298,12 @@ class ValidatorTests(unittest.TestCase):
         packet = self.root / f'docs/exec-plans/active/{task_id}.md'
         packet.write_text(
             f'# {task_id} — SUPERSEDED\n\n'
-            f'Task identity `{task["task_identity"]}` is traceability-only and MUST NOT be '
-            'scheduled. The explicit replacement remains authoritative.\n'
+            f'Task identity `{task["task_identity"]}` is traceability-only and '
+            + ('MUST NOT be scheduled.\n\n' if include_schedule_barrier else 'is retired.\n\n')
+            + '## Disposition\n\n'
+            + (f'Reason: {reason}\n\n' if include_reason else 'Reason: \n\n')
+            + 'Replacement tasks:\n'
+            + (f'- {packet_replacement}\n' if packet_replacement else '')
         )
 
         traceability_path = self.root / v.TRACEABILITY
@@ -1485,6 +1502,138 @@ class ValidatorTests(unittest.TestCase):
         self.persist_governance_change(
             'HG-999', tested, [task['id']], task['review_requirements'])
         self.check(1, 'governance-retirement-definition-scope:' + task['id'],
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_retirement_requires_schedule_barrier(self):
+        task = self.retire_task(include_schedule_barrier=False)
+        refresh(self.root)
+        tested = self.commit('retire task without schedule barrier')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(1, 'packet-superseded-schedulable:' + task['id'],
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_retirement_requires_durable_reason(self):
+        task = self.retire_task(include_reason=False)
+        refresh(self.root)
+        tested = self.commit('retire task without durable reason')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(1, 'governance-retirement-reason:' + task['id'],
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_retirement_requires_nonempty_replacement(self):
+        task = self.retire_task(replacement_mode='empty', packet_replacement=None)
+        refresh(self.root)
+        tested = self.commit('retire task without replacement')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(1, 'governance-retirement-replacement:' + task['id'],
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_retirement_requires_changed_replacement(self):
+        task = self.retire_task(replacement_mode='unchanged')
+        refresh(self.root)
+        tested = self.commit('retire task with unchanged dependencies')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(1, 'governance-retirement-replacement:' + task['id'],
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_retirement_rejects_unknown_replacement(self):
+        task = self.retire_task(replacement_mode='unknown', packet_replacement='KL-999')
+        refresh(self.root)
+        tested = self.commit('retire task with unknown replacement')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(1, 'unknown-dep:' + task['id'] + '->KL-999',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_retirement_rejects_packet_replacement_mismatch(self):
+        task = self.retire_task(packet_replacement='KL-002')
+        refresh(self.root)
+        tested = self.commit('retire task with mismatched packet replacement')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(1, 'packet-superseded-replacements:' + task['id'],
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_superseded_task_cannot_have_yaml_or_json_result(self):
+        task_id = 'KL-053'
+        backlog = json.loads((self.root / v.BACKLOG).read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == task_id)
+        evidence = f'docs/exec-plans/evidence/{task_id}/checks.log'
+        self.put(evidence, 'fabricated superseded result evidence\n')
+        result = {
+            'task_identity': task['task_identity'],
+            'display_task_id': task_id,
+            'base_commit': self.base,
+            'tested_commit': self.base,
+            'task_status': 'PASS',
+            'task_checks_status': 'PASS',
+            'integration_status': 'UNMERGED',
+            'summary': 'A superseded task must never pass.',
+            'files_changed': [],
+            'requirements_covered': [],
+            'commands_run': [{
+                'check_id': check_id,
+                'command': 'fabricated-check ' + check_id,
+                'result': 'PASS',
+                'evidence_ref': evidence,
+            } for check_id in task['checks_required_for_this_task']],
+        }
+        for extension in ('yaml', 'json'):
+            path = self.root / f'docs/exec-plans/completed/{task_id}_RESULT.{extension}'
+            self.save_result(path, result)
+            self.check(1, path.name + ':result-for-superseded-task')
+            path.unlink()
+
+    def test_ci_governance_rejects_superseded_task_reactivation(self):
+        task_id = 'KL-053'
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == task_id)
+        task['status'] = 'NOT_STARTED'
+        task['packet_refinement'] = 'ENFORCEABLE'
+        task['write_paths_status'] = 'ENFORCEABLE'
+        backlog['active_task_count'] += 1
+        dump(backlog_path, backlog)
+        packet = self.root / f'docs/exec-plans/active/{task_id}.md'
+        packet.write_text(packet.read_text() + '\nReactivation fixture.\n')
+        traceability_path = self.root / v.TRACEABILITY
+        traceability = json.loads(traceability_path.read_text())
+        trace = next(item for item in traceability['tasks'] if item['id'] == task_id)
+        for field in v.TRACEABILITY_TASK_FIELDS:
+            trace[field] = task.get(field)
+        dump(traceability_path, traceability)
+        refresh(self.root)
+        tested = self.commit('attempt superseded task reactivation')
+        self.persist_governance_change(
+            'HG-999', tested, [task_id], task['review_requirements'])
+        self.check(1, 'governance-reactivate-superseded-task:' + task_id,
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_rejects_same_status_superseded_refinement(self):
+        task_id = 'KL-053'
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == task_id)
+        task['packet_refinement'] = 'ENFORCEABLE'
+        task['write_paths_status'] = 'ENFORCEABLE'
+        dump(backlog_path, backlog)
+        packet = self.root / f'docs/exec-plans/active/{task_id}.md'
+        packet.write_text(packet.read_text() + '\nSame-status refinement fixture.\n')
+        traceability_path = self.root / v.TRACEABILITY
+        traceability = json.loads(traceability_path.read_text())
+        trace = next(item for item in traceability['tasks'] if item['id'] == task_id)
+        for field in v.TRACEABILITY_TASK_FIELDS:
+            trace[field] = task.get(field)
+        dump(traceability_path, traceability)
+        refresh(self.root)
+        tested = self.commit('attempt same-status superseded refinement')
+        self.persist_governance_change(
+            'HG-999', tested, [task_id], task['review_requirements'])
+        self.check(1, 'governance-modify-superseded-task:' + task_id,
                    '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
     def test_ci_governance_rejects_wrong_target_backlog_edit(self):

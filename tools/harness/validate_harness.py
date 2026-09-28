@@ -516,6 +516,20 @@ def packet_errors(task, text):
     if task['status'] == 'SUPERSEDED':
         if not re.search(r'MUST NOT be\s+scheduled', text):
             errors.append('packet-superseded-schedulable:' + name)
+        disposition_reason = task.get('disposition_reason')
+        superseded_by = task.get('superseded_by')
+        if disposition_reason is not None or superseded_by is not None:
+            disposition = section(text, 'Disposition') or ''
+            if not isinstance(disposition_reason, str) or not disposition_reason.strip():
+                errors.append('packet-superseded-reason:' + name)
+            elif 'Reason: ' + disposition_reason not in disposition:
+                errors.append('packet-superseded-reason:' + name)
+            replacements = set(re.findall(r'^- (KL-[0-9]{3}[A-Z]?)$', disposition, re.M))
+            if (not isinstance(superseded_by, list)
+                    or not superseded_by
+                    or replacements != set(superseded_by)
+                    or len(superseded_by) != len(set(superseded_by))):
+                errors.append('packet-superseded-replacements:' + name)
         return errors
     if task['title'] not in text:
         errors.append('packet-title:' + name)
@@ -916,6 +930,8 @@ def evidence_exists(root, ref, revision=None):
 
 def semantic_result_errors(obj, task, root, evidence_revision=None):
     errors = []
+    if task.get('status') == 'SUPERSEDED':
+        errors.append('result-for-superseded-task')
     if obj['task_identity'] != task['task_identity'] or obj['display_task_id'] != task['id']:
         errors.append('result-task-identity')
     if obj['task_status'] == 'PASS' and obj['task_checks_status'] != 'PASS':
@@ -2328,15 +2344,20 @@ def validate(root, args):
                             old_task.get('status') == 'NOT_STARTED'
                             and task.get('status') == 'SUPERSEDED'
                         )
-                        if (old_task.get('status') == 'SUPERSEDED'
-                                and task.get('status') != 'SUPERSEDED'):
-                            errors.append(
-                                'governance-reactivate-superseded-task:' + task_id)
+                        if old_task.get('status') == 'SUPERSEDED':
+                            observed.add(task_id)
+                            if task.get('status') != 'SUPERSEDED':
+                                errors.append(
+                                    'governance-reactivate-superseded-task:' + task_id)
+                            elif task != old_task:
+                                errors.append(
+                                    'governance-modify-superseded-task:' + task_id)
                         if retired:
                             observed.add(task_id)
                             retirement_fields = {
                                 'status', 'title', 'depends_on', 'deliverables',
-                                'definition_of_done',
+                                'definition_of_done', 'superseded_by',
+                                'disposition_reason',
                             }
                             changed_fields = {
                                 field for field in set(old_task) | set(task)
@@ -2345,6 +2366,18 @@ def validate(root, args):
                             if not changed_fields <= retirement_fields:
                                 errors.append(
                                     'governance-retirement-definition-scope:' + task_id)
+                            replacements = task.get('superseded_by')
+                            reason = task.get('disposition_reason')
+                            if (not isinstance(replacements, list)
+                                    or not replacements
+                                    or replacements != task.get('depends_on')
+                                    or replacements == old_task.get('depends_on')
+                                    or len(replacements) != len(set(replacements))):
+                                errors.append(
+                                    'governance-retirement-replacement:' + task_id)
+                            if not isinstance(reason, str) or not reason.strip():
+                                errors.append(
+                                    'governance-retirement-reason:' + task_id)
                         elif ((old_task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY'
                              and task.get('packet_refinement') != 'MUST_REFINE_BEFORE_READY')
                                 or (old_task != task and
