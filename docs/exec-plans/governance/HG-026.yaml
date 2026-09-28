@@ -1,7 +1,7 @@
 change_identity: harness-governance-v0.1/HG-026
 display_change_id: HG-026
 base_commit: 8587593d8575cab634eb1ab664cb1cbb911cbf23
-tested_commit: 1f09e078781d10e1c353241ee20e0eedad060a09
+tested_commit: b10483943abb12d31c71694faaf8404341fd3c64
 change_status: PASS
 summary: >-
   Refine only KL-020 for actual M3 execution after merged KL-015 and M2 closure.
@@ -20,41 +20,41 @@ files_changed:
   - KineticLoop_Harness_Backlog_v0.2.json
   - KineticLoop_Harness_Traceability_v0.3.json
   - docs/exec-plans/active/KL-020.md
-  - docs/exec-plans/evidence/HG-026/checks-1f09e07.log
+  - docs/exec-plans/evidence/HG-026/checks-b104839.log
   - docs/exec-plans/governance/HG-026.yaml
 checks_run:
   - check_id: harness_structure_valid
     command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-026/checks-1f09e07.log
+    evidence_ref: docs/exec-plans/evidence/HG-026/checks-b104839.log
   - check_id: harness_tests_pass
     command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-026/checks-1f09e07.log
+    evidence_ref: docs/exec-plans/evidence/HG-026/checks-b104839.log
   - check_id: unit_tests_pass
     command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-026/checks-1f09e07.log
+    evidence_ref: docs/exec-plans/evidence/HG-026/checks-b104839.log
   - check_id: database_tests_pass
     command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m pytest -q tests/db -p no:cacheprovider
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-026/checks-1f09e07.log
+    evidence_ref: docs/exec-plans/evidence/HG-026/checks-b104839.log
   - check_id: lint_pass
-    command: RUFF_CACHE_DIR=/private/tmp/hg026-ruff PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
+    command: RUFF_CACHE_DIR=/private/tmp/hg026-ruff-r2 PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-026/checks-1f09e07.log
+    evidence_ref: docs/exec-plans/evidence/HG-026/checks-b104839.log
   - check_id: typecheck_pass
-    command: MYPY_CACHE_DIR=/private/tmp/hg026-mypy PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
+    command: MYPY_CACHE_DIR=/private/tmp/hg026-mypy-r2 PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-026/checks-1f09e07.log
+    evidence_ref: docs/exec-plans/evidence/HG-026/checks-b104839.log
   - check_id: kl020_acceptance_only_scope_exact
     command: Verify the refined KL-020 dependency, write path, resource keys, isolated environment, check contracts and zero product requirement claims.
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-026/checks-1f09e07.log
+    evidence_ref: docs/exec-plans/evidence/HG-026/checks-b104839.log
   - check_id: frozen_and_production_unchanged
-    command: Compare protected base 8587593d8575cab634eb1ab664cb1cbb911cbf23 with tested commit 1f09e078781d10e1c353241ee20e0eedad060a09 across frozen authority, FROZEN_BASELINE.json, product source, migrations and completed KL-015/KL-073 artifacts.
+    command: Compare protected base 8587593d8575cab634eb1ab664cb1cbb911cbf23 with tested commit b10483943abb12d31c71694faaf8404341fd3c64 across frozen authority, FROZEN_BASELINE.json, product source, migrations and completed KL-015/KL-073 artifacts.
     result: PASS
-    evidence_ref: docs/exec-plans/evidence/HG-026/checks-1f09e07.log
+    evidence_ref: docs/exec-plans/evidence/HG-026/checks-b104839.log
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
