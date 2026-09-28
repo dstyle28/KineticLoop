@@ -1,5 +1,11 @@
 KL-020 required task checks
 tested_commit: b67a19c34b5b2139f4e88d00166ddf9050bd5179
+review_status: CHANGES_REQUIRED_SUPERSEDED
+review_note: >-
+  The commands below exited successfully, but independent review found that the
+  original T2-T7 test stopped after lock/context observation and that historical
+  replay did not yet prove aggregate-lock exclusion. This execution is retained as
+  superseded evidence and is not the final PASS basis.
 database: kineticloop_kl020_b7ab4fa
 compose_project: kineticloop-kl020-b7ab4fa
 database_clock_fixture: PostgreSQL clock_timestamp()
@@ -17,13 +23,7 @@ exit_code: 0
 output:
 .                                                                        [100%]
 1 passed in 2.90s
-oracle_notes: >-
-  PostgreSQL pg_blocking_pids observed each T2, T3, T4, T5, T6 and T7
-  contender blocked behind the held subject S01 row. Registry-gated contenders
-  reached S01 only through the S51-to-S01 routine. On release, successful
-  contenders observed the committed authorization epoch; T6 and T7 failed closed
-  after rereading the incompatible committed epoch. A command for a second subject
-  committed while the first subject remained blocked.
+oracle_notes: INSUFFICIENT_AT_THIS_REVISION; superseded by the post-review execution.
 
 check_id: concurrent_same_key_same_hash_replays_one_outcome
 command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_concurrent_same_key_same_hash_replays_one_outcome
@@ -53,12 +53,7 @@ exit_code: 0
 output:
 .                                                                        [100%]
 1 passed in 2.57s
-oracle_notes: >-
-  After the current artifact validity and intent lease/fence/status guards were made
-  ineligible, historical S02 replay returned the durable outcomes without rerunning
-  mutation or current guards. Hash mismatch still conflicted, a new T6/T5 command
-  failed its current guard, PermitDispatch replay was non-sendable, and T7 replay
-  was non-executable.
+oracle_notes: INSUFFICIENT_AT_THIS_REVISION; aggregate-lock exclusion was not tested.
 
 check_id: receipt_lock_order_guards_remain_enforced
 command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_complete_frozen_lock_order_enforced tests/db/test_transaction_interfaces.py::test_multi_key_lock_order_is_stable tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected tests/db/test_transaction_interfaces.py::test_receipt_before_s01_is_rejected
