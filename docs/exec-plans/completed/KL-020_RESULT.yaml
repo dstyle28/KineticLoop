@@ -1,0 +1,71 @@
+task_identity: harness-backlog-v0.2/KL-020
+display_task_id: KL-020
+task_definition_version: v0.2
+base_commit: b7ab4fab8dd7d340b5f191493c5c4874a84f6573
+tested_commit: b67a19c34b5b2139f4e88d00166ddf9050bd5179
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Added residual real-PostgreSQL acceptance coverage for the merged KL-015
+  transaction harness without changing production code. Database-observed
+  interleavings prove representative T2 through T7 commands serialize on the
+  subject S01 row after any required S51 gate, reread the committed epoch and
+  either proceed from that basis or fail closed, while a second subject remains
+  independent. Concurrent same-key/same-hash calls persist one S02/S03/S04 and
+  return one byte-equivalent replay; different hashes persist one outcome and
+  reject the blocked loser after the winner commits. Historical replay remains
+  available after current artifact and lease/fence guards fail, but PermitDispatch
+  replay is non-sendable and T7 replay is non-executable. Frozen complete and
+  multi-key lock order tests remain green.
+commands_run:
+  - check_id: transaction_owner_matrix_remains_complete
+    command: uv run pytest -q tests/unit/persistence/test_transactions.py::test_transaction_owner_matrix_complete
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-020/checks-b67a19c.log
+  - check_id: t2_t7_subject_commands_share_s01_linearization
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_t2_t7_subject_commands_share_s01_linearization
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-020/checks-b67a19c.log
+  - check_id: concurrent_same_key_same_hash_replays_one_outcome
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_concurrent_same_key_same_hash_replays_one_outcome
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-020/checks-b67a19c.log
+  - check_id: concurrent_same_key_different_hash_rejects_conflict
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_concurrent_same_key_different_hash_rejects_conflict
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-020/checks-b67a19c.log
+  - check_id: historical_replay_preserves_guard_boundary
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_historical_replay_preserves_guard_boundary
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-020/checks-b67a19c.log
+  - check_id: receipt_lock_order_guards_remain_enforced
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_complete_frozen_lock_order_enforced tests/db/test_transaction_interfaces.py::test_multi_key_lock_order_is_stable tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected tests/db/test_transaction_interfaces.py::test_receipt_before_s01_is_rejected
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-020/checks-b67a19c.log
+  - check_id: transaction_interface_db_suite_passes
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-020/checks-b67a19c.log
+  - check_id: harness_validation_passes
+    command: uv run kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-020/checks-b67a19c.log
+requirements_covered: []
+files_changed:
+  - tests/db/test_transaction_interfaces.py
+  - docs/exec-plans/evidence/KL-020/checks-b67a19c.log
+  - docs/exec-plans/completed/KL-020_RESULT.yaml
+decisions:
+  - Reuse the merged RepositoryTransaction command owners and idempotent outcome path; add no test-side replica of production transaction logic.
+  - Observe blocking through PostgreSQL pg_blocking_pids and release contenders with bounded threading events; use no timing sleep as a correctness oracle.
+  - Treat the post-lock T6/T7 authorization-epoch mismatch as the packet-authorized fail-closed reread outcome.
+  - Keep the task-only explicit PostgreSQL and Compose namespaces opt-in through KL-020 environment variables so normal suite runs retain worktree-derived isolation.
+  - Preserve product requirement status separately; this acceptance-only task claims no requirement PASS.
+known_limitations:
+  - The tests exercise isolated synthetic subjects, commands, receipts and current-guard invalidation; they do not enable production auto-activation or make real-data shadow executable.
+  - Task PASS does not imply product requirement PASS, independent review PASS, CI PASS or MERGED state.
+follow_up_tasks:
+  - Obtain fresh SHA-bound GENERAL, PROTOCOL and DB_CONCURRENCY independent reviews on the immutable result head.
+spec_change_request: null
