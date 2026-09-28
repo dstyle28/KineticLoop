@@ -522,7 +522,7 @@ def packet_errors(task, text):
             disposition = section(text, 'Disposition') or ''
             if not isinstance(disposition_reason, str) or not disposition_reason.strip():
                 errors.append('packet-superseded-reason:' + name)
-            elif 'Reason: ' + disposition_reason not in disposition:
+            elif re.findall(r'^Reason: (.*)$', disposition, re.M) != [disposition_reason]:
                 errors.append('packet-superseded-reason:' + name)
             replacements = set(re.findall(r'^- (KL-[0-9]{3}[A-Z]?)$', disposition, re.M))
             if (not isinstance(superseded_by, list)

@@ -265,7 +265,8 @@ class ValidatorTests(unittest.TestCase):
     def retire_task(self, task_id='KL-008', *, update_active_count=True,
                     preserve_requirement_mapping=True, replacement_mode='valid',
                     packet_replacement='KL-001', include_schedule_barrier=True,
-                    include_reason=True, metadata_replacements=None):
+                    include_reason=True, metadata_replacements=None,
+                    packet_reason=None, duplicate_reason=None):
         backlog_path = self.root / v.BACKLOG
         backlog = json.loads(backlog_path.read_text())
         task = next(item for item in backlog['tasks'] if item['id'] == task_id)
@@ -277,6 +278,7 @@ class ValidatorTests(unittest.TestCase):
             else ['KL-001']
         )
         reason = 'The user approved this fixture retirement because replacement work exists.'
+        projected_reason = reason if packet_reason is None else packet_reason
         task.update({
             'title': task['title'] + ' (retired by explicit user decision)',
             'depends_on': replacements,
@@ -309,7 +311,9 @@ class ValidatorTests(unittest.TestCase):
             f'Task identity `{task["task_identity"]}` is traceability-only and '
             + ('MUST NOT be scheduled.\n\n' if include_schedule_barrier else 'is retired.\n\n')
             + '## Disposition\n\n'
-            + (f'Reason: {reason}\n\n' if include_reason else 'Reason: \n\n')
+            + (f'Reason: {projected_reason}\n' if include_reason else 'Reason: \n')
+            + (f'Reason: {duplicate_reason}\n' if duplicate_reason is not None else '')
+            + '\n'
             + 'Replacement tasks:\n'
             + ''.join(f'- {replacement}\n' for replacement in projected_replacements)
         )
@@ -1528,6 +1532,36 @@ class ValidatorTests(unittest.TestCase):
         self.persist_governance_change(
             'HG-999', tested, [task['id']], task['review_requirements'])
         self.check(1, 'governance-retirement-reason:' + task['id'],
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_retirement_rejects_altered_packet_reason(self):
+        task = self.retire_task(packet_reason='A different retirement reason.')
+        refresh(self.root)
+        tested = self.commit('retire task with altered packet reason')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(1, 'packet-superseded-reason:' + task['id'],
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_retirement_rejects_extended_packet_reason(self):
+        task = self.retire_task(packet_reason=(
+            'The user approved this fixture retirement because replacement work exists. '
+            'Conflicting extension.'
+        ))
+        refresh(self.root)
+        tested = self.commit('retire task with extended packet reason')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(1, 'packet-superseded-reason:' + task['id'],
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_retirement_rejects_duplicate_packet_reason(self):
+        task = self.retire_task(duplicate_reason='A contradictory second reason.')
+        refresh(self.root)
+        tested = self.commit('retire task with duplicate packet reason')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(1, 'packet-superseded-reason:' + task['id'],
                    '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
     def test_ci_governance_retirement_requires_nonempty_replacement(self):
