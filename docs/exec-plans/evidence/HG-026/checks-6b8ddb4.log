@@ -1,0 +1,47 @@
+HG-026 final governance evidence
+date: 2026-09-28
+base_commit: 8587593d8575cab634eb1ab664cb1cbb911cbf23
+tested_commit: 6b8ddb4420e1f4b0c5478896cdaba793af73a5ad
+content_commit: b10483943abb12d31c71694faaf8404341fd3c64
+isolated_postgresql_namespace: kl_dc62_b7d95cf49da3
+
+REVISION BINDING
+The complete test commands below ran after the DB_CONCURRENCY remediation against content commit b10483943abb12d31c71694faaf8404341fd3c64. The suffix from that content commit through tested commit 6b8ddb4420e1f4b0c5478896cdaba793af73a5ad changes only HG-026 evidence, its governance record, and its three SHA-bound review records; it changes no packet, backlog, traceability, derived hash, source, test, migration, frozen, or completed prerequisite content. At tested commit 6b8ddb4420e1f4b0c5478896cdaba793af73a5ad, check-harness reran over the final persisted records and passed.
+
+CHECK harness_structure_valid: PASS
+command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
+tested revision oracle: exited 0 and printed HARNESS_CHECK_PASS tasks=70 active=67 at 6b8ddb4420e1f4b0c5478896cdaba793af73a5ad.
+
+CHECK harness_tests_pass: PASS
+command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+content revision oracle: 167 passed in 183.08s at b10483943abb12d31c71694faaf8404341fd3c64; no harness implementation or definition changed before tested commit.
+
+CHECK unit_tests_pass: PASS
+command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+content revision oracle: 186 passed in 52.42s at b10483943abb12d31c71694faaf8404341fd3c64; no unit implementation changed before tested commit.
+
+CHECK database_tests_pass: PASS
+command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m pytest -q tests/db -p no:cacheprovider
+content revision oracle: 214 passed in 101.35s at b10483943abb12d31c71694faaf8404341fd3c64 in the worktree-specific PostgreSQL namespace; no source, database test, migration or authority changed before tested commit.
+
+CHECK lint_pass: PASS
+command: RUFF_CACHE_DIR=/private/tmp/hg026-ruff-r2 PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
+content revision oracle: exited 0 and printed All checks passed! at b10483943abb12d31c71694faaf8404341fd3c64; linted source is unchanged before tested commit.
+
+CHECK typecheck_pass: PASS
+command: MYPY_CACHE_DIR=/private/tmp/hg026-mypy-r2 PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
+content revision oracle: exited 0 and printed Success: no issues found in 85 source files at b10483943abb12d31c71694faaf8404341fd3c64; typed source is unchanged before tested commit.
+
+CHECK kl020_acceptance_only_scope_exact: PASS
+command: Parse harness-backlog-v0.2/KL-020 and assert the preserved KL-015 dependency, exact tests/db/test_transaction_interfaces.py write path, transaction_interfaces and user_coordination resource keys, ISOLATED_POSTGRESQL_NAMESPACE environment, ENFORCEABLE packet state, zero product requirement claims, eight exact check contracts, and explicit inclusion of test_multi_key_lock_order_is_stable in the lock-order check.
+oracle: printed KL020_ACCEPTANCE_SCOPE_PASS; the task definition is byte-identical from b10483943abb12d31c71694faaf8404341fd3c64 through tested commit.
+
+CHECK frozen_and_production_unchanged: PASS
+command: Compare 8587593d8575cab634eb1ab664cb1cbb911cbf23..6b8ddb4420e1f4b0c5478896cdaba793af73a5ad across Frozen Protocol/DB authority, FROZEN_BASELINE.json, src, migrations, Alembic, and completed KL-015/KL-073 result artifacts.
+oracle: protected content is unchanged; the governance content is limited to the KL-020 definition and derived hashes plus HG-026 record/evidence/reviews.
+
+REVIEW REMEDIATION
+The first DB_CONCURRENCY review correctly found that the receipt_lock_order_guards_remain_enforced oracle named stable multi-key ordering while the exact command omitted test_multi_key_lock_order_is_stable. Commit b10483943abb12d31c71694faaf8404341fd3c64 adds that exact node ID to the packet, backlog and traceability mirrors and refreshes all derived hashes. Fresh GENERAL, PROTOCOL and DB_CONCURRENCY reviews at 7388572898f41bac6f2e53d661638c7f2564768d all passed with zero findings; those records are part of the tested bookkeeping tree and will be refreshed once more for the final review head.
+
+CONCLUSION: PASS
+The refined KL-020 packet is a governance-only, acceptance-only definition. It adds no product code, migration, frozen semantic change, completed-task rewrite, requirement PASS, or production activation claim.
