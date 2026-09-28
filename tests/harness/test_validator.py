@@ -266,7 +266,8 @@ class ValidatorTests(unittest.TestCase):
                     preserve_requirement_mapping=True, replacement_mode='valid',
                     packet_replacement='KL-001', include_schedule_barrier=True,
                     include_reason=True, metadata_replacements=None,
-                    packet_reason=None, duplicate_reason=None):
+                    packet_reason=None, duplicate_reason=None,
+                    schedule_barrier_text='Scheduling barrier: MUST NOT be scheduled.'):
         backlog_path = self.root / v.BACKLOG
         backlog = json.loads(backlog_path.read_text())
         task = next(item for item in backlog['tasks'] if item['id'] == task_id)
@@ -308,8 +309,8 @@ class ValidatorTests(unittest.TestCase):
         )
         packet.write_text(
             f'# {task_id} — SUPERSEDED\n\n'
-            f'Task identity `{task["task_identity"]}` is traceability-only and '
-            + ('MUST NOT be scheduled.\n\n' if include_schedule_barrier else 'is retired.\n\n')
+            f'Task identity `{task["task_identity"]}` is traceability-only.\n\n'
+            + (f'{schedule_barrier_text}\n\n' if include_schedule_barrier else '')
             + '## Disposition\n\n'
             + (f'Reason: {projected_reason}\n' if include_reason else 'Reason: \n')
             + (f'Reason: {duplicate_reason}\n' if duplicate_reason is not None else '')
@@ -1525,6 +1526,17 @@ class ValidatorTests(unittest.TestCase):
         self.check(1, 'packet-superseded-schedulable:' + task['id'],
                    '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
+    def test_ci_governance_retirement_rejects_negated_schedule_barrier(self):
+        task = self.retire_task(schedule_barrier_text=(
+            'Scheduling note: This packet does not claim it MUST NOT be scheduled.'
+        ))
+        refresh(self.root)
+        tested = self.commit('retire task with negated schedule barrier')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(1, 'packet-superseded-schedulable:' + task['id'],
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
     def test_ci_governance_retirement_requires_durable_reason(self):
         task = self.retire_task(include_reason=False)
         refresh(self.root)
@@ -1595,6 +1607,15 @@ class ValidatorTests(unittest.TestCase):
         task = self.retire_task(packet_replacement='KL-002')
         refresh(self.root)
         tested = self.commit('retire task with mismatched packet replacement')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(1, 'packet-superseded-replacements:' + task['id'],
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_retirement_rejects_duplicate_packet_replacement(self):
+        task = self.retire_task(packet_replacement=['KL-001', 'KL-001'])
+        refresh(self.root)
+        tested = self.commit('retire task with duplicate packet replacement')
         self.persist_governance_change(
             'HG-999', tested, [task['id']], task['review_requirements'])
         self.check(1, 'packet-superseded-replacements:' + task['id'],

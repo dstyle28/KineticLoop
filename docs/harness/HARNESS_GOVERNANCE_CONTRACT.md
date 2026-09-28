@@ -27,8 +27,11 @@ result or requirement evidence and removes the task from the active count. The
 governance change must preserve the task identity and requirement mapping, limit the
 definition edit to the status, title, replacement dependencies, structured
 `superseded_by` / `disposition_reason` metadata, deliverables and definition of done,
-and replace the active packet with a traceability-only packet that says the task MUST
-NOT be scheduled. `superseded_by` must be a non-empty exact projection of changed
+and replace the active packet with a traceability-only packet. A new explicit
+retirement packet with structured disposition metadata must contain exactly one
+standalone `Scheduling barrier: MUST NOT be scheduled.` line; pre-existing historical
+supersessions retain their exact identity-bound scheduling sentence. `superseded_by`
+must be a non-empty exact, ordered and duplicate-free projection of changed
 replacement dependencies, and the packet must exactly project both it and the durable
 reason. Completed tasks are immutable. A `SUPERSEDED` task cannot have a result and
 cannot be reactivated or otherwise refined through ordinary governance.

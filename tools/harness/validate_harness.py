@@ -514,20 +514,32 @@ def packet_errors(task, text):
     if task['task_identity'] not in text:
         errors.append('packet-identity:' + name)
     if task['status'] == 'SUPERSEDED':
-        if not re.search(r'MUST NOT be\s+scheduled', text):
-            errors.append('packet-superseded-schedulable:' + name)
         disposition_reason = task.get('disposition_reason')
         superseded_by = task.get('superseded_by')
-        if disposition_reason is not None or superseded_by is not None:
+        structured_retirement = disposition_reason is not None or superseded_by is not None
+        if structured_retirement:
+            scheduling_barriers = re.findall(
+                r'^Scheduling barrier: MUST NOT be scheduled\.$', text, re.M)
+            scheduling_valid = (
+                scheduling_barriers == ['Scheduling barrier: MUST NOT be scheduled.'])
+        else:
+            legacy_barrier = (
+                r'^Task identity `' + re.escape(task['task_identity'])
+                + r'` is traceability-only and MUST NOT be scheduled\.')
+            scheduling_valid = len(re.findall(legacy_barrier, text, re.M)) == 1
+        if not scheduling_valid:
+            errors.append('packet-superseded-schedulable:' + name)
+        if structured_retirement:
             disposition = section(text, 'Disposition') or ''
             if not isinstance(disposition_reason, str) or not disposition_reason.strip():
                 errors.append('packet-superseded-reason:' + name)
             elif re.findall(r'^Reason: (.*)$', disposition, re.M) != [disposition_reason]:
                 errors.append('packet-superseded-reason:' + name)
-            replacements = set(re.findall(r'^- (KL-[0-9]{3}[A-Z]?)$', disposition, re.M))
+            replacements = re.findall(r'^- (KL-[0-9]{3}[A-Z]?)$', disposition, re.M)
             if (not isinstance(superseded_by, list)
                     or not superseded_by
-                    or replacements != set(superseded_by)
+                    or replacements != superseded_by
+                    or len(replacements) != len(set(replacements))
                     or len(superseded_by) != len(set(superseded_by))):
                 errors.append('packet-superseded-replacements:' + name)
         return errors
