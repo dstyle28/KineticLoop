@@ -2784,7 +2784,7 @@
         },
         {
           "check_id": "receipt_lock_order_guards_remain_enforced",
-          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_complete_frozen_lock_order_enforced tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected tests/db/test_transaction_interfaces.py::test_receipt_before_s01_is_rejected",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_complete_frozen_lock_order_enforced tests/db/test_transaction_interfaces.py::test_multi_key_lock_order_is_stable tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected tests/db/test_transaction_interfaces.py::test_receipt_before_s01_is_rejected",
           "pass_oracle": "All named PostgreSQL tests pass and prove the frozen applicable order S51 to S01 to S30 to S27 to S31 to S38 to S44 to S02 to remaining aggregates, stable multi-key ordering, and fail-closed rejection of acquiring S02 before required S01 or reversing from a later stage."
         },
         {
