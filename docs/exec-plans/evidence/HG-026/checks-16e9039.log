@@ -1,0 +1,18 @@
+HG-026 merge-gate revision binding
+date: 2026-09-28
+base_commit: 8587593d8575cab634eb1ab664cb1cbb911cbf23
+tested_commit: 16e90390974792474df9cc94608e261908c9a0a7
+content_commit: b10483943abb12d31c71694faaf8404341fd3c64
+isolated_postgresql_namespace: kl_dc62_b7d95cf49da3
+
+The content suites ran after the DB_CONCURRENCY remediation at b10483943abb12d31c71694faaf8404341fd3c64: 167 harness tests passed in 183.08s, 186 unit tests passed in 52.42s, 214 database tests passed in 101.35s, lint passed, and typecheck reported no issues in 85 source files. The suffix to tested commit 16e90390974792474df9cc94608e261908c9a0a7 contains only HG-026 governance evidence/record and independent review bookkeeping. It changes no KL-020 definition, derived authority hash, source, test, migration, frozen file, or completed prerequisite result after b10483943abb12d31c71694faaf8404341fd3c64.
+
+At tested commit 16e90390974792474df9cc94608e261908c9a0a7:
+- `PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness` exited 0 and printed `HARNESS_CHECK_PASS tasks=70 active=67`.
+- KL-020 remained exactly ENFORCEABLE, acceptance-only, dependent only on KL-015, limited to `tests/db/test_transaction_interfaces.py`, locked by `transaction_interfaces` and `user_coordination`, isolated by `ISOLATED_POSTGRESQL_NAMESPACE`, assigned no product requirement claims, and bound to eight exact checks.
+- `receipt_lock_order_guards_remain_enforced` still explicitly included `test_multi_key_lock_order_is_stable` in packet, backlog and traceability.
+- Frozen Protocol/DB authority, FROZEN_BASELINE.json, product source, migrations, Alembic, and completed KL-015/KL-073 results remained unchanged from the protected base.
+- GENERAL, PROTOCOL and DB_CONCURRENCY review records were schema-valid and PASS; their prior SHA bindings are bookkeeping inputs to the final rereview, not the final review claim.
+
+CONCLUSION: PASS
+HG-026 refines only KL-020 and makes no product, frozen-semantic, completed-task, product-requirement, or production-activation claim.
