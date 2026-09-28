@@ -1,0 +1,61 @@
+HG-025 KL-035 retirement governance evidence after two review remediations
+protected_base: 98242e56565febc091810612f1da71414544ba83
+tested_commit: c5d3bb260c7295e35abb8621eee5e3998506efeb
+
+PASS harness_tests_pass
+command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+transcribed-stdout-summary: collected 162 items; 162 passed in 200.30s
+oracle: The complete harness suite includes explicit retirement acceptance plus
+fail-closed rejection of stale active counts, requirement remapping, absent reasons,
+missing schedule barriers, absent/unchanged/reordered/unknown/mismatched replacements,
+structured replacement/dependency mismatch, superseded YAML/JSON results,
+reactivation, task-object same-status refinement and packet-only refinement.
+
+PASS unit_tests_pass
+command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+transcribed-stdout-summary: collected 186 items; 186 passed in 53.65s
+
+PASS database_tests_pass
+command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m pytest -q tests/db -p no:cacheprovider
+transcribed-stdout-summary: 214 passed in 105.76s
+execution_context: Docker access outside the filesystem/process sandbox; the
+repository selected this worktree's isolated Compose namespace.
+
+PASS harness_structure_valid
+command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
+stdout: HARNESS_CHECK_PASS tasks=70 active=67
+
+PASS lint_pass
+command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
+stdout: All checks passed!
+
+PASS typecheck_pass
+command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
+stdout: Success: no issues found in 85 source files
+
+PASS frozen_and_retained_scope_unchanged
+command: git diff --exit-code 98242e56565febc091810612f1da71414544ba83 c5d3bb260c7295e35abb8621eee5e3998506efeb -- 05_KineticLoop_Protocol_v1.2_FROZEN.md 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md FROZEN_BASELINE.json CURRENT_REQUIREMENT_SET.json 12_KineticLoop_Integration_Spec_v0.1.md KineticLoop_Integration_Acceptance_v0.1.json migrations src
+stdout: <empty>
+oracle: Frozen Protocol/DB, FROZEN_BASELINE, the complete requirement set, current
+Integration Spec and acceptance requirements, every migration and all product source
+code are byte-unchanged from the protected base. Hevy backfill/update/delete,
+HealthKit and cross-source dedup requirements therefore remain authoritative.
+
+PASS disposition_integrity
+command: test ! -e docs/exec-plans/completed/KL-035_RESULT.yaml && test ! -e docs/exec-plans/completed/KL-035_RESULT.json && test ! -d docs/exec-plans/reviews/KL-035 && test ! -e docs/exec-plans/integrations/KL-035.json
+stdout: <empty>
+oracle: KL-035 has no YAML/JSON result, review or integration artifact. Its namespaced
+identity is preserved with SUPERSEDED status, empty requirements_covered, exact full
+traceability projection, exact superseded_by/dependency projection to KL-051,
+durable user-decision reason and active_task_count reduced from 68 to 67. The
+disposition claims no task PASS, product requirement PASS, review PASS or MERGED fact.
+
+REMEDIATED independent_review_blockers
+stale_reviewed_heads:
+- 6dad8af1d41dd18856f7393fc9a3038a95330e39
+- 3e66e95ed5aa955ad3860689817f97ead20dee55
+resolution: Exact reason/replacement projection; hard result, reactivation and
+same-status task-object rejection; set-semantic replacement change; unconditional
+rejection of governance naming an already-superseded task, including packet-only
+edits; complete KL-035 traceability projection; requested negative regressions.
+Fresh independent review is required and the stale review cycles grant no approval.
