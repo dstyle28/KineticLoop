@@ -262,6 +262,41 @@ class ValidatorTests(unittest.TestCase):
         dump(traceability_path, traceability)
         return task
 
+    def retire_task(self, task_id='KL-008', *, update_active_count=True,
+                    preserve_requirement_mapping=True):
+        backlog_path = self.root / v.BACKLOG
+        backlog = json.loads(backlog_path.read_text())
+        task = next(item for item in backlog['tasks'] if item['id'] == task_id)
+        task.update({
+            'title': task['title'] + ' (retired by explicit user decision)',
+            'deliverables': ['No implementation for this retired fixture task'],
+            'definition_of_done': (
+                'No implementation; traceability preserved by the explicit replacement.'
+            ),
+            'status': 'SUPERSEDED',
+        })
+        if not preserve_requirement_mapping:
+            task['requirements_covered'] = ['INT-A01@PU']
+        if update_active_count:
+            backlog['active_task_count'] = sum(
+                item['status'] != 'SUPERSEDED' for item in backlog['tasks'])
+        dump(backlog_path, backlog)
+
+        packet = self.root / f'docs/exec-plans/active/{task_id}.md'
+        packet.write_text(
+            f'# {task_id} — SUPERSEDED\n\n'
+            f'Task identity `{task["task_identity"]}` is traceability-only and MUST NOT be '
+            'scheduled. The explicit replacement remains authoritative.\n'
+        )
+
+        traceability_path = self.root / v.TRACEABILITY
+        traceability = json.loads(traceability_path.read_text())
+        trace = next(item for item in traceability['tasks'] if item['id'] == task_id)
+        for field in v.TRACEABILITY_TASK_FIELDS:
+            trace[field] = task.get(field)
+        dump(traceability_path, traceability)
+        return task
+
 
     def add_governance_task(self, task_id='KL-999', status='NOT_STARTED',
                             add_review_artifact=False):
@@ -1425,6 +1460,32 @@ class ValidatorTests(unittest.TestCase):
         self.persist_governance_change(
             'HG-999', tested, [task_id], task['review_requirements'])
         self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_allows_explicit_unstarted_task_retirement(self):
+        task = self.retire_task()
+        refresh(self.root)
+        tested = self.commit('retire unneeded Google Sheet migration task')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_retirement_requires_updated_active_count(self):
+        task = self.retire_task(update_active_count=False)
+        refresh(self.root)
+        tested = self.commit('retire task with stale active count')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(1, 'backlog-active-task-count',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_ci_governance_retirement_preserves_requirement_mapping(self):
+        task = self.retire_task(preserve_requirement_mapping=False)
+        refresh(self.root)
+        tested = self.commit('retire task while changing requirement mapping')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+        self.check(1, 'governance-retirement-definition-scope:' + task['id'],
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
     def test_ci_governance_rejects_wrong_target_backlog_edit(self):
         task_id = 'KL-008'

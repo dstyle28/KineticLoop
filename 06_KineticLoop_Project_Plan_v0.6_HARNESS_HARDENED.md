@@ -85,7 +85,7 @@ Before KL-014/KL-015/KL-045 or any shadow persistence contract: implement the ex
 Before T3/T6/T7 implementation: repository/transaction contract must encode `SafetyRegistry shared → S01` and T2-GLOBAL exclusive registry semantics; user STOP must not depend on registry.
 
 ### G-REALDATA
-Before importing the real Google Sheet or retaining real health/training data: subject isolation, access scope, secrets, retention/logging behavior and redaction tests exist.
+Before retaining real health/training data: subject isolation, access scope, secrets, retention/logging behavior and redaction tests exist.
 
 ### G-REMOTE-AI
 Before sending real context to a remote model: exact release/artifact identity, outbound-data allowlist/redaction, fixed evaluation subset, refusal/bad-output/timeout cases and input/output evidence capture exist.
@@ -172,9 +172,9 @@ Deliverables:
 Exit: faults are induced by process termination/real DB transactions where applicable, not only mocked exceptions.
 
 ### M5 — Canonical training data vertical slice
-Deliverables: typed workout/session/set/cardio storage; association/dedup; user/chat provenance; progression/sequence/exposure projections; correction invalidation; Sheet migration staging.
+Deliverables: typed workout/session/set/cardio storage; association/dedup; user/chat provenance; progression/sequence/exposure projections; correction invalidation.
 
-Entry: G-REALDATA must close before real Sheet import.
+Entry: G-REALDATA must close before retaining real training data.
 Exit: E01/E03/E04/E05/E07/A08 real-stack evidence without LLM planning.
 
 ### M6 — Decision context + read-only tools
@@ -223,7 +223,7 @@ The machine-readable backlog is authoritative for task records. Key tasks includ
 - KL-001..KL-009 foundation/evidence/acceptance/shadow/security;
 - KL-010..KL-018 plus KL-072 DDL/contracts/registry/two-phase migration handoff/session-bound roles/artifacts, and KL-073 database-clock-relative transaction regression fixtures;
 - KL-020..KL-029 PostgreSQL protocol demo and full boundary/interleaving evidence;
-- KL-030..KL-035 canonical data;
+- KL-030..KL-034 canonical data; KL-035 is retained as a superseded audit identity after the user confirmed all historical workouts are already in Hevy;
 - KL-040..KL-048 context/Fitness shadow/eval;
 - KL-050+ provider adapters and staging tasks.
 

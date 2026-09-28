@@ -4175,12 +4175,10 @@
     {
       "id": "KL-035",
       "milestone": "M5",
-      "title": "Google Sheet migration staging/import",
+      "title": "Google Sheet migration staging/import (retired; historical workouts are in Hevy)",
       "owner_role": "integration",
       "depends_on": [
-        "KL-009",
-        "KL-031",
-        "KL-032"
+        "KL-051"
       ],
       "commands": [
         "ReceiveEvidence"
@@ -4202,13 +4200,13 @@
         "E2E"
       ],
       "deliverables": [
-        "Google Sheet migration staging/import deliverable"
+        "No Google Sheet migration implementation"
       ],
-      "definition_of_done": "Google Sheet migration staging/import acceptance evidence recorded",
+      "definition_of_done": "No implementation; traceability preserved. Use KL-051 and the current Integration Spec for Hevy historical workout backfill.",
       "entry_conditions": [
         "M5 entry gates satisfied"
       ],
-      "status": "NOT_STARTED",
+      "status": "SUPERSEDED",
       "evidence_refs": [],
       "thread_id": "THREAD-KL-035",
       "thread_mode": "INDEPENDENT_WORKTREE",
@@ -6618,5 +6616,5 @@
   "acceptance_requirement_set": "v1.2.2 + integration-v0.1",
   "task_namespace": "harness-backlog-v0.2",
   "requirement_set": "KINETICLOOP_HARNESS_REQSET_V1_2_2_INTEGRATION_V0_1",
-  "active_task_count": 68
+  "active_task_count": 67
 }
