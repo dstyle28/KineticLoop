@@ -1,0 +1,82 @@
+HG-028 KL-022 governance refinement evidence
+date: 2026-09-29
+protected_base: ad0c4373e6f64cc753af989c798636f7c365359b
+tested_commit: d3bebf2a2e13602c4174d4fba5d4fd91b7f7045e
+
+Scope resolution
+- Resolved current authority through CURRENT_DOCUMENT_INDEX.json, then read KL-022,
+  merged KL-015/KL-018/KL-021 results, M2 closure, the repository/registry contracts,
+  actual T6/T7 transaction code and only the relevant frozen Protocol/DB/acceptance
+  sections.
+- KL-015 already owns the T6/T7 repository transaction, S51-before-S01 order,
+  current manifest/epoch/fence/validation checks, exact leased artifact closure,
+  server-time validity calculation and current T7 P/A query.
+- KL-018 already owns immutable artifact registration, NULL-total validity, bounded
+  complete transitive dependency admission and explicit registered-policy approval
+  for TIMELESS artifacts.
+- KL-021 already owns T2-GLOBAL commit linearization and current T3/T6/T7 denial
+  after a committed revoke.
+- The residual KL-022 implementation is one pure validity/executability evaluator,
+  integrated into those existing T6/T7 owners, plus exact current S18/S43/S49-S51
+  and trusted-time enforcement. It creates no second owner, gate, store or migration.
+
+Refined packet oracle
+- Backlog, traceability and packet exactly project dependencies, context, entry
+  conditions, INV-08/INV-09/INV-10, T2/T6/T7, logical impact, 11 check contracts,
+  two deliverables, Definition of Done, four exclusive resource keys, six literal
+  implementation paths, one isolated-PostgreSQL requirement, review set and
+  NOT_STARTED/ENFORCEABLE state.
+- PU proves the pure minimum closure, missing/undefined/not-yet-valid/expired denial,
+  explicit TIMELESS approval-policy closure and exact executable guard dimensions.
+- DC uses migrated PostgreSQL to prove exact S42 certificate persistence and rollback,
+  transitive revoke plus current S51 reads, and current epoch/scope/S18/S43/time
+  enforcement for START/RESUME/CONTINUE.
+- E2E is deliberately limited to an isolated TEST-subject, current, non-bearer
+  eligibility query. It does not write S45 or duplicate KL-019 or KL-027.
+- KL-028 remains the owner of B01-B18 requirement evidence. KL-022 has an empty
+  requirements_covered list and may not claim product requirement PASS.
+- No command waits on a model, network or other external operation while S51/S01 or
+  another coordination transaction is held.
+
+Successful checks at tested_commit
+- The exact KL-022 backlog/traceability projection comparison: PASS, including
+  shared_hotspot=true; only KL-022 differs from protected-base traceability.
+- jq empty CURRENT_DOCUMENT_INDEX.json HARNESS_DOCUMENT_MANIFEST.json
+  KineticLoop_Harness_Backlog_v0.2.json KineticLoop_Harness_Traceability_v0.3.json:
+  PASS.
+- PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness:
+  PASS; HARNESS_CHECK_PASS tasks=70 active=67.
+- PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness:
+  PASS; 167 passed in 188.96s.
+- PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit:
+  PASS; 186 passed in 59.01s.
+- RUFF_CACHE_DIR=/private/tmp/hg028-final-ruff PYTHONPATH="$PWD/src"
+  /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint:
+  PASS; all checks passed.
+- MYPY_CACHE_DIR=/private/tmp/hg028-final-mypy PYTHONPATH="$PWD/src"
+  /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck:
+  PASS; no issues found in 85 source files.
+- PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m pytest -q tests/db
+  -p no:cacheprovider:
+  PASS; 221 passed in 115.79s with approved Docker access in isolated Compose project
+  kl_4242_ddb0877b4b60 and database kl_4242_ddb0877b4b60_test.
+- PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m pytest -q tests/e2e
+  -p no:cacheprovider:
+  PASS; 1 passed in 2.51s with approved Docker access in the same isolated namespace.
+- git diff --check ad0c4373e6f64cc753af989c798636f7c365359b
+  d3bebf2a2e13602c4174d4fba5d4fd91b7f7045e: PASS.
+- Protected-base comparison across frozen Protocol/DB, FROZEN_BASELINE.json, src/**,
+  migrations/** and docs/exec-plans/completed/**: PASS; all are unchanged.
+- Protected-base changed paths at tested_commit: PASS; exactly
+  CURRENT_DOCUMENT_INDEX.json, HARNESS_DOCUMENT_MANIFEST.json,
+  KineticLoop_Harness_Backlog_v0.2.json, KineticLoop_Harness_Traceability_v0.3.json
+  and docs/exec-plans/active/KL-022.md.
+
+Governance artifact boundary
+- docs/exec-plans/governance/HG-028.yaml and this evidence log are new additions
+  after tested_commit. The record binds every check above to the exact corrected
+  tested snapshot; no product or packet content changes follow that snapshot.
+
+CONCLUSION: PASS
+HG-028 makes KL-022 enforceable without changing frozen semantics, production code,
+migrations, completed prerequisites, requirement state or production activation.
