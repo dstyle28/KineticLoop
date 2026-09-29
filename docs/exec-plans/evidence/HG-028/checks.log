@@ -41,8 +41,6 @@ Refined packet oracle
 Successful checks at tested_commit
 - HARNESS_CHANGE.schema.json validates docs/exec-plans/governance/HG-028.yaml: PASS;
   the record is not part of tested_commit by design.
-- Backlog/traceability projection comparison: PASS; the shared KL-022 fields are
-  byte-equivalent after deleting backlog-only scheduling/display metadata.
 - jq empty CURRENT_DOCUMENT_INDEX.json HARNESS_DOCUMENT_MANIFEST.json
   KineticLoop_Harness_Backlog_v0.2.json KineticLoop_Harness_Traceability_v0.3.json:
   PASS.
@@ -74,6 +72,18 @@ Successful checks at tested_commit
   CURRENT_DOCUMENT_INDEX.json, HARNESS_DOCUMENT_MANIFEST.json,
   KineticLoop_Harness_Backlog_v0.2.json, KineticLoop_Harness_Traceability_v0.3.json
   and docs/exec-plans/active/KL-022.md.
+
+Post-tested governance bookkeeping correction
+- The first CI-merge-gate rehearsal correctly rejected the pre-review tree with
+  governance-traceability-mismatch:KL-022 and governance-files-changed-mismatch:HG-028.
+- d0fb147cd93f36d11371a501bd155cef24e21d90 restores the omitted traceability
+  projection field shared_hotspot=true, refreshes the authoritative hashes, and
+  removes the superseded review records before fresh independent review. It changes
+  no packet meaning, production source, migration, frozen file, completed result, or
+  requirement state.
+- At d0fb147cd93f36d11371a501bd155cef24e21d90, the exact backlog/traceability
+  projection comparison and check-harness both PASS; HARNESS_CHECK_PASS tasks=70
+  active=67.
 
 CONCLUSION: PASS
 HG-028 makes KL-022 enforceable without changing frozen semantics, production code,
