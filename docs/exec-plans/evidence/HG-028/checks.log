@@ -76,14 +76,13 @@ Successful checks at tested_commit
 Post-tested governance bookkeeping correction
 - The first CI-merge-gate rehearsal correctly rejected the pre-review tree with
   governance-traceability-mismatch:KL-022 and governance-files-changed-mismatch:HG-028.
-- d0fb147cd93f36d11371a501bd155cef24e21d90 restores the omitted traceability
-  projection field shared_hotspot=true, refreshes the authoritative hashes, and
-  removes the superseded review records before fresh independent review. It changes
-  no packet meaning, production source, migration, frozen file, completed result, or
-  requirement state.
-- At d0fb147cd93f36d11371a501bd155cef24e21d90, the exact backlog/traceability
-  projection comparison and check-harness both PASS; HARNESS_CHECK_PASS tasks=70
-  active=67.
+- The final pre-review correction restores the omitted KL-022 traceability projection
+  field shared_hotspot=true, preserves the base KL-021 projection, refreshes the
+  authoritative hashes, and removes superseded review records before fresh
+  independent review. It changes no packet meaning, production source, migration,
+  frozen file, completed result, or requirement state.
+- At the final pre-review head, the exact KL-022 backlog/traceability projection and
+  check-harness both PASS; HARNESS_CHECK_PASS tasks=70 active=67.
 
 CONCLUSION: PASS
 HG-028 makes KL-022 enforceable without changing frozen semantics, production code,
