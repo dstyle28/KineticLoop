@@ -41,6 +41,16 @@ Validation
   result: PASS; all are unchanged.
 - command: inspect changed paths from protected base to tested commit
   result: PASS; exactly the two derived index files, backlog, traceability and KL-021 packet changed.
+- command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+  result: PASS; 167 passed in 202.07s.
+- command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+  result: PASS; 186 passed in 59.31s.
+- command: RUFF_CACHE_DIR=/private/tmp/hg027-ruff PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
+  result: PASS; all checks passed.
+- command: MYPY_CACHE_DIR=/private/tmp/hg027-mypy PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
+  result: PASS; no issues found in 85 source files.
+- command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m pytest -q tests/db -p no:cacheprovider
+  result: PASS; 218 passed in 113.75s with approved Docker access and the worktree-derived isolated namespace kl_e94b_b59a7cbaf961. The first sandboxed attempt was denied access to the Docker API; it was an environment failure, not test evidence, and the identical approved rerun passed.
 
 Integration bookkeeping
 - KL-016, KL-018 and KL-072 have committed MERGED integration records.

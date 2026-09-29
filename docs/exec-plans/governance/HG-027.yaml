@@ -47,6 +47,26 @@ checks_run:
     command: Compare the protected base and tested commit across frozen authority, FROZEN_BASELINE.json, src, migrations and completed task artifacts.
     result: PASS
     evidence_ref: docs/exec-plans/evidence/HG-027/checks.log
+  - check_id: harness_tests_pass
+    command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-027/checks.log
+  - check_id: unit_tests_pass
+    command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-027/checks.log
+  - check_id: database_tests_pass
+    command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m pytest -q tests/db -p no:cacheprovider
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-027/checks.log
+  - check_id: lint_pass
+    command: RUFF_CACHE_DIR=/private/tmp/hg027-ruff PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-027/checks.log
+  - check_id: typecheck_pass
+    command: MYPY_CACHE_DIR=/private/tmp/hg027-mypy PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-027/checks.log
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
