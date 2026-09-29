@@ -23,7 +23,7 @@ from kineticloop.contracts.safety_registry import (
     RegistryEligibility,
     revocation_payload_hash,
 )
-from kineticloop.db.lifecycle import DatabaseLifecycle
+from kineticloop.db.lifecycle import DatabaseLifecycle, DatabaseNamespace
 from kineticloop.identity import ActorRole
 from kineticloop.persistence.immutability import RUNTIME_ROLE_NAMES
 from kineticloop.persistence.safety_registry import (
@@ -38,6 +38,7 @@ from kineticloop.persistence.subject_scope import (
     PRODUCTION_SUBJECT_LOGIN,
     TEST_SUBJECT_LOGINS,
 )
+from kineticloop.persistence.transactions import replay_outcome
 from kineticloop.primitives.times import canonical_utc
 
 ROOT = Path(__file__).parents[2]
@@ -61,6 +62,9 @@ AUTHORIZATION_ID = "00000000-0000-8000-8000-00000000000b"
 RECEIPT_ID = "00000000-0000-8000-8000-00000000000c"
 EVENT_ID = "00000000-0000-8000-8000-00000000000d"
 OUTBOX_ID = "00000000-0000-8000-8000-00000000000e"
+SESSION_ID = "00000000-0000-8000-8000-00000000000f"
+BINDING_ID = "00000000-0000-8000-8000-000000000010"
+REPLAY_RECEIPT_ID = "00000000-0000-8000-8000-000000000011"
 CONTENT_HASH = "a" * 64
 NOW = datetime(2026, 9, 24, 18, tzinfo=UTC)
 ARTIFACT_CLOSURE_HASH = hashlib.sha256(
@@ -71,7 +75,14 @@ ARTIFACT_CLOSURE_HASH = hashlib.sha256(
 @pytest.fixture(scope="module")
 def database_urls() -> Iterator[dict[str, str]]:
     lifecycle = DatabaseLifecycle(ROOT)
-    yield bootstrap_two_phase(lifecycle)
+    lifecycle.namespace = DatabaseNamespace(
+        project_name="kineticloop-kl021-ec264bb",
+        database_name="kineticloop_kl021_ec264bb",
+    )
+    try:
+        yield bootstrap_two_phase(lifecycle)
+    finally:
+        lifecycle.destroy()
 
 
 @pytest.fixture
@@ -948,6 +959,9 @@ def test_exclusive_global_gate_serializes(db_urls: dict[str, str]) -> None:
         assert ordering is not None
         assert ordering[0] is not None and ordering[0] <= ordering[1]
 
+    seed(db_urls["admin"])
+    run_revoke_first_then_shared_denies(db_urls, RegistryCommand.START_SESSION)
+
 
 def registry_counts(admin_url: str) -> tuple[int, int, int, int]:
     with connect(admin_url) as connection:
@@ -959,6 +973,202 @@ def registry_counts(admin_url: str) -> tuple[int, int, int, int]:
         ).fetchone()
         assert row is not None
         return int(row[0]), int(row[1]), int(row[2]), int(row[3])
+
+
+def relation_snapshot(admin_url: str, relation: str) -> object:
+    allowed = {
+        "artifact_revocation_events",
+        "authorization_artifact_closure",
+        "authorization_events",
+        "authorization_issuances",
+        "command_receipts",
+        "domain_events",
+        "execution_bindings",
+        "outbox_deliveries",
+        "registry_audit_events",
+        "registry_management_receipts",
+        "registry_outbox",
+        "safety_registry_state",
+        "user_decision_state",
+        "workout_sessions",
+    }
+    assert relation in allowed
+    with connect(admin_url) as connection:
+        row = connection.execute(
+            f"SELECT coalesce(jsonb_agg(snapshot ORDER BY snapshot::text), '[]'::jsonb) "
+            f"FROM (SELECT to_jsonb(source) AS snapshot "
+            f"FROM kineticloop.{relation} AS source) rows"
+        ).fetchone()
+        assert row is not None
+        return row[0]
+
+
+def registry_state(admin_url: str) -> tuple[int, UUID | None]:
+    with connect(admin_url) as connection:
+        row = connection.execute(
+            "SELECT registry_revision,last_revocation_id "
+            "FROM kineticloop.safety_registry_state WHERE id=1"
+        ).fetchone()
+        assert row is not None
+        return int(row[0]), row[1]
+
+
+def test_t2_global_commit_rollback_and_effective_at_semantics(
+    db_urls: dict[str, str],
+) -> None:
+    with connect(db_urls["admin"]) as admin:
+        database_clock = admin.execute("SELECT clock_timestamp()").fetchone()
+        assert database_clock is not None
+        backdated_effective = database_clock[0] - timedelta(days=7)
+        future_effective = database_clock[0] + timedelta(days=7)
+
+    with psycopg.connect(db_urls["admin"], autocommit=True) as admin:
+        admin.execute(
+            "CREATE FUNCTION public.fail_registry_outbox_kl021() RETURNS trigger "
+            "LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'KL021 post-S50 failure'; END $$"
+        )
+        admin.execute(
+            "CREATE TRIGGER fail_registry_outbox_kl021 BEFORE INSERT "
+            "ON kineticloop.registry_outbox FOR EACH ROW "
+            "EXECUTE FUNCTION public.fail_registry_outbox_kl021()"
+        )
+    try:
+        with connect(db_urls["trusted_admin"]) as trusted:
+            with pytest.raises(psycopg.errors.RaiseException, match="KL021 post-S50 failure"):
+                revoke_artifact(
+                    trusted,
+                    revoke_command(
+                        key="kl021-rollback",
+                        effective_at=backdated_effective,
+                    ),
+                    effective_at=backdated_effective,
+                    reason_code="EMERGENCY",
+                )
+    finally:
+        with psycopg.connect(db_urls["admin"], autocommit=True) as admin:
+            admin.execute(
+                "DROP TRIGGER fail_registry_outbox_kl021 "
+                "ON kineticloop.registry_outbox"
+            )
+            admin.execute("DROP FUNCTION public.fail_registry_outbox_kl021()")
+
+    assert registry_counts(db_urls["admin"]) == (0, 0, 0, 0)
+    assert registry_state(db_urls["admin"]) == (0, None)
+    with connect(db_urls["application"]) as application:
+        assert execute_shared_registry_command(
+            application,
+            eligibility(RegistryCommand.START_SESSION),
+            mutate(RegistryCommand.START_SESSION),
+        ) == 1
+
+    seed(db_urls["admin"])
+    with connect(db_urls["trusted_admin"]) as trusted:
+        backdated = revoke_artifact(
+            trusted,
+            revoke_command(
+                key="kl021-backdated",
+                effective_at=backdated_effective,
+            ),
+            effective_at=backdated_effective,
+            reason_code="EMERGENCY",
+        )
+    assert backdated.effective_at < backdated.recorded_at
+    assert registry_counts(db_urls["admin"]) == (1, 1, 1, 1)
+    assert registry_state(db_urls["admin"])[0] == 1
+    assert_denied(
+        db_urls,
+        RegistryCommand.START_SESSION,
+        RegistryDenialCode.ARTIFACT_REVOKED,
+    )
+
+    seed(db_urls["admin"])
+    with connect(db_urls["trusted_admin"]) as trusted:
+        future = revoke_artifact(
+            trusted,
+            revoke_command(
+                key="kl021-future",
+                effective_at=future_effective,
+            ),
+            effective_at=future_effective,
+            reason_code="EMERGENCY",
+        )
+    assert future.effective_at > future.recorded_at
+    assert registry_counts(db_urls["admin"]) == (1, 1, 1, 1)
+    assert registry_state(db_urls["admin"])[0] == 1
+    assert_denied(
+        db_urls,
+        RegistryCommand.START_SESSION,
+        RegistryDenialCode.ARTIFACT_REVOKED,
+    )
+
+
+def test_t2_global_has_no_subject_or_user_fanout_dependency(
+    db_urls: dict[str, str],
+) -> None:
+    isolated_subjects = (
+        UUID(SUBJECT_ID),
+        UUID("00000000-0000-8000-8000-000000000021"),
+        UUID("00000000-0000-8000-8000-000000000022"),
+    )
+    with connect(db_urls["admin"]) as admin:
+        admin.execute("SET LOCAL session_replication_role=replica")
+        for subject_id in isolated_subjects[1:]:
+            admin.execute(
+                "INSERT INTO kineticloop.user_decision_state(subject_id) VALUES (%s)",
+                (subject_id,),
+            )
+        admin.commit()
+
+    unchanged_relations = (
+        "user_decision_state",
+        "authorization_events",
+        "command_receipts",
+        "domain_events",
+        "outbox_deliveries",
+    )
+    before = {
+        relation: relation_snapshot(db_urls["admin"], relation)
+        for relation in unchanged_relations
+    }
+    blocker = connect(db_urls["admin"], name="kl021-held-multiple-s01")
+    try:
+        rows = blocker.execute(
+            "SELECT subject_id FROM kineticloop.user_decision_state "
+            "WHERE subject_id=ANY(%s) ORDER BY subject_id FOR UPDATE",
+            (list(isolated_subjects),),
+        ).fetchall()
+        assert [row[0] for row in rows] == sorted(isolated_subjects)
+        with connect(db_urls["trusted_admin"]) as trusted:
+            result = revoke_artifact(
+                trusted,
+                revoke_command(key="kl021-no-fanout"),
+                effective_at=NOW,
+                reason_code="EMERGENCY",
+                lock_timeout_ms=500,
+            )
+    finally:
+        blocker.rollback()
+        blocker.close()
+
+    assert result.registry_revision == 1
+    after = {
+        relation: relation_snapshot(db_urls["admin"], relation)
+        for relation in unchanged_relations
+    }
+    assert after == before
+    assert registry_counts(db_urls["admin"]) == (1, 1, 1, 1)
+    assert registry_state(db_urls["admin"])[0] == 1
+    with connect(db_urls["admin"]) as admin:
+        definition = admin.execute(
+            "SELECT pg_get_functiondef(p.oid) FROM pg_proc p "
+            "JOIN pg_namespace n ON n.oid=p.pronamespace "
+            "WHERE n.nspname='kineticloop' "
+            "AND p.proname='registry_revoke_artifact'"
+        ).fetchone()
+        assert definition is not None
+        normalized_definition = definition[0].lower()
+        assert "user_decision_state" not in normalized_definition
+        assert "authorization_events" not in normalized_definition
 
 
 def test_revoke_artifact_atomic_linearization_and_idempotency(
@@ -1145,6 +1355,111 @@ def test_revoke_ack_loss_reconciles_by_command_key(
             connection, revoke_command(), effective_at=NOW, reason_code="EMERGENCY"
         )
     assert recovered.registry_revision == 1
+
+
+def test_committed_revoke_controls_current_admission_not_history(
+    db_urls: dict[str, str],
+) -> None:
+    with connect(db_urls["admin"]) as admin:
+        admin.execute("SET LOCAL session_replication_role=replica")
+        admin.execute(
+            "INSERT INTO kineticloop.workout_sessions("
+            "id,subject_id,session_identity,origin,lifecycle,execution_revision) "
+            "VALUES (%s,%s,'historical-session','AI_GENERATED','STARTED',1)",
+            (UUID(SESSION_ID), UUID(SUBJECT_ID)),
+        )
+        admin.execute(
+            "INSERT INTO kineticloop.execution_bindings("
+            "id,subject_id,binding_kind,execution_scope,binding_revision,accepted_at,"
+            "ref_s02_id,ref_s40_id,ref_s42_id,ref_s44_id) "
+            "VALUES (%s,%s,'START','EXECUTION',1,clock_timestamp(),%s,%s,%s,%s)",
+            (
+                UUID(BINDING_ID),
+                UUID(SUBJECT_ID),
+                UUID(RECEIPT_ID),
+                UUID(POLICY_ID),
+                UUID(AUTHORIZATION_ID),
+                UUID(SESSION_ID),
+            ),
+        )
+        admin.execute(
+            "INSERT INTO kineticloop.command_receipts("
+            "id,subject_id,status,command_kind,client_key,actor_scope,request_hash,"
+            "typed_payload) VALUES (%s,%s,'SUCCEEDED','StartSession',"
+            "'kl021-historical-start','subject','kl021-historical-start-hash',%s)",
+            (
+                UUID(REPLAY_RECEIPT_ID),
+                UUID(SUBJECT_ID),
+                psycopg.types.json.Jsonb(
+                    {
+                        "outcome": {
+                            "session_id": SESSION_ID,
+                            "binding_id": BINDING_ID,
+                            "executable": True,
+                        }
+                    }
+                ),
+            ),
+        )
+        admin.commit()
+
+    historical_relations = (
+        "authorization_issuances",
+        "authorization_artifact_closure",
+        "workout_sessions",
+        "execution_bindings",
+        "command_receipts",
+        "domain_events",
+        "outbox_deliveries",
+    )
+    before = {
+        relation: relation_snapshot(db_urls["admin"], relation)
+        for relation in historical_relations
+    }
+    with connect(db_urls["trusted_admin"]) as trusted:
+        revoke = revoke_artifact(
+            trusted,
+            revoke_command(key="kl021-current-not-history"),
+            effective_at=NOW,
+            reason_code="EMERGENCY",
+        )
+    assert revoke.registry_revision == 1
+
+    for command_kind in RegistryCommand:
+        assert_denied(
+            db_urls,
+            command_kind,
+            RegistryDenialCode.ARTIFACT_REVOKED,
+        )
+
+    after_denials = {
+        relation: relation_snapshot(db_urls["admin"], relation)
+        for relation in historical_relations
+    }
+    assert after_denials == before
+    assert mutation_count(db_urls["admin"]) == 0
+
+    with connect(db_urls["admin"]) as admin:
+        replay = replay_outcome(
+            admin,
+            "StartSession",
+            UUID(SUBJECT_ID),
+            actor_scope="subject",
+            client_key="kl021-historical-start",
+            request_hash="kl021-historical-start-hash",
+        )
+    assert replay == {
+        "session_id": SESSION_ID,
+        "binding_id": BINDING_ID,
+        "executable": False,
+        "replayed": True,
+    }
+    after_replay = {
+        relation: relation_snapshot(db_urls["admin"], relation)
+        for relation in historical_relations
+    }
+    assert after_replay == before
+    assert mutation_count(db_urls["admin"]) == 0
 
 
 def test_direct_sql_revoke_rejects_unbound_payload_hash(
