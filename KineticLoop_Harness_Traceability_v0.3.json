@@ -2060,12 +2060,55 @@
       "task_identity": "harness-backlog-v0.2/KL-021",
       "id": "KL-021",
       "milestone": "M3",
+      "commands": [
+        "RevokeArtifact"
+      ],
+      "transaction_boundaries": [
+        "T2-GLOBAL"
+      ],
+      "invariant_ids": [
+        "INV-08",
+        "INV-09",
+        "INV-10",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S49",
+        "S50",
+        "S51"
+      ],
       "depends_on": [
         "KL-016",
         "KL-018",
         "KL-020"
       ],
       "conditional_depends_on": [],
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "docs/contracts/safety_registry.md",
+        "docs/exec-plans/completed/KL-015_RESULT.yaml",
+        "docs/exec-plans/completed/KL-016_RESULT.yaml",
+        "docs/exec-plans/completed/KL-018_RESULT.yaml",
+        "docs/exec-plans/completed/KL-020_RESULT.yaml",
+        "docs/exec-plans/completed/KL-072_RESULT.yaml",
+        "docs/exec-plans/milestones/M2.json"
+      ],
+      "entry_conditions": [
+        "M2 closure PASS: docs/exec-plans/milestones/M2.json",
+        "KL-016, KL-018, and KL-020 merged into the protected branch",
+        "G-SHADOW closed",
+        "G-REGISTRY closed"
+      ],
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE"
+      ],
+      "deliverables": [
+        "PostgreSQL acceptance evidence for the merged T2-GLOBAL SafetyRegistry revoke implementation"
+      ],
+      "definition_of_done": "the exact PostgreSQL checks prove that successful commit is the only global revoke linearization point; rollback has no visible effect; past or future effective_at does not move that point; RevokeArtifact is an authenticated global-admin command that depends on S51 but not S01 or user fanout; its S50/S51/management evidence is atomic and idempotent under concurrency and unknown commit outcomes; committed relevant revocation denies every new T3/T6/T7 admission while preserving immutable historical records and non-authorizing replay; and no production source, migration, frozen authority, completed prerequisite artifact, or requirement PASS claim changes",
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
         "t2_global_commit_rollback_and_effective_at_semantics",
@@ -2091,6 +2134,7 @@
       ],
       "packet_refinement": "ENFORCEABLE",
       "status": "NOT_STARTED",
+      "shared_hotspot": true,
       "check_contracts": [
         {
           "check_id": "t2_global_commit_rollback_and_effective_at_semantics",
