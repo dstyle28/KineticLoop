@@ -1,0 +1,80 @@
+task_identity: harness-backlog-v0.2/KL-021
+display_task_id: KL-021
+task_definition_version: v0.2
+base_commit: ec264bb0d8a8114a73ef85340537b1ead0c74c6e
+tested_commit: 675697f0f455757d8efb548e0ac4ec6d48ca1908
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Added only the residual real-PostgreSQL acceptance coverage required for the
+  already-merged T2-GLOBAL SafetyRegistry owner. Database-clock-relative cases
+  prove commit is the revoke linearization point for backdated and future
+  effective_at metadata, while an injected post-S50 failure rolls back S50,
+  S51, management receipt, audit and outbox state and leaves admission eligible.
+  PostgreSQL-observed bounded interleavings prove both shared-first and
+  revoke-first commit orders. Locked rows for three isolated subjects plus exact
+  relation snapshots prove RevokeArtifact has no S01 or per-user fanout
+  dependency. Existing authority, idempotency and unknown-commit cases remain
+  green. A committed revoke denies all six migrated T3/T6/T7 current admission
+  paths while immutable authorization, execution-binding, receipt, event and
+  outbox history stays byte-equivalent and historical START replay is explicitly
+  non-executable.
+commands_run:
+  - check_id: t2_global_commit_rollback_and_effective_at_semantics
+    command: uv run pytest -q tests/db/test_safety_registry.py::test_t2_global_commit_rollback_and_effective_at_semantics
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-021/t2-global-commit-rollback-675697f.log
+  - check_id: t2_global_shared_exclusive_commit_order
+    command: uv run pytest -q tests/db/test_safety_registry.py::test_exclusive_global_gate_serializes
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-021/t2-global-commit-order-675697f.log
+  - check_id: t2_global_has_no_subject_or_user_fanout_dependency
+    command: uv run pytest -q tests/db/test_safety_registry.py::test_t2_global_has_no_subject_or_user_fanout_dependency
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-021/t2-global-no-fanout-675697f.log
+  - check_id: t2_global_authenticated_admin_boundary
+    command: uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_role_owner_boundary tests/db/test_safety_registry.py::test_migrated_registry_command_routine_privileges
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-021/t2-global-admin-boundary-675697f.log
+  - check_id: t2_global_idempotency_and_unknown_commit_reconciliation
+    command: uv run pytest -q tests/db/test_safety_registry.py::test_revoke_artifact_atomic_linearization_and_idempotency tests/db/test_safety_registry.py::test_revoke_ack_loss_reconciles_by_command_key
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-021/t2-global-idempotency-675697f.log
+  - check_id: committed_revoke_controls_current_admission_not_history
+    command: uv run pytest -q tests/db/test_safety_registry.py::test_committed_revoke_controls_current_admission_not_history
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-021/t2-global-current-not-history-675697f.log
+  - check_id: safety_registry_db_suite_passes
+    command: uv run pytest -q tests/db/test_safety_registry.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-021/safety-registry-suite-675697f.log
+  - check_id: harness_validation_passes
+    command: uv run kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-021/harness-check-675697f.log
+requirements_covered: []
+files_changed:
+  - tests/db/test_safety_registry.py
+  - docs/exec-plans/evidence/KL-021/t2-global-commit-rollback-675697f.log
+  - docs/exec-plans/evidence/KL-021/t2-global-commit-order-675697f.log
+  - docs/exec-plans/evidence/KL-021/t2-global-no-fanout-675697f.log
+  - docs/exec-plans/evidence/KL-021/t2-global-admin-boundary-675697f.log
+  - docs/exec-plans/evidence/KL-021/t2-global-idempotency-675697f.log
+  - docs/exec-plans/evidence/KL-021/t2-global-current-not-history-675697f.log
+  - docs/exec-plans/evidence/KL-021/safety-registry-suite-675697f.log
+  - docs/exec-plans/evidence/KL-021/harness-check-675697f.log
+  - docs/exec-plans/completed/KL-021_RESULT.yaml
+decisions:
+  - Reuse the merged public RevokeArtifact persistence owner and migrated command routine; add no test-side production mechanism, source change or migration.
+  - Derive backdated and future effective_at fixtures from PostgreSQL clock_timestamp and treat effective_at only as immutable audit metadata.
+  - Observe blocking with pg_blocking_pids and bounded thread/barrier coordination; use no sleep as a correctness oracle in the added acceptance cases.
+  - Use the isolated Compose project kineticloop-kl021-ec264bb and database kineticloop_kl021_ec264bb, with module teardown removing its containers, network and volume.
+  - Preserve product requirement status separately; this acceptance-only task claims no requirement PASS.
+known_limitations:
+  - The tests use isolated synthetic subjects and migrated PostgreSQL roles; they do not enable production auto-activation or make real-data shadow executable.
+  - Task PASS does not imply product requirement PASS, independent review PASS, CI PASS or MERGED state.
+follow_up_tasks:
+  - Obtain fresh SHA-bound GENERAL, PROTOCOL and DB_CONCURRENCY independent reviews on the immutable result head.
+spec_change_request: null
