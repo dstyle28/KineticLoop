@@ -1,0 +1,57 @@
+HG-027 KL-021 governance refinement evidence
+date: 2026-09-29
+protected_base: 7982c30230d2f0e0a5aa4a7ae6299aaa1386a6da
+tested_commit: 7cd9aed34d2a01aadd12cc292e39cc8add453d71
+
+Scope resolution
+- Read CURRENT_DOCUMENT_INDEX.json and the KL-021 packet before frozen authority.
+- Read merged KL-015, KL-016, KL-018, KL-020 and KL-072 result artifacts.
+- Inspected the merged SafetyRegistry contract, persistence owner, successor migrations,
+  PostgreSQL tests and frozen Protocol/DB clauses for INV-08, INV-09, INV-10,
+  INV-17, T2-GLOBAL and S49/S50/S51.
+- The merged stack already contains the production RevokeArtifact implementation,
+  migrated trusted-admin routine, exclusive S51 gate, atomic S50/S51/global companion
+  writes, shared-gate admission checks and idempotent replay. KL-021 is consequently
+  acceptance-only and cannot modify production source or migrations.
+
+Refined scope oracle
+- KL-021 remains NOT_STARTED and depends on KL-016, KL-018 and KL-020.
+- Packet, backlog and traceability project the same eight exact check IDs, commands
+  and pass oracles.
+- The only implementation write path is tests/db/test_safety_registry.py.
+- registry_coordination remains the exclusive resource key and the task requires an
+  isolated PostgreSQL database/Compose namespace.
+- The exact contracts cover commit-only linearization, complete rollback, past/future
+  effective_at audit-only meaning, both shared/exclusive commit orders, no S01/S43 or
+  user-fanout dependency, authenticated global-admin authority, concurrency and
+  commit-unknown idempotency, current T3/T6/T7 denial, and immutable non-authorizing
+  historical replay.
+- Any discovered production defect produces failing task evidence and requires a
+  separately governed implementation task; KL-021 cannot widen its write scope.
+
+Validation
+- command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
+  result: PASS
+  output: HARNESS_CHECK_PASS tasks=70 active=67
+- command: jq empty CURRENT_DOCUMENT_INDEX.json HARNESS_DOCUMENT_MANIFEST.json KineticLoop_Harness_Backlog_v0.2.json KineticLoop_Harness_Traceability_v0.3.json
+  result: PASS
+- command: git diff --check 7982c30230d2f0e0a5aa4a7ae6299aaa1386a6da 7cd9aed34d2a01aadd12cc292e39cc8add453d71
+  result: PASS
+- command: compare protected base to tested commit across 05_KineticLoop_Protocol_v1.2_FROZEN.md, 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md, FROZEN_BASELINE.json, src/**, migrations/** and docs/exec-plans/completed/**
+  result: PASS; all are unchanged.
+- command: inspect changed paths from protected base to tested commit
+  result: PASS; exactly the two derived index files, backlog, traceability and KL-021 packet changed.
+
+Integration bookkeeping
+- KL-016, KL-018 and KL-072 have committed MERGED integration records.
+- KL-020 is present on the protected branch through merge commit 7982c30, with its
+  committed PASS result and reviews, but no docs/exec-plans/integrations/KL-020.json
+  exists at the protected base.
+- HG-027 does not fabricate or mix post-merge KL-020 integration bookkeeping into
+  this governance refinement. The governance contract admits that bookkeeping only
+  through its separate review/integration remediation path.
+
+CONCLUSION: PASS
+HG-027 refines only KL-021. It changes no frozen semantic, product implementation,
+migration, completed task definition/result, product requirement status, or production
+activation state.
