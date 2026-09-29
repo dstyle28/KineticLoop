@@ -1,0 +1,88 @@
+change_identity: harness-governance-v0.1/HG-027
+display_change_id: HG-027
+base_commit: 7982c30230d2f0e0a5aa4a7ae6299aaa1386a6da
+tested_commit: 6980d6bd57222df2cf17f229b038bb42815b51fd
+change_status: PASS
+summary: >-
+  Refine only KL-021 after the merged KL-016, KL-018, KL-020 and KL-072 stack.
+  The production SafetyRegistry already implements T2-GLOBAL RevokeArtifact, so
+  KL-021 is now acceptance-only rather than a duplicate implementation task. Bind
+  it to one concrete PostgreSQL test path, exact commit/rollback, shared/exclusive,
+  no-S01/no-fanout, authenticated-admin, idempotency and current-admission versus
+  historical-replay contracts, the registry coordination lock and an isolated
+  PostgreSQL namespace without changing frozen authority, product code, migrations,
+  completed prerequisites, requirement state or production activation.
+packets_refined:
+  - KL-021
+files_changed:
+  - CURRENT_DOCUMENT_INDEX.json
+  - HARNESS_DOCUMENT_MANIFEST.json
+  - KineticLoop_Harness_Backlog_v0.2.json
+  - KineticLoop_Harness_Traceability_v0.3.json
+  - docs/exec-plans/active/KL-021.md
+  - docs/exec-plans/evidence/HG-027/checks.log
+  - docs/exec-plans/evidence/HG-027/checks-final.log
+  - docs/exec-plans/governance/HG-027.yaml
+  - docs/exec-plans/reviews/HG-027/DB_CONCURRENCY.json
+  - docs/exec-plans/reviews/HG-027/GENERAL.json
+  - docs/exec-plans/reviews/HG-027/PROTOCOL.json
+checks_run:
+  - check_id: harness_structure_valid
+    command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-027/checks-final.log
+  - check_id: kl021_projection_exact
+    command: Verify identical KL-021 dependency, write/resource scope, environment, check IDs, commands and pass oracles in backlog, traceability and packet.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-027/checks-final.log
+  - check_id: t2_global_acceptance_scope_exact
+    command: Verify KL-021 is acceptance-only and pins commit/rollback, effective_at, shared/exclusive ordering, no S01/user fanout, authenticated global admin, idempotency, current admission and historical replay semantics.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-027/checks-final.log
+  - check_id: governance_scope_exact
+    command: Verify the protected-base-to-tested content change set is exactly the two derived index files, backlog, traceability and KL-021 packet; all other tested-prefix paths are HG-027 bookkeeping/reviews.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-027/checks-final.log
+  - check_id: diff_clean
+    command: git diff --check 7982c30230d2f0e0a5aa4a7ae6299aaa1386a6da 6980d6bd57222df2cf17f229b038bb42815b51fd
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-027/checks-final.log
+  - check_id: frozen_production_and_completed_state_unchanged
+    command: Compare the protected base and tested commit across frozen authority, FROZEN_BASELINE.json, src, migrations and completed task artifacts.
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-027/checks-final.log
+  - check_id: harness_tests_pass
+    command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-027/checks-final.log
+  - check_id: unit_tests_pass
+    command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-027/checks-final.log
+  - check_id: database_tests_pass
+    command: PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m pytest -q tests/db -p no:cacheprovider
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-027/checks-final.log
+  - check_id: lint_pass
+    command: RUFF_CACHE_DIR=/private/tmp/hg027-ruff PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-027/checks-final.log
+  - check_id: typecheck_pass
+    command: MYPY_CACHE_DIR=/private/tmp/hg027-mypy PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/HG-027/checks-final.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+  - >-
+    KL-021 remains NOT_STARTED. HG-027 defines its executable acceptance scope but
+    does not run the future KL-021 checks, create a KL-021 result, or claim task PASS,
+    product requirement PASS, review PASS or MERGED state for KL-021.
+  - >-
+    If a KL-021 acceptance check exposes a production defect, the acceptance-only
+    task must record failure and use a separately governed implementation task; its
+    narrow write scope is not permission to modify the merged SafetyRegistry path.
+  - >-
+    The protected branch contains merged KL-020 code/result/reviews but no KL-020
+    integration record. HG-027 cannot mix that post-merge bookkeeping into this
+    packet refinement and makes no fabricated KL-020 integration claim.
