@@ -2955,17 +2955,27 @@
         "is_executable"
       ],
       "transaction_boundaries": [
+        "T2",
         "T6",
         "T7"
       ],
       "invariant_ids": [
+        "INV-08",
         "INV-09",
         "INV-10"
       ],
       "table_ids": [
+        "S01",
+        "S18",
+        "S24",
+        "S37",
+        "S38",
+        "S40",
         "S42",
         "S43",
+        "S45",
         "S49",
+        "S50",
         "S51"
       ],
       "required_test_layers": [
@@ -2974,13 +2984,14 @@
         "E2E"
       ],
       "deliverables": [
-        "evaluator"
+        "reusable pure authorization validity/executability evaluator wired into the existing T6/T7 repository transaction owner",
+        "exact PU, migrated-PostgreSQL DC, and isolated TEST-subject E2E evidence for the residual evaluator semantics"
       ],
-      "definition_of_done": "min-validity closure, transitive revoke and TIMELESS rules enforced",
+      "definition_of_done": "the existing T6 owner persists one immutable finite S42 validity certificate whose end is the exact minimum of every required finite bound and whose complete transitive artifact/TIMELESS-policy closure is explicit; missing, undefined, not-yet-effective, expired, or revoked basis denies atomically; the existing T7 owner recomputes exact subject/content/scope/epoch/control/session/dependency/time eligibility from current S01/S18/S42/S43/S49-S51 state under S51-to-S01 ordering; valid_until equality denies; read-only `is_executable` is non-bearer; merged KL-015/KL-018/KL-021 ownership and behavior are reused rather than duplicated; and no migration, frozen authority, completed prerequisite artifact, full KL-019/KL-027 flow, production activation, or product requirement PASS claim is added",
       "entry_conditions": [
-        "M2 migration/contracts merged",
-        "G-SHADOW closed",
-        "G-REGISTRY closed"
+        "M2 closure PASS: docs/exec-plans/milestones/M2.json",
+        "merged prerequisite result artifacts exist for KL-015, KL-018, and KL-021",
+        "G-SHADOW and G-REGISTRY remain closed by the merged M2 closure"
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
@@ -2989,7 +3000,14 @@
       "context_files": [
         "05_KineticLoop_Protocol_v1.2_FROZEN.md",
         "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
-        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md"
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "docs/contracts/repository_transactions.md",
+        "docs/contracts/artifact_registry.md",
+        "docs/contracts/safety_registry.md",
+        "docs/exec-plans/completed/KL-015_RESULT.yaml",
+        "docs/exec-plans/completed/KL-018_RESULT.yaml",
+        "docs/exec-plans/completed/KL-021_RESULT.yaml",
+        "docs/exec-plans/milestones/M2.json"
       ],
       "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
       "merge_unit": "ONE_PR",
@@ -2999,18 +3017,31 @@
       "task_identity": "harness-backlog-v0.2/KL-022",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_pu_checks",
-        "task_scope_dc_checks",
-        "task_scope_e2e_checks"
+        "validity_closure_minimum_and_missing_values_pu",
+        "timeless_policy_dependency_closure_pu",
+        "executable_guard_dimensions_and_time_boundary_pu",
+        "t6_certificate_and_minimum_closure_dc",
+        "t6_t7_transitive_revoke_and_current_registry_dc",
+        "t7_current_epoch_scope_control_and_time_dc",
+        "test_subject_current_non_bearer_eligibility_e2e",
+        "authorization_unit_suite_passes",
+        "transaction_interface_db_suite_passes",
+        "authorization_e2e_suite_passes",
+        "harness_validation_passes"
       ],
       "resource_keys": [
-        "authorization_core"
+        "authorization_core",
+        "registry_coordination",
+        "transaction_interfaces",
+        "user_coordination"
       ],
       "write_paths": [
-        "src/kineticloop/protocol/**",
-        "src/kineticloop/workflow/**",
-        "tests/protocol/**",
-        "tests/faults/**"
+        "src/kineticloop/protocol/__init__.py",
+        "src/kineticloop/protocol/authorization.py",
+        "src/kineticloop/persistence/transactions.py",
+        "tests/unit/protocol/test_authorization.py",
+        "tests/db/test_transaction_interfaces.py",
+        "tests/e2e/test_authorization_evaluator.py"
       ],
       "review_requirements": [
         "DB_CONCURRENCY",
@@ -3018,9 +3049,72 @@
         "PROTOCOL"
       ],
       "conditional_depends_on": [],
-      "environment_requirements": [],
-      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
-      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "check_contracts": [
+        {
+          "check_id": "validity_closure_minimum_and_missing_values_pu",
+          "command": "uv run pytest -q tests/unit/protocol/test_authorization.py::test_validity_closure_uses_every_bound_and_denies_missing_or_elapsed_basis",
+          "pass_oracle": "The pure evaluator uses authoritative issuance time and returns the exact minimum of requested absolute end, manifest, evidence-resolution, validation/admission freshness, every relevant projection, every bounded transitive artifact, policy TTL, request/intent deadline, and calendar/session boundary. The request may only shorten the result. A missing, unparsable, not-yet-effective, equal-to-now, or expired required bound denies; NULL is never treated as infinity; the resulting S42 interval is finite and strictly valid_from < valid_until."
+        },
+        {
+          "check_id": "timeless_policy_dependency_closure_pu",
+          "command": "uv run pytest -q tests/unit/protocol/test_authorization.py::test_timeless_dependency_requires_auditable_policy_in_same_transitive_closure",
+          "pass_oracle": "The pure evaluator accepts a TIMELESS artifact only when it has a nonempty auditable reason and names an exact POLICY or POLICY_BUNDLE artifact that is present in the same complete transitive certificate closure. Missing, malformed, absent, expired, or revoked approval policy denies. TIMELESS contributes no artificial end, remains revocable, and cannot make the finite authorization interval outlive the remaining bounded dependencies."
+        },
+        {
+          "check_id": "executable_guard_dimensions_and_time_boundary_pu",
+          "command": "uv run pytest -q tests/unit/protocol/test_authorization.py::test_is_executable_requires_subject_content_scope_epoch_control_and_strict_time",
+          "pass_oracle": "The pure evaluator returns eligible only when subject, prescription content hash, execution scope, authorization epoch, targeted S43 state, applicable current control state, policy admissibility, session/head relation, and dependency eligibility all agree. It uses the half-open interval valid_from <= authoritative_now < valid_until; exact expiry denies; unknown control or dependency state denies; and the result is explicitly a non-bearer observation rather than permission for a later T7 mutation."
+        },
+        {
+          "check_id": "t6_certificate_and_minimum_closure_dc",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_authorization_evaluator_persists_exact_minimum_certificate",
+          "pass_oracle": "Against migrated PostgreSQL, the existing CommitBundle and Reauthorize owners acquire S51 then S01 and invoke the evaluator under those locks. The test varies each finite dependency independently, proves S42.valid_until equals the earliest bound, verifies the immutable certificate contains exact identity/revision/validity entries and one deterministic closure digest, and proves an omitted or undefined required dependency rolls back S39-S43, S27/S29, S38, S02/S03/S04 with no partial issuance."
+        },
+        {
+          "check_id": "t6_t7_transitive_revoke_and_current_registry_dc",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_t7_deny_revoked_transitive_dependency_after_current_registry_read",
+          "pass_oracle": "The real-PostgreSQL test leases an exact root-plus-transitive S49 closure, revokes only a transitive member through the merged T2-GLOBAL owner, and proves both T6 issue/reauthorize and T7 current eligibility deny after the revoke commits. A bounded S51 interleaving proves the waiter reads the post-wait registry revision/state rather than a pre-lock snapshot or cache. An unrelated revoked identity outside the exact closure is the negative control and does not itself deny. No historical S42/S43/S45/S02/S03/S04 row is rewritten."
+        },
+        {
+          "check_id": "t7_current_epoch_scope_control_and_time_dc",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_t7_executability_rereads_epoch_scope_control_and_time",
+          "pass_oracle": "For StartSession, ResumeSession, and ContinueSession, migrated PostgreSQL is reread after S51 then S01 for the exact P/A pair. A current epoch mismatch, exact-scope mismatch, targeted invalidation, applicable active S18 hold/stop/restriction, unprovable S18 state, content mismatch, non-current session/head relation, dependency not-yet-valid, and authoritative database time at or after valid_until each deny before S45 or execution mutation. Clearing a control does not revive the old issuance; only a newly issued exact basis at the new epoch is accepted, and CONTINUE cannot substitute a different pair from the latest START/RESUME binding."
+        },
+        {
+          "check_id": "test_subject_current_non_bearer_eligibility_e2e",
+          "command": "uv run pytest -q tests/e2e/test_authorization_evaluator.py::test_test_subject_eligibility_query_is_current_and_non_bearer",
+          "pass_oracle": "Using an isolated TEST subject/policy/environment and the migrated production evaluator path, the first current query reports eligible for an exact valid P/A/scope and returns no reusable permission token. After an authoritative epoch/control/registry-or-time change, a new query reports ineligible without relying on cached status. This E2E stops at the eligibility boundary: it does not write S45, implement the KL-019 public publish/commit/start slice, or duplicate the KL-027 full valid-to-START-to-revoke/expiry trajectory."
+        },
+        {
+          "check_id": "authorization_unit_suite_passes",
+          "command": "uv run pytest -q tests/unit/protocol/test_authorization.py",
+          "pass_oracle": "The complete pure authorization-evaluator suite exits 0 with no failed, skipped, or deselected tests and includes the exact minimum, missing-value, TIMELESS, epoch/scope/control, and strict time-boundary cases."
+        },
+        {
+          "check_id": "transaction_interface_db_suite_passes",
+          "command": "uv run pytest -q tests/db/test_transaction_interfaces.py",
+          "pass_oracle": "The complete migrated real-PostgreSQL transaction-interface suite exits 0 with no failed, skipped, or deselected tests, including the KL-022 T6/T7 cases and all pre-existing command-owner, lock-order, idempotency, rollback, replay, and current-registry regressions."
+        },
+        {
+          "check_id": "authorization_e2e_suite_passes",
+          "command": "uv run pytest -q tests/e2e/test_authorization_evaluator.py",
+          "pass_oracle": "The complete isolated authorization evaluator E2E file exits 0 with no failed, skipped, or deselected tests and never enables production auto-activation, production-subject authorization, live execution binding, or real-data shadow execution."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Command exits 0 and prints HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-022/**"
+      ],
+      "write_paths_status": "ENFORCEABLE"
     },
     {
       "id": "KL-023",
