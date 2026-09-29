@@ -4786,24 +4786,26 @@ def test_historical_replay_preserves_guard_boundary(
                 )
         with psycopg.connect(database_urls["admin"]) as connection:
             new_expiry = _database_timestamp(connection, offset=timedelta(hours=1))
+
+            def stale_lease_guard(tx: RepositoryTransaction) -> None:
+                tx.lock_subject()
+                tx.lock_intents((INTENT,))
+                tx.require_lease_acquisition_basis(
+                    INTENT,
+                    expected_owner_id="worker-a",
+                    expected_fence=7,
+                    new_owner_id="worker-kl020",
+                    new_fence=8,
+                    new_lease_expires_at=new_expiry,
+                    expected_request_revision=1,
+                )
+
             with pytest.raises(FenceLost):
                 execute_command(
                     connection,
                     "AcquireLease",
                     SUBJECT,
-                    lambda tx: (
-                        tx.lock_subject(),
-                        tx.lock_intents((INTENT,)),
-                        tx.require_lease_acquisition_basis(
-                            INTENT,
-                            expected_owner_id="worker-a",
-                            expected_fence=7,
-                            new_owner_id="worker-kl020",
-                            new_fence=8,
-                            new_lease_expires_at=new_expiry,
-                            expected_request_revision=1,
-                        ),
-                    ),
+                    stale_lease_guard,
                 )
     finally:
         with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
