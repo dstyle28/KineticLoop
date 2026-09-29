@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import threading
+import time
 from collections.abc import Iterator, Mapping
 from datetime import UTC, date, datetime, timedelta
 from importlib.util import module_from_spec, spec_from_file_location
@@ -13,7 +15,7 @@ from uuid import UUID
 import psycopg
 import pytest
 
-from kineticloop.db.lifecycle import DatabaseLifecycle
+from kineticloop.db.lifecycle import DatabaseLifecycle, DatabaseNamespace
 from kineticloop.persistence.transactions import (
     ArtifactIdentity,
     ArtifactIdentityRequired,
@@ -253,6 +255,15 @@ def _manifest_candidate_payload(connection: Any) -> dict[str, Any]:
 @pytest.fixture(scope="module")
 def database_urls() -> Iterator[dict[str, str]]:
     lifecycle = DatabaseLifecycle(ROOT)
+    kl020_project = os.environ.get("KINETICLOOP_KL020_COMPOSE_PROJECT")
+    kl020_database = os.environ.get("KINETICLOOP_KL020_DATABASE")
+    if (kl020_project is None) != (kl020_database is None):
+        raise AssertionError("KL-020 database and Compose namespaces must be supplied together")
+    if kl020_project is not None and kl020_database is not None:
+        lifecycle.namespace = DatabaseNamespace(
+            project_name=kl020_project,
+            database_name=kl020_database,
+        )
     urls = _MIGRATIONS.bootstrap_two_phase(lifecycle)
     _SAFETY.seed(urls["admin"])
     _seed_transaction_rows(urls["admin"])
@@ -580,6 +591,67 @@ def _event(tag: int) -> EventWrite:
         "KL015Mutation",
         "kl015-events",
         UUID(f"00000000-0000-8000-8000-{tag + 1:012x}"),
+    )
+
+
+def _wait_until_database_blocked(
+    admin_url: str,
+    application_name: str,
+    *,
+    timeout_seconds: float = 5,
+) -> tuple[int, ...]:
+    deadline = time.monotonic() + timeout_seconds
+    with psycopg.connect(admin_url, autocommit=True) as observer:
+        while time.monotonic() < deadline:
+            row = observer.execute(
+                "SELECT pg_blocking_pids(pid) FROM pg_stat_activity "
+                "WHERE application_name=%s AND state<>'idle'",
+                (application_name,),
+            ).fetchone()
+            if row is not None and row[0]:
+                return tuple(int(pid) for pid in row[0])
+            threading.Event().wait(0.02)
+    raise AssertionError(f"{application_name} did not become database-blocked")
+
+
+def _cancel_idempotent_outcome(
+    tx: RepositoryTransaction,
+    *,
+    client_key: str,
+    request_hash: str,
+    receipt_id: UUID,
+    event: EventWrite,
+    result_identity: str,
+    mutation_runs: list[str],
+    hold_after_subject: tuple[threading.Event, threading.Event] | None = None,
+) -> tuple[Mapping[str, Any], bool]:
+    tx.lock_subject()
+    if hold_after_subject is not None:
+        locked, release = hold_after_subject
+        locked.set()
+        assert release.wait(timeout=5)
+    tx.lock_intents((INTENT,))
+    tx.lock_reservations((RESERVATION,))
+
+    def mutation(session: Any) -> Mapping[str, Any]:
+        mutation_runs.append(request_hash)
+        session.update(
+            "S27",
+            {"typed_payload": psycopg.types.json.Jsonb({"kl020": result_identity})},
+            {"id": INTENT, "subject_id": SUBJECT},
+        )
+        return {
+            "intent_id": str(INTENT),
+            "result_identity": result_identity,
+        }
+
+    return tx.idempotent_outcome(
+        receipt_id=receipt_id,
+        actor_scope="subject",
+        client_key=client_key,
+        request_hash=request_hash,
+        mutation=mutation,
+        event=event,
     )
 
 
@@ -4096,3 +4168,655 @@ def test_t7_exact_session_and_t3_publication_guards(database_urls: dict[str, str
             connection, "PublishManifest", SUBJECT, publish_next
         )
     assert not replayed and outcome["manifest_id"] == str(next_manifest)
+
+
+def test_t2_t7_subject_commands_share_s01_linearization(
+    database_urls: dict[str, str],
+) -> None:
+    independent_subject = UUID("00000000-0000-8000-8000-000000020001")
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        original_epoch_row = connection.execute(
+            "SELECT authorization_epoch FROM kineticloop.user_decision_state "
+            "WHERE subject_id=%s",
+            (SUBJECT,),
+        ).fetchone()
+        assert original_epoch_row is not None
+        original_epoch = int(original_epoch_row[0])
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "INSERT INTO kineticloop.user_decision_state"
+            "(subject_id,authorization_epoch,input_frontier_hash) VALUES (%s,0,'independent')",
+            (independent_subject,),
+        )
+        connection.execute("SET session_replication_role=origin")
+
+    commands = (
+        "ApplyControl",
+        "PublishManifest",
+        "AdmitOrReviseIntent",
+        "AcquireLease",
+        "CommitBundle",
+        "StartSession",
+    )
+    observations: dict[str, tuple[int, tuple[tuple[LockStage, str], ...]]] = {}
+    fail_closed: dict[str, BaseException] = {}
+    errors: list[BaseException] = []
+    attempted_outcomes = {
+        command: (
+            UUID(f"00000000-0000-8000-8000-{0x20020 + index * 0x10:012x}"),
+            _event(0x20021 + index * 0x10),
+        )
+        for index, command in enumerate(commands)
+    }
+    with psycopg.connect(database_urls["admin"]) as connection:
+        lease_target = _database_timestamp(connection, offset=timedelta(hours=1))
+    try:
+        for index, command in enumerate(commands, start=1):
+            blocker = psycopg.connect(
+                database_urls["admin"],
+                application_name=f"kl020-s01-holder-{command}",
+            )
+            try:
+                blocker.execute(
+                    "SELECT authorization_epoch FROM kineticloop.user_decision_state "
+                    "WHERE subject_id=%s FOR UPDATE",
+                    (SUBJECT,),
+                )
+                next_epoch = original_epoch + index
+                blocker.execute(
+                    "UPDATE kineticloop.user_decision_state SET authorization_epoch=%s "
+                    "WHERE subject_id=%s",
+                    (next_epoch, SUBJECT),
+                )
+                application_name = f"kl020-s01-waiter-{command}"
+
+                def contender(command_kind: str = command) -> None:
+                    try:
+                        with psycopg.connect(
+                            database_urls["admin"],
+                            application_name=application_name,
+                            options="-c statement_timeout=5000",
+                        ) as connection:
+
+                            def operation(tx: RepositoryTransaction) -> None:
+                                if command_kind in {
+                                    "PublishManifest",
+                                    "CommitBundle",
+                                    "StartSession",
+                                }:
+                                    _acquire_registry(tx)
+                                else:
+                                    tx.lock_subject()
+                                context = getattr(tx, "_coordination_context")
+                                observations[command_kind] = (
+                                    int(context["authorization_epoch"]),
+                                    tx.lock_trace,
+                                )
+                                receipt_id, event = attempted_outcomes[command_kind]
+                                if command_kind == "ApplyControl":
+                                    tx.idempotent_outcome(
+                                        receipt_id=receipt_id,
+                                        actor_scope="subject",
+                                        client_key="kl020-t2-stale-guard",
+                                        request_hash="kl020-t2-stale-guard-hash",
+                                        mutation=lambda session: {},
+                                        event=event,
+                                        invalidation_scope="NOT_THE_POLICY_SCOPE",
+                                    )
+                                elif command_kind == "PublishManifest":
+                                    tx.idempotent_outcome(
+                                        receipt_id=receipt_id,
+                                        actor_scope="subject",
+                                        client_key="kl020-t3-stale-guard",
+                                        request_hash="kl020-t3-stale-guard-hash",
+                                        mutation=lambda session: {},
+                                        event=event,
+                                        aggregate_locks={
+                                            "manifest_builds": (MANIFEST_BUILD,)
+                                        },
+                                    )
+                                elif command_kind == "AdmitOrReviseIntent":
+                                    tx.idempotent_outcome(
+                                        receipt_id=receipt_id,
+                                        actor_scope="subject",
+                                        client_key="kl020-t4-missing-guard",
+                                        request_hash="kl020-t4-missing-guard-hash",
+                                        mutation=lambda session: {},
+                                        event=event,
+                                    )
+                                elif command_kind == "AcquireLease":
+                                    tx.lock_intents((INTENT,))
+                                    tx.require_lease_acquisition_basis(
+                                        INTENT,
+                                        expected_owner_id="pre-lock-owner",
+                                        expected_fence=999,
+                                        new_owner_id="kl020-worker",
+                                        new_fence=1000,
+                                        new_lease_expires_at=lease_target,
+                                        expected_request_revision=1,
+                                    )
+
+                            execute_command(connection, command_kind, SUBJECT, operation)
+                    except BaseException as error:
+                        expected_fragments = {
+                            "ApplyControl": "invalidation scope",
+                            "PublishManifest": "manifest build is stale",
+                            "AdmitOrReviseIntent": "S30 row lock",
+                            "AcquireLease": "compare-and-swap basis",
+                            "CommitBundle": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE",
+                            "StartSession": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE",
+                        }
+                        if expected_fragments[command_kind] in str(error):
+                            fail_closed[command_kind] = error
+                        else:
+                            errors.append(error)
+
+                thread = threading.Thread(target=contender)
+                thread.start()
+                blockers = _wait_until_database_blocked(
+                    database_urls["admin"], application_name
+                )
+                assert blocker.info.backend_pid in blockers
+
+                if index == 1:
+                    independent_done = threading.Event()
+
+                    def independent() -> None:
+                        try:
+                            with psycopg.connect(
+                                database_urls["admin"],
+                                application_name="kl020-independent-subject",
+                                options="-c statement_timeout=5000",
+                            ) as connection:
+                                execute_command(
+                                    connection,
+                                    "AdmitOrReviseIntent",
+                                    independent_subject,
+                                    lambda tx: tx.lock_subject(),
+                                )
+                            independent_done.set()
+                        except BaseException as error:
+                            errors.append(error)
+
+                    independent_thread = threading.Thread(target=independent)
+                    independent_thread.start()
+                    independent_thread.join(timeout=5)
+                    assert not independent_thread.is_alive()
+                    assert independent_done.is_set()
+                    assert thread.is_alive()
+
+                blocker.commit()
+                thread.join(timeout=5)
+                assert not thread.is_alive()
+            finally:
+                if not blocker.closed:
+                    blocker.rollback()
+                    blocker.close()
+
+        assert not errors
+        assert set(observations) | set(fail_closed) == set(commands)
+        assert set(fail_closed) == set(commands)
+        for index, command in enumerate(commands, start=1):
+            if command in {"CommitBundle", "StartSession"}:
+                continue
+            observed_epoch, trace = observations[command]
+            assert observed_epoch == original_epoch + index
+            expected_prefix = (
+                ((LockStage.REGISTRY, "S51"), (LockStage.SUBJECT, "S01"))
+                if command in {"PublishManifest", "CommitBundle", "StartSession"}
+                else ((LockStage.SUBJECT, "S01"),)
+            )
+            assert trace[: len(expected_prefix)] == expected_prefix
+        with psycopg.connect(database_urls["admin"]) as connection:
+            assert connection.execute(
+                "SELECT authorization_epoch FROM kineticloop.user_decision_state "
+                "WHERE subject_id=%s",
+                (SUBJECT,),
+            ).fetchone() == (original_epoch + len(commands),)
+            for receipt_id, event in attempted_outcomes.values():
+                for table, object_id in (
+                    ("command_receipts", receipt_id),
+                    ("domain_events", event.event_id),
+                    ("outbox_deliveries", event.outbox_id),
+                ):
+                    assert connection.execute(
+                        f"SELECT count(*) FROM kineticloop.{table} WHERE id=%s",
+                        (object_id,),
+                    ).fetchone() == (0,)
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute(
+                "UPDATE kineticloop.user_decision_state SET authorization_epoch=%s "
+                "WHERE subject_id=%s",
+                (original_epoch, SUBJECT),
+            )
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "DELETE FROM kineticloop.user_decision_state WHERE subject_id=%s",
+                (independent_subject,),
+            )
+            connection.execute("SET session_replication_role=origin")
+
+
+def test_concurrent_same_key_same_hash_replays_one_outcome(
+    database_urls: dict[str, str],
+) -> None:
+    client_key = "kl020-same-hash"
+    request_hash = "kl020-same-hash-request"
+    receipt = UUID("00000000-0000-8000-8000-000000020102")
+    event = _event(0x20103)
+    first_locked = threading.Event()
+    release_first = threading.Event()
+    mutation_runs: list[str] = []
+    outcomes: list[tuple[Mapping[str, Any], bool]] = []
+    errors: list[BaseException] = []
+
+    def invoke(index: int) -> None:
+        try:
+            with psycopg.connect(
+                database_urls["admin"],
+                application_name=f"kl020-same-hash-{index}",
+                options="-c statement_timeout=5000",
+            ) as connection:
+                outcomes.append(
+                    execute_command(
+                        connection,
+                        "CancelIntent",
+                        SUBJECT,
+                        lambda tx: _cancel_idempotent_outcome(
+                            tx,
+                            client_key=client_key,
+                            request_hash=request_hash,
+                            receipt_id=receipt,
+                            event=event,
+                            result_identity="kl020-same-result",
+                            mutation_runs=mutation_runs,
+                            hold_after_subject=(first_locked, release_first)
+                            if index == 0
+                            else None,
+                        ),
+                    )
+                )
+        except BaseException as error:
+            errors.append(error)
+
+    first = threading.Thread(target=invoke, args=(0,))
+    first.start()
+    assert first_locked.wait(timeout=5)
+    second = threading.Thread(target=invoke, args=(1,))
+    second.start()
+    blockers = _wait_until_database_blocked(
+        database_urls["admin"], "kl020-same-hash-1"
+    )
+    assert blockers
+    release_first.set()
+    first.join(timeout=5)
+    second.join(timeout=5)
+    assert not first.is_alive() and not second.is_alive()
+    assert not errors
+    assert len(outcomes) == 2
+    assert sum(replayed for _, replayed in outcomes) == 1
+    serialized = [
+        json.dumps(outcome, sort_keys=True, separators=(",", ":")).encode()
+        for outcome, _ in outcomes
+    ]
+    assert serialized[0] == serialized[1]
+    assert mutation_runs == [request_hash]
+    with psycopg.connect(database_urls["admin"]) as connection:
+        assert connection.execute(
+            "SELECT count(*) FROM kineticloop.command_receipts "
+            "WHERE subject_id=%s AND command_kind='CancelIntent' AND client_key=%s",
+            (SUBJECT, client_key),
+        ).fetchone() == (1,)
+        for table, object_id in (
+            ("domain_events", event.event_id),
+            ("outbox_deliveries", event.outbox_id),
+        ):
+            assert connection.execute(
+                f"SELECT count(*) FROM kineticloop.{table} WHERE id=%s",
+                (object_id,),
+            ).fetchone() == (1,)
+
+
+def test_concurrent_same_key_different_hash_rejects_conflict(
+    database_urls: dict[str, str],
+) -> None:
+    client_key = "kl020-different-hash"
+    first_locked = threading.Event()
+    release_first = threading.Event()
+    mutation_runs: list[str] = []
+    outcomes: list[tuple[Mapping[str, Any], bool]] = []
+    errors: list[tuple[BaseException, tuple[str, str] | None]] = []
+
+    def invoke(index: int) -> None:
+        request_hash = f"kl020-different-hash-{index}"
+        receipt = UUID(f"00000000-0000-8000-8000-{0x20202 + index * 0x10:012x}")
+        event = _event(0x20203 + index * 0x10)
+        try:
+            with psycopg.connect(
+                database_urls["admin"],
+                application_name=f"kl020-different-hash-{index}",
+                options="-c statement_timeout=5000",
+            ) as connection:
+                outcomes.append(
+                    execute_command(
+                        connection,
+                        "CancelIntent",
+                        SUBJECT,
+                        lambda tx: _cancel_idempotent_outcome(
+                            tx,
+                            client_key=client_key,
+                            request_hash=request_hash,
+                            receipt_id=receipt,
+                            event=event,
+                            result_identity=f"kl020-result-{index}",
+                            mutation_runs=mutation_runs,
+                            hold_after_subject=(first_locked, release_first)
+                            if index == 0
+                            else None,
+                        ),
+                    )
+                )
+        except BaseException as error:
+            with psycopg.connect(database_urls["admin"]) as observer:
+                committed = observer.execute(
+                    "SELECT status,request_hash FROM kineticloop.command_receipts "
+                    "WHERE subject_id=%s AND command_kind='CancelIntent' AND client_key=%s",
+                    (SUBJECT, client_key),
+                ).fetchone()
+            errors.append((error, committed))
+
+    first = threading.Thread(target=invoke, args=(0,))
+    first.start()
+    assert first_locked.wait(timeout=5)
+    second = threading.Thread(target=invoke, args=(1,))
+    second.start()
+    blockers = _wait_until_database_blocked(
+        database_urls["admin"], "kl020-different-hash-1"
+    )
+    assert blockers
+    release_first.set()
+    first.join(timeout=5)
+    second.join(timeout=5)
+    assert not first.is_alive() and not second.is_alive()
+    assert len(outcomes) == 1 and outcomes[0][1] is False
+    assert len(errors) == 1 and isinstance(errors[0][0], IdempotencyConflict)
+    assert errors[0][1] == ("SUCCEEDED", "kl020-different-hash-0")
+    assert mutation_runs == ["kl020-different-hash-0"]
+    with psycopg.connect(database_urls["admin"]) as connection:
+        assert connection.execute(
+            "SELECT count(*) FROM kineticloop.command_receipts "
+            "WHERE subject_id=%s AND command_kind='CancelIntent' AND client_key=%s",
+            (SUBJECT, client_key),
+        ).fetchone() == (1,)
+        assert connection.execute(
+            "SELECT count(*) FROM kineticloop.domain_events WHERE id IN (%s,%s)",
+            (
+                UUID("00000000-0000-8000-8000-000000020203"),
+                UUID("00000000-0000-8000-8000-000000020213"),
+            ),
+        ).fetchone() == (1,)
+        assert connection.execute(
+            "SELECT count(*) FROM kineticloop.outbox_deliveries WHERE id IN (%s,%s)",
+            (
+                UUID("00000000-0000-8000-8000-000000020204"),
+                UUID("00000000-0000-8000-8000-000000020214"),
+            ),
+        ).fetchone() == (1,)
+
+
+def test_historical_replay_preserves_guard_boundary(
+    database_urls: dict[str, str],
+) -> None:
+    mutation_runs: list[str] = []
+    cancel_receipt = UUID("00000000-0000-8000-8000-000000020302")
+    cancel_event = _event(0x20303)
+    with psycopg.connect(database_urls["admin"]) as connection:
+        first, replayed = execute_command(
+            connection,
+            "CancelIntent",
+            SUBJECT,
+            lambda tx: _cancel_idempotent_outcome(
+                tx,
+                client_key="kl020-historical-cancel",
+                request_hash="kl020-historical-cancel-hash",
+                receipt_id=cancel_receipt,
+                event=cancel_event,
+                result_identity="kl020-historical-result",
+                mutation_runs=mutation_runs,
+            ),
+        )
+    assert not replayed
+
+    seeded_receipts = (
+        (
+            UUID("00000000-0000-8000-8000-000000020312"),
+            "CommitBundle",
+            "kl020-historical-t6",
+            "kl020-historical-t6-hash",
+            {"bundle_id": "old-bundle", "authorization_id": "old-authorization"},
+        ),
+        (
+            UUID("00000000-0000-8000-8000-000000020322"),
+            "AcquireLease",
+            "kl020-historical-lease",
+            "kl020-historical-lease-hash",
+            {"intent_id": str(INTENT), "fence": 7},
+        ),
+        (
+            UUID("00000000-0000-8000-8000-000000020332"),
+            "PermitDispatch",
+            "kl020-historical-permit",
+            "kl020-historical-permit-hash",
+            {"reservation_id": str(RESERVATION), "sendable": True},
+        ),
+        (
+            UUID("00000000-0000-8000-8000-000000020342"),
+            "StartSession",
+            "kl020-historical-start",
+            "kl020-historical-start-hash",
+            {"session_id": str(SESSION), "executable": True},
+        ),
+    )
+    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+        artifact_row = connection.execute(
+            "SELECT valid_until FROM kineticloop.safety_artifacts WHERE id=%s",
+            (ARTIFACT,),
+        ).fetchone()
+        intent_row = connection.execute(
+            "SELECT status,lease_owner,fence_token,lease_expires_at "
+            "FROM kineticloop.planning_intents WHERE id=%s",
+            (INTENT,),
+        ).fetchone()
+        assert artifact_row is not None and intent_row is not None
+        for receipt_id, command, key, request_hash, outcome in seeded_receipts:
+            connection.execute(
+                "INSERT INTO kineticloop.command_receipts"
+                "(id,subject_id,status,command_kind,client_key,actor_scope,request_hash,typed_payload) "
+                "VALUES (%s,%s,'SUCCEEDED',%s,%s,'subject',%s,%s)",
+                (
+                    receipt_id,
+                    SUBJECT,
+                    command,
+                    key,
+                    request_hash,
+                    psycopg.types.json.Jsonb({"outcome": outcome}),
+                ),
+            )
+        connection.execute("SET session_replication_role=replica")
+        connection.execute(
+            "UPDATE kineticloop.safety_artifacts "
+            "SET valid_until=clock_timestamp()-interval '1 minute' WHERE id=%s",
+            (ARTIFACT,),
+        )
+        connection.execute(
+            "UPDATE kineticloop.planning_intents SET status='FAILED',lease_owner='obsolete',"
+            "fence_token=fence_token+1,lease_expires_at=clock_timestamp()-interval '1 minute' "
+            "WHERE id=%s",
+            (INTENT,),
+        )
+        connection.execute("SET session_replication_role=origin")
+
+    try:
+        aggregate_blocker = psycopg.connect(
+            database_urls["admin"],
+            application_name="kl020-historical-aggregate-holder",
+            options="-c statement_timeout=5000",
+        )
+        aggregate_replay: dict[str, Mapping[str, Any]] = {}
+        aggregate_errors: list[BaseException] = []
+        try:
+            for table, object_id in (
+                ("planning_intents", INTENT),
+                ("call_reservations", RESERVATION),
+                ("daily_plan_heads", DAILY_HEAD),
+                ("workout_sessions", SESSION),
+            ):
+                assert aggregate_blocker.execute(
+                    f"SELECT id FROM kineticloop.{table} WHERE id=%s FOR UPDATE",
+                    (object_id,),
+                ).fetchone() == (object_id,)
+
+            def replay_while_aggregates_are_locked() -> None:
+                try:
+                    with psycopg.connect(
+                        database_urls["admin"],
+                        application_name="kl020-historical-replay",
+                        options="-c statement_timeout=5000",
+                    ) as connection:
+                        aggregate_replay["outcome"] = replay_outcome(
+                            connection,
+                            "CommitBundle",
+                            SUBJECT,
+                            actor_scope="subject",
+                            client_key="kl020-historical-t6",
+                            request_hash="kl020-historical-t6-hash",
+                        )
+                except BaseException as error:
+                    aggregate_errors.append(error)
+
+            replay_thread = threading.Thread(target=replay_while_aggregates_are_locked)
+            replay_thread.start()
+            replay_thread.join(timeout=5)
+            assert not replay_thread.is_alive()
+            assert not aggregate_errors
+            assert aggregate_replay["outcome"] == {
+                "bundle_id": "old-bundle",
+                "authorization_id": "old-authorization",
+            }
+        finally:
+            if not aggregate_blocker.closed:
+                aggregate_blocker.rollback()
+                aggregate_blocker.close()
+
+        with psycopg.connect(database_urls["admin"]) as connection:
+            historical_cancel = replay_outcome(
+                connection,
+                "CancelIntent",
+                SUBJECT,
+                actor_scope="subject",
+                client_key="kl020-historical-cancel",
+                request_hash="kl020-historical-cancel-hash",
+            )
+            historical_t6 = replay_outcome(
+                connection,
+                "CommitBundle",
+                SUBJECT,
+                actor_scope="subject",
+                client_key="kl020-historical-t6",
+                request_hash="kl020-historical-t6-hash",
+            )
+            historical_lease = replay_outcome(
+                connection,
+                "AcquireLease",
+                SUBJECT,
+                actor_scope="subject",
+                client_key="kl020-historical-lease",
+                request_hash="kl020-historical-lease-hash",
+            )
+            historical_permit = replay_outcome(
+                connection,
+                "PermitDispatch",
+                SUBJECT,
+                actor_scope="subject",
+                client_key="kl020-historical-permit",
+                request_hash="kl020-historical-permit-hash",
+            )
+            historical_start = replay_outcome(
+                connection,
+                "StartSession",
+                SUBJECT,
+                actor_scope="subject",
+                client_key="kl020-historical-start",
+                request_hash="kl020-historical-start-hash",
+            )
+        assert historical_cancel == first and mutation_runs == [
+            "kl020-historical-cancel-hash"
+        ]
+        assert historical_t6 == {
+            "bundle_id": "old-bundle",
+            "authorization_id": "old-authorization",
+        }
+        assert historical_lease == {"intent_id": str(INTENT), "fence": 7}
+        assert historical_permit["sendable"] is False
+        assert historical_permit["replayed"] is True
+        assert historical_start["executable"] is False
+        assert historical_start["replayed"] is True
+
+        with psycopg.connect(database_urls["admin"]) as connection:
+            with pytest.raises(IdempotencyConflict):
+                replay_outcome(
+                    connection,
+                    "CancelIntent",
+                    SUBJECT,
+                    actor_scope="subject",
+                    client_key="kl020-historical-cancel",
+                    request_hash="kl020-wrong-hash",
+                )
+        with psycopg.connect(database_urls["admin"]) as connection:
+            with pytest.raises(
+                psycopg.errors.RaiseException,
+                match="KL_REGISTRY_ARTIFACT_EXPIRED",
+            ):
+                execute_command(
+                    connection,
+                    "CommitBundle",
+                    SUBJECT,
+                    lambda tx: _acquire_registry(tx),
+                )
+        with psycopg.connect(database_urls["admin"]) as connection:
+            new_expiry = _database_timestamp(connection, offset=timedelta(hours=1))
+
+            def stale_lease_guard(tx: RepositoryTransaction) -> None:
+                tx.lock_subject()
+                tx.lock_intents((INTENT,))
+                tx.require_lease_acquisition_basis(
+                    INTENT,
+                    expected_owner_id="worker-a",
+                    expected_fence=7,
+                    new_owner_id="worker-kl020",
+                    new_fence=8,
+                    new_lease_expires_at=new_expiry,
+                    expected_request_revision=1,
+                )
+
+            with pytest.raises(FenceLost):
+                execute_command(
+                    connection,
+                    "AcquireLease",
+                    SUBJECT,
+                    stale_lease_guard,
+                )
+    finally:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "UPDATE kineticloop.safety_artifacts SET valid_until=%s WHERE id=%s",
+                (artifact_row[0], ARTIFACT),
+            )
+            connection.execute(
+                "UPDATE kineticloop.planning_intents SET status=%s,lease_owner=%s,"
+                "fence_token=%s,lease_expires_at=%s WHERE id=%s",
+                (*intent_row, INTENT),
+            )
+            connection.execute("SET session_replication_role=origin")

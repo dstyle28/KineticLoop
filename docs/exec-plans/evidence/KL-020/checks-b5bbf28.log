@@ -1,0 +1,69 @@
+KL-020 final required checks after CI typecheck remediation
+tested_commit: b5bbf280082dac1c2912ca161287e89dd57a191b
+database: kineticloop_kl020_b7ab4fa
+compose_project: kineticloop-kl020-b7ab4fa
+database_clock_fixture: PostgreSQL clock_timestamp()
+
+check_id: transaction_owner_matrix_remains_complete
+command: uv run pytest -q tests/unit/persistence/test_transactions.py::test_transaction_owner_matrix_complete
+exit_code: 0
+output: 1 passed in 0.24s
+
+check_id: t2_t7_subject_commands_share_s01_linearization
+command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_t2_t7_subject_commands_share_s01_linearization
+exit_code: 0
+output: 1 passed in 3.02s
+oracle_notes: >-
+  PostgreSQL pg_blocking_pids observed T2-T7 owners behind S01 after applicable
+  S51 acquisition. Each boundary reread committed state and failed its stale or
+  incomplete post-lock guard; the exact epoch survived, all attempted S02/S03/S04
+  identities rolled back, and an independent subject committed concurrently.
+
+check_id: concurrent_same_key_same_hash_replays_one_outcome
+command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_concurrent_same_key_same_hash_replays_one_outcome
+exit_code: 0
+output: 1 passed in 2.59s
+oracle_notes: >-
+  The second caller was database-observed waiting behind S01; mutation ran once,
+  one caller replayed the byte-equivalent result, and one S02/S03/S04 persisted.
+
+check_id: concurrent_same_key_different_hash_rejects_conflict
+command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_concurrent_same_key_different_hash_rejects_conflict
+exit_code: 0
+output: 1 passed in 2.67s
+oracle_notes: >-
+  The blocked loser observed the committed SUCCEEDED receipt before raising
+  IdempotencyConflict; one mutation and one S02/S03/S04 outcome persisted.
+
+check_id: historical_replay_preserves_guard_boundary
+command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_historical_replay_preserves_guard_boundary
+exit_code: 0
+output: 1 passed in 2.66s
+oracle_notes: >-
+  Historical replay completed while S27/S31/S38/S44 were held FOR UPDATE and after
+  current artifact/lease/fence guards became ineligible. Hash mismatch conflicted,
+  new commands failed current guards, PermitDispatch was non-sendable, and T7 was
+  non-executable. The CI typecheck-only helper rewrite did not change this oracle.
+
+check_id: receipt_lock_order_guards_remain_enforced
+command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_complete_frozen_lock_order_enforced tests/db/test_transaction_interfaces.py::test_multi_key_lock_order_is_stable tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected tests/db/test_transaction_interfaces.py::test_receipt_before_s01_is_rejected
+exit_code: 0
+output: 10 passed in 2.98s
+
+check_id: transaction_interface_db_suite_passes
+command: uv run pytest -q tests/db/test_transaction_interfaces.py
+exit_code: 0
+output: 52 passed in 5.39s
+
+check_id: harness_validation_passes
+command: uv run kl check-harness
+exit_code: 0
+output: HARNESS_CHECK_PASS tasks=70 active=67
+
+supplemental_ci_check: uv run kl lint
+exit_code: 0
+output: All checks passed!
+
+supplemental_ci_check: uv run kl typecheck
+exit_code: 0
+output: Success: no issues found in 85 source files
