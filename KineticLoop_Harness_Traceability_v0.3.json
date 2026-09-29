@@ -2068,25 +2068,74 @@
       "conditional_depends_on": [],
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_dc_checks"
+        "t2_global_commit_rollback_and_effective_at_semantics",
+        "t2_global_shared_exclusive_commit_order",
+        "t2_global_has_no_subject_or_user_fanout_dependency",
+        "t2_global_authenticated_admin_boundary",
+        "t2_global_idempotency_and_unknown_commit_reconciliation",
+        "committed_revoke_controls_current_admission_not_history",
+        "safety_registry_db_suite_passes",
+        "harness_validation_passes"
       ],
       "resource_keys": [
         "registry_coordination"
       ],
       "write_paths": [
-        "src/kineticloop/protocol/**",
-        "src/kineticloop/workflow/**",
-        "tests/protocol/**",
-        "tests/faults/**"
+        "tests/db/test_safety_registry.py"
       ],
-      "write_paths_status": null,
+      "write_paths_status": "ENFORCEABLE",
       "review_requirements": [
         "DB_CONCURRENCY",
         "GENERAL",
         "PROTOCOL"
       ],
-      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
-      "status": "NOT_STARTED"
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED",
+      "check_contracts": [
+        {
+          "check_id": "t2_global_commit_rollback_and_effective_at_semantics",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_t2_global_commit_rollback_and_effective_at_semantics",
+          "pass_oracle": "The named real-PostgreSQL test invokes the public RevokeArtifact persistence owner through the migrated trusted-admin routine, proves a successful outer transaction commit is the only revoke linearization point for both backdated and future effective_at values, and injects a post-S50 pre-completion failure that rolls back S50, S51, management receipt, audit event, and outbox state completely. Rollback leaves a fresh protected admission eligible; commit makes the same relevant admission fail closed. effective_at remains audit metadata and neither rewrites historical state nor schedules future eligibility."
+        },
+        {
+          "check_id": "t2_global_shared_exclusive_commit_order",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_exclusive_global_gate_serializes",
+          "pass_oracle": "The named bounded real-PostgreSQL interleaving test proves both legal commit orders: a shared T3/T6/T7 admission holding S51 may commit before a waiting revoke, while a revoke that commits first makes a later relevant admission reread committed registry state and deny before mutation. The exclusive gate remains held through commit, no stale pre-gate read can authorize after the revoke linearization point, and blocking is observed from PostgreSQL rather than inferred from sleep timing."
+        },
+        {
+          "check_id": "t2_global_has_no_subject_or_user_fanout_dependency",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_t2_global_has_no_subject_or_user_fanout_dependency",
+          "pass_oracle": "The named PostgreSQL test holds S01 rows for multiple isolated subjects and proves RevokeArtifact still commits within a bounded timeout through the exclusive S51 path. Exact before/after snapshots prove it neither reads nor mutates S01, writes per-subject S43 invalidations, creates subject S02/S03/S04 outcomes, nor scans/fans out over users; only one S50 row, one S51 revision advance, and their global management receipt/audit/outbox companions appear."
+        },
+        {
+          "check_id": "t2_global_authenticated_admin_boundary",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_role_owner_boundary tests/db/test_safety_registry.py::test_migrated_registry_command_routine_privileges",
+          "pass_oracle": "Both named PostgreSQL tests pass and prove RevokeArtifact authority derives inside the fixed-search-path SECURITY DEFINER routine from authenticated session_user membership in kl_trusted_admin; PUBLIC, application, audit, USER, AGENT, STOP, and caller-asserted ADMIN attempts cannot execute or directly mutate S49/S50/S51, cannot assume the writer/owner role, and leave zero registry mutation. A successful command persists the actual authenticated operator identity and exact command/request/incident/outbox identities."
+        },
+        {
+          "check_id": "t2_global_idempotency_and_unknown_commit_reconciliation",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_revoke_artifact_atomic_linearization_and_idempotency tests/db/test_safety_registry.py::test_revoke_ack_loss_reconciles_by_command_key",
+          "pass_oracle": "The named sequential, concurrent, and unknown-commit PostgreSQL cases prove same command key plus same request hash returns the byte-equivalent original revocation with one S50/revision/receipt/event/outbox outcome, same key plus different hash returns IDEMPOTENCY_CONFLICT with no second effect, and an ACK-loss or commit-unknown exception is reconciled only by replaying the durable command identity rather than being mislabeled as a deterministic failure or executing the revoke twice."
+        },
+        {
+          "check_id": "committed_revoke_controls_current_admission_not_history",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py::test_committed_revoke_controls_current_admission_not_history",
+          "pass_oracle": "The named PostgreSQL test commits one relevant artifact revoke and proves every migrated shared-gated current path—PublishManifest, CommitBundle, Reauthorize, StartSession, ResumeSession, and ContinueSession—returns ARTIFACT_REVOKED before domain mutation. Existing immutable authorization, execution-binding, receipt, event, and outbox history remains byte-identical; historical replay remains a non-mutating record and is never converted into current publish, issue, START, RESUME, CONTINUE, send, or execution permission."
+        },
+        {
+          "check_id": "safety_registry_db_suite_passes",
+          "command": "uv run pytest -q tests/db/test_safety_registry.py",
+          "pass_oracle": "Command exits 0 with no failed, skipped, or deselected tests, including all KL-021 commit/rollback, interleaving, no-fanout, authority, idempotency, current-admission, and historical-record cases against the migrated PostgreSQL schema."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Command exits 0 and prints HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-021/**"
+      ]
     },
     {
       "task_identity": "harness-backlog-v0.2/KL-022",
