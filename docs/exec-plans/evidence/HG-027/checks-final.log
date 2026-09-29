@@ -1,0 +1,48 @@
+HG-027 final pre-review verification
+date: 2026-09-29
+protected_base: 7982c30230d2f0e0a5aa4a7ae6299aaa1386a6da
+tested_commit: 6980d6bd57222df2cf17f229b038bb42815b51fd
+
+Scope and protocol oracles
+- KL-021 is acceptance-only because merged KL-016/KL-018/KL-072 already own the
+  production RevokeArtifact persistence owner, migrated routine, S50/S51 atomic
+  state, privilege boundary and shared/exclusive gate. KL-020 supplies the merged
+  transaction-interface acceptance prerequisite.
+- The only KL-021 implementation write path is tests/db/test_safety_registry.py;
+  registry_coordination is the exact resource key; ISOLATED_POSTGRESQL_NAMESPACE
+  requires unique database and Compose namespaces.
+- Packet, backlog and traceability are exact projections, including context, entry
+  conditions, frozen impact, check IDs/commands/oracles, deliverable, Definition of
+  Done, write/resource/environment scope, review set and NOT_STARTED state.
+- Exact future checks cover commit-only revoke linearization, complete rollback,
+  audit-only effective_at, both shared/exclusive commit orders, no S01/S43/user
+  fanout, authenticated global-admin authority, concurrency and commit-unknown
+  idempotency, all six current T3/T6/T7 denials and immutable non-authorizing replay.
+- Product source, migrations, frozen Protocol/DB/FROZEN_BASELINE, completed task
+  definitions/results and product requirement status are unchanged.
+- Missing KL-020 integration bookkeeping is reported, not fabricated or mixed into
+  this governance PR.
+
+Successful checks
+- HARNESS_CHANGE.schema.json validates docs/exec-plans/governance/HG-027.yaml.
+- THREAD_REVIEW.schema.json validated the first independent review round. Those
+  reviews became stale when the PR-mode traceability defect was remediated and are
+  not the final review claim; fresh reviews must bind the post-remediation head.
+- PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
+  PASS: HARNESS_CHECK_PASS tasks=70 active=67.
+- PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+  PASS: 167 passed in 202.07s.
+- PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+  PASS: 186 passed in 59.31s.
+- PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m pytest -q tests/db -p no:cacheprovider
+  PASS: 218 passed in 113.75s under approved Docker access using isolated namespace
+  kl_e94b_b59a7cbaf961. The preceding sandbox-denied Docker attempt was environmental.
+- RUFF_CACHE_DIR=/private/tmp/hg027-ruff PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
+  PASS: all checks passed.
+- MYPY_CACHE_DIR=/private/tmp/hg027-mypy PYTHONPATH="$PWD/src" /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
+  PASS: no issues found in 85 source files.
+- git diff --check 7982c30230d2f0e0a5aa4a7ae6299aaa1386a6da 6980d6bd57222df2cf17f229b038bb42815b51fd
+  PASS.
+
+CONCLUSION: PASS
+HG-027 precisely refines KL-021 without changing frozen semantics or production code.
