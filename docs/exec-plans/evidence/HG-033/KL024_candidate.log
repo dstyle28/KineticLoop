@@ -1,0 +1,10 @@
+task_identity: harness-backlog-v0.2/KL-024
+tested_commit: 9282e124ad1ca30bf6b1a6149a17ac1c799500a1
+command: PYTHONPATH="$(pwd)/docs/exec-plans/evidence/KL-024" uv run pytest -q -p candidate_subject_scope_head_probe tests/db/test_subject_scope.py::test_populated_downgrade_fails_before_guard_or_acl_changes
+exit_code: 0
+classification: CANDIDATE_PROOF_ONLY
+actual_CI_status: FAIL
+excluded_repository_test_edited: false
+
+.                                                                        [100%]
+1 passed in 7.41s

@@ -1,0 +1,50 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-033",
+  "reviewed_head_sha": "51abd92a1ec0c37a4400a08fba79980bce964f47",
+  "review_type": "PROTOCOL",
+  "status": "PASS",
+  "findings": [],
+  "review_contract_version": "v0.2",
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-033.yaml",
+    "docs/exec-plans/active/KL-024.md",
+    "docs/exec-plans/evidence/HG-033/scope_and_source_audit-68c2a7b.log",
+    "docs/exec-plans/evidence/HG-033/scope_regressions-68c2a7b.log",
+    "docs/exec-plans/evidence/HG-033/future_scope_compatibility-68c2a7b.log",
+    "docs/exec-plans/evidence/HG-033/candidate_db_proof-68c2a7b.log",
+    "docs/exec-plans/evidence/HG-033/KL024_RESULT.yaml",
+    "docs/exec-plans/evidence/HG-033/KL024_failure.log",
+    "docs/exec-plans/evidence/HG-033/KL024_proposal.patch"
+  ],
+  "independence": "Fresh-context specialist review; independently inspected protected-base/reviewed diff, current authority, governance/review contracts, enforcement implementation, source evidence and candidate proof. No implementation or task artifacts edited.",
+  "base_commit": "abc5af63bc580bb22e54baeb0af577448b57a75a",
+  "tested_commit": "68c2a7b813e1c3cefba9799d8a95c83c63e5962f",
+  "assessment": [
+    "Only KL-024 gains tests/db/test_subject_scope.py write scope. The exact packet contract permits two REVISION -> _MIGRATIONS.HEAD_REVISION expected-version expressions in test_populated_downgrade_fails_before_guard_or_acl_changes; complete-file byte equality rejects all other changes. Actual tests/db, src and migration bytes are unchanged.",
+    "Failed transactional downgrade must retain the current migration head, not the historical subject-scope revision. The proposal changes only those two expressions; historical REVISION binding, downgrade exception, five storage guards, lookup existence, revoked application SELECT ACL, TEST/EVALUATION namespace and binding counts, scoped lookup, production binding and retained authorization data assertions remain byte-identical.",
+    "Frozen Protocol invariants and sections 2, 3.7-3.8, 5.3, 6.4-6.5 and 8, and DB command ownership, fixed lock order and T1-T8 boundaries remain unchanged. No authorization/Evidence meaning, SafetyRegistry/S01 order, network wait, provider authority, production activation or real-data shadow execution change is introduced.",
+    "HG-032 exact DATE fixture allowance remains enforced alongside the new check; no mandatory KL-024 checks, review union, dependencies, status, completed results/integrations or requirement statuses change. GENERAL, PROTOCOL and DB_CONCURRENCY remain required.",
+    "Copied KL-024 source artifacts were independently checked byte-for-byte against source SHA 4543b563259f5170370a0624b4542d392e528c85. The source result remains BLOCKED despite 13 task-check PASS logs; full DB evidence is 237 PASS/1 FAIL. The committed exact-patch disposable PostgreSQL proof exercises the entire named test and is explicitly CANDIDATE_PROOF_ONLY, with actual KL-024 CI still FAIL.",
+    "Selected governance evidence binds tested SHA 68c2a7b813e1c3cefba9799d8a95c83c63e5962f. Independently verified valid tested-to-reviewed bookkeeping suffix and indexed frozen hashes. No SPEC_CHANGE_REQUIRED condition or protocol blocker found."
+  ],
+  "independent_verification": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-033/audit.py",
+      "result": "PASS",
+      "revision": "51abd92a1ec0c37a4400a08fba79980bce964f47"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/kl017-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_planning_subject_scope.py tests/harness/test_planning_fixture_scope.py tests/harness/test_wave_scope.py",
+      "result": "PASS: 73 passed",
+      "revision": "51abd92a1ec0c37a4400a08fba79980bce964f47"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-033/future_scope.py",
+      "result": "PASS: both exact future repairs preserve 73 scope regressions; governance DB tests unchanged",
+      "revision": "51abd92a1ec0c37a4400a08fba79980bce964f47"
+    }
+  ],
+  "limitations": [
+    "This governance review does not approve the eventual KL-024 implementation or claim product/release acceptance PASS. The owner must apply only merged allowances, rerun all task checks and CI regressions, and obtain fresh SHA-bound union reviews. The committed real-PostgreSQL candidate proof was inspected; no broad database rerun was needed for this protocol-only governance review."
+  ]
+}
