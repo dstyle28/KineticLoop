@@ -1,0 +1,38 @@
+change_identity: harness-governance-v0.1/HG-033
+tested_commit: 68c2a7b813e1c3cefba9799d8a95c83c63e5962f
+command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+exit_code: 0
+
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/davetian/.codex/worktrees/25ca/KineticLoop
+configfile: pyproject.toml
+collected 202 items
+
+tests/unit/config/test_secret_loader.py .                                [  0%]
+tests/unit/contracts/test_artifact_registry.py ...                       [  1%]
+tests/unit/contracts/test_commands.py ..............                     [  8%]
+tests/unit/contracts/test_errors.py .                                    [  9%]
+tests/unit/contracts/test_receipts.py ........................           [ 21%]
+tests/unit/contracts/test_results.py .....                               [ 23%]
+tests/unit/contracts/test_safety_registry.py ..                          [ 24%]
+tests/unit/contracts/test_shadow.py ...                                  [ 26%]
+tests/unit/identity/test_roles.py .............                          [ 32%]
+tests/unit/integrations/test_launch_registry.py ........                 [ 36%]
+tests/unit/integrations/test_provider.py ...........                     [ 42%]
+tests/unit/persistence/test_fact_children.py ...                         [ 43%]
+tests/unit/persistence/test_immutability.py ....                         [ 45%]
+tests/unit/persistence/test_schema_topology.py .......                   [ 49%]
+tests/unit/persistence/test_transactions.py ...                          [ 50%]
+tests/unit/primitives/test_canonical.py ...........                      [ 55%]
+tests/unit/primitives/test_hashes.py ........                            [ 59%]
+tests/unit/primitives/test_ids.py .........                              [ 64%]
+tests/unit/primitives/test_times.py .......................              [ 75%]
+tests/unit/protocol/test_authorization.py ...                            [ 77%]
+tests/unit/protocol/test_factsets.py .....                               [ 79%]
+tests/unit/security/test_redaction.py .................................. [ 96%]
+...                                                                      [ 98%]
+tests/unit/security/test_synthetic_fixtures.py .                         [ 98%]
+tests/unit/test_cli.py ...                                               [100%]
+
+============================= 202 passed in 52.50s =============================

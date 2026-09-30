@@ -1,0 +1,59 @@
+{
+  "tested_commit": "68c2a7b813e1c3cefba9799d8a95c83c63e5962f",
+  "checks": [
+    {
+      "check_id": "scope_and_source_audit",
+      "command": "/private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-033/audit.py",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-033/scope_and_source_audit-68c2a7b.log"
+    },
+    {
+      "check_id": "future_scope_compatibility",
+      "command": "/private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-033/future_scope.py",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-033/future_scope_compatibility-68c2a7b.log"
+    },
+    {
+      "check_id": "scope_regressions",
+      "command": "/private/tmp/kl017-venv/bin/python -m pytest -q tests/harness/test_planning_subject_scope.py tests/harness/test_planning_fixture_scope.py tests/harness/test_wave_scope.py",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-033/scope_regressions-68c2a7b.log"
+    },
+    {
+      "check_id": "harness_validation",
+      "command": "/private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-033/harness_validation-68c2a7b.log"
+    },
+    {
+      "check_id": "harness_tests",
+      "command": "/private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-033/harness_tests-68c2a7b.log"
+    },
+    {
+      "check_id": "unit_tests",
+      "command": "/private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-033/unit_tests-68c2a7b.log"
+    },
+    {
+      "check_id": "lint",
+      "command": "/private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-033/lint-68c2a7b.log"
+    },
+    {
+      "check_id": "typecheck",
+      "command": "/private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-033/typecheck-68c2a7b.log"
+    },
+    {
+      "check_id": "diff_clean",
+      "command": "git diff --check abc5af63bc580bb22e54baeb0af577448b57a75a 68c2a7b813e1c3cefba9799d8a95c83c63e5962f -- . :(exclude)docs/exec-plans/evidence/HG-033/KL024_failure.log",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-033/diff_clean-68c2a7b.log"
+    }
+  ]
+}
