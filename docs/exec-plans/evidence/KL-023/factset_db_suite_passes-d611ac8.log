@@ -1,0 +1,25 @@
+task_identity=harness-backlog-v0.2/KL-023
+tested_commit=d611ac86412531bfe4b24cae72c2ae6821b439b4
+command=uv run pytest -q tests/db/test_factsets.py
+PYTEST_ADDOPTS=-s (exposes persisted-state and PostgreSQL barrier observations)
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+persisted lifecycle: builder/key conflicts, READY/SEALED immutable, complete basis, DELTA/FULL identical
+.PostgreSQL barrier kl023-complete-loser: blocking_pids=[112], query=SELECT typed_payload FROM kineticloop.factset_revisions WHERE subject_id=$1 AND id=$2 FOR UPDATE
+persisted race winner=complete: closed revision/count=2, certificate=077d3b833f7daf75ea51b942089b4172c80547b984d0b98deeef5abc56fe5006
+.PostgreSQL barrier kl023-writer-loser: blocking_pids=[117], query=SELECT typed_payload FROM kineticloop.factset_revisions WHERE subject_id=$1 AND id=$2 FOR UPDATE
+persisted race winner=writer: closed revision/count=3, certificate=702caeac64202d479559f9e84d8c07023a452530d6cf7c14e945bbae62e2537f
+.PostgreSQL barrier kl023-second-input: blocking_pids=[128], query=SELECT subject_id,authorization_epoch,current_factset_id,input_frontier_hash,active_policy_bundle_id,active_program_id,current_manifest_id FROM kineticloop.user_decision_state WHERE subject_id=$1 FOR UPDATE
+persisted T2 serial outcome=input; all S01/S15/S02/S03/S04 atomic, seal member scans=0
+.PostgreSQL barrier kl023-second-seal: blocking_pids=[134], query=SELECT subject_id,authorization_epoch,current_factset_id,input_frontier_hash,active_policy_bundle_id,active_program_id,current_manifest_id FROM kineticloop.user_decision_state WHERE subject_id=$1 FOR UPDATE
+persisted T2 serial outcome=seal; all S01/S15/S02/S03/S04 atomic, seal member scans=0
+.
+5 passed in 3.89s
+
+exit_code=0
