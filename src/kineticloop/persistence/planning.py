@@ -255,7 +255,7 @@ class PlanningWorkflowService:
                 event=EventWrite(
                     event_id=uuid4(),
                     aggregate_type="PLANNING_COMMAND",
-                    aggregate_identity=command.key,
+                    aggregate_identity=digest([self.identity.key, "AdmitOrReviseIntent", command.key]),
                     event_type=mode,
                     aggregate_revision=1,
                     outbox_id=uuid4(),
@@ -369,7 +369,7 @@ class PlanningWorkflowService:
                 event=EventWrite(
                     event_id=uuid4(),
                     aggregate_type="PLANNING_COMMAND",
-                    aggregate_identity=command.key,
+                    aggregate_identity=digest([self.identity.key, kind, command.key]),
                     event_type=kind,
                     aggregate_revision=1,
                     outbox_id=uuid4(),

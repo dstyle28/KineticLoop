@@ -2962,8 +2962,7 @@ class RepositoryTransaction:
             "AND EXISTS (SELECT 1 FROM kineticloop.planning_attempts a "
             "WHERE a.subject_id=intent.subject_id AND a.id=intent.current_attempt_id "
             "AND a.ref_s27_id=intent.id AND a.ref_s28_id=request.id "
-            "AND a.status IN ('CREATED','LEASED','BUILDING_CONTEXT','FITNESS',"
-            "'DEMAND_FEATURES','NUTRITION','VALIDATING','COMMIT_READY'))",
+            "AND a.status NOT IN ('COMMITTED','STALE','FAILED','CANCELLED','LEASE_LOST'))",
             (
                 self.subject_id,
                 intent_id,

@@ -707,3 +707,19 @@ def test_bounded_owner_capabilities(
     with psycopg.connect(url, autocommit=True) as db:
         db.execute("UPDATE kineticloop.planning_intents SET status='PENDING'")
     assert acquire(url, root, "legacy")["fence"] == 1
+
+
+def test_command_identity_namespaces(database_urls: dict[str, str]) -> None:
+    url = database_urls["admin"]
+    command = request("shared-key")
+    root = admission(url, command)
+    with psycopg.connect(url) as db:
+        joined = service(db, OTHER).admit_or_revise(command)
+    assert joined == {**root, "mode": "JOIN"}
+    leased = acquire(url, root, "shared-key")
+    assert leased["fence"] == 1
+    assert admission(url, command) == root
+    with psycopg.connect(url) as db:
+        assert service(db, OTHER).admit_or_revise(command) == joined
+    assert acquire(url, root, "shared-key") == leased
+    assert counts(url) == (1, 1, 1, 2, 3, 3, 3)
