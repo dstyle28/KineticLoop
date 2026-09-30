@@ -334,7 +334,10 @@ def test_join_and_revision_preserve_root_authority(database_urls: dict[str, str]
 
             with pytest.raises(FenceLost):
                 execute_command(db, command, SUBJECT, stale)
-    assert admission(url, request("revise", constraints={"minutes": 31})) == revision
+    assert admission(url, request("revise", constraints={"minutes": 31})) == {
+        **revision,
+        "replayed": True,
+    }
     with pytest.raises(IdempotencyConflict):
         admission(url, request("revise", constraints={"minutes": 32}))
     back = admission(url, request("back"))
@@ -448,6 +451,13 @@ def test_takeover_and_renew_fence_old_workers(
     assert takeover_results.count("LOST") == 1
     takeover = next(r for r in takeover_results if isinstance(r, Mapping))
     assert takeover["fence"] == 2
+    before_replay = read(
+        url, "SELECT lease_owner,fence_token,lease_expires_at FROM kineticloop.planning_intents"
+    )
+    assert acquire(url, root, "acquire", identity=winner) == {**winners[0], "replayed": True}
+    assert before_replay == read(
+        url, "SELECT lease_owner,fence_token,lease_expires_at FROM kineticloop.planning_intents"
+    )  # Historical acquisition cannot undo takeover or renew its old lease.
     with psycopg.connect(url) as db:
         with pytest.raises(FenceLost):
             service(db, winner).renew_lease(
