@@ -1,0 +1,74 @@
+task_identity: harness-backlog-v0.2/KL-024
+tested_commit: 9282e124ad1ca30bf6b1a6149a17ac1c799500a1
+command: KINETICLOOP_KL022_COMPOSE_PROJECT="kineticloop-kl024-full-$(git rev-parse --short HEAD)" KINETICLOOP_KL022_DATABASE="kineticloop_kl024_full_$(git rev-parse --short HEAD)" uv run pytest -q tests/db
+exit_code: 1
+
+........................................................................ [ 30%]
+........................................................................ [ 60%]
+....................................F................................... [ 90%]
+......................                                                   [100%]
+=================================== FAILURES ===================================
+__________ test_populated_downgrade_fails_before_guard_or_acl_changes __________
+
+database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:55247/kl_88b8_c7b12df1b09d_test', 'agent': 'postg...b09d_test', 'auditor': 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:55247/kl_88b8_c7b12df1b09d_test', ...}
+
+    def test_populated_downgrade_fails_before_guard_or_acl_changes(
+        database_urls: dict[str, str],
+    ) -> None:
+        def assert_failed_without_changes(urls: dict[str, str]) -> None:
+            with pytest.raises(
+                Exception, match="KL_SUBJECT_SCOPE_DOWNGRADE_SCOPED_STATE"
+            ):
+                run_alembic_downgrade(urls["deployer"], ARTIFACT_REGISTRY_REVISION)
+            with psycopg.connect(urls["admin"]) as admin:
+                assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (
+                    REVISION,
+                )
+                assert admin.execute(
+                    "SELECT count(*) FROM pg_trigger trigger "
+                    "JOIN pg_class relation ON relation.oid=trigger.tgrelid "
+                    "JOIN pg_namespace namespace ON namespace.oid=relation.relnamespace "
+                    "WHERE namespace.nspname='kineticloop' "
+                    "AND trigger.tgname='subject_storage_scope' "
+                    "AND NOT trigger.tgisinternal"
+                ).fetchone() == (5,)
+                assert admin.execute(
+                    "SELECT to_regprocedure("
+                    "'kineticloop.subject_scope_lookup(text,uuid)') IS NOT NULL"
+                ).fetchone() == (True,)
+                assert admin.execute(
+                    "SELECT has_table_privilege('kl_application',"
+                    "'kineticloop.authorization_issuances','SELECT')"
+                ).fetchone() == (False,)
+    
+        # Non-production classifications and rows are never silently declassified.
+>       assert_failed_without_changes(database_urls)
+
+tests/db/test_subject_scope.py:1616: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:55247/kl_88b8_c7b12df1b09d_test', 'agent': 'postg...b09d_test', 'auditor': 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:55247/kl_88b8_c7b12df1b09d_test', ...}
+
+    def assert_failed_without_changes(urls: dict[str, str]) -> None:
+        with pytest.raises(
+            Exception, match="KL_SUBJECT_SCOPE_DOWNGRADE_SCOPED_STATE"
+        ):
+            run_alembic_downgrade(urls["deployer"], ARTIFACT_REGISTRY_REVISION)
+        with psycopg.connect(urls["admin"]) as admin:
+>           assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (
+                REVISION,
+            )
+E           AssertionError: assert ('e8c2f1a6b904',) == ('d4c1a9e7b203',)
+E             
+E             At index 0 diff: 'e8c2f1a6b904' != 'd4c1a9e7b203'
+E             Use -v to get more diff
+
+tests/db/test_subject_scope.py:1595: AssertionError
+----------------------------- Captured stderr call -----------------------------
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade e8c2f1a6b904 -> d4c1a9e7b203, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+INFO  [alembic.runtime.migration] Running downgrade d4c1a9e7b203 -> b6e4d8a1c927, production, test, and evaluation subject namespace isolation
+=========================== short test summary info ============================
+FAILED tests/db/test_subject_scope.py::test_populated_downgrade_fails_before_guard_or_acl_changes
+1 failed, 237 passed in 151.24s (0:02:31)

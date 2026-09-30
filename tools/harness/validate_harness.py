@@ -99,6 +99,10 @@ PLANNING_FIXTURE_CONTRACT = (
     "cases and successful atomic intent completion. Do not skip tests or weaken "
     "uq_s27_active_partition, transaction guards or authorization semantics."
 )
+PLANNING_SUBJECT_SCOPE_PATH = 'tests/db/test_subject_scope.py'
+PLANNING_SUBJECT_SCOPE_CONTRACT = (
+    'KL-024 may replace only the two expected-version expressions REVISION with _MIGRATIONS.HEAD_REVISION in test_populated_downgrade_fails_before_guard_or_acl_changes. Preserve every other byte in tests/db/test_subject_scope.py, including all downgrade exception, trigger, lookup, ACL, namespace, binding and retained-data assertions. Do not skip tests, alter historical migrations, change guards or weaken subject isolation.'
+)
 M2_REGRESSION_COMMANDS = [
     'uv run pytest -q -p no:cacheprovider',
     'uv run kl check-harness',
@@ -661,6 +665,10 @@ def packet_errors(task, text):
     if name == 'KL-024' and PLANNING_FIXTURE_PATH in task.get('write_paths', []):
         if (section(text, 'Fixture-only scope exception') or '').strip() != PLANNING_FIXTURE_CONTRACT:
             errors.append('packet-planning-fixture-contract:' + name)
+    if name == 'KL-024' and PLANNING_SUBJECT_SCOPE_PATH in task.get('write_paths', []):
+        if ((section(text, 'Subject-scope current-head exception') or '').strip()
+                != PLANNING_SUBJECT_SCOPE_CONTRACT):
+            errors.append('packet-planning-subject-scope-contract:' + name)
     return errors
 
 
@@ -690,7 +698,8 @@ def wave_definition_errors(task):
     if (task.get('packet_refinement') != 'ENFORCEABLE'
             or task.get('write_paths_status') != 'ENFORCEABLE'
             or not paths or any('*' in path or path.endswith('/__init__.py')
-                                or (path == PLANNING_FIXTURE_PATH and name != 'KL-024')
+                                or (path in {PLANNING_FIXTURE_PATH, PLANNING_SUBJECT_SCOPE_PATH}
+                                    and name != 'KL-024')
                                 for path in paths)
             or (core and 'src/kineticloop/persistence/transactions.py' not in paths)
             or (not core and any(path.startswith(('src/kineticloop/persistence/',
@@ -735,12 +744,40 @@ def planning_fixture_content_errors(before: bytes, after: bytes) -> list[str]:
     return []
 
 
+def planning_subject_scope_content_errors(before: bytes, after: bytes) -> list[str]:
+    """Permit only two current-head expressions in the named downgrade oracle."""
+    start = before.find(b'def test_populated_downgrade_fails_before_guard_or_acl_changes(')
+    end = before.find(b'\ndef ', start + 1)
+    if end == -1:
+        end = len(before)
+    block = before[start:end] if start >= 0 else b''
+    old_nested = b'                REVISION,\n'
+    old_outer = b'            REVISION,\n'
+    # Match full lines: the outer indentation must not match a nested suffix.
+    old_nested = b'\n' + old_nested
+    old_outer = b'\n' + old_outer
+    if (start < 0 or block.count(old_nested) != 1 or block.count(old_outer) != 1
+            or block.count(b'REVISION,') != 2):
+        return ['planning-subject-scope-baseline-unexpected:KL-024']
+    expected_block = block.replace(old_nested, old_nested.replace(
+        b'REVISION', b'_MIGRATIONS.HEAD_REVISION')).replace(
+        old_outer, old_outer.replace(b'REVISION', b'_MIGRATIONS.HEAD_REVISION'))
+    if after != before[:start] + expected_block + before[end:]:
+        return ['planning-subject-scope-content-scope:KL-024']
+    return []
+
+
 def task_fixture_scope_errors(root, base, head, task_id, changed):
-    if task_id != 'KL-024' or PLANNING_FIXTURE_PATH not in changed:
+    if task_id != 'KL-024':
         return []
-    return planning_fixture_content_errors(
-        git(root, 'show', base + ':' + PLANNING_FIXTURE_PATH),
-        git(root, 'show', head + ':' + PLANNING_FIXTURE_PATH))
+    errors = []
+    for path, check in (
+            (PLANNING_FIXTURE_PATH, planning_fixture_content_errors),
+            (PLANNING_SUBJECT_SCOPE_PATH, planning_subject_scope_content_errors)):
+        if path in changed:
+            errors.extend(check(git(root, 'show', base + ':' + path),
+                                git(root, 'show', head + ':' + path)))
+    return errors
 
 
 def ledger_definition_errors(task):

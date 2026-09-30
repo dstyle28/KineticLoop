@@ -1,0 +1,31 @@
+change_identity: harness-governance-v0.1/HG-033
+tested_commit: 68c2a7b813e1c3cefba9799d8a95c83c63e5962f
+command: /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-033/audit.py
+exit_code: 0
+
+base_commit=abc5af63bc580bb22e54baeb0af577448b57a75a
+tested_commit=68c2a7b813e1c3cefba9799d8a95c83c63e5962f
+KL024_source_commit=4543b563259f5170370a0624b4542d392e528c85
+PASS only KL024 exact write path added; checks/reviews/statuses/completed/Frozen/CI unchanged
+PASS committed BLOCKED source, 13 exact PASS logs, failure and candidate verified by source SHA
+PASS proposal changes precisely two expressions; all other AST and bytes preserved
+tests/db/test_migrations.py:307: assert migrated_database.execute_sql("SELECT version_num FROM alembic_version;") == HEAD_REVISION     assert migrated_database.execute_sql(         "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace "         "WHERE n.nspname='kineticloop' AND c.relkind='r';"
+tests/db/test_migrations.py:418: assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (                 SAFETY_REGISTRY_REVISION,             )             assert admin.execute(
+tests/db/test_migrations.py:430: "SELECT version_num,(SELECT count(*) FROM pg_class c "             "JOIN pg_namespace n ON n.oid=c.relnamespace "             "WHERE n.nspname='kineticloop') FROM alembic_version"         ).fetchone()
+tests/db/test_migrations.py:439: "SELECT version_num,(SELECT count(*) FROM pg_class c "             "JOIN pg_namespace n ON n.oid=c.relnamespace "             "WHERE n.nspname='kineticloop') FROM alembic_version"         ).fetchone() == before
+tests/db/test_migrations.py:542: assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (             ARTIFACT_REGISTRY_REVISION,         )         assert admin.execute(
+tests/db/test_migrations.py:550: assert lifecycle.execute_sql("SELECT version_num FROM alembic_version") == HEAD_REVISION   def test_subject_scope_preflight_rejects_legacy_external_inbound_fk() -> None:
+tests/db/test_migrations.py:601: assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (             ARTIFACT_REGISTRY_REVISION,         )         assert admin.execute(
+tests/db/test_migrations.py:635: assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (             HEAD_REVISION,         )
+tests/db/test_migrations.py:672: assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (             HEAD_REVISION,         )         assert admin.execute(
+tests/db/test_migrations.py:702: assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (                 HEAD_REVISION,             )             assert admin.execute(
+tests/db/test_migrations.py:799: assert lifecycle.execute_sql("SELECT version_num FROM alembic_version") == HEAD_REVISION     with psycopg.connect(urls["admin"]) as connection:         row = connection.execute(             "SELECT rolcanlogin,rolsuper,rolcreaterole FROM pg_roles "
+tests/db/test_migrations.py:821: SELECT 'version:' || version_num AS value FROM alembic_version               UNION ALL               SELECT 'class:' || c.oid::regclass::text || ':' || c.relkind::text || ':' ||                      pg_get_userbyid(c.relowner) || ':' || coalesce(c.relacl::text, '')
+tests/db/test_migrations.py:859: assert connection.execute("SELECT version_num FROM alembic_version").fetchone() == (             BASELINE_REVISION,         )
+tests/db/test_migrations.py:1430: assert lifecycle.execute_sql("SELECT version_num FROM alembic_version") == BASELINE_REVISION     assert (         lifecycle.execute_sql(             "SELECT to_regclass('kineticloop.registry_management_receipts') IS NULL"
+tests/db/test_migrations.py:1452: assert lifecycle.execute_sql("SELECT version_num FROM alembic_version") == HEAD_REVISION   def schema_signature(lifecycle: DatabaseLifecycle) -> str:
+tests/db/test_migrations.py:1497: assert migrated_database.execute_sql("SELECT version_num FROM alembic_version") == HEAD_REVISION
+tests/db/test_subject_scope.py:1595: assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (                 REVISION,             )             assert admin.execute(
+tests/db/test_subject_scope.py:1618: assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (             REVISION,         )         assert admin.execute(
+PASS migration-head inventory: test_migrations current-head expectations already updated by KL024
+PASS no additional concrete same-cause omission; no scope expansion or database/task/product PASS

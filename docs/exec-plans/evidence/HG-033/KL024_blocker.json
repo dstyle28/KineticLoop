@@ -1,0 +1,13 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-024",
+  "tested_commit": "9282e124ad1ca30bf6b1a6149a17ac1c799500a1",
+  "task_required_checks": "13 PASS",
+  "supplemental_ci_database_suite": "1 failed, 237 passed",
+  "failure": "tests/db/test_subject_scope.py::test_populated_downgrade_fails_before_guard_or_acl_changes",
+  "cause": "Failed downgrade rolls back to current HEAD e8c2f1a6b904; two assertions still expect old subject-scope migration identity d4c1a9e7b203. First failure at line 1595, second expected-version assertion at 1618 would also be stale.",
+  "scope": "tests/db/test_subject_scope.py is outside KL024 write scope. No file bytes changed.",
+  "proposed_narrow_governance": "Allow only the two expected-version expressions REVISION -> _MIGRATIONS.HEAD_REVISION within this named test, preserving all other bytes, exception/trigger/lookup/ACL/count checks, historical migrations and production/shadow semantics.",
+  "proposal_applied": false,
+  "evidence_ref": "docs/exec-plans/evidence/KL-024/full_database_regressions-9282e12.log",
+  "proposal_ref": "docs/exec-plans/evidence/KL-024/proposed-subject-scope-head-rescope.patch"
+}

@@ -1,0 +1,107 @@
+change_identity: harness-governance-v0.1/HG-033
+display_change_id: HG-033
+base_commit: abc5af63bc580bb22e54baeb0af577448b57a75a
+tested_commit: 68c2a7b813e1c3cefba9799d8a95c83c63e5962f
+change_status: PASS
+summary: Authorize only two REVISION -> _MIGRATIONS.HEAD_REVISION expected-version expressions in KL024 test_populated_downgrade_fails_before_guard_or_acl_changes.
+  Exact committed source evidence and an independent disposable PostgreSQL candidate proof confirm failed downgrade
+  rollback retains current head. Enforce byte-exact future task delta; preserve all exception, trigger, lookup,
+  ACL, namespace, binding and retained-data oracles, previous HG032 allowance, historical migrations, completed
+  definitions, mandatory checks and review union. Actual DB test repair remains with KL024 owner after governance
+  merge.
+packets_refined:
+- KL-024
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- KineticLoop_Harness_Backlog_v0.2.json
+- KineticLoop_Harness_Traceability_v0.3.json
+- docs/exec-plans/active/KL-024.md
+- docs/exec-plans/evidence/HG-033/KL024_RESULT.yaml
+- docs/exec-plans/evidence/HG-033/KL024_blocker.json
+- docs/exec-plans/evidence/HG-033/KL024_candidate.log
+- docs/exec-plans/evidence/HG-033/KL024_candidate.py
+- docs/exec-plans/evidence/HG-033/KL024_failure.log
+- docs/exec-plans/evidence/HG-033/KL024_proposal.patch
+- docs/exec-plans/evidence/HG-033/audit.py
+- docs/exec-plans/evidence/HG-033/candidate_db.py
+- docs/exec-plans/evidence/HG-033/candidate_db_proof-68c2a7b.log
+- docs/exec-plans/evidence/HG-033/checks-68c2a7b-candidate.json
+- docs/exec-plans/evidence/HG-033/checks-68c2a7b.json
+- docs/exec-plans/evidence/HG-033/diff_clean-68c2a7b.log
+- docs/exec-plans/evidence/HG-033/future_scope.py
+- docs/exec-plans/evidence/HG-033/future_scope_compatibility-68c2a7b.log
+- docs/exec-plans/evidence/HG-033/harness_tests-68c2a7b.log
+- docs/exec-plans/evidence/HG-033/harness_validation-68c2a7b.log
+- docs/exec-plans/evidence/HG-033/lint-68c2a7b.log
+- docs/exec-plans/evidence/HG-033/scope_and_source_audit-68c2a7b.log
+- docs/exec-plans/evidence/HG-033/scope_regressions-68c2a7b.log
+- docs/exec-plans/evidence/HG-033/typecheck-68c2a7b.log
+- docs/exec-plans/evidence/HG-033/unit_tests-68c2a7b.log
+- docs/exec-plans/governance/HG-033.yaml
+- tests/harness/test_planning_subject_scope.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: scope_and_source_audit
+  command: /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-033/audit.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-033/scope_and_source_audit-68c2a7b.log
+- check_id: future_scope_compatibility
+  command: /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-033/future_scope.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-033/future_scope_compatibility-68c2a7b.log
+- check_id: scope_regressions
+  command: /private/tmp/kl017-venv/bin/python -m pytest -q tests/harness/test_planning_subject_scope.py tests/harness/test_planning_fixture_scope.py
+    tests/harness/test_wave_scope.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-033/scope_regressions-68c2a7b.log
+- check_id: harness_validation
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-033/harness_validation-68c2a7b.log
+- check_id: harness_tests
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-033/harness_tests-68c2a7b.log
+- check_id: unit_tests
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-033/unit_tests-68c2a7b.log
+- check_id: lint
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-033/lint-68c2a7b.log
+- check_id: typecheck
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-033/typecheck-68c2a7b.log
+- check_id: diff_clean
+  command: git diff --check abc5af63bc580bb22e54baeb0af577448b57a75a 68c2a7b813e1c3cefba9799d8a95c83c63e5962f --
+    . :(exclude)docs/exec-plans/evidence/HG-033/KL024_failure.log
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-033/diff_clean-68c2a7b.log
+- check_id: candidate_db_proof
+  command: /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-033/candidate_db.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-033/candidate_db_proof-68c2a7b.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- 'KL024 PR62 remains OPEN/UNMERGED with BLOCKED result at source 4543b563259f5170370a0624b4542d392e528c85, tested
+  9282e124ad1ca30bf6b1a6149a17ac1c799500a1: 13 exact checks PASS, full unit204/harness228 PASS, full DB237PASS/1FAIL.
+  Those facts are source evidence, not HG033 product or task PASS.'
+- Independent candidate_db.py uses source-SHA disposable clone, applies exactly the two-expression patch, executes
+  the entire named real PostgreSQL test and destroys only its unique path-derived namespace. CANDIDATE_PROOF_ONLY
+  is not actual KL024 CI PASS and changes no governance DB-test bytes.
+- Read-only inventory covers version_num assertions across source tests/db; test_migrations.py already differentiates
+  HEAD_REVISION from historical targets. No other concrete same-cause omission found; no further test scope authorized.
+- KL024 owner must integrate this merged packet, preserve HG032 exact DATE correction, apply only the two allowed
+  expressions, rerun every exact task check and full CI regressions, then obtain fresh union reviews. No waiver,
+  CI weakening, mixed task/governance exception, frozen change or downstream implementation.
+- Governance definition allows exactly one new KL024 write path; completed task artifacts and all task status/check/dependency/review/requirement
+  definitions otherwise remain identical to protected base. Production activation and real-data shadow remain disabled/non-executable.
+- Copied source failure traceback is byte-identical and retains original whitespace. Only its exact HG033 path is
+  excluded from whitespace checking; all new governance source/definitions are checked. Selected raw logs bind tested_commit
+  and remain append-only after testing.
+- Local stable commands use existing /private/tmp/kl017-venv Python because uv is absent; standard CI continues
+  to use locked uv without changes.
