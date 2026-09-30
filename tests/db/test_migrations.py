@@ -45,6 +45,7 @@ BASELINE_REVISION = "76fd67f76bd4"
 SAFETY_REGISTRY_REVISION = "a3f91c7d2e10"
 ARTIFACT_REGISTRY_REVISION = "b6e4d8a1c927"
 REVISION = "d4c1a9e7b203"
+HEAD_REVISION = "e8c2f1a6b904"
 MIGRATION = ROOT / "migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py"
 SUCCESSOR = ROOT / "migrations/versions/a3f91c7d2e10_safety_registry_integration.py"
 ARTIFACT_REGISTRY_SUCCESSOR = ROOT / "migrations/versions/b6e4d8a1c927_artifact_registry.py"
@@ -303,7 +304,7 @@ def migrated_database() -> DatabaseLifecycle:
 
 
 def test_empty_db_upgrade_head(migrated_database: DatabaseLifecycle) -> None:
-    assert migrated_database.execute_sql("SELECT version_num FROM alembic_version;") == REVISION
+    assert migrated_database.execute_sql("SELECT version_num FROM alembic_version;") == HEAD_REVISION
     assert migrated_database.execute_sql(
         "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace "
         "WHERE n.nspname='kineticloop' AND c.relkind='r';"
@@ -320,15 +321,17 @@ def test_safety_registry_successor_migration_chain() -> None:
     config = Config(ROOT / "alembic.ini")
     revisions = list(ScriptDirectory.from_config(config).walk_revisions())
     assert [revision.revision for revision in revisions] == [
+        HEAD_REVISION,
         REVISION,
         ARTIFACT_REGISTRY_REVISION,
         SAFETY_REGISTRY_REVISION,
         BASELINE_REVISION,
     ]
-    assert revisions[0].down_revision == ARTIFACT_REGISTRY_REVISION
-    assert revisions[1].down_revision == SAFETY_REGISTRY_REVISION
-    assert revisions[2].down_revision == BASELINE_REVISION
-    assert revisions[3].down_revision is None
+    assert revisions[0].down_revision == REVISION
+    assert revisions[1].down_revision == ARTIFACT_REGISTRY_REVISION
+    assert revisions[2].down_revision == SAFETY_REGISTRY_REVISION
+    assert revisions[3].down_revision == BASELINE_REVISION
+    assert revisions[4].down_revision is None
     assert (
         MIGRATION.read_bytes()
         == (ROOT / "migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py").read_bytes()
@@ -339,14 +342,16 @@ def test_artifact_registry_successor_migration_chain() -> None:
     config = Config(ROOT / "alembic.ini")
     revisions = list(ScriptDirectory.from_config(config).walk_revisions())
     assert [revision.revision for revision in revisions] == [
+        HEAD_REVISION,
         REVISION,
         ARTIFACT_REGISTRY_REVISION,
         SAFETY_REGISTRY_REVISION,
         BASELINE_REVISION,
     ]
     assert len(ScriptDirectory.from_config(config).get_heads()) == 1
-    assert revisions[0].down_revision == ARTIFACT_REGISTRY_REVISION
-    assert revisions[1].down_revision == SAFETY_REGISTRY_REVISION
+    assert revisions[0].down_revision == REVISION
+    assert revisions[1].down_revision == ARTIFACT_REGISTRY_REVISION
+    assert revisions[2].down_revision == SAFETY_REGISTRY_REVISION
 
     spec = spec_from_file_location("kl018_migration", ARTIFACT_REGISTRY_SUCCESSOR)
     assert spec is not None and spec.loader is not None
@@ -542,7 +547,7 @@ def test_subject_scope_preflight_requires_exact_external_ddl_guard() -> None:
         ).fetchone() == (None,)
     provision_subject_scope_ddl_guard(urls["admin"])
     run_alembic(urls["deployer"], "head")
-    assert lifecycle.execute_sql("SELECT version_num FROM alembic_version") == REVISION
+    assert lifecycle.execute_sql("SELECT version_num FROM alembic_version") == HEAD_REVISION
 
 
 def test_subject_scope_preflight_rejects_legacy_external_inbound_fk() -> None:
@@ -628,7 +633,7 @@ def test_subject_scope_preflight_rejects_writer_assumption_paths() -> None:
     run_alembic(urls["deployer"], "head")
     with psycopg.connect(urls["admin"]) as admin:
         assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (
-            REVISION,
+            HEAD_REVISION,
         )
 
 
@@ -665,7 +670,7 @@ def test_subject_scope_preflight_rejects_principal_object_bypasses() -> None:
     run_alembic(urls["deployer"], "head")
     with psycopg.connect(urls["admin"]) as admin:
         assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (
-            REVISION,
+            HEAD_REVISION,
         )
         assert admin.execute(
             "SELECT has_table_privilege('kl_test_subject_1_login',"
@@ -695,7 +700,7 @@ def test_subject_scope_downgrade_locks_serialize_registration_and_writes() -> No
                 future.result(timeout=10)
         with psycopg.connect(urls["admin"]) as admin:
             assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (
-                REVISION,
+                HEAD_REVISION,
             )
             assert admin.execute(
                 "SELECT count(*) FROM pg_trigger trigger "
@@ -791,7 +796,7 @@ def test_safety_registry_successor_contains_no_cluster_role_ddl() -> None:
 def test_two_phase_empty_db_upgrade_head() -> None:
     lifecycle = DatabaseLifecycle(ROOT)
     urls = bootstrap_two_phase(lifecycle)
-    assert lifecycle.execute_sql("SELECT version_num FROM alembic_version") == REVISION
+    assert lifecycle.execute_sql("SELECT version_num FROM alembic_version") == HEAD_REVISION
     with psycopg.connect(urls["admin"]) as connection:
         row = connection.execute(
             "SELECT rolcanlogin,rolsuper,rolcreaterole FROM pg_roles "
@@ -1444,7 +1449,7 @@ def test_upgrade_downgrade_roundtrip() -> None:
         ):
             scoped.execute("CREATE TEMP TABLE kl017_downgrade_probe(id bigint)")
     run_alembic(urls["deployer"], "head")
-    assert lifecycle.execute_sql("SELECT version_num FROM alembic_version") == REVISION
+    assert lifecycle.execute_sql("SELECT version_num FROM alembic_version") == HEAD_REVISION
 
 
 def schema_signature(lifecycle: DatabaseLifecycle) -> str:
@@ -1469,3 +1474,24 @@ def test_database_rebuild_is_deterministic() -> None:
     upgrade_empty(lifecycle)
     second = schema_signature(lifecycle)
     assert first == second
+
+
+def test_planning_active_partition_successor(migrated_database: DatabaseLifecycle) -> None:
+    index = migrated_database.execute_sql(
+        "SELECT indexdef FROM pg_indexes WHERE schemaname='kineticloop' "
+        "AND indexname='uq_s27_active_partition'"
+    )
+    assert "UNIQUE INDEX" in index
+    assert "(subject_id, local_date, purpose)" in index
+    assert all(status in index for status in ("ADMITTED", "PENDING", "RUNNING"))
+    run_alembic_downgrade(
+        role_url(migrated_database.connection().url, "kl_migration_deployer"), REVISION
+    )
+    assert (
+        migrated_database.execute_sql(
+            "SELECT to_regclass('kineticloop.uq_s27_active_partition') IS NULL"
+        )
+        == "t"
+    )
+    run_alembic(role_url(migrated_database.connection().url, "kl_migration_deployer"), "head")
+    assert migrated_database.execute_sql("SELECT version_num FROM alembic_version") == HEAD_REVISION

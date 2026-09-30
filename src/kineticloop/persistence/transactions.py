@@ -8,6 +8,7 @@ durable idempotent outcomes, atomic event/outbox writes, and isolated outbox cla
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 from collections.abc import Callable, Mapping, Sequence
@@ -657,7 +658,7 @@ _COMMAND_OPERATIONS: Mapping[str, Mapping[str, tuple[str, ...]]] = {
     "RecordProjection": {"insert": ("S21", "S22"), "update": ("S21",)},
     "BuildManifest": {"insert": ("S23",), "update": ("S23",)},
     "PublishManifest": {"insert": ("S24", "S25"), "update": ("S01", "S23")},
-    "AdmitOrReviseIntent": {"insert": ("S27", "S28", "S29"), "update": ("S27", "S30")},
+    "AdmitOrReviseIntent": {"insert": ("S27", "S28", "S29"), "update": ("S27", "S29", "S30")},
     "CancelIntent": {"update": ("S27", "S31")},
     "AcquireLease": {"update": ("S27",)},
     "RenewLease": {"update": ("S27",)},
@@ -711,6 +712,7 @@ _UPDATE_COLUMNS: Mapping[str, Mapping[str, frozenset[str]]] = {
         )
     },
     "AdmitOrReviseIntent": {
+        "S29": frozenset({"status"}),
         "S27": frozenset(
             {"status", "current_request_revision_id", "current_attempt_id", "typed_payload"}
         ),
@@ -1286,6 +1288,35 @@ class RestrictedSqlSession:
         if logical_id == "S18" and self.__command_kind in {"ApplyControl", "ClearControl"}:
             if values.get("ref_s17_id") not in self.__inserted_ids.get("S17", set()):
                 raise GuardRequired("S18 must bind the control event inserted by this command")
+        if self.__command_kind == "AdmitOrReviseIntent":
+            planning = self.__coordination_context.get("planning_admission")
+            if planning is not None:
+                if planning["mode"] == "JOIN":
+                    raise GuardRequired("join cannot create planning state")
+                if logical_id == "S27" and (
+                    planning["mode"] != "ADMIT"
+                    or values.get("id") != planning["intent_id"]
+                    or values.get("purpose") != planning["purpose"]
+                    or values.get("local_date") != planning["local_date"]
+                    or values.get("root_request_identity") != (
+                        f"{self.__coordination_context['command_actor_scope']}:"
+                        f"{self.__coordination_context['command_causation_key']}"
+                    )
+                    or values.get("stale_restart_count") != 0
+                    or any(values.get(field) is not None for field in (
+                        "current_request_revision_id", "current_attempt_id",
+                        "result_bundle_revision_id", "result_authorization_id",
+                    ))
+                    or values.get("status") != "ADMITTED"
+                    or values.get("deadline") != planning["deadline"]
+                    or self._json_value(values.get("typed_payload")) != planning["root_payload"]
+                    or values.get("fence_token") != 0
+                    or values.get("lease_owner") is not None
+                    or values.get("lease_expires_at") is not None
+                ):
+                    raise GuardRequired(
+                        "root must preserve server admission policy/budget/deadline"
+                    )
         if logical_id == "S28" and self.__command_kind == "AdmitOrReviseIntent":
             intent_id = values.get("ref_s27_id")
             if intent_id not in self.__inserted_ids.get("S27", set()) and intent_id not in (
@@ -1614,6 +1645,34 @@ class RestrictedSqlSession:
         if logical_id == "S18" and self.__command_kind in {"ApplyControl", "ClearControl"}:
             if values.get("ref_s17_id") not in self.__inserted_ids.get("S17", set()):
                 raise GuardRequired("S18 head must bind the same-command control event")
+        if self.__command_kind == "AdmitOrReviseIntent":
+            planning = self.__coordination_context.get("planning_admission")
+            if planning is not None:
+                if planning["mode"] == "JOIN":
+                    raise GuardRequired("a planning join has no aggregate mutation")
+                if logical_id == "S29" and (
+                    planning["mode"] != "REVISE"
+                    or predicates.get("id") != planning["old_attempt_id"]
+                    or dict(values) != {"status": "STALE"}
+                ):
+                    raise GuardRequired("T4 can only invalidate its exact old attempt")
+                if logical_id == "S27" and (
+                    predicates.get("id") != planning["intent_id"]
+                    or set(values) != {"current_request_revision_id", "current_attempt_id"}
+                ):
+                    raise GuardRequired("planning revision preserves all root authority")
+                if logical_id == "S30":
+                    quota = next(
+                        (q for q in planning["quotas"] if q["id"] == predicates.get("id")), None
+                    )
+                    if (
+                        planning["mode"] != "ADMIT"
+                        or quota is None
+                        or dict(values) != {"admitted_count": quota["count"] + 1}
+                    ):
+                        raise GuardRequired("root quota debit must equal the locked policy basis")
+            elif logical_id == "S29":
+                raise GuardRequired("attempt invalidation requires bounded planning revision")
         if logical_id == "S27" and self.__command_kind == "AdmitOrReviseIntent":
             if "current_request_revision_id" in values or "current_attempt_id" in values:
                 if values.get("current_request_revision_id") not in self.__inserted_ids.get(
@@ -1676,6 +1735,7 @@ class RestrictedSqlSession:
                 if (
                     lease_basis is None
                     or not isinstance(new_expiry, datetime)
+                    or lease_basis[0] <= lease_basis[2]
                     or new_expiry <= lease_basis[0]
                     or new_expiry <= lease_basis[2]
                     or new_expiry > lease_basis[1]
@@ -1835,6 +1895,11 @@ class RestrictedSqlSession:
         if self.__command_kind == "AdmitOrReviseIntent":
             requests = self.__inserted_values.get("S28", {})
             attempts = self.__inserted_values.get("S29", {})
+            planning = self.__coordination_context.get("planning_admission")
+            if planning is not None and planning["mode"] == "JOIN":
+                if self.__inserted_ids or self.__updated_values:
+                    raise GuardRequired("join must preserve every planning aggregate")
+                return
             if len(requests) != 1 or len(attempts) != 1:
                 raise GuardRequired("T4 requires exactly one request and one initial attempt")
             request_id, request = next(iter(requests.items()))
@@ -1850,6 +1915,40 @@ class RestrictedSqlSession:
                 )
             ):
                 raise GuardRequired("T4 request/attempt/current-intent chain is not exact")
+            if planning is not None:
+                expected = planning["mode"]
+                if (
+                    request.get("request_revision") != planning["request_revision"]
+                    or request.get("constraint_fingerprint") != planning["fingerprint"]
+                    or request.get("normalization_version") != planning["normalization_version"]
+                    or self._json_value(request.get("typed_payload")) != planning["request_payload"]
+                    or attempt.get("attempt_no") != planning["attempt_no"]
+                    or attempt.get("status") != "CREATED"
+                    or attempt.get("fence_token") != planning["fence"]
+                ):
+                    raise GuardRequired("T4 must persist the exact normalized current basis")
+                if expected == "REVISE":
+                    if (
+                        self.__inserted_ids.get("S27")
+                        or self.__updated_values.get("S30")
+                        or self.__updated_values.get("S29")
+                        != [
+                            {
+                                "subject_id": self.__subject_id,
+                                "id": planning["old_attempt_id"],
+                                "status": "STALE",
+                            }
+                        ]
+                    ):
+                        raise GuardRequired(
+                            "revision requires exact invalidation without root reset"
+                        )
+                elif len(self.__inserted_ids.get("S27", set())) != 1 or len(
+                    self.__updated_values.get("S30", [])
+                ) != len(planning["quotas"]):
+                    raise GuardRequired(
+                        "admission must create root and debit every quota atomically"
+                    )
         if self.__command_kind == "ReserveCall":
             reservations = self.__inserted_values.get("S31", {})
             ledgers = self.__inserted_values.get("S32", {})
@@ -1985,7 +2084,11 @@ class RestrictedSqlSession:
             "CompleteReportedWorkout": ("S01", "S44"),
             "SealFactset": ("S01", "S15"),
             "PublishManifest": ("S01", "S23"),
-            "AdmitOrReviseIntent": ("S27", "S30"),
+            "AdmitOrReviseIntent": (
+                ("S27",)
+                if self.__coordination_context.get("planning_admission", {}).get("mode") == "REVISE"
+                else ("S27", "S30")
+            ),
             "CancelIntent": ("S27",),
             "RenewLease": ("S27",),
             "ReserveCall": ("S27",),
@@ -2187,8 +2290,7 @@ class RepositoryTransaction:
         if revision < minimum_revision:
             raise GuardRequired("safety registry revision is stale")
         _cursor(self).execute(
-            "SELECT 1 FROM kineticloop.user_decision_state "
-            "WHERE subject_id=%s FOR UPDATE",
+            "SELECT 1 FROM kineticloop.user_decision_state WHERE subject_id=%s FOR UPDATE",
             (self.subject_id,),
         )
         if _cursor(self).fetchone() is None:
@@ -2243,8 +2345,7 @@ class RepositoryTransaction:
                         "timeless registry artifact approval policy is not in its closure"
                     )
         _cursor(self).execute(
-            "SELECT 1 FROM kineticloop.artifact_revocation_events "
-            "WHERE ref_s49_id=ANY(%s) LIMIT 1",
+            "SELECT 1 FROM kineticloop.artifact_revocation_events WHERE ref_s49_id=ANY(%s) LIMIT 1",
             (list(supplied),),
         )
         if _cursor(self).fetchone() is not None:
@@ -2285,6 +2386,245 @@ class RepositoryTransaction:
         # it owns source idempotency and must not later reverse into S01.
         if not self._subject and self.spec.boundary is not Boundary.T1:
             raise GuardRequired("S01 subject guard is required")
+
+    def planning_historical_outcome(
+        self,
+        *,
+        actor_scope: str,
+        client_key: str,
+        request_hash: str,
+    ) -> Mapping[str, Any] | None:
+        """Close preflight-replay races before current authority guards.
+
+        S01 serializes these command owners; this bounded successful S02 read
+        acquires no lower-stage lock, and a found outcome performs no mutation.
+        """
+        self._require_subject()
+        if self.command_kind not in {"AdmitOrReviseIntent", "AcquireLease", "RenewLease"}:
+            raise GuardRequired("planning replay belongs to planning command owners")
+        _cursor(self).execute(
+            "SELECT request_hash,status,typed_payload FROM kineticloop.command_receipts "
+            "WHERE subject_id=%s AND actor_scope=%s AND command_kind=%s AND client_key=%s",
+            (self.subject_id, actor_scope, self.command_kind, client_key),
+        )
+        prior = _cursor(self).fetchone()
+        if prior is None:
+            return None
+        if prior[0] != request_hash:
+            raise IdempotencyConflict("command key request hash mismatch")
+        if prior[1] != "SUCCEEDED" or "outcome" not in prior[2]:
+            raise IdempotencyConflict("command key has no durable successful outcome")
+        return dict(prior[2]["outcome"])
+
+    def prepare_planning_admission(
+        self,
+        *,
+        local_date: date,
+        purpose: str,
+        calendar_policy: str,
+        constraints: Mapping[str, Any],
+        explicit: bool,
+        trigger: str,
+        new_intent_id: UUID,
+    ) -> Mapping[str, Any]:
+        """Resolve one bounded T4 decision under S01; caller cannot select its mode.
+
+        Missing S30 rows are created under S01 before quota/intent/receipt locks.
+        They and all later writes roll back together on any failure.
+        """
+        from datetime import UTC, timedelta
+
+        from kineticloop.workflow.planning import (
+            NORMALIZATION_VERSION,
+            PlanningDenied,
+            admission_decision,
+            fingerprint,
+            normalize,
+        )
+
+        self._require_subject()
+        if self.command_kind != "AdmitOrReviseIntent":
+            raise GuardRequired("planning admission belongs only to T4")
+        _cursor(self).execute(
+            "SELECT typed_payload FROM kineticloop.policy_bundles WHERE subject_id=%s AND id=%s",
+            (self.subject_id, self._coordination_context["active_policy_bundle_id"]),
+        )
+        row = _cursor(self).fetchone()
+        policy = (row[0] or {}).get("planning_admission", {}) if row else {}
+        if calendar_policy not in policy.get("calendar_policies", []):
+            raise PlanningDenied("calendar policy not admitted")
+        if self._coordination_context["current_manifest_id"] is None:
+            raise PlanningDenied("planning requires a current manifest basis")
+        positive = ("hourly_roots", "daily_roots", "deadline_seconds", "max_active_per_day")
+        limits = policy.get("root_limits", {})
+        if (
+            any(type(policy.get(k)) is not int or policy[k] <= 0 for k in positive)
+            or not limits
+            or any(type(v) is not int or v < 0 for v in limits.values())
+        ):
+            raise PlanningDenied("missing or invalid policy-bound limits")
+        _cursor(self).execute("SELECT clock_timestamp()")
+        now_row = _cursor(self).fetchone()
+        assert now_row is not None
+        now = now_row[0]
+        hour = now.astimezone(UTC).replace(minute=0, second=0, microsecond=0)
+        day = hour.replace(hour=0)
+        keys = [
+            ("ROOT_HOUR", hour, hour + timedelta(hours=1)),
+            ("ROOT_DAY", day, day + timedelta(days=1)),
+        ]
+        policy_id = self._coordination_context["active_policy_bundle_id"]
+        for kind, begin, end in sorted(keys):
+            limit = policy["hourly_roots" if kind == "ROOT_HOUR" else "daily_roots"]
+            _cursor(self).execute(
+                "INSERT INTO kineticloop.planning_quota_buckets "
+                "(subject_id,quota_kind,window_start,window_end,ref_s05_id,admitted_count,quota_limit) "
+                "VALUES (%s,%s,%s,%s,%s,0,%s) ON CONFLICT DO NOTHING",
+                (self.subject_id, kind, begin, end, policy_id, limit),
+            )
+        self.lock_quota_buckets(keys)
+        _cursor(self).execute(
+            "SELECT id,admitted_count,quota_limit FROM kineticloop.planning_quota_buckets "
+            "WHERE subject_id=%s AND ref_s05_id=%s AND "
+            "((quota_kind='ROOT_HOUR' AND window_start=%s) "
+            "OR (quota_kind='ROOT_DAY' AND window_start=%s)) ORDER BY quota_kind",
+            (self.subject_id, policy_id, hour, day),
+        )
+        quotas = [
+            {"id": q[0], "count": int(q[1]), "limit": int(q[2])} for q in _cursor(self).fetchall()
+        ]
+        _cursor(self).execute(
+            "SELECT id,purpose,status,deadline,current_request_revision_id,current_attempt_id,"
+            "fence_token,typed_payload FROM kineticloop.planning_intents "
+            "WHERE subject_id=%s AND local_date=%s ORDER BY recorded_at DESC,id",
+            (self.subject_id, local_date),
+        )
+        roots = _cursor(self).fetchall()
+        active = [r for r in roots if r[2] in {"ADMITTED", "PENDING", "RUNNING"}]
+        current = next((r for r in active if r[1] == purpose), None)
+        latest = current or next((r for r in roots if r[1] == purpose), None)
+        normalized = normalize(constraints)
+        semantic = fingerprint(normalized)
+        request = attempt = None
+        same_scope = same_fingerprint = same_basis = False
+        if current:
+            self.lock_intents((current[0],))
+            _cursor(self).execute(
+                "SELECT request_revision,constraint_fingerprint,normalization_version,typed_payload "
+                "FROM kineticloop.planning_request_revisions WHERE subject_id=%s AND id=%s",
+                (self.subject_id, current[4]),
+            )
+            request = _cursor(self).fetchone()
+            _cursor(self).execute(
+                "SELECT attempt_no,captured_epoch,ref_s24_id,status FROM kineticloop.planning_attempts "
+                "WHERE subject_id=%s AND id=%s AND ref_s27_id=%s AND ref_s28_id=%s",
+                (self.subject_id, current[5], current[0], current[4]),
+            )
+            attempt = _cursor(self).fetchone()
+            if request is None or attempt is None:
+                raise GuardRequired("planning current request/attempt chain missing")
+            same_scope = request[3].get("calendar_policy") == calendar_policy
+            if not same_scope:
+                raise PlanningDenied("active partition calendar scope differs")
+            same_fingerprint = request[1] == semantic and request[2] == NORMALIZATION_VERSION
+            same_basis = (
+                attempt[1] == self._coordination_context["authorization_epoch"]
+                and attempt[2] == self._coordination_context["current_manifest_id"]
+                and request[3].get("input_frontier")
+                == self._coordination_context["input_frontier_hash"]
+            )
+            if attempt[3] in {"COMMITTED", "STALE", "FAILED", "CANCELLED", "LEASE_LOST"}:
+                raise PlanningDenied("terminal attempt requires downstream recovery")
+        mode = admission_decision(
+            status=latest[2] if latest else None,
+            same_scope=same_scope,
+            same_fingerprint=same_fingerprint,
+            same_basis=same_basis,
+            explicit=explicit,
+            trigger=trigger,
+            purpose=purpose,
+            policy=policy,
+            other_active=len(active),
+            now=now,
+            deadline=current[3] if current else None,
+        )
+        if mode == "ADMIT" and (len(quotas) != 2 or any(q["count"] >= q["limit"] for q in quotas)):
+            raise PlanningDenied("root quota exhausted")
+        basis = {
+            "mode": mode,
+            "purpose": purpose, "local_date": local_date,
+            "intent_id": current[0] if current else new_intent_id,
+            "request_id": current[4] if current else None,
+            "old_attempt_id": current[5] if current else None,
+            "request_revision": int(request[0]) + (mode != "JOIN") if request else 1,
+            "attempt_no": int(attempt[0]) + (mode != "JOIN") if attempt else 1,
+            "fence": int(current[6]) if current else 0,
+            "manifest_id": self._coordination_context["current_manifest_id"],
+            "epoch": self._coordination_context["authorization_epoch"],
+            "deadline": current[3]
+            if current
+            else now + timedelta(seconds=policy["deadline_seconds"]),
+            "fingerprint": semantic,
+            "normalization_version": NORMALIZATION_VERSION,
+            "request_payload": {
+                "constraints": normalized,
+                "calendar_policy": calendar_policy,
+                "input_frontier": self._coordination_context["input_frontier_hash"],
+                "trigger": trigger,
+                "explicit": explicit,
+            },
+            "root_payload": {
+                "admission_policy_id": str(policy_id),
+                "admission_policy_version": policy["version"],
+                "limits": dict(limits),
+                "reserved": {k: 0 for k in limits},
+                "settled": {k: 0 for k in limits},
+            },
+            "quotas": quotas,
+        }
+        if mode != "ADMIT":
+            assert current is not None
+            basis["root_payload"] = dict(current[7])
+        self._coordination_context["planning_admission"] = basis
+        return MappingProxyType(copy.deepcopy(basis))
+
+    def planning_lease_snapshot(self, intent_id: UUID) -> Mapping[str, Any]:
+        """Trusted-time bounded read of the exact locked lease chain."""
+        self._require_subject()
+        if self.command_kind not in {"AcquireLease", "RenewLease"}:
+            raise GuardRequired("lease snapshot is only available to lease owners")
+        if intent_id not in self._locked_ids.get("planning_intents", set()):
+            raise GuardRequired("lease snapshot requires exact S27 lock")
+        _cursor(self).execute(
+            "SELECT i.status,i.lease_owner,i.fence_token,i.lease_expires_at,i.deadline,"
+            "r.request_revision,i.current_attempt_id,a.status,clock_timestamp() "
+            "FROM kineticloop.planning_intents i JOIN kineticloop.planning_request_revisions r "
+            "ON r.subject_id=i.subject_id AND r.id=i.current_request_revision_id "
+            "JOIN kineticloop.planning_attempts a ON a.subject_id=i.subject_id "
+            "AND a.id=i.current_attempt_id AND a.ref_s28_id=r.id AND a.ref_s27_id=i.id "
+            "WHERE i.subject_id=%s AND i.id=%s",
+            (self.subject_id, intent_id),
+        )
+        row = _cursor(self).fetchone()
+        if row is None:
+            raise FenceLost("lease current chain absent")
+        return dict(
+            zip(
+                (
+                    "status",
+                    "owner",
+                    "fence",
+                    "expiry",
+                    "deadline",
+                    "request",
+                    "attempt",
+                    "attempt_status",
+                    "now",
+                ),
+                row,
+                strict=True,
+            )
+        )
 
     def lock_quota_buckets(self, keys: Sequence[tuple[str, datetime, datetime]]) -> None:
         self._require_subject()
@@ -2609,7 +2949,11 @@ class RepositoryTransaction:
             "AND intent.lease_owner=%s AND intent.fence_token=%s "
             "AND intent.status='RUNNING' AND intent.lease_expires_at > clock_timestamp() "
             "AND intent.deadline > clock_timestamp() "
-            "AND request.request_revision=%s AND intent.current_attempt_id=%s",
+            "AND request.request_revision=%s AND intent.current_attempt_id=%s "
+            "AND EXISTS (SELECT 1 FROM kineticloop.planning_attempts a "
+            "WHERE a.subject_id=intent.subject_id AND a.id=intent.current_attempt_id "
+            "AND a.ref_s27_id=intent.id AND a.ref_s28_id=request.id "
+            "AND a.status NOT IN ('COMMITTED','STALE','FAILED','CANCELLED','LEASE_LOST'))",
             (
                 self.subject_id,
                 intent_id,
@@ -2969,8 +3313,7 @@ class RepositoryTransaction:
         ):
             raise GuardRequired("READY manifest candidate has malformed projection bindings")
         _cursor(self).execute(
-            "SELECT typed_payload FROM kineticloop.policy_bundles "
-            "WHERE subject_id=%s AND id=%s",
+            "SELECT typed_payload FROM kineticloop.policy_bundles WHERE subject_id=%s AND id=%s",
             (self.subject_id, build[3]),
         )
         policy = _cursor(self).fetchone()
@@ -3570,7 +3913,7 @@ class RepositoryTransaction:
             "AND request.id=intent.current_request_revision_id "
             "WHERE intent.subject_id=%s AND intent.id=%s "
             "AND intent.lease_owner IS NOT DISTINCT FROM %s AND intent.fence_token=%s "
-            "AND intent.status IN ('PENDING','RUNNING') "
+            "AND intent.status IN ('ADMITTED','PENDING','RUNNING') "
             "AND intent.deadline > clock_timestamp() "
             "AND (intent.lease_expires_at IS NULL OR intent.lease_expires_at <= clock_timestamp() "
             "OR intent.lease_owner IS NOT DISTINCT FROM %s) "
@@ -3616,7 +3959,7 @@ class RepositoryTransaction:
             "AND request.id=intent.current_request_revision_id "
             "WHERE intent.subject_id=%s AND intent.id=%s "
             "AND intent.lease_owner=%s AND intent.fence_token=%s "
-            "AND intent.status IN ('PENDING','RUNNING') "
+            "AND intent.status IN ('ADMITTED','PENDING','RUNNING') "
             "AND intent.deadline IS NOT DISTINCT FROM %s "
             "AND request.request_revision=%s "
             "AND intent.current_attempt_id=%s "
@@ -3736,6 +4079,7 @@ class RepositoryTransaction:
         self._require_receipt_guard()
         self._require_command_locks(aggregate_locks or {})
         self._coordination_context["command_causation_key"] = client_key
+        self._coordination_context["command_actor_scope"] = actor_scope
         if self.spec.boundary is Boundary.T2_IN:
             if not isinstance(invalidation_scope, str) or not invalidation_scope.strip():
                 raise GuardRequired("T2 invalidation requires a nonempty canonical scope")
