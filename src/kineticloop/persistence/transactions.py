@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from enum import IntEnum, StrEnum
 from types import MappingProxyType
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 from uuid import UUID
 from weakref import WeakKeyDictionary
 
@@ -37,6 +37,7 @@ from kineticloop.protocol.authorization import (
     evaluate_executability,
     evaluate_validity_closure,
 )
+from kineticloop.protocol.factsets import certificate_basis as _factset_certificate_basis
 
 _T = TypeVar("_T")
 
@@ -3244,7 +3245,20 @@ class RepositoryTransaction:
         factset_id = next(iter(factset_ids))
         _cursor(self).execute(
             "SELECT status,member_revision,completed_member_revision,membership_digest,"
-            "typed_payload,clock_timestamp() FROM kineticloop.factset_revisions "
+            "jsonb_build_object("
+            "'captured_input_frontier',typed_payload->'captured_input_frontier',"
+            "'captured_epoch',typed_payload->'captured_epoch',"
+            "'member_count',typed_payload->'member_count',"
+            "'completion_identity',typed_payload->'completion_identity',"
+            "'completion_certificate',typed_payload->'completion_certificate',"
+            "'builder_identity',typed_payload->'builder_identity',"
+            "'program_revision_id',typed_payload->'program_revision_id',"
+            "'policy_id',typed_payload->'policy_id',"
+            "'mapping_revision_id',typed_payload->'mapping_revision_id',"
+            "'parent_factset_id',typed_payload->'parent_factset_id',"
+            "'max_delta_depth',typed_payload->'max_delta_depth',"
+            "'domain_basis_digest',typed_payload->'domain_basis_digest'),"
+            "clock_timestamp() FROM kineticloop.factset_revisions "
             "WHERE subject_id=%s AND id=%s",
             (self.subject_id, factset_id),
         )
@@ -3263,6 +3277,8 @@ class RepositoryTransaction:
             "membership_digest": row[3],
             "member_count": member_count,
         }
+        if payload.get("builder_identity"):
+            certificate_basis.update(_factset_certificate_basis(payload))
         certificate = hashlib.sha256(
             json.dumps(certificate_basis, sort_keys=True, separators=(",", ":")).encode()
         ).hexdigest()
@@ -3283,12 +3299,21 @@ class RepositoryTransaction:
             or row[1] != row[2]
             or payload.get("captured_input_frontier")
             != self._coordination_context.get("input_frontier_hash")
-            or payload.get("captured_epoch")
-            != self._coordination_context.get("authorization_epoch")
+            or payload.get("captured_epoch") != self._coordination_context.get("authorization_epoch")
             or payload.get("completion_certificate") != certificate
             or any(basis.get(key) != value for key, value in expected.items())
         ):
             raise GuardRequired("factset completion basis is stale, incomplete, or mismatched")
+        if payload.get("builder_identity") and (
+            payload.get("program_revision_id")
+            != str(self._coordination_context.get("active_program_id"))
+            or payload.get("policy_id")
+            != str(self._coordination_context.get("active_policy_bundle_id"))
+            or any(
+                basis.get(key) != value for key, value in _factset_certificate_basis(payload).items()
+            )
+        ):
+            raise GuardRequired("factset program/policy/basis is stale or mismatched")
         self._coordination_context["seal_factset_id"] = factset_id
         self._coordination_context["seal_timestamp"] = row[5]
 
@@ -4039,26 +4064,59 @@ def execute_factset_build(
     if specification is None or specification.boundary is not Boundary.BUILD:
         raise GuardRequired("command is not a factset-build owner")
     basis = dict(factset_build_basis or {})
-    if command_kind == "BeginBuild":
-        # Capture validation is intentionally a separate short read transaction.  It
-        # proves the caller's basis is current without carrying S01 coordination into
-        # the potentially longer build-creation transaction.
-        with connection.transaction():
-            snapshot = connection.execute(
+    with connection.transaction():
+        cursor = connection.cursor()
+        # S15-local replay; Begin's advisory lock closes the missing-row race.
+        replay_key = basis.get("command_key")
+        builder = basis.get("builder_identity")
+        replay_token = None
+        replay_record = None
+        if replay_key is not None:
+            if not builder or not replay_key or not basis.get("request_hash"):
+                raise GuardRequired("build replay requires authenticated builder/key/hash")
+            replay_token = hashlib.sha256(
+                json.dumps([command_kind, replay_key], separators=(",", ":")).encode()
+            ).hexdigest()
+            replay_record = {
+                "request_hash": basis["request_hash"],
+                "outcome": basis["durable_outcome"],
+            }
+        if command_kind == "BeginBuild":
+            cursor.execute(
+                "SELECT pg_advisory_xact_lock(hashtextextended(%s,0))",
+                (f"kl-factset:{subject_id}:{build_id}",),
+            )
+        cursor.execute(
+            "SELECT typed_payload FROM kineticloop.factset_revisions "
+            "WHERE subject_id=%s AND id=%s FOR UPDATE",
+            (subject_id, build_id),
+        )
+        existing = cursor.fetchone()
+        if existing is not None and existing[0].get("builder_identity") is not None:
+            if builder != existing[0]["builder_identity"]:
+                raise GuardRequired("factset builder ownership mismatch")
+            prior = existing[0].get("build_replays", {}).get(replay_token)
+            if prior is not None:
+                if prior["request_hash"] != basis.get("request_hash"):
+                    raise IdempotencyConflict("build command key payload conflict")
+                return cast(_T, dict(prior["outcome"]))
+            if replay_token is None:
+                raise GuardRequired("owned builds require durable command identity")
+        if command_kind == "BeginBuild":
+            cursor.execute(
                 "SELECT input_frontier_hash,authorization_epoch,active_program_id,"
                 "active_policy_bundle_id FROM kineticloop.user_decision_state "
                 "WHERE subject_id=%s",
                 (subject_id,),
-            ).fetchone()
-        if snapshot is None or (
-            basis.get("captured_input_frontier") != snapshot[0]
-            or basis.get("captured_epoch") != snapshot[1]
-            or basis.get("program_revision_id") != snapshot[2]
-            or basis.get("policy_id") != snapshot[3]
-        ):
-            raise GuardRequired("BeginBuild basis does not match the current committed S01 basis")
-    with connection.transaction():
-        cursor = connection.cursor()
+            )
+            snapshot = cursor.fetchone()
+            if snapshot is None or (
+                basis.get("captured_input_frontier") != snapshot[0]
+                or basis.get("captured_epoch") != snapshot[1]
+                or basis.get("program_revision_id") != snapshot[2]
+                or basis.get("policy_id") != snapshot[3]
+            ):
+                raise GuardRequired("BeginBuild basis does not match current committed S01 basis")
         context: dict[str, Any] = {}
         locked: Mapping[str, frozenset[UUID]] = {}
         if command_kind == "BeginBuild":
@@ -4088,6 +4146,18 @@ def execute_factset_build(
                     else None
                 ),
             }
+            if replay_token is not None:
+                typed_payload.update(
+                    {
+                        "builder_identity": builder,
+                        "build_replays": {replay_token: replay_record},
+                        "domain_basis": basis["domain_basis"],
+                        "domain_basis_digest": basis["domain_basis_digest"],
+                        "parent_factset_id": basis["parent_factset_id"],
+                        "max_delta_depth": basis["max_delta_depth"],
+                        "checkpoint": basis["checkpoint"],
+                    }
+                )
             context["factset_begin"] = {
                 **basis,
                 "build_id": build_id,
@@ -4135,6 +4205,10 @@ def execute_factset_build(
                     "membership_digest": basis["membership_digest"],
                     "member_count": member_count,
                 }
+                if build_context["typed_payload"].get("builder_identity"):
+                    certificate_basis.update(
+                        _factset_certificate_basis(build_context["typed_payload"])
+                    )
                 certificate = hashlib.sha256(
                     json.dumps(certificate_basis, sort_keys=True, separators=(",", ":")).encode()
                 ).hexdigest()
@@ -4145,6 +4219,11 @@ def execute_factset_build(
                     "member_count": member_count,
                     "completion_certificate": certificate,
                 }
+                if replay_token is not None:
+                    build_context["completion_payload"]["build_replays"] = {
+                        **build_context["typed_payload"].get("build_replays", {}),
+                        replay_token: replay_record,
+                    }
             context["factset_build"] = build_context
             locked = {"factset_revisions": frozenset({build_id})}
         session = RestrictedSqlSession(
@@ -4157,8 +4236,20 @@ def execute_factset_build(
         )
         result = operation(session)
         session.validate_completion()
+        if replay_record is not None and result != replay_record["outcome"]:
+            raise GuardRequired("build durable outcome differs from callback result")
+        if command_kind == "WriteCandidate" and replay_token is not None:
+            payload = dict(context["factset_build"]["typed_payload"])
+            payload["build_replays"] = {
+                **payload.get("build_replays", {}),
+                replay_token: replay_record,
+            }
+            cursor.execute(
+                "UPDATE kineticloop.factset_revisions SET typed_payload=%s "
+                "WHERE subject_id=%s AND id=%s AND status='BUILDING'",
+                (Jsonb(payload), subject_id, build_id),
+            )
         return result
-
 
 def claim_outbox(
     connection: Connection[Any], *, destination: str, limit: int = 1
