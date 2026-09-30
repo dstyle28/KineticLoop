@@ -1,0 +1,69 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-024",
+  "reviewed_head_sha": "afc04894896de7ee2697dd1951ad4c3882b7d0c3",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "finding_id": "GENERAL-01",
+      "classification": "BLOCKER",
+      "title": "Mandatory transaction-owner regression is still failing",
+      "file": "tests/db/test_transaction_interfaces.py",
+      "line": 3396,
+      "description": "The exact required transaction_owner_regressions_pass command reports 1 failed, 57 passed at tested_commit c414cd12384a29e607e552c62e5e9199cdf401f9. test_reauthorize_requires_atomic_intent_success moves the RUNNING INTENT to 2026-09-27, where its fixture already has RUNNING INTENT_2 for the same subject and PLAN purpose. The additive uq_s27_active_partition correctly rejects that fixture update before the intended head-day mismatch denial oracle runs. The packet requires every exact check to pass, so DoD and merge-gate conditions remain unsatisfied despite the other twelve successful checks. The committed BLOCKED/FAIL/UNMERGED result accurately represents this state.",
+      "required_change": "Obtain narrow governance rescoping for the fixture-only correction, or merge a separate authorized correction, while preserving the frozen active-partition index and the existing mismatch oracle. tests/db/test_transaction_interfaces.py is explicitly excluded from KL-024's current write scope; do not edit it under this packet or waive/skip the regression. Rerun all exact checks against the resulting implementation revision, persist new SHA-bound evidence/result, and obtain fresh required reviews after any substantive change.",
+      "evidence_refs": [
+        "docs/exec-plans/active/KL-024.md",
+        "docs/exec-plans/completed/KL-024_RESULT.yaml",
+        "docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-c414cd1.log",
+        "docs/exec-plans/evidence/KL-024/proposed-regression-fixture-rescope.patch",
+        "migrations/versions/e8c2f1a6b904_planning_active_partition.py",
+        "docs/harness/MERGE_GATE.md"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "AGENTS.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+    "docs/exec-plans/active/KL-024.md",
+    "docs/exec-plans/completed/KL-015_RESULT.yaml",
+    "docs/exec-plans/integrations/KL-015.json",
+    "docs/exec-plans/milestones/M2.json",
+    "docs/contracts/repository_transactions.md",
+    "docs/contracts/planning_intents.md",
+    "docs/harness/THREAD_RESULT_CONTRACT.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/harness/MERGE_GATE.md",
+    "docs/exec-plans/completed/KL-024_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-024/checks-c414cd1.json",
+    "docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-c414cd1.log",
+    "docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-c414cd1.log",
+    "docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-c414cd1.log",
+    "docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-c414cd1.log",
+    "docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-c414cd1.log",
+    "docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-c414cd1.log",
+    "docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-c414cd1.log",
+    "docs/exec-plans/evidence/KL-024/planning_db_suite_passes-c414cd1.log",
+    "docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-c414cd1.log",
+    "docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-c414cd1.log",
+    "docs/exec-plans/evidence/KL-024/lint_passes-c414cd1.log",
+    "docs/exec-plans/evidence/KL-024/typecheck_passes-c414cd1.log",
+    "docs/exec-plans/evidence/KL-024/harness_validation_passes-c414cd1.log"
+  ],
+  "review_contract_version": "v0.2",
+  "review_notes": [
+    "Fresh independent GENERAL inspection used the current indexed authorities, full KL-024 packet, repository pr-merge-reviewer skill, merged KL-015 result/integration, M2 closure, relevant frozen Protocol sections 2, 6.1-6.5, 6.7, 6.9 and T4/T5/T6, relevant DB table/owner/lock/invariant clauses, full base-to-head implementation/test/contract diff, committed result and raw evidence. Implementation-thread reasoning was not used as approval authority.",
+    "Verified base 8df9d8851cdc8f68e1f6429149b420604d6aa1b5 and tested c414cd12384a29e607e552c62e5e9199cdf401f9 are ancestors of the exact reviewed SHA. The tested-to-reviewed suffix is one linear commit adding only the task result and new task evidence. KL-015 merge 7623c20bb267a39b8d02c29845b4ee054714d2b1, M2 evaluated revision 08f3a985e52150a18678d2f913c0a8d6a44792b1, and reviewed merged KL-023 implementation/result 6cd15b03cb0206156b8e295d34516f457c7b046a are ancestors. The prior serialized core task is present in the base.",
+    "Validated the committed result against THREAD_RESULT.schema.json and checked all thirteen command evidence files for the exact tested SHA and consistent exit codes. Twelve required commands exit zero; the owner regression exits one. Planning PU reports 2 passed, planning DB reports 6 passed, migration regression reports 26 passed, and the owner regression reports 1 failed, 57 passed. No result, requirement, review, release or merge PASS is inferred from successful local checks.",
+    "Independently executed .venv/bin/python -m pytest -q -p no:cacheprovider tests/unit/workflow/test_planning.py tests/unit/persistence/test_transactions.py at reviewed head: 5 passed in 0.25s. Independently executed .venv/bin/python -m ruff check --no-cache src tools tests: All checks passed; .venv/bin/python -m mypy --cache-dir /private/tmp/kl024-general-review-mypy: no issues in 100 source files; .venv/bin/python tools/harness/validate_harness.py: HARNESS_CHECK_PASS tasks=70 active=67. Database suites were not rerun by GENERAL; the DB_CONCURRENCY reviewer owns that lane. Their committed logs and service-level test assertions were inspected.",
+    "Reviewed versioned structured normalization, NFC/whitespace rules, equipment set semantics, ordered collections, collision/type/size/depth denial, and separation of the subject/date/purpose partition from semantic fingerprint and calendar scope. Admission resolves the active S05 policy under S01, enforces policy purposes/triggers/calendar/quota/concurrency and new-root capacity, and records root limits/reserved/settled categories without fabricating plan success or authorization.",
+    "Reviewed the bounded T4 planning basis and deep-copy protection: JOIN returns current identities without S28/S29, quota debit or S27 mutation; REVISE appends one immutable request and CREATED attempt, marks only the exact prior attempt STALE, and switches pointers while retaining root counters, lease/fence and original deadline. Tests assert persisted identities/counters/pointers, return-to-old-constraints new revisions, replay conflicts, basis changes, rollback and old-request/attempt denial through existing command guards.",
+    "Reviewed typed AcquireLease/RenewLease CAS identity checks, trusted time after coordination, monotonic fencing, bounded expiry, post-lock renewal reread and terminal/current-chain denial. Their generic mutation and aggregate-lock capabilities remain S27-only; downstream attempt advancement owns attempt progression. The shared current-fence guard rejects frozen terminal attempts while retaining documented merged nonterminal compatibility. PostgreSQL test code uses bounded barriers/events and observed pg_blocking_pids/Lock state for acquisition/takeover and renewal waiters.",
+    "Reviewed atomic owner use, subject namespace binding, actor/command/client-key receipt and event identities, historical replay without current worker authority, and the under-S01 replay recheck. Positive planning S27/S28/S29/S30 mutations in DC tests call the service; direct admin writes are identified as prerequisite or negative time/state/index controls. Failure injections assert planning/quota/receipt/event/outbox rollback. Service command transactions contain no provider/model/network waits.",
+    "Scope comparison confirms only declared implementation paths and task-scoped result/evidence were changed. The one new migration follows d4c1a9e7b203 and implements frozen active subject/date/purpose uniqueness with explicit legacy PENDING compatibility. Historical migration files, excluded transaction fixture, frozen Protocol/DB/FROZEN_BASELINE, current document index and requirement registry are byte-identical to base. No shared package marker, downstream model/dispatch/reaper implementation or product requirement status was changed.",
+    "GENERAL identifies one BLOCKER and no additional REQUIRED_FOLLOWUP or NONBLOCKING finding. The failed fixture is a scope/governance repair, not evidence that the frozen uniqueness constraint should be weakened. No merge recommendation is issued. Separate PROTOCOL and DB_CONCURRENCY reviews are still required and cannot override the mandatory FAIL. This review makes no production activation, real-data shadow execution, W04-W06 release or product requirement PASS claim."
+  ]
+}
