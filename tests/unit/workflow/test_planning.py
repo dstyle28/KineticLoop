@@ -101,7 +101,7 @@ def test_fence_deadline_and_terminal_guards() -> None:
         {"attempt": "old"},
         {"expiry": NOW},
         {"deadline": NOW},
-        {"attempt_status": "STALE"},
+        {"attempt_status": "STALE"}, {"attempt_status": "UNKNOWN"},
         *({"status": terminal} for terminal in TERMINAL),
     )
     for change in changes:

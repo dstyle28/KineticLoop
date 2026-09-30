@@ -24,6 +24,10 @@ TERMINAL = frozenset(
         "CANCELLED",
     }
 )
+ATTEMPT_ACTIVE = frozenset({
+    "CREATED", "LEASED", "BUILDING_CONTEXT", "FITNESS", "DEMAND_FEATURES",
+    "NUTRITION", "VALIDATING", "COMMIT_READY",
+})
 ATTEMPT_TERMINAL = frozenset({"COMMITTED", "STALE", "FAILED", "CANCELLED", "LEASE_LOST"})
 
 
@@ -142,7 +146,7 @@ def require_live(
         or fence != expected_fence
         or request != expected_request
         or attempt != expected_attempt
-        or attempt_status in ATTEMPT_TERMINAL
+        or attempt_status not in ATTEMPT_ACTIVE
         or expiry is None
         or now >= expiry
         or now >= deadline

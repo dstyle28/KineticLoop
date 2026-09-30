@@ -26,7 +26,7 @@ from kineticloop.persistence.transactions import (
 )
 from kineticloop.workflow.planning import (
     ACTIVE,
-    ATTEMPT_TERMINAL,
+    ATTEMPT_ACTIVE,
     PlanningDenied,
     digest,
     normalize,
@@ -308,7 +308,7 @@ class PlanningWorkflowService:
             state = tx.planning_lease_snapshot(command.intent_id)
             if (
                 state["status"] not in ACTIVE
-                or state["attempt_status"] in ATTEMPT_TERMINAL
+                or state["attempt_status"] not in ATTEMPT_ACTIVE
                 or state["attempt"] != command.attempt_id
                 or state["request"] != command.request_revision
                 or state["now"] >= state["deadline"]

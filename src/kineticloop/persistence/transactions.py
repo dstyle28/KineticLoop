@@ -2435,6 +2435,7 @@ class RepositoryTransaction:
         from datetime import UTC, timedelta
 
         from kineticloop.workflow.planning import (
+            ATTEMPT_ACTIVE,
             NORMALIZATION_VERSION,
             PlanningDenied,
             admission_decision,
@@ -2496,13 +2497,21 @@ class RepositoryTransaction:
         _cursor(self).execute(
             "SELECT id,purpose,status,deadline,current_request_revision_id,current_attempt_id,"
             "fence_token,typed_payload FROM kineticloop.planning_intents "
-            "WHERE subject_id=%s AND local_date=%s ORDER BY recorded_at DESC,id",
+            "WHERE subject_id=%s AND local_date=%s "
+            "AND status IN ('ADMITTED','PENDING','RUNNING') ORDER BY recorded_at DESC,id",
             (self.subject_id, local_date),
         )
-        roots = _cursor(self).fetchall()
-        active = [r for r in roots if r[2] in {"ADMITTED", "PENDING", "RUNNING"}]
+        active = _cursor(self).fetchall()
         current = next((r for r in active if r[1] == purpose), None)
-        latest = current or next((r for r in roots if r[1] == purpose), None)
+        latest = current
+        if latest is None:
+            _cursor(self).execute(
+                "SELECT id,purpose,status FROM kineticloop.planning_intents "
+                "WHERE subject_id=%s AND local_date=%s AND purpose=%s "
+                "ORDER BY recorded_at DESC,id LIMIT 1",
+                (self.subject_id, local_date, purpose),
+            )
+            latest = _cursor(self).fetchone()
         normalized = normalize(constraints)
         semantic = fingerprint(normalized)
         request = attempt = None
@@ -2533,7 +2542,7 @@ class RepositoryTransaction:
                 and request[3].get("input_frontier")
                 == self._coordination_context["input_frontier_hash"]
             )
-            if attempt[3] in {"COMMITTED", "STALE", "FAILED", "CANCELLED", "LEASE_LOST"}:
+            if attempt[3] not in ATTEMPT_ACTIVE:
                 raise PlanningDenied("terminal attempt requires downstream recovery")
         mode = admission_decision(
             status=latest[2] if latest else None,
@@ -2953,7 +2962,8 @@ class RepositoryTransaction:
             "AND EXISTS (SELECT 1 FROM kineticloop.planning_attempts a "
             "WHERE a.subject_id=intent.subject_id AND a.id=intent.current_attempt_id "
             "AND a.ref_s27_id=intent.id AND a.ref_s28_id=request.id "
-            "AND a.status NOT IN ('COMMITTED','STALE','FAILED','CANCELLED','LEASE_LOST'))",
+            "AND a.status IN ('CREATED','LEASED','BUILDING_CONTEXT','FITNESS',"
+            "'DEMAND_FEATURES','NUTRITION','VALIDATING','COMMIT_READY'))",
             (
                 self.subject_id,
                 intent_id,
