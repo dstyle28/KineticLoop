@@ -1,0 +1,90 @@
+change_identity: harness-governance-v0.1/HG-030
+display_change_id: HG-030
+base_commit: 8df9d8851cdc8f68e1f6429149b420604d6aa1b5
+tested_commit: 8c9a1a5e11e8560963b1b4d59a7f13e598145132
+change_status: PASS
+summary: Refine only KL025 residual typed call ledger service and root budget accounting over merged KL015
+  owners. Pin cancellation versus durable dispatch mutual exclusion, stale request/attempt/fence/deadline
+  denial, non-sendable idempotent replay, physical-send transaction boundary, UNKNOWN occupation and reliable
+  late accounting-only settlement to literal scope and PU/DC commands. Preserve the hard dependency on
+  merged KL024 and require verification of its actual merged API and fixture isolation before scheduling;
+  no speculative prerequisite PASS or downstream launch.
+packets_refined:
+- KL-025
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- KineticLoop_Harness_Backlog_v0.2.json
+- KineticLoop_Harness_Traceability_v0.3.json
+- docs/exec-plans/active/KL-025.md
+- docs/exec-plans/evidence/HG-030/audit.py
+- docs/exec-plans/evidence/HG-030/diff_clean-final.log
+- docs/exec-plans/evidence/HG-030/diff_clean.log
+- docs/exec-plans/evidence/HG-030/harness_structure_valid-final.log
+- docs/exec-plans/evidence/HG-030/harness_structure_valid.log
+- docs/exec-plans/evidence/HG-030/harness_tests_pass-final.log
+- docs/exec-plans/evidence/HG-030/harness_tests_pass.log
+- docs/exec-plans/evidence/HG-030/ledger_governance_regressions-final.log
+- docs/exec-plans/evidence/HG-030/ledger_governance_regressions.log
+- docs/exec-plans/evidence/HG-030/lint_passes-final.log
+- docs/exec-plans/evidence/HG-030/lint_passes.log
+- docs/exec-plans/evidence/HG-030/scope_projection_audit-final.log
+- docs/exec-plans/evidence/HG-030/scope_projection_audit.log
+- docs/exec-plans/evidence/HG-030/typecheck_passes-final.log
+- docs/exec-plans/evidence/HG-030/typecheck_passes.log
+- docs/exec-plans/evidence/HG-030/unit_tests_pass-final.log
+- docs/exec-plans/evidence/HG-030/unit_tests_pass.log
+- docs/exec-plans/governance/HG-030.yaml
+- tests/harness/test_call_ledger_scope.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: scope_projection_audit
+  command: /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-030/audit.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-030/scope_projection_audit-final.log
+- check_id: diff_clean
+  command: git diff --check 8df9d8851cdc8f68e1f6429149b420604d6aa1b5 8c9a1a5e11e8560963b1b4d59a7f13e598145132
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-030/diff_clean-final.log
+- check_id: ledger_governance_regressions
+  command: /private/tmp/kl017-venv/bin/python -m pytest -q tests/harness/test_call_ledger_scope.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-030/ledger_governance_regressions-final.log
+- check_id: harness_structure_valid
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-030/harness_structure_valid-final.log
+- check_id: harness_tests_pass
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-030/harness_tests_pass-final.log
+- check_id: unit_tests_pass
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-030/unit_tests_pass-final.log
+- check_id: lint_passes
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-030/lint_passes-final.log
+- check_id: typecheck_passes
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-030/typecheck_passes-final.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- KL025 remains NOT_STARTED. ENFORCEABLE describes the conditional packet contract, not readiness, implementation
+  PASS, product requirement PASS or release approval. Future task commands are NOT_RUN in governance.
+- KL024 has no merged implementation/result at the protected base. Its actual root-budget representation,
+  live attempt/request API and planning fixture overrides must be verified at the merged SHA before scheduling
+  KL025. Mismatch leaves KL025 unstarted and requires governance refinement (MUST_REFINE_BEFORE_READY);
+  frozen meaning changes require SPEC_CHANGE_REQUIRED.
+- No product source, migration or test-db changes and no local database implementation checks occur here.
+  Full worker fault/live transport/WF/E2E release obligations stay downstream; the declared fake-sender
+  check is deterministic boundary evidence only.
+- Only task-specific harness definition enforcement and negative regressions were added. Other task definitions,
+  KL023 source, completed evidence, requirement status and frozen baseline are unchanged.
+- The original immutable pre-rebase logs are historical attempt records, not selected PASS evidence; every
+  current check selects a fresh -final.log bound to the rebased tested revision after merged KL023. Parent
+  coordinates shared main synchronization and separate KL023 integration bookkeeping; neither expands
+  HG030 scope.
