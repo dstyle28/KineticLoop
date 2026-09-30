@@ -1,16 +1,9 @@
 {
   "task_identity": "harness-governance-v0.1/HG-032",
-  "reviewed_head_sha": "2f2c02816e9c15e9b558aaa09c56433b2e4faade",
+  "reviewed_head_sha": "97f4d701f0ba10c6d6209ef284aaadc13472025b",
   "review_type": "DB_CONCURRENCY",
-  "status": "CHANGES_REQUIRED",
-  "findings": [
-    {
-      "classification": "BLOCKER",
-      "file": "docs/exec-plans/evidence/HG-032/checks.json",
-      "title": "Post-tested evidence registry was overwritten",
-      "description": "The tested-to-reviewed suffix from bb2cf012895e16b07e247f3497183c4b8eb847ee to 2f2c02816e9c15e9b558aaa09c56433b2e4faade modifies the already-existing checks.json. governance_suffix_errors rejects this with governance-tested-evidence-not-addition:docs/exec-plans/evidence/HG-032/checks.json. Preserve that tested artifact and append a new selected registry under a new evidence path, updating governance declarations; obtain fresh exact-SHA reviews."
-    }
-  ],
+  "status": "PASS",
+  "findings": [],
   "evidence_refs": [
     "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
     "05_KineticLoop_Protocol_v1.2_FROZEN.md",
@@ -37,18 +30,20 @@
     "tests/db/test_transaction_interfaces.py",
     "src/kineticloop/persistence/transactions.py",
     "tools/harness/validate_harness.py",
-    "tests/harness/test_planning_fixture_scope.py"
+    "tests/harness/test_planning_fixture_scope.py",
+    "docs/exec-plans/evidence/HG-032/checks-bb2cf01.json"
   ],
   "review_contract_version": "v0.2",
   "verification": [
-    "Fresh independent review of exact head 2f2c02816e9c15e9b558aaa09c56433b2e4faade against protected base 7d24ee6dd0458e2971f26f9ac96d0465dae5ac22; read actual diff, current authority, packet, frozen S27/T4/T5/T6 and registry-to-S01 lock order.",
-    "Independent audit.py rerun exit 0: no src, migrations, tests/db, Frozen, completed result, integration, milestone or requirement bytes changed. Backlog/traceability changes only add the restricted KL024 fixture path; required gates/namespaces remain intact.",
-    "Copied BLOCKED KL024 result, 1-failed/57-passed owner-regression log, patch and migration text independently matched byte-for-byte to source afc04894896de7ee2697dd1951ad4c3882b7d0c3. Failure binds c414cd12384a29e607e552c62e5e9199cdf401f9 at fixture UPDATE due to uq_s27_active_partition.",
-    "Frozen S27 active uniqueness and proposed source migration index remain faithful: unique subject/date/purpose for ADMITTED/PENDING/RUNNING, with explicit legacy PENDING compatibility. September 28 is unused; September 27 collides with the other PLAN RUNNING intent. September 28 still mismatches the September 26 head and preserves cleanup to September 26.",
-    "The exact byte guard preserves every other fixture byte, head-day GuardRequired assertion, negative cases and successful atomic intent/attempt/authorization completion. Unchanged Reauthorize retains registry/subject/intent/head order, fence/request/attempt/lease/deadline and mandatory intent-success guards; no command owner, atomic boundary, authorization or production/shadow change.",
-    "task_fixture_scope_errors reads committed protected-base and head bytes and is invoked in the task merge gate. Adversarial wrong-date, cleanup, assertion, skip and unrelated-byte cases reject; KL023/KL050 cannot acquire this exception.",
-    "Prior fixture-baseline blocker resolved: scope tests read immutable protected-base Git bytes. Independent current targeted scope rerun: 49 passed, exit 0. Independent future_fixture.py rerun at reviewed head: exact patch applied in disposable clone, 49 passed, exit 0; governance fixture byte-identical and clone removed.",
-    "Selected verified logs bind bb2cf012895e16b07e247f3497183c4b8eb847ee and show scope/future-fixture 49 passes, harness 228 passes, unit 202 passes, HARNESS_CHECK_PASS, lint/typecheck and diff exit 0. Historical failed diagnostics are not selected PASS evidence. However independent suffix validation found the existing checks.json mutation recorded as BLOCKER.",
-    "This is governance review only; KL024 remains BLOCKED/unmerged and requires the exact repair, every mandatory real PostgreSQL check and fresh task reviews before any task PASS. No product/release PASS inferred."
+    "Fresh exact-SHA rereview of 97f4d701f0ba10c6d6209ef284aaadc13472025b against protected base 7d24ee6dd0458e2971f26f9ac96d0465dae5ac22. Inspected complete protected-base diff and correction diff; the correction changes only governance record and the historical/new check registry. Source, tests, selected logs and frozen semantics are unchanged from prior independent semantic review.",
+    "Prior suffix BLOCKER is closed: historical checks.json is byte-identical to tested bb2cf012895e16b07e247f3497183c4b8eb847ee; newly added checks-bb2cf01.json equals the previously selected registry and matches governance checks_run exactly. Independent governance_suffix_errors tested-to-reviewed and reviewed-to-current review-only HEAD both returned no errors. Exact governance file declaration equals all 45 protected-base changed paths.",
+    "Selected verified logs bind bb2cf012895e16b07e247f3497183c4b8eb847ee, remain byte-identical and show scope/future-fixture 49 passes, harness 228 passes, unit 202 passes, HARNESS_CHECK_PASS, lint/typecheck and diff exit 0. Historical failed diagnostics remain preserved but are not selected PASS evidence.",
+    "Independent reruns from disposable clone checked out at exact reviewed 97f4d701: audit.py exit 0 and future_fixture.py exit 0 with 49 passed in exact-patch disposable clone. Main fixture stayed byte-identical; both clones removed. No redundant full suite or database execution performed.",
+    "Exact-SHA audit proves no src, migrations, tests/db, Frozen, completed result, integration, milestone or requirement bytes changed. Backlog/traceability change only the restricted unmerged KL024 fixture path, preserving all mandatory checks, review types and isolated PostgreSQL namespaces.",
+    "Copied BLOCKED KL024 result, 1-failed/57-passed owner-regression log, patch and migration text independently matched byte-for-byte to source afc04894896de7ee2697dd1951ad4c3882b7d0c3. Failure binds c414cd12384a29e607e552c62e5e9199cdf401f9 at fixture UPDATE due to uq_s27_active_partition, before intended head-day guard.",
+    "Frozen S27 active subject/date/purpose uniqueness and source migration predicate ADMITTED/PENDING/RUNNING with explicit legacy PENDING compatibility remain unchanged. Proposed unused September 28 avoids the other active September 27 PLAN root, preserves mismatch with September 26 head, and preserves cleanup to September 26.",
+    "Complete-file byte comparison permits only the named DATE literal replacement inside test_reauthorize_requires_atomic_intent_success. Head-day GuardRequired assertion, other negative cases, cleanup and successful atomic S27/S29/authorization completion remain protected. Task merge gate reads committed protected-base/head bytes; wrong date, assertion/cleanup drift, skip or unrelated edits fail closed; KL023/KL050 cannot use the exception.",
+    "Prior fixture-baseline blocker remains closed: scope tests read immutable protected-base Git bytes, proven compatible with exact repaired fixture by 49 passing future scope regressions. Unchanged Reauthorize owner retains registry-to-subject coordination, intent then head order, current fence/request/attempt/lease/deadline and mandatory S27 success guards. No owner, idempotency, atomic boundary, network wait, authorization, production/shadow or test-gate weakening.",
+    "Governance PASS only: KL024 remains BLOCKED/unmerged. Its owner must implement the exact authorized repair, rerun every mandatory migrated PostgreSQL and transaction-owner check in isolated task namespaces and obtain fresh SHA-bound task reviews. No task, requirement or release PASS inferred."
   ]
 }
