@@ -2644,7 +2644,13 @@ class RepositoryTransaction:
             "resolution.id,resolution.revision,resolution.resolution_expires_at,"
             "validation.id,validation.revision,validation.valid_until,validation.result,"
             "request.id,request.request_revision,intent.deadline,head.id,head.local_date,"
-            "clock_timestamp(),manifest.typed_payload "
+            "clock_timestamp(),manifest.typed_payload,"
+            "GREATEST(manifest.recorded_at,"
+            "COALESCE(manifest.effective_at,manifest.recorded_at)),"
+            "GREATEST(resolution.recorded_at,"
+            "COALESCE(resolution.effective_at,resolution.recorded_at)),"
+            "GREATEST(validation.recorded_at,"
+            "COALESCE(validation.effective_at,validation.recorded_at)) "
             "FROM kineticloop.planning_intents intent "
             "JOIN kineticloop.planning_request_revisions request "
             "ON request.subject_id=intent.subject_id AND request.id=intent.current_request_revision_id "
@@ -2741,7 +2747,10 @@ class RepositoryTransaction:
         ):
             raise GuardRequired("policy, demand, and calendar authorization bounds must exist")
         _cursor(self).execute(
-            "SELECT projection.id,projection.revision,projection.valid_until,binding.projection_role "
+            "SELECT projection.id,projection.revision,projection.valid_until,"
+            "binding.projection_role,GREATEST(projection.recorded_at,"
+            "COALESCE(projection.effective_at,projection.recorded_at),"
+            "COALESCE(projection.computed_at,projection.recorded_at)) "
             "FROM kineticloop.manifest_projection_bindings binding "
             "LEFT JOIN kineticloop.projection_versions projection "
             "ON projection.subject_id=binding.subject_id AND projection.id=binding.ref_s21_id "
@@ -2820,15 +2829,15 @@ class RepositoryTransaction:
                 raise GuardRequired("artifact validity certificate is malformed") from error
         validity_dependencies.extend(
             (
-                ValidityDependency("MANIFEST", str(row[0]), row[1], now, row[2]),
+                ValidityDependency("MANIFEST", str(row[0]), row[1], row[17], row[2]),
                 ValidityDependency(
-                    "EVIDENCE_RESOLUTION", str(row[3]), row[4], now, row[5]
+                    "EVIDENCE_RESOLUTION", str(row[3]), row[4], row[18], row[5]
                 ),
                 ValidityDependency(
                     "VALIDATION_ADMISSION_FRESHNESS",
                     str(row[6]),
                     row[7],
-                    now,
+                    row[19],
                     row[8],
                 ),
                 ValidityDependency(
@@ -2876,7 +2885,7 @@ class RepositoryTransaction:
                 "PROJECTION",
                 str(projection[0]),
                 projection[1],
-                now,
+                projection[4],
                 projection[2],
                 attributes={"role": projection[3]},
             )

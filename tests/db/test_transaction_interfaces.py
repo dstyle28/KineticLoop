@@ -4984,64 +4984,68 @@ def test_t6_authorization_evaluator_persists_exact_minimum_certificate(
 ) -> None:
     _reset_kl022_fixture(database_urls)
     prescription_id, _ = _set_kl022_t6_ready(database_urls["admin"])
-    with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
-        connection.execute("SET session_replication_role=replica")
-        connection.execute(
-            "UPDATE kineticloop.decision_manifests SET valid_until=clock_timestamp()+interval '2 days' "
-            "WHERE id=%s",
-            (MANIFEST,),
-        )
-        connection.execute(
-            "UPDATE kineticloop.evidence_resolutions SET resolution_expires_at="
-            "clock_timestamp()+interval '2 days',typed_payload=jsonb_build_object("
-            "'admission_freshness',jsonb_build_array(jsonb_build_object("
-            "'identity','admission:fitness','revision',1,"
-            "'valid_from',(clock_timestamp()-interval '1 minute')::text,"
-            "'valid_until',(clock_timestamp()+interval '2 days')::text))) WHERE id=%s",
-            (RESOLUTION,),
-        )
-        connection.execute(
-            "UPDATE kineticloop.projection_versions SET valid_until=clock_timestamp()+interval '2 days' "
-            "WHERE id=%s",
-            (PROJECTION,),
-        )
-        connection.execute(
-            "UPDATE kineticloop.safety_artifacts SET valid_until=clock_timestamp()+interval '2 days' "
-            "WHERE id=ANY(%s)",
-            (list(_registry_ids()),),
-        )
-        connection.execute(
-            "UPDATE kineticloop.policy_bundles SET typed_payload=jsonb_set(typed_payload,"
-            "'{max_authorization_ttl_seconds}','172800'::jsonb) WHERE id=%s",
-            (POLICY,),
-        )
-        connection.execute(
-            "UPDATE kineticloop.daily_plan_heads SET typed_payload=jsonb_set(typed_payload,"
-            "'{calendar_valid_until}',to_jsonb((clock_timestamp()+interval '2 days')::text)) "
-            "WHERE id=%s",
-            (DAILY_HEAD,),
-        )
-        connection.execute("SET session_replication_role=origin")
-        manifest_basis = _manifest_candidate_payload(connection)
-        connection.execute("SET session_replication_role=replica")
-        connection.execute(
-            "UPDATE kineticloop.decision_manifests SET typed_payload=%s WHERE id=%s",
-            (
-                psycopg.types.json.Jsonb(
-                    {
-                        "artifact_closure_ids": manifest_basis["artifact_closure_ids"],
-                        "artifact_root_ids": manifest_basis["artifact_root_ids"],
-                        "artifact_dependency_closure_hash": manifest_basis[
-                            "artifact_dependency_closure_hash"
-                        ],
-                    }
-                ),
-                MANIFEST,
-            ),
-        )
-        connection.execute("SET session_replication_role=origin")
 
-    requested_end: datetime
+    def configure_long_bounds() -> None:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "UPDATE kineticloop.decision_manifests SET valid_until="
+                "clock_timestamp()+interval '2 days' WHERE id=%s",
+                (MANIFEST,),
+            )
+            connection.execute(
+                "UPDATE kineticloop.evidence_resolutions SET resolution_expires_at="
+                "clock_timestamp()+interval '2 days',typed_payload=jsonb_build_object("
+                "'admission_freshness',jsonb_build_array(jsonb_build_object("
+                "'identity','admission:fitness','revision',1,"
+                "'valid_from',(clock_timestamp()-interval '1 minute')::text,"
+                "'valid_until',(clock_timestamp()+interval '2 days')::text))) WHERE id=%s",
+                (RESOLUTION,),
+            )
+            connection.execute(
+                "UPDATE kineticloop.projection_versions SET valid_until="
+                "clock_timestamp()+interval '2 days' WHERE id=%s",
+                (PROJECTION,),
+            )
+            connection.execute(
+                "UPDATE kineticloop.safety_artifacts SET valid_until="
+                "clock_timestamp()+interval '2 days' WHERE id=ANY(%s)",
+                (list(_registry_ids()),),
+            )
+            connection.execute(
+                "UPDATE kineticloop.policy_bundles SET typed_payload=jsonb_set(typed_payload,"
+                "'{max_authorization_ttl_seconds}','172800'::jsonb) WHERE id=%s",
+                (POLICY,),
+            )
+            connection.execute(
+                "UPDATE kineticloop.daily_plan_heads SET typed_payload=jsonb_set(typed_payload,"
+                "'{calendar_valid_until}',to_jsonb((clock_timestamp()+interval '2 days')::text)) "
+                "WHERE id=%s",
+                (DAILY_HEAD,),
+            )
+            connection.execute("SET session_replication_role=origin")
+            manifest_basis = _manifest_candidate_payload(connection)
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "UPDATE kineticloop.decision_manifests SET typed_payload=%s WHERE id=%s",
+                (
+                    psycopg.types.json.Jsonb(
+                        {
+                            "artifact_closure_ids": manifest_basis["artifact_closure_ids"],
+                            "artifact_root_ids": manifest_basis["artifact_root_ids"],
+                            "artifact_dependency_closure_hash": manifest_basis[
+                                "artifact_dependency_closure_hash"
+                            ],
+                        }
+                    ),
+                    MANIFEST,
+                ),
+            )
+            connection.execute("SET session_replication_role=origin")
+
+    configure_long_bounds()
+
+    requested_end: datetime | None
     with psycopg.connect(database_urls["admin"]) as connection:
         requested_end = _database_timestamp(connection, offset=timedelta(minutes=10))
     commit_basis = _prepare_kl022_t6_basis(
@@ -5185,6 +5189,37 @@ def test_t6_authorization_evaluator_persists_exact_minimum_certificate(
         assert matching_ends == [varied_until], kind
         vary_bound(kind, restore=True)
 
+    future_effective_rows = (
+        ("MANIFEST", "decision_manifests", MANIFEST),
+        ("EVIDENCE_RESOLUTION", "evidence_resolutions", RESOLUTION),
+        ("VALIDATION_ADMISSION_FRESHNESS", "validation_results", VALIDATION),
+        ("PROJECTION", "projection_versions", PROJECTION),
+    )
+    for kind, table, object_id in future_effective_rows:
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                psycopg.sql.SQL(
+                    "UPDATE kineticloop.{} SET effective_at=clock_timestamp()+interval '1 hour' "
+                    "WHERE id=%s"
+                ).format(psycopg.sql.Identifier(table)),
+                (object_id,),
+            )
+            connection.execute("SET session_replication_role=origin")
+        try:
+            with pytest.raises(GuardRequired, match="not yet effective"):
+                _prepare_kl022_t6_basis(database_urls["admin"], "CommitBundle")
+        finally:
+            with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+                connection.execute("SET session_replication_role=replica")
+                connection.execute(
+                    psycopg.sql.SQL("UPDATE kineticloop.{} SET effective_at=NULL WHERE id=%s").format(
+                        psycopg.sql.Identifier(table)
+                    ),
+                    (object_id,),
+                )
+                connection.execute("SET session_replication_role=origin")
+
     issuance = UUID("00000000-0000-8000-8000-000000022142")
     receipt = UUID("00000000-0000-8000-8000-000000022143")
     event = _event(0x22144)
@@ -5270,6 +5305,43 @@ def test_t6_authorization_evaluator_persists_exact_minimum_certificate(
             },
         )
 
+    dynamic_start_kinds = {
+        "CALENDAR",
+        "POLICY_TTL",
+        "REQUEST_DEADLINE",
+        "REQUESTED_ABSOLUTE_END",
+    }
+
+    def assert_exact_certificate(
+        actual: list[Mapping[str, Any]],
+        expected: tuple[Mapping[str, Any], ...],
+        authorization_valid_from: datetime,
+    ) -> None:
+        actual_normalized = []
+        expected_normalized = []
+        for actual_entry, expected_entry in zip(actual, expected, strict=True):
+            assert set(actual_entry) == set(expected_entry)
+            actual_copy = dict(actual_entry)
+            expected_copy = dict(expected_entry)
+            if actual_entry["dependency_kind"] in dynamic_start_kinds:
+                assert datetime.fromisoformat(str(actual_copy.pop("valid_from"))) == (
+                    authorization_valid_from
+                )
+                expected_copy.pop("valid_from")
+            if actual_entry["dependency_kind"] == "POLICY_TTL":
+                policy_end = datetime.fromisoformat(str(actual_copy.pop("valid_until")))
+                assert policy_end - authorization_valid_from in {
+                    timedelta(seconds=1200),
+                    timedelta(seconds=172800),
+                }
+                expected_copy.pop("valid_until")
+            actual_normalized.append(actual_copy)
+            expected_normalized.append(expected_copy)
+        assert actual_normalized == expected_normalized
+
+    reauthorize_basis = _prepare_kl022_t6_basis(
+        database_urls["admin"], "Reauthorize", requested_end
+    )
     with psycopg.connect(database_urls["admin"]) as connection:
         outcome, replayed = execute_command(connection, "Reauthorize", SUBJECT, persist)
     assert not replayed and outcome == {"authorization_id": str(issuance)}
@@ -5288,13 +5360,50 @@ def test_t6_authorization_evaluator_persists_exact_minimum_certificate(
                 persisted[2]["dependencies"], sort_keys=True, separators=(",", ":")
             ).encode()
         ).hexdigest()
-        assert {
-            (item["dependency_kind"], item["identity"], str(item["revision"]))
-            for item in persisted[2]["dependencies"]
-        } == {
-            (item["dependency_kind"], item["identity"], str(item["revision"]))
-            for item in reauthorize_basis[0]
+        assert_exact_certificate(
+            persisted[2]["dependencies"], reauthorize_basis[0], persisted[0]
+        )
+
+    # Exercise the full existing Reauthorize owner for every independently varied
+    # finite bound, and compare the immutable S42 certificate (including both
+    # validity endpoints) with the exact server-computed basis.
+    for kind in varied_kinds:
+        _reset_kl022_fixture(database_urls)
+        prescription_id, _ = _set_kl022_t6_ready(database_urls["admin"])
+        configure_long_bounds()
+        vary_bound(kind)
+        varied_basis = _prepare_kl022_t6_basis(database_urls["admin"], "Reauthorize")
+        requested_end = None
+        with psycopg.connect(database_urls["admin"]) as connection:
+            varied_outcome, varied_replayed = execute_command(
+                connection, "Reauthorize", SUBJECT, persist
+            )
+        assert not varied_replayed and varied_outcome == {
+            "authorization_id": str(issuance)
         }
+        with psycopg.connect(database_urls["admin"]) as connection:
+            varied_persisted = connection.execute(
+                "SELECT valid_from,valid_until,validity_certificate,"
+                "artifact_dependency_closure_hash "
+                "FROM kineticloop.authorization_issuances WHERE id=%s",
+                (issuance,),
+            ).fetchone()
+        assert varied_persisted is not None
+        if kind == "POLICY_TTL":
+            assert varied_persisted[1] == varied_persisted[0] + timedelta(seconds=1200)
+        else:
+            assert varied_persisted[1] == varied_basis[2], kind
+        assert_exact_certificate(
+            varied_persisted[2]["dependencies"], varied_basis[0], varied_persisted[0]
+        )
+        assert varied_persisted[2]["closure_digest"] == varied_persisted[3]
+        assert varied_persisted[2]["closure_digest"] == hashlib.sha256(
+            json.dumps(
+                varied_persisted[2]["dependencies"],
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
+        ).hexdigest()
 
     _reset_kl022_fixture(database_urls)
     _set_kl022_t6_ready(database_urls["admin"])
@@ -5337,6 +5446,201 @@ def test_t6_authorization_evaluator_persists_exact_minimum_certificate(
             (INTENT, ATTEMPT, DAILY_HEAD),
         ).fetchone()
     assert after == before
+
+    _reset_kl022_fixture(database_urls)
+    _set_kl022_t6_ready(database_urls["admin"])
+    rollback_bundle = UUID("00000000-0000-8000-8000-000000022239")
+    rollback_prescription = UUID("00000000-0000-8000-8000-000000022240")
+    rollback_member = UUID("00000000-0000-8000-8000-000000022241")
+    rollback_authorization = UUID("00000000-0000-8000-8000-000000022242")
+    rollback_receipt = UUID("00000000-0000-8000-8000-000000022247")
+    rollback_event = _event(0x22248)
+    with psycopg.connect(database_urls["admin"]) as connection:
+        rollback_parent_row = connection.execute(
+            "SELECT current_bundle_revision_id FROM kineticloop.daily_plan_heads WHERE id=%s",
+            (DAILY_HEAD,),
+        ).fetchone()
+        assert rollback_parent_row is not None
+        rollback_parent = rollback_parent_row[0]
+        rollback_before = connection.execute(
+            "SELECT (SELECT count(*) FROM kineticloop.daily_bundle_revisions),"
+            "(SELECT count(*) FROM kineticloop.prescription_revisions),"
+            "(SELECT count(*) FROM kineticloop.bundle_prescription_members),"
+            "(SELECT count(*) FROM kineticloop.authorization_issuances),"
+            "(SELECT count(*) FROM kineticloop.authorization_events),"
+            "(SELECT count(*) FROM kineticloop.command_receipts),"
+            "(SELECT count(*) FROM kineticloop.domain_events),"
+            "(SELECT count(*) FROM kineticloop.outbox_deliveries),"
+            "(SELECT ARRAY[authorization_epoch::text,execution_basis_event_id::text] "
+            "FROM kineticloop.user_decision_state WHERE subject_id=%s),"
+            "(SELECT ARRAY[status,result_bundle_revision_id::text,result_authorization_id::text] "
+            "FROM kineticloop.planning_intents WHERE id=%s),"
+            "(SELECT ARRAY[status,completed_at::text] "
+            "FROM kineticloop.planning_attempts WHERE id=%s),"
+            "(SELECT ARRAY[head_revision::text,current_bundle_revision_id::text] "
+            "FROM kineticloop.daily_plan_heads WHERE id=%s)",
+            (SUBJECT, INTENT, ATTEMPT, DAILY_HEAD),
+        ).fetchone()
+
+    def partial_then_bad_certificate(tx: RepositoryTransaction) -> Any:
+        registry_revision = _acquire_registry(tx)
+        tx.lock_intents((INTENT,))
+        tx.lock_daily_head(date(2026, 9, 26))
+        tx.require_current_fence(
+            INTENT,
+            owner_id="worker-kl022",
+            fence=22,
+            expected_request_revision=1,
+            expected_attempt_id=ATTEMPT,
+        )
+
+        def mutation(session: Any) -> Mapping[str, Any]:
+            dependencies = list(session.authorization_certificate_dependencies())
+            omitted_dependencies = dependencies[:-1]
+            omitted_digest = hashlib.sha256(
+                json.dumps(
+                    omitted_dependencies, sort_keys=True, separators=(",", ":")
+                ).encode()
+            ).hexdigest()
+            session.insert(
+                "S39",
+                {
+                    "id": rollback_bundle,
+                    "subject_id": SUBJECT,
+                    "local_date": date(2026, 9, 26),
+                    "revision_no": 1,
+                    "generation_mode": "AI_GENERATED_CURRENT",
+                    "parent_revision_id": rollback_parent,
+                    "ref_s02_id": rollback_receipt,
+                    "ref_s24_id": MANIFEST,
+                    "ref_s27_id": INTENT,
+                    "ref_s29_id": ATTEMPT,
+                    "ref_s37_id": VALIDATION,
+                    "ref_s38_id": DAILY_HEAD,
+                },
+            )
+            session.insert(
+                "S40",
+                {
+                    "id": rollback_prescription,
+                    "subject_id": SUBJECT,
+                    "prescription_identity": "kl022-rollback-prescription",
+                    "prescription_kind": "WORKOUT",
+                    "prescription_revision": 1,
+                    "content_hash": "kl022-rollback-content",
+                    "ref_s34_id": PROPOSAL,
+                    "ref_s49_id": ARTIFACT,
+                },
+            )
+            session.insert(
+                "S41",
+                {
+                    "id": rollback_member,
+                    "subject_id": SUBJECT,
+                    "member_kind": "PRESCRIPTION",
+                    "session_slot": "rollback",
+                    "member_order": 1,
+                    "ref_s39_id": rollback_bundle,
+                    "ref_s40_id": rollback_prescription,
+                },
+            )
+            session.update(
+                "S01",
+                {"execution_basis_event_id": rollback_event.event_id},
+                {"subject_id": SUBJECT},
+            )
+            session.update(
+                "S38",
+                {"head_revision": 1, "current_bundle_revision_id": rollback_bundle},
+                {"id": DAILY_HEAD, "subject_id": SUBJECT},
+            )
+            session.update(
+                "S27",
+                {"status": "FOUND_VALID_PLAN", "result_bundle_revision_id": rollback_bundle},
+                {"id": INTENT, "subject_id": SUBJECT},
+            )
+            session.update(
+                "S29",
+                {"status": "COMMITTED", "completed_at": COMPLETION_RECORDED_AT},
+                {"id": ATTEMPT, "subject_id": SUBJECT},
+            )
+            session.insert(
+                "S42",
+                {
+                    "id": rollback_authorization,
+                    "subject_id": SUBJECT,
+                    "bound_content_hash": "kl022-rollback-content",
+                    "scope": "EXECUTION",
+                    "issuance_reason": "AI_PLAN",
+                    "artifact_dependency_closure_hash": omitted_digest,
+                    "registry_revision_at_issue": registry_revision,
+                    "valid_from": session.authorization_valid_from(),
+                    "valid_until": session.authorization_valid_until(),
+                    "validity_certificate": psycopg.types.json.Jsonb(
+                        {
+                            "authorization_epoch": tx.authorization_epoch,
+                            "method_version": AUTHORIZATION_METHOD_VERSION,
+                            "closure_digest": omitted_digest,
+                            "dependencies": omitted_dependencies,
+                        }
+                    ),
+                    "ref_s02_id": rollback_receipt,
+                    "ref_s05_id": POLICY,
+                    "ref_s24_id": MANIFEST,
+                    "ref_s36_id": RESOLUTION,
+                    "ref_s37_id": VALIDATION,
+                    "ref_s40_id": rollback_prescription,
+                    "ref_s49_id": ARTIFACT,
+                    "registry_state_id": 1,
+                },
+            )
+            raise AssertionError("incomplete certificate unexpectedly admitted")
+
+        return tx.idempotent_outcome(
+            receipt_id=rollback_receipt,
+            actor_scope="subject",
+            client_key="kl022-partial-rollback",
+            request_hash="kl022-partial-rollback-hash",
+            mutation=mutation,
+            event=rollback_event,
+            aggregate_locks={
+                "planning_attempts": (ATTEMPT,),
+                "validation_results": (VALIDATION,),
+            },
+            authorization_basis={
+                "validation_id": VALIDATION,
+                "resolution_id": RESOLUTION,
+                "intent_id": INTENT,
+                "head_id": DAILY_HEAD,
+            },
+        )
+
+    with psycopg.connect(database_urls["admin"]) as connection:
+        with pytest.raises(ArtifactIdentityRequired, match="exact verified artifact proofs"):
+            execute_command(
+                connection, "CommitBundle", SUBJECT, partial_then_bad_certificate
+            )
+    with psycopg.connect(database_urls["admin"]) as connection:
+        rollback_after = connection.execute(
+            "SELECT (SELECT count(*) FROM kineticloop.daily_bundle_revisions),"
+            "(SELECT count(*) FROM kineticloop.prescription_revisions),"
+            "(SELECT count(*) FROM kineticloop.bundle_prescription_members),"
+            "(SELECT count(*) FROM kineticloop.authorization_issuances),"
+            "(SELECT count(*) FROM kineticloop.authorization_events),"
+            "(SELECT count(*) FROM kineticloop.command_receipts),"
+            "(SELECT count(*) FROM kineticloop.domain_events),"
+            "(SELECT count(*) FROM kineticloop.outbox_deliveries),"
+            "(SELECT ARRAY[authorization_epoch::text,execution_basis_event_id::text] "
+            "FROM kineticloop.user_decision_state WHERE subject_id=%s),"
+            "(SELECT ARRAY[status,result_bundle_revision_id::text,result_authorization_id::text] "
+            "FROM kineticloop.planning_intents WHERE id=%s),"
+            "(SELECT ARRAY[status,completed_at::text] "
+            "FROM kineticloop.planning_attempts WHERE id=%s),"
+            "(SELECT ARRAY[head_revision::text,current_bundle_revision_id::text] "
+            "FROM kineticloop.daily_plan_heads WHERE id=%s)",
+            (SUBJECT, INTENT, ATTEMPT, DAILY_HEAD),
+        ).fetchone()
+    assert rollback_after == rollback_before
 
 
 def test_t7_executability_rereads_epoch_scope_control_and_time(
@@ -5451,6 +5755,12 @@ def test_t7_executability_rereads_epoch_scope_control_and_time(
     assert not query().is_executable
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
         connection.execute("SET session_replication_role=replica")
+        for control_state in ("STOP", "RESTRICTION"):
+            connection.execute(
+                "UPDATE kineticloop.control_events SET status=%s WHERE id=%s",
+                (control_state, control_event),
+            )
+            assert not query().is_executable
         connection.execute(
             "UPDATE kineticloop.control_heads SET status='UNKNOWN' WHERE id=%s", (control_head,)
         )
@@ -5738,7 +6048,9 @@ def test_t6_t7_deny_revoked_transitive_dependency_after_current_registry_read(
     blocker.close()
     thread.join(timeout=5)
     assert not thread.is_alive()
-    assert isinstance(outcome.get("error"), psycopg.Error)
+    blocked_error = outcome.get("error")
+    assert isinstance(blocked_error, psycopg.Error)
+    assert "KL_REGISTRY_ARTIFACT_REVOKED" in str(blocked_error)
 
     for command_kind in ("CommitBundle", "Reauthorize"):
         with psycopg.connect(database_urls["admin"]) as connection:
