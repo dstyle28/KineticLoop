@@ -88,6 +88,7 @@ M1_CLOSURE_M2_TASK_IDS = {
 # Current M2 may grow through later governance without rewriting the historical M1
 # closure revision that proved the original refinement set.
 M2_REFINED_TASK_IDS = M1_CLOSURE_M2_TASK_IDS | {'KL-072', 'KL-073'}
+WAVE_REFINED_TASK_IDS = {'KL-023', 'KL-024', 'KL-050'}
 M2_TASK_IDS = M2_REFINED_TASK_IDS
 M2_REGRESSION_COMMANDS = [
     'uv run pytest -q -p no:cacheprovider',
@@ -562,7 +563,8 @@ def packet_errors(task, text):
     checks = section(text, 'Checks required for this task PR')
     if checks is None or sorted(bullets(checks)) != sorted(task['checks_required_for_this_task']):
         errors.append('packet-checks:' + name)
-    if name in M2_REFINED_TASK_IDS:
+    if (name in M2_REFINED_TASK_IDS or (name in WAVE_REFINED_TASK_IDS
+                                      and task.get('packet_refinement') == 'ENFORCEABLE')):
         read_first = section(text, 'Read first') or ''
         if bullets(read_first) != task.get('context_files', []):
             errors.append('packet-context-files:' + name)
@@ -647,6 +649,60 @@ def packet_errors(task, text):
         command_surface = section(text, 'Registry-gated command surface') or ''
         if bullets(command_surface) != task.get('commands', []):
             errors.append('packet-command-surface:' + name)
+    return errors
+
+
+def wave_definition_errors(task):
+    """Keep the executable wave identity, ownership and gate boundaries explicit."""
+    name = task['id']
+    if name not in WAVE_REFINED_TASK_IDS:
+        return []
+    errors = []
+    dependencies = ['KL-055'] if name == 'KL-050' else ['KL-015']
+    if (task.get('task_identity') != 'harness-backlog-v0.2/' + name
+            or task.get('depends_on') != dependencies
+            or task.get('conditional_depends_on') != []):
+        errors.append('wave-identity-or-dependency:' + name)
+    resources = ({'provider_contracts', 'registry_coordination'} if name == 'KL-050'
+                 else {'transaction_interfaces', 'user_coordination'})
+    if name == 'KL-024':
+        resources.update({'planning_ledger', 'migration_chain', 'persistence_schema'})
+    if not resources <= set(task.get('resource_keys', [])):
+        errors.append('wave-resource-contention:' + name)
+    core = name != 'KL-050'
+    policy = 'SERIALIZE_WITH_OTHER_HOTSPOT_TASKS' if core else 'PARALLEL_IF_DEPENDENCIES_MET'
+    if (task.get('parallel_write_policy') != policy
+            or task.get('shared_hotspot') is not core):
+        errors.append('wave-scheduling-policy:' + name)
+    paths = task.get('write_paths', [])
+    if (task.get('packet_refinement') != 'ENFORCEABLE'
+            or task.get('write_paths_status') != 'ENFORCEABLE'
+            or not paths or any('*' in path or path.endswith('/__init__.py')
+                                or path == 'tests/db/test_transaction_interfaces.py'
+                                for path in paths)
+            or (core and 'src/kineticloop/persistence/transactions.py' not in paths)
+            or (not core and any(path.startswith(('src/kineticloop/persistence/',
+                                                 'src/kineticloop/protocol/',
+                                                 'src/kineticloop/workflow/')) for path in paths))):
+        errors.append('wave-write-ownership:' + name)
+    contracts = task.get('check_contracts', [])
+    ids = [item.get('check_id') for item in contracts if isinstance(item, dict)]
+    generic = re.compile(r'(?:^task_scope_|todo|tbd|placeholder)', re.I)
+    if (not contracts or len(ids) != len(set(ids))
+            or ids != task.get('checks_required_for_this_task')
+            or any(not isinstance(item, dict)
+                   or set(item) != {'check_id', 'command', 'pass_oracle'}
+                   or any(not isinstance(item.get(field), str) or not item[field].strip()
+                          or generic.search(item[field])
+                          for field in ('check_id', 'command', 'pass_oracle'))
+                   for item in contracts)):
+        errors.append('wave-check-contract:' + name)
+    if (task.get('evidence_paths') != [f'docs/exec-plans/evidence/{name}/**']
+            or task.get('requirements_covered') != []):
+        errors.append('wave-evidence-or-requirement-claim:' + name)
+    expected_environment = ['ISOLATED_POSTGRESQL_NAMESPACE'] if core else []
+    if task.get('environment_requirements') != expected_environment:
+        errors.append('wave-environment:' + name)
     return errors
 
 
@@ -1823,6 +1879,8 @@ def task_definition_errors(
                 errors.extend(packet_errors(task, packet.read_text()))
             elif task['status'] != 'SUPERSEDED':
                 errors.append('packet:' + name)
+        if not revision or task.get('packet_refinement') == 'ENFORCEABLE':
+            errors.extend(wave_definition_errors(task))
         for dep in task['depends_on']:
             if dep not in tasks:
                 errors.append('unknown-dep:' + name + '->' + dep)
@@ -1944,7 +2002,9 @@ def task_definition_errors(
                 and (task.get('packet_refinement') != 'ENFORCEABLE'
                      or task.get('write_paths_status') != 'ENFORCEABLE')):
             errors.append('ready-write-scope-unrefined:' + name)
-    refined = [tasks[name] for name in sorted(M2_REFINED_TASK_IDS) if name in tasks]
+    refined = [tasks[name] for name in sorted(M2_REFINED_TASK_IDS | WAVE_REFINED_TASK_IDS)
+               if name in tasks and (name in M2_REFINED_TASK_IDS
+                                     or tasks[name].get('packet_refinement') == 'ENFORCEABLE')]
     for position, left in enumerate(refined):
         for right in refined[position + 1:]:
             overlaps = {
