@@ -13,6 +13,24 @@
     }
   ],
   "evidence_refs": [
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "docs/exec-plans/active/KL-024.md",
+    "docs/exec-plans/governance/HG-032.yaml",
+    "docs/exec-plans/evidence/HG-032/checks.json",
+    "docs/exec-plans/evidence/HG-032/KL024_RESULT.yaml",
+    "docs/exec-plans/evidence/HG-032/KL024_failure.log",
+    "docs/exec-plans/evidence/HG-032/KL024_proposal.patch",
+    "docs/exec-plans/evidence/HG-032/KL024_migration.txt",
+    "docs/exec-plans/evidence/HG-032/audit.py",
+    "docs/exec-plans/evidence/HG-032/scope_and_blocker_audit.log",
+    "docs/exec-plans/evidence/HG-032/fixture_scope_regressions.log",
+    "tests/db/test_transaction_interfaces.py",
+    "src/kineticloop/persistence/transactions.py",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_planning_fixture_scope.py"
+  ],
+  "review_contract_version": "v0.2",
+  "verification": [
     "protected base 7d24ee6dd0458e2971f26f9ac96d0465dae5ac22; reviewed implementation/result head 4f637602865db9bfb6568446280328937a80ee11",
     "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:263 S27 active subject/date/purpose uniqueness; :500 Reauthorize current intent/attempt guards; :503 frozen lock order; :550 T6 atomic success and authorization",
     "docs/exec-plans/active/KL-024.md:175 exact fixture-only scope exception; mandatory check contracts and isolated regression namespaces preserved",
@@ -24,6 +42,5 @@
     "tools/harness/validate_harness.py:721 exact protected-base-to-head byte comparison; :2430 integration into task merge gate; unchanged fixture/product/migrations/Frozen/requirements confirmed by independent audit",
     "Independent targeted review run: /private/tmp/kl017-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_planning_fixture_scope.py tests/harness/test_wave_scope.py; 49 passed, exit 0 on reviewed head; adversarial oracle, cleanup, skip, unrelated-byte and wrong-date cases rejected",
     "Independent in-memory application of exact approved literal repair: repaired fixture contains zero OLD literals, proving tests/harness/test_planning_fixture_scope.py:22 fails after the intended repair; no database or product fixture modified"
-  ],
-  "review_contract_version": "v0.2"
+  ]
 }

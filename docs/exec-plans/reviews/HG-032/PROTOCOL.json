@@ -5,6 +5,25 @@
   "status": "PASS",
   "findings": [],
   "evidence_refs": [
+    "CURRENT_DOCUMENT_INDEX.json",
+    "docs/exec-plans/active/KL-024.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "src/kineticloop/persistence/transactions.py",
+    "tests/db/test_transaction_interfaces.py",
+    "tools/harness/validate_harness.py",
+    "docs/exec-plans/evidence/HG-032/KL024_RESULT.yaml",
+    "docs/exec-plans/evidence/HG-032/KL024_failure.log",
+    "docs/exec-plans/evidence/HG-032/KL024_migration.txt",
+    "docs/exec-plans/evidence/HG-032/KL024_proposal.patch",
+    "docs/exec-plans/evidence/HG-032/audit.py",
+    "docs/exec-plans/evidence/HG-032/scope_and_blocker_audit.log",
+    "docs/exec-plans/evidence/HG-032/fixture_scope_regressions.log",
+    "docs/exec-plans/evidence/HG-032/checks.json",
+    "docs/exec-plans/governance/HG-032.yaml"
+  ],
+  "review_contract_version": "v0.2",
+  "verification": [
     "Independent diff inspection: protected base 7d24ee6dd0458e2971f26f9ac96d0465dae5ac22 to reviewed head 4f637602865db9bfb6568446280328937a80ee11. No src, migrations, tests/db, frozen authority, completed task artifact, product acceptance or requirement-status changes.",
     "docs/exec-plans/active/KL-024.md: Fixture-only scope exception retains head-day GuardRequired, restoration to 2026-09-26, all other fixture bytes, mandatory checks, command owners and frozen semantics. No KL-024/product/release PASS is granted.",
     "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md: S27 requires unique active subject/date/purpose; section 3 retains Reauthorize ownership and current-attempt guards; section 5 retains T1-T8 atomic boundaries. Frozen Protocol section 6.1 retains planning date/purpose scope.",
@@ -15,6 +34,5 @@
     "Independent rerun at reviewed head: /private/tmp/kl017-venv/bin/python -m pytest -q tests/harness/test_planning_fixture_scope.py tests/harness/test_wave_scope.py exited 0, 49 passed with no skipped/deselected tests. Full expensive product/DB suites were not duplicated for this governance review.",
     "docs/exec-plans/governance/HG-032.yaml and docs/exec-plans/evidence/HG-032/checks.json bind governance checks to 3ff69607032d815664c1e0524ba93c362c0b4996. Reviewed head adds recorded governance evidence/result; product code and fixture remain untouched. Separate replayed=true issue remains in KL-024 implementation scope.",
     "GENERAL review owns the identified future fixture-test baseline durability blocker; this protocol PASS is not a merge recommendation and any substantive repair requires a fresh SHA-bound PROTOCOL review."
-  ],
-  "review_contract_version": "v0.2"
+  ]
 }
