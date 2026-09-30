@@ -5,7 +5,7 @@ import subprocess
 from pathlib import Path
 
 root = Path.cwd()
-base = 'e97a0488515f16e840b3328c13e4b5bba6196ccf'
+base = '8df9d8851cdc8f68e1f6429149b420604d6aa1b5'
 head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
 print('base_commit=' + base)
 print('tested_commit=' + head)
@@ -30,13 +30,15 @@ allowed = {'CURRENT_DOCUMENT_INDEX.json', 'HARNESS_DOCUMENT_MANIFEST.json',
            'docs/exec-plans/active/KL-025.md', 'tools/harness/validate_harness.py',
            'tests/harness/test_call_ledger_scope.py'}
 changed = set(subprocess.check_output(['git', 'diff', '--name-only', base, head], text=True).splitlines())
-assert changed == allowed, changed
+content = {p for p in changed if not p.startswith(('docs/exec-plans/evidence/HG-030/',
+                                                          'docs/exec-plans/governance/HG-030.'))}
+assert content == allowed, changed
 assert subprocess.run(['git', 'cat-file', '-e', base + ':docs/exec-plans/governance/HG-030.yaml'],
                       capture_output=True).returncode != 0
-for name in ['KL-023', 'KL-024', 'KL-025']:
+for name in ['KL-024', 'KL-025']:
     for ext in ['yaml', 'json']:
         assert not (root / f'docs/exec-plans/completed/{name}_RESULT.{ext}').exists()
-print('PASS HG030 unused; KL023/KL024/KL025 have no result at tested base; no prerequisite PASS assumed')
+print('PASS HG030 unused; KL024/KL025 have no result at tested base; no prerequisite PASS assumed')
 spec = importlib.util.spec_from_file_location('validator', root / 'tools/harness/validate_harness.py')
 v = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(v)

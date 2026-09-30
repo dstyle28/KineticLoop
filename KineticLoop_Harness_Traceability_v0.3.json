@@ -1062,7 +1062,7 @@
       "deliverables": [
         "complete frozen lock-order repository transaction interfaces"
       ],
-      "definition_of_done": "preparation interfaces, including Factset build commands, stay outside S01 coordination; publish/commit/session-entry interfaces acquire only their applicable locks in the complete frozen order S51 (when required) \u2192 S01 \u2192 S30 \u2192 S27 \u2192 S31 \u2192 S38 \u2192 S44 \u2192 S02 / remaining aggregate rows, with stable multi-key ordering and no direct-write or reverse-order path; each applicable T1-T8 mutation atomically writes S03/S04, OutboxDispatcher never acquires S01, stale fences cannot commit, only the first DISPATCH_INTENT winner may send, and T6 ACK-loss replay returns the exact prior receipt, bundle revision, and authorization issuance without duplicate issuance, supersession, event, outbox, reservation, operation, or other natural identity",
+      "definition_of_done": "preparation interfaces, including Factset build commands, stay outside S01 coordination; publish/commit/session-entry interfaces acquire only their applicable locks in the complete frozen order S51 (when required) → S01 → S30 → S27 → S31 → S38 → S44 → S02 / remaining aggregate rows, with stable multi-key ordering and no direct-write or reverse-order path; each applicable T1-T8 mutation atomically writes S03/S04, OutboxDispatcher never acquires S01, stale fences cannot commit, only the first DISPATCH_INTENT winner may send, and T6 ACK-loss replay returns the exact prior receipt, bundle revision, and authorization issuance without duplicate issuance, supersession, event, outbox, reservation, operation, or other natural identity",
       "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
@@ -1260,7 +1260,7 @@
       "deliverables": [
         "lock/gate API"
       ],
-      "definition_of_done": "shared\u2192S01 ordering is encoded and command-specifically tested for PublishManifest, CommitBundle, Reauthorize, StartSession, ResumeSession, and executable ContinueSession; every path reads current artifact and applicable authorization eligibility after acquiring the shared gate and fails closed before mutation on unavailable, timeout, revoked, expired, or stale registry state; authenticated exclusive RevokeArtifact never locks S01, atomically appends S50, advances S51, and records its management receipt/audit/outbox, with commit as the global revocation linearization point, exact same-key/same-hash replay, different-hash rejection, and effective_at prohibited from retroactive or scheduled authorization effect; STOP remains registry-independent; all behavior is testable against a task-local minimal PostgreSQL fixture without adding migrations",
+      "definition_of_done": "shared→S01 ordering is encoded and command-specifically tested for PublishManifest, CommitBundle, Reauthorize, StartSession, ResumeSession, and executable ContinueSession; every path reads current artifact and applicable authorization eligibility after acquiring the shared gate and fails closed before mutation on unavailable, timeout, revoked, expired, or stale registry state; authenticated exclusive RevokeArtifact never locks S01, atomically appends S50, advances S51, and records its management receipt/audit/outbox, with commit as the global revocation linearization point, exact same-key/same-hash replay, different-hash rejection, and effective_at prohibited from retroactive or scheduled authorization effect; STOP remains registry-independent; all behavior is testable against a task-local minimal PostgreSQL fixture without adding migrations",
       "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
@@ -2164,7 +2164,7 @@
         {
           "check_id": "committed_revoke_controls_current_admission_not_history",
           "command": "uv run pytest -q tests/db/test_safety_registry.py::test_committed_revoke_controls_current_admission_not_history",
-          "pass_oracle": "The named PostgreSQL test commits one relevant artifact revoke and proves every migrated shared-gated current path\u2014PublishManifest, CommitBundle, Reauthorize, StartSession, ResumeSession, and ContinueSession\u2014returns ARTIFACT_REVOKED before domain mutation. Existing immutable authorization, execution-binding, receipt, event, and outbox history remains byte-identical; historical replay remains a non-mutating record and is never converted into current publish, issue, START, RESUME, CONTINUE, send, or execution permission."
+          "pass_oracle": "The named PostgreSQL test commits one relevant artifact revoke and proves every migrated shared-gated current path—PublishManifest, CommitBundle, Reauthorize, StartSession, ResumeSession, and ContinueSession—returns ARTIFACT_REVOKED before domain mutation. Existing immutable authorization, execution-binding, receipt, event, and outbox history remains byte-identical; historical replay remains a non-mutating record and is never converted into current publish, issue, START, RESUME, CONTINUE, send, or execution permission."
         },
         {
           "check_id": "safety_registry_db_suite_passes",
