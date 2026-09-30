@@ -90,6 +90,15 @@ M1_CLOSURE_M2_TASK_IDS = {
 M2_REFINED_TASK_IDS = M1_CLOSURE_M2_TASK_IDS | {'KL-072', 'KL-073'}
 WAVE_REFINED_TASK_IDS = {'KL-023', 'KL-024', 'KL-050'}
 M2_TASK_IDS = M2_REFINED_TASK_IDS
+PLANNING_FIXTURE_PATH = 'tests/db/test_transaction_interfaces.py'
+PLANNING_FIXTURE_CONTRACT = (
+    "KL-024 may change only the DATE literal 2026-09-27 to 2026-09-28 in the "
+    "INTENT local_date UPDATE inside test_reauthorize_requires_atomic_intent_success. "
+    "Preserve every other byte in tests/db/test_transaction_interfaces.py, including "
+    "the head day GuardRequired assertion, restoration to 2026-09-26, other negative "
+    "cases and successful atomic intent completion. Do not skip tests or weaken "
+    "uq_s27_active_partition, transaction guards or authorization semantics."
+)
 M2_REGRESSION_COMMANDS = [
     'uv run pytest -q -p no:cacheprovider',
     'uv run kl check-harness',
@@ -649,6 +658,9 @@ def packet_errors(task, text):
         command_surface = section(text, 'Registry-gated command surface') or ''
         if bullets(command_surface) != task.get('commands', []):
             errors.append('packet-command-surface:' + name)
+    if name == 'KL-024' and PLANNING_FIXTURE_PATH in task.get('write_paths', []):
+        if (section(text, 'Fixture-only scope exception') or '').strip() != PLANNING_FIXTURE_CONTRACT:
+            errors.append('packet-planning-fixture-contract:' + name)
     return errors
 
 
@@ -678,7 +690,7 @@ def wave_definition_errors(task):
     if (task.get('packet_refinement') != 'ENFORCEABLE'
             or task.get('write_paths_status') != 'ENFORCEABLE'
             or not paths or any('*' in path or path.endswith('/__init__.py')
-                                or path == 'tests/db/test_transaction_interfaces.py'
+                                or (path == PLANNING_FIXTURE_PATH and name != 'KL-024')
                                 for path in paths)
             or (core and 'src/kineticloop/persistence/transactions.py' not in paths)
             or (not core and any(path.startswith(('src/kineticloop/persistence/',
@@ -704,6 +716,31 @@ def wave_definition_errors(task):
     if task.get('environment_requirements') != expected_environment:
         errors.append('wave-environment:' + name)
     return errors
+
+
+def planning_fixture_content_errors(before: bytes, after: bytes) -> list[str]:
+    """Permit exactly the reviewed one-literal fixture repair over protected base."""
+    start = before.find(b'def test_reauthorize_requires_atomic_intent_success(')
+    end = before.find(b'\ndef ', start + 1)
+    if end == -1:
+        end = len(before)
+    old = b"UPDATE kineticloop.planning_intents SET local_date=DATE '2026-09-27' WHERE id=%s"
+    new = old.replace(b'2026-09-27', b'2026-09-28')
+    block = before[start:end] if start >= 0 else b''
+    if start < 0 or block.count(old) != 1:
+        return ['planning-fixture-baseline-unexpected:KL-024']
+    expected = before[:start] + block.replace(old, new) + before[end:]
+    if after != expected:
+        return ['planning-fixture-content-scope:KL-024']
+    return []
+
+
+def task_fixture_scope_errors(root, base, head, task_id, changed):
+    if task_id != 'KL-024' or PLANNING_FIXTURE_PATH not in changed:
+        return []
+    return planning_fixture_content_errors(
+        git(root, 'show', base + ':' + PLANNING_FIXTURE_PATH),
+        git(root, 'show', head + ':' + PLANNING_FIXTURE_PATH))
 
 
 def ledger_definition_errors(task):
@@ -2389,6 +2426,8 @@ def validate(root, args):
                         errors.extend(hash_refresh_errors(root, base_sha, path, baseline_task, changed, protected_paths))
                     elif not matches(path, allowed):
                         errors.append('write-scope:' + args.task_id + ':' + path)
+            errors.extend(task_fixture_scope_errors(
+                root, base_sha, head, args.task_id, changed))
         elif getattr(args, 'governance_change_id', None):
             change_id = args.governance_change_id
             selected = governance_records.get(change_id)
