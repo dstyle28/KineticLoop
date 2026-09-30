@@ -4064,23 +4064,64 @@ def execute_factset_build(
     if specification is None or specification.boundary is not Boundary.BUILD:
         raise GuardRequired("command is not a factset-build owner")
     basis = dict(factset_build_basis or {})
+    # S15-local replay; Begin's advisory lock closes the missing-row race.
+    replay_key = basis.get("command_key")
+    builder = basis.get("builder_identity")
+    replay_token = None
+    replay_record = None
+    if replay_key is not None:
+        if not builder or not replay_key or not basis.get("request_hash"):
+            raise GuardRequired("build replay requires authenticated builder/key/hash")
+        replay_token = hashlib.sha256(
+            json.dumps([command_kind, replay_key], separators=(",", ":")).encode()
+        ).hexdigest()
+        replay_record = {
+            "request_hash": basis["request_hash"],
+            "outcome": basis["durable_outcome"],
+        }
+
+    def read_replay(payload: Mapping[str, Any]) -> _T | None:
+        if payload.get("builder_identity") is None:
+            return None
+        if builder != payload["builder_identity"]:
+            raise GuardRequired("factset builder ownership mismatch")
+        prior = payload.get("build_replays", {}).get(replay_token)
+        if prior is not None:
+            if prior["request_hash"] != basis.get("request_hash"):
+                raise IdempotencyConflict("build command key payload conflict")
+            return cast(_T, dict(prior["outcome"]))
+        if replay_token is None:
+            raise GuardRequired("owned builds require durable command identity")
+        return None
+
+    if command_kind == "BeginBuild":
+        # Replay first, then capture S01 in a short, separately committed read.
+        # No S01 relation/row lock survives into the S15 build transaction.
+        with connection.transaction():
+            existing = connection.execute(
+                "SELECT typed_payload FROM kineticloop.factset_revisions "
+                "WHERE subject_id=%s AND id=%s",
+                (subject_id, build_id),
+            ).fetchone()
+            if existing is not None:
+                replayed = read_replay(existing[0])
+                if replayed is not None:
+                    return replayed
+            snapshot = connection.execute(
+                "SELECT input_frontier_hash,authorization_epoch,active_program_id,"
+                "active_policy_bundle_id FROM kineticloop.user_decision_state "
+                "WHERE subject_id=%s",
+                (subject_id,),
+            ).fetchone()
+        if snapshot is None or (
+            basis.get("captured_input_frontier") != snapshot[0]
+            or basis.get("captured_epoch") != snapshot[1]
+            or basis.get("program_revision_id") != snapshot[2]
+            or basis.get("policy_id") != snapshot[3]
+        ):
+            raise GuardRequired("BeginBuild basis does not match current committed S01 basis")
     with connection.transaction():
         cursor = connection.cursor()
-        # S15-local replay; Begin's advisory lock closes the missing-row race.
-        replay_key = basis.get("command_key")
-        builder = basis.get("builder_identity")
-        replay_token = None
-        replay_record = None
-        if replay_key is not None:
-            if not builder or not replay_key or not basis.get("request_hash"):
-                raise GuardRequired("build replay requires authenticated builder/key/hash")
-            replay_token = hashlib.sha256(
-                json.dumps([command_kind, replay_key], separators=(",", ":")).encode()
-            ).hexdigest()
-            replay_record = {
-                "request_hash": basis["request_hash"],
-                "outcome": basis["durable_outcome"],
-            }
         if command_kind == "BeginBuild":
             cursor.execute(
                 "SELECT pg_advisory_xact_lock(hashtextextended(%s,0))",
@@ -4092,31 +4133,10 @@ def execute_factset_build(
             (subject_id, build_id),
         )
         existing = cursor.fetchone()
-        if existing is not None and existing[0].get("builder_identity") is not None:
-            if builder != existing[0]["builder_identity"]:
-                raise GuardRequired("factset builder ownership mismatch")
-            prior = existing[0].get("build_replays", {}).get(replay_token)
-            if prior is not None:
-                if prior["request_hash"] != basis.get("request_hash"):
-                    raise IdempotencyConflict("build command key payload conflict")
-                return cast(_T, dict(prior["outcome"]))
-            if replay_token is None:
-                raise GuardRequired("owned builds require durable command identity")
-        if command_kind == "BeginBuild":
-            cursor.execute(
-                "SELECT input_frontier_hash,authorization_epoch,active_program_id,"
-                "active_policy_bundle_id FROM kineticloop.user_decision_state "
-                "WHERE subject_id=%s",
-                (subject_id,),
-            )
-            snapshot = cursor.fetchone()
-            if snapshot is None or (
-                basis.get("captured_input_frontier") != snapshot[0]
-                or basis.get("captured_epoch") != snapshot[1]
-                or basis.get("program_revision_id") != snapshot[2]
-                or basis.get("policy_id") != snapshot[3]
-            ):
-                raise GuardRequired("BeginBuild basis does not match current committed S01 basis")
+        if existing is not None:
+            replayed = read_replay(existing[0])
+            if replayed is not None:
+                return replayed
         context: dict[str, Any] = {}
         locked: Mapping[str, frozenset[UUID]] = {}
         if command_kind == "BeginBuild":
