@@ -1,0 +1,58 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-023",
+  "reviewed_head_sha": "202999d1a16f6e7cb683f5340d8a8ec757286bd4",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "findings": [
+    {
+      "id": "KL023-GENERAL-01",
+      "classification": "BLOCKER",
+      "priority": "P2",
+      "title": "Permit FULL checkpoint fallback when the selected policy lowers the depth bound",
+      "file": "src/kineticloop/persistence/factsets.py",
+      "line": 158,
+      "description": "BeginBuild passes the new command.max_delta_depth to both _load_chain and reconstruct before storage_plan can choose FULL. A valid SEALED parent created under a prior immutable policy can have depth greater than a newly activated policy's bound. For example, a valid depth-1 parent under bound 1 and a new policy bound 0 should produce a depth-0 FULL checkpoint, as storage_plan(parent, 0) already specifies. Instead BeginBuild rejects the chain before reaching that fallback. A normal stricter-policy transition therefore cannot compact the provided canonical parent, contrary to the packet's policy-bound FULL fallback and logical DB section 8.2.",
+      "reproduction": "A read-only Python probe constructed and digest-validated a SEALED FULL plus depth-1 SEALED DELTA under max_depth=1. reconstruct(parent, ancestors, max_depth=1) succeeded and storage_plan(parent, 0) returned ('FULL', None, 0). A CanonicalViewService subclass replaced only _guard and _load_chain with read-only fixture access; invoking the actual begin_build with parent_id set and max_delta_depth=0 raised FactsetError('invalid chain depth/mode') before database access or FULL fallback. The real _load_chain additionally rejects the ancestor traversal at that smaller limit.",
+      "requested_change": "Validate and reconstruct the historical SEALED parent with its own immutable captured policy bound, then apply the newly selected policy bound to storage_plan and the resulting new build. Preserve bounded traversal and all existing closed-chain checks. Add a meaningful regression for a policy decrease, including parent depth greater than the new limit, proving a FULL checkpoint preserves the ordered membership, complete basis, digest and count and remains sealable under the new policy.",
+      "authority_refs": [
+        "docs/exec-plans/active/KL-023.md:Goal, factset_reconstruction_and_closed_digest_pu, Definition of Done",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:8.2",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md:4.1a"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-023.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/exec-plans/completed/KL-015_RESULT.yaml",
+    "docs/exec-plans/integrations/KL-015.json",
+    "docs/exec-plans/milestones/M2.json",
+    "docs/exec-plans/completed/KL-023_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-023/checks-188f716.json",
+    "docs/exec-plans/evidence/KL-023/factset_reconstruction_and_closed_digest_pu-188f716.log",
+    "docs/exec-plans/evidence/KL-023/factset_build_idempotency_and_canonical_reads_dc-188f716.log",
+    "docs/exec-plans/evidence/KL-023/factset_complete_writer_interleaving_dc-188f716.log",
+    "docs/exec-plans/evidence/KL-023/factset_seal_frontier_atomicity_and_replay_dc-188f716.log",
+    "docs/exec-plans/evidence/KL-023/factset_unit_suite_passes-188f716.log",
+    "docs/exec-plans/evidence/KL-023/factset_db_suite_passes-188f716.log",
+    "docs/exec-plans/evidence/KL-023/transaction_owner_regressions_pass-188f716.log",
+    "docs/exec-plans/evidence/KL-023/lint_passes-188f716.log",
+    "docs/exec-plans/evidence/KL-023/typecheck_passes-188f716.log",
+    "docs/exec-plans/evidence/KL-023/harness_validation_passes-188f716.log"
+  ],
+  "review_scope": {
+    "base_commit": "e97a0488515f16e840b3328c13e4b5bba6196ccf",
+    "tested_commit": "188f716a7367b0f6b0897dd6a87588f429f4bebb",
+    "independent_checks": [
+      "Read the current authority index, task packet, merged prerequisite artifacts, M2 closure, named frozen sections, acceptance gates, owner contract and review skill/contract.",
+      "Inspected the complete base-to-reviewed diff, domain/service implementation, bounded owner changes, PU/DC source assertions and revision-bound raw evidence. The tested-to-reviewed diff contains only this task's result and test evidence; implementation and tests are identical.",
+      "Independently reran tests/unit/protocol/test_factsets.py using /private/tmp/kl023-venv/bin/python: 5 passed, zero skipped/deselected/failed.",
+      "Confirmed the policy-decrease failure with a deterministic read-only service/domain probe, without database mutations.",
+      "Verified declared write scope, existing command ownership, authenticated subject/builder checks, closed revision CAS, retained basis validation, SEALED-only reads, durable build/natural completion/seal replay, rollback and newer-head preservation assertions.",
+      "Read committed real PostgreSQL evidence for both Complete/writer and T2-IN/seal serial orders, PostgreSQL-observed bounded barriers, no S01 build locks, no S16 seal statements, atomic rollback and replay. Docker/DB suites were not rerun by GENERAL to preserve reviewer resource isolation.",
+      "Verified that frozen files, migrations, prerequisite completed artifacts, requirement statuses and downstream resolver/manifest implementation are absent from the task diff. No product or release PASS is claimed."
+    ],
+    "merge_recommendation": "CHANGES_REQUIRED: the policy-decrease FULL fallback defect must be fixed and independently rereviewed at the new implementation/result SHA."
+  }
+}

@@ -1,0 +1,72 @@
+task_identity=harness-backlog-v0.2/KL-023
+tested_commit=d611ac86412531bfe4b24cae72c2ae6821b439b4
+command=KINETICLOOP_KL022_COMPOSE_PROJECT="kineticloop-kl023-reg-$(git rev-parse --short HEAD)" KINETICLOOP_KL022_DATABASE="kineticloop_kl023_reg_$(git rev-parse --short HEAD)" uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py
+PYTEST_ADDOPTS=-s (exposes persisted-state and PostgreSQL barrier observations)
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+..F.......................................................
+=================================== FAILURES ===================================
+____________ test_factset_build_stays_outside_subject_coordination _____________
+
+database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:55124/kineticloop_kl023_reg_d611ac8', 'agent': 'p...11ac8', 'auditor': 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:55124/kineticloop_kl023_reg_d611ac8', ...}
+
+    def test_factset_build_stays_outside_subject_coordination(
+        database_urls: dict[str, str],
+    ) -> None:
+        for command in ("BeginBuild", "WriteCandidate", "CompleteFactset"):
+            with psycopg.connect(database_urls["admin"]) as connection:
+                with pytest.raises(GuardRequired, match="isolated"):
+                    execute_command(connection, command, SUBJECT, lambda tx: tx.lock_subject())
+        begin_basis = {
+            "build_identity": "build-interface-test",
+            "captured_input_frontier": "frontier-1",
+            "captured_epoch": 0,
+            "program_revision_id": POLICY,
+            "policy_id": POLICY,
+            "mapping_revision_id": None,
+            "storage_mode": "FULL",
+        }
+    
+        def begin(session: Any) -> tuple[str, ...]:
+            session.insert(
+                "S15",
+                {
+                    "id": FACTSET_BUILD_TEST,
+                    "subject_id": SUBJECT,
+                    "factset_identity": "build-interface-test",
+                    "status": "BUILDING",
+                    "storage_mode": "FULL",
+                    "member_revision": 0,
+                    "completed_member_revision": None,
+                    "membership_digest": None,
+                    "ref_s20_id": None,
+                    "typed_payload": psycopg.types.json.Jsonb(session.factset_build_payload()),
+                },
+            )
+            return session.relation_locks()
+    
+        with psycopg.connect(database_urls["admin"]) as connection:
+            observed = execute_factset_build(
+                connection,
+                "BeginBuild",
+                SUBJECT,
+                FACTSET_BUILD_TEST,
+                begin,
+                factset_build_basis=begin_basis,
+            )
+        assert "factset_revisions" in observed
+>       assert "user_decision_state" not in observed
+E       AssertionError: assert 'user_decision_state' not in frozenset({'factset_revisions', 'factset_revisions_pkey', 'uq_factset_revisions_natural', 'uq_s15_subject_id', 'user_decision_state', 'user_decision_state_pkey'})
+
+tests/db/test_transaction_interfaces.py:843: AssertionError
+=========================== short test summary info ============================
+FAILED tests/db/test_transaction_interfaces.py::test_factset_build_stays_outside_subject_coordination
+1 failed, 57 passed in 14.75s
+
+exit_code=1

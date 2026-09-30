@@ -1,0 +1,17 @@
+task_identity=harness-backlog-v0.2/KL-023
+tested_commit=077c383e6a825bc6f55ece4d4311531e0bb0411f
+command=uv run pytest -q tests/db/test_factsets.py::test_build_replay_and_sealed_only_reads
+PYTEST_ADDOPTS=-s (exposes persisted-state and PostgreSQL barrier observations)
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+persisted lifecycle: builder/key conflicts, READY/SEALED immutable, complete basis, DELTA/FULL identical
+.
+1 passed in 4.03s
+
+exit_code=0

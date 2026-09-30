@@ -1,0 +1,52 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-023",
+  "reviewed_head_sha": "ee461b973bbb43df3673efa4361d018634dafbc8",
+  "review_type": "PROTOCOL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "id": "KL023-PROTOCOL-01",
+      "classification": "BLOCKER",
+      "title": "Preserve the frozen natural completion and seal replay identities",
+      "file": "src/kineticloop/persistence/transactions.py",
+      "line": 4088,
+      "description": "Frozen DB section 11 defines CompleteFactset replay by build_id + closed_member_revision + completion digest, returning the original READY/SEALED completion, and SealFactset replay by build_id + completion identity. The implementation instead indexes build replay by command_kind/client key and seal replay by actor/client key. After a successful completion, an authenticated call with the same closed revision/digest but a different client key misses read_replay and is rejected by the BUILDING-only guard at lines 4193-4198. After sealing, the same build/completion under a different client key misses the S02 replay in factsets.py lines 355-365 and is rejected by the READY-only seal guard. It does not repoint the old head, but it also does not return the original identities required by section 11 and Protocol section 4.1a. The current tests exercise only reuse of the original client keys.",
+      "required_change": "Retain client-key payload-conflict checks while adding owner-controlled replay by the frozen natural completion/seal identities. Add migrated PostgreSQL checks for the same completion and seal with another client key, including after SEALED and after a newer head, and assert no state/event/outbox changes. A change to the frozen replay meaning requires SPEC_CHANGE_REQUIRED rather than a local contract exception.",
+      "authority_refs": [
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md#11-r2-新命令与错误合同",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md#41a-factset-构建与封存"
+      ]
+    },
+    {
+      "id": "KL023-PROTOCOL-02",
+      "classification": "BLOCKER",
+      "title": "Deny evaluation actors the live build/seal command path",
+      "file": "src/kineticloop/persistence/factsets.py",
+      "line": 58,
+      "description": "BuilderIdentity explicitly admits ActorRole.EVALUATION, and _guard at lines 136-142 treats a registered EVALUATION namespace as sufficient for every build mutation and seal. The resulting seal path writes S01.current_factset_id and canonical S03/S04 through live T2-SEAL. Neither execute_command nor the changed build/seal owner adds an evaluation-role denial; KL-017's storage boundary protects S38/S42/S45/S46/S47, not these S01/S15/S16/S02/S03/S04 surfaces. Thus an ingress-authenticated evaluation actor supplied with the service's writer connection can enter live command storage instead of isolated evaluation output. Frozen Protocol section 7.4 forbids replay writes to user live state or notifications, and frozen DB S46/S47 requires read-only historical T1-T8 reconstruction outside live transactions. Tests cover a SUBJECT-vs-TEST mismatch, but no evaluation write denial.",
+      "required_change": "Reject evaluation actors at every live factset mutation/seal entry point before owner execution. Keep authorized historical reads separate if needed; evaluation-derived output belongs in S46/S47. Add service-bound PostgreSQL denial checks for a registered evaluation actor that assert S01/S15/S16/S02/S03/S04 remain unchanged. Supporting evaluation writes through live T2 would require SPEC_CHANGE_REQUIRED.",
+      "authority_refs": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md#74-replay-状态机",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md#s46-replay_runs--m隔离-evaluation-存储",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md#s47-replay_artifacts--i隔离-evaluation-存储"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-023.md",
+    "docs/exec-plans/completed/KL-015_RESULT.yaml",
+    "docs/exec-plans/integrations/KL-015.json",
+    "docs/exec-plans/milestones/M2.json",
+    "docs/exec-plans/completed/KL-023_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-023/checks-1f52e6a.json",
+    "docs/exec-plans/evidence/KL-023/factset_unit_suite_passes-1f52e6a.log",
+    "docs/exec-plans/evidence/KL-023/factset_db_suite_passes-1f52e6a.log",
+    "docs/exec-plans/evidence/KL-023/transaction_owner_regressions_pass-1f52e6a.log",
+    "src/kineticloop/protocol/factsets.py",
+    "src/kineticloop/persistence/factsets.py",
+    "src/kineticloop/persistence/transactions.py",
+    "tests/unit/protocol/test_factsets.py",
+    "tests/db/test_factsets.py"
+  ],
+  "review_contract_version": "v0.2"
+}

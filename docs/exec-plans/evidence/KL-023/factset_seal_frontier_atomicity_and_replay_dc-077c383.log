@@ -1,0 +1,20 @@
+task_identity=harness-backlog-v0.2/KL-023
+tested_commit=077c383e6a825bc6f55ece4d4311531e0bb0411f
+command=uv run pytest -q tests/db/test_factsets.py::test_seal_frontier_atomicity_and_old_replay
+PYTEST_ADDOPTS=-s (exposes persisted-state and PostgreSQL barrier observations)
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+PostgreSQL barrier kl023-second-input: blocking_pids=[109], query=SELECT subject_id,authorization_epoch,current_factset_id,input_frontier_hash,active_policy_bundle_id,active_program_id,current_manifest_id FROM kineticloop.user_decision_state WHERE subject_id=$1 FOR UPDATE
+persisted T2 serial outcome=input; all S01/S15/S02/S03/S04 atomic, seal member scans=0
+.PostgreSQL barrier kl023-second-seal: blocking_pids=[114], query=SELECT subject_id,authorization_epoch,current_factset_id,input_frontier_hash,active_policy_bundle_id,active_program_id,current_manifest_id FROM kineticloop.user_decision_state WHERE subject_id=$1 FOR UPDATE
+persisted T2 serial outcome=seal; all S01/S15/S02/S03/S04 atomic, seal member scans=0
+.
+2 passed in 3.67s
+
+exit_code=0

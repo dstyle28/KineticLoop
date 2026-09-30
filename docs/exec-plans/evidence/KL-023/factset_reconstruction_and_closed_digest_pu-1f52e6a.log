@@ -1,0 +1,8 @@
+task_identity=harness-backlog-v0.2/KL-023
+tested_commit=1f52e6af53b98474d07da7105928087ae3e09e12
+command=uv run pytest -q tests/unit/protocol/test_factsets.py::test_full_delta_reconstruction_and_digest
+PYTEST_ADDOPTS=-s (exposes persisted-state and PostgreSQL barrier observations)
+.
+1 passed in 0.01s
+
+exit_code=0
