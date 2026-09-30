@@ -1,0 +1,33 @@
+tested_commit: f4e81eecbe15e536c02e373fa366135ab69eeac3
+command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/davetian/.codex/worktrees/59e0/KineticLoop
+configfile: pyproject.toml
+collected 189 items
+
+tests/unit/config/test_secret_loader.py .                                [  0%]
+tests/unit/contracts/test_artifact_registry.py ...                       [  2%]
+tests/unit/contracts/test_commands.py ..............                     [  9%]
+tests/unit/contracts/test_errors.py .                                    [ 10%]
+tests/unit/contracts/test_receipts.py ........................           [ 22%]
+tests/unit/contracts/test_results.py .....                               [ 25%]
+tests/unit/contracts/test_safety_registry.py ..                          [ 26%]
+tests/unit/contracts/test_shadow.py ...                                  [ 28%]
+tests/unit/identity/test_roles.py .............                          [ 34%]
+tests/unit/integrations/test_provider.py ...........                     [ 40%]
+tests/unit/persistence/test_fact_children.py ...                         [ 42%]
+tests/unit/persistence/test_immutability.py ....                         [ 44%]
+tests/unit/persistence/test_schema_topology.py .......                   [ 48%]
+tests/unit/persistence/test_transactions.py ...                          [ 49%]
+tests/unit/primitives/test_canonical.py ...........                      [ 55%]
+tests/unit/primitives/test_hashes.py ........                            [ 59%]
+tests/unit/primitives/test_ids.py .........                              [ 64%]
+tests/unit/primitives/test_times.py .......................              [ 76%]
+tests/unit/protocol/test_authorization.py ...                            [ 78%]
+tests/unit/security/test_redaction.py .................................. [ 96%]
+...                                                                      [ 97%]
+tests/unit/security/test_synthetic_fixtures.py .                         [ 98%]
+tests/unit/test_cli.py ...                                               [100%]
+
+============================= 189 passed in 41.27s =============================

@@ -2351,27 +2351,140 @@
         "KL-015"
       ],
       "conditional_depends_on": [],
+      "commands": [
+        "SealFactset"
+      ],
+      "transaction_boundaries": [
+        "T2"
+      ],
+      "invariant_ids": [
+        "INV-03",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S15",
+        "S16"
+      ],
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "docs/contracts/repository_transactions.md",
+        "docs/exec-plans/completed/KL-015_RESULT.yaml",
+        "docs/exec-plans/integrations/KL-015.json",
+        "docs/exec-plans/milestones/M2.json"
+      ],
+      "entry_conditions": [
+        "M2 closure PASS: docs/exec-plans/milestones/M2.json",
+        "merged prerequisite result and integration artifact exist for KL-015",
+        "G-SHADOW and G-REGISTRY remain closed by the merged M2 closure"
+      ],
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE"
+      ],
+      "deliverables": [
+        "typed CanonicalViewService build/complete/seal commands and SEALED-only canonical reader over the merged transaction owner",
+        "deterministic bounded FULL/DELTA reconstruction, derived digest/count, authenticated builder ownership and durable build replay",
+        "PU and migrated PostgreSQL DC lifecycle/interleaving/rollback/replay evidence"
+      ],
+      "definition_of_done": "FULL/DELTA reconstruction preserves the complete selected evidence basis and derives one deterministic digest/count at a closed member revision; authenticated build commands are idempotent with payload conflict rejection; READY is immutable and noncanonical; only validated SEALED chains are readable; CompleteFactset excludes concurrent writers; T2-SEAL revalidates the captured frontier/epoch/basis without scanning members under S01 and commits S15/S01/S02/S03/S04 atomically; a stale build cannot seal; old seal replay returns the original identity without repointing a later head; no frozen authority, migration, downstream resolver/manifest implementation or product requirement PASS is added",
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_pu_checks",
-        "task_scope_dc_checks"
+        "factset_reconstruction_and_closed_digest_pu",
+        "factset_build_idempotency_and_canonical_reads_dc",
+        "factset_complete_writer_interleaving_dc",
+        "factset_seal_frontier_atomicity_and_replay_dc",
+        "factset_unit_suite_passes",
+        "factset_db_suite_passes",
+        "transaction_owner_regressions_pass",
+        "lint_passes",
+        "typecheck_passes",
+        "harness_validation_passes"
+      ],
+      "check_contracts": [
+        {
+          "check_id": "factset_reconstruction_and_closed_digest_pu",
+          "command": "uv run pytest -q tests/unit/protocol/test_factsets.py::test_full_delta_reconstruction_and_digest",
+          "pass_oracle": "FULL and bounded DELTA SET/REMOVE reconstruction produce identical ordered logical membership/digest/count; missing, foreign, unsealed or cyclic parents reject; depth boundary compacts to FULL; unresolved/admission/association basis required by the downstream resolver is retained; member revision and basis are bound to completion."
+        },
+        {
+          "check_id": "factset_build_idempotency_and_canonical_reads_dc",
+          "command": "uv run pytest -q tests/db/test_factsets.py::test_build_replay_and_sealed_only_reads",
+          "pass_oracle": "Migrated PostgreSQL service commands enforce subject and unique builder ownership. Same BeginBuild/member-operation/Complete key and payload return original identities, including completion replay after SEALED; changed payload or closed revision conflicts. BUILDING/READY never appear in canonical reads; READY/SEALED content is immutable."
+        },
+        {
+          "check_id": "factset_complete_writer_interleaving_dc",
+          "command": "uv run pytest -q tests/db/test_factsets.py::test_complete_serializes_with_candidate_writer",
+          "pass_oracle": "Bounded PostgreSQL-observed S15 barrier proves writer vs Complete produces a certificate for exactly one closed revision/count/digest; the losing writer cannot append or reuse a stale completion. No sleep-based oracle; no S01 lock during bulk reconstruction."
+        },
+        {
+          "check_id": "factset_seal_frontier_atomicity_and_replay_dc",
+          "command": "uv run pytest -q tests/db/test_factsets.py::test_seal_frontier_atomicity_and_old_replay",
+          "pass_oracle": "Real T2-IN/frontier or epoch change vs T2-SEAL yields only legal serial outcomes. Stale/mismatched completion rejects with S01/S15/S02/S03/S04 unchanged. Injected failure rolls back all writes. ACK-loss replay returns original seal result after a newer head, never repoints it. Prove seal performs no full S16 member scan/recompute under S01."
+        },
+        {
+          "check_id": "factset_unit_suite_passes",
+          "command": "uv run pytest -q tests/unit/protocol/test_factsets.py",
+          "pass_oracle": "Entire file exits 0 with no failed/skipped/deselected tests."
+        },
+        {
+          "check_id": "factset_db_suite_passes",
+          "command": "uv run pytest -q tests/db/test_factsets.py",
+          "pass_oracle": "Entire migrated PostgreSQL file exits 0 with no failed/skipped/deselected tests."
+        },
+        {
+          "check_id": "transaction_owner_regressions_pass",
+          "command": "KINETICLOOP_KL022_COMPOSE_PROJECT=\"kineticloop-kl023-reg-$(git rev-parse --short HEAD)\" KINETICLOOP_KL022_DATABASE=\"kineticloop_kl023_reg_$(git rev-parse --short HEAD)\" uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py",
+          "pass_oracle": "Existing owner, lock-order, fencing, replay, atomicity and authorization regression suites exit 0 with no failed/skipped/deselected tests in the explicitly task-unique regression DB/Compose namespace."
+        },
+        {
+          "check_id": "lint_passes",
+          "command": "uv run kl lint",
+          "pass_oracle": "Exit 0."
+        },
+        {
+          "check_id": "typecheck_passes",
+          "command": "uv run kl typecheck",
+          "pass_oracle": "Exit 0."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Exit 0 and HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-023/**"
       ],
       "resource_keys": [
+        "transaction_interfaces",
         "user_coordination"
       ],
       "write_paths": [
-        "src/kineticloop/protocol/**",
-        "src/kineticloop/workflow/**",
-        "tests/protocol/**",
-        "tests/faults/**"
+        "src/kineticloop/protocol/factsets.py",
+        "src/kineticloop/persistence/factsets.py",
+        "src/kineticloop/persistence/transactions.py",
+        "tests/unit/protocol/test_factsets.py",
+        "tests/db/test_factsets.py",
+        "docs/contracts/factsets.md"
       ],
-      "write_paths_status": null,
+      "write_paths_status": "ENFORCEABLE",
       "review_requirements": [
+        "DB_CONCURRENCY",
         "GENERAL",
         "PROTOCOL"
       ],
-      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
-      "status": "NOT_STARTED"
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED",
+      "shared_hotspot": true
     },
     {
       "task_identity": "harness-backlog-v0.2/KL-024",
@@ -2381,28 +2494,168 @@
         "KL-015"
       ],
       "conditional_depends_on": [],
+      "commands": [
+        "AdmitOrReviseIntent",
+        "AcquireLease",
+        "RenewLease"
+      ],
+      "transaction_boundaries": [
+        "T4",
+        "T5"
+      ],
+      "invariant_ids": [
+        "INV-10",
+        "INV-11",
+        "INV-13",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S24",
+        "S27",
+        "S28",
+        "S29",
+        "S30"
+      ],
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "docs/contracts/repository_transactions.md",
+        "docs/exec-plans/completed/KL-015_RESULT.yaml",
+        "docs/exec-plans/integrations/KL-015.json",
+        "docs/exec-plans/milestones/M2.json"
+      ],
+      "entry_conditions": [
+        "M2 closure PASS: docs/exec-plans/milestones/M2.json",
+        "merged prerequisite result and integration artifact exist for KL-015",
+        "G-SHADOW and G-REGISTRY remain closed by the merged M2 closure"
+      ],
+      "environment_requirements": [
+        "ISOLATED_POSTGRESQL_NAMESPACE"
+      ],
+      "deliverables": [
+        "typed PlanningWorkflowService single-flight join/revision admission and acquire/renew lease commands over the merged transaction owner",
+        "one additive frozen-S27 active-partition uniqueness migration after d4c1a9e7b203 with faithful ADMITTED status handling",
+        "PU and migrated PostgreSQL DC quota/budget/deadline/fence/request-revision evidence"
+      ],
+      "definition_of_done": "same normalized scope/fingerprint/current basis joins the existing active intent/attempt without a new request revision, attempt, root quota debit or budget reset; changed constraints atomically append S28, invalidate the old S29 and switch current pointers while preserving root budget/deadline; a new root atomically consumes policy-bound S30 quota; frozen S27 active subject/date/purpose uniqueness is enforced in PostgreSQL; acquire/takeover uses monotonic owner/fence CAS and renew requires a live current owner/token within deadline; all shared writes reject stale request, attempt, fence, expired lease and terminal intent; admission never fabricates success/authorization; existing T6 remains success owner; no dispatch ledger, model loop, full reaper or product requirement PASS is added",
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_pu_checks",
-        "task_scope_dc_checks"
+        "planning_normalization_and_admission_pu",
+        "planning_fence_deadline_and_terminal_pu",
+        "planning_active_partition_and_quota_dc",
+        "planning_join_revision_budget_preservation_dc",
+        "planning_takeover_and_renew_interleavings_dc",
+        "planning_atomicity_and_ack_loss_dc",
+        "planning_unit_suite_passes",
+        "planning_db_suite_passes",
+        "migration_chain_regressions_pass",
+        "transaction_owner_regressions_pass",
+        "lint_passes",
+        "typecheck_passes",
+        "harness_validation_passes"
+      ],
+      "check_contracts": [
+        {
+          "check_id": "planning_normalization_and_admission_pu",
+          "command": "uv run pytest -q tests/unit/workflow/test_planning.py::test_normalized_single_flight_and_revision_decisions",
+          "pass_oracle": "Versioned deterministic server normalization distinguishes partition from semantic fingerprint; same scope/fingerprint/current basis joins; changed constraints revise; different purpose is policy-checked; terminal intent cannot reopen; new explicit request passes root admission policy; auto triggers never bypass policy or quota."
+        },
+        {
+          "check_id": "planning_fence_deadline_and_terminal_pu",
+          "command": "uv run pytest -q tests/unit/workflow/test_planning.py::test_fence_deadline_and_terminal_guards",
+          "pass_oracle": "Owner/token/request/attempt/status and trusted-time guard denies old or expired workers; takeover increases fence, renewal extends only live lease within original deadline; exact lease/deadline equality denies; frozen ADMITTED and terminal meanings are explicit with no generic FAILED substitution."
+        },
+        {
+          "check_id": "planning_active_partition_and_quota_dc",
+          "command": "uv run pytest -q tests/db/test_planning.py::test_active_partition_and_quota_are_atomic",
+          "pass_oracle": "Migrated PostgreSQL contains a partial unique active subject/local_date/purpose index faithful to ADMITTED/RUNNING including documented legacy PENDING compatibility if retained. Two real admitted contenders cannot create duplicate active roots; root/S30/initial S28/S29/receipt/event/outbox commit atomically or fully roll back. Joined/revised intent never consumes a new root quota."
+        },
+        {
+          "check_id": "planning_join_revision_budget_preservation_dc",
+          "command": "uv run pytest -q tests/db/test_planning.py::test_join_and_revision_preserve_root_authority",
+          "pass_oracle": "Service-level same-basis join returns current intent/request/attempt without extra S28/S29 or quota debit; changed constraints append one immutable S28, make the old attempt STALE and switch pointers atomically. Root counters/limits/deadline persist, and old request/attempt fails current shared-write and existing T6 guards; replay returns original result and changed payload conflicts."
+        },
+        {
+          "check_id": "planning_takeover_and_renew_interleavings_dc",
+          "command": "uv run pytest -q tests/db/test_planning.py::test_takeover_and_renew_fence_old_workers",
+          "pass_oracle": "Bounded PostgreSQL-observed competing acquire/takeover/renew transactions prove one CAS winner, strictly larger token and server-time expiry within deadline. Old owner/token, obsolete request/attempt, lease equality/expiry and terminal intent all lose shared-write/commit authority; a renewal waiter rereads post-lock state. No model/network wait inside coordination."
+        },
+        {
+          "check_id": "planning_atomicity_and_ack_loss_dc",
+          "command": "uv run pytest -q tests/db/test_planning.py::test_atomicity_and_ack_loss_replay",
+          "pass_oracle": "Injected failures roll back intent/request/attempt/quota and S02/S03/S04 together; ACK-loss replay returns exact historical identities once without current worker authority. Same key with changed payload conflicts. Revision returning to earlier constraints creates a new revision and never revives historical authority."
+        },
+        {
+          "check_id": "planning_unit_suite_passes",
+          "command": "uv run pytest -q tests/unit/workflow/test_planning.py",
+          "pass_oracle": "Entire file exits 0 with no failed/skipped/deselected tests."
+        },
+        {
+          "check_id": "planning_db_suite_passes",
+          "command": "uv run pytest -q tests/db/test_planning.py",
+          "pass_oracle": "Entire service-level migrated PostgreSQL file exits 0 with no failed/skipped/deselected tests."
+        },
+        {
+          "check_id": "migration_chain_regressions_pass",
+          "command": "uv run pytest -q tests/db/test_migrations.py",
+          "pass_oracle": "The existing migration/ownership/permission/Frozen-protection suite plus the exact additive successor assertions exits 0 with no failed/skipped/deselected tests; zero-to-head rebuild includes the new active index; historical migration bytes remain unchanged."
+        },
+        {
+          "check_id": "transaction_owner_regressions_pass",
+          "command": "KINETICLOOP_KL022_COMPOSE_PROJECT=\"kineticloop-kl024-reg-$(git rev-parse --short HEAD)\" KINETICLOOP_KL022_DATABASE=\"kineticloop_kl024_reg_$(git rev-parse --short HEAD)\" uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py",
+          "pass_oracle": "Existing owner, lock-order, fencing, replay, atomicity and authorization regression suites exit 0 with no failed/skipped/deselected tests in the explicitly task-unique regression DB/Compose namespace."
+        },
+        {
+          "check_id": "lint_passes",
+          "command": "uv run kl lint",
+          "pass_oracle": "Exit 0."
+        },
+        {
+          "check_id": "typecheck_passes",
+          "command": "uv run kl typecheck",
+          "pass_oracle": "Exit 0."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Exit 0 and HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-024/**"
       ],
       "resource_keys": [
-        "planning_ledger"
+        "migration_chain",
+        "persistence_schema",
+        "planning_ledger",
+        "transaction_interfaces",
+        "user_coordination"
       ],
       "write_paths": [
-        "src/kineticloop/protocol/**",
-        "src/kineticloop/workflow/**",
-        "tests/protocol/**",
-        "tests/faults/**"
+        "src/kineticloop/workflow/planning.py",
+        "src/kineticloop/persistence/planning.py",
+        "src/kineticloop/persistence/transactions.py",
+        "migrations/versions/e8c2f1a6b904_planning_active_partition.py",
+        "tests/unit/workflow/test_planning.py",
+        "tests/db/test_planning.py",
+        "tests/db/test_migrations.py",
+        "docs/contracts/planning_intents.md"
       ],
-      "write_paths_status": null,
+      "write_paths_status": "ENFORCEABLE",
       "review_requirements": [
         "DB_CONCURRENCY",
         "GENERAL",
         "PROTOCOL"
       ],
-      "packet_refinement": "READY_WHEN_DEPENDENCIES_AND_GATES_SATISFIED",
-      "status": "NOT_STARTED"
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED",
+      "shared_hotspot": true
     },
     {
       "task_identity": "harness-backlog-v0.2/KL-025",
@@ -3295,26 +3548,135 @@
         "KL-055"
       ],
       "conditional_depends_on": [],
+      "commands": [],
+      "transaction_boundaries": [],
+      "invariant_ids": [],
+      "table_ids": [],
+      "context_files": [
+        "12_KineticLoop_Integration_Spec_v0.1.md",
+        "KineticLoop_Integration_Matrix_v0.1.json",
+        "KineticLoop_Integration_Acceptance_v0.1.json",
+        "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
+        "docs/contracts/provider_evidence.md",
+        "docs/exec-plans/completed/KL-055_RESULT.yaml",
+        "docs/exec-plans/integrations/KL-055.json"
+      ],
+      "entry_conditions": [
+        "KL-055 merged",
+        "This task PUBLISHES launch_source_scope; it is not blocked by M9A source-scope completion"
+      ],
+      "environment_requirements": [],
+      "deliverables": [
+        "immutable versioned launch_source_scope and descriptive provider capability registry with deterministic digest",
+        "mandatory Hevy and Apple HealthKit plus manual/chat fallback, optional sources and default-denied Oura AI exposure metadata",
+        "hermetic PU registry and existing provider boundary regression evidence"
+      ],
+      "definition_of_done": "publish immutable deterministic versioned launch_source_scope with HEVY and APPLE_HEALTHKIT mandatory and MANUAL_CHAT fallback; OURA and auxiliary imports remain optional/nonblocking and Oura AI exposure remains denied pending INT-06; retired spreadsheet migration is absent; descriptive capabilities preserve provenance, watermark, missing-data, degradation and exposure-policy distinctions and grant no fact/admission/command/authorization/execution authority; registry membership and transport health do not imply coverage or LAUNCH_READY; provider data cannot mutate trusted registry policy; KL-050 creates the source-scope gate without waiting for M9A completion and does not unblock KL-051/KL-052 actual adapters or claim requirement PASS",
+      "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_pu_checks"
+        "launch_scope_required_sources",
+        "launch_scope_optional_sources",
+        "launch_registry_closed_canonical_identity",
+        "launch_registry_version_and_digest",
+        "launch_registry_evidence_only",
+        "launch_registry_exposure_policy",
+        "launch_registry_health_coverage_separation",
+        "launch_registry_hermetic",
+        "launch_registry_suite_passes",
+        "provider_contract_regressions",
+        "lint_passes",
+        "typecheck_passes",
+        "harness_validation_passes"
+      ],
+      "check_contracts": [
+        {
+          "check_id": "launch_scope_required_sources",
+          "command": "uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_launch_scope_required_sources",
+          "pass_oracle": "Exactly MANUAL_CHAT fallback plus both HEVY and APPLE_HEALTHKIT required launch integrations are published; omission or downgrade of either rejects."
+        },
+        {
+          "check_id": "launch_scope_optional_sources",
+          "command": "uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_optional_sources_do_not_block_launch",
+          "pass_oracle": "OURA, HealthKit nutrition, MacroFactor and DEXA are optional/nonblocking, do not silently activate, and retired spreadsheet migration is absent; promoting an optional source requires explicitly versioned approved policy/ADR."
+        },
+        {
+          "check_id": "launch_registry_closed_canonical_identity",
+          "command": "uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_registry_rejects_invalid_duplicate_unknown_entries",
+          "pass_oracle": "Canonical ProviderId/StreamId reuse and closed immutable metadata reject unknown identities, malformed versions, duplicate/contradictory entries and provider-owned registration."
+        },
+        {
+          "check_id": "launch_registry_version_and_digest",
+          "command": "uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_registry_version_and_digest_are_deterministic",
+          "pass_oracle": "Equivalent registry content yields identical canonical serialization/version-bound digest regardless of input order; semantic changes change digest; mutation is rejected."
+        },
+        {
+          "check_id": "launch_registry_evidence_only",
+          "command": "uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_registry_cannot_grant_command_or_fact_authority",
+          "pass_oracle": "Capability entries describe domains/provenance/transport only and cannot grant canonical fact, admission, readiness, approval, authorization, execution, production activation or command authority; provider observations remain evidence through KL-055 boundary."
+        },
+        {
+          "check_id": "launch_registry_exposure_policy",
+          "command": "uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_oura_ai_exposure_remains_gated",
+          "pass_oracle": "Oura raw and derived data AI exposure defaults to denied and cannot be enabled by membership/availability/connected state or a caller flag; separate INT-06 compliance approval remains required."
+        },
+        {
+          "check_id": "launch_registry_health_coverage_separation",
+          "command": "uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_scope_membership_is_not_health_coverage_or_launch_ready",
+          "pass_oracle": "Launch requirement, runtime connection health, stream coverage/missingness and real adapter launch readiness are distinct facts; CONNECTED does not imply complete/zero-valued coverage or LAUNCH_READY; partial/absent sources declare degradation."
+        },
+        {
+          "check_id": "launch_registry_hermetic",
+          "command": "uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_registry_is_hermetic",
+          "pass_oracle": "No network, credentials, environment discovery, database or Docker access occurs; explicit immutable trusted policy supplies registry values."
+        },
+        {
+          "check_id": "launch_registry_suite_passes",
+          "command": "uv run pytest -q tests/unit/integrations/test_launch_registry.py",
+          "pass_oracle": "Entire registry file exits 0 with no failed/skipped/deselected tests."
+        },
+        {
+          "check_id": "provider_contract_regressions",
+          "command": "uv run pytest -q tests/unit/integrations",
+          "pass_oracle": "Existing KL-055 evidence-only, subject binding, credential redaction and hermetic provider boundary regressions pass unchanged."
+        },
+        {
+          "check_id": "lint_passes",
+          "command": "uv run kl lint",
+          "pass_oracle": "Exit 0."
+        },
+        {
+          "check_id": "typecheck_passes",
+          "command": "uv run kl typecheck",
+          "pass_oracle": "Exit 0."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Exit 0 and HARNESS_CHECK_PASS."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-050/**"
       ],
       "resource_keys": [
         "provider_contracts",
         "registry_coordination"
       ],
       "write_paths": [
-        "src/kineticloop/integrations/**",
-        "tests/integrations/**"
+        "src/kineticloop/integrations/launch_registry.py",
+        "tests/unit/integrations/test_launch_registry.py",
+        "docs/contracts/launch_source_scope.md"
       ],
-      "write_paths_status": null,
+      "write_paths_status": "ENFORCEABLE",
       "review_requirements": [
         "DB_CONCURRENCY",
         "GENERAL",
         "SECURITY_DATA_BOUNDARY"
       ],
-      "packet_refinement": "MUST_REFINE_BEFORE_READY",
-      "status": "NOT_STARTED"
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED",
+      "shared_hotspot": false
     },
     {
       "task_identity": "harness-backlog-v0.2/KL-051",
