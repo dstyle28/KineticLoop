@@ -1,0 +1,53 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-032",
+  "reviewed_head_sha": "97f4d701f0ba10c6d6209ef284aaadc13472025b",
+  "review_type": "GENERAL",
+  "status": "PASS",
+  "review_contract_version": "v0.2",
+  "base_commit": "7d24ee6dd0458e2971f26f9ac96d0465dae5ac22",
+  "tested_commit": "bb2cf012895e16b07e247f3497183c4b8eb847ee",
+  "summary": "The exact future KL-024 fixture literal authorization preserves scope and the head-day negative oracle. Both prior findings are closed: regression inputs use immutable protected-base bytes, and post-test evidence is appended under fresh paths. No blockers remain.",
+  "findings": [],
+  "verification": [
+    "Independently reviewed corrected implementation/result SHA 97f4d701f0ba10c6d6209ef284aaadc13472025b through Git against protected base 7d24ee6dd0458e2971f26f9ac96d0465dae5ac22, with the current index, repository skill, governance/review/merge contracts, HG-032 record, KL-024 packet and actual diff.",
+    "The corrected revision differs from previously reviewed 2f2c028 only in three bookkeeping paths: checks.json restored to tested bytes, checks-bb2cf01.json newly added and the governance record updated. No source, test, fixture, migration or selected raw check log changed.",
+    "Verified HG-032 schema conformance and exact 45-file protected-base-to-reviewed declaration. Only KL-024 task metadata changes, by adding the exact transaction fixture write path; all mandatory checks, statuses and other task definitions remain unchanged. The protected base contains no KL-024 result and HG-032 was unused.",
+    "Verified every indexed checksum and manifest checksum/byte count directly from the corrected Git revision. The unchanged changed-task base/head review union is GENERAL, PROTOCOL and DB_CONCURRENCY.",
+    "The prior read-only source audit passed Frozen/product/migration/database-test/completed/requirement/integration/milestone immutability and exact source-SHA equality for the historical BLOCKED KL-024 result, failure, migration and proposal. Those bytes are identical at the corrected reviewed revision.",
+    "Inspected the source uniqueness collision and literal proposal: INTENT moves off the active INTENT_2 date to unused 2026-09-28 while preserving the head-day mismatch against 2026-09-26, GuardRequired assertion, restoration, other negative cases and successful atomic completion. Governance changes no database fixture or product path.",
+    "The byte-exact task guard reads committed protected-base/head bytes and permits only the single literal substitution. Negative tests reject wrong dates, altered assertions, skips, restoration changes and unrelated content. Fixture regression inputs use immutable protected-base Git bytes.",
+    "The disposable future_fixture.py proof was independently rerun at the preceding reviewed revision and passed all 49 scope regressions after applying only the authorized fixture patch. All proof source, regression-test source and relevant fixture bytes are unchanged at the corrected revision.",
+    "Verified checks-bb2cf01.json exactly projects current checks_run and tested_commit bb2cf012895e16b07e247f3497183c4b8eb847ee. Every selected -verified.log exists at the reviewed revision, matches its command and tested SHA and reports exit_code 0. Raw evidence reports 228 harness and 202 unit tests passing plus harness validation, lint and typecheck. Historical failed diagnostics remain preserved and are not selected as PASS evidence.",
+    "Closed the prior evidence-append blocker by verifying historical checks.json is byte-identical to tested_commit. Independently ran governance_suffix_errors over the complete tested-to-reviewed chain and corrected-reviewed-to-current-HEAD chain: both return no errors. The latter suffix contains review records only.",
+    "No expensive full suite or database suite was repeated because the corrected revision changes only evidence/record bookkeeping and all executable source plus selected raw logs remain identical."
+  ],
+  "limitations": [
+    "KL-024 remains historical BLOCKED source evidence; governance does not implement the fixture repair or establish KL-024 task, product, release or merge PASS. The KL-024 owner must apply only the declared literal repair and rerun its mandatory checks and exact-SHA reviews.",
+    "GENERAL PASS binds exactly 97f4d701f0ba10c6d6209ef284aaadc13472025b. Merge requires the complete specialist review union at that SHA and a review-record-only suffix."
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-032.yaml",
+    "docs/exec-plans/active/KL-024.md",
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_planning_fixture_scope.py",
+    "docs/exec-plans/evidence/HG-032/checks-bb2cf01.json",
+    "docs/exec-plans/evidence/HG-032/checks.json",
+    "docs/exec-plans/evidence/HG-032/audit.py",
+    "docs/exec-plans/evidence/HG-032/future_fixture.py",
+    "docs/exec-plans/evidence/HG-032/scope_and_blocker_audit-verified.log",
+    "docs/exec-plans/evidence/HG-032/future_fixture_compatibility-verified.log",
+    "docs/exec-plans/evidence/HG-032/fixture_scope_regressions-verified.log",
+    "docs/exec-plans/evidence/HG-032/harness_tests-verified.log",
+    "docs/exec-plans/evidence/HG-032/unit_tests-verified.log",
+    "docs/exec-plans/evidence/HG-032/harness_validation-verified.log",
+    "docs/exec-plans/evidence/HG-032/lint-verified.log",
+    "docs/exec-plans/evidence/HG-032/typecheck-verified.log",
+    "docs/exec-plans/evidence/HG-032/diff_clean-verified.log",
+    "docs/exec-plans/evidence/HG-032/KL024_RESULT.yaml",
+    "docs/exec-plans/evidence/HG-032/KL024_failure.log",
+    "docs/exec-plans/evidence/HG-032/KL024_proposal.patch",
+    "docs/exec-plans/evidence/HG-032/KL024_migration.txt"
+  ]
+}

@@ -90,6 +90,15 @@ M1_CLOSURE_M2_TASK_IDS = {
 M2_REFINED_TASK_IDS = M1_CLOSURE_M2_TASK_IDS | {'KL-072', 'KL-073'}
 WAVE_REFINED_TASK_IDS = {'KL-023', 'KL-024', 'KL-050'}
 M2_TASK_IDS = M2_REFINED_TASK_IDS
+PLANNING_FIXTURE_PATH = 'tests/db/test_transaction_interfaces.py'
+PLANNING_FIXTURE_CONTRACT = (
+    "KL-024 may change only the DATE literal 2026-09-27 to 2026-09-28 in the "
+    "INTENT local_date UPDATE inside test_reauthorize_requires_atomic_intent_success. "
+    "Preserve every other byte in tests/db/test_transaction_interfaces.py, including "
+    "the head day GuardRequired assertion, restoration to 2026-09-26, other negative "
+    "cases and successful atomic intent completion. Do not skip tests or weaken "
+    "uq_s27_active_partition, transaction guards or authorization semantics."
+)
 M2_REGRESSION_COMMANDS = [
     'uv run pytest -q -p no:cacheprovider',
     'uv run kl check-harness',
@@ -563,7 +572,7 @@ def packet_errors(task, text):
     checks = section(text, 'Checks required for this task PR')
     if checks is None or sorted(bullets(checks)) != sorted(task['checks_required_for_this_task']):
         errors.append('packet-checks:' + name)
-    if (name in M2_REFINED_TASK_IDS or (name in WAVE_REFINED_TASK_IDS
+    if (name in M2_REFINED_TASK_IDS or (name in (WAVE_REFINED_TASK_IDS | {'KL-025'})
                                       and task.get('packet_refinement') == 'ENFORCEABLE')):
         read_first = section(text, 'Read first') or ''
         if bullets(read_first) != task.get('context_files', []):
@@ -649,6 +658,9 @@ def packet_errors(task, text):
         command_surface = section(text, 'Registry-gated command surface') or ''
         if bullets(command_surface) != task.get('commands', []):
             errors.append('packet-command-surface:' + name)
+    if name == 'KL-024' and PLANNING_FIXTURE_PATH in task.get('write_paths', []):
+        if (section(text, 'Fixture-only scope exception') or '').strip() != PLANNING_FIXTURE_CONTRACT:
+            errors.append('packet-planning-fixture-contract:' + name)
     return errors
 
 
@@ -678,7 +690,7 @@ def wave_definition_errors(task):
     if (task.get('packet_refinement') != 'ENFORCEABLE'
             or task.get('write_paths_status') != 'ENFORCEABLE'
             or not paths or any('*' in path or path.endswith('/__init__.py')
-                                or path == 'tests/db/test_transaction_interfaces.py'
+                                or (path == PLANNING_FIXTURE_PATH and name != 'KL-024')
                                 for path in paths)
             or (core and 'src/kineticloop/persistence/transactions.py' not in paths)
             or (not core and any(path.startswith(('src/kineticloop/persistence/',
@@ -704,6 +716,186 @@ def wave_definition_errors(task):
     if task.get('environment_requirements') != expected_environment:
         errors.append('wave-environment:' + name)
     return errors
+
+
+def planning_fixture_content_errors(before: bytes, after: bytes) -> list[str]:
+    """Permit exactly the reviewed one-literal fixture repair over protected base."""
+    start = before.find(b'def test_reauthorize_requires_atomic_intent_success(')
+    end = before.find(b'\ndef ', start + 1)
+    if end == -1:
+        end = len(before)
+    old = b"UPDATE kineticloop.planning_intents SET local_date=DATE '2026-09-27' WHERE id=%s"
+    new = old.replace(b'2026-09-27', b'2026-09-28')
+    block = before[start:end] if start >= 0 else b''
+    if start < 0 or block.count(old) != 1:
+        return ['planning-fixture-baseline-unexpected:KL-024']
+    expected = before[:start] + block.replace(old, new) + before[end:]
+    if after != expected:
+        return ['planning-fixture-content-scope:KL-024']
+    return []
+
+
+def task_fixture_scope_errors(root, base, head, task_id, changed):
+    if task_id != 'KL-024' or PLANNING_FIXTURE_PATH not in changed:
+        return []
+    return planning_fixture_content_errors(
+        git(root, 'show', base + ':' + PLANNING_FIXTURE_PATH),
+        git(root, 'show', head + ':' + PLANNING_FIXTURE_PATH))
+
+
+def ledger_definition_errors(task):
+    """Pin KL025's conditional ledger contract without assuming unmerged APIs."""
+    if task.get("id") != "KL-025":
+        return []
+    expected = {
+        "task_identity": "harness-backlog-v0.2/KL-025",
+        "depends_on": ["KL-024"],
+        "conditional_depends_on": [],
+        "commands": [
+            "ReserveCall",
+            "PermitDispatch",
+            "CancelUndispatched",
+            "SettleCall",
+            "MarkUnknown",
+        ],
+        "transaction_boundaries": ["T5", "T8"],
+        "invariant_ids": ["INV-10", "INV-11", "INV-12", "INV-13", "INV-16", "INV-17"],
+        "table_ids": ["S01", "S02", "S03", "S04", "S27", "S28", "S29", "S31", "S32"],
+        "context_files": [
+            "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+            "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+            "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+            "docs/contracts/repository_transactions.md",
+            "docs/exec-plans/active/KL-024.md",
+            "docs/exec-plans/completed/KL-015_RESULT.yaml",
+            "docs/exec-plans/integrations/KL-015.json",
+            "docs/exec-plans/milestones/M2.json",
+        ],
+        "entry_conditions": [
+            "M2 closure PASS: docs/exec-plans/milestones/M2.json",
+            "G-SHADOW and G-REGISTRY remain closed by merged M2 closure",
+            "KL-024 implementation and PASS result with fresh required reviews are merged; prerequisite APIs and root-budget representation verified on that merged SHA",
+            "Actual merged KL-024 planning API and tests support the declared service integration and task-owned fixture namespace; mismatch requires governance refinement before scheduling",
+        ],
+        "environment_requirements": ["ISOLATED_POSTGRESQL_NAMESPACE"],
+        "deliverables": [
+            "typed CallLedgerService over merged KL015 owners and actual merged KL024 planning API",
+            "bounded guarded CancelUndispatched owner and root accounting support with exact S27/S31/S32 atomic deltas",
+            "PU and migrated PostgreSQL DC budget/cancellation/fence/replay/unknown/physical-send-boundary evidence",
+        ],
+        "definition_of_done": "every reservation atomically occupies the same root budget across attempts/revisions; cancellation and durable dispatch permission have one winner; first committed permit alone is sendable and replay never resends; stale worker/request/attempt and deadline guards deny new work; UNKNOWN remains occupied without fictional confirmed charges; reliable late settlement updates only accounting/evidence and never restores business authority; all task checks pass without promoting product requirement or release status",
+        "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+        "requirements_covered": [],
+        "checks_required_for_this_task": [
+            "ledger_budget_dimensions_pu",
+            "ledger_state_and_replay_pu",
+            "ledger_root_budget_atomic_dc",
+            "ledger_cancel_dispatch_exclusion_dc",
+            "ledger_current_authority_dc",
+            "ledger_ack_loss_and_natural_identity_dc",
+            "ledger_unknown_and_late_settlement_dc",
+            "ledger_physical_dispatch_boundary_pu",
+            "ledger_unit_suite_passes",
+            "ledger_db_suite_passes",
+            "planning_prerequisite_regressions_pass",
+            "transaction_owner_regressions_pass",
+            "lint_passes",
+            "typecheck_passes",
+            "harness_validation_passes",
+        ],
+        "check_contracts": [
+            {
+                "check_id": "ledger_budget_dimensions_pu",
+                "command": "uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_root_budget_and_charge_bounds",
+                "pass_oracle": "Versioned budget arithmetic covers call slots and every configured token/cost dimension; settled plus all outstanding reservations plus the new upper bound cannot exceed root limits. Reject negative/unknown/unbounded monetary configurations or explicitly use only enforceable count/token limits without a strict money claim. Pending and UNKNOWN are occupied usage, never confirmed provider charges.",
+            },
+            {
+                "check_id": "ledger_state_and_replay_pu",
+                "command": "uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_state_machine_and_non_sendable_replay",
+                "pass_oracle": "Only RESERVED can cancel/release or win DISPATCH_INTENT. All post-permit timeout/cancel/crash states retain occupation; no transition resets to RESERVED. Same-key replay returns original identities with sendable=false; changed payload conflicts; permit cannot be interpreted as business commit authority.",
+            },
+            {
+                "check_id": "ledger_root_budget_atomic_dc",
+                "command": "uv run pytest -q tests/db/test_call_ledger.py::test_competing_reservations_share_root_budget",
+                "pass_oracle": "Two migrated PostgreSQL service contenders across attempts cannot overspend any root dimension. S27 counters, one exact S31 and S32, S02 receipt, S03 event and S04 outbox commit together or all roll back; limits/deadline persist across KL024 join/revision/takeover. Natural intent/attempt/operation_slot uniqueness prevents duplicate occupation.",
+            },
+            {
+                "check_id": "ledger_cancel_dispatch_exclusion_dc",
+                "command": "uv run pytest -q tests/db/test_call_ledger.py::test_cancel_and_dispatch_have_one_winner",
+                "pass_oracle": "Run both lock-winning orders with bounded barriers and PostgreSQL-observed blocking. RESERVED cancellation and dispatch permission cannot both succeed: cancel winner releases once and forbids permit; permit winner commits DISPATCH_INTENT and forbids refund. Exactly one matching S32 transition and accounting delta persist with receipt/event/outbox atomicity.",
+            },
+            {
+                "check_id": "ledger_current_authority_dc",
+                "command": "uv run pytest -q tests/db/test_call_ledger.py::test_stale_attempt_fence_and_deadline_deny",
+                "pass_oracle": "Use the actual merged KL024 admission/revision/acquire/renew API. Old owner/fence, obsolete request/attempt, terminal attempt or intent, and trusted-time equality at lease/deadline deny new reservation/permit. Already committed permit may physically send after takeover but conveys no current business-write or T6 authority.",
+            },
+            {
+                "check_id": "ledger_ack_loss_and_natural_identity_dc",
+                "command": "uv run pytest -q tests/db/test_call_ledger.py::test_ack_loss_and_payload_conflicts",
+                "pass_oracle": "Reserve/permit/cancel/unknown/settle ACK-loss retries never debit/release twice or create another S31/S32. Same key with changed payload conflicts. Permit replay after lost ACK or changed worker authority is historical and sendable=false; a different key cannot redispatch the same reservation. Failures at each mutation/bookkeeping boundary fully roll back.",
+            },
+            {
+                "check_id": "ledger_unknown_and_late_settlement_dc",
+                "command": "uv run pytest -q tests/db/test_call_ledger.py::test_unknown_and_late_settlement_are_accounting_only",
+                "pass_oracle": "DISPATCH_INTENT without DISPATCHED, timeout, cancellation or lease loss retains all reserved bounds as OUTCOME_UNKNOWN. Reliable receipt/reconciliation idempotently replaces outstanding bounds with confirmed actual usage and immutable S32; untrusted/duplicate/conflicting receipts cannot refund twice. Late settlement after terminal/revision/takeover changes accounting only, preserving intent/attempt/control/authorization state. Competing expected-transition/revision waiters reread locked state and reject stale transitions.",
+            },
+            {
+                "check_id": "ledger_physical_dispatch_boundary_pu",
+                "command": "uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_dispatch_occurs_once_after_commit",
+                "pass_oracle": "A deterministic fake sender/instrumented transaction proves network invocation happens only after committed DISPATCH_INTENT and transaction release, only for the first sendable winner, once per reservation. Inject precommit rollback, lost permit ACK, postcommit/pre-send crash and post-send/pre-settle crash: replay/recovery never resend the reservation; possible-send windows retain occupation. SDK implicit retry is disabled; each explicit physical retry needs a fresh covered reservation. No live provider/model call is used.",
+            },
+            {
+                "check_id": "ledger_unit_suite_passes",
+                "command": "uv run pytest -q tests/unit/workflow/test_call_ledger.py",
+                "pass_oracle": "Entire deterministic service/domain file exits 0 without failed/skipped/deselected tests.",
+            },
+            {
+                "check_id": "ledger_db_suite_passes",
+                "command": "uv run pytest -q tests/db/test_call_ledger.py",
+                "pass_oracle": "Entire migrated PostgreSQL service/interleaving file exits 0 without failed/skipped/deselected tests.",
+            },
+            {
+                "check_id": "planning_prerequisite_regressions_pass",
+                "command": "uv run pytest -q tests/unit/workflow/test_planning.py tests/db/test_planning.py",
+                "pass_oracle": "Actual merged KL024 suites pass without failed/skipped/deselected tests in KL025-owned isolated planning fixture namespaces; unchanged KL024 contract and historical evidence remain intact.",
+            },
+            {
+                "check_id": "transaction_owner_regressions_pass",
+                "command": 'KINETICLOOP_KL022_COMPOSE_PROJECT="kineticloop-kl025-reg-$(git rev-parse --short HEAD)" KINETICLOOP_KL022_DATABASE="kineticloop_kl025_reg_$(git rev-parse --short HEAD)" uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py',
+                "pass_oracle": "Existing owner/lock/fence/receipt/settlement regressions exit 0 without failed/skipped/deselected tests in the exact KL025-owned regression namespace.",
+            },
+            {"check_id": "lint_passes", "command": "uv run kl lint", "pass_oracle": "Exit 0."},
+            {
+                "check_id": "typecheck_passes",
+                "command": "uv run kl typecheck",
+                "pass_oracle": "Exit 0.",
+            },
+            {
+                "check_id": "harness_validation_passes",
+                "command": "uv run kl check-harness",
+                "pass_oracle": "Exit 0 and HARNESS_CHECK_PASS.",
+            },
+        ],
+        "evidence_paths": ["docs/exec-plans/evidence/KL-025/**"],
+        "resource_keys": ["planning_ledger", "transaction_interfaces", "user_coordination"],
+        "write_paths": [
+            "src/kineticloop/workflow/call_ledger.py",
+            "src/kineticloop/persistence/call_ledger.py",
+            "src/kineticloop/persistence/transactions.py",
+            "tests/unit/workflow/test_call_ledger.py",
+            "tests/db/test_call_ledger.py",
+            "docs/contracts/call_ledger.md",
+        ],
+        "write_paths_status": "ENFORCEABLE",
+        "review_requirements": ["DB_CONCURRENCY", "GENERAL", "PROTOCOL"],
+        "packet_refinement": "ENFORCEABLE",
+        "shared_hotspot": True,
+    }
+    return [
+        "ledger-definition-drift:" + field
+        for field, value in expected.items()
+        if task.get(field) != value
+    ]
 
 
 def git(root, *args):
@@ -1881,6 +2073,8 @@ def task_definition_errors(
                 errors.append('packet:' + name)
         if not revision or task.get('packet_refinement') == 'ENFORCEABLE':
             errors.extend(wave_definition_errors(task))
+        if not revision or task.get('packet_refinement') == 'ENFORCEABLE':
+            errors.extend(ledger_definition_errors(task))
         for dep in task['depends_on']:
             if dep not in tasks:
                 errors.append('unknown-dep:' + name + '->' + dep)
@@ -2232,6 +2426,8 @@ def validate(root, args):
                         errors.extend(hash_refresh_errors(root, base_sha, path, baseline_task, changed, protected_paths))
                     elif not matches(path, allowed):
                         errors.append('write-scope:' + args.task_id + ':' + path)
+            errors.extend(task_fixture_scope_errors(
+                root, base_sha, head, args.task_id, changed))
         elif getattr(args, 'governance_change_id', None):
             change_id = args.governance_change_id
             selected = governance_records.get(change_id)

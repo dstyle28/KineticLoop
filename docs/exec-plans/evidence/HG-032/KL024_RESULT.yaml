@@ -1,0 +1,170 @@
+task_identity: harness-backlog-v0.2/KL-024
+display_task_id: KL-024
+task_definition_version: v0.2
+base_commit: 8df9d8851cdc8f68e1f6429149b420604d6aa1b5
+tested_commit: c414cd12384a29e607e552c62e5e9199cdf401f9
+merge_commit: null
+task_status: BLOCKED
+task_checks_status: FAIL
+integration_status: UNMERGED
+summary: 'Implemented normalized, policy-bound T4 planning admission/join/revision and typed fenced acquire/renew
+  commands over the merged owner, plus the additive frozen-S27 active-partition index. Twelve exact checks
+  pass; the mandatory owner regression fails because its existing negative T6 fixture moves a RUNNING
+  intent onto another RUNNING partition. Correcting that fixture requires governance rescoping: KL024
+  explicitly excludes tests/db/test_transaction_interfaces.py. No task/product/release/merge PASS is claimed.'
+commands_run:
+- check_id: planning_normalization_and_admission_pu
+  command: uv run pytest -q tests/unit/workflow/test_planning.py::test_normalized_single_flight_and_revision_decisions
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-c414cd1.log
+- check_id: planning_fence_deadline_and_terminal_pu
+  command: uv run pytest -q tests/unit/workflow/test_planning.py::test_fence_deadline_and_terminal_guards
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-c414cd1.log
+- check_id: planning_active_partition_and_quota_dc
+  command: uv run pytest -q tests/db/test_planning.py::test_active_partition_and_quota_are_atomic
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-c414cd1.log
+- check_id: planning_join_revision_budget_preservation_dc
+  command: uv run pytest -q tests/db/test_planning.py::test_join_and_revision_preserve_root_authority
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-c414cd1.log
+- check_id: planning_takeover_and_renew_interleavings_dc
+  command: uv run pytest -q tests/db/test_planning.py::test_takeover_and_renew_fence_old_workers
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-c414cd1.log
+- check_id: planning_atomicity_and_ack_loss_dc
+  command: uv run pytest -q tests/db/test_planning.py::test_atomicity_and_ack_loss_replay
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-c414cd1.log
+- check_id: planning_unit_suite_passes
+  command: uv run pytest -q tests/unit/workflow/test_planning.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-c414cd1.log
+- check_id: planning_db_suite_passes
+  command: uv run pytest -q tests/db/test_planning.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_db_suite_passes-c414cd1.log
+- check_id: migration_chain_regressions_pass
+  command: uv run pytest -q tests/db/test_migrations.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-c414cd1.log
+- check_id: transaction_owner_regressions_pass
+  command: KINETICLOOP_KL022_COMPOSE_PROJECT="kineticloop-kl024-reg-$(git rev-parse --short HEAD)" KINETICLOOP_KL022_DATABASE="kineticloop_kl024_reg_$(git
+    rev-parse --short HEAD)" uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py
+  result: FAIL
+  evidence_ref: docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-c414cd1.log
+- check_id: lint_passes
+  command: uv run kl lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/lint_passes-c414cd1.log
+- check_id: typecheck_passes
+  command: uv run kl typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/typecheck_passes-c414cd1.log
+- check_id: harness_validation_passes
+  command: uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/harness_validation_passes-c414cd1.log
+requirements_covered: []
+files_changed:
+- docs/contracts/planning_intents.md
+- migrations/versions/e8c2f1a6b904_planning_active_partition.py
+- src/kineticloop/persistence/planning.py
+- src/kineticloop/persistence/transactions.py
+- src/kineticloop/workflow/planning.py
+- tests/db/test_migrations.py
+- tests/db/test_planning.py
+- tests/unit/workflow/test_planning.py
+- docs/exec-plans/evidence/KL-024/checks-2415ccd.json
+- docs/exec-plans/evidence/KL-024/checks-395a8c4.json
+- docs/exec-plans/evidence/KL-024/checks-c414cd1.json
+- docs/exec-plans/evidence/KL-024/harness_validation_passes-2415ccd.log
+- docs/exec-plans/evidence/KL-024/harness_validation_passes-395a8c4.log
+- docs/exec-plans/evidence/KL-024/harness_validation_passes-c414cd1.log
+- docs/exec-plans/evidence/KL-024/lint_passes-2415ccd.log
+- docs/exec-plans/evidence/KL-024/lint_passes-395a8c4.log
+- docs/exec-plans/evidence/KL-024/lint_passes-c414cd1.log
+- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-2415ccd.log
+- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-395a8c4.log
+- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-c414cd1.log
+- docs/exec-plans/evidence/KL-024/proposed-regression-fixture-rescope.patch
+- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-2415ccd.log
+- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-395a8c4.log
+- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-c414cd1.log
+- docs/exec-plans/evidence/KL-024/typecheck_passes-2415ccd.log
+- docs/exec-plans/evidence/KL-024/typecheck_passes-395a8c4.log
+- docs/exec-plans/evidence/KL-024/typecheck_passes-c414cd1.log
+- docs/exec-plans/completed/KL-024_RESULT.yaml
+decisions:
+- Use versioned deterministic structured normalization, separating subject/date/purpose partition from
+  semantic fingerprint and calendar scope; same fingerprint/current Manifest/epoch/frontier joins without
+  S28/S29 or quota debit.
+- Resolve immutable active admission policy under S01; new roots atomically debit policy-bound hourly/day
+  S30 quotas, retain nonnegative root limits/reserved/settled categories, and start ADMITTED with original
+  server deadline.
+- Bounded T4 revision appends exact S28/S29, marks only the old current attempt STALE, and updates only
+  current pointers; root limits/counters/deadline/lease/fence remain unchanged. Copies of the prepared
+  basis cannot mutate guard authority.
+- Retain frozen lease lock order and S27-only lease capabilities; acquire uses monotonic owner/token CAS,
+  renewal rereads after locks and extends only a live lease within deadline. New typed commands reject
+  terminal/unknown attempt states; the shared fence guard retains merged nonterminal compatibility while
+  rejecting frozen terminal attempts.
+- New service intents use frozen ADMITTED; existing PENDING remains explicit ADMITTED compatibility in
+  the active unique index and acquisition guard. Intent terminal reasons remain distinct; success remains
+  T6-owned.
+- Scope receipt and event identities by trusted actor, command kind and client key. Successful historical
+  replay returns original identities without refreshing current worker authority; an under-S01 recheck
+  closes preflight races.
+- Keep the frozen active index intact and preserve historical migrations, Protocol/DB/baseline, shared
+  metadata, KL023 changes and all requirement statuses. Do not work around the failing legacy fixture
+  or modify its excluded path.
+known_limitations:
+- 'BLOCKER: transaction_owner_regressions_pass reports 1 failed, 57 passed on tested_commit. test_reauthorize_requires_atomic_intent_success
+  at tests/db/test_transaction_interfaces.py:3396 deliberately assigns 2026-09-27 to INTENT while INTENT_2
+  is already active in that same subject/date/purpose. uq_s27_active_partition rejects it before the intended
+  head-day denial oracle.'
+- Physical scope insufficiency requires a governance task to authorize the exact fixture-only date change
+  to unused 2026-09-28 (proposal recorded in docs/exec-plans/evidence/KL-024/proposed-regression-fixture-rescope.patch),
+  or repair and merge that fixture separately. The excluded test file remains byte-identical to the merged
+  base.
+- No W04-W06 release/product requirement PASS, model loop, dispatch/call ledger, downstream attempt advancement,
+  full watchdog/reaper, authorization implementation or production activation is claimed. Expired active/terminal-attempt
+  recovery remains downstream.
+- Ingress authentication supplies the trusted subject/actor binding and owner connection; runtime system/model
+  capacity admission is represented by the versioned policy boundary and downstream capacity enforcement,
+  not a provider network call inside coordination.
+- Automatic approval review rejected messaging the parent chat for lack of explicit human authorization.
+  Completion/blocker is reported in this chat; no workaround message was sent.
+follow_up_tasks:
+- Arrange narrow governance scope approval or a separate merged fixture-only correction; rerun every exact
+  check on the resulting stable implementation revision.
+- Obtain fresh SHA-bound GENERAL, PROTOCOL and DB_CONCURRENCY reviews; fix findings and rereview substantive
+  changes.
+- After all task checks, required reviews and CI/merge gates pass, publish/merge normally, synchronize
+  clean master without colliding with governance sync, and clean only this verified merged clean worktree/branch/resources.
+spec_change_request: null
