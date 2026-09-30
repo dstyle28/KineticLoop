@@ -37,7 +37,10 @@ from kineticloop.persistence.transactions import (
     query_execution_eligibility,
     replay_outcome,
 )
-from kineticloop.protocol.authorization import AUTHORIZATION_METHOD_VERSION
+from kineticloop.protocol.authorization import (
+    AUTHORIZATION_METHOD_VERSION,
+    canonical_certificate_timestamp,
+)
 
 ROOT = Path(__file__).parents[2]
 _MIGRATION_SPEC = spec_from_file_location(
@@ -154,8 +157,12 @@ def _manifest_candidate_payload(connection: Any) -> dict[str, Any]:
             "content_hash": row[4],
             "artifact_revision": row[5],
             "validity_kind": row[6],
-            "valid_from": row[7].isoformat(),
-            "valid_until": row[8].isoformat() if row[8] is not None else None,
+            "valid_from": canonical_certificate_timestamp(row[7], "artifact valid_from"),
+            "valid_until": (
+                canonical_certificate_timestamp(row[8], "artifact valid_until")
+                if row[8] is not None
+                else None
+            ),
             "timeless_approval_policy": row[9],
             "timeless_approval_reason": row[10],
             "dependency_ids": [
@@ -4945,6 +4952,8 @@ def _prepare_kl022_t6_basis(
     admin_url: str,
     command_kind: str,
     requested_valid_until: datetime | None = None,
+    *,
+    session_timezone: str | None = None,
 ) -> tuple[tuple[Mapping[str, Any], ...], str, datetime, tuple[tuple[LockStage, str], ...]]:
     def operation(
         tx: RepositoryTransaction,
@@ -4976,6 +4985,11 @@ def _prepare_kl022_t6_basis(
         return dependencies, digest, valid_until, tx.lock_trace
 
     with psycopg.connect(admin_url) as connection:
+        if session_timezone is not None:
+            connection.execute(
+                "SELECT set_config('TimeZone',%s,false)", (session_timezone,)
+            )
+            connection.commit()
         return execute_command(connection, command_kind, SUBJECT, operation)
 
 
@@ -5054,6 +5068,12 @@ def test_t6_authorization_evaluator_persists_exact_minimum_certificate(
     reauthorize_basis = _prepare_kl022_t6_basis(
         database_urls["admin"], "Reauthorize", requested_end
     )
+    los_angeles_basis = _prepare_kl022_t6_basis(
+        database_urls["admin"],
+        "Reauthorize",
+        requested_end,
+        session_timezone="America/Los_Angeles",
+    )
     for dependencies, digest, valid_until, trace in (commit_basis, reauthorize_basis):
         assert valid_until == requested_end
         assert trace[:2] == ((LockStage.REGISTRY, "S51"), (LockStage.SUBJECT, "S01"))
@@ -5075,6 +5095,18 @@ def test_t6_authorization_evaluator_persists_exact_minimum_certificate(
             "PROJECTION",
             "REQUESTED_ABSOLUTE_END",
         } <= kinds
+    assert los_angeles_basis[2] == requested_end
+    assert los_angeles_basis[1] == hashlib.sha256(
+        json.dumps(
+            list(los_angeles_basis[0]), sort_keys=True, separators=(",", ":")
+        ).encode()
+    ).hexdigest()
+    assert all(
+        str(value).endswith("Z")
+        for dependency in los_angeles_basis[0]
+        for key, value in dependency.items()
+        if key in {"valid_from", "valid_until"}
+    )
 
     def vary_bound(kind: str, *, restore: bool = False) -> None:
         interval = "2 days" if restore else "20 minutes"

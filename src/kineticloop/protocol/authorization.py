@@ -11,7 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from types import MappingProxyType
 from typing import Any, Mapping, Sequence
 from uuid import UUID
@@ -29,6 +29,12 @@ def _aware(value: object, label: str) -> datetime:
     if not isinstance(value, datetime) or value.tzinfo is None:
         raise AuthorizationEvaluationError(f"{label} must be an aware datetime")
     return value
+
+
+def canonical_certificate_timestamp(value: object, label: str) -> str:
+    """Serialize one instant in the certificate's canonical UTC RFC3339 form."""
+
+    return _aware(value, label).astimezone(UTC).isoformat().replace("+00:00", "Z")
 
 
 @dataclass(frozen=True)
@@ -59,9 +65,13 @@ class ValidityDependency:
         if self.validity_kind != "BOUNDED" or self.dependency_kind == "ARTIFACT":
             entry["validity_kind"] = self.validity_kind
         if self.valid_from is not None:
-            entry["valid_from"] = self.valid_from.isoformat()
+            entry["valid_from"] = canonical_certificate_timestamp(
+                self.valid_from, "dependency valid_from"
+            )
         if self.valid_until is not None:
-            entry["valid_until"] = self.valid_until.isoformat()
+            entry["valid_until"] = canonical_certificate_timestamp(
+                self.valid_until, "dependency valid_until"
+            )
         if self.artifact_kind is not None:
             entry["artifact_kind"] = self.artifact_kind
         if self.timeless_approval_policy is not None:
@@ -187,8 +197,10 @@ def evaluate_validity_closure(
                 "dependency_kind": "REQUESTED_ABSOLUTE_END",
                 "identity": "client-shortening-request",
                 "revision": 1,
-                "valid_from": now.isoformat(),
-                "valid_until": requested_absolute_end.isoformat(),
+                "valid_from": canonical_certificate_timestamp(now, "authoritative_now"),
+                "valid_until": canonical_certificate_timestamp(
+                    requested_absolute_end, "requested_absolute_end"
+                ),
             }
         )
         certificate_entries.sort(

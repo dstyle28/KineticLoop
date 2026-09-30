@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import replace
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, timedelta, timezone
 
 import pytest
 
@@ -66,6 +66,37 @@ def test_validity_closure_uses_every_bound_and_denies_missing_or_elapsed_basis()
     )
     assert reversed_closure.dependencies == closure.dependencies
     assert reversed_closure.closure_digest == closure.closure_digest
+
+    offset = timezone(timedelta(hours=-7))
+    offset_dependencies = [
+        replace(
+            dependency,
+            valid_from=(
+                dependency.valid_from.astimezone(offset)
+                if dependency.valid_from is not None
+                else None
+            ),
+            valid_until=(
+                dependency.valid_until.astimezone(offset)
+                if dependency.valid_until is not None
+                else None
+            ),
+        )
+        for dependency in dependencies
+    ]
+    offset_closure = evaluate_validity_closure(
+        authoritative_now=NOW.astimezone(offset),
+        dependencies=offset_dependencies,
+        requested_absolute_end=(NOW + timedelta(seconds=50)).astimezone(offset),
+    )
+    assert offset_closure.dependencies == closure.dependencies
+    assert offset_closure.closure_digest == closure.closure_digest
+    assert all(
+        not str(value).endswith("-07:00")
+        for entry in offset_closure.dependencies
+        for key, value in entry.items()
+        if key in {"valid_from", "valid_until"}
+    )
 
     assert evaluate_validity_closure(
         authoritative_now=NOW,

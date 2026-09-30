@@ -32,6 +32,7 @@ from kineticloop.protocol.authorization import (
     ExecutabilityBasis,
     ExecutabilityDecision,
     ValidityDependency,
+    canonical_certificate_timestamp,
     controls_are_eligible,
     evaluate_executability,
     evaluate_validity_closure,
@@ -2496,8 +2497,14 @@ class RepositoryTransaction:
                 "content_hash": row[3],
                 "artifact_revision": artifact_revision,
                 "validity_kind": row[4],
-                "valid_from": row[5].isoformat(),
-                "valid_until": row[6].isoformat() if row[6] is not None else None,
+                "valid_from": canonical_certificate_timestamp(
+                    row[5], "artifact valid_from"
+                ),
+                "valid_until": (
+                    canonical_certificate_timestamp(row[6], "artifact valid_until")
+                    if row[6] is not None
+                    else None
+                ),
                 "timeless_approval_policy": row[7],
                 "timeless_approval_reason": row[8],
                 "dependency_ids": dependency_ids,
