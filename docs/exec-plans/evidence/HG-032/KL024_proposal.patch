@@ -1,0 +1,11 @@
+--- a/tests/db/test_transaction_interfaces.py
++++ b/tests/db/test_transaction_interfaces.py
+@@ -3393,7 +3393,7 @@
+     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+         connection.execute("SET session_replication_role=replica")
+         connection.execute(
+-            "UPDATE kineticloop.planning_intents SET local_date=DATE '2026-09-27' WHERE id=%s",
++            "UPDATE kineticloop.planning_intents SET local_date=DATE '2026-09-28' WHERE id=%s",
+             (INTENT,),
+         )
+         connection.execute("SET session_replication_role=origin")
