@@ -13,7 +13,11 @@ spec = importlib.util.spec_from_file_location(
 assert spec is not None and spec.loader is not None
 v = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(v)
-BEFORE = (ROOT / v.PLANNING_FIXTURE_PATH).read_bytes()
+# The regression baseline must survive KL024 applying its authorized repair.
+BEFORE = v.git(
+    ROOT, "show",
+    "7d24ee6dd0458e2971f26f9ac96d0465dae5ac22:" + v.PLANNING_FIXTURE_PATH,
+)
 OLD = b"UPDATE kineticloop.planning_intents SET local_date=DATE '2026-09-27' WHERE id=%s"
 AFTER = BEFORE.replace(OLD, OLD.replace(b"2026-09-27", b"2026-09-28"))
 
