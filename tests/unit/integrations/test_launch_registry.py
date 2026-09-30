@@ -101,9 +101,12 @@ def test_registry_rejects_invalid_duplicate_unknown_entries() -> None:
     for provider in ("SPREADSHEET", "PROVIDER_INJECTED"):
         with pytest.raises(ValueError):
             dataclasses.replace(hevy, provider_id=ProviderId(provider))
+    provider_input: dict[str, Any] = {
+        "version": "v1.0.0", "entries": registry.entries,
+        "provider_payload": {"register": "OURA"},
+    }
     with pytest.raises(TypeError):
-        hostile_replace(registry, **{"version": "v1.0.0", "entries": registry.entries,
-                          "provider_payload": {"register": "OURA"}})
+        LaunchRegistry(**provider_input)
     assert not hasattr(registry, "register")
     # Revalidation rejects low-level forged nested values at the publication boundary.
     forged = dataclasses.replace(hevy)
