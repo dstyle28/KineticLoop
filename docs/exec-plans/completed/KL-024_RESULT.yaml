@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-024
 display_task_id: KL-024
 task_definition_version: v0.2
 base_commit: 8df9d8851cdc8f68e1f6429149b420604d6aa1b5
-tested_commit: c414cd12384a29e607e552c62e5e9199cdf401f9
+tested_commit: 3e1fdaf491929ad5963ec4491cb1d1139fc1b8e8
 merge_commit: null
 task_status: BLOCKED
 task_checks_status: FAIL
@@ -16,59 +16,135 @@ commands_run:
 - check_id: planning_normalization_and_admission_pu
   command: uv run pytest -q tests/unit/workflow/test_planning.py::test_normalized_single_flight_and_revision_decisions
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-c414cd1.log
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-3e1fdaf.log
 - check_id: planning_fence_deadline_and_terminal_pu
   command: uv run pytest -q tests/unit/workflow/test_planning.py::test_fence_deadline_and_terminal_guards
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-c414cd1.log
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-3e1fdaf.log
 - check_id: planning_active_partition_and_quota_dc
   command: uv run pytest -q tests/db/test_planning.py::test_active_partition_and_quota_are_atomic
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-c414cd1.log
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-3e1fdaf.log
 - check_id: planning_join_revision_budget_preservation_dc
   command: uv run pytest -q tests/db/test_planning.py::test_join_and_revision_preserve_root_authority
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-c414cd1.log
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-3e1fdaf.log
 - check_id: planning_takeover_and_renew_interleavings_dc
   command: uv run pytest -q tests/db/test_planning.py::test_takeover_and_renew_fence_old_workers
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-c414cd1.log
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-3e1fdaf.log
 - check_id: planning_atomicity_and_ack_loss_dc
   command: uv run pytest -q tests/db/test_planning.py::test_atomicity_and_ack_loss_replay
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-c414cd1.log
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-3e1fdaf.log
 - check_id: planning_unit_suite_passes
   command: uv run pytest -q tests/unit/workflow/test_planning.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-c414cd1.log
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-3e1fdaf.log
 - check_id: planning_db_suite_passes
   command: uv run pytest -q tests/db/test_planning.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-024/planning_db_suite_passes-c414cd1.log
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_db_suite_passes-3e1fdaf.log
 - check_id: migration_chain_regressions_pass
   command: uv run pytest -q tests/db/test_migrations.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-c414cd1.log
+  evidence_ref: docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-3e1fdaf.log
 - check_id: transaction_owner_regressions_pass
   command: KINETICLOOP_KL022_COMPOSE_PROJECT="kineticloop-kl024-reg-$(git rev-parse --short HEAD)" KINETICLOOP_KL022_DATABASE="kineticloop_kl024_reg_$(git
     rev-parse --short HEAD)" uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py
   result: FAIL
-  evidence_ref: docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-c414cd1.log
+  evidence_ref: docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-3e1fdaf.log
 - check_id: lint_passes
   command: uv run kl lint
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-024/lint_passes-c414cd1.log
+  evidence_ref: docs/exec-plans/evidence/KL-024/lint_passes-3e1fdaf.log
 - check_id: typecheck_passes
   command: uv run kl typecheck
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-024/typecheck_passes-c414cd1.log
+  evidence_ref: docs/exec-plans/evidence/KL-024/typecheck_passes-3e1fdaf.log
 - check_id: harness_validation_passes
   command: uv run kl check-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-024/harness_validation_passes-c414cd1.log
+  evidence_ref: docs/exec-plans/evidence/KL-024/harness_validation_passes-3e1fdaf.log
 requirements_covered: []
 files_changed:
 - docs/contracts/planning_intents.md
+- docs/exec-plans/completed/KL-024_RESULT.yaml
+- docs/exec-plans/evidence/KL-024/checks-2415ccd.json
+- docs/exec-plans/evidence/KL-024/checks-395a8c4.json
+- docs/exec-plans/evidence/KL-024/checks-3cd5389.json
+- docs/exec-plans/evidence/KL-024/checks-3e1fdaf.json
+- docs/exec-plans/evidence/KL-024/checks-c414cd1.json
+- docs/exec-plans/evidence/KL-024/harness_validation_passes-2415ccd.log
+- docs/exec-plans/evidence/KL-024/harness_validation_passes-395a8c4.log
+- docs/exec-plans/evidence/KL-024/harness_validation_passes-3cd5389.log
+- docs/exec-plans/evidence/KL-024/harness_validation_passes-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/harness_validation_passes-c414cd1.log
+- docs/exec-plans/evidence/KL-024/lint_passes-2415ccd.log
+- docs/exec-plans/evidence/KL-024/lint_passes-395a8c4.log
+- docs/exec-plans/evidence/KL-024/lint_passes-3cd5389.log
+- docs/exec-plans/evidence/KL-024/lint_passes-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/lint_passes-c414cd1.log
+- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-2415ccd.log
+- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-395a8c4.log
+- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-3cd5389.log
+- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-3cd5389.log
+- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-3cd5389.log
+- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-3cd5389.log
+- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-3cd5389.log
+- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-3cd5389.log
+- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-3cd5389.log
+- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-3cd5389.log
+- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-3cd5389.log
+- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-c414cd1.log
+- docs/exec-plans/evidence/KL-024/proposed-regression-fixture-rescope.patch
+- docs/exec-plans/evidence/KL-024/review-repair-attempt-3cd5389.json
+- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-2415ccd.log
+- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-395a8c4.log
+- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-3cd5389.log
+- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-c414cd1.log
+- docs/exec-plans/evidence/KL-024/typecheck_passes-2415ccd.log
+- docs/exec-plans/evidence/KL-024/typecheck_passes-395a8c4.log
+- docs/exec-plans/evidence/KL-024/typecheck_passes-3cd5389.log
+- docs/exec-plans/evidence/KL-024/typecheck_passes-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/typecheck_passes-c414cd1.log
+- docs/exec-plans/reviews/KL-024/DB_CONCURRENCY.json
+- docs/exec-plans/reviews/KL-024/GENERAL.json
+- docs/exec-plans/reviews/KL-024/PROTOCOL.json
 - migrations/versions/e8c2f1a6b904_planning_active_partition.py
 - src/kineticloop/persistence/planning.py
 - src/kineticloop/persistence/transactions.py
@@ -76,50 +152,6 @@ files_changed:
 - tests/db/test_migrations.py
 - tests/db/test_planning.py
 - tests/unit/workflow/test_planning.py
-- docs/exec-plans/evidence/KL-024/checks-2415ccd.json
-- docs/exec-plans/evidence/KL-024/checks-395a8c4.json
-- docs/exec-plans/evidence/KL-024/checks-c414cd1.json
-- docs/exec-plans/evidence/KL-024/harness_validation_passes-2415ccd.log
-- docs/exec-plans/evidence/KL-024/harness_validation_passes-395a8c4.log
-- docs/exec-plans/evidence/KL-024/harness_validation_passes-c414cd1.log
-- docs/exec-plans/evidence/KL-024/lint_passes-2415ccd.log
-- docs/exec-plans/evidence/KL-024/lint_passes-395a8c4.log
-- docs/exec-plans/evidence/KL-024/lint_passes-c414cd1.log
-- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-2415ccd.log
-- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-395a8c4.log
-- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-c414cd1.log
-- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-2415ccd.log
-- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-395a8c4.log
-- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-c414cd1.log
-- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-2415ccd.log
-- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-395a8c4.log
-- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-c414cd1.log
-- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-2415ccd.log
-- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-395a8c4.log
-- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-c414cd1.log
-- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-2415ccd.log
-- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-395a8c4.log
-- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-c414cd1.log
-- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-2415ccd.log
-- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-395a8c4.log
-- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-c414cd1.log
-- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-2415ccd.log
-- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-395a8c4.log
-- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-c414cd1.log
-- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-2415ccd.log
-- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-395a8c4.log
-- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-c414cd1.log
-- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-2415ccd.log
-- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-395a8c4.log
-- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-c414cd1.log
-- docs/exec-plans/evidence/KL-024/proposed-regression-fixture-rescope.patch
-- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-2415ccd.log
-- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-395a8c4.log
-- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-c414cd1.log
-- docs/exec-plans/evidence/KL-024/typecheck_passes-2415ccd.log
-- docs/exec-plans/evidence/KL-024/typecheck_passes-395a8c4.log
-- docs/exec-plans/evidence/KL-024/typecheck_passes-c414cd1.log
-- docs/exec-plans/completed/KL-024_RESULT.yaml
 decisions:
 - Use versioned deterministic structured normalization, separating subject/date/purpose partition from
   semantic fingerprint and calendar scope; same fingerprint/current Manifest/epoch/frontier joins without
@@ -138,8 +170,12 @@ decisions:
   the active unique index and acquisition guard. Intent terminal reasons remain distinct; success remains
   T6-owned.
 - Scope receipt and event identities by trusted actor, command kind and client key. Successful historical
-  replay returns original identities without refreshing current worker authority; an under-S01 recheck
-  closes preflight races.
+  replay returns original identities with replayed=true without refreshing current worker authority; an
+  under-S01 recheck closes preflight races. Independent replay-marker finding repaired with preflight
+  and under-S01 replay tests for admission/acquire/renew after revision and cancellation.
+- 'Independent review quota finding repaired: completion requires exact distinct prepared S30 identities
+  and exactly one effect per bucket. Migrated PostgreSQL negative duplicate-one/omit-other callback test
+  proves complete rollback.'
 - Keep the frozen active index intact and preserve historical migrations, Protocol/DB/baseline, shared
   metadata, KL023 changes and all requirement statuses. Do not work around the failing legacy fixture
   or modify its excluded path.
