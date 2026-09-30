@@ -120,7 +120,7 @@ class PlanningWorkflowService:
     def _replay(self, command: Any, kind: str, request_hash: str) -> Mapping[str, Any] | None:
         try:
             # Historical identities are observations, never a current worker permit.
-            return replay_outcome(
+            outcome = replay_outcome(
                 self.connection,
                 kind,
                 command.subject_id,
@@ -128,6 +128,7 @@ class PlanningWorkflowService:
                 client_key=command.key,
                 request_hash=request_hash,
             )
+            return {**outcome, "replayed": True}
         except ReplayNotFound:
             return None
 
@@ -243,7 +244,7 @@ class PlanningWorkflowService:
                 )
                 return result
 
-            outcome, _ = tx.idempotent_outcome(
+            outcome, replayed = tx.idempotent_outcome(
                 receipt_id=receipt_id,
                 actor_scope=self.identity.key,
                 client_key=command.key,
@@ -255,14 +256,16 @@ class PlanningWorkflowService:
                 event=EventWrite(
                     event_id=uuid4(),
                     aggregate_type="PLANNING_COMMAND",
-                    aggregate_identity=digest([self.identity.key, "AdmitOrReviseIntent", command.key]),
+                    aggregate_identity=digest(
+                        [self.identity.key, "AdmitOrReviseIntent", command.key]
+                    ),
                     event_type=mode,
                     aggregate_revision=1,
                     outbox_id=uuid4(),
                     destination="planning",
                 ),
             )
-            return outcome
+            return {**outcome, "replayed": True} if replayed else outcome
 
         return execute_command(
             self.connection, "AdmitOrReviseIntent", command.subject_id, operation
@@ -360,7 +363,7 @@ class PlanningWorkflowService:
                 )
                 return result
 
-            outcome, _ = tx.idempotent_outcome(
+            outcome, replayed = tx.idempotent_outcome(
                 receipt_id=uuid4(),
                 actor_scope=self.identity.key,
                 client_key=command.key,
@@ -376,6 +379,6 @@ class PlanningWorkflowService:
                     destination="planning",
                 ),
             )
-            return outcome
+            return {**outcome, "replayed": True} if replayed else outcome
 
         return execute_command(self.connection, kind, command.subject_id, operation)

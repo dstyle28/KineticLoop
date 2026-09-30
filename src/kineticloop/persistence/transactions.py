@@ -1943,9 +1943,12 @@ class RestrictedSqlSession:
                         raise GuardRequired(
                             "revision requires exact invalidation without root reset"
                         )
-                elif len(self.__inserted_ids.get("S27", set())) != 1 or len(
-                    self.__updated_values.get("S30", [])
-                ) != len(planning["quotas"]):
+                elif (
+                    len(self.__inserted_ids.get("S27", set())) != 1
+                    or len(self.__updated_values.get("S30", [])) != len(planning["quotas"])
+                    or {row.get("id") for row in self.__updated_values.get("S30", [])}
+                    != {quota["id"] for quota in planning["quotas"]}
+                ):
                     raise GuardRequired(
                         "admission must create root and debit every quota atomically"
                     )
@@ -2414,7 +2417,7 @@ class RepositoryTransaction:
             raise IdempotencyConflict("command key request hash mismatch")
         if prior[1] != "SUCCEEDED" or "outcome" not in prior[2]:
             raise IdempotencyConflict("command key has no durable successful outcome")
-        return dict(prior[2]["outcome"])
+        return {**prior[2]["outcome"], "replayed": True}
 
     def prepare_planning_admission(
         self,

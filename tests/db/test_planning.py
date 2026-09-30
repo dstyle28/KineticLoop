@@ -596,9 +596,25 @@ def test_atomicity_and_ack_loss_replay(
     command = request("ack-loss")
     outcome = admission(url, command)
     lease = acquire(url, outcome)
+    renew_command = RenewLease(
+        SUBJECT,
+        "renew-ack",
+        UUID(outcome["intent_id"]),
+        1,
+        outcome["request_revision"],
+        UUID(outcome["attempt_id"]),
+        120,
+    )
+    with psycopg.connect(url) as db:
+        renewed = service(db).renew_lease(renew_command)
     after = counts(url)
-    assert admission(url, command) == outcome  # Lost ACK: exact identities once.
-    assert acquire(url, outcome) == lease
+    with psycopg.connect(url) as db:
+        assert service(db).renew_lease(renew_command) == {**renewed, "replayed": True}
+    assert admission(url, command) == {
+        **outcome,
+        "replayed": True,
+    }  # Lost ACK: exact identities once.
+    assert acquire(url, outcome) == {**lease, "replayed": True}
     assert counts(url) == after
     with pytest.raises(IdempotencyConflict):
         admission(url, replace(command, constraints={"minutes": 1}))
@@ -635,8 +651,20 @@ def test_atomicity_and_ack_loss_replay(
     with psycopg.connect(url, autocommit=True) as db:
         db.execute("UPDATE kineticloop.planning_intents SET status='CANCELLED'")
     before_replay = counts(url)
-    assert admission(url, command) == outcome
-    assert acquire(url, outcome) == lease  # Historical lease receipt conveys no renewed authority.
+    assert admission(url, command) == {**outcome, "replayed": True}
+    assert acquire(url, outcome) == {
+        **lease,
+        "replayed": True,
+    }  # Historical lease receipt conveys no renewed authority.
+    with psycopg.connect(url) as db:
+        assert service(db).renew_lease(renew_command) == {**renewed, "replayed": True}
+    # Force preflight miss to exercise the under-S01 ACK-loss race path on all owners.
+    with monkeypatch.context() as scoped:
+        scoped.setattr(PlanningWorkflowService, "_replay", lambda *args: None)
+        assert admission(url, command) == {**outcome, "replayed": True}
+        assert acquire(url, outcome) == {**lease, "replayed": True}
+        with psycopg.connect(url) as db:
+            assert service(db).renew_lease(renew_command) == {**renewed, "replayed": True}
     assert counts(url) == before_replay
     with pytest.raises(PlanningDenied, match="explicit"):
         admission(url, request("terminal-auto", explicit=False, trigger="INPUT_EVENT"))
@@ -654,8 +682,28 @@ def test_bounded_owner_capabilities(
     from kineticloop.persistence.transactions import GuardRequired, StatementRejected
 
     url = database_urls["admin"]
-    root = admission(url, request("root"))
     original_update = RestrictedSqlSession.update
+    quota_ids: list[UUID] = []
+
+    def duplicate_quota_bypass(
+        session: RestrictedSqlSession,
+        logical_id: str,
+        values: Mapping[str, Any],
+        where: Mapping[str, Any],
+    ) -> int:
+        if logical_id == "S30":
+            quota_ids.append(where["id"])
+            where = {**where, "id": quota_ids[0]}
+        return original_update(session, logical_id, values, where)
+
+    initial = counts(url)
+    with monkeypatch.context() as scoped:
+        scoped.setattr(RestrictedSqlSession, "update", duplicate_quota_bypass)
+        with pytest.raises(GuardRequired, match="every quota"):
+            admission(url, request("duplicate-quota"))
+    assert len(quota_ids) == 2 and len(set(quota_ids)) == 2
+    assert counts(url) == initial  # Missing hour/day coverage rolls back the entire root.
+    root = admission(url, request("root"))
 
     def invalidation_bypass(
         session: RestrictedSqlSession,
@@ -718,8 +766,8 @@ def test_command_identity_namespaces(database_urls: dict[str, str]) -> None:
     assert joined == {**root, "mode": "JOIN"}
     leased = acquire(url, root, "shared-key")
     assert leased["fence"] == 1
-    assert admission(url, command) == root
+    assert admission(url, command) == {**root, "replayed": True}
     with psycopg.connect(url) as db:
-        assert service(db, OTHER).admit_or_revise(command) == joined
-    assert acquire(url, root, "shared-key") == leased
+        assert service(db, OTHER).admit_or_revise(command) == {**joined, "replayed": True}
+    assert acquire(url, root, "shared-key") == {**leased, "replayed": True}
     assert counts(url) == (1, 1, 1, 2, 3, 3, 3)
