@@ -1,0 +1,53 @@
+{
+  "tested_commit": "3ff69607032d815664c1e0524ba93c362c0b4996",
+  "checks": [
+    {
+      "check_id": "scope_and_blocker_audit",
+      "command": "/private/tmp/kl017-venv/bin/python /Users/davetian/.codex/worktrees/e748/KineticLoop/docs/exec-plans/evidence/HG-032/audit.py",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-032/scope_and_blocker_audit.log"
+    },
+    {
+      "check_id": "fixture_scope_regressions",
+      "command": "/private/tmp/kl017-venv/bin/python -m pytest -q tests/harness/test_planning_fixture_scope.py tests/harness/test_wave_scope.py",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-032/fixture_scope_regressions.log"
+    },
+    {
+      "check_id": "harness_validation",
+      "command": "/private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-032/harness_validation.log"
+    },
+    {
+      "check_id": "harness_tests",
+      "command": "/private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-032/harness_tests.log"
+    },
+    {
+      "check_id": "unit_tests",
+      "command": "/private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-032/unit_tests.log"
+    },
+    {
+      "check_id": "lint",
+      "command": "/private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-032/lint.log"
+    },
+    {
+      "check_id": "typecheck",
+      "command": "/private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-032/typecheck.log"
+    },
+    {
+      "check_id": "diff_clean",
+      "command": "git diff --check 7d24ee6dd0458e2971f26f9ac96d0465dae5ac22 3ff69607032d815664c1e0524ba93c362c0b4996 -- . ':(exclude)docs/exec-plans/evidence/HG-032/KL024_failure.log'",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-032/diff_clean-final.log"
+    }
+  ]
+}
