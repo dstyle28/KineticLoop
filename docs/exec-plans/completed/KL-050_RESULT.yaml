@@ -1,0 +1,106 @@
+task_identity: harness-backlog-v0.2/KL-050
+display_task_id: KL-050
+task_definition_version: v0.2
+base_commit: e7cfce1cbd76a1dbad32091529dd42a208770875
+tested_commit: 2d8dddbcd3585a7bd4996a3e7dacfc79fb6f457f
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: Published an immutable versioned evidence-only launch registry with required
+  Hevy and Apple HealthKit integrations, authenticated manual/chat fallback, optional
+  Oura/nutrition/import streams and denied Oura raw/derived AI exposure pending INT-06.
+  Canonical identities reuse KL-055; deterministic version-bound digests, closed metadata
+  and explicit provenance/watermark/missingness/degradation distinctions grant no
+  runtime readiness or authority.
+commands_run:
+- check_id: launch_scope_required_sources
+  command: uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_launch_scope_required_sources
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-050/checks-2d8dddb.log
+- check_id: launch_scope_optional_sources
+  command: uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_optional_sources_do_not_block_launch
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-050/checks-2d8dddb.log
+- check_id: launch_registry_closed_canonical_identity
+  command: uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_registry_rejects_invalid_duplicate_unknown_entries
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-050/checks-2d8dddb.log
+- check_id: launch_registry_version_and_digest
+  command: uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_registry_version_and_digest_are_deterministic
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-050/checks-2d8dddb.log
+- check_id: launch_registry_evidence_only
+  command: uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_registry_cannot_grant_command_or_fact_authority
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-050/checks-2d8dddb.log
+- check_id: launch_registry_exposure_policy
+  command: uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_oura_ai_exposure_remains_gated
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-050/checks-2d8dddb.log
+- check_id: launch_registry_health_coverage_separation
+  command: uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_scope_membership_is_not_health_coverage_or_launch_ready
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-050/checks-2d8dddb.log
+- check_id: launch_registry_hermetic
+  command: uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_registry_is_hermetic
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-050/checks-2d8dddb.log
+- check_id: launch_registry_suite_passes
+  command: uv run pytest -q tests/unit/integrations/test_launch_registry.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-050/checks-2d8dddb.log
+- check_id: provider_contract_regressions
+  command: uv run pytest -q tests/unit/integrations
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-050/checks-2d8dddb.log
+- check_id: lint_passes
+  command: uv run kl lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-050/checks-2d8dddb.log
+- check_id: typecheck_passes
+  command: uv run kl typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-050/checks-2d8dddb.log
+- check_id: harness_validation_passes
+  command: uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-050/checks-2d8dddb.log
+requirements_covered: []
+files_changed:
+- src/kineticloop/integrations/launch_registry.py
+- tests/unit/integrations/test_launch_registry.py
+- docs/contracts/launch_source_scope.md
+- docs/exec-plans/evidence/KL-050/checks-2d8dddb.log
+- docs/exec-plans/completed/KL-050_RESULT.yaml
+- docs/exec-plans/evidence/KL-050/checks-3fcd2d0.log
+decisions:
+- Publish HEVY and APPLE_HEALTHKIT as required launch integrations; MANUAL_CHAT remains
+  required fallback.
+- Represent HEALTHKIT_NUTRITION as an optional stream of canonical APPLE_HEALTHKIT
+  rather than a new provider.
+- Reject caller promotion of optional entries even when the version is changed; approved
+  policy/ADR requires an explicit catalog change.
+- Keep source policy separate from runtime connection status, evidence coverage, frozen
+  SafetyRegistry and adapter release readiness.
+- Keep Oura raw and derived AI exposure denied with explicit INT-06 prerequisite metadata;
+  no caller flag or membership grants approval.
+- No invariants, transactions, logical tables, frozen authority or shared provider
+  contracts are modified.
+known_limitations:
+- Descriptive policy only; actual adapters, ingress/admission, cross-source association,
+  runtime coverage and AI-context enforcement remain downstream.
+- No adapter LAUNCH_READY, M9A completion, product requirement PASS, E2E degradation
+  evidence, release-gate PASS or production activation is claimed.
+- The trusted in-process registry is not a sandbox against arbitrary code executing
+  low-level object mutation; provider observations have no registry input or registration
+  API.
+- Exact HealthKit iOS sample types and source-specific transport configuration remain
+  downstream decisions.
+follow_up_tasks:
+- Complete actual adapters under their unchanged KL-051/KL-052 prerequisites.
+- INT-06 must approve any future Oura AI exposure via its separate compliance/field
+  policy gate.
+- Prove provider-loss degradation and adapter launch release obligations in downstream
+  E2E gates.
+spec_change_request: null
