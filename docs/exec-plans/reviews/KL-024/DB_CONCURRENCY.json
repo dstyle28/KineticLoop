@@ -2,7 +2,7 @@
   "task_identity": "harness-backlog-v0.2/KL-024",
   "reviewed_head_sha": "885d038d83c6c5e59d39229c241aba01b1988f68",
   "review_type": "DB_CONCURRENCY",
-  "status": "CHANGES_REQUIRED",
+  "status": "STALE",
   "review_contract_version": "v0.2",
   "base_commit": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
   "tested_commit": "3e1fdaf491929ad5963ec4491cb1d1139fc1b8e8",
@@ -174,5 +174,6 @@
     }
   ],
   "resource_cleanup": "Suites ran sequentially in explicitly task-owned distinct namespaces. Post-run Docker container and volume listings for both exact project labels were empty. DB lane released; no application/test/result/evidence changes or commits were made by this reviewer.",
-  "merge_recommendation": "DO_NOT_MERGE"
+  "merge_recommendation": "DO_NOT_MERGE",
+  "stale_reason": "Implementation/master/HG032 integration and result have advanced after this reviewed SHA. Its historical findings are not current approval. Fresh DB_CONCURRENCY review is required after the separate governance repair for the current full-CI subject-scope assertion blocker; current cycle is paused at the parent instruction pending that merge."
 }
