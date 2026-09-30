@@ -55,7 +55,7 @@ class BuilderIdentity:
     def __post_init__(self) -> None:
         if (
             type(self.actor) is not RoleIdentity
-            or self.actor.role not in {ActorRole.SUBJECT, ActorRole.TEST, ActorRole.EVALUATION}
+            or self.actor.role not in {ActorRole.SUBJECT, ActorRole.TEST}
             or not isinstance(self.subject_id, UUID)
         ):
             raise GuardRequired("authenticated subject builder required")
@@ -136,7 +136,6 @@ class CanonicalViewService:
         namespace = {
             ActorRole.SUBJECT: "PRODUCTION",
             ActorRole.TEST: "TEST",
-            ActorRole.EVALUATION: "EVALUATION",
         }[self.builder.actor.role]
         if scope is None or scope[0] != namespace:
             raise GuardRequired("authenticated subject namespace mismatch")
@@ -386,6 +385,7 @@ class CanonicalViewService:
                 return {
                     "factset_id": str(command.build_id),
                     "completion_identity": completion["completion_identity"],
+                    "completion": completion,
                 }
 
             return tx.idempotent_outcome(

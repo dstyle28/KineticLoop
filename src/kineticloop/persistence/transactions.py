@@ -3740,15 +3740,12 @@ class RepositoryTransaction:
             if not isinstance(invalidation_scope, str) or not invalidation_scope.strip():
                 raise GuardRequired("T2 invalidation requires a nonempty canonical scope")
             _cursor(self).execute(
-                "SELECT typed_payload FROM kineticloop.policy_bundles "
-                "WHERE subject_id=%s AND id=%s",
+                "SELECT typed_payload FROM kineticloop.policy_bundles WHERE subject_id=%s AND id=%s",
                 (self.subject_id, self._coordination_context.get("active_policy_bundle_id")),
             )
             policy = _cursor(self).fetchone()
             if policy is None:
-                raise GuardRequired(
-                    "T2 invalidation classification is absent from the active policy"
-                )
+                raise GuardRequired("T2 invalidation classification is absent from the active policy")
             try:
                 canonical_scope = (policy[0] or {})["t2_invalidation_scopes"][self.command_kind]
             except (KeyError, TypeError) as error:
@@ -3781,6 +3778,28 @@ class RepositoryTransaction:
             if prior[1] != "SUCCEEDED" or "outcome" not in prior[2]:
                 raise IdempotencyConflict("command key has no durable successful outcome")
             return dict(prior[2]["outcome"]), True
+        if self.command_kind == "SealFactset" and factset_seal_basis is not None:
+            # Frozen natural replay identity is build + completion, independent
+            # of transport client key. S01 serializes this bounded S03/S02 lookup.
+            build_id = factset_seal_basis.get("factset_id")
+            _cursor(self).execute(
+                "SELECT receipt.typed_payload->'outcome' FROM kineticloop.domain_events event "
+                "JOIN kineticloop.command_receipts receipt ON receipt.subject_id=event.subject_id "
+                "AND receipt.id=event.ref_s02_id WHERE event.subject_id=%s "
+                "AND event.aggregate_type='FACTSET' AND event.aggregate_identity=%s "
+                "AND event.aggregate_revision=1 AND event.event_type='FACTSET_SEALED' "
+                "AND receipt.command_kind='SealFactset' AND receipt.actor_scope=%s "
+                "AND receipt.status='SUCCEEDED'",
+                (self.subject_id, str(build_id), actor_scope),
+            )
+            sealed = _cursor(self).fetchone()
+            if sealed is not None:
+                outcome = dict(sealed[0])
+                completion = dict(factset_seal_basis)
+                completion.pop("factset_id", None)
+                if outcome.get("completion") != completion:
+                    raise GuardRequired("sealed build completion identity/basis mismatch")
+                return outcome, True
         self._require_fence_guard()
         for table in sorted(
             aggregate_locks or (),
@@ -4092,8 +4111,18 @@ def execute_factset_build(
             return cast(_T, dict(prior["outcome"]))
         if replay_token is None:
             raise GuardRequired("owned builds require durable command identity")
+        if command_kind == "CompleteFactset":
+            natural = payload.get("completion_outcome")
+            if natural is not None and (
+                basis.get("expected_member_revision") == natural.get("completed_member_revision")
+                and basis.get("membership_digest") == natural.get("membership_digest")
+                and basis.get("member_count") == natural.get("member_count")
+                and basis.get("completion_identity") == natural.get("completion_identity")
+            ):
+                return cast(_T, dict(natural))
         return None
 
+    capture_matches = True
     if command_kind == "BeginBuild":
         # Replay first, then capture S01 in a short, separately committed read.
         # No S01 relation/row lock survives into the S15 build transaction.
@@ -4113,13 +4142,12 @@ def execute_factset_build(
                 "WHERE subject_id=%s",
                 (subject_id,),
             ).fetchone()
-        if snapshot is None or (
-            basis.get("captured_input_frontier") != snapshot[0]
-            or basis.get("captured_epoch") != snapshot[1]
-            or basis.get("program_revision_id") != snapshot[2]
-            or basis.get("policy_id") != snapshot[3]
-        ):
-            raise GuardRequired("BeginBuild basis does not match current committed S01 basis")
+        capture_matches = snapshot is not None and (
+            basis.get("captured_input_frontier") == snapshot[0]
+            and basis.get("captured_epoch") == snapshot[1]
+            and basis.get("program_revision_id") == snapshot[2]
+            and basis.get("policy_id") == snapshot[3]
+        )
     with connection.transaction():
         cursor = connection.cursor()
         if command_kind == "BeginBuild":
@@ -4137,6 +4165,8 @@ def execute_factset_build(
             replayed = read_replay(existing[0])
             if replayed is not None:
                 return replayed
+        if command_kind == "BeginBuild" and not capture_matches:
+            raise GuardRequired("BeginBuild basis does not match current committed S01 basis")
         context: dict[str, Any] = {}
         locked: Mapping[str, frozenset[UUID]] = {}
         if command_kind == "BeginBuild":
@@ -4240,6 +4270,9 @@ def execute_factset_build(
                     "completion_certificate": certificate,
                 }
                 if replay_token is not None:
+                    build_context["completion_payload"]["completion_outcome"] = basis[
+                        "durable_outcome"
+                    ]
                     build_context["completion_payload"]["build_replays"] = {
                         **build_context["typed_payload"].get("build_replays", {}),
                         replay_token: replay_record,

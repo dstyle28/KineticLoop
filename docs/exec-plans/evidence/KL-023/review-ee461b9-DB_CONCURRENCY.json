@@ -1,0 +1,68 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-023",
+  "reviewed_head_sha": "ee461b973bbb43df3673efa4361d018634dafbc8",
+  "review_type": "DB_CONCURRENCY",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "finding_id": "KL023-DB-001",
+      "classification": "BLOCKER",
+      "priority": "P2",
+      "title": "Recheck durable BeginBuild replay before rejecting a newly stale capture",
+      "file": "src/kineticloop/persistence/transactions.py",
+      "start_line": 4116,
+      "end_line": 4122,
+      "description": "The first BeginBuild replay read and S01 capture are separate READ COMMITTED statements. A duplicate can read no S15 row, then the original identical BeginBuild commits and T2-IN advances frontier/epoch before the duplicate's S01 statement. The duplicate raises GuardRequired at line 4122 without reaching the advisory-locked durable replay read at lines 4125-4139. Thus identical concurrently retried commands can reject even though their original successful outcome is already durable; the packet requires same BeginBuild key/payload to return original identities. This is reproducible with real PostgreSQL and the service/transaction owners, without sleeps or direct factset writes.",
+      "required_change": "Keep S01 capture in its separate short read transaction, but defer the capture mismatch rejection until after acquiring the S15-local advisory lock and checking durable BeginBuild replay. Existing matching replay must return the original outcome, payload conflicts must remain conflicts, and a truly new stale command must still reject. Add a bounded regression exercising the absent-row read, original BeginBuild commit, T2-IN frontier/epoch commit, duplicate capture sequence.",
+      "reproduction": {
+        "reviewed_sha": "ee461b973bbb43df3673efa4361d018634dafbc8",
+        "command": "PATH=/usr/local/bin:$PATH UV_PROJECT_ENVIRONMENT=/private/tmp/kl023-venv UV_CACHE_DIR=/private/tmp/kl023-uv-cache /private/tmp/kl001-bootstrap/bin/uv run python /private/tmp/kl023_begin_review_race.py",
+        "namespace": {
+          "compose": "kineticloop-kl023-ee461b9",
+          "database": "kineticloop_kl023_ee461b9"
+        },
+        "steps": [
+          "Bootstrap and seed tests/db/test_factsets.py database_urls.__wrapped__() in the current SHA-derived isolated TEST namespace.",
+          "Create BeginBuild(SUBJECT, 'review-begin-frontier-race', 'frontier-0', 0, PROGRAM, POLICY, BASIS, max_delta_depth=1).",
+          "Run duplicate BeginBuild on a second connection using a psycopg Cursor subclass whose execute sets a threading Event and waits at the owner SELECT input_frontier_hash,authorization_epoch,active_program_id query. This point follows its absent S15 replay read.",
+          "Wait for that Event, then execute the identical BeginBuild through CanonicalViewService on the first connection; execute the existing test input_revision helper with key review-advanced-frontier to commit real AcceptFactRevision T2-IN frontier/epoch changes.",
+          "Execute a serial same-command replay as the control; release the bounded Event and collect the paused duplicate result.",
+          "Close the fixture to destroy only its task-owned resources."
+        ],
+        "raw_stdout": [
+          "FIRST_BEGIN_DURABLE {'build_id': '73e8c4af-c031-56ff-ae05-bd6a4f28043d', 'member_revision': 0, 'storage_mode': 'FULL', 'delta_depth': 0}",
+          "SERIAL_REPLAY {'build_id': '73e8c4af-c031-56ff-ae05-bd6a4f28043d', 'delta_depth': 0, 'storage_mode': 'FULL', 'member_revision': 0}",
+          "CONTENDER_REJECTED GuardRequired BeginBuild basis does not match current committed S01 basis"
+        ]
+      },
+      "validation_context": "Independently reproduced the whole factset DB suite at reviewed SHA: 5 passed in 4.69s, with PostgreSQL-observed S15 writer/completion blocking in both orders and S01 input/seal blocking in both orders. Independently reproduced transaction owner DB/unit regressions in kineticloop-kl023-reg-ee461b9 / kineticloop_kl023_reg_ee461b9: 58 passed in 15.45s. Committed raw PASS logs bind tested_commit 1f52e6af53b98474d07da7105928087ae3e09e12; git diff from that SHA to reviewed SHA changes only task evidence/result files, so implementation and tests match. Those suites omit the reproduced Begin/frontier schedule."
+    }
+  ],
+  "evidence_refs": [
+    "AGENTS.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    "docs/exec-plans/active/KL-023.md",
+    "docs/exec-plans/completed/KL-015_RESULT.yaml",
+    "docs/exec-plans/integrations/KL-015.json",
+    "docs/exec-plans/milestones/M2.json",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+    "docs/contracts/repository_transactions.md",
+    "docs/contracts/factsets.md",
+    "docs/exec-plans/completed/KL-023_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-023/checks-1f52e6a.json",
+    "docs/exec-plans/evidence/KL-023/factset_build_idempotency_and_canonical_reads_dc-1f52e6a.log",
+    "docs/exec-plans/evidence/KL-023/factset_complete_writer_interleaving_dc-1f52e6a.log",
+    "docs/exec-plans/evidence/KL-023/factset_seal_frontier_atomicity_and_replay_dc-1f52e6a.log",
+    "docs/exec-plans/evidence/KL-023/factset_db_suite_passes-1f52e6a.log",
+    "docs/exec-plans/evidence/KL-023/transaction_owner_regressions_pass-1f52e6a.log",
+    "src/kineticloop/persistence/factsets.py",
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/protocol/factsets.py",
+    "tests/db/test_factsets.py",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "THREAD_REVIEW.schema.json"
+  ],
+  "review_contract_version": "v0.2"
+}

@@ -222,6 +222,8 @@ def test_build_replay_and_sealed_only_reads(database_urls: dict[str, str]) -> No
         )
         with pytest.raises(GuardRequired, match="namespace"):
             wrong_namespace.begin_build(command)
+        with pytest.raises(GuardRequired, match="builder"):
+            BuilderIdentity(RoleIdentity(str(uuid4()), ActorRole.EVALUATION), SUBJECT)
 
         with pytest.raises(IdempotencyConflict):
             api.begin_build(replace(command, captured_input_frontier="changed"))
@@ -258,6 +260,7 @@ def test_build_replay_and_sealed_only_reads(database_urls: dict[str, str]) -> No
         result = api.complete_factset(complete)
         before = state(db, build)
         assert api.complete_factset(complete) == result
+        assert api.complete_factset(replace(complete, key="natural-complete")) == result
         with pytest.raises(GuardRequired):
             api.complete_factset(replace(complete, expected_member_revision=2))
         with pytest.raises(GuardRequired):
@@ -269,6 +272,8 @@ def test_build_replay_and_sealed_only_reads(database_urls: dict[str, str]) -> No
         sealed = api.seal_factset(seal)
         assert sealed["factset_id"] == str(build)
         assert api.complete_factset(complete) == result
+        assert api.complete_factset(replace(complete, key="natural-complete-sealed")) == result
+        assert api.seal_factset(replace(seal, key="natural-seal")) == sealed
         assert api.write_candidate(first) == original_member
         assert api.begin_build(command) == original
         canonical = api.read_canonical(SUBJECT, build)
@@ -614,6 +619,17 @@ def test_seal_frontier_atomicity_and_old_replay(
             newer_state = state(db, build)
             # ACK-loss replay after a newer head returns only the original identity.
             assert service(db).seal_factset(seal_command) == original_seal
+            assert (
+                service(db).seal_factset(replace(seal_command, key="old-natural-seal"))
+                == original_seal
+            )
+            assert (
+                service(db).complete_factset(
+                    CompleteFactset(SUBJECT, "old-natural-complete", build, 3)
+                )
+                == completion
+            )
+
             assert state(db, build) == newer_state and newer_state[0] == newer
             with pytest.raises(IdempotencyConflict):
                 service(db).seal_factset(
@@ -622,4 +638,80 @@ def test_seal_frontier_atomicity_and_old_replay(
             assert state(db, build) == newer_state
         print(
             f"persisted T2 serial outcome={winner}; all S01/S15/S02/S03/S04 atomic, seal member scans=0"
+        )
+
+
+def test_begin_replay_after_concurrent_frontier_change(database_urls: dict[str, str]) -> None:
+    url = database_urls["admin"]
+    with psycopg.connect(url) as db:
+        with db.transaction():
+            row = db.execute(
+                "SELECT input_frontier_hash,authorization_epoch FROM "
+                "kineticloop.user_decision_state WHERE subject_id=%s",
+                (SUBJECT,),
+            ).fetchone()
+        assert row is not None
+        command = BeginBuild(
+            SUBJECT,
+            "begin-frontier-race",
+            row[0],
+            row[1],
+            PROGRAM,
+            POLICY,
+            BASIS,
+            max_delta_depth=1,
+        )
+    captured, release = Event(), Event()
+
+    class SnapshotBarrierConnection(psycopg.Connection[Any]):
+        def execute(self, query: Any, *args: Any, **kwargs: Any) -> Any:
+            if str(query).startswith(
+                "SELECT input_frontier_hash,authorization_epoch,active_program_id,"
+            ):
+                # This is after the owner's initial absent-S15 replay read and before
+                # S01 snapshot capture; no build or S01 row lock is held here.
+                captured.set()
+                assert release.wait(8)
+            return super().execute(query, *args, **kwargs)
+
+    def retry() -> Any:
+        with SnapshotBarrierConnection.connect(
+            url,
+            application_name="kl023-begin-retry",
+            options="-c lock_timeout=10000 -c statement_timeout=15000",
+        ) as db:
+            return service(db).begin_build(command)
+
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        second = pool.submit(retry)
+        assert captured.wait(8)
+        try:
+            with psycopg.connect(url, autocommit=True) as observer:
+                rows = observer.execute(
+                    "SELECT pid,state,query,pg_blocking_pids(pid) "
+                    "FROM pg_stat_activity WHERE application_name='kl023-begin-retry'"
+                ).fetchall()
+                assert len(rows) == 1 and rows[0][1] == "idle in transaction"
+                assert "factset_revisions" in rows[0][2] and rows[0][3] == []
+                print(
+                    f"PostgreSQL Begin barrier: state={rows[0][1]}, query={rows[0][2]}, blockers={rows[0][3]}"
+                )
+            with psycopg.connect(url) as first:
+                original = service(first).begin_build(command)
+                input_revision(first, "begin-frontier-advance")
+                before = state(first, UUID(original["build_id"]))
+        finally:
+            release.set()
+        assert second.result(timeout=8) == original
+    with psycopg.connect(url) as db:
+        assert service(db).begin_build(command) == original
+        assert state(db, UUID(original["build_id"])) == before
+        with db.transaction():
+            assert db.execute(
+                "SELECT count(*) FROM kineticloop.factset_revisions "
+                "WHERE subject_id=%s AND factset_identity='kl023:begin-frontier-race'",
+                (SUBJECT,),
+            ).fetchone() == (1,)
+        print(
+            "persisted concurrent Begin replay: original identity survives newer frontier/epoch; no repeated mutations"
         )

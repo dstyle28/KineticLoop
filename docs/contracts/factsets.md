@@ -8,10 +8,11 @@ with their downstream acceptance owners, including KL-032.
 `CanonicalViewService` takes an idle PostgreSQL connection and a trusted
 `BuilderIdentity(RoleIdentity, subject_id)` supplied by authenticated ingress.
 Commands cannot assert another actor or subject. The actor's role must match
-the registered PRODUCTION/TEST/EVALUATION subject namespace. The exact builder
+the registered PRODUCTION/TEST subject namespace. The exact builder
 identity is frozen at BeginBuild and required for every build mutation and seal.
 Ingress must bind RoleIdentity and subject_id before constructing the service;
-these Python value objects are not authentication tokens.
+these Python value objects are not authentication tokens. Evaluation actors cannot
+construct this live service; replay/evaluation artifacts remain under S46/S47.
 
 The typed commands are `BeginBuild`, `WriteCandidate`, `CompleteFactset` and
 `SealFactset`. Build keys are local to the subject/build/command; seal keys are
@@ -23,7 +24,9 @@ operation and advances member_revision once. The physical natural key forbids
 multiple operations for the same kind/key/scope within one build. A subsequent
 replacement uses a new build. Build key/request hash/outcome records live in
 S15's typed payload, are committed with their mutations, and freeze at READY.
-Same keys and payloads return original identities even after SEALED; changed
+Same keys and payloads return original identities even after SEALED. Complete
+also replays by build/closed revision/digest across transport keys, and Seal by
+build/completion identity across transport keys, without new head/event/outbox writes. Changed
 payloads and new writes to closed revisions fail.
 
 EvidenceBasis explicitly lists the complete selected association, admission and
