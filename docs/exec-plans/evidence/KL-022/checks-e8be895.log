@@ -1,0 +1,73 @@
+KL-022 required task-check evidence after independent-review remediation
+tested_commit: e8be895ec334f7752b4368f82cca2f7c3f088513
+database_namespace: kineticloop_kl022_08e743c
+compose_project: kineticloop-kl022-08e743c
+e2e_database_namespace: kineticloop_kl022_e2e_08e743c
+e2e_compose_project: kineticloop-kl022-e2e-08e743c
+
+$ uv run pytest -q tests/unit/protocol/test_authorization.py::test_validity_closure_uses_every_bound_and_denies_missing_or_elapsed_basis
+.                                                                        [100%]
+1 passed in 0.01s
+
+$ uv run pytest -q tests/unit/protocol/test_authorization.py::test_timeless_dependency_requires_auditable_policy_in_same_transitive_closure
+.                                                                        [100%]
+1 passed in 0.01s
+
+$ uv run pytest -q tests/unit/protocol/test_authorization.py::test_is_executable_requires_subject_content_scope_epoch_control_and_strict_time
+.                                                                        [100%]
+1 passed in 0.01s
+
+$ uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_authorization_evaluator_persists_exact_minimum_certificate
+.                                                                        [100%]
+1 passed in 10.42s
+
+$ uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_t7_deny_revoked_transitive_dependency_after_current_registry_read
+.                                                                        [100%]
+1 passed in 4.28s
+
+$ uv run pytest -q tests/db/test_transaction_interfaces.py::test_t7_executability_rereads_epoch_scope_control_and_time
+.                                                                        [100%]
+1 passed in 4.53s
+
+$ uv run pytest -q tests/e2e/test_authorization_evaluator.py::test_test_subject_eligibility_query_is_current_and_non_bearer
+.                                                                        [100%]
+1 passed in 3.85s
+
+$ uv run pytest -q tests/unit/protocol/test_authorization.py
+...                                                                      [100%]
+3 passed in 0.01s
+
+$ uv run pytest -q tests/db/test_transaction_interfaces.py
+.......................................................                  [100%]
+55 passed in 14.47s
+
+$ uv run pytest -q tests/e2e/test_authorization_evaluator.py
+.                                                                        [100%]
+1 passed in 3.87s
+
+$ uv run kl check-harness
+HARNESS_CHECK_PASS tasks=70 active=67
+
+Supplemental implementation checks on the same tested commit:
+
+$ uv run kl lint
+All checks passed!
+
+$ uv run kl typecheck
+Success: no issues found in 89 source files
+
+Oracle notes:
+- T6 persisted one immutable S42 through the existing Reauthorize owner for every
+  independently varied finite dependency, including exact authoritative start/end
+  entries and a deterministic digest.
+- Future-effective manifest, evidence-resolution, validation, and projection rows
+  denied before issuance.
+- A deliberately incomplete certificate was rejected after attempted S39-S43,
+  S27/S29, S38, and S01 mutation; database snapshots proved S02/S03/S04 and all
+  named state rolled back atomically.
+- T7 database evidence exercised HOLD, STOP, RESTRICTION, and unprovable control
+  projection states.
+- The E2E used canonical trusted-admin TEST registration, its exact isolated
+  policy/environment, TEST_ONLY S42 scope, and a bound TEST-principal lookup before
+  calling the non-bearer evaluator boundary. A committed transitive revoke changed
+  a fresh query to ineligible without S45 or domain/outbox mutation.

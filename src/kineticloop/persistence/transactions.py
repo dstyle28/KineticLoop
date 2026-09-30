@@ -12,7 +12,7 @@ import hashlib
 import json
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from enum import IntEnum, StrEnum
 from types import MappingProxyType
 from typing import Any, TypeVar
@@ -20,11 +20,23 @@ from uuid import UUID
 from weakref import WeakKeyDictionary
 
 from psycopg import Connection, Cursor, sql
+from psycopg import Error as PsycopgError
 from psycopg.pq import TransactionStatus
 from psycopg.types.json import Jsonb
 
 from kineticloop.persistence.metadata import REQUIRED_FIELDS
 from kineticloop.persistence.schema_topology import LOGICAL_RELATIONS
+from kineticloop.protocol.authorization import (
+    AUTHORIZATION_METHOD_VERSION,
+    AuthorizationEvaluationError,
+    ExecutabilityBasis,
+    ExecutabilityDecision,
+    ValidityDependency,
+    canonical_certificate_timestamp,
+    controls_are_eligible,
+    evaluate_executability,
+    evaluate_validity_closure,
+)
 
 _T = TypeVar("_T")
 
@@ -1431,7 +1443,7 @@ class RestrictedSqlSession:
                 "authorization_epoch"
             ):
                 raise GuardRequired("S42 certificate epoch must equal locked S01")
-            if certificate["method_version"] != "kl015-v1":
+            if certificate["method_version"] != AUTHORIZATION_METHOD_VERSION:
                 raise GuardRequired("S42 certificate method version is server-owned")
             authorization_valid_until = values.get("valid_until")
             if (
@@ -2469,6 +2481,13 @@ class RepositoryTransaction:
         artifact_revision = int(row[9])
         if artifact_revision <= 0:
             raise ArtifactIdentityRequired("artifact revision must be positive")
+        _cursor(self).execute(
+            "SELECT dependency_artifact_id "
+            "FROM kineticloop.safety_artifact_dependencies WHERE artifact_id=%s "
+            "ORDER BY dependency_artifact_id",
+            (identity.artifact_id,),
+        )
+        dependency_ids = tuple(str(item[0]) for item in _cursor(self).fetchall())
         self._artifact_details[identity.artifact_id] = MappingProxyType(
             {
                 "artifact_id": str(identity.artifact_id),
@@ -2478,10 +2497,17 @@ class RepositoryTransaction:
                 "content_hash": row[3],
                 "artifact_revision": artifact_revision,
                 "validity_kind": row[4],
-                "valid_from": row[5].isoformat(),
-                "valid_until": row[6].isoformat() if row[6] is not None else None,
+                "valid_from": canonical_certificate_timestamp(
+                    row[5], "artifact valid_from"
+                ),
+                "valid_until": (
+                    canonical_certificate_timestamp(row[6], "artifact valid_until")
+                    if row[6] is not None
+                    else None
+                ),
                 "timeless_approval_policy": row[7],
                 "timeless_approval_reason": row[8],
+                "dependency_ids": dependency_ids,
             }
         )
 
@@ -2514,6 +2540,44 @@ class RepositoryTransaction:
         if not self._registry:
             raise GuardRequired("authorization epoch requires registry/subject guard")
         return int(self._coordination_context["authorization_epoch"])
+
+    def _current_control_states(self, execution_scope: str) -> tuple[bool, tuple[str, ...]]:
+        """Read the exact synchronous S18/S17 projection for one execution scope."""
+
+        _cursor(self).execute(
+            "SELECT head.control_identity,head.execution_scope,head.head_revision,head.status,"
+            "head.ref_s17_id,event.control_identity,event.control_revision,event.scope,event.status "
+            "FROM kineticloop.control_heads head "
+            "LEFT JOIN kineticloop.control_events event "
+            "ON event.subject_id=head.subject_id AND event.id=head.ref_s17_id "
+            "WHERE head.subject_id=%s AND head.execution_scope=%s "
+            "ORDER BY head.control_identity,head.id",
+            (self.subject_id, execution_scope),
+        )
+        states: list[str] = []
+        proven = True
+        for row in _cursor(self).fetchall():
+            head_identity, head_scope, head_revision, head_status = row[:4]
+            event_id, event_identity, event_revision, event_scope, event_kind = row[4:]
+            exact_projection = (
+                event_id is not None
+                and head_identity is not None
+                and head_identity == event_identity
+                and head_scope == event_scope == execution_scope
+                and isinstance(head_revision, int)
+                and head_revision == event_revision
+            )
+            if not exact_projection:
+                proven = False
+                states.append("UNKNOWN")
+            elif head_status == "CLEARED" and event_kind == "CLEAR":
+                states.append("CLEARED")
+            elif head_status == "ACTIVE" and event_kind in {"HOLD", "STOP", "RESTRICTION"}:
+                states.append(str(event_kind))
+            else:
+                proven = False
+                states.append("UNKNOWN")
+        return proven, tuple(states)
 
     def require_current_fence(
         self,
@@ -2587,7 +2651,13 @@ class RepositoryTransaction:
             "resolution.id,resolution.revision,resolution.resolution_expires_at,"
             "validation.id,validation.revision,validation.valid_until,validation.result,"
             "request.id,request.request_revision,intent.deadline,head.id,head.local_date,"
-            "clock_timestamp(),manifest.typed_payload "
+            "clock_timestamp(),manifest.typed_payload,"
+            "GREATEST(manifest.recorded_at,"
+            "COALESCE(manifest.effective_at,manifest.recorded_at)),"
+            "GREATEST(resolution.recorded_at,"
+            "COALESCE(resolution.effective_at,resolution.recorded_at)),"
+            "GREATEST(validation.recorded_at,"
+            "COALESCE(validation.effective_at,validation.recorded_at)) "
             "FROM kineticloop.planning_intents intent "
             "JOIN kineticloop.planning_request_revisions request "
             "ON request.subject_id=intent.subject_id AND request.id=intent.current_request_revision_id "
@@ -2684,7 +2754,10 @@ class RepositoryTransaction:
         ):
             raise GuardRequired("policy, demand, and calendar authorization bounds must exist")
         _cursor(self).execute(
-            "SELECT projection.id,projection.revision,projection.valid_until,binding.projection_role "
+            "SELECT projection.id,projection.revision,projection.valid_until,"
+            "binding.projection_role,GREATEST(projection.recorded_at,"
+            "COALESCE(projection.effective_at,projection.recorded_at),"
+            "COALESCE(projection.computed_at,projection.recorded_at)) "
             "FROM kineticloop.manifest_projection_bindings binding "
             "LEFT JOIN kineticloop.projection_versions projection "
             "ON projection.subject_id=binding.subject_id AND projection.id=binding.ref_s21_id "
@@ -2707,102 +2780,143 @@ class RepositoryTransaction:
             calendar_end = datetime.fromisoformat(str((calendar[0] or {})["calendar_valid_until"]))
         except (KeyError, TypeError, ValueError) as error:
             raise GuardRequired("policy TTL and calendar validity must be explicit") from error
+        if policy_ttl <= 0:
+            raise GuardRequired("policy TTL must be finite and positive")
         policy_end = now + timedelta(seconds=policy_ttl)
-        artifact_ends = tuple(
-            datetime.fromisoformat(str(detail["valid_until"]))
-            for detail in self._artifact_details.values()
-            if detail["valid_until"] is not None
+        control_proven, control_states = self._current_control_states(authorization_scope)
+        if not controls_are_eligible(proven=control_proven, states=control_states):
+            raise GuardRequired("applicable current control state denies authorization")
+        _cursor(self).execute(
+            "SELECT typed_payload FROM kineticloop.evidence_resolutions "
+            "WHERE subject_id=%s AND id=%s",
+            (self.subject_id, resolution_id),
         )
-        bounded = (
-            row[2],
-            row[5],
-            row[8],
-            row[12],
-            policy_end,
-            calendar_end,
-            *(projection[2] for projection in projections),
-            *artifact_ends,
-        )
-        if any(not isinstance(value, datetime) or value <= now for value in bounded):
-            raise GuardRequired("authorization basis contains an expired or undefined dependency")
-        valid_until = min(bounded)
-        if requested_valid_until is not None:
-            if requested_valid_until <= now:
-                raise GuardRequired("requested authorization end is already expired")
-            valid_until = min(valid_until, requested_valid_until)
-        dependencies = [
-            dict(self._artifact_details[artifact_id])
-            for artifact_id in sorted(self._verified_artifacts, key=str)
-        ]
-        dependencies.extend(
+        freshness_row = _cursor(self).fetchone()
+        if freshness_row is None:
+            raise GuardRequired("evidence admission freshness is missing or malformed")
+        try:
+            freshness_items = list(dict(freshness_row[0] or {})["admission_freshness"])
+            if not freshness_items:
+                raise ValueError("empty admission freshness")
+        except (IndexError, KeyError, TypeError, ValueError) as error:
+            raise GuardRequired("evidence admission freshness is missing or malformed") from error
+
+        validity_dependencies: list[ValidityDependency] = []
+        for artifact_id in sorted(self._verified_artifacts, key=str):
+            detail = self._artifact_details[artifact_id]
+            try:
+                validity_dependencies.append(
+                    ValidityDependency(
+                        "ARTIFACT",
+                        str(artifact_id),
+                        int(detail["artifact_revision"]),
+                        datetime.fromisoformat(str(detail["valid_from"])),
+                        (
+                            datetime.fromisoformat(str(detail["valid_until"]))
+                            if detail["valid_until"] is not None
+                            else None
+                        ),
+                        validity_kind=str(detail["validity_kind"]),
+                        artifact_kind=str(detail["artifact_kind"]),
+                        timeless_approval_policy=(
+                            str(detail["timeless_approval_policy"])
+                            if detail["timeless_approval_policy"] is not None
+                            else None
+                        ),
+                        timeless_approval_reason=detail["timeless_approval_reason"],
+                        dependency_ids=tuple(str(item) for item in detail["dependency_ids"]),
+                        attributes={
+                            "artifact_identity": detail["artifact_identity"],
+                            "artifact_version": detail["artifact_version"],
+                            "content_hash": detail["content_hash"],
+                        },
+                    )
+                )
+            except (TypeError, ValueError) as error:
+                raise GuardRequired("artifact validity certificate is malformed") from error
+        validity_dependencies.extend(
             (
-                {
-                    "dependency_kind": "MANIFEST",
-                    "identity": str(row[0]),
-                    "revision": row[1],
-                    "valid_until": row[2].isoformat(),
-                },
-                {
-                    "dependency_kind": "EVIDENCE_RESOLUTION",
-                    "identity": str(row[3]),
-                    "revision": row[4],
-                    "valid_until": row[5].isoformat(),
-                },
-                {
-                    "dependency_kind": "VALIDATION",
-                    "identity": str(row[6]),
-                    "revision": row[7],
-                    "valid_until": row[8].isoformat(),
-                },
-                {
-                    "dependency_kind": "DEMAND_FEATURE",
-                    "identity": str(demand_basis[1]),
-                    "revision": demand_basis[4],
-                    "proposal_id": str(demand_basis[2]),
-                },
-                {
-                    "dependency_kind": "REQUEST",
-                    "identity": str(row[10]),
-                    "revision": row[11],
-                    "valid_until": row[12].isoformat(),
-                },
-                {
-                    "dependency_kind": "POLICY",
-                    "identity": str(self._coordination_context.get("active_policy_bundle_id")),
-                    "revision": policy[0],
-                    "valid_until": policy_end.isoformat(),
-                },
-                {
-                    "dependency_kind": "CALENDAR",
-                    "identity": str(row[13]),
-                    "revision": row[14].isoformat(),
-                    "valid_until": calendar_end.isoformat(),
-                },
+                ValidityDependency("MANIFEST", str(row[0]), row[1], row[17], row[2]),
+                ValidityDependency(
+                    "EVIDENCE_RESOLUTION", str(row[3]), row[4], row[18], row[5]
+                ),
+                ValidityDependency(
+                    "VALIDATION_ADMISSION_FRESHNESS",
+                    str(row[6]),
+                    row[7],
+                    row[19],
+                    row[8],
+                ),
+                ValidityDependency(
+                    "DEMAND_FEATURE",
+                    str(demand_basis[1]),
+                    demand_basis[4],
+                    None,
+                    None,
+                    requires_validity=False,
+                    attributes={"proposal_id": str(demand_basis[2])},
+                ),
+                ValidityDependency("REQUEST_DEADLINE", str(row[10]), row[11], now, row[12]),
+                ValidityDependency(
+                    "POLICY_TTL",
+                    str(self._coordination_context.get("active_policy_bundle_id")),
+                    policy[0],
+                    now,
+                    policy_end,
+                ),
+                ValidityDependency(
+                    "CALENDAR",
+                    str(row[13]),
+                    row[14].isoformat(),
+                    now,
+                    calendar_end,
+                ),
             )
         )
-        dependencies.extend(
-            {
-                "dependency_kind": "PROJECTION",
-                "identity": str(projection[0]),
-                "revision": projection[1],
-                "role": projection[3],
-                "valid_until": projection[2].isoformat(),
-            }
+        for freshness in freshness_items:
+            try:
+                freshness_mapping = dict(freshness)
+                validity_dependencies.append(
+                    ValidityDependency(
+                        "EVIDENCE_ADMISSION_FRESHNESS",
+                        str(freshness_mapping["identity"]),
+                        freshness_mapping["revision"],
+                        datetime.fromisoformat(str(freshness_mapping["valid_from"])),
+                        datetime.fromisoformat(str(freshness_mapping["valid_until"])),
+                    )
+                )
+            except (KeyError, TypeError, ValueError) as error:
+                raise GuardRequired("evidence admission freshness is missing or malformed") from error
+        validity_dependencies.extend(
+            ValidityDependency(
+                "PROJECTION",
+                str(projection[0]),
+                projection[1],
+                projection[4],
+                projection[2],
+                attributes={"role": projection[3]},
+            )
             for projection in projections
         )
-        digest = hashlib.sha256(
-            json.dumps(dependencies, sort_keys=True, separators=(",", ":")).encode()
-        ).hexdigest()
-        self._coordination_context["authorization_dependencies"] = tuple(dependencies)
-        self._coordination_context["authorization_valid_from"] = now
-        self._coordination_context["authorization_valid_until"] = valid_until
+        try:
+            closure = evaluate_validity_closure(
+                authoritative_now=now,
+                dependencies=validity_dependencies,
+                requested_absolute_end=requested_valid_until,
+            )
+        except AuthorizationEvaluationError as error:
+            raise GuardRequired(f"authorization validity closure denied: {error}") from error
+        dependencies = tuple(dict(item) for item in closure.dependencies)
+        self._coordination_context["authorization_dependencies"] = dependencies
+        self._coordination_context["authorization_valid_from"] = closure.valid_from
+        self._coordination_context["authorization_valid_until"] = closure.valid_until
         self._coordination_context["validation_valid_until"] = row[8]
         self._coordination_context["authorization_validation_id"] = validation_id
         self._coordination_context["authorization_resolution_id"] = resolution_id
         self._coordination_context["authorization_demand_id"] = demand_basis[1]
         self._coordination_context["authorization_scope"] = authorization_scope
         self._coordination_context["authorization_head_id"] = head_id
-        return tuple(dependencies), digest, valid_until
+        return dependencies, closure.closure_digest, closure.valid_until
 
     def _prepare_manifest_publication(self) -> None:
         """Bind T3 publication to the one locked READY build and current S01 basis."""
@@ -3223,14 +3337,14 @@ class RepositoryTransaction:
             "occurred_at": row[4],
         }
 
-    def require_execution_authorization(
+    def evaluate_execution_authorization(
         self,
         *,
         prescription_id: UUID,
         authorization_id: UUID,
         execution_scope: str,
-    ) -> None:
-        """Revalidate the exact P/A pair consumed by a T7 START/RESUME/CONTINUE."""
+    ) -> ExecutabilityDecision:
+        """Return a current non-bearer observation for one exact T7 P/A pair."""
 
         if self.command_kind not in {"StartSession", "ResumeSession", "ContinueSession"}:
             raise GuardRequired("execution authorization is exclusive to T7 owners")
@@ -3238,60 +3352,91 @@ class RepositoryTransaction:
         if not self._registry:
             raise GuardRequired("T7 execution authorization requires the registry lease")
         _cursor(self).execute(
-            "SELECT 1 FROM kineticloop.authorization_issuances issuance "
-            "JOIN kineticloop.prescription_revisions prescription "
-            "ON prescription.subject_id=issuance.subject_id "
-            "AND prescription.id=issuance.ref_s40_id "
-            "JOIN kineticloop.bundle_prescription_members member "
-            "ON member.subject_id=prescription.subject_id "
-            "AND member.ref_s40_id=prescription.id "
-            "JOIN kineticloop.daily_plan_heads head "
-            "ON head.subject_id=member.subject_id "
+            "SELECT issuance.subject_id,prescription.content_hash,issuance.bound_content_hash,"
+            "issuance.scope,(issuance.validity_certificate->>'authorization_epoch')::bigint,"
+            "issuance.valid_from,issuance.valid_until,issuance.ref_s05_id,"
+            "issuance.registry_revision_at_issue,issuance.registry_state_id,issuance.ref_s49_id,"
+            "issuance.ref_s40_id,clock_timestamp(),"
+            "NOT EXISTS (SELECT 1 FROM kineticloop.authorization_events event "
+            "WHERE event.subject_id=issuance.subject_id AND event.ref_s42_id=issuance.id),"
+            "EXISTS (SELECT 1 FROM kineticloop.bundle_prescription_members member "
+            "JOIN kineticloop.daily_plan_heads head ON head.subject_id=member.subject_id "
             "AND head.current_bundle_revision_id=member.ref_s39_id "
-            "WHERE issuance.subject_id=%s AND issuance.id=%s "
-            "AND prescription.id=%s "
-            "AND issuance.bound_content_hash=prescription.content_hash "
-            "AND issuance.scope=%s "
-            "AND issuance.valid_from <= clock_timestamp() "
-            "AND issuance.valid_until > clock_timestamp() "
-            "AND issuance.registry_revision_at_issue <= %s "
-            "AND issuance.registry_state_id=1 "
-            "AND issuance.ref_s49_id=ANY(%s) "
-            "AND (issuance.validity_certificate->>'authorization_epoch')::bigint=%s "
-            "AND head.id=ANY(%s) "
-            "AND NOT EXISTS ("
-            "SELECT 1 FROM kineticloop.authorization_events event "
-            "WHERE event.subject_id=issuance.subject_id "
-            "AND event.ref_s42_id=issuance.id) "
-            "AND (SELECT count(*) "
-            "FROM kineticloop.authorization_artifact_closure closure "
-            "WHERE closure.subject_id=issuance.subject_id "
-            "AND closure.authorization_id=issuance.id "
-            "AND closure.artifact_id=ANY(%s) "
-            "AND closure.valid_from <= clock_timestamp() "
-            "AND (closure.valid_until IS NULL "
-            "OR closure.valid_until > clock_timestamp()))=%s "
-            "AND (SELECT count(*) "
-            "FROM kineticloop.authorization_artifact_closure closure "
-            "WHERE closure.subject_id=issuance.subject_id "
-            "AND closure.authorization_id=issuance.id)=%s",
+            "WHERE member.subject_id=issuance.subject_id "
+            "AND member.ref_s40_id=prescription.id AND head.id=ANY(%s)) "
+            "FROM kineticloop.authorization_issuances issuance "
+            "LEFT JOIN kineticloop.prescription_revisions prescription "
+            "ON prescription.subject_id=issuance.subject_id AND prescription.id=%s "
+            "WHERE issuance.subject_id=%s AND issuance.id=%s",
             (
+                list(self._locked_ids.get("daily_plan_heads", set())),
+                prescription_id,
                 self.subject_id,
                 authorization_id,
-                prescription_id,
-                execution_scope,
-                self._registry_revision,
-                list(self._leased_artifacts),
-                self._coordination_context.get("authorization_epoch"),
-                list(self._locked_ids.get("daily_plan_heads", set())),
-                list(self._leased_artifacts),
-                len(self._leased_artifacts),
-                len(self._leased_artifacts),
             ),
         )
-        if _cursor(self).fetchone() is None:
-            raise GuardRequired("exact T7 prescription/authorization is not executable")
+        authorization = _cursor(self).fetchone()
+        if authorization is None:
+            _cursor(self).execute("SELECT clock_timestamp()")
+            now_row = _cursor(self).fetchone()
+            assert now_row is not None
+            return evaluate_executability(
+                ExecutabilityBasis(
+                    now_row[0],
+                    str(self.subject_id),
+                    None,
+                    None,
+                    None,
+                    execution_scope,
+                    None,
+                    int(self._coordination_context.get("authorization_epoch", -1)),
+                    None,
+                    None,
+                    None,
+                    None,
+                    False,
+                    (),
+                    None,
+                    None,
+                    None,
+                )
+            )
+        now = authorization[12]
+        _cursor(self).execute(
+            "SELECT closure.artifact_id,closure.artifact_revision,closure.valid_from,"
+            "closure.valid_until,artifact.revision,artifact.validity_kind,artifact.valid_from,"
+            "artifact.valid_until,EXISTS(SELECT 1 FROM kineticloop.artifact_revocation_events "
+            "revocation WHERE revocation.ref_s49_id=closure.artifact_id) "
+            "FROM kineticloop.authorization_artifact_closure closure "
+            "LEFT JOIN kineticloop.safety_artifacts artifact ON artifact.id=closure.artifact_id "
+            "WHERE closure.subject_id=%s AND closure.authorization_id=%s "
+            "ORDER BY closure.artifact_id",
+            (self.subject_id, authorization_id),
+        )
+        closure_rows = _cursor(self).fetchall()
+        closure_ids = {UUID(str(row[0])) for row in closure_rows}
+        dependency_eligible = closure_ids == self._leased_artifacts and all(
+            row[4] is not None
+            and int(row[1]) == int(row[4])
+            and isinstance(row[2], datetime)
+            and row[2] <= now
+            and (
+                (row[5] == "TIMELESS" and row[3] is None)
+                or (row[5] == "BOUNDED" and isinstance(row[3], datetime) and row[3] > now)
+            )
+            and isinstance(row[6], datetime)
+            and row[6] <= now
+            and (row[5] == "TIMELESS" or (isinstance(row[7], datetime) and row[7] > now))
+            and row[8] is False
+            for row in closure_rows
+        )
+        control_proven, control_states = self._current_control_states(execution_scope)
         session_id = self._coordination_context.get("execution_session_id")
+        session_relation_current = bool(
+            authorization[14]
+            and authorization[11] == prescription_id
+            and session_id is not None
+        )
         if self.command_kind == "ContinueSession":
             _cursor(self).execute(
                 "SELECT ref_s40_id,ref_s42_id,execution_scope "
@@ -3302,12 +3447,63 @@ class RepositoryTransaction:
                 (self.subject_id, session_id),
             )
             current_binding = _cursor(self).fetchone()
-            if current_binding != (prescription_id, authorization_id, execution_scope):
-                raise GuardRequired(
-                    "ContinueSession must preserve the latest START/RESUME binding"
-                )
+            session_relation_current = session_relation_current and current_binding == (
+                prescription_id,
+                authorization_id,
+                execution_scope,
+            )
+        decision = evaluate_executability(
+            ExecutabilityBasis(
+                now,
+                str(self.subject_id),
+                str(authorization[0]) if authorization[0] is not None else None,
+                authorization[1],
+                authorization[2],
+                execution_scope,
+                authorization[3],
+                int(self._coordination_context.get("authorization_epoch", -1)),
+                int(authorization[4]) if authorization[4] is not None else None,
+                authorization[5],
+                authorization[6],
+                "ACTIVE" if authorization[13] else "INVALIDATED",
+                control_proven,
+                control_states,
+                (
+                    authorization[7]
+                    == self._coordination_context.get("active_policy_bundle_id")
+                    and self._registry_revision is not None
+                    and int(authorization[8]) <= self._registry_revision
+                    and authorization[9] == 1
+                    and authorization[10] in self._leased_artifacts
+                ),
+                session_relation_current,
+                dependency_eligible,
+            )
+        )
+        return decision
+
+    def require_execution_authorization(
+        self,
+        *,
+        prescription_id: UUID,
+        authorization_id: UUID,
+        execution_scope: str,
+    ) -> None:
+        """Revalidate the exact P/A pair consumed by a T7 START/RESUME/CONTINUE."""
+
+        decision = self.evaluate_execution_authorization(
+            prescription_id=prescription_id,
+            authorization_id=authorization_id,
+            execution_scope=execution_scope,
+        )
+        if not decision.is_executable:
+            raise GuardRequired(
+                "exact T7 prescription/authorization is not executable: "
+                + ",".join(decision.denial_reasons)
+            )
+        session_id = self._coordination_context.get("execution_session_id")
         _cursor(self).execute(
-            "SELECT clock_timestamp(),COALESCE(MAX(binding_revision),0)+1 "
+            "SELECT COALESCE(MAX(binding_revision),0)+1 "
             "FROM kineticloop.execution_bindings WHERE subject_id=%s AND ref_s44_id=%s",
             (self.subject_id, session_id),
         )
@@ -3319,8 +3515,8 @@ class RepositoryTransaction:
             authorization_id,
         )
         self._coordination_context["execution_scope"] = execution_scope
-        self._coordination_context["execution_accepted_at"] = binding_basis[0]
-        self._coordination_context["execution_binding_revision"] = int(binding_basis[1])
+        self._coordination_context["execution_accepted_at"] = decision.observed_at
+        self._coordination_context["execution_binding_revision"] = int(binding_basis[0])
 
     def require_lease_acquisition_basis(
         self,
@@ -3716,6 +3912,45 @@ def execute_command(
         result = operation(transaction)
         transaction.finish()
         return result
+
+
+def query_execution_eligibility(
+    connection: Connection[Any],
+    *,
+    command_kind: str,
+    subject_id: UUID,
+    artifact_ids: Sequence[UUID],
+    artifact_identities: Sequence[ArtifactIdentity],
+    local_date: date,
+    session_id: UUID,
+    prescription_id: UUID,
+    authorization_id: UUID,
+    execution_scope: str,
+) -> ExecutabilityDecision:
+    """Query the current T7 path and return only a non-bearer observation."""
+
+    if command_kind not in {"StartSession", "ResumeSession", "ContinueSession"}:
+        raise ValueError("eligibility query requires a T7 command kind")
+
+    def operation(transaction: RepositoryTransaction) -> ExecutabilityDecision:
+        transaction.acquire_registry_lease(artifact_ids)
+        for identity in artifact_identities:
+            transaction.require_artifact(identity)
+        transaction.lock_daily_head(local_date)
+        transaction.lock_execution((session_id,))
+        return transaction.evaluate_execution_authorization(
+            prescription_id=prescription_id,
+            authorization_id=authorization_id,
+            execution_scope=execution_scope,
+        )
+
+    try:
+        return execute_command(connection, command_kind, subject_id, operation)
+    except (RepositoryTransactionError, PsycopgError):
+        with connection.transaction():
+            now_row = connection.execute("SELECT clock_timestamp()").fetchone()
+        assert now_row is not None
+        return ExecutabilityDecision(False, now_row[0], ("CURRENT_AUTHORITY_DENIED",))
 
 
 def replay_outcome(

@@ -1,0 +1,99 @@
+task_identity: harness-backlog-v0.2/KL-022
+display_task_id: KL-022
+task_definition_version: v0.2
+base_commit: 08e743c3ada23ea226bfaacb1dae5e080b6a71bb
+tested_commit: fa228db83f8151f52bc4c78f43c5a7e17e0b8c48
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: >-
+  Added a reusable pure Authorization validity/executability evaluator and wired
+  it into the existing T6 and T7 repository owners. T6 now persists one
+  deterministic finite certificate whose end is the exact minimum of requested,
+  manifest, resolution, admission-freshness, validation, projection, transitive
+  artifact, policy TTL, request deadline and calendar bounds, using each persisted
+  dependency's authoritative start and canonical UTC timestamp representation;
+  missing, future-effective, or invalid basis denies atomically, and approved
+  TIMELESS artifacts contribute no artificial end.
+  T7 rereads exact subject, content, scope, epoch, targeted S43, applicable
+  S18/S17, policy, session/head, dependency and database-time facts under the
+  existing S51-to-S01 gate, returning only a non-bearer current observation.
+  Isolated PostgreSQL interleavings prove committed transitive revocation is seen
+  after lock wait while unrelated revocation does not deny. The TEST-subject E2E
+  uses canonical trusted-admin registration, an isolated policy/environment and
+  TEST_ONLY scope, and stops without writing an execution binding.
+commands_run:
+  - check_id: validity_closure_minimum_and_missing_values_pu
+    command: uv run pytest -q tests/unit/protocol/test_authorization.py::test_validity_closure_uses_every_bound_and_denies_missing_or_elapsed_basis
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-022/checks-fa228db.log
+  - check_id: timeless_policy_dependency_closure_pu
+    command: uv run pytest -q tests/unit/protocol/test_authorization.py::test_timeless_dependency_requires_auditable_policy_in_same_transitive_closure
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-022/checks-fa228db.log
+  - check_id: executable_guard_dimensions_and_time_boundary_pu
+    command: uv run pytest -q tests/unit/protocol/test_authorization.py::test_is_executable_requires_subject_content_scope_epoch_control_and_strict_time
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-022/checks-fa228db.log
+  - check_id: t6_certificate_and_minimum_closure_dc
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_authorization_evaluator_persists_exact_minimum_certificate
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-022/checks-fa228db.log
+  - check_id: t6_t7_transitive_revoke_and_current_registry_dc
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_t7_deny_revoked_transitive_dependency_after_current_registry_read
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-022/checks-fa228db.log
+  - check_id: t7_current_epoch_scope_control_and_time_dc
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py::test_t7_executability_rereads_epoch_scope_control_and_time
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-022/checks-fa228db.log
+  - check_id: test_subject_current_non_bearer_eligibility_e2e
+    command: uv run pytest -q tests/e2e/test_authorization_evaluator.py::test_test_subject_eligibility_query_is_current_and_non_bearer
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-022/checks-fa228db.log
+  - check_id: authorization_unit_suite_passes
+    command: uv run pytest -q tests/unit/protocol/test_authorization.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-022/checks-fa228db.log
+  - check_id: transaction_interface_db_suite_passes
+    command: uv run pytest -q tests/db/test_transaction_interfaces.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-022/checks-fa228db.log
+  - check_id: authorization_e2e_suite_passes
+    command: uv run pytest -q tests/e2e/test_authorization_evaluator.py
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-022/checks-fa228db.log
+  - check_id: harness_validation_passes
+    command: uv run kl check-harness
+    result: PASS
+    evidence_ref: docs/exec-plans/evidence/KL-022/checks-fa228db.log
+requirements_covered: []
+files_changed:
+  - src/kineticloop/protocol/__init__.py
+  - src/kineticloop/protocol/authorization.py
+  - src/kineticloop/persistence/transactions.py
+  - tests/unit/protocol/test_authorization.py
+  - tests/db/test_transaction_interfaces.py
+  - tests/e2e/test_authorization_evaluator.py
+  - docs/exec-plans/evidence/KL-022/checks-28974c5.log
+  - docs/exec-plans/evidence/KL-022/checks-e8be895.log
+  - docs/exec-plans/evidence/KL-022/checks-fa228db.log
+  - docs/exec-plans/completed/KL-022_RESULT.yaml
+decisions:
+  - Reuse the merged CommitBundle/Reauthorize and StartSession/ResumeSession/ContinueSession owners and their command-specific registry routines; add no second owner, registry gate, authorization store or migration.
+  - Compute certificate material only from authoritative database reads made while the existing S51-to-S01 transaction guard is held; caller-requested expiry can only shorten the finite result.
+  - Preserve each dependency's authoritative persisted validity start in the certificate and deny future-effective manifest, resolution, validation, or projection rows.
+  - Canonicalize every certificate and artifact-closure instant to UTC RFC3339 Z before JSON hashing so connection TimeZone cannot change an immutable digest.
+  - Model TIMELESS as a revocable exact artifact with a nonempty reason and an explicit POLICY or POLICY_BUNDLE dependency in the same transitive certificate closure; never synthesize an infinite S42 end.
+  - Interpret the existing synchronous S18 projection narrowly and fail closed for an unknown, cross-wired or noncanonical S18/S17 state.
+  - Return current T7 eligibility as an immutable non-bearer observation; command mutation still re-evaluates through the owner and cannot consume a cached query result as authority.
+  - Use isolated Compose/database namespaces and PostgreSQL pg_blocking_pids with bounded joins for the concurrency oracle; use no sleep as a correctness oracle.
+  - Preserve product requirement status separately; KL-022 claims no product requirement PASS.
+known_limitations:
+  - The public eligibility E2E uses a canonically registered isolated TEST subject and intentionally stops before S45 or any execution mutation; KL-019 and KL-027 retain ownership of their broader trajectories.
+  - Current controls are derived from the existing S18/S17 projection and policy-derived exact execution scope; this task adds no new control taxonomy or service.
+  - Task PASS does not imply product requirement PASS, independent review PASS, CI PASS or MERGED state.
+follow_up_tasks:
+  - Obtain fresh SHA-bound GENERAL, PROTOCOL and DB_CONCURRENCY independent reviews on the immutable result head.
+spec_change_request: null
