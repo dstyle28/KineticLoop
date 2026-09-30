@@ -1,0 +1,57 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-032",
+  "reviewed_head_sha": "4f637602865db9bfb6568446280328937a80ee11",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "base_commit": "7d24ee6dd0458e2971f26f9ac96d0465dae5ac22",
+  "tested_commit": "3ff69607032d815664c1e0524ba93c362c0b4996",
+  "summary": "The exact fixture authorization and byte-level task gate preserve scope, but the new harness regression tests fail after the authorized downstream fixture repair. One BLOCKER prevents merge recommendation.",
+  "findings": [
+    {
+      "classification": "BLOCKER",
+      "priority": 1,
+      "title": "Bind fixture-scope test inputs to an immutable baseline",
+      "file": "tests/harness/test_planning_fixture_scope.py",
+      "start": 16,
+      "end": 18,
+      "description": "BEFORE reads the current working-tree transaction fixture. Once KL-024 applies the only authorized 2026-09-27 to 2026-09-28 literal repair, BEFORE no longer contains OLD, so test_only_proposed_literal_change_is_authorized fails with 0 != 1 and the other negative-oracle tests mostly return baseline-unexpected instead of their asserted content-scope error. CI runs kl test-harness on every PR, so the governance authorization creates a new blocker for precisely the downstream change it is intended to enable. KL-024 cannot repair these harness tests within its declared scope.",
+      "reproduction": "In a temporary isolated copy of the validator, fixture-scope test and database fixture, change only the authorized UPDATE date literal. Run python -m pytest -q -p no:cacheprovider --tb=short tests/harness/test_planning_fixture_scope.py::test_only_proposed_literal_change_is_authorized: 1 failed, exit 1. A broader selection covering the authorization, negative-oracle, unexpected-base and committed-byte tests produced 8 failed, 1 passed, 3 deselected. No repository fixture or implementation was modified.",
+      "requested_change": "Use a stable protected-base fixture input for these regression tests and verify that they still pass when the current fixture contains the authorized repaired literal. Preserve the meaningful oracle-drift, skip, unrelated-byte and wrong-date rejection cases."
+    }
+  ],
+  "verification": [
+    "Read the current authority index, pr-merge-reviewer skill, governance/review contracts, merge gate, schemas, HG-032 governance record, KL-024 packet, complete protected-base diff and bound evidence.",
+    "Verified HG-032 schema conformance, exact 23-file declaration, base/tested/reviewed ancestry and the governance/evidence-only tested-to-reviewed suffix.",
+    "Independently reran the committed read-only scope/blocker audit at reviewed HEAD. It passed protected Frozen/product/migration/database-test/completed/requirement/integration immutability, exact KL-024-only metadata projection and source-SHA byte equality for the copied BLOCKED result, failure, migration and proposal.",
+    "Verified all indexed and manifest checksums and byte counts, all check-log tested_commit and exit_code 0 bindings, and the unchanged GENERAL/PROTOCOL/DB_CONCURRENCY base/head review union.",
+    "Inspected the actual S27 active-partition uniqueness collision and the unchanged head-day GuardRequired assertion/restoration and successful atomic completion in the source fixture. The proposed repair uses a free date and preserves the mismatch oracle; HG-032 changes no fixture or product path.",
+    "Reviewed the new guard implementation and negative tests. It reads committed protected-base/head bytes and permits exactly the one literal change while rejecting wrong dates, weakened oracles, test skipping, unrelated content and other wave-task ownership. Committed raw evidence reports 49 focused, 228 harness and 202 unit tests passing before the downstream repair, plus successful harness validation, lint and typecheck.",
+    "Reproduced the downstream fixture-test failure in an isolated temporary copy, without altering repository implementation or running database suites."
+  ],
+  "limitations": [
+    "The copied KL-024 BLOCKED result and failure remain historical source evidence; no KL-024 task PASS, product requirement PASS, release PASS or merge fact is established here.",
+    "A corrected implementation revision requires fresh independent review; this CHANGES_REQUIRED artifact remains bound to 4f637602865db9bfb6568446280328937a80ee11."
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-032.yaml",
+    "docs/exec-plans/active/KL-024.md",
+    "tests/harness/test_planning_fixture_scope.py",
+    ".github/workflows/ci.yml",
+    "tools/harness/validate_harness.py",
+    "docs/exec-plans/evidence/HG-032/checks.json",
+    "docs/exec-plans/evidence/HG-032/audit.py",
+    "docs/exec-plans/evidence/HG-032/scope_and_blocker_audit.log",
+    "docs/exec-plans/evidence/HG-032/fixture_scope_regressions.log",
+    "docs/exec-plans/evidence/HG-032/harness_tests.log",
+    "docs/exec-plans/evidence/HG-032/unit_tests.log",
+    "docs/exec-plans/evidence/HG-032/harness_validation.log",
+    "docs/exec-plans/evidence/HG-032/lint.log",
+    "docs/exec-plans/evidence/HG-032/typecheck.log",
+    "docs/exec-plans/evidence/HG-032/diff_clean-final.log",
+    "docs/exec-plans/evidence/HG-032/KL024_RESULT.yaml",
+    "docs/exec-plans/evidence/HG-032/KL024_failure.log",
+    "docs/exec-plans/evidence/HG-032/KL024_proposal.patch",
+    "docs/exec-plans/evidence/HG-032/KL024_migration.txt"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-032",
+  "reviewed_head_sha": "4f637602865db9bfb6568446280328937a80ee11",
+  "review_type": "PROTOCOL",
+  "status": "PASS",
+  "findings": [],
+  "evidence_refs": [
+    "Independent diff inspection: protected base 7d24ee6dd0458e2971f26f9ac96d0465dae5ac22 to reviewed head 4f637602865db9bfb6568446280328937a80ee11. No src, migrations, tests/db, frozen authority, completed task artifact, product acceptance or requirement-status changes.",
+    "docs/exec-plans/active/KL-024.md: Fixture-only scope exception retains head-day GuardRequired, restoration to 2026-09-26, all other fixture bytes, mandatory checks, command owners and frozen semantics. No KL-024/product/release PASS is granted.",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md: S27 requires unique active subject/date/purpose; section 3 retains Reauthorize ownership and current-attempt guards; section 5 retains T1-T8 atomic boundaries. Frozen Protocol section 6.1 retains planning date/purpose scope.",
+    "tests/db/test_transaction_interfaces.py: test_reauthorize_requires_atomic_intent_success locks head 2026-09-26; proposed intent date 2026-09-28 still mismatches it, avoids existing RUNNING PLAN root on 2026-09-27 and restores 2026-09-26. GuardRequired head day and mandatory S27 update assertions remain byte-identical.",
+    "src/kineticloop/persistence/transactions.py: existing authorization head day guard compares head local_date to verified intent local_date; implementation is unchanged.",
+    "tools/harness/validate_harness.py: planning_fixture_content_errors constructs exactly one literal replacement within the named test and compares entire protected-base/head committed files. Task gate applies it only to KL-024; other wave tasks retain fixture prohibition.",
+    "Independent rerun at reviewed head: /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-032/audit.py exited 0; source afc04894896de7ee2697dd1951ad4c3882b7d0c3 copied result/log/proposal/migration bytes verified; original transaction-owner failure is uq_s27_active_partition on 2026-09-27, 1 failed and 57 passed, with KL-024 BLOCKED preserved.",
+    "Independent rerun at reviewed head: /private/tmp/kl017-venv/bin/python -m pytest -q tests/harness/test_planning_fixture_scope.py tests/harness/test_wave_scope.py exited 0, 49 passed with no skipped/deselected tests. Full expensive product/DB suites were not duplicated for this governance review.",
+    "docs/exec-plans/governance/HG-032.yaml and docs/exec-plans/evidence/HG-032/checks.json bind governance checks to 3ff69607032d815664c1e0524ba93c362c0b4996. Reviewed head adds recorded governance evidence/result; product code and fixture remain untouched. Separate replayed=true issue remains in KL-024 implementation scope.",
+    "GENERAL review owns the identified future fixture-test baseline durability blocker; this protocol PASS is not a merge recommendation and any substantive repair requires a fresh SHA-bound PROTOCOL review."
+  ],
+  "review_contract_version": "v0.2"
+}
