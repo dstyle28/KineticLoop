@@ -1,0 +1,44 @@
+[
+  {
+    "check_id": "integration_audit",
+    "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/170e/KineticLoop/src /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-031/audit.py",
+    "result": "PASS",
+    "evidence_ref": "docs/exec-plans/evidence/HG-031/integration_audit.log"
+  },
+  {
+    "check_id": "harness_validation",
+    "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/170e/KineticLoop/src /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness",
+    "result": "PASS",
+    "evidence_ref": "docs/exec-plans/evidence/HG-031/harness_validation.log"
+  },
+  {
+    "check_id": "harness_tests",
+    "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/170e/KineticLoop/src /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness",
+    "result": "PASS",
+    "evidence_ref": "docs/exec-plans/evidence/HG-031/harness_tests.log"
+  },
+  {
+    "check_id": "unit_tests",
+    "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/170e/KineticLoop/src /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit",
+    "result": "PASS",
+    "evidence_ref": "docs/exec-plans/evidence/HG-031/unit_tests.log"
+  },
+  {
+    "check_id": "lint",
+    "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/170e/KineticLoop/src /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint",
+    "result": "PASS",
+    "evidence_ref": "docs/exec-plans/evidence/HG-031/lint.log"
+  },
+  {
+    "check_id": "typecheck",
+    "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/170e/KineticLoop/src /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck",
+    "result": "PASS",
+    "evidence_ref": "docs/exec-plans/evidence/HG-031/typecheck.log"
+  },
+  {
+    "check_id": "diff_clean",
+    "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/170e/KineticLoop/src git diff --check a8e243f043ad828717b667a222c695e2500ac1a0 230d3870350708cfe30026979afd375cbe63deeb",
+    "result": "PASS",
+    "evidence_ref": "docs/exec-plans/evidence/HG-031/diff_clean.log"
+  }
+]

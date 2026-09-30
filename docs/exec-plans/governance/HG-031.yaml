@@ -1,0 +1,79 @@
+change_identity: harness-governance-v0.1/HG-031
+display_change_id: HG-031
+base_commit: a8e243f043ad828717b667a222c695e2500ac1a0
+tested_commit: 230d3870350708cfe30026979afd375cbe63deeb
+change_status: PASS
+summary: Add missing integration bookkeeping for exactly KL-020, KL-021, KL-022, KL-023 and KL-050. Bind
+  each MERGED record to independently verified GitHub PR merge/head metadata, immutable PASS result bytes,
+  exact reviewed revision, required PASS reviews and normal Git ancestry. Preserve all historical results
+  and reviews, frozen authorities, task definitions, product requirement states and M3 closure.
+packets_refined: []
+files_changed:
+- docs/exec-plans/evidence/HG-031/audit.py
+- docs/exec-plans/evidence/HG-031/checks.json
+- docs/exec-plans/evidence/HG-031/diff_clean.log
+- docs/exec-plans/evidence/HG-031/harness_tests.log
+- docs/exec-plans/evidence/HG-031/harness_validation.log
+- docs/exec-plans/evidence/HG-031/integration_audit.log
+- docs/exec-plans/evidence/HG-031/lint.log
+- docs/exec-plans/evidence/HG-031/pr-52.json
+- docs/exec-plans/evidence/HG-031/pr-54.json
+- docs/exec-plans/evidence/HG-031/pr-56.json
+- docs/exec-plans/evidence/HG-031/pr-58.json
+- docs/exec-plans/evidence/HG-031/pr-59.json
+- docs/exec-plans/evidence/HG-031/typecheck.log
+- docs/exec-plans/evidence/HG-031/unit_tests.log
+- docs/exec-plans/governance/HG-031.yaml
+- docs/exec-plans/integrations/KL-020.json
+- docs/exec-plans/integrations/KL-021.json
+- docs/exec-plans/integrations/KL-022.json
+- docs/exec-plans/integrations/KL-023.json
+- docs/exec-plans/integrations/KL-050.json
+checks_run:
+- check_id: integration_audit
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/170e/KineticLoop/src /private/tmp/kl017-venv/bin/python
+    docs/exec-plans/evidence/HG-031/audit.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-031/integration_audit.log
+- check_id: harness_validation
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/170e/KineticLoop/src /private/tmp/kl017-venv/bin/python
+    -m kineticloop.db.cli check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-031/harness_validation.log
+- check_id: harness_tests
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/170e/KineticLoop/src /private/tmp/kl017-venv/bin/python
+    -m kineticloop.db.cli test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-031/harness_tests.log
+- check_id: unit_tests
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/170e/KineticLoop/src /private/tmp/kl017-venv/bin/python
+    -m kineticloop.db.cli test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-031/unit_tests.log
+- check_id: lint
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/170e/KineticLoop/src /private/tmp/kl017-venv/bin/python
+    -m kineticloop.db.cli lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-031/lint.log
+- check_id: typecheck
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/170e/KineticLoop/src /private/tmp/kl017-venv/bin/python
+    -m kineticloop.db.cli typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-031/typecheck.log
+- check_id: diff_clean
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/170e/KineticLoop/src git diff --check a8e243f043ad828717b667a222c695e2500ac1a0
+    230d3870350708cfe30026979afd375cbe63deeb
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-031/diff_clean.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- This change records post-merge integration only; task PASS, review PASS, MERGED, product requirement
+  PASS and milestone closure remain separate facts. No product requirement or M3 closure status is promoted.
+- The five historical pre-review results remain byte-identical, including their original UNMERGED integration_status.
+  Required historical reviews are not rewritten.
+- No implementation, migrations, provider data, frozen baseline, task packets or KL-024 resources are
+  changed. No downstream task is launched.
+- Local validation uses the existing kl017 virtualenv with absolute source PYTHONPATH because its previous
+  editable checkout is unavailable; the same stable kl commands run without import-path dependence in
+  CI.
