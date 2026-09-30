@@ -1,0 +1,27 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-024",
+  "tested_commit": "9282e124ad1ca30bf6b1a6149a17ac1c799500a1",
+  "checks": [
+    {
+      "check_id": "full_unit_regressions",
+      "command": "uv run kl test-unit",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-024/full_unit_regressions-9282e12.log"
+    },
+    {
+      "check_id": "full_harness_regressions",
+      "command": "uv run kl test-harness",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-024/full_harness_regressions-9282e12.log"
+    },
+    {
+      "check_id": "full_database_regressions",
+      "command": "KINETICLOOP_KL022_COMPOSE_PROJECT=\"kineticloop-kl024-full-$(git rev-parse --short HEAD)\" KINETICLOOP_KL022_DATABASE=\"kineticloop_kl024_full_$(git rev-parse --short HEAD)\" uv run pytest -q tests/db",
+      "result": "FAIL",
+      "exit_code": 1,
+      "evidence_ref": "docs/exec-plans/evidence/KL-024/full_database_regressions-9282e12.log"
+    }
+  ]
+}

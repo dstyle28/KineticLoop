@@ -1,0 +1,39 @@
+task_identity: harness-backlog-v0.2/KL-024
+tested_commit: 9282e124ad1ca30bf6b1a6149a17ac1c799500a1
+command: uv run kl test-unit
+exit_code: 0
+
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/davetian/.codex/worktrees/88b8/KineticLoop
+configfile: pyproject.toml
+collected 204 items
+
+tests/unit/config/test_secret_loader.py .                                [  0%]
+tests/unit/contracts/test_artifact_registry.py ...                       [  1%]
+tests/unit/contracts/test_commands.py ..............                     [  8%]
+tests/unit/contracts/test_errors.py .                                    [  9%]
+tests/unit/contracts/test_receipts.py ........................           [ 21%]
+tests/unit/contracts/test_results.py .....                               [ 23%]
+tests/unit/contracts/test_safety_registry.py ..                          [ 24%]
+tests/unit/contracts/test_shadow.py ...                                  [ 25%]
+tests/unit/identity/test_roles.py .............                          [ 32%]
+tests/unit/integrations/test_launch_registry.py ........                 [ 36%]
+tests/unit/integrations/test_provider.py ...........                     [ 41%]
+tests/unit/persistence/test_fact_children.py ...                         [ 43%]
+tests/unit/persistence/test_immutability.py ....                         [ 45%]
+tests/unit/persistence/test_schema_topology.py .......                   [ 48%]
+tests/unit/persistence/test_transactions.py ...                          [ 50%]
+tests/unit/primitives/test_canonical.py ...........                      [ 55%]
+tests/unit/primitives/test_hashes.py ........                            [ 59%]
+tests/unit/primitives/test_ids.py .........                              [ 63%]
+tests/unit/primitives/test_times.py .......................              [ 75%]
+tests/unit/protocol/test_authorization.py ...                            [ 76%]
+tests/unit/protocol/test_factsets.py .....                               [ 78%]
+tests/unit/security/test_redaction.py .................................. [ 95%]
+...                                                                      [ 97%]
+tests/unit/security/test_synthetic_fixtures.py .                         [ 97%]
+tests/unit/test_cli.py ...                                               [ 99%]
+tests/unit/workflow/test_planning.py ..                                  [100%]
+
+============================= 204 passed in 39.13s =============================
