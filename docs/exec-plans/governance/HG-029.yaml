@@ -1,0 +1,87 @@
+change_identity: harness-governance-v0.1/HG-029
+display_change_id: HG-029
+base_commit: 88adc5be3f7c567413be671a2b3dc5e6c802ffe8
+tested_commit: f4e81eecbe15e536c02e373fa366135ab69eeac3
+change_status: PASS
+summary: 'Refine one executable wave scope/ownership concern: residual KL-023 factset build/ready/seal,
+  KL-024 planning admission/join/revision/lease-fencing with one additive frozen-S27 active partition
+  migration, and KL-050 hermetic launch_source_scope/capability registry. Preserve actual shared transaction/user
+  coordination contention; run KL-023 alongside KL-050 then KL-024 after KL-023 integration. Retain provider/registry
+  locks, exact prerequisites and gate-builder exemption. Both Hevy and HealthKit are mandatory, Oura optional,
+  spreadsheet migration retired. Define literal files, exact PU/DC commands/oracles and isolated DB/Compose
+  namespaces without product code, frozen authority, completed task or requirement-state changes.'
+packets_refined:
+- KL-023
+- KL-024
+- KL-050
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- KineticLoop_Harness_Backlog_v0.2.json
+- KineticLoop_Harness_Traceability_v0.3.json
+- docs/exec-plans/active/KL-023.md
+- docs/exec-plans/active/KL-024.md
+- docs/exec-plans/active/KL-050.md
+- docs/exec-plans/evidence/HG-029/diff_clean.log
+- docs/exec-plans/evidence/HG-029/harness_structure_valid.log
+- docs/exec-plans/evidence/HG-029/harness_tests_pass.log
+- docs/exec-plans/evidence/HG-029/lint_passes.log
+- docs/exec-plans/evidence/HG-029/protected_state_preserved.log
+- docs/exec-plans/evidence/HG-029/typecheck_passes.log
+- docs/exec-plans/evidence/HG-029/unit_tests_pass.log
+- docs/exec-plans/evidence/HG-029/wave_projection_dependency_ownership_regressions.log
+- docs/exec-plans/governance/HG-029.yaml
+- tests/harness/test_wave_scope.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: diff_clean
+  command: git diff --check 88adc5be3f7c567413be671a2b3dc5e6c802ffe8 f4e81eecbe15e536c02e373fa366135ab69eeac3
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-029/diff_clean.log
+- check_id: harness_structure_valid
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-029/harness_structure_valid.log
+- check_id: harness_tests_pass
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-029/harness_tests_pass.log
+- check_id: lint_passes
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-029/lint_passes.log
+- check_id: protected_state_preserved
+  command: git diff --exit-code 88adc5be3f7c567413be671a2b3dc5e6c802ffe8 f4e81eecbe15e536c02e373fa366135ab69eeac3
+    -- FROZEN_BASELINE.json 05_KineticLoop_Protocol_v1.2_FROZEN.md 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md
+    src migrations CURRENT_REQUIREMENT_SET.json KineticLoop_Acceptance_Spec_v1.2.2.json KineticLoop_Integration_Acceptance_v0.1.json
+    KineticLoop_Evidence_Manifest_v0.1.json docs/exec-plans/completed docs/exec-plans/integrations docs/exec-plans/milestones
+    docs/exec-plans/active/KL-051.md docs/exec-plans/active/KL-052.md
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-029/protected_state_preserved.log
+- check_id: typecheck_passes
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-029/typecheck_passes.log
+- check_id: unit_tests_pass
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-029/unit_tests_pass.log
+- check_id: wave_projection_dependency_ownership_regressions
+  command: /private/tmp/kl017-venv/bin/python -m pytest -q tests/harness/test_wave_scope.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-029/wave_projection_dependency_ownership_regressions.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- All three tasks remain NOT_STARTED. Governance check PASS does not run future task commands or claim
+  implementation, product requirement, release, production-readiness, review or merge PASS for them.
+- No product source or migration changes occur in HG-029, so database implementation checks are deferred
+  to the refined task owners; only harness governance/quality checks ran here.
+- KL-023 and KL-024 share exclusive transaction_interfaces/user_coordination and transactions.py, so their
+  implementation/review/merge must serialize. KL-050 can overlap either if no other provider_contracts/registry_coordination
+  holder exists.
+- KL-051/KL-052 adapter dependencies and HealthKit ownership refinement remain unchanged and unsatisfied
+  until their actual prerequisites merge.
+- KL-024 owns only the named new additive migration and designated migration regression updates. KL-023
+  migration need requires further governance refinement; frozen semantic insufficiency in either task
+  requires SPEC_CHANGE_REQUIRED.
