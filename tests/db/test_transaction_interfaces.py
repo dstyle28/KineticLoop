@@ -3393,7 +3393,7 @@ def test_reauthorize_requires_atomic_intent_success(database_urls: dict[str, str
     with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
         connection.execute("SET session_replication_role=replica")
         connection.execute(
-            "UPDATE kineticloop.planning_intents SET local_date=DATE '2026-09-27' WHERE id=%s",
+            "UPDATE kineticloop.planning_intents SET local_date=DATE '2026-09-28' WHERE id=%s",
             (INTENT,),
         )
         connection.execute("SET session_replication_role=origin")
