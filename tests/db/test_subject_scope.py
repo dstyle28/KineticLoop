@@ -1593,7 +1593,7 @@ def test_populated_downgrade_fails_before_guard_or_acl_changes(
             run_alembic_downgrade(urls["deployer"], ARTIFACT_REGISTRY_REVISION)
         with psycopg.connect(urls["admin"]) as admin:
             assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (
-                REVISION,
+                _MIGRATIONS.HEAD_REVISION,
             )
             assert admin.execute(
                 "SELECT count(*) FROM pg_trigger trigger "
@@ -1616,7 +1616,7 @@ def test_populated_downgrade_fails_before_guard_or_acl_changes(
     assert_failed_without_changes(database_urls)
     with psycopg.connect(database_urls["admin"]) as admin:
         assert admin.execute("SELECT version_num FROM alembic_version").fetchone() == (
-            REVISION,
+            _MIGRATIONS.HEAD_REVISION,
         )
         assert admin.execute(
             "SELECT count(*) FROM kineticloop.subject_scopes "
