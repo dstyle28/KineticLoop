@@ -1,0 +1,92 @@
+task_identity: harness-backlog-v0.2/KL-050
+tested_commit: 2d8dddbcd3585a7bd4996a3e7dacfc79fb6f457f
+base_commit: e7cfce1cbd76a1dbad32091529dd42a208770875
+
+check_id: launch_scope_required_sources
+command: uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_launch_scope_required_sources
+.                                                                        [100%]
+1 passed in 0.06s
+
+exit_code: 0
+
+check_id: launch_scope_optional_sources
+command: uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_optional_sources_do_not_block_launch
+.                                                                        [100%]
+1 passed in 0.03s
+
+exit_code: 0
+
+check_id: launch_registry_closed_canonical_identity
+command: uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_registry_rejects_invalid_duplicate_unknown_entries
+.                                                                        [100%]
+1 passed in 0.04s
+
+exit_code: 0
+
+check_id: launch_registry_version_and_digest
+command: uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_registry_version_and_digest_are_deterministic
+.                                                                        [100%]
+1 passed in 0.03s
+
+exit_code: 0
+
+check_id: launch_registry_evidence_only
+command: uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_registry_cannot_grant_command_or_fact_authority
+.                                                                        [100%]
+1 passed in 0.03s
+
+exit_code: 0
+
+check_id: launch_registry_exposure_policy
+command: uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_oura_ai_exposure_remains_gated
+.                                                                        [100%]
+1 passed in 0.03s
+
+exit_code: 0
+
+check_id: launch_registry_health_coverage_separation
+command: uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_scope_membership_is_not_health_coverage_or_launch_ready
+.                                                                        [100%]
+1 passed in 0.03s
+
+exit_code: 0
+
+check_id: launch_registry_hermetic
+command: uv run pytest -q tests/unit/integrations/test_launch_registry.py::test_registry_is_hermetic
+.                                                                        [100%]
+1 passed in 0.10s
+
+exit_code: 0
+
+check_id: launch_registry_suite_passes
+command: uv run pytest -q tests/unit/integrations/test_launch_registry.py
+........                                                                 [100%]
+8 passed in 0.06s
+
+exit_code: 0
+
+check_id: provider_contract_regressions
+command: uv run pytest -q tests/unit/integrations
+...................                                                      [100%]
+19 passed in 0.15s
+
+exit_code: 0
+
+check_id: lint_passes
+command: uv run kl lint
+All checks passed!
+
+exit_code: 0
+
+check_id: typecheck_passes
+command: uv run kl typecheck
+Success: no issues found in 92 source files
+
+exit_code: 0
+
+check_id: harness_validation_passes
+command: uv run kl check-harness
+HARNESS_CHECK_PASS tasks=70 active=67
+
+exit_code: 0
+
