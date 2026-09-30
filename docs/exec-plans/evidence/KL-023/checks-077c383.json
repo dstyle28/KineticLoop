@@ -1,0 +1,71 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-023",
+  "tested_commit": "077c383e6a825bc6f55ece4d4311531e0bb0411f",
+  "environment": {
+    "UV_PROJECT_ENVIRONMENT": "/private/tmp/kl023-venv",
+    "UV_CACHE_DIR": "/private/tmp/kl023-uv-cache",
+    "PYTEST_ADDOPTS": "-s"
+  },
+  "checks": [
+    {
+      "check_id": "factset_reconstruction_and_closed_digest_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_factsets.py::test_full_delta_reconstruction_and_digest",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-023/factset_reconstruction_and_closed_digest_pu-077c383.log"
+    },
+    {
+      "check_id": "factset_build_idempotency_and_canonical_reads_dc",
+      "command": "uv run pytest -q tests/db/test_factsets.py::test_build_replay_and_sealed_only_reads",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-023/factset_build_idempotency_and_canonical_reads_dc-077c383.log"
+    },
+    {
+      "check_id": "factset_complete_writer_interleaving_dc",
+      "command": "uv run pytest -q tests/db/test_factsets.py::test_complete_serializes_with_candidate_writer",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-023/factset_complete_writer_interleaving_dc-077c383.log"
+    },
+    {
+      "check_id": "factset_seal_frontier_atomicity_and_replay_dc",
+      "command": "uv run pytest -q tests/db/test_factsets.py::test_seal_frontier_atomicity_and_old_replay",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-023/factset_seal_frontier_atomicity_and_replay_dc-077c383.log"
+    },
+    {
+      "check_id": "factset_unit_suite_passes",
+      "command": "uv run pytest -q tests/unit/protocol/test_factsets.py",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-023/factset_unit_suite_passes-077c383.log"
+    },
+    {
+      "check_id": "factset_db_suite_passes",
+      "command": "uv run pytest -q tests/db/test_factsets.py",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-023/factset_db_suite_passes-077c383.log"
+    },
+    {
+      "check_id": "transaction_owner_regressions_pass",
+      "command": "KINETICLOOP_KL022_COMPOSE_PROJECT=\"kineticloop-kl023-reg-$(git rev-parse --short HEAD)\" KINETICLOOP_KL022_DATABASE=\"kineticloop_kl023_reg_$(git rev-parse --short HEAD)\" uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-023/transaction_owner_regressions_pass-077c383.log"
+    },
+    {
+      "check_id": "lint_passes",
+      "command": "uv run kl lint",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-023/lint_passes-077c383.log"
+    },
+    {
+      "check_id": "typecheck_passes",
+      "command": "uv run kl typecheck",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-023/typecheck_passes-077c383.log"
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "command": "uv run kl check-harness",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-023/harness_validation_passes-077c383.log"
+    }
+  ]
+}
