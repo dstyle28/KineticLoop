@@ -43,7 +43,8 @@ digest/count. Cycles, missing/foreign/unsealed parents, duplicate logical member
 unsupported kinds/operations and chains beyond the command's explicit depth bound
 fail. BeginBuild requires the supplied maximum depth to equal the selected immutable
 policy's `factset_max_delta_depth`; it captures that bound immutably. At the depth boundary, BeginBuild reconstructs the sealed
-parent outside coordination and stores a complete FULL checkpoint in the closed
+parent outside coordination under that parent’s immutable historical depth bound,
+then applies the new policy bound and stores a complete FULL checkpoint in the closed
 S15 typed content; subsequent S16 operations overlay it. This uses existing JSONB
 storage and introduces no migration. A FULL has depth zero and no parent dependency.
 Deletion creates tombstones and never deletes historical facts.

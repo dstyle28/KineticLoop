@@ -76,7 +76,10 @@ def database_urls() -> Iterator[dict[str, str]]:
                     SUBJECT,
                     Jsonb(
                         {
-                            "t2_invalidation_scopes": {"AcceptFactRevision": "TEST_ONLY"},
+                            "t2_invalidation_scopes": {
+                                "AcceptFactRevision": "TEST_ONLY",
+                                "ActivateApprovedProgram": "TEST_ONLY",
+                            },
                             "factset_max_delta_depth": 1,
                         }
                     ),
@@ -148,7 +151,7 @@ def begin(
 ) -> tuple[UUID, BeginBuild]:
     with db.transaction():
         row = db.execute(
-            "SELECT input_frontier_hash,authorization_epoch FROM "
+            "SELECT input_frontier_hash,authorization_epoch,active_policy_bundle_id FROM "
             "kineticloop.user_decision_state WHERE subject_id=%s",
             (SUBJECT,),
         ).fetchone()
@@ -159,7 +162,7 @@ def begin(
         row[0],
         row[1],
         PROGRAM,
-        POLICY,
+        row[2],
         BASIS,
         parent_id=parent,
         max_delta_depth=depth,
@@ -715,3 +718,105 @@ def test_begin_replay_after_concurrent_frontier_change(database_urls: dict[str, 
         print(
             "persisted concurrent Begin replay: original identity survives newer frontier/epoch; no repeated mutations"
         )
+
+
+def test_policy_depth_decrease_compacts_historical_parent(database_urls: dict[str, str]) -> None:
+    zero_policy = UUID(int=23990)
+    with psycopg.connect(database_urls["admin"], autocommit=True) as db:
+        # Immutable policy input is seeded; every active-policy/head mutation uses owners.
+        db.execute(
+            "INSERT INTO kineticloop.policy_bundles "
+            "(id,subject_id,policy_namespace,policy_version,content_hash,typed_payload) "
+            "VALUES (%s,%s,'test:kl023','zero-depth','kl023-zero-depth',%s)",
+            (
+                zero_policy,
+                SUBJECT,
+                Jsonb(
+                    {
+                        "factset_max_delta_depth": 0,
+                        "t2_invalidation_scopes": {"ActivateApprovedProgram": "TEST_ONLY"},
+                    }
+                ),
+            ),
+        )
+    with psycopg.connect(database_urls["admin"]) as db:
+        api = service(db)
+        full, completion = closed(db, "policy-decrease-full")
+        api.seal_factset(SealFactset(SUBJECT, "policy-decrease-full-seal", full, completion))
+        delta, _ = begin(db, "policy-decrease-delta", parent=full)
+        dc = api.complete_factset(CompleteFactset(SUBJECT, "complete", delta, 0))
+        api.seal_factset(SealFactset(SUBJECT, "policy-decrease-delta-seal", delta, dc))
+        canonical = api.read_canonical(SUBJECT, delta)
+
+        def activate(policy: UUID, key: str) -> None:
+            receipt, event = uuid4(), uuid4()
+
+            def operation(tx: RepositoryTransaction) -> Any:
+                tx.lock_subject()
+                row = db.execute(
+                    "SELECT authorization_epoch FROM kineticloop.user_decision_state WHERE subject_id=%s",
+                    (SUBJECT,),
+                ).fetchone()
+                assert row is not None
+                epoch = row[0] + 1
+
+                def mutate(session: RestrictedSqlSession) -> Mapping[str, Any]:
+                    session.insert(
+                        "S43",
+                        {
+                            "id": uuid4(),
+                            "subject_id": SUBJECT,
+                            "event_kind": "EPOCH_INVALIDATED",
+                            "invalidated_epoch": epoch,
+                            "scope": "TEST_ONLY",
+                            "causation_key": key,
+                            "ref_s02_id": receipt,
+                        },
+                    )
+                    session.update(
+                        "S01",
+                        {
+                            "active_policy_bundle_id": policy,
+                            "authorization_epoch": epoch,
+                        },
+                        {"subject_id": SUBJECT},
+                    )
+                    return {"policy_id": str(policy)}
+
+                return tx.idempotent_outcome(
+                    receipt_id=receipt,
+                    actor_scope="test",
+                    client_key=key,
+                    request_hash=key,
+                    mutation=mutate,
+                    invalidation_scope="TEST_ONLY",
+                    event=EventWrite(
+                        event, "PROGRAM", str(event), 1, "PROGRAM_ACTIVATED", "canonical", uuid4()
+                    ),
+                )
+
+            service_module.execute_command(db, "ActivateApprovedProgram", SUBJECT, operation)
+
+        activate(zero_policy, "policy-decrease-activate")
+        try:
+            checkpoint, command = begin(db, "policy-decrease-checkpoint", parent=delta, depth=0)
+            outcome = api.begin_build(command)
+            assert outcome["storage_mode"] == "FULL" and outcome["delta_depth"] == 0
+            cc = api.complete_factset(CompleteFactset(SUBJECT, "complete", checkpoint, 0))
+            assert cc["membership_digest"] == dc["membership_digest"]
+            api.seal_factset(
+                SealFactset(SUBJECT, "policy-decrease-checkpoint-seal", checkpoint, cc)
+            )
+            assert api.read_canonical(SUBJECT, checkpoint) == canonical
+            with db.transaction():
+                row = db.execute(
+                    "SELECT typed_payload->>'parent_factset_id',typed_payload->'max_delta_depth' "
+                    "FROM kineticloop.factset_revisions WHERE id=%s",
+                    (checkpoint,),
+                ).fetchone()
+            assert row == (None, 0)
+            print(
+                "persisted policy decrease: historical depth-1 chain validates at old bound; new depth-0 FULL preserves digest/count"
+            )
+        finally:
+            activate(POLICY, "policy-decrease-restore")

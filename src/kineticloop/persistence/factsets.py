@@ -156,9 +156,9 @@ class CanonicalViewService:
         parent = None
         checkpoint: tuple[Member, ...] = ()
         if command.parent_id is not None:
-            parent, ancestors, _ = self._load_chain(command.parent_id, command.max_delta_depth)
+            parent, ancestors, parent_payload = self._load_chain(command.parent_id)
             inherited = reconstruct(
-                parent, ancestors, max_depth=command.max_delta_depth, canonical=True
+                parent, ancestors, max_depth=parent_payload["max_delta_depth"], canonical=True
             )
             if parent.subject_id != command.subject_id:
                 raise FactsetError("foreign parent")
