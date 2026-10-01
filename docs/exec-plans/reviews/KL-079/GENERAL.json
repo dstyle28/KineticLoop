@@ -1,0 +1,96 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-079",
+  "reviewed_head_sha": "cf57c0a1c32d7ec84bd55be5351bf5de6ad21df0",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "findings": [
+    {
+      "id": "KL079-GENERAL-01",
+      "classification": "BLOCKER",
+      "priority": 1,
+      "title": "Independent full-certificate expiry oracle is not demonstrated",
+      "description": "The exact full_action_basis_denials_dc oracle requires source/runtime expiry denials and fresh post-lock time evidence; the owner-pipeline oracle also requires the finite minimum expiry. seed_source assigns the same end to admission freshness, fixture policy, registered runtime, engine and projection. The only consumer before/after expiry pair uses seconds=6 for that shared end. Its committed after_expiry witness reports 'attempt/request/manifest/epoch/stage basis changed or expired', so the common manifest guard rejects before _verify_full_progress and does not demonstrate the new S36/S37 minimum-expiry guard while current manifest and workflow authority remain valid. The PU fixture likewise gives every bound the same expiry. These tests cannot distinguish using the manifest deadline alone from propagating an earlier admitted-source deadline. Code inspection and an independent heterogeneous-deadline pure rerun support the implementation's minimum calculation, but they do not satisfy the required committed DC oracle.",
+      "requested_change": "Add task-owned real-PG cases with deliberately different valid bounds, including an admitted-source deadline earlier than the manifest/runtime/lease/root deadline. Produce both S36 rows and S37 through actual owners, assert the exact earliest persisted deadline, then exercise before/after the earlier bound with an observed bounded blocker and fresh post-lock time. Verify zero output/bookkeeping/stage/pointer effects and identify the full-resolution/full-validation denial reached with still-valid ingress/current manifest. Cover the named source/runtime expiry obligations without counting an unrelated earlier failure as their proof. Rerun every required check on the new tested revision and request fresh reviews.",
+      "evidence_refs": [
+        "docs/exec-plans/active/KL-079.md#Machine-readable check contract",
+        "tests/db/test_full_action_preparation.py:216",
+        "tests/db/test_full_action_preparation.py:2088",
+        "tests/unit/workflow/test_full_action_preparation.py:123",
+        "src/kineticloop/persistence/deterministic_planning.py:795",
+        "docs/exec-plans/evidence/KL-079/949bbd530061ecb3644998719fe998f86cad999e/full_action_basis_denials_dc.log"
+      ]
+    },
+    {
+      "id": "KL079-GENERAL-02",
+      "classification": "BLOCKER",
+      "priority": 1,
+      "title": "COMMIT_READY does not independently exercise all required current-state denials",
+      "description": "The packet explicitly requires real owners and actual COMMIT_READY to independently reject current manifest, attempt, fence and lease loss. The 30 preparation-denial cases exercise those conditions on ResolveEvidence, while the consumer selector list covers resolution_swap, foreign validation/resolution, runtime revocation, execution basis, epoch, revision, control, deadline and shared expiry only. There is no full COMMIT_READY current-manifest replacement, current-attempt mismatch, fence/takeover or lease-expiry case in the test file or raw final log. Reusing the existing common guard is appropriate implementation, but preparation-stage witnesses cannot stand in for the explicitly required consumer trajectory, particularly its post-lock lease recheck.",
+      "requested_change": "Extend the existing own-namespace suite with actual fully prepared S36/S37-to-COMMIT_READY denials for current-manifest replacement, attempt loss, stale fence/takeover and lease expiry. Establish valid ingress and the intended current-state denial, use a bounded observed lock blocker for post-lock lease expiry, and compare exact persisted state including receipt/event/outbox and stage/pointers. Preserve owner-generated immutable outputs and existing fixtures. Rerun every required check and obtain fresh SHA-bound reviews.",
+      "evidence_refs": [
+        "docs/exec-plans/active/KL-079.md#Machine-readable check contract",
+        "tests/db/test_full_action_preparation.py:1306",
+        "tests/db/test_full_action_preparation.py:1339",
+        "tests/db/test_full_action_preparation.py:2088",
+        "docs/exec-plans/evidence/KL-079/949bbd530061ecb3644998719fe998f86cad999e/full_action_basis_denials_dc.log",
+        "docs/exec-plans/evidence/KL-079/949bbd530061ecb3644998719fe998f86cad999e/full_action_suite_dc.log"
+      ]
+    },
+    {
+      "id": "KL079-GENERAL-03",
+      "classification": "REQUIRED_FOLLOWUP",
+      "priority": 2,
+      "title": "Final hosted and selected-task merge gates remain separate",
+      "description": "The committed result correctly records UNMERGED and no product/release PASS. After substantive repairs, final fresh reviews and their allowed REVIEW_RECORD_ONLY append, unchanged hosted PostgreSQL/quality CI and the applicable selected-task merge gate must pass at the final relevant head before ordinary merge. This review does not assert those future gates passed.",
+      "requested_change": "Verify and retain final relevant-head hosted CI and selected-task merge-gate evidence before normal merge, without changing reviewed implementation/result bytes afterward.",
+      "evidence_refs": [
+        "docs/exec-plans/completed/KL-079_RESULT.yaml",
+        "docs/harness/THREAD_REVIEW_CONTRACT.md",
+        "docs/exec-plans/active/KL-079.md"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "AGENTS.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    "docs/exec-plans/active/KL-079.md",
+    "docs/exec-plans/evidence/HG-041/PREPARATION.md",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/contracts/deterministic_planning.md",
+    "docs/contracts/full_action_preparation.md",
+    "docs/exec-plans/milestones/M2.json",
+    "docs/exec-plans/completed/KL-076_RESULT.yaml",
+    "docs/exec-plans/completed/KL-075_RESULT.yaml",
+    "docs/exec-plans/completed/KL-078_RESULT.yaml",
+    "docs/exec-plans/completed/KL-024_RESULT.yaml",
+    "docs/exec-plans/completed/KL-019_RESULT.yaml",
+    "docs/exec-plans/completed/KL-017_RESULT.yaml",
+    "docs/exec-plans/completed/KL-074_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-079/entry.json",
+    "docs/exec-plans/evidence/KL-079/preserved-baseline.json",
+    "docs/exec-plans/completed/KL-079_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-079/949bbd530061ecb3644998719fe998f86cad999e/checks.json",
+    "docs/exec-plans/evidence/KL-079/949bbd530061ecb3644998719fe998f86cad999e/full_action_suite_dc.log",
+    "docs/exec-plans/evidence/KL-079/949bbd530061ecb3644998719fe998f86cad999e/verification.json",
+    "docs/exec-plans/evidence/KL-079/949bbd530061ecb3644998719fe998f86cad999e/legacy-golden-bytes.json",
+    "src/kineticloop/workflow/deterministic_planning.py",
+    "src/kineticloop/persistence/deterministic_planning.py",
+    "src/kineticloop/persistence/transactions.py",
+    "tests/unit/workflow/test_full_action_preparation.py",
+    "tests/db/test_full_action_preparation.py",
+    "tests/fixtures/full_action_preparation.json"
+  ],
+  "verification": {
+    "independence": "Fresh independent read-only GENERAL review of the exact assigned committed SHA, actual base-to-head diff, indexed authorities, complete task packet, prerequisite artifacts/current code and final raw evidence. No implementation-chat reasoning, DB lifecycle, foreign fixture, source/test/result/evidence mutation or commit/push was used. Only this GENERAL review path is written.",
+    "authority_and_entry": "All 26 indexed document/machine-readable hashes match committed files. Seven namespaced prerequisite PASS results and their required PASS review SHAs are ancestors of actual normal two-parent merges and protected base 15e8592: KL076 035644e, KL075 d0470ba, KL078 c599ec1, KL024 ff57a80, KL019 cfbfae0, KL017 21ec0b5, KL074 3c1312e. Existing integration records match; absent KL075/KL076 records are disclosed and actual normal merges independently verified. M2 closure is PASS.",
+    "revision_and_scope": "Reviewed HEAD is cf57c0a1c32d7ec84bd55be5351bf5de6ad21df0. Tested revision 949bbd530061ecb3644998719fe998f86cad999e is an ancestor; the only intervening commit adds own final evidence and result. All implementation/test/fixture/contract blobs are identical tested-to-reviewed. Complete base diff stays within the seven declared implementation/test/fixture/contract paths and own task result/evidence. Frozen/index/requirement/packet/registry/owner-matrix/migration/CI/lifecycle files, both planning_progress modules, historical deterministic DB suite and fixture remain unchanged.",
+    "implementation": "Persisted closed isolated TEST policy selects the separate full request profile; legacy downgrade denies. Full action UUIDs and query hashes bind exact F/D/N, action-specific parameters, sealed admitted membership/source/provenance, manifest/policy and current attempt basis. Both S36 rows are explicitly loaded and reconstructed by subject/ID/hash; S37 preserves singular TRAINING resolution plus N/D anchors and ordered full bindings. Full COMMIT_READY reconstructs the additional N resolution under existing current-chain locks. Closed owners permit only append-only output plus own receipt/event/outbox and return non-executable historical identities. No production/head/session/P/A/binding or intent success is introduced. No code defect or frozen semantic change was established by this GENERAL review; blockers are unmet exact evidence oracles.",
+    "committed_evidence": "All 14 unique required check log digests match checks.json, exit codes are zero, and selected logs bind tested 949bbd5. Counts: three PU selectors one each; owner pipeline 1, basis denials 41, replay/atomicity 3, repair 1, legacy/no-authority 2, full own DC 48; unit 226 and harness 676. Raw full-suite witnesses independently parsed: 48 namespaces/upstream/cleanups, 47 full runtime registrations, 68 full outputs, 30 preparation denials, 10 consumer denials, 6 observed blockers, 3 replay/atomicity witnesses and 1 F2 repair. Payload hashes independently recomputed and physical output hashes agree. Every namespace derives exact original resolved-root digest 90cbd6dddc92 and tested first7 949bbd5; migration e8c2f1a6b904 and empty owned cleanup inventories agree. Successful commands and these witnesses do not overcome the two missing exact oracles identified above.",
+    "pure_reruns": "Independent bounded rerun using /private/tmp/kl001-bootstrap/bin/uv, temporary UV_CACHE_DIR, PYTHONDONTWRITEBYTECODE and no pytest cache: tests/unit/workflow/test_full_action_preparation.py plus unchanged tests/unit/workflow/test_deterministic_planning.py => 7 passed in 0.85 seconds, exit zero. Additional read-only heterogeneous-deadline pure construction with admission valid_until two minutes after now and other bounds one hour after now produced both exact resolutions and validation at the two-minute minimum. No PostgreSQL lifecycle was invoked.",
+    "state_separation": "Result records task PASS, empty requirements_covered, integration_status UNMERGED and merge_commit null; downstream T6/T7/KL077, product/M3/G-SHADOW/production release remain independent. This GENERAL review is CHANGES_REQUIRED because exact task DoD is not yet met, regardless of successful check commands. Repairs require new tested revision/result and fresh reviews; only own linear REVIEW_RECORD_ONLY append is exempt after a future passing review."
+  }
+}
