@@ -1,0 +1,62 @@
+protected_base_commit=0c11a89f4c624290bf8f2a911bc81e5740240e45
+tested_commit=0de1168b35bb3f51d21498b65b04e243d9289ef4
+command=/private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-036/audit.py 0c11a89f4c624290bf8f2a911bc81e5740240e45
+protected_base_commit=0c11a89f4c624290bf8f2a911bc81e5740240e45
+tested_commit=0de1168b35bb3f51d21498b65b04e243d9289ef4
+PASS frozen/product/completed/requirement/gates/KL019/CI/provider paths unchanged
+PASS only KL047 refined; no new identity, no retrospective mutation or review/gate weakening
+audited_commit=0de1168b35bb3f51d21498b65b04e243d9289ef4
+PASS indexed current source hashes
+PASS actual result/checks/review/integration bindings KL-005 {"display_task_id": "KL-005", "integration_status": "MERGED", "merge_commit": "2e84dfb5904449351da9ff8f9d7d944d34fefb11", "result_commit": "9f14d725b9abab54fa45f5e91492c93889334649", "review_record_commit": "a159dec2f4c7c0a3a14fc45b4feae046a940e484", "reviewed_head_sha": "9f14d725b9abab54fa45f5e91492c93889334649", "task_identity": "harness-backlog-v0.2/KL-005"}
+PASS actual result/checks/review/integration bindings KL-018 {"display_task_id": "KL-018", "integration_status": "MERGED", "merge_commit": "8d93fbd603a71c02c4b291194843b2cfb35e1078", "result_commit": "d81fd99aac1941f309537e911d5f78bb1ace5eaa", "review_record_commit": "5d5a99436ae9357601602affc1e1c8bb60a1e5e8", "reviewed_head_sha": "d81fd99aac1941f309537e911d5f78bb1ace5eaa", "task_identity": "harness-backlog-v0.2/KL-018"}
+SOURCE 06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md sha256=1fc4fe48479c0545394039bb3b907648de7a7233e0f4c35fbbe26a3ab6100434
+SOURCE 05_KineticLoop_Protocol_v1.2_FROZEN.md sha256=00bf3eb2e0e2e00867d114b42e147a2341d98454f08629c849ebf0b4c0c4916c
+SOURCE 04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md sha256=2158a80bdc0e16eaf9c2cd835f704bdc2f346565dc35cb0c1fc1a8c00a1b8eda
+SOURCE 03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md sha256=4645a9660485e5a388d0b238c926e091f9b0215a9792eac705938266c989deb2
+PASS prospective KL047 exact write/resource scope independent of current KL019; recheck after HG035 merge
+LIMITATION no typed FitnessProposal/expert labels/rubric/sample-size/weights/quality thresholds provided by cited sources
+NOT_RUN all prospective KL047 task checks; product/gate/release/quality/model obligations remain NOT_RUN
+PASS draft packet projection/context/exact write list/check-contract paths; all prospective checks NOT_RUN
+PASS exact proposal ratification; future checks remain NOT_RUN
+EXACT_PROTECTED_BASE_TO_TESTED_INVENTORY
+M	CURRENT_DOCUMENT_INDEX.json
+M	HARNESS_DOCUMENT_MANIFEST.json
+M	KineticLoop_Harness_Backlog_v0.2.json
+M	KineticLoop_Harness_Traceability_v0.3.json
+M	docs/exec-plans/active/KL-047.md
+A	docs/exec-plans/evidence/HG-036/HG035_checks_pass_unmerged.json
+A	docs/exec-plans/evidence/HG-036/HG035_merged.json
+A	docs/exec-plans/evidence/HG-036/KL047_definition_draft.json
+A	docs/exec-plans/evidence/HG-036/KL047_packet_draft.md
+A	docs/exec-plans/evidence/HG-036/apply_after_merge.py
+A	docs/exec-plans/evidence/HG-036/audit.py
+A	docs/exec-plans/evidence/HG-036/check_draft.py
+A	docs/exec-plans/evidence/HG-036/checks-2536ea75.json
+A	docs/exec-plans/evidence/HG-036/diff_clean-2536ea75.json
+A	docs/exec-plans/evidence/HG-036/fitness_governance_regressions-2536ea75.log
+A	docs/exec-plans/evidence/HG-036/governance_test_draft.py
+A	docs/exec-plans/evidence/HG-036/harness_tests-2536ea75.log
+A	docs/exec-plans/evidence/HG-036/harness_validation-2536ea75.log
+A	docs/exec-plans/evidence/HG-036/lint-2536ea75.log
+A	docs/exec-plans/evidence/HG-036/merged_preflight_and_protected_scope-2536ea75.log
+A	docs/exec-plans/evidence/HG-036/packet_body_draft.md
+A	docs/exec-plans/evidence/HG-036/preflight.py
+A	docs/exec-plans/evidence/HG-036/premerge-guard-plan.log
+A	docs/exec-plans/evidence/HG-036/premerge-preflight-complete-eab2b30.log
+A	docs/exec-plans/evidence/HG-036/premerge-preflight-eab2b30.log
+A	docs/exec-plans/evidence/HG-036/prepare_guard_draft.py
+A	docs/exec-plans/evidence/HG-036/proposal.py
+A	docs/exec-plans/evidence/HG-036/render_packet.py
+A	docs/exec-plans/evidence/HG-036/run_checks.py
+A	docs/exec-plans/evidence/HG-036/scope_note.md
+A	docs/exec-plans/evidence/HG-036/typecheck-2536ea75.log
+A	docs/exec-plans/evidence/HG-036/unit_tests-2536ea75.log
+A	docs/exec-plans/evidence/HG-036/validator_proposal.py
+A	docs/exec-plans/evidence/HG-036/validator_snippet_draft.py
+M	docs/harness/RESOURCE_LOCKS.md
+A	tests/harness/test_fitness_evaluation_scope.py
+M	tools/harness/validate_harness.py
+
+TESTED_TREE=f60add39bcb2d8b4a71b28425efed7b907f3c7bc
+
+exit_code=0

@@ -5533,7 +5533,7 @@
     {
       "id": "KL-047",
       "milestone": "M7",
-      "title": "Fixed predeclared Fitness eval set + scorer",
+      "title": "Fixed predeclared Fitness evaluation foundation and mechanical scorer",
       "owner_role": "quality",
       "depends_on": [
         "KL-005",
@@ -5551,21 +5551,30 @@
         "PU"
       ],
       "deliverables": [
-        "Fixed predeclared Fitness eval set + scorer deliverable"
+        "Immutable source-bound synthetic case dataset and predeclared manifest with disjoint train/tune/test splits, freeze times, available-data rules and leakage checks.",
+        "Pure deterministic mechanical scorer with immutable metric/config/scorer identity and exhaustive mandatory case/output correspondence.",
+        "Immutable canonical report with per-case captured input/output hashes, exact release/artifact bundle provenance and explicit synthetic non-executable limitations.",
+        "Contract preserving unresolved genuine Fitness quality decisions and all original G-REMOTE-AI, M7, S48 and release obligations independently of infrastructure task PASS."
       ],
-      "definition_of_done": "Fixed predeclared Fitness eval set + scorer acceptance evidence recorded",
+      "definition_of_done": "Every named offline task check passes on tested_commit with committed evidence; mechanical synthetic scoring is reproducible and fail-closed, all mandatory negative cases run, and no Fitness quality, model evaluation, G-REMOTE-AI closure, M7 exit, product requirement or release PASS is claimed. Genuine quality corpus/rubric/sample-size/weights/threshold decisions and later measured release evaluation remain explicit unresolved obligations; infrastructure completion alone cannot satisfy the original project evaluation/release scope.",
       "entry_conditions": [
-        "KL-005 and KL-018 merged",
-        "This task helps BUILD G-REMOTE-AI and is not blocked by that gate"
+        "Actual KL-005 and KL-018 PASS results, required fresh reviews and MERGED integration records verified against the protected base.",
+        "This offline gate builder helps BUILD G-REMOTE-AI; neither G-REMOTE-AI closure nor M7 real-data shadow entry is a prerequisite for this infrastructure task.",
+        "All fixtures and observations are synthetic and local; no credentials, provider data, model invocation, database or external network is available to the scorer.",
+        "KL-047 has no result or implementation at the protected base; every task check and product/gate/release obligation starts NOT_RUN."
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
       "thread_id": "THREAD-KL-047",
       "thread_mode": "INDEPENDENT_WORKTREE",
       "context_files": [
+        "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
         "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
         "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
-        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+        "docs/contracts/shadow_test_semantics.md",
+        "docs/contracts/artifact_registry.md"
       ],
       "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
       "merge_unit": "ONE_PR",
@@ -5575,14 +5584,32 @@
       "task_identity": "harness-backlog-v0.2/KL-047",
       "requirements_covered": [],
       "checks_required_for_this_task": [
-        "task_scope_pu_checks"
+        "eval_manifest_identity_and_freeze_pu",
+        "eval_split_and_knowledge_boundary_pu",
+        "eval_source_derived_cases_pu",
+        "eval_complete_observations_pu",
+        "eval_deterministic_report_pu",
+        "eval_no_release_or_execution_claim_pu",
+        "eval_offline_suite_passes",
+        "eval_existing_contract_regressions",
+        "harness_validation_passes",
+        "lint_passes",
+        "typecheck_passes"
       ],
-      "resource_keys": [],
+      "resource_keys": [
+        "fitness_eval_contract"
+      ],
       "write_paths": [
-        "src/kineticloop/agents/**",
-        "src/kineticloop/evaluation/**",
-        "tests/agents/**",
-        "tests/evaluation/**"
+        "src/kineticloop/evaluation/__init__.py",
+        "src/kineticloop/evaluation/manifest.py",
+        "src/kineticloop/evaluation/scorer.py",
+        "src/kineticloop/evaluation/report.py",
+        "tests/evaluation/test_manifest.py",
+        "tests/evaluation/test_scorer.py",
+        "tests/evaluation/test_report.py",
+        "tests/evaluation/synthetic_cases.json",
+        "tests/evaluation/predeclared_manifest.json",
+        "docs/contracts/fitness_evaluation.md"
       ],
       "review_requirements": [
         "GENERAL",
@@ -5590,8 +5617,69 @@
       ],
       "conditional_depends_on": [],
       "environment_requirements": [],
-      "packet_refinement": "MUST_REFINE_BEFORE_READY",
-      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS"
+      "packet_refinement": "ENFORCEABLE",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "write_paths_status": "ENFORCEABLE",
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-047/**"
+      ],
+      "check_contracts": [
+        {
+          "check_id": "eval_manifest_identity_and_freeze_pu",
+          "command": "uv run pytest -q tests/evaluation/test_manifest.py::test_manifest_identity_and_freeze",
+          "pass_oracle": "Content-bound case/dataset/split IDs, canonical immutable manifest and exact source hashes survive roundtrip; changed case, scorer or metric/threshold digest and postfreeze mutation reject under old identity."
+        },
+        {
+          "check_id": "eval_split_and_knowledge_boundary_pu",
+          "command": "uv run pytest -q tests/evaluation/test_manifest.py::test_split_and_knowledge_boundary",
+          "pass_oracle": "Train/tune/test membership is exhaustive and disjoint by case and underlying input identity; available-at/known-at after cutoff, future outcome labels, tuning reuse, missing freeze metadata and overlapping/leaking splits reject."
+        },
+        {
+          "check_id": "eval_source_derived_cases_pu",
+          "command": "uv run pytest -q tests/evaluation/test_scorer.py::test_source_derived_cases",
+          "pass_oracle": "Each mandatory synthetic mechanical case cites exact repository source path/hash/clause; well-formed non-executable output, refusal, malformed output, timeout, tool failure, budget exhaustion, forbidden execution target and knowledge-cutoff violation have source-derived expected outcomes. No expert recommendation or causal-effect labels are invented."
+        },
+        {
+          "check_id": "eval_complete_observations_pu",
+          "command": "uv run pytest -q tests/evaluation/test_scorer.py::test_complete_observations",
+          "pass_oracle": "Missing/duplicate/extra outputs, omitted mandatory case categories, unexecuted or missing observations, wrong input/output hashes and stale exact release/artifact bundle binding fail closed; model/prompt/engine/policy/config/scorer changes cannot retain the old evaluation identity."
+        },
+        {
+          "check_id": "eval_deterministic_report_pu",
+          "command": "uv run pytest -q tests/evaluation/test_report.py::test_deterministic_report",
+          "pass_oracle": "Equivalent ordered evidence yields byte-identical canonical reports and hashes without wall-clock or network dependence; caller input/output mutation cannot alter frozen manifest or report. Counts/denominators and each observation/hash/provenance are retained; no weighted Fitness quality aggregate is invented."
+        },
+        {
+          "check_id": "eval_no_release_or_execution_claim_pu",
+          "command": "uv run pytest -q tests/evaluation/test_report.py::test_no_release_or_execution_claim",
+          "pass_oracle": "Empty, synthetic-only, unexecuted and mechanically successful fixtures never yield release PASSED or quality PASS. Reports always expose synthetic provenance, NOT_EXECUTABLE, absent live targets and NOT_RUN product/gate/release statuses; no S48 writer/registry/authorization/provider/network side effect exists."
+        },
+        {
+          "check_id": "eval_offline_suite_passes",
+          "command": "uv run pytest -q tests/evaluation",
+          "pass_oracle": "Explicit discovery runs all new evaluation tests with no skipped/xfail/xpass cases; all six named selectors above are collected and executed. This explicit directory command is required because existing pytest testpaths and kl test-unit do not discover tests/evaluation."
+        },
+        {
+          "check_id": "eval_existing_contract_regressions",
+          "command": "uv run pytest -q tests/unit/contracts/test_shadow.py tests/unit/contracts/test_artifact_registry.py tests/unit/primitives/test_canonical.py tests/harness/acceptance/test_registry.py",
+          "pass_oracle": "Existing strict shadow, immutable artifact, canonical hashing and acceptance registry checks pass unchanged; generated product obligations remain NOT_RUN."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "Current authorities, frozen baseline, exact task scope and result/evidence separation validate."
+        },
+        {
+          "check_id": "lint_passes",
+          "command": "uv run kl lint",
+          "pass_oracle": "Repository lint passes including evaluation package/tests."
+        },
+        {
+          "check_id": "typecheck_passes",
+          "command": "uv run kl typecheck",
+          "pass_oracle": "Repository typecheck passes including evaluation package/tests."
+        }
+      ]
     },
     {
       "id": "KL-048",
