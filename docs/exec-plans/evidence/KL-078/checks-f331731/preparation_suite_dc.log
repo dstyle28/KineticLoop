@@ -1,0 +1,88 @@
+TASK harness-backlog-v0.2/KL-078
+TESTED_COMMIT f33173102abed0633d4c99002b610b99eaea3016
+COMMAND uv run pytest -q tests/db/test_preparation.py
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-f331731-0b068b742ff6', database_name='kineticloop_kl078_prep_f331731_0b068b742ff6') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE d5c33eed-8c6f-5f66-9fec-bcc118a02af9 SEALED
+OWNER_OUTPUT {'projection_id': '9c9a8eb6-5ae2-5dcb-92c3-b60162532645', 'revision': 1, 'input_basis_hash': '3f2ab49fe7062780bce5fe30d169d0bcd0a88f94c23e0ee081c947ffd2801dee', 'dependency_ids': ['19d0e9b0-e423-5528-b185-b5d3eb4feccf', '24c0c793-d534-5c51-9f21-43c7d6555cf4', '37b8b864-6a3f-52f2-9552-22949359aa36', 'c672f3e5-7432-58aa-a4b1-84dfdce43f58', 'd22b8773-0cbd-5466-91b5-f22fcbaf9517', 'e731e6ab-8ec6-5478-a9a4-9683f3ff2fbb'], 'executable': False} {'build_id': '63fe4f3f-581e-562d-aab4-406b2bd12800', 'status': 'READY', 'dependency_basis_hash': '10764d883bf42678d6e8a82fe9a9599e5df2802b3380b34e756bbf2aa4f52939', 'artifact_dependency_closure_hash': 'e17bf1d531502aa27299d9defc9659756da7fed6edfe0f5267f9a66f4a5bfc62', 'manifest_hash': '530f9a9819119bd94ae692183991276691ce6fdecec74cd811f7279a9542ef61', 'executable': False} {'manifest_id': '5ffc4e32-8e56-4978-9a64-84672d1d71e3', 'generation': 1, 'receipt_id': 'e2a9dab5-754f-4a9c-80c3-a4d80032370e', 'event_id': 'd4217e00-40c5-448a-b398-9290460bf3b1', 'executable': False, 'replayed': False}
+.INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 3.4487168749328703
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-f331731-0b068b742ff6', database_name='kineticloop_kl078_prep_f331731_0b068b742ff6') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE 70fe8b09-bbef-58c4-90c9-ffdaf1aa133f READY
+ACTUAL_SOURCE afeca77e-c8ab-5a9a-ba5f-bf5d710879a5 SEALED
+ACTUAL_SOURCE 20bc4f4e-2bdd-5aff-a25a-268e7ed5ae25 SEALED
+ACTUAL_SOURCE 931723b8-3012-5edb-b90c-211ad5b27841 SEALED
+ACTUAL_SOURCE 4ec7f55f-cc80-5f93-ab7c-717e3874d24b SEALED
+ACTUAL_SOURCE 07d8be4c-d2df-553f-964b-f26f365a1c7d SEALED
+.INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 4.887316917069256
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-f331731-0b068b742ff6', database_name='kineticloop_kl078_prep_f331731_0b068b742ff6') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE 5c1b6d5b-be48-5172-8acb-e2273155977b SEALED
+ACTUAL_SOURCE 58ba152b-97ae-5795-9c5a-ac2b38283f9e SEALED
+.INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 3.5206901668570936
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-f331731-0b068b742ff6', database_name='kineticloop_kl078_prep_f331731_0b068b742ff6') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE 303b9c37-0f73-550c-b9e3-6bc332c37b09 SEALED
+ACTUAL_SOURCE b95f8430-dbd8-5e27-b375-dbe79455b467 SEALED
+ACTUAL_SOURCE fd9c6219-c630-58ae-9bad-43bc8669398f SEALED
+ACTUAL_SOURCE 5c69265f-0232-5cf5-ad94-6ef3b60d0bcd SEALED
+ACTUAL_SOURCE 8167b38d-6b11-5873-93c2-e15c8d8ec1c7 SEALED
+OBSERVED_LOCAL_BLOCKER projection {'first': 115, 'second': 116}
+ACTUAL_SOURCE 3f85e6d5-f098-58a8-8e47-4ff3ca29a551 SEALED
+OBSERVED_LOCAL_BLOCKER build {'first': 117, 'second': 118}
+ACTUAL_SOURCE 267924a9-df6e-59b4-ac6d-cb6a51cc2752 SEALED
+OBSERVED_LOCAL_BLOCKER complete {'first': 119, 'second': 120}
+.INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 3.875823999987915
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-f331731-0b068b742ff6', database_name='kineticloop_kl078_prep_f331731_0b068b742ff6') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE a85fe579-dbc5-515d-8b85-a2cd5b794530 SEALED
+ACTUAL_SOURCE 2cc2b45b-1488-5230-b24d-0ef1d034f7f4 SEALED
+OBSERVED_S01_BLOCKER 113 114
+FROZEN_T3_LOCK_ORDER 7 8
+.LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 3.5643806669395417
+
+- generated xml file: /Users/davetian/.codex/worktrees/68f1/KineticLoop/docs/exec-plans/evidence/KL-078/checks-f331731/preparation_suite_dc.xml -
+5 passed in 19.63s
+
+EXIT_CODE 0
+ELAPSED_SECONDS 19.856

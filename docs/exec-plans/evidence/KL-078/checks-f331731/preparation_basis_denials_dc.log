@@ -1,0 +1,26 @@
+TASK harness-backlog-v0.2/KL-078
+TESTED_COMMIT f33173102abed0633d4c99002b610b99eaea3016
+COMMAND uv run pytest -q tests/db/test_preparation.py::test_basis_denials
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-f331731-0b068b742ff6', database_name='kineticloop_kl078_prep_f331731_0b068b742ff6') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE ea594937-178d-5ef6-ae47-3564429efcc2 READY
+ACTUAL_SOURCE a3579f33-794a-5aac-a638-2894d01eca06 SEALED
+ACTUAL_SOURCE be62c7f2-9b75-5b35-ad5e-e8f71ed4a0b5 SEALED
+ACTUAL_SOURCE 9c9fd7e1-06af-5df8-9a67-30207d4236ea SEALED
+ACTUAL_SOURCE 70c2fd89-ad39-5d29-aec4-849eca4f8d3b SEALED
+ACTUAL_SOURCE 4d5510fe-b91e-54e2-83af-32a0d2070b50 SEALED
+.LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 4.979730417020619
+
+- generated xml file: /Users/davetian/.codex/worktrees/68f1/KineticLoop/docs/exec-plans/evidence/KL-078/checks-f331731/preparation_basis_denials_dc.xml -
+1 passed in 5.22s
+
+EXIT_CODE 0
+ELAPSED_SECONDS 5.404

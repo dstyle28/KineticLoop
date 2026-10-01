@@ -17,6 +17,7 @@ from kineticloop.persistence.transactions import (
     IdempotencyConflict,
     _execute_source_preparation,
     _source_preparation_session,
+    artifact_bindings_match_activation,
 )
 from kineticloop.protocol.authorization import canonical_certificate_timestamp
 from kineticloop.protocol.execution import ExecutionIdentity, digest
@@ -157,7 +158,7 @@ def _verify_source(cursor: Cursor[Any], identity: PreparationIdentity, source: S
         raise GuardRequired("exact source hash/basis conflict")
 
 
-def _requirements(cursor: Cursor[Any], identity: PreparationIdentity) -> dict[str, Any]:
+def _requirements(cursor: Cursor[Any], identity: PreparationIdentity, source: SourceBasis) -> dict[str, Any]:
     cursor.execute(
         "SELECT typed_payload FROM kineticloop.policy_bundles WHERE subject_id=%s AND id=%s",
         (identity.subject_id, identity.policy_id),
@@ -167,6 +168,11 @@ def _requirements(cursor: Cursor[Any], identity: PreparationIdentity) -> dict[st
         requirements = row[0]["manifest_projection_requirements"] if row else None
         if not isinstance(requirements, dict) or not requirements:
             raise ValueError("missing role closure")
+        mandatory = {"COLLECTION", "ENGINE", "FACTSET", "PROGRAM", "POLICY"}
+        if source.mapping_id is not None:
+            mandatory.add("MAPPING")
+        if source.catalog_id is not None:
+            mandatory.add("CATALOG")
         for role, item in requirements.items():
             deps = item["dependencies"]
             keys = [(d["kind"], d["key"], d.get("collection")) for d in deps]
@@ -174,9 +180,9 @@ def _requirements(cursor: Cursor[Any], identity: PreparationIdentity) -> dict[st
                 not role
                 or not item["projection_kind"]
                 or len(keys) != len(set(keys))
-                or not {"COLLECTION", "ENGINE", "FACTSET", "PROGRAM", "POLICY"}
-                <= {k[0] for k in keys}
+                or not mandatory <= {k[0] for k in keys}
                 or not any(k[2] for k in keys)
+                or any(k[0] == "COLLECTION" and not k[2] for k in keys)
             ):
                 raise ValueError("incomplete dependency closure")
         return requirements
@@ -283,6 +289,42 @@ def _artifacts(cursor: Cursor[Any], roots: tuple[UUID, ...]) -> tuple[list[dict[
     return proofs, digest(proofs)
 
 
+def _artifact_bindings(
+    cursor: Cursor[Any],
+    source: SourceBasis,
+    proofs: list[dict[str, Any]],
+    roots: tuple[UUID, ...],
+) -> None:
+    ids = [UUID(proof["artifact_id"]) for proof in proofs]
+    cursor.execute(
+        "SELECT id,ref_s05_id,ref_s19_id,ref_s48_id FROM kineticloop.safety_artifacts WHERE id=ANY(%s)",
+        (ids,),
+    )
+    bindings = cursor.fetchall()
+    cursor.execute(
+        "WITH RECURSIVE policy_closure(id) AS ("
+        "SELECT id FROM kineticloop.safety_artifacts WHERE id=ANY(%s) AND ref_s05_id=%s "
+        "UNION SELECT e.dependency_artifact_id FROM policy_closure c "
+        "JOIN kineticloop.safety_artifact_dependencies e ON e.artifact_id=c.id) "
+        "SELECT DISTINCT a.ref_s48_id FROM policy_closure c JOIN kineticloop.safety_artifacts a "
+        "ON a.id=c.id WHERE a.ref_s48_id IS NOT NULL",
+        (ids, source.policy_id),
+    )
+    releases = {r[0] for r in cursor.fetchall()}
+    nonroots = {UUID(edge) for proof in proofs for edge in proof["dependency_ids"]}
+    if not artifact_bindings_match_activation(
+        bindings,
+        root_ids=set(roots),
+        expected_root_ids=set(ids) - nonroots,
+        active_policy_id=source.policy_id,
+        selected_catalog_id=source.catalog_id,
+        active_release_ids=releases,
+    ):
+        raise GuardRequired(
+            "artifact closure does not match exact sealed policy/catalog/release basis"
+        )
+
+
 def _record(
     cursor: Cursor[Any], identity: PreparationIdentity, request: RecordProjection
 ) -> Mapping[str, Any]:
@@ -302,9 +344,9 @@ def _record(
     ):
         raise GuardRequired("typed computation without caller revision/provenance required")
     signatures = [(d.kind, d.key, d.collection) for d in request.dependencies]
-    if len(signatures) != len(set(signatures)) or len({(d.kind, d.key) for d in request.dependencies}) != len(
-        signatures
-    ):
+    if len(signatures) != len(set(signatures)) or len(
+        {(d.kind, d.key) for d in request.dependencies}
+    ) != len(signatures):
         raise GuardRequired("duplicate dependency semantic key")
     projection, basis_hash, request_hash = projection_identity(identity.subject_id, request)
     cursor.execute(
@@ -318,7 +360,7 @@ def _record(
             raise IdempotencyConflict("immutable computation identity conflict")
         return history["outcome"]
     _verify_source(cursor, identity, request.source)
-    requirements = _requirements(cursor, identity)
+    requirements = _requirements(cursor, identity, request.source)
     matching = [r for r in requirements.values() if r["projection_kind"] == request.kind]
     expected = [
         {(d["kind"], d["key"], d.get("collection")) for d in r["dependencies"]} for r in matching
@@ -326,6 +368,7 @@ def _record(
     if not expected or set(signatures) not in expected:
         raise GuardRequired("projection dependency signature incomplete/foreign")
     proof, _ = _artifacts(cursor, (request.engine.artifact_id,))
+    _artifact_bindings(cursor, request.source, proof, (request.engine.artifact_id,))
     engine = next(p for p in proof if p["artifact_id"] == str(request.engine.artifact_id))
     if (
         engine["artifact_kind"],
@@ -440,7 +483,7 @@ def _candidate(
     cursor: Cursor[Any], identity: PreparationIdentity, request: BuildManifest
 ) -> dict[str, Any]:
     _verify_source(cursor, identity, request.source)
-    requirements = _requirements(cursor, identity)
+    requirements = _requirements(cursor, identity, request.source)
     if (
         any(type(b) is not ProjectionBinding for b in request.bindings)
         or len(request.bindings) != len(requirements)
@@ -511,16 +554,7 @@ def _candidate(
     artifacts, artifact_hash = _artifacts(cursor, request.artifact_roots)
     if not engine_ids <= {a["artifact_id"] for a in artifacts}:
         raise GuardRequired("computation engines missing from artifact closure")
-    cursor.execute(
-        "SELECT id,ref_s05_id,ref_s19_id,ref_s48_id FROM kineticloop.safety_artifacts WHERE id=ANY(%s)",
-        ([UUID(a["artifact_id"]) for a in artifacts],),
-    )
-    # Preparation captures immutable bindings; T3 independently rechecks activation/registry/time.
-    for row in cursor.fetchall():
-        if (row[1] is not None and row[1] != request.source.policy_id) or (
-            row[2] is not None and row[2] != request.source.catalog_id
-        ):
-            raise GuardRequired("artifact belongs to foreign policy/catalog")
+    _artifact_bindings(cursor, request.source, artifacts, request.artifact_roots)
     dependency_hash = digest(
         {
             "projections": projections,

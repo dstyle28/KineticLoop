@@ -1,0 +1,30 @@
+TASK harness-backlog-v0.2/KL-078
+TESTED_COMMIT f33173102abed0633d4c99002b610b99eaea3016
+COMMAND uv run pytest -q tests/db/test_preparation.py::test_duplicate_rollback
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-f331731-0b068b742ff6', database_name='kineticloop_kl078_prep_f331731_0b068b742ff6') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE 93d5c369-e2aa-57b6-bb0d-8b4f4bed5cef SEALED
+ACTUAL_SOURCE d9bb83da-578d-5d43-b3d9-5a7149f8a0ba SEALED
+ACTUAL_SOURCE f45ab13c-1e0d-5d59-aa08-a61126aba83e SEALED
+ACTUAL_SOURCE c2f545d1-9308-56c3-a68d-f27b9cad7f49 SEALED
+ACTUAL_SOURCE 0c18b8e7-88c1-5d9d-a22a-eedbaf31690d SEALED
+OBSERVED_LOCAL_BLOCKER projection {'first': 110, 'second': 111}
+ACTUAL_SOURCE a39f06a6-97db-5ee7-85dd-d11e67d3272c SEALED
+OBSERVED_LOCAL_BLOCKER build {'first': 119, 'second': 120}
+ACTUAL_SOURCE 90f7f4ab-c9cd-5773-b0ee-b6d240da1f1d SEALED
+OBSERVED_LOCAL_BLOCKER complete {'first': 121, 'second': 122}
+.LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 3.8140145000070333
+
+- generated xml file: /Users/davetian/.codex/worktrees/68f1/KineticLoop/docs/exec-plans/evidence/KL-078/checks-f331731/preparation_duplicate_rollback_dc.xml -
+1 passed in 4.05s
+
+EXIT_CODE 0
+ELAPSED_SECONDS 4.225

@@ -595,6 +595,11 @@ def test_basis_denials(database_urls: dict[str, str]) -> None:
             replace(request, key="foreign", bindings=(ProjectionBinding("EXPOSURE", uuid4()),)),
             replace(request, key="role", bindings=(replace(request.bindings[0], role="OTHER"),)),
             replace(request, key="artifact", artifact_roots=(uuid4(),)),
+            replace(
+                request,
+                key="foreign-artifact-policy",
+                artifact_roots=(seed["engine"].artifact_id, peer["engine"].artifact_id),
+            ),
         ):
             with pytest.raises(GuardRequired):
                 api.build_manifest(bad)
