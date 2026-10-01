@@ -1,0 +1,108 @@
+change_identity: harness-governance-v0.1/HG-037
+display_change_id: HG-037
+base_commit: 822322dfcac69d1042c8f9f7517cecf4903f8163
+tested_commit: 87ff1dc6235140d1481003da79107296d720870a
+change_status: PASS
+summary: Append fresh NOT_STARTED KL074 PostgreSQL final-server readiness follow-up after normal HG036
+  merge. Preserve completed KL002 and all existing definitions/results/evidence. Ratify nine future
+  checks with explicit TCP readiness, bounded deadline, SQL no-replay, isolated actual-image migrated
+  coldstart provenance and cleanup; exact scope guard and meaningful positive/negative harness regressions.
+  No product/Compose/test implementation or requirement/release claim.
+packets_refined:
+- KL-074
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- KineticLoop_Harness_Backlog_v0.2.json
+- KineticLoop_Harness_Traceability_v0.3.json
+- docs/exec-plans/active/KL-074.md
+- docs/exec-plans/evidence/HG-037/KL-074.packet.draft.md
+- docs/exec-plans/evidence/HG-037/KL-074.task-definition.draft.json
+- docs/exec-plans/evidence/HG-037/PREPARATION.md
+- docs/exec-plans/evidence/HG-037/READINESS_EVIDENCE.md
+- docs/exec-plans/evidence/HG-037/append_only_provenance_audit-87ff1dc.json
+- docs/exec-plans/evidence/HG-037/append_only_provenance_audit-87ff1dc.log
+- docs/exec-plans/evidence/HG-037/audit.py
+- docs/exec-plans/evidence/HG-037/boundaries.draft.json
+- docs/exec-plans/evidence/HG-037/diff_clean-87ff1dc.json
+- docs/exec-plans/evidence/HG-037/diff_clean-87ff1dc.log
+- docs/exec-plans/evidence/HG-037/docker-entrypoint.reference.sh
+- docs/exec-plans/evidence/HG-037/draft.py
+- docs/exec-plans/evidence/HG-037/finalize.py
+- docs/exec-plans/evidence/HG-037/guard.draft.py
+- docs/exec-plans/evidence/HG-037/harness_tests-87ff1dc.json
+- docs/exec-plans/evidence/HG-037/harness_tests-87ff1dc.log
+- docs/exec-plans/evidence/HG-037/harness_validation-87ff1dc.json
+- docs/exec-plans/evidence/HG-037/harness_validation-87ff1dc.log
+- docs/exec-plans/evidence/HG-037/lint-87ff1dc.json
+- docs/exec-plans/evidence/HG-037/lint-87ff1dc.log
+- docs/exec-plans/evidence/HG-037/pr67.json
+- docs/exec-plans/evidence/HG-037/preparation-provenance.json
+- docs/exec-plans/evidence/HG-037/protected-base.txt
+- docs/exec-plans/evidence/HG-037/readiness_scope_regressions-87ff1dc.json
+- docs/exec-plans/evidence/HG-037/readiness_scope_regressions-87ff1dc.log
+- docs/exec-plans/evidence/HG-037/refresh_hashes.py
+- docs/exec-plans/evidence/HG-037/run36807167973-attempt1-failed.log.json
+- docs/exec-plans/evidence/HG-037/run36807167973-attempt1.json
+- docs/exec-plans/evidence/HG-037/run36807167973-attempt2-failed.log.json
+- docs/exec-plans/evidence/HG-037/run36807167973-attempt2.json
+- docs/exec-plans/evidence/HG-037/run36807167973-attempt3.json
+- docs/exec-plans/evidence/HG-037/run36807167973-attempt3.log.json
+- docs/exec-plans/evidence/HG-037/run_check.py
+- docs/exec-plans/evidence/HG-037/test_readiness_scope.draft.py
+- docs/exec-plans/evidence/HG-037/typecheck-87ff1dc.json
+- docs/exec-plans/evidence/HG-037/typecheck-87ff1dc.log
+- docs/exec-plans/evidence/HG-037/unit_tests-87ff1dc.json
+- docs/exec-plans/evidence/HG-037/unit_tests-87ff1dc.log
+- docs/exec-plans/evidence/HG-037/write_record.py
+- docs/exec-plans/governance/HG-037.yaml
+- docs/harness/RESOURCE_LOCKS.md
+- tests/harness/test_readiness_scope.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: append_only_provenance_audit
+  command: /private/tmp/kl017-venv/bin/python /Users/davetian/.codex/worktrees/c4cb/KineticLoop/docs/exec-plans/evidence/HG-037/audit.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-037/append_only_provenance_audit-87ff1dc.log
+- check_id: readiness_scope_regressions
+  command: /private/tmp/kl017-venv/bin/python -m pytest -q tests/harness/test_readiness_scope.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-037/readiness_scope_regressions-87ff1dc.log
+- check_id: harness_validation
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-037/harness_validation-87ff1dc.log
+- check_id: harness_tests
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-037/harness_tests-87ff1dc.log
+- check_id: unit_tests
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-037/unit_tests-87ff1dc.log
+- check_id: lint
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-037/lint-87ff1dc.log
+- check_id: typecheck
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-037/typecheck-87ff1dc.log
+- check_id: diff_clean
+  command: git diff --check 822322dfcac69d1042c8f9f7517cecf4903f8163 87ff1dc6235140d1481003da79107296d720870a
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-037/diff_clean-87ff1dc.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- All nine prospective KL074 implementation checks remain NOT_RUN; HG037 governance PASS is not task/product/release
+  PASS or production activation.
+- Current source plus same-SHA CI missing-socket errors strongly support an init-stop-final startup
+  race; actual deployed image digest/entrypoint and timestamped failing container logs are unverified.
+  The future task must independently demonstrate actual-image ordering and cannot fabricate causal PASS.
+- No product/Compose/DB test/CI workflow/migration/authentication change is made here; KL019 owns transaction
+  resources independently. Full legacy DB regressions require dedicated hosted VM Docker.
+- Local uv is unavailable; checks use existing kl017 virtualenv with PYTHONPATH. Normal hosted locked-uv
+  CI and merge gates remain required.
+- Fresh independent GENERAL and DB_CONCURRENCY reviews bind the final governance+evidence head. After
+  review only HG037 review-record paths may change.
