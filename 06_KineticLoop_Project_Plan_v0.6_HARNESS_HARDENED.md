@@ -292,3 +292,19 @@ The machine-readable task source is `KineticLoop_Harness_Backlog_v0.2.json`. Ind
 - KL-001 has an enforceable concrete write set and must implement positive/negative harness fixtures.
 - Other M1 tasks remain `MUST_REFINE_BEFORE_READY` until their task-specific write sets are derived from the repo layout established by KL-001.
 - A validator PASS must distinguish structural validity from proved negative guard behavior.
+
+
+## M3 remaining wave — HG038
+
+KL026 owns tests-only real PostgreSQL I01–I09 DC interleavings over merged owners,
+with exact task-owned namespace and no production-fix permission. I04@WF remains
+separate. KL075 implements internal guarded RecordSnapshot/AdvanceAttempt only;
+KL076 supplies deterministic TEST source-bound F/D/N/resolution/validation owners;
+KL077 consumes complete TEST bundle preparation and current CONTINUE/RESUME guards.
+They serialize shared transaction interfaces, preserve the 39 public commands and
+start NOT_STARTED. KL027 waits for these normally merged prerequisites and owns
+only the composed deterministic TEST trajectory suite. KL026 may proceed alongside
+owner tasks using merged interfaces and nonoverlapping resources. No M3 closure,
+product requirement, release, production activation or executable shadow PASS is
+established by this governance refinement. Missing product/model quality and policy
+decisions remain outside these exact mechanical TEST fixture packets.

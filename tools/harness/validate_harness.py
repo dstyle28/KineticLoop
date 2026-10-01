@@ -580,7 +580,7 @@ def packet_errors(task, text):
     if checks is None or sorted(bullets(checks)) != sorted(task['checks_required_for_this_task']):
         errors.append('packet-checks:' + name)
     if (name in M2_REFINED_TASK_IDS or (name == 'KL-047'
-            and task.get('packet_refinement') == 'ENFORCEABLE') or (name in (WAVE_REFINED_TASK_IDS | {'KL-019', 'KL-025', 'KL-074'})
+            and task.get('packet_refinement') == 'ENFORCEABLE') or (name in (WAVE_REFINED_TASK_IDS | {'KL-019', 'KL-025', 'KL-074', 'KL-026', 'KL-027', 'KL-075', 'KL-076', 'KL-077'})
                                       and task.get('packet_refinement') == 'ENFORCEABLE')):
         read_first = section(text, 'Read first') or ''
         if bullets(read_first) != task.get('context_files', []):
@@ -677,6 +677,7 @@ def packet_errors(task, text):
         if ((section(text, 'Planning fixture namespace exception') or '').strip()
                 != LEDGER_PLANNING_FIXTURE_CONTRACT):
             errors.append('packet-ledger-planning-fixture-contract:' + name)
+    errors.extend(m3_next_wave_packet_errors(task, text))
     errors.extend(readiness_packet_errors(task, text))
     errors.extend(execution_packet_errors(task, text))
     return errors
@@ -2648,6 +2649,7 @@ def task_definition_errors(
             errors.extend(ledger_definition_errors(task))
         if not revision or task.get('packet_refinement') == 'ENFORCEABLE':
             errors.extend(execution_definition_errors(task))
+        errors.extend(m3_next_wave_definition_errors(task))
         errors.extend(readiness_definition_errors(task))
         for dep in task['depends_on']:
             if dep not in tasks:
@@ -2770,7 +2772,7 @@ def task_definition_errors(
                 and (task.get('packet_refinement') != 'ENFORCEABLE'
                      or task.get('write_paths_status') != 'ENFORCEABLE')):
             errors.append('ready-write-scope-unrefined:' + name)
-    refined = [tasks[name] for name in sorted(M2_REFINED_TASK_IDS | WAVE_REFINED_TASK_IDS | {'KL-047', 'KL-074'})
+    refined = [tasks[name] for name in sorted(M2_REFINED_TASK_IDS | WAVE_REFINED_TASK_IDS | {'KL-047', 'KL-074', 'KL-026', 'KL-027', 'KL-075', 'KL-076', 'KL-077'})
                if name in tasks and (name in M2_REFINED_TASK_IDS
                                      or tasks[name].get('packet_refinement') == 'ENFORCEABLE')]
     for position, left in enumerate(refined):
@@ -3928,6 +3930,47 @@ def readiness_workflow_errors(base_listing, after):
     if base_listing.strip():
         return ['readiness-workflow-baseline-exists']
     return [] if hashlib.sha256(after).hexdigest() == READINESS_WORKFLOW_SHA256 else ['readiness-workflow-content-scope']
+
+
+
+
+
+M3_NEXT_WAVE_IDS = frozenset({'KL-026', 'KL-027', 'KL-075', 'KL-076', 'KL-077'})
+M3_NEXT_WAVE_DEFINITION_HASHES = {'KL-026': '8cf9fcd21a85ccf7f158648922883c197b77e7165e497b8589a6a9055433848a',
+ 'KL-027': 'e4750ebd2b31f2daea56247a7266420c1608a305298ee86fe8fcd808b73f6328',
+ 'KL-075': '956c3785ba73e3994873ed349fd579d1761d769191700e690ff3e12e91708068',
+ 'KL-076': '8fbe465e75fe98c608b23ffe7e007198f1763ef91e8cae6f17811b9475096b99',
+ 'KL-077': '9fcc7161d40649a502900f38e484c945b3503881d470f9a9f1cc6b4adecc2a25'}
+M3_NEXT_WAVE_PACKET_HASHES = {'KL-026': '4caa7464e6665c17711d7481bf56c2806865a27c0e851f52e7042183e355dc39',
+ 'KL-027': 'd85ca2adfdf68ad84973365c3c183dd023dee5cd1747f5ef0e2abd136a980827',
+ 'KL-075': 'bddc0b95ce5c35904527045ccec7139c88cc39d25c8e98bcda22202c0dd103fa',
+ 'KL-076': 'c7fdaa1c849cfeadc9c4b56dd0513172dd0521b519a590fb0908201fa94e8ca2',
+ 'KL-077': '95fa58380f6da50356f49e9c144473608373ed4faa38ab93faeb314185528aee'}
+
+
+def m3_next_wave_definition_errors(task):
+    name = task.get('id')
+    if name not in M3_NEXT_WAVE_IDS or (
+            task.get('packet_refinement') != 'ENFORCEABLE'
+            and 'check_contracts' not in task):
+        return []
+    actual = hashlib.sha256(json.dumps(
+        task, ensure_ascii=False, sort_keys=True,
+        separators=(',', ':'),
+    ).encode()).hexdigest()
+    return ([] if actual == M3_NEXT_WAVE_DEFINITION_HASHES[name]
+            else ['m3-next-wave-definition:' + name])
+
+
+def m3_next_wave_packet_errors(task, text):
+    name = task.get('id')
+    if name not in M3_NEXT_WAVE_IDS or (
+            task.get('packet_refinement') != 'ENFORCEABLE'
+            and 'check_contracts' not in task):
+        return []
+    actual = hashlib.sha256(text.encode()).hexdigest()
+    return ([] if actual == M3_NEXT_WAVE_PACKET_HASHES[name]
+            else ['m3-next-wave-packet:' + name])
 
 
 if __name__ == '__main__':
