@@ -1,0 +1,40 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-077",
+  "tested_commit": "2c04437d46fc38eace30ea63d57e5ab5de1960e3",
+  "exact_checks": 14,
+  "full_suite_passed": 85,
+  "witness_counts": {
+    "namespace": 85,
+    "runtime_registration": 85,
+    "upstream": 85,
+    "full_output": 261,
+    "full_prepared_chain": 87,
+    "full_commit": 1,
+    "cleanup": 85,
+    "exact_zero_effect_denial": 69,
+    "ordinary_pause": 7,
+    "lifecycle_current_preconditions": 9,
+    "current_T7": 3,
+    "actual_T7_before_authority_loss": 4,
+    "historical_non_executable": 1,
+    "blocked": 10,
+    "observed_duplicate": 2,
+    "trusted_post_lock_expiry_DC": 4,
+    "F2_full_commit": 1,
+    "output": 1,
+    "server_full_validity": 2,
+    "post_lock_planning_bound_DC": 4
+  },
+  "namespace": "kineticloop-kl077-full-2c04437-b943d189a833",
+  "namespace_and_cleanup_count": 85,
+  "migration_revision": "e8c2f1a6b904",
+  "equality_layer": "PU only: actual eligibility/lease/deadline pure predicates before/equal/after; trusted real PostgreSQL owner evidence before/after and observed expiry-crossing lock waits are DC.",
+  "requirements_covered": [],
+  "notes": [
+    "Each final log is hashed and has exact tested SHA/command header and successful positive collection count.",
+    "Every full-suite namespace is derived from actual tested HEAD and resolved root; every cleanup inventory is empty.",
+    "All denial witnesses assert explicit intended guard causes and complete persisted zero effects.",
+    "Actual T7 successes precede separate fresh-key STOP/finite-expiry denials with owner-produced lifecycle.",
+    "Legacy/full baseline command, frozen, schema, progress, migration and CI authorities remain unchanged."
+  ]
+}

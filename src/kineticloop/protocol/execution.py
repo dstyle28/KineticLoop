@@ -5,11 +5,18 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 from uuid import UUID
 
-from kineticloop.contracts.commands import CommitBundle, StartSession, TestOnlyScope
+from kineticloop.contracts.commands import (
+    CommitBundle,
+    ContinueSession,
+    ResumeSession,
+    StartSession,
+    TestOnlyScope,
+)
 from kineticloop.identity import ActorRole, RoleIdentity
 
 
@@ -19,7 +26,7 @@ def digest(value: Any) -> str:
     ).hexdigest()
 
 
-def command_digest(command: CommitBundle | StartSession) -> str:
+def command_digest(command: CommitBundle | StartSession | ContinueSession | ResumeSession) -> str:
     payload = command.model_dump(mode="json")
     payload.pop("request_hash")
     return digest(payload)
@@ -50,7 +57,9 @@ class ExecutionIdentity:
     def key(self) -> str:
         return f"{self.actor.role}:{self.actor.identity_id}"
 
-    def require_wire(self, command: CommitBundle | StartSession) -> None:
+    def require_wire(
+        self, command: CommitBundle | StartSession | ContinueSession | ResumeSession
+    ) -> None:
         scope = command.authorization_scope
         if (
             command.actor.role_identity != self.actor
@@ -108,3 +117,98 @@ class PublishReady:
             or self.expected_authorization_epoch < 0
         ):
             raise ValueError("nonnegative epoch required")
+
+
+@dataclass(frozen=True, slots=True)
+class FullCommitRequest:
+    """Closed internal full TEST input; public CommitBundle stays unchanged."""
+
+    command: CommitBundle
+    sources: Mapping[str, Mapping[str, str]]
+
+    def __post_init__(self) -> None:
+        names = {
+            "snapshot",
+            "fitness",
+            "demand",
+            "nutrition",
+            "resolution",
+            "nutrition_resolution",
+            "validation",
+        }
+        if (
+            type(self.command) is not CommitBundle
+            or not isinstance(self.sources, Mapping)
+            or set(self.sources) != names
+        ):
+            raise ValueError("exact full F/D/N/two-resolution/validation closure required")
+        for source in self.sources.values():
+            if not isinstance(source, Mapping) or set(source) != {"id", "hash"}:
+                raise ValueError("exact immutable source descriptor required")
+            if (
+                type(source["id"]) is not str
+                or str(UUID(source["id"])) != source["id"]
+                or type(source["hash"]) is not str
+                or not re.fullmatch(r"[0-9a-f]{64}", source["hash"])
+            ):
+                raise ValueError("canonical source identity/hash required")
+        if self.sources["validation"][
+            "id"
+        ] != self.command.validation_id or self.command.result_fingerprint != digest(
+            {"contract": "kl079-full-actions-v1", "sources": dict(self.sources)}
+        ):
+            raise ValueError("full result fingerprint/validation binding mismatch")
+
+
+@dataclass(frozen=True, slots=True)
+class OrdinaryPause:
+    """Non-granting internal TEST lifecycle request, distinct from protective T2."""
+
+    identity: ExecutionIdentity
+    key: str
+    session_id: UUID
+    binding_id: UUID
+    binding_hash: str
+    expected_execution_revision: int
+    reason: str
+
+    def __post_init__(self) -> None:
+        if type(self.identity) is not ExecutionIdentity:
+            raise ValueError("exact pause TEST identity required")
+        self.identity.__post_init__()
+        if any(type(v) is not UUID for v in (self.session_id, self.binding_id)):
+            raise ValueError("exact pause session/binding identities required")
+        if (
+            type(self.expected_execution_revision) is not int
+            or self.expected_execution_revision < 1
+        ):
+            raise ValueError("positive expected execution revision required")
+        for value, bound in ((self.key, 200), (self.reason, 500)):
+            if (
+                type(value) is not str
+                or not value.strip()
+                or value != value.strip()
+                or len(value) > bound
+            ):
+                raise ValueError("bounded nonempty ordinary pause key/reason required")
+        if type(self.binding_hash) is not str or not re.fullmatch(
+            r"[0-9a-f]{64}", self.binding_hash
+        ):
+            raise ValueError("exact immutable pause binding hash required")
+
+
+def binding_digest(row: Mapping[str, Any]) -> str:
+    """Hash the closed immutable START/RESUME identity, independent of display data."""
+    fields = (
+        "id",
+        "subject_id",
+        "binding_kind",
+        "binding_revision",
+        "accepted_at",
+        "execution_scope",
+        "ref_s02_id",
+        "ref_s40_id",
+        "ref_s42_id",
+        "ref_s44_id",
+    )
+    return digest({key: str(row[key]) if key != "binding_revision" else row[key] for key in fields})

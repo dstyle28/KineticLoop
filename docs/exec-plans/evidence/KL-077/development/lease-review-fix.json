@@ -1,0 +1,28 @@
+{
+  "records": [
+    {
+      "compressed_ref": "docs/exec-plans/evidence/KL-077/development/kl077-lease-fix-development.log.gz",
+      "raw_sha256": "fd9abf272ad9d2b677aa81f419da98c8913c1c68e174d97a6d66373402fc5ed4",
+      "status": "DEVELOPMENT_ONLY_NOT_FINAL_PASS",
+      "revision": "dirty working tree based on 118b464"
+    },
+    {
+      "compressed_ref": "docs/exec-plans/evidence/KL-077/development/kl077-lease-fix-development2.log.gz",
+      "raw_sha256": "491015060e5dd1517fd530e3ad60a6b14e8e203367a7380af5d01e314f7efb90",
+      "status": "DEVELOPMENT_ONLY_NOT_FINAL_PASS",
+      "revision": "dirty working tree based on 118b464"
+    },
+    {
+      "compressed_ref": "docs/exec-plans/evidence/KL-077/development/kl077-lease-fix-development3.log.gz",
+      "raw_sha256": "a75993f8aacfe91eca236035d0645b80875304cf1f3f438295e445bdf3576d31",
+      "status": "DEVELOPMENT_ONLY_NOT_FINAL_PASS",
+      "revision": "dirty working tree based on 118b464"
+    }
+  ],
+  "notes": [
+    "Three independent exact 0f63f70 reviews identified the same post-lock lease blocker.",
+    "After-bound owner-created lease and deadline races denied via fresh recheck with zero effects.",
+    "Before-bound test assertion was corrected to successful non-bearer T6 identity semantics.",
+    "Final development controls: 4 passed; new final SHA-bound all-packet evidence follows."
+  ]
+}

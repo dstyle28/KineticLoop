@@ -1,0 +1,48 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-077",
+  "records": [
+    {
+      "raw_name": "kl077-development-all.log",
+      "compressed_ref": "docs/exec-plans/evidence/KL-077/development/kl077-development-all.log.gz",
+      "raw_sha256": "8420b1e9b9b4c4cab2166dd93a69437e95cbadce46aff6fe7e2c36f0e46a81c6",
+      "status": "DEVELOPMENT_ONLY_NOT_FINAL_PASS",
+      "revision": "dirty working tree based on 7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588"
+    },
+    {
+      "raw_name": "kl077-development-critical.log",
+      "compressed_ref": "docs/exec-plans/evidence/KL-077/development/kl077-development-critical.log.gz",
+      "raw_sha256": "86c2736062260de8ca8715ca8f21dd219bfa56c1b0c81f0bf8df3bd51963aeda",
+      "status": "DEVELOPMENT_ONLY_NOT_FINAL_PASS",
+      "revision": "dirty working tree based on 7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588"
+    },
+    {
+      "raw_name": "kl077-development-all2.log",
+      "compressed_ref": "docs/exec-plans/evidence/KL-077/development/kl077-development-all2.log.gz",
+      "raw_sha256": "c864a0f05a2d91dedf50b9651e91d284c0b658b6353384d635833e8c64b59046",
+      "status": "DEVELOPMENT_ONLY_NOT_FINAL_PASS",
+      "revision": "dirty working tree based on 7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588"
+    },
+    {
+      "raw_name": "kl077-development-final-new.log",
+      "compressed_ref": "docs/exec-plans/evidence/KL-077/development/kl077-development-final-new.log.gz",
+      "raw_sha256": "5d10503b6791f68cb4cfad8143d1c11c44313bf5d4ac3930dc21385cc7555cd8",
+      "status": "DEVELOPMENT_ONLY_NOT_FINAL_PASS",
+      "revision": "dirty working tree based on 7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588"
+    },
+    {
+      "raw_name": "kl077-final-precommit.log",
+      "compressed_ref": "docs/exec-plans/evidence/KL-077/development/kl077-final-precommit.log.gz",
+      "raw_sha256": "04e5eeca360e2471b72c4f253894bf105c359f82fe76c4d9c927dd7df27790a6",
+      "status": "DEVELOPMENT_ONLY_NOT_FINAL_PASS",
+      "revision": "dirty working tree based on 7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588"
+    }
+  ],
+  "notes": [
+    "Development failures remain raw and are not counted as final PASS.",
+    "Missing fixture TTL, legacy admission-shape assumption and unbound mutation variable were fixed.",
+    "Immutable-row negative rewrites were removed in favor of exact request mismatches and actual dependency expiry.",
+    "Current-authorization registry denials are distinguished from later T7 predicates.",
+    "Observed lock waits cross expiry inside unchanged registry lock timeout.",
+    "Existing-head fixture uses actual new-root F1 then structured F2 revision to respect immutable evidence natural identity."
+  ]
+}

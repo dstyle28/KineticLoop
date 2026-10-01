@@ -1,0 +1,16 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-077",
+  "tested_head": "ae6564e1ad7537323a5f4db9ce9b5eaa6cc80ef6",
+  "run_id": 36917346931,
+  "raw_sha256": "ea0adf5381d47634d36c9af1cb43cf4ec51cfd6c33b59f1d4b7d51649bb47657",
+  "status": "FAIL",
+  "passed": 543,
+  "failed": 2,
+  "diagnosis": "Legacy CommitBundle completion diagnostic changed exactly one to exactly 1. The module-scoped test_transaction_interfaces fixture then lacks its successfully installed BUNDLE/PRESCRIPTION for the subsequent reauthorize test. Restore prior count-one text; retain count-two full message and all authorization guards. Hosted reruns must independently establish both failures resolved.",
+  "legacy_read_evidence": [
+    "tests/db/test_transaction_interfaces.py:274 module-scoped database fixture",
+    "tests/db/test_transaction_interfaces.py:3069 assertion aborts before invoke commit",
+    "tests/db/test_transaction_interfaces.py:3233 normal first-head commit installs BUNDLE",
+    "tests/db/test_transaction_interfaces.py:3322 subsequent reauthorize cites PRESCRIPTION"
+  ]
+}
