@@ -1,0 +1,90 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-038",
+  "review_type": "PROTOCOL",
+  "reviewed_head_sha": "c4272b1804fb4ab0d6e74f0605786d65dd070e1b",
+  "review_contract_version": "v0.2",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "finding_id": "HG038-PROTOCOL-01",
+      "classification": "BLOCKER",
+      "priority": "P1",
+      "title": "Restore the frozen intent-cancellation outcome in I03",
+      "location": "docs/exec-plans/active/KL-026.md:98",
+      "description": "The i03_dc oracle requires only CallLedgerService.CancelUndispatched versus PermitDispatch. That owner cancels a RESERVED reservation and updates S27 accounting payload, not the intent status. After DISPATCH_INTENT it rejects cancellation. Frozen DB section 5.1 requires the dispatch-first order to cancel/end the intent while preserving the possible-call reservation occupation. Therefore this check can pass with the root still RUNNING and does not prove the assigned I03 frozen ordering or loss of future planning/dispatch authority.",
+      "evidence_refs": [
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:566",
+        "src/kineticloop/persistence/call_ledger.py:375",
+        "src/kineticloop/persistence/call_ledger.py:419",
+        "src/kineticloop/persistence/transactions.py:739",
+        "src/kineticloop/persistence/transactions.py:750",
+        "src/kineticloop/workflow/call_ledger.py:153"
+      ],
+      "requested_change": "Refine the I03 packet/backlog/check projection to exercise the actual CancelIntent outcome in both orders: cancel-first terminal root with exact RESERVED release and permit denial; dispatch-first terminal root with unchanged DISPATCH_INTENT occupation, no refund/resend, and denied future worker authority. Explicitly name an exact guarded test-local CancelIntent owner recipe if the merged restricted owner can provide the complete frozen result; otherwise add a bounded owner prerequisite. Keep the reservation-cancellation race as additional evidence rather than substituting it for I03. Regenerate derived hashes and rerun governance checks before fresh review."
+    },
+    {
+      "finding_id": "HG038-PROTOCOL-02",
+      "classification": "BLOCKER",
+      "priority": "P1",
+      "title": "Declare a legitimate PAUSED-state owner prerequisite for positive RESUME",
+      "location": "docs/exec-plans/active/KL-077.md:88",
+      "description": "continue_resume_current_dc requires a successful typed RESUME preserving START history and forbids raw PAUSE/state seeding. The actual merged lock_execution guard requires PAUSED plus an existing START, while every current START/CONTINUE/RESUME mutation must set IN_PROGRESS. ProtocolExecutionService exposes publish/commit/start only; no source PAUSE service or owner exists. Historical transaction coverage creates PAUSED with privileged raw SQL. KL075/076 do not own S44, and KL077 only declares the existing T6/T7 commit/continuation/resumption adapters. The stated prerequisite and write/owner scope therefore cannot produce the positive RESUME state. On an IN_PROGRESS session, the post-revoke/expiry RESUME denial also exits at lifecycle validation before checking current authorization, so it can be vacuous.",
+      "evidence_refs": [
+        "src/kineticloop/persistence/transactions.py:3038",
+        "src/kineticloop/persistence/transactions.py:1726",
+        "src/kineticloop/persistence/protocol_execution.py",
+        "tests/db/test_transaction_interfaces.py:5905",
+        "docs/contracts/repository_transactions.md:134",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md:422",
+        "docs/exec-plans/active/KL-027.md:102"
+      ],
+      "requested_change": "Declare an exact authenticated internal ExecutionService pause/stop lifecycle operation in a bounded prerequisite or explicitly scoped KL077 owner capability, preserving the 39 public commands, frozen S51/S01/aggregate/receipt order as applicable, immutable START binding, atomic execution-basis event/bookkeeping, and TEST boundary. Require an actual START then owner-produced PAUSED then successful RESUME. For revoke/expiry negative checks, start from a lifecycle-valid PAUSED session (or a separately labeled guard-only negative fixture), assert the current authority rejection reason, and ensure lifecycle failure cannot satisfy the revoke/expiry oracle. Update dependency/packet/backlog/hash projections and rerun checks before fresh review."
+    }
+  ],
+  "evidence_refs": [
+    "AGENTS.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    ".agents/skills/pr-merge-reviewer/SKILL.md",
+    ".agents/skills/protocol-guardian/SKILL.md",
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+    "docs/harness/THREAD_RESULT_CONTRACT.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/exec-plans/governance/HG-038.yaml",
+    "docs/exec-plans/active/KL-026.md",
+    "docs/exec-plans/active/KL-027.md",
+    "docs/exec-plans/active/KL-075.md",
+    "docs/exec-plans/active/KL-076.md",
+    "docs/exec-plans/active/KL-077.md",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+    "KineticLoop_Acceptance_Spec_v1.2.2.json",
+    "docs/exec-plans/completed/KL-019_RESULT.yaml",
+    "docs/exec-plans/completed/KL-022_RESULT.yaml",
+    "docs/exec-plans/completed/KL-023_RESULT.yaml",
+    "docs/exec-plans/completed/KL-024_RESULT.yaml",
+    "docs/exec-plans/completed/KL-025_RESULT.yaml",
+    "docs/exec-plans/completed/KL-074_RESULT.yaml",
+    "src/kineticloop/contracts/commands.py",
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/persistence/planning.py",
+    "src/kineticloop/persistence/call_ledger.py",
+    "src/kineticloop/persistence/protocol_execution.py",
+    "tests/harness/test_m3_next_wave_scope.py"
+  ],
+  "observations": [
+    "Independently compared protected base 3c1312e5946593d73f169f6ea1ce559c27523bd2 to reviewed SHA. No production source or migration changes; Protocol/DB/FROZEN_BASELINE/CURRENT_REQUIREMENT_SET/acceptance JSON bytes remain unchanged. AST count of PUBLIC_COMMAND_MODELS is 39; RecordSnapshot/AdvanceAttempt remain internal-only. Actual merged owner gaps were inspected directly rather than inferred from PREPARATION.md.",
+    "KL075 correctly distinguishes acquired S27 lease from S29 CREATED, bounds internal snapshot/stage persistence to current request/attempt/fence/time/source guards, preserves forward state transitions and T6-only COMMITTED, and excludes computation/network waits under coordination.",
+    "KL076 requires immutable source-bound F to computed D to N, explicit new-attempt repair with retained root budget/deadline, action/policy-derived resolution completeness and mechanical TEST validation. Existing N-to-D-to-F subject-keyed chain and immutable payload hashes avoid a speculative migration. Guarded preparation is kept distinct from public coordination commands; unrestricted workflow preparation writes are expressly forbidden.",
+    "KL077 requires both TRAINING and NUTRITION atomic members, member-specific evidence/validation and server validity closure; legacy synthetic single-training compatibility is confined to its own immutable policy/certificate domain. No production/shadow activation or caller certificate authority is authorized.",
+    "I01/I02/I04/I05/I06/I07/I08/I09 name actual relevant owners, retained immutable success history and effect-free losing operations. I04 explicitly tests T6 CommitBundle rather than ReserveCall and preserves independent I04@WF NOT_RUN. Current acceptance JSON declares I01-I09 DC and only I04 additionally WF; those layer obligations are unchanged. I03 remains blocked by finding HG038-PROTOCOL-01.",
+    "Task checks/product requirements/review/merge/release remain separate; governance does not claim prospective implementation PASS or M3/G-SHADOW/auto-activation closure. Shared production hotspots are serialized and test-only integration cannot quietly absorb owner repairs."
+  ],
+  "limitations": [
+    "Fresh source/definition review only. No PostgreSQL/Docker lifecycle, application implementation, commits, repository writes, or messaging to other chats were performed. The only written artifact is this requested temporary review JSON.",
+    "Governance check records and scope regression source were inspected; no prospective task selectors were run because KL026/027/075/076/077 are unimplemented. Committed governance PASS checks do not demonstrate semantic feasibility of the two blocked oracles.",
+    "No new frozen semantics are proposed by these findings. They require task-definition correction and bounded owner scope; a change to frozen authorization, command authority, atomic boundaries or lock semantics would require the repository SPEC_CHANGE_REQUIRED process.",
+    "This review binds only c4272b1804fb4ab0d6e74f0605786d65dd070e1b. Substantive repairs require a new reviewed implementation/governance/evidence SHA and fresh independent review."
+  ],
+  "spec_change_request": null
+}

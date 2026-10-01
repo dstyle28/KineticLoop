@@ -66,7 +66,7 @@
     "Nine owner-driven interleavings on real PostgreSQL with exact owner and immutable identity contract.",
     "Named positive/negative PU and real PostgreSQL checks with persisted rows/receipt/event/outbox assertions, bounded lock barriers and task-owned namespace inventory."
   ],
-  "definition_of_done": "Every exact named check and oracle executes and passes on tested_commit with committed raw evidence and no skipped/xfail/zero-collection substitute; only declared scope is written, frozen guards and immutable history hold, all product/release/layer obligations remain independent. I01\u2013I09 DC orderings hold; I04 WF and any other declared release layers stay independently NOT_RUN until their own evidence.",
+  "definition_of_done": "Every exact named check and oracle executes and passes on tested_commit with committed raw evidence and no skipped/xfail/zero-collection substitute; only declared scope is written, frozen guards and immutable history hold, all product/release/layer obligations remain independent. I01\u2013I09 DC orderings hold with separate exact equality PU evidence; I04 WF and any other declared release layers stay independently NOT_RUN until their own evidence.",
   "entry_conditions": [
     "Actual prerequisite PASS results, required reviews, and normal MERGED commits verified against protected base before first DB lifecycle.",
     "M2 closure PASS: docs/exec-plans/milestones/M2.json; isolated TEST gate construction does not assume full G-SHADOW or production release closure.",
@@ -121,6 +121,7 @@
     "i07_dc",
     "i08_dc",
     "i09_dc",
+    "time_boundary_pu",
     "interleaving_namespace_pu",
     "interleaving_suite_dc",
     "harness_validation_passes",
@@ -166,12 +167,12 @@
     {
       "check_id": "i03_dc",
       "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_cancel_vs_dispatch",
-      "pass_oracle": "Actual CancelUndispatched/PermitDispatch both S01+reservation orders using merged CallLedgerService. Cancel-first releases exact reserved dimensions and prevents permit; dispatch-first persists DISPATCH_INTENT and retained possible-call occupation, cannot refund or resend. Replay is non-sendable, no double counters/events; no physical provider call. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+      "pass_oracle": "Actual guarded CancelIntent root termination versus PermitDispatch in both S01/intent/reservation orders. Cancel-first root CANCELLED immediately denies permit/new reservation/T6, then separate actual CancelUndispatched cleanup releases exact RESERVED dimensions with S31/S32/receipt/event/outbox. Prove intermediate terminal-with-RESERVED is safe and both transactions preserve terminal root. Dispatch-first root cancellation succeeds but DISPATCH_INTENT occupation/identity remains unchanged; cleanup denies/no effects, never refunds/resends. Replay is historical/non-sendable; no double counters/events or provider call. Reservation-only cancellation cannot substitute for I03. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
     },
     {
       "check_id": "i04_dc",
       "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_takeover_vs_commit",
-      "pass_oracle": "Actual CommitBundle T6 versus actual AcquireLease takeover T5. Commit-first before lease expiry yields one atomic bundle/issuance/intent success and takeover cannot reopen terminal root. Takeover-first after expiry raises fence and old T6 denies with no effects. Independently exercise before/equal/after lease and root deadline and expiry while commit waits on lock; trusted post-lock DB clock controls denial. ReserveCall stale-fence test cannot substitute for CommitBundle. This DC evidence does not satisfy I04@WF. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+      "pass_oracle": "Actual CommitBundle T6 versus actual AcquireLease takeover T5. Commit-first before lease expiry yields one atomic bundle/issuance/intent success and takeover cannot reopen terminal root. Takeover-first after expiry raises fence and old T6 denies with no effects. Independently exercise real-PG before/after lease and root deadline plus expiry while commit waits on lock; trusted post-lock DB clock controls denial. Exact equality belongs to the separate time_boundary_pu predicate check, never inferred from setup time. ReserveCall stale-fence test cannot substitute for CommitBundle. This DC evidence does not satisfy I04@WF. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
     },
     {
       "check_id": "i05_dc",
@@ -196,17 +197,22 @@
     {
       "check_id": "i09_dc",
       "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_expiry_vs_start",
-      "pass_oracle": "Actual START before/equal/after server-computed minimum dependency valid_until; equality denies. Force expiry while START waits on real registry/user lock and demonstrate fresh trusted post-lock DB clock, not transaction-start timestamp/cached VALID/status job. Failed START has zero target/bookkeeping effects; valid historical binding/replay stays immutable and non-executable after expiry. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+      "pass_oracle": "Actual START before/after server-computed minimum dependency valid_until; exact equality denies in separate time_boundary_pu predicate evidence. Force expiry while START waits on real registry/user lock and demonstrate fresh trusted post-lock DB clock, not transaction-start timestamp/cached VALID/status job. Failed START has zero target/bookkeeping effects; valid historical binding/replay stays immutable and non-executable after expiry. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+    },
+    {
+      "check_id": "time_boundary_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_time_boundaries",
+      "pass_oracle": "Exact equality is deterministic PU evidence over the actual pure eligibility/lease/deadline predicates: before allows, now==valid_until/lease expiry/deadline denies, after denies, retaining the half-open interval. Real PostgreSQL DC separately exercises actual guarded owners before and after expiry plus expiry crossed during a bounded observed lock wait, using fresh trusted post-lock clock_timestamp. No current controllable trusted-clock seam exists. Setting expiry=clock_timestamp during setup cannot prove a later guard observed equality; no caller-supplied clock, timestamp overwrite, cached time, or production seam is authorized. Record PU and DC separately; never label PU equality as DC or missing WF/product evidence PASS."
     },
     {
       "check_id": "interleaving_namespace_pu",
-      "command": "uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py",
+      "command": "uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_namespace",
       "pass_oracle": "All nine test paths and nested source helpers use only own label interleave namespace; malformed/default/foreign/ambient targets deny before lifecycle; no foreign fixture execution."
     },
     {
       "check_id": "interleaving_suite_dc",
       "command": "uv run pytest -q tests/db/test_protocol_interleavings.py",
-      "pass_oracle": "All I01\u2013I09 scenarios and every required ordering/boundary run with real PostgreSQL, finite barriers/timeouts, complete persisted oracles and committed requirement/layer identities. I04@WF remains NOT_RUN; DC alone cannot mark I04 globally PASS."
+      "pass_oracle": "All I01\u2013I09 DC scenarios and both race orders run with real PostgreSQL, finite barriers/timeouts, before/after and lock-wait expiry, complete persisted oracles and committed requirement/layer identities. Exact equality is separately PU; I04@WF remains NOT_RUN; DC alone cannot mark I04 globally PASS."
     },
     {
       "check_id": "harness_validation_passes",

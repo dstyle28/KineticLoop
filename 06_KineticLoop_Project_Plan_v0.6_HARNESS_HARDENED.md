@@ -301,6 +301,12 @@ with exact task-owned namespace and no production-fix permission. I04@WF remains
 separate. KL075 implements internal guarded RecordSnapshot/AdvanceAttempt only;
 KL076 supplies deterministic TEST source-bound F/D/N/resolution/validation owners;
 KL077 consumes complete TEST bundle preparation and current CONTINUE/RESUME guards.
+Its bounded ordinary lifecycle PAUSE owner produces PAUSED without granting
+execution authority; protective controls retain the separate frozen T2 path.
+KL026 I03 composes actual root cancellation and separate guarded RESERVED cleanup;
+dispatch-first root cancellation retains possible-call occupation. Exact time
+equality is deterministic PU evidence; real-PG DC proves actual owner outcomes
+before/after expiry and expiry crossed during an observed lock wait.
 They serialize shared transaction interfaces, preserve the 39 public commands and
 start NOT_STARTED. KL027 waits for these normally merged prerequisites and owns
 only the composed deterministic TEST trajectory suite. KL026 may proceed alongside

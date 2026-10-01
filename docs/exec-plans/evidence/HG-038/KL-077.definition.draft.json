@@ -56,7 +56,7 @@
     "Complete TEST bundle and current execution adapters with exact owner and immutable identity contract.",
     "Named positive/negative PU and real PostgreSQL checks with persisted rows/receipt/event/outbox assertions, bounded lock barriers and task-owned namespace inventory."
   ],
-  "definition_of_done": "Every exact named check and oracle executes and passes on tested_commit with committed raw evidence and no skipped/xfail/zero-collection substitute; only declared scope is written, frozen guards and immutable history hold, all product/release/layer obligations remain independent. Complete full TEST bundle and current T7 adapters are independently reviewable before KL027 composed demo; no production rollout, policy/model quality or product PASS.",
+  "definition_of_done": "Every exact named check and oracle executes and passes on tested_commit with committed raw evidence and no skipped/xfail/zero-collection substitute; only declared scope is written, frozen guards and immutable history hold, all product/release/layer obligations remain independent. Complete full TEST bundle and current T7 adapters with the bounded ordinary PAUSED producer are independently reviewable before KL027 composed demo; no production rollout, policy/model quality or product PASS.",
   "entry_conditions": [
     "Actual prerequisite PASS results, required reviews, and normal MERGED commits verified against protected base before first DB lifecycle.",
     "M2 closure PASS: docs/exec-plans/milestones/M2.json; isolated TEST gate construction does not assume full G-SHADOW or production release closure.",
@@ -93,6 +93,8 @@
     "full_execution_identity_pu",
     "full_bundle_commit_dc",
     "full_bundle_basis_denials_dc",
+    "ordinary_pause_identity_pu",
+    "ordinary_pause_owner_dc",
     "continue_resume_current_dc",
     "full_execution_replay_atomicity_dc",
     "full_execution_namespace_pu",
@@ -149,9 +151,19 @@
       "pass_oracle": "Missing N, stale F/D/N, wrong certificate/proposal/action/policy/subject, source revocation/expiry/current-basis/fence/lease/deadline loss deny entire T6 with exact zero effects. Finite server minimum validity closure for every required member; caller may shorten only. Guarded first-use/new head and declared supported existing-head semantics preserve immutable prior history; unsupported modes deny, never bypass."
     },
     {
+      "check_id": "ordinary_pause_identity_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_full_test_execution.py::test_ordinary_pause_identity",
+      "pass_oracle": "Strict internal authenticated TEST ordinary lifecycle PAUSE binds exact session/current immutable binding/expected execution revision/reason. Public39/TRANSACTION_OWNER_MATRIX/INTERNAL_ONLY_OPERATIONS unchanged; protective T2 STOP/hold cannot route through ordinary pause; no generic patch/current-authority grant."
+    },
+    {
+      "check_id": "ordinary_pause_owner_dc",
+      "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_ordinary_pause_owner",
+      "pass_oracle": "Declare a separately authenticated internal TEST-only ExecutionService ordinary lifecycle PAUSE request and exact capability in KL077; do not add a public command, change the 39 public wire types/TRANSACTION_OWNER_MATRIX or alter the existing INTERNAL_ONLY_OPERATIONS list. Use separate internal descriptors with only S01/S44 and receipt/event/outbox mutations. Bind authenticated subject/principal/role/TEST environment/policy, command key, exact APP_STARTED session, latest immutable START-or-RESUME P/A binding identity/hash, expected execution revision and nonempty ordinary-pause reason. Under S01\u2192exact S44\u2192receipt, read and verify same-subject immutable binding and IN_PROGRESS/revision, persist only PAUSED and execution_revision+1, reason in S03/payload, S01.execution_basis_event_id equal to that event, and receipt/event/outbox atomically. No S51 is needed because pause grants no execution authority and reads no registry eligibility; no late gate acquisition, current-head membership, current-A validity, provider/model/queue wait, issuance, S45 append, actual facts, head/epoch/control mutation, or generic session patch permission. Pausing a historically started session still succeeds after revocation/expiry/head change while eligibility remains denied. Protective PAUSE/STOP/hold is distinct: it uses existing frozen T2 ApplyControl/invalidation/epoch semantics and independent safety capacity, never this ordinary session operation. RESUME still uses full current T7 authorization and frozen S51\u2192S01\u2192head/session\u2192receipt order; ordinary PAUSE cannot restore A or reopen a completed session. Exact same-key replay returns original paused revision without reapplying after RESUME; changed payload conflicts, new keys recheck current state. Duplicate/wrong-state/subject/principal/environment/revision and injected failure cases prove exact scope and atomic rollback."
+    },
+    {
       "check_id": "continue_resume_current_dc",
       "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_continue_resume_rechecks",
-      "pass_oracle": "Actual typed ContinueSession and ResumeSession use existing T7 owners and exact session/P/A binding under S51\u2192S01\u2192daily head/session\u2192receipt. Valid CONTINUE updates only allowed execution metadata and valid RESUME appends exact immutable new resume binding, preserving original START A. Revoke/expiry then CONTINUE/RESUME/new START independently deny with no effects; read-only eligibility is never a bearer permit. No raw PAUSE/state seeding to prove RESUME; valid service state or explicit guard-only negative setup labeled as such."
+      "pass_oracle": "Actual typed ContinueSession and ResumeSession use existing T7 owners and exact session/P/A binding under S51\u2192S01\u2192daily head/session\u2192receipt. Valid CONTINUE updates only allowed execution metadata and valid RESUME appends exact immutable new resume binding, preserving original START A. Positive RESUME requires actual START\u2192authenticated ordinary lifecycle PAUSE\u2192RESUME, one new immutable S45 resume revision and unchanged original START A. Authority-denial tests use independent owner-produced trajectories and fresh operation keys: CONTINUE has IN_PROGRESS plus current binding; RESUME has PAUSED plus immutable START/current binding from the pause owner; new START names a different absent session with no START binding. Establish each operation's valid lifecycle and current authorization preconditions before STOP/revoke or finite dependency expiry, then assert the exact current-authorization/expiry rejection cause. Lifecycle, existing-binding, key conflict or transport rejection cannot satisfy that oracle. Assert failed operations leave no session/revision/binding/head/issuance/receipt/event/outbox/first-use placeholder effects. Historical command replay is a separate non-executable identity oracle. Read-only eligibility is never a bearer permit; no raw PAUSE/state seeding or guard-only negative substitute."
     },
     {
       "check_id": "full_execution_replay_atomicity_dc",

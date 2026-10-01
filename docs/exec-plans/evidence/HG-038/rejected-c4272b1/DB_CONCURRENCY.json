@@ -1,0 +1,77 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-038",
+  "reviewed_head_sha": "c4272b1804fb4ab0d6e74f0605786d65dd070e1b",
+  "review_type": "DB_CONCURRENCY",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "findings": [
+    {
+      "classification": "BLOCKER",
+      "priority": 1,
+      "title": "Declare the owner that produces PAUSED before requiring positive RESUME",
+      "file": "docs/exec-plans/active/KL-077.md",
+      "line": 88,
+      "body": "continue_resume_current_dc requires a successful typed RESUME and forbids raw PAUSE/state seeding for that proof. The merged lock_execution guard accepts ResumeSession only for PAUSED with an existing START (transactions.py:3038), while all existing START/RESUME/CONTINUE updates force IN_PROGRESS (transactions.py:1731). No source service or transaction owner produces PAUSED; the previous eligibility test uses raw SQL at tests/db/test_transaction_interfaces.py:5905. ApplyControl cannot mutate S44, and CompleteReportedWorkout has completion semantics rather than a pause operation. KL075/076 do not supply this capability, and the KL077 owner boundary only names the existing T6/T7 owners and CONTINUE/RESUME adapters. The packet therefore hides an additional owner prerequisite, and an IN_PROGRESS-session RESUME denial could pass for lifecycle reasons before testing authority revocation/expiry.",
+      "required_change": "Before scheduling, explicitly declare a bounded authenticated internal pause owner/capability and its guards, receipt/event/outbox/atomicity checks, write/resource scope, dependency placement and preservation of the 39-command public registry; alternatively narrow positive RESUME to explicitly labeled guard instrumentation and retain the owner-driven positive trajectory as an unfulfilled follow-up. Require revoke/expiry RESUME tests to reach a valid resumable lifecycle first so the observed denial proves current authorization loss."
+    },
+    {
+      "classification": "BLOCKER",
+      "priority": 2,
+      "title": "Give exact equality a deterministic test mechanism and honest layer identity",
+      "file": "docs/exec-plans/active/KL-026.md",
+      "line": 128,
+      "body": "i04_dc and i09_dc demand actual owner execution before/equal/after lease/deadline/valid_until, and KL075 progress_current_guards_dc repeats that promise. The merged T6 live-fence SQL reads clock_timestamp() directly (transactions.py:3277-3278); START separately reads fresh clock_timestamp() after locking (transactions.py:4372). There is no declared controllable trusted acceptance-time seam. Setting persisted expiry to clock_timestamp() during setup, as historical tests do, is already after expiry when the later guarded command executes and does not demonstrate equality. Waiting until a measured wall-clock deadline also cannot deterministically make a later PostgreSQL microsecond clock read equal that deadline within bounded execution. KL026 is tests-only and cannot add a production time seam; the packet does not state a permitted equality proof separate from its real-PG race claim.",
+      "required_change": "Specify exact before/equal/after as a named deterministic PU/predicate proof with explicit timestamps, and retain owner-driven real-PG before/after plus bounded lock-wait crossing with recorded trusted post-lock acceptance time as DC evidence; do not label a setup-time clock assignment as equality. If exact live-owner equality is mandatory, declare and review a bounded trusted-time instrumentation prerequisite and its allowed scope without substituting raced SQL authority. Project the corrected oracle/check contract consistently to KL026/KL075 and KL027 dependency evidence."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-038.yaml",
+    "docs/exec-plans/active/KL-026.md",
+    "docs/exec-plans/active/KL-027.md",
+    "docs/exec-plans/active/KL-075.md",
+    "docs/exec-plans/active/KL-076.md",
+    "docs/exec-plans/active/KL-077.md",
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/persistence/protocol_execution.py",
+    "src/kineticloop/persistence/planning.py",
+    "src/kineticloop/persistence/call_ledger.py",
+    "src/kineticloop/persistence/metadata.py",
+    "src/kineticloop/persistence/schema_topology.py",
+    "src/kineticloop/persistence/immutability.py",
+    "tests/db/test_transaction_interfaces.py",
+    "tests/db/test_protocol_execution.py",
+    "tests/db/test_planning.py",
+    "tests/db/test_factsets.py",
+    "tests/unit/protocol/test_authorization.py",
+    "tests/unit/workflow/test_planning.py",
+    "docs/exec-plans/evidence/HG-038/integration-provenance.json",
+    "docs/exec-plans/evidence/HG-038/append_only_scope_audit-accd461.log",
+    "docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-accd461.log",
+    "docs/exec-plans/evidence/HG-038/harness_validation-accd461.log",
+    "docs/exec-plans/evidence/HG-038/harness_tests-accd461.log",
+    "docs/exec-plans/evidence/HG-038/unit_tests-accd461.log",
+    "docs/exec-plans/evidence/HG-038/lint-accd461.log",
+    "docs/exec-plans/evidence/HG-038/typecheck-accd461.log",
+    "docs/exec-plans/evidence/HG-038/diff_clean-accd461.log",
+    "docs/exec-plans/integrations/KL-019.json",
+    "docs/exec-plans/integrations/KL-047.json",
+    "docs/exec-plans/integrations/KL-074.json",
+    ".github/workflows/db.yml"
+  ],
+  "verified_scope": [
+    "No application, migration, database lifecycle, hosted workflow, Frozen authority, completed result/evidence, or product requirement state changed by governance diff.",
+    "KL026 names all nine actual-owner real-PG interleavings, both user/registry orders, actual T6 takeover and post-lock clock guards, cancel/dispatch occupation and actual seal/input recipes; raw raced epoch/frontier SQL substitution is prohibited and synthetic T6 preparation is honestly limited to DC.",
+    "KL075 separates internal RecordSnapshot/AdvanceAttempt from the closed public wire set; guards current owner/fence/request/attempt/manifest/epoch and keeps computation outside short persistence; AcquireLease leaving CREATED is explicitly accounted for.",
+    "KL076 bounds immutable deterministic TEST F/D/N preparation, guarded S34-S37 writers and denial of unguarded workflow writes while preserving read-only/non-workflow preparation. Existing N.demand_feature_id to D.ref_s34_id to F same-subject chain and immutable typed payloads support bindings without new columns.",
+    "KL077 scope admits extension of exact prepared T6/T7 capabilities for full TRAINING/NUTRITION members, finite source validity closure and original START/resume history; full-policy downgrade to legacy synthetic single-training is forbidden. Existing physical schema has member/issuance identities and references needed for this extension.",
+    "Every suite requires first7 HEAD SHA plus resolved-root SHA256 first12 namespace, fixed suite labels, destructive validation before construction/reset/bootstrap/finally cleanup, explicit nested lifecycle inventory and no foreign pytest lifecycle fixture import.",
+    "KL026 and KL027 concrete paths are tests/docs only and nonoverlapping with owners. KL075/076/077 share transaction_interfaces/user_coordination exclusive keys and are sequential merged prerequisites; KL027 depends on all owner slices. Hosted full legacy DB job already runs on fresh ubuntu-latest and no KL074-only workflow reuse is required.",
+    "KL019/KL047/KL074 integration records independently verified against actual Git objects: PASS immutable result, tested/result/review ancestry, required SHA-bound PASS reviews, linear review-record-only suffix, actual two-parent normal merge and complete parent/merge tree equality.",
+    "All eight committed accd461 governance check envelopes have correct tested SHA, command, zero exit, raw hash and byte count. Fresh read-only exact scope regression run: 82 passed; source tree remains clean."
+  ],
+  "known_limitations": [
+    "This is prospective packet/governance DB review, not implementation or product/layer PASS; no real PostgreSQL suite, Docker/database lifecycle, external model/network or hosted CI was run during review.",
+    "All implementation checks for KL026/027/075/076/077 remain NOT_RUN; I04@WF, M3, G-SHADOW and production release closure remain separate obligations.",
+    "No repository writes or commits were made; only this requested /private/tmp review artifact was written."
+  ]
+}

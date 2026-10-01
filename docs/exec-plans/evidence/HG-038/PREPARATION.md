@@ -51,3 +51,28 @@ implementation or authentication assurance.
 No frozen authority, requirement set, release status, completed task definition,
 result or evidence may change. Normal CI and merge gates remain mandatory; the
 KL074 branch-specific hosted workflow cannot execute any of these tasks.
+
+Fresh reviews of c4272b1804fb4ab0d6e74f0605786d65dd070e1b found three packet
+feasibility gaps. Their original CHANGES_REQUIRED records and governance record
+are preserved under rejected-c4272b1/; the prior successful checks remain historical
+evidence, not evidence for the repaired packet revision.
+
+- I03 must end the root, not substitute reservation-only cancellation. The corrected
+  recipe uses existing CancelIntent restricted S27 CANCELLED mutation under exact
+  S01/intent/reservation locks, followed only for RESERVED by actual CancelUndispatched
+  cleanup in a separate transaction. Intermediate terminal-with-RESERVED retains
+  safe occupation and denies worker/dispatch/T6; dispatch-first retains occupation.
+- Existing T7 RESUME requires PAUSED, and merged owners cannot produce it. KL077
+  explicitly scopes an authenticated internal TEST ordinary lifecycle PAUSE under
+  S01→S44→receipt, atomic revision/reason/execution-basis/receipt/event/outbox, no
+  new A/binding/head/epoch. Pause may contract execution after expiry/revocation;
+  protective controls remain existing T2. Positive RESUME and denial tests use
+  owner-produced lifecycle-valid states and assert the authority rejection cause.
+- Current real-PG guards hardcode fresh clock_timestamp and offer no deterministic
+  equality seam. Exact equality is separately labeled pure-predicate PU; actual
+  T6/START DC covers before/after and lock-wait crossing. No missing DC/WF obligation
+  is relabeled PASS, and no production clock seam or caller time is introduced.
+
+Independent source assessments confirmed these bounded recipes preserve frozen
+owner/atomic/lock/permission meaning. Repaired packets require all eight governance
+checks and a new complete independent SHA-bound review set before PR/merge.

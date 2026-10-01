@@ -87,3 +87,43 @@ def test_m3_next_wave_global_validator_and_write_scope_guard() -> None:
         task = next(t for t in altered['tasks'] if t['id'] == name)
         task['write_paths'].append('src/kineticloop/contracts/commands.py')
         assert 'm3-next-wave-definition:' + name in v.task_definition_errors(ROOT, altered)[0]
+
+
+def test_i03_terminates_root_before_bounded_ledger_cleanup() -> None:
+    task = TASKS['KL-026']
+    oracle = next(c['pass_oracle'] for c in task['check_contracts'] if c['check_id'] == 'i03_dc')
+    for phrase in ('CancelIntent root termination', 'root CANCELLED',
+                   'separate actual CancelUndispatched cleanup',
+                   'terminal-with-RESERVED', 'DISPATCH_INTENT occupation/identity remains unchanged'):
+        assert phrase in oracle
+    packet = (ROOT / 'docs/exec-plans/active/KL-026.md').read_text()
+    for phrase in ('two existing named owner transactions', 'no S32 insert',
+                   'SELECT-only instrumentation on that same owned connection after locks'):
+        assert phrase in packet
+        assert 'm3-next-wave-packet:KL-026' in v.packet_errors(task, packet.replace(phrase, 'bypass', 1))
+
+
+def test_resume_requires_ordinary_owner_pause_and_current_auth_denial() -> None:
+    task = TASKS['KL-077']
+    assert {'ordinary_pause_identity_pu', 'ordinary_pause_owner_dc'} <= set(task['checks_required_for_this_task'])
+    packet = (ROOT / 'docs/exec-plans/active/KL-077.md').read_text()
+    for phrase in ('S01→exact S44→receipt', 'S01.execution_basis_event_id',
+                   'Protective PAUSE/STOP/hold is distinct'):
+        assert phrase in packet
+        assert 'm3-next-wave-packet:KL-077' in v.packet_errors(task, packet.replace(phrase, 'bypass', 1))
+    for name in ('KL-027', 'KL-077'):
+        text = (ROOT / f'docs/exec-plans/active/{name}.md').read_text()
+        assert 'actual START→authenticated ordinary lifecycle PAUSE→RESUME' in text
+        assert 'Lifecycle, existing-binding, key conflict or transport rejection cannot satisfy that oracle' in text
+        assert 'new START names a different absent session with no START binding' in text
+
+
+def test_equality_is_separate_pu_from_real_post_lock_dc() -> None:
+    for name, check_id in (('KL-026', 'time_boundary_pu'), ('KL-075', 'progress_time_boundary_pu')):
+        task = TASKS[name]
+        check = next(c for c in task['check_contracts'] if c['check_id'] == check_id)
+        assert 'tests/unit/' in check['command'] and 'test_time_boundaries' in check['command']
+        assert 'now==valid_until/lease expiry/deadline denies' in check['pass_oracle']
+        assert 'Setting expiry=clock_timestamp during setup cannot prove' in check['pass_oracle']
+        assert 'fresh trusted post-lock clock_timestamp' in check['pass_oracle']
+        assert 'never label PU equality as DC' in check['pass_oracle']
