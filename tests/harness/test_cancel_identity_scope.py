@@ -6,7 +6,7 @@ import importlib.util
 import json
 import subprocess
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 from uuid import UUID
 
 import pytest
@@ -105,7 +105,8 @@ def test_foreign_request_scope_rejects(field: str) -> None:
     {'registration': ('TEST', uid(99), uid(3), 'kl_test_subject_1_login')},
     {'registration': ('TEST', uid(2), uid(99), 'kl_test_subject_1_login')},
     {'registration': ('TEST', uid(2), uid(3), 'kl_test_subject_2_login')},
-    {'identity': identity(ActorRole.SUBJECT)}, {'identity': object()},
+    {'identity': identity(ActorRole.SUBJECT)}, {'identity': object()}, {'policy': str(uid(2))}, {'environment': str(uid(3))},
+    {'identity': PlanningIdentity(RoleIdentity(str(uid(7)), ActorRole.TEST), cast(Any, str(uid(1))))},
     {'identity': PlanningIdentity(RoleIdentity(str(uid(7)), ActorRole.TEST), uid(99))},
 ])
 def test_untrusted_identity_and_registration_reject(changes: dict[str, Any]) -> None:
@@ -220,3 +221,10 @@ def test_server_computed_hash_conflict_and_non_executable_historical_fact() -> N
         candidate.historical(request, ("0" * 64, "SUCCEEDED", receipt[2]))
     with pytest.raises(IdempotencyConflict):
         candidate.historical(request, (receipt[0], "FAILED", receipt[2]))
+
+
+def test_noncanonical_principal_cannot_self_register_in_proposal() -> None:
+    request = candidate.TestCancelIntentRequest.model_validate({**payload(), "principal": "foreign_login"})
+    with pytest.raises(GuardRequired):
+        candidate.bind(request, identity(), uid(2), uid(3), "foreign_login",
+                       ("TEST", uid(2), uid(3), "foreign_login"))

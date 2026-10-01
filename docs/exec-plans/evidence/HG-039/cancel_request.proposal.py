@@ -33,6 +33,9 @@ def bind(request, identity, policy, environment, principal, registration):
     """Trusted owner supplies identity and actual registration; request supplies no authority/hash."""
     if (type(request) is not TestCancelIntentRequest or type(identity) is not PlanningIdentity
             or identity.actor.role is not ActorRole.TEST
+            or type(identity.subject_id) is not UUID
+            or type(policy) is not UUID or type(environment) is not UUID
+            or principal not in {"kl_test_subject_1_login", "kl_test_subject_2_login"}
             or request.subject_id != str(identity.subject_id)
             or (request.policy_id, request.environment_id, request.principal)
             != (str(policy), str(environment), principal)
