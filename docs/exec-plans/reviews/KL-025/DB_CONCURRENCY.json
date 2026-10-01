@@ -1,89 +1,61 @@
 {
   "task_identity": "harness-backlog-v0.2/KL-025",
-  "reviewed_head_sha": "2200e1362c966633b98b69334052095a1c4d910f",
+  "reviewed_head_sha": "5f3c14b94a2aebd4e5ce97c2414c8271e9ff9ef4",
   "review_type": "DB_CONCURRENCY",
-  "status": "CHANGES_REQUIRED",
+  "status": "PASS",
+  "findings": [],
   "review_contract_version": "v0.2",
   "base_commit": "d93131de0cd313199f3c787b56ff4b211f2905d7",
-  "tested_commit": "337e932d42f4fa88da1858655f53d36dfff5c423",
-  "findings": [
+  "tested_commit": "c3966cc790e1e2aa187dfb70496e4f811404a9ee",
+  "summary": "Fresh independent database concurrency review found no remaining findings in the exact committed implementation/result revision. All sixteen packet checks have verified revision-bound evidence and their service-level PostgreSQL assertions satisfy the local task DoD. Hosted full database CI and the selected-task merge gate remain separate mandatory prerequisites before merge.",
+  "review_method": [
+    "Applied the repository pr-merge-reviewer and db-transaction-reviewer skills. Read AGENTS, current document index, complete KL025 and prerequisite KL024 packets, named frozen Protocol/DB and acceptance scope clauses, merged KL015/KL024 results and prerequisite reviews, KL015 integration, M2 closure, HG034 record, planning/repository transaction/call-ledger contracts and result/review contracts and schemas.",
+    "Inspected the complete protected-base source/service/domain/test/contract diff and actual merged planning admission, revision, acquisition, renewal, root counters, deadline and current-fence APIs. Prior KL025 CHANGES_REQUIRED artifacts were historical finding context only; no other current reviewer approval was used as proof.",
+    "Read-only Python/Git audit independently verified all eighteen selected raw-log SHA256 hashes, exact commands, tested-SHA headers, committed bytes and exit codes. Matched all sixteen required IDs to packet/result/check registry; verified no failed/skipped/deselected required summaries, result schema and PASS/PASS/UNMERGED separation.",
+    "Verified prerequisite/base/tested/reviewed ancestry, every tested-to-reviewed commit, complete task-path inventory, frozen/current authority and requirement preservation, unchanged production planning/CI/Compose files, and exact complete planning fixture bytes reconstructed from protected KL024 base plus HG034 zero-context patch.",
+    "No reviewer DB/Docker operations, resets, bootstrap, teardown, source/result/evidence edits, app messages or commits occurred. Only this DB_CONCURRENCY review record was written and schema-validated."
+  ],
+  "observations": [
+    "T5/T8 retain the sole merged repository coordinator and applicable S01 -> S27 -> S31 -> S02 order. S01 serializes cross-root subject accounting and natural receipt/request identities. Ledger commands neither acquire registry backwards nor mutate control/authorization state. Receipt provenance verification runs on an idle connection before coordination; the physical sender is fake PU only and runs after committed DISPATCH_INTENT plus transaction release.",
+    "ReserveCall uses the actual KL024 root limits/reserved/settled maps: every enforced dimension includes settled actual plus all outstanding reservations across attempts plus the new bound. It preserves unrelated root fields and the original deadline. Natural intent/attempt/operation_slot identity prevents duplicate occupation. Two real service contenders observe PostgreSQL blocking and one budget winner; join/revision/takeover preserve counters.",
+    "Owner guards bind exact prepared S27 accounting, S31 ID/status/revision/operation slot/intent/attempt/dispatch owner/fence/configuration/payload and S32 immutable transition/deltas. Malicious callbacks independently corrupt root amounts, S31/S32 payloads and each repaired S31 identity field; all deny and persisted S27/S31/S32/S02/S03/S04 snapshots remain unchanged.",
+    "Bounded internal CancelUndispatched preserves the frozen closed public command set. Only its locked RESERVED winner releases the exact outstanding bound. Both cancel-first and permit-first orderings use bounded events and PostgreSQL-observed blocking; one transition and matching receipt/event/outbox persist. A permit winner retains possible-send occupation and cancellation cannot refund it.",
+    "Reserve/permit enforce current owner/fence/request/attempt, active intent/attempt and trusted post-lock lease/deadline. Old workers and obsolete request/attempt chains lose authority. First committed permit alone is sendable; preflight and under-S01 historical retries are non-sendable even after takeover. Five owner ACK-loss retry paths retain original identities and no duplicate debit/release; changed payload and different-key redispatch conflict.",
+    "DISPATCH_INTENT without DISPATCHED, UNKNOWN and crash windows retain outstanding bounds without fictional confirmed charges. Expected revision/transition contenders reread after PostgreSQL-observed blocking and reject stale state. Reliable settlement removes exact occupation and records verified actual once; late evidence after revision/takeover/termination changes accounting and immutable evidence only, preserving intent/attempt/control/authorization state.",
+    "Actual token usage 601 against a 600 reservation settles below every aggregate root limit and atomically persists call_bound_violation=true. Further reservation denies even after join, revision and takeover, with unchanged persisted snapshots. PU covers every supported non-call overrun dimension, preservation through cancellation/in-bound settlement, malformed marker denial and equality remaining allowed. PostgreSQL fault injection at every S27/S31/S32/S02/S03/S04 settlement boundary rolls back the marker and actual together.",
+    "Distinct still-outstanding reservations compete for reused receipt_id with different provider_request_id, then independently reused provider_request_id with different receipt_id. Each race observes PostgreSQL lock blocking behind the first settlement, rejects the second at the natural identity lookup, commits winner actual/accounting/S32/receipt/event/outbox once and leaves the losing S31/history/bounds fully occupied. Same-key ACK-loss replay and changed actual/configuration evidence preserve state; exactly-at-bound settlement leaves capacity usable.",
+    "Complete tests/db/test_planning.py bytes match protected ff57a80 plus only the exact HG034 adaptation, SHA256 b7b185e069d94f0e67826de02ec630259881add0fa8f5366823d830f95917636. Unset selector retains KL024 defaults; exact KL025 selector derives validated SHA/worktree namespaces; invalid selectors/suffixes fail before runner calls. Local recorded ledger/planning/owner-regression namespaces belong to KL025.",
+    "The preserved hosted full-database attempt records 243 passed and one fixture setup error before the root-budget contender ran: container-local PostgreSQL socket unavailable during reset. This failed hosted run is not PASS evidence. Unchanged ubuntu-latest hosted full database/quality CI, normal retry outcome and current PR checks must pass separately before merge; this review changes no CI or lifecycle scope."
+  ],
+  "historical_findings_resolution": [
     {
       "finding_id": "KL025-DB-001",
-      "classification": "BLOCKER",
-      "priority": 1,
-      "title": "Bound overrun does not stop further root reservations",
-      "file": "src/kineticloop/workflow/call_ledger.py",
-      "start_line": 133,
-      "end_line": 140,
-      "description": "Reliable actual usage above this reservation's enforced bound is recorded, but settle_budget persists no indication that the bound was violated and reserve_budget checks only aggregate root exhaustion (lines 115-118). A root with limits calls=3/tokens=1000, outstanding calls=1/tokens=100 and settled zero can settle actual calls=1/tokens=101, then successfully reserve another calls=1/tokens=100. The service owner uses these exact functions, so the same sequence succeeds on S27. This violates the packet residual boundary requiring observed actual above bounds to remain recorded and fail closed for further reservation. Current unit and DC overrun tests use actual totals above the root limit; they cannot distinguish bound overrun from ordinary root exhaustion.",
-      "authority_refs": [
-        "docs/exec-plans/active/KL-025.md:Residual implementation boundary",
-        "05_KineticLoop_Protocol_v1.2_FROZEN.md:6.6-6.7",
-        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:S27/S31/S32,INV-11/12"
-      ],
-      "requested_change": "Persist a task-scoped, fail-closed accounting basis for observed bound overruns atomically with exact S27/S31/S32 and receipt/event/outbox settlement, and deny subsequent reservations even when aggregate root limits still have capacity. Preserve the verified actual, outstanding other reservations, all unrelated planning fields and late-settlement authority restrictions; do not clamp actuals, discard evidence or reopen/terminate intent through settlement.",
-      "required_validation": "Add deterministic PU and migrated PostgreSQL service/DC cases with actual exceeding one configured reservation bound while the aggregate root remains below every limit. Assert subsequent reservation denial and no bookkeeping/accounting mutation. Cover join/revision/takeover preservation, equality at the bound remaining allowed, repeated settlement, and rollback of the overrun basis with the atomic settlement writes. Retest all sixteen exact checks on a new tested SHA and obtain fresh reviews."
+      "status": "RESOLVED_ON_REVIEWED_SHA",
+      "evidence": "Persistent accounting-only bound-violation marker and below-root PU/DC denial; atomic rollback at all six mutation/bookkeeping boundaries; preserved through join/revision/takeover/replay. Historical r1 is retained under task evidence."
     },
     {
       "finding_id": "KL025-DB-002",
-      "classification": "BLOCKER",
-      "priority": 1,
-      "title": "Cross-reservation receipt/request uniqueness has no PostgreSQL proof",
-      "file": "tests/db/test_call_ledger.py",
-      "start_line": 763,
-      "end_line": 770,
-      "description": "The new natural receipt/request lookup at transactions.py:3982-3994 prevents one verified provider receipt or request identity from settling two different reservations. Existing duplicate/conflicting cases resubmit the same reservation after it is already SETTLED with expected_revision=2. They are rejected at prepare_ledger_change's revision/state checks before the natural identity lookup runs; the same-key cases replay historical S02. No committed test settles a distinct outstanding reservation with a reused receipt_id or provider_request_id, and no cross-row competing settlement exercises S01 serialization of that new lookup. Thus the claimed reliable natural uniqueness is not demonstrated by the selected DC PASS log.",
-      "authority_refs": [
-        "docs/exec-plans/active/KL-025.md:ledger_unknown_and_late_settlement_dc,ledger_ack_loss_and_natural_identity_dc",
-        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:S31/S32,INV-11/12",
-        ".agents/skills/db-transaction-reviewer/SKILL.md:7"
-      ],
-      "requested_change": "Add real migrated PostgreSQL owner-level tests using two distinct permitted outstanding reservations of the same subject/provider. Reuse receipt identity with a different request identity, and request identity with a different receipt identity, independently. Include competing settlements with bounded barriers and observed PostgreSQL blocking so the second contender rechecks the first committed natural identity.",
-      "required_validation": "For each conflict, assert only one reservation settles, the other retains its entire occupied bound, and S27 counters, exact S31/S32 transition/payload and S02/S03/S04 counts commit once without a second refund. Same-key ACK-loss retry must return the original outcome without mutation; changed actual/accounting evidence must conflict. Run the named complete DC file and all sixteen exact checks on the repaired tested SHA; rereview the new committed implementation/result."
+      "status": "RESOLVED_ON_REVIEWED_SHA",
+      "evidence": "Two separate real PostgreSQL races on distinct outstanding reservations independently exercise receipt_id and provider_request_id reuse after observed S01 blocking; one exact committed settlement and loser fully unchanged."
     }
-  ],
-  "review_method": [
-    "Fresh independent review using repository pr-merge-reviewer and db-transaction-reviewer skills; read AGENTS, current index, complete KL025 and prerequisite KL024 packets, named frozen Protocol/DB and acceptance sections, merged KL015/KL024 results/reviews and KL015 integration, M2 closure, planning and repository transaction contracts, result/review contracts and schemas.",
-    "Inspected protected-base implementation/service/domain/test/contract diff, merged planning root/lease APIs, and the service-level test bodies independently. Prior review approval was prerequisite context only, not approval of this task.",
-    "Independently verified all eighteen selected raw-log hashes, exact command strings, tested-SHA headers and zero exits against committed bytes. Reviewed all sixteen packet checks plus full unit207 and harness265 logs. Tested-to-reviewed suffix changes only KL025 result/new evidence, leaving implementation/test/contract bytes identical.",
-    "Read-only Git/Python audit verified KL015/KL024 reviewed/merged ancestry, frozen/current requirement preservation and complete tests/db/test_planning.py byte identity against protected base plus the exact HG034 zero-context patch (sha256 b7b185e069d94f0e67826de02ec630259881add0fa8f5366823d830f95917636).",
-    "Ran only a deterministic non-database function reproduction of KL025-DB-001. No local DB/Docker reviewer tests, resets, bootstrap or teardown occurred. Source, result and evidence were not modified; only this review record is written."
-  ],
-  "observations": [
-    "Ledger commands preserve T5/T8 single ownership and S01 -> S27 -> S31 -> S02 ordering as applicable. They do not acquire registry backwards. Dedicated receipt verification occurs on an idle connection outside coordination; physical sender is fake PU only and invoked after committed permit plus transaction release.",
-    "Root reservation occupation uses the actual merged KL024 limits/reserved/settled maps, includes old-attempt reservations, and retains unrelated root fields and original deadline across join/revision/takeover. RESERVED natural intent/attempt/operation_slot lookup and underlying uniqueness prevent a different transport key from occupying the same operation twice.",
-    "Cancellation is a bounded internal owner, preserving the frozen public 39-command matrix/ingress. Only the exact locked RESERVED source releases; permit winner preserves possible-send occupation. Both winner orders are exercised with PostgreSQL-observed blocking and persisted one-transition/receipt/event/outbox counts.",
-    "Reserve and permit recheck exact current owner/fence/request/attempt, terminal status and post-lock trusted-time eligibility. Already committed permits remain historical and non-sendable on replay after authority loss. All five ACK-loss replay paths include forced preflight-miss reread under S01, payload conflict checks and unchanged persisted rows.",
-    "Failure injection executes real PostgreSQL mutation/bookkeeping statements then raises at each relevant S27/S31/S32/S02/S03/S04 boundary, with complete persisted-state equality after rollback. Owner guards require exact prepared root/reservation/transition/deltas and reject fabricated root/S31/S32 accounting.",
-    "UNKNOWN retains outstanding bounds and no fictional confirmed usage. Stale expected transition/revision waiters reread after observed blocking. Reliable late evidence can settle after revision, takeover and terminal states without changing control, current pointers, attempts or authorization; immutable S32 history remains protected. These positive properties do not resolve the two BLOCKER findings.",
-    "HG034 complete-file fixture adaptation is exact and selectors/namespaces are validated before reset/bootstrap/teardown. Local packet evidence uses only KL025 namespaces. Full database CI is intentionally not run locally; unchanged GitHub-hosted ubuntu-latest fresh-VM/default-daemon CI remains separately required before merge."
   ],
   "verification_summary": {
-    "recorded_packet_commands": "16 exit0/PASS; required behavior is incomplete as described in findings",
+    "exact_packet_checks": "16 PASS; independently verified exact command, SHA, hash, committed raw bytes and exit0 bindings",
     "ledger_unit_suite": "3 passed",
     "ledger_database_suite": "6 passed on migrated real PostgreSQL",
-    "planning_regressions": "8 passed",
-    "transaction_owner_regressions": "58 passed",
+    "planning_regressions": "8 passed in KL025-owned planning namespace",
+    "transaction_owner_regressions": "58 passed in KL025-owned regression namespace",
     "full_unit_regressions": "207 passed",
     "full_harness_regressions": "265 passed",
-    "local_reviewer_db_runs": "NONE",
-    "full_hosted_db_ci": "Separate pending requirement; not discharged by this review"
+    "lint_typecheck_harness": "PASS; HARNESS_CHECK_PASS recorded",
+    "independent_read_only_audit": "PASS; ancestry, exact fixture bytes, frozen/current preservation, 69-path task inventory and schema verified",
+    "reviewer_database_runs": "NONE",
+    "hosted_full_database_ci": "Preserved attempt1 FAIL: 243 passed/1 setup error; current retry/PR checks remain separate mandatory premerge gates"
   },
-  "independent_verification": [
-    {
-      "command": "Read-only Python/Git committed-evidence, ancestry, frozen/current preservation and exact HG034 complete-file audit",
-      "result": "PASS",
-      "output": "18 SHA/hash/command/exit bindings verified; source/test/contract unchanged tested-to-reviewed; merged prerequisites ancestors; exact fixture hash b7b185e069d94f0e67826de02ec630259881add0fa8f5366823d830f95917636."
-    },
-    {
-      "command": "Direct reserve_budget/settle_budget deterministic reproduction without PostgreSQL",
-      "result": "CONFIRMED_BLOCKER",
-      "output": "limits calls3/tokens1000; reservation calls1/tokens100; reliable actual calls1/tokens101 settles to reserved0/settled calls1,tokens101; subsequent calls1/tokens100 reservation succeeds."
-    }
-  ],
   "limitations": [
-    "CHANGES_REQUIRED at the exact reviewed implementation/result SHA. Task PASS, recorded command success, review PASS and MERGED are separate; no product requirement or release/activation PASS is claimed. Findings close only through repaired committed implementation/result and fresh reviews.",
-    "Full hosted database/quality CI and selected-task merge-gate PASS remain independent integration prerequisites. This reviewer created no database resources and made no commit."
+    "PASS approves the DB concurrency surface and local task DoD only at reviewed_head_sha. Task PASS, product requirement PASS, review PASS and integration MERGED remain separate. requirements_covered is empty; W01/W03/W05/W06/W08 WF/E2E/release, production auto-activation and real-data shadow execution remain outside task approval.",
+    "Trusted ingress must authenticate PlanningIdentity and verify reliable receipt provenance. Shape/provenance strings are not authentication or billing proof. Count/token accounting is enforced and strict_money remains false; no provider SDK transport/model loop/reaper or downstream business-write authority is added.",
+    "The committed PostgreSQL evidence was inspected and hash-bound; no independent DB/Docker rerun was performed. Hosted full database/quality CI and the selected-task merge gate must separately pass before integration. Any substantive code/test/contract/result change requires retesting and fresh review; only a linear task-scoped REVIEW_RECORD_ONLY suffix may follow without rereview."
   ],
   "evidence_refs": [
     "docs/exec-plans/active/KL-025.md",
@@ -96,26 +68,29 @@
     "src/kineticloop/persistence/transactions.py",
     "tests/unit/workflow/test_call_ledger.py",
     "tests/db/test_call_ledger.py",
-    "docs/exec-plans/evidence/KL-025/checks-337e932.json",
-    "docs/exec-plans/evidence/KL-025/namespaces-and-source-337e932.json",
+    "docs/exec-plans/evidence/KL-025/checks-c3966cc.json",
+    "docs/exec-plans/evidence/KL-025/namespaces-and-source-c3966cc.json",
     "docs/exec-plans/evidence/HG-034/planning_namespace.patch",
-    "docs/exec-plans/evidence/KL-025/planning_fixture_namespace_isolation_pu-337e932.log",
-    "docs/exec-plans/evidence/KL-025/ledger_budget_dimensions_pu-337e932.log",
-    "docs/exec-plans/evidence/KL-025/ledger_state_and_replay_pu-337e932.log",
-    "docs/exec-plans/evidence/KL-025/ledger_root_budget_atomic_dc-337e932.log",
-    "docs/exec-plans/evidence/KL-025/ledger_cancel_dispatch_exclusion_dc-337e932.log",
-    "docs/exec-plans/evidence/KL-025/ledger_current_authority_dc-337e932.log",
-    "docs/exec-plans/evidence/KL-025/ledger_ack_loss_and_natural_identity_dc-337e932.log",
-    "docs/exec-plans/evidence/KL-025/ledger_unknown_and_late_settlement_dc-337e932.log",
-    "docs/exec-plans/evidence/KL-025/ledger_physical_dispatch_boundary_pu-337e932.log",
-    "docs/exec-plans/evidence/KL-025/ledger_unit_suite_passes-337e932.log",
-    "docs/exec-plans/evidence/KL-025/ledger_db_suite_passes-337e932.log",
-    "docs/exec-plans/evidence/KL-025/planning_prerequisite_regressions_pass-337e932.log",
-    "docs/exec-plans/evidence/KL-025/transaction_owner_regressions_pass-337e932.log",
-    "docs/exec-plans/evidence/KL-025/lint_passes-337e932.log",
-    "docs/exec-plans/evidence/KL-025/typecheck_passes-337e932.log",
-    "docs/exec-plans/evidence/KL-025/harness_validation_passes-337e932.log",
-    "docs/exec-plans/evidence/KL-025/full_unit_regressions-337e932.log",
-    "docs/exec-plans/evidence/KL-025/full_harness_regressions-337e932.log"
+    "docs/exec-plans/evidence/KL-025/hosted-db-c3966cc-attempt1.json",
+    "docs/exec-plans/evidence/KL-025/hosted-db-c3966cc-attempt1-failure.log",
+    "docs/exec-plans/evidence/KL-025/review-DB_CONCURRENCY-2200e13.json",
+    "docs/exec-plans/evidence/KL-025/planning_fixture_namespace_isolation_pu-c3966cc.log",
+    "docs/exec-plans/evidence/KL-025/ledger_budget_dimensions_pu-c3966cc.log",
+    "docs/exec-plans/evidence/KL-025/ledger_state_and_replay_pu-c3966cc.log",
+    "docs/exec-plans/evidence/KL-025/ledger_root_budget_atomic_dc-c3966cc.log",
+    "docs/exec-plans/evidence/KL-025/ledger_cancel_dispatch_exclusion_dc-c3966cc.log",
+    "docs/exec-plans/evidence/KL-025/ledger_current_authority_dc-c3966cc.log",
+    "docs/exec-plans/evidence/KL-025/ledger_ack_loss_and_natural_identity_dc-c3966cc.log",
+    "docs/exec-plans/evidence/KL-025/ledger_unknown_and_late_settlement_dc-c3966cc.log",
+    "docs/exec-plans/evidence/KL-025/ledger_physical_dispatch_boundary_pu-c3966cc.log",
+    "docs/exec-plans/evidence/KL-025/ledger_unit_suite_passes-c3966cc.log",
+    "docs/exec-plans/evidence/KL-025/ledger_db_suite_passes-c3966cc.log",
+    "docs/exec-plans/evidence/KL-025/planning_prerequisite_regressions_pass-c3966cc.log",
+    "docs/exec-plans/evidence/KL-025/transaction_owner_regressions_pass-c3966cc.log",
+    "docs/exec-plans/evidence/KL-025/lint_passes-c3966cc.log",
+    "docs/exec-plans/evidence/KL-025/typecheck_passes-c3966cc.log",
+    "docs/exec-plans/evidence/KL-025/harness_validation_passes-c3966cc.log",
+    "docs/exec-plans/evidence/KL-025/full_unit_regressions-c3966cc.log",
+    "docs/exec-plans/evidence/KL-025/full_harness_regressions-c3966cc.log"
   ]
 }
