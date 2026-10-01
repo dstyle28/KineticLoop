@@ -126,13 +126,19 @@ class MeasuredRunner:
         category = "compose"
         if "pg_isready" in command:
             category = "tcp_probe"
+            probe_started = time.monotonic()
+            requested = kwargs.get("timeout")
+            probe_deadline = min(self.deadline, probe_started + requested) if requested is not None else self.deadline
             # Observe the actual init socket immediately before each measured TCP probe.
             socket_command = list(command)
             index = socket_command.index("--host")
             del socket_command[index:index + 4]
-            observed = bounded_run(socket_command, self.deadline, **kwargs)
+            observed = bounded_run(socket_command, probe_deadline, **kwargs)
             self.event(kind="socket_probe", returncode=observed.returncode,
                        stdout=self.redactor.text(observed.stdout))
+            if requested is not None:
+                kwargs['timeout'] = probe_deadline - time.monotonic()
+                require(kwargs['timeout'] > 0, "measured probe exhausted readiness deadline")
         elif "psql" in command:
             category = "sql"
         safe_command = [self.redactor.text(part) for part in command]
