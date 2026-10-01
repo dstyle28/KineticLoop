@@ -1,104 +1,149 @@
 task_identity: harness-backlog-v0.2/KL-076
 display_task_id: KL-076
 task_definition_version: v0.2
-base_commit: d0470badf0ccf6bec28a9bc7e6836b57d9df93ce
-tested_commit: d0470badf0ccf6bec28a9bc7e6836b57d9df93ce
+base_commit: c599ec1ef39c28bd691748698a09805f390878cf
+tested_commit: 509eeee298d59b29afbfacf8c40f7cefd5d02844
 merge_commit: null
-task_status: BLOCKED
-task_checks_status: NOT_RUN
+task_status: PASS
+task_checks_status: PASS
 integration_status: UNMERGED
-summary: KL076 cannot construct the prescribed owner-driven upstream chain at the actual normal KL075
-  merge. RecordProjection cannot insert S21 because revision is required but forbidden; RecordProjection
-  S22 and BuildManifest S23 cannot bind the required sealed factset through execute_preparation because
-  its session supplies no factset lock capability. Five actual gateway rejections were reproduced with
-  zero SQL calls in a pure diagnostic. A fresh independent preliminary review confirmed both gaps. No
-  KL076 implementation or database lifecycle started; twelve required task checks remain NOT_RUN; check-harness
-  passed for the BLOCKED bookkeeping only.
+summary: Actual restricted RecordProposal, RecordDemandFeatures, ResolveEvidence and RecordValidation
+  owners produce immutable mechanical TEST F/D/N and source-bound resolution/validation from real sealed
+  CanonicalViewService inputs, KL078 READY preparation and T3 publication. KL024 admission/lease and KL075
+  snapshot/forward stages reach coherent COMMIT_READY. F2 repair uses a new actual request/attempt under
+  the original root; old immutable outputs, budgets and deadline remain intact. All thirteen exact packet
+  checks pass with zero skips, including the complete 68-case isolated PostgreSQL suite. No product, layer,
+  release, execution or production activation PASS is inferred.
 commands_run:
 - check_id: fixture_fdn_identity_pu
   command: uv run pytest -q tests/unit/workflow/test_deterministic_planning.py::test_fdn_identities
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-076/BLOCKER.md
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_fdn_identity_pu.log
 - check_id: fixture_fdn_repair_pu
   command: uv run pytest -q tests/unit/workflow/test_deterministic_planning.py::test_fitness_repair
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-076/BLOCKER.md
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_fdn_repair_pu.log
 - check_id: fixture_resolution_validation_pu
   command: uv run pytest -q tests/unit/workflow/test_deterministic_planning.py::test_source_bound_validation
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-076/BLOCKER.md
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_resolution_validation_pu.log
 - check_id: fixture_preparation_owners_dc
   command: uv run pytest -q tests/db/test_deterministic_planning.py::test_owner_pipeline
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-076/BLOCKER.md
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_owners_dc.log
 - check_id: fixture_preparation_denials_dc
   command: uv run pytest -q tests/db/test_deterministic_planning.py::test_stale_and_incomplete
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-076/BLOCKER.md
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_denials_dc.log
 - check_id: fixture_preparation_atomicity_dc
   command: uv run pytest -q tests/db/test_deterministic_planning.py::test_immutable_replay_rollback
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-076/BLOCKER.md
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_atomicity_dc.log
 - check_id: fixture_namespace_pu
   command: uv run pytest -q tests/unit/workflow/test_deterministic_planning.py::test_namespace
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-076/BLOCKER.md
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_namespace_pu.log
 - check_id: fixture_suite_dc
   command: uv run pytest -q tests/db/test_deterministic_planning.py
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-076/BLOCKER.md
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_suite_dc.log
 - check_id: harness_validation_passes
   command: uv run kl check-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-076/blocked-artifact-validation-d0470ba.log
+  evidence_ref: docs/exec-plans/evidence/KL-076/checks-509eeee/harness_validation_passes.log
 - check_id: unit_regressions_pass
   command: uv run kl test-unit
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-076/BLOCKER.md
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-076/checks-509eeee/unit_regressions_pass.log
 - check_id: harness_regressions_pass
   command: uv run kl test-harness
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-076/BLOCKER.md
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-076/checks-509eeee/harness_regressions_pass.log
 - check_id: lint_passes
   command: uv run kl lint
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-076/BLOCKER.md
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-076/checks-509eeee/lint_passes.log
 - check_id: typecheck_passes
   command: uv run kl typecheck
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-076/BLOCKER.md
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-076/checks-509eeee/typecheck_passes.log
 requirements_covered: []
 files_changed:
+- docs/contracts/deterministic_planning.md
+- docs/exec-plans/completed/KL-076_RESULT.yaml
 - docs/exec-plans/evidence/KL-076/BLOCKER.md
 - docs/exec-plans/evidence/KL-076/blocked-artifact-validation-d0470ba.log
+- docs/exec-plans/evidence/KL-076/checks-509eeee/checks.json
+- docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_fdn_identity_pu.log
+- docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_fdn_identity_pu.xml
+- docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_fdn_repair_pu.log
+- docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_fdn_repair_pu.xml
+- docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_namespace_pu.log
+- docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_namespace_pu.xml
+- docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_atomicity_dc.log
+- docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_atomicity_dc.xml
+- docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_denials_dc.log
+- docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_denials_dc.xml
+- docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_owners_dc.log
+- docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_owners_dc.xml
+- docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_resolution_validation_pu.log
+- docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_resolution_validation_pu.xml
+- docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_suite_dc.log
+- docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_suite_dc.xml
+- docs/exec-plans/evidence/KL-076/checks-509eeee/harness_regressions_pass.log
+- docs/exec-plans/evidence/KL-076/checks-509eeee/harness_regressions_pass.xml
+- docs/exec-plans/evidence/KL-076/checks-509eeee/harness_validation_passes.log
+- docs/exec-plans/evidence/KL-076/checks-509eeee/lint_passes.log
+- docs/exec-plans/evidence/KL-076/checks-509eeee/typecheck_passes.log
+- docs/exec-plans/evidence/KL-076/checks-509eeee/unit_regressions_pass.log
+- docs/exec-plans/evidence/KL-076/checks-509eeee/unit_regressions_pass.xml
 - docs/exec-plans/evidence/KL-076/entry-d0470ba.json
 - docs/exec-plans/evidence/KL-076/entry-d0470ba.log
+- docs/exec-plans/evidence/KL-076/historical-blocked-29a2b00.yaml
 - docs/exec-plans/evidence/KL-076/pr74-normal-merge.json
+- docs/exec-plans/evidence/KL-076/result-validation-509eeee.log
+- docs/exec-plans/evidence/KL-076/resume-entry-c599ec1.json
 - docs/exec-plans/evidence/KL-076/upstream-feasibility-d0470ba.json
 - docs/exec-plans/evidence/KL-076/upstream-gateway-d0470ba.log
 - docs/exec-plans/evidence/KL-076/upstream_gateway_probe.py
-- docs/exec-plans/completed/KL-076_RESULT.yaml
+- src/kineticloop/persistence/deterministic_planning.py
+- src/kineticloop/persistence/transactions.py
+- src/kineticloop/workflow/deterministic_planning.py
+- tests/db/test_deterministic_planning.py
+- tests/fixtures/deterministic_planning.json
+- tests/unit/workflow/test_deterministic_planning.py
 decisions:
-- Stop at the packet-directed bounded upstream capability prerequisite; do not repair RecordProjection/BuildManifest
-  ownership inside KL076 or replace owner-produced outputs with raw seeds.
-- Pure gateway diagnostic and independent feasibility assessment are not packet acceptance, PostgreSQL
-  DC, final implementation review, product PASS or MERGED evidence.
-- Retain the blocked branch/worktree for coordinator disposition; no DB resources were constructed and
-  no incomplete task archive is claimed.
+- Preserve public PREPARATION owner boundaries and the wire/owner matrix. Exact typed internal services
+  compute before coordination and permit only one server-generated immutable S34/S35/S36/S37 row under
+  current authenticated TEST request/attempt/lease/fence guards.
+- Use the existing Nutrition.demand_feature_id -> Demand.ref_s34_id -> FITNESS same-subject FK chain plus
+  duplicated verified immutable identities/hashes. No migration or new direct-F Nutrition column is introduced.
+- The explicit versioned mechanical fixture policy defines minutes, fixture units, half-open window, complete
+  admitted source membership, underlying-event deduplication, unknown-exposure denial and exact actual
+  replacement of reservation slots. Planned quantities never create actual facts.
+- Use actual RecordActualExecution for the isolated accepted source fact and execution-basis event; do
+  not seed pipeline outputs, certificates, COMMIT_READY, heads, issuances, bindings or root success.
+- Every named selector and the complete own suite ran on tested_commit. Raw persisted ID/hash/FK/receipt/event/outbox
+  witnesses, post-lock trusted-time bounds, observed blocking, rollback, replay, execution counts and
+  exact namespace cleanup are committed.
+- A fresh owned database per case preserves the canonical one-subject principal registration. Namespace
+  proof precedes every lifecycle constructor/reset; bootstrap receives the selected lifecycle and every
+  connection/cleanup verifies only the own HEAD/root-derived fixture target.
+- The prior BLOCKED diagnostic/result is retained as historical evidence only. KL078 normal merge c599ec1
+  resolves its two upstream capability gaps; historical probes are not reused as KL076 acceptance evidence.
+- Task PASS, independent review, hosted CI, normal merge and product/release status remain separate. The
+  reviewed result stays immutable; later integration bookkeeping is separate.
 known_limitations:
-- Twelve required KL076 checks are NOT_RUN. check-harness passed for this BLOCKED artifact; there is no
-  F/D/N implementation, final review set, CI/gate PASS, PR or merge.
-- Protected base lacks KL075 integration bookkeeping; actual normal PR74 merge, two-parent ancestry, reviewed
-  implementation/result ancestry and prerequisite result/review bytes were independently checked.
-- Initial dependency bootstrap encountered sandbox DNS failure; existing cached dependencies were used
-  offline for the successful pure diagnostic. This is unrelated to the confirmed upstream capability blockers.
+- This exact isolated mechanical TEST domain is not a production/model planner or clinical/nutritional
+  policy. Fixture units have no health interpretation; unsupported policy/evidence domains fail closed.
+- No product requirements are claimed by this task. Production auto-activation, real-data shadow execution,
+  authorization issuance and downstream bundle/T7 behavior remain outside this implementation.
+- Full legacy database regressions execute through unchanged hosted CI rather than foreign shared-Docker
+  lifecycle fixtures. Required reviews and final-head CI/merge gates must pass before normal merge.
+- The pre-integration result intentionally records merge_commit null and integration_status UNMERGED;
+  review and merge facts are recorded independently.
 follow_up_tasks:
-- Create a separately bounded prerequisite that provides exact server-generated S21 revision completeness
-  and immutable same-subject SEALED S15 reference capabilities for the existing RecordProjection/BuildManifest
-  preparation owners, with tests, independent reviews and normal merge.
-- After that prerequisite normally merges and the authorized HG039/KL026 preceding merges and coordinator
-  slot are verified, rebase KL076 onto latest master and implement/run every exact selector and own PG
-  suite with fresh result/reviews/CI.
-- Coordinator accepted this blocker and is preparing HG040 governance for the bounded prerequisite; wait
-  for its actual normal merge and explicit coordinator resume. Keep the blocked branch/worktree intact.
+- KL077 complete bundle/authorization and guarded T7 remain separately scoped downstream work.
+- Coordinator integration bookkeeping may bind the eventual normal merge without mutating this reviewed
+  result.
 spec_change_request: null
