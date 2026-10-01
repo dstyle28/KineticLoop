@@ -1,0 +1,29 @@
+{
+  "rules": {
+    "version": "kl076-mechanical-test-v1",
+    "domain": "ISOLATED_TEST_ONLY",
+    "exercise": "fixture:cycle",
+    "units": "minutes_and_fixture_units",
+    "window": "explicit_half_open",
+    "dedup": "underlying_event_id_exact",
+    "unknown_exposure": "DENY",
+    "actual_replacement": "actual_replaces_exact_reservation_slot",
+    "maximum_minutes": 60,
+    "rolling_minutes": 90,
+    "fuel_per_minute": 3,
+    "estimate_per_minute": 2,
+    "semantic_classes": [
+      "PRESCRIBED_QUANTITY",
+      "TARGET",
+      "ESTIMATE"
+    ],
+    "maximum_members": 64,
+    "coverage": "all_sealed_fixture_facts_admissions_associations"
+  },
+  "mechanical_examples": {
+    "F1_minutes": 30,
+    "F2_minutes": 20,
+    "actual_minutes": 10,
+    "reserved_replaced_minutes": 50
+  }
+}

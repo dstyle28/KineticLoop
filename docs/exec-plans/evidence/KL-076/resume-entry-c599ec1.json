@@ -1,0 +1,86 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-076",
+  "protected_base": "c599ec1ef39c28bd691748698a09805f390878cf",
+  "indexed_sha256_verified": 26,
+  "prerequisites": [
+    {
+      "task": "KL-017",
+      "result_status": "PASS",
+      "reviewed_sha": "4aa711e0e6aa490e250c8eb3241653b90307df6d",
+      "reviews": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "normal_merge": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+      "integration_present": true
+    },
+    {
+      "task": "KL-022",
+      "result_status": "PASS",
+      "reviewed_sha": "63f9decb1482c7f01c7170cdf6bf3778ed4cc063",
+      "reviews": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "normal_merge": "88adc5be3f7c567413be671a2b3dc5e6c802ffe8",
+      "integration_present": true
+    },
+    {
+      "task": "KL-023",
+      "result_status": "PASS",
+      "reviewed_sha": "6cd15b03cb0206156b8e295d34516f457c7b046a",
+      "reviews": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "normal_merge": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+      "integration_present": true
+    },
+    {
+      "task": "KL-074",
+      "result_status": "PASS",
+      "reviewed_sha": "7327e653d25b5aaba56fe96f8b2cd309d4a4aaf4",
+      "reviews": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "normal_merge": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+      "integration_present": true
+    },
+    {
+      "task": "KL-075",
+      "result_status": "PASS",
+      "reviewed_sha": "5543bfb2a40a6e29c49f0325d8542a1b38a8fcca",
+      "reviews": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "normal_merge": "d0470badf0ccf6bec28a9bc7e6836b57d9df93ce",
+      "integration_present": false
+    },
+    {
+      "task": "KL-078",
+      "result_status": "PASS",
+      "reviewed_sha": "89249abcfe5075d958c5e1ea4532b774ea4668de",
+      "reviews": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "normal_merge": "c599ec1ef39c28bd691748698a09805f390878cf",
+      "integration_present": false
+    }
+  ],
+  "m2": "PASS",
+  "prior_result_review_integration_absent_at_base": true,
+  "resources": "Coordinator released/reserved transaction_interfaces,user_coordination,planning_ledger exclusively to KL076",
+  "db_lifecycle_started": false,
+  "historical_blocked_evidence": "d0470ba diagnostics preserved; not acceptance evidence",
+  "merge_slot": "HG039/KL026 holds satisfied; authorized next uncontested slot"
+}
