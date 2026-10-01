@@ -21,7 +21,7 @@ exact S50/S51/management receipt/audit/outbox identities must join one-to-one.
 | --- | --- |
 | I01@DC | T3 publish vs S01 ApplyControl, both orders; stale READY denial, immutable manifest/binding/receipt/event/outbox, epoch advance and old T6 denial |
 | I02@DC | START vs ApplyControl, both orders; zero failed-first-use session/binding/bookkeeping, immutable historical IDs, denied current START and CONTINUE |
-| I03@DC | Root CancelIntent vs PermitDispatch, followed by separate CancelUndispatched cleanup; **blocked before either race**, strict TEST CancelIntent identity is not admitted at T4/T8 |
+| I03@DC | HG039 strict TEST-local root CancelIntent vs PermitDispatch, both orders; separate exact CancelUndispatched cleanup, terminal-with-RESERVED safety, retained DISPATCH_INTENT occupation, stale/cross-root denials, same-key conflict/concurrent history and actual successful T6 preservation |
 | I04@DC | Actual CommitBundle vs AcquireLease takeover, both orders; atomic issuance/bundle/success or higher fence and no stale T6 effects; separate real lease/deadline before/after and observed-lock-wait expiry |
 | I05@DC | Global revoke of exact transitive grandchild vs actual T6, both shared/exclusive orders; historical certificate/closure immutable, current START denied |
 | I06@DC | Transitive revoke vs START, both orders; historical binding/replay immutable, current START/CONTINUE denied |
@@ -34,7 +34,11 @@ separate deterministic PU evidence over `evaluate_executability`,
 `evaluate_validity_closure` and `require_live`. Actual PostgreSQL DC uses trusted
 post-lock `clock_timestamp` before/after and while waiting. No timestamp overwrite,
 caller clock, cached VALID, status job or new production clock seam establishes an
-expiry result. I04@WF remains NOT_RUN; DC cannot close its workflow obligation.
+expiry result. Lease/deadline equality exercises the merged pure `require_live` helper,
+not execution of the SQL owner at equality. The actual lease owner caps expiry at
+the root deadline; the real deadline-crossing case legally expires both together
+and does not causally isolate the SQL deadline predicate. I04@WF remains NOT_RUN;
+DC cannot close its workflow obligation.
 
 The namespace is exactly `kineticloop-kl026-interleave-<HEAD first7>-<root digest>`
 and `kineticloop_kl026_interleave_<HEAD first7>_<root digest>`, where HEAD is the full
@@ -55,19 +59,35 @@ intent outputs. S43 is generated only by actual ApplyControl/AcceptFactRevision
 owners. This is T6 guard evidence, not full F/D/N workflow evidence. I08 instead
 uses actual factset builder completion and source-bound admitted input revisions.
 
-## I03 blocker
+## TEST-local I03 cancellation
 
-The frozen strict `CancelIntent` class has T4/T8 boundaries. Its inherited TEST_ONLY
-validator allows only T6/T7; production scope requires a SUBJECT capability and an
-actor ID equal to subject. KL026 requires the independently authenticated TEST
-identity and an isolated TEST principal. Inventing a SUBJECT translation,
-`model_construct`, relaxed validation or a new identity/owner contract would
-exceed this tests-only task. The failing selector retains the exact TEST_ONLY
-validation rejection, with no skip/xfail. Root cancellation, intermediate terminal
-with RESERVED, cleanup, dispatch-first retained occupation and replay assertions
-are present but NOT_RUN behind this missing identity precondition.
+HG039 normally merged after KL075 ratifies the independent immutable
+`TestCancelIntentRequest` in this test file. It carries exact TEST subject, policy,
+environment and principal; root, attempt, reservation, request revision and fence;
+and a bounded key. It carries no caller actor, authorization grant or hash. The
+recipe uses separately trusted `PlanningIdentity(TEST)` and computes the canonical
+hash from the entire strict payload. The existing idle registration guard precedes
+replay; fresh SELECT-only registration binding repeats under S01.
 
-A separate bounded packet/identity-contract refinement must explicitly ratify the
-TEST cancellation request shape before I03 can execute. Existing S27 cancellation
-permissions and separate ledger cleanup need no speculative grant. This is a task
-BLOCKED condition, not an inferred requirement to change frozen semantics.
+Historical replay first uses the existing idle `replay_outcome`. After a real miss,
+the recipe locks S01 and reads successful S02 by exact subject/actor/command/key,
+checks hash/outcome, and returns non-executable history before live-root guards.
+No receipt lock precedes S27/S31. Live cancellation locks the exact intent and
+reservation, checks current request/attempt/fence and reservation linkage/state,
+and updates only S27.status with the existing atomic receipt/event/outbox. An
+actual FOUND_VALID_PLAN returns original completed facts without cancellation
+bookkeeping. Root fields and reservation/accounting are otherwise unchanged.
+
+Both cancellation/dispatch orders run. Real stale/foreign denials leave every
+relation unchanged. Two real preflight misses are synchronized before either
+mutation; the winner commits one cancellation and the contender rechecks history
+under S01, with a PostgreSQL blocker witness and no duplicate bookkeeping. Same-key
+changed payload conflicts. The separate actual ledger cleanup releases only
+RESERVED dimensions; DISPATCH_INTENT cleanup denies with no refund or resend.
+
+The named PU selector executes the installed model/binding/basis/history predicates,
+strict immutable payload and negative identity/scope/type/hash cases. Public
+TEST_ONLY CancelIntent still rejects T4/T8, with the merged 39-command registry and
+validator bytes unchanged. Original blocked results/raw logs are preserved as
+historical evidence, without reuse as current PASS. No production cancellation
+ingress, permission/grant, clock seam or frozen meaning changes here.

@@ -10,7 +10,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pytest
 
@@ -294,3 +294,214 @@ def test_namespace(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
         for cmd, env in calls
     )
     assert calls[-1][0][-3:] == ["down", "--volumes", "--remove-orphans"]
+
+
+def test_cancellation_identity() -> None:
+    """Installed HG039 candidate: strict payload, trusted identity, basis and history PU."""
+    import importlib.util
+    import json
+    import sys
+    from dataclasses import replace
+    from uuid import uuid4
+
+    from pydantic import ValidationError
+
+    from kineticloop.contracts.commands import PUBLIC_COMMAND_MODELS, CancelIntent, SubjectCommand
+    from kineticloop.identity import ActorRole, RoleIdentity
+    from kineticloop.persistence.planning import PlanningIdentity
+    from kineticloop.persistence.transactions import GuardRequired, IdempotencyConflict
+
+    spec = importlib.util.spec_from_file_location(
+        "kl026_cancel_pu", ROOT / "tests/db/test_protocol_interleavings.py"
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    cls = module.TestCancelIntentRequest
+    assert not issubclass(cls, SubjectCommand) and cls not in PUBLIC_COMMAND_MODELS
+    assert len(PUBLIC_COMMAND_MODELS) == 39 and CancelIntent in PUBLIC_COMMAND_MODELS
+    assert {"actor", "request_hash", "authorization_scope"}.isdisjoint(cls.model_fields)
+    root, attempt, reservation = uuid4(), uuid4(), uuid4()
+    request = module.cancel_request(root, attempt, reservation)
+    payload = request.model_dump(mode="python")
+    identity = PlanningIdentity(module.IDENTITY.actor, module.SUBJECT)
+    registration = ("TEST", module.POLICY, module.ENVIRONMENT, module.IDENTITY.principal)
+
+    def bind(
+        candidate: Any = request, actor: Any = identity, registered: Any = registration
+    ) -> Any:
+        return module.bind(
+            candidate,
+            actor,
+            module.POLICY,
+            module.ENVIRONMENT,
+            module.IDENTITY.principal,
+            registered,
+        )
+
+    scope, key, request_hash = bind()
+    assert scope == identity.key and key == request.key and len(request_hash) == 64
+    assert bind(cls.model_validate(dict(reversed(list(payload.items())))))[2] == request_hash
+    assert bind(cls.model_validate({**payload, "expected_fence": 2}))[2] != request_hash
+    with pytest.raises(ValidationError):
+        request.expected_fence = 2
+    with pytest.raises(ValidationError):
+        bind(request.model_copy(update={"expected_fence": True}))
+    malformed = [
+        ("subject_id", "invalid"),
+        ("policy_id", 2),
+        ("environment_id", None),
+        ("key", ""),
+        ("key", " "),
+        ("key", " cancel"),
+        ("key", "x" * 513),
+        ("principal", ""),
+        ("intent_id", root),
+        ("attempt_id", "foreign"),
+        ("reservation_id", False),
+        ("expected_request_revision", True),
+        ("expected_request_revision", 0),
+        ("expected_request_revision", "1"),
+        ("expected_fence", False),
+        ("expected_fence", -1),
+        ("expected_fence", "1"),
+        ("boundary", "T4"),
+        ("command_kind", "CommitBundle"),
+        ("actor", {}),
+        ("request_hash", "0" * 64),
+        ("authorization_scope", "production"),
+    ]
+    for field, value in malformed:
+        with pytest.raises(ValidationError):
+            cls.model_validate({**payload, field: value})
+    for field in ("subject_id", "policy_id", "environment_id", "principal"):
+        value = "kl_test_subject_2_login" if field == "principal" else str(uuid4())
+        with pytest.raises(GuardRequired):
+            bind(cls.model_validate({**payload, field: value}))
+    for actor in (
+        object(),
+        PlanningIdentity(RoleIdentity(str(uuid4()), ActorRole.SUBJECT), module.SUBJECT),
+        replace(identity, subject_id=uuid4()),
+        replace(identity, subject_id=cast(Any, str(module.SUBJECT))),
+    ):
+        with pytest.raises(GuardRequired):
+            bind(actor=actor)
+    for registered in (
+        None,
+        ("PRODUCTION", *registration[1:]),
+        ("TEST", uuid4(), *registration[2:]),
+        ("TEST", module.POLICY, uuid4(), module.IDENTITY.principal),
+        ("TEST", module.POLICY, module.ENVIRONMENT, "kl_test_subject_2_login"),
+    ):
+        with pytest.raises(GuardRequired):
+            bind(registered=registered)
+    for field in ("policy", "environment"):
+        args = dict(
+            identity=identity,
+            policy=module.POLICY,
+            environment=module.ENVIRONMENT,
+            principal=module.IDENTITY.principal,
+            registration=registration,
+        )
+        args[field] = str(args[field])
+        with pytest.raises(GuardRequired):
+            module.bind(request, **args)
+    foreign = cls.model_validate({**payload, "principal": "foreign_login"})
+    with pytest.raises(GuardRequired):
+        module.bind(
+            foreign,
+            identity,
+            module.POLICY,
+            module.ENVIRONMENT,
+            "foreign_login",
+            ("TEST", module.POLICY, module.ENVIRONMENT, "foreign_login"),
+        )
+    basis = dict(
+        subject_id=module.SUBJECT,
+        intent_id=root,
+        attempt_id=attempt,
+        reservation_id=reservation,
+        reservation_root=root,
+        reservation_attempt=attempt,
+        status="RUNNING",
+        request_revision=1,
+        fence=1,
+        reservation_status="RESERVED",
+    )
+    assert module.locked_basis(request, basis) == "CANCELLED"
+    assert (
+        module.locked_basis(request, {**basis, "reservation_status": "DISPATCH_INTENT"})
+        == "CANCELLED"
+    )
+    assert module.locked_basis(request, {**basis, "status": "FOUND_VALID_PLAN"}) == "COMPLETED_FACT"
+    bad_basis: list[tuple[str, Any]] = [
+        (field, uuid4())
+        for field in (
+            "subject_id",
+            "intent_id",
+            "attempt_id",
+            "reservation_id",
+            "reservation_root",
+            "reservation_attempt",
+        )
+    ]
+    bad_basis += [
+        ("status", "CANCELLED"),
+        ("status", "DEADLINE_EXCEEDED"),
+        ("request_revision", 2),
+        ("fence", 2),
+        ("reservation_status", "UNKNOWN"),
+    ]
+    for field, value in bad_basis:
+        with pytest.raises(GuardRequired):
+            module.locked_basis(request, {**basis, field: value})
+    receipt = (
+        request_hash,
+        "SUCCEEDED",
+        {"outcome": {"intent_id": str(root), "status": "CANCELLED"}},
+    )
+    assert module.historical(request, None) is None
+    assert module.historical(request, receipt) == {
+        **receipt[2]["outcome"],
+        "replayed": True,
+        "executable": False,
+    }
+    for receipt_bad in (
+        ("0" * 64, *receipt[1:]),
+        (request_hash, "FAILED", receipt[2]),
+        (request_hash, "SUCCEEDED", {}),
+    ):
+        with pytest.raises(IdempotencyConflict):
+            module.historical(request, receipt_bad)
+    with pytest.raises(IdempotencyConflict):
+        module.historical(cls.model_validate({**payload, "expected_fence": 2}), receipt)
+    for boundary in ("T4", "T8"):
+        with pytest.raises(ValidationError, match="TEST_ONLY is admitted only at T6/T7"):
+            CancelIntent.model_validate_json(
+                json.dumps({
+                    **module.wire("CancelIntent"),
+                    "boundary": boundary,
+                    "intent_id": str(root),
+                    "expected_request_revision": 1,
+                    "expected_fence": 1,
+                })
+            )
+    # Public validator/registry bytes remain those of the actual merged authority.
+    source = "src/kineticloop/contracts/commands.py"
+    assert (ROOT / source).read_bytes() == subprocess.check_output(
+        ["git", "show", "37de321:" + source], cwd=ROOT
+    )
+    print(
+        "KL026_PU "
+        + json.dumps(
+            {
+                "check": "cancellation_identity_pu",
+                "strict_negative_cases": len(malformed),
+                "basis_negative_cases": len(bad_basis),
+                "installed_candidate": True,
+                "public_commands": len(PUBLIC_COMMAND_MODELS),
+                "layer": "PU",
+            }
+        )
+    )

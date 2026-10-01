@@ -1,0 +1,85 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-026",
+  "tested_commit": "78d0158cbf9f0e22492bfef89287a41dced79a88",
+  "requirement_set_sha256": "c7ce1793c0b5fcbdec99afc8742e33b60e42cb633eacf9424ae84c4639dfa750",
+  "migration_revision": "e8c2f1a6b904",
+  "environment": {
+    "UV_PROJECT_ENVIRONMENT": "/private/tmp/kl026-venv",
+    "UV_NO_SYNC": "1",
+    "UV_CACHE_DIR": "/private/tmp/kl026-uv-cache",
+    "PYTHONPATH": "/Users/davetian/.codex/worktrees/b89d/KineticLoop/src",
+    "PYTEST_ADDOPTS": "-s"
+  },
+  "commands": [
+    {
+      "check_id": "interleaving_namespace_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_namespace",
+      "tested_commit": "78d0158cbf9f0e22492bfef89287a41dced79a88",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 0.5095067920628935,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/interleaving_namespace_pu-ownruntime-78d0158cbf9f0e22492bfef89287a41dced79a88.log",
+      "sha256": "05b729c7361bbdcff6fb2d60acb978faaf5480843d1ff2a0ea3b446480646faa"
+    },
+    {
+      "check_id": "time_boundary_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_time_boundaries",
+      "tested_commit": "78d0158cbf9f0e22492bfef89287a41dced79a88",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 0.09865025011822581,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/time_boundary_pu-ownruntime-78d0158cbf9f0e22492bfef89287a41dced79a88.log",
+      "sha256": "c7f3056aa661af9e06c3f8afc9b1e623459e0fa51fde7afd699b4d6a7be4f0f9"
+    },
+    {
+      "check_id": "i01_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_publish_vs_user_revoke",
+      "tested_commit": "78d0158cbf9f0e22492bfef89287a41dced79a88",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 5.854396833106875,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/i01_dc-ownruntime-78d0158cbf9f0e22492bfef89287a41dced79a88.log",
+      "sha256": "3944ee9fb7b89cda30c1defbcd8dc20eeecaaedc944cd460751340b1fd9ca196"
+    },
+    {
+      "check_id": "i02_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_start_vs_user_revoke",
+      "tested_commit": "78d0158cbf9f0e22492bfef89287a41dced79a88",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 6.043190083000809,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/i02_dc-ownruntime-78d0158cbf9f0e22492bfef89287a41dced79a88.log",
+      "sha256": "60df161ce3d4170d091614ab8b51d8c209fabf6c86a26fbf2a2ba666f4d8202d"
+    },
+    {
+      "check_id": "i03_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_cancel_vs_dispatch",
+      "tested_commit": "78d0158cbf9f0e22492bfef89287a41dced79a88",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 11.637375125195831,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/i03_dc-ownruntime-78d0158cbf9f0e22492bfef89287a41dced79a88.log",
+      "sha256": "22fb11a3da8e41471f166ec46041c1a69b07e1c23154ac0cdd0d5287ef5bc0d1"
+    },
+    {
+      "check_id": "i04_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_takeover_vs_commit",
+      "tested_commit": "78d0158cbf9f0e22492bfef89287a41dced79a88",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 12.255145707866177,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/i04_dc-ownruntime-78d0158cbf9f0e22492bfef89287a41dced79a88.log",
+      "sha256": "6aebd50278ac96691b01527554788a3574baa0ecb3ab3472206a514eb304ac97"
+    },
+    {
+      "check_id": "i05_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_issue",
+      "tested_commit": "78d0158cbf9f0e22492bfef89287a41dced79a88",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 6.230130833107978,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/i05_dc-ownruntime-78d0158cbf9f0e22492bfef89287a41dced79a88.log",
+      "sha256": "eccc30728ae76b2fc94e0c842e64f37e79f6437db3c7c7e1948c277e788a37c3"
+    }
+  ]
+}

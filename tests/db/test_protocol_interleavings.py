@@ -11,15 +11,23 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
-from threading import Event
-from typing import Any
+from threading import Barrier, Event
+from typing import Annotated, Any, ClassVar, Literal
 from uuid import UUID, uuid4
 
 import psycopg
 import pytest
 from psycopg.types.json import Jsonb
+from pydantic import BaseModel, ConfigDict, StringConstraints
 
-from kineticloop.contracts.commands import CancelIntent, CommitBundle, RevokeArtifact, StartSession
+from kineticloop.contracts.commands import (
+    CanonicalId,
+    CommitBundle,
+    NonNegativeInt,
+    PositiveInt,
+    RevokeArtifact,
+    StartSession,
+)
 from kineticloop.contracts.safety_registry import revocation_payload_hash
 from kineticloop.identity import ActorRole, RoleIdentity
 from kineticloop.persistence.call_ledger import (
@@ -47,6 +55,7 @@ from kineticloop.persistence.safety_registry import revoke_artifact
 from kineticloop.persistence.transactions import (
     EventWrite,
     GuardRequired,
+    IdempotencyConflict,
     ReplayNotFound,
     RepositoryTransaction,
     RepositoryTransactionError,
@@ -749,6 +758,7 @@ def race(
     first_registry: bool = False,
     second_registry: bool = False,
     second_denies: bool = False,
+    duplicate_preflight: bool = False,
 ) -> tuple[Any, Any]:
     """Pause real winner after owned mutation/finish, still uncommitted; observe loser."""
     from threading import local
@@ -758,6 +768,8 @@ def race(
     pids: dict[str, int] = {}
     owned: dict[str, dict[str, Any]] = {}
     original = RepositoryTransaction.finish
+    original_replay = replay_outcome
+    preflights = Barrier(2)
     baseline = snapshot(urls)
 
     def held(db: Any, name: str) -> None:
@@ -775,6 +787,18 @@ def race(
         original(tx)
         if getattr(thread, "db", None) is not None:
             held(thread.db, thread.name)
+
+    def synchronized_replay(*args: Any, **kwargs: Any) -> Any:
+        try:
+            return original_replay(*args, **kwargs)
+        except ReplayNotFound:
+            # Both idle-connection lookups actually miss before either mutation.
+            # Delay only the loser after its real lookup, so it must use the fresh
+            # S01 receipt recheck after the winning commit (ACK-loss window).
+            preflights.wait(8)
+            if thread.name == "loser":
+                assert locked.wait(8), "same-key preflight winner deadline"
+            raise
 
     class RegistryCursor(psycopg.Cursor[Any]):
         def execute(self, query: Any, params: Any = None, **kwargs: Any) -> Any:
@@ -802,12 +826,17 @@ def race(
     started = time.monotonic()
     with monkeypatch.context() as patch, ThreadPoolExecutor(max_workers=2) as pool:
         patch.setattr(RepositoryTransaction, "finish", finish)
+        if duplicate_preflight:
+            patch.setattr(sys.modules[__name__], "replay_outcome", synchronized_replay)
         winner = pool.submit(run, first, "winner", first_registry)
+        if duplicate_preflight:
+            loser = pool.submit(run, second, "loser", second_registry)
         try:
             assert locked.wait(8), (
                 f"winner never reached owned finish: {winner.result(timeout=1) if winner.done() else 'still running'}"
             )
-            loser = pool.submit(run, second, "loser", second_registry)
+            if not duplicate_preflight:
+                loser = pool.submit(run, second, "loser", second_registry)
             assert contender_ready.wait(8)
             with connect(urls["admin"], autocommit=True) as observer:
                 witness = observe_block(observer, pids["winner"], pids["loser"])
@@ -1143,66 +1172,213 @@ def test_artifact_revoke_vs_publish(urls: dict[str, str], monkeypatch: pytest.Mo
     artifact_race(urls, monkeypatch, "publish", "I07@DC")
 
 
-def cancel_intent(db: Any, command: CancelIntent, reservation: UUID) -> Mapping[str, Any]:
-    """Ratified trusted TEST root owner; no ledger accessors or S32 write grant."""
+Key = Annotated[str, StringConstraints(min_length=1, max_length=512, pattern=r"^\S(?:.*\S)?$")]
+
+
+class TestCancelIntentRequest(BaseModel):
+    __test__: ClassVar[bool] = False
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+    command_kind: Literal["CancelIntent"]
+    boundary: Literal["T8"]
+    subject_id: CanonicalId
+    policy_id: CanonicalId
+    environment_id: CanonicalId
+    principal: Key
+    key: Key
+    intent_id: CanonicalId
+    attempt_id: CanonicalId
+    reservation_id: CanonicalId
+    expected_request_revision: PositiveInt
+    expected_fence: NonNegativeInt
+
+
+def bind(request, identity, policy, environment, principal, registration):
+    """Trusted owner supplies identity and actual registration; request supplies no authority/hash."""
     if (
-        type(command) is not CancelIntent
-        or command.actor.role_identity != IDENTITY.actor
-        or command.subject_id != str(SUBJECT)
-        or digest({k: v for k, v in command.model_dump(mode="json").items() if k != "request_hash"})
-        != command.request_hash
+        type(request) is not TestCancelIntentRequest
+        or type(identity) is not PlanningIdentity
+        or identity.actor.role is not ActorRole.TEST
+        or type(identity.subject_id) is not UUID
+        or type(policy) is not UUID
+        or type(environment) is not UUID
+        or principal not in {"kl_test_subject_1_login", "kl_test_subject_2_login"}
+        or request.subject_id != str(identity.subject_id)
+        or (request.policy_id, request.environment_id, request.principal)
+        != (str(policy), str(environment), principal)
+        or registration != ("TEST", policy, environment, principal)
     ):
-        raise GuardRequired("authenticated TEST cancellation identity mismatch")
-    service(db)._guard(SUBJECT)
+        raise GuardRequired("exact registered TEST cancellation identity required")
+    request = TestCancelIntentRequest.model_validate(request.model_dump(mode="python"))
+    return identity.key, request.key, digest(request.model_dump(mode="json"))
+
+
+def locked_basis(request, row):
+    """Pure feasibility predicate for fresh SELECT-only S01->S27->S31 observations."""
+    if (
+        row["subject_id"] != UUID(request.subject_id)
+        or row["intent_id"] != UUID(request.intent_id)
+        or row["attempt_id"] != UUID(request.attempt_id)
+        or row["reservation_id"] != UUID(request.reservation_id)
+        or row["reservation_root"] != row["intent_id"]
+        or row["reservation_attempt"] != row["attempt_id"]
+    ):
+        raise GuardRequired("exact root/attempt/reservation required")
+    if row["status"] == "FOUND_VALID_PLAN":
+        return "COMPLETED_FACT"
+    if (
+        row["status"] not in {"ADMITTED", "RUNNING"}
+        or row["request_revision"] != request.expected_request_revision
+        or row["fence"] != request.expected_fence
+        or row["reservation_status"] not in {"RESERVED", "DISPATCH_INTENT"}
+    ):
+        raise GuardRequired("terminal/stale cancellation basis")
+    return "CANCELLED"
+
+
+def historical(request, receipt):
+    """Bounded successful S02 observation under S01, before current live-root checks."""
+    if receipt is None:
+        return None
+    request_hash, status, payload = receipt
+    if (
+        request_hash != digest(request.model_dump(mode="json"))
+        or status != "SUCCEEDED"
+        or "outcome" not in payload
+    ):
+        raise IdempotencyConflict("command key request hash/outcome mismatch")
+    return {**payload["outcome"], "replayed": True, "executable": False}
+
+
+def cancellation_registration(db: Any, subject: UUID) -> Any:
+    return db.execute(
+        "SELECT scope.namespace,scope.policy_id,scope.environment_id,binding.principal_name "
+        "FROM kineticloop.subject_scopes scope JOIN kineticloop.subject_principal_bindings binding "
+        "ON binding.subject_id=scope.subject_id AND binding.namespace=scope.namespace "
+        "WHERE scope.subject_id=%s",
+        (subject,),
+    ).fetchone()
+
+
+def cancel_intent(
+    db: Any,
+    command: TestCancelIntentRequest,
+    identity: PlanningIdentity | None = None,
+) -> Mapping[str, Any]:
+    """HG039-ratified TEST recipe over the unchanged restricted T8 owner."""
+    trusted = PlanningIdentity(IDENTITY.actor, SUBJECT) if identity is None else identity
+    # Scope and trusted identity are checked before any historical replay. The existing
+    # idle-connection registration guard is followed by a fresh binding under S01.
+    bind(
+        command,
+        trusted,
+        POLICY,
+        ENVIRONMENT,
+        IDENTITY.principal,
+        ("TEST", POLICY, ENVIRONMENT, IDENTITY.principal),
+    )
+    service(db)._guard(trusted.subject_id)
+    actor, key, request_hash = bind(
+        command,
+        trusted,
+        POLICY,
+        ENVIRONMENT,
+        IDENTITY.principal,
+        ("TEST", POLICY, ENVIRONMENT, IDENTITY.principal),
+    )
     try:
         prior = replay_outcome(
             db,
             "CancelIntent",
-            SUBJECT,
-            actor_scope=IDENTITY.key,
-            client_key=command.idempotency_key,
-            request_hash=command.request_hash,
+            trusted.subject_id,
+            actor_scope=actor,
+            client_key=key,
+            request_hash=request_hash,
         )
         return {**prior, "replayed": True, "executable": False}
     except ReplayNotFound:
         pass
-    intent = UUID(command.intent_id)
+    intent, reservation = UUID(command.intent_id), UUID(command.reservation_id)
 
     def operation(tx: RepositoryTransaction) -> Mapping[str, Any]:
         tx.lock_subject()
+        bind(
+            command,
+            trusted,
+            POLICY,
+            ENVIRONMENT,
+            IDENTITY.principal,
+            cancellation_registration(db, trusted.subject_id),
+        )
+        # SELECT-only successful receipt lookup needs no receipt lock before S27/S31.
+        # S01 serializes same-key contenders; history is checked before live-root guards.
+        prior = db.execute(
+            "SELECT request_hash,status,typed_payload FROM kineticloop.command_receipts "
+            "WHERE subject_id=%s AND actor_scope=%s AND command_kind='CancelIntent' AND client_key=%s",
+            (trusted.subject_id, actor, key),
+        ).fetchone()
+        previous = historical(command, prior)
+        if previous is not None:
+            return previous
         tx.lock_intents((intent,))
         tx.lock_reservations((reservation,))
         row = db.execute(
-            "SELECT i.status,r.request_revision,i.fence_token,i.current_attempt_id,i.typed_payload,c.ref_s27_id,c.ref_s29_id,c.status,c.typed_payload FROM kineticloop.planning_intents i JOIN kineticloop.planning_request_revisions r ON r.id=i.current_request_revision_id AND r.subject_id=i.subject_id JOIN kineticloop.call_reservations c ON c.subject_id=i.subject_id AND c.id=%s WHERE i.subject_id=%s AND i.id=%s",
-            (reservation, SUBJECT, intent),
+            "SELECT i.subject_id,i.id,i.current_attempt_id,c.id,c.ref_s27_id,c.ref_s29_id,"
+            "i.status,r.request_revision,i.fence_token,c.status,i.typed_payload,"
+            "i.result_bundle_revision_id,i.result_authorization_id,c.typed_payload "
+            "FROM kineticloop.planning_intents i JOIN kineticloop.planning_request_revisions r "
+            "ON r.id=i.current_request_revision_id AND r.subject_id=i.subject_id "
+            "JOIN kineticloop.planning_attempts a ON a.id=i.current_attempt_id AND a.subject_id=i.subject_id "
+            "AND a.ref_s27_id=i.id AND a.ref_s28_id=r.id "
+            "JOIN kineticloop.call_reservations c ON c.subject_id=i.subject_id AND c.id=%s "
+            "WHERE i.subject_id=%s AND i.id=%s",
+            (reservation, trusted.subject_id, intent),
         ).fetchone()
-        if row is None or row[5] != intent or row[6] != row[3]:
+        if row is None:
             raise GuardRequired("exact cancellation root/attempt/reservation required")
-        if row[0] == "FOUND_VALID_PLAN":
-            return {"intent_id": str(intent), "completed_fact": row[4], "executable": False}
-        if (
-            row[0] not in {"ADMITTED", "RUNNING"}
-            or row[1] != command.expected_request_revision
-            or row[2] != command.expected_fence
-            or row[7] not in {"RESERVED", "DISPATCH_INTENT"}
-        ):
-            raise GuardRequired("terminal/stale cancellation basis")
-        receipt = uuid4()
+        basis = dict(
+            zip(
+                (
+                    "subject_id",
+                    "intent_id",
+                    "attempt_id",
+                    "reservation_id",
+                    "reservation_root",
+                    "reservation_attempt",
+                    "status",
+                    "request_revision",
+                    "fence",
+                    "reservation_status",
+                ),
+                row[:10],
+                strict=True,
+            )
+        )
+        if locked_basis(command, basis) == "COMPLETED_FACT":
+            return {
+                "intent_id": str(intent),
+                "status": row[6],
+                "completed_fact": row[10],
+                "bundle_id": str(row[11]),
+                "authorization_id": str(row[12]),
+                "executable": False,
+            }
 
         def mutation(session: RestrictedSqlSession) -> Mapping[str, Any]:
-            session.update("S27", {"status": "CANCELLED"}, {"subject_id": SUBJECT, "id": intent})
+            session.update(
+                "S27", {"status": "CANCELLED"}, {"subject_id": trusted.subject_id, "id": intent}
+            )
             return {"intent_id": str(intent), "status": "CANCELLED", "executable": False}
 
         outcome, replayed = tx.idempotent_outcome(
-            receipt_id=receipt,
-            actor_scope=IDENTITY.key,
-            client_key=command.idempotency_key,
-            request_hash=command.request_hash,
+            receipt_id=uuid4(),
+            actor_scope=actor,
+            client_key=key,
+            request_hash=request_hash,
             mutation=mutation,
             event=EventWrite(
                 uuid4(),
                 "PLANNING_COMMAND",
-                digest([IDENTITY.key, "CancelIntent", command.idempotency_key]),
+                digest([actor, "CancelIntent", key]),
                 1,
                 "INTENT_CANCELLED",
                 "planning",
@@ -1211,7 +1387,28 @@ def cancel_intent(db: Any, command: CancelIntent, reservation: UUID) -> Mapping[
         )
         return {**outcome, "replayed": replayed, "executable": False}
 
-    return execute_command(db, "CancelIntent", SUBJECT, operation)
+    return execute_command(db, "CancelIntent", trusted.subject_id, operation)
+
+
+def cancel_request(
+    root: UUID, attempt: UUID, reservation: UUID, key: str = "root-cancel"
+) -> TestCancelIntentRequest:
+    return TestCancelIntentRequest.model_validate(
+        {
+            "command_kind": "CancelIntent",
+            "boundary": "T8",
+            "subject_id": str(SUBJECT),
+            "policy_id": str(POLICY),
+            "environment_id": str(ENVIRONMENT),
+            "principal": IDENTITY.principal,
+            "key": key,
+            "intent_id": str(root),
+            "attempt_id": str(attempt),
+            "reservation_id": str(reservation),
+            "expected_request_revision": 1,
+            "expected_fence": 1,
+        }
+    )
 
 
 def ledger(db: Any) -> CallLedgerService:
@@ -1220,39 +1417,56 @@ def ledger(db: Any) -> CallLedgerService:
     )
 
 
+def cancellation_case(urls: dict[str, str]) -> Any:
+    seed_inputs(urls)
+    commit = upstream(urls, publish(urls))
+    root, attempt = UUID(commit.intent_id), UUID(commit.attempt_id)
+    reserve = ReserveCall(
+        SUBJECT,
+        "reserve",
+        root,
+        attempt,
+        1,
+        1,
+        "one-physical-request",
+        AccountingIdentity("test-provider", "test-model", "config-v1", "price-v1"),
+        {"calls": 1, "tokens": 100, "tools": 1},
+    )
+    with connect(urls["admin"]) as db:
+        reserved = ledger(db).reserve(reserve)
+    reservation = UUID(reserved["reservation_id"])
+    permit = PermitDispatch(SUBJECT, "permit", root, reservation, attempt, 1, 1)
+    return commit, reserve, reservation, permit, cancel_request(root, attempt, reservation)
+
+
 def test_cancel_vs_dispatch(urls: dict[str, str], monkeypatch: pytest.MonkeyPatch) -> None:
     for cancel_first in (True, False):
-        seed_inputs(urls)
-        commit = upstream(urls, publish(urls))
+        commit, reserve, reservation, permit, cancellation = cancellation_case(urls)
         root, attempt = UUID(commit.intent_id), UUID(commit.attempt_id)
-        reserve = ReserveCall(
-            SUBJECT,
-            "reserve",
-            root,
-            attempt,
-            1,
-            1,
-            "one-physical-request",
-            AccountingIdentity("test-provider", "test-model", "config-v1", "price-v1"),
-            {"calls": 1, "tokens": 100, "tools": 1},
-        )
-        with connect(urls["admin"]) as db:
-            reserved = ledger(db).reserve(reserve)
-        reservation = UUID(reserved["reservation_id"])
-        permit = PermitDispatch(SUBJECT, "permit", root, reservation, attempt, 1, 1)
-        cancellation = signed(
-            CancelIntent,
-            {
-                **wire("CancelIntent"),
-                "boundary": "T8",
-                "intent_id": str(root),
-                "expected_request_revision": 1,
-                "expected_fence": 1,
-            },
-        )
+        # Every stale/cross-root and foreign-scope attempt runs the installed recipe,
+        # with whole-relation no-effect assertions before any successful cancellation.
+        payload = cancellation.model_dump(mode="python")
+        negatives: list[tuple[str, Any]] = [("expected_request_revision", 2), ("expected_fence", 2)]
+        negatives += [
+            (field, str(uuid4()))
+            for field in (
+                "intent_id",
+                "attempt_id",
+                "reservation_id",
+                "subject_id",
+                "policy_id",
+                "environment_id",
+            )
+        ]
+        negatives.append(("principal", "kl_test_subject_2_login"))
+        for field, value in negatives:
+            bad = TestCancelIntentRequest.model_validate({**payload, field: value})
+            bounded_denial(urls, lambda db: cancel_intent(db, bad))
+        other_role = PlanningIdentity(RoleIdentity(str(uuid4()), ActorRole.SUBJECT), SUBJECT)
+        bounded_denial(urls, lambda db: cancel_intent(db, cancellation, other_role))
 
         def root_cancel(db):
-            return cancel_intent(db, cancellation, reservation)
+            return cancel_intent(db, cancellation)
 
         def dispatch(db):
             return ledger(db).permit(permit)
@@ -1332,9 +1546,68 @@ def test_cancel_vs_dispatch(urls: dict[str, str], monkeypatch: pytest.MonkeyPatc
             assert_historical(urls, root_cancel, b)
             assert_bookkeeping(urls, "PermitDispatch")
             assert_bookkeeping(urls, "CancelUndispatched", 0)
+        conflict = TestCancelIntentRequest.model_validate({**payload, "expected_fence": 2})
+        bounded_denial(urls, lambda db: cancel_intent(db, conflict), match="request hash")
         assert_bookkeeping(urls, "CancelIntent")
         assert_bookkeeping(urls, "ReserveCall")
         # No sender/provider is instantiated or called by this DC suite.
+
+    # Two genuine preflight misses followed by one cancellation and an under-S01
+    # successful historical receipt lookup. No fabricated replay or nested accessor.
+    commit, reserve, reservation, permit, cancellation = cancellation_case(urls)
+    root = UUID(commit.intent_id)
+    original, duplicate = race(
+        urls,
+        monkeypatch,
+        "I03@DC",
+        lambda db: cancel_intent(db, cancellation),
+        lambda db: cancel_intent(db, cancellation),
+        duplicate_preflight=True,
+    )
+    assert not original["replayed"] and duplicate["replayed"]
+    assert duplicate == {**original, "replayed": True, "executable": False}
+    assert read(urls, "SELECT status FROM kineticloop.planning_intents WHERE id=%s", (root,)) == [
+        ("CANCELLED",)
+    ]
+    assert_bookkeeping(urls, "CancelIntent", 1)
+    assert_bookkeeping(urls, "ReserveCall", 1)
+    before = snapshot(urls)
+    with connect(urls["admin"]) as db:
+        historical_result = cancel_intent(db, cancellation)
+    assert historical_result == duplicate and snapshot(urls) == before
+
+    # Actual successful T6 facts survive CancelIntent without cancellation bookkeeping.
+    commit, reserve, reservation, permit, cancellation = cancellation_case(urls)
+    root = UUID(commit.intent_id)
+    with connect(urls["admin"]) as db:
+        ledger(db).cancel(CancelUndispatched(SUBJECT, "precommit-cleanup", root, reservation))
+        completed = service(db).commit(commit)
+    before = snapshot(urls)
+    with connect(urls["admin"]) as db:
+        fact = cancel_intent(db, cancellation)
+    assert fact["status"] == "FOUND_VALID_PLAN" and not fact["executable"]
+    assert fact["bundle_id"] == completed["bundle_id"]
+    assert fact["authorization_id"] == completed["authorization_id"]
+    assert snapshot(urls) == before
+    assert_bookkeeping(urls, "CancelIntent", 0)
+    assert_bookkeeping(urls, "CommitBundle", 1)
+    emit_raw(
+        "\nKL026_I03_IDENTITY "
+        + json.dumps(
+            {
+                "tested_commit": head_sha(),
+                "layer": "DC",
+                "stale_and_foreign_denials": 20,
+                "same_key_conflict": True,
+                "two_actual_preflight_misses": True,
+                "one_cancellation_receipt": True,
+                "terminal_success_preserved": True,
+                "persisted": snapshot(urls),
+            },
+            default=str,
+        )
+        + "\n"
+    )
 
 
 EVIDENCE, CANDIDATE, UNDERLYING, ADMISSION = [UUID(int=26100 + n) for n in range(4)]
