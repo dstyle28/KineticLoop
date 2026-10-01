@@ -20,7 +20,7 @@ from kineticloop.contracts.commands import (
 )
 from kineticloop.identity import ActorRole, RoleIdentity
 from kineticloop.persistence.planning import PlanningIdentity
-from kineticloop.persistence.transactions import GuardRequired
+from kineticloop.persistence.transactions import GuardRequired, IdempotencyConflict
 
 ROOT = Path(__file__).resolve().parents[2]
 PROPOSAL = ROOT / 'docs/exec-plans/evidence/HG-039/cancel_request.proposal.py'
@@ -203,3 +203,20 @@ def test_forged_copy_and_wrong_type_reject() -> None:
         bind(object())
     with pytest.raises(ValidationError):
         bind(request.model_copy(update={"expected_fence": True}))
+
+
+def test_server_computed_hash_conflict_and_non_executable_historical_fact() -> None:
+    request = candidate.TestCancelIntentRequest.model_validate(payload())
+    receipt = (bind(request)[2], "SUCCEEDED", {"outcome": {"intent_id": str(uid(4)), "status": "CANCELLED"}})
+    original = copy.deepcopy(receipt)
+    assert candidate.historical(request, None) is None
+    replay = candidate.historical(request, receipt)
+    assert replay == {**receipt[2]["outcome"], "replayed": True, "executable": False}
+    assert receipt == original
+    different = candidate.TestCancelIntentRequest.model_validate({**payload(), "expected_fence": 2})
+    with pytest.raises(IdempotencyConflict):
+        candidate.historical(different, receipt)
+    with pytest.raises(IdempotencyConflict):
+        candidate.historical(request, ("0" * 64, "SUCCEEDED", receipt[2]))
+    with pytest.raises(IdempotencyConflict):
+        candidate.historical(request, (receipt[0], "FAILED", receipt[2]))

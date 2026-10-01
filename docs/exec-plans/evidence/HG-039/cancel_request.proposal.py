@@ -59,3 +59,15 @@ def locked_basis(request, row):
             or row["reservation_status"] not in {"RESERVED", "DISPATCH_INTENT"}):
         raise GuardRequired("terminal/stale cancellation basis")
     return "CANCELLED"
+
+
+def historical(request, receipt):
+    """Bounded successful S02 observation under S01, before current live-root checks."""
+    from kineticloop.persistence.transactions import IdempotencyConflict
+    if receipt is None:
+        return None
+    request_hash, status, payload = receipt
+    if (request_hash != digest(request.model_dump(mode="json"))
+            or status != "SUCCEEDED" or "outcome" not in payload):
+        raise IdempotencyConflict("command key request hash/outcome mismatch")
+    return {**payload["outcome"], "replayed": True, "executable": False}
