@@ -1,6 +1,7 @@
 """Ratified KL074 scope and readiness boundaries fail closed."""
 from __future__ import annotations
 
+import ast
 import copy
 import importlib.util
 import json
@@ -50,7 +51,7 @@ def test_readiness_packet_boundary_drift_fails_closed(heading: str) -> None:
 def candidate(path: str, before: bytes) -> bytes:
     if path == 'compose.yaml':
         return before.replace(b'pg_isready --username', b'pg_isready --host 127.0.0.1 --port 5432 --username')
-    return before.replace(b'"pg_isready",\n', b'"pg_isready",\n                "--host",\n                "127.0.0.1",\n                "--port",\n                "5432",\n')
+    return v.readiness_lifecycle_candidate(before)
 
 
 @pytest.mark.parametrize('path', ['compose.yaml', 'src/kineticloop/db/lifecycle.py'])
@@ -116,3 +117,62 @@ def test_timeout_handler_cannot_replay_sql() -> None:
         b'        except subprocess.TimeoutExpired:\n            self._runner(command)\n        except FileNotFoundError as error:',
     )
     assert v.readiness_content_errors(path, before, after)
+
+
+@pytest.mark.parametrize('change', [
+    '        self.namespace = DatabaseNamespace(project_name="shared", database_name="postgres")\n',
+    '        self.user = "foreign"\n',
+    '        self.password = SecretValue("foreign")\n',
+    '        self.root = Path("/shared")\n',
+    '        self.compose_file = Path("/shared/compose.yaml")\n',
+    '        self._runner(["psql", "--command", "DROP DATABASE postgres"], check=True)\n',
+    '        subprocess.run(["psql", "--command", "DROP DATABASE postgres"])\n',
+])
+def test_startup_ownership_and_direct_sql_bypass_rejected(change: str) -> None:
+    path = 'src/kineticloop/db/lifecycle.py'
+    before = v.git(ROOT, 'show', BASE + ':' + path)
+    after = candidate(path, before).replace(b'        self.validate_compose()\n', change.encode() + b'        self.validate_compose()\n')
+    assert v.readiness_content_errors(path, before, after) == ['readiness-lifecycle-content-scope']
+
+
+def test_foreign_startup_endpoint_cannot_hide_behind_loopback_literal() -> None:
+    path = 'src/kineticloop/db/lifecycle.py'
+    before = v.git(ROOT, 'show', BASE + ':' + path)
+    after = candidate(path, before).replace(b'"127.0.0.1",', b'"shared",', 1).replace(
+        b'        self.validate_compose()\n', b'        endpoint_note = "127.0.0.1"\n        self.validate_compose()\n')
+    assert v.readiness_content_errors(path, before, after) == ['readiness-lifecycle-content-scope']
+
+
+@pytest.mark.parametrize('old,new', [
+    (b'timeout_seconds=remaining', b'timeout_seconds=None'),
+    (b'timeout=timeout_seconds', b'timeout=None'),
+    (b'time.sleep(min(0.5, max(0.0, deadline - time.monotonic())))', b'time.sleep(5.0)'),
+    (b'if remaining <= 0:', b'if remaining < -60:'),
+])
+def test_bounded_deadline_and_probe_plumbing_drift_rejected(old: bytes, new: bytes) -> None:
+    path = 'src/kineticloop/db/lifecycle.py'
+    before = v.git(ROOT, 'show', BASE + ':' + path)
+    after = candidate(path, before).replace(old, new)
+    assert after != candidate(path, before)
+    assert v.readiness_content_errors(path, before, after) == ['readiness-lifecycle-content-scope']
+
+
+def test_positive_candidate_compiles_and_preserves_sql_and_ownership() -> None:
+    path = 'src/kineticloop/db/lifecycle.py'
+    before = v.git(ROOT, 'show', BASE + ':' + path)
+    after = candidate(path, before)
+    compile(after, path, 'exec')
+    def methods(raw: bytes) -> dict[str, ast.FunctionDef]:
+        cls = next(n for n in ast.parse(raw).body if isinstance(n, ast.ClassDef) and n.name == 'DatabaseLifecycle')
+        return {n.name:n for n in cls.body if isinstance(n, ast.FunctionDef)}
+    old, new = methods(before), methods(after)
+    for name in ['__init__', 'compose_command', 'environment', '_psql', 'execute_sql', 'connection', 'destroy']:
+        assert ast.dump(old[name]) == ast.dump(new[name])
+    for name in ['start', 'reset']:
+        probes = [n for n in ast.walk(new[name]) if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr == 'compose_command' and any(isinstance(a,ast.Constant) and a.value == 'pg_isready' for a in n.args)]
+        assert len(probes) == 1
+        values = [a.value if isinstance(a, ast.Constant) else None for a in probes[0].args]
+        assert values[values.index('--host')+1] == '127.0.0.1'
+        assert values[values.index('--port')+1] == '5432'
+    assert b'timeout_seconds=remaining' in after and b'timeout=timeout_seconds' in after
+    assert v.readiness_content_errors(path, before + b'\n', after) == ['readiness-lifecycle-baseline-unexpected']

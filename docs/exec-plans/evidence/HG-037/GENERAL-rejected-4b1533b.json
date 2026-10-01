@@ -1,0 +1,48 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-037",
+  "reviewed_head_sha": "4b1533bc6bf2052d859e2b079116e0d408013f43",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "priority": 1,
+      "title": "Constrain the actual startup command and preserve namespace ownership",
+      "file": "tools/harness/validate_harness.py",
+      "start_line": 3668,
+      "end_line": 3677,
+      "description": "readiness_content_errors checks only whether four endpoint substrings occur anywhere in start(), rejects a few direct method names, then replaces the entire proposed start() AST with the base method before the final comparison. Consequently the new KL-074 scope gate accepts changes outside the ratified readiness boundary. Against the committed protected-base lifecycle, I added the allowed explicit TCP arguments and then inserted self.namespace = DatabaseNamespace(project_name=\"shared\", database_name=\"postgres\") before self.validate_compose() in start(): the guard returned []. Unchanged reset() subsequently uses this overwritten namespace for its DROP/CREATE target and Compose project. Independently, changing the actual startup probe's host to \"shared\" while adding an unused endpoint_note = \"127.0.0.1\" also returned []. These are concrete violations of the packet's owned-namespace and exact-loopback boundaries, not PostgreSQL test failures. All 29 committed scope regressions pass and do not cover these bypasses.",
+      "requested_change": "Constrain permitted start() changes structurally to the actual readiness command and bounded deadline/probe plumbing. Preserve command/project/namespace/credential ownership and normal startup handling, and validate host/port on the executed pg_isready call rather than as arbitrary method substrings. Add negative regressions proving namespace/credential mutations, foreign endpoint substitution with unused expected literals, and direct command-based SQL bypasses fail closed, alongside a positive bounded-readiness candidate. Commit a new tested governance revision with updated bound evidence, then obtain fresh reviews."
+    }
+  ],
+  "observations": [
+    "Direct Git diff inspection and an independent local read-only audit found exactly 48 changed files, matching HG-037 files_changed. Backlog and traceability append precisely one previously unused harness-backlog-v0.2/KL-074 task; every prior task object is identical to protected base 822322dfcac69d1042c8f9f7517cecf4903f8163.",
+    "KL-074 begins NOT_STARTED, has empty requirement/evidence claims, nine check contracts, a complete matching packet and traceability projection, and no task result/review/integration artifacts. Dependencies retain merged KL-002, KL-013 and KL-023 as historical inputs. Product sources, Compose, DB/unit tests, migrations, CI workflows, completed results, integrations, frozen authorities, requirement authorities and prior evidence are unchanged in the reviewed diff.",
+    "base 822322dfcac69d1042c8f9f7517cecf4903f8163 is an ancestor of tested implementation 87ff1dc6235140d1481003da79107296d720870a, which is the direct parent of reviewed governance/evidence head 4b1533bc6bf2052d859e2b079116e0d408013f43. The validator's tested-to-reviewed governance suffix check returned no errors; all eight committed check logs contain the exact tested SHA and successful exit status.",
+    "Committed governance evidence reports 29 readiness-scope, 404 harness and 207 unit tests passing, plus harness validation, lint, typecheck and clean diff. Independently reran tests/harness/test_readiness_scope.py with the existing Python environment, PYTHONPATH=src, PYTHONDONTWRITEBYTECODE=1 and no pytest cache: 29 passed. Independently exercised the committed guard with in-memory candidate blobs; both ownership/endpoint bypasses returned no errors. No PostgreSQL or Docker operations were performed.",
+    "Readiness evidence honestly distinguishes the saved mutable upstream entrypoint reference and same-head hosted setup failures/success from unverified deployed-image root cause. Future actual-image coldstart, migration, isolation, cleanup and full-suite checks remain NOT_RUN; governance PASS does not claim task/product/release PASS or activation.",
+    "The only changed task definition requires GENERAL and DB_CONCURRENCY, so their union is the required governance review set. This GENERAL review is CHANGES_REQUIRED and cannot satisfy the merge gate; no merge recommendation is made."
+  ],
+  "evidence_refs": [
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/harness/MERGE_GATE.md",
+    "docs/exec-plans/governance/HG-037.yaml",
+    "docs/exec-plans/active/KL-074.md",
+    "KineticLoop_Harness_Backlog_v0.2.json",
+    "KineticLoop_Harness_Traceability_v0.3.json",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_readiness_scope.py",
+    "docs/exec-plans/evidence/HG-037/READINESS_EVIDENCE.md",
+    "docs/exec-plans/evidence/HG-037/preparation-provenance.json",
+    "docs/exec-plans/evidence/HG-037/append_only_provenance_audit-87ff1dc.log",
+    "docs/exec-plans/evidence/HG-037/readiness_scope_regressions-87ff1dc.log",
+    "docs/exec-plans/evidence/HG-037/harness_validation-87ff1dc.log",
+    "docs/exec-plans/evidence/HG-037/harness_tests-87ff1dc.log",
+    "docs/exec-plans/evidence/HG-037/unit_tests-87ff1dc.log",
+    "docs/exec-plans/evidence/HG-037/lint-87ff1dc.log",
+    "docs/exec-plans/evidence/HG-037/typecheck-87ff1dc.log",
+    "docs/exec-plans/evidence/HG-037/diff_clean-87ff1dc.log"
+  ],
+  "review_contract_version": "v0.2"
+}

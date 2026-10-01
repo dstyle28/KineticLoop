@@ -19,85 +19,209 @@ def readiness_packet_errors(task, text):
             if (section(text, heading) or '').strip() != value]
 
 
+READINESS_LIFECYCLE_BASE_SHA256 = 'de55f62dd25e3379c67b7b6306cdbd882ce8a6d3d615715a7f9d35c30c6a3686'
+READINESS_LIFECYCLE_REPLACEMENTS = [('    def _run(\n'
+  '        self,\n'
+  '        command: Sequence[str],\n'
+  '        *,\n'
+  '        check: bool = True,\n'
+  '    ) -> subprocess.CompletedProcess[str]:\n'
+  '        try:\n'
+  '            return self._runner(\n'
+  '                list(command),\n'
+  '                cwd=self.root,\n'
+  '                env=self.environment,\n'
+  '                check=check,\n'
+  '                capture_output=True,\n'
+  '                text=True,\n'
+  '            )\n'
+  '        except FileNotFoundError as error:\n'
+  '            raise DatabaseLifecycleError(\n'
+  '                "Docker with the Compose plugin is required for the local test database."\n'
+  '            ) from error\n'
+  '        except subprocess.CalledProcessError as error:\n'
+  '            details = Redactor((self.user, self.password)).exception_diagnostic(error)\n'
+  '            raise DatabaseLifecycleError(f"database command failed: {details}") from None\n'
+  '\n',
+  '    def _run(\n'
+  '        self,\n'
+  '        command: Sequence[str],\n'
+  '        *,\n'
+  '        check: bool = True,\n'
+  '        timeout_seconds: float | None = None,\n'
+  '    ) -> subprocess.CompletedProcess[str]:\n'
+  '        try:\n'
+  '            return self._runner(\n'
+  '                list(command),\n'
+  '                cwd=self.root,\n'
+  '                env=self.environment,\n'
+  '                check=check,\n'
+  '                capture_output=True,\n'
+  '                text=True,\n'
+  '                timeout=timeout_seconds,\n'
+  '            )\n'
+  '        except subprocess.TimeoutExpired:\n'
+  '            raise DatabaseLifecycleError("database readiness command timed out") from None\n'
+  '        except FileNotFoundError as error:\n'
+  '            raise DatabaseLifecycleError(\n'
+  '                "Docker with the Compose plugin is required for the local test database."\n'
+  '            ) from error\n'
+  '        except subprocess.CalledProcessError as error:\n'
+  '            details = Redactor((self.user, self.password)).exception_diagnostic(error)\n'
+  '            raise DatabaseLifecycleError(f"database command failed: {details}") from None\n'
+  '\n'),
+ ('    def start(self, *, timeout_seconds: float = 60.0) -> None:\n'
+  '        self.validate_compose()\n'
+  '        self._run(self.compose_command("up", "--detach", "postgres"))\n'
+  '        deadline = time.monotonic() + timeout_seconds\n'
+  '        while time.monotonic() < deadline:\n'
+  '            result = self._run(\n'
+  '                self.compose_command(\n'
+  '                    "exec",\n'
+  '                    "--no-TTY",\n'
+  '                    "postgres",\n'
+  '                    "pg_isready",\n'
+  '                    "--username",\n'
+  '                    self.user,\n'
+  '                    "--dbname",\n'
+  '                    "postgres",\n'
+  '                ),\n'
+  '                check=False,\n'
+  '            )\n'
+  '            if result.returncode == 0:\n'
+  '                return\n'
+  '            time.sleep(0.5)\n'
+  '        raise DatabaseLifecycleError(\n'
+  '            f"PostgreSQL did not become ready within {timeout_seconds:g} seconds"\n'
+  '        )\n'
+  '\n',
+  '    def start(self, *, timeout_seconds: float = 60.0) -> None:\n'
+  '        self.validate_compose()\n'
+  '        self._run(self.compose_command("up", "--detach", "postgres"))\n'
+  '        deadline = time.monotonic() + timeout_seconds\n'
+  '        while time.monotonic() < deadline:\n'
+  '            remaining = deadline - time.monotonic()\n'
+  '            if remaining <= 0:\n'
+  '                break\n'
+  '            result = self._run(\n'
+  '                self.compose_command(\n'
+  '                    "exec",\n'
+  '                    "--no-TTY",\n'
+  '                    "postgres",\n'
+  '                    "pg_isready",\n'
+  '                    "--host",\n'
+  '                    "127.0.0.1",\n'
+  '                    "--port",\n'
+  '                    "5432",\n'
+  '                    "--username",\n'
+  '                    self.user,\n'
+  '                    "--dbname",\n'
+  '                    "postgres",\n'
+  '                ),\n'
+  '                check=False,\n'
+  '                timeout_seconds=remaining,\n'
+  '            )\n'
+  '            if result.returncode == 0:\n'
+  '                return\n'
+  '            time.sleep(min(0.5, max(0.0, deadline - time.monotonic())))\n'
+  '        raise DatabaseLifecycleError(\n'
+  '            f"PostgreSQL did not become ready within {timeout_seconds:g} seconds"\n'
+  '        )\n'
+  '\n'),
+ ('    def reset(self, *, timeout_seconds: float = 60.0) -> DatabaseConnection:\n'
+  '        self.start(timeout_seconds=timeout_seconds)\n'
+  '        quoted_database = f\'"{self.namespace.database_name}"\'\n'
+  '        quoted_user = f\'"{self.user}"\'\n'
+  '        self._psql(\n'
+  '            "postgres",\n'
+  '            f"DROP DATABASE IF EXISTS {quoted_database} WITH (FORCE);",\n'
+  '        )\n'
+  '        self._psql(\n'
+  '            "postgres",\n'
+  '            f"CREATE DATABASE {quoted_database} OWNER {quoted_user};",\n'
+  '        )\n'
+  '        ready = self._run(\n'
+  '            self.compose_command(\n'
+  '                "exec",\n'
+  '                "--no-TTY",\n'
+  '                "postgres",\n'
+  '                "pg_isready",\n'
+  '                "--username",\n'
+  '                self.user,\n'
+  '                "--dbname",\n'
+  '                self.namespace.database_name,\n'
+  '            ),\n'
+  '            check=False,\n'
+  '        )\n'
+  '        if ready.returncode != 0:\n'
+  '            raise DatabaseLifecycleError("reset database failed its readiness probe")\n'
+  '        return self.connection()\n'
+  '\n',
+  '    def reset(self, *, timeout_seconds: float = 60.0) -> DatabaseConnection:\n'
+  '        self.start(timeout_seconds=timeout_seconds)\n'
+  '        quoted_database = f\'"{self.namespace.database_name}"\'\n'
+  '        quoted_user = f\'"{self.user}"\'\n'
+  '        self._psql(\n'
+  '            "postgres",\n'
+  '            f"DROP DATABASE IF EXISTS {quoted_database} WITH (FORCE);",\n'
+  '        )\n'
+  '        self._psql(\n'
+  '            "postgres",\n'
+  '            f"CREATE DATABASE {quoted_database} OWNER {quoted_user};",\n'
+  '        )\n'
+  '        ready = self._run(\n'
+  '            self.compose_command(\n'
+  '                "exec",\n'
+  '                "--no-TTY",\n'
+  '                "postgres",\n'
+  '                "pg_isready",\n'
+  '                "--host",\n'
+  '                "127.0.0.1",\n'
+  '                "--port",\n'
+  '                "5432",\n'
+  '                "--username",\n'
+  '                self.user,\n'
+  '                "--dbname",\n'
+  '                self.namespace.database_name,\n'
+  '            ),\n'
+  '            check=False,\n'
+  '            timeout_seconds=timeout_seconds,\n'
+  '        )\n'
+  '        if ready.returncode != 0:\n'
+  '            raise DatabaseLifecycleError("reset database failed its readiness probe")\n'
+  '        return self.connection()\n'
+  '\n')]
+
+
+def readiness_lifecycle_candidate(before):
+    """Only the complete reviewed bounded-readiness delta is authorized."""
+    if hashlib.sha256(before).hexdigest() != READINESS_LIFECYCLE_BASE_SHA256:
+        raise ValueError('unexpected readiness lifecycle baseline')
+    text = before.decode()
+    for old, new in READINESS_LIFECYCLE_REPLACEMENTS:
+        if text.count(old) != 1:
+            raise ValueError('unexpected readiness lifecycle method baseline')
+        text = text.replace(old, new, 1)
+    return text.encode()
+
+
 def readiness_content_errors(path, before, after):
-    """Preserve SQL/auth/namespace semantics outside bounded readiness plumbing."""
-    import ast
-    import copy
+    """Keep startup ownership, SQL/auth and every other source byte exact."""
     if path == 'compose.yaml':
         import yaml
-        old, new = yaml.safe_load(before), yaml.safe_load(after)
-        expected = ['CMD-SHELL', 'pg_isready --host 127.0.0.1 --port 5432 --username "$${POSTGRES_USER}" --dbname "$${POSTGRES_DB}"']
-        if new['services']['postgres']['healthcheck']['test'] != expected:
-            return ['readiness-compose-tcp-required']
-        new['services']['postgres']['healthcheck']['test'] = old['services']['postgres']['healthcheck']['test']
-        return [] if old == new else ['readiness-compose-content-scope']
+        try:
+            old, new = yaml.safe_load(before), yaml.safe_load(after)
+            expected = ['CMD-SHELL', 'pg_isready --host 127.0.0.1 --port 5432 --username "$${POSTGRES_USER}" --dbname "$${POSTGRES_DB}"']
+            if new['services']['postgres']['healthcheck']['test'] != expected:
+                return ['readiness-compose-tcp-required']
+            new['services']['postgres']['healthcheck']['test'] = old['services']['postgres']['healthcheck']['test']
+            return [] if old == new else ['readiness-compose-content-scope']
+        except (KeyError, TypeError, yaml.YAMLError):
+            return ['readiness-compose-content-scope']
     if path != 'src/kineticloop/db/lifecycle.py':
         return []
-    old, new = ast.parse(before), ast.parse(after)
-    def methods(tree):
-        cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == 'DatabaseLifecycle')
-        return cls, {n.name: n for n in cls.body if isinstance(n, ast.FunctionDef)}
-    oc, om = methods(old)
-    nc, nm = methods(new)
-    if set(om) != set(nm):
-        return ['readiness-lifecycle-method-scope']
-    if ast.dump(om['_run'].args) != ast.dump(nm['_run'].args):
-        # Only one optional timeout parameter may be appended.
-        args = copy.deepcopy(nm['_run'].args)
-        if not args.kwonlyargs or args.kwonlyargs[-1].arg != 'timeout_seconds':
-            return ['readiness-command-failure-policy']
-        args.kwonlyargs.pop()
-        args.kw_defaults.pop()
-        if ast.dump(args) != ast.dump(om['_run'].args):
-            return ['readiness-command-failure-policy']
-    # _run may only pass a bounded timeout and translate TimeoutExpired;
-    # command ownership, redaction and failure behavior remain exact.
-    runner_calls = [node for node in ast.walk(nm['_run'])
-                    if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
-                    and node.func.attr == '_runner']
-    if len(runner_calls) != 1 or any(isinstance(node, (ast.For, ast.While))
-                                   for node in ast.walk(nm['_run'])):
-        return ['readiness-command-replay-forbidden']
-    for node in ast.walk(nm['_run']):
-        if isinstance(node, ast.ExceptHandler) and isinstance(node.type, ast.Attribute) and node.type.attr == 'TimeoutExpired':
-            for call in (item for item in ast.walk(node) if isinstance(item, ast.Call)):
-                if not isinstance(call.func, ast.Name) or call.func.id != 'DatabaseLifecycleError':
-                    return ['readiness-timeout-handler-replay-forbidden']
-    run = copy.deepcopy(nm['_run'])
-    run.args = copy.deepcopy(om['_run'].args)
-    for node in ast.walk(run):
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr == '_runner':
-            node.keywords = [kw for kw in node.keywords if kw.arg != 'timeout']
-        if isinstance(node, ast.Try):
-            node.handlers = [handler for handler in node.handlers if not (
-                isinstance(handler.type, ast.Attribute) and handler.type.attr == 'TimeoutExpired')]
-    if ast.dump(run) != ast.dump(om['_run']):
-        return ['readiness-command-body-scope']
-    start_text = ast.unparse(nm['start'])
-    if not all(value in start_text for value in ['--host', '127.0.0.1', '--port', '5432']):
-        return ['readiness-start-tcp-required']
-    for name in ('start', '_run'):
-        # Readiness plumbing cannot invoke SQL, reset or cleanup.
-        for node in ast.walk(nm[name]):
-            if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
-                if node.func.attr in {'_psql', 'execute_sql', 'reset', 'destroy'}:
-                    return ['readiness-startup-sql-or-cleanup']
-        nc.body[nc.body.index(nm[name])] = copy.deepcopy(om[name])
-    reset = nm['reset']
-    for node in ast.walk(reset):
-        if not isinstance(node, ast.Call):
-            continue
-        if isinstance(node.func, ast.Attribute) and node.func.attr == '_run':
-            node.keywords = [kw for kw in node.keywords if kw.arg != 'timeout_seconds']
-        if isinstance(node.func, ast.Attribute) and node.func.attr == 'compose_command':
-            args = node.args
-            if any(isinstance(n, ast.Constant) and n.value == 'pg_isready' for n in args):
-                values = [n.value if isinstance(n, ast.Constant) else None for n in args]
-                if values.count('--host') != 1 or values.count('--port') != 1:
-                    return ['readiness-reset-tcp-required']
-                if values[values.index('--host') + 1] != '127.0.0.1' or values[values.index('--port') + 1] != '5432':
-                    return ['readiness-reset-tcp-required']
-                node.args = [n for i, n in enumerate(args) if i not in {
-                    values.index('--host'), values.index('--host') + 1,
-                    values.index('--port'), values.index('--port') + 1}]
-    return [] if ast.dump(old) == ast.dump(new) else ['readiness-lifecycle-content-scope']
+    try:
+        expected = readiness_lifecycle_candidate(before)
+    except (ValueError, UnicodeError):
+        return ['readiness-lifecycle-baseline-unexpected']
+    return [] if after == expected else ['readiness-lifecycle-content-scope']
