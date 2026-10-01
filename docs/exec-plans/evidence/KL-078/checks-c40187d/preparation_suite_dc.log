@@ -1,0 +1,100 @@
+TASK harness-backlog-v0.2/KL-078
+TESTED_COMMIT c40187d620190dae2d78b03892912842206bf1c0
+COMMAND uv run pytest -q tests/db/test_preparation.py
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-c40187d-0b068b742ff6', database_name='kineticloop_kl078_prep_c40187d_0b068b742ff6') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE bd03e7d4-7cff-52df-b81a-0f9f6dbff2ae SEALED
+PERSISTED_PROOFS {"artifact_closure_ids": ["1046b9bf-b4f5-418c-a389-4803cc047735", "70dd5b3a-d19c-48a6-9cc4-cfe93917686d"], "artifact_hash": "ac64cec6db43dd93a0ae494b26e1df10c2565e21d6dd165182d51dfa5dce2b69", "basis_hash": "b075433f32698a90d4e0254383d6ba29a097e6ebf0eaf6f83009ffa7f237066e", "build": "a95ba5fb-22e8-5bc1-b82f-83ebd4b68aa3", "dependency_basis_hash": "2f3f8e949433a205e5256ed0351c6a9ada1d5114a7336ca3386e6a456b9fac9b", "dependency_ids": ["871526d7-c80a-54d5-acd9-7c1a87d817fa", "0b371f31-e2a8-5817-80ea-ba2ac0b9187f", "faf994e3-5223-5725-909b-ad9bc1cf23e8", "eb3236eb-e105-5d43-a5bc-9a0cf085a2d7", "430ffa38-ca14-50df-90b6-d2f3351dec7f", "837dd553-efaa-5f5c-89a4-aa20d3173ce2"], "manifest_hash": "4b3268b6025949b43096f2cc6141cdf89bee6f14a2f15afde806dee19127c7f7", "projection": "41376bef-b534-5e1c-94de-b59e4a60c363", "source": "bd03e7d4-7cff-52df-b81a-0f9f6dbff2ae", "source_hash": "8d41379ac7e17225d58382e30b09edb4ec6cde15b32fd500545462509a45e904"}
+OWNER_OUTPUT {'projection_id': '41376bef-b534-5e1c-94de-b59e4a60c363', 'revision': 1, 'input_basis_hash': 'b075433f32698a90d4e0254383d6ba29a097e6ebf0eaf6f83009ffa7f237066e', 'dependency_ids': ['0b371f31-e2a8-5817-80ea-ba2ac0b9187f', '430ffa38-ca14-50df-90b6-d2f3351dec7f', '837dd553-efaa-5f5c-89a4-aa20d3173ce2', '871526d7-c80a-54d5-acd9-7c1a87d817fa', 'eb3236eb-e105-5d43-a5bc-9a0cf085a2d7', 'faf994e3-5223-5725-909b-ad9bc1cf23e8'], 'executable': False} {'build_id': 'a95ba5fb-22e8-5bc1-b82f-83ebd4b68aa3', 'status': 'READY', 'dependency_basis_hash': '2f3f8e949433a205e5256ed0351c6a9ada1d5114a7336ca3386e6a456b9fac9b', 'artifact_dependency_closure_hash': 'ac64cec6db43dd93a0ae494b26e1df10c2565e21d6dd165182d51dfa5dce2b69', 'manifest_hash': '4b3268b6025949b43096f2cc6141cdf89bee6f14a2f15afde806dee19127c7f7', 'executable': False} {'manifest_id': '724a1c3f-d9af-4972-9893-56639d853ed9', 'generation': 1, 'receipt_id': 'a5c6f6bc-910f-4746-8f76-86be61c584c6', 'event_id': '4ba899cb-6aac-45bb-8e2c-d36f4e45bf81', 'executable': False, 'replayed': False}
+.INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 3.360486499965191
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-c40187d-0b068b742ff6', database_name='kineticloop_kl078_prep_c40187d_0b068b742ff6') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE a9154e90-a702-5663-835b-2874d20a45c9 READY
+ACTUAL_SOURCE d3d3a653-8051-5193-b7e2-0a0279541a6f SEALED
+PERSISTED_PROOFS {"artifact_closure_ids": ["9acc702b-1f79-4927-ace4-15b0b892d026", "9b3f9f8e-b9e6-4d7a-b9f8-ccb1b437c43b"], "artifact_hash": "6400eac16ea43cf950fe118c45656580ccb6f825f1c6924956d6b976242e4875", "basis_hash": "57f5c8afd78ef70309b39c2bbdb0fb72c6460032d970d52a8f13b105a553e6bf", "build": "3853fcf8-71cd-52ba-95d4-46e1779d7f24", "dependency_basis_hash": "bcf956acf76bce2b502758b779a42533b733ae751fcff7caa99777fca61c295b", "dependency_ids": ["c65e9e4a-4b34-5ca4-9401-7e251b7579df", "fb37c6c7-48ac-5837-9c32-f0b6a1813cab", "db8ec440-6d0b-565c-aa99-c03f1b250802", "41e445f1-bc71-514d-b8e0-c6d6496c5b55", "d29ca47f-ed3a-5a73-b0f9-610a705ddd0b", "ddd22342-db04-5356-8bf9-a26d2b971988"], "manifest_hash": "628010038a0470682d514ec4bf675cc0d9f3da7a33ff83b1ed6fe62f08c5e7d8", "projection": "177cee48-f7c6-5ed1-bbd8-24aaf2e725a0", "source": "d3d3a653-8051-5193-b7e2-0a0279541a6f", "source_hash": "1c072912ad964ebbc71ec622e3720e553689edbc518245e140c06181ca0e4f8a"}
+ACTUAL_SOURCE ff86bc19-4a02-5678-936f-fe9eafa8f155 SEALED
+ACTUAL_SOURCE 46a3159c-788d-5693-baa3-2278bda10f27 SEALED
+PERSISTED_PROOFS {"artifact_closure_ids": ["9acc702b-1f79-4927-ace4-15b0b892d026", "9b3f9f8e-b9e6-4d7a-b9f8-ccb1b437c43b"], "artifact_hash": "6400eac16ea43cf950fe118c45656580ccb6f825f1c6924956d6b976242e4875", "basis_hash": "2d5a1a62ca323a00d25651fc00015492fbab5e2dfeab04692b49ff0dc96e7239", "build": "82d0f77a-0072-5442-afd5-01c11efd967d", "dependency_basis_hash": "d44b3e6d64da53d039f29798065f8477eeb586fb9242b8318a7b965fa91f4862", "dependency_ids": ["3ebe6019-fc0a-5469-9270-1930bafff70c", "6da22c25-01e9-50f7-a300-6635790d3a82", "991f03af-491a-5a3f-9729-4850ae576cdd", "2225e7cf-3f5e-58bf-b614-4a98dbee7447", "55a21c04-55ae-5e76-8595-0bb4664c7981", "70612e1a-3ecf-55e2-8a50-c7dde9548da5"], "manifest_hash": "da7bcfe58fe859cd10f27a272dade80b4c191e5a6805ffeebf908f51bf46e372", "projection": "6d68ac11-353b-51a4-a09d-0edf39709a5f", "source": "46a3159c-788d-5693-baa3-2278bda10f27", "source_hash": "cc45438d1341961ad4a45c339ea4be53f910270e84e963a107f3634a2f24aafa"}
+ACTUAL_SOURCE 335b3bdf-3bed-526d-b7be-73fcb49d5169 SEALED
+ACTUAL_SOURCE 72eef147-85e6-561d-983e-8b108bbfcd48 SEALED
+PERSISTED_PROOFS {"artifact_closure_ids": ["9acc702b-1f79-4927-ace4-15b0b892d026", "9b3f9f8e-b9e6-4d7a-b9f8-ccb1b437c43b"], "artifact_hash": "6400eac16ea43cf950fe118c45656580ccb6f825f1c6924956d6b976242e4875", "basis_hash": "cc327fc9b57798f7482ac81fad4263d87d2015e3768b01ce5d0db67be7debafa", "build": "2e242b5c-dfc7-52da-b2bd-878187b2685e", "dependency_basis_hash": "e4ab9b202d12114d8e25fa10dc3015341167ca3dd61de953a8dcfd397eef477d", "dependency_ids": ["0e60312b-dd03-5d09-a29d-435bd8ef7158", "d0765392-470b-5ef8-be7b-73129fd9bec1", "7fe46293-a125-513c-9729-cc5d17b8dc32", "c75feb51-3524-5379-83c6-972ee52cf017", "00522f98-c360-57f9-98f4-031443d4255d", "0f7d6f50-6d32-5847-ae90-9eea1d307a2d"], "manifest_hash": "da94a156eef7f55604535f95b8766ad0d2e2b1562d5da488b688636997f3085a", "projection": "71bebf82-ce2a-5a78-a2bd-eb56b2229b19", "source": "72eef147-85e6-561d-983e-8b108bbfcd48", "source_hash": "89dc8c7a93de667db20dc24a053b462bc31697a886abbd9ebb6f9765edccc0bf"}
+.INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 5.092407833086327
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-c40187d-0b068b742ff6', database_name='kineticloop_kl078_prep_c40187d_0b068b742ff6') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE 38d91916-59ff-5a7c-8f5d-566bd072169a SEALED
+PERSISTED_PROOFS {"artifact_closure_ids": ["4ccaf5f9-5db5-435a-b107-90863cd5a3fb", "67adf7d6-3986-42d6-8d6c-0052cdb10969"], "artifact_hash": "eda91aa04f7383a376e084ce627498da3fffd1178e263185b9c98b632377ae7d", "basis_hash": "c7fc9f2708f4e37fdb9b1db0692db4a368e7d650ef2a78f1a916fca198c5c86d", "build": "f5b6a339-e819-5966-bc64-5fa6e8edafca", "dependency_basis_hash": "e5459ca54cdc9e8a32fe224b95a6c266c9dcd63a0fd860fde47ebdb9dbbd3f07", "dependency_ids": ["f24ff835-3ae4-5475-9311-ab11241cdf60", "41d5b2f5-44db-592f-95e3-976201f0ae53", "0eb7e2ce-9c9e-5868-964e-8c49d39b1ee7", "7b67b467-371e-5b77-93ed-2a2dfcd0f083", "0e95ed88-88b9-5a64-abae-a659fc792c58", "c6d47064-4e73-589b-bbe2-c884105c2da5"], "manifest_hash": "aaae1ed8876b04197f2d45a7341f30a552a485561f70dd5fee4673cbe035c18c", "projection": "eb34b5d7-fd03-5d7a-9689-a971e5462258", "source": "38d91916-59ff-5a7c-8f5d-566bd072169a", "source_hash": "0bf453e74b8e0be52a86b7b6b28a196bee8d1e9cfdd0654d44a426993232c443"}
+ACTUAL_SOURCE 5f37f9bf-4c14-5c66-ba3c-51dc89988ab6 SEALED
+PERSISTED_PROOFS {"artifact_closure_ids": ["4ccaf5f9-5db5-435a-b107-90863cd5a3fb", "67adf7d6-3986-42d6-8d6c-0052cdb10969"], "artifact_hash": "eda91aa04f7383a376e084ce627498da3fffd1178e263185b9c98b632377ae7d", "basis_hash": "cb386cd725eca06ed51f8aa4fa535fc73abbbe17bce0bf04a140187e06f46d28", "build": "9a0f0775-1140-53cd-8629-512f7ab3c833", "dependency_basis_hash": "ab388170ad1677d09510d8dfd370f689cd224415ed272739e9e13b07c4d3bb41", "dependency_ids": ["83fee8f0-0eca-54d0-b8ab-e3932a75a896", "ff0d4438-be36-50ba-94fa-abcd1d9c3e61", "6eed0861-d5b7-53c7-a80b-9f45dbc0204c", "268eb506-dffc-550e-bb81-5de3463a5059", "5a71d858-15b0-5fe1-bc33-aa41927f690a", "a75c0c0c-6f23-55fc-b883-0934d29c5b71"], "manifest_hash": "c332f95d3956227ae22c204baab2656a3e7163add636dc35dbe263e6bef8bdcb", "projection": "c42ec2f5-b47c-5e78-8238-c77a439d9d8b", "source": "5f37f9bf-4c14-5c66-ba3c-51dc89988ab6", "source_hash": "715cb6f61059b7606b5f6cea0d4d726ab6b30973e03c9ba761a243676f34c55e"}
+.INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 3.5492184159811586
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-c40187d-0b068b742ff6', database_name='kineticloop_kl078_prep_c40187d_0b068b742ff6') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE d41d0f0f-64ef-5f8c-aa98-ed5fc5fe5c9d SEALED
+PERSISTED_PROOFS {"artifact_closure_ids": ["6181f979-1f4f-495c-90a6-d9ea79e371c0", "e4d65031-f67b-470b-8702-ff1546b05afc"], "artifact_hash": "951db118cfe5aef2f1b6969044c2d37c9cb316e6d93e68f1ac5e351767dff91d", "basis_hash": "307c0f5bd8fc64275dc7cdc945d9be99712e6a710e9f91afd1a81e063f4a0162", "build": "eea4a0b2-7da8-5358-a701-ecfa14fafe20", "dependency_basis_hash": "657487d709aa8a4a9545617cac0d2d3145833c225a9ef97de45f31f9e990023a", "dependency_ids": ["d59099cd-2da7-5b2d-9b4d-ae1c89cddfce", "57bc15f1-9dab-5df4-9df0-9deef509b841", "911dd534-edbc-5704-8333-9cb66b897683", "dfb88b8d-8c3d-5c21-96e8-246cdccb366a", "8f34627f-2207-582a-96ca-1af985514488", "5ea2ada5-3ed8-5ab8-a18b-751dc30b4c8f"], "manifest_hash": "3f24b8bc6e68b6168db458c6b3b22e8aefc7e1bda300cc84ecb45d874b589f90", "projection": "bee63e48-3bf7-5825-9e57-6aef8d138b29", "source": "d41d0f0f-64ef-5f8c-aa98-ed5fc5fe5c9d", "source_hash": "aacadf52cc5070bbd50b6a21252370135df865266e9501d46748ec69d397d547"}
+ACTUAL_SOURCE b75ae94b-41b5-58ea-83af-a8e5ed9531a6 SEALED
+ACTUAL_SOURCE c4dea516-f8e9-558d-9e63-eff1334bf2d4 SEALED
+ACTUAL_SOURCE 3315273d-07aa-5936-98e3-c9c3ca20e94f SEALED
+PERSISTED_PROOFS {"artifact_closure_ids": ["6181f979-1f4f-495c-90a6-d9ea79e371c0", "e4d65031-f67b-470b-8702-ff1546b05afc"], "artifact_hash": "951db118cfe5aef2f1b6969044c2d37c9cb316e6d93e68f1ac5e351767dff91d", "basis_hash": "65236b791c18d30b805c59b0f0fcc25d3861677ca04c7a7871b0ea4133af5f25", "build": "23bfb8c4-554f-5f43-af65-48fa0a0b6ace", "dependency_basis_hash": "913196d0d42a9471d7be3ad0acc3cdf5df89f867b47ec931fb7d729a0ef6effa", "dependency_ids": ["637bfb86-ed15-5929-b2e3-656a1738017b", "7f17d0f8-0c20-5cfc-9eba-9182b481e3a3", "a624b945-e76d-57a4-8dba-07d48c2c38e3", "2bdd45ab-d7e9-5160-9ce2-b6bbc676562d", "bc0649e0-5068-58da-8a21-170a389f73f8", "a1be6d7e-ae61-5a5e-9131-707cb7498251"], "manifest_hash": "b6248effd7577a6ddcdecb615f1521aff23ce23820ebe214b3be7266873ba8ba", "projection": "2af5445f-cdd4-5a26-816a-2309c9162a20", "source": "3315273d-07aa-5936-98e3-c9c3ca20e94f", "source_hash": "4b68fcf6a2c3c4df76fec9b9eb97b717086499c3423dac59144633646e6897d8"}
+ACTUAL_SOURCE e24eff32-d326-5e4e-b583-0850dd8fd54e SEALED
+OBSERVED_LOCAL_BLOCKER projection {'first': 110, 'second': 111}
+PERSISTED_DUPLICATE_CLOSURE projection {'projection_id': '82d89aed-78fd-5cfc-ad9d-334c116c96ac', 'revision': 1, 'input_basis_hash': 'deb79efea9528b6bb920d68f4cc069ca160d11cb8eae154920a8808e3be9e828', 'dependency_ids': ['14931fc7-1b54-5a95-a5d4-c28da4671696', '402ec84f-fabe-5fee-9c08-0b6bc7cfa3c2', '544aca40-e749-5a4f-b1f9-66018dc994f7', '761a390f-1df1-56b3-8abd-15a5ac6bd23b', '90fcc690-5c1a-5d7b-b89b-e9af4d20aabc', 'cf92f7df-a1c0-5e99-a5ea-99b961fd467c'], 'executable': False} [3, 18, 4]
+ACTUAL_SOURCE 7a3ebb0f-b52b-561d-b0d7-c4ed558f8415 SEALED
+OBSERVED_LOCAL_BLOCKER build {'first': 119, 'second': 120}
+PERSISTED_DUPLICATE_CLOSURE build {'build_id': 'e421b80e-d3fc-5ff6-9f88-87e6d6a10f97', 'status': 'BUILDING', 'executable': False} [4, 24, 5]
+ACTUAL_SOURCE 9a83e0ab-d901-5c78-8df5-29baea0471b8 SEALED
+OBSERVED_LOCAL_BLOCKER complete {'first': 121, 'second': 122}
+PERSISTED_DUPLICATE_CLOSURE complete {'build_id': '439ac673-7f03-56bd-8963-351e86272e4f', 'status': 'READY', 'dependency_basis_hash': '032614c35c4058760f04e232fc339a7e284d80af237b4fc9b533d9d2ebb95cb1', 'artifact_dependency_closure_hash': '951db118cfe5aef2f1b6969044c2d37c9cb316e6d93e68f1ac5e351767dff91d', 'manifest_hash': 'ab342769e758a57a307c71c62008bdfea41fa7aef04a566bba83c4d0a2bae902', 'executable': False} [5, 30, 6]
+.INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 3.8341720409225672
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-c40187d-0b068b742ff6', database_name='kineticloop_kl078_prep_c40187d_0b068b742ff6') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE 550a7014-fa19-5911-9cb2-75e0303dc519 SEALED
+PERSISTED_PROOFS {"artifact_closure_ids": ["310f28e5-7af2-4953-acf6-dd1b0ef29376", "351c61e9-d45b-45c8-9131-aeb27cb9477d"], "artifact_hash": "516a4e81a90a62734272f414ec4a51fa39451ebb641152d27c9249589f563301", "basis_hash": "45663fa2e524abce36cb43625afe943dff82ad1f1f54587bef01a9d3264990d3", "build": "c22bc819-9c54-5eb9-9a16-79794d866563", "dependency_basis_hash": "d1710d1f4c0719802da808849d03120b4a513ef286e326b976e655f4e7efd17b", "dependency_ids": ["edc0af83-88ce-5995-bb12-a959a676b538", "4721e447-0a2b-514c-b4dc-c974f4ee624f", "9e1058d5-1a7d-59c2-b571-7c1ecad913f9", "11418655-2c88-57f6-a3e2-c1227d91e5a8", "10bc8638-b12e-59cb-95ce-09d08ac6ea45", "7312d59b-a6e7-55b5-bf49-9db040dec845"], "manifest_hash": "5a377b6182f73532e31589d4f16840a47312cf6aa8b1a0a87da7c984c486f1b3", "projection": "1077d8b6-8a10-5d17-995f-427edf7d4a9a", "source": "550a7014-fa19-5911-9cb2-75e0303dc519", "source_hash": "c7f3f5b4efbb4d47ea8a6d5ea709ab66e695d726fe4422738157b01d4f6ca61a"}
+ACTUAL_SOURCE 7abd506c-0b10-5e6b-9e27-06f0ecf18aa6 SEALED
+OBSERVED_S01_BLOCKER 113 114
+FROZEN_T3_LOCK_ORDER 7 8
+.LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 3.6531981250736862
+
+- generated xml file: /Users/davetian/.codex/worktrees/68f1/KineticLoop/docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_suite_dc.xml -
+5 passed in 19.83s
+
+EXIT_CODE 0
+ELAPSED_SECONDS 20.050

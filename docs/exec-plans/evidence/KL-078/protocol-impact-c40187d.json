@@ -1,0 +1,42 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-078",
+  "tested_commit": "c40187d620190dae2d78b03892912842206bf1c0",
+  "base_commit": "7186b3024dcb5a555070391cf138b5e300819db5",
+  "scope_check": "PASS",
+  "unchanged_guard_functions": {
+    "execute_command": "6ab084664ad2abd6aafa221d57283417c793b02d66549b866fbc45311cb03e72",
+    "_prepare_manifest_publication": "6ece6bd58da6f5291d79bf96c329db3417b83afc1d39b8ff0d7847e7a7818076",
+    "acquire_registry_lease": "3da827f12bd1dac3a17feba08571d51d87b4daf0e26ba20be04032159f060452",
+    "_acquire_publish_candidate_registry_lease": "9bde385bc8af4a38fc72396ed1851a8bf843104ab40c438f63c29d0b4c3c7faa",
+    "require_test_execution_ingress": "c8985f076b9a4125fef23dd1997c9102336599bd75383bfe193f52bb1a30eef3",
+    "_prepare_factset_seal": "a9719123be95da242bcea250151f01c8c06d5d09f1bed6a24d1034046955a4d4",
+    "replay_outcome": "7c6f912151bb1e223dd3557ff66e0306a962ae31e23a4a23230b89bb3997f1b2",
+    "lock_subject": "9375c95a6390e18c33c309a8458bab09285be2f75d48693400dfcd8ac8ccb020"
+  },
+  "unchanged_files": {
+    "AGENTS.md": "31ab3baa35945abfc1f3779968b0e232d7fda1fed70180ab5c786ede6ba99134",
+    "CURRENT_DOCUMENT_INDEX.json": "afd36ebf05b42deccda6e625608769618c3ff096c89bb0be0bd8788aadfa6716",
+    "CURRENT_REQUIREMENT_SET.json": "c7ce1793c0b5fcbdec99afc8742e33b60e42cb633eacf9424ae84c4639dfa750",
+    "FROZEN_BASELINE.json": "bb8cd79942d3ca735e38e0363d8f56c5c45bbd79210a6618d29704aac3dd04df",
+    "src/kineticloop/contracts/commands.py": "022e3fa180c6fbcd5ad8382fd5e8d1e01418c819a52b6ce706534ce594a8539e",
+    "src/kineticloop/persistence/metadata.py": "9fb8155722a29959094c24e8aa61456854b8474009831dfe0c0e5778325d7000",
+    "src/kineticloop/persistence/factsets.py": "f0df646a66724867e39b0a6223314a9768fbb8309961edd31ffe26bade159e86",
+    "src/kineticloop/persistence/protocol_execution.py": "2a8b36c0b92c406e29f1d4d2199ea2d6e8b2b534a656774ecda1dc6344a8c242",
+    ".github/workflows/ci.yml": "c955d1de33682d253aeac020efb56bb660c92759b223bd6211fefccd859d4d8a",
+    ".github/workflows/db.yml": "efef56c3e5debb4c335fff41873889b209ce45979f950e85672165b0a1d06326"
+  },
+  "public_commands": 39,
+  "caller_revision_capability": "FORBIDDEN",
+  "product_requirement_pass_claims": [],
+  "review_required": [
+    "GENERAL",
+    "PROTOCOL",
+    "DB_CONCURRENCY"
+  ],
+  "implementation_byte_identical_to": "c2816f6c1108bf33d93b4ace1fcfb18645cfc779",
+  "assertion_repairs": [
+    "Independently recompute source, projection, dependency, artifact and manifest hashes from persisted inputs; verify exact S21/S22/S23/S24/S25 references, candidate and outcome.",
+    "Full row snapshots for all denial/rollback targets plus S01; duplicate exact cardinality and existing history byte equality.",
+    "Expiry assertions compare parsed persisted timestamps."
+  ]
+}

@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-078
 display_task_id: KL-078
 task_definition_version: v0.2
 base_commit: 7186b3024dcb5a555070391cf138b5e300819db5
-tested_commit: c2816f6c1108bf33d93b4ace1fcfb18645cfc779
+tested_commit: c40187d620190dae2d78b03892912842206bf1c0
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -15,63 +15,73 @@ commands_run:
 - check_id: preparation_revision_pu
   command: uv run pytest -q tests/unit/persistence/test_preparation.py::test_server_revision
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_revision_pu.log
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_revision_pu.log
 - check_id: preparation_capability_pu
   command: uv run pytest -q tests/unit/persistence/test_preparation.py::test_exact_capabilities
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_capability_pu.log
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_capability_pu.log
 - check_id: preparation_namespace_pu
   command: uv run pytest -q tests/unit/persistence/test_preparation.py::test_namespace
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_namespace_pu.log
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_namespace_pu.log
 - check_id: preparation_owner_pipeline_dc
   command: uv run pytest -q tests/db/test_preparation.py::test_owner_pipeline
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_owner_pipeline_dc.log
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_owner_pipeline_dc.log
 - check_id: preparation_basis_denials_dc
   command: uv run pytest -q tests/db/test_preparation.py::test_basis_denials
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_basis_denials_dc.log
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_basis_denials_dc.log
 - check_id: preparation_immutable_replay_dc
   command: uv run pytest -q tests/db/test_preparation.py::test_immutable_replay
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_immutable_replay_dc.log
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_immutable_replay_dc.log
 - check_id: preparation_duplicate_rollback_dc
   command: uv run pytest -q tests/db/test_preparation.py::test_duplicate_rollback
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_duplicate_rollback_dc.log
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_duplicate_rollback_dc.log
 - check_id: preparation_no_authority_dc
   command: uv run pytest -q tests/db/test_preparation.py::test_no_authority
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_no_authority_dc.log
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_no_authority_dc.log
 - check_id: preparation_suite_dc
   command: uv run pytest -q tests/db/test_preparation.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_suite_dc.log
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_suite_dc.log
 - check_id: harness_validation_passes
   command: uv run kl check-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/harness_validation_passes.log
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c40187d/harness_validation_passes.log
 - check_id: unit_regressions_pass
   command: uv run kl test-unit
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/unit_regressions_pass.log
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c40187d/unit_regressions_pass.log
 - check_id: harness_regressions_pass
   command: uv run kl test-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/harness_regressions_pass.log
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c40187d/harness_regressions_pass.log
 - check_id: lint_passes
   command: uv run kl lint
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/lint_passes.log
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c40187d/lint_passes.log
 - check_id: typecheck_passes
   command: uv run kl typecheck
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/typecheck_passes.log
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c40187d/typecheck_passes.log
 requirements_covered: []
 files_changed:
 - docs/contracts/preparation.md
 - docs/exec-plans/completed/KL-078_RESULT.yaml
+- docs/exec-plans/evidence/KL-078/checks-06e0a48/checks.json
+- docs/exec-plans/evidence/KL-078/checks-06e0a48/interrupted.json
+- docs/exec-plans/evidence/KL-078/checks-06e0a48/preparation_capability_pu.log
+- docs/exec-plans/evidence/KL-078/checks-06e0a48/preparation_capability_pu.xml
+- docs/exec-plans/evidence/KL-078/checks-06e0a48/preparation_namespace_pu.log
+- docs/exec-plans/evidence/KL-078/checks-06e0a48/preparation_namespace_pu.xml
+- docs/exec-plans/evidence/KL-078/checks-06e0a48/preparation_owner_pipeline_dc.log
+- docs/exec-plans/evidence/KL-078/checks-06e0a48/preparation_owner_pipeline_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-06e0a48/preparation_revision_pu.log
+- docs/exec-plans/evidence/KL-078/checks-06e0a48/preparation_revision_pu.xml
 - docs/exec-plans/evidence/KL-078/checks-c2816f6/checks.json
 - docs/exec-plans/evidence/KL-078/checks-c2816f6/harness_regressions_pass.log
 - docs/exec-plans/evidence/KL-078/checks-c2816f6/harness_regressions_pass.xml
@@ -98,6 +108,52 @@ files_changed:
 - docs/exec-plans/evidence/KL-078/checks-c2816f6/typecheck_passes.log
 - docs/exec-plans/evidence/KL-078/checks-c2816f6/unit_regressions_pass.log
 - docs/exec-plans/evidence/KL-078/checks-c2816f6/unit_regressions_pass.xml
+- docs/exec-plans/evidence/KL-078/checks-c40187d/checks.json
+- docs/exec-plans/evidence/KL-078/checks-c40187d/harness_regressions_pass.log
+- docs/exec-plans/evidence/KL-078/checks-c40187d/harness_regressions_pass.xml
+- docs/exec-plans/evidence/KL-078/checks-c40187d/harness_validation_passes.log
+- docs/exec-plans/evidence/KL-078/checks-c40187d/lint_passes.log
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_basis_denials_dc.log
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_basis_denials_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_capability_pu.log
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_capability_pu.xml
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_duplicate_rollback_dc.log
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_duplicate_rollback_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_immutable_replay_dc.log
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_immutable_replay_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_namespace_pu.log
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_namespace_pu.xml
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_no_authority_dc.log
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_no_authority_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_owner_pipeline_dc.log
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_owner_pipeline_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_revision_pu.log
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_revision_pu.xml
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_suite_dc.log
+- docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_suite_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-c40187d/typecheck_passes.log
+- docs/exec-plans/evidence/KL-078/checks-c40187d/unit_regressions_pass.log
+- docs/exec-plans/evidence/KL-078/checks-c40187d/unit_regressions_pass.xml
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/checks.json
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/interrupted.json
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_basis_denials_dc.log
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_basis_denials_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_capability_pu.log
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_capability_pu.xml
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_duplicate_rollback_dc.log
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_duplicate_rollback_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_immutable_replay_dc.log
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_immutable_replay_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_namespace_pu.log
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_namespace_pu.xml
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_no_authority_dc.log
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_no_authority_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_owner_pipeline_dc.log
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_owner_pipeline_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_revision_pu.log
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_revision_pu.xml
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_suite_dc.log
+- docs/exec-plans/evidence/KL-078/checks-e1ad25c/preparation_suite_dc.xml
 - docs/exec-plans/evidence/KL-078/checks-f331731/checks.json
 - docs/exec-plans/evidence/KL-078/checks-f331731/harness_validation_passes.log
 - docs/exec-plans/evidence/KL-078/checks-f331731/interrupted.json
@@ -119,8 +175,13 @@ files_changed:
 - docs/exec-plans/evidence/KL-078/checks-f331731/preparation_revision_pu.xml
 - docs/exec-plans/evidence/KL-078/checks-f331731/preparation_suite_dc.log
 - docs/exec-plans/evidence/KL-078/checks-f331731/preparation_suite_dc.xml
+- docs/exec-plans/evidence/KL-078/development-assertions-15a6c19.log
 - docs/exec-plans/evidence/KL-078/entry.json
 - docs/exec-plans/evidence/KL-078/protocol-impact-c2816f6.json
+- docs/exec-plans/evidence/KL-078/protocol-impact-c40187d.json
+- docs/exec-plans/reviews/KL-078/round-15a6c19/DB_CONCURRENCY.json
+- docs/exec-plans/reviews/KL-078/round-15a6c19/GENERAL.json
+- docs/exec-plans/reviews/KL-078/round-15a6c19/PROTOCOL.json
 - src/kineticloop/persistence/preparation.py
 - src/kineticloop/persistence/transactions.py
 - tests/db/test_preparation.py
@@ -152,8 +213,8 @@ known_limitations:
   persistence rather than any new product projection algorithm.
 - Full legacy DB regressions run only through unchanged hosted CI on a fresh runner; local runs execute
   the own suite and read-only unit/harness quality checks.
-- Superseded partial checks-f331731 logs are retained as diagnostic evidence; only the fourteen checks-c2816f6
-  final logs establish this result.
+- Superseded checks-f331731/checks-c2816f6/checks-e1ad25c/checks-06e0a48 and round-15a6c19 CHANGES_REQUIRED
+  reviews remain diagnostic history; only the fourteen checks-c40187d final logs establish this result.
 follow_up_tasks:
 - Coordinator may resume harness-backlog-v0.2/KL-076 after actual normal merge; no downstream task was
   started.
@@ -164,75 +225,75 @@ environment:
   cache: /private/tmp/kl078-uv-cache
   namespace_root_digest: 0b068b742ff6
   migration_revision: e8c2f1a6b904
-  command_inventory: docs/exec-plans/evidence/KL-078/checks-c2816f6/checks.json
+  command_inventory: docs/exec-plans/evidence/KL-078/checks-c40187d/checks.json
 evidence_summary:
 - check_id: preparation_revision_pu
   collected_and_executed: 1
   skipped: 0
   failures: 0
-  elapsed_seconds: 0.503538333112374
+  elapsed_seconds: 0.3844148749485612
 - check_id: preparation_capability_pu
   collected_and_executed: 1
   skipped: 0
   failures: 0
-  elapsed_seconds: 0.37774170795455575
+  elapsed_seconds: 0.372925833100453
 - check_id: preparation_namespace_pu
   collected_and_executed: 1
   skipped: 0
   failures: 0
-  elapsed_seconds: 0.7794625828973949
+  elapsed_seconds: 0.7881942498497665
 - check_id: preparation_owner_pipeline_dc
   collected_and_executed: 1
   skipped: 0
   failures: 0
-  elapsed_seconds: 3.90537912491709
+  elapsed_seconds: 3.9463387501891702
 - check_id: preparation_basis_denials_dc
   collected_and_executed: 1
   skipped: 0
   failures: 0
-  elapsed_seconds: 5.418104875134304
+  elapsed_seconds: 5.470186457969248
 - check_id: preparation_immutable_replay_dc
   collected_and_executed: 1
   skipped: 0
   failures: 0
-  elapsed_seconds: 3.9933431670069695
+  elapsed_seconds: 4.011638999916613
 - check_id: preparation_duplicate_rollback_dc
   collected_and_executed: 1
   skipped: 0
   failures: 0
-  elapsed_seconds: 4.232534124981612
+  elapsed_seconds: 4.2434281669557095
 - check_id: preparation_no_authority_dc
   collected_and_executed: 1
   skipped: 0
   failures: 0
-  elapsed_seconds: 4.023665374843404
+  elapsed_seconds: 4.0245074580889195
 - check_id: preparation_suite_dc
   collected_and_executed: 5
   skipped: 0
   failures: 0
-  elapsed_seconds: 19.801462416071445
+  elapsed_seconds: 20.04997841711156
 - check_id: harness_validation_passes
   collected_and_executed: null
   skipped: null
   failures: null
-  elapsed_seconds: 58.72017824999057
+  elapsed_seconds: 58.90084029198624
 - check_id: unit_regressions_pass
   collected_and_executed: 219
   skipped: 0
   failures: 0
-  elapsed_seconds: 60.14345841598697
+  elapsed_seconds: 60.664038917049766
 - check_id: harness_regressions_pass
   collected_and_executed: 626
   skipped: 0
   failures: 0
-  elapsed_seconds: 208.96310529089533
+  elapsed_seconds: 207.9885838329792
 - check_id: lint_passes
   collected_and_executed: null
   skipped: null
   failures: null
-  elapsed_seconds: 0.14370949985459447
+  elapsed_seconds: 0.14375049993395805
 - check_id: typecheck_passes
   collected_and_executed: null
   skipped: null
   failures: null
-  elapsed_seconds: 0.25516425003297627
+  elapsed_seconds: 0.256065082969144
