@@ -2,44 +2,127 @@ task_identity: harness-backlog-v0.2/KL-026
 display_task_id: KL-026
 task_definition_version: v0.2
 base_commit: 37de3219bc543e4fe4e554483e7e22262691f97a
-tested_commit: 14e2aab89772265c4f36d895b33d7db3a169dd0e
+tested_commit: 1059fe77cd8c13ee98b47be2b5c16b7ee626d75c
 merge_commit: null
-task_status: BLOCKED
-task_checks_status: NOT_RUN
+task_status: PASS
+task_checks_status: PASS
 integration_status: UNMERGED
-summary: Post-HG039 strict TEST-local cancellation candidate includes all original races, actual cross-root/link
-  denials, same-key conflict/concurrent replay and successful T6 preservation. Complete revised acceptance
-  checks on this final candidate and fresh reviews remain NOT_RUN; all old logs remain historical and are not
-  reused as current PASS.
-commands_run: []
+summary: All eighteen revised exact packet checks pass on the final post-KL075/HG039 tested commit, with nine
+  real PostgreSQL owner interleavings, three PU selectors, full own DC suite, 216 unit regressions and full
+  harness/lint/type checks. I03 uses the ratified independent immutable TEST request, actual root cancellation
+  and separate ledger cleanup; stale/cross-root denials, same-key conflict/concurrent history and successful
+  T6 preservation execute. Historical blocked/failed/precommit evidence remains historical, never selected
+  as current PASS. No workflow, production, real-data shadow or release PASS is inferred.
+commands_run:
+- check_id: interleaving_namespace_pu
+  command: uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_namespace
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/interleaving_namespace_pu-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
+- check_id: time_boundary_pu
+  command: uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_time_boundaries
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/time_boundary_pu-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
+- check_id: i01_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_publish_vs_user_revoke
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i01_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
+- check_id: i02_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_start_vs_user_revoke
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i02_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
+- check_id: i03_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_cancel_vs_dispatch
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i03_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
+- check_id: i04_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_takeover_vs_commit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i04_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
+- check_id: i05_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_issue
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i05_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
+- check_id: i06_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_start
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i06_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
+- check_id: i07_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_publish
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i07_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
+- check_id: i08_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_seal_vs_input_update
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i08_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
+- check_id: i09_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_expiry_vs_start
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i09_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
+- check_id: cancellation_identity_pu
+  command: uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_cancellation_identity
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/cancellation_identity_pu-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
+- check_id: interleaving_suite_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/interleaving_suite_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
+- check_id: harness_validation_passes
+  command: uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/harness_validation_passes-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
+- check_id: unit_regressions_pass
+  command: uv run kl test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/unit_regressions_pass-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
+- check_id: harness_regressions_pass
+  command: uv run kl test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/harness_regressions_pass-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
+- check_id: lint_passes
+  command: uv run kl lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/lint_passes-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
+- check_id: typecheck_passes
+  command: uv run kl typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/typecheck_passes-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 requirements_covered:
 - requirement_id: I01@DC
-  status: NOT_RUN
-  evidence_ref: null
+  status: PASS
+  tested_commit: 1059fe77cd8c13ee98b47be2b5c16b7ee626d75c
+  evidence_ref: docs/exec-plans/evidence/KL-026/i01_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - requirement_id: I02@DC
-  status: NOT_RUN
-  evidence_ref: null
+  status: PASS
+  tested_commit: 1059fe77cd8c13ee98b47be2b5c16b7ee626d75c
+  evidence_ref: docs/exec-plans/evidence/KL-026/i02_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - requirement_id: I03@DC
-  status: NOT_RUN
-  evidence_ref: null
+  status: PASS
+  tested_commit: 1059fe77cd8c13ee98b47be2b5c16b7ee626d75c
+  evidence_ref: docs/exec-plans/evidence/KL-026/i03_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - requirement_id: I04@DC
-  status: NOT_RUN
-  evidence_ref: null
+  status: PASS
+  tested_commit: 1059fe77cd8c13ee98b47be2b5c16b7ee626d75c
+  evidence_ref: docs/exec-plans/evidence/KL-026/i04_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - requirement_id: I05@DC
-  status: NOT_RUN
-  evidence_ref: null
+  status: PASS
+  tested_commit: 1059fe77cd8c13ee98b47be2b5c16b7ee626d75c
+  evidence_ref: docs/exec-plans/evidence/KL-026/i05_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - requirement_id: I06@DC
-  status: NOT_RUN
-  evidence_ref: null
+  status: PASS
+  tested_commit: 1059fe77cd8c13ee98b47be2b5c16b7ee626d75c
+  evidence_ref: docs/exec-plans/evidence/KL-026/i06_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - requirement_id: I07@DC
-  status: NOT_RUN
-  evidence_ref: null
+  status: PASS
+  tested_commit: 1059fe77cd8c13ee98b47be2b5c16b7ee626d75c
+  evidence_ref: docs/exec-plans/evidence/KL-026/i07_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - requirement_id: I08@DC
-  status: NOT_RUN
-  evidence_ref: null
+  status: PASS
+  tested_commit: 1059fe77cd8c13ee98b47be2b5c16b7ee626d75c
+  evidence_ref: docs/exec-plans/evidence/KL-026/i08_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - requirement_id: I09@DC
-  status: NOT_RUN
-  evidence_ref: null
+  status: PASS
+  tested_commit: 1059fe77cd8c13ee98b47be2b5c16b7ee626d75c
+  evidence_ref: docs/exec-plans/evidence/KL-026/i09_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - requirement_id: I04@WF
   status: NOT_RUN
   evidence_ref: null
@@ -47,6 +130,8 @@ files_changed:
 - docs/contracts/protocol_interleavings.md
 - docs/exec-plans/completed/KL-026_RESULT.yaml
 - docs/exec-plans/evidence/KL-026/ENTRY.json
+- docs/exec-plans/evidence/KL-026/FINAL_OBSERVATIONS-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.json
+- docs/exec-plans/evidence/KL-026/FINAL_SCOPE_AUDIT-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.json
 - docs/exec-plans/evidence/KL-026/I03_IDENTITY_BLOCKER.json
 - docs/exec-plans/evidence/KL-026/ITERATION-14e2aab89772265c4f36d895b33d7db3a169dd0e.json
 - docs/exec-plans/evidence/KL-026/MERGED_REFINEMENT.json
@@ -54,59 +139,75 @@ files_changed:
 - docs/exec-plans/evidence/KL-026/PRECOMMIT_RUN_NOT_ACCEPTANCE.json
 - docs/exec-plans/evidence/KL-026/UNAFFECTED_PREFLIGHT-01d7e18.json
 - docs/exec-plans/evidence/KL-026/blocked-result-27934b5152abbbfd404a940ef4cb9634e5dd1423.yaml
+- docs/exec-plans/evidence/KL-026/cancellation_identity_pu-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/cancellation_identity_pu-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/checks-27934b5152abbbfd404a940ef4cb9634e5dd1423.json
+- docs/exec-plans/evidence/KL-026/checks-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.json
 - docs/exec-plans/evidence/KL-026/checks-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.json
 - docs/exec-plans/evidence/KL-026/checks-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.json
 - docs/exec-plans/evidence/KL-026/checks-ownruntime-78d0158cbf9f0e22492bfef89287a41dced79a88.json
 - docs/exec-plans/evidence/KL-026/checks-selected-blocked-27934b5152abbbfd404a940ef4cb9634e5dd1423.json
 - docs/exec-plans/evidence/KL-026/harness_regressions_pass-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/harness_regressions_pass-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/harness_regressions_pass-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/harness_regressions_pass-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - docs/exec-plans/evidence/KL-026/harness_validation_passes-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/harness_validation_passes-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/harness_validation_passes-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/harness_validation_passes-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - docs/exec-plans/evidence/KL-026/i01_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i01_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/i01_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/i01_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - docs/exec-plans/evidence/KL-026/i01_dc-ownruntime-78d0158cbf9f0e22492bfef89287a41dced79a88.log
 - docs/exec-plans/evidence/KL-026/i02_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i02_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/i02_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/i02_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - docs/exec-plans/evidence/KL-026/i02_dc-ownruntime-78d0158cbf9f0e22492bfef89287a41dced79a88.log
 - docs/exec-plans/evidence/KL-026/i03_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i03_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/i03_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/i03_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - docs/exec-plans/evidence/KL-026/i03_dc-ownruntime-78d0158cbf9f0e22492bfef89287a41dced79a88.log
 - docs/exec-plans/evidence/KL-026/i04_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i04_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/i04_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/i04_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - docs/exec-plans/evidence/KL-026/i04_dc-ownruntime-78d0158cbf9f0e22492bfef89287a41dced79a88.log
 - docs/exec-plans/evidence/KL-026/i05_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i05_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/i05_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/i05_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - docs/exec-plans/evidence/KL-026/i05_dc-ownruntime-78d0158cbf9f0e22492bfef89287a41dced79a88.log
 - docs/exec-plans/evidence/KL-026/i06_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i06_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/i06_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/i06_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - docs/exec-plans/evidence/KL-026/i07_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i07_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/i07_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/i07_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - docs/exec-plans/evidence/KL-026/i07_dc-ownruntime-retry-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - docs/exec-plans/evidence/KL-026/i08_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i08_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/i08_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/i08_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - docs/exec-plans/evidence/KL-026/i09_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i09_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/i09_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/i09_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - docs/exec-plans/evidence/KL-026/interleaving_namespace_pu-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/interleaving_namespace_pu-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/interleaving_namespace_pu-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/interleaving_namespace_pu-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - docs/exec-plans/evidence/KL-026/interleaving_namespace_pu-ownruntime-78d0158cbf9f0e22492bfef89287a41dced79a88.log
 - docs/exec-plans/evidence/KL-026/interleaving_suite_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/interleaving_suite_dc-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/interleaving_suite_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/interleaving_suite_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - docs/exec-plans/evidence/KL-026/lint_passes-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/lint_passes-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/lint_passes-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/lint_passes-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - docs/exec-plans/evidence/KL-026/observations-27934b5152abbbfd404a940ef4cb9634e5dd1423.json
@@ -114,33 +215,53 @@ files_changed:
 - docs/exec-plans/evidence/KL-026/record_owned_runtime_checks.py
 - docs/exec-plans/evidence/KL-026/scope-audit-27934b5152abbbfd404a940ef4cb9634e5dd1423.json
 - docs/exec-plans/evidence/KL-026/time_boundary_pu-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/time_boundary_pu-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/time_boundary_pu-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/time_boundary_pu-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - docs/exec-plans/evidence/KL-026/time_boundary_pu-ownruntime-78d0158cbf9f0e22492bfef89287a41dced79a88.log
 - docs/exec-plans/evidence/KL-026/typecheck_passes-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/typecheck_passes-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/typecheck_passes-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/typecheck_passes-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - docs/exec-plans/evidence/KL-026/unit_regressions_pass-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/unit_regressions_pass-ownruntime-1059fe77cd8c13ee98b47be2b5c16b7ee626d75c.log
 - docs/exec-plans/evidence/KL-026/unit_regressions_pass-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log
 - docs/exec-plans/evidence/KL-026/unit_regressions_pass-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
 - tests/db/test_protocol_interleavings.py
 - tests/unit/protocol/test_interleaving_namespace.py
 decisions:
-- HG039 actual normal merge ratifies the independent immutable TEST request, separately trusted PlanningIdentity(TEST),
-  exact registered scope and canonical server-computed hash.
-- Public CancelIntent and its 39-command registry/validator remain unchanged. Only the existing restricted
-  cancellation owner and separate actual CancelUndispatched cleanup are used.
-- Initial failing/blocked checks and preflight records remain immutable historical evidence. Rebase requires
-  complete fresh testing; no historical PASS is reused.
+- Actual KL075 and HG039 normal merges precede this implementation. The existing strict public CancelIntent
+  and 39-command validator remain byte-identical; only the ratified TEST-local request/binding/basis/history
+  recipe is installed in the allowed test file.
+- Use separately trusted PlanningIdentity(TEST), exact registered subject/policy/environment/principal before
+  replay and again under S01, and a server-computed canonical full-payload hash. No caller actor, authorization
+  grant or hash is admitted.
+- "Root cancellation uses only the existing S01\u2192S27\u2192S31\u2192receipt owner and status-only S27 update\
+  \ with atomic bookkeeping. RESERVED cleanup remains a separate actual CancelUndispatched transaction; DISPATCH_INTENT\
+  \ preserves occupation and dispatch identity, with no refund or resend."
+- Two actual idle preflight misses are synchronized outside coordination; the winner commits exactly one cancellation
+  and the contender rechecks successful historical S02 under S01 before live-root guards, with original non-executable
+  facts and no second mutation/bookkeeping.
+- All nine DC scenarios use actual owner services, bounded events/futures and PostgreSQL blocking witnesses;
+  whole persisted relations prove loser rollback and historical immutability. Namespace validation covers construction
+  and all nested reset/bootstrap/destroy paths, with finally cleanup only of the owned task/SHA/root namespace.
+- Append fresh raw checks and exact identity/layer observations; preserve original strict-wire blocker, precommit
+  abort and checkpoint failures without reuse as current PASS.
 known_limitations:
-- Current full revised checks and final independent acceptance reviews remain NOT_RUN.
-- I04@WF remains NOT_RUN; DC and PU do not establish workflow, production, shadow or release PASS.
-- Deadline-crossing DC legally expires both capped lease and root deadline; it does not causally isolate the
-  SQL deadline predicate. Exact equality is pure helper PU, not execution of SQL at equality.
+- "Synthetic S26/COMMIT_READY/S34\u2013S37 inputs are explicitly bounded outside target T6 transactions. This\
+  \ proves T6 guard DC races, not KL027 full workflow or downstream model/provider execution."
+- I04@WF remains NOT_RUN. Production auto-activation, real-data shadow and release gate status are unchanged;
+  local DC/PU PASS never establishes those obligations.
+- Actual acquisition caps lease expiry at root deadline. The deadline-crossing scenario legally expires both
+  together and does not causally isolate the SQL deadline predicate. Exact equality is deterministic pure-helper
+  PU, not SQL owner execution at equality.
+- Local foreign broad DB fixtures are not invoked. Unchanged hosted PostgreSQL lifecycle CI owns the full legacy
+  tests/db regression on a fresh VM.
+- Fresh GENERAL, PROTOCOL and DB_CONCURRENCY final reviews remain required against this committed implementation/result
+  revision. Result records UNMERGED; actual integration is a separate Git fact.
 follow_up_tasks:
-- Execute all eighteen revised packet checks on the final tested commit; update result and append fresh raw
-  evidence before independent review.
-- Obtain fresh GENERAL, PROTOCOL and DB_CONCURRENCY reviews, fix/retest/rereview findings if needed.
-- Create/attach one PR; all applicable final-head CI/gates PASS before normal exact-head merge, then clean
-  only own verified merged resources and archive completed task.
+- Obtain fresh independent GENERAL, PROTOCOL and DB_CONCURRENCY reviews; fixes require new implementation checks
+  and rereview. Append only own REVIEW_RECORD_ONLY paths after the reviewed result.
+- Create and attach one KL026 PR; normal exact-head merge only after all applicable final-head CI/reviews/gates
+  PASS. Sync clean master, clean only verified own merged resources and archive only the completed task.
 spec_change_request: null
