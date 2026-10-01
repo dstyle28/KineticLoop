@@ -1,0 +1,95 @@
+task_identity: harness-backlog-v0.2/KL-024
+tested_commit: 3cd538989dbf79bd8907587b317ef003bcfbd8e9
+command: uv run pytest -q tests/db/test_planning.py::test_join_and_revision_preserve_root_authority
+exit_code: 1
+
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________________ test_join_and_revision_preserve_root_authority ________________
+
+database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:55209/kineticloop_kl024_3cd5389', 'agent': 'postg...4_3cd5389', 'auditor': 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:55209/kineticloop_kl024_3cd5389', ...}
+
+    def test_join_and_revision_preserve_root_authority(database_urls: dict[str, str]) -> None:
+        url = database_urls["admin"]
+        root = admission(url, request("root"))
+        lease = acquire(url, root)
+        # Seed nonzero ledger counters as a downstream-work prerequisite fixture;
+        # revision assertions prove they persist, without claiming a dispatch/ledger test.
+        with psycopg.connect(url, autocommit=True) as db:
+            db.execute(
+                "UPDATE kineticloop.planning_intents SET typed_payload="
+                "jsonb_set(jsonb_set(typed_payload,'{reserved,calls}','2'),'{settled,tokens}','20')"
+            )
+        root_state = read(
+            url,
+            "SELECT deadline,typed_payload,fence_token,lease_owner,lease_expires_at "
+            "FROM kineticloop.planning_intents",
+        )[0]
+        same = admission(
+            url, request("join", constraints={"minutes": 30, "equipment": ["mat", "band", "band"]})
+        )
+        assert same == {**root, "mode": "JOIN"}
+        assert counts(url) == (1, 1, 1, 2, 3, 3, 3)
+        revision = admission(url, request("revise", constraints={"minutes": 31}))
+        assert revision["intent_id"] == root["intent_id"] and revision["request_revision"] == 2
+        assert (
+            revision["attempt_id"] != root["attempt_id"]
+            and revision["request_id"] != root["request_id"]
+        )
+        assert read(
+            url, "SELECT status FROM kineticloop.planning_attempts WHERE id=%s", (root["attempt_id"],)
+        ) == [("STALE",)]
+        assert (
+            root_state
+            == read(
+                url,
+                "SELECT deadline,typed_payload,fence_token,lease_owner,lease_expires_at "
+                "FROM kineticloop.planning_intents",
+            )[0]
+        )
+        assert read(url, "SELECT admitted_count FROM kineticloop.planning_quota_buckets") == [
+            (1,),
+            (1,),
+        ]
+        assert read(
+            url,
+            "SELECT current_request_revision_id,current_attempt_id FROM kineticloop.planning_intents",
+        )[0] == (UUID(revision["request_id"]), UUID(revision["attempt_id"]))
+        for command in ("RenewLease", "ReserveCall", "CommitBundle"):
+            with psycopg.connect(url) as db:
+    
+                def stale(tx: RepositoryTransaction) -> None:
+                    tx.lock_subject()
+                    tx.lock_intents((UUID(root["intent_id"]),))
+                    tx.require_current_fence(
+                        UUID(root["intent_id"]),
+                        owner_id=IDENTITY.key,
+                        fence=lease["fence"],
+                        expected_request_revision=1,
+                        expected_attempt_id=UUID(root["attempt_id"]),
+                    )
+    
+                with pytest.raises(FenceLost):
+                    execute_command(db, command, SUBJECT, stale)
+>       assert admission(url, request("revise", constraints={"minutes": 31})) == revision
+E       AssertionError: assert {'attempt_id'...d': True, ...} == {'attempt_id'...a559b88', ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'replayed': True}
+E         Use -v to get more diff
+
+tests/db/test_planning.py:337: AssertionError
+---------------------------- Captured stderr setup -----------------------------
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+=========================== short test summary info ============================
+FAILED tests/db/test_planning.py::test_join_and_revision_preserve_root_authority
+1 failed in 3.43s

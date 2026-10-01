@@ -1,0 +1,275 @@
+task_identity: harness-backlog-v0.2/KL-024
+display_task_id: KL-024
+task_definition_version: v0.2
+base_commit: 8ebeab3e509793b4c08968fb59758fea86370c05
+tested_commit: 638396cc5d7c28d5152038d08390a2de11320064
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: Implemented normalized policy-bound T4 planning admission/join/revision and typed fenced acquire/renew
+  commands over the sole merged owner, with additive frozen-S27 active-partition uniqueness. Integrated
+  merged protected master/HG032/HG033 and applied only the byte-exact authorized negative-fixture date
+  and two rollback-head expectations. All thirteen exact task checks and full CI unit/harness/database
+  regressions PASS on the stable tested SHA. Historical BLOCKED evidence and candidate-only proofs remain
+  historical; no product/release/activation or merge PASS is inferred.
+commands_run:
+- check_id: planning_normalization_and_admission_pu
+  command: uv run pytest -q tests/unit/workflow/test_planning.py::test_normalized_single_flight_and_revision_decisions
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-638396c.log
+- check_id: planning_fence_deadline_and_terminal_pu
+  command: uv run pytest -q tests/unit/workflow/test_planning.py::test_fence_deadline_and_terminal_guards
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-638396c.log
+- check_id: planning_active_partition_and_quota_dc
+  command: uv run pytest -q tests/db/test_planning.py::test_active_partition_and_quota_are_atomic
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-638396c.log
+- check_id: planning_join_revision_budget_preservation_dc
+  command: uv run pytest -q tests/db/test_planning.py::test_join_and_revision_preserve_root_authority
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-638396c.log
+- check_id: planning_takeover_and_renew_interleavings_dc
+  command: uv run pytest -q tests/db/test_planning.py::test_takeover_and_renew_fence_old_workers
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-638396c.log
+- check_id: planning_atomicity_and_ack_loss_dc
+  command: uv run pytest -q tests/db/test_planning.py::test_atomicity_and_ack_loss_replay
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-638396c.log
+- check_id: planning_unit_suite_passes
+  command: uv run pytest -q tests/unit/workflow/test_planning.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-638396c.log
+- check_id: planning_db_suite_passes
+  command: uv run pytest -q tests/db/test_planning.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/planning_db_suite_passes-638396c.log
+- check_id: migration_chain_regressions_pass
+  command: uv run pytest -q tests/db/test_migrations.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-638396c.log
+- check_id: transaction_owner_regressions_pass
+  command: KINETICLOOP_KL022_COMPOSE_PROJECT="kineticloop-kl024-reg-$(git rev-parse --short HEAD)" KINETICLOOP_KL022_DATABASE="kineticloop_kl024_reg_$(git
+    rev-parse --short HEAD)" uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-638396c.log
+- check_id: lint_passes
+  command: uv run kl lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/lint_passes-638396c.log
+- check_id: typecheck_passes
+  command: uv run kl typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/typecheck_passes-638396c.log
+- check_id: harness_validation_passes
+  command: uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-024/harness_validation_passes-638396c.log
+requirements_covered: []
+files_changed:
+- docs/contracts/planning_intents.md
+- docs/exec-plans/completed/KL-024_RESULT.yaml
+- docs/exec-plans/evidence/KL-024/blocked-result-885d038.yaml
+- docs/exec-plans/evidence/KL-024/blocked-result-bafc645.yaml
+- docs/exec-plans/evidence/KL-024/candidate_subject_scope_head_probe-9282e12.log
+- docs/exec-plans/evidence/KL-024/candidate_subject_scope_head_probe.py
+- docs/exec-plans/evidence/KL-024/checks-2415ccd.json
+- docs/exec-plans/evidence/KL-024/checks-395a8c4.json
+- docs/exec-plans/evidence/KL-024/checks-3cd5389.json
+- docs/exec-plans/evidence/KL-024/checks-3e1fdaf.json
+- docs/exec-plans/evidence/KL-024/checks-638396c.json
+- docs/exec-plans/evidence/KL-024/checks-9282e12.json
+- docs/exec-plans/evidence/KL-024/checks-c414cd1.json
+- docs/exec-plans/evidence/KL-024/full_database_regressions-638396c.log
+- docs/exec-plans/evidence/KL-024/full_database_regressions-9282e12.log
+- docs/exec-plans/evidence/KL-024/full_harness_regressions-638396c.log
+- docs/exec-plans/evidence/KL-024/full_harness_regressions-9282e12.log
+- docs/exec-plans/evidence/KL-024/full_unit_regressions-638396c.log
+- docs/exec-plans/evidence/KL-024/full_unit_regressions-9282e12.log
+- docs/exec-plans/evidence/KL-024/harness_validation_passes-2415ccd.log
+- docs/exec-plans/evidence/KL-024/harness_validation_passes-395a8c4.log
+- docs/exec-plans/evidence/KL-024/harness_validation_passes-3cd5389.log
+- docs/exec-plans/evidence/KL-024/harness_validation_passes-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/harness_validation_passes-638396c.log
+- docs/exec-plans/evidence/KL-024/harness_validation_passes-9282e12.log
+- docs/exec-plans/evidence/KL-024/harness_validation_passes-c414cd1.log
+- docs/exec-plans/evidence/KL-024/historical-GENERAL-4543b56.json
+- docs/exec-plans/evidence/KL-024/historical-PROTOCOL-4543b56.json
+- docs/exec-plans/evidence/KL-024/lint_passes-2415ccd.log
+- docs/exec-plans/evidence/KL-024/lint_passes-395a8c4.log
+- docs/exec-plans/evidence/KL-024/lint_passes-3cd5389.log
+- docs/exec-plans/evidence/KL-024/lint_passes-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/lint_passes-638396c.log
+- docs/exec-plans/evidence/KL-024/lint_passes-9282e12.log
+- docs/exec-plans/evidence/KL-024/lint_passes-c414cd1.log
+- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-2415ccd.log
+- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-395a8c4.log
+- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-3cd5389.log
+- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-638396c.log
+- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-9282e12.log
+- docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-3cd5389.log
+- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-638396c.log
+- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-9282e12.log
+- docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-3cd5389.log
+- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-638396c.log
+- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-9282e12.log
+- docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-3cd5389.log
+- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-638396c.log
+- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-9282e12.log
+- docs/exec-plans/evidence/KL-024/planning_db_suite_passes-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-3cd5389.log
+- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-638396c.log
+- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-9282e12.log
+- docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-3cd5389.log
+- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-638396c.log
+- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-9282e12.log
+- docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-3cd5389.log
+- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-638396c.log
+- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-9282e12.log
+- docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-3cd5389.log
+- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-638396c.log
+- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-9282e12.log
+- docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-c414cd1.log
+- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-2415ccd.log
+- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-395a8c4.log
+- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-3cd5389.log
+- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-638396c.log
+- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-9282e12.log
+- docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-c414cd1.log
+- docs/exec-plans/evidence/KL-024/proposed-regression-fixture-rescope.patch
+- docs/exec-plans/evidence/KL-024/proposed-subject-scope-head-rescope.patch
+- docs/exec-plans/evidence/KL-024/review-repair-attempt-3cd5389.json
+- docs/exec-plans/evidence/KL-024/subject-scope-ci-blocker-9282e12.json
+- docs/exec-plans/evidence/KL-024/supplemental-checks-638396c.json
+- docs/exec-plans/evidence/KL-024/supplemental-checks-9282e12.json
+- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-2415ccd.log
+- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-395a8c4.log
+- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-3cd5389.log
+- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-638396c.log
+- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-9282e12.log
+- docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-c414cd1.log
+- docs/exec-plans/evidence/KL-024/typecheck_passes-2415ccd.log
+- docs/exec-plans/evidence/KL-024/typecheck_passes-395a8c4.log
+- docs/exec-plans/evidence/KL-024/typecheck_passes-3cd5389.log
+- docs/exec-plans/evidence/KL-024/typecheck_passes-3e1fdaf.log
+- docs/exec-plans/evidence/KL-024/typecheck_passes-638396c.log
+- docs/exec-plans/evidence/KL-024/typecheck_passes-9282e12.log
+- docs/exec-plans/evidence/KL-024/typecheck_passes-c414cd1.log
+- docs/exec-plans/reviews/KL-024/DB_CONCURRENCY.json
+- docs/exec-plans/reviews/KL-024/GENERAL.json
+- docs/exec-plans/reviews/KL-024/PROTOCOL.json
+- migrations/versions/e8c2f1a6b904_planning_active_partition.py
+- src/kineticloop/persistence/planning.py
+- src/kineticloop/persistence/transactions.py
+- src/kineticloop/workflow/planning.py
+- tests/db/test_migrations.py
+- tests/db/test_planning.py
+- tests/db/test_subject_scope.py
+- tests/db/test_transaction_interfaces.py
+- tests/unit/workflow/test_planning.py
+decisions:
+- Use versioned deterministic structured normalization, separating subject/date/purpose partition from
+  semantic fingerprint and calendar scope; same fingerprint/current Manifest/epoch/frontier joins without
+  S28/S29 or quota debit.
+- Resolve immutable active admission policy under S01; new roots atomically debit policy-bound hourly/day
+  S30 quotas, retain nonnegative root limits/reserved/settled categories, and start ADMITTED with original
+  server deadline.
+- Bounded T4 revision appends exact S28/S29, marks only the old current attempt STALE, and updates only
+  current pointers; root limits/counters/deadline/lease/fence remain unchanged. Copies of the prepared
+  basis cannot mutate guard authority.
+- Retain frozen lease lock order and S27-only lease capabilities; acquire uses monotonic owner/token CAS,
+  renewal rereads after locks and extends only a live lease within deadline. New typed commands reject
+  terminal/unknown attempt states; the shared fence guard retains merged nonterminal compatibility while
+  rejecting frozen terminal attempts.
+- New service intents use frozen ADMITTED; existing PENDING remains explicit ADMITTED compatibility in
+  the active unique index and acquisition guard. Intent terminal reasons remain distinct; success remains
+  T6-owned.
+- Scope receipt and event identities by trusted actor, command kind and client key. Successful historical
+  replay returns original identities with replayed=true without refreshing current worker authority; an
+  under-S01 recheck closes preflight races. Independent replay-marker finding repaired with preflight
+  and under-S01 replay tests for admission/acquire/renew after revision and cancellation.
+- 'Independent review quota finding repaired: completion requires exact distinct prepared S30 identities
+  and exactly one effect per bucket. Migrated PostgreSQL negative duplicate-one/omit-other callback test
+  proves complete rollback.'
+- HG032 PR63 merged at abc5af6 authorizes only DATE 2026-09-27 to 2026-09-28 inside the INTENT local_date
+  update in test_reauthorize_requires_atomic_intent_success. Applied exactly that byte change and verified
+  all other bytes against protected master, preserving head-day GuardRequired, restoration, all other
+  cases and active-partition uniqueness.
+- HG033 PR64 merged at8ebeab3 authorizes only the two expected-version expressions REVISION -> _MIGRATIONS.HEAD_REVISION
+  inside test_populated_downgrade_fails_before_guard_or_acl_changes. Applied exactly those expressions,
+  preserving every other byte and all exception/trigger/lookup/ACL/namespace/binding/retained-data oracles;
+  HG032 date repair remains exact. Historical migration identities and frozen guards remain unchanged.
+- Preserve all prior raw checks, unapplied historical proposals, candidate-only proof labels and byte-identical
+  BLOCKED snapshots. Current task PASS selects only the new exact/full-CI checks on the post-governance
+  tested SHA; previous review records cannot approve this revision. Inventory includes only committed
+  task paths and the explicit new selected evidence files.
+known_limitations:
+- Task PASS covers local implementation evidence only. No W04-W06 product/release PASS, model loop, call
+  ledger, dispatch, downstream attempt advancement, full watchdog/reaper, authorization implementation
+  or production activation is claimed. Expired active/terminal-attempt recovery remains downstream.
+- Ingress authentication supplies trusted subject/actor binding and owner connection. Runtime system/model
+  capacity admission is represented by the versioned policy boundary and downstream enforcement; no provider/model
+  network call occurs inside coordination.
+- Historical BLOCKED/CHANGES_REQUIRED records and candidate probes retain their original meanings. They
+  are not current CI, review or release approval. Both governance-authorized fixture compatibility repairs
+  are now exercised by actual full regression suites.
+- Result records UNMERGED before independent review; actual Git integration remains a separate fact and
+  must not mutate the reviewed result.
+follow_up_tasks:
+- Complete fresh GENERAL, PROTOCOL and DB_CONCURRENCY reviews against this implementation/result revision.
+  Fix substantive findings and retest/rereview if needed; only the task-scoped review-record-only suffix
+  may follow without rereview.
+- Merge existing PR62 normally only after required reviews and all CI/merge gates PASS; ff-only synchronize
+  clean master, clean only verified merged task resources and archive the completed task.
+- Downstream KL025 owns call ledger/dispatch; later tasks own model loop, attempt advancement, recovery/reaper
+  and full W04-W06 release evidence. Record post-merge integration separately without changing this result.
+spec_change_request: null
+supplemental_checks:
+- check_id: full_unit_regressions
+  command: uv run kl test-unit
+  result: PASS
+  exit_code: 0
+  evidence_ref: docs/exec-plans/evidence/KL-024/full_unit_regressions-638396c.log
+- check_id: full_harness_regressions
+  command: uv run kl test-harness
+  result: PASS
+  exit_code: 0
+  evidence_ref: docs/exec-plans/evidence/KL-024/full_harness_regressions-638396c.log
+- check_id: full_database_regressions
+  command: KINETICLOOP_KL022_COMPOSE_PROJECT="kineticloop-kl024-full-$(git rev-parse --short HEAD)" KINETICLOOP_KL022_DATABASE="kineticloop_kl024_full_$(git
+    rev-parse --short HEAD)" uv run pytest -q tests/db
+  result: PASS
+  exit_code: 0
+  evidence_ref: docs/exec-plans/evidence/KL-024/full_database_regressions-638396c.log

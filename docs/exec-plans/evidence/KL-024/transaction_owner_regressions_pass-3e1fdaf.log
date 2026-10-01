@@ -1,0 +1,202 @@
+task_identity: harness-backlog-v0.2/KL-024
+tested_commit: 3e1fdaf491929ad5963ec4491cb1d1139fc1b8e8
+command: KINETICLOOP_KL022_COMPOSE_PROJECT="kineticloop-kl024-reg-$(git rev-parse --short HEAD)" KINETICLOOP_KL022_DATABASE="kineticloop_kl024_reg_$(git rev-parse --short HEAD)" uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py
+exit_code: 1
+
+.............................................F............               [100%]
+=================================== FAILURES ===================================
+_______________ test_reauthorize_requires_atomic_intent_success ________________
+
+database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:55229/kineticloop_kl024_reg_3e1fdaf', 'agent': 'p...1fdaf', 'auditor': 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:55229/kineticloop_kl024_reg_3e1fdaf', ...}
+
+    def test_reauthorize_requires_atomic_intent_success(database_urls: dict[str, str]) -> None:
+        issuance = UUID("00000000-0000-8000-8000-000000015742")
+        receipt = UUID("00000000-0000-8000-8000-000000015743")
+        foreign_policy = UUID("00000000-0000-8000-8000-000000015749")
+        event = _event(0x15744)
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            execution_basis_row = connection.execute(
+                "SELECT execution_basis_event_id FROM kineticloop.user_decision_state "
+                "WHERE subject_id=%s",
+                (SUBJECT,),
+            ).fetchone()
+            assert execution_basis_row is not None
+            execution_basis = execution_basis_row[0]
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "UPDATE kineticloop.planning_intents SET status='RUNNING',"
+                "lease_owner='worker-reauth',fence_token=11,"
+                "lease_expires_at=clock_timestamp()+interval '1 day',"
+                "result_authorization_id=NULL WHERE id=%s",
+                (INTENT,),
+            )
+            connection.execute(
+                "UPDATE kineticloop.planning_attempts SET status='COMMIT_READY',fence_token=11,"
+                "completed_at=NULL,captured_epoch=(SELECT authorization_epoch "
+                "FROM kineticloop.user_decision_state WHERE subject_id=%s) WHERE id=%s",
+                (SUBJECT, ATTEMPT),
+            )
+            connection.execute(
+                "UPDATE kineticloop.validation_results SET result='PASS',"
+                "valid_until=clock_timestamp()+interval '1 day',ref_s03_id=%s WHERE id=%s",
+                (execution_basis, VALIDATION),
+            )
+            connection.execute("SET session_replication_role=origin")
+    
+        def invoke(status: str) -> tuple[Mapping[str, Any], bool]:
+            def operation(tx: RepositoryTransaction) -> tuple[Mapping[str, Any], bool]:
+                registry_revision = _acquire_registry(tx)
+                tx.lock_intents((INTENT,))
+                tx.lock_daily_head(date(2026, 9, 26))
+                tx.require_current_fence(
+                    INTENT,
+                    owner_id="worker-reauth",
+                    fence=11,
+                    expected_request_revision=1,
+                    expected_attempt_id=ATTEMPT,
+                )
+    
+                def mutation(session: Any) -> Mapping[str, Any]:
+                    dependencies = session.authorization_certificate_dependencies()
+                    closure_digest = session.authorization_closure_digest()
+                    session.insert(
+                        "S42",
+                        {
+                            "id": issuance,
+                            "subject_id": SUBJECT,
+                            "bound_content_hash": "content",
+                            "scope": "EXECUTION",
+                            "issuance_reason": "REVALIDATION",
+                            "artifact_dependency_closure_hash": closure_digest,
+                            "registry_revision_at_issue": registry_revision,
+                            "valid_from": session.authorization_valid_from(),
+                            "valid_until": session.authorization_valid_until(),
+                            "validity_certificate": psycopg.types.json.Jsonb(
+                                {
+                                    "authorization_epoch": tx.authorization_epoch,
+                                    "method_version": AUTHORIZATION_METHOD_VERSION,
+                                    "closure_digest": closure_digest,
+                                    "dependencies": list(dependencies),
+                                }
+                            ),
+                            "ref_s02_id": receipt,
+                            "ref_s05_id": POLICY,
+                            "ref_s24_id": MANIFEST,
+                            "ref_s36_id": RESOLUTION,
+                            "ref_s37_id": VALIDATION,
+                            "ref_s40_id": PRESCRIPTION,
+                            "ref_s49_id": ARTIFACT,
+                            "registry_state_id": 1,
+                        },
+                    )
+                    session.insert_authorization_artifact_closure(issuance, _registry_ids())
+                    session.update(
+                        "S01",
+                        {"execution_basis_event_id": event.event_id},
+                        {"subject_id": SUBJECT},
+                    )
+                    session.update(
+                        "S27",
+                        {"status": status, "result_authorization_id": issuance},
+                        {"id": INTENT, "subject_id": SUBJECT},
+                    )
+                    session.update(
+                        "S29",
+                        {"status": "COMMITTED", "completed_at": COMPLETION_RECORDED_AT},
+                        {"id": ATTEMPT, "subject_id": SUBJECT},
+                    )
+                    return {"authorization_id": str(issuance)}
+    
+                return tx.idempotent_outcome(
+                    receipt_id=receipt,
+                    actor_scope="subject",
+                    client_key="reauthorize-intent-success",
+                    request_hash="reauthorize-intent-success-hash",
+                    mutation=mutation,
+                    event=event,
+                    aggregate_locks={
+                        "planning_attempts": (ATTEMPT,),
+                        "validation_results": (VALIDATION,),
+                    },
+                    authorization_basis={
+                        "validation_id": VALIDATION,
+                        "resolution_id": RESOLUTION,
+                        "intent_id": INTENT,
+                        "head_id": DAILY_HEAD,
+                    },
+                )
+    
+            with psycopg.connect(database_urls["admin"]) as connection:
+                return execute_command(connection, "Reauthorize", SUBJECT, operation)
+    
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+            connection.execute(
+                "INSERT INTO kineticloop.policy_bundles"
+                "(id,subject_id,policy_namespace,policy_version,content_hash) "
+                "VALUES (%s,%s,'kl015-cross-policy','1','cross-policy') "
+                "ON CONFLICT (id) DO NOTHING",
+                (foreign_policy, SUBJECT),
+            )
+            connection.execute(
+                "UPDATE kineticloop.evidence_resolutions SET ref_s05_id=%s WHERE id=%s",
+                (foreign_policy, RESOLUTION),
+            )
+            connection.execute("SET session_replication_role=origin")
+        try:
+            with pytest.raises(GuardRequired, match="current PASS validation basis"):
+                invoke("FOUND_VALID_PLAN")
+        finally:
+            with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+                connection.execute("SET session_replication_role=replica")
+                connection.execute(
+                    "UPDATE kineticloop.evidence_resolutions SET ref_s05_id=%s WHERE id=%s",
+                    (POLICY, RESOLUTION),
+                )
+                connection.execute("SET session_replication_role=origin")
+    
+        with psycopg.connect(database_urls["admin"], autocommit=True) as connection:
+            connection.execute("SET session_replication_role=replica")
+>           connection.execute(
+                "UPDATE kineticloop.planning_intents SET local_date=DATE '2026-09-27' WHERE id=%s",
+                (INTENT,),
+            )
+
+tests/db/test_transaction_interfaces.py:3395: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <psycopg.Connection [BAD] at 0x10c13cd40>
+query = "UPDATE kineticloop.planning_intents SET local_date=DATE '2026-09-27' WHERE id=%s"
+params = (UUID('00000000-0000-8000-8000-000000015027'),)
+
+    def execute(
+        self,
+        query: Query,
+        params: Params | None = None,
+        *,
+        prepare: bool | None = None,
+        binary: bool = False,
+    ) -> Cursor[Row]:
+        """Execute a query and return a cursor to read its results."""
+        try:
+            cur = self.cursor()
+            if binary:
+                cur.format = BINARY
+    
+            if isinstance(query, Template):
+                if params is not None:
+                    raise TypeError(
+                        "'execute()' with string template query doesn't support parameters"
+                    )
+                return cur.execute(query, prepare=prepare)
+            else:
+                return cur.execute(query, params, prepare=prepare)
+        except e._NO_TRACEBACK as ex:
+>           raise ex.with_traceback(None)
+E           psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "uq_s27_active_partition"
+E           DETAIL:  Key (subject_id, local_date, purpose)=(00000000-0000-8000-8000-000000000001, 2026-09-27, PLAN) already exists.
+
+.venv/lib/python3.12/site-packages/psycopg/connection.py:304: UniqueViolation
+=========================== short test summary info ============================
+FAILED tests/db/test_transaction_interfaces.py::test_reauthorize_requires_atomic_intent_success
+1 failed, 57 passed in 13.83s
