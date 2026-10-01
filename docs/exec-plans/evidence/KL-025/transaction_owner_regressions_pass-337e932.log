@@ -1,0 +1,7 @@
+tested_commit: 337e932d42f4fa88da1858655f53d36dfff5c423
+command: KINETICLOOP_KL022_COMPOSE_PROJECT="kineticloop-kl025-reg-$(git rev-parse --short HEAD)" KINETICLOOP_KL022_DATABASE="kineticloop_kl025_reg_$(git rev-parse --short HEAD)" uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py
+worktree: /Users/davetian/.codex/worktrees/17f0/KineticLoop
+..........................................................               [100%]
+58 passed in 14.46s
+
+exit_code: 0

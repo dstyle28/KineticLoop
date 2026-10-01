@@ -2,104 +2,184 @@ task_identity: harness-backlog-v0.2/KL-025
 display_task_id: KL-025
 task_definition_version: v0.2
 base_commit: d93131de0cd313199f3c787b56ff4b211f2905d7
-tested_commit: d93131de0cd313199f3c787b56ff4b211f2905d7
+tested_commit: 337e932d42f4fa88da1858655f53d36dfff5c423
 merge_commit: null
-task_status: BLOCKED
-task_checks_status: NOT_RUN
+task_status: PASS
+task_checks_status: PASS
 integration_status: UNMERGED
-summary: Verification pending after supplemental CI scope clarification. Historical
-  blocked entry report is preserved byte-identically in task evidence; local exact
-  packet checks are compatible and namespace proof passed on candidate bytes. All
-  task checks remain NOT_RUN until revision-bound implementation checks finish. Full
-  database CI runs only unchanged GitHub-hosted ubuntu-latest; foreign local fixture
-  execution is prohibited.
+summary: Implemented typed call reservation, non-sendable permit replay, bounded internal
+  cancellation, UNKNOWN occupation and reliable late settlement over the merged T5/T8
+  transaction owners and actual KL024 planning root. All sixteen exact local packet
+  checks and full local unit/harness regressions PASS on tested337e932. Full database
+  regression is required separately on unchanged GitHub-hosted ubuntu-latest CI; foreign
+  local namespaces are never used. No product/release/activation or merge PASS is
+  inferred.
 commands_run:
 - check_id: ledger_budget_dimensions_pu
   command: uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_root_budget_and_charge_bounds
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_budget_dimensions_pu-337e932.log
 - check_id: ledger_state_and_replay_pu
   command: uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_state_machine_and_non_sendable_replay
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_state_and_replay_pu-337e932.log
 - check_id: ledger_root_budget_atomic_dc
   command: uv run pytest -q tests/db/test_call_ledger.py::test_competing_reservations_share_root_budget
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_root_budget_atomic_dc-337e932.log
 - check_id: ledger_cancel_dispatch_exclusion_dc
   command: uv run pytest -q tests/db/test_call_ledger.py::test_cancel_and_dispatch_have_one_winner
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_cancel_dispatch_exclusion_dc-337e932.log
 - check_id: ledger_current_authority_dc
   command: uv run pytest -q tests/db/test_call_ledger.py::test_stale_attempt_fence_and_deadline_deny
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_current_authority_dc-337e932.log
 - check_id: ledger_ack_loss_and_natural_identity_dc
   command: uv run pytest -q tests/db/test_call_ledger.py::test_ack_loss_and_payload_conflicts
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_ack_loss_and_natural_identity_dc-337e932.log
 - check_id: ledger_unknown_and_late_settlement_dc
   command: uv run pytest -q tests/db/test_call_ledger.py::test_unknown_and_late_settlement_are_accounting_only
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_unknown_and_late_settlement_dc-337e932.log
 - check_id: ledger_physical_dispatch_boundary_pu
   command: uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_dispatch_occurs_once_after_commit
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_physical_dispatch_boundary_pu-337e932.log
 - check_id: ledger_unit_suite_passes
   command: uv run pytest -q tests/unit/workflow/test_call_ledger.py
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_unit_suite_passes-337e932.log
 - check_id: ledger_db_suite_passes
   command: uv run pytest -q tests/db/test_call_ledger.py
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_db_suite_passes-337e932.log
 - check_id: planning_fixture_namespace_isolation_pu
   command: uv run pytest -q tests/db/test_call_ledger.py::test_planning_fixture_namespace_isolation
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/planning_fixture_namespace_isolation_pu-337e932.log
 - check_id: planning_prerequisite_regressions_pass
   command: KINETICLOOP_KL024_FIXTURE_OWNER=KL-025 uv run pytest -q tests/unit/workflow/test_planning.py
     tests/db/test_planning.py
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/planning_prerequisite_regressions_pass-337e932.log
 - check_id: transaction_owner_regressions_pass
   command: KINETICLOOP_KL022_COMPOSE_PROJECT="kineticloop-kl025-reg-$(git rev-parse
     --short HEAD)" KINETICLOOP_KL022_DATABASE="kineticloop_kl025_reg_$(git rev-parse
     --short HEAD)" uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/transaction_owner_regressions_pass-337e932.log
 - check_id: lint_passes
   command: uv run kl lint
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/lint_passes-337e932.log
 - check_id: typecheck_passes
   command: uv run kl typecheck
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/typecheck_passes-337e932.log
 - check_id: harness_validation_passes
   command: uv run kl check-harness
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/harness_validation_passes-337e932.log
 requirements_covered: []
 files_changed:
+- docs/contracts/call_ledger.md
 - docs/exec-plans/completed/KL-025_RESULT.yaml
 - docs/exec-plans/evidence/KL-025/candidate-inventory-d93131d.json
+- docs/exec-plans/evidence/KL-025/checks-337e932.json
 - docs/exec-plans/evidence/KL-025/entry-audit-d93131d.json
 - docs/exec-plans/evidence/KL-025/entry-audit.py
+- docs/exec-plans/evidence/KL-025/full_harness_regressions-337e932.log
+- docs/exec-plans/evidence/KL-025/full_unit_regressions-337e932.log
+- docs/exec-plans/evidence/KL-025/harness_validation_passes-337e932.log
 - docs/exec-plans/evidence/KL-025/historical-blocked-result-41c292f.yaml
+- docs/exec-plans/evidence/KL-025/ledger_ack_loss_and_natural_identity_dc-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_budget_dimensions_pu-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_cancel_dispatch_exclusion_dc-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_current_authority_dc-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_db_suite_passes-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_physical_dispatch_boundary_pu-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_root_budget_atomic_dc-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_state_and_replay_pu-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_unit_suite_passes-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_unknown_and_late_settlement_dc-337e932.log
+- docs/exec-plans/evidence/KL-025/lint_passes-337e932.log
 - docs/exec-plans/evidence/KL-025/message-rejection-d93131d.json
+- docs/exec-plans/evidence/KL-025/metadata-driver-note-337e932.json
+- docs/exec-plans/evidence/KL-025/namespaces-and-source-337e932.json
+- docs/exec-plans/evidence/KL-025/planning_fixture_namespace_isolation_pu-337e932.log
+- docs/exec-plans/evidence/KL-025/planning_prerequisite_regressions_pass-337e932.log
 - docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
+- docs/exec-plans/evidence/KL-025/run-checks-337e932.py
+- docs/exec-plans/evidence/KL-025/transaction_owner_regressions_pass-337e932.log
+- docs/exec-plans/evidence/KL-025/typecheck_passes-337e932.log
 - docs/exec-plans/evidence/KL-025/unapplied-incomplete-candidate-d93131d.patch
+- src/kineticloop/persistence/call_ledger.py
+- src/kineticloop/persistence/transactions.py
+- src/kineticloop/workflow/call_ledger.py
+- tests/db/test_call_ledger.py
+- tests/db/test_planning.py
+- tests/unit/workflow/test_call_ledger.py
 decisions:
-- Retain historical blocked snapshot and unapplied candidate evidence without altering
-  them.
-- Apply exact HG034 planning patch for local exact regressions; full suite only unchanged
-  hosted CI per clarified supplemental request.
+- Read actual merged KL024 planning service, root limits/reserved/settled/deadline/fence,
+  prerequisite SHA-bound reviews and M2 closure; exact planning fixture patch matches
+  HG034 full-file hash. Isolation proof runs first and records derived KL025 SHA/worktree
+  digest namespaces.
+- Use the workflow namespace package; typed accounting identity and exact finite nonnegative
+  integer dimensions retain all unrelated root payload fields. No strict money guarantee
+  is claimed; actual above bounds remains recorded and further reservations fail closed.
+- Register CancelUndispatched only as bounded internal owner, retaining the closed
+  39-command public ingress. Exact locked RESERVED source alone may release a obsolete
+  reservation after lease loss; it supplies no stale business or execution authority.
+- Owner guards require exact prepared root accounting, reservation identity/bounds/fence
+  and immutable transition/deltas with one S27/S31/S32 plus S02/S03/S04 atomic effect.
+  Expected revision and merged UNKNOWN-to-OUTCOME_UNKNOWN vocabulary reject blocked
+  stale contenders.
+- The existing first committed DISPATCH_INTENT winner is sendable after transaction
+  release; all preflight and under-S01 replay paths return historical non-sendable
+  identities. Recovery never resends that reservation. Physical requests are fake
+  PU only; each future retry needs fresh budget coverage.
+- Dedicated reliable receipt verifier runs before coordination. Immutable receipt/accounting
+  identity and actual maps bind settlement; provider receipt/request natural identities
+  cannot settle multiple reservations. Late settlement changes only accounting and
+  ledger evidence, preserving terminal/revised/taken-over workflow and control/authorization
+  state.
+- Historical BLOCKED result, entry audit, unreviewed candidate patch and actual message
+  rejection remain preserved. Clarified supplemental full-DB request runs only unchanged
+  hosted CI with fresh VM/default local Docker; this removes local foreign-fixture
+  execution without modifying packet checks or foreign fixtures.
 known_limitations:
-- Implementation is in progress; no acceptance/product/review/release/merge PASS claimed.
-- Historical parent-message rejection remains honored; no retry/workaround.
+- No provider SDK/model loop, DISPATCHED diagnosis, full watchdog/reaper, generic
+  progression, production activation, live shadow head or execution binding is implemented.
+  Task PU/DC evidence does not discharge W01/W03/W05/W06/W08 WF/E2E or release obligations.
+- Trusted ingress must authenticate PlanningIdentity and supply a real reliable receipt
+  verifier. Shape and provenance strings alone are not authentication/provider billing
+  proof. Count/token limits are enforced; strict_money is false, including when integer
+  cost_micros participates in arithmetic.
+- This immutable pre-review result records task PASS/UNMERGED. Required fresh independent
+  reviews, hosted full database/quality CI and the selected-task merge gate remain
+  separate prerequisites before integration.
+- The child-to-parent status message was actually rejected by automatic approval review
+  for absent explicit human message authorization. No retry or workaround was used;
+  parent monitors this chat.
 follow_up_tasks:
-- Complete stable revision exact checks, committed result/evidence, fresh required
-  reviews and genuine hosted CI before merge.
+- Finish fresh GENERAL/PROTOCOL/DB_CONCURRENCY reviews on the committed implementation/result
+  SHA; substantive repairs require full retesting and rereview.
+- Require unchanged hosted full database/quality CI and selected-task merge gate PASS,
+  then normal PR merge, ff-only clean master synchronization and cleanup of own merged
+  branch/worktree/resources only.
+- Downstream model loop/recovery and full release acceptance remain separate tasks;
+  no downstream task is duplicated here.
 spec_change_request: null
+supplemental_checks:
+- check_id: full_unit_regressions
+  command: uv run kl test-unit
+  result: PASS
+  exit_code: 0
+  evidence_ref: docs/exec-plans/evidence/KL-025/full_unit_regressions-337e932.log
+- check_id: full_harness_regressions
+  command: uv run kl test-harness
+  result: PASS
+  exit_code: 0
+  evidence_ref: docs/exec-plans/evidence/KL-025/full_harness_regressions-337e932.log
