@@ -156,6 +156,7 @@ def test_packet_check_scope_and_projections_preserve_dc_oracles() -> None:
     packet = (ROOT / 'docs/exec-plans/active/KL-026.md').read_text()
     assert v.m3_next_wave_definition_errors(task) == []
     assert v.packet_errors(task, packet) == []
+    assert v.bullets(v.section(packet, 'Checks required for this task PR')) == task['checks_required_for_this_task']
     trace = json.loads((ROOT / v.TRACEABILITY).read_text())['tasks']
     assert next(t for t in trace if t['id'] == 'KL-026') == v.traceability_projection(task)
     old = json.loads(subprocess.check_output(['git', 'show',

@@ -19,7 +19,7 @@ p=root/'KineticLoop_Harness_Traceability_v0.3.json'; trace=json.loads(p.read_tex
 trace['tasks']=[v.traceability_projection(task) if t['id']=='KL-026' else t for t in trace['tasks']]
 p.write_text(json.dumps(trace,indent=2)+'\n')
 p=root/'docs/exec-plans/active/KL-026.md'; text=p.read_text()
-text=text.replace('- interleaving_namespace_pu','- cancellation_identity_pu\n- interleaving_namespace_pu',1)
+text=text.replace('- time_boundary_pu','- cancellation_identity_pu\n- time_boundary_pu',1)
 text=text.replace('- docs/exec-plans/completed/KL-074_RESULT.yaml','- docs/exec-plans/completed/KL-074_RESULT.yaml\n- docs/exec-plans/evidence/HG-039/PREPARATION.md',1)
 start=text.index('```json\n')+len('```json\n'); end=text.index('\n```',start)
 text=text[:start]+json.dumps({'check_contracts':task['check_contracts'],'evidence_paths':task['evidence_paths']},indent=2)+text[end:]
