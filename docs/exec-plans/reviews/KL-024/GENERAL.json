@@ -1,60 +1,16 @@
 {
   "task_identity": "harness-backlog-v0.2/KL-024",
-  "reviewed_head_sha": "bafc64531f3072685c884b403a8c8e1c1ec91213",
+  "reviewed_head_sha": "28a47f1747c942d6b0382d3d610b8a998e2c512f",
   "review_type": "GENERAL",
-  "status": "CHANGES_REQUIRED",
+  "status": "PASS",
   "review_contract_version": "v0.2",
-  "protected_base_sha": "abc5af63bc580bb22e54baeb0af577448b57a75a",
-  "tested_commit": "9282e124ad1ca30bf6b1a6149a17ac1c799500a1",
-  "findings": [
-    {
-      "finding_id": "KL024-GENERAL-002",
-      "classification": "BLOCKER",
-      "priority": 1,
-      "title": "Full database CI fails on stale rollback-head expectations",
-      "file": "tests/db/test_subject_scope.py",
-      "line": 1596,
-      "description": "The full database suite invoked by .github/workflows/db.yml exits 1 at tested_commit: 237 passed, 1 failed. test_populated_downgrade_fails_before_guard_or_acl_changes correctly observes the failed downgrade rolling back to e8c2f1a6b904, but its two expected-version expressions still use REVISION=d4c1a9e7b203. The first assertion stops the remaining trigger, lookup, ACL and subject/binding checks. All thirteen exact packet checks pass and the BLOCKED/PASS/UNMERGED result accurately separates that fact from failing supplemental CI. The excluded test remains byte-identical to protected master; neither the unapplied patch nor candidate-only in-memory probe closes the CI failure.",
-      "required_change": "Obtain narrow governance scope or a separately authorized repair for exactly the two expected-head expressions at lines 1596 and 1619. Preserve every downgrade exception, trigger, lookup, ACL, namespace and principal-binding assertion and all other bytes. Integrate the authorized scope, apply the repair, rerun all thirteen exact task checks and full CI regressions on a new tested revision, commit the new result/evidence and obtain fresh SHA-bound GENERAL, PROTOCOL and DB_CONCURRENCY reviews. Do not waive, skip or weaken CI or frozen uniqueness.",
-      "evidence_refs": [
-        ".github/workflows/db.yml",
-        "docs/exec-plans/active/KL-024.md",
-        "docs/exec-plans/completed/KL-024_RESULT.yaml",
-        "docs/exec-plans/evidence/KL-024/full_database_regressions-9282e12.log",
-        "docs/exec-plans/evidence/KL-024/proposed-subject-scope-head-rescope.patch",
-        "docs/exec-plans/evidence/KL-024/candidate_subject_scope_head_probe-9282e12.log"
-      ]
-    }
-  ],
-  "prior_finding_disposition": [
-    {
-      "prior_reviewed_sha": "885d038d83c6c5e59d39229c241aba01b1988f68",
-      "prior_finding": "KL024-GENERAL-001",
-      "disposition": "RESOLVED_AT_REVIEWED_SHA",
-      "basis": "Merged HG032 authorizes only the named DATE literal change. Independent byte comparison proves the current fixture equals protected master with exactly 2026-09-27 replaced by 2026-09-28 in the INTENT update. All other bytes remain intact, and the exact owner regression now reports 58 passed."
-    },
-    {
-      "prior_reviewed_sha": "afc04894896de7ee2697dd1951ad4c3882b7d0c3",
-      "prior_finding": "KL024-DB-001",
-      "disposition": "RESOLVED_AT_REVIEWED_SHA",
-      "basis": "Completion checks require the exact number of S30 effects plus equality with prepared distinct quota IDs, while each effect binds the prepared row and count+1. The duplicate-first/omit-second negative test proves complete rollback and is included in the six-case planning DB suite. GENERAL inspected implementation and persisted-state oracle; DB_CONCURRENCY owns independent database execution."
-    },
-    {
-      "prior_reviewed_sha": "afc04894896de7ee2697dd1951ad4c3882b7d0c3",
-      "prior_finding": "KL024-PROTOCOL-002",
-      "disposition": "RESOLVED_AT_REVIEWED_SHA",
-      "basis": "All three typed commands mark historical replay replayed=true on preflight, under-S01 and idempotent-outcome paths. Tests cover replay after takeover, revision and cancellation, force the under-S01 path, and verify unchanged identities/state/counts without live worker authority."
-    },
-    {
-      "prior_reviewed_sha": "4543b563259f5170370a0624b4542d392e528c85",
-      "prior_finding": "KL024-GENERAL-003",
-      "disposition": "RESOLVED_AT_REVIEWED_SHA",
-      "basis": "The corrective result revision removes exactly the ignored/uncommitted cache path and adds the two newly committed historical review evidence paths. All other result fields are byte-equivalent after parsing. The saved GENERAL historical record is byte-identical to the independently written 4543 review draft; historical reviews remain evidence, not current approval."
-    }
-  ],
+  "protected_base_sha": "8ebeab3e509793b4c08968fb59758fea86370c05",
+  "tested_commit": "638396cc5d7c28d5152038d08390a2de11320064",
+  "findings": [],
   "evidence_refs": [
     "AGENTS.md",
     "CURRENT_DOCUMENT_INDEX.json",
+    "CURRENT_REQUIREMENT_SET.json",
     ".agents/skills/pr-merge-reviewer/SKILL.md",
     "05_KineticLoop_Protocol_v1.2_FROZEN.md",
     "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
@@ -62,13 +18,17 @@
     "docs/exec-plans/active/KL-024.md",
     "docs/exec-plans/completed/KL-015_RESULT.yaml",
     "docs/exec-plans/integrations/KL-015.json",
+    "docs/exec-plans/completed/KL-023_RESULT.yaml",
+    "docs/exec-plans/integrations/KL-023.json",
     "docs/exec-plans/milestones/M2.json",
     "docs/exec-plans/governance/HG-032.yaml",
+    "docs/exec-plans/governance/HG-033.yaml",
     "docs/contracts/repository_transactions.md",
     "docs/contracts/planning_intents.md",
     "docs/harness/THREAD_RESULT_CONTRACT.md",
     "docs/harness/THREAD_REVIEW_CONTRACT.md",
     "docs/harness/MERGE_GATE.md",
+    "THREAD_RESULT.schema.json",
     "THREAD_REVIEW.schema.json",
     ".github/workflows/db.yml",
     "src/kineticloop/workflow/planning.py",
@@ -81,56 +41,48 @@
     "tests/db/test_transaction_interfaces.py",
     "tests/db/test_subject_scope.py",
     "docs/exec-plans/completed/KL-024_RESULT.yaml",
-    "docs/exec-plans/evidence/KL-024/checks-9282e12.json",
-    "docs/exec-plans/evidence/KL-024/supplemental-checks-9282e12.json",
-    "docs/exec-plans/evidence/KL-024/proposed-subject-scope-head-rescope.patch",
-    "docs/exec-plans/evidence/KL-024/candidate_subject_scope_head_probe.py",
-    "docs/exec-plans/evidence/KL-024/candidate_subject_scope_head_probe-9282e12.log",
-    "docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-9282e12.log",
-    "docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-9282e12.log",
-    "docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-9282e12.log",
-    "docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-9282e12.log",
-    "docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-9282e12.log",
-    "docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-9282e12.log",
-    "docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-9282e12.log",
-    "docs/exec-plans/evidence/KL-024/planning_db_suite_passes-9282e12.log",
-    "docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-9282e12.log",
-    "docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-9282e12.log",
-    "docs/exec-plans/evidence/KL-024/lint_passes-9282e12.log",
-    "docs/exec-plans/evidence/KL-024/typecheck_passes-9282e12.log",
-    "docs/exec-plans/evidence/KL-024/harness_validation_passes-9282e12.log",
-    "docs/exec-plans/evidence/KL-024/full_unit_regressions-9282e12.log",
-    "docs/exec-plans/evidence/KL-024/full_harness_regressions-9282e12.log",
-    "docs/exec-plans/evidence/KL-024/full_database_regressions-9282e12.log",
-    "docs/exec-plans/evidence/KL-024/historical-GENERAL-4543b56.json",
-    "docs/exec-plans/evidence/KL-024/historical-PROTOCOL-4543b56.json"
+    "docs/exec-plans/evidence/KL-024/checks-638396c.json",
+    "docs/exec-plans/evidence/KL-024/supplemental-checks-638396c.json",
+    "docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-638396c.log",
+    "docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-638396c.log",
+    "docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-638396c.log",
+    "docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-638396c.log",
+    "docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-638396c.log",
+    "docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-638396c.log",
+    "docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-638396c.log",
+    "docs/exec-plans/evidence/KL-024/planning_db_suite_passes-638396c.log",
+    "docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-638396c.log",
+    "docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-638396c.log",
+    "docs/exec-plans/evidence/KL-024/lint_passes-638396c.log",
+    "docs/exec-plans/evidence/KL-024/typecheck_passes-638396c.log",
+    "docs/exec-plans/evidence/KL-024/harness_validation_passes-638396c.log",
+    "docs/exec-plans/evidence/KL-024/full_unit_regressions-638396c.log",
+    "docs/exec-plans/evidence/KL-024/full_harness_regressions-638396c.log",
+    "docs/exec-plans/evidence/KL-024/full_database_regressions-638396c.log"
   ],
   "review_notes": [
-    "Fresh independent GENERAL review resolved the current index and full packet, read the reviewer skill, named frozen Protocol/DB sections, current acceptance gates, sole-owner contract, prerequisite result/integration and M2 closure, HG032 record, result/review/merge contracts. Inspected the protected-base implementation/test/contract diff, complete changed-path inventory, current result, latest exact raw evidence and supplemental failure/proposal/candidate evidence. Prior findings identify repair obligations only and are not reused as approval.",
-    "Verified protected base -> tested -> reviewed ancestry. KL015 merge 7623c20bb267a39b8d02c29845b4ee054714d2b1, M2 evaluated SHA 08f3a985e52150a18678d2f913c0a8d6a44792b1 and merged KL023 implementation/result 6cd15b03cb0206156b8e295d34516f457c7b046a precede the base. The tested-to-reviewed suffix is two linear commits modifying only the task result and adding new task evidence; every intervening commit was inspected, and source/test/migration/contract bytes match tested_commit. Fresh review includes the result correction at bafc645; old 4543 reviews are preserved as historical evidence.",
-    "Validated result schema and all thirteen exact commands/results/evidence references against checks-9282e12.json. Selected logs are committed at reviewed_head_sha and contain matching tested SHA, command and exit code. Required suites report planning PU 2 passed, planning DB 6 passed, migration 26 passed and owner regression 58 passed; supplemental full unit 204 and harness 228 pass while full DB 237/1 fails. Historical failed runs are retained and not selected as current PASS.",
-    "Normalization is versioned, structured, deterministic and bounded; partition, calendar scope and fingerprint are separate. Admission resolves active immutable S05 under S01, applies hour/day quotas and purpose/trigger/concurrency/capacity policy, and creates an ADMITTED root with original deadline and nonnegative root budget categories. Terminal intent explicit restart creates a new admitted root rather than reopening history; terminal attempts are not revived.",
-    "JOIN returns the existing request/attempt with only receipt/event/outbox. REVISE appends one immutable S28 and CREATED S29, makes exactly the former attempt STALE, and atomically switches pointers without root budget/deadline/lease/fence reset. Prepared basis is deep-copied away from callback authority. Negative tests cover old shared/T6 guard denial, payload conflicts, changed basis, return to earlier constraints, quota coverage bypass, root budget bypass and injected transaction rollback.",
-    "Typed acquire/renew reuse sole owner and trusted post-lock time; exact CAS produces strictly greater fence, renewal requires current live owner/token/request/attempt and deadline-bounded strict extension, and terminal/equality guards deny. Lease commands remain S27-only and cannot mutate/lock S29. Interleavings use bounded barriers/events and observed PostgreSQL blocking. No model/network wait is added to coordination transactions.",
-    "The one additive migration implements frozen S27 active uniqueness after d4c1a9e7b203 with explicit legacy PENDING compatibility. All changed tracked paths are declared task implementation or task-local result/evidence/reviews, including the sole HG032 fixture exception. Historical migrations, frozen files, requirement registry and current index remain unchanged. No downstream model/dispatch/reaper, authorization owner, production activation or product/release requirement PASS is added.",
-    "Candidate probe changes a selected module global only in memory to model the two proposed expectations and asserts its scope. It is explicitly CANDIDATE_PROOF_ONLY with actual_CI_status FAIL. The excluded source is unchanged. The proposal is a fixture/scope compatibility repair, not a frozen semantic change; SPEC_CHANGE_REQUIRED is not indicated.",
-    "One BLOCKER prevents merge recommendation; no unresolved REQUIRED_FOLLOWUP or NONBLOCKING findings remain. The result inventory issue is closed by the separately inspected result-only correction and this fresh SHA binding. Required specialist reviews must bind this exact SHA; substantive future changes require fresh checks/result/reviews. Wrote only GENERAL.json; performed no commits, DB/Docker commands or source/result/evidence changes."
+    "Fresh independent GENERAL review read the current full packet, repository reviewer skill, named frozen Protocol/DB authority, current acceptance gates, owner contract, KL015 and serialized KL023 prerequisite results/integrations, M2 closure, merged HG032/HG033 records and result/review/merge contracts. Inspected the complete protected-base implementation, migration, tests and contract diff and all changed paths. Re-read the final committed result and every selected exact and supplemental raw log at reviewed_head_sha. Prior review opinions and candidate-only probes were not used as current approval or CI proof.",
+    "Verified protected base -> tested -> reviewed ancestry and merged prerequisite ancestry. The tested-to-reviewed suffix consists of one linear commit, 28a47f1, which changes only the task result and adds new task evidence. No existing evidence is overwritten or deleted; tested source, tests, migration and contract bytes are unchanged. The reviewed result is committed before review, schema-valid, PASS/PASS/UNMERGED, and claims no product requirement PASS.",
+    "The result files_changed inventory exactly equals all 130 committed protected-base diff paths, without duplicates or uncommitted/cache entries. Every declared path and selected evidence reference exists at reviewed_head_sha. Current packet/index, frozen authorities/baseline, requirement registry and historical migration bytes remain identical to protected base. Changes stay within the task implementation/result/evidence/review scope.",
+    "Independently compared all thirteen required IDs, exact command strings and pass oracles against the full current packet and check registry. Each final result entry selects one PASS with committed raw evidence bearing the exact tested SHA, command and exit code 0. Planning unit 2, planning DB 6, migration 26 and owner regression 58 tests pass; all six selected individual behavioral cases pass. No required cases are reported failed, skipped or deselected. Full CI regressions independently read as unit 204, harness 252 and database 238 passed, with exit code 0. Actual full database execution exercises the corrected rollback-head test; historical failed/candidate evidence is not selected.",
+    "Byte-exact protected-base comparison proves test_transaction_interfaces.py changes only DATE 2026-09-27 to 2026-09-28 in the named INTENT update, and test_subject_scope.py changes only the two named REVISION expressions to _MIGRATIONS.HEAD_REVISION. All remaining fixture bytes and negative guard, restoration, exception, trigger, lookup, ACL, namespace, principal-binding and retained-data assertions are preserved. These are the precise merged HG032/HG033 allowances; neither test nor CI is skipped or weakened.",
+    "Structured normalization is versioned, deterministic and bounded, with partition, calendar scope and semantic fingerprint separated. Root admission resolves immutable active S05 under S01, applies purpose/trigger/automatic-root, same-day concurrency, capacity and hourly/day quota policy, initializes frozen ADMITTED with original trusted-time deadline and nonnegative root budget categories, and creates terminal explicit restarts as new roots. Unknown policy/state and terminal attempts fail closed.",
+    "JOIN returns the existing intent/request/attempt and creates only receipt/event/outbox, without request revision, attempt, quota debit or root reset. REVISE appends one immutable S28 and CREATED S29, invalidates only the exact former attempt to STALE, and atomically switches pointers while preserving budget, counters, deadline, lease and fence. Prepared authority is deep-copied away from callback mutation. Tests assert persisted identity/count/budget/pointer preservation, changed basis and return to prior constraints, stale shared/T6 guards, payload conflict and transaction rollback.",
+    "Bounded owner support restricts T4 S29 mutation to its exact prepared old attempt and STALE status, preserves original root authority, and requires exactly one debit for every distinct prepared S30 identity. Negative callback tests cover duplicate-one/omit-other quotas, root-budget substitution, invalid attempt transition and S29 lease mutation, all with rollback. The new typed service delegates to the existing sole command owner; no raw SQL/callback authority or second owner is exposed to callers.",
+    "Acquire/renew retain S27-only write and lock capabilities and use trusted post-lock time and current request/attempt status. CAS yields a strictly larger fence and future deadline-bounded lease; renewal requires exact live current owner/token/request/attempt and strict extension within the original deadline. Equality, expired/terminal and stale authority deny. Interleavings use bounded barriers/events and observed PostgreSQL lock state. All three historical replay paths return original identities with replayed=true and preserve current state after revision, takeover or cancellation. No model/network wait is added to coordination transactions.",
+    "One additive migration follows d4c1a9e7b203 and installs frozen subject/local_date/purpose active uniqueness for ADMITTED/RUNNING plus explicit legacy PENDING compatibility. New roots never write PENDING. Terminal intent reasons remain distinct and success remains T6-owned. Tests include zero-to-head/roundtrip/index/permission regressions, actual concurrent admission/quota contenders and negative physical uniqueness controls. Existing raw historical failure logs retain traceback whitespace; implementation and selected current evidence do not introduce those diagnostics.",
+    "No BLOCKER, REQUIRED_FOLLOWUP or NONBLOCKING findings remain in this GENERAL review. Local task DoD is satisfied; full W04-W06 release evidence, call/dispatch/model/recovery work and production activation remain downstream. This PASS is not a merge or product/release PASS. Required PROTOCOL and DB_CONCURRENCY reviews must independently PASS at this exact reviewed SHA before merge. No DB/Docker commands, source/result/evidence changes or commits were performed by this reviewer; only GENERAL.json was written."
   ],
   "independent_verification": [
     {
-      "command": ".venv/bin/python -m pytest -q -p no:cacheprovider tests/unit/workflow/test_planning.py tests/unit/persistence/test_transactions.py",
+      "command": "Read-only Python/Git audit of committed result schema, complete inventory, ancestry, every tested-to-reviewed commit, packet/check/evidence binding and fixture exceptions",
       "result": "PASS",
-      "output": "5 passed in 0.24s; no skipped/deselected cases."
+      "output": "GENERAL_AUDIT_PASS: schema valid; exact 130-path committed inventory; prerequisite/base/tested/reviewed ancestry; one linear result/new-evidence-only suffix; all 13 exact and 3 supplemental raw logs bound to tested638396c and committed; byte-exact fixture allowances; historical migrations/frozen/current requirements preserved."
     },
     {
-      "command": "Read-only Python/Git audit of result schema, ancestry, bounded diff, frozen authorities, byte-exact fixture change, excluded source and latest evidence binding",
+      "command": "Direct inspection of all selected raw logs and implementation/test/contract diff",
       "result": "PASS",
-      "output": "THREAD_RESULT schema valid; prerequisite/base/tested/reviewed ancestry verified; tested suffix result/new-evidence only; fixture exception exact; subject-scope file unchanged; 13 required logs and 3 supplemental logs bound and committed."
-    },
-    {
-      "command": "Read-only Git/Python comparison of 4543b56 -> bafc645 and every tested9282 -> reviewed bookkeeping commit",
-      "result": "PASS",
-      "output": "Exact inventory removal/additions only; result schema valid; historical GENERAL bytes preserved; two-commit linear suffix is result/new-evidence-only; tested implementation and selected check evidence unchanged."
+      "output": "13 exact checks pass; planning PU2/DC6, migration26, owner58; full unit204/harness252/database238 all pass without failed/skipped/deselected cases. Persisted-state, failure-injection, idempotency and PostgreSQL-observed interleaving oracles match the bounded task DoD."
     }
   ]
 }

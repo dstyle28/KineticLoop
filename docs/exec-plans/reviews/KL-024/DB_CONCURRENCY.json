@@ -1,179 +1,65 @@
 {
   "task_identity": "harness-backlog-v0.2/KL-024",
-  "reviewed_head_sha": "885d038d83c6c5e59d39229c241aba01b1988f68",
+  "reviewed_head_sha": "28a47f1747c942d6b0382d3d610b8a998e2c512f",
   "review_type": "DB_CONCURRENCY",
-  "status": "STALE",
+  "status": "PASS",
+  "findings": [],
   "review_contract_version": "v0.2",
-  "base_commit": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
-  "tested_commit": "3e1fdaf491929ad5963ec4491cb1d1139fc1b8e8",
-  "summary": "Fresh independent DB review confirms the exact-distinct S30 completion repair rejects duplicate-one/omit-other quota effects and rolls back the complete admission. No additional DB correctness finding was found. The mandatory transaction owner regression still fails on the unchanged excluded T6 fixture, so the task is not mergeable.",
-  "findings": [
-    {
-      "id": "KL024-DB-002",
-      "classification": "BLOCKER",
-      "priority": 1,
-      "title": "Mandatory owner regression fails on a duplicate active-partition fixture",
-      "file": "tests/db/test_transaction_interfaces.py",
-      "start_line": 3396,
-      "end_line": 3398,
-      "description": "The exact required transaction_owner_regressions_pass evidence reports 1 failed, 57 passed. An independent complete rerun at reviewed HEAD reproduces the same failure. The existing negative Reauthorize fixture moves RUNNING INTENT from 2026-09-26 to 2026-09-27 while RUNNING INTENT_2 already occupies that subject/date/PLAN partition. The required uq_s27_active_partition index rejects the fixture update before the intended T6 head-day denial guard runs. Correct index enforcement and passing planning tests do not satisfy the required zero-failure owner regression oracle.",
-      "authority": [
-        "KL-024 transaction_owner_regressions_pass exact check contract",
-        "DOC-DB-V0.2 S27 active ADMITTED/RUNNING uniqueness",
-        "KL-024 write scope excludes tests/db/test_transaction_interfaces.py"
-      ],
-      "evidence_ref": "docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-3e1fdaf.log",
-      "independent_reproduction": "At 885d038, ran both complete owner regression files sequentially after the planning DB suite in isolated kineticloop-kl024-review-885d038 / kineticloop_kl024_review_885d038. Result: exit 1, 1 failed, 57 passed in 14.63s. UniqueViolation names uq_s27_active_partition and (subject,2026-09-27,PLAN). No fixture/application edits were made; the fixture destroyed its own namespace.",
-      "required_change": "Obtain narrow governance scope authorization or separately merge the fixture-only correction to an unused day while preserving the head-day denial oracle. Preserve the frozen index and required case; do not skip/deselect it or weaken guards. Rerun every required check on the stable resulting revision and obtain fresh SHA-bound reviews."
-    }
+  "base_commit": "8ebeab3e509793b4c08968fb59758fea86370c05",
+  "tested_commit": "638396cc5d7c28d5152038d08390a2de11320064",
+  "review_method": [
+    "Fresh independent review of the current index, full current task packet, merged KL015 and KL023 prerequisite results/integrations, M2 closure, HG032/HG033 governance records, repository transaction and planning contracts, and pr-merge-reviewer/db-transaction-reviewer skills.",
+    "Inspected implementation, migration and test changes against protected base and frozen Protocol sections 2, 6.1-6.5, 6.7, 6.9 and T4/T5/T6; DB S01-S04/S24/S27-S30, command ownership, frozen lock order, transaction boundaries and INV10/11/13/17.",
+    "Read every selected committed raw log and both current check registries. Independently checked all 16 task/command/tested-SHA/exit bindings, no failed/skipped/deselected summaries, committed byte identity, tested-to-reviewed source identity, both exact fixture exceptions, historical migration bytes and frozen/requirement preservation.",
+    "No independent DB/Docker rerun or candidate proof was used. Review accepts the committed real PostgreSQL evidence only after inspecting its service-level persisted-state, fault-injection and bounded PostgreSQL-observed interleaving assertions."
   ],
-  "closed_prior_findings": [
-    {
-      "id": "KL024-DB-001",
-      "prior_reviewed_head_sha": "afc04894896de7ee2697dd1951ad4c3882b7d0c3",
-      "disposition": "CLOSED_BY_REVIEWED_IMPLEMENTATION",
-      "description": "Admission completion now requires both len(S30 effects)==len(prepared quotas) and exact equality of effect IDs to prepared quota IDs. Prepared quotas have distinct database primary keys and the owner already binds each effect to its subject, prepared ID and count+1. The combined cardinality and set checks reject duplicates, omissions and extras; per-effect checks reject altered debit values. The deep-copied prepared basis cannot rewrite owner authority.",
-      "independent_verification": "Complete migrated tests/db/test_planning.py run at reviewed HEAD: exit 0, 6 passed in 21.47s. test_bounded_owner_capabilities redirects the second distinct prepared S30 effect to the first ID, expects GuardRequired matching every quota, confirms two distinct original IDs and counts(S27,S28,S29,S30,S02,S03,S04) remain at the pre-admission baseline. This directly exercises and rolls back the prior demonstrated bypass.",
-      "evidence_refs": [
-        "src/kineticloop/persistence/transactions.py:1947",
-        "tests/db/test_planning.py:689",
-        "docs/exec-plans/evidence/KL-024/planning_db_suite_passes-3e1fdaf.log"
-      ]
-    }
+  "observations": [
+    "T4/T5 use the sole merged repository owner. S01 serializes subject planning commands; quota keys precede S27, receipt precedes remaining S29 locks, and revision invalidation/pointer changes commit with S02/S03/S04. No S51 is required by these non-executing planning commands and none is acquired in reverse order.",
+    "New roots resolve active immutable admission policy under S01 and debit exactly the distinct prepared hour/day S30 identities. Owner completion checks reject duplicate-one/omit-other effects; the migrated PostgreSQL negative callback test proves complete rollback. Root budget/deadline fields are server prepared and cannot be replaced by callbacks.",
+    "Same normalized scope/fingerprint/current basis joins without an extra request/attempt, root debit or S27 mutation. Revision appends exact immutable S28 and CREATED S29, marks the exact old attempt STALE, adopts both pointers atomically and preserves root limits/reserved/settled/deadline/lease/fence. Reverting constraints creates a new revision; old request/attempt loses the shared current-fence guard used by existing T6.",
+    "Acquire and takeover compare exact current owner/fence/request/attempt under S01/S27 and trusted database time, persist strictly increasing fence plus bounded expiry, and produce one CAS winner. Renewal rereads after lock acquisition and mutation rechecks live expiry; only a current owner/token can extend within the original deadline. Lease commands retain S27-only mutation and no S29 lock capability.",
+    "ACK-loss replay returns exact durable historical identities with replayed=true through preflight and the under-S01 race recheck before current authority guards. Replay after revision, takeover and cancellation neither reacquires leases nor restores worker authority; changed normalized payload conflicts and counts remain unchanged.",
+    "The only additive migration is e8c2f1a6b904 after d4c1a9e7b203. Its unique subject/local_date/purpose predicate includes frozen ADMITTED/RUNNING and documented legacy PENDING compatibility. Real migrated PostgreSQL checks prove uniqueness, zero-to-head installation, downgrade/upgrade and historical protections.",
+    "HG032 changes only the authorized negative-fixture DATE literal; HG033 changes only the two authorized rollback-head expectations. Byte comparison against protected base confirms every other byte remains intact. Actual full database regression evidence exercises both repairs; candidate-only probes are not approval evidence."
+  ],
+  "verification_summary": {
+    "exact_packet_checks": "13 PASS; exact commands and raw logs bind tested_commit",
+    "planning_unit_suite": "2 passed",
+    "planning_database_suite": "6 passed on migrated real PostgreSQL",
+    "migration_chain_regressions": "26 passed",
+    "transaction_owner_regressions": "58 passed in task-unique regression namespace",
+    "full_unit_regressions": "204 passed",
+    "full_harness_regressions": "252 passed",
+    "full_database_regressions": "238 passed",
+    "lint_typecheck_harness": "PASS; HARNESS_CHECK_PASS recorded",
+    "review_audit": "PASS using /private/tmp/kl017-venv/bin/python; uv is not on this reviewer shell PATH"
+  },
+  "limitations": [
+    "This approves local task DoD and evidence for the reviewed implementation/result SHA only. Product W04-W06, release readiness, production auto-activation and integration MERGED remain separate facts.",
+    "The task deliberately does not implement dispatch/call ledger, model loop, downstream attempt advancement or full watchdog/reaper. Expired active/terminal-attempt recovery remains downstream; provider waits do not occur within these coordination transactions.",
+    "Ingress must authenticate the trusted subject/actor binding; the Python identity value is not an authentication token. System/model capacity is supplied through the versioned admission policy boundary and downstream enforcement.",
+    "No DB/Docker resources were created, reset or destroyed by this reviewer. The exclusive review lane is released upon completion."
   ],
   "evidence_refs": [
-    "CURRENT_DOCUMENT_INDEX.json",
     "docs/exec-plans/active/KL-024.md",
     "docs/exec-plans/completed/KL-024_RESULT.yaml",
-    "docs/exec-plans/completed/KL-015_RESULT.yaml",
-    "docs/exec-plans/integrations/KL-015.json",
-    "docs/exec-plans/milestones/M2.json",
-    "docs/contracts/repository_transactions.md",
-    "docs/contracts/planning_intents.md",
-    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
-    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
-    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
-    "docs/exec-plans/evidence/KL-024/checks-3e1fdaf.json",
-    "docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-3e1fdaf.log",
-    "docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-3e1fdaf.log",
-    "docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-3e1fdaf.log",
-    "docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-3e1fdaf.log",
-    "docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-3e1fdaf.log",
-    "docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-3e1fdaf.log",
-    "docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-3e1fdaf.log",
-    "docs/exec-plans/evidence/KL-024/planning_db_suite_passes-3e1fdaf.log",
-    "docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-3e1fdaf.log",
-    "docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-3e1fdaf.log",
-    "docs/exec-plans/evidence/KL-024/lint_passes-3e1fdaf.log",
-    "docs/exec-plans/evidence/KL-024/typecheck_passes-3e1fdaf.log",
-    "docs/exec-plans/evidence/KL-024/harness_validation_passes-3e1fdaf.log"
-  ],
-  "evidence_analysis": "All thirteen latest exact log headers, commands and exit codes match checks-3e1fdaf.json: twelve PASS and one FAIL. Implementation, migration, tests and contracts are byte-identical between tested_commit 3e1fdaf and reviewed implementation/result HEAD 885d038. Earlier evidence and earlier stale reviews were not used as current passing evidence. KL015 has a MERGED integration record with its merge in the base ancestry. The base is the KL023 merge. M2 closure is PASS, including shadow/registry prerequisite closure. Task BLOCKED/checks FAIL and downstream requirement/release NOT_RUN states are represented honestly.",
-  "committed_raw_evidence": [
-    {
-      "check_id": "planning_normalization_and_admission_pu",
-      "path": "docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-3e1fdaf.log",
-      "result": "PASS",
-      "sha256": "9915ed6a3c41b3001bd807dd512327899b22d322fe9af7f5cdc0e5099ed06906"
-    },
-    {
-      "check_id": "planning_fence_deadline_and_terminal_pu",
-      "path": "docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-3e1fdaf.log",
-      "result": "PASS",
-      "sha256": "6a0c7a447e5d7b01aad833f337e8cc11a5908f94ed74d462a9a33ce82a57aefb"
-    },
-    {
-      "check_id": "planning_active_partition_and_quota_dc",
-      "path": "docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-3e1fdaf.log",
-      "result": "PASS",
-      "sha256": "fb38abe732a6c0d75a0255fb9a2c290564eb215a1a658db1dca2fb72abc0cbfa"
-    },
-    {
-      "check_id": "planning_join_revision_budget_preservation_dc",
-      "path": "docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-3e1fdaf.log",
-      "result": "PASS",
-      "sha256": "037c3451ba301633fcff18d18d93c946c594c4f5e68202e5aef145a0070c6da3"
-    },
-    {
-      "check_id": "planning_takeover_and_renew_interleavings_dc",
-      "path": "docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-3e1fdaf.log",
-      "result": "PASS",
-      "sha256": "be37277871295fb312bf4a798c2939944a1281308f2c123bee0ec0f5178b33ac"
-    },
-    {
-      "check_id": "planning_atomicity_and_ack_loss_dc",
-      "path": "docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-3e1fdaf.log",
-      "result": "PASS",
-      "sha256": "2c05c30f47fa6e896a104c4c580ff3183a64dddc7628eb6e36714d1b1a733203"
-    },
-    {
-      "check_id": "planning_unit_suite_passes",
-      "path": "docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-3e1fdaf.log",
-      "result": "PASS",
-      "sha256": "036058a15c7c1d38e4737310dff0f1d8a26930fb9fd459b60f852579cf000bc5"
-    },
-    {
-      "check_id": "planning_db_suite_passes",
-      "path": "docs/exec-plans/evidence/KL-024/planning_db_suite_passes-3e1fdaf.log",
-      "result": "PASS",
-      "sha256": "d2cd2aca799f1578f9546c5a3f279b5a52a22a82671b0399bf2bcd49cd5bd1ce"
-    },
-    {
-      "check_id": "migration_chain_regressions_pass",
-      "path": "docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-3e1fdaf.log",
-      "result": "PASS",
-      "sha256": "ca868eb764b400ab6a1a2a571190a5fe1db73308bccbb2475356508178dec496"
-    },
-    {
-      "check_id": "transaction_owner_regressions_pass",
-      "path": "docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-3e1fdaf.log",
-      "result": "FAIL",
-      "sha256": "ee1c17eb1ffd6d766e758f50c9500de60dfc1013690b34c3a86497499badd253"
-    },
-    {
-      "check_id": "lint_passes",
-      "path": "docs/exec-plans/evidence/KL-024/lint_passes-3e1fdaf.log",
-      "result": "PASS",
-      "sha256": "2ec894c8046c3b1531a546ad5735eea976ed806eb94eb513c75027184b38ae5d"
-    },
-    {
-      "check_id": "typecheck_passes",
-      "path": "docs/exec-plans/evidence/KL-024/typecheck_passes-3e1fdaf.log",
-      "result": "PASS",
-      "sha256": "3b8a332ac9665c3a48b8ea23b392fed7fc70a632efa881116551514d0e873029"
-    },
-    {
-      "check_id": "harness_validation_passes",
-      "path": "docs/exec-plans/evidence/KL-024/harness_validation_passes-3e1fdaf.log",
-      "result": "PASS",
-      "sha256": "d0b254abde37df8cac615aacf655dd6d4c32105b56b06f49539d0b2b00a91153"
-    }
-  ],
-  "reviewed_behavior": [
-    "T4 uses S01 serialization, stable S30 keys, then the exact active S27, then S02 and old S29. T5 uses S01 then S27 then S02 and retains S27-only lease mutation/lock capabilities. Registry S51 is not required for planning admission/lease because these commands grant no publication, issuance or execution authority.",
-    "The active-partition additive migration is the sole new migration, follows d4c1a9e7b203, includes faithful ADMITTED/RUNNING plus explicit legacy PENDING compatibility, and changes no historical migration bytes. Committed migration regression evidence passes all 26 cases including zero-to-head and downgrade/reupgrade index checks.",
-    "New root admission resolves immutable active policy under S01, atomically debits the exact two policy-bound S30 buckets with S27/S28/S29/S02/S03/S04, and preserves full rollback. Same-basis join creates no new S28/S29 or quota debit. Revision appends one immutable request/attempt, invalidates only the exact old attempt, and preserves root budgets/deadline/lease/fence.",
-    "Lease acquisition CAS has trusted post-lock time, exact owner/fence/request/attempt validation in the typed service, monotonic tokens and bounded future expiry. Renewal rereads post-lock state, rejects equality/expiry and terminal chains, and extends only a live current lease within the original deadline. PostgreSQL-observed blocked contenders prove one acquisition/takeover winner and renewal waiter post-lock reread.",
-    "Current shared fence guard rejects obsolete request/attempt and frozen terminal attempts without broadening typed lease capabilities. Existing T6 remains the success/authorization owner. No external/model/network waits were introduced inside coordination transactions.",
-    "Actor/command/client-key-scoped successful replay returns original historical identities with replayed=true on both preflight and under-S01 recheck paths, even after revision/cancellation. Changed payload conflicts and replay performs no aggregate mutation or renewed worker authority."
-  ],
-  "independent_commands": [
-    {
-      "command": "uv run pytest -q tests/db/test_planning.py",
-      "reviewed_head_sha": "885d038d83c6c5e59d39229c241aba01b1988f68",
-      "exit_code": 0,
-      "result": "6 passed in 21.47s",
-      "compose_project": "kineticloop-kl024-885d038",
-      "database": "kineticloop_kl024_885d038"
-    },
-    {
-      "command": "KINETICLOOP_KL022_COMPOSE_PROJECT=kineticloop-kl024-review-885d038 KINETICLOOP_KL022_DATABASE=kineticloop_kl024_review_885d038 uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py",
-      "reviewed_head_sha": "885d038d83c6c5e59d39229c241aba01b1988f68",
-      "exit_code": 1,
-      "result": "1 failed, 57 passed in 14.63s"
-    }
-  ],
-  "resource_cleanup": "Suites ran sequentially in explicitly task-owned distinct namespaces. Post-run Docker container and volume listings for both exact project labels were empty. DB lane released; no application/test/result/evidence changes or commits were made by this reviewer.",
-  "merge_recommendation": "DO_NOT_MERGE",
-  "stale_reason": "Implementation/master/HG032 integration and result have advanced after this reviewed SHA. Its historical findings are not current approval. Fresh DB_CONCURRENCY review is required after the separate governance repair for the current full-CI subject-scope assertion blocker; current cycle is paused at the parent instruction pending that merge."
+    "docs/exec-plans/evidence/KL-024/checks-638396c.json",
+    "docs/exec-plans/evidence/KL-024/supplemental-checks-638396c.json",
+    "docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-638396c.log",
+    "docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-638396c.log",
+    "docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-638396c.log",
+    "docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-638396c.log",
+    "docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-638396c.log",
+    "docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-638396c.log",
+    "docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-638396c.log",
+    "docs/exec-plans/evidence/KL-024/planning_db_suite_passes-638396c.log",
+    "docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-638396c.log",
+    "docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-638396c.log",
+    "docs/exec-plans/evidence/KL-024/lint_passes-638396c.log",
+    "docs/exec-plans/evidence/KL-024/typecheck_passes-638396c.log",
+    "docs/exec-plans/evidence/KL-024/harness_validation_passes-638396c.log",
+    "docs/exec-plans/evidence/KL-024/full_unit_regressions-638396c.log",
+    "docs/exec-plans/evidence/KL-024/full_harness_regressions-638396c.log",
+    "docs/exec-plans/evidence/KL-024/full_database_regressions-638396c.log"
+  ]
 }
