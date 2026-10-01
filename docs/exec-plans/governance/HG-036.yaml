@@ -1,0 +1,131 @@
+change_identity: harness-governance-v0.1/HG-036
+display_change_id: HG-036
+base_commit: 0c11a89f4c624290bf8f2a911bc81e5740240e45
+tested_commit: 0de1168b35bb3f51d21498b65b04e243d9289ef4
+change_status: PASS
+summary: Refine only unstarted KL047 into an enforceable offline synthetic evaluation infrastructure foundation
+  after actual normal HG035 PR67 merge. Exact dataset/manifest/scorer/report scope, source-derived mechanical
+  cases, immutable identity/config/split/freeze/bundle bindings, explicit test discovery and negative
+  oracles are independent of KL019. Preserve genuine Fitness quality decisions and every original G-REMOTE-AI/M7/S48/release
+  obligation as open; no fabricated labels/thresholds, quality/model/product/release PASS or actual KL047
+  implementation.
+packets_refined:
+- KL-047
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- KineticLoop_Harness_Backlog_v0.2.json
+- KineticLoop_Harness_Traceability_v0.3.json
+- docs/exec-plans/active/KL-047.md
+- docs/exec-plans/evidence/HG-036/HG035_checks_pass_unmerged.json
+- docs/exec-plans/evidence/HG-036/HG035_merged.json
+- docs/exec-plans/evidence/HG-036/KL047_definition_draft.json
+- docs/exec-plans/evidence/HG-036/KL047_packet_draft.md
+- docs/exec-plans/evidence/HG-036/apply_after_merge.py
+- docs/exec-plans/evidence/HG-036/audit.py
+- docs/exec-plans/evidence/HG-036/check_draft.py
+- docs/exec-plans/evidence/HG-036/checks-0de1168b.json
+- docs/exec-plans/evidence/HG-036/checks-2536ea75.json
+- docs/exec-plans/evidence/HG-036/diff_clean-0de1168b.log
+- docs/exec-plans/evidence/HG-036/diff_clean-2536ea75.json
+- docs/exec-plans/evidence/HG-036/fitness_governance_regressions-0de1168b.log
+- docs/exec-plans/evidence/HG-036/fitness_governance_regressions-2536ea75.log
+- docs/exec-plans/evidence/HG-036/governance_test_draft.py
+- docs/exec-plans/evidence/HG-036/harness_tests-0de1168b.log
+- docs/exec-plans/evidence/HG-036/harness_tests-2536ea75.log
+- docs/exec-plans/evidence/HG-036/harness_validation-0de1168b.log
+- docs/exec-plans/evidence/HG-036/harness_validation-2536ea75.log
+- docs/exec-plans/evidence/HG-036/lint-0de1168b.log
+- docs/exec-plans/evidence/HG-036/lint-2536ea75.log
+- docs/exec-plans/evidence/HG-036/merged_preflight_and_protected_scope-0de1168b.log
+- docs/exec-plans/evidence/HG-036/merged_preflight_and_protected_scope-2536ea75.log
+- docs/exec-plans/evidence/HG-036/packet_body_draft.md
+- docs/exec-plans/evidence/HG-036/preflight.py
+- docs/exec-plans/evidence/HG-036/premerge-guard-plan.log
+- docs/exec-plans/evidence/HG-036/premerge-preflight-complete-eab2b30.log
+- docs/exec-plans/evidence/HG-036/premerge-preflight-eab2b30.log
+- docs/exec-plans/evidence/HG-036/prepare_guard_draft.py
+- docs/exec-plans/evidence/HG-036/proposal.py
+- docs/exec-plans/evidence/HG-036/render_packet.py
+- docs/exec-plans/evidence/HG-036/run_checks.py
+- docs/exec-plans/evidence/HG-036/scope_note.md
+- docs/exec-plans/evidence/HG-036/typecheck-0de1168b.log
+- docs/exec-plans/evidence/HG-036/typecheck-2536ea75.log
+- docs/exec-plans/evidence/HG-036/unit_tests-0de1168b.log
+- docs/exec-plans/evidence/HG-036/unit_tests-2536ea75.log
+- docs/exec-plans/evidence/HG-036/validator_proposal.py
+- docs/exec-plans/evidence/HG-036/validator_snippet_draft.py
+- docs/exec-plans/governance/HG-036.yaml
+- docs/harness/RESOURCE_LOCKS.md
+- tests/harness/test_fitness_evaluation_scope.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: merged_preflight_and_protected_scope
+  command: PYTHONPATH=src /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-036/audit.py
+    0c11a89f4c624290bf8f2a911bc81e5740240e45
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-036/merged_preflight_and_protected_scope-0de1168b.log
+- check_id: fitness_governance_regressions
+  command: PYTHONPATH=src /private/tmp/kl017-venv/bin/python -m pytest -q tests/harness/test_fitness_evaluation_scope.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-036/fitness_governance_regressions-0de1168b.log
+- check_id: harness_validation
+  command: PYTHONPATH=src /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-036/harness_validation-0de1168b.log
+- check_id: harness_tests
+  command: PYTHONPATH=src /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-036/harness_tests-0de1168b.log
+- check_id: unit_tests
+  command: PYTHONPATH=src /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-036/unit_tests-0de1168b.log
+- check_id: lint
+  command: PYTHONPATH=src /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-036/lint-0de1168b.log
+- check_id: typecheck
+  command: PYTHONPATH=src /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-036/typecheck-0de1168b.log
+- check_id: diff_clean
+  command: git diff --check 0c11a89f4c624290bf8f2a911bc81e5740240e45 0de1168b35bb3f51d21498b65b04e243d9289ef4
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-036/diff_clean-0de1168b.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- KL047 remains NOT_STARTED. All eleven prospective implementation task checks are NOT_RUN. No evaluation
+  package, dataset/scorer/report implementation, typed FitnessProposal or actual Fitness evaluation test
+  is added by this governance PR. The 64 new tests enforce governance scope only.
+- The original full Fitness quality/evaluation obligation is not honestly satisfied by a synthetic mechanical
+  foundation. Representative corpus, expert/reference labels, quantitative quality rubric, sample-size
+  justification, weights/aggregation and quality thresholds remain precise open decisions. Later governance
+  must assign any uncovered genuine-quality decision/implementation scope in an enforceable packet before
+  scheduling it; no speculative new task identity is created here.
+- Synthetic task PASS cannot close G-REMOTE-AI, M7 exit, actual model evaluation, product requirements,
+  S48 release admission, medical safety or causal/training-effect claims. Exact measured release evidence,
+  privacy/outbound controls, real shadow reproducibility and Protocol 7.3/7.5 obligations remain unchanged.
+  Hevy plus HealthKit launch obligations and spreadsheet retirement are preserved.
+- Actual KL005 and KL018 PASS results, required fresh review unions, immutable result bytes, integration
+  ancestry/tree edges and MERGED facts are reverified. No completed task/result/evidence/integration or
+  frozen baseline is mutated; historical UNMERGED result payloads retain their original bytes.
+- Protected base is actual normal two-parent HG035 merge 0c11a89f4c624290bf8f2a911bc81e5740240e45. Read-only
+  draft preparation was committed under own evidence directory before that merge; branch was rebased before
+  shared governance edits. Current KL019 packet/write/resource ownership is byte-unchanged and disjoint
+  from KL047.
+- The exact ten implementation paths include only the new evaluation namespace marker, manifest/scorer/report
+  modules, three explicit test files, two synthetic JSON fixtures and one contract. Explicit pytest directory/selector
+  commands discover tests/evaluation; default testpaths and kl test-unit do not. No shared marker, agents,
+  provider fixture schema, persistence, migration, registry/S48 writer, live remote call, CLI/dependency/CI
+  edit or synthetic production capability registration is authorized.
+- First formal 2536ea75 checks passed audit/64 focused/375 harness/207 unit/lint/typecheck but failed
+  whitespace for draft Markdown spacing and snippet EOF. The exact failed raw output and SHA256 are preserved
+  reversibly in diff_clean-2536ea75.json. Formatting and packet digest were corrected, all eight checks
+  reran on 0de1168b35bb3f51d21498b65b04e243d9289ef4, and only those final PASS logs are selected. No whitespace
+  waiver or denial workaround was used.
+- Local checks use PYTHONPATH=src with the existing /private/tmp/kl017-venv Python and stable kl module
+  entrypoint. Hosted CI retains locked uv and all original workflows without exemption. Fresh protected-base/head
+  review union is GENERAL plus PROTOCOL; only HG036 review-record-only files may follow the final reviewed
+  head.
