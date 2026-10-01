@@ -1,0 +1,3 @@
+# HG037 protected-base refresh
+
+KL047 PR70 normally merged as dac7df4adde23cba0ac5483204a25f4b3668176d on 2026-10-01T04:21:34Z (two parents). HG037 consumed that actual master commit before final review/push through an ordinary merge, preserving the published branch ancestry. The only new authority is the existing current index; no historical frozen baseline or completed artifacts are rewritten. Prior 70fd44d union PASS reviews are preserved as historical evidence and do not authorize the refreshed head. Regenerate revision-bound checks and fresh reviews. All ten prospective KL074 checks remain NOT_RUN.

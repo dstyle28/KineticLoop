@@ -1,0 +1,44 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-037",
+  "reviewed_head_sha": "78171e730daad732ea7fc55c5dfd90e40cdfd80d",
+  "review_type": "SECURITY_DATA_BOUNDARY",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "priority": 1,
+      "title": "Permit the ratified future workflow in the permanent harness regression",
+      "file": "tests/harness/test_readiness_scope.py",
+      "start_line": 216,
+      "end_line": 216,
+      "description": "The permanent test_hosted_entrypoint_positive_revision_commands_and_transport regression asserts that .github/workflows/kl074-readiness.yml does not exist. KL-074 must create this exact workflow and then run both the entire repository suite and test-harness without suppressing failures. Its six authorized implementation paths exclude tests/harness/test_readiness_scope.py. Consequently the new hosted execution contract cannot pass within its ratified write scope: installing the required workflow causes this harness assertion to fail. Independently reran all 63 scope tests successfully at the reviewed head, then reproduced this specific failure by mocking only Path.exists for the exact future workflow to return True; no workflow, Docker resource or database was created.",
+      "requested_change": "Keep governance-only absence checking in a revision-bound governance audit instead of an unconditional permanent harness assertion. Make the permanent harness test accept either an absent future workflow or a present workflow whose complete bytes match the ratified hash, and add positive/negative regression coverage for the present exact-byte workflow and drifted workflow. Preserve the six-path future scope, all existing workflows/gates, and no-suppression requirement. Rerun governance checks at a new tested revision and obtain fresh SHA-bound reviews."
+    }
+  ],
+  "observations": [
+    "Independent committed-diff inspection at protected base 822322dfcac69d1042c8f9f7517cecf4903f8163 and reviewed head 78171e730daad732ea7fc55c5dfd90e40cdfd80d found no changes to .github workflows, product sources, Compose, completed results, integrations, current requirement set or frozen baseline. The live KL-074 workflow is absent. This review covers prospective governance authorization, not deployed execution or release approval.",
+    "The task remains namespaced harness-backlog-v0.2/KL-074, NOT_STARTED, with empty evidence and requirement claims and ten future checks. Its exact definition, packet boundaries and single new workflow hash are ratified in the validator. The workflow guard rejects an already-existing baseline workflow and any complete-byte drift, and reads committed baseline/head blobs. The specialist review requirement includes SECURITY_DATA_BOUNDARY and cannot be removed through this governance PR's own task definition.",
+    "The proposal uses only pull_request events, a same-repository codex/kl074- branch condition, GitHub-provided head SHA environment values, explicit head-SHA checkout, contents: read and persist-credentials: false. It introduces no secrets references, dispatch/call inputs, permission expansion or existing CI changes. Locked uv installation, a fresh ubuntu-latest runner and default local Unix Docker socket checks provide a feasible isolated runner boundary, subject to actual future run evidence.",
+    "Both exact hosted commands preserve failures with set -euo pipefail and have finite step/job deadlines. Always-uploaded artifacts are limited to the exact task/head evidence directory, named with head SHA/run ID/attempt, and retained for 30 days. The packet requires credential redaction, actual image/entrypoint and ordered probe/SQL evidence, validated task-owned namespaces, finally-cleanup proof, downloaded raw artifacts and run/job/artifact identity/digest before expiry and before final result/review. Missing, skipped, failed, mismatched or incomplete hosted execution cannot establish PASS. No production credentials, health/provider data export or remote daemon authority is granted.",
+    "The 63 independently executed readiness-scope regressions pass at the reviewed head. Their negative cases cover permission escalation, self-hosted runner, wrong checkout SHA, unlocked dependencies, reduced commands/iterations, absent pipefail, success-only upload, remote daemon, expanded timeout, persisted credentials, widened branch prefix, overbroad artifact path, continue-on-error, secrets and dispatch. Exact lifecycle byte guarding also rejects namespace/credential mutations, direct SQL bypasses, foreign endpoints and timeout drift. The workflow-presence contradiction above remains a blocker despite those passing current-head regressions.",
+    "Tested implementation b82c41d982547d7f62db18c17385cbeb46b86945 to reviewed head changes only HG-037 evidence and governance record bookkeeping. Existing passing evidence is bound to that tested SHA; none claims future KL-074 execution. Reviewed current GitHub PR-event and runner documentation and Docker-context documentation as reference support for the hosted entrypoint and isolation assumptions. No actual hosted KL-074 run, Docker/PostgreSQL operation, shared daemon operation or product requirement PASS is asserted."
+  ],
+  "evidence_refs": [
+    "CURRENT_DOCUMENT_INDEX.json",
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/harness/MERGE_GATE.md",
+    "docs/exec-plans/governance/HG-037.yaml",
+    "docs/exec-plans/active/KL-074.md",
+    "docs/exec-plans/evidence/HG-037/HOSTED_EXECUTION_PREFLIGHT.md",
+    "docs/exec-plans/evidence/HG-037/kl074-readiness.workflow.proposal.yml",
+    "docs/exec-plans/evidence/HG-037/readiness_scope_regressions-b82c41d.json",
+    "docs/exec-plans/evidence/HG-037/readiness_scope_regressions-b82c41d.log",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_readiness_scope.py",
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows",
+    "https://docs.github.com/en/actions/reference/runners/github-hosted-runners",
+    "https://docs.docker.com/engine/manage-resources/contexts/"
+  ],
+  "review_contract_version": "v0.2"
+}

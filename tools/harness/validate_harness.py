@@ -580,7 +580,7 @@ def packet_errors(task, text):
     if checks is None or sorted(bullets(checks)) != sorted(task['checks_required_for_this_task']):
         errors.append('packet-checks:' + name)
     if (name in M2_REFINED_TASK_IDS or (name == 'KL-047'
-            and task.get('packet_refinement') == 'ENFORCEABLE') or (name in (WAVE_REFINED_TASK_IDS | {'KL-019', 'KL-025'})
+            and task.get('packet_refinement') == 'ENFORCEABLE') or (name in (WAVE_REFINED_TASK_IDS | {'KL-019', 'KL-025', 'KL-074'})
                                       and task.get('packet_refinement') == 'ENFORCEABLE')):
         read_first = section(text, 'Read first') or ''
         if bullets(read_first) != task.get('context_files', []):
@@ -677,6 +677,7 @@ def packet_errors(task, text):
         if ((section(text, 'Planning fixture namespace exception') or '').strip()
                 != LEDGER_PLANNING_FIXTURE_CONTRACT):
             errors.append('packet-ledger-planning-fixture-contract:' + name)
+    errors.extend(readiness_packet_errors(task, text))
     errors.extend(execution_packet_errors(task, text))
     return errors
 
@@ -800,6 +801,18 @@ def ledger_planning_fixture_content_errors(before: bytes, after: bytes) -> list[
 
 
 def task_fixture_scope_errors(root, base, head, task_id, changed):
+    if task_id == 'KL-074':
+        errors = []
+        for path in ('compose.yaml', 'src/kineticloop/db/lifecycle.py'):
+            if path in changed:
+                errors.extend(readiness_content_errors(
+                    path, git(root, 'show', base + ':' + path),
+                    git(root, 'show', head + ':' + path)))
+        if READINESS_WORKFLOW_PATH in changed:
+            errors.extend(readiness_workflow_errors(
+                git(root, 'ls-tree', '--name-only', base, '--', READINESS_WORKFLOW_PATH),
+                git(root, 'show', head + ':' + READINESS_WORKFLOW_PATH)))
+        return errors
     if task_id == 'KL-019':
         errors = []
         for path in EXECUTION_FIXTURE_BASE_HASHES:
@@ -2635,6 +2648,7 @@ def task_definition_errors(
             errors.extend(ledger_definition_errors(task))
         if not revision or task.get('packet_refinement') == 'ENFORCEABLE':
             errors.extend(execution_definition_errors(task))
+        errors.extend(readiness_definition_errors(task))
         for dep in task['depends_on']:
             if dep not in tasks:
                 errors.append('unknown-dep:' + name + '->' + dep)
@@ -2756,7 +2770,7 @@ def task_definition_errors(
                 and (task.get('packet_refinement') != 'ENFORCEABLE'
                      or task.get('write_paths_status') != 'ENFORCEABLE')):
             errors.append('ready-write-scope-unrefined:' + name)
-    refined = [tasks[name] for name in sorted(M2_REFINED_TASK_IDS | WAVE_REFINED_TASK_IDS | {'KL-047'})
+    refined = [tasks[name] for name in sorted(M2_REFINED_TASK_IDS | WAVE_REFINED_TASK_IDS | {'KL-047', 'KL-074'})
                if name in tasks and (name in M2_REFINED_TASK_IDS
                                      or tasks[name].get('packet_refinement') == 'ENFORCEABLE')]
     for position, left in enumerate(refined):
@@ -3370,6 +3384,550 @@ def main(argv=None, root=ROOT):
         return 1
     print(f'HARNESS_CHECK_PASS tasks={count} active={active}')
     return 0
+
+
+
+
+# Generated HG037 guard proposal; append only after HG036 merge.
+READINESS_TASK_DEFINITION = {'id': 'KL-074',
+ 'milestone': 'M1',
+ 'title': 'PostgreSQL final-server startup readiness repair',
+ 'owner_role': 'platform',
+ 'depends_on': ['KL-002', 'KL-013', 'KL-023'],
+ 'commands': [],
+ 'transaction_boundaries': [],
+ 'invariant_ids': [],
+ 'table_ids': [],
+ 'required_test_layers': ['UNIT', 'DC'],
+ 'deliverables': ['explicit bounded container loopback TCP lifecycle readiness',
+                  'aligned Compose and post-reset readiness probes',
+                  'deterministic init-stop-final positive and negative regression tests',
+                  'isolated migrated coldstart provenance and cleanup evidence',
+                  'additive exact-head hosted workflow and durable raw artifact evidence'],
+ 'definition_of_done': 'Only startup readiness changes: temporary socket-only initialization '
+                       'cannot authorize reset SQL; bounded explicit container TCP readiness gates '
+                       'reset, Compose and post-reset probes align, SQL failures propagate without '
+                       'replay, and deterministic regressions plus three isolated migrated cold '
+                       'starts prove actual image ordering, ownership and cleanup. Full repository '
+                       'and normal hosted CI/gates pass without product, migration, authentication '
+                       'or frozen semantic changes. The additive exact-head hosted entrypoint '
+                       'executes both exact commands, preserves raw failure/success artifacts and '
+                       'provenance, and leaves all existing CI/gates unchanged.',
+ 'entry_conditions': ['merged KL-002 result and integration: '
+                      'docs/exec-plans/completed/KL-002_RESULT.yaml and '
+                      'docs/exec-plans/integrations/KL-002.json',
+                      'merged KL-013 baseline and KL-023 current migrated prerequisite: '
+                      'docs/exec-plans/completed/KL-013_RESULT.yaml and '
+                      'docs/exec-plans/completed/KL-023_RESULT.yaml',
+                      'exclusive postgres_lifecycle resource and exact write paths available; no '
+                      'overlap with active KL019 transaction resources',
+                      'dedicated hosted VM for full legacy DB suites; unique task-owned isolated '
+                      'coldstart namespaces',
+                      'same-repository codex/kl074- PR branch for the additive exact-head hosted '
+                      'workflow; no arbitrary inputs or shared/remote Docker'],
+ 'status': 'NOT_STARTED',
+ 'evidence_refs': [],
+ 'thread_id': 'THREAD-KL-074',
+ 'thread_mode': 'INDEPENDENT_WORKTREE',
+ 'context_files': ['docs/exec-plans/completed/KL-002_RESULT.yaml',
+                   'docs/exec-plans/integrations/KL-002.json',
+                   'docs/exec-plans/completed/KL-013_RESULT.yaml',
+                   'docs/exec-plans/completed/KL-023_RESULT.yaml',
+                   'src/kineticloop/db/lifecycle.py',
+                   'compose.yaml',
+                   'tests/db/test_lifecycle.py',
+                   'tests/db/test_migrations.py',
+                   'docs/exec-plans/evidence/HG-037/READINESS_EVIDENCE.md',
+                   'tools/harness/validate_harness.py',
+                   '.github/workflows/ci.yml',
+                   '.github/workflows/db.yml',
+                   'docs/exec-plans/evidence/HG-037/HOSTED_EXECUTION_PREFLIGHT.md',
+                   'docs/exec-plans/evidence/HG-037/kl074-readiness.workflow.proposal.yml'],
+ 'max_context_policy': 'READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND',
+ 'merge_unit': 'ONE_PR',
+ 'handoff_artifact': 'docs/exec-plans/completed/KL-074_RESULT.yaml',
+ 'shared_hotspot': True,
+ 'parallel_write_policy': 'SERIALIZE_WITH_OTHER_HOTSPOT_TASKS',
+ 'task_identity': 'harness-backlog-v0.2/KL-074',
+ 'requirements_covered': [],
+ 'checks_required_for_this_task': ['temporary_socket_ready_not_final_ready',
+                                   'permanent_tcp_unready_bounded',
+                                   'delayed_final_ready_exact_reset',
+                                   'sql_failure_no_replay',
+                                   'compose_and_lifecycle_tcp_alignment',
+                                   'isolated_migrated_coldstart',
+                                   'lifecycle_regressions',
+                                   'full_repository_regressions',
+                                   'quality_and_harness',
+                                   'hosted_entrypoint_and_evidence'],
+ 'resource_keys': ['postgres_lifecycle'],
+ 'write_paths': ['src/kineticloop/db/lifecycle.py',
+                 'compose.yaml',
+                 'tests/db/test_lifecycle.py',
+                 'tests/db/test_startup_readiness.py',
+                 'tools/db/verify_startup_readiness.py',
+                 '.github/workflows/kl074-readiness.yml'],
+ 'review_requirements': ['GENERAL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'],
+ 'conditional_depends_on': [],
+ 'environment_requirements': ['ISOLATED_POSTGRESQL_NAMESPACE',
+                              'TASK_OWNED_COMPOSE_NAMESPACE',
+                              'DEDICATED_HOSTED_VM_FOR_LEGACY_DB_SUITES'],
+ 'packet_refinement': 'ENFORCEABLE',
+ 'required_test_layers_semantics': 'COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS',
+ 'check_contracts': [{'check_id': 'temporary_socket_ready_not_final_ready',
+                      'command': 'uv run pytest -q tests/db/test_lifecycle.py -k temporary_socket',
+                      'pass_oracle': 'A deterministic runner/clock reproduces the old socket-ready '
+                                     'init-stop race against protected-base lifecycle code. '
+                                     'Against repaired code, temporary initialization accepts '
+                                     'socket pg_isready but rejects explicit 127.0.0.1:5432 TCP; '
+                                     'zero psql/SQL occurs until final TCP readiness. Same '
+                                     'scenario fails old code and passes repaired code; no sleeps '
+                                     'or nondeterministic scheduler assumptions establish this '
+                                     'oracle.'},
+                     {'check_id': 'permanent_tcp_unready_bounded',
+                      'command': 'uv run pytest -q tests/db/test_lifecycle.py -k permanent_tcp',
+                      'pass_oracle': 'Socket remains ready while TCP never becomes ready. '
+                                     'Monotonic deadline terminates within the requested bound '
+                                     '(including bounded per-command probe duration) with '
+                                     'DatabaseLifecycleError and zero destructive SQL. Normal '
+                                     'missing-Docker/startup failures remain actionable; no '
+                                     'unbounded subprocess or polling wait.'},
+                     {'check_id': 'delayed_final_ready_exact_reset',
+                      'command': 'uv run pytest -q tests/db/test_lifecycle.py -k delayed_final',
+                      'pass_oracle': 'Multiple TCP failures followed by final TCP success permit '
+                                     'exactly one DROP and one CREATE for the task-owned derived '
+                                     'database only; post-reset readiness also explicitly uses '
+                                     'container loopback TCP port 5432. Default, foreign, invalid '
+                                     'or ambient-overridden targets cannot replace the owned '
+                                     'namespace; socket psql behavior remains unchanged.'},
+                     {'check_id': 'sql_failure_no_replay',
+                      'command': 'uv run pytest -q tests/db/test_lifecycle.py -k sql_failure',
+                      'pass_oracle': 'After final TCP readiness, injected DROP and CREATE failures '
+                                     'independently propagate with original redacted actionable '
+                                     'diagnostics. Neither destructive statement is replayed; '
+                                     'CREATE is never attempted after failed DROP. No destructive '
+                                     'SQL retry, reset restart, or success fabrication.'},
+                     {'check_id': 'compose_and_lifecycle_tcp_alignment',
+                      'command': 'uv run pytest -q tests/db/test_startup_readiness.py',
+                      'pass_oracle': 'Structural checks inspect actual Compose healthcheck and '
+                                     'both actual lifecycle probes: each explicitly targets '
+                                     '127.0.0.1 port 5432 inside postgres, not published host port '
+                                     'or socket. Tests reject a socket-healthcheck regression. SQL '
+                                     'stays on the existing socket/authentication path. Namespace, '
+                                     'secret redaction, ports, volume, image, normal startup and '
+                                     'migrations stay unchanged.'},
+                     {'check_id': 'isolated_migrated_coldstart',
+                      'command': 'uv run python tools/db/verify_startup_readiness.py --iterations '
+                                 '3 --startup-timeout 60 --total-timeout 300',
+                      'pass_oracle': 'Three bounded cold starts use three fresh resolved temporary '
+                                     'worktree roots with exact Compose '
+                                     'kineticloop-kl074-cold-<shortsha>-<digest> and database '
+                                     'kineticloop_kl074_cold_<shortsha>_<digest> names; shortsha '
+                                     'is tested_commit first7 lowercase hex and digest is SHA256 '
+                                     'of os.fsencode(resolved root) first12 lowercase hex; '
+                                     'validate exact names before first reset, verify no '
+                                     'preexisting owned resources/volume, and fail closed on '
+                                     'malformed/mismatched/default/foreign target. Inspect actual '
+                                     'configured image, resolved image ID/digest and in-container '
+                                     'entrypoint SHA256/source, Docker/Compose/PostgreSQL '
+                                     'versions, and timestamped startup logs/probe events. Prove '
+                                     'socket-only init start, init stop, final TCP-ready start '
+                                     'ordering for the actual image, zero measured lifecycle SQL '
+                                     'before final readiness, then successful reset and existing '
+                                     'two-phase migrated bootstrap on the identical owned '
+                                     'lifecycle. Verify current_database and migrated revision, '
+                                     'repeated reset sentinel removal and namespace isolation. '
+                                     'Each iteration captures evidence before finally destroying '
+                                     'only its exact owned containers/network/volume and proving '
+                                     'absence; cleanup failure fails. Total wall time and '
+                                     'subprocess durations are bounded; no foreign/default DB '
+                                     'reset or destroy. If actual ordering/root cause cannot be '
+                                     'demonstrated, report FAIL/NOT_RUN with limitation, never '
+                                     'infer PASS from success alone. Execute through the ratified '
+                                     'exact-head hosted workflow; retain raw logs/provenance plus '
+                                     'downloaded artifacts bound to tested_commit before final '
+                                     'result/review.'},
+                     {'check_id': 'lifecycle_regressions',
+                      'command': 'uv run pytest -q tests/db/test_lifecycle.py '
+                                 'tests/db/test_startup_readiness.py',
+                      'pass_oracle': 'All existing lifecycle assertions plus new positive/negative '
+                                     'startup checks pass without skips, xfail, disabled tests or '
+                                     'changed SQL/auth/namespace semantics.'},
+                     {'check_id': 'full_repository_regressions',
+                      'command': 'uv run pytest -q -p no:cacheprovider',
+                      'pass_oracle': 'Entire repository suite passes with no suppressed '
+                                     'failures/skips added by this task on a dedicated hosted VM '
+                                     'with job-owned Docker. Retain all normal CI jobs/gates and '
+                                     'existing DB suites; hosted VM isolates legacy prerequisite '
+                                     'fixture namespaces. Do not run legacy full DB suites on '
+                                     'shared developer Docker or borrow KL019/KL024/KL025 '
+                                     'resources. Preserve exact head-bound full-suite evidence. '
+                                     'Execute through the ratified exact-head hosted workflow; '
+                                     'retain raw logs/provenance plus downloaded artifacts bound '
+                                     'to tested_commit before final result/review.'},
+                     {'check_id': 'quality_and_harness',
+                      'command': 'uv run kl lint && uv run kl typecheck && uv run kl test-harness '
+                                 '&& uv run kl check-harness',
+                      'pass_oracle': 'All four commands exit 0; check-harness prints '
+                                     'HARNESS_CHECK_PASS. Every normal hosted CI and applicable '
+                                     'merge gate also passes at the reviewed head; no workflow '
+                                     'weakening, retry concealment or fixed startup sleep.'},
+                     {'check_id': 'hosted_entrypoint_and_evidence',
+                      'command': 'uv run pytest -q tests/db/test_startup_readiness.py -k '
+                                 'hosted_entrypoint',
+                      'pass_oracle': 'Structural positive/negative tests prove the single new '
+                                     'workflow matches the ratified bytes/hash, explicit PR head '
+                                     'checkout, same-repository codex/kl074- entrypoint, locked '
+                                     'uv, fresh ubuntu-latest runner, local default Docker daemon '
+                                     'preflight, bounded pipefail commands and always-uploaded '
+                                     'task-only artifacts. Existing workflows and gates remain '
+                                     'byte-identical. Actual hosted '
+                                     'run/job/head/run-attempt/artifact identity and downloaded '
+                                     'raw coldstart/full-suite/provenance evidence must match '
+                                     'tested_commit; both exact commands and their oracles pass '
+                                     'without skips or continue-on-error. '
+                                     'Missing/skipped/incomplete/mismatched execution is '
+                                     'NOT_RUN/FAIL, never PASS. No new secrets, elevated token '
+                                     'permissions, remote/self-hosted daemon, arbitrary inputs or '
+                                     'command substitutions.'}],
+ 'evidence_paths': ['docs/exec-plans/evidence/KL-074/**'],
+ 'write_paths_status': 'ENFORCEABLE'}
+
+READINESS_PACKET_BOUNDARIES = {'Repair boundary': 'Use explicit container loopback TCP pg_isready --host 127.0.0.1 --port 5432 '
+                    'for startup, Compose healthcheck and post-reset readiness. Retain the '
+                    'existing monotonic startup deadline and normal startup handling; bound each '
+                    'probe subprocess to remaining deadline so the timeout oracle is real. A '
+                    'readiness-loop backoff is allowed within that bound; no unconditional startup '
+                    'sleep. Keep psql socket usage, credentials, image, ports, volumes and '
+                    'namespaces unchanged. No destructive SQL retry, fixed sleeps, unbounded '
+                    'waits, CI suppression, migrations, transaction/authorization semantics or '
+                    'product/frozen changes.',
+ 'Isolation and evidence boundary': 'The dedicated probe validates exact Compose '
+                                    'kineticloop-kl074-cold-<shortsha>-<digest> and database '
+                                    'kineticloop_kl074_cold_<shortsha>_<digest> before any '
+                                    'reset/bootstrap/cleanup: shortsha is tested_commit first7 '
+                                    'lowercase hex; digest is SHA256 of os.fsencode(resolved root) '
+                                    'first12 lowercase hex. Never accept caller-supplied or '
+                                    'ambient namespaces. Use three fresh task-owned temporary '
+                                    'roots, the unchanged checked-in Compose file, and the '
+                                    'existing tests/db/test_migrations.py '
+                                    'bootstrap_two_phase(lifecycle) on that same selected '
+                                    'lifecycle. Reject preexisting resources and '
+                                    'foreign/default/ambient targets. Record image/digest, actual '
+                                    'entrypoint hash/source, timestamped logs and probe/SQL '
+                                    'ordering; redact credentials. Assert migrated revision, exact '
+                                    'current_database, reset sentinel removal, cross-root '
+                                    'separation and finally cleanup absence. Bound iterations, '
+                                    'total wall time and subprocesses. Failure or unavailable '
+                                    'exact root-cause evidence must be reported; source inference '
+                                    'is not deployed-image proof. Full legacy DB suites run on a '
+                                    'dedicated hosted VM, not shared Docker; never overlap KL019 '
+                                    'transaction resources.',
+ 'Hosted execution and evidence entrypoint': 'KL074 creates only '
+                                             '.github/workflows/kl074-readiness.yml with exact '
+                                             'bytes from '
+                                             'docs/exec-plans/evidence/HG-037/kl074-readiness.workflow.proposal.yml, '
+                                             'pinned by READINESS_WORKFLOW_SHA256 in '
+                                             'tools/harness/validate_harness.py; an existing '
+                                             'baseline file or byte drift fails closed. Open a '
+                                             'same-repository codex/kl074- PR; pull_request '
+                                             'opened/synchronize/reopened/ready_for_review runs '
+                                             'before merge, with no caller inputs. The single '
+                                             'ubuntu-latest job checks out '
+                                             'github.event.pull_request.head.sha, verifies git '
+                                             'HEAD, uses uv 0.12.17 and uv sync --locked, and '
+                                             'rejects non-GitHub-hosted Linux or any '
+                                             'DOCKER_HOST/DOCKER_CONTEXT override, nondefault '
+                                             'context or nonlocal socket endpoint. Execute the '
+                                             'exact three-iteration coldstart command and uv run '
+                                             'pytest -q -p no:cacheprovider with pipefail and '
+                                             'finite step/job deadlines. No secret access, token '
+                                             'permission expansion, self-hosted/remote daemon, '
+                                             'test suppression, continue-on-error or existing '
+                                             'workflow/gate edits.\n'
+                                             '\n'
+                                             'The probe must validate '
+                                             'KINETICLOOP_KL074_TESTED_COMMIT equals git HEAD and '
+                                             'KINETICLOOP_KL074_EVIDENCE_DIR resolves exactly to '
+                                             'docs/exec-plans/evidence/KL-074/hosted-<tested_commit> '
+                                             'under the checkout before writing. Write raw '
+                                             'timestamped container logs, actual image/entrypoint '
+                                             'provenance, ordered probes/SQL, migrated/reset '
+                                             'assertions and finally-cleanup evidence below that '
+                                             'directory. This environment sets evidence output '
+                                             'only, never namespaces. The always() upload '
+                                             'preserves this directory on success/failure; '
+                                             'incomplete upload or skipped steps cannot establish '
+                                             'PASS. Before artifact expiry, download raw files (or '
+                                             'byte-exact envelopes), record run/job URLs, '
+                                             'event/head SHA, run ID/attempt and artifact '
+                                             'ID/digest, and commit them under task evidence '
+                                             'before final result/review. Verify '
+                                             'hosted-provenance/logs and both exact command '
+                                             'oracles against tested_commit. Final reviewed-head '
+                                             'normal CI/gates also pass independently; a changed '
+                                             'implementation stales checks/reviews. Missing, '
+                                             'failed, skipped, mismatched or unavailable '
+                                             'actual-image evidence is NOT_RUN/FAIL. Governance '
+                                             'ratification is not execution evidence.',
+ 'Non-goals': 'Do not implement downstream protocol/product work, alter completed KL002 '
+              'definitions/results/evidence, edit existing CI workflows or any workflow except the '
+              'single additive .github/workflows/kl074-readiness.yml, migration/schema/auth/role '
+              'ownership, other fixtures or SQL command semantics. No production/live credentials '
+              'or data. No product requirement PASS, release closure or auto-activation claim. '
+              'Stop with SPEC_CHANGE_REQUIRED for any frozen authorization, admission, lock, '
+              'transaction, provider or shadow boundary change.',
+ 'Exact lifecycle readiness candidate': 'KL074 may change lifecycle source only to '
+                                        'readiness_lifecycle_candidate(before) in '
+                                        'tools/harness/validate_harness.py, anchored to '
+                                        'READINESS_LIFECYCLE_BASE_SHA256. The complete-byte '
+                                        'candidate adds explicit loopback TCP to '
+                                        'startup/post-reset, passes the positive remaining '
+                                        'monotonic deadline into each startup probe subprocess, '
+                                        'bounds readiness backoff by remaining time, adds only '
+                                        'optional runner timeout plumbing and a non-replaying '
+                                        'sanitized TimeoutExpired error. It preserves every other '
+                                        'byte, including normal Compose startup, '
+                                        'namespace/credential ownership, socket psql, DROP/CREATE '
+                                        'order, redaction and cleanup. Unexpected baseline or any '
+                                        'extra startup command, namespace/credential mutation, SQL '
+                                        'runner bypass, foreign endpoint or timeout drift fails '
+                                        'closed. Compose changes only the exact ratified loopback '
+                                        'healthcheck test.'}
+
+def readiness_definition_errors(task):
+    if task.get('id') != 'KL-074':
+        return []
+    return ['readiness-definition-drift:' + field
+            for field in set(task) | set(READINESS_TASK_DEFINITION)
+            if task.get(field) != READINESS_TASK_DEFINITION.get(field)]
+
+
+def readiness_packet_errors(task, text):
+    if task.get('id') != 'KL-074':
+        return []
+    return ['readiness-packet-boundary:' + heading
+            for heading, value in READINESS_PACKET_BOUNDARIES.items()
+            if (section(text, heading) or '').strip() != value]
+
+
+READINESS_LIFECYCLE_BASE_SHA256 = 'de55f62dd25e3379c67b7b6306cdbd882ce8a6d3d615715a7f9d35c30c6a3686'
+READINESS_LIFECYCLE_REPLACEMENTS = [('    def _run(\n'
+  '        self,\n'
+  '        command: Sequence[str],\n'
+  '        *,\n'
+  '        check: bool = True,\n'
+  '    ) -> subprocess.CompletedProcess[str]:\n'
+  '        try:\n'
+  '            return self._runner(\n'
+  '                list(command),\n'
+  '                cwd=self.root,\n'
+  '                env=self.environment,\n'
+  '                check=check,\n'
+  '                capture_output=True,\n'
+  '                text=True,\n'
+  '            )\n'
+  '        except FileNotFoundError as error:\n'
+  '            raise DatabaseLifecycleError(\n'
+  '                "Docker with the Compose plugin is required for the local test database."\n'
+  '            ) from error\n'
+  '        except subprocess.CalledProcessError as error:\n'
+  '            details = Redactor((self.user, self.password)).exception_diagnostic(error)\n'
+  '            raise DatabaseLifecycleError(f"database command failed: {details}") from None\n'
+  '\n',
+  '    def _run(\n'
+  '        self,\n'
+  '        command: Sequence[str],\n'
+  '        *,\n'
+  '        check: bool = True,\n'
+  '        timeout_seconds: float | None = None,\n'
+  '    ) -> subprocess.CompletedProcess[str]:\n'
+  '        try:\n'
+  '            return self._runner(\n'
+  '                list(command),\n'
+  '                cwd=self.root,\n'
+  '                env=self.environment,\n'
+  '                check=check,\n'
+  '                capture_output=True,\n'
+  '                text=True,\n'
+  '                timeout=timeout_seconds,\n'
+  '            )\n'
+  '        except subprocess.TimeoutExpired:\n'
+  '            raise DatabaseLifecycleError("database readiness command timed out") from None\n'
+  '        except FileNotFoundError as error:\n'
+  '            raise DatabaseLifecycleError(\n'
+  '                "Docker with the Compose plugin is required for the local test database."\n'
+  '            ) from error\n'
+  '        except subprocess.CalledProcessError as error:\n'
+  '            details = Redactor((self.user, self.password)).exception_diagnostic(error)\n'
+  '            raise DatabaseLifecycleError(f"database command failed: {details}") from None\n'
+  '\n'),
+ ('    def start(self, *, timeout_seconds: float = 60.0) -> None:\n'
+  '        self.validate_compose()\n'
+  '        self._run(self.compose_command("up", "--detach", "postgres"))\n'
+  '        deadline = time.monotonic() + timeout_seconds\n'
+  '        while time.monotonic() < deadline:\n'
+  '            result = self._run(\n'
+  '                self.compose_command(\n'
+  '                    "exec",\n'
+  '                    "--no-TTY",\n'
+  '                    "postgres",\n'
+  '                    "pg_isready",\n'
+  '                    "--username",\n'
+  '                    self.user,\n'
+  '                    "--dbname",\n'
+  '                    "postgres",\n'
+  '                ),\n'
+  '                check=False,\n'
+  '            )\n'
+  '            if result.returncode == 0:\n'
+  '                return\n'
+  '            time.sleep(0.5)\n'
+  '        raise DatabaseLifecycleError(\n'
+  '            f"PostgreSQL did not become ready within {timeout_seconds:g} seconds"\n'
+  '        )\n'
+  '\n',
+  '    def start(self, *, timeout_seconds: float = 60.0) -> None:\n'
+  '        self.validate_compose()\n'
+  '        self._run(self.compose_command("up", "--detach", "postgres"))\n'
+  '        deadline = time.monotonic() + timeout_seconds\n'
+  '        while time.monotonic() < deadline:\n'
+  '            remaining = deadline - time.monotonic()\n'
+  '            if remaining <= 0:\n'
+  '                break\n'
+  '            result = self._run(\n'
+  '                self.compose_command(\n'
+  '                    "exec",\n'
+  '                    "--no-TTY",\n'
+  '                    "postgres",\n'
+  '                    "pg_isready",\n'
+  '                    "--host",\n'
+  '                    "127.0.0.1",\n'
+  '                    "--port",\n'
+  '                    "5432",\n'
+  '                    "--username",\n'
+  '                    self.user,\n'
+  '                    "--dbname",\n'
+  '                    "postgres",\n'
+  '                ),\n'
+  '                check=False,\n'
+  '                timeout_seconds=remaining,\n'
+  '            )\n'
+  '            if result.returncode == 0:\n'
+  '                return\n'
+  '            time.sleep(min(0.5, max(0.0, deadline - time.monotonic())))\n'
+  '        raise DatabaseLifecycleError(\n'
+  '            f"PostgreSQL did not become ready within {timeout_seconds:g} seconds"\n'
+  '        )\n'
+  '\n'),
+ ('    def reset(self, *, timeout_seconds: float = 60.0) -> DatabaseConnection:\n'
+  '        self.start(timeout_seconds=timeout_seconds)\n'
+  '        quoted_database = f\'"{self.namespace.database_name}"\'\n'
+  '        quoted_user = f\'"{self.user}"\'\n'
+  '        self._psql(\n'
+  '            "postgres",\n'
+  '            f"DROP DATABASE IF EXISTS {quoted_database} WITH (FORCE);",\n'
+  '        )\n'
+  '        self._psql(\n'
+  '            "postgres",\n'
+  '            f"CREATE DATABASE {quoted_database} OWNER {quoted_user};",\n'
+  '        )\n'
+  '        ready = self._run(\n'
+  '            self.compose_command(\n'
+  '                "exec",\n'
+  '                "--no-TTY",\n'
+  '                "postgres",\n'
+  '                "pg_isready",\n'
+  '                "--username",\n'
+  '                self.user,\n'
+  '                "--dbname",\n'
+  '                self.namespace.database_name,\n'
+  '            ),\n'
+  '            check=False,\n'
+  '        )\n'
+  '        if ready.returncode != 0:\n'
+  '            raise DatabaseLifecycleError("reset database failed its readiness probe")\n'
+  '        return self.connection()\n'
+  '\n',
+  '    def reset(self, *, timeout_seconds: float = 60.0) -> DatabaseConnection:\n'
+  '        self.start(timeout_seconds=timeout_seconds)\n'
+  '        quoted_database = f\'"{self.namespace.database_name}"\'\n'
+  '        quoted_user = f\'"{self.user}"\'\n'
+  '        self._psql(\n'
+  '            "postgres",\n'
+  '            f"DROP DATABASE IF EXISTS {quoted_database} WITH (FORCE);",\n'
+  '        )\n'
+  '        self._psql(\n'
+  '            "postgres",\n'
+  '            f"CREATE DATABASE {quoted_database} OWNER {quoted_user};",\n'
+  '        )\n'
+  '        ready = self._run(\n'
+  '            self.compose_command(\n'
+  '                "exec",\n'
+  '                "--no-TTY",\n'
+  '                "postgres",\n'
+  '                "pg_isready",\n'
+  '                "--host",\n'
+  '                "127.0.0.1",\n'
+  '                "--port",\n'
+  '                "5432",\n'
+  '                "--username",\n'
+  '                self.user,\n'
+  '                "--dbname",\n'
+  '                self.namespace.database_name,\n'
+  '            ),\n'
+  '            check=False,\n'
+  '            timeout_seconds=timeout_seconds,\n'
+  '        )\n'
+  '        if ready.returncode != 0:\n'
+  '            raise DatabaseLifecycleError("reset database failed its readiness probe")\n'
+  '        return self.connection()\n'
+  '\n')]
+
+
+def readiness_lifecycle_candidate(before):
+    """Only the complete reviewed bounded-readiness delta is authorized."""
+    if hashlib.sha256(before).hexdigest() != READINESS_LIFECYCLE_BASE_SHA256:
+        raise ValueError('unexpected readiness lifecycle baseline')
+    text = before.decode()
+    for old, new in READINESS_LIFECYCLE_REPLACEMENTS:
+        if text.count(old) != 1:
+            raise ValueError('unexpected readiness lifecycle method baseline')
+        text = text.replace(old, new, 1)
+    return text.encode()
+
+
+def readiness_content_errors(path, before, after):
+    """Keep startup ownership, SQL/auth and every other source byte exact."""
+    if path == 'compose.yaml':
+        import yaml
+        try:
+            old, new = yaml.safe_load(before), yaml.safe_load(after)
+            expected = ['CMD-SHELL', 'pg_isready --host 127.0.0.1 --port 5432 --username "$${POSTGRES_USER}" --dbname "$${POSTGRES_DB}"']
+            if new['services']['postgres']['healthcheck']['test'] != expected:
+                return ['readiness-compose-tcp-required']
+            new['services']['postgres']['healthcheck']['test'] = old['services']['postgres']['healthcheck']['test']
+            return [] if old == new else ['readiness-compose-content-scope']
+        except (KeyError, TypeError, yaml.YAMLError):
+            return ['readiness-compose-content-scope']
+    if path != 'src/kineticloop/db/lifecycle.py':
+        return []
+    try:
+        expected = readiness_lifecycle_candidate(before)
+    except (ValueError, UnicodeError):
+        return ['readiness-lifecycle-baseline-unexpected']
+    return [] if after == expected else ['readiness-lifecycle-content-scope']
+
+
+READINESS_WORKFLOW_PATH = '.github/workflows/kl074-readiness.yml'
+READINESS_WORKFLOW_SHA256 = 'bbf7f77baa008a13660313c4af9b6ace506b41c22da7fee1737a4afd4870f6df'
+
+
+def readiness_workflow_errors(base_listing, after):
+    """Only the new, ratified exact-head hosted entrypoint is authorized."""
+    if base_listing.strip():
+        return ['readiness-workflow-baseline-exists']
+    return [] if hashlib.sha256(after).hexdigest() == READINESS_WORKFLOW_SHA256 else ['readiness-workflow-content-scope']
 
 
 if __name__ == '__main__':

@@ -1,0 +1,42 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-037",
+  "reviewed_head_sha": "70fd44d25e61f9931fcc6cb7d4bc369885ea0f10",
+  "review_type": "DB_CONCURRENCY",
+  "status": "PASS",
+  "findings": [],
+  "review_contract_version": "v0.2",
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-037.yaml",
+    "docs/exec-plans/active/KL-074.md",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_readiness_scope.py",
+    "docs/harness/RESOURCE_LOCKS.md",
+    "docs/exec-plans/evidence/HG-037/READINESS_EVIDENCE.md",
+    "docs/exec-plans/evidence/HG-037/HOSTED_EXECUTION_PREFLIGHT.md",
+    "docs/exec-plans/evidence/HG-037/kl074-readiness.workflow.proposal.yml",
+    "docs/exec-plans/evidence/HG-037/append_only_provenance_audit-e8bb2b9.log",
+    "docs/exec-plans/evidence/HG-037/readiness_scope_regressions-e8bb2b9.log",
+    "docs/exec-plans/evidence/HG-037/harness_validation-e8bb2b9.log",
+    "docs/exec-plans/evidence/HG-037/harness_tests-e8bb2b9.log",
+    "docs/exec-plans/evidence/HG-037/unit_tests-e8bb2b9.log",
+    "docs/exec-plans/evidence/HG-037/lint-e8bb2b9.log",
+    "docs/exec-plans/evidence/HG-037/typecheck-e8bb2b9.log",
+    "docs/exec-plans/evidence/HG-037/diff_clean-e8bb2b9.log"
+  ],
+  "review_summary": [
+    "Fresh independent review of protected base 822322dfcac69d1042c8f9f7517cecf4903f8163 through reviewed head 70fd44d25e61f9931fcc6cb7d4bc369885ea0f10. Applied pr-merge-reviewer and db-transaction-reviewer after reading AGENTS, current authority index, governance/review contracts, packet, merged prerequisite results/integration, actual lifecycle/Compose/bootstrap and changed guards/tests. Older PASS and rejected reviews were not used as proof.",
+    "Governance only: exactly one fresh namespaced KL-074 NOT_STARTED definition with ten prospective checks and no requirement PASS. All prior backlog/traceability task definitions remain identical. Production source, Compose, DB/unit tests, existing CI, migrations, frozen files, requirement status, completed results and integrations are unchanged. Declared changed-file set exactly matches the protected-base diff.",
+    "Frozen T1-T8 boundaries, S51-before-S01 lock order, command owners, authorization, leases, fencing, ledger and outbox are not modified. postgres_lifecycle writers serialize; no transaction resource or shared database authority is granted. No network or model work enters coordination transactions.",
+    "The complete-byte lifecycle candidate is anchored to the unchanged baseline SHA256 and permits only explicit container 127.0.0.1:5432 readiness, remaining monotonic deadline passed to startup probe subprocesses, bounded backoff, optional timeout plumbing and sanitized non-replaying timeout errors. SQL/psql socket authentication, namespace derivation, credential ownership, DROP/CREATE order, execute_sql and destroy remain unchanged. Guard regressions reject direct SQL bypass, ownership mutation, foreign endpoints, SQL replay and deadline drift; Compose permits only the exact readiness healthcheck change.",
+    "Future actual-image oracle requires three fresh root-derived exact namespaces validated before reset, no preexisting owned resources, actual configured/resolved image and entrypoint provenance, timestamped init-start/init-stop/final TCP ordering, zero measured lifecycle SQL before readiness, current_database and migrated revision, existing bootstrap_two_phase on the identical selected lifecycle, reset sentinel removal, separation and finally cleanup absence. Missing causal proof is FAIL/NOT_RUN, not inferred PASS. These are prospective obligations; no Docker/PostgreSQL execution occurred in this review.",
+    "The six future implementation paths include only one additive exact-byte hosted workflow. It checks out the same-repository codex/kl074- PR head, verifies HEAD and GitHub-hosted Linux/default local Docker, rejects ambient Docker overrides, uses locked uv, bounded pipefail exact coldstart/full-suite commands and always-uploaded task-only raw artifacts. Existing workflows/gates remain immutable; actual downloaded provenance/run/job/head/attempt/artifact identity must bind tested_commit before KL-074 completion.",
+    "The permanent workflow-absence blocker is resolved: the actual positive hosted-entrypoint test accepts absent or installed exact authorized bytes and rejects installed drift. Independently invoked that actual test against a temporary root containing the exact proposal, then contents:write mutation; exact installation passed and mutation raised AssertionError. No repository workflow was installed or changed.",
+    "All eight selected check metadata and log headers bind protected base and tested_commit e8bb2b9034e2888761ea31ad38e22dd522644184 with exit 0. The tested-to-reviewed suffix contains only those evidence files and governance bookkeeping; executable guard/test/packet bytes are unchanged. Current index and all manifest SHA256 hashes were independently recomputed. The audit rerun verified merged prerequisites, append-only definitions, source/reference hashes and same-SHA failed/failed/success hosted log envelopes without treating the reference entrypoint as deployed-image proof.",
+    "Fresh local verification at reviewed head: focused readiness-scope tests 65 passed; full harness 440 passed; unit suite 207 passed; check-harness printed HARNESS_CHECK_PASS tasks=71 active=68; append-only audit printed HG037_AUDIT_PASS; protected-base diff whitespace check passed. Commands used existing /private/tmp/kl017-venv/bin/python with absolute src PYTHONPATH; no Docker or database was accessed."
+  ],
+  "known_limitations": [
+    "All ten KL-074 implementation checks remain NOT_RUN; actual deployed-image provenance/causal ordering, coldstarts, migrated PostgreSQL execution, cleanup and exact-head hosted full-suite execution remain future task obligations.",
+    "This PASS approves HG-037 governance boundaries only. It does not establish task/product/release PASS, production activation, or future KL-074 independent review.",
+    "Local uv was unavailable; inspected recorded lint/typecheck evidence and independently reran focused/harness/unit/audit/check-harness with the existing virtualenv. Normal hosted locked-uv CI and applicable merge gates remain separate obligations."
+  ]
+}

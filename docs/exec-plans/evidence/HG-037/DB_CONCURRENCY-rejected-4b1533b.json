@@ -1,0 +1,56 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-037",
+  "reviewed_head_sha": "4b1533bc6bf2052d859e2b079116e0d408013f43",
+  "review_type": "DB_CONCURRENCY",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "priority": "P1",
+      "title": "Startup normalization permits namespace replacement and direct SQL",
+      "file": "tools/harness/validate_harness.py",
+      "line": 3671,
+      "observation": "The guard replaces the entire candidate start method with its baseline AST before comparing the lifecycle, and checks only four attribute call names beforehand. Independently evaluating the committed guard against a minimally TCP-aligned baseline plus either self.namespace = DatabaseNamespace(project_name=\"foreign\", database_name=\"postgres\") or self._runner([\"psql\", \"--command\", \"DROP DATABASE foreign;\"]) inside start returned an empty error list for each. The first candidate redirects the unchanged reset DROP/CREATE to a foreign/default target; the second bypasses readiness and SQL ownership entirely.",
+      "required_change": "Constrain candidate start structurally to bounded readiness and normal Compose startup plumbing. Reject namespace/credential/ownership changes and direct runner or alternate SQL calls inside start, and add negative committed-blob scope regressions for both demonstrated bypasses. Preserve the ability to implement the required monotonic deadline and bounded probes."
+    },
+    {
+      "severity": "BLOCKER",
+      "priority": "P1",
+      "title": "Unused loopback literal can conceal a foreign startup endpoint",
+      "file": "tools/harness/validate_harness.py",
+      "line": 3668,
+      "observation": "Startup TCP validation searches unparsed method text for endpoint substrings rather than checking the actual readiness command arguments. Independently changing the first startup host argument from 127.0.0.1 to foreign while adding unused_host = \"127.0.0.1\" inside start caused the exact committed guard to return an empty error list. Post-reset endpoint checking remains structural, but startup checking does not enforce the packet's container-loopback prerequisite.",
+      "required_change": "Inspect the actual startup pg_isready compose command and require exactly one host/port pair targeting 127.0.0.1:5432. Reject malformed, foreign, socket-only and hidden-literal candidates with meaningful negative tests."
+    },
+    {
+      "severity": "NONBLOCKING",
+      "title": "Packet and evidence otherwise preserve the database safety boundary",
+      "observation": "The committed diff appends only fresh NOT_STARTED harness-backlog-v0.2/KL-074, preserving every existing backlog and traceability task, completed KL002 artifacts, lifecycle/Compose/runtime/DB tests, migrations, frozen files and requirement state. KL074's exact write paths and postgres_lifecycle resource do not overlap KL019 transaction resources or fixture writes. Its nine contracts require bounded probe subprocesses, no destructive SQL replay, unchanged socket psql/authentication, exact ownership before reset, same-lifecycle existing bootstrap_two_phase migrations, three isolated actual-image cold starts with provenance and timestamped ordering, cleanup absence, and dedicated hosted VM Docker for unchanged full legacy regressions. No T1-T8, SafetyRegistry/S01 locking, authorization, product PASS, release closure or production activation claim is introduced. These observations do not close the mechanical guard blockers or approve a future implementation."
+    },
+    {
+      "severity": "NONBLOCKING",
+      "title": "Independent evidence and revision checks",
+      "observation": "Independently checked committed base 822322dfcac69d1042c8f9f7517cecf4903f8163 to tested 87ff1dc6235140d1481003da79107296d720870a to reviewed 4b1533bc6bf2052d859e2b079116e0d408013f43 linear ancestry, exact declared changed paths, and all eight recorded check logs' revision headers/exit-zero markers. Retained source hashes and raw log-envelope hashes match. Same-SHA hosted attempts show two missing-socket reset setup failures followed by success; the packet correctly treats this as intermittent supporting evidence and labels actual deployed image/entrypoint causal proof NOT_VERIFIED and all future checks NOT_RUN. Local readiness scope tests passed 29/29 before corrections. The selected validator independently derived only changed KL074 and required review union GENERAL plus DB_CONCURRENCY; its terminal errors were missing required reviews and a concurrently dirty working tree, so no selected merge-gate PASS is claimed. All blocker reproductions were rerun from exact reviewed Git blobs in memory, independently of subsequent worktree edits. Docker and PostgreSQL were not executed."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-037.yaml",
+    "docs/exec-plans/active/KL-074.md",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_readiness_scope.py",
+    "docs/exec-plans/evidence/HG-037/READINESS_EVIDENCE.md",
+    "docs/exec-plans/evidence/HG-037/preparation-provenance.json",
+    "docs/exec-plans/evidence/HG-037/append_only_provenance_audit-87ff1dc.log",
+    "docs/exec-plans/evidence/HG-037/readiness_scope_regressions-87ff1dc.log",
+    "docs/exec-plans/evidence/HG-037/harness_validation-87ff1dc.log",
+    "src/kineticloop/db/lifecycle.py",
+    "compose.yaml",
+    "tests/db/test_lifecycle.py",
+    "tests/db/test_migrations.py",
+    "docs/exec-plans/active/KL-019.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+    "docs/harness/MERGE_GATE.md"
+  ],
+  "review_contract_version": "v0.2"
+}

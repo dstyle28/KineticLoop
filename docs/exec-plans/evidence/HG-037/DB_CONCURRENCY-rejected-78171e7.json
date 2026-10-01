@@ -1,0 +1,51 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-037",
+  "reviewed_head_sha": "78171e730daad732ea7fc55c5dfd90e40cdfd80d",
+  "review_type": "DB_CONCURRENCY",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "classification": "BLOCKER",
+      "title": "Mandatory hosted full suite rejects the mandatory additive workflow",
+      "file": "tests/harness/test_readiness_scope.py",
+      "line": 216,
+      "description": "test_hosted_entrypoint_positive_revision_commands_and_transport unconditionally asserts that .github/workflows/kl074-readiness.yml does not exist. KL074 is required to create that exact file and then run uv run pytest -q -p no:cacheprovider on its exact PR head; the normal test-harness CI command also includes this test. The six-path KL074 scope does not permit changing tests/harness/test_readiness_scope.py. The new hosted execution contract therefore cannot pass its mandatory full-suite and normal harness gates under its authorized implementation scope. All 63 tests pass on the governance-only tree, but independent in-memory simulation of only the mandated workflow presence reproduces AssertionError at line 216 without Docker, SQL, or filesystem mutations.",
+      "required_change": "Correct the governance harness regression before ratification so it accepts both the governance-only absent workflow and the future present workflow only when its complete bytes match the ratified hash. Add meaningful positive and negative coverage for the present-file case, rerun revision-bound checks, and obtain fresh SHA-bound reviews."
+    },
+    {
+      "classification": "NONBLOCKING",
+      "title": "Readiness source candidate preserves DB command ownership and transaction semantics",
+      "description": "Independent comparison of the complete-byte candidate with unchanged lifecycle.py confirms only bounded readiness runner plumbing, explicit container 127.0.0.1:5432 startup/post-reset probes, deadline-bounded backoff and sanitized non-replaying TimeoutExpired handling. _psql socket/authentication path, ON_ERROR_STOP, DROP then CREATE sequencing, worktree namespace derivation, credential environment, connection and destroy methods remain unchanged. The candidate is anchored to the exact baseline hash; endpoint, ownership, SQL bypass, retry and timeout mutations fail closed. Compose permits only the ratified healthcheck test semantic change. No production code, migration, T1-T8 boundary, SafetyRegistry/S01 lock ordering, authorization or product requirement changes occur in this governance diff."
+    },
+    {
+      "classification": "NONBLOCKING",
+      "title": "Real-image, migration and cleanup evidence remains prospective",
+      "description": "KL074 remains NOT_STARTED with no requirement PASS and ten future checks explicitly NOT_RUN. Its deterministic runner/clock oracle must fail old code; its actual-image oracle additionally requires deployed image/entrypoint identity and timestamped socket-init/stop/final-TCP ordering with zero early SQL. Three fresh root-derived task namespaces reject preexisting, ambient, default and foreign targets before reset/bootstrap/cleanup. Existing bootstrap_two_phase(lifecycle) resets and migrates the same lifecycle; the packet requires exact current_database/revision, repeated-reset sentinel removal, isolation and finally cleanup absence. Full legacy DB suites require dedicated job-owned Docker. No real Docker/PostgreSQL or shared database activity was performed in this review; these guarantees must be proved by future KL074 evidence and are not inferred from governance tests or upstream source."
+    },
+    {
+      "classification": "NONBLOCKING",
+      "title": "Hosted entrypoint and evidence transport are constrained but blocked by the harness contradiction",
+      "description": "The prospective workflow is a single additive exact-byte file on same-repository codex/kl074- PR events, with explicit head-SHA checkout, locked uv, fresh GitHub-hosted Linux runner and default local socket Docker preflight. Coldstart and exact full repository commands preserve exit status with pipefail and finite step/job limits; always-uploaded task-only artifacts retain failure evidence. The packet requires downloaded raw logs, event/job/head/run-attempt/artifact identities bound to tested_commit before final result/review and rejects missing, skipped or mismatched execution. Existing CI workflows remain unchanged. The source guard and 16 meaningful workflow mutations reject endpoint, revision, permission, scope, command, timeout and transport drift. These are prospective contracts; no hosted KL074 PASS has been claimed."
+    },
+    {
+      "classification": "NONBLOCKING",
+      "title": "Committed governance evidence is bound to the tested revision",
+      "description": "Reviewed the committed b82c41d readiness regression envelope/log and governance checks rather than prior reviewer conclusions. The log binds protected base 822322d and tested b82c41d and reports 63 passed; independently reran the same 63 scope regressions successfully on reviewed tree with cacheprovider disabled. The tested-to-reviewed diff contains only HG037 evidence envelopes/logs and its governance record, so no hidden readiness implementation or CI change occurred after testing. The passing governance-only run does not test the mandatory future workflow presence and cannot close the blocker."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-074.md",
+    "docs/exec-plans/governance/HG-037.yaml",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_readiness_scope.py:216",
+    "src/kineticloop/db/lifecycle.py",
+    "tests/db/test_migrations.py:262",
+    "docs/exec-plans/evidence/HG-037/kl074-readiness.workflow.proposal.yml",
+    "docs/exec-plans/evidence/HG-037/HOSTED_EXECUTION_PREFLIGHT.md",
+    "docs/exec-plans/evidence/HG-037/READINESS_EVIDENCE.md",
+    "docs/exec-plans/evidence/HG-037/readiness_scope_regressions-b82c41d.json",
+    "docs/exec-plans/evidence/HG-037/readiness_scope_regressions-b82c41d.log",
+    "docs/exec-plans/evidence/HG-037/append_only_provenance_audit-b82c41d.log"
+  ],
+  "review_contract_version": "v0.2"
+}
