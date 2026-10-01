@@ -1,0 +1,46 @@
+TASK harness-backlog-v0.2/KL-075
+TESTED_COMMIT bccbb6c98eb70980c24efa47abccda6caaa85452
+COMMAND uv run pytest -q tests/db/test_planning_progress.py::test_current_guard_denials
+PYTEST_ADDOPTS=-s --junitxml=<own evidence XML>; raw assertion and collection evidence
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+PROGRESS_EVIDENCE {"bootstrap_elapsed": 2.8673167501110584, "compose": "kineticloop-kl075-progress-bccbb6c-cb2e4202e692", "database": "kineticloop_kl075_progress_bccbb6c_cb2e4202e692", "kind": "namespace", "migration": "e8c2f1a6b904", "nested_routes": ["bootstrap_two_phase(selected_lifecycle)", "reset", "start", "connection", "seed_reset", "finally_destroy"], "resolved_root": "/Users/davetian/.codex/worktrees/11ad/KineticLoop", "tested_commit": "bccbb6c98eb70980c24efa47abccda6caaa85452"}
+PROGRESS_EVIDENCE {"case": "owner", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "fence", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "revision", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "request", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "attempt", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "manifest", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "epoch", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "policy", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "environment", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "principal", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "subject", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "terminal_attempt", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "terminal_root", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "takeover", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "lease_expired", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "deadline_expired", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "control", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "request_changed", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"case": "manifest_changed", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"bound": "manifest.valid_until", "kind": "AFTER_DC", "observed_now": "2026-10-01 07:01:42.698062+00:00", "valid_until": "2026-10-01 07:01:42.695757+00:00"}
+PROGRESS_EVIDENCE {"case": "manifest_expired", "kind": "guard_denial", "no_effect": true}
+.PROGRESS_EVIDENCE {"advance": {"attempt_id": "9bcfdebc-f99c-4127-a262-c1abea57a8dd", "executable": false, "lock_trace": [[20, "S01"], [40, "S27:d90464f8-89b0-4b70-a9f1-5baa31107514"], [80, "S02:test:8810bfd6-bfe5-44b0-8fa5-cd589ef446f2:AdvanceAttempt:advance:FITNESS"], [90, "S29:9bcfdebc-f99c-4127-a262-c1abea57a8dd"]], "snapshot_id": "a0d96039-8a77-49f9-913f-1f156f86a9f4", "state": "FITNESS"}, "case": "lease_before", "kind": "BEFORE_DC", "snapshot": {"attempt_id": "9bcfdebc-f99c-4127-a262-c1abea57a8dd", "executable": false, "lock_trace": [[20, "S01"], [40, "S27:d90464f8-89b0-4b70-a9f1-5baa31107514"], [80, "S02:test:8810bfd6-bfe5-44b0-8fa5-cd589ef446f2:RecordSnapshot:denied_snapshot"], [90, "S29:9bcfdebc-f99c-4127-a262-c1abea57a8dd"]], "snapshot_id": "b71689fa-fd73-43b4-a076-ed9b2d15e8e3", "state": "BUILDING_CONTEXT"}}
+.PROGRESS_EVIDENCE {"advance": {"attempt_id": "eb02ee95-12a9-4c32-b4ec-1ad7799bc40b", "executable": false, "lock_trace": [[20, "S01"], [40, "S27:8eb17059-72ae-41e3-a6d6-fae3594e2bd9"], [80, "S02:test:8810bfd6-bfe5-44b0-8fa5-cd589ef446f2:AdvanceAttempt:advance:FITNESS"], [90, "S29:eb02ee95-12a9-4c32-b4ec-1ad7799bc40b"]], "snapshot_id": "74082388-90b4-4583-8539-ff415a4ceade", "state": "FITNESS"}, "case": "deadline_before", "kind": "BEFORE_DC", "snapshot": {"attempt_id": "eb02ee95-12a9-4c32-b4ec-1ad7799bc40b", "executable": false, "lock_trace": [[20, "S01"], [40, "S27:8eb17059-72ae-41e3-a6d6-fae3594e2bd9"], [80, "S02:test:8810bfd6-bfe5-44b0-8fa5-cd589ef446f2:RecordSnapshot:denied_snapshot"], [90, "S29:eb02ee95-12a9-4c32-b4ec-1ad7799bc40b"]], "snapshot_id": "bdddf9a4-6516-4eb2-b249-d4b559a7d7b1", "state": "BUILDING_CONTEXT"}}
+.PROGRESS_EVIDENCE {"advance": {"attempt_id": "4bb81b9a-ba39-4f4b-abf6-b5e700f19d33", "executable": false, "lock_trace": [[20, "S01"], [40, "S27:0814104d-5549-463a-8427-0bab371c978f"], [80, "S02:test:8810bfd6-bfe5-44b0-8fa5-cd589ef446f2:AdvanceAttempt:advance:FITNESS"], [90, "S29:4bb81b9a-ba39-4f4b-abf6-b5e700f19d33"]], "snapshot_id": "93ea25b5-3b45-4eef-ad6d-ba1a2739f4c7", "state": "FITNESS"}, "case": "manifest_before", "kind": "BEFORE_DC", "snapshot": {"attempt_id": "4bb81b9a-ba39-4f4b-abf6-b5e700f19d33", "executable": false, "lock_trace": [[20, "S01"], [40, "S27:0814104d-5549-463a-8427-0bab371c978f"], [80, "S02:test:8810bfd6-bfe5-44b0-8fa5-cd589ef446f2:RecordSnapshot:denied_snapshot"], [90, "S29:4bb81b9a-ba39-4f4b-abf6-b5e700f19d33"]], "snapshot_id": "ffce6338-ea1a-43ff-81db-4f09e0de2e3e", "state": "BUILDING_CONTEXT"}}
+.PROGRESS_EVIDENCE {"blocking_observed": true, "bound": "lease_expires_at", "elapsed": 1.4986278750002384, "exact_equality": "PU_ONLY", "expiry": "2026-10-01 07:01:46.381298+00:00", "kind": "POST_LOCK_DC", "observed_now": "2026-10-01 07:01:46.381367+00:00", "operation": "snapshot", "result": "FenceLost"}
+.PROGRESS_EVIDENCE {"blocking_observed": true, "bound": "deadline", "elapsed": 1.5007903748191893, "exact_equality": "PU_ONLY", "expiry": "2026-10-01 07:01:48.385093+00:00", "kind": "POST_LOCK_DC", "observed_now": "2026-10-01 07:01:48.385970+00:00", "operation": "snapshot", "result": "FenceLost"}
+.PROGRESS_EVIDENCE {"blocking_observed": true, "bound": "lease_expires_at", "elapsed": 1.5097710830159485, "exact_equality": "PU_ONLY", "expiry": "2026-10-01 07:01:50.341909+00:00", "kind": "POST_LOCK_DC", "observed_now": "2026-10-01 07:01:50.350722+00:00", "operation": "advance", "result": "FenceLost"}
+.PROGRESS_EVIDENCE {"blocking_observed": true, "bound": "deadline", "elapsed": 1.50489787501283, "exact_equality": "PU_ONLY", "expiry": "2026-10-01 07:01:52.301379+00:00", "kind": "POST_LOCK_DC", "observed_now": "2026-10-01 07:01:52.308760+00:00", "operation": "advance", "result": "FenceLost"}
+.PROGRESS_EVIDENCE {"compose": "kineticloop-kl075-progress-bccbb6c-cb2e4202e692", "database": "kineticloop_kl075_progress_bccbb6c_cb2e4202e692", "destroy": "PASS", "elapsed": 25.722500208066776, "kind": "cleanup", "lock_timeout_ms": 8000, "remaining_resources": {"container": "", "network": "", "volume": ""}, "startup_timeout_seconds": 60, "statement_timeout_ms": 10000}
+
+- generated xml file: /Users/davetian/.codex/worktrees/11ad/KineticLoop/docs/exec-plans/evidence/KL-075/progress_current_guards_dc-bccbb6c.xml -
+27 passed in 26.08s

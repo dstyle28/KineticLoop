@@ -1,0 +1,161 @@
+task_identity: harness-backlog-v0.2/KL-075
+display_task_id: KL-075
+task_definition_version: v0.2
+base_commit: 74cd5b3c8782f4eefb8f98a3895407300990cc27
+tested_commit: 54867864fc69b7ecbc75ad644d3baa817434598f
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: Typed authenticated internal RecordSnapshot and AdvanceAttempt owners persist immutable S26 and
+  guarded frozen S29 progression without extending public commands, SQL owner grants, root budgets or
+  T1-T8. All thirteen exact packet checks pass, including fifty-six real PostgreSQL own-suite cases; product/release
+  obligations remain separate.
+commands_run:
+- check_id: progress_internal_identity_pu
+  command: uv run pytest -q tests/unit/workflow/test_planning_progress.py::test_internal_identity
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-075/progress_internal_identity_pu-5486786.log
+- check_id: progress_state_machine_pu
+  command: uv run pytest -q tests/unit/workflow/test_planning_progress.py::test_frozen_transitions
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-075/progress_state_machine_pu-5486786.log
+- check_id: progress_snapshot_dc
+  command: uv run pytest -q tests/db/test_planning_progress.py::test_snapshot_owner
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-075/progress_snapshot_dc-5486786.log
+- check_id: progress_time_boundary_pu
+  command: uv run pytest -q tests/unit/workflow/test_planning_progress.py::test_time_boundaries
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-075/progress_time_boundary_pu-5486786.log
+- check_id: progress_current_guards_dc
+  command: uv run pytest -q tests/db/test_planning_progress.py::test_current_guard_denials
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-075/progress_current_guards_dc-5486786.log
+- check_id: progress_atomicity_dc
+  command: uv run pytest -q tests/db/test_planning_progress.py::test_progress_atomicity
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-075/progress_atomicity_dc-5486786.log
+- check_id: progress_namespace_pu
+  command: uv run pytest -q tests/unit/workflow/test_planning_progress.py::test_namespace
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-075/progress_namespace_pu-5486786.log
+- check_id: progress_suite_dc
+  command: uv run pytest -q tests/db/test_planning_progress.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-075/progress_suite_dc-5486786.log
+- check_id: harness_validation_passes
+  command: uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-075/harness_validation_passes-5486786.log
+- check_id: unit_regressions_pass
+  command: uv run kl test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-075/unit_regressions_pass-5486786.log
+- check_id: harness_regressions_pass
+  command: uv run kl test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-075/harness_regressions_pass-5486786.log
+- check_id: lint_passes
+  command: uv run kl lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-075/lint_passes-5486786.log
+- check_id: typecheck_passes
+  command: uv run kl typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-075/typecheck_passes-5486786.log
+requirements_covered: []
+files_changed:
+- docs/contracts/planning_progress.md
+- docs/exec-plans/completed/KL-075_RESULT.yaml
+- docs/exec-plans/evidence/KL-075/assertions-5486786.json
+- docs/exec-plans/evidence/KL-075/assertions-bccbb6c.json
+- docs/exec-plans/evidence/KL-075/checks-5486786.json
+- docs/exec-plans/evidence/KL-075/checks-bccbb6c.json
+- docs/exec-plans/evidence/KL-075/entry.json
+- docs/exec-plans/evidence/KL-075/harness_regressions_pass-5486786.log
+- docs/exec-plans/evidence/KL-075/harness_regressions_pass-bccbb6c.log
+- docs/exec-plans/evidence/KL-075/harness_validation_passes-5486786.log
+- docs/exec-plans/evidence/KL-075/harness_validation_passes-bccbb6c.log
+- docs/exec-plans/evidence/KL-075/lint_passes-5486786.log
+- docs/exec-plans/evidence/KL-075/lint_passes-bccbb6c.log
+- docs/exec-plans/evidence/KL-075/progress_atomicity_dc-5486786.log
+- docs/exec-plans/evidence/KL-075/progress_atomicity_dc-5486786.xml
+- docs/exec-plans/evidence/KL-075/progress_atomicity_dc-bccbb6c.log
+- docs/exec-plans/evidence/KL-075/progress_atomicity_dc-bccbb6c.xml
+- docs/exec-plans/evidence/KL-075/progress_current_guards_dc-5486786.log
+- docs/exec-plans/evidence/KL-075/progress_current_guards_dc-5486786.xml
+- docs/exec-plans/evidence/KL-075/progress_current_guards_dc-bccbb6c.log
+- docs/exec-plans/evidence/KL-075/progress_current_guards_dc-bccbb6c.xml
+- docs/exec-plans/evidence/KL-075/progress_internal_identity_pu-5486786.log
+- docs/exec-plans/evidence/KL-075/progress_internal_identity_pu-5486786.xml
+- docs/exec-plans/evidence/KL-075/progress_internal_identity_pu-bccbb6c.log
+- docs/exec-plans/evidence/KL-075/progress_internal_identity_pu-bccbb6c.xml
+- docs/exec-plans/evidence/KL-075/progress_namespace_pu-5486786.log
+- docs/exec-plans/evidence/KL-075/progress_namespace_pu-5486786.xml
+- docs/exec-plans/evidence/KL-075/progress_namespace_pu-bccbb6c.log
+- docs/exec-plans/evidence/KL-075/progress_namespace_pu-bccbb6c.xml
+- docs/exec-plans/evidence/KL-075/progress_snapshot_dc-5486786.log
+- docs/exec-plans/evidence/KL-075/progress_snapshot_dc-5486786.xml
+- docs/exec-plans/evidence/KL-075/progress_snapshot_dc-bccbb6c.log
+- docs/exec-plans/evidence/KL-075/progress_snapshot_dc-bccbb6c.xml
+- docs/exec-plans/evidence/KL-075/progress_state_machine_pu-5486786.log
+- docs/exec-plans/evidence/KL-075/progress_state_machine_pu-5486786.xml
+- docs/exec-plans/evidence/KL-075/progress_state_machine_pu-bccbb6c.log
+- docs/exec-plans/evidence/KL-075/progress_state_machine_pu-bccbb6c.xml
+- docs/exec-plans/evidence/KL-075/progress_suite_dc-5486786.log
+- docs/exec-plans/evidence/KL-075/progress_suite_dc-5486786.xml
+- docs/exec-plans/evidence/KL-075/progress_suite_dc-bccbb6c.log
+- docs/exec-plans/evidence/KL-075/progress_suite_dc-bccbb6c.xml
+- docs/exec-plans/evidence/KL-075/progress_time_boundary_pu-5486786.log
+- docs/exec-plans/evidence/KL-075/progress_time_boundary_pu-5486786.xml
+- docs/exec-plans/evidence/KL-075/progress_time_boundary_pu-bccbb6c.log
+- docs/exec-plans/evidence/KL-075/progress_time_boundary_pu-bccbb6c.xml
+- docs/exec-plans/evidence/KL-075/rejected-DB_CONCURRENCY-0fccfe2.json
+- docs/exec-plans/evidence/KL-075/rejected-GENERAL-0fccfe2.json
+- docs/exec-plans/evidence/KL-075/rejected-PROTOCOL-0fccfe2.json
+- docs/exec-plans/evidence/KL-075/typecheck_passes-5486786.log
+- docs/exec-plans/evidence/KL-075/typecheck_passes-bccbb6c.log
+- docs/exec-plans/evidence/KL-075/unit_regressions_pass-5486786.log
+- docs/exec-plans/evidence/KL-075/unit_regressions_pass-bccbb6c.log
+- src/kineticloop/persistence/planning_progress.py
+- src/kineticloop/persistence/transactions.py
+- src/kineticloop/workflow/planning_progress.py
+- tests/db/test_planning_progress.py
+- tests/unit/workflow/test_planning_progress.py
+decisions:
+- Keep both owners INTERNAL_ONLY_OPERATIONS and PREPARATION descriptors. Generic execute_command/execute_preparation
+  reject them; only typed authenticated progress persistence grants one exact server-derived write. Public
+  39-owner descriptor/column fingerprint equals protected baseline.
+- AcquireLease owns current S27 fence/lease only. AdvanceAttempt explicitly verifies CREATED to LEASED
+  and records the actual fence before BUILDING_CONTEXT and frozen forward stages. Current guards reread
+  trusted time after S01/intent/receipt/attempt locks.
+- Capture full mandatory context outside coordination from exact immutable manifest/request/program/policy
+  inputs. Bind registered policy-selected RUNTIME builder version/hash, audit cutoff and bounded UTF8
+  byte accounting to the complete immutable context hash. Rebuilds append S26 sequence; AdvanceAttempt
+  alone binds S29 snapshot pointer.
+- Every stage preserves earlier source IDs/hashes. FITNESS/Demand/Nutrition/resolution/validation binding
+  mutants with self-consistent content hashes deny. Validation also binds current execution basis and
+  explicit semantic/envelope PASS; progression never issues authorization.
+- Exact equality evidence is PU over the actual predicates. Actual PostgreSQL before/after and four bounded
+  observed lock-wait crossings are separate DC evidence; no caller clock or production time seam.
+- Only own exact HEAD-first7/resolved-root SHA256-first12 progress namespace is constructed, bootstrapped,
+  reset, seeded and destroyed. Revalidate nested lifecycle and explicit current_database; cleanup inventories
+  containers/volumes/networks empty. No foreign legacy fixture lifecycle invoked.
+- Independent initial reviews required exact resolution action type and durable guard acceptance time.
+  Bind S36 action/query hash to the locked root purpose and active TEST_ONLY policy mapping, deny a self-consistent
+  wrong-action input, and commit the exact post-lock database timestamp in each progress event. Initial
+  CHANGES_REQUIRED records are preserved as superseded evidence; new checks/reviews close them.
+known_limitations:
+- Adapters accept isolated authenticated TEST identities only. No F/D/N engines, provider/model/network
+  work, production policy or execution expansion, migration or SQL permission changes.
+- Later-stage immutable fixtures are declared INPUT_ONLY guard instrumentation and not F/D/N completeness
+  evidence. KL076 remains responsible for composed preparation. Product, WF, E2E, release and production
+  autoactivation obligations are not claimed PASS.
+- Broader legacy DB regressions run only in unchanged hosted PostgreSQL CI on fresh ubuntu-latest. Required
+  independent reviews, final-head CI and protected selected-task merge gate are merge conditions, not
+  facts inferred from local task checks.
+- The immutable reviewed result retains integration_status UNMERGED and merge_commit null. Actual normal
+  merge is a separate Git integration fact.
+follow_up_tasks: []
+spec_change_request: null

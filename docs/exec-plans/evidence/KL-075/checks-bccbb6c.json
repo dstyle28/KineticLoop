@@ -1,0 +1,185 @@
+[
+  {
+    "check_id": "progress_internal_identity_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_planning_progress.py::test_internal_identity",
+    "result": "PASS",
+    "returncode": 0,
+    "tested_commit": "bccbb6c98eb70980c24efa47abccda6caaa85452",
+    "elapsed_seconds": 0.4800452501513064,
+    "counts": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "evidence_ref": "docs/exec-plans/evidence/KL-075/progress_internal_identity_pu-bccbb6c.log",
+    "sha256": "fa9ab609c7fc1fe67d6b0754ee25ae2640999aeaf1c0d1599fdab53ae04d8e1a"
+  },
+  {
+    "check_id": "progress_state_machine_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_planning_progress.py::test_frozen_transitions",
+    "result": "PASS",
+    "returncode": 0,
+    "tested_commit": "bccbb6c98eb70980c24efa47abccda6caaa85452",
+    "elapsed_seconds": 0.34763074992224574,
+    "counts": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "evidence_ref": "docs/exec-plans/evidence/KL-075/progress_state_machine_pu-bccbb6c.log",
+    "sha256": "4f397f32567f3107158f25ab43aa5f8a9a5ff7218d6193b815a4b79c5c0b7548"
+  },
+  {
+    "check_id": "progress_snapshot_dc",
+    "command": "uv run pytest -q tests/db/test_planning_progress.py::test_snapshot_owner",
+    "result": "PASS",
+    "returncode": 0,
+    "tested_commit": "bccbb6c98eb70980c24efa47abccda6caaa85452",
+    "elapsed_seconds": 4.746084792073816,
+    "counts": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "evidence_ref": "docs/exec-plans/evidence/KL-075/progress_snapshot_dc-bccbb6c.log",
+    "sha256": "75c711cbbfaa75bdb7a938cdd43a3eae13c80d2acae6da83bbef95ef5f845bf1"
+  },
+  {
+    "check_id": "progress_time_boundary_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_planning_progress.py::test_time_boundaries",
+    "result": "PASS",
+    "returncode": 0,
+    "tested_commit": "bccbb6c98eb70980c24efa47abccda6caaa85452",
+    "elapsed_seconds": 0.37469895789399743,
+    "counts": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "evidence_ref": "docs/exec-plans/evidence/KL-075/progress_time_boundary_pu-bccbb6c.log",
+    "sha256": "94d2d78f905f9e2336fb55a7e37cacaa6a4e26c3218d467e176dc4dfa92378ed"
+  },
+  {
+    "check_id": "progress_current_guards_dc",
+    "command": "uv run pytest -q tests/db/test_planning_progress.py::test_current_guard_denials",
+    "result": "PASS",
+    "returncode": 0,
+    "tested_commit": "bccbb6c98eb70980c24efa47abccda6caaa85452",
+    "elapsed_seconds": 26.27834383281879,
+    "counts": {
+      "tests": 27,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "evidence_ref": "docs/exec-plans/evidence/KL-075/progress_current_guards_dc-bccbb6c.log",
+    "sha256": "3d99e8fc76751ab1f65a995e51161b6a8af0a6b8c17388617a41ec05af436236"
+  },
+  {
+    "check_id": "progress_atomicity_dc",
+    "command": "uv run pytest -q tests/db/test_planning_progress.py::test_progress_atomicity",
+    "result": "PASS",
+    "returncode": 0,
+    "tested_commit": "bccbb6c98eb70980c24efa47abccda6caaa85452",
+    "elapsed_seconds": 7.978370917029679,
+    "counts": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "evidence_ref": "docs/exec-plans/evidence/KL-075/progress_atomicity_dc-bccbb6c.log",
+    "sha256": "15fc0a737bf751b7028d68f2e1e16cf719e1728db77e45576ac0c97e286b5a46"
+  },
+  {
+    "check_id": "progress_namespace_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_planning_progress.py::test_namespace",
+    "result": "PASS",
+    "returncode": 0,
+    "tested_commit": "bccbb6c98eb70980c24efa47abccda6caaa85452",
+    "elapsed_seconds": 0.4707003750372678,
+    "counts": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "evidence_ref": "docs/exec-plans/evidence/KL-075/progress_namespace_pu-bccbb6c.log",
+    "sha256": "3dbc4dbcde65d65535a8991fe593b9ceb7647265fc1aa32c55ded542bc3c9fb9"
+  },
+  {
+    "check_id": "progress_suite_dc",
+    "command": "uv run pytest -q tests/db/test_planning_progress.py",
+    "result": "PASS",
+    "returncode": 0,
+    "tested_commit": "bccbb6c98eb70980c24efa47abccda6caaa85452",
+    "elapsed_seconds": 46.49552974989638,
+    "counts": {
+      "tests": 55,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "evidence_ref": "docs/exec-plans/evidence/KL-075/progress_suite_dc-bccbb6c.log",
+    "sha256": "2bd254268c93ac2d08030ed731a643fc025b93b9f908325051d4e5ca36b2cce3"
+  },
+  {
+    "check_id": "harness_validation_passes",
+    "command": "uv run kl check-harness",
+    "result": "PASS",
+    "returncode": 0,
+    "tested_commit": "bccbb6c98eb70980c24efa47abccda6caaa85452",
+    "elapsed_seconds": 79.58355566579849,
+    "counts": null,
+    "evidence_ref": "docs/exec-plans/evidence/KL-075/harness_validation_passes-bccbb6c.log",
+    "sha256": "a83d888638c88be7e52a2754a68589f667cb5fea9fc51be2dd0bf362c9c0bbdb"
+  },
+  {
+    "check_id": "unit_regressions_pass",
+    "command": "uv run kl test-unit",
+    "result": "PASS",
+    "returncode": 0,
+    "tested_commit": "bccbb6c98eb70980c24efa47abccda6caaa85452",
+    "elapsed_seconds": 74.72531862510368,
+    "counts": null,
+    "evidence_ref": "docs/exec-plans/evidence/KL-075/unit_regressions_pass-bccbb6c.log",
+    "sha256": "23c7e5b885ee2ce88f4844c04ae390c04fd457b85da7504e9c17eb118012f807"
+  },
+  {
+    "check_id": "harness_regressions_pass",
+    "command": "uv run kl test-harness",
+    "result": "PASS",
+    "returncode": 0,
+    "tested_commit": "bccbb6c98eb70980c24efa47abccda6caaa85452",
+    "elapsed_seconds": 239.8310909580905,
+    "counts": null,
+    "evidence_ref": "docs/exec-plans/evidence/KL-075/harness_regressions_pass-bccbb6c.log",
+    "sha256": "f598cd2075dee73cc36968ed9da6eae708d513900443ad1ee4f31a44b5956413"
+  },
+  {
+    "check_id": "lint_passes",
+    "command": "uv run kl lint",
+    "result": "PASS",
+    "returncode": 0,
+    "tested_commit": "bccbb6c98eb70980c24efa47abccda6caaa85452",
+    "elapsed_seconds": 0.10144720901735127,
+    "counts": null,
+    "evidence_ref": "docs/exec-plans/evidence/KL-075/lint_passes-bccbb6c.log",
+    "sha256": "9db8ce40df0e6d33fcea88a99a38240268dc4392030fc767ad5c57a473c5799a"
+  },
+  {
+    "check_id": "typecheck_passes",
+    "command": "uv run kl typecheck",
+    "result": "PASS",
+    "returncode": 0,
+    "tested_commit": "bccbb6c98eb70980c24efa47abccda6caaa85452",
+    "elapsed_seconds": 0.2168919169344008,
+    "counts": null,
+    "evidence_ref": "docs/exec-plans/evidence/KL-075/typecheck_passes-bccbb6c.log",
+    "sha256": "4193e1ad704c4a39dc9035c75993720c1c379d01c87c9ef6917c6d2128023103"
+  }
+]
