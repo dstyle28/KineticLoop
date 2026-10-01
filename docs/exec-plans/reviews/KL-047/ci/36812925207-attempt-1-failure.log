@@ -1,0 +1,91 @@
+kl-002-database	Unit, lint, and type checks	﻿2026-10-01T03:58:19.8582828Z ##[group]Run uv run kl lint
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:58:19.8583085Z ^[[36;1muv run kl lint^[[0m
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:58:19.8583283Z ^[[36;1muv run kl typecheck^[[0m
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:58:19.8583483Z ^[[36;1muv run pytest tests/db^[[0m
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:58:19.8639389Z shell: /usr/bin/bash -e {0}
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:58:19.8639597Z env:
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:58:19.8639802Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:58:19.8640053Z ##[endgroup]
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:58:20.2002255Z All checks passed!
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:58:27.9951182Z Success: no issues found in 116 source files
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:58:30.1952281Z ============================= test session starts ==============================
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:58:30.1953139Z platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:58:30.1953823Z rootdir: /home/runner/work/KineticLoop/KineticLoop
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:58:30.1954523Z configfile: pyproject.toml
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:58:30.1955319Z collected 244 items
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:58:30.1955639Z 
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:58:56.7756549Z tests/db/test_artifact_registry.py ................                      [  6%]
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:59:43.5775917Z tests/db/test_call_ledger.py ......                                      [  9%]
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:59:43.5855947Z tests/db/test_cli.py ..                                                  [  9%]
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:59:50.5709335Z tests/db/test_factsets.py .......                                        [ 12%]
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:59:55.5749079Z tests/db/test_immutability.py ...                                        [ 13%]
+kl-002-database	Unit, lint, and type checks	2026-10-01T03:59:55.5821833Z tests/db/test_lifecycle.py ......                                        [ 16%]
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:01:42.5239213Z tests/db/test_migrations.py ..........................                   [ 27%]
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:02:20.6632948Z tests/db/test_planning.py .....E                                         [ 29%]
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:02:20.7055902Z tests/db/test_result_writer.py .                                         [ 29%]
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:03:15.2049489Z tests/db/test_safety_registry.py ....................................... [ 45%]
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:03:19.9006366Z ......                                                                   [ 48%]
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:03:19.9590810Z tests/db/test_secret_output.py ......................................... [ 65%]
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:03:19.9699660Z ........                                                                 [ 68%]
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:03:35.3933426Z tests/db/test_subject_scope.py .....................                     [ 77%]
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:03:43.0522227Z tests/db/test_transaction_interfaces.py ................................ [ 90%]
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.0515905Z .......................                                                  [ 99%]
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3590626Z tests/db/test_workflow.py .                                              [100%]
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3591542Z 
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3591928Z ==================================== ERRORS ====================================
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3592600Z ______________ ERROR at setup of test_command_identity_namespaces ______________
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3593181Z 
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3593445Z     @pytest.fixture()
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3593945Z     def database_urls() -> Iterator[dict[str, str]]:
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3594425Z         short = subprocess.check_output(
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3595281Z             ["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, text=True
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3595630Z         ).strip()
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3595885Z         lifecycle = DatabaseLifecycle(ROOT)
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3596245Z         lifecycle.namespace = _planning_namespace(short)
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3597065Z         try:
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3597360Z >           urls = _MIGRATIONS.bootstrap_two_phase(lifecycle)
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3597738Z                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3597965Z 
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3598088Z tests/db/test_planning.py:88: 
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3598450Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3598902Z tests/db/test_migrations.py:263: in bootstrap_two_phase
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3599538Z     database = lifecycle.reset()
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3615170Z                ^^^^^^^^^^^^^^^^^
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3615434Z src/kineticloop/db/lifecycle.py:258: in reset
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3632174Z     self._psql(
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3632471Z src/kineticloop/db/lifecycle.py:232: in _psql
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3632813Z     return self._run(
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3633078Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3633287Z 
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3633472Z self = <kineticloop.db.lifecycle.DatabaseLifecycle object at 0x7f84671e88f0>
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3634078Z command = ['docker', 'compose', '--project-name', 'kineticloop-kl024-b03db33', '--file', '/home/runner/work/KineticLoop/KineticLoop/compose.yaml', ...]
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3634465Z 
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3634539Z     def _run(
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3634886Z         self,
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3635118Z         command: Sequence[str],
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3635398Z         *,
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3635612Z         check: bool = True,
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3635897Z     ) -> subprocess.CompletedProcess[str]:
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3636196Z         try:
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3636421Z             return self._runner(
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3636688Z                 list(command),
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3636947Z                 cwd=self.root,
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3637207Z                 env=self.environment,
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3637496Z                 check=check,
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3637769Z                 capture_output=True,
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3638042Z                 text=True,
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3638279Z             )
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3638525Z         except FileNotFoundError as error:
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3638846Z             raise DatabaseLifecycleError(
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3639288Z                 "Docker with the Compose plugin is required for the local test database."
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3639720Z             ) from error
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3640033Z         except subprocess.CalledProcessError as error:
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3640514Z             details = Redactor((self.user, self.password)).exception_diagnostic(error)
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3641123Z >           raise DatabaseLifecycleError(f"database command failed: {details}") from None
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3644166Z E           kineticloop.db.lifecycle.DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 2 (returncode=2; command=['docker', 'compose', '--project-name', '[REDACTED]-kl024-b03db33', '--file', '/home/runner/work/KineticLoop/KineticLoop/compose.yaml', 'exec', '--no-TTY', 'postgres', 'psql', '--username', '[REDACTED]', '--dbname', 'postgres', '--set', 'ON_ERROR_STOP=1', '--tuples-only', '--no-align', '--command', 'DROP DATABASE IF EXISTS "[REDACTED]_kl024_b03db33" WITH (FORCE);']; stdout=''; stderr='psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: No such file or directory\n\tIs the server running locally and accepting connections on that socket?\n')
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3652097Z 
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3652312Z src/kineticloop/db/lifecycle.py:197: DatabaseLifecycleError
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3652799Z =========================== short test summary info ============================
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3656271Z ERROR tests/db/test_planning.py::test_command_identity_namespaces - kineticloop.db.lifecycle.DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 2 (returncode=2; command=['docker', 'compose', '--project-name', '[REDACTED]-kl024-b03db33', '--file', '/home/runner/work/KineticLoop/KineticLoop/compose.yaml', 'exec', '--no-TTY', 'postgres', 'psql', '--username', '[REDACTED]', '--dbname', 'postgres', '--set', 'ON_ERROR_STOP=1', '--tuples-only', '--no-align', '--command', 'DROP DATABASE IF EXISTS "[REDACTED]_kl024_b03db33" WITH (FORCE);']; stdout=''; stderr='psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: No such file or directory\n\tIs the server running locally and accepting connections on that socket?\n')
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.3659781Z =================== 243 passed, 1 error in 333.70s (0:05:33) ===================
+kl-002-database	Unit, lint, and type checks	2026-10-01T04:04:02.5911768Z ##[error]Process completed with exit code 1.
