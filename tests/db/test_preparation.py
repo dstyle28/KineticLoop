@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import re
 import subprocess
 import time
 from collections.abc import Iterator, Mapping
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import replace
+from dataclasses import asdict, replace
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from threading import Event
@@ -343,7 +344,259 @@ def pipeline(db: Any, seed: dict[str, Any], key: str) -> tuple[Any, Any, Any, An
     )
     build = api.build_manifest(request)
     ready = api.complete_manifest(CompleteManifest(UUID(build["build_id"])))
+    assert_prepared_rows(db, seed, record, projection, request, ready)
     return record, projection, request, ready
+
+
+def json_value(value: Any) -> Any:
+    return json.loads(json.dumps(value, default=str))
+
+
+def assert_prepared_rows(
+    db: Any,
+    seed: dict[str, Any],
+    record: RecordProjection,
+    projection: Mapping[str, Any],
+    request: BuildManifest,
+    ready: Mapping[str, Any],
+) -> None:
+    """Independently read source/output rows and recompute the canonical candidate proofs."""
+    from kineticloop.protocol.authorization import canonical_certificate_timestamp
+
+    source = record.source
+    subject = seed["identity"].subject_id
+    with db.transaction():
+        actual_source = db.execute(
+            "SELECT f.status,f.membership_digest,f.typed_payload,f.ref_s20_id,m.ref_s19_id "
+            "FROM kineticloop.factset_revisions f LEFT JOIN kineticloop.exercise_mapping_decisions m "
+            "ON m.subject_id=f.subject_id AND m.id=f.ref_s20_id WHERE f.subject_id=%s AND f.id=%s",
+            (subject, source.factset_id),
+        ).fetchone()
+        assert actual_source is not None and actual_source[0] == "SEALED"
+        assert source.source_hash == digest(json_value([str(source.factset_id), *actual_source]))
+        assert actual_source[2]["captured_epoch"] == source.epoch
+        assert actual_source[2]["captured_input_frontier"] == source.frontier
+        assert actual_source[2]["program_revision_id"] == str(source.program_id)
+        assert actual_source[2]["policy_id"] == str(source.policy_id)
+        members = db.execute(
+            "SELECT ref_s14_id FROM kineticloop.factset_members WHERE subject_id=%s AND ref_s15_id=%s AND member_operation='SET' AND ref_s14_id IS NOT NULL",
+            (subject, source.factset_id),
+        ).fetchall()
+        assert {r[0] for r in members} == {
+            m.revision_id for m in seed["members"] if m.kind == "FACT"
+        }
+        projection_row = db.execute(
+            "SELECT row_to_json(r) FROM kineticloop.projection_versions r WHERE subject_id=%s AND id=%s",
+            (subject, UUID(projection["projection_id"])),
+        ).fetchone()[0]
+        assert projection_row["revision"] == 1
+        assert projection_row["projection_kind"] == record.kind
+        assert projection_row["valid_until"] == record.valid_until.isoformat()
+        assert projection_row["content_hash"] == digest(json_value(record.content))
+        assert projection_row["typed_payload"]["result"] == json_value(record.content)
+        canonical_deps = [
+            asdict(dep) for dep in sorted(record.dependencies, key=lambda d: (d.kind, d.key))
+        ]
+        expected_basis = digest(
+            json_value({"source": asdict(source), "dependencies": canonical_deps})
+        )
+        assert (
+            projection_row["input_basis_hash"] == projection["input_basis_hash"] == expected_basis
+        )
+        provenance = projection_row["typed_payload"]["preparation"]
+        assert provenance["version"] == "kl078-v1" and provenance["owner"] == seed["identity"].key
+        assert provenance["source"] == json_value(asdict(source))
+        assert provenance["engine"] == json_value(asdict(record.engine))
+        assert provenance["window"] == list(record.window)
+        canonical_request = json_value(asdict(record))
+        canonical_request["dependencies"] = json_value(canonical_deps)
+        assert provenance["request_hash"] == digest(canonical_request)
+        assert provenance["outcome"] == dict(projection)
+        dep_rows = [
+            r[0]
+            for r in db.execute(
+                "SELECT row_to_json(r) FROM kineticloop.projection_dependencies r WHERE subject_id=%s AND ref_s21_id=%s ORDER BY dependency_kind,dependency_semantic_key,id",
+                (subject, UUID(projection["projection_id"])),
+            ).fetchall()
+        ]
+        assert {(r["dependency_kind"], r["dependency_semantic_key"]) for r in dep_rows} == {
+            (d.kind, d.key) for d in record.dependencies
+        }
+        assert len(dep_rows) == len(record.dependencies)
+        assert sorted(r["id"] for r in dep_rows) == projection["dependency_ids"]
+        dependency_proofs = []
+        for row in dep_rows:
+            dep = next(
+                d
+                for d in record.dependencies
+                if (d.kind, d.key) == (row["dependency_kind"], row["dependency_semantic_key"])
+            )
+            expected = {
+                "ref_s05_id": str(source.policy_id) if dep.kind == "POLICY" else None,
+                "ref_s06_id": str(source.program_id) if dep.kind == "PROGRAM" else None,
+                "ref_s14_id": str(dep.fact_id) if dep.kind == "FACT" else None,
+                "ref_s15_id": str(source.factset_id)
+                if dep.kind in {"FACTSET", "COLLECTION"}
+                else None,
+                "ref_s19_id": str(source.catalog_id) if dep.kind == "CATALOG" else None,
+                "ref_s20_id": str(source.mapping_id) if dep.kind == "MAPPING" else None,
+            }
+            assert {key: row[key] for key in expected} == expected
+            assert row["ref_s21_id"] == projection["projection_id"] and row["subject_id"] == str(
+                subject
+            )
+            assert row["collection_signature"] == dep.collection
+            assert row["typed_payload"] == {
+                "source_hash": source.source_hash,
+                "window": list(record.window),
+                "collection_digest": source.source_hash if dep.collection else None,
+            }
+            dependency_proofs.append(
+                {
+                    "projection_id": projection["projection_id"],
+                    "kind": dep.kind,
+                    "key": dep.key,
+                    "collection": dep.collection,
+                    "policy": expected["ref_s05_id"],
+                    "program": expected["ref_s06_id"],
+                    "fact": expected["ref_s14_id"],
+                    "factset": expected["ref_s15_id"],
+                    "catalog": expected["ref_s19_id"],
+                    "mapping": expected["ref_s20_id"],
+                }
+            )
+        build_row = db.execute(
+            "SELECT row_to_json(r) FROM kineticloop.manifest_builds r WHERE subject_id=%s AND id=%s",
+            (subject, UUID(ready["build_id"])),
+        ).fetchone()[0]
+        assert build_row["status"] == "READY"
+        assert (
+            build_row["captured_epoch"] == source.epoch
+            and build_row["captured_input_frontier"] == source.frontier
+        )
+        assert (
+            build_row["ref_s05_id"],
+            build_row["ref_s06_id"],
+            build_row["ref_s15_id"],
+            build_row["ref_s21_id"],
+        ) == (
+            str(source.policy_id),
+            str(source.program_id),
+            str(source.factset_id),
+            projection["projection_id"],
+        )
+        candidate = build_row["typed_payload"]
+        policy = db.execute(
+            "SELECT typed_payload FROM kineticloop.policy_bundles WHERE subject_id=%s AND id=%s",
+            (subject, source.policy_id),
+        ).fetchone()[0]
+        assert {b["role"] for b in candidate["projection_bindings"]} == set(
+            policy["manifest_projection_requirements"]
+        )
+        assert candidate["projection_bindings"] == [
+            {"id": projection["projection_id"], "role": "EXPOSURE", "basis_hash": expected_basis}
+        ]
+        expected_dependency_hash = digest(
+            {
+                "projections": [
+                    {
+                        "id": projection["projection_id"],
+                        "role": "EXPOSURE",
+                        "projection_kind": record.kind,
+                        "validated_basis_hash": expected_basis,
+                        "dependencies": dependency_proofs,
+                    }
+                ],
+                "catalog_id": json_value(source.catalog_id),
+                "mapping_id": json_value(source.mapping_id),
+            }
+        )
+        assert (
+            candidate["dependency_basis_hash"]
+            == ready["dependency_basis_hash"]
+            == expected_dependency_hash
+        )
+        artifact_rows = db.execute(
+            "WITH RECURSIVE closure(id) AS (SELECT id FROM kineticloop.safety_artifacts WHERE id=ANY(%s) UNION SELECT e.dependency_artifact_id FROM closure c JOIN kineticloop.safety_artifact_dependencies e ON e.artifact_id=c.id) "
+            "SELECT a.id,a.artifact_kind,a.artifact_identity,a.artifact_version,a.content_hash,a.revision,a.validity_kind,a.valid_from,a.valid_until,a.timeless_approval_policy,a.timeless_approval_reason FROM closure c JOIN kineticloop.safety_artifacts a ON a.id=c.id ORDER BY a.id",
+            (list(request.artifact_roots),),
+        ).fetchall()
+        artifact_proofs = []
+        for r in artifact_rows:
+            edges = [
+                str(e[0])
+                for e in db.execute(
+                    "SELECT dependency_artifact_id FROM kineticloop.safety_artifact_dependencies WHERE artifact_id=%s ORDER BY dependency_artifact_id",
+                    (r[0],),
+                ).fetchall()
+            ]
+            artifact_proofs.append(
+                dict(
+                    zip(
+                        (
+                            "artifact_id",
+                            "artifact_kind",
+                            "artifact_identity",
+                            "artifact_version",
+                            "content_hash",
+                            "artifact_revision",
+                            "validity_kind",
+                            "valid_from",
+                            "valid_until",
+                            "timeless_approval_policy",
+                            "timeless_approval_reason",
+                        ),
+                        (
+                            str(r[0]),
+                            *r[1:7],
+                            canonical_certificate_timestamp(r[7], "from"),
+                            canonical_certificate_timestamp(r[8], "until") if r[8] else None,
+                            r[9],
+                            r[10],
+                        ),
+                        strict=True,
+                    )
+                )
+                | {"dependency_ids": edges}
+            )
+        assert candidate["artifact_closure_ids"] == [str(r[0]) for r in artifact_rows]
+        assert candidate["artifact_root_ids"] == sorted(map(str, request.artifact_roots))
+        assert (
+            candidate["artifact_dependency_closure_hash"]
+            == ready["artifact_dependency_closure_hash"]
+            == digest(artifact_proofs)
+        )
+        content_candidate = {
+            key: value
+            for key, value in candidate.items()
+            if key not in {"manifest_hash", "preparation"}
+        }
+        assert (
+            candidate["manifest_hash"]
+            == ready["manifest_hash"]
+            == digest({"source": json_value(asdict(source)), **content_candidate})
+        )
+        assert candidate["preparation"]["owner"] == seed["identity"].key
+        assert candidate["preparation"]["request"] == json_value(asdict(request))
+        assert candidate["preparation"]["complete_outcome"] == dict(ready)
+    print(
+        "PERSISTED_PROOFS",
+        json.dumps(
+            {
+                "source": str(source.factset_id),
+                "source_hash": source.source_hash,
+                "projection": projection_row["id"],
+                "basis_hash": expected_basis,
+                "dependency_ids": [r["id"] for r in dep_rows],
+                "build": build_row["id"],
+                "dependency_basis_hash": expected_dependency_hash,
+                "artifact_closure_ids": candidate["artifact_closure_ids"],
+                "artifact_hash": digest(artifact_proofs),
+                "manifest_hash": candidate["manifest_hash"],
+            },
+            sort_keys=True,
+        ),
+    )
 
 
 def publication(
@@ -390,7 +643,14 @@ def state(db: Any, subject: UUID, *, preparation: bool = False) -> Any:
             ).fetchone()[0]
             for table in tables
         ]
-    return row, counts
+        rows = [
+            db.execute(
+                f"SELECT row_to_json(r) FROM kineticloop.{table} r WHERE subject_id=%s ORDER BY id",
+                (subject,),
+            ).fetchall()
+            for table in tables
+        ]
+    return row, counts, rows
 
 
 def history(db: Any, subject: UUID) -> Any:
@@ -520,6 +780,14 @@ def test_owner_pipeline(database_urls: dict[str, str]) -> None:
             (seed["engine"].artifact_id,),
         )
         building = api.build_manifest(build_request)
+        with db.transaction():
+            captured_build_result = db.execute(
+                "SELECT row_to_json(r) FROM kineticloop.manifest_builds r WHERE id=%s",
+                (UUID(building["build_id"]),),
+            ).fetchone()
+            assert captured_build_result is not None
+            captured_build = captured_build_result[0]
+        assert captured_build["status"] == "BUILDING"
         assert state(db, seed["identity"].subject_id) == before
         ready = api.complete_manifest(CompleteManifest(UUID(building["build_id"])))
         assert state(db, seed["identity"].subject_id) == before
@@ -532,6 +800,20 @@ def test_owner_pipeline(database_urls: dict[str, str]) -> None:
                 "SELECT count(*) FROM kineticloop.projection_dependencies WHERE ref_s21_id=%s",
                 (UUID(projection["projection_id"]),),
             ).fetchone() == (len(seed["deps"]),)
+        assert_prepared_rows(db, seed, record, projection, build_request, ready)
+        with db.transaction():
+            completed_build_result = db.execute(
+                "SELECT row_to_json(r) FROM kineticloop.manifest_builds r WHERE id=%s",
+                (UUID(building["build_id"]),),
+            ).fetchone()
+            assert completed_build_result is not None
+            completed_build = completed_build_result[0]
+        assert {
+            k: v for k, v in completed_build.items() if k not in {"status", "typed_payload"}
+        } == {k: v for k, v in captured_build.items() if k not in {"status", "typed_payload"}}
+        ready_payload = json_value(completed_build["typed_payload"])
+        ready_payload["preparation"].pop("complete_outcome")
+        assert ready_payload == captured_build["typed_payload"]
         result = ProtocolExecutionService(db, seed["identity"]).publish(
             publication(seed, build_request, ready, "publish")
         )
@@ -540,6 +822,58 @@ def test_owner_pipeline(database_urls: dict[str, str]) -> None:
         assert after[1][5:] == before[1][5:]
         assert after[0][0]["current_manifest_id"] == result["manifest_id"]
         assert after[0][0]["decision_generation"] == before[0][0]["decision_generation"] + 1
+        with db.transaction():
+            manifest_result = db.execute(
+                "SELECT row_to_json(r) FROM kineticloop.decision_manifests r WHERE id=%s",
+                (UUID(result["manifest_id"]),),
+            ).fetchone()
+            assert manifest_result is not None
+            manifest = manifest_result[0]
+            bindings = db.execute(
+                "SELECT projection_role,ref_s21_id,validated_basis_hash FROM kineticloop.manifest_projection_bindings WHERE ref_s24_id=%s",
+                (UUID(result["manifest_id"]),),
+            ).fetchall()
+            assert bindings == [
+                ("EXPOSURE", UUID(projection["projection_id"]), projection["input_basis_hash"])
+            ]
+            assert (
+                manifest["ref_s15_id"],
+                manifest["ref_s23_id"],
+                manifest["ref_s05_id"],
+                manifest["ref_s06_id"],
+            ) == (
+                str(source.factset_id),
+                ready["build_id"],
+                str(source.policy_id),
+                str(source.program_id),
+            )
+            assert manifest["manifest_hash"] == ready["manifest_hash"]
+            assert (
+                manifest["input_frontier_hash"] == source.frontier
+                and manifest["captured_epoch"] == source.epoch
+            )
+            assert manifest["dependency_closure_hash"] == digest(
+                {
+                    "dependency_basis_hash": ready["dependency_basis_hash"],
+                    "artifact_dependency_closure_hash": ready["artifact_dependency_closure_hash"],
+                }
+            )
+            assert db.execute(
+                "SELECT status FROM kineticloop.manifest_builds WHERE id=%s",
+                (UUID(ready["build_id"]),),
+            ).fetchone() == ("PUBLISHED",)
+            assert db.execute(
+                "SELECT status FROM kineticloop.command_receipts WHERE id=%s",
+                (UUID(result["receipt_id"]),),
+            ).fetchone() == ("SUCCEEDED",)
+            assert db.execute(
+                "SELECT ref_s02_id FROM kineticloop.domain_events WHERE id=%s",
+                (UUID(result["event_id"]),),
+            ).fetchone() == (UUID(result["receipt_id"]),)
+            assert db.execute(
+                "SELECT count(*) FROM kineticloop.outbox_deliveries WHERE subject_id=%s AND ref_s03_id=%s",
+                (seed["identity"].subject_id, UUID(result["event_id"])),
+            ).fetchone() == (1,)
         print("OWNER_OUTPUT", projection, ready, result)
 
 
@@ -861,6 +1195,7 @@ def test_duplicate_rollback(database_urls: dict[str, str], monkeypatch: pytest.M
                 assert duplicate_request is not None
                 raced_build = api.build_manifest(duplicate_request)
             pids: dict[str, int] = {}
+            old_history = history(db, seed["identity"].subject_id)
 
             def action(contender: Any) -> Any:
                 owner = PreparationService(contender, seed["identity"])
@@ -923,7 +1258,56 @@ def test_duplicate_rollback(database_urls: dict[str, str], monkeypatch: pytest.M
                     print("OBSERVED_LOCAL_BLOCKER", mode, pids)
                 finally:
                     release.set()
-                assert a.result(timeout=8) == b.result(timeout=8)
+                winner = a.result(timeout=8)
+                assert winner == b.result(timeout=8)
+            new_history = history(db, seed["identity"].subject_id)
+            old_by_table = [{r[0]["id"]: r[0] for r in rows} for rows in old_history]
+            new_by_table = [{r[0]["id"]: r[0] for r in rows} for rows in new_history]
+            for table_index, old_rows in enumerate(old_by_table):
+                for row_id, row in old_rows.items():
+                    if mode == "complete" and table_index == 2 and row_id == winner["build_id"]:
+                        compare = json_value(new_by_table[table_index][row_id])
+                        compare["status"] = "BUILDING"
+                        compare["typed_payload"]["preparation"].pop("complete_outcome")
+                        assert compare == row
+                    else:
+                        assert new_by_table[table_index][row_id] == row
+            if mode == "projection":
+                assert [len(rows) for rows in new_history] == [
+                    len(old_history[0]) + 1,
+                    len(old_history[1]) + len(duplicate_record.dependencies),
+                    len(old_history[2]),
+                ]
+                with db.transaction():
+                    assert db.execute(
+                        "SELECT count(*) FROM kineticloop.projection_versions WHERE id=%s",
+                        (UUID(winner["projection_id"]),),
+                    ).fetchone() == (1,)
+                    assert db.execute(
+                        "SELECT count(*) FROM kineticloop.projection_dependencies WHERE ref_s21_id=%s",
+                        (UUID(winner["projection_id"]),),
+                    ).fetchone() == (len(duplicate_record.dependencies),)
+                assert api.record_projection(duplicate_record) == winner
+                assert history(db, seed["identity"].subject_id) == new_history
+            elif mode == "build":
+                assert [len(rows) for rows in new_history] == [
+                    len(old_history[0]),
+                    len(old_history[1]),
+                    len(old_history[2]) + 1,
+                ]
+                with db.transaction():
+                    assert db.execute(
+                        "SELECT count(*) FROM kineticloop.manifest_builds WHERE id=%s",
+                        (UUID(winner["build_id"]),),
+                    ).fetchone() == (1,)
+                assert duplicate_request is not None
+                assert api.build_manifest(duplicate_request) == winner
+                assert history(db, seed["identity"].subject_id) == new_history
+            else:
+                assert [len(rows) for rows in new_history] == [len(rows) for rows in old_history]
+                assert api.complete_manifest(CompleteManifest(UUID(winner["build_id"]))) == winner
+                assert history(db, seed["identity"].subject_id) == new_history
+            print("PERSISTED_DUPLICATE_CLOSURE", mode, winner, [len(rows) for rows in new_history])
         assert before[1][5:10] == state(db, seed["identity"].subject_id)[1][5:10]
 
 

@@ -1,0 +1,134 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-078",
+  "reviewed_head_sha": "15a6c19d67d6c42ed43c1b16fff47aa65be3df76",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "findings": [
+    {
+      "id": "GENERAL-01",
+      "classification": "BLOCKER",
+      "priority": 1,
+      "title": "Denial assertions do not prove zero changed rows",
+      "file": "tests/db/test_preparation.py",
+      "line": 364,
+      "related_lines": [
+        546,
+        574,
+        587,
+        611,
+        632,
+        648,
+        691,
+        699,
+        930
+      ],
+      "body": "state(..., preparation=True) snapshots the full S01 row but only counts rows in preparation/publication/receipt/event/outbox and other target tables. Most basis and authentication denial cases compare this count snapshot, so changing an existing S21/S22/S23, S24/S25 or bookkeeping row without changing counts can pass. The preparation_basis_denials_dc oracle explicitly requires zero new rows/changed rows, and immutable history must remain intact. Use complete persisted-row snapshots for all relevant existing tables around each denial; history() already demonstrates full-row comparisons for only a subset of cases."
+    },
+    {
+      "id": "GENERAL-02",
+      "classification": "BLOCKER",
+      "priority": 1,
+      "title": "Positive pipeline lacks independent persisted hash/reference assertions",
+      "file": "tests/db/test_preparation.py",
+      "line": 499,
+      "related_lines": [
+        526,
+        530,
+        539
+      ],
+      "body": "test_owner_pipeline checks the stored S21 revision and S22 count, then checks T3 counts/pointer/generation. It does not independently derive and compare the persisted S21 content/basis/provenance, each S22 positive and collection/absence reference/window/signature, complete BUILDING and READY S23 candidate hashes/roles/artifact closure, or exact S24/S25 identities and refs from actual source rows. T3 success provides substantial guard coverage, but the packet additionally requires exact persisted hashes/refs/roles/artifact closure derived from the sealed admitted inputs. Assertions derived only from returned outcomes or production helper computations would not satisfy that independent oracle."
+    },
+    {
+      "id": "GENERAL-03",
+      "classification": "BLOCKER",
+      "priority": 1,
+      "title": "Duplicate contenders do not assert exact persisted immutable closure",
+      "file": "tests/db/test_preparation.py",
+      "line": 859,
+      "related_lines": [
+        924
+      ],
+      "body": "The three races observe pg_blocking_pids and require equal returned outcomes. After each race they do not assert exactly one corresponding immutable S21 result with complete S22 closure, exactly one S23 build/local READY transition, or unchanged byte-identical winner content. Equal API results alone cannot establish the preparation_duplicate_rollback_dc one-result/dependency-closure/build and no-overwrite oracle. Add exact persisted row sets/counts and immutable candidate comparisons after releasing each observed blocker."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-078.md",
+    "docs/exec-plans/completed/KL-078_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-078/entry.json",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/checks.json",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_suite_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_owner_pipeline_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_basis_denials_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_duplicate_rollback_dc.log",
+    "docs/exec-plans/evidence/KL-078/protocol-impact-c2816f6.json"
+  ],
+  "verification_notes": [
+    "Read root AGENTS.md, current index, exact packet and pr-merge-reviewer skill; reviewed relevant Protocol 5.3-5.6 and 6.1-6.9, frozen DB S15/S16/S21-S25, owner/lock/T3 clauses, acceptance 2-4 and HG040 preparation assessment.",
+    "Fresh private local clone checked out detached exact reviewed SHA. Independent private runtime/cache installed locked dependencies. No foreign legacy DB fixture lifecycle was invoked; existing test_migrations bootstrap_two_phase received the owned selected lifecycle.",
+    "Independently verified actual prerequisite KL017/KL019/KL022/KL023/KL074 PASS result hashes, required PASS review hashes and reviewed revisions, actual integration records, two-parent normal merges and ancestry to protected base. M2 closure PASS and absence of KL078 result/review/integration at base verified.",
+    "Independently verified all fourteen final committed commands exited zero; JUnit executed counts agree with result/check inventory and have zero skips/errors/failures. Superseded f331731 evidence is diagnostic only. tested_commit c2816f6 -> reviewed_head 15a6c19 changes only own result/evidence and preserves implementation/tests.",
+    "Scope stays in declared five application/test/contract paths plus task bookkeeping. Current indexed hashes checked. Frozen/metadata/wire/prerequisite/CI files remain byte-identical to protected base. All eight named publication/authentication/registry/seal/replay/subject-lock guard functions independently compared byte-for-byte with base.",
+    "Inspected immutable computation identity/conflict, source-derived refs, server-only revision injection, exact typed restricted insertion/completion plans, authenticated TEST registration, artifact binding/validity checks, local build ownership, no coordination locks and unchanged T3 owner guards. No separate implementation defect was reproduced; the blockers concern explicit acceptance assertions."
+  ],
+  "independent_reruns": {
+    "reviewed_sha": "15a6c19d67d6c42ed43c1b16fff47aa65be3df76",
+    "private_clone": "/private/tmp/kl078-general-review-15a6c19",
+    "runtime": "/private/tmp/kl078-general-runtime-15a6c19",
+    "cache": "/private/tmp/kl078-general-cache-15a6c19",
+    "namespace_pu_before_db": true,
+    "compose_project": "kineticloop-kl078-prep-15a6c19-595ea54abe9a",
+    "database": "kineticloop_kl078_prep_15a6c19_595ea54abe9a",
+    "migration_revision": "e8c2f1a6b904",
+    "commands": [
+      {
+        "command": "uv run --frozen pytest -q tests/unit/persistence/test_preparation.py",
+        "result": "PASS",
+        "executed": 3,
+        "skipped": 0,
+        "raw_log": "GENERAL-unit.log"
+      },
+      {
+        "command": "uv run --frozen pytest -q -s tests/db/test_preparation.py",
+        "result": "PASS",
+        "executed": 5,
+        "skipped": 0,
+        "elapsed_seconds": 19.55,
+        "cleanup": "All five owned lifecycle finally blocks reported CLEANUP_OK",
+        "raw_log": "GENERAL-db-rerun.log"
+      },
+      {
+        "command": "uv run --frozen kl test-unit",
+        "result": "PASS",
+        "executed": 219,
+        "skipped": 0,
+        "elapsed_seconds": 66.31,
+        "raw_log": "GENERAL-unit-regressions.log"
+      },
+      {
+        "command": "uv run --frozen kl lint",
+        "result": "PASS",
+        "raw_log": "GENERAL-lint.log"
+      },
+      {
+        "command": "uv run --frozen kl typecheck",
+        "result": "PASS",
+        "raw_log": "GENERAL-typecheck.log"
+      },
+      {
+        "command": "uv run --frozen kl check-harness",
+        "result": "PASS",
+        "oracle": "HARNESS_CHECK_PASS tasks=75 active=72",
+        "raw_log": "GENERAL-harness.log"
+      }
+    ],
+    "raw_prerequisite_and_evidence_audit": "GENERAL-evidence.log",
+    "diagnostics": "Initial sandbox DB attempt failed Docker socket permission before bootstrap; GENERAL-db.log is failure-only diagnostic. Escalated owned suite completed successfully. Initial locked dependency sync failed sandbox DNS and escalated private sync succeeded.",
+    "raw_logs_are_post_review_head": true
+  },
+  "merge_conditions": [
+    "Close BLOCKER findings with a new tested implementation/result revision and fresh independent GENERAL/PROTOCOL/DB_CONCURRENCY reviews.",
+    "Only task-scoped linear REVIEW_RECORD_ONLY files may follow a reviewed SHA; mechanically validate freshness before merge.",
+    "Unchanged hosted full legacy DB/quality CI and applicable selected task merge gate must pass at final PR head before normal merge. Review/task PASS does not establish product requirement or release PASS."
+  ]
+}

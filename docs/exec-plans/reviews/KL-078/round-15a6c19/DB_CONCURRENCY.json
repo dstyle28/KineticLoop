@@ -1,0 +1,77 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-078",
+  "reviewed_head_sha": "15a6c19d67d6c42ed43c1b16fff47aa65be3df76",
+  "review_type": "DB_CONCURRENCY",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "classification": "BLOCKER",
+      "title": "Persisted source/output closure oracle is not independently asserted",
+      "file": "tests/db/test_preparation.py",
+      "line": 526,
+      "check_id": "preparation_owner_pipeline_dc",
+      "detail": "The positive owner test reads only S21 revision and S22 row count before publication. Returned hashes are carried directly into PublishReady, and logs print owner-returned outcomes. The packet requires exact persisted hashes, references, roles and artifact closure derived from actual immutable inputs; the current test does not independently reconstruct and compare these persisted values. Actual T3 success exercises the current guard, but cannot independently detect a shared preparation/publication derivation mistake.",
+      "required_change": "Read complete persisted S15/S16/S21/S22/S23/S24/S25 provenance, basis references and policy role/artifact closure; independently reconstruct source, projection/dependency, candidate and artifact hashes from those immutable inputs and assert exact values and references."
+    },
+    {
+      "classification": "BLOCKER",
+      "title": "Denial snapshots do not prove zero changed rows",
+      "file": "tests/db/test_preparation.py",
+      "line": 367,
+      "check_id": "preparation_basis_denials_dc",
+      "detail": "state(preparation=True) stores the full S01 row but only counts the preparation, publication, receipt/event/outbox and authority tables. Most basis, identity and candidate denials compare this snapshot. A denial that modified an existing candidate/history/receipt/event row while keeping counts unchanged would satisfy these assertions, contrary to the required zero new rows/changed rows and immutable-history oracle.",
+      "required_change": "For each required denial compare stable complete row snapshots, including S21/S22/S23 and relevant S02/S03/S04/S24/S25 and authority rows, before and after; retain existing S01 comparisons and real owner-driven races."
+    },
+    {
+      "classification": "BLOCKER",
+      "title": "Duplicate contenders lack exact persisted cardinality/history assertions",
+      "file": "tests/db/test_preparation.py",
+      "line": 926,
+      "check_id": "preparation_duplicate_rollback_dc",
+      "detail": "The tests correctly establish local contention with bounded Events and pg_blocking_pids, then assert identical contender outcomes. They do not explicitly inspect the new S21 row and complete S22 closure, new S23 row/candidate, or unchanged previously committed preparation history after each duplicate race. Equal returned IDs alone do not fulfill the packet oracle of one immutable result/dependency closure/build with no overwrite.",
+      "required_change": "After each projection/build/completion race assert exactly one corresponding persisted S21/S23 identity, exact complete S22 semantic keys and references, unchanged immutable payload/candidate bytes, and zero unintended authority/receipt/event/outbox changes."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/completed/KL-078_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/checks.json",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_namespace_pu.log",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_owner_pipeline_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_basis_denials_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_immutable_replay_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_duplicate_rollback_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_no_authority_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_suite_dc.log"
+  ],
+  "review_contract_version": "v0.2",
+  "review_scope": [
+    "T3-PREPARATION immutable S21/S22 creation and exact local S23 BUILDING-to-READY completion",
+    "T3 publication current-basis/registry/time rechecks and shared S51 -> S01 ordering preserved",
+    "Exact SHA/resolved-root lifecycle validation before nested destructive operations"
+  ],
+  "independent_rerun": {
+    "clone": "/private/tmp/kl078-db-review-15a6c19",
+    "namespace_project": "kineticloop-kl078-prep-15a6c19-52ea0b52430e",
+    "namespace_database": "kineticloop_kl078_prep_15a6c19_52ea0b52430e",
+    "migration_revision": "e8c2f1a6b904",
+    "namespace_pu_before_first_lifecycle": true,
+    "named_db_selectors_passed": 5,
+    "full_db_suite_tests_passed": 5,
+    "unit_selectors_passed": 3,
+    "skipped": 0,
+    "xfail": 0,
+    "observations": [
+      "pg_blocking_pids confirms projection/build advisory contention and S23 completion row contention",
+      "Real owner-produced SEALED S15 -> atomic immutable S21/S22 -> locally completed S23 -> actual T3 publication",
+      "Injected failures after S21, midway S22, before/after READY, and after T3 S01 update fully roll back",
+      "Historical replay is byte-identical and does not repoint later published S01 head",
+      "S01 blocker does not block preparation; no S01/S51 preparation relation locks; unchanged actual T3 ordering and stale-basis denial"
+    ],
+    "raw_logs_adjacent": "DB_CONCURRENCY-*.log",
+    "cleanup_verified": true
+  },
+  "limits": [
+    "Hosted legacy PostgreSQL/quality and selected-task merge gates remain coordinator pre-merge obligations; no legacy/default DB fixture was run locally.",
+    "All independent selectors and full suite pass, but existing assertions do not yet satisfy the three exact packet oracles identified above. No transaction implementation flaw was demonstrated by this review."
+  ]
+}

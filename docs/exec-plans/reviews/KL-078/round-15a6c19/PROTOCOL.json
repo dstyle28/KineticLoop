@@ -1,0 +1,67 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-078",
+  "reviewed_head_sha": "15a6c19d67d6c42ed43c1b16fff47aa65be3df76",
+  "review_type": "PROTOCOL",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "findings": [
+    {
+      "id": "KL078-PROTOCOL-01",
+      "classification": "BLOCKER",
+      "file": "tests/db/test_preparation.py",
+      "line": 499,
+      "title": "Owner pipeline does not prove exact persisted source hash and provenance",
+      "body": "The preparation_owner_pipeline_dc oracle requires exact persisted hashes, references, roles and artifact closure derived from actual sealed inputs. test_owner_pipeline checks S21 revision, S22 row count, authority counts and publication pointer/generation, then prints values returned by the services. It never independently reads and checks the S15 source hash against S21 provenance/input identity, the complete S22 source references and collection/window payload, or the immutable S23 candidate/manifest source hash. Actual T3 independently validates dependency and artifact hashes, which is useful, but it does not independently validate the new preparation source hash or computation provenance. A consistently incorrect source hash returned by capture_source and used again by _verify_source would therefore satisfy the existing positive test and the arbitrary source_hash='foreign' denial. The committed OWNER_OUTPUT log is a returned-value record, not the missing persisted-source assertion. Add independent assertions from actual persisted S15/S16/source identities through S21/S22/S23 and S24/S25, preserving the unchanged T3 guard, then rerun the named selector and full suite on a new tested revision.",
+      "authority": ["docs/exec-plans/active/KL-078.md:preparation_owner_pipeline_dc", "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:S21-S25", "05_KineticLoop_Protocol_v1.2_FROZEN.md:4.1-4.4"]
+    },
+    {
+      "id": "KL078-PROTOCOL-02",
+      "classification": "BLOCKER",
+      "file": "tests/db/test_preparation.py",
+      "line": 367,
+      "title": "Denial assertions cannot detect changed preparation or target rows",
+      "body": "preparation_basis_denials_dc explicitly requires zero new rows and zero changed rows, including the existing prepared candidate and publication targets. state(..., preparation=True) captures the S01 row and row counts only. The denial cases at lines 574-641 and expiry/revocation cases at lines 691-700 compare this state, so a rejected attempt that changes S21 provenance, replaces an S22 value, alters S23 candidate/status, or changes an existing receipt/event/outbox/target payload without changing counts is invisible to these assertions. The immutable-replay test does compare complete preparation history, but that does not establish the independent denial oracle. Snapshot and compare complete relevant persisted rows before/after each denied owner/T3 operation, alongside the existing S01/count checks, and retain the raw assertions in new acceptance evidence.",
+      "authority": ["docs/exec-plans/active/KL-078.md:preparation_basis_denials_dc", "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:S21-S23", "05_KineticLoop_Protocol_v1.2_FROZEN.md:4.4"]
+    },
+    {
+      "id": "KL078-PROTOCOL-03",
+      "classification": "BLOCKER",
+      "file": "tests/db/test_preparation.py",
+      "line": 926,
+      "title": "Duplicate contender proof stops at equal returned outcomes",
+      "body": "preparation_duplicate_rollback_dc requires one immutable projection/dependency closure/build and no overwrite under the observed duplicate contention. The test correctly establishes bounded event barriers and observed pg_blocking_pids for projection, build and completion contenders, but its post-race assertion compares the two returned outcomes only. The final assertion checks downstream authority counts, not exact S21/S22/S23 persisted identities, counts, closure contents or preserved READY candidate. Equal historical results can coexist with extra persisted rows or a same-count overwrite, so the required database result is not asserted. After each contention, read and assert exactly the expected natural identity and dependency closure, exactly one build where relevant, and byte-equivalent candidate/history for completion and replay; also compare the full rollback row snapshots rather than counts for S21/mid-S22 failure paths. Rerun the selector and full suite with committed evidence.",
+      "authority": ["docs/exec-plans/active/KL-078.md:preparation_duplicate_rollback_dc", "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:S21-S23"]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-078.md",
+    "tests/db/test_preparation.py",
+    "tests/unit/persistence/test_preparation.py",
+    "src/kineticloop/persistence/preparation.py",
+    "src/kineticloop/persistence/transactions.py",
+    "docs/exec-plans/completed/KL-078_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-078/entry.json",
+    "docs/exec-plans/evidence/KL-078/protocol-impact-c2816f6.json",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/checks.json",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_owner_pipeline_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_basis_denials_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_duplicate_rollback_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_immutable_replay_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_no_authority_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_suite_dc.log"
+  ],
+  "review_summary": "Fresh independent review in a private local clone at the exact reviewed SHA. Actual prerequisite PASS results, required review hashes and normal merge ancestry match the protected base; M2 closure hash/status match. The fourteen committed command records and their JUnit counts/exits match tested_commit, and implementation/test/contract bytes are identical between tested_commit and reviewed_head_sha. Static inspection found no authorization, Evidence Admission, T1-T8, frozen lock-order, production/shadow, provider-command or planned-actual bypass. Exact typed preparation supplies server revision only in the narrow owner insert, binds immutable SEALED source, commits S21/S22 atomically, completes S23 under its local lock and preserves immutable history; the T3 registry/current-basis/time guards are byte-identical to base. Approval is withheld because the stated exact persisted-row oracles are not fully asserted by the acceptance tests.",
+  "independent_rerun": {
+    "resolved_clone_root": "/private/tmp/kl078-protocol-review-hQniQj/repo",
+    "reviewed_sha": "15a6c19d67d6c42ed43c1b16fff47aa65be3df76",
+    "runtime": "/private/tmp/kl078-protocol-review-hQniQj/runtime",
+    "cache": "/private/tmp/kl078-protocol-review-hQniQj/cache",
+    "unit_result": "3 passed, including namespace PU before first real lifecycle",
+    "database_result": "5 passed in 19.48s; no skips/xfail; observed projection/build/completion blockers and S01 blocker; frozen T3 S51-before-S01 order observed; own cleanup completed after each test",
+    "compose_namespace": "kineticloop-kl078-prep-15a6c19-e194b359b04a",
+    "database_namespace": "kineticloop_kl078_prep_15a6c19_e194b359b04a",
+    "migration_revision": "e8c2f1a6b904",
+    "limitations": "Initial sandboxed Docker attempt failed before lifecycle SQL due to socket permissions; bounded escalation succeeded in the same owned namespace. No legacy DB fixtures or hosted CI were invoked. Raw rerun logs are review bookkeeping and intentionally excluded from evidence_refs because they were not committed at reviewed_head_sha."
+  },
+  "spec_change_required": false
+}
