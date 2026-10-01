@@ -1,0 +1,27 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-075",
+  "tested_commit": "bccbb6c98eb70980c24efa47abccda6caaa85452",
+  "migration_revision": "e8c2f1a6b904",
+  "root": "/Users/davetian/.codex/worktrees/11ad/KineticLoop",
+  "worktree_digest": "cb2e4202e692",
+  "public_commands": 39,
+  "public_owner_descriptor_and_column_fingerprint": "aec8554042a26955d805bca7048b16cde5f3af58b68cc23d25311f46d25b9844",
+  "time_evidence": {
+    "PU": "before/equality/after over actual eligible_at and require_live pure predicates",
+    "DC": "actual owners before/after; four witnessed S29 row-lock waits crossing lease/deadline; fresh post-lock DB clock",
+    "equality_is_DC": false
+  },
+  "source_evidence": "TEST input-only placeholder immutable S34/S35/S36/S37; no F/D/N computation or product completeness claim",
+  "namespace_routes": [
+    "ProgressLifecycle constructor/validate_target/_run/reset/start/connection/destroy",
+    "bootstrap_two_phase(explicit validated lifecycle)",
+    "validate_database before reset_inputs/seed_inputs/later_inputs",
+    "finally destroy and empty container/volume/network inventory"
+  ],
+  "all_own_suite_tests": 55,
+  "skips": 0,
+  "xfails": 0,
+  "production_autoactivation": "DISABLED",
+  "real_data_shadow": "NOT_EXECUTABLE",
+  "product_requirement_claims": []
+}
