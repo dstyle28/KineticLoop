@@ -1,0 +1,274 @@
+EEEEE
+==================================== ERRORS ====================================
+____________________ ERROR at setup of test_owner_pipeline _____________________
+
+    @pytest.fixture
+    def database_urls() -> Iterator[dict[str, str]]:
+        head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+        lifecycle = OwnedLifecycle(ROOT, head)
+        started = time.monotonic()
+        try:
+            yield lifecycle.bootstrap()
+        finally:
+            lifecycle.validate()
+>           lifecycle.destroy()
+
+tests/db/test_preparation.py:152: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/db/test_preparation.py:122: in destroy
+    super().destroy()
+src/kineticloop/db/lifecycle.py:324: in destroy
+    self._run(self.compose_command("down", "--volumes", "--remove-orphans"))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <db.test_preparation.OwnedLifecycle object at 0x1099a8380>
+command = ['docker', 'compose', '--project-name', 'kineticloop-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', ...]
+
+    def _run(
+        self,
+        command: Sequence[str],
+        *,
+        check: bool = True,
+        timeout_seconds: float | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        try:
+            return self._runner(
+                list(command),
+                cwd=self.root,
+                env=self.environment,
+                check=check,
+                capture_output=True,
+                text=True,
+                timeout=timeout_seconds,
+            )
+        except subprocess.TimeoutExpired:
+            raise DatabaseLifecycleError("database readiness command timed out") from None
+        except FileNotFoundError as error:
+            raise DatabaseLifecycleError(
+                "Docker with the Compose plugin is required for the local test database."
+            ) from error
+        except subprocess.CalledProcessError as error:
+            details = Redactor((self.user, self.password)).exception_diagnostic(error)
+>           raise DatabaseLifecycleError(f"database command failed: {details}") from None
+E           kineticloop.db.lifecycle.DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', 'down', '--volumes', '--remove-orphans']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n')
+
+src/kineticloop/db/lifecycle.py:201: DatabaseLifecycleError
+_____________________ ERROR at setup of test_basis_denials _____________________
+
+    @pytest.fixture
+    def database_urls() -> Iterator[dict[str, str]]:
+        head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+        lifecycle = OwnedLifecycle(ROOT, head)
+        started = time.monotonic()
+        try:
+            yield lifecycle.bootstrap()
+        finally:
+            lifecycle.validate()
+>           lifecycle.destroy()
+
+tests/db/test_preparation.py:152: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/db/test_preparation.py:122: in destroy
+    super().destroy()
+src/kineticloop/db/lifecycle.py:324: in destroy
+    self._run(self.compose_command("down", "--volumes", "--remove-orphans"))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <db.test_preparation.OwnedLifecycle object at 0x109d7a900>
+command = ['docker', 'compose', '--project-name', 'kineticloop-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', ...]
+
+    def _run(
+        self,
+        command: Sequence[str],
+        *,
+        check: bool = True,
+        timeout_seconds: float | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        try:
+            return self._runner(
+                list(command),
+                cwd=self.root,
+                env=self.environment,
+                check=check,
+                capture_output=True,
+                text=True,
+                timeout=timeout_seconds,
+            )
+        except subprocess.TimeoutExpired:
+            raise DatabaseLifecycleError("database readiness command timed out") from None
+        except FileNotFoundError as error:
+            raise DatabaseLifecycleError(
+                "Docker with the Compose plugin is required for the local test database."
+            ) from error
+        except subprocess.CalledProcessError as error:
+            details = Redactor((self.user, self.password)).exception_diagnostic(error)
+>           raise DatabaseLifecycleError(f"database command failed: {details}") from None
+E           kineticloop.db.lifecycle.DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', 'down', '--volumes', '--remove-orphans']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n')
+
+src/kineticloop/db/lifecycle.py:201: DatabaseLifecycleError
+___________________ ERROR at setup of test_immutable_replay ____________________
+
+    @pytest.fixture
+    def database_urls() -> Iterator[dict[str, str]]:
+        head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+        lifecycle = OwnedLifecycle(ROOT, head)
+        started = time.monotonic()
+        try:
+            yield lifecycle.bootstrap()
+        finally:
+            lifecycle.validate()
+>           lifecycle.destroy()
+
+tests/db/test_preparation.py:152: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/db/test_preparation.py:122: in destroy
+    super().destroy()
+src/kineticloop/db/lifecycle.py:324: in destroy
+    self._run(self.compose_command("down", "--volumes", "--remove-orphans"))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <db.test_preparation.OwnedLifecycle object at 0x109d7ad80>
+command = ['docker', 'compose', '--project-name', 'kineticloop-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', ...]
+
+    def _run(
+        self,
+        command: Sequence[str],
+        *,
+        check: bool = True,
+        timeout_seconds: float | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        try:
+            return self._runner(
+                list(command),
+                cwd=self.root,
+                env=self.environment,
+                check=check,
+                capture_output=True,
+                text=True,
+                timeout=timeout_seconds,
+            )
+        except subprocess.TimeoutExpired:
+            raise DatabaseLifecycleError("database readiness command timed out") from None
+        except FileNotFoundError as error:
+            raise DatabaseLifecycleError(
+                "Docker with the Compose plugin is required for the local test database."
+            ) from error
+        except subprocess.CalledProcessError as error:
+            details = Redactor((self.user, self.password)).exception_diagnostic(error)
+>           raise DatabaseLifecycleError(f"database command failed: {details}") from None
+E           kineticloop.db.lifecycle.DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', 'down', '--volumes', '--remove-orphans']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n')
+
+src/kineticloop/db/lifecycle.py:201: DatabaseLifecycleError
+__________________ ERROR at setup of test_duplicate_rollback ___________________
+
+    @pytest.fixture
+    def database_urls() -> Iterator[dict[str, str]]:
+        head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+        lifecycle = OwnedLifecycle(ROOT, head)
+        started = time.monotonic()
+        try:
+            yield lifecycle.bootstrap()
+        finally:
+            lifecycle.validate()
+>           lifecycle.destroy()
+
+tests/db/test_preparation.py:152: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/db/test_preparation.py:122: in destroy
+    super().destroy()
+src/kineticloop/db/lifecycle.py:324: in destroy
+    self._run(self.compose_command("down", "--volumes", "--remove-orphans"))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <db.test_preparation.OwnedLifecycle object at 0x109dc7a70>
+command = ['docker', 'compose', '--project-name', 'kineticloop-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', ...]
+
+    def _run(
+        self,
+        command: Sequence[str],
+        *,
+        check: bool = True,
+        timeout_seconds: float | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        try:
+            return self._runner(
+                list(command),
+                cwd=self.root,
+                env=self.environment,
+                check=check,
+                capture_output=True,
+                text=True,
+                timeout=timeout_seconds,
+            )
+        except subprocess.TimeoutExpired:
+            raise DatabaseLifecycleError("database readiness command timed out") from None
+        except FileNotFoundError as error:
+            raise DatabaseLifecycleError(
+                "Docker with the Compose plugin is required for the local test database."
+            ) from error
+        except subprocess.CalledProcessError as error:
+            details = Redactor((self.user, self.password)).exception_diagnostic(error)
+>           raise DatabaseLifecycleError(f"database command failed: {details}") from None
+E           kineticloop.db.lifecycle.DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', 'down', '--volumes', '--remove-orphans']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n')
+
+src/kineticloop/db/lifecycle.py:201: DatabaseLifecycleError
+_____________________ ERROR at setup of test_no_authority ______________________
+
+    @pytest.fixture
+    def database_urls() -> Iterator[dict[str, str]]:
+        head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+        lifecycle = OwnedLifecycle(ROOT, head)
+        started = time.monotonic()
+        try:
+            yield lifecycle.bootstrap()
+        finally:
+            lifecycle.validate()
+>           lifecycle.destroy()
+
+tests/db/test_preparation.py:152: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/db/test_preparation.py:122: in destroy
+    super().destroy()
+src/kineticloop/db/lifecycle.py:324: in destroy
+    self._run(self.compose_command("down", "--volumes", "--remove-orphans"))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <db.test_preparation.OwnedLifecycle object at 0x109dc58b0>
+command = ['docker', 'compose', '--project-name', 'kineticloop-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', ...]
+
+    def _run(
+        self,
+        command: Sequence[str],
+        *,
+        check: bool = True,
+        timeout_seconds: float | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        try:
+            return self._runner(
+                list(command),
+                cwd=self.root,
+                env=self.environment,
+                check=check,
+                capture_output=True,
+                text=True,
+                timeout=timeout_seconds,
+            )
+        except subprocess.TimeoutExpired:
+            raise DatabaseLifecycleError("database readiness command timed out") from None
+        except FileNotFoundError as error:
+            raise DatabaseLifecycleError(
+                "Docker with the Compose plugin is required for the local test database."
+            ) from error
+        except subprocess.CalledProcessError as error:
+            details = Redactor((self.user, self.password)).exception_diagnostic(error)
+>           raise DatabaseLifecycleError(f"database command failed: {details}") from None
+E           kineticloop.db.lifecycle.DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', 'down', '--volumes', '--remove-orphans']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl078-prep-15a6c19-595ea54abe9a', '--file', '/private/tmp/kl078-general-review-15a6c19/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n')
+
+src/kineticloop/db/lifecycle.py:201: DatabaseLifecycleError
+=========================== short test summary info ============================
+ERROR tests/db/test_preparation.py::test_owner_pipeline - kineticloop.db.life...
+ERROR tests/db/test_preparation.py::test_basis_denials - kineticloop.db.lifec...
+ERROR tests/db/test_preparation.py::test_immutable_replay - kineticloop.db.li...
+ERROR tests/db/test_preparation.py::test_duplicate_rollback - kineticloop.db....
+ERROR tests/db/test_preparation.py::test_no_authority - kineticloop.db.lifecy...
+5 errors in 4.79s

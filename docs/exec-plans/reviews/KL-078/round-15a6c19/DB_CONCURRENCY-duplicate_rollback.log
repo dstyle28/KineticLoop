@@ -1,0 +1,29 @@
+REVIEWED_SHA 15a6c19d67d6c42ed43c1b16fff47aa65be3df76
+ROOT /private/tmp/kl078-db-review-15a6c19
+COMMAND uv run pytest -q tests/db/test_preparation.py::test_duplicate_rollback
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-15a6c19-52ea0b52430e', database_name='kineticloop_kl078_prep_15a6c19_52ea0b52430e') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE aa4a403d-1d02-5c03-9550-47fd03bbc334 SEALED
+ACTUAL_SOURCE 84c94b90-895f-5033-800c-525dd054d612 SEALED
+ACTUAL_SOURCE fa526f96-6463-5a72-a9e1-49b9cc660b94 SEALED
+ACTUAL_SOURCE d022e726-34d8-5b4f-a952-cc0267c3aab4 SEALED
+ACTUAL_SOURCE 4528dd4d-68fd-50f3-a742-4bfbf96a8222 SEALED
+OBSERVED_LOCAL_BLOCKER projection {'first': 110, 'second': 118}
+ACTUAL_SOURCE 09f8cdd7-245d-5899-b123-b34da4c455c7 SEALED
+OBSERVED_LOCAL_BLOCKER build {'first': 119, 'second': 120}
+ACTUAL_SOURCE 1b51fce7-09b9-5c27-b574-afc9f26f836f SEALED
+OBSERVED_LOCAL_BLOCKER complete {'first': 121, 'second': 122}
+.LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 3.7602483748923987
+
+1 passed in 4.01s
+
+EXIT_CODE 0
+ELAPSED_SECONDS 4.185248708

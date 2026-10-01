@@ -1,0 +1,99 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-078",
+  "reviewed_head_sha": "154171ef87c832e08f2cd51b455bf54080b315cc",
+  "review_type": "PROTOCOL",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "findings": [
+    {
+      "id": "KL078-PROTOCOL-03-R2",
+      "classification": "BLOCKER",
+      "file": "tests/db/test_preparation.py",
+      "line": 1264,
+      "title": "Duplicate race winner closure and authority effects are not independently verified",
+      "body": "The added post-race assertions preserve every older preparation row, prove expected cardinality deltas, and replay the winner without mutation. They still do not independently verify the newly raced S21 provenance/input/content hash, exact S22 semantic keys/references/payload closure, or the newly raced BUILDING/READY S23 captured basis/candidate hashes against the actual sealed source. assert_prepared_rows is invoked for earlier pipeline fixtures, not any newly raced winner. Thus equal API outcomes, expected counts and an unchanged repeat can all coexist with a consistently incorrect newly persisted winner. The race section also lacks full S01/receipt/event/outbox/target snapshots immediately before and after each race; the final assertion compares only downstream authority counts. Add independently derived exact closure assertions for each newly raced winner and full authority snapshots around the contention operation (after actual source sealing), then rerun the named check and complete suite on a new tested revision. This is the unresolved part of first-round PROTOCOL-03 and the original preparation_duplicate_rollback_dc/no-authority oracle.",
+      "authority": [
+        "docs/exec-plans/active/KL-078.md:preparation_duplicate_rollback_dc",
+        "docs/exec-plans/active/KL-078.md:preparation_no_authority_dc",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:S21-S23"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-078.md",
+    "tests/db/test_preparation.py",
+    "tests/unit/persistence/test_preparation.py",
+    "src/kineticloop/persistence/preparation.py",
+    "src/kineticloop/persistence/transactions.py",
+    "docs/contracts/preparation.md",
+    "docs/exec-plans/completed/KL-078_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-078/entry.json",
+    "docs/exec-plans/milestones/M2.json",
+    "docs/exec-plans/evidence/KL-078/protocol-impact-c40187d.json",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/checks.json",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_immutable_replay_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_namespace_pu.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_suite_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_capability_pu.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/harness_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_revision_pu.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/lint_passes.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/typecheck_passes.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_owner_pipeline_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_duplicate_rollback_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_no_authority_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/unit_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/harness_validation_passes.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_basis_denials_dc.log"
+  ],
+  "review_summary": "Fresh independent review of exact detached SHA, using private clone/runtime/cache and the actual packet, indexed frozen authorities, prerequisite results/reviews/integrations and M2 closure. Source-binding/revision/TEST ownership and exact restricted preparation guard inspection found no frozen semantic bypass. S21/S22 remain immutable and atomic, S23 completion uses exact local ownership/row lock, and unchanged T3 rechecks current source/epoch/frontier/program/policy/dependencies/trusted validity/registry under S51 then S01. Wire schema, command matrix, metadata, migrations, CI, factset builders/seal and protocol execution paths are byte-identical to base. All fourteen committed final commands succeeded at c40187d with expected counts and no skips; tested-to-reviewed suffix contains only task result/evidence. Independent PU3 and PG5 succeeded, but command success cannot substitute for the remaining exact duplicate oracle.",
+  "first_round_closure": {
+    "KL078-PROTOCOL-01": "CLOSED: assert_prepared_rows independently reads sealed S15/members, S21 provenance/content/basis, every S22 ref/payload, S23 basis/roles/artifact closure/candidate hashes; positive pipeline verifies BUILDING-to-READY candidate preservation and actual S24/S25/receipt/event/outbox references.",
+    "KL078-PROTOCOL-02": "CLOSED: state includes stable complete row snapshots for preparation/publication/receipt/event/outbox/authority tables, and named owner/T3 denial assertions compare them.",
+    "KL078-PROTOCOL-03": "PARTIAL: full rollback row snapshots and old history/cardinality/replay assertions added; newly raced exact closure and race authority snapshots remain missing."
+  },
+  "independent_rerun": {
+    "resolved_clone_root": "/private/tmp/kl078-protocol-154171e",
+    "runtime": "/private/tmp/kl078-protocol-154171e-venv",
+    "cache": "/private/tmp/kl078-protocol-154171e-cache",
+    "reviewed_sha": "154171ef87c832e08f2cd51b455bf54080b315cc",
+    "namespace_pu_before_db": true,
+    "compose_namespace": "kineticloop-kl078-prep-154171e-e024d67c8e85",
+    "database_namespace": "kineticloop_kl078_prep_154171e_e024d67c8e85",
+    "migration_revision": "e8c2f1a6b904",
+    "commands": [
+      {
+        "command": "uv run --frozen pytest -q tests/unit/persistence/test_preparation.py",
+        "result": "PASS",
+        "executed": 3,
+        "skipped": 0,
+        "elapsed_seconds": 3.07,
+        "raw_log": "PROTOCOL-unit.log"
+      },
+      {
+        "command": "uv run --frozen pytest -q -s tests/db/test_preparation.py",
+        "result": "PASS",
+        "executed": 5,
+        "skipped": 0,
+        "elapsed_seconds": 20.36,
+        "raw_log": "PROTOCOL-db.log"
+      },
+      {
+        "command": "uv run --frozen kl test-protocol-model",
+        "result": "NOT_RUN",
+        "exit_code": 2,
+        "raw_log": "PROTOCOL-model.log",
+        "reason": "Existing entrypoint reports model source unavailable; no protocol model evidence claimed. This additional diagnostic is not a KL078 required task check."
+      }
+    ],
+    "raw_audit_logs": [
+      "PROTOCOL-audit.log",
+      "PROTOCOL-guards.log",
+      "PROTOCOL-cleanup.log"
+    ],
+    "raw_logs_are_post_review_head": true,
+    "cleanup": "All five OwnedLifecycle finally blocks reported CLEANUP_OK; exact Docker namespace absence verified; own clone/runtime/cache removed and filesystem absence verified.",
+    "limitations": "No legacy DB fixtures, hosted CI, code edits, commits, pushes or peer resource changes. Hosted fresh-runner DB/quality CI and selected-task merge gate remain coordinator pre-merge obligations."
+  },
+  "spec_change_required": false
+}

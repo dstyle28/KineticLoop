@@ -1,0 +1,21 @@
+REVIEWED_SHA 15a6c19d67d6c42ed43c1b16fff47aa65be3df76
+ROOT /private/tmp/kl078-db-review-15a6c19
+COMMAND uv run pytest -q tests/db/test_preparation.py::test_owner_pipeline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-15a6c19-52ea0b52430e', database_name='kineticloop_kl078_prep_15a6c19_52ea0b52430e') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE 289a7804-2a1e-53c1-829b-fd2f10f08655 SEALED
+OWNER_OUTPUT {'projection_id': '99267b7b-2fa8-5f27-b2a5-3948e51ff7dd', 'revision': 1, 'input_basis_hash': 'e603f69054b4523017c8b4ec1c005b68973fb2447d6f67d438591e681593f6a5', 'dependency_ids': ['3e2acecb-dd97-5dcb-9358-7d157433a9ca', '4d0ff82b-4a66-5058-acf9-801b4da92cba', '8bf5e3d4-6d48-58c7-ac3e-2818d94cf0c0', 'b0039117-a8a8-5735-a0c4-9a95e32069fd', 'b73a2331-7b7c-5431-bd3b-e86993671fa3', 'cc562ca4-bee1-5ac3-855d-922b2820905e'], 'executable': False} {'build_id': 'b6ce5dd3-c840-5fc4-abb6-90bb0ececc85', 'status': 'READY', 'dependency_basis_hash': 'df58dc4ac53e2a5e8d31d7aa830ab26b80a612d322f16f4fba26bb71d47798c2', 'artifact_dependency_closure_hash': '14cd8bd945691fba549189fd6f41f9c8d78248563b32bf8cbf11f4e84d8ea7e7', 'manifest_hash': 'ffef6a2329308e1e0833a172b17ac656cbedc9ff76a8f67e63c2714ea1d70a54', 'executable': False} {'manifest_id': '4a6e2447-c4a0-477c-8675-25ac3daaf1cd', 'generation': 1, 'receipt_id': '981c84e0-13b3-411f-945c-7031005266f3', 'event_id': 'ca77eba8-e10d-489d-af63-4a28c2e4d32e', 'executable': False, 'replayed': False}
+.LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 3.3589503339026123
+
+1 passed in 3.73s
+
+EXIT_CODE 0
+ELAPSED_SECONDS 3.973585917

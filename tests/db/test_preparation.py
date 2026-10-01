@@ -358,8 +358,8 @@ def assert_prepared_rows(
     seed: dict[str, Any],
     record: RecordProjection,
     projection: Mapping[str, Any],
-    request: BuildManifest,
-    ready: Mapping[str, Any],
+    request: BuildManifest | None,
+    ready: Mapping[str, Any] | None,
 ) -> None:
     """Independently read source/output rows and recompute the canonical candidate proofs."""
     from kineticloop.protocol.authorization import canonical_certificate_timestamp
@@ -466,11 +466,21 @@ def assert_prepared_rows(
                     "mapping": expected["ref_s20_id"],
                 }
             )
+        if request is None:
+            assert ready is None
+            print(
+                "PERSISTED_PROJECTION_PROOF",
+                projection_row["id"],
+                expected_basis,
+                dependency_proofs,
+            )
+            return
+        assert ready is not None and ready["status"] in {"BUILDING", "READY"}
         build_row = db.execute(
             "SELECT row_to_json(r) FROM kineticloop.manifest_builds r WHERE subject_id=%s AND id=%s",
             (subject, UUID(ready["build_id"])),
         ).fetchone()[0]
-        assert build_row["status"] == "READY"
+        assert build_row["status"] == ready["status"]
         assert (
             build_row["captured_epoch"] == source.epoch
             and build_row["captured_input_frontier"] == source.frontier
@@ -512,11 +522,7 @@ def assert_prepared_rows(
                 "mapping_id": json_value(source.mapping_id),
             }
         )
-        assert (
-            candidate["dependency_basis_hash"]
-            == ready["dependency_basis_hash"]
-            == expected_dependency_hash
-        )
+        assert candidate["dependency_basis_hash"] == expected_dependency_hash
         artifact_rows = db.execute(
             "WITH RECURSIVE closure(id) AS (SELECT id FROM kineticloop.safety_artifacts WHERE id=ANY(%s) UNION SELECT e.dependency_artifact_id FROM closure c JOIN kineticloop.safety_artifact_dependencies e ON e.artifact_id=c.id) "
             "SELECT a.id,a.artifact_kind,a.artifact_identity,a.artifact_version,a.content_hash,a.revision,a.validity_kind,a.valid_from,a.valid_until,a.timeless_approval_policy,a.timeless_approval_reason FROM closure c JOIN kineticloop.safety_artifacts a ON a.id=c.id ORDER BY a.id",
@@ -562,24 +568,28 @@ def assert_prepared_rows(
             )
         assert candidate["artifact_closure_ids"] == [str(r[0]) for r in artifact_rows]
         assert candidate["artifact_root_ids"] == sorted(map(str, request.artifact_roots))
-        assert (
-            candidate["artifact_dependency_closure_hash"]
-            == ready["artifact_dependency_closure_hash"]
-            == digest(artifact_proofs)
-        )
+        assert candidate["artifact_dependency_closure_hash"] == digest(artifact_proofs)
         content_candidate = {
             key: value
             for key, value in candidate.items()
             if key not in {"manifest_hash", "preparation"}
         }
-        assert (
-            candidate["manifest_hash"]
-            == ready["manifest_hash"]
-            == digest({"source": json_value(asdict(source)), **content_candidate})
+        assert candidate["manifest_hash"] == digest(
+            {"source": json_value(asdict(source)), **content_candidate}
         )
         assert candidate["preparation"]["owner"] == seed["identity"].key
         assert candidate["preparation"]["request"] == json_value(asdict(request))
-        assert candidate["preparation"]["complete_outcome"] == dict(ready)
+        if ready["status"] == "BUILDING":
+            assert candidate["preparation"]["begin_outcome"] == dict(ready)
+            assert "complete_outcome" not in candidate["preparation"]
+        else:
+            assert candidate["preparation"]["complete_outcome"] == dict(ready)
+            for key in (
+                "dependency_basis_hash",
+                "artifact_dependency_closure_hash",
+                "manifest_hash",
+            ):
+                assert ready[key] == candidate[key]
     print(
         "PERSISTED_PROOFS",
         json.dumps(
@@ -1197,6 +1207,7 @@ def test_duplicate_rollback(database_urls: dict[str, str], monkeypatch: pytest.M
                 raced_build = api.build_manifest(duplicate_request)
             pids: dict[str, int] = {}
             old_history = history(db, seed["identity"].subject_id)
+            race_authority = state(db, seed["identity"].subject_id)
 
             def action(contender: Any) -> Any:
                 owner = PreparationService(contender, seed["identity"])
@@ -1308,6 +1319,15 @@ def test_duplicate_rollback(database_urls: dict[str, str], monkeypatch: pytest.M
                 assert [len(rows) for rows in new_history] == [len(rows) for rows in old_history]
                 assert api.complete_manifest(CompleteManifest(UUID(winner["build_id"]))) == winner
                 assert history(db, seed["identity"].subject_id) == new_history
+            if mode == "projection":
+                assert_prepared_rows(db, seed, duplicate_record, winner, None, None)
+            else:
+                assert duplicate_projection is not None and duplicate_request is not None
+                assert_prepared_rows(
+                    db, seed, duplicate_record, duplicate_projection, duplicate_request, winner
+                )
+            assert history(db, seed["identity"].subject_id) == new_history
+            assert state(db, seed["identity"].subject_id) == race_authority
             print("PERSISTED_DUPLICATE_CLOSURE", mode, winner, [len(rows) for rows in new_history])
         assert before[1][5:10] == state(db, seed["identity"].subject_id)[1][5:10]
 

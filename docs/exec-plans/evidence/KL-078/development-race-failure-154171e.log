@@ -1,0 +1,492 @@
+...F
+=================================== FAILURES ===================================
+___________________________ test_duplicate_rollback ____________________________
+
+database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:55718/kineticloop_kl078_prep_154171e_0b068b742ff6...or': 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:55718/kineticloop_kl078_prep_154171e_0b068b742ff6', ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1091f3650>
+
+    def test_duplicate_rollback(database_urls: dict[str, str], monkeypatch: pytest.MonkeyPatch) -> None:
+        seed = seed_sources(database_urls)
+        with psycopg.connect(database_urls["admin"]) as db:
+            record, projection, request, ready = pipeline(db, seed, "rollback-base")
+            before = state(db, seed["identity"].subject_id, preparation=True)
+            original_insert, original_update = RestrictedSqlSession.insert, RestrictedSqlSession.update
+            for fail_kind, ordinal in [("S21", 1), ("S22", 3)]:
+                calls = 0
+    
+                def failing(self: Any, kind: str, values: Any) -> int:
+                    nonlocal calls
+                    result = original_insert(self, kind, values)
+                    if kind == fail_kind:
+                        calls += 1
+                        if calls == ordinal:
+                            raise RuntimeError("injected closure failure")
+                    return result
+    
+                with monkeypatch.context() as patch:
+                    patch.setattr(RestrictedSqlSession, "insert", failing)
+                    # New window keeps natural identity and conflicts; new sealed basis is required.
+                    other = factset(db, seed, f"rollback-{fail_kind}")
+                    changed = replace(
+                        record, source=PreparationService(db, seed["identity"]).capture_source(other)
+                    )
+                    baseline = state(db, seed["identity"].subject_id, preparation=True)
+                    with pytest.raises(RuntimeError):
+                        PreparationService(db, seed["identity"]).record_projection(changed)
+                    assert state(db, seed["identity"].subject_id, preparation=True) == baseline
+            api = PreparationService(db, seed["identity"])
+            for phase in ("before", "after"):
+                building = api.build_manifest(replace(request, key=f"rollback-ready-{phase}"))
+                baseline = history(db, seed["identity"].subject_id)
+                authority_baseline = state(db, seed["identity"].subject_id)
+    
+                def failing_update(self: Any, kind: str, values: Any, where: Any) -> int:
+                    if kind == "S23" and phase == "before":
+                        raise RuntimeError("injected READY failure")
+                    result = original_update(self, kind, values, where)
+                    if kind == "S23":
+                        raise RuntimeError("injected READY failure")
+                    return result
+    
+                with monkeypatch.context() as patch:
+                    patch.setattr(RestrictedSqlSession, "update", failing_update)
+                    with pytest.raises(RuntimeError):
+                        api.complete_manifest(CompleteManifest(UUID(building["build_id"])))
+                assert history(db, seed["identity"].subject_id) == baseline
+                assert state(db, seed["identity"].subject_id) == authority_baseline
+            # Actual T3 rollback even after its generation update, without replacing any guard.
+            _, _, publish_request, publish_ready = pipeline(db, seed, "t3-rollback")
+            authority_baseline = state(db, seed["identity"].subject_id, preparation=True)
+    
+            def fail_t3(self: Any, kind: str, values: Any, where: Any) -> int:
+                result = original_update(self, kind, values, where)
+                if kind == "S01":
+                    raise RuntimeError("injected after T3 head/generation")
+                return result
+    
+            with monkeypatch.context() as patch:
+                patch.setattr(RestrictedSqlSession, "update", fail_t3)
+                with pytest.raises(RuntimeError):
+                    ProtocolExecutionService(db, seed["identity"]).publish(
+                        publication(seed, publish_request, publish_ready, "t3-rollback")
+                    )
+            assert state(db, seed["identity"].subject_id, preparation=True) == authority_baseline
+            # Explicit row/advisory lock barriers, with observed PG waiting, no sleeps.
+            for mode in ("projection", "build", "complete"):
+                held, release, waiter_started = Event(), Event(), Event()
+                new_source = api.capture_source(factset(db, seed, f"duplicate-{mode}"))
+                duplicate_record = replace(record, source=new_source)
+                duplicate_projection = (
+                    api.record_projection(duplicate_record) if mode != "projection" else None
+                )
+                duplicate_request = (
+                    replace(
+                        request,
+                        key=f"duplicate-{mode}",
+                        source=new_source,
+                        bindings=(
+                            ProjectionBinding("EXPOSURE", UUID(duplicate_projection["projection_id"])),
+                        ),
+                    )
+                    if duplicate_projection
+                    else None
+                )
+                raced_build: Any = None
+                if mode == "complete":
+                    assert duplicate_request is not None
+                    raced_build = api.build_manifest(duplicate_request)
+                pids: dict[str, int] = {}
+                old_history = history(db, seed["identity"].subject_id)
+                race_authority = state(db, seed["identity"].subject_id)
+    
+                def action(contender: Any) -> Any:
+                    owner = PreparationService(contender, seed["identity"])
+                    if mode == "projection":
+                        return owner.record_projection(duplicate_record)
+                    if mode == "build":
+                        assert duplicate_request is not None
+                        return owner.build_manifest(duplicate_request)
+                    return owner.complete_manifest(CompleteManifest(UUID(raced_build["build_id"])))
+    
+                def first() -> Any:
+                    with psycopg.connect(database_urls["admin"]) as contender:
+                        pids["first"] = contender.info.backend_pid
+    
+                        # Pause after first actual write while the local lock remains held.
+                        def block_insert(self: Any, kind: str, values: Any) -> int:
+                            result = original_insert(self, kind, values)
+                            if contender.info.backend_pid == pids["first"] and kind in {"S21", "S23"}:
+                                held.set()
+                                assert release.wait(8)
+                            return result
+    
+                        def block_update(self: Any, kind: str, values: Any, where: Any) -> int:
+                            result = original_update(self, kind, values, where)
+                            if contender.info.backend_pid == pids["first"] and kind == "S23":
+                                held.set()
+                                assert release.wait(8)
+                            return result
+    
+                        with monkeypatch.context() as patch:
+                            patch.setattr(RestrictedSqlSession, "insert", block_insert)
+                            patch.setattr(RestrictedSqlSession, "update", block_update)
+                            return action(contender)
+    
+                def second() -> Any:
+                    with psycopg.connect(database_urls["admin"]) as contender:
+                        pids["second"] = contender.info.backend_pid
+                        waiter_started.set()
+                        return action(contender)
+    
+                with ThreadPoolExecutor(max_workers=2) as pool:
+                    a = pool.submit(first)
+                    assert held.wait(8)
+                    b = pool.submit(second)
+                    assert waiter_started.wait(8)
+                    deadline = time.monotonic() + 5
+                    observed = False
+                    try:
+                        while time.monotonic() < deadline:
+                            with db.transaction():
+                                blocked_row = db.execute(
+                                    "SELECT pg_blocking_pids(%s)", (pids["second"],)
+                                ).fetchone()
+                                assert blocked_row is not None
+                                blockers = blocked_row[0]
+                            if pids["first"] in blockers:
+                                observed = True
+                                break
+                        assert observed
+                        print("OBSERVED_LOCAL_BLOCKER", mode, pids)
+                    finally:
+                        release.set()
+                    winner = a.result(timeout=8)
+                    assert winner == b.result(timeout=8)
+                new_history = history(db, seed["identity"].subject_id)
+                old_by_table = [{r[0]["id"]: r[0] for r in rows} for rows in old_history]
+                new_by_table = [{r[0]["id"]: r[0] for r in rows} for rows in new_history]
+                for table_index, old_rows in enumerate(old_by_table):
+                    for row_id, row in old_rows.items():
+                        if mode == "complete" and table_index == 2 and row_id == winner["build_id"]:
+                            compare = json_value(new_by_table[table_index][row_id])
+                            compare["status"] = "BUILDING"
+                            compare["typed_payload"]["preparation"].pop("complete_outcome")
+                            assert compare == row
+                        else:
+                            assert new_by_table[table_index][row_id] == row
+                if mode == "projection":
+                    assert [len(rows) for rows in new_history] == [
+                        len(old_history[0]) + 1,
+                        len(old_history[1]) + len(duplicate_record.dependencies),
+                        len(old_history[2]),
+                    ]
+                    with db.transaction():
+                        assert db.execute(
+                            "SELECT count(*) FROM kineticloop.projection_versions WHERE id=%s",
+                            (UUID(winner["projection_id"]),),
+                        ).fetchone() == (1,)
+                        assert db.execute(
+                            "SELECT count(*) FROM kineticloop.projection_dependencies WHERE ref_s21_id=%s",
+                            (UUID(winner["projection_id"]),),
+                        ).fetchone() == (len(duplicate_record.dependencies),)
+                    assert api.record_projection(duplicate_record) == winner
+                    assert history(db, seed["identity"].subject_id) == new_history
+                elif mode == "build":
+                    assert [len(rows) for rows in new_history] == [
+                        len(old_history[0]),
+                        len(old_history[1]),
+                        len(old_history[2]) + 1,
+                    ]
+                    with db.transaction():
+                        assert db.execute(
+                            "SELECT count(*) FROM kineticloop.manifest_builds WHERE id=%s",
+                            (UUID(winner["build_id"]),),
+                        ).fetchone() == (1,)
+                    assert duplicate_request is not None
+                    assert api.build_manifest(duplicate_request) == winner
+                    assert history(db, seed["identity"].subject_id) == new_history
+                else:
+                    assert [len(rows) for rows in new_history] == [len(rows) for rows in old_history]
+                    assert api.complete_manifest(CompleteManifest(UUID(winner["build_id"]))) == winner
+                    assert history(db, seed["identity"].subject_id) == new_history
+                if mode == "projection":
+                    assert_prepared_rows(db, seed, duplicate_record, winner, None, None)
+                else:
+                    assert duplicate_projection is not None and duplicate_request is not None
+>                   assert_prepared_rows(
+                        db, seed, duplicate_record, duplicate_projection, duplicate_request, winner
+                    )
+
+tests/db/test_preparation.py:1326: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+db = <psycopg.Connection [BAD] at 0x1094fe4b0>
+seed = {'admission': UUID('9247c7c0-046a-4090-ae3e-43bc8605b39b'), 'assertion': UUID('49b86827-cb4d-4862-9249-4b6842419c41'),...endency(kind='FACT', key='actual-member', collection=None, fact_id=UUID('0a129f32-7e39-46e1-90f7-cc17a93ba5b4'))), ...}
+record = RecordProjection(source=SourceBasis(factset_id=UUID('f9d1f22a-41eb-5233-808e-a7b33a537887'), source_hash='5bbb10064691...e1-90f7-cc17a93ba5b4'))), valid_until=datetime.datetime(2026, 10, 1, 11, 49, 52, 508746, tzinfo=datetime.timezone.utc))
+projection = {'dependency_ids': ['00c86b09-8853-58c4-8230-59ce48051c73', '030a77cb-26c9-5382-966f-5bacf2c2f706', '1db1967a-90ae-5ea...132e7a087517fd0f24393774fe0107015a62853baebcf865ef69d4c', 'projection_id': 'ab149f2e-1f54-5160-b4bb-55e7a2f896fc', ...}
+request = BuildManifest(key='duplicate-build', source=SourceBasis(factset_id=UUID('f9d1f22a-41eb-5233-808e-a7b33a537887'), sourc...ion_id=UUID('ab149f2e-1f54-5160-b4bb-55e7a2f896fc')),), artifact_roots=(UUID('9789b4e2-e230-41df-99a5-44f859c9ab6e'),))
+ready = {'build_id': '4fe350e6-31df-5a3a-b45c-22c5f80ac928', 'executable': False, 'status': 'BUILDING'}
+
+    def assert_prepared_rows(
+        db: Any,
+        seed: dict[str, Any],
+        record: RecordProjection,
+        projection: Mapping[str, Any],
+        request: BuildManifest | None,
+        ready: Mapping[str, Any] | None,
+    ) -> None:
+        """Independently read source/output rows and recompute the canonical candidate proofs."""
+        from kineticloop.protocol.authorization import canonical_certificate_timestamp
+    
+        source = record.source
+        subject = seed["identity"].subject_id
+        with db.transaction():
+            actual_source = db.execute(
+                "SELECT f.status,f.membership_digest,f.typed_payload,f.ref_s20_id,m.ref_s19_id "
+                "FROM kineticloop.factset_revisions f LEFT JOIN kineticloop.exercise_mapping_decisions m "
+                "ON m.subject_id=f.subject_id AND m.id=f.ref_s20_id WHERE f.subject_id=%s AND f.id=%s",
+                (subject, source.factset_id),
+            ).fetchone()
+            assert actual_source is not None and actual_source[0] == "SEALED"
+            assert source.source_hash == digest(json_value([str(source.factset_id), *actual_source]))
+            assert actual_source[2]["captured_epoch"] == source.epoch
+            assert actual_source[2]["captured_input_frontier"] == source.frontier
+            assert actual_source[2]["program_revision_id"] == str(source.program_id)
+            assert actual_source[2]["policy_id"] == str(source.policy_id)
+            members = db.execute(
+                "SELECT ref_s14_id FROM kineticloop.factset_members WHERE subject_id=%s AND ref_s15_id=%s AND member_operation='SET' AND ref_s14_id IS NOT NULL",
+                (subject, source.factset_id),
+            ).fetchall()
+            assert {r[0] for r in members} == {
+                m.revision_id for m in seed["members"] if m.kind == "FACT"
+            }
+            projection_row = db.execute(
+                "SELECT row_to_json(r) FROM kineticloop.projection_versions r WHERE subject_id=%s AND id=%s",
+                (subject, UUID(projection["projection_id"])),
+            ).fetchone()[0]
+            assert projection_row["revision"] == 1
+            assert projection_row["projection_kind"] == record.kind
+            assert datetime.fromisoformat(projection_row["valid_until"]) == record.valid_until
+            assert projection_row["content_hash"] == digest(json_value(record.content))
+            assert projection_row["typed_payload"]["result"] == json_value(record.content)
+            canonical_deps = [
+                asdict(dep) for dep in sorted(record.dependencies, key=lambda d: (d.kind, d.key))
+            ]
+            expected_basis = digest(
+                json_value({"source": asdict(source), "dependencies": canonical_deps})
+            )
+            assert (
+                projection_row["input_basis_hash"] == projection["input_basis_hash"] == expected_basis
+            )
+            provenance = projection_row["typed_payload"]["preparation"]
+            assert provenance["version"] == "kl078-v1" and provenance["owner"] == seed["identity"].key
+            assert provenance["source"] == json_value(asdict(source))
+            assert provenance["engine"] == json_value(asdict(record.engine))
+            assert provenance["window"] == list(record.window)
+            canonical_request = json_value(asdict(record))
+            canonical_request["dependencies"] = json_value(canonical_deps)
+            assert provenance["request_hash"] == digest(canonical_request)
+            assert provenance["outcome"] == dict(projection)
+            dep_rows = [
+                r[0]
+                for r in db.execute(
+                    "SELECT row_to_json(r) FROM kineticloop.projection_dependencies r WHERE subject_id=%s AND ref_s21_id=%s ORDER BY dependency_kind,dependency_semantic_key,id",
+                    (subject, UUID(projection["projection_id"])),
+                ).fetchall()
+            ]
+            assert {(r["dependency_kind"], r["dependency_semantic_key"]) for r in dep_rows} == {
+                (d.kind, d.key) for d in record.dependencies
+            }
+            assert len(dep_rows) == len(record.dependencies)
+            assert sorted(r["id"] for r in dep_rows) == projection["dependency_ids"]
+            dependency_proofs = []
+            for row in dep_rows:
+                dep = next(
+                    d
+                    for d in record.dependencies
+                    if (d.kind, d.key) == (row["dependency_kind"], row["dependency_semantic_key"])
+                )
+                expected = {
+                    "ref_s05_id": str(source.policy_id) if dep.kind == "POLICY" else None,
+                    "ref_s06_id": str(source.program_id) if dep.kind == "PROGRAM" else None,
+                    "ref_s14_id": str(dep.fact_id) if dep.kind == "FACT" else None,
+                    "ref_s15_id": str(source.factset_id)
+                    if dep.kind in {"FACTSET", "COLLECTION"}
+                    else None,
+                    "ref_s19_id": str(source.catalog_id) if dep.kind == "CATALOG" else None,
+                    "ref_s20_id": str(source.mapping_id) if dep.kind == "MAPPING" else None,
+                }
+                assert {key: row[key] for key in expected} == expected
+                assert row["ref_s21_id"] == projection["projection_id"] and row["subject_id"] == str(
+                    subject
+                )
+                assert row["collection_signature"] == dep.collection
+                assert row["typed_payload"] == {
+                    "source_hash": source.source_hash,
+                    "window": list(record.window),
+                    "collection_digest": source.source_hash if dep.collection else None,
+                }
+                dependency_proofs.append(
+                    {
+                        "projection_id": projection["projection_id"],
+                        "kind": dep.kind,
+                        "key": dep.key,
+                        "collection": dep.collection,
+                        "policy": expected["ref_s05_id"],
+                        "program": expected["ref_s06_id"],
+                        "fact": expected["ref_s14_id"],
+                        "factset": expected["ref_s15_id"],
+                        "catalog": expected["ref_s19_id"],
+                        "mapping": expected["ref_s20_id"],
+                    }
+                )
+            if request is None:
+                assert ready is None
+                print(
+                    "PERSISTED_PROJECTION_PROOF",
+                    projection_row["id"],
+                    expected_basis,
+                    dependency_proofs,
+                )
+                return
+            assert ready is not None and ready["status"] in {"BUILDING", "READY"}
+            build_row = db.execute(
+                "SELECT row_to_json(r) FROM kineticloop.manifest_builds r WHERE subject_id=%s AND id=%s",
+                (subject, UUID(ready["build_id"])),
+            ).fetchone()[0]
+            assert build_row["status"] == ready["status"]
+            assert (
+                build_row["captured_epoch"] == source.epoch
+                and build_row["captured_input_frontier"] == source.frontier
+            )
+            assert (
+                build_row["ref_s05_id"],
+                build_row["ref_s06_id"],
+                build_row["ref_s15_id"],
+                build_row["ref_s21_id"],
+            ) == (
+                str(source.policy_id),
+                str(source.program_id),
+                str(source.factset_id),
+                projection["projection_id"],
+            )
+            candidate = build_row["typed_payload"]
+            policy = db.execute(
+                "SELECT typed_payload FROM kineticloop.policy_bundles WHERE subject_id=%s AND id=%s",
+                (subject, source.policy_id),
+            ).fetchone()[0]
+            assert {b["role"] for b in candidate["projection_bindings"]} == set(
+                policy["manifest_projection_requirements"]
+            )
+            assert candidate["projection_bindings"] == [
+                {"id": projection["projection_id"], "role": "EXPOSURE", "basis_hash": expected_basis}
+            ]
+            expected_dependency_hash = digest(
+                {
+                    "projections": [
+                        {
+                            "id": projection["projection_id"],
+                            "role": "EXPOSURE",
+                            "projection_kind": record.kind,
+                            "validated_basis_hash": expected_basis,
+                            "dependencies": dependency_proofs,
+                        }
+                    ],
+                    "catalog_id": json_value(source.catalog_id),
+                    "mapping_id": json_value(source.mapping_id),
+                }
+            )
+            assert candidate["dependency_basis_hash"] == expected_dependency_hash
+            artifact_rows = db.execute(
+                "WITH RECURSIVE closure(id) AS (SELECT id FROM kineticloop.safety_artifacts WHERE id=ANY(%s) UNION SELECT e.dependency_artifact_id FROM closure c JOIN kineticloop.safety_artifact_dependencies e ON e.artifact_id=c.id) "
+                "SELECT a.id,a.artifact_kind,a.artifact_identity,a.artifact_version,a.content_hash,a.revision,a.validity_kind,a.valid_from,a.valid_until,a.timeless_approval_policy,a.timeless_approval_reason FROM closure c JOIN kineticloop.safety_artifacts a ON a.id=c.id ORDER BY a.id",
+                (list(request.artifact_roots),),
+            ).fetchall()
+            artifact_proofs = []
+            for r in artifact_rows:
+                edges = [
+                    str(e[0])
+                    for e in db.execute(
+                        "SELECT dependency_artifact_id FROM kineticloop.safety_artifact_dependencies WHERE artifact_id=%s ORDER BY dependency_artifact_id",
+                        (r[0],),
+                    ).fetchall()
+                ]
+                artifact_proofs.append(
+                    dict(
+                        zip(
+                            (
+                                "artifact_id",
+                                "artifact_kind",
+                                "artifact_identity",
+                                "artifact_version",
+                                "content_hash",
+                                "artifact_revision",
+                                "validity_kind",
+                                "valid_from",
+                                "valid_until",
+                                "timeless_approval_policy",
+                                "timeless_approval_reason",
+                            ),
+                            (
+                                str(r[0]),
+                                *r[1:7],
+                                canonical_certificate_timestamp(r[7], "from"),
+                                canonical_certificate_timestamp(r[8], "until") if r[8] else None,
+                                r[9],
+                                r[10],
+                            ),
+                            strict=True,
+                        )
+                    )
+                    | {"dependency_ids": edges}
+                )
+            assert candidate["artifact_closure_ids"] == [str(r[0]) for r in artifact_rows]
+            assert candidate["artifact_root_ids"] == sorted(map(str, request.artifact_roots))
+            assert candidate["artifact_dependency_closure_hash"] == digest(artifact_proofs)
+            content_candidate = {
+                key: value
+                for key, value in candidate.items()
+                if key not in {"manifest_hash", "preparation"}
+            }
+            assert candidate["manifest_hash"] == digest(
+                {"source": json_value(asdict(source)), **content_candidate}
+            )
+            assert candidate["preparation"]["owner"] == seed["identity"].key
+            assert candidate["preparation"]["request"] == json_value(asdict(request))
+            if ready["status"] == "BUILDING":
+>               assert candidate["preparation"]["outcome"] == dict(ready)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               KeyError: 'outcome'
+
+tests/db/test_preparation.py:583: KeyError
+---------------------------- Captured stdout setup -----------------------------
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-154171e-0b068b742ff6', database_name='kineticloop_kl078_prep_154171e_0b068b742ff6') MIGRATION e8c2f1a6b904
+---------------------------- Captured stderr setup -----------------------------
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+----------------------------- Captured stdout call -----------------------------
+ACTUAL_SOURCE 703dbe78-7a7f-5439-89a4-118775caea7f SEALED
+PERSISTED_PROOFS {"artifact_closure_ids": ["6aac3580-5123-4b66-b28a-98edbf20884c", "9789b4e2-e230-41df-99a5-44f859c9ab6e"], "artifact_hash": "55cb383ed4039a776ff4da3790799a4784f948196c7b7b33290315dfa39c459d", "basis_hash": "c2816aa9022805dc94c74c877f465dda894428a67ce1d5fb7354cf325841fc29", "build": "43f30898-b50d-5b0f-8da6-642defd82921", "dependency_basis_hash": "9540eda7b58a08d3229f3ebae91be5d4d130eba55259c2ecf648cdc5b91690fc", "dependency_ids": ["32750ca5-4ce7-583c-8ead-635722d923fd", "b13d1cfa-dd65-584b-b510-6354d96673da", "ae0c1a7e-83d6-51ae-9fd0-797dc5418d14", "9be28b9b-c7e0-5640-a9f6-15d62894955d", "67ae7637-c790-53fe-92b5-071374ce8bcb", "89052103-f11e-529c-a5df-2fd693cb5f53"], "manifest_hash": "b31bf25b580b7b06fdffe10ab6814aa633a58068136ba6706e3be013704ef634", "projection": "7bd571ce-3a30-5223-981d-4542dbc35796", "source": "703dbe78-7a7f-5439-89a4-118775caea7f", "source_hash": "c653762cf2b932a6baf81ea2bebec1d411bf4d0d9752c01b26343422e088b352"}
+ACTUAL_SOURCE 2f3eca72-bdd7-546e-ade5-546b04d83e5f SEALED
+ACTUAL_SOURCE 9d547abb-7b3a-502e-973a-2d83f48d2d87 SEALED
+ACTUAL_SOURCE aeb040ae-66f1-51b2-ad55-903c3281b818 SEALED
+PERSISTED_PROOFS {"artifact_closure_ids": ["6aac3580-5123-4b66-b28a-98edbf20884c", "9789b4e2-e230-41df-99a5-44f859c9ab6e"], "artifact_hash": "55cb383ed4039a776ff4da3790799a4784f948196c7b7b33290315dfa39c459d", "basis_hash": "4213ed83104700a699a061dc3fe3a22276e0e0b42f2af4dec6b9639c6e8e023a", "build": "cff92bf6-684f-5859-b9c9-ad8dacb67eb1", "dependency_basis_hash": "f34108c42b47ef63d79166e397c3b3ec582ca98d1028bbfdd98440963302ff9e", "dependency_ids": ["24dd1654-20eb-5052-89bb-1f596479322b", "c628bbc7-3391-56ee-ae20-e0bfcd1b9fc3", "4160bcc9-9d4c-5331-b301-ceec80540243", "8ce32613-31d8-54fc-ae36-bd7c17564da9", "8f82360c-6f6c-5a7d-84d7-800aaa5943e1", "c1062f18-a9b3-5a37-9872-206e1e7c9673"], "manifest_hash": "1df6a4d7b8bac710b765aac85fc22783be67a807849d64f820ba165b95aed099", "projection": "a2cc4573-9ca3-5b9c-b903-97e4cf8b1287", "source": "aeb040ae-66f1-51b2-ad55-903c3281b818", "source_hash": "fc3e79d17f189f1f9da8e9e0727f5ef5cb1eb97f07d88af38d1c47ba744923f7"}
+ACTUAL_SOURCE b3eb0e1b-0461-5738-95c6-d25314f0576c SEALED
+OBSERVED_LOCAL_BLOCKER projection {'first': 117, 'second': 118}
+PERSISTED_PROJECTION_PROOF d19f0599-37d2-529f-96fe-2ad7f18d8871 aaf3b623b0f658b09c14e6538e98ee0ab30e4b52711a95e9e8fab6a79a3b523a [{'projection_id': 'd19f0599-37d2-529f-96fe-2ad7f18d8871', 'kind': 'COLLECTION', 'key': 'actual-facts', 'collection': 'actual-facts-and-absence:v1', 'policy': None, 'program': None, 'fact': None, 'factset': 'b3eb0e1b-0461-5738-95c6-d25314f0576c', 'catalog': None, 'mapping': None}, {'projection_id': 'd19f0599-37d2-529f-96fe-2ad7f18d8871', 'kind': 'ENGINE', 'key': 'test:kl078-engine-1557bb35-7a53-4bbf-bffb-4154678902dd:1', 'collection': None, 'policy': None, 'program': None, 'fact': None, 'factset': None, 'catalog': None, 'mapping': None}, {'projection_id': 'd19f0599-37d2-529f-96fe-2ad7f18d8871', 'kind': 'FACT', 'key': 'actual-member', 'collection': None, 'policy': None, 'program': None, 'fact': '0a129f32-7e39-46e1-90f7-cc17a93ba5b4', 'factset': None, 'catalog': None, 'mapping': None}, {'projection_id': 'd19f0599-37d2-529f-96fe-2ad7f18d8871', 'kind': 'FACTSET', 'key': 'sealed-input', 'collection': None, 'policy': None, 'program': None, 'fact': None, 'factset': 'b3eb0e1b-0461-5738-95c6-d25314f0576c', 'catalog': None, 'mapping': None}, {'projection_id': 'd19f0599-37d2-529f-96fe-2ad7f18d8871', 'kind': 'POLICY', 'key': 'selected-policy', 'collection': None, 'policy': 'a0d0d480-4793-4d15-bf4c-204b4fadffbc', 'program': None, 'fact': None, 'factset': None, 'catalog': None, 'mapping': None}, {'projection_id': 'd19f0599-37d2-529f-96fe-2ad7f18d8871', 'kind': 'PROGRAM', 'key': 'selected-program', 'collection': None, 'policy': None, 'program': '065c60c1-84bd-46ed-b0f7-0616dca88cf8', 'fact': None, 'factset': None, 'catalog': None, 'mapping': None}]
+PERSISTED_DUPLICATE_CLOSURE projection {'projection_id': 'd19f0599-37d2-529f-96fe-2ad7f18d8871', 'revision': 1, 'input_basis_hash': 'aaf3b623b0f658b09c14e6538e98ee0ab30e4b52711a95e9e8fab6a79a3b523a', 'dependency_ids': ['12b23039-a1c6-5bc2-a99f-a19b828e8caa', '5eff6eb0-f32f-53ea-a8f3-1ec33d782e9a', '7aaf9eac-2532-5f5e-9250-e7ccf20aebab', '89ed3416-02d0-5341-a368-bc1ffe8667fb', 'c446c34c-1a6a-52bc-903c-8043204bbf3c', 'f10f754f-cd22-5e83-b44d-e29372450872'], 'executable': False} [3, 18, 4]
+ACTUAL_SOURCE f9d1f22a-41eb-5233-808e-a7b33a537887 SEALED
+OBSERVED_LOCAL_BLOCKER build {'first': 119, 'second': 120}
+--------------------------- Captured stdout teardown ---------------------------
+LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 3.8055101251229644
+=========================== short test summary info ============================
+FAILED tests/db/test_preparation.py::test_duplicate_rollback - KeyError: 'out...
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 3 passed in 16.10s
