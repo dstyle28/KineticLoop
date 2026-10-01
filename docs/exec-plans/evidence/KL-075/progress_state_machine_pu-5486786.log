@@ -1,0 +1,7 @@
+TASK harness-backlog-v0.2/KL-075
+TESTED_COMMIT 54867864fc69b7ecbc75ad644d3baa817434598f
+COMMAND uv run pytest -q tests/unit/workflow/test_planning_progress.py::test_frozen_transitions
+PYTEST_ADDOPTS=-s --junitxml=<own evidence XML>; raw assertion and collection evidence
+.
+- generated xml file: /Users/davetian/.codex/worktrees/11ad/KineticLoop/docs/exec-plans/evidence/KL-075/progress_state_machine_pu-5486786.xml -
+1 passed in 0.19s
