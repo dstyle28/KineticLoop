@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/Users/davetian/.codex/worktrees/d804/KineticLoop/docs/exec-plans/evidence/HG-040/candidate_gateway_diagnostic.py", line 57, in <module>
+    exec(compile(source,str(path)+' [IN_MEMORY_RESEARCH_CANDIDATE]','exec'),module.__dict__)
+  File "/Users/davetian/.codex/worktrees/d804/KineticLoop/src/kineticloop/persistence/transactions.py [IN_MEMORY_RESEARCH_CANDIDATE]", line 159, in <module>
+  File "/Users/davetian/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/dataclasses.py", line 1265, in wrap
+    return _process_class(cls, init, repr, eq, order, unsafe_hash,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/dataclasses.py", line 983, in _process_class
+    and _is_type(type, cls, dataclasses, dataclasses.KW_ONLY,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/dataclasses.py", line 749, in _is_type
+    ns = sys.modules.get(cls.__module__).__dict__
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute '__dict__'. Did you mean: '__dir__'?

@@ -1,0 +1,200 @@
+{
+  "id": "KL-078",
+  "milestone": "M3",
+  "title": "Source-bound projection and manifest preparation repair",
+  "owner_role": "backend",
+  "depends_on": [
+    "KL-017",
+    "KL-019",
+    "KL-022",
+    "KL-023",
+    "KL-074"
+  ],
+  "commands": [],
+  "transaction_boundaries": [
+    "T3-PREPARATION",
+    "T3"
+  ],
+  "invariant_ids": [
+    "INV-03",
+    "INV-04",
+    "INV-05",
+    "INV-06",
+    "INV-07",
+    "INV-10",
+    "INV-16",
+    "INV-17"
+  ],
+  "table_ids": [
+    "S01",
+    "S02",
+    "S03",
+    "S04",
+    "S15",
+    "S16",
+    "S21",
+    "S22",
+    "S23",
+    "S24",
+    "S25",
+    "S49",
+    "S51"
+  ],
+  "required_test_layers": [
+    "PU",
+    "DC"
+  ],
+  "deliverables": [
+    "Source-bound projection and manifest preparation repair with exact owner and immutable identity contract.",
+    "Named positive/negative PU and real PostgreSQL checks with persisted rows/receipt/event/outbox assertions, bounded lock barriers and task-owned namespace inventory."
+  ],
+  "definition_of_done": "Every exact named check and oracle executes and passes on tested_commit with committed raw evidence and no skipped/xfail/zero-collection substitute; only declared scope is written, frozen guards and immutable history hold, all product/release/layer obligations remain independent. Actual owner-driven CanonicalViewService \u2192 RecordProjection \u2192 BuildManifest \u2192 T3 succeeds with immutable source binding and every denial, replay, duplicate, rollback and no-authority oracle; no new product/layer/release evidence is inferred.",
+  "entry_conditions": [
+    "Actual prerequisite PASS results, required reviews, and normal MERGED commits verified against protected base before first DB lifecycle.",
+    "M2 closure PASS: docs/exec-plans/milestones/M2.json; isolated TEST gate construction does not assume full G-SHADOW or production release closure.",
+    "KL074 actual normally merged readiness implementation verified; exclusive task resources/write paths available.",
+    "No result/review/integration for this unstarted task at protected base; every prospective check starts NOT_RUN."
+  ],
+  "status": "NOT_STARTED",
+  "evidence_refs": [],
+  "thread_id": "THREAD-KL-078",
+  "thread_mode": "INDEPENDENT_WORKTREE",
+  "context_files": [
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+    "src/kineticloop/contracts/commands.py",
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/persistence/protocol_execution.py",
+    "docs/contracts/protocol_execution.md",
+    "docs/exec-plans/completed/KL-017_RESULT.yaml",
+    "docs/exec-plans/completed/KL-019_RESULT.yaml",
+    "docs/exec-plans/completed/KL-022_RESULT.yaml",
+    "docs/exec-plans/completed/KL-023_RESULT.yaml",
+    "docs/exec-plans/completed/KL-074_RESULT.yaml",
+    "docs/exec-plans/evidence/HG-040/PREPARATION.md",
+    "src/kineticloop/persistence/metadata.py",
+    "src/kineticloop/persistence/factsets.py",
+    "src/kineticloop/protocol/factsets.py"
+  ],
+  "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+  "merge_unit": "ONE_PR",
+  "handoff_artifact": "docs/exec-plans/completed/KL-078_RESULT.yaml",
+  "shared_hotspot": true,
+  "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+  "task_identity": "harness-backlog-v0.2/KL-078",
+  "requirements_covered": [],
+  "checks_required_for_this_task": [
+    "preparation_revision_pu",
+    "preparation_capability_pu",
+    "preparation_namespace_pu",
+    "preparation_owner_pipeline_dc",
+    "preparation_basis_denials_dc",
+    "preparation_immutable_replay_dc",
+    "preparation_duplicate_rollback_dc",
+    "preparation_no_authority_dc",
+    "preparation_suite_dc",
+    "harness_validation_passes",
+    "unit_regressions_pass",
+    "harness_regressions_pass",
+    "lint_passes",
+    "typecheck_passes"
+  ],
+  "resource_keys": [
+    "transaction_interfaces"
+  ],
+  "write_paths": [
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/persistence/preparation.py",
+    "tests/unit/persistence/test_preparation.py",
+    "tests/db/test_preparation.py",
+    "docs/contracts/preparation.md"
+  ],
+  "review_requirements": [
+    "DB_CONCURRENCY",
+    "GENERAL",
+    "PROTOCOL"
+  ],
+  "conditional_depends_on": [],
+  "environment_requirements": [
+    "Exact task-owned SHA/resolved-worktree-derived DB and Compose namespace per suite; isolated TEST subjects/policies/environments; no foreign legacy fixture lifecycle on shared Docker."
+  ],
+  "packet_refinement": "ENFORCEABLE",
+  "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+  "write_paths_status": "ENFORCEABLE",
+  "evidence_paths": [
+    "docs/exec-plans/evidence/KL-078/**"
+  ],
+  "check_contracts": [
+    {
+      "check_id": "preparation_revision_pu",
+      "command": "uv run pytest -q tests/unit/persistence/test_preparation.py::test_server_revision",
+      "pass_oracle": "Exact RecordProjection supplies immutable server-owned S21 revision and provenance bound to authenticated subject/kind/engine/basis/window/content/computation identity. Caller revision/provenance override rejects before mutation; unchanged input returns identical identity, changed content under same identity conflicts, changed basis creates new immutable revision identity. REQUIRED_FIELDS stays complete; no caller column permission or global required-field relaxation."
+    },
+    {
+      "check_id": "preparation_capability_pu",
+      "command": "uv run pytest -q tests/unit/persistence/test_preparation.py::test_exact_capabilities",
+      "pass_oracle": "Actual gateway permits only respective RecordProjection S21/S22 and BuildManifest S23 surfaces with verified exact basis. Foreign owner/table/column, fabricated lock inventory, raw SQL access, SUBJECT translation, missing typed basis and unguarded callback inserts fail closed. Existing public wire schema, 39-command matrix, PREPARATION boundaries and execute_command rejection remain unchanged; S34-S37 workflow path is untouched."
+    },
+    {
+      "check_id": "preparation_namespace_pu",
+      "command": "uv run pytest -q tests/unit/persistence/test_preparation.py::test_namespace",
+      "pass_oracle": "Before first real lifecycle prove exact task/SHA/resolved-root namespace derivation and every nested bootstrap/reset/cleanup validation; peer root, malformed SHA/digest, wrong label, arbitrary/ambient/default/foreign project/database deny before destructive entry. bootstrap_two_phase receives own selected lifecycle and finally cleanup revalidates it."
+    },
+    {
+      "check_id": "preparation_owner_pipeline_dc",
+      "command": "uv run pytest -q tests/db/test_preparation.py::test_owner_pipeline",
+      "pass_oracle": "Real PG CanonicalViewService.begin_build/write_candidate/complete_factset/seal_factset produces exact actual SEALED S15 from registered TEST subject/program/policy and admitted immutable source inputs. Actual RecordProjection records S21 and complete S22 positive plus collection/absence dependencies atomically; BuildManifest produces complete BUILDING then READY S23 under exact local build ownership. Exact persisted hashes/refs/roles/artifact closure derive from these inputs, then actual ProtocolExecutionService.publish T3 produces S24/S25 plus S01 generation/pointer and receipt/event/outbox once. No S15/S16, S21/S22/S23 or S24/S25 output seeds. Every preparation commit leaves S01 generation/frontier/epoch/pointers and receipt/event/outbox unchanged; only actual T2 seal/T3 may advance their frozen state."
+    },
+    {
+      "check_id": "preparation_basis_denials_dc",
+      "command": "uv run pytest -q tests/db/test_preparation.py::test_basis_denials",
+      "pass_oracle": "Actual real PG owner gateways reject cross-subject/nonexistent/nonsealed S15, missing/null/foreign FACTSET references or dependencies, wrong projection parent, incomplete/duplicate role closure, wrong policy/program/artifacts and exact source hash conflict with zero new rows/changed rows. Cover BUILDING, READY and SEALED source states produced by actual builders, never raw status seeds. Exact input validation is exclusive to S22/S23 under their owners, not a blanket FK exemption. Independently show missing/stale epoch/frontier/factset/program/policy/dependency/validity/revoked artifact causes actual T3 denial with zero target/generation/receipt/event/outbox effects; stale preparation cannot be relabeled current."
+    },
+    {
+      "check_id": "preparation_immutable_replay_dc",
+      "command": "uv run pytest -q tests/db/test_preparation.py::test_immutable_replay",
+      "pass_oracle": "ACK-loss retry returns exact historical projection/dependency/build identities with no mutation or current/execution authority. Changed same-key content conflicts. Byte-identical S21/S22 and READY/PUBLISHED S23 candidate history survives replay; caller revision injection, updates/dependency replacement, READY basis/epoch relabeling, terminal reopening and unauthorized generic preparation mutations reject. T3 replay retains historical original IDs and cannot repoint S01; subsequent independent publication rechecks current basis."
+    },
+    {
+      "check_id": "preparation_duplicate_rollback_dc",
+      "command": "uv run pytest -q tests/db/test_preparation.py::test_duplicate_rollback",
+      "pass_oracle": "Real PG same-computation and same-build duplicate contenders with bounded Events/futures and observed pg_blocking_pids produce one immutable result/dependency closure/build and no overwrite. Exact S23 local locks serialize BUILDING completion; READY candidate cannot change. Inject failure after S21, midway S22 and before/after READY transition then assert full transaction rollback including unchanged S01/receipt/event/outbox. Actual T3 rollback assertions remain enforced. No sleeps establish ordering, no coordination/external waits inside preparation."
+    },
+    {
+      "check_id": "preparation_no_authority_dc",
+      "command": "uv run pytest -q tests/db/test_preparation.py::test_no_authority",
+      "pass_oracle": "Preparation holds neither S01 nor SafetyRegistry coordination locks, writes no generation/head/P/A/session/binding/intent success, and grants no execution/production authority. An observed S01 blocker does not block independent immutable preparation; actual T3 uses unchanged shared registry then S01 ordering and rejects stale captured basis after guarded owner input update. Wrong TEST principal/policy/environment and PRODUCTION/SHADOW attempts through fixture ingress reject with zero effects. Provider/network calls absent; planned values never populate actual facts."
+    },
+    {
+      "check_id": "preparation_suite_dc",
+      "command": "uv run pytest -q tests/db/test_preparation.py",
+      "pass_oracle": "Entire own real-PG preparation suite runs without skips/xfail/zero collection. Namespace inventory/current_database/migration revision/persisted source/output IDs/cleanup/deadlines and raw logs recorded. Full legacy tests/db regressions run only through existing unchanged hosted CI on fresh VM; all normal quality and selected-task merge gates pass before normal merge."
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "command": "uv run kl check-harness",
+      "pass_oracle": "HARNESS_CHECK_PASS; frozen/index/packet/prospective status and revision-bound scope validate."
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "command": "uv run kl test-unit",
+      "pass_oracle": "All repository unit tests pass, no newly skipped/xfail or suppressed failures."
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "command": "uv run kl test-harness",
+      "pass_oracle": "All harness regressions pass, including unchanged command/owner/frozen gates."
+    },
+    {
+      "check_id": "lint_passes",
+      "command": "uv run kl lint",
+      "pass_oracle": "Repository lint passes."
+    },
+    {
+      "check_id": "typecheck_passes",
+      "command": "uv run kl typecheck",
+      "pass_oracle": "Repository typecheck passes."
+    }
+  ]
+}

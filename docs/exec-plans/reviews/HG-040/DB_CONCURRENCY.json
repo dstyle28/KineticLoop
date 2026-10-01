@@ -1,0 +1,49 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-040",
+  "reviewed_head_sha": "5f41d88c5f8c3142b43b3101486c1fa149394543",
+  "review_type": "DB_CONCURRENCY",
+  "status": "PASS",
+  "findings": [],
+  "review_contract_version": "v0.2",
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-040.yaml",
+    "docs/exec-plans/active/KL-078.md",
+    "docs/exec-plans/active/KL-076.md",
+    "docs/exec-plans/evidence/HG-040/PREPARATION.md",
+    "docs/exec-plans/evidence/HG-040/BASE_REFRESH.md",
+    "docs/exec-plans/evidence/HG-040/original_gateway_reproduction-35044fd.log",
+    "docs/exec-plans/evidence/HG-040/candidate_gateway_feasibility-35044fd.log",
+    "docs/exec-plans/evidence/HG-040/upstream_scope_regressions-35044fd.log",
+    "docs/exec-plans/evidence/HG-040/scope_audit-35044fd.log",
+    "tests/harness/test_preparation_scope.py",
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/persistence/metadata.py",
+    "src/kineticloop/persistence/factsets.py",
+    "src/kineticloop/persistence/protocol_execution.py",
+    "migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    ".github/workflows/db.yml"
+  ],
+  "observations": [
+    "Fresh independent read-only review of exact SHA against protected base 70dc4863ccdca95f7a44e79b68501a698262e323. No DB opened, Docker/lifecycle invoked, network used, foreign DB fixture run, repository edits or commits made.",
+    "Governance only: KL078 is new NOT_STARTED without task/result/review/integration evidence and no covered product requirements. KL076 remains unresulted; only dependency, read context and upstream source requirement change. Frozen authority, source, migrations, roles, public wire/39-command owner matrix, CI and lifecycle implementations are unchanged.",
+    "Actual S21 NATURAL_KEYS/REQUIRED_FIELDS require revision while caller insert capability omits revision; both original pre-SQL denials independently reproduce. Existing revision DEFAULT 1 is unreachable. Exact server-owned immutable revision/provenance reconciliation within RecordProjection is feasible in declared transactions.py/preparation.py without metadata relaxation or granting revision to callers.",
+    "Actual preparation initializes no locked_ids and actual S22/S23 factset binding rejects; execute_command rejects PREPARATION owners. Packet requires exact same-subject existing SEALED S15 validation under respective owners, including missing/null/foreign references and wrong parent denials. It forbids fabricated lock inventories, blanket FK exemption, arbitrary callback capabilities, raw SQL output escape and SUBJECT translation.",
+    "Frozen DB S21 independent short preparation and S22 same-transaction seal, S23 immutable READY candidate and no epoch relabeling are explicitly carried into prospective acceptance. Packet requires atomic S21/S22 closure, exact S23 local row lock for BUILDING completion, ACK-loss historical identities, same-key content conflict, immutable READY/PUBLISHED history and rollback. These are requirements, not claims proved by the in-memory candidate.",
+    "Actual T3 _prepare_manifest_publication rechecks locked READY S23 against current S01 epoch/frontier/program/policy/factset, exact SEALED source, active-policy role/dependency completeness, positive fact membership, exact candidate hashes, artifact closure/release/policy bindings and validity. Registry guard takes S51 FOR SHARE before S01 FOR UPDATE. Packet preserves this path read-only and requires actual T3 positive and zero-effect stale/denial/replay/rollback assertions; preparation has neither S01 nor registry coordination.",
+    "Prospective real-PG positive begins with actual CanonicalViewService begin/write/complete/seal, then actual RecordProjection S21/S22 and BuildManifest BUILDING/READY, ending at actual ProtocolExecutionService.publish S24/S25 and atomic generation/pointer/receipt/event/outbox. No target output seeds. Race source changes use actual AcceptFactRevision/seal and SafetyRegistryService. Duplicate and S01-independence oracles require bounded Events/futures, observed pg_blocking_pids and zero-authority assertions; no sleeps establish ordering.",
+    "Exact task-owned namespace contract derives first7 lowercase HEAD SHA and first12 SHA256(os.fsencode(resolved root)), fixed suite label and KL078 prefixes; validates before every construction/bootstrap/reset/finally destroy, rejects malformed/peer/foreign/ambient values and passes selected lifecycle into bootstrap_two_phase. All helpers remain in declared tests; hotspot transaction_interfaces serializes overlapping writers. Legacy full DB regression uses existing unchanged db.yml fresh ubuntu-latest job and normal gates, not local foreign fixtures or new CI.",
+    "Independent focused reruns: 129 preparation/M3 governance tests PASS, 8 transaction-owner/factset pure unit tests PASS, five actual original gateway failures with zero SQL calls PASS, candidate four positives/nine negatives PASS. Candidate substitutes source in memory with MagicMock; it proves neither PostgreSQL concurrency nor typed ingress/provenance/replay/local-lock/T3 acceptance. All prospective KL078 PU/DC checks remain NOT_RUN.",
+    "Integrity audit verified all ten final PASS log envelopes and sidecars bind tested_commit 35044fd3d94472b41b1bbe6c0313a2a7701c8063, protected base, zero exit and exact raw SHA256/byte counts. Tested-to-reviewed suffix is one linear commit containing only new own evidence files and HG040 governance record; frozen/source checks unchanged. Review evidence_refs all exist at exact reviewed SHA.",
+    {
+      "independent_tmp_logs_and_sha256": {
+        "/private/tmp/hg040-db-review-pure-tests.log": "e7c327161f64fe9ba60cfaf06521a0649f567b97bbae7241d0ab42265f8538a7",
+        "/private/tmp/hg040-db-review-owner-tests.log": "1b2656f5fc4bff75b8cd52aba0844fe99ec5f4f66ebf1c6f920dd4c165b9649e",
+        "/private/tmp/hg040-db-review-original.log": "1e1f2850739182a724b4556a47fcf2b119059a92b2d120099ba5aa25462527c5",
+        "/private/tmp/hg040-db-review-candidate.log": "ef5429c07a2d4caccbeb9d7e37bc9597f01068b1e804b8cdcf3ac7f51f6df46c",
+        "/private/tmp/hg040-db-review-integrity.json": "0e63575414523b0724ecee37f0d09683c9625c17188589ad5ef42dc7823b6853"
+      }
+    }
+  ]
+}

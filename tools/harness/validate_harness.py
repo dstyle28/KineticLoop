@@ -580,7 +580,7 @@ def packet_errors(task, text):
     if checks is None or sorted(bullets(checks)) != sorted(task['checks_required_for_this_task']):
         errors.append('packet-checks:' + name)
     if (name in M2_REFINED_TASK_IDS or (name == 'KL-047'
-            and task.get('packet_refinement') == 'ENFORCEABLE') or (name in (WAVE_REFINED_TASK_IDS | {'KL-019', 'KL-025', 'KL-074', 'KL-026', 'KL-027', 'KL-075', 'KL-076', 'KL-077'})
+            and task.get('packet_refinement') == 'ENFORCEABLE') or (name in (WAVE_REFINED_TASK_IDS | {'KL-019', 'KL-025', 'KL-074', 'KL-026', 'KL-027', 'KL-075', 'KL-076', 'KL-077', 'KL-078'})
                                       and task.get('packet_refinement') == 'ENFORCEABLE')):
         read_first = section(text, 'Read first') or ''
         if bullets(read_first) != task.get('context_files', []):
@@ -2772,7 +2772,7 @@ def task_definition_errors(
                 and (task.get('packet_refinement') != 'ENFORCEABLE'
                      or task.get('write_paths_status') != 'ENFORCEABLE')):
             errors.append('ready-write-scope-unrefined:' + name)
-    refined = [tasks[name] for name in sorted(M2_REFINED_TASK_IDS | WAVE_REFINED_TASK_IDS | {'KL-047', 'KL-074', 'KL-026', 'KL-027', 'KL-075', 'KL-076', 'KL-077'})
+    refined = [tasks[name] for name in sorted(M2_REFINED_TASK_IDS | WAVE_REFINED_TASK_IDS | {'KL-047', 'KL-074', 'KL-026', 'KL-027', 'KL-075', 'KL-076', 'KL-077', 'KL-078'})
                if name in tasks and (name in M2_REFINED_TASK_IDS
                                      or tasks[name].get('packet_refinement') == 'ENFORCEABLE')]
     for position, left in enumerate(refined):
@@ -3935,17 +3935,9 @@ def readiness_workflow_errors(base_listing, after):
 
 
 
-M3_NEXT_WAVE_IDS = frozenset({'KL-026', 'KL-027', 'KL-075', 'KL-076', 'KL-077'})
-M3_NEXT_WAVE_DEFINITION_HASHES = {'KL-026': '4f7c470fa4cbbe77be7dd3a3c18e1576eab282a710097cfeaf0a74a7e352ca8e',
- 'KL-027': 'c096b030c9cdb6ac9d71d3ed309660bcb68e5e30b7ad8316b3ccd5df4ae7e625',
- 'KL-075': '1f2f0fbe783abc2368fc933db23732c5416338a8f67a4fea52aac65dce78aa50',
- 'KL-076': '8fbe465e75fe98c608b23ffe7e007198f1763ef91e8cae6f17811b9475096b99',
- 'KL-077': '359fa38b0d063fa9bc1801f6a62a6e64cf8e9caf85d1b1dff3d3d5ea06423c17'}
-M3_NEXT_WAVE_PACKET_HASHES = {'KL-026': '31c83ce523976265f89aa2be3890d2b428d1a23d65ae486f24e266333c854942',
- 'KL-027': 'c35634ce527adb3e0db39697a91874091f14a74c1a5254b910d46332e004a4cc',
- 'KL-075': '698722f17f1b8b977b440e79b11fe240d1605304fd95bf26f98abbf0520ee835',
- 'KL-076': 'a49d66fc98b4bd858c85cc5ede8641957a1eff36eed50342222caa2ae7f9696c',
- 'KL-077': 'caea28c083db164802146c23773f4f538314764480363a18b3f47e50834100fe'}
+M3_NEXT_WAVE_IDS = frozenset({'KL-026', 'KL-027', 'KL-075', 'KL-076', 'KL-077', 'KL-078'})
+M3_NEXT_WAVE_DEFINITION_HASHES = {'KL-026': '4f7c470fa4cbbe77be7dd3a3c18e1576eab282a710097cfeaf0a74a7e352ca8e', 'KL-027': 'c096b030c9cdb6ac9d71d3ed309660bcb68e5e30b7ad8316b3ccd5df4ae7e625', 'KL-075': '1f2f0fbe783abc2368fc933db23732c5416338a8f67a4fea52aac65dce78aa50', 'KL-076': '97912a9834f1fefa97455fe7466a97aba6562995de34023814476b227698b5b6', 'KL-077': '359fa38b0d063fa9bc1801f6a62a6e64cf8e9caf85d1b1dff3d3d5ea06423c17', 'KL-078': 'ed872c583bdead8c9486183f31fdcebc8bf7f5591a53b724ff7ae261844c8138'}
+M3_NEXT_WAVE_PACKET_HASHES = {'KL-026': '31c83ce523976265f89aa2be3890d2b428d1a23d65ae486f24e266333c854942', 'KL-027': 'c35634ce527adb3e0db39697a91874091f14a74c1a5254b910d46332e004a4cc', 'KL-075': '698722f17f1b8b977b440e79b11fe240d1605304fd95bf26f98abbf0520ee835', 'KL-076': '354dc2a62a65e8266c869a412282a363fe4347a401d52eca31cf84adf15603b7', 'KL-077': 'caea28c083db164802146c23773f4f538314764480363a18b3f47e50834100fe', 'KL-078': 'cc742bb17b2f282fdb78cb65971b9c9d7c39d73cb1935221c25470e266bf7784'}
 
 
 def m3_next_wave_definition_errors(task):
