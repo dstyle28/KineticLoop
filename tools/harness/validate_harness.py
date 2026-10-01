@@ -103,6 +103,9 @@ PLANNING_SUBJECT_SCOPE_PATH = 'tests/db/test_subject_scope.py'
 PLANNING_SUBJECT_SCOPE_CONTRACT = (
     'KL-024 may replace only the two expected-version expressions REVISION with _MIGRATIONS.HEAD_REVISION in test_populated_downgrade_fails_before_guard_or_acl_changes. Preserve every other byte in tests/db/test_subject_scope.py, including all downgrade exception, trigger, lookup, ACL, namespace, binding and retained-data assertions. Do not skip tests, alter historical migrations, change guards or weaken subject isolation.'
 )
+LEDGER_PLANNING_FIXTURE_PATH = "tests/db/test_planning.py"
+LEDGER_PLANNING_FIXTURE_CONTRACT = 'KL-025 may add only import os, the exact _planning_namespace helper and its fixture assignment from HG-034 planning_namespace.patch to tests/db/test_planning.py. Preserve every other byte, including all six planning tests, assertions, seeds, policies, bootstrap and cleanup. KINETICLOOP_KL024_FIXTURE_OWNER unset preserves KL024 defaults; exact KL-025 derives validated task-owned SHA/worktree namespaces; every other value fails before reset/bootstrap/teardown. No arbitrary project/database target, skip, semantic fixture repair or prerequisite product edit is authorized.'
+LEDGER_PLANNING_NAMESPACE_HELPER = 'def _planning_namespace(short: str) -> DatabaseNamespace:\n    if not 7 <= len(short) <= 12 or any(c not in "0123456789abcdef" for c in short):\n        raise ValueError("invalid planning fixture commit suffix")\n    owner = os.environ.get("KINETICLOOP_KL024_FIXTURE_OWNER")\n    if owner is None:\n        return DatabaseNamespace(f"kineticloop-kl024-{short}", f"kineticloop_kl024_{short}")\n    if owner != "KL-025":\n        raise ValueError("unsupported planning fixture owner")\n    suffix = DatabaseNamespace.for_worktree(ROOT).project_name[-12:]\n    return DatabaseNamespace(\n        f"kineticloop-kl025-plan-{short}-{suffix}",\n        f"kineticloop_kl025_plan_{short}_{suffix}",\n    )\n\n\n'
 M2_REGRESSION_COMMANDS = [
     'uv run pytest -q -p no:cacheprovider',
     'uv run kl check-harness',
@@ -669,6 +672,10 @@ def packet_errors(task, text):
         if ((section(text, 'Subject-scope current-head exception') or '').strip()
                 != PLANNING_SUBJECT_SCOPE_CONTRACT):
             errors.append('packet-planning-subject-scope-contract:' + name)
+    if name == 'KL-025':
+        if ((section(text, 'Planning fixture namespace exception') or '').strip()
+                != LEDGER_PLANNING_FIXTURE_CONTRACT):
+            errors.append('packet-ledger-planning-fixture-contract:' + name)
     return errors
 
 
@@ -767,7 +774,34 @@ def planning_subject_scope_content_errors(before: bytes, after: bytes) -> list[s
     return []
 
 
+def ledger_planning_fixture_candidate(before: bytes) -> bytes:
+    """Build only the reviewed namespace adaptation; fail on baseline drift."""
+    text = before.decode()
+    imports = "import subprocess\n"
+    fixture = "@pytest.fixture()\ndef database_urls()"
+    old = '    lifecycle.namespace = DatabaseNamespace(\n        f"kineticloop-kl024-{short}", f"kineticloop_kl024_{short}"\n    )'
+    if (text.count(imports) != 1 or text.count(fixture) != 1 or text.count(old) != 1
+            or "def _planning_namespace(" in text or "import os\n" in text):
+        raise ValueError("unexpected planning namespace baseline")
+    return text.replace(imports, "import os\n" + imports, 1).replace(
+        fixture, LEDGER_PLANNING_NAMESPACE_HELPER + fixture, 1).replace(
+        old, "    lifecycle.namespace = _planning_namespace(short)", 1).encode()
+
+
+def ledger_planning_fixture_content_errors(before: bytes, after: bytes) -> list[str]:
+    """No assertion, seed, policy, bootstrap, teardown or unrelated byte may drift."""
+    try:
+        expected = ledger_planning_fixture_candidate(before)
+    except (ValueError, UnicodeError):
+        return ["ledger-planning-fixture-baseline-unexpected:KL-025"]
+    return [] if after == expected else ["ledger-planning-fixture-content-scope:KL-025"]
+
+
 def task_fixture_scope_errors(root, base, head, task_id, changed):
+    if task_id == 'KL-025' and LEDGER_PLANNING_FIXTURE_PATH in changed:
+        return ledger_planning_fixture_content_errors(
+            git(root, 'show', base + ':' + LEDGER_PLANNING_FIXTURE_PATH),
+            git(root, 'show', head + ':' + LEDGER_PLANNING_FIXTURE_PATH))
     if task_id != 'KL-024':
         return []
     errors = []
@@ -781,7 +815,7 @@ def task_fixture_scope_errors(root, base, head, task_id, changed):
 
 
 def ledger_definition_errors(task):
-    """Pin KL025's conditional ledger contract without assuming unmerged APIs."""
+    """Pin KL025 ledger semantics and the narrow merged-prerequisite fixture adaptation."""
     if task.get("id") != "KL-025":
         return []
     expected = {
@@ -812,7 +846,7 @@ def ledger_definition_errors(task):
             "M2 closure PASS: docs/exec-plans/milestones/M2.json",
             "G-SHADOW and G-REGISTRY remain closed by merged M2 closure",
             "KL-024 implementation and PASS result with fresh required reviews are merged; prerequisite APIs and root-budget representation verified on that merged SHA",
-            "Actual merged KL-024 planning API and tests support the declared service integration and task-owned fixture namespace; mismatch requires governance refinement before scheduling",
+            "Actual merged KL-024 API/root-budget/fence and all called regression fixtures are verified; apply only the authorized planning namespace adaptation and prove task-owned isolation before required checks; any other mismatch requires governance refinement before scheduling",
         ],
         "environment_requirements": ["ISOLATED_POSTGRESQL_NAMESPACE"],
         "deliverables": [
@@ -834,6 +868,7 @@ def ledger_definition_errors(task):
             "ledger_physical_dispatch_boundary_pu",
             "ledger_unit_suite_passes",
             "ledger_db_suite_passes",
+            "planning_fixture_namespace_isolation_pu",
             "planning_prerequisite_regressions_pass",
             "transaction_owner_regressions_pass",
             "lint_passes",
@@ -892,8 +927,13 @@ def ledger_definition_errors(task):
                 "pass_oracle": "Entire migrated PostgreSQL service/interleaving file exits 0 without failed/skipped/deselected tests.",
             },
             {
+                "check_id": "planning_fixture_namespace_isolation_pu",
+                "command": "uv run pytest -q tests/db/test_call_ledger.py::test_planning_fixture_namespace_isolation",
+                "pass_oracle": "Prove unset selector preserves KL024 defaults; exact KL-025 selects bounded lowercase-hex SHA plus resolved-worktree digest namespaces; different worktrees at the same SHA differ. Empty, malformed or arbitrary selectors and invalid SHA suffixes fail before any reset/bootstrap/teardown runner call. Verify actual planning regression reset and cleanup use only the selected KL025-owned namespace; no existing planning semantic assertion changes."
+            },
+            {
                 "check_id": "planning_prerequisite_regressions_pass",
-                "command": "uv run pytest -q tests/unit/workflow/test_planning.py tests/db/test_planning.py",
+                "command": "KINETICLOOP_KL024_FIXTURE_OWNER=KL-025 uv run pytest -q tests/unit/workflow/test_planning.py tests/db/test_planning.py",
                 "pass_oracle": "Actual merged KL024 suites pass without failed/skipped/deselected tests in KL025-owned isolated planning fixture namespaces; unchanged KL024 contract and historical evidence remain intact.",
             },
             {
@@ -922,6 +962,7 @@ def ledger_definition_errors(task):
             "tests/unit/workflow/test_call_ledger.py",
             "tests/db/test_call_ledger.py",
             "docs/contracts/call_ledger.md",
+            "tests/db/test_planning.py",
         ],
         "write_paths_status": "ENFORCEABLE",
         "review_requirements": ["DB_CONCURRENCY", "GENERAL", "PROTOCOL"],

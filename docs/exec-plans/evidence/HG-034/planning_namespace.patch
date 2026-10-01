@@ -1,0 +1,41 @@
+--- a/tests/db/test_planning.py
++++ b/tests/db/test_planning.py
+@@ -1,5 +1,6 @@
+ from __future__ import annotations
+ 
++import os
+ import subprocess
+ import time
+ from collections.abc import Iterator, Mapping
+@@ -61,15 +62,28 @@
+ }
+ 
+ 
++def _planning_namespace(short: str) -> DatabaseNamespace:
++    if not 7 <= len(short) <= 12 or any(c not in "0123456789abcdef" for c in short):
++        raise ValueError("invalid planning fixture commit suffix")
++    owner = os.environ.get("KINETICLOOP_KL024_FIXTURE_OWNER")
++    if owner is None:
++        return DatabaseNamespace(f"kineticloop-kl024-{short}", f"kineticloop_kl024_{short}")
++    if owner != "KL-025":
++        raise ValueError("unsupported planning fixture owner")
++    suffix = DatabaseNamespace.for_worktree(ROOT).project_name[-12:]
++    return DatabaseNamespace(
++        f"kineticloop-kl025-plan-{short}-{suffix}",
++        f"kineticloop_kl025_plan_{short}_{suffix}",
++    )
++
++
+ @pytest.fixture()
+ def database_urls() -> Iterator[dict[str, str]]:
+     short = subprocess.check_output(
+         ["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, text=True
+     ).strip()
+     lifecycle = DatabaseLifecycle(ROOT)
+-    lifecycle.namespace = DatabaseNamespace(
+-        f"kineticloop-kl024-{short}", f"kineticloop_kl024_{short}"
+-    )
++    lifecycle.namespace = _planning_namespace(short)
+     try:
+         urls = _MIGRATIONS.bootstrap_two_phase(lifecycle)
+         with psycopg.connect(urls["admin"], autocommit=True) as db:

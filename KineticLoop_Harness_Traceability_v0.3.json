@@ -2711,7 +2711,7 @@
         "M2 closure PASS: docs/exec-plans/milestones/M2.json",
         "G-SHADOW and G-REGISTRY remain closed by merged M2 closure",
         "KL-024 implementation and PASS result with fresh required reviews are merged; prerequisite APIs and root-budget representation verified on that merged SHA",
-        "Actual merged KL-024 planning API and tests support the declared service integration and task-owned fixture namespace; mismatch requires governance refinement before scheduling"
+        "Actual merged KL-024 API/root-budget/fence and all called regression fixtures are verified; apply only the authorized planning namespace adaptation and prove task-owned isolation before required checks; any other mismatch requires governance refinement before scheduling"
       ],
       "environment_requirements": [
         "ISOLATED_POSTGRESQL_NAMESPACE"
@@ -2735,6 +2735,7 @@
         "ledger_physical_dispatch_boundary_pu",
         "ledger_unit_suite_passes",
         "ledger_db_suite_passes",
+        "planning_fixture_namespace_isolation_pu",
         "planning_prerequisite_regressions_pass",
         "transaction_owner_regressions_pass",
         "lint_passes",
@@ -2793,8 +2794,13 @@
           "pass_oracle": "Entire migrated PostgreSQL service/interleaving file exits 0 without failed/skipped/deselected tests."
         },
         {
+          "check_id": "planning_fixture_namespace_isolation_pu",
+          "command": "uv run pytest -q tests/db/test_call_ledger.py::test_planning_fixture_namespace_isolation",
+          "pass_oracle": "Prove unset selector preserves KL024 defaults; exact KL-025 selects bounded lowercase-hex SHA plus resolved-worktree digest namespaces; different worktrees at the same SHA differ. Empty, malformed or arbitrary selectors and invalid SHA suffixes fail before any reset/bootstrap/teardown runner call. Verify actual planning regression reset and cleanup use only the selected KL025-owned namespace; no existing planning semantic assertion changes."
+        },
+        {
           "check_id": "planning_prerequisite_regressions_pass",
-          "command": "uv run pytest -q tests/unit/workflow/test_planning.py tests/db/test_planning.py",
+          "command": "KINETICLOOP_KL024_FIXTURE_OWNER=KL-025 uv run pytest -q tests/unit/workflow/test_planning.py tests/db/test_planning.py",
           "pass_oracle": "Actual merged KL024 suites pass without failed/skipped/deselected tests in KL025-owned isolated planning fixture namespaces; unchanged KL024 contract and historical evidence remain intact."
         },
         {
@@ -2832,7 +2838,8 @@
         "src/kineticloop/persistence/transactions.py",
         "tests/unit/workflow/test_call_ledger.py",
         "tests/db/test_call_ledger.py",
-        "docs/contracts/call_ledger.md"
+        "docs/contracts/call_ledger.md",
+        "tests/db/test_planning.py"
       ],
       "write_paths_status": "ENFORCEABLE",
       "review_requirements": [
