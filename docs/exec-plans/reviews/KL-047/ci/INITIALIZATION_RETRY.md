@@ -22,3 +22,21 @@ A bounded fresh hosted CI attempt follows this REVIEW_RECORD_ONLY preservation
 commit, with implementation, tests, fixtures, contracts, result and tested
 revision unchanged. No local foreign database fixture or lifecycle repair is
 performed. New head CI must pass normally before merge; no admin bypass applies.
+
+## Second PR lifecycle attempt
+
+The fresh review-record head `40ff6d956cf220dac7f9e4099535d672d195927d`
+also hit startup/reset fixture errors in
+[run 36813573659](https://github.com/dstyle28/KineticLoop/actions/runs/36813573659):
+188 tests passed, 56 setup errors, exit 1. The first missing socket occurred in
+planning fixture setup; transaction fixtures subsequently observed PostgreSQL's
+temporary initialization server shutting down during reset. The raw failed-step
+transcript is preserved in `36813573659-attempt-1-failure.log`. No evaluation test
+or evaluation import was involved in these database fixture failures.
+
+Preserving this second failure produces one final review-record head and a third
+full hosted attempt. This is the retry bound for unchanged implementation: no
+further blind retry or lifecycle edit is authorized by this diagnosis. If the
+final attempt fails, leave the PR unmerged with concrete CI failure evidence;
+resolution belongs to the separately assigned lifecycle readiness repair, after
+which base advancement requires retesting and fresh reviews as applicable.
