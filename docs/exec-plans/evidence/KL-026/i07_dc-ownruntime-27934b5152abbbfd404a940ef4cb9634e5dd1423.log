@@ -1,0 +1,59 @@
+
+KL026_LIFECYCLE {"tested_commit": "27934b5152abbbfd404a940ef4cb9634e5dd1423", "root": "/Users/davetian/.codex/worktrees/b89d/KineticLoop", "project": "kineticloop-kl026-interleave-27934b5-23708ac340b9", "database": "kineticloop_kl026_interleave_27934b5_23708ac340b9", "commands": [["docker", "compose", "--project-name", "kineticloop-kl026-interleave-27934b5-23708ac340b9", "--file", "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml", "config", "--quiet"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-27934b5-23708ac340b9", "--file", "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml", "up", "--detach", "postgres"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-27934b5-23708ac340b9", "--file", "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml", "exec", "--no-TTY", "postgres", "pg_isready", "--host", "127.0.0.1", "--port", "5432", "--username", "kineticloop", "--dbname", "postgres"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-27934b5-23708ac340b9", "--file", "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml", "exec", "--no-TTY", "postgres", "psql", "--username", "kineticloop", "--dbname", "postgres", "--set", "ON_ERROR_STOP=1", "--tuples-only", "--no-align", "--command", "DROP DATABASE IF EXISTS \"kineticloop_kl026_interleave_27934b5_23708ac340b9\" WITH (FORCE);"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-27934b5-23708ac340b9", "--file", "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml", "exec", "--no-TTY", "postgres", "psql", "--username", "kineticloop", "--dbname", "postgres", "--set", "ON_ERROR_STOP=1", "--tuples-only", "--no-align", "--command", "CREATE DATABASE \"kineticloop_kl026_interleave_27934b5_23708ac340b9\" OWNER \"kineticloop\";"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-27934b5-23708ac340b9", "--file", "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml", "exec", "--no-TTY", "postgres", "pg_isready", "--host", "127.0.0.1", "--port", "5432", "--username", "kineticloop", "--dbname", "kineticloop_kl026_interleave_27934b5_23708ac340b9"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-27934b5-23708ac340b9", "--file", "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml", "port", "postgres", "5432"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-27934b5-23708ac340b9", "--file", "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml", "down", "--volumes", "--remove-orphans"]], "cleanup": "completed", "elapsed": 12.978271792177111}
+
+E
+==================================== ERRORS ====================================
+______________ ERROR at setup of test_artifact_revoke_vs_publish _______________
+
+    @pytest.fixture(scope="module")
+    def database_urls() -> Iterator[dict[str, str]]:
+        # Deterministic destructive-entrypoint proof runs before the first real lifecycle.
+        with pytest.MonkeyPatch.context() as patch:
+            _NAMESPACE.namespace_core(patch, ROOT.parent / "kl026-peer-never-created")
+        lifecycle = _NAMESPACE.OwnedLifecycle(ROOT, head_sha())
+        started = time.monotonic()
+        try:
+>           urls = _MIGRATIONS.bootstrap_two_phase(lifecycle)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/db/test_protocol_interleavings.py:661: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/db/test_migrations.py:263: in bootstrap_two_phase
+    database = lifecycle.reset()
+               ^^^^^^^^^^^^^^^^^
+src/kineticloop/db/lifecycle.py:298: in reset
+    return self.connection()
+           ^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <kl026_test_interleaving_namespace.OwnedLifecycle object at 0x10df5a5a0>
+
+    def connection(self) -> DatabaseConnection:
+        result = self._run(self.compose_command("port", "postgres", "5432"))
+        endpoint = result.stdout.strip().rsplit("\n", maxsplit=1)[-1]
+        host, separator, raw_port = endpoint.rpartition(":")
+        if not separator or not raw_port.isdigit():
+            safe_endpoint = Redactor((self.user, self.password)).redact(endpoint)
+            raise DatabaseLifecycleError(f"unexpected Docker port output: {safe_endpoint!r}")
+        try:
+            return DatabaseConnection(
+                project_name=self.namespace.project_name,
+                database_name=self.namespace.database_name,
+                host=host.strip("[]") or "127.0.0.1",
+                port=int(raw_port),
+                user=self.user,
+                password=self.password,
+            )
+        except (TypeError, ValueError):
+            safe_endpoint = Redactor((self.user, self.password)).redact(endpoint)
+>           raise DatabaseLifecycleError(
+                f"unexpected Docker port output: {safe_endpoint!r}"
+            ) from None
+E           kineticloop.db.lifecycle.DatabaseLifecycleError: unexpected Docker port output: 'invalid IP:0'
+
+src/kineticloop/db/lifecycle.py:318: DatabaseLifecycleError
+=========================== short test summary info ============================
+ERROR tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_publish
+1 error in 13.27s
+
+STDERR

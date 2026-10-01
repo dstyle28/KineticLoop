@@ -1,0 +1,195 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-026",
+  "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+  "requirement_set_sha256": "c7ce1793c0b5fcbdec99afc8742e33b60e42cb633eacf9424ae84c4639dfa750",
+  "migration_revision": "e8c2f1a6b904",
+  "environment": {
+    "UV_PROJECT_ENVIRONMENT": "/private/tmp/kl026-venv",
+    "UV_NO_SYNC": "1",
+    "UV_CACHE_DIR": "/private/tmp/kl026-uv-cache",
+    "PYTHONPATH": "/Users/davetian/.codex/worktrees/b89d/KineticLoop/src",
+    "PYTEST_ADDOPTS": "-s"
+  },
+  "commands": [
+    {
+      "check_id": "interleaving_namespace_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_namespace",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 0.502201417228207,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/interleaving_namespace_pu-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "e8e54677c12e47cd3ffb50cca5b816468f8863dc41fa29896424e6e4344081bb"
+    },
+    {
+      "check_id": "time_boundary_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_time_boundaries",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 0.10462808306328952,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/time_boundary_pu-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "2b40b1ebb8c9b5948f40cd99ca85d64c197cd20919e36ce8f40e58dba44b57be"
+    },
+    {
+      "check_id": "i01_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_publish_vs_user_revoke",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 5.782590166898444,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/i01_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "2e4fe672a5f0c46ba4bbda6fc48a07f119361b48786ced84f145325dd3a05562"
+    },
+    {
+      "check_id": "i02_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_start_vs_user_revoke",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 5.965537042124197,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/i02_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "c2da0c4a914373b31682abd215fcfe0853a2b0e02e40037e19990be658ee987d"
+    },
+    {
+      "check_id": "i03_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_cancel_vs_dispatch",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 11.68539633299224,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/i03_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "9f2953372d4574c525831ac5260a9d6d9219060002011ae972f5942054e7de18"
+    },
+    {
+      "check_id": "i04_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_takeover_vs_commit",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 12.166989791905507,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/i04_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "879578b53701bc7e0463fbc2dd49df3172bb45ac5ee5c57a0f6742994ec943ce"
+    },
+    {
+      "check_id": "i05_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_issue",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 6.157249791081995,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/i05_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "b784fdb9b5486b0f902987d94ac4bb1cc9f978b9fd2eb83a53c90c0d53a65676"
+    },
+    {
+      "check_id": "i06_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_start",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 6.444510624976829,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/i06_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "281f8f617b788e262fcede483482efd6e8be0fe4b82e3e078cd917e4e9a6ee1e"
+    },
+    {
+      "check_id": "i07_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_publish",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 5.978129459079355,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/i07_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "ca92a3b0e38c354e05333c02c0da88839da31cf915c078977605ad7c6b502869"
+    },
+    {
+      "check_id": "i08_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_seal_vs_input_update",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 5.743161500198767,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/i08_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "a14cce4e29afa4276ec9d1be4b32815e3313ebbedae983a079bd382e8161c2f9"
+    },
+    {
+      "check_id": "i09_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_expiry_vs_start",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 11.624999208142981,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/i09_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "1511879f55544b68ab3002b92486db33b640da44f76e44aef6281140d36be6e9"
+    },
+    {
+      "check_id": "cancellation_identity_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_cancellation_identity",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 0.40680570900440216,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/cancellation_identity_pu-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "0163e089d95e49cc1fa76764421d22141b4e23e3fa14e0ac826cb2ae0696c631"
+    },
+    {
+      "check_id": "interleaving_suite_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 42.78200066718273,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/interleaving_suite_dc-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "70890351ad9287c8fd24318b602ddc790680450355a5801c4521ffe24ffa7e80"
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "command": "uv run kl check-harness",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 1,
+      "result": "FAIL",
+      "elapsed_seconds": 59.08376366691664,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/harness_validation_passes-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "de5e4394ea404b01e7adf978c9b3a3a512a0f9a9a6e741d9f46235ee4c2ab44b"
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "command": "uv run kl test-unit",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 1,
+      "result": "FAIL",
+      "elapsed_seconds": 59.389516999945045,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/unit_regressions_pass-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "6d9e8ddc0fb7519c1a672752b7d2bce42e4b70890c2e7f23edd3c50da46b3468"
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "command": "uv run kl test-harness",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 209.74268187512644,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/harness_regressions_pass-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "4c31a0254f3ca107acd0ec18cc5c371ccdbef096f6f1dd1cb746b9edff47e099"
+    },
+    {
+      "check_id": "lint_passes",
+      "command": "uv run kl lint",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 0.10414349986240268,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/lint_passes-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "08c8d9e6e870cfbd908a47a20ab036a78f282c8b459086f3c01cc8559f610430"
+    },
+    {
+      "check_id": "typecheck_passes",
+      "command": "uv run kl typecheck",
+      "tested_commit": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+      "exit_code": 0,
+      "result": "PASS",
+      "elapsed_seconds": 0.20912600005976856,
+      "evidence_ref": "docs/exec-plans/evidence/KL-026/typecheck_passes-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.log",
+      "sha256": "8319089f7a730df45e36b1669070bde4d627e3ac85cf104b3d872cccb3e30b1d"
+    }
+  ]
+}

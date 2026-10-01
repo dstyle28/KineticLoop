@@ -1,0 +1,203 @@
+task_identity: harness-backlog-v0.2/KL-026
+display_task_id: KL-026
+task_definition_version: v0.2
+base_commit: 74cd5b3c8782f4eefb8f98a3895407300990cc27
+tested_commit: 27934b5152abbbfd404a940ef4cb9634e5dd1423
+merge_commit: null
+task_status: BLOCKED
+task_checks_status: FAIL
+integration_status: UNMERGED
+summary: Implemented the isolated tests-only interleaving suite. Eight DC scenarios, both PU checks and all
+  quality/regression checks pass on the owned runtime. I03 fails before either race because strict public CancelIntent
+  rejects TEST_ONLY at T8. Production command validation and trusted TEST identity remain unchanged. Preserve
+  the exact failure and wait for actual KL075 then HG039 normal merge before the bounded internal TEST cancellation
+  remedy; no final acceptance review or merge approval is claimed.
+commands_run:
+- check_id: interleaving_namespace_pu
+  command: uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_namespace
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/interleaving_namespace_pu-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- check_id: time_boundary_pu
+  command: uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_time_boundaries
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/time_boundary_pu-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- check_id: i01_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_publish_vs_user_revoke
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i01_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- check_id: i02_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_start_vs_user_revoke
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i02_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- check_id: i03_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_cancel_vs_dispatch
+  result: FAIL
+  evidence_ref: docs/exec-plans/evidence/KL-026/i03_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- check_id: i04_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_takeover_vs_commit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i04_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- check_id: i05_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_issue
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i05_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- check_id: i06_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_start
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i06_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- check_id: i07_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_publish
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i07_dc-ownruntime-retry-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- check_id: i08_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_seal_vs_input_update
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i08_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- check_id: i09_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py::test_expiry_vs_start
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i09_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- check_id: interleaving_suite_dc
+  command: uv run pytest -q tests/db/test_protocol_interleavings.py
+  result: FAIL
+  evidence_ref: docs/exec-plans/evidence/KL-026/interleaving_suite_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- check_id: harness_validation_passes
+  command: uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/harness_validation_passes-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- check_id: unit_regressions_pass
+  command: uv run kl test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/unit_regressions_pass-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- check_id: harness_regressions_pass
+  command: uv run kl test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/harness_regressions_pass-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- check_id: lint_passes
+  command: uv run kl lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/lint_passes-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- check_id: typecheck_passes
+  command: uv run kl typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/typecheck_passes-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+requirements_covered:
+- requirement_id: I01@DC
+  status: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i01_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+  tested_commit: 27934b5152abbbfd404a940ef4cb9634e5dd1423
+- requirement_id: I02@DC
+  status: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i02_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+  tested_commit: 27934b5152abbbfd404a940ef4cb9634e5dd1423
+- requirement_id: I03@DC
+  status: NOT_RUN
+  evidence_ref: docs/exec-plans/evidence/KL-026/I03_IDENTITY_BLOCKER.json
+  tested_commit: 27934b5152abbbfd404a940ef4cb9634e5dd1423
+- requirement_id: I04@DC
+  status: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i04_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+  tested_commit: 27934b5152abbbfd404a940ef4cb9634e5dd1423
+- requirement_id: I05@DC
+  status: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i05_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+  tested_commit: 27934b5152abbbfd404a940ef4cb9634e5dd1423
+- requirement_id: I06@DC
+  status: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i06_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+  tested_commit: 27934b5152abbbfd404a940ef4cb9634e5dd1423
+- requirement_id: I07@DC
+  status: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i07_dc-ownruntime-retry-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+  tested_commit: 27934b5152abbbfd404a940ef4cb9634e5dd1423
+- requirement_id: I08@DC
+  status: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i08_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+  tested_commit: 27934b5152abbbfd404a940ef4cb9634e5dd1423
+- requirement_id: I09@DC
+  status: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-026/i09_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+  tested_commit: 27934b5152abbbfd404a940ef4cb9634e5dd1423
+- requirement_id: I04@WF
+  status: NOT_RUN
+  evidence_ref: null
+files_changed:
+- docs/contracts/protocol_interleavings.md
+- docs/exec-plans/completed/KL-026_RESULT.yaml
+- docs/exec-plans/evidence/KL-026/ENTRY.json
+- docs/exec-plans/evidence/KL-026/I03_IDENTITY_BLOCKER.json
+- docs/exec-plans/evidence/KL-026/OWN_RUNTIME_PREPARATION.json
+- docs/exec-plans/evidence/KL-026/blocked-result-27934b5152abbbfd404a940ef4cb9634e5dd1423.yaml
+- docs/exec-plans/evidence/KL-026/checks-27934b5152abbbfd404a940ef4cb9634e5dd1423.json
+- docs/exec-plans/evidence/KL-026/checks-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.json
+- docs/exec-plans/evidence/KL-026/checks-selected-blocked-27934b5152abbbfd404a940ef4cb9634e5dd1423.json
+- docs/exec-plans/evidence/KL-026/harness_regressions_pass-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/harness_regressions_pass-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/harness_validation_passes-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/harness_validation_passes-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i01_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i01_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i02_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i02_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i03_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i03_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i04_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i04_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i05_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i05_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i06_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i06_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i07_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i07_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i07_dc-ownruntime-retry-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i08_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i08_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i09_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/i09_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/interleaving_namespace_pu-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/interleaving_namespace_pu-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/interleaving_suite_dc-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/interleaving_suite_dc-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/lint_passes-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/lint_passes-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/observations-27934b5152abbbfd404a940ef4cb9634e5dd1423.json
+- docs/exec-plans/evidence/KL-026/record_exact_checks.py
+- docs/exec-plans/evidence/KL-026/record_owned_runtime_checks.py
+- docs/exec-plans/evidence/KL-026/scope-audit-27934b5152abbbfd404a940ef4cb9634e5dd1423.json
+- docs/exec-plans/evidence/KL-026/time_boundary_pu-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/time_boundary_pu-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/typecheck_passes-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/typecheck_passes-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/unit_regressions_pass-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- docs/exec-plans/evidence/KL-026/unit_regressions_pass-ownruntime-27934b5152abbbfd404a940ef4cb9634e5dd1423.log
+- tests/db/test_protocol_interleavings.py
+- tests/unit/protocol/test_interleaving_namespace.py
+decisions:
+- Use exact task/SHA/resolved-worktree-owned PostgreSQL and Compose names with validated fail-safe bootstrap
+  and finally cleanup; no local legacy task fixture lifecycle.
+- Exercise actual merged owner services and lock order with independent PostgreSQL connections, bounded barriers,
+  observed pg_blocking_pids and whole-state rollback/persisted output assertions. Synthetic upstream certificate
+  inputs remain explicitly bounded to preparation.
+- Do not substitute SUBJECT production identity, loosen public models, bypass model validation or claim reservation-only
+  cancellation satisfies root cancellation. Independent read-only preflight confirms the I03 feasibility blocker.
+- Preserve initial raw logs, lost shared-runtime lint/typecheck failures, native Docker I07 setup failure and
+  exact retry. Select the completed owned-runtime check results without altering earlier attempts.
+- "Await actual KL075 \u2192 HG039 \u2192 KL026 merge order. HG039 is governance authority only after its actual\
+  \ reviewed normal merge; read the refined packet then implement/retest before fresh reviews."
+known_limitations:
+- 'I03@DC is NOT_RUN: input validation rejects the public request before any root cancellation race. Its required
+  selector and full suite are FAIL, never skipped or xfailed.'
+- I04@WF is NOT_RUN. Local DC/PU evidence does not establish workflow, production, real-data shadow or release
+  PASS.
+- GENERAL, PROTOCOL and DB_CONCURRENCY final acceptance reviews remain NOT_RUN. The cancellation preflight
+  is an independent blocker assessment, not a SHA-bound final acceptance PASS.
+- Result records UNMERGED. Production owners, frozen baselines, current indexes and requirement governance
+  are unchanged; no frozen specification change is requested.
+follow_up_tasks:
+- Read actually merged HG039 refinement after KL075 merge; apply only the ratified internal TEST cancellation
+  request/identity/registration/hash/replay guards inside this task test scope.
+- Retest every exact packet check on the final post-merge implementation SHA and refresh result/evidence. Obtain
+  fresh SHA-bound GENERAL, PROTOCOL and DB_CONCURRENCY reviews.
+- Create and attach one task PR; normal exact-head merge only after all required CI/reviews/gates pass. Clean
+  only own verified merged resources and archive only the completed task chat.
+spec_change_request: null

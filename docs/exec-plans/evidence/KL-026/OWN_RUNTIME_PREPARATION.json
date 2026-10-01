@@ -1,0 +1,45 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-026",
+  "implementation_commit": "27934b5152abbbfd404a940ef4cb9634e5dd1423",
+  "python": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+  "executable": "/private/tmp/kl026-venv/bin/python",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "runtime_modules": {
+    "kineticloop.contracts.commands": {
+      "path": "/Users/davetian/.codex/worktrees/b89d/KineticLoop/src/kineticloop/contracts/commands.py",
+      "sha256": "022e3fa180c6fbcd5ad8382fd5e8d1e01418c819a52b6ce706534ce594a8539e"
+    },
+    "kineticloop.persistence.transactions": {
+      "path": "/Users/davetian/.codex/worktrees/b89d/KineticLoop/src/kineticloop/persistence/transactions.py",
+      "sha256": "2331fd8fdd879f233e14b914c1fcd506ed7978f13c2aaf72aa490fc2ab1ccf4d"
+    },
+    "kineticloop.persistence.protocol_execution": {
+      "path": "/Users/davetian/.codex/worktrees/b89d/KineticLoop/src/kineticloop/persistence/protocol_execution.py",
+      "sha256": "2a8b36c0b92c406e29f1d4d2199ea2d6e8b2b534a656774ecda1dc6344a8c242"
+    },
+    "kineticloop.persistence.planning": {
+      "path": "/Users/davetian/.codex/worktrees/b89d/KineticLoop/src/kineticloop/persistence/planning.py",
+      "sha256": "9e71882238fa0bafb42869212829dbb555533232428d6e806822ef971a96cff2"
+    },
+    "kineticloop.persistence.call_ledger": {
+      "path": "/Users/davetian/.codex/worktrees/b89d/KineticLoop/src/kineticloop/persistence/call_ledger.py",
+      "sha256": "ca06322bc03e4859966c6dffbc33f6bd957c6b0689bae24e2469401cf474a65c"
+    },
+    "kineticloop.persistence.factsets": {
+      "path": "/Users/davetian/.codex/worktrees/b89d/KineticLoop/src/kineticloop/persistence/factsets.py",
+      "sha256": "f0df646a66724867e39b0a6223314a9768fbb8309961edd31ffe26bade159e86"
+    }
+  },
+  "dependencies": {
+    "pytest": "8.4.2",
+    "psycopg": "3.3.6",
+    "pydantic": "2.11.9",
+    "PyYAML": "6.0.3",
+    "alembic": "1.16.5",
+    "ruff": "0.16.8",
+    "mypy": "1.20.2"
+  },
+  "runtime_note": "Own runtime reinstalled offline from unchanged uv.lock after historical shared KL017 environment was removed during first checks. First lint/typecheck exited due missing executables; retain failures separately. Later task checks use this own runtime.",
+  "uv_lock_sha256": "d4c221b53a2f2efad30a656fb4735f4b710f2f278cb1816bbcd1be97c8ea5034",
+  "full_legacy_local_db_suite_run": false
+}

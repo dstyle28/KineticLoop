@@ -1,0 +1,13 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-026",
+  "implementation_sha": "14e2aab89772265c4f36d895b33d7db3a169dd0e",
+  "disposition": "HISTORICAL_ITERATION_NOT_FINAL_ACCEPTANCE",
+  "checks_manifest": "docs/exec-plans/evidence/KL-026/checks-ownruntime-14e2aab89772265c4f36d895b33d7db3a169dd0e.json",
+  "passes": 16,
+  "failures": [
+    "harness_validation_passes",
+    "unit_regressions_pass"
+  ],
+  "diagnosis": "NOT_RUN result mistakenly contained command rows with null evidence refs; harness and nested unit CLI validation rejected them. Fresh NOT_RUN checkpoint leaves commands_run empty. No production/harness validator change. All nine DC selectors/full own suite and three PU checks passed. Added actual two-root/two-reservation cross-link negative proof and explicit idle preflight-barrier assertion; all required checks rerun on new implementation SHA.",
+  "final_pass_reused": false
+}

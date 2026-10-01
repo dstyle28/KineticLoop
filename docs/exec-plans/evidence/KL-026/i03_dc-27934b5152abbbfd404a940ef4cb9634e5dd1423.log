@@ -1,0 +1,69 @@
+F
+KL026_LIFECYCLE {"tested_commit": "27934b5152abbbfd404a940ef4cb9634e5dd1423", "root": "/Users/davetian/.codex/worktrees/b89d/KineticLoop", "project": "kineticloop-kl026-interleave-27934b5-23708ac340b9", "database": "kineticloop_kl026_interleave_27934b5_23708ac340b9", "commands": [["docker", "compose", "--project-name", "kineticloop-kl026-interleave-27934b5-23708ac340b9", "--file", "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml", "config", "--quiet"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-27934b5-23708ac340b9", "--file", "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml", "up", "--detach", "postgres"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-27934b5-23708ac340b9", "--file", "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml", "exec", "--no-TTY", "postgres", "pg_isready", "--host", "127.0.0.1", "--port", "5432", "--username", "kineticloop", "--dbname", "postgres"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-27934b5-23708ac340b9", "--file", "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml", "exec", "--no-TTY", "postgres", "pg_isready", "--host", "127.0.0.1", "--port", "5432", "--username", "kineticloop", "--dbname", "postgres"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-27934b5-23708ac340b9", "--file", "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml", "exec", "--no-TTY", "postgres", "psql", "--username", "kineticloop", "--dbname", "postgres", "--set", "ON_ERROR_STOP=1", "--tuples-only", "--no-align", "--command", "DROP DATABASE IF EXISTS \"kineticloop_kl026_interleave_27934b5_23708ac340b9\" WITH (FORCE);"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-27934b5-23708ac340b9", "--file", "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml", "exec", "--no-TTY", "postgres", "psql", "--username", "kineticloop", "--dbname", "postgres", "--set", "ON_ERROR_STOP=1", "--tuples-only", "--no-align", "--command", "CREATE DATABASE \"kineticloop_kl026_interleave_27934b5_23708ac340b9\" OWNER \"kineticloop\";"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-27934b5-23708ac340b9", "--file", "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml", "exec", "--no-TTY", "postgres", "pg_isready", "--host", "127.0.0.1", "--port", "5432", "--username", "kineticloop", "--dbname", "kineticloop_kl026_interleave_27934b5_23708ac340b9"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-27934b5-23708ac340b9", "--file", "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml", "port", "postgres", "5432"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-27934b5-23708ac340b9", "--file", "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml", "down", "--volumes", "--remove-orphans"]], "cleanup": "completed", "elapsed": 3.829510916955769}
+
+
+=================================== FAILURES ===================================
+___________________________ test_cancel_vs_dispatch ____________________________
+
+urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:55534/kineticloop_kl026_interleave_27934b5_23708a...postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:55534/kineticloop_kl026_interleave_27934b5_23708ac340b9', ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10bbd9700>
+
+    def test_cancel_vs_dispatch(urls: dict[str, str], monkeypatch: pytest.MonkeyPatch) -> None:
+        for cancel_first in (True, False):
+            seed_inputs(urls)
+            commit = upstream(urls, publish(urls))
+            root, attempt = UUID(commit.intent_id), UUID(commit.attempt_id)
+            reserve = ReserveCall(
+                SUBJECT,
+                "reserve",
+                root,
+                attempt,
+                1,
+                1,
+                "one-physical-request",
+                AccountingIdentity("test-provider", "test-model", "config-v1", "price-v1"),
+                {"calls": 1, "tokens": 100, "tools": 1},
+            )
+            with connect(urls["admin"]) as db:
+                reserved = ledger(db).reserve(reserve)
+            reservation = UUID(reserved["reservation_id"])
+            permit = PermitDispatch(SUBJECT, "permit", root, reservation, attempt, 1, 1)
+>           cancellation = signed(
+                CancelIntent,
+                {
+                    **wire("CancelIntent"),
+                    "boundary": "T8",
+                    "intent_id": str(root),
+                    "expected_request_revision": 1,
+                    "expected_fence": 1,
+                },
+            )
+
+tests/db/test_protocol_interleavings.py:1243: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+model = <class 'kineticloop.contracts.commands.CancelIntent'>
+payload = {'actor': {'identity_id': '83aa2d75-a79a-461d-992e-593d17d75601', 'role': 'test', 'schema': 'kineticloop-role-identity...4c739c-d429-465b-bd8a-e86cd2b244b8', ...}, 'boundary': 'T8', 'command_id': 'af95ed9f-25e2-4ba3-b09b-0ee959115807', ...}
+
+    def signed(model: Any, payload: dict[str, Any]) -> Any:
+>       first = model.model_validate_json(json.dumps(payload))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for CancelIntent
+E         Value error, TEST_ONLY is admitted only at T6/T7 command owners [type=value_error, input_value={'schema_version': 'kinet... 1, 'expected_fence': 1}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.11/v/value_error
+
+tests/db/test_protocol_interleavings.py:424: ValidationError
+=========================== short test summary info ============================
+FAILED tests/db/test_protocol_interleavings.py::test_cancel_vs_dispatch - pyd...
+1 failed in 4.12s
+
+STDERR
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).

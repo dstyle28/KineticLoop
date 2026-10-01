@@ -1,0 +1,25 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-026",
+  "disposition": "PRECOMMIT_ONLY_NOT_ACCEPTANCE",
+  "recorded_head": "78d0158cbf9f0e22492bfef89287a41dced79a88",
+  "reason": "Commit failed before checks started, so partial precommit run was aborted and excluded from final acceptance. Only the own runner process tree was terminated; explicit validated own namespace destroy completed before commit/restart.",
+  "logs_manifest": "docs/exec-plans/evidence/KL-026/checks-ownruntime-78d0158cbf9f0e22492bfef89287a41dced79a88.json",
+  "owned_namespace_cleanup": {
+    "project": "kineticloop-kl026-interleave-78d0158-23708ac340b9",
+    "database": "kineticloop_kl026_interleave_78d0158_23708ac340b9",
+    "inventory": [
+      [
+        "docker",
+        "compose",
+        "--project-name",
+        "kineticloop-kl026-interleave-78d0158-23708ac340b9",
+        "--file",
+        "/Users/davetian/.codex/worktrees/b89d/KineticLoop/compose.yaml",
+        "down",
+        "--volumes",
+        "--remove-orphans"
+      ]
+    ],
+    "status": "PASS"
+  }
+}
