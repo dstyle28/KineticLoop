@@ -1,0 +1,120 @@
+change_identity: harness-governance-v0.1/HG-034
+display_change_id: HG-034
+base_commit: ff57a80feebd4e539f9af277e0dcb26d942bc3e0
+tested_commit: 3b23836da9475b1512989705c12b8778e4ba6723
+change_status: PASS
+summary: Refine only unstarted KL025 after actual normal KL024 PR62 merge ff57a80. Permit one byte-exact
+  planning fixture namespace adaptation, retaining all six semantic test oracles and every other file
+  byte. An exact task selector derives validated SHA/resolved-worktree KL025 namespaces, preserves unset
+  KL024 defaults, and rejects arbitrary targets before reset/bootstrap/teardown. Add one required isolation
+  proof and the exact planning regression selector command; preserve existing transaction override, all
+  API/root-budget/fence checks, hard KL024 dependency, non-sendable replay/UNKNOWN boundaries and review
+  union. Candidate-only real PostgreSQL regressions verify all called fixtures and owned cleanup; no actual
+  fixture/product/frozen/CI/completed-prerequisite change or KL025 task/product/release PASS.
+packets_refined:
+- KL-025
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- KineticLoop_Harness_Backlog_v0.2.json
+- KineticLoop_Harness_Traceability_v0.3.json
+- docs/exec-plans/active/KL-025.md
+- docs/exec-plans/evidence/HG-034/audit.py
+- docs/exec-plans/evidence/HG-034/candidate-checks-0f5ad59.json
+- docs/exec-plans/evidence/HG-034/candidate-checks-3b23836.json
+- docs/exec-plans/evidence/HG-034/candidate_isolation_proof-0f5ad59.log
+- docs/exec-plans/evidence/HG-034/candidate_isolation_proof-3b23836.log
+- docs/exec-plans/evidence/HG-034/candidate_proof.py
+- docs/exec-plans/evidence/HG-034/checks-0f5ad59.json
+- docs/exec-plans/evidence/HG-034/checks-3b23836.json
+- docs/exec-plans/evidence/HG-034/diff_clean-3b23836.log
+- docs/exec-plans/evidence/HG-034/harness_tests-3b23836.log
+- docs/exec-plans/evidence/HG-034/harness_validation-0f5ad59.log
+- docs/exec-plans/evidence/HG-034/harness_validation-3b23836.log
+- docs/exec-plans/evidence/HG-034/isolation_plugin.py
+- docs/exec-plans/evidence/HG-034/lint-3b23836.log
+- docs/exec-plans/evidence/HG-034/merged_preflight_and_scope_audit-0f5ad59.log
+- docs/exec-plans/evidence/HG-034/merged_preflight_and_scope_audit-3b23836.log
+- docs/exec-plans/evidence/HG-034/namespace_probe.py
+- docs/exec-plans/evidence/HG-034/planning_namespace.patch
+- docs/exec-plans/evidence/HG-034/pr62-merged.json
+- docs/exec-plans/evidence/HG-034/scope_regressions-0f5ad59.log
+- docs/exec-plans/evidence/HG-034/scope_regressions-3b23836.log
+- docs/exec-plans/evidence/HG-034/typecheck-3b23836.log
+- docs/exec-plans/evidence/HG-034/unit_tests-3b23836.log
+- docs/exec-plans/governance/HG-034.yaml
+- tests/harness/test_call_ledger_scope.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: merged_preflight_and_scope_audit
+  command: /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-034/audit.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-034/merged_preflight_and_scope_audit-3b23836.log
+- check_id: scope_regressions
+  command: /private/tmp/kl017-venv/bin/python -m pytest -q tests/harness/test_call_ledger_scope.py tests/harness/test_planning_fixture_scope.py
+    tests/harness/test_planning_subject_scope.py tests/harness/test_wave_scope.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-034/scope_regressions-3b23836.log
+- check_id: harness_validation
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-034/harness_validation-3b23836.log
+- check_id: harness_tests
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-034/harness_tests-3b23836.log
+- check_id: unit_tests
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-034/unit_tests-3b23836.log
+- check_id: lint
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-034/lint-3b23836.log
+- check_id: typecheck
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-034/typecheck-3b23836.log
+- check_id: diff_clean
+  command: git diff --check ff57a80feebd4e539f9af277e0dcb26d942bc3e0 3b23836da9475b1512989705c12b8778e4ba6723
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-034/diff_clean-3b23836.log
+- check_id: candidate_isolation_proof
+  command: /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-034/candidate_proof.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-034/candidate_isolation_proof-3b23836.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- KL025 remains NOT_STARTED. The exact tests/db/test_planning.py path is its sole added existing-file
+  scope; only import os, the reviewed _planning_namespace helper and assignment are allowed. No blanket
+  tests/db, prerequisite semantic change, migration, shared package marker, or further fixture repair
+  is authorized. KL025 must apply the proposal after this governance normal merge and run all 16 required
+  checks.
+- Candidate clone uses tested governance SHA with product/fixture bytes exactly equal to actual merged
+  KL024 base. It applies only planning_namespace.patch and runs all 66 planning/transaction regressions
+  sequentially in two distinct KL025-owned namespaces. Runtime tracing rejects any other reset/destroy
+  target; all selected resources are destroyed. The candidate also passes 25 future scope regressions.
+  This is prospective isolation evidence, not actual KL025 implementation/test PASS.
+- Fresh actual merged preflight inventories pure unit planning/transactions, planning database_urls, transaction
+  database_urls/_reset_kl022_fixture/_seed_transaction_rows, imported migration bootstrap and safety seed.
+  All role URLs/reseeding use the selected lifecycle. Generic Compose/database environment injection is
+  inadequate because DatabaseLifecycle overwrites it from namespace. No additional called-fixture mismatch
+  was found; broad CI fixtures are separately unchanged.
+- Actual typed API fields, integer root limits/reserved/settled payload, original deadline preservation,
+  current request/attempt/owner/fence guard and expected_transition UNKNOWN -> OUTCOME_UNKNOWN are verified
+  at base. Residual ledger implementation must reject unbounded monetary claims, retain all root dimensions
+  and unrelated payload fields, non-sendable replay, possible-send occupation and accounting-only late
+  settlement. Production activation and real-data shadow boundaries remain unchanged.
+- Historical KL024 result retains immutable premerge UNMERGED; its actual normal merge and fresh union
+  reviews are verified through Git/API. No KL024 integration artifact exists at protected base; this governance
+  does not create/change historical bookkeeping or completed task definitions.
+- First tested SHA0f5ad59 candidate passed66 and focused97; harness validation failed because the new
+  packet clause incorrectly applied to historical milestone packets. Corrected the guard to require the
+  new path, added an immutable historical-packet regression, and regenerated equivalent zero-context patch
+  with no whitespace waiver. Prior diagnostic evidence is preserved; only new 3b23836 logs are selected
+  for governance PASS.
+- Local stable commands use existing /private/tmp/kl017-venv Python because uv is absent. Required CI
+  remains locked uv with no workflow waiver or modification. The complete GENERAL/PROTOCOL/DB_CONCURRENCY
+  protected-base/head union must review the final implementation/evidence/record SHA; only HG034 review-directory
+  appends may follow without rereview.
