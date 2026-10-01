@@ -125,6 +125,10 @@ class MeasuredRunner:
         elif "psql" in command:
             category = "sql"
         safe_command = [self.redactor.text(part) for part in command]
+        if "--username" in safe_command:
+            safe_command[safe_command.index("--username") + 1] = "<redacted>"
+        if "psql" in safe_command:
+            safe_command[-1] = safe_command[-1].replace('OWNER "kineticloop"', 'OWNER "<redacted>"')
         self.event(kind=f"{category}_begin", command=safe_command,
                    requested_timeout=kwargs.get("timeout"))
         try:
@@ -166,12 +170,21 @@ def worker(root: Path, tested_commit: str, evidence: Path, deadline: float, star
                 "repeated reset retained sentinel")
         require(lifecycle.execute_sql("SELECT current_database();") == lifecycle.namespace.database_name,
                 "repeated reset reached foreign database")
+        events = [json.loads(line) for line in (evidence / "events.jsonl").read_text().splitlines()]
+        sql_commands = [event['command'] for event in events if event['kind'] == 'sql_begin']
+        require(all(command[command.index('--dbname') + 1] in ('postgres', lifecycle.namespace.database_name)
+                    for command in sql_commands), "measured SQL targeted foreign database")
+        require(sum(command[-1] == f'DROP DATABASE IF EXISTS "{lifecycle.namespace.database_name}" WITH (FORCE);'
+                    for command in sql_commands) == 3, "reset DROP count/target mismatch")
+        require(sum(command[-1] == f'CREATE DATABASE "{lifecycle.namespace.database_name}" OWNER "<redacted>";'
+                    for command in sql_commands) == 3, "reset CREATE count/target mismatch")
         save_json(evidence / "assertions.json", {
             "tested_commit": tested_commit, "root": str(root),
             "project_name": lifecycle.namespace.project_name,
             "database_name": lifecycle.namespace.database_name,
             "migrated_revision": revision, "expected_revision": migrations.HEAD_REVISION,
             "sentinel_removed": True, "current_database_verified_twice": True,
+            "exact_owned_drop_count": 3, "exact_owned_create_count": 3,
             "status": "PASS",
         })
     except Exception as error:
