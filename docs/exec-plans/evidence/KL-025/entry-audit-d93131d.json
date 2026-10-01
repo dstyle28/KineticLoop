@@ -1,0 +1,30 @@
+{
+  "base_commit": "d93131de0cd313199f3c787b56ff4b211f2905d7",
+  "status": "MUST_REFINE_BEFORE_READY",
+  "db_or_docker_commands_run": false,
+  "requested_regression": "uv run pytest tests/db",
+  "ci_source": ".github/workflows/db.yml",
+  "foreign_namespace_fixtures": [
+    {
+      "path": "tests/db/test_safety_registry.py",
+      "sha256": "736e2d96a072d6bcf96d1819f114e1970c51dd584ce5f9466a074f647adec5ed",
+      "namespace": [
+        "kineticloop-kl021-ec264bb",
+        "kineticloop_kl021_ec264bb"
+      ],
+      "supported_task_selector": false,
+      "fixture_source": "def database_urls() -> Iterator[dict[str, str]]:\n    lifecycle = DatabaseLifecycle(ROOT)\n    lifecycle.namespace = DatabaseNamespace(\n        project_name=\"kineticloop-kl021-ec264bb\",\n        database_name=\"kineticloop_kl021_ec264bb\",\n    )\n    try:\n        yield bootstrap_two_phase(lifecycle)\n    finally:\n        lifecycle.destroy()\n\n\n@pytest.fixture\ndef db_urls(database_urls: dict[str, str]) -> dict[str, str]:\n    seed(database_urls[\"admin\"])\n    return database_urls\n"
+    },
+    {
+      "path": "tests/db/test_factsets.py",
+      "sha256": "be1e4a00c1a1f3e665967e05f3e738edd0238a3a6d13090a839bfbb5ab3e4750",
+      "namespace": [
+        "kineticloop-kl023-{shortsha}",
+        "kineticloop_kl023_{shortsha}"
+      ],
+      "supported_task_selector": false,
+      "fixture_source": "def database_urls() -> Iterator[dict[str, str]]:\n    shortsha = subprocess.check_output(\n        [\"git\", \"rev-parse\", \"--short\", \"HEAD\"], cwd=ROOT, text=True\n    ).strip()\n    lifecycle = DatabaseLifecycle(ROOT)\n    lifecycle.namespace = DatabaseNamespace(\n        f\"kineticloop-kl023-{shortsha}\", f\"kineticloop_kl023_{shortsha}\"\n    )\n    try:\n        urls = _MIGRATIONS.bootstrap_two_phase(lifecycle)\n        with psycopg.connect(urls[\"admin\"], autocommit=True) as db:\n            # Only immutable prerequisite inputs are seeded. All factsets, candidate\n            # operations, completions, seals and racing T2-IN mutations use owners.\n            db.execute(\n                \"INSERT INTO kineticloop.policy_bundles \"\n                \"(id,subject_id,policy_namespace,policy_version,content_hash,typed_payload) \"\n                \"VALUES (%s,%s,'test:kl023','1','kl023-test-policy',%s)\",\n                (\n                    POLICY,\n                    SUBJECT,\n                    Jsonb(\n                        {\n                            \"t2_invalidation_scopes\": {\n                                \"AcceptFactRevision\": \"TEST_ONLY\",\n                                \"ActivateApprovedProgram\": \"TEST_ONLY\",\n                            },\n                            \"factset_max_delta_depth\": 1,\n                        }\n                    ),\n                ),\n            )\n            db.execute(\n                \"INSERT INTO kineticloop.program_versions \"\n                \"(id,subject_id,program_identity,program_revision) VALUES (%s,%s,'test-kl023',1)\",\n                (PROGRAM, SUBJECT),\n            )\n            db.execute(\n                \"INSERT INTO kineticloop.user_decision_state \"\n                \"(subject_id,input_frontier_hash,active_policy_bundle_id,active_program_id) \"\n                \"VALUES (%s,'frontier-0',%s,%s)\",\n                (SUBJECT, POLICY, PROGRAM),\n            )\n            db.execute(\n                \"INSERT INTO kineticloop.evidence_revisions \"\n                \"(id,subject_id,source_connection_identity,source_object_type,source_object_identity,\"\n                \"source_revision,trust_class,source_class,command_authority) \"\n                \"VALUES (%s,%s,'kl023-test','observation','test-1','1','USER_REPORTED','USER','NONE')\",\n                (EVIDENCE, SUBJECT),\n            )\n            db.execute(\n                \"INSERT INTO kineticloop.candidate_assertions \"\n                \"(id,subject_id,assertion_family_identity,ref_s09_id) \"\n                \"VALUES (%s,%s,'test-assertion',%s)\",\n                (CANDIDATE, SUBJECT, EVIDENCE),\n            )\n            db.execute(\n                \"INSERT INTO kineticloop.underlying_events \"\n                \"(id,subject_id,event_identity) VALUES (%s,%s,'test-underlying')\",\n                (UNDERLYING, SUBJECT),\n            )\n            db.execute(\n                \"INSERT INTO kineticloop.event_association_decisions \"\n                \"(id,subject_id,association_family_identity,association_state) \"\n                \"VALUES (%s,%s,'unresolved','UNRESOLVED')\",\n                (ASSOCIATION, SUBJECT),\n            )\n            db.execute(\n                \"INSERT INTO kineticloop.admission_decisions \"\n                \"(id,subject_id,action_scope,decision,ref_s05_id,ref_s09_id,ref_s10_id) \"\n                \"VALUES (%s,%s,'ALL','DENIED',%s,%s,%s)\",\n                (ADMISSION, SUBJECT, POLICY, EVIDENCE, CANDIDATE),\n            )\n            db.execute(\n                \"INSERT INTO kineticloop.canonical_fact_revisions \"\n                \"(id,subject_id,stable_fact_identity,fact_kind,fact_revision,ref_s10_id,ref_s11_id,ref_s13_id) \"\n                \"VALUES (%s,%s,'actual','HEALTH_OBSERVATION',1,%s,%s,%s)\",\n                (FACT, SUBJECT, CANDIDATE, UNDERLYING, ADMISSION),\n            )\n        with psycopg.connect(urls[\"trusted_admin\"], autocommit=True) as db:\n            db.execute(\n                \"SELECT kineticloop.subject_scope_register(%s,'TEST',%s,%s,%s)\",\n                (SUBJECT, POLICY, UUID(int=23901), \"kl_test_subject_1_login\"),\n            )\n        yield urls\n    finally:\n        lifecycle.destroy()\n"
+    }
+  ],
+  "packet_scope": "Only HG034 exact tests/db/test_planning.py patch is permitted; never reset another task database."
+}

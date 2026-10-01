@@ -1,0 +1,167 @@
+{
+  "tested_commit": "c3966cc790e1e2aa187dfb70496e4f811404a9ee",
+  "checks": [
+    {
+      "check_id": "planning_fixture_namespace_isolation_pu",
+      "command": "uv run pytest -q tests/db/test_call_ledger.py::test_planning_fixture_namespace_isolation",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/planning_fixture_namespace_isolation_pu-c3966cc.log",
+      "elapsed_seconds": 0.4,
+      "sha256": "8560fa5b6bd6f7ebcc503f1c961b2f622b6e4fb34c2639ed4bebb1cb3c89f019"
+    },
+    {
+      "check_id": "ledger_budget_dimensions_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_root_budget_and_charge_bounds",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/ledger_budget_dimensions_pu-c3966cc.log",
+      "elapsed_seconds": 0.26,
+      "sha256": "6c22497b1cd9614bbe84b84ee5b1def94dc50bdbe924d062854db2e1ca90ec4c"
+    },
+    {
+      "check_id": "ledger_state_and_replay_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_state_machine_and_non_sendable_replay",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/ledger_state_and_replay_pu-c3966cc.log",
+      "elapsed_seconds": 0.24,
+      "sha256": "ba91abd22b56ad81dd5c37589ef430e835a7990106837504e3ad30b7d79da2f8"
+    },
+    {
+      "check_id": "ledger_root_budget_atomic_dc",
+      "command": "uv run pytest -q tests/db/test_call_ledger.py::test_competing_reservations_share_root_budget",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/ledger_root_budget_atomic_dc-c3966cc.log",
+      "elapsed_seconds": 3.96,
+      "sha256": "aa31df98294c41182153fbfdcb934679342673255cf455ff459195dd629db29b"
+    },
+    {
+      "check_id": "ledger_cancel_dispatch_exclusion_dc",
+      "command": "uv run pytest -q tests/db/test_call_ledger.py::test_cancel_and_dispatch_have_one_winner",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/ledger_cancel_dispatch_exclusion_dc-c3966cc.log",
+      "elapsed_seconds": 3.81,
+      "sha256": "f7a25cef06c215d2d805161dd5dcf9286529d801bf1c83447fa310bc6edd6f46"
+    },
+    {
+      "check_id": "ledger_current_authority_dc",
+      "command": "uv run pytest -q tests/db/test_call_ledger.py::test_stale_attempt_fence_and_deadline_deny",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/ledger_current_authority_dc-c3966cc.log",
+      "elapsed_seconds": 5.16,
+      "sha256": "0f3e9d04fa6ca353efbbecde41639b0483c3294048b61f6862a79f99150bb10b"
+    },
+    {
+      "check_id": "ledger_ack_loss_and_natural_identity_dc",
+      "command": "uv run pytest -q tests/db/test_call_ledger.py::test_ack_loss_and_payload_conflicts",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/ledger_ack_loss_and_natural_identity_dc-c3966cc.log",
+      "elapsed_seconds": 8.12,
+      "sha256": "4a23ba4489a36d8602e81a5e821c4968212165d5f775fa64606f5c221ca00a4a"
+    },
+    {
+      "check_id": "ledger_unknown_and_late_settlement_dc",
+      "command": "uv run pytest -q tests/db/test_call_ledger.py::test_unknown_and_late_settlement_are_accounting_only",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/ledger_unknown_and_late_settlement_dc-c3966cc.log",
+      "elapsed_seconds": 4.94,
+      "sha256": "a3c9f32779f90ac87115d7071f5648499f43ca2beed7af1f20b7970f4e6257ac"
+    },
+    {
+      "check_id": "ledger_physical_dispatch_boundary_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_dispatch_occurs_once_after_commit",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/ledger_physical_dispatch_boundary_pu-c3966cc.log",
+      "elapsed_seconds": 0.26,
+      "sha256": "0e14841b9bfef21f2d4c792194d7206f2842b4a37af43542a195f46a9e0d14c5"
+    },
+    {
+      "check_id": "ledger_unit_suite_passes",
+      "command": "uv run pytest -q tests/unit/workflow/test_call_ledger.py",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/ledger_unit_suite_passes-c3966cc.log",
+      "elapsed_seconds": 0.24,
+      "sha256": "a2ed052eee1c9df631b0f2e1b60dcd20ee44cfe3417874263da0fff4592756d4"
+    },
+    {
+      "check_id": "ledger_db_suite_passes",
+      "command": "uv run pytest -q tests/db/test_call_ledger.py",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/ledger_db_suite_passes-c3966cc.log",
+      "elapsed_seconds": 24.55,
+      "sha256": "fe0adf592abac8623d60ebab810a00c9aa75c895c2f9d2e88144fa3c61ca7a91"
+    },
+    {
+      "check_id": "planning_prerequisite_regressions_pass",
+      "command": "KINETICLOOP_KL024_FIXTURE_OWNER=KL-025 uv run pytest -q tests/unit/workflow/test_planning.py tests/db/test_planning.py",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/planning_prerequisite_regressions_pass-c3966cc.log",
+      "elapsed_seconds": 22.97,
+      "sha256": "c9bc2c0d6fb2b779bb31d881ae7ec4e1bb4333000b9e7ed0ee01eca21916fadf"
+    },
+    {
+      "check_id": "transaction_owner_regressions_pass",
+      "command": "KINETICLOOP_KL022_COMPOSE_PROJECT=\"kineticloop-kl025-reg-$(git rev-parse --short HEAD)\" KINETICLOOP_KL022_DATABASE=\"kineticloop_kl025_reg_$(git rev-parse --short HEAD)\" uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/transaction_owner_regressions_pass-c3966cc.log",
+      "elapsed_seconds": 14.72,
+      "sha256": "4198967ad05452f1b203813b25f5fa8a25a04aafd4779d17866bdaccf5fdbe8b"
+    },
+    {
+      "check_id": "lint_passes",
+      "command": "uv run kl lint",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/lint_passes-c3966cc.log",
+      "elapsed_seconds": 0.09,
+      "sha256": "7a3d4cbcacd52db1dde33c7a935c580ed76b1438a862887b9f2b5277da3f0f77"
+    },
+    {
+      "check_id": "typecheck_passes",
+      "command": "uv run kl typecheck",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/typecheck_passes-c3966cc.log",
+      "elapsed_seconds": 0.2,
+      "sha256": "96fc700ccdc001f7b2972e4abb39abca0666d0384592e4252ddb00d976501dd6"
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "command": "uv run kl check-harness",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/harness_validation_passes-c3966cc.log",
+      "elapsed_seconds": 51.87,
+      "sha256": "df5f28d6ea233dfae2c53f40b958696f18238c43f9f10d5833fdd52c33b73605"
+    },
+    {
+      "check_id": "full_unit_regressions",
+      "command": "uv run kl test-unit",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/full_unit_regressions-c3966cc.log",
+      "elapsed_seconds": 53.04,
+      "sha256": "e5336c6a8402aab14d917fe5b9c5a495391546048a2ab1d7746705f9d58fdec1"
+    },
+    {
+      "check_id": "full_harness_regressions",
+      "command": "uv run kl test-harness",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-025/full_harness_regressions-c3966cc.log",
+      "elapsed_seconds": 195.77,
+      "sha256": "32a435b002868f29d63dade400759424678088445ed491dc3d8742321aec5127"
+    }
+  ]
+}

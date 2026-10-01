@@ -1,0 +1,41 @@
+{
+  "status": "ENTRY_COMPATIBLE_WITH_CLARIFIED_SUPPLEMENTAL_CI_SCOPE",
+  "base_commit": "d93131de0cd313199f3c787b56ff4b211f2905d7",
+  "historical_blocker": "Historical audit correctly prohibits full tests/db on this shared local daemon; no foreign local namespace is used. That supplemental local run is no longer requested. Exact packet checks remain unchanged.",
+  "clarification": "Run all sixteen exact packet checks locally with KL025 namespace/selector proof first. Full unmodified tests/db is required on the unchanged GitHub-hosted ubuntu-latest workflow fresh VM and default local Docker daemon, not a self-hosted/shared/remote context. Actual hosted CI PASS is still required before merge.",
+  "audit": {
+    "github_hosted_ubuntu_latest": true,
+    "self_hosted_or_remote_docker_configuration": false,
+    "db_suite_skip_or_deselection": false,
+    "compose_external_shared_volume": false,
+    "local_foreign_fixture_execution": false
+  },
+  "protected_files": [
+    {
+      "path": ".github/workflows/db.yml",
+      "sha256": "efef56c3e5debb4c335fff41873889b209ce45979f950e85672165b0a1d06326",
+      "unchanged_from_base": true
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "c955d1de33682d253aeac020efb56bb660c92759b223bd6211fefccd859d4d8a",
+      "unchanged_from_base": true
+    },
+    {
+      "path": "compose.yaml",
+      "sha256": "0fd6b11266f81b83807d8fbd479c30d8375ccee5a761b6e1a55811017660be1a",
+      "unchanged_from_base": true
+    },
+    {
+      "path": "src/kineticloop/db/lifecycle.py",
+      "sha256": "de55f62dd25e3379c67b7b6306cdbd882ce8a6d3d615715a7f9d35c30c6a3686",
+      "unchanged_from_base": true
+    },
+    {
+      "path": "src/kineticloop/contracts/commands.py",
+      "sha256": "022e3fa180c6fbcd5ad8382fd5e8d1e01418c819a52b6ce706534ce594a8539e",
+      "unchanged_from_base": true
+    }
+  ],
+  "product_pass_claims": []
+}
