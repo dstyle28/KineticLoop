@@ -1,0 +1,1155 @@
+--- a/src/kineticloop/persistence/transactions.py
++++ b/src/kineticloop/persistence/transactions.py
+@@ -240,6 +240,9 @@
+         ),
+         "ReserveCall": OwnerSpec(
+             "CallLedgerService", Boundary.T5, ("S01", "S27", "S31", "S32", "S02", "S03", "S04")
++        ),
++        "CancelUndispatched": OwnerSpec(
++            "CallLedgerService", Boundary.T8, ("S01", "S27", "S31", "S32", "S02", "S03", "S04")
+         ),
+         "PermitDispatch": OwnerSpec(
+             "CallLedgerService", Boundary.T5, ("S01", "S27", "S31", "S32", "S02", "S03", "S04")
+@@ -413,7 +416,7 @@
+             )
+         },
+         "SettleCall": {
+-            ("S27", "update"): frozenset({"status", "typed_payload"}),
++            ("S27", "update"): frozenset({"typed_payload"}),
+             ("S31", "update"): frozenset({"status", "settlement_revision", "typed_payload"}),
+         },
+         "PermitDispatch": {
+@@ -664,6 +667,7 @@
+     "RenewLease": {"update": ("S27",)},
+     "ReserveCall": {"insert": ("S31", "S32"), "update": ("S27",)},
+     "PermitDispatch": {"insert": ("S32",), "update": ("S31",)},
++    "CancelUndispatched": {"insert": ("S32",), "update": ("S27", "S31")},
+     "RecordToolResult": {"insert": ("S33",)},
+     "RecordProposal": {"insert": ("S34",)},
+     "RecordDemandFeatures": {"insert": ("S35",)},
+@@ -729,6 +733,10 @@
+     },
+     "RenewLease": {"S27": frozenset({"lease_expires_at", "typed_payload"})},
+     "ReserveCall": {"S27": frozenset({"typed_payload"})},
++    "CancelUndispatched": {
++        "S27": frozenset({"typed_payload"}),
++        "S31": frozenset({"status", "settlement_revision", "typed_payload"}),
++    },
+     "Reauthorize": {
+         "S27": frozenset({"status", "result_authorization_id", "typed_payload"}),
+         "S29": frozenset({"status", "completed_at", "typed_payload"}),
+@@ -1082,7 +1090,7 @@
+ 
+     def settlement_transition(self) -> Mapping[str, Any]:
+         basis = self.__coordination_context.get("settlement_basis")
+-        if self.__command_kind not in {"SettleCall", "MarkUnknown"} or not isinstance(
++        if self.__command_kind not in {"SettleCall", "MarkUnknown", "CancelUndispatched"} or not isinstance(
+             basis, dict
+         ):
+             raise GuardRequired("T8 settlement transition was not prepared under lock")
+@@ -1334,6 +1342,26 @@
+                 "authorization_epoch"
+             ) or values.get("ref_s24_id") != self.__coordination_context.get("current_manifest_id"):
+                 raise GuardRequired("S29 must capture the current epoch and manifest")
++        if self.__command_kind in {"ReserveCall", "CancelUndispatched"} and logical_id in {"S31", "S32"}:
++            basis = self.__coordination_context.get("ledger_basis")
++            if self.__command_kind == "CancelUndispatched" and not basis:
++                raise GuardRequired("bounded ledger cancellation basis required")
++            if basis and logical_id == "S31" and (
++                values.get("id") != basis["reservation_id"]
++                or self._json_value(values.get("typed_payload")) != basis["payload"]
++                or values.get("status") != basis["target_status"]
++                or values.get("settlement_revision") != basis["next_revision"]
++                or values.get("operation_slot") != basis["operation_slot"]
++            ):
++                raise GuardRequired("S31 must equal prepared reservation")
++        basis = self.__coordination_context.get("ledger_basis")
++        if basis and logical_id == "S32" and (
++            values.get("ref_s31_id") != basis["reservation_id"]
++            or values.get("transition_revision") != basis["next_revision"]
++            or values.get("event_type") != basis["target_status"]
++            or values.get("occurred_at") != basis["occurred_at"]
++        ):
++            raise GuardRequired("S32 must equal prepared ledger delta")
+         if logical_id == "S31" and self.__command_kind == "ReserveCall":
+             intent_id = values.get("ref_s27_id")
+             verified = (
+@@ -1344,7 +1372,7 @@
+         if logical_id == "S32" and self.__command_kind == "ReserveCall":
+             if values.get("ref_s31_id") not in self.__inserted_ids.get("S31", set()):
+                 raise GuardRequired("ReserveCall S32 must bind its same-command S31")
+-        if logical_id == "S32" and self.__command_kind in {"SettleCall", "MarkUnknown"}:
++        if logical_id == "S32" and self.__command_kind in {"SettleCall", "MarkUnknown", "CancelUndispatched"}:
+             basis = self.__coordination_context.get("settlement_basis", {})
+             if (
+                 not basis.get("allowed")
+@@ -1693,7 +1721,11 @@
+                 or manifest_values.get("revision_no") != values.get("head_revision")
+             ):
+                 raise GuardRequired("S38 must advance the exact locked head revision")
+-        if logical_id == "S31" and self.__command_kind in {"SettleCall", "MarkUnknown"}:
++        ledger = self.__coordination_context.get("ledger_basis")
++        if ledger and logical_id == "S31" and self.__command_kind in {"SettleCall", "MarkUnknown", "CancelUndispatched"}:
++            if self._json_value(values.get("typed_payload")) != ledger["payload"]:
++                raise GuardRequired("S31 must preserve exact prepared accounting")
++        if logical_id == "S31" and self.__command_kind in {"SettleCall", "MarkUnknown", "CancelUndispatched"}:
+             basis = self.__coordination_context.get("settlement_basis", {})
+             if (
+                 not basis.get("allowed")
+@@ -1702,9 +1734,18 @@
+                 or values.get("settlement_revision") != basis.get("next_revision")
+             ):
+                 raise GuardRequired("S31 must apply the exact guarded settlement transition")
++        if logical_id == "S27" and self.__command_kind in {"ReserveCall", "SettleCall", "MarkUnknown", "CancelUndispatched"}:
++            _cursor(self).execute("SELECT typed_payload FROM kineticloop.planning_intents WHERE subject_id=%s AND id=%s", (self.__subject_id, predicates.get("id")))
++            old = _cursor(self).fetchone()
++            ledger = self.__coordination_context.get("ledger_basis")
++            if ledger or (old and "limits" in (old[0] or {})):
++                if not ledger or dict(values) != {"typed_payload": Jsonb(ledger["root_payload"])}:
++                    # Jsonb objects compare by identity; compare their wrapped JSON explicitly.
++                    if not ledger or set(values) != {"typed_payload"} or self._json_value(values.get("typed_payload")) != ledger["root_payload"] or predicates.get("id") != ledger["intent_id"]:
++                        raise GuardRequired("S27 requires exact root accounting delta without business mutation")
+         if logical_id == "S27":
+             object_id = predicates.get("id")
+-            if self.__command_kind in {"SettleCall", "MarkUnknown"}:
++            if self.__command_kind in {"SettleCall", "MarkUnknown", "CancelUndispatched"}:
+                 basis = self.__coordination_context.get("settlement_basis", {})
+                 if object_id != basis.get("intent_id"):
+                     raise GuardRequired("settlement accounting must update the reservation intent")
+@@ -1995,7 +2036,7 @@
+             and len(self.__inserted_ids.get("S32", set())) != 1
+         ):
+             raise GuardRequired("PermitDispatch requires one atomic S32 ledger event")
+-        if self.__command_kind in {"SettleCall", "MarkUnknown"}:
++        if self.__command_kind in {"SettleCall", "MarkUnknown", "CancelUndispatched"}:
+             basis = self.__coordination_context.get("settlement_basis", {})
+             reservation_id = basis.get("reservation_id")
+             intent_id = basis.get("intent_id")
+@@ -2060,6 +2101,7 @@
+             "ReserveCall": ("S31", "S32"),
+             "SettleCall": ("S32",),
+             "MarkUnknown": ("S32",),
++            "CancelUndispatched": ("S32",),
+         }
+         for logical_id in required_inserts.get(self.__command_kind, ()):
+             if not self.__inserted_ids.get(logical_id):
+@@ -2097,6 +2139,7 @@
+             "ReserveCall": ("S27",),
+             "SettleCall": ("S27", "S31"),
+             "MarkUnknown": ("S27", "S31"),
++            "CancelUndispatched": ("S27", "S31"),
+         }
+         for logical_id in mandatory_updates.get(self.__command_kind, ()):
+             if not self.__updated_values.get(logical_id):
+@@ -2405,6 +2448,35 @@
+         self._require_subject()
+         if self.command_kind not in {"AdmitOrReviseIntent", "AcquireLease", "RenewLease"}:
+             raise GuardRequired("planning replay belongs to planning command owners")
++        _cursor(self).execute(
++            "SELECT request_hash,status,typed_payload FROM kineticloop.command_receipts "
++            "WHERE subject_id=%s AND actor_scope=%s AND command_kind=%s AND client_key=%s",
++            (self.subject_id, actor_scope, self.command_kind, client_key),
++        )
++        prior = _cursor(self).fetchone()
++        if prior is None:
++            return None
++        if prior[0] != request_hash:
++            raise IdempotencyConflict("command key request hash mismatch")
++        if prior[1] != "SUCCEEDED" or "outcome" not in prior[2]:
++            raise IdempotencyConflict("command key has no durable successful outcome")
++        return {**prior[2]["outcome"], "replayed": True}
++
++    def ledger_historical_outcome(
++        self,
++        *,
++        actor_scope: str,
++        client_key: str,
++        request_hash: str,
++    ) -> Mapping[str, Any] | None:
++        """Close preflight-replay races before current authority guards.
++
++        S01 serializes these command owners; this bounded successful S02 read
++        acquires no lower-stage lock, and a found outcome performs no mutation.
++        """
++        self._require_subject()
++        if self.command_kind not in {"ReserveCall", "PermitDispatch", "CancelUndispatched", "SettleCall", "MarkUnknown"}:
++            raise GuardRequired("ledger replay belongs to ledger command owners")
+         _cursor(self).execute(
+             "SELECT request_hash,status,typed_payload FROM kineticloop.command_receipts "
+             "WHERE subject_id=%s AND actor_scope=%s AND command_kind=%s AND client_key=%s",
+@@ -3672,8 +3744,120 @@
+         self._coordination_context["seal_factset_id"] = factset_id
+         self._coordination_context["seal_timestamp"] = row[5]
+ 
++    def ledger_snapshot(self, intent_id: UUID, reservation_id: UUID | None = None) -> Mapping[str, Any]:
++        """Read only the exact locked ledger chain, never a current-worker grant."""
++        self._require_subject()
++        if self.command_kind not in {"ReserveCall", "PermitDispatch", "CancelUndispatched", "SettleCall", "MarkUnknown"}:
++            raise GuardRequired("ledger snapshot belongs to ledger owners")
++        if intent_id not in self._locked_ids.get("planning_intents", set()):
++            raise GuardRequired("ledger requires exact intent lock")
++        _cursor(self).execute(
++            "SELECT typed_payload FROM kineticloop.planning_intents WHERE subject_id=%s AND id=%s",
++            (self.subject_id, intent_id),
++        )
++        root = _cursor(self).fetchone()
++        if root is None:
++            raise GuardRequired("ledger intent absent")
++        result: dict[str, Any] = {"root_payload": root[0]}
++        if reservation_id is not None:
++            if reservation_id not in self._locked_ids.get("call_reservations", set()):
++                raise GuardRequired("ledger requires exact reservation lock")
++            _cursor(self).execute(
++                "SELECT r.ref_s27_id,r.ref_s29_id,r.status,r.settlement_revision,r.typed_payload,"
++                "clock_timestamp(),a.ref_s27_id FROM kineticloop.call_reservations r "
++                "JOIN kineticloop.planning_attempts a ON a.subject_id=r.subject_id AND a.id=r.ref_s29_id "
++                "WHERE r.subject_id=%s AND r.id=%s", (self.subject_id, reservation_id),
++            )
++            row = _cursor(self).fetchone()
++            if row is None or row[0] != intent_id or row[6] != intent_id:
++                raise GuardRequired("ledger reservation must bind exact locked intent/attempt")
++            result.update(zip(("intent_id", "attempt_id", "status", "revision", "payload", "now"), row[:6], strict=True))
++        return copy.deepcopy(result)
++
++    def prepare_ledger_reservation(
++        self, *, intent_id: UUID, reservation_id: UUID, attempt_id: UUID,
++        operation_slot: str, accounting: Any, bounds: Mapping[str, int],
++    ) -> Mapping[str, Any]:
++        from dataclasses import asdict
++        from kineticloop.workflow.call_ledger import ACCOUNTING_VERSION, reserve_budget
++
++        if self.command_kind != "ReserveCall" or self._verified_fences.get(intent_id, ())[-1:] != (attempt_id,):
++            raise GuardRequired("reservation requires exact verified attempt")
++        root = self.ledger_snapshot(intent_id)["root_payload"]
++        _cursor(self).execute(
++            "SELECT 1 FROM kineticloop.call_reservations WHERE subject_id=%s AND ref_s27_id=%s "
++            "AND ref_s29_id=%s AND operation_slot=%s",
++            (self.subject_id, intent_id, attempt_id, operation_slot),
++        )
++        if _cursor(self).fetchone() is not None:
++            raise IdempotencyConflict("operation slot already occupied")
++        _cursor(self).execute("SELECT clock_timestamp()")
++        now = _cursor(self).fetchone()[0]
++        basis = {
++            "intent_id": intent_id, "reservation_id": reservation_id,
++            "root_payload": reserve_budget(root, bounds, accounting),
++            "payload": {"version": ACCOUNTING_VERSION, "accounting": asdict(accounting),
++                        "bounds": dict(bounds), "actual": None},
++            "source_status": None, "target_status": "RESERVED", "next_revision": 0,
++            "occurred_at": now, "operation_slot": operation_slot,
++        }
++        self._coordination_context["ledger_basis"] = copy.deepcopy(basis)
++        return copy.deepcopy(basis)
++
++    def prepare_ledger_change(
++        self, *, intent_id: UUID, reservation_id: UUID, expected_transition: str,
++        expected_revision: int, receipt: Any = None,
++    ) -> Mapping[str, Any]:
++        from dataclasses import asdict
++        from kineticloop.workflow.call_ledger import (
++            ACCOUNTING_VERSION, AccountingIdentity, LedgerDenied, ReliableReceipt,
++            next_state, release_budget, settle_budget,
++        )
++
++        if self.command_kind not in {"CancelUndispatched", "SettleCall", "MarkUnknown"}:
++            raise GuardRequired("invalid ledger change owner")
++        snapshot = self.ledger_snapshot(intent_id, reservation_id)
++        if snapshot["revision"] != expected_revision:
++            raise GuardRequired("ledger expected revision is stale")
++        try:
++            target = next_state(snapshot["status"], self.command_kind, expected_transition)
++        except LedgerDenied as error:
++            raise GuardRequired(str(error)) from error
++        payload = snapshot["payload"]
++        if payload.get("version") != ACCOUNTING_VERSION:
++            raise GuardRequired("typed ledger accounting basis missing")
++        identity = AccountingIdentity(**payload["accounting"])
++        root = snapshot["root_payload"]
++        if self.command_kind == "CancelUndispatched":
++            root = release_budget(root, payload["bounds"])
++        elif self.command_kind == "SettleCall":
++            if type(receipt) is not ReliableReceipt or receipt.reservation_id != reservation_id or receipt.accounting != identity:
++                raise GuardRequired("receipt must bind exact reservation/accounting identity")
++            root = settle_budget(root, payload["bounds"], receipt.actual)
++            payload["actual"] = dict(receipt.actual)
++            payload["receipt"] = {**asdict(receipt), "reservation_id": str(reservation_id)}
++            # S01 serializes reliable provider request/receipt identities across this subject.
++            natural = hashlib.sha256(json.dumps([identity.provider, receipt.receipt_id, receipt.provider_request_id], separators=(",", ":")).encode()).hexdigest()
++            _cursor(self).execute(
++                "SELECT id FROM kineticloop.call_reservations WHERE subject_id=%s "
++                "AND (typed_payload->'receipt'->>'receipt_id'=%s OR typed_payload->'receipt'->>'provider_request_id'=%s) "
++                "AND typed_payload->'accounting'->>'provider'=%s",
++                (self.subject_id, receipt.receipt_id, receipt.provider_request_id, identity.provider),
++            )
++            if _cursor(self).fetchone() is not None:
++                raise IdempotencyConflict("reliable receipt/request already settled")
++            payload["receipt_identity"] = natural
++        basis = {
++            "intent_id": intent_id, "reservation_id": reservation_id,
++            "root_payload": root, "payload": payload,
++            "source_status": snapshot["status"], "target_status": target,
++            "next_revision": expected_revision + 1, "occurred_at": snapshot["now"],
++        }
++        self._coordination_context["ledger_basis"] = copy.deepcopy(basis)
++        return copy.deepcopy(basis)
++
+     def _prepare_settlement_basis(self) -> None:
+-        if self.command_kind not in {"SettleCall", "MarkUnknown"}:
++        if self.command_kind not in {"SettleCall", "MarkUnknown", "CancelUndispatched"}:
+             return
+         intent_ids = self._locked_ids.get("planning_intents", set())
+         reservation_ids = self._locked_ids.get("call_reservations", set())
+@@ -3697,6 +3881,7 @@
+         expected_sources = {
+             "SettleCall": {"DISPATCH_INTENT": "DISPATCH_INTENT", "UNKNOWN": "OUTCOME_UNKNOWN"},
+             "MarkUnknown": {"DISPATCH_INTENT": "DISPATCH_INTENT"},
++            "CancelUndispatched": {"RESERVED": "RESERVED"},
+         }
+         expected_source = (
+             expected_sources[self.command_kind].get(expected_transition)
+@@ -3705,7 +3890,7 @@
+         )
+         if expected_source is None or row[2] != expected_source:
+             raise GuardRequired("settlement expected transition does not match locked reservation")
+-        target = "SETTLED" if self.command_kind == "SettleCall" else "OUTCOME_UNKNOWN"
++        target = {"SettleCall": "SETTLED", "MarkUnknown": "OUTCOME_UNKNOWN", "CancelUndispatched": "CANCELLED_BEFORE_DISPATCH"}[self.command_kind]
+         self._coordination_context["settlement_basis"] = {
+             "reservation_id": reservation_id,
+             "intent_id": intent_id,
+@@ -3714,7 +3899,7 @@
+             "allowed": True,
+             "target_status": target,
+             "next_revision": int(row[3] or 0) + 1,
+-            "occurred_at": row[4],
++            "occurred_at": self._coordination_context.get("ledger_basis", {}).get("occurred_at", row[4]),
+         }
+ 
+     def evaluate_execution_authorization(
+@@ -4111,7 +4296,7 @@
+             if invalidation_scope != canonical_scope:
+                 raise GuardRequired("T2 invalidation scope must equal active-policy classification")
+             self._coordination_context["invalidation_scope"] = canonical_scope
+-        if self.command_kind in {"SettleCall", "MarkUnknown"}:
++        if self.command_kind in {"SettleCall", "MarkUnknown", "CancelUndispatched"}:
+             self._coordination_context["expected_transition"] = expected_transition
+         self._prepare_settlement_basis()
+         if self.spec.boundary is Boundary.T1 and source_identity_key is None:
+--- a/tests/db/test_planning.py
++++ b/tests/db/test_planning.py
+@@ -1,5 +1,6 @@
+ from __future__ import annotations
+ 
++import os
+ import subprocess
+ import time
+ from collections.abc import Iterator, Mapping
+@@ -61,15 +62,28 @@
+ }
+ 
+ 
++def _planning_namespace(short: str) -> DatabaseNamespace:
++    if not 7 <= len(short) <= 12 or any(c not in "0123456789abcdef" for c in short):
++        raise ValueError("invalid planning fixture commit suffix")
++    owner = os.environ.get("KINETICLOOP_KL024_FIXTURE_OWNER")
++    if owner is None:
++        return DatabaseNamespace(f"kineticloop-kl024-{short}", f"kineticloop_kl024_{short}")
++    if owner != "KL-025":
++        raise ValueError("unsupported planning fixture owner")
++    suffix = DatabaseNamespace.for_worktree(ROOT).project_name[-12:]
++    return DatabaseNamespace(
++        f"kineticloop-kl025-plan-{short}-{suffix}",
++        f"kineticloop_kl025_plan_{short}_{suffix}",
++    )
++
++
+ @pytest.fixture()
+ def database_urls() -> Iterator[dict[str, str]]:
+     short = subprocess.check_output(
+         ["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, text=True
+     ).strip()
+     lifecycle = DatabaseLifecycle(ROOT)
+-    lifecycle.namespace = DatabaseNamespace(
+-        f"kineticloop-kl024-{short}", f"kineticloop_kl024_{short}"
+-    )
++    lifecycle.namespace = _planning_namespace(short)
+     try:
+         urls = _MIGRATIONS.bootstrap_two_phase(lifecycle)
+         with psycopg.connect(urls["admin"], autocommit=True) as db:
+--- /dev/null
++++ b/docs/contracts/call_ledger.md
+@@ -0,0 +1,65 @@
++# Call ledger — KL025
++
++`CallLedgerService` submits typed ReserveCall, PermitDispatch, CancelUndispatched,
++MarkUnknown and SettleCall commands to the merged repository transaction owners.
++It uses the actual planning root's top-level `limits`, `reserved` and `settled`
++maps; it preserves every unrelated root payload field. No new coordinator, table,
++planning lease API or provider transport is introduced.
++
++`kl025-v1` accounting binds provider, model, configuration fingerprint and price
++accounting version. Every configured dimension has a finite nonnegative integer
++unit. Supported dimensions are calls, tokens, tools, input_tokens, output_tokens
++and cost_micros. Unknown dimensions, bools, floats, missing/extra counters and
++unbounded values fail closed. Each physical request reserves exactly one call;
++reliable settlement retains that physical request count. Admission compares
++settled actual + all outstanding reserved maxima + the new maximum with every
++root limit. Equality is allowed. Pending and OUTCOME_UNKNOWN occupation remains
++reserved usage; it is never reported as confirmed provider charges.
++
++This version explicitly sets `AccountingIdentity.strict_money=false`; it rejects
++a strict money claim because it does not establish complete provider billing
++coverage. Integer cost_micros, when configured, participates in root arithmetic,
++but does not supply that missing provider guarantee. Count/token limits remain
++enforceable. A complete verified pricing/billing configuration is future work.
++
++Only a locked RESERVED reservation may cancel and release its exact maximum.
++Cancellation may release an obsolete reservation because its locked source proves
++that no permit exists. It supplies no stale planning authority. Only the first
++committed RESERVED → DISPATCH_INTENT winner receives `sendable=true`. That permit
++is a single physical-send permission, with no business-write or T6 authority.
++Same-key replay retains the original identity and is `sendable=false`; changed
++payload conflicts. Another key cannot permit the same reservation again.
++
++DISPATCH_INTENT is the possible-send boundary. DISPATCHED is optional diagnosis
++and is not implemented here. Crashes before sending, after sending, lost permit
++ACKs, timeout and post-permit cancellation cannot release occupation or reset the
++reservation. Recovery never sends the same reservation again. A consumer invokes
++its sender only after the permission transaction has committed and released its
++locks, only for its first sendable result. SDK implicit retry must be disabled;
++each explicit future physical retry requires a fresh covered reservation. Unit
++evidence uses an instrumented owner and fake sender, with no live network call.
++
++The existing owner's expected-transition vocabulary is `DISPATCH_INTENT` or
++`UNKNOWN`; the latter names the persisted OUTCOME_UNKNOWN source. MarkUnknown
++accepts DISPATCH_INTENT only and preserves the root counters. SettleCall accepts
++DISPATCH_INTENT or UNKNOWN, an exact expected settlement revision and a reliable
++receipt/reconciliation. A blocked contender rereads the locked transition and
++rejects a stale expectation.
++
++`ReliableReceipt` binds the reservation, accounting identity, exact actual
++dimension map, provider request ID, immutable receipt ID, source and provenance
++reference. Its shape does not establish trust. The dedicated settlement ingress
++requires its injected trusted receipt verifier before coordination begins.
++Untrusted, duplicate and conflicting evidence cannot refund occupation twice.
++Settlement atomically removes the exact outstanding maximum and adds verified
++actual usage. Actual above a reserved maximum remains recorded without clamping;
++an overdrawn root denies subsequent reservation. Late settlement updates only
++accounting and immutable evidence, preserving terminal/revised intent, attempt,
++lease, control and authorization state.
++
++Applicable ordering remains S01 → S27 → S31 → S02 with remaining applicable
++locks acquired in frozen order. S27 accounting, S31 state, S32 transition and
++S02/S03/S04 bookkeeping commit atomically. Ledger commands never acquire a
++registry lock backwards and never wait on a model or network inside coordination.
++The task's PU/DC evidence does not discharge full W01/W03/W05/W06/W08 workflow,
++end-to-end or release obligations and changes no product requirement status.
+--- /dev/null
++++ b/src/kineticloop/workflow/call_ledger.py
+@@ -0,0 +1,155 @@
++"""Versioned, finite call accounting; no planning or execution authority."""
++
++from __future__ import annotations
++
++from collections.abc import Mapping
++from dataclasses import dataclass
++from typing import Any, Literal
++from uuid import UUID
++
++ACCOUNTING_VERSION = "kl025-v1"
++DIMENSIONS = frozenset({"calls", "tokens", "tools", "input_tokens", "output_tokens", "cost_micros"})
++OCCUPIED = frozenset({"RESERVED", "DISPATCH_INTENT", "OUTCOME_UNKNOWN"})
++ReceiptSource = Literal["PROVIDER_RECEIPT", "RECONCILIATION"]
++
++
++class LedgerDenied(ValueError):
++    """The requested accounting change cannot be established safely."""
++
++
++def _name(value: Any) -> bool:
++    return isinstance(value, str) and bool(value.strip()) and len(value) <= 512
++
++
++@dataclass(frozen=True)
++class AccountingIdentity:
++    provider: str
++    model: str
++    config_fingerprint: str
++    price_version: str
++    strict_money: bool = False
++    version: str = ACCOUNTING_VERSION
++
++    def __post_init__(self) -> None:
++        if (
++            self.version != ACCOUNTING_VERSION
++            or any(not _name(v) for v in (
++                self.provider, self.model, self.config_fingerprint, self.price_version
++            ))
++            or type(self.strict_money) is not bool
++            or self.strict_money
++        ):
++            raise LedgerDenied("versioned count/token accounting required; no strict money claim")
++
++
++def validate_usage(
++    usage: Mapping[str, int], dimensions: set[str] | frozenset[str] | None = None
++) -> dict[str, int]:
++    """Integer counters have exact units and reject floats, bools, NaN and infinity."""
++    if (
++        not isinstance(usage, Mapping)
++        or not usage
++        or any(not isinstance(k, str) or k not in DIMENSIONS for k in usage)
++        or any(type(v) is not int or v < 0 for v in usage.values())
++        or (dimensions is not None and set(usage) != dimensions)
++    ):
++        raise LedgerDenied("unknown, missing, negative or unbounded budget dimension")
++    return dict(usage)
++
++
++@dataclass(frozen=True)
++class ReliableReceipt:
++    """Evidence shape only; the settlement ingress must verify its provenance."""
++
++    reservation_id: UUID
++    accounting: AccountingIdentity
++    actual: Mapping[str, int]
++    source: ReceiptSource
++    receipt_id: str
++    provider_request_id: str
++    provenance: str
++
++    def __post_init__(self) -> None:
++        if (
++            type(self.reservation_id) is not UUID
++            or type(self.accounting) is not AccountingIdentity
++            or self.source not in {"PROVIDER_RECEIPT", "RECONCILIATION"}
++            or any(not _name(v) for v in (
++                self.receipt_id, self.provider_request_id, self.provenance
++            ))
++        ):
++            raise LedgerDenied("receipt must bind exact reservation/accounting/source identities")
++        object.__setattr__(self, "actual", validate_usage(self.actual))
++
++
++def _root(root: Mapping[str, Any]) -> tuple[dict[str, int], dict[str, int], dict[str, int]]:
++    if not isinstance(root, Mapping):
++        raise LedgerDenied("root budget mapping required")
++    limits = validate_usage(root.get("limits"))
++    if "calls" not in limits:
++        raise LedgerDenied("physical call count must be bounded")
++    dimensions = set(limits)
++    return (
++        limits,
++        validate_usage(root.get("reserved"), dimensions),
++        validate_usage(root.get("settled"), dimensions),
++    )
++
++
++def _bounds(bounds: Mapping[str, int], dimensions: set[str]) -> dict[str, int]:
++    result = validate_usage(bounds, dimensions)
++    if result["calls"] != 1:
++        raise LedgerDenied("each physical request needs exactly one covered call slot")
++    return result
++
++
++def reserve_budget(
++    root: Mapping[str, Any], bounds: Mapping[str, int], accounting: AccountingIdentity
++) -> dict[str, Any]:
++    if type(accounting) is not AccountingIdentity:
++        raise LedgerDenied("versioned accounting identity required")
++    # Revalidate at ingress even if a caller has circumvented frozen dataclass assignment.
++    accounting.__post_init__()
++    limits, reserved, settled = _root(root)
++    upper = _bounds(bounds, set(limits))
++    if any(settled[k] + reserved[k] + upper[k] > limits[k] for k in limits):
++        raise LedgerDenied("root budget exhausted")
++    return {**root, "reserved": {k: reserved[k] + upper[k] for k in limits}}
++
++
++def release_budget(root: Mapping[str, Any], bounds: Mapping[str, int]) -> dict[str, Any]:
++    """Only the command owner's locked RESERVED winner may use this delta."""
++    limits, reserved, _ = _root(root)
++    upper = _bounds(bounds, set(limits))
++    if any(reserved[k] < upper[k] for k in limits):
++        raise LedgerDenied("release exceeds outstanding root occupation")
++    return {**root, "reserved": {k: reserved[k] - upper[k] for k in limits}}
++
++
++def settle_budget(
++    root: Mapping[str, Any], bounds: Mapping[str, int], actual: Mapping[str, int]
++) -> dict[str, Any]:
++    """Record verified actuals without clamping, including observed bound overruns."""
++    limits, _, settled = _root(root)
++    verified = _bounds(actual, set(limits))
++    released = release_budget(root, bounds)
++    return {**released, "settled": {k: settled[k] + verified[k] for k in limits}}
++
++
++def next_state(source: str, command: str, expected_transition: str | None = None) -> str:
++    """The merged owner API calls OUTCOME_UNKNOWN's expected transition UNKNOWN."""
++    transitions = {
++        ("RESERVED", "PermitDispatch"): "DISPATCH_INTENT",
++        ("RESERVED", "CancelUndispatched"): "CANCELLED_BEFORE_DISPATCH",
++        ("DISPATCH_INTENT", "MarkUnknown"): "OUTCOME_UNKNOWN",
++        ("DISPATCH_INTENT", "SettleCall"): "SETTLED",
++        ("OUTCOME_UNKNOWN", "SettleCall"): "SETTLED",
++    }
++    if command in {"MarkUnknown", "SettleCall"}:
++        expected_source = {"DISPATCH_INTENT": "DISPATCH_INTENT", "UNKNOWN": "OUTCOME_UNKNOWN"}
++        if expected_source.get(expected_transition or "") != source:
++            raise LedgerDenied("stale or unsupported expected transition")
++    target = transitions.get((source, command))
++    if target is None:
++        raise LedgerDenied("reservation transition denied")
++    return target
+--- /dev/null
++++ b/tests/db/test_call_ledger.py
+@@ -0,0 +1,428 @@
++from __future__ import annotations
++
++import subprocess
++import re
++import time
++from collections.abc import Iterator, Mapping
++from concurrent.futures import ThreadPoolExecutor
++from dataclasses import replace
++from datetime import date
++from importlib.util import module_from_spec, spec_from_file_location
++from pathlib import Path
++from threading import Barrier, Event
++from typing import Any
++from uuid import UUID, uuid4
++
++import psycopg
++import pytest
++from psycopg.types.json import Jsonb
++
++from kineticloop.db.lifecycle import DatabaseLifecycle, DatabaseNamespace
++from kineticloop.identity import ActorRole, RoleIdentity
++from kineticloop.persistence.planning import (
++    AcquireLease,
++    AdmitOrReviseIntent,
++    PlanningIdentity,
++    PlanningWorkflowService,
++    RenewLease,
++)
++from kineticloop.persistence.transactions import (
++    FenceLost,
++    IdempotencyConflict,
++    RepositoryTransaction,
++    RestrictedSqlSession,
++    execute_command,
++)
++from kineticloop.workflow.planning import TERMINAL, PlanningDenied
++
++ROOT = Path(__file__).parents[2]
++_SPEC = spec_from_file_location("kl025_migrations", ROOT / "tests/db/test_migrations.py")
++assert _SPEC is not None and _SPEC.loader is not None
++_MIGRATIONS: Any = module_from_spec(_SPEC)
++_SPEC.loader.exec_module(_MIGRATIONS)
++SUBJECT, POLICY = UUID(int=25001), UUID(int=25005)
++IDENTITY = PlanningIdentity(
++    RoleIdentity("00000000-0000-8000-8000-000000025900", ActorRole.TEST), SUBJECT
++)
++OTHER = PlanningIdentity(
++    RoleIdentity("00000000-0000-8000-8000-000000025901", ActorRole.TEST), SUBJECT
++)
++POLICY_BODY = {
++    "version": "kl025-v1",
++    "purposes": ["TRAINING", "NUTRITION"],
++    "triggers": ["USER_REQUEST", "INPUT_EVENT"],
++    "auto_root_triggers": [],
++    "max_active_per_day": 1,
++    "capacity_available": True,
++    "hourly_roots": 3,
++    "daily_roots": 3,
++    "deadline_seconds": 3600,
++    "calendar_policies": ["test:UTC-v1"],
++    "root_limits": {"calls": 3, "tokens": 1000, "tools": 10},
++}
++
++
++@pytest.fixture()
++def database_urls() -> Iterator[dict[str, str]]:
++    short = subprocess.check_output(
++        ["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, text=True
++    ).strip()
++    if re.fullmatch(r"[0-9a-f]{7,12}", short) is None:
++        raise ValueError("invalid ledger fixture commit suffix")
++    lifecycle = DatabaseLifecycle(ROOT)
++    lifecycle.namespace = DatabaseNamespace(
++        f"kineticloop-kl025-{short}", f"kineticloop_kl025_{short}"
++    )
++    try:
++        urls = _MIGRATIONS.bootstrap_two_phase(lifecycle)
++        with psycopg.connect(urls["admin"], autocommit=True) as db:
++            # Only trusted TEST scope, immutable policy and the prerequisite S01 are seeded.
++            # Every positive S27/S28/S29/S30 operation below uses PlanningWorkflowService.
++            db.execute(
++                "INSERT INTO kineticloop.policy_bundles "
++                "(id,subject_id,policy_namespace,policy_version,content_hash,typed_payload) "
++                "VALUES (%s,%s,'test:kl025','1','kl025-policy',%s)",
++                (POLICY, SUBJECT, Jsonb({"planning_admission": POLICY_BODY})),
++            )
++            db.execute(
++                "INSERT INTO kineticloop.user_decision_state "
++                "(subject_id,input_frontier_hash,active_policy_bundle_id) VALUES (%s,'basis-1',%s)",
++                (SUBJECT, POLICY),
++            )
++            program, factset, build, artifact, manifest = (UUID(int=25010 + n) for n in range(5))
++            db.execute(
++                "INSERT INTO kineticloop.program_versions "
++                "(id,subject_id,program_identity,program_revision) VALUES (%s,%s,'test:kl025',1)",
++                (program, SUBJECT),
++            )
++            db.execute(
++                "INSERT INTO kineticloop.factset_revisions "
++                "(id,subject_id,factset_identity,status,storage_mode) VALUES (%s,%s,%s,'SEALED','FULL')",
++                (factset, SUBJECT, str(factset)),
++            )
++            db.execute(
++                "INSERT INTO kineticloop.manifest_builds "
++                "(id,subject_id,build_identity,status,captured_epoch) VALUES (%s,%s,'test:kl025','PUBLISHED',0)",
++                (build, SUBJECT),
++            )
++            db.execute(
++                "INSERT INTO kineticloop.safety_artifacts "
++                "(id,artifact_kind,artifact_identity,artifact_version,content_hash,validity_kind,valid_from,valid_until,ref_s05_id) "
++                "VALUES (%s,'POLICY_BUNDLE','test:kl025','1','kl025-policy','BOUNDED',clock_timestamp(),clock_timestamp()+interval '1 day',%s)",
++                (artifact, POLICY),
++            )
++            db.execute(
++                "INSERT INTO kineticloop.decision_manifests "
++                "(id,subject_id,generation,captured_epoch,manifest_hash,registry_revision_at_publish,valid_until,ref_s05_id,ref_s06_id,ref_s15_id,ref_s23_id,ref_s49_id,registry_state_id) "
++                "VALUES (%s,%s,1,0,'test:manifest',0,clock_timestamp()+interval '1 day',%s,%s,%s,%s,%s,1)",
++                (manifest, SUBJECT, POLICY, program, factset, build, artifact),
++            )
++            db.execute(
++                "UPDATE kineticloop.user_decision_state SET current_manifest_id=%s WHERE subject_id=%s",
++                (manifest, SUBJECT),
++            )
++        with psycopg.connect(urls["trusted_admin"], autocommit=True) as db:
++            db.execute(
++                "SELECT kineticloop.subject_scope_register(%s,'TEST',%s,%s,%s)",
++                (SUBJECT, POLICY, UUID(int=25902), "kl_test_subject_1_login"),
++            )
++        yield urls
++    finally:
++        lifecycle.destroy()
++
++
++
++def test_planning_fixture_namespace_isolation(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
++    """Exercise the actual planning selector and fixture before any database runner."""
++    spec = spec_from_file_location("kl025_planning_fixture", ROOT / "tests/db/test_planning.py")
++    assert spec is not None and spec.loader is not None
++    planning: Any = module_from_spec(spec)
++    spec.loader.exec_module(planning)
++    selector = "KINETICLOOP_KL024_FIXTURE_OWNER"
++    short = "abcdef1"
++    monkeypatch.delenv(selector, raising=False)
++    assert planning._planning_namespace(short) == DatabaseNamespace(
++        "kineticloop-kl024-abcdef1", "kineticloop_kl024_abcdef1"
++    )
++    monkeypatch.setenv(selector, "KL-025")
++    actual = planning._planning_namespace(short)
++    suffix = DatabaseNamespace.for_worktree(ROOT).project_name[-12:]
++    assert actual == DatabaseNamespace(
++        f"kineticloop-kl025-plan-{short}-{suffix}",
++        f"kineticloop_kl025_plan_{short}_{suffix}",
++    )
++    with monkeypatch.context() as scoped:
++        scoped.setattr(planning, "ROOT", tmp_path / "different-worktree")
++        other = planning._planning_namespace(short)
++    assert other != actual
++    calls: list[tuple[str, DatabaseNamespace]] = []
++
++    class BootstrapStop(RuntimeError):
++        pass
++
++    def reset(lifecycle: DatabaseLifecycle) -> None:
++        calls.append(("reset", lifecycle.namespace))
++
++    def destroy(lifecycle: DatabaseLifecycle) -> None:
++        calls.append(("destroy", lifecycle.namespace))
++
++    def bootstrap(lifecycle: DatabaseLifecycle) -> None:
++        lifecycle.reset()
++        raise BootstrapStop
++
++    monkeypatch.setattr(planning.subprocess, "check_output", lambda *args, **kwargs: short)
++    monkeypatch.setattr(DatabaseLifecycle, "reset", reset)
++    monkeypatch.setattr(DatabaseLifecycle, "destroy", destroy)
++    monkeypatch.setattr(planning._MIGRATIONS, "bootstrap_two_phase", bootstrap)
++    fixture = planning.database_urls.__wrapped__
++    with pytest.raises(BootstrapStop):
++        next(fixture())
++    assert calls == [("reset", actual), ("destroy", actual)]
++    assert all("kl025" in ns.project_name and "kl025" in ns.database_name for _, ns in calls)
++    print("PLANNING_NAMESPACE", actual.project_name, actual.database_name)
++    calls.clear()
++    for value in ("", "KL-024", "kl-025", "arbitrary", "KL-025 ", "../KL-025"):
++        monkeypatch.setenv(selector, value)
++        with pytest.raises(ValueError, match="owner"):
++            next(fixture())
++        assert calls == []
++    monkeypatch.setenv(selector, "KL-025")
++    for invalid in ("", "abcdef", "abcdef1234567", "ABCDEF1", "abcdex1", "abcdef1;"):
++        monkeypatch.setattr(planning.subprocess, "check_output", lambda *a, _s=invalid, **k: _s)
++        with pytest.raises(ValueError, match="suffix"):
++            next(fixture())
++        assert calls == []
++
++
++def read(url: str, statement: str, args: Any = ()) -> list[Any]:
++    with psycopg.connect(url, autocommit=True) as db:
++        return db.execute(statement, args).fetchall()
++
++
++def bookkeeping(url: str) -> tuple[int, ...]:
++    return tuple(
++        read(url, f"SELECT count(*) FROM kineticloop.{table}")[0][0]
++        for table in (
++            "call_reservations", "call_ledger_events", "command_receipts",
++            "domain_events", "outbox_deliveries",
++        )
++    )
++
++
++def root_payload(url: str) -> dict[str, Any]:
++    return dict(read(url, "SELECT typed_payload FROM kineticloop.planning_intents")[0][0])
++
++
++def request(key: str, **changes: Any) -> AdmitOrReviseIntent:
++    return replace(AdmitOrReviseIntent(
++        SUBJECT, key, date(2026, 9, 30), "TRAINING", "test:UTC-v1", {"minutes": 30}
++    ), **changes)
++
++
++def admission(url: str, key: str = "root", **changes: Any) -> Mapping[str, Any]:
++    with psycopg.connect(url) as db:
++        return PlanningWorkflowService(db, IDENTITY).admit_or_revise(request(key, **changes))
++
++
++def acquire(
++    url: str, root: Mapping[str, Any], key: str = "lease", *,
++    identity: PlanningIdentity = IDENTITY, owner: str | None = None, fence: int = 0,
++) -> Mapping[str, Any]:
++    with psycopg.connect(url) as db:
++        return PlanningWorkflowService(db, identity).acquire_lease(AcquireLease(
++            SUBJECT, key, UUID(root["intent_id"]), owner, fence, root["request_revision"],
++            UUID(root["attempt_id"]), 60,
++        ))
++
++
++def ledger(db: Any, identity: PlanningIdentity = IDENTITY, trusted: bool = True) -> Any:
++    from kineticloop.persistence.call_ledger import CallLedgerService
++    return CallLedgerService(db, identity, receipt_verifier=lambda receipt: trusted)
++
++
++def reserve_command(
++    root: Mapping[str, Any], key: str, slot: str | None = None, *, fence: int = 1,
++    tokens: int = 100, tools: int = 1,
++) -> Any:
++    from kineticloop.persistence.call_ledger import ReserveCall
++    from kineticloop.workflow.call_ledger import AccountingIdentity
++    return ReserveCall(
++        SUBJECT, key, UUID(root["intent_id"]), UUID(root["attempt_id"]),
++        root["request_revision"], fence, slot or key,
++        AccountingIdentity("fake-provider", "fake-model", "config-v1", "price-v1"),
++        {"calls": 1, "tokens": tokens, "tools": tools},
++    )
++
++
++def reserve(url: str, command: Any, identity: PlanningIdentity = IDENTITY) -> Mapping[str, Any]:
++    with psycopg.connect(url) as db:
++        return ledger(db, identity).reserve(command)
++
++
++def permit_command(root: Mapping[str, Any], reserved: Mapping[str, Any], key: str) -> Any:
++    from kineticloop.persistence.call_ledger import PermitDispatch
++    return PermitDispatch(
++        SUBJECT, key, UUID(root["intent_id"]), UUID(reserved["reservation_id"]),
++        UUID(root["attempt_id"]), root["request_revision"], 1,
++    )
++
++
++def cancel_command(root: Mapping[str, Any], reserved: Mapping[str, Any], key: str) -> Any:
++    from kineticloop.persistence.call_ledger import CancelUndispatched
++    return CancelUndispatched(SUBJECT, key, UUID(root["intent_id"]), UUID(reserved["reservation_id"]))
++
++
++def unknown_command(root: Mapping[str, Any], reserved: Mapping[str, Any], key: str) -> Any:
++    from kineticloop.persistence.call_ledger import MarkUnknown
++    return MarkUnknown(SUBJECT, key, UUID(root["intent_id"]), UUID(reserved["reservation_id"]),
++                       expected_transition="DISPATCH_INTENT", expected_revision=1)
++
++
++def settlement_command(
++    root: Mapping[str, Any], reserved: Mapping[str, Any], key: str, *,
++    expected: str = "UNKNOWN", revision: int = 2, tokens: int = 80,
++    receipt_id: str | None = None,
++) -> Any:
++    from kineticloop.persistence.call_ledger import SettleCall
++    from kineticloop.workflow.call_ledger import AccountingIdentity, ReliableReceipt
++    receipt = ReliableReceipt(
++        UUID(reserved["reservation_id"]),
++        AccountingIdentity("fake-provider", "fake-model", "config-v1", "price-v1"),
++        {"calls": 1, "tokens": tokens, "tools": 1}, "PROVIDER_RECEIPT",
++        receipt_id or key, f"provider-{reserved['reservation_id']}", "verified:test-evidence-v1",
++    )
++    return SettleCall(SUBJECT, key, UUID(root["intent_id"]), UUID(reserved["reservation_id"]),
++                      receipt, expected_transition=expected, expected_revision=revision)
++
++
++def invoke(url: str, method: str, command: Any, identity: PlanningIdentity = IDENTITY) -> Any:
++    with psycopg.connect(url) as db:
++        return getattr(ledger(db, identity), method)(command)
++
++
++def observe_block(url: str, pid: int) -> None:
++    until = time.monotonic() + 5
++    with psycopg.connect(url, autocommit=True) as monitor:
++        while time.monotonic() < until:
++            row = monitor.execute(
++                "SELECT wait_event_type,cardinality(pg_blocking_pids(pid)) "
++                "FROM pg_stat_activity WHERE pid=%s", (pid,),
++            ).fetchone()
++            if row is not None and row[0] == "Lock" and row[1] > 0:
++                return
++            time.sleep(0.01)  # Poll actual PG locks; elapsed time is never the oracle.
++    pytest.fail("PostgreSQL did not observe bounded lock blocking")
++
++
++def test_competing_reservations_share_root_budget(database_urls: dict[str, str]) -> None:
++    from kineticloop.workflow.call_ledger import LedgerDenied
++    url = database_urls["admin"]
++    root = admission(url)
++    lease = acquire(url, root)
++    old = reserve(url, reserve_command(root, "old-attempt", tokens=200, tools=2))
++    original = root_payload(url)
++    deadline = read(url, "SELECT deadline FROM kineticloop.planning_intents")[0][0]
++    joined = admission(url, "join")
++    assert joined["attempt_id"] == root["attempt_id"]
++    revised = admission(url, "revision", constraints={"minutes": 31})
++    with psycopg.connect(url) as db:
++        PlanningWorkflowService(db, IDENTITY).renew_lease(RenewLease(
++            SUBJECT, "renew-revised", UUID(root["intent_id"]), lease["fence"],
++            revised["request_revision"], UUID(revised["attempt_id"]), 120,
++        ))
++    assert root_payload(url) == original
++    assert read(url, "SELECT deadline FROM kineticloop.planning_intents")[0][0] == deadline
++    before = bookkeeping(url)
++    barrier, pids = Barrier(3), []
++
++    def contender(key: str) -> Mapping[str, Any] | str:
++        with psycopg.connect(url) as db:
++            pids.append(db.info.backend_pid)
++            barrier.wait(timeout=5)
++            try:
++                return ledger(db).reserve(reserve_command(revised, key, tokens=600, tools=6))
++            except LedgerDenied as error:
++                assert "budget" in str(error)
++                return "DENIED"
++
++    with psycopg.connect(url) as blocker, ThreadPoolExecutor(2) as pool:
++        blocker.execute("SELECT subject_id FROM kineticloop.user_decision_state "
++                        "WHERE subject_id=%s FOR UPDATE", (SUBJECT,))
++        futures = [pool.submit(contender, key) for key in ("budget-a", "budget-b")]
++        barrier.wait(timeout=5)
++        for pid in pids:
++            observe_block(url, pid)
++        blocker.commit()
++        results = [future.result(timeout=10) for future in futures]
++    assert results.count("DENIED") == 1
++    assert bookkeeping(url) == tuple(a + 1 for a in before)
++    payload = root_payload(url)
++    assert payload["reserved"] == {"calls": 2, "tokens": 800, "tools": 8}
++    assert payload["settled"] == {"calls": 0, "tokens": 0, "tools": 0}
++    assert payload["limits"] == original["limits"]
++    assert read(url, "SELECT count(DISTINCT ref_s29_id) FROM kineticloop.call_reservations") == [(2,)]
++    assert read(url, "SELECT count(*) FROM kineticloop.call_ledger_events WHERE event_type='RESERVED'") == [(2,)]
++    winner = next(result for result in results if isinstance(result, Mapping))
++    winner_key = "budget-a" if winner == results[0] else "budget-b"
++    with pytest.raises((GuardRequired, IdempotencyConflict, LedgerDenied, psycopg.errors.UniqueViolation)):
++        reserve(url, reserve_command(revised, "different-key", slot=winner_key, tokens=1, tools=1))
++    assert bookkeeping(url) == tuple(a + 1 for a in before)
++    assert old["reservation_id"] != winner["reservation_id"]
++    print("ROOT_BUDGET", payload)
++
++
++def test_cancel_and_dispatch_have_one_winner(
++    database_urls: dict[str, str], monkeypatch: pytest.MonkeyPatch,
++) -> None:
++    from kineticloop.persistence.transactions import DispatchNotPermitted, GuardRequired
++    url = database_urls["admin"]
++    root = admission(url)
++    acquire(url, root)
++    for winner_method in ("cancel", "permit"):
++        reserved = reserve(url, reserve_command(root, f"reserve-{winner_method}"))
++        commands = {"cancel": cancel_command(root, reserved, f"cancel-{winner_method}"),
++                    "permit": permit_command(root, reserved, f"permit-{winner_method}")}
++        loser_method = "permit" if winner_method == "cancel" else "cancel"
++        entered, release, started = Event(), Event(), Event()
++        original = RestrictedSqlSession.update
++        before = bookkeeping(url)
++        target = "CANCELLED_BEFORE_DISPATCH" if winner_method == "cancel" else "DISPATCH_INTENT"
++
++        def pause(session: Any, logical: str, values: Mapping[str, Any], where: Mapping[str, Any]) -> int:
++            result = original(session, logical, values, where)
++            if logical == "S31" and values.get("status") == target:
++                entered.set()
++                assert release.wait(5)
++            return result
++
++        with monkeypatch.context() as scoped, ThreadPoolExecutor(2) as pool:
++            scoped.setattr(RestrictedSqlSession, "update", pause)
++            first = pool.submit(invoke, url, winner_method, commands[winner_method])
++            assert entered.wait(5)
++            scoped.setattr(RestrictedSqlSession, "update", original)
++            pids: list[int] = []
++
++            def waiter() -> str:
++                with psycopg.connect(url) as db:
++                    pids.append(db.info.backend_pid)
++                    started.set()
++                    try:
++                        getattr(ledger(db), loser_method)(commands[loser_method])
++                    except (DispatchNotPermitted, GuardRequired):
++                        return "DENIED_AFTER_LOCK"
++                    return "BAD"
++
++            second = pool.submit(waiter)
++            assert started.wait(5)
++            observe_block(url, pids[0])
++            release.set()
++            first.result(timeout=10)
++            assert second.result(timeout=10) == "DENIED_AFTER_LOCK"
++        assert bookkeeping(url) == (before[0], *(n + 1 for n in before[1:]))
++        assert read(url, "SELECT status,settlement_revision FROM kineticloop.call_reservations WHERE id=%s",
++                    (reserved["reservation_id"],)) == [(target, 1)]
++        assert read(url, "SELECT event_type,transition_revision FROM kineticloop.call_ledger_events "
++                    "WHERE ref_s31_id=%s ORDER BY transition_revision", (reserved["reservation_id"],)) == [
++                        ("RESERVED", 0), (target, 1)]
++        assert root_payload(url)["reserved"]["calls"] == (0 if winner_method == "cancel" else 1)
++    print("CANCEL_DISPATCH_LOCK_ORDERS", "cancel-first", "permit-first")
+--- /dev/null
++++ b/tests/unit/workflow/test_call_ledger.py
+@@ -0,0 +1,118 @@
++from dataclasses import replace
++from typing import Any
++from uuid import uuid4
++
++import pytest
++
++from kineticloop.workflow.call_ledger import (
++    ACCOUNTING_VERSION,
++    OCCUPIED,
++    AccountingIdentity,
++    LedgerDenied,
++    ReliableReceipt,
++    next_state,
++    release_budget,
++    reserve_budget,
++    settle_budget,
++    validate_usage,
++)
++
++ACCOUNTING = AccountingIdentity("fake-provider", "fake-model", "config-v1", "price-v1")
++BOUNDS = {"calls": 1, "tokens": 20, "tools": 1, "input_tokens": 8,
++          "output_tokens": 12, "cost_micros": 30}
++
++
++def root_budget() -> dict[str, Any]:
++    return {
++        "limits": {k: v * 3 for k, v in BOUNDS.items()},
++        "reserved": dict(BOUNDS),
++        "settled": dict(BOUNDS),
++        "admission_policy_id": "policy-v1",
++        "version": "kl024-v1",
++        "unrelated": {"deadline": "original", "request": 2},
++    }
++
++
++def test_root_budget_and_charge_bounds() -> None:
++    root = root_budget()
++    updated = reserve_budget(root, BOUNDS, ACCOUNTING)
++    assert updated["reserved"] == {k: v * 2 for k, v in BOUNDS.items()}
++    assert updated["settled"] == root["settled"]
++    assert updated["version"] == "kl024-v1" and ACCOUNTING.version == ACCOUNTING_VERSION
++    assert updated["unrelated"] == root["unrelated"]
++    assert root == root_budget()  # pure calculation, not an unguarded root mutation
++    for dimension in BOUNDS:
++        saturated = root_budget()
++        saturated["limits"][dimension] -= 1
++        with pytest.raises(LedgerDenied, match="exhausted"):
++            reserve_budget(saturated, BOUNDS, ACCOUNTING)
++    with pytest.raises(LedgerDenied, match="exhausted"):
++        reserve_budget(updated, BOUNDS, ACCOUNTING)
++
++    for bad in (-1, 0.5, float("nan"), float("inf"), True, None):
++        values: Any = {**BOUNDS, "tokens": bad}
++        with pytest.raises(LedgerDenied):
++            reserve_budget(root, values, ACCOUNTING)
++    for values in ({**BOUNDS, "unknown": 1}, {k: v for k, v in BOUNDS.items() if k != "tokens"},
++                   {**BOUNDS, "calls": 0}, {**BOUNDS, "calls": 2}):
++        with pytest.raises(LedgerDenied):
++            reserve_budget(root, values, ACCOUNTING)
++    for change in ({"version": "unknown"}, {"price_version": ""}, {"strict_money": True},
++                   {"config_fingerprint": ""}, {"provider": ""}, {"model": ""}):
++        with pytest.raises(LedgerDenied):
++            replace(ACCOUNTING, **change)
++    with pytest.raises(LedgerDenied):
++        validate_usage({"cost": 1})
++    counts_only = {"limits": {"calls": 2, "tokens": 50},
++                   "reserved": {"calls": 0, "tokens": 0},
++                   "settled": {"calls": 0, "tokens": 0}}
++    assert ACCOUNTING.strict_money is False
++    assert reserve_budget(counts_only, {"calls": 1, "tokens": 50}, ACCOUNTING)["reserved"] == {
++        "calls": 1, "tokens": 50
++    }
++
++    # Unknown and pending remain bounds, not invented provider-confirmed usage.
++    assert {"RESERVED", "DISPATCH_INTENT", "OUTCOME_UNKNOWN"} <= OCCUPIED
++    assert root["settled"] != updated["reserved"]
++    actual = {**BOUNDS, "tokens": 999, "cost_micros": 9999}
++    settled = settle_budget(root, BOUNDS, actual)
++    assert settled["reserved"] == {k: 0 for k in BOUNDS}
++    assert settled["settled"]["tokens"] == 1019
++    assert settled["settled"]["cost_micros"] == 10029
++    with pytest.raises(LedgerDenied, match="exhausted"):
++        reserve_budget(settled, BOUNDS, ACCOUNTING)
++    assert release_budget(root, BOUNDS)["reserved"] == {k: 0 for k in BOUNDS}
++    with pytest.raises(LedgerDenied, match="occupation"):
++        release_budget(release_budget(root, BOUNDS), BOUNDS)
++
++    receipt = ReliableReceipt(uuid4(), ACCOUNTING, BOUNDS, "PROVIDER_RECEIPT",
++                              "receipt-1", "request-1", "verified-adapter-v1")
++    assert receipt.accounting == ACCOUNTING
++    assert replace(receipt, source="RECONCILIATION").source == "RECONCILIATION"
++    for change in ({"receipt_id": ""}, {"provider_request_id": ""}, {"provenance": ""},
++                   {"source": "UNTRUSTED"}, {"reservation_id": "wrong"}):
++        with pytest.raises(LedgerDenied):
++            replace(receipt, **change)
++
++
++def test_state_machine_and_non_sendable_replay() -> None:
++    assert next_state("RESERVED", "CancelUndispatched") == "CANCELLED_BEFORE_DISPATCH"
++    assert next_state("RESERVED", "PermitDispatch") == "DISPATCH_INTENT"
++    assert next_state("DISPATCH_INTENT", "MarkUnknown", "DISPATCH_INTENT") == "OUTCOME_UNKNOWN"
++    assert next_state("DISPATCH_INTENT", "SettleCall", "DISPATCH_INTENT") == "SETTLED"
++    assert next_state("OUTCOME_UNKNOWN", "SettleCall", "UNKNOWN") == "SETTLED"
++    for source in ("DISPATCH_INTENT", "OUTCOME_UNKNOWN", "SETTLED", "CANCELLED_BEFORE_DISPATCH"):
++        for command in ("CancelUndispatched", "PermitDispatch", "ReserveCall"):
++            with pytest.raises(LedgerDenied):
++                next_state(source, command)
++    for source, command, expectation in (
++        ("OUTCOME_UNKNOWN", "MarkUnknown", "UNKNOWN"),
++        ("OUTCOME_UNKNOWN", "SettleCall", "OUTCOME_UNKNOWN"),
++        ("OUTCOME_UNKNOWN", "SettleCall", "DISPATCH_INTENT"),
++        ("DISPATCH_INTENT", "SettleCall", "UNKNOWN"),
++        ("DISPATCH_INTENT", "MarkUnknown", None),
++        ("RESERVED", "SettleCall", "DISPATCH_INTENT"),
++        ("SETTLED", "SettleCall", "UNKNOWN"),
++    ):
++        with pytest.raises(LedgerDenied):
++            next_state(source, command, expectation)

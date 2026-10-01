@@ -1,0 +1,43 @@
+{
+  "base_commit": "d93131de0cd313199f3c787b56ff4b211f2905d7",
+  "status": "UNAPPLIED_INCOMPLETE_UNREVIEWED_NOT_TASK_PASS",
+  "reason": "Work began while full called CI fixture inventory audit was pending. Audit found additional isolation mismatch; halted and restored all implementation/test/contract bytes to base. Candidate patch is recovery data only. No live DB tests/resources ran.",
+  "paths": [
+    {
+      "path": "src/kineticloop/persistence/transactions.py",
+      "base_sha256": "ee1e0f8a502c2cd95c69bd576949daaba9b023b64f19dfb1a669692839f4adfb",
+      "candidate_sha256": "626ea880175570fe9db5cec31f677788668b568299bc922912179e86111d5c0c",
+      "candidate_only": true
+    },
+    {
+      "path": "tests/db/test_planning.py",
+      "base_sha256": "1b962c360d5eacb2eaa01eb3a733986b32f2975fbd6053c2d85efac234a041b8",
+      "candidate_sha256": "b7b185e069d94f0e67826de02ec630259881add0fa8f5366823d830f95917636",
+      "candidate_only": true
+    },
+    {
+      "path": "docs/contracts/call_ledger.md",
+      "base_sha256": null,
+      "candidate_sha256": "9b0e1a1f835ae4e49dd87796f63afe11a748f6e066d459b218f7776d1500b516",
+      "candidate_only": true
+    },
+    {
+      "path": "src/kineticloop/workflow/call_ledger.py",
+      "base_sha256": null,
+      "candidate_sha256": "107cbededc5c8b878b7271cedb6748a073e0fedc6fbd543279d6b7f0a4e7af39",
+      "candidate_only": true
+    },
+    {
+      "path": "tests/db/test_call_ledger.py",
+      "base_sha256": null,
+      "candidate_sha256": "43d7fedbf8fe630218ce8fe5ca5b2805df0d8f23804813a396c1dce050106d57",
+      "candidate_only": true
+    },
+    {
+      "path": "tests/unit/workflow/test_call_ledger.py",
+      "base_sha256": null,
+      "candidate_sha256": "d520adf986fd28b68d68f17b0ba9d27ee1ef689142df841f5746a9fa55473860",
+      "candidate_only": true
+    }
+  ]
+}

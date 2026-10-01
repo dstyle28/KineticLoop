@@ -1,0 +1,122 @@
+task_identity: harness-backlog-v0.2/KL-025
+display_task_id: KL-025
+task_definition_version: v0.2
+base_commit: d93131de0cd313199f3c787b56ff4b211f2905d7
+tested_commit: d93131de0cd313199f3c787b56ff4b211f2905d7
+merge_commit: null
+task_status: BLOCKED
+task_checks_status: NOT_RUN
+integration_status: UNMERGED
+summary: 'MUST_REFINE_BEFORE_READY: merged API, prerequisite reviews and M2 closure
+  are compatible, but requested full database CI calls KL021/KL023 fixtures without
+  KL025 namespace selectors. HG034 authorizes only the exact planning fixture adaptation.
+  No foreign task database was reset and no live DB checks ran. Incomplete candidate
+  work is preserved as unapplied recovery evidence; all implementation/test/contract
+  bytes restored to base. KL025 remains NOT_STARTED; no task/product/review/release/merge
+  PASS.'
+commands_run:
+- check_id: ledger_budget_dimensions_pu
+  command: uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_root_budget_and_charge_bounds
+  result: NOT_RUN
+  evidence_ref: null
+- check_id: ledger_state_and_replay_pu
+  command: uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_state_machine_and_non_sendable_replay
+  result: NOT_RUN
+  evidence_ref: null
+- check_id: ledger_root_budget_atomic_dc
+  command: uv run pytest -q tests/db/test_call_ledger.py::test_competing_reservations_share_root_budget
+  result: NOT_RUN
+  evidence_ref: null
+- check_id: ledger_cancel_dispatch_exclusion_dc
+  command: uv run pytest -q tests/db/test_call_ledger.py::test_cancel_and_dispatch_have_one_winner
+  result: NOT_RUN
+  evidence_ref: null
+- check_id: ledger_current_authority_dc
+  command: uv run pytest -q tests/db/test_call_ledger.py::test_stale_attempt_fence_and_deadline_deny
+  result: NOT_RUN
+  evidence_ref: null
+- check_id: ledger_ack_loss_and_natural_identity_dc
+  command: uv run pytest -q tests/db/test_call_ledger.py::test_ack_loss_and_payload_conflicts
+  result: NOT_RUN
+  evidence_ref: null
+- check_id: ledger_unknown_and_late_settlement_dc
+  command: uv run pytest -q tests/db/test_call_ledger.py::test_unknown_and_late_settlement_are_accounting_only
+  result: NOT_RUN
+  evidence_ref: null
+- check_id: ledger_physical_dispatch_boundary_pu
+  command: uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_dispatch_occurs_once_after_commit
+  result: NOT_RUN
+  evidence_ref: null
+- check_id: ledger_unit_suite_passes
+  command: uv run pytest -q tests/unit/workflow/test_call_ledger.py
+  result: NOT_RUN
+  evidence_ref: null
+- check_id: ledger_db_suite_passes
+  command: uv run pytest -q tests/db/test_call_ledger.py
+  result: NOT_RUN
+  evidence_ref: null
+- check_id: planning_fixture_namespace_isolation_pu
+  command: uv run pytest -q tests/db/test_call_ledger.py::test_planning_fixture_namespace_isolation
+  result: NOT_RUN
+  evidence_ref: null
+- check_id: planning_prerequisite_regressions_pass
+  command: KINETICLOOP_KL024_FIXTURE_OWNER=KL-025 uv run pytest -q tests/unit/workflow/test_planning.py
+    tests/db/test_planning.py
+  result: NOT_RUN
+  evidence_ref: null
+- check_id: transaction_owner_regressions_pass
+  command: KINETICLOOP_KL022_COMPOSE_PROJECT="kineticloop-kl025-reg-$(git rev-parse
+    --short HEAD)" KINETICLOOP_KL022_DATABASE="kineticloop_kl025_reg_$(git rev-parse
+    --short HEAD)" uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py
+  result: NOT_RUN
+  evidence_ref: null
+- check_id: lint_passes
+  command: uv run kl lint
+  result: NOT_RUN
+  evidence_ref: null
+- check_id: typecheck_passes
+  command: uv run kl typecheck
+  result: NOT_RUN
+  evidence_ref: null
+- check_id: harness_validation_passes
+  command: uv run kl check-harness
+  result: NOT_RUN
+  evidence_ref: null
+requirements_covered: []
+files_changed:
+- docs/exec-plans/completed/KL-025_RESULT.yaml
+- docs/exec-plans/evidence/KL-025/candidate-inventory-d93131d.json
+- docs/exec-plans/evidence/KL-025/entry-audit-d93131d.json
+- docs/exec-plans/evidence/KL-025/entry-audit.py
+- docs/exec-plans/evidence/KL-025/message-rejection-d93131d.json
+- docs/exec-plans/evidence/KL-025/unapplied-incomplete-candidate-d93131d.patch
+decisions:
+- Preserve exact HG034 candidate adaptation in unapplied patch only; do not widen
+  fixture scope or bypass selectors with monkeypatch/environment injection.
+- Stop before full CI can reset kineticloop_kl021_ec264bb or kineticloop_kl023_<shortsha>.
+  Governance must explicitly resolve compatibility without semantic assertion changes.
+- 'Record BLOCKED separately from frozen SPEC_CHANGE_REQUIRED: no frozen semantic
+  incompatibility was found.'
+- Use base SHA as the required schema identity for entry audit; no required acceptance
+  run on a committed implementation exists. All sixteen exact task checks are NOT_RUN.
+known_limitations:
+- A namespace proof on uncommitted candidate bytes was reported as 1 passed by the
+  DB test subagent using an existing Python interpreter. It is not a revision-bound
+  exact-command acceptance PASS and is not selected as task evidence.
+- UV discovery attempts encountered sandbox cache access and build DNS failures, not
+  automatic approval rejection. Git branch creation escalation succeeded. No Docker
+  resources were created.
+- 'Automatic approval review actually rejected a send_message_to_thread status report
+  to parent chat 01a0d208-77cd-7233-80b2-d5595e126a96: user did not explicitly authorize
+  sending a follow-up message. No workaround or retry used; explicit user authorization
+  requested in this chat.'
+follow_up_tasks:
+- Parent governance scheduling must reconcile requested full pytest tests/db with
+  KL025 task-owned isolation. Static KL021 safety fixture and KL023 factset fixture
+  have no supported KL025 selector and are outside the seven write paths.
+- After merged governance refinement, restart exact KL025 entry validation, apply
+  only the authorized selectors and prove isolation before regression execution; implement,
+  commit, run all sixteen exact checks, then fresh independent reviews/PR/CI/merge.
+- No downstream task was started, scheduled or duplicated. Keep this blocked task
+  worktree/branch for recovery; unrelated branches/worktrees remain untouched.
+spec_change_request: null
