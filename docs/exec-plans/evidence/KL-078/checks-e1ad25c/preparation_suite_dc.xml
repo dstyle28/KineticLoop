@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="5" time="19.851" timestamp="2026-10-01T03:37:15.919515-07:00" hostname="Daves-MacBook-Pro---26.local"><testcase classname="tests.db.test_preparation" name="test_owner_pipeline" time="3.399" /><testcase classname="tests.db.test_preparation" name="test_basis_denials" time="5.134" /><testcase classname="tests.db.test_preparation" name="test_immutable_replay" time="3.383"><failure message="AssertionError: assert '2026-10-01T1...7.54787+00:00' == '2026-10-01T1....547870+00:00'&#10;  &#10;  - 2026-10-01T11:37:27.547870+00:00&#10;  ?                          -&#10;  + 2026-10-01T11:37:27.54787+00:00">database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:55681/kineticloop_kl078_prep_e1ad25c_0b068b742ff6...or': 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:55681/kineticloop_kl078_prep_e1ad25c_0b068b742ff6', ...}
+
+    def test_immutable_replay(database_urls: dict[str, str]) -&gt; None:
+        seed = seed_sources(database_urls)
+        with psycopg.connect(database_urls["admin"]) as db:
+&gt;           record, projection, request, ready = pipeline(db, seed, "replay")
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/db/test_preparation.py:1040: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/db/test_preparation.py:347: in pipeline
+    assert_prepared_rows(db, seed, record, projection, request, ready)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+db = &lt;psycopg.Connection [BAD] at 0x10bb301d0&gt;
+seed = {'admission': UUID('6c79c0aa-4242-4ff8-aeb2-f8429ebced8e'), 'assertion': UUID('74c9485f-5fb8-4853-8cbc-7f1545e842ec'),...endency(kind='FACT', key='actual-member', collection=None, fact_id=UUID('9d33f0ae-9a37-40a8-ada1-221629614c68'))), ...}
+record = RecordProjection(source=SourceBasis(factset_id=UUID('bbbb5837-f5d6-5df5-baae-e1752d4486fd'), source_hash='db8086f79018...a8-ada1-221629614c68'))), valid_until=datetime.datetime(2026, 10, 1, 11, 37, 27, 547870, tzinfo=datetime.timezone.utc))
+projection = {'dependency_ids': ['40efcf1e-ac52-5e15-8877-64792523d839', '4b17bd06-61a4-5edf-a2af-146ce4c1fdf9', '6253c64a-fc4b-53a...a54baa96cc81ee916280c17481ece7ec9da78dd1d2d21bb867006d2', 'projection_id': '9728b124-76ae-5601-8483-2e653ef97112', ...}
+request = BuildManifest(key='replay', source=SourceBasis(factset_id=UUID('bbbb5837-f5d6-5df5-baae-e1752d4486fd'), source_hash='d...ion_id=UUID('9728b124-76ae-5601-8483-2e653ef97112')),), artifact_roots=(UUID('196facab-1742-42dd-93cd-c20fe901cfca'),))
+ready = {'artifact_dependency_closure_hash': '166007480e2b8537b6d5abb4e4933fd1ad07301025396c3c9e2f7fba565c7d58', 'build_id': '... 'dependency_basis_hash': 'b3da4e6868af9916dc9e3b451eb5f9e36cab6a95bdd1b704cbc3c4eca3ac5c8e', 'executable': False, ...}
+
+    def assert_prepared_rows(
+        db: Any,
+        seed: dict[str, Any],
+        record: RecordProjection,
+        projection: Mapping[str, Any],
+        request: BuildManifest,
+        ready: Mapping[str, Any],
+    ) -&gt; None:
+        """Independently read source/output rows and recompute the canonical candidate proofs."""
+        from kineticloop.protocol.authorization import canonical_certificate_timestamp
+    
+        source = record.source
+        subject = seed["identity"].subject_id
+        with db.transaction():
+            actual_source = db.execute(
+                "SELECT f.status,f.membership_digest,f.typed_payload,f.ref_s20_id,m.ref_s19_id "
+                "FROM kineticloop.factset_revisions f LEFT JOIN kineticloop.exercise_mapping_decisions m "
+                "ON m.subject_id=f.subject_id AND m.id=f.ref_s20_id WHERE f.subject_id=%s AND f.id=%s",
+                (subject, source.factset_id),
+            ).fetchone()
+            assert actual_source is not None and actual_source[0] == "SEALED"
+            assert source.source_hash == digest(json_value([str(source.factset_id), *actual_source]))
+            assert actual_source[2]["captured_epoch"] == source.epoch
+            assert actual_source[2]["captured_input_frontier"] == source.frontier
+            assert actual_source[2]["program_revision_id"] == str(source.program_id)
+            assert actual_source[2]["policy_id"] == str(source.policy_id)
+            members = db.execute(
+                "SELECT ref_s14_id FROM kineticloop.factset_members WHERE subject_id=%s AND ref_s15_id=%s AND member_operation='SET' AND ref_s14_id IS NOT NULL",
+                (subject, source.factset_id),
+            ).fetchall()
+            assert {r[0] for r in members} == {
+                m.revision_id for m in seed["members"] if m.kind == "FACT"
+            }
+            projection_row = db.execute(
+                "SELECT row_to_json(r) FROM kineticloop.projection_versions r WHERE subject_id=%s AND id=%s",
+                (subject, UUID(projection["projection_id"])),
+            ).fetchone()[0]
+            assert projection_row["revision"] == 1
+            assert projection_row["projection_kind"] == record.kind
+&gt;           assert projection_row["valid_until"] == record.valid_until.isoformat()
+E           AssertionError: assert '2026-10-01T1...7.54787+00:00' == '2026-10-01T1....547870+00:00'
+E             
+E             - 2026-10-01T11:37:27.547870+00:00
+E             ?                          -
+E             + 2026-10-01T11:37:27.54787+00:00
+
+tests/db/test_preparation.py:394: AssertionError</failure></testcase><testcase classname="tests.db.test_preparation" name="test_duplicate_rollback" time="3.992" /><testcase classname="tests.db.test_preparation" name="test_no_authority" time="3.690" /></testsuite></testsuites>

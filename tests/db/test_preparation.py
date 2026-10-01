@@ -391,7 +391,7 @@ def assert_prepared_rows(
         ).fetchone()[0]
         assert projection_row["revision"] == 1
         assert projection_row["projection_kind"] == record.kind
-        assert projection_row["valid_until"] == record.valid_until.isoformat()
+        assert datetime.fromisoformat(projection_row["valid_until"]) == record.valid_until
         assert projection_row["content_hash"] == digest(json_value(record.content))
         assert projection_row["typed_payload"]["result"] == json_value(record.content)
         canonical_deps = [
