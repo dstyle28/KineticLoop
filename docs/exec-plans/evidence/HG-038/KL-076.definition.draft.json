@@ -148,12 +148,12 @@
     {
       "check_id": "fixture_preparation_owners_dc",
       "command": "uv run pytest -q tests/db/test_deterministic_planning.py::test_owner_pipeline",
-      "pass_oracle": "Actual RecordProposal/RecordDemandFeatures/ResolveEvidence/RecordValidation restricted owners persist S34 F then S35 D then S34 N then S36/S37 certificates, guarded by merged KL075 current request/attempt/lease/fence and exact snapshot/manifest. Full parent/basis refs, immutable hashes and source ranges persisted; stage advances only through KL075. No target output seeds/self-PASS labels."
+      "pass_oracle": "Actual RecordProposal/RecordDemandFeatures/ResolveEvidence/RecordValidation restricted owners persist S34 F then S35 D then S34 N then S36/S37 certificates, guarded by merged KL075 current request/attempt/lease/fence and exact snapshot/manifest. Use existing same-subject N.demand_feature_id\u2192D.ref_s34_id\u2192F foreign-key chain; persist and verify duplicated F/D hashes, parent repair identity, manifest/policy and method version in immutable typed payloads. No missing direct-F column or speculative migration is assumed. Full parent/basis refs, immutable hashes and source ranges persisted; stage advances only through KL075. No target output seeds/self-PASS labels."
     },
     {
       "check_id": "fixture_preparation_denials_dc",
       "command": "uv run pytest -q tests/db/test_deterministic_planning.py::test_stale_and_incomplete",
-      "pass_oracle": "Real PG takeover/revision/epoch/manifest/expiry/terminal and wrong principal/policy/environment deny each writer with zero effects; stale F/D/N combinations, missing Nutrition, resolution/certificate mismatch fail closed. ACK-loss replay historical IDs only; independent new operation still guards current authority."
+      "pass_oracle": "Real PG takeover/revision/epoch/manifest/expiry/terminal and wrong principal/policy/environment deny each writer with zero effects; stale F/D/N combinations, missing Nutrition, resolution/certificate mismatch fail closed. Unguarded execute_preparation insert/update attempts for S34\u2013S37 reject with zero effects while existing read-only/non-workflow preparation remains outside coordination. ACK-loss replay historical IDs only; independent new operation still guards current authority."
     },
     {
       "check_id": "fixture_preparation_atomicity_dc",
