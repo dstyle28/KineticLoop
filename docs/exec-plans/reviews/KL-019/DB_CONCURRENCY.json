@@ -1,0 +1,68 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-019",
+  "reviewed_head_sha": "4fa4e6c661697fb3024c891c35b307dbff391f8f",
+  "review_type": "DB_CONCURRENCY",
+  "status": "PASS",
+  "findings": [],
+  "review_contract_version": "v0.2",
+  "protected_base_sha": "62e75bac61c8f3e9b3de6cdc6d19a84ce2776908",
+  "tested_commit": "600c901404a5ebcbde3cea289f6249242b2c4686",
+  "summary": "Fresh independent review of the complete protected-base-to-reviewed implementation/result diff and committed real PostgreSQL evidence found zero remaining BLOCKER or REQUIRED_FOLLOWUP findings. The isolated KL019 publish/first-day commit/first-session START Definition of Done is satisfied at this exact reviewed SHA. This record does not approve a future implementation revision or establish CI, merge, product acceptance or release readiness.",
+  "review_checks": [
+    "Read actual AGENTS.md, current indexed authorities, KL019 packet, pr-merge-reviewer and db-transaction-reviewer skills, frozen Protocol sections 2.1/2.1a,4.4,5.3/5.3a,5.4/5.5,6.2/6.3/6.5,8 and DB S23-S29,S34-S45,S49-S51,command ownership,lock order,T3/T6/T7,validity. Independently verified indexed file hashes and all eight prerequisite PASS result hashes, merged integration ancestry and SHA-bound required specialist review hashes against the protected normally merged HG037 base; read actual merged transaction, planning and ledger contracts.",
+    "Compared full transactions.py diff and AST definitions: TRANSACTION_OWNER_MATRIX, _OWNER_SPECS and _MUTATION_COLUMNS are identical to protected base. No generic S38/S44 INSERT, caller timestamp column, new command owner, migration, wire-role or subject-scope grant exists. Typed adapters accept structured requests only; owner connections and authenticated ExecutionIdentity remain trusted internal ingress responsibilities.",
+    "Existing registry lease algorithms take S51 shared before S01; no fresh service path reverses the frozen applicable intent/head/session/receipt/remaining-row order. Missing S38/S44 inserts occur at their exact command lock stages after S01 and serialize absent natural keys through S01 plus database uniqueness. First S38 requires authenticated TEST CommitBundle, exact verified intent day, current trusted policy timezone/day/calendar, null prior bundle and revision zero; successful completion verifies its exact same-command revision-one bundle switch. First S44 requires authenticated StartSession, exact session identity, APP_STARTED origin, server lifecycle/revision/times and validated S45 START; wrong key, owner, subject, calendar, lifecycle or extra mutation columns deny.",
+    "Under existing coordination, current command identity, TEST registration/policy/environment/principal, Manifest/generation/epoch, intent/request/attempt/owner/fence, live lease/deadline and exposure basis are checked against persisted state. T6 rereads the complete snapshot/proposal/demand/resolution/validation bindings and full finite authorization certificate using post-lock trusted DB time. Caller shortening cannot extend validity. T7 uses the existing current executability evaluator for exact P/A/content/hash/scope/bundle/closure/session/binding and accepted_at; no duplicate evaluator or external/model/network wait occurs within owner coordination.",
+    "Inspected all eight real migrated PostgreSQL execution tests and committed raw logs. Trusted upstream fixture asserts absence of all target publication/issuance/head/session/binding outputs; actual T3 supplies S24/S25, actual KL024 admission/acquire supplies S27/S28/S29 and fence/lease, explicitly labeled missing upstream-owner inputs alone supply S26/COMMIT_READY/S34-S37. Negative cases derive from real service outputs, independently change one input and compare complete persisted relation snapshots. Available ApplyControl and SafetyRegistry revocation owners are used. Canonical control tests verify S18 ACTIVE with S17 HOLD/STOP, exact _current_control_states and controls_are_eligible rejection plus post-control observation/fresh START denial without suppressing epoch guards.",
+    "Failure injection observes every real owner INSERT/UPDATE then fails after each write/bookkeeping boundary, compares complete persisted rows to baseline, and retries the real owner successfully after rollback. Includes first S38/S44, publication/bundle/prescription/membership/issuance/closure, terminal S27/S29, S01 event pointer and S02/S03/S04/successful receipt completion. Bare owner callbacks return immediately after first-use creation and outer finish denies with exact PostgreSQL baseline preservation.",
+    "Bounded thread barriers and actual pg_blocking_pids observation establish S01 blocking for first-use CommitBundle and StartSession competition, including same-key retries. Exact REGISTRY then SUBJECT traces, one coherent winning first head/bundle/issuance or session/binding, loser denial and historical non-executable same-key replay are asserted. Natural publication build and session START uniqueness plus changed payload conflicts retain no duplicate effects.",
+    "Independently inspected genuine preflight ReplayNotFound race: retry pauses after real receipt-only lookup misses and releases S01; original commits; existing revoke owner or labeled expiry/membership negative input removes current authority; resumed fresh owner fails/rolls back before unchanged receipt-only replay returns original historical identities with replayed=true/executable=false. Unchanged-authority races for all three commands take the under-S01 history path. Complete relation snapshots remain byte-equivalent after recovery.",
+    "Independently compared all twenty checks-600c901 command strings and pass_oracles to packet contracts; every exact check has tested SHA600c901, exit zero, PASS, matching raw log SHA256 and successful unskipped result. Whole execution DB suite8, transaction regressions58, planning8, ledger9, full unit209 and full harness440 passed. Environment source/fixture hashes match tested and reviewed Git objects; all four namespaces exactly derive from tested short SHA600c901 and physical worktree digeste281d6459e62.",
+    "Confirmed transaction fixture, lifecycle, Compose, CI, frozen/index/requirement files and strict wire/role files remain byte-identical to protected base; both planning and ledger fixtures exactly equal execution_fixture_candidate transformations of complete merged KL025 bytes. Read the constructor/launcher instrumented fail-before-lifecycle proof separately from actual PostgreSQL regression evidence. New entry-audit-base-62e75ba matches the real pre-reset candidate fixture hashes, protected base/index, prerequisite merges and M2 closure. No Docker/lifecycle/full database command was run by this reviewer.",
+    "Exact protected-base-to-reviewed diff comprises169 paths and matches result.files_changed. Tested-to-reviewed changes comprise only24 own result/new evidence paths; application, tests, fixtures and contract bytes remain tested. Prior07a6ba6 CHANGES_REQUIRED and9cb6451 PASS artifacts remain historical evidence. Six assigned product obligations I01@DC,I02@DC,I04@DC,I04@WF,I07@DC,A03@DC remain NOT_RUN; actual integration remains UNMERGED and hosted CI/merge gates remain separate."
+  ],
+  "historical_findings_closed": [
+    {
+      "finding_id": "KL019-DB-001",
+      "resolution": "Independently closed: outer RepositoryTransaction.finish now rejects first-use rows unless idempotent_outcome has completed RestrictedSqlSession.validate_completion and successful receipt/bookkeeping. Real bare-owner PostgreSQL callbacks and every-boundary fault tests prove rollback for both row types."
+    },
+    {
+      "finding_id": "KL019-DB-002",
+      "resolution": "Independently closed: _fresh_or_historical waits for failed fresh operation rollback/IDLE, rechecks authenticated TEST registration, then uses unchanged receipt-only replay. Genuine preflight-miss/original-commit/authority-loss PostgreSQL interleavings prove historical non-executable recovery without current-state remutation."
+    }
+  ],
+  "independent_validation": [
+    {
+      "command": "env PATH=/private/tmp/kl001-bootstrap/bin:/opt/homebrew/bin:/usr/local/bin:$PATH UV_PROJECT_ENVIRONMENT=/private/tmp/kl017-venv UV_NO_SYNC=1 UV_CACHE_DIR=/private/tmp/kl019-uv-cache PYTHONPATH=\"$PWD/src\" uv run pytest -q -p no:cacheprovider tests/unit/protocol/test_execution.py",
+      "result": "PASS:2 passed; pure/instrumented tests only; no real PostgreSQL or Docker lifecycle"
+    },
+    {
+      "command": "Read-only Python/Git audit of packet commands/oracles, raw log hashes, indexed/source/fixture hashes, owner AST definitions, fixture candidate byte transformations, prerequisite result/review ancestry, scope and result path inventory",
+      "result": "PASS:20 exact final checks,4 exact namespaces,169 paths,24 result/evidence-only tested-to-reviewed paths,6 NOT_RUN obligations, protected base and new entry audit verified"
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-019.md",
+    "docs/exec-plans/completed/KL-019_RESULT.yaml",
+    "docs/contracts/protocol_execution.md",
+    "docs/contracts/repository_transactions.md",
+    "src/kineticloop/persistence/protocol_execution.py",
+    "src/kineticloop/persistence/transactions.py",
+    "tests/db/test_protocol_execution.py",
+    "tests/unit/protocol/test_execution.py",
+    "docs/exec-plans/evidence/KL-019/checks-600c901.json",
+    "docs/exec-plans/evidence/KL-019/environment-600c901.json",
+    "docs/exec-plans/evidence/KL-019/scope-audit-600c901.json",
+    "docs/exec-plans/evidence/KL-019/entry-audit-base-62e75ba.json",
+    "docs/exec-plans/evidence/KL-019/execution_db_suite_passes-600c901.log",
+    "docs/exec-plans/evidence/KL-019/execution_atomic_rollback_dc-600c901.log",
+    "docs/exec-plans/evidence/KL-019/execution_first_use_contention_dc-600c901.log",
+    "docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-600c901.log",
+    "docs/exec-plans/evidence/KL-019/execution_current_start_denial_dc-600c901.log",
+    "docs/exec-plans/evidence/KL-019/transaction_owner_regressions_pass-600c901.log",
+    "docs/exec-plans/evidence/KL-019/planning_prerequisite_regressions_pass-600c901.log",
+    "docs/exec-plans/evidence/KL-019/ledger_prerequisite_regressions_pass-600c901.log",
+    "docs/exec-plans/evidence/KL-019/review-DB_CONCURRENCY-07a6ba6.json",
+    "docs/exec-plans/evidence/KL-019/review-DB_CONCURRENCY-9cb6451.json"
+  ]
+}

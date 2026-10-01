@@ -1,0 +1,113 @@
+{
+  "tested_commit": "c7392733e2c040ab7b7f4484f69a5a4860be1ac4",
+  "worktree": "/Users/davetian/.codex/worktrees/4338/KineticLoop",
+  "worktree_digest": "e281d6459e62",
+  "namespaces": {
+    "exec": {
+      "compose_project": "kineticloop-kl019-exec-c739273-e281d6459e62",
+      "database": "kineticloop_kl019_exec_c739273_e281d6459e62"
+    },
+    "tx": {
+      "compose_project": "kineticloop-kl019-tx-c739273-e281d6459e62",
+      "database": "kineticloop_kl019_tx_c739273_e281d6459e62"
+    },
+    "plan": {
+      "compose_project": "kineticloop-kl019-plan-c739273-e281d6459e62",
+      "database": "kineticloop_kl019_plan_c739273_e281d6459e62"
+    },
+    "ledger": {
+      "compose_project": "kineticloop-kl019-ledger-c739273-e281d6459e62",
+      "database": "kineticloop_kl019_ledger_c739273_e281d6459e62"
+    }
+  },
+  "checks": [
+    {
+      "check_id": "execution_fixture_namespace_isolation_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_execution.py::test_all_fixture_namespaces_fail_before_reset",
+      "pass_oracle": "Exercise the owned launch/constructor proof for all four selected fixtures: new protocol execution, unchanged transaction interfaces, planning and call ledger. Derive lowercase 7-12 hex tested SHA plus the exact 12-hex digest of the resolved worktree, with distinct exec/tx/plan/ledger prefixes; different worktrees at the same SHA differ. Before launching the unchanged transaction fixture, the owned launcher must validate its two existing KINETICLOOP_KL022_COMPOSE_PROJECT/DATABASE values equal the exact KL019 tx derivation and reject malformed SHA/digest or mismatched targets before pytest/reset/bootstrap/teardown. Prove the actual unchanged fixture consumes those values for bootstrap/reset and cleanup. New execution/planning/ledger constructors reject invalid selectors/SHA before lifecycle work; preserve unset and exact KL-025 planning behavior. Instrumented runner proof establishes fail-before-launch/reset and selected cleanup; no lifecycle monkeypatch substitutes for a real regression, and no global override rejection or transaction fixture edit is required.",
+      "tested_commit": "c7392733e2c040ab7b7f4484f69a5a4860be1ac4",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-c739273.log",
+      "sha256": "c412067c2226cbf81d081e615d9ba7c322b1bb2062dbb7585bf753448b490979",
+      "elapsed_seconds": 0.531
+    },
+    {
+      "check_id": "execution_identity_and_wire_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_execution.py::test_identity_and_wire_scope",
+      "pass_oracle": "Trusted identity is bound separately from request data. Publication service request has no authorization_scope and accepts only an authenticated registered TEST subject. Existing PublishManifest wire and TEST_ONLY-at-T6/T7 rule remain unchanged. Strict T6/T7 commands match authenticated identity plus registered subject/policy/environment; EVALUATION, production, shadow, cross-subject, actor mismatch, changed policy/environment and arbitrary extra authority fields deny. No owner connection or mutation callback is caller supplied.",
+      "tested_commit": "c7392733e2c040ab7b7f4484f69a5a4860be1ac4",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-c739273.log",
+      "sha256": "f2a9a5f25ea08ef1d9e3ddb9fd16890beb3eabced061fb0ecf73006456ad8d62",
+      "elapsed_seconds": 0.33
+    },
+    {
+      "check_id": "publish_ready_build_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_execution.py::test_publish_ready_build",
+      "pass_oracle": "Start with a coherent READY S23 and S21/S22 basis but no S24/S25/current Manifest. Call the typed publication service through the existing T3 owner: exactly one immutable S24 at next S01 generation, complete exact S25 role/basis set, exact artifact roots/closure/registry revision, S23 PUBLISHED, S01 current pointer and one S02/S03/S04 all commit together. No direct SQL publication or generation update substitutes for the call.",
+      "tested_commit": "c7392733e2c040ab7b7f4484f69a5a4860be1ac4",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-019/publish_ready_build_dc-c739273.log",
+      "sha256": "f046c664c8726a1790adb1056d9a7bb69cea9ee010ae896727a6143cf3aca60a",
+      "elapsed_seconds": 3.715
+    },
+    {
+      "check_id": "commit_test_only_bundle_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_execution.py::test_commit_test_only_bundle",
+      "pass_oracle": "Publish through the service first, then use merged KL024 admission/acquire services and explicit trusted upstream bootstrap only. With no daily head, bundle, prescription, issuance or successful intent seeded, strict TEST_ONLY CommitBundle uses existing T6: one coherent S38/S39/S40/S41/S42, exact S27 FOUND_VALID_PLAN/result and S29 COMMITTED plus S02/S03/S04. P/A content and all request/attempt/manifest/epoch/fence references match. S42 server validity end equals the exact minimum of every required finite bound; complete transitive artifact and approved TIMELESS closure/certificate/digest are persisted. Caller can request shortening only. First head parent is null, revision is one and calendar comes from bound trusted policy.",
+      "tested_commit": "c7392733e2c040ab7b7f4484f69a5a4860be1ac4",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-c739273.log",
+      "sha256": "c7848f623381801a7af69062add5a6fd965c0d4835471c8e8da4c8528b85d853",
+      "elapsed_seconds": 4.026
+    },
+    {
+      "check_id": "start_new_session_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_execution.py::test_start_new_session",
+      "pass_oracle": "Use exact newly committed P/A and no seeded S44/S45. Typed StartSession enters existing T7, rechecks current eligibility, creates one APP_STARTED S44 at IN_PROGRESS revision one, appends one START S45 with exact P/A/hash/scope, server accepted_at and same receipt, and persists correct same-command S01 execution basis event and S02/S03/S04. Changed-key repeated START cannot create a second binding or event. No READY/PLANNED or already-started session seed substitutes for first-session creation.",
+      "tested_commit": "c7392733e2c040ab7b7f4484f69a5a4860be1ac4",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-019/start_new_session_dc-c739273.log",
+      "sha256": "947be94c7884a8427050cef786d25353ce2b070c0113553231a48c12ea4c7149",
+      "elapsed_seconds": 3.816
+    },
+    {
+      "check_id": "execution_stale_commit_basis_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_execution.py::test_stale_commit_basis_denies",
+      "pass_oracle": "Independently vary stale epoch, noncurrent Manifest/generation, obsolete request/attempt, owner/fence, lease/deadline equality, changed execution basis and mismatched validation/proposal/demand/resolution/closure. Each fresh-key service commit denies with zero new S38-S43/intent-success/head-switch/receipt/event/outbox effects; preserve prior rows byte-for-byte. Guards use locked current state and trusted post-lock time, never payload-only or cached status. Negative upstream perturbations are declared fixture inputs, never proof of an owner-driven upstream transition.",
+      "tested_commit": "c7392733e2c040ab7b7f4484f69a5a4860be1ac4",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-019/execution_stale_commit_basis_dc-c739273.log",
+      "sha256": "97131dbcfc4009287bf72bd712400007f2ad49e7528ea13b5b851a2276b61635",
+      "elapsed_seconds": 11.581
+    },
+    {
+      "check_id": "execution_current_start_denial_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_execution.py::test_current_start_denial",
+      "pass_oracle": "After real issuance, independent wrong actor/subject/policy/environment, P/A/hash/scope/bundle membership, epoch, active hold/stop, revoked root or transitive artifact, missing/undefined/future-effective/expired dependency and valid_until equality all deny fresh START without S44/S45/S01/S02/S03/S04 effects. Use existing control/registry owner calls when available; explicitly label absent upstream-owner perturbations. Recheck after read-only eligibility to prove it is no bearer permission; deny EVALUATION, production and shadow execution.",
+      "tested_commit": "c7392733e2c040ab7b7f4484f69a5a4860be1ac4",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-019/execution_current_start_denial_dc-c739273.log",
+      "sha256": "2cfb7ec44a15a285916bfbb77a9faabc8ebbaa0b8d1fec624c749e09ff141864",
+      "elapsed_seconds": 13.808
+    },
+    {
+      "check_id": "execution_ack_loss_replay_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_execution.py::test_ack_loss_replay_is_historical",
+      "pass_oracle": "Lose the response after actual committed publish, commit and START; same-key identical retries return exact historical identities and no duplicate generation/bundle/issuance/head-success/session/binding/events/outbox. Changed payload conflicts. Natural publication build and START session uniqueness survive changed-key retries. After authority loss/expiry/revocation, same-key START replay remains available with replayed=true and executable=false, conveys no new execution authorization, and never re-mutates current state; historical commit/publication observations do not bypass fresh START guards.",
+      "tested_commit": "c7392733e2c040ab7b7f4484f69a5a4860be1ac4",
+      "exit_code": 1,
+      "result": "FAIL",
+      "evidence_ref": "docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-c739273.log",
+      "sha256": "5e68fd645ca81336508029d56876880fd628ac9460971eb214920b948ba4ac28",
+      "elapsed_seconds": 4.062
+    }
+  ]
+}

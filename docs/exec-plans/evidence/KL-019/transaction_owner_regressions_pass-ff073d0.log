@@ -1,0 +1,9 @@
+TASK_IDENTITY=harness-backlog-v0.2/KL-019
+TESTED_COMMIT=ff073d04d1cafc507ac1a3b6364e7d73034731c1
+WORKTREE=/Users/davetian/.codex/worktrees/4338/KineticLoop
+WORKTREE_DIGEST=e281d6459e62
+COMMAND=KINETICLOOP_KL022_COMPOSE_PROJECT="kineticloop-kl019-tx-$(git rev-parse --short HEAD)-$(uv run python -c 'import hashlib,os; from pathlib import Path; print(hashlib.sha256(os.fsencode(Path.cwd().resolve())).hexdigest()[:12])')" KINETICLOOP_KL022_DATABASE="kineticloop_kl019_tx_$(git rev-parse --short HEAD)_$(uv run python -c 'import hashlib,os; from pathlib import Path; print(hashlib.sha256(os.fsencode(Path.cwd().resolve())).hexdigest()[:12])')" uv run python tests/unit/protocol/test_execution.py --run-transaction-owner-regressions
+..........................................................               [100%]
+58 passed in 13.84s
+
+EXIT_CODE=0

@@ -1,0 +1,363 @@
+task_identity: harness-backlog-v0.2/KL-019
+display_task_id: KL-019
+task_definition_version: v0.2
+base_commit: 62e75bac61c8f3e9b3de6cdc6d19a84ce2776908
+tested_commit: 600c901404a5ebcbde3cea289f6249242b2c4686
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: Typed isolated TEST service publishes READY inputs through T3, commits one first-day TEST_ONLY
+  P/A through T6 after real KL024 admission/lease, and starts an absent APP_STARTED session through
+  T7. All twenty exact packet checks PASS on the committed tested revision. No target output is seeded
+  and no product or release PASS is inferred.
+commands_run:
+- check_id: execution_fixture_namespace_isolation_pu
+  command: uv run pytest -q tests/unit/protocol/test_execution.py::test_all_fixture_namespaces_fail_before_reset
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-600c901.log
+- check_id: execution_identity_and_wire_pu
+  command: uv run pytest -q tests/unit/protocol/test_execution.py::test_identity_and_wire_scope
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-600c901.log
+- check_id: publish_ready_build_dc
+  command: uv run pytest -q tests/db/test_protocol_execution.py::test_publish_ready_build
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/publish_ready_build_dc-600c901.log
+- check_id: commit_test_only_bundle_dc
+  command: uv run pytest -q tests/db/test_protocol_execution.py::test_commit_test_only_bundle
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-600c901.log
+- check_id: start_new_session_dc
+  command: uv run pytest -q tests/db/test_protocol_execution.py::test_start_new_session
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/start_new_session_dc-600c901.log
+- check_id: execution_stale_commit_basis_dc
+  command: uv run pytest -q tests/db/test_protocol_execution.py::test_stale_commit_basis_denies
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_stale_commit_basis_dc-600c901.log
+- check_id: execution_current_start_denial_dc
+  command: uv run pytest -q tests/db/test_protocol_execution.py::test_current_start_denial
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_current_start_denial_dc-600c901.log
+- check_id: execution_ack_loss_replay_dc
+  command: uv run pytest -q tests/db/test_protocol_execution.py::test_ack_loss_replay_is_historical
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-600c901.log
+- check_id: execution_atomic_rollback_dc
+  command: uv run pytest -q tests/db/test_protocol_execution.py::test_failures_roll_back_each_boundary
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_atomic_rollback_dc-600c901.log
+- check_id: execution_first_use_contention_dc
+  command: uv run pytest -q tests/db/test_protocol_execution.py::test_first_use_contention
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_first_use_contention_dc-600c901.log
+- check_id: execution_unit_suite_passes
+  command: uv run pytest -q tests/unit/protocol/test_execution.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_unit_suite_passes-600c901.log
+- check_id: execution_db_suite_passes
+  command: uv run pytest -q tests/db/test_protocol_execution.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_db_suite_passes-600c901.log
+- check_id: transaction_owner_regressions_pass
+  command: KINETICLOOP_KL022_COMPOSE_PROJECT="kineticloop-kl019-tx-$(git rev-parse --short HEAD)-$(uv
+    run python -c 'import hashlib,os; from pathlib import Path; print(hashlib.sha256(os.fsencode(Path.cwd().resolve())).hexdigest()[:12])')"
+    KINETICLOOP_KL022_DATABASE="kineticloop_kl019_tx_$(git rev-parse --short HEAD)_$(uv run python
+    -c 'import hashlib,os; from pathlib import Path; print(hashlib.sha256(os.fsencode(Path.cwd().resolve())).hexdigest()[:12])')"
+    uv run python tests/unit/protocol/test_execution.py --run-transaction-owner-regressions
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/transaction_owner_regressions_pass-600c901.log
+- check_id: planning_prerequisite_regressions_pass
+  command: KINETICLOOP_KL024_FIXTURE_OWNER=KL-019 uv run pytest -q tests/unit/workflow/test_planning.py
+    tests/db/test_planning.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/planning_prerequisite_regressions_pass-600c901.log
+- check_id: ledger_prerequisite_regressions_pass
+  command: KINETICLOOP_KL025_FIXTURE_OWNER=KL-019 uv run pytest -q tests/unit/workflow/test_call_ledger.py
+    tests/db/test_call_ledger.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/ledger_prerequisite_regressions_pass-600c901.log
+- check_id: full_unit_regressions_pass
+  command: uv run kl test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/full_unit_regressions_pass-600c901.log
+- check_id: full_harness_regressions_pass
+  command: uv run kl test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/full_harness_regressions_pass-600c901.log
+- check_id: lint_passes
+  command: uv run kl lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/lint_passes-600c901.log
+- check_id: typecheck_passes
+  command: uv run kl typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/typecheck_passes-600c901.log
+- check_id: harness_validation_passes
+  command: uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-019/harness_validation_passes-600c901.log
+requirements_covered:
+- requirement_id: I01@DC
+  status: NOT_RUN
+  evidence_ref: null
+- requirement_id: I02@DC
+  status: NOT_RUN
+  evidence_ref: null
+- requirement_id: I04@DC
+  status: NOT_RUN
+  evidence_ref: null
+- requirement_id: I04@WF
+  status: NOT_RUN
+  evidence_ref: null
+- requirement_id: I07@DC
+  status: NOT_RUN
+  evidence_ref: null
+- requirement_id: A03@DC
+  status: NOT_RUN
+  evidence_ref: null
+files_changed:
+- docs/contracts/protocol_execution.md
+- docs/exec-plans/completed/KL-019_RESULT.yaml
+- docs/exec-plans/evidence/KL-019/checks-600c901.json
+- docs/exec-plans/evidence/KL-019/checks-7cdee15.json
+- docs/exec-plans/evidence/KL-019/checks-8af107b.json
+- docs/exec-plans/evidence/KL-019/checks-949820c.json
+- docs/exec-plans/evidence/KL-019/checks-b47e710.json
+- docs/exec-plans/evidence/KL-019/checks-bf00942.json
+- docs/exec-plans/evidence/KL-019/checks-c739273.json
+- docs/exec-plans/evidence/KL-019/checks-ff073d0.json
+- docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-600c901.log
+- docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-7cdee15.log
+- docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-8af107b.log
+- docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-949820c.log
+- docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-b47e710.log
+- docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-bf00942.log
+- docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-c739273.log
+- docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-ff073d0.log
+- docs/exec-plans/evidence/KL-019/entry-audit-base-62e75ba.json
+- docs/exec-plans/evidence/KL-019/entry-audit.json
+- docs/exec-plans/evidence/KL-019/entry-audit.py
+- docs/exec-plans/evidence/KL-019/environment-600c901.json
+- docs/exec-plans/evidence/KL-019/environment-8af107b.json
+- docs/exec-plans/evidence/KL-019/environment-949820c.json
+- docs/exec-plans/evidence/KL-019/environment-b47e710.json
+- docs/exec-plans/evidence/KL-019/environment-ff073d0.json
+- docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-600c901.log
+- docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-949820c.log
+- docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-b47e710.log
+- docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-bf00942.log
+- docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-c739273.log
+- docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-ff073d0.log
+- docs/exec-plans/evidence/KL-019/execution_atomic_rollback_dc-600c901.log
+- docs/exec-plans/evidence/KL-019/execution_atomic_rollback_dc-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_atomic_rollback_dc-949820c.log
+- docs/exec-plans/evidence/KL-019/execution_atomic_rollback_dc-b47e710.log
+- docs/exec-plans/evidence/KL-019/execution_atomic_rollback_dc-bf00942.log
+- docs/exec-plans/evidence/KL-019/execution_atomic_rollback_dc-ff073d0.log
+- docs/exec-plans/evidence/KL-019/execution_current_start_denial_dc-600c901.log
+- docs/exec-plans/evidence/KL-019/execution_current_start_denial_dc-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_current_start_denial_dc-949820c.log
+- docs/exec-plans/evidence/KL-019/execution_current_start_denial_dc-b47e710.log
+- docs/exec-plans/evidence/KL-019/execution_current_start_denial_dc-bf00942.log
+- docs/exec-plans/evidence/KL-019/execution_current_start_denial_dc-c739273.log
+- docs/exec-plans/evidence/KL-019/execution_current_start_denial_dc-ff073d0.log
+- docs/exec-plans/evidence/KL-019/execution_db_suite_passes-600c901.log
+- docs/exec-plans/evidence/KL-019/execution_db_suite_passes-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_db_suite_passes-949820c.log
+- docs/exec-plans/evidence/KL-019/execution_db_suite_passes-b47e710.log
+- docs/exec-plans/evidence/KL-019/execution_db_suite_passes-bf00942.log
+- docs/exec-plans/evidence/KL-019/execution_db_suite_passes-ff073d0.log
+- docs/exec-plans/evidence/KL-019/execution_first_use_contention_dc-600c901.log
+- docs/exec-plans/evidence/KL-019/execution_first_use_contention_dc-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_first_use_contention_dc-949820c.log
+- docs/exec-plans/evidence/KL-019/execution_first_use_contention_dc-b47e710.log
+- docs/exec-plans/evidence/KL-019/execution_first_use_contention_dc-bf00942.log
+- docs/exec-plans/evidence/KL-019/execution_first_use_contention_dc-ff073d0.log
+- docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-600c901.log
+- docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-7cdee15.log
+- docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-949820c.log
+- docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-b47e710.log
+- docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-bf00942.log
+- docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-c739273.log
+- docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-ff073d0.log
+- docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-600c901.log
+- docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-7cdee15.log
+- docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-949820c.log
+- docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-b47e710.log
+- docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-bf00942.log
+- docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-c739273.log
+- docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-ff073d0.log
+- docs/exec-plans/evidence/KL-019/execution_stale_commit_basis_dc-600c901.log
+- docs/exec-plans/evidence/KL-019/execution_stale_commit_basis_dc-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_stale_commit_basis_dc-949820c.log
+- docs/exec-plans/evidence/KL-019/execution_stale_commit_basis_dc-b47e710.log
+- docs/exec-plans/evidence/KL-019/execution_stale_commit_basis_dc-bf00942.log
+- docs/exec-plans/evidence/KL-019/execution_stale_commit_basis_dc-c739273.log
+- docs/exec-plans/evidence/KL-019/execution_stale_commit_basis_dc-ff073d0.log
+- docs/exec-plans/evidence/KL-019/execution_unit_suite_passes-600c901.log
+- docs/exec-plans/evidence/KL-019/execution_unit_suite_passes-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_unit_suite_passes-949820c.log
+- docs/exec-plans/evidence/KL-019/execution_unit_suite_passes-b47e710.log
+- docs/exec-plans/evidence/KL-019/execution_unit_suite_passes-bf00942.log
+- docs/exec-plans/evidence/KL-019/execution_unit_suite_passes-ff073d0.log
+- docs/exec-plans/evidence/KL-019/full_harness_regressions_pass-600c901.log
+- docs/exec-plans/evidence/KL-019/full_harness_regressions_pass-949820c.log
+- docs/exec-plans/evidence/KL-019/full_harness_regressions_pass-b47e710.log
+- docs/exec-plans/evidence/KL-019/full_harness_regressions_pass-bf00942.log
+- docs/exec-plans/evidence/KL-019/full_harness_regressions_pass-ff073d0.log
+- docs/exec-plans/evidence/KL-019/full_unit_regressions_pass-600c901.log
+- docs/exec-plans/evidence/KL-019/full_unit_regressions_pass-8af107b.log
+- docs/exec-plans/evidence/KL-019/full_unit_regressions_pass-949820c.log
+- docs/exec-plans/evidence/KL-019/full_unit_regressions_pass-b47e710.log
+- docs/exec-plans/evidence/KL-019/full_unit_regressions_pass-bf00942.log
+- docs/exec-plans/evidence/KL-019/full_unit_regressions_pass-ff073d0.log
+- docs/exec-plans/evidence/KL-019/harness_validation_passes-600c901.log
+- docs/exec-plans/evidence/KL-019/harness_validation_passes-949820c.log
+- docs/exec-plans/evidence/KL-019/harness_validation_passes-b47e710.log
+- docs/exec-plans/evidence/KL-019/harness_validation_passes-bf00942.log
+- docs/exec-plans/evidence/KL-019/harness_validation_passes-ff073d0.log
+- docs/exec-plans/evidence/KL-019/ledger_prerequisite_regressions_pass-600c901.log
+- docs/exec-plans/evidence/KL-019/ledger_prerequisite_regressions_pass-8af107b.log
+- docs/exec-plans/evidence/KL-019/ledger_prerequisite_regressions_pass-949820c.log
+- docs/exec-plans/evidence/KL-019/ledger_prerequisite_regressions_pass-b47e710.log
+- docs/exec-plans/evidence/KL-019/ledger_prerequisite_regressions_pass-bf00942.log
+- docs/exec-plans/evidence/KL-019/ledger_prerequisite_regressions_pass-ff073d0.log
+- docs/exec-plans/evidence/KL-019/lint_passes-600c901.log
+- docs/exec-plans/evidence/KL-019/lint_passes-949820c.log
+- docs/exec-plans/evidence/KL-019/lint_passes-b47e710.log
+- docs/exec-plans/evidence/KL-019/lint_passes-bf00942.log
+- docs/exec-plans/evidence/KL-019/lint_passes-ff073d0.log
+- docs/exec-plans/evidence/KL-019/planning_prerequisite_regressions_pass-600c901.log
+- docs/exec-plans/evidence/KL-019/planning_prerequisite_regressions_pass-8af107b.log
+- docs/exec-plans/evidence/KL-019/planning_prerequisite_regressions_pass-949820c.log
+- docs/exec-plans/evidence/KL-019/planning_prerequisite_regressions_pass-b47e710.log
+- docs/exec-plans/evidence/KL-019/planning_prerequisite_regressions_pass-bf00942.log
+- docs/exec-plans/evidence/KL-019/planning_prerequisite_regressions_pass-ff073d0.log
+- docs/exec-plans/evidence/KL-019/publish_ready_build_dc-600c901.log
+- docs/exec-plans/evidence/KL-019/publish_ready_build_dc-7cdee15.log
+- docs/exec-plans/evidence/KL-019/publish_ready_build_dc-8af107b.log
+- docs/exec-plans/evidence/KL-019/publish_ready_build_dc-949820c.log
+- docs/exec-plans/evidence/KL-019/publish_ready_build_dc-b47e710.log
+- docs/exec-plans/evidence/KL-019/publish_ready_build_dc-bf00942.log
+- docs/exec-plans/evidence/KL-019/publish_ready_build_dc-c739273.log
+- docs/exec-plans/evidence/KL-019/publish_ready_build_dc-ff073d0.log
+- docs/exec-plans/evidence/KL-019/result-before-HG037-base-update-949820c.yaml
+- docs/exec-plans/evidence/KL-019/result-before-base-update-9cb6451.yaml
+- docs/exec-plans/evidence/KL-019/result-before-review-repairs-07a6ba6.yaml
+- docs/exec-plans/evidence/KL-019/review-DB_CONCURRENCY-07a6ba6.json
+- docs/exec-plans/evidence/KL-019/review-DB_CONCURRENCY-9cb6451.json
+- docs/exec-plans/evidence/KL-019/review-GENERAL-07a6ba6.json
+- docs/exec-plans/evidence/KL-019/review-GENERAL-9cb6451.json
+- docs/exec-plans/evidence/KL-019/review-PROTOCOL-07a6ba6.json
+- docs/exec-plans/evidence/KL-019/review-PROTOCOL-9cb6451.json
+- docs/exec-plans/evidence/KL-019/run-checks.py
+- docs/exec-plans/evidence/KL-019/scope-audit-600c901.json
+- docs/exec-plans/evidence/KL-019/scope-audit-949820c.json
+- docs/exec-plans/evidence/KL-019/scope-audit-b47e710.json
+- docs/exec-plans/evidence/KL-019/start_new_session_dc-600c901.log
+- docs/exec-plans/evidence/KL-019/start_new_session_dc-8af107b.log
+- docs/exec-plans/evidence/KL-019/start_new_session_dc-949820c.log
+- docs/exec-plans/evidence/KL-019/start_new_session_dc-b47e710.log
+- docs/exec-plans/evidence/KL-019/start_new_session_dc-bf00942.log
+- docs/exec-plans/evidence/KL-019/start_new_session_dc-c739273.log
+- docs/exec-plans/evidence/KL-019/start_new_session_dc-ff073d0.log
+- docs/exec-plans/evidence/KL-019/transaction_owner_regressions_pass-600c901.log
+- docs/exec-plans/evidence/KL-019/transaction_owner_regressions_pass-8af107b.log
+- docs/exec-plans/evidence/KL-019/transaction_owner_regressions_pass-949820c.log
+- docs/exec-plans/evidence/KL-019/transaction_owner_regressions_pass-b47e710.log
+- docs/exec-plans/evidence/KL-019/transaction_owner_regressions_pass-bf00942.log
+- docs/exec-plans/evidence/KL-019/transaction_owner_regressions_pass-ff073d0.log
+- docs/exec-plans/evidence/KL-019/typecheck_passes-600c901.log
+- docs/exec-plans/evidence/KL-019/typecheck_passes-949820c.log
+- docs/exec-plans/evidence/KL-019/typecheck_passes-b47e710.log
+- docs/exec-plans/evidence/KL-019/typecheck_passes-bf00942.log
+- docs/exec-plans/evidence/KL-019/typecheck_passes-ff073d0.log
+- docs/exec-plans/reviews/KL-019/DB_CONCURRENCY.json
+- docs/exec-plans/reviews/KL-019/GENERAL.json
+- docs/exec-plans/reviews/KL-019/PROTOCOL.json
+- src/kineticloop/persistence/protocol_execution.py
+- src/kineticloop/persistence/transactions.py
+- src/kineticloop/protocol/execution.py
+- tests/db/test_call_ledger.py
+- tests/db/test_planning.py
+- tests/db/test_protocol_execution.py
+- tests/unit/protocol/test_execution.py
+decisions:
+- Current indexed authorities and eight merged prerequisite result/review/integration records plus
+  M2 were independently re-audited on the normally merged HG037 base before this revision first reset;
+  docs/exec-plans/evidence/KL-019/entry-audit-base-62e75ba.json records that audit. Entry audit verified
+  indexed authorities, merged prerequisite PASS results/integrations and specialist reviews, M2 closure
+  and actual KL025 API/fixture bytes before the first real local reset. Latest protected master including
+  the unrelated KL047 and HG037 merges was incorporated before final testing; the complete twenty-check
+  suite was rerun after rebase.
+- Keep publication as separate typed request without authorization_scope; preserve all frozen strict
+  wire/role/subject-scope/migration/owner-matrix bytes. Authenticated identity is supplied separately
+  and exact TEST subject/policy/environment/principal bindings are reread under S51/S01.
+- Reuse existing T3/T6/T7 transaction owners, SafetyRegistry coordination and certificate/current-eligibility
+  evaluators. Add only exact first-use S38/S44 and immutable prepared/current-basis accessors/checks
+  to transactions.py; no generic insert grants or caller-writable timestamps.
+- First head calendar derives from immutable policy timezone and trusted database time, exact real
+  intent day, null parent/revision zero then guarded revision one; S01 serializes missing natural
+  keys. First session is APP_STARTED and exact immutable START binding, server accepted_at and revision
+  one complete atomically.
+- Bootstrap only registered upstream TEST S01/policy/program/artifacts/SEALED factset/projections/READY
+  candidate. Actual service T3 creates Manifest/projection bindings. Actual KL024 admission/acquire
+  creates intent/request/attempt/root budgets/fence/lease. Missing upstream owners require explicitly
+  synthetic S26/current COMMIT_READY plus S34-S37 certificate input setup outside target transactions.
+- Finite issuance certificate is server-computed with every exact persisted dependency identity/bound,
+  complete transitive artifact/TIMELESS approval and minimum verified independently. Caller may only
+  shorten. Every historical publish/commit/START replay returns original IDs and executable=false,
+  including authority loss/expiry/revocation.
+- Preserve transaction fixture complete bytes and mechanically exact planning/ledger namespace transformations.
+  Namespace proof runs before real lifecycle; four distinct lowercase tested-SHA/resolved-worktree-derived
+  namespaces are inventoried and cleanup uses selected targets only. Broader tests/db runs only unchanged
+  hosted ubuntu-latest CI.
+- Preserve c739273 ACK-loss setup and 7cdee15 oracle-query failure logs as historical evidence. The
+  superseded bf00942 candidate passed all twenty checks; final TEST_ONLY policy scope and exact first-use
+  day/session defenses were added before the final full run.
+known_limitations:
+- No RecordSnapshot/AdvanceAttempt owner, evidence-resolution/semantic-validation engine, full workflow/model
+  loop, production activation, executable real-data shadow or provider command authority is implemented.
+  Synthetic upstream inputs demonstrate no owner-driven planning progress.
+- Trusted ingress must authenticate ExecutionIdentity and supply existing privileged internal owner
+  connections. This task compares canonical registered TEST principal metadata; it does not implement
+  a new authentication system or grant subject-session privileges.
+- I01/I02/I04/I07 and every A03@DC product obligation remain NOT_RUN; passing task PU/DC checks does
+  not meet KL027/KL028 or full integration/release trajectories.
+- This pre-review result records task PASS/UNMERGED. Independent reviews, unchanged hosted full database/quality
+  CI and selected-task merge gate remain separate prerequisites.
+follow_up_tasks:
+- Complete fresh SHA-bound GENERAL/PROTOCOL/DB_CONCURRENCY reviews; only own review-record-only append
+  is allowed afterward. Any substantive repair requires all exact checks and fresh reviews again.
+- Require unchanged hosted full database/quality CI and selected-task merge gate PASS, then normal
+  merge and ff-only clean master synchronization; preserve unrelated worktrees/resources.
+- Missing upstream owners/full workflow and independent product/release acceptance belong to downstream
+  packets; do not infer them from this task.
+spec_change_request: null
+review_repair_resolution:
+  prior_reviewed_commit: 07a6ba6e33e0fc20169268d07cf6167778db992a
+  historical_findings:
+  - docs/exec-plans/evidence/KL-019/review-GENERAL-07a6ba6.json
+  - docs/exec-plans/evidence/KL-019/review-PROTOCOL-07a6ba6.json
+  - docs/exec-plans/evidence/KL-019/review-DB_CONCURRENCY-07a6ba6.json
+  resolutions:
+  - Outer owner finish now rejects first-use S38/S44 unless the complete RestrictedSqlSession outcome
+    validation and succeeded receipt/bookkeeping finished; real PostgreSQL bare callbacks prove exact
+    rollback for both row types.
+  - An actual preflight miss can race original commit then revocation/expiry/membership loss. The
+    fresh path rolls back before the unchanged receipt-only owner rereads history, while authentication/registration
+    remain mandatory. Real bounded barriers prove under-S01 history for all three unchanged-authority
+    commands and receipt-only fallback after loss, original IDs/non-executable result and byte-identical
+    persisted state.
+  - Actual ApplyControl fixtures now persist canonical S18 ACTIVE and S17 HOLD/STOP. The existing
+    owner proves exact current control states and existing controls_are_eligible denies them. Real
+    read-only execution observation is denied after mandatory T2 epoch advance, and fresh START has
+    zero effects; no epoch/registry guard is suppressed.
+  - Correct requirement bookkeeping to concrete assigned layer IDs I01@DC/I02@DC/I04@DC/I04@WF/I07@DC/A03@DC,
+    all NOT_RUN; normal harness validation and full CLI/unit regressions verify the canonical known-requirement
+    mapping

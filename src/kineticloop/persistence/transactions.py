@@ -17,14 +17,16 @@ from datetime import date, datetime, timedelta
 from enum import IntEnum, StrEnum
 from types import MappingProxyType
 from typing import Any, TypeVar, cast
-from uuid import UUID
+from uuid import UUID, uuid4
 from weakref import WeakKeyDictionary
+from zoneinfo import ZoneInfo
 
 from psycopg import Connection, Cursor, sql
 from psycopg import Error as PsycopgError
 from psycopg.pq import TransactionStatus
 from psycopg.types.json import Jsonb
 
+from kineticloop.contracts.commands import CommitBundle, StartSession
 from kineticloop.persistence.metadata import REQUIRED_FIELDS
 from kineticloop.persistence.schema_topology import LOGICAL_RELATIONS
 from kineticloop.protocol.authorization import (
@@ -38,6 +40,7 @@ from kineticloop.protocol.authorization import (
     evaluate_executability,
     evaluate_validity_closure,
 )
+from kineticloop.protocol.execution import PublishReady, digest
 from kineticloop.protocol.factsets import certificate_basis as _factset_certificate_basis
 
 _T = TypeVar("_T")
@@ -1006,6 +1009,9 @@ class RestrictedSqlSession:
         self._require_columns(logical_id, "update", assignment_values)
         self._require_locked_identity(logical_id, dict(predicates))
         self._require_update_bindings(logical_id, assignment_values, dict(predicates))
+        if logical_id == "S44" and self.__coordination_context.get("first_execution_session") == dict(predicates).get("id"):
+            assignments = self._items({**assignment_values,
+                "started_at": self.__coordination_context["execution_accepted_at"]}, "server START assignments")
         statement = sql.SQL("UPDATE {}.{} SET {} WHERE {}").format(
             sql.Identifier("kineticloop"),
             sql.Identifier(table),
@@ -1100,6 +1106,40 @@ class RestrictedSqlSession:
         if not isinstance(value, datetime):
             raise GuardRequired("T3 publication validity was not prepared")
         return value
+
+    def prepared_publication(self) -> Mapping[str, Any]:
+        if self.__command_kind != "PublishManifest":
+            raise GuardRequired("prepared publication is exclusive to T3")
+        c = self.__coordination_context
+        return MappingProxyType({
+            "generation": c["publication_generation"],
+            "captured_epoch": c["authorization_epoch"],
+            "input_frontier_hash": c["input_frontier_hash"],
+            "ref_s23_id": c["publication_build_id"],
+            "ref_s05_id": c["active_policy_bundle_id"],
+            "ref_s06_id": c["active_program_id"],
+            "ref_s15_id": c["current_factset_id"],
+            "ref_s19_id": c["publication_catalog_id"],
+            "ref_s20_id": c["publication_mapping_id"],
+            "dependency_closure_hash": c["publication_dependency_digest"],
+            "manifest_hash": c["publication_manifest_hash"],
+            "ref_s49_id": c["publication_primary_artifact_id"],
+            "registry_revision_at_publish": self.__registry_revision,
+            "registry_state_id": 1,
+            "valid_until": c["publication_valid_until"],
+        })
+
+    def prepared_projection_bindings(self) -> tuple[Mapping[str, Any], ...]:
+        if self.__command_kind != "PublishManifest":
+            raise GuardRequired("prepared projection bindings are exclusive to T3")
+        return tuple(MappingProxyType({"projection_role": role,
+            "ref_s21_id": item["id"], "validated_basis_hash": item["basis_hash"]})
+            for role, item in self.__coordination_context["publication_projections"].items())
+
+    def prepared_commit(self) -> Mapping[str, Any]:
+        if self.__command_kind != "CommitBundle" or "execution_commit" not in self.__coordination_context:
+            raise GuardRequired("exact adapter commit basis required")
+        return MappingProxyType(copy.deepcopy(self.__coordination_context["execution_commit"]))
 
     def settlement_transition(self) -> Mapping[str, Any]:
         basis = self.__coordination_context.get("settlement_basis")
@@ -1431,6 +1471,14 @@ class RestrictedSqlSession:
                 or values.get("occurred_at") != basis.get("occurred_at")
             ):
                 raise GuardRequired("S32 must equal the exact guarded settlement transition")
+        if logical_id == "S40" and "execution_commit" in self.__coordination_context:
+            basis = self.__coordination_context["execution_commit"]
+            if (values.get("ref_s34_id") != basis["proposal_id"]
+                or values.get("content_hash") != basis["content_hash"]
+                or self._json_value(values.get("typed_payload")) != basis["content"]
+                or values.get("prescription_kind") != "TRAINING"
+                or values.get("ref_s49_id") != basis["artifact_id"]):
+                raise GuardRequired("S40 must equal immutable prepared validated content")
         if logical_id == "S41":
             if values.get("ref_s39_id") not in self.__inserted_ids.get("S39", set()):
                 raise GuardRequired("S41 must bind the S39 inserted by this command")
@@ -1945,6 +1993,14 @@ class RestrictedSqlSession:
             for logical_id, predicate in commit_updates.items():
                 if not any(predicate(row) for row in self.__updated_values.get(logical_id, [])):
                     raise GuardRequired(f"CommitBundle requires its mandatory {logical_id} update")
+        first_head = self.__coordination_context.get("first_execution_head")
+        if first_head is not None:
+            _cursor(self).execute("SELECT current_bundle_revision_id,head_revision,calendar_policy,local_date,typed_payload,day_lifecycle FROM "
+                "kineticloop.daily_plan_heads WHERE subject_id=%s AND id=%s",
+                (self.__subject_id, first_head))
+            head = _cursor(self).fetchone()
+            if head is None or head[0] not in self.__inserted_ids.get("S39", set()) or head[1] != 1 or head[2:5] != self.__coordination_context["first_execution_calendar"] or head[5] != "ACTIVE":
+                raise GuardRequired("first head must complete its exact revision-one switch")
         if self.__command_kind == "Reauthorize":
             if len(self.__inserted_ids.get("S42", set())) != 1:
                 raise GuardRequired("Reauthorize requires exactly one new S42 issuance")
@@ -2101,6 +2157,15 @@ class RestrictedSqlSession:
                 raise GuardRequired(
                     f"{self.__command_kind} requires {required_bindings} new S45 binding(s)"
                 )
+        first_session = self.__coordination_context.get("first_execution_session")
+        if first_session is not None:
+            _cursor(self).execute("SELECT session_identity,origin,lifecycle,execution_revision,"
+                "started_at,completed_at FROM kineticloop.workout_sessions WHERE subject_id=%s AND id=%s",
+                (self.__subject_id, first_session))
+            session = _cursor(self).fetchone()
+            if session != (str(first_session), "APP_STARTED", "IN_PROGRESS", 1,
+                self.__coordination_context.get("execution_accepted_at"), None):
+                raise GuardRequired("first session must complete its exact authenticated START")
         if self.__command_kind == "PermitDispatch" and not self.__coordination_context.get(
             "dispatch_guard"
         ):
@@ -2268,6 +2333,7 @@ class RepositoryTransaction:
         "_last_stage",
         "_leased_artifacts",
         "_head_bundles",
+        "_first_use_completed",
         "_artifact_details",
         "_coordination_context",
         "_locked_ids",
@@ -2303,6 +2369,7 @@ class RepositoryTransaction:
         self._head_bundles: dict[UUID, UUID | None] = {}
         self._artifact_details: dict[UUID, Mapping[str, Any]] = {}
         self._coordination_context: dict[str, Any] = {}
+        self._first_use_completed = False
 
     @property
     def lock_trace(self) -> tuple[tuple[LockStage, str], ...]:
@@ -2822,7 +2889,43 @@ class RepositoryTransaction:
         self._advance(LockStage.RESERVATION)
         self._lock_ids("call_reservations", reservation_ids)
 
-    def lock_daily_head(self, local_date: Any) -> None:
+    def execution_historical_outcome(
+        self, *, actor_scope: str, client_key: str, request_hash: str,
+    ) -> Mapping[str, Any] | None:
+        self._require_subject()
+        if self.command_kind not in {"PublishManifest", "CommitBundle", "StartSession"}:
+            raise GuardRequired("execution replay belongs to exact execution owners")
+        _cursor(self).execute("SELECT request_hash,status,typed_payload FROM kineticloop.command_receipts "
+            "WHERE subject_id=%s AND actor_scope=%s AND command_kind=%s AND client_key=%s",
+            (self.subject_id, actor_scope, self.command_kind, client_key))
+        prior = _cursor(self).fetchone()
+        if prior is None:
+            return None
+        if prior[0] != request_hash or prior[1] != "SUCCEEDED" or "outcome" not in prior[2]:
+            raise IdempotencyConflict("command key has no identical successful outcome")
+        return {**prior[2]["outcome"], "replayed": True, "executable": False}
+
+    def require_test_execution_ingress(
+        self, *, policy_id: UUID, environment_id: UUID, principal: str,
+    ) -> None:
+        self._require_subject()
+        if self.command_kind not in {"PublishManifest", "CommitBundle", "StartSession"}:
+            raise GuardRequired("isolated execution ingress is command specific")
+        _cursor(self).execute(
+            "SELECT scope.namespace,scope.policy_id,scope.environment_id,"
+            "binding.principal_name,current_user,session_user FROM kineticloop.subject_scopes scope "
+            "JOIN kineticloop.subject_principal_bindings binding "
+            "ON binding.subject_id=scope.subject_id AND binding.namespace=scope.namespace "
+            "WHERE scope.subject_id=%s", (self.subject_id,),
+        )
+        row = _cursor(self).fetchone()
+        if (row is None or row[:4] != ("TEST", policy_id, environment_id, principal)
+            or row[4] != row[5] or row[5] == principal
+            or self._coordination_context.get("active_policy_bundle_id") != policy_id):
+            raise GuardRequired("authenticated TEST registration/owner binding mismatch")
+        self._coordination_context["test_execution_ingress"] = (policy_id, environment_id, principal)
+
+    def lock_daily_head(self, local_date: Any, *, create_first: bool = False) -> None:
         self._require_subject()
         if "S38" not in self.spec.mutation_surfaces:
             raise GuardRequired(f"{self.command_kind} cannot lock inapplicable S38")
@@ -2835,7 +2938,41 @@ class RepositoryTransaction:
         )
         rows = _cursor(self).fetchall()
         if not rows:
-            raise GuardRequired("daily head does not exist")
+            if (not create_first or self.command_kind != "CommitBundle"
+                or not self._coordination_context.get("test_execution_ingress")
+                or local_date != self._coordination_context.get("verified_intent_local_date")):
+                raise GuardRequired("daily head does not exist")
+            _cursor(self).execute(
+                "SELECT typed_payload,clock_timestamp() FROM kineticloop.policy_bundles "
+                "WHERE subject_id=%s AND id=%s", (self.subject_id,
+                    self._coordination_context["active_policy_bundle_id"]),
+            )
+            policy = _cursor(self).fetchone()
+            if policy is None:
+                raise GuardRequired("trusted calendar policy is absent")
+            try:
+                calendar = policy[0]["execution_calendar"]
+                zone = ZoneInfo(calendar["timezone"])
+                if local_date != policy[1].astimezone(zone).date():
+                    raise ValueError("first-day commit must use trusted current calendar day")
+                end = datetime.combine(local_date + timedelta(days=1), datetime.min.time(), zone)
+                name = calendar["policy"]
+                if not isinstance(name, str) or not name:
+                    raise ValueError("missing calendar policy")
+            except (KeyError, TypeError, ValueError) as error:
+                raise GuardRequired("trusted calendar is unavailable") from error
+            head_id = uuid4()
+            _cursor(self).execute(
+                "INSERT INTO kineticloop.daily_plan_heads "
+                "(id,subject_id,local_date,calendar_policy,day_lifecycle,head_revision,"
+                "current_bundle_revision_id,typed_payload) VALUES (%s,%s,%s,%s,'ACTIVE',0,NULL,%s)",
+                (head_id, self.subject_id, local_date, name,
+                 Jsonb({"calendar_valid_until": end.isoformat(), "timezone": calendar["timezone"]})),
+            )
+            self._coordination_context["first_execution_head"] = head_id
+            self._coordination_context["first_execution_calendar"] = (
+                name, local_date, {"calendar_valid_until": end.isoformat(), "timezone": calendar["timezone"]})
+            rows = [(head_id, None, local_date, 0)]
         self._trace.append((LockStage.DAILY_HEAD, f"S38:{local_date}"))
         self._locked_ids.setdefault("daily_plan_heads", set()).update(
             UUID(str(row[0])) for row in rows
@@ -2851,13 +2988,39 @@ class RepositoryTransaction:
                 "head_revision": int(row[3] or 0),
             }
 
-    def lock_execution(self, session_ids: Sequence[UUID]) -> None:
+        if len(rows) != 1:
+            raise GuardRequired("exact daily head required")
+
+    def execution_daily_head_id(self) -> UUID:
+        if self.command_kind != "CommitBundle" or not self._coordination_context.get("test_execution_ingress"):
+            raise GuardRequired("adapter daily-head accessor is exclusive to CommitBundle")
+        ids = self._locked_ids.get("daily_plan_heads", set())
+        if len(ids) != 1:
+            raise GuardRequired("exact daily head guard required")
+        return next(iter(ids))
+
+    def lock_execution(self, session_ids: Sequence[UUID], *, create_first: bool = False) -> None:
         self._require_subject()
         if len(session_ids) != 1:
             raise GuardRequired("T7 requires exactly one execution session")
         self._advance(LockStage.EXECUTION)
-        self._lock_ids("workout_sessions", session_ids)
         session_id = session_ids[0]
+        if create_first:
+            if self.command_kind != "StartSession" or not self._coordination_context.get("test_execution_ingress"):
+                raise GuardRequired("first session creation is exclusive to authenticated START")
+            _cursor(self).execute(
+                "SELECT 1 FROM kineticloop.workout_sessions WHERE subject_id=%s AND id=%s",
+                (self.subject_id, session_id),
+            )
+            if _cursor(self).fetchone() is None:
+                _cursor(self).execute(
+                    "INSERT INTO kineticloop.workout_sessions "
+                    "(id,subject_id,session_identity,origin,lifecycle,execution_revision) "
+                    "VALUES (%s,%s,%s,'APP_STARTED','READY',0)",
+                    (session_id, self.subject_id, str(session_id)),
+                )
+                self._coordination_context["first_execution_session"] = session_id
+        self._lock_ids("workout_sessions", session_ids)
         _cursor(self).execute(
             "SELECT lifecycle,execution_revision,EXISTS("
             "SELECT 1 FROM kineticloop.execution_bindings binding "
@@ -3426,6 +3589,121 @@ class RepositoryTransaction:
         self._coordination_context["authorization_scope"] = authorization_scope
         self._coordination_context["authorization_head_id"] = head_id
         return dependencies, closure.closure_digest, closure.valid_until
+
+    def require_execution_request(self, request: PublishReady | CommitBundle | StartSession) -> None:
+        """Compare adapter expectations at the existing guarded coordination point."""
+        c = self._coordination_context
+        if not c.get("test_execution_ingress"):
+            raise GuardRequired("trusted execution ingress required")
+        if self.command_kind == "PublishManifest" and type(request) is PublishReady:
+            expected = (c["publication_build_id"], c["current_factset_id"],
+                c["input_frontier_hash"], c["authorization_epoch"], c["active_program_id"],
+                c["active_policy_bundle_id"])
+            if expected != (request.build_id, request.sealed_factset_id,
+                request.expected_input_frontier_hash, request.expected_authorization_epoch,
+                request.program_revision_id, request.policy_id):
+                raise GuardRequired("publication expectations are stale")
+            _cursor(self).execute("SELECT typed_payload FROM kineticloop.manifest_builds "
+                "WHERE subject_id=%s AND id=%s", (self.subject_id, request.build_id))
+            candidate = _cursor(self).fetchone()
+            if candidate is None or (candidate[0]["dependency_basis_hash"],
+                candidate[0]["artifact_dependency_closure_hash"]) != (
+                request.dependency_basis_hash, request.artifact_dependency_closure_hash):
+                raise GuardRequired("publication expected closure mismatch")
+            return
+        if self.command_kind == "CommitBundle" and type(request) is CommitBundle:
+            if c.get("authorization_scope") != "TEST_ONLY":
+                raise GuardRequired("authenticated TEST commit requires TEST_ONLY policy scope")
+            if (UUID(request.manifest_id), request.expected_generation,
+                request.expected_authorization_epoch, UUID(request.policy_id),
+                UUID(request.execution_basis_event_id), request.artifact_dependency_closure_hash) != (
+                c["current_manifest_id"], c["decision_generation"], c["authorization_epoch"],
+                c["active_policy_bundle_id"], c["execution_basis_event_id"], self.artifact_closure_digest()):
+                raise GuardRequired("commit current-basis expectations mismatch")
+            _cursor(self).execute(
+                "SELECT snapshot.id,snapshot.ref_s24_id,snapshot.ref_s28_id,snapshot.ref_s29_id,"
+                "snapshot.captured_epoch,snapshot.context_hash,snapshot.typed_payload,"
+                "proposal.id,proposal.ref_s26_id,proposal.ref_s29_id,proposal.content_hash,"
+                "proposal.typed_payload,demand.content_hash,resolution.action_parameters_hash,"
+                "resolution.typed_payload,validation.typed_payload,intent.typed_payload "
+                "FROM kineticloop.planning_attempts attempt "
+                "JOIN kineticloop.planning_intents intent ON intent.subject_id=attempt.subject_id AND intent.id=attempt.ref_s27_id "
+                "JOIN kineticloop.decision_snapshots snapshot ON snapshot.subject_id=attempt.subject_id AND snapshot.id=attempt.snapshot_id "
+                "JOIN kineticloop.validation_results validation ON validation.subject_id=attempt.subject_id AND validation.id=%s "
+                "JOIN kineticloop.proposal_revisions proposal ON proposal.subject_id=attempt.subject_id AND proposal.id=validation.ref_s34_id "
+                "JOIN kineticloop.prescription_demand_features demand ON demand.subject_id=attempt.subject_id AND demand.id=validation.ref_s35_id "
+                "JOIN kineticloop.evidence_resolutions resolution ON resolution.subject_id=attempt.subject_id AND resolution.id=validation.ref_s36_id "
+                "WHERE attempt.subject_id=%s AND attempt.id=%s",
+                (UUID(request.validation_id), self.subject_id, UUID(request.attempt_id)),
+            )
+            row = _cursor(self).fetchone()
+            if row is None:
+                raise GuardRequired("complete synthetic upstream certificate inputs required")
+            snapshot, manifest, revision, attempt, epoch, context_hash, context, proposal, proposal_snapshot, proposal_attempt, proposal_hash, body, demand_hash, params_hash, resolution, certificate, root = row
+            expected_certificate = {
+                "snapshot_id": str(snapshot), "context_hash": context_hash,
+                "proposal_hash": proposal_hash, "demand_hash": demand_hash,
+                "resolution_hash": digest(resolution), "semantic_validation": "PASS",
+                "policy_envelope": "PASS", "execution_basis_event_id": request.execution_basis_event_id,
+            }
+            if (manifest != c["current_manifest_id"] or revision != c["verified_request_id"]
+                or attempt != c["verified_attempt_id"] or epoch != c["authorization_epoch"]
+                or proposal_snapshot != snapshot or proposal_attempt != attempt
+                or context_hash != digest(context) or context.get("mandatory_context") is not True
+                or context.get("manifest_id") != request.manifest_id
+                or context.get("request_id") != str(c["verified_request_id"])
+                or context.get("attempt_id") != request.attempt_id
+                or body.get("demand_hash") != demand_hash
+                or proposal_hash != digest(body) or certificate != expected_certificate
+                or params_hash != digest(body.get("prescription"))
+                or request.result_fingerprint != digest({"proposal_id": str(proposal), "proposal_hash": proposal_hash,
+                    "validation_id": request.validation_id})
+                or resolution.get("coverage") != "COMPLETE_FOR_POLICY"
+                or resolution.get("consistency") != "CONSISTENT"
+                or resolution.get("truncation_status") != "NOT_TRUNCATED"):
+                raise GuardRequired("upstream snapshot/content/certificate binding mismatch")
+            try:
+                from kineticloop.workflow.call_ledger import validate_usage
+                limits = validate_usage(root.get("limits"))
+                reserved = validate_usage(root.get("reserved"), set(limits))
+                settled = validate_usage(root.get("settled"), set(limits))
+                if "calls" not in limits or any(reserved[k] + settled[k] > limits[k] for k in limits):
+                    raise ValueError("budget exceeded")
+            except (KeyError, TypeError, ValueError) as error:
+                raise GuardRequired("planning root budget invalid") from error
+            _cursor(self).execute("SELECT ref_s49_id FROM kineticloop.decision_manifests WHERE subject_id=%s AND id=%s",
+                (self.subject_id, manifest))
+            primary = _cursor(self).fetchone()
+            if primary is None or primary[0] not in self._verified_artifacts:
+                raise GuardRequired("manifest primary artifact missing")
+            c["execution_primary_artifact"] = primary[0]
+            head = c["daily_heads"][c["authorization_head_id"]]
+            c["execution_commit"] = {"proposal_id": proposal, "content": body["prescription"],
+                "content_hash": digest(body["prescription"]), "head_id": c["authorization_head_id"],
+                "local_date": head["local_date"], "parent_revision_id": head["current_bundle_revision_id"],
+                "revision_no": head["head_revision"] + 1, "manifest_id": manifest,
+                "policy_id": c["active_policy_bundle_id"], "scope": c["authorization_scope"],
+                "epoch": c["authorization_epoch"], "registry_revision": self._registry_revision,
+                "artifact_id": self._coordination_context["execution_primary_artifact"]}
+            return
+        if self.command_kind == "StartSession" and type(request) is StartSession:
+            if request.expected_authorization_epoch != c["authorization_epoch"]:
+                raise GuardRequired("START epoch expectation mismatch")
+            _cursor(self).execute("SELECT prescription.content_hash,issuance.artifact_dependency_closure_hash "
+                "FROM kineticloop.prescription_revisions prescription JOIN kineticloop.authorization_issuances issuance "
+                "ON issuance.subject_id=prescription.subject_id AND issuance.ref_s40_id=prescription.id "
+                "WHERE prescription.subject_id=%s AND prescription.id=%s AND issuance.id=%s",
+                (self.subject_id, UUID(request.prescription_id), UUID(request.authorization_id)))
+            row = _cursor(self).fetchone()
+            if row != (request.content_hash, request.artifact_dependency_closure_hash):
+                raise GuardRequired("START exact content/closure expectation mismatch")
+            self.require_execution_authorization(prescription_id=UUID(request.prescription_id),
+                authorization_id=UUID(request.authorization_id), execution_scope="TEST_ONLY")
+            if (request.binding_revision != c["execution_binding_revision"]
+                or UUID(request.session_id) != c["execution_session_id"]):
+                raise GuardRequired("START session/binding expectation mismatch")
+            return
+        raise GuardRequired("execution request must match its exact owner")
 
     def _prepare_manifest_publication(self) -> None:
         """Bind T3 publication to the one locked READY build and current S01 basis."""
@@ -4442,6 +4720,7 @@ class RepositoryTransaction:
         invalidation_scope: str | None = None,
         factset_seal_basis: Mapping[str, Any] | None = None,
         expected_transition: str | None = None,
+        execution_request: PublishReady | CommitBundle | StartSession | None = None,
     ) -> tuple[Mapping[str, Any], bool]:
         self._require_receipt_guard()
         self._require_command_locks(aggregate_locks or {})
@@ -4532,6 +4811,8 @@ class RepositoryTransaction:
             if authorization_basis is None:
                 raise GuardRequired("T6 requires a complete authorization validity basis")
             self.prepare_authorization_basis(**authorization_basis)
+        if execution_request is not None:
+            self.require_execution_request(execution_request)
         _cursor(self).execute(
             "INSERT INTO kineticloop.command_receipts"
             "(id,subject_id,status,command_kind,client_key,actor_scope,request_hash) "
@@ -4581,6 +4862,7 @@ class RepositoryTransaction:
             "WHERE id=%s AND subject_id=%s",
             (Jsonb({"outcome": outcome}), receipt_id, self.subject_id),
         )
+        self._first_use_completed = True
         return outcome, False
 
     def _require_command_locks(self, aggregate_locks: Mapping[str, Sequence[UUID]]) -> None:
@@ -4639,6 +4921,10 @@ class RepositoryTransaction:
         return object_id in self._locked_ids.get(table, set())
 
     def finish(self) -> None:
+        if (self._coordination_context.get("first_execution_head") is not None
+            or self._coordination_context.get("first_execution_session") is not None
+        ) and not self._first_use_completed:
+            raise GuardRequired("first-use row requires complete owner outcome and bookkeeping")
         if self.spec.registry_required and not self._registry:
             raise GuardRequired(f"{self.command_kind} requires a shared S51 registry lease")
         if self.spec.subject_guard_required and not self._subject:
