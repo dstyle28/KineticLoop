@@ -1,84 +1,91 @@
 {
   "task_identity": "harness-backlog-v0.2/KL-079",
-  "reviewed_head_sha": "cf57c0a1c32d7ec84bd55be5351bf5de6ad21df0",
+  "reviewed_head_sha": "056b5471f3b360eeda2eca5b1c8def107222acae",
   "review_type": "DB_CONCURRENCY",
-  "status": "CHANGES_REQUIRED",
+  "status": "PASS",
   "review_contract_version": "v0.2",
   "findings": [
-    {
-      "id": "KL079-DB-B01",
-      "classification": "BLOCKER",
-      "priority": 1,
-      "title": "Expiry DC is masked by the earlier manifest guard",
-      "description": "The packet's full_action_basis_denials_dc oracle requires source/runtime expiry rejection and a fresh trusted post-lock expiry crossing. seed_source gives policy validity, admission validity, runtime validity, projection validity and the resulting manifest the same end timestamp (tests/db/test_full_action_preparation.py:244-255, 370-407, 605-619). consumer_denial varies that common timestamp rather than a single tighter source/runtime bound (2088-2091, 2141-2175). The actual after_expiry witness in full_action_suite_dc.log:687-689 observes a real S29 blocker and crosses time, but reports 'attempt/request/manifest/epoch/stage basis changed or expired': _prepare_current_progress rejects the expired manifest before _verify_full_progress can exercise the source/runtime/full-certificate validity checks. The preparation lease crossing proves lease freshness only. No other parametrized case isolates runtime expiry or admitted-source expiry while manifest and lease remain live. Thus the real-PG expiry oracle is incomplete despite 48 successful tests; this finding is an evidence gap, not a demonstrated defect in the visible minimum calculation.",
-      "requested_change": "Add owner-driven PostgreSQL trajectories with distinct validity bounds so source admission and registered runtime can each be the limiting dependency while manifest/current-chain ingress remains valid. For full validation and actual COMMIT_READY, show success before and denial after the limiting bound, observe bounded pg_blocking_pids/barrier witnesses for post-lock crossings, assert the intended denial stage and exact zero rows/receipt/event/outbox/stage/pointer effects, and retain immutable prior outputs. Reexecute the named selector and full own suite, update the result and raw evidence on the new tested revision, and obtain fresh reviews.",
-      "evidence_refs": [
-        "docs/exec-plans/active/KL-079.md#full_action_basis_denials_dc",
-        "tests/db/test_full_action_preparation.py:244",
-        "tests/db/test_full_action_preparation.py:2088",
-        "src/kineticloop/persistence/transactions.py:3078",
-        "src/kineticloop/persistence/deterministic_planning.py:559",
-        "src/kineticloop/persistence/deterministic_planning.py:749",
-        "docs/exec-plans/evidence/KL-079/949bbd530061ecb3644998719fe998f86cad999e/full_action_suite_dc.log:687"
-      ]
-    },
-    {
-      "id": "KL079-DB-B02",
-      "classification": "BLOCKER",
-      "priority": 1,
-      "title": "COMMIT_READY lacks independent current-chain denial cases",
-      "description": "The exact packet requires real owners and actual COMMIT_READY independently to reject current manifest, attempt, fence and lease loss. The consumer matrix (tests/db/test_full_action_preparation.py:1339-1353) includes resolution swap, foreign validation/resolution, runtime revocation, execution basis, epoch, request revision, control, deadline and common expiry. It has no consumer cases for a newly published current manifest, mismatched/current-attempt loss, wrong/taken-over fence, or lease crossing after the consumer waits on S29. The similarly named preparation negatives run ResolveEvidence, not AdvanceAttempt(COMMIT_READY). F2 repair demonstrates request-revision/old-attempt rejection but does not isolate current-attempt, fence or lease under an otherwise valid full certificate/current revision. The shared guards exist in code; their PostgreSQL consumer oracles still have not executed as required by this packet's DoD.",
-      "requested_change": "Extend the own consumer matrix with valid persisted full certificates and separate current-manifest, current-attempt, fence/takeover and post-lock lease-loss controls. Use fresh command keys, prove valid authenticated ingress followed by the intended current-state guard, and assert complete zero-effect snapshots and non-executable outputs. Commit new raw selector/suite evidence and rerun all required task checks before fresh SHA-bound review.",
-      "evidence_refs": [
-        "docs/exec-plans/active/KL-079.md#full_action_basis_denials_dc",
-        "tests/db/test_full_action_preparation.py:1339",
-        "tests/db/test_full_action_preparation.py:2088",
-        "tests/db/test_full_action_preparation.py:1571",
-        "tests/db/test_full_action_preparation.py:1853",
-        "docs/exec-plans/evidence/KL-079/949bbd530061ecb3644998719fe998f86cad999e/full_action_basis_denials_dc.log",
-        "docs/exec-plans/evidence/KL-079/949bbd530061ecb3644998719fe998f86cad999e/full_action_suite_dc.log"
-      ]
-    },
     {
       "id": "KL079-DB-F01",
       "classification": "REQUIRED_FOLLOWUP",
       "priority": 2,
       "title": "Final hosted and selected-task gates remain merge conditions",
-      "description": "After the evidence gaps are fixed and fresh reviews are persisted, unchanged hosted PostgreSQL/quality jobs and the selected-task merge gate must pass on the final relevant PR head. The reviewed result correctly keeps integration UNMERGED and does not claim these future gates already passed.",
-      "requested_change": "Verify and persist actual final-head hosted/merge-gate outcomes before ordinary merge. Preserve the task-scoped REVIEW_RECORD_ONLY rule; any implementation or result change requires fresh review.",
+      "description": "The task-local implementation and required own PostgreSQL oracles pass independent review at the recorded SHA. Unchanged hosted PostgreSQL/quality jobs and the selected-task merge gate must still pass on the final relevant PR head. This review does not claim those future gates, MERGED, downstream T6/T7, product requirements or release activation have passed.",
+      "requested_change": "Persist only task-scoped REVIEW_RECORD_ONLY files after this reviewed SHA, verify the linear suffix mechanically, and require actual final-head hosted/selected-task gate success before ordinary merge. Any implementation, test, contract or result change requires fresh tests/review.",
       "evidence_refs": [
+        "docs/exec-plans/active/KL-079.md",
         "docs/exec-plans/completed/KL-079_RESULT.yaml",
-        "docs/harness/THREAD_REVIEW_CONTRACT.md",
-        "docs/exec-plans/active/KL-079.md"
+        "docs/harness/THREAD_REVIEW_CONTRACT.md"
       ]
     }
   ],
   "evidence_refs": [
+    "AGENTS.md",
     "CURRENT_DOCUMENT_INDEX.json",
     "docs/exec-plans/active/KL-079.md",
     "docs/exec-plans/evidence/HG-041/PREPARATION.md",
     "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
     "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
     "docs/exec-plans/milestones/M2.json",
+    "docs/harness/THREAD_RESULT_CONTRACT.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
     "docs/exec-plans/completed/KL-079_RESULT.yaml",
+    "docs/contracts/full_action_preparation.md",
     "src/kineticloop/persistence/deterministic_planning.py",
     "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/persistence/planning_progress.py",
+    "src/kineticloop/persistence/metadata.py",
+    "src/kineticloop/persistence/schema_topology.py",
+    "src/kineticloop/workflow/deterministic_planning.py",
     "tests/db/test_full_action_preparation.py",
-    "docs/exec-plans/evidence/KL-079/949bbd530061ecb3644998719fe998f86cad999e/full_action_owner_pipeline_dc.log",
-    "docs/exec-plans/evidence/KL-079/949bbd530061ecb3644998719fe998f86cad999e/full_action_basis_denials_dc.log",
-    "docs/exec-plans/evidence/KL-079/949bbd530061ecb3644998719fe998f86cad999e/full_action_replay_atomicity_dc.log",
-    "docs/exec-plans/evidence/KL-079/949bbd530061ecb3644998719fe998f86cad999e/full_action_repair_dc.log",
-    "docs/exec-plans/evidence/KL-079/949bbd530061ecb3644998719fe998f86cad999e/full_action_legacy_no_authority_dc.log",
-    "docs/exec-plans/evidence/KL-079/949bbd530061ecb3644998719fe998f86cad999e/full_action_suite_dc.log"
+    "tests/unit/workflow/test_full_action_preparation.py",
+    "tests/fixtures/full_action_preparation.json",
+    "docs/exec-plans/evidence/KL-079/review-repair.md",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/checks.json",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/verification.json",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/preserved-baseline.json",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/legacy-golden-bytes.json",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_contract_pu.log",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_resolution_pu.log",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_namespace_pu.log",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_owner_pipeline_dc.log",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_basis_denials_dc.log",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_replay_atomicity_dc.log",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_repair_dc.log",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_legacy_no_authority_dc.log",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_suite_dc.log",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/harness_validation_passes.log",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/unit_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/harness_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/lint_passes.log",
+    "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/typecheck_passes.log"
   ],
   "independent_verification": [
-    "Read the complete packet, HG041 preparation, relevant frozen ownership/lock/T5/T6-preparation clauses, current schema/owner paths, prerequisite results and required reviews, M2 closure, and prerequisite normal merges. All prerequisite reviewed SHAs are ancestors of protected base 15e85921f58d2f7ea816b694bc80221bd7406ee8. The absence of KL075/KL076 integration JSON is recorded as an existing governance limitation; their normal PR77/PR79 merges and PASS results/reviews are actual Git facts.",
-    "Inspected the committed protected-base diff and confirmed tested_commit 949bbd530061ecb3644998719fe998f86cad999e to reviewed_head_sha changes only task result/evidence. Source/test bytes inspected are the tested implementation; no migrations, owner registry, frozen or planning_progress edits appear.",
-    "The source trajectory uses admitted immutable input plus actual T2 actual-fact creation, CanonicalViewService build/write/complete/seal, KL078 projection/build, T3 publish, KL024 admission/acquire and KL075 snapshot/forward progression. No S15/S16, S21-S26, S34-S37 or downstream target-output SQL seeds are used. Full runtime registration invokes SafetyRegistry.RegisterArtifact.",
-    "Independently parsed the final full-suite raw log, recomputed canonical payload hashes for all 68 unique full outputs, independently recomputed action parameter hashes, full-resolution UUIDs and query_basis_hash field sets, and checked actual admitted FACT/ADMISSION/ASSOCIATION membership. S37 bindings are ordered TRAINING/NUTRITION, resolution IDs are distinct, the singular column/hash anchor remains TRAINING, N/D anchors and execution-basis FK match, and the additional NUTRITION JSON identity/hash matches a real S36 output. Finite resolution and validation deadlines match the minima observable in these equal-bound fixtures.",
-    "Inspected authentication/current-chain code and idempotent mutation order: S01 then S27, receipt S02 then remaining S29. Current guard clock_timestamp is selected after S29 locking; preparation capture is reread and full artifacts reconstructed under those locks. No external/model/network wait exists inside the transaction. Historical authenticated replay returns original immutable IDs/hashes with executable=false before live-current guards; changed same-key payload hashes conflict.",
-    "Verified actual pg_blocking_pids raw witnesses for duplicate TRAINING, NUTRITION and VALIDATION contenders waiting on S01, event barriers and bounded future results. Tests assert exactly one output and one receipt/event/outbox, preserve all prior rows, inject failure after output insertion and via a PostgreSQL trigger before receipt bookkeeping success, and compare complete rollback snapshots. Raw ACK-loss outputs retain exact IDs/hashes and non-executable replay after epoch loss.",
-    "Verified the F2 path uses actual same-root revision/new attempt and forward stages, denies old F/D/N/resolutions/certificates, preserves prior immutable row snapshots and root budget/deadline payload, and reaches new COMMIT_READY without terminal reopening or backward transition. Legacy actual-owner trajectory preserves original UUID algorithm and TRAINING-only contract; full policy denies legacy requests. Subject principal, production/evaluation/test role and restricted-write negatives have zero effects. S38-S45/session/binding/head/authorization/root success remain absent.",
-    "Independently checked all fourteen raw-log SHA256 values against their committed verification entries. Final suite has 48 cases and 48 namespace/cleanup witnesses; every namespace derives exact HEAD7/resolved-root SHA256, reports current database and migration e8c2f1a6b904, and cleanup inventory has no remaining containers/networks/volumes. Inspected every nested own lifecycle validation and selected bootstrap route. No PostgreSQL lifecycle, foreign fixture, source/test/result/evidence write, commit, push, or other chat message was invoked by this reviewer. The only write is this review record. Successful command exits are accepted only for the independently verified sub-oracles above; B01/B02 prevent PASS for the complete DoD."
+    "Fresh independent review of the actual protected-base 15e85921f58d2f7ea816b694bc80221bd7406ee8 diff to reviewed 056b5471f3b360eeda2eca5b1c8def107222acae, the complete KL079 packet/HG041 preparation, named frozen ownership/lock/T5/T6-preparation and planning clauses, current merged producer/consumer/schema code and thread contracts. All indexed authority hashes independently match. Seven prerequisite PASS results and required PASS reviews were inspected, all prerequisite reviewed SHAs are protected-base ancestors, and actual normal prerequisite merges are present in Git. M2 is PASS. Existing absent KL075/KL076 integration JSON is disclosed in the result and does not replace the actual normal merge evidence.",
+    "Exact tested 1e5803836c645c90ee85980c50d9e8d245fb6cf7 is an ancestor of reviewed HEAD; the single linear tested-to-reviewed commit changes only the own result and new own evidence. Application/test/contract bytes are the tested bytes. The protected-base diff is confined to declared producer modules, restricted full consumer branch in transactions.py, own tests/fixture/contract/result/evidence/review bookkeeping. No frozen/index/requirement/migration/public-command/owner-registry/role/CI/lifecycle/planning_progress/legacy fixture edit exists. Eight preserved-baseline hashes and protected-base bytes were independently compared.",
+    "Mapped to T5 preparation and T6 preparation only. Authenticated exact TEST ProgressIdentity registration precedes current authority. Existing S01 then S27 then S02 then S29 order is retained; fresh clock_timestamp and current owner/fence/request/attempt/lease/deadline/manifest/epoch/stage/control guards execute after the appropriate locks. Capture is reread and full output reconstructed after S29. Bounded sealed reconstruction and computation occur outside coordination; no external/model/network wait or new late S51 lock appears. Historical authenticated replay returns immutable original IDs/hashes with executable=false before live-current guards; changed same-key payload conflicts.",
+    "Source trajectories build actual SEALED CanonicalViewService membership, KL078 projection/READY build, real T3 publication, KL024 admission/acquire and KL075 snapshot/forward stages before actual F/D/N and action owners. Source input registration is explicitly admitted immutable fixture input; full runtime uses actual trusted SafetyRegistry RegisterArtifact with immutable dependency registration and canonical owner payload. No S15/S16, S21-S26, S34-S37, COMMIT_READY or downstream target output is seeded. Supporting historical context-builder/catalog shape is fixture-only and disclosed.",
+    "Independently parsed all final raw full-suite witnesses: 99 unique full outputs. Recomputed every canonical payload hash, full S36 UUID from subject/attempt/profile/action and exact query_basis_hash field set. Physical subject/manifest/policy/resolver/action bindings match payloads; admitted FACT/ADMISSION/ASSOCIATION membership closes exactly over actual same-policy TEST_ONLY ACTUAL_EXECUTION sources. Each S37 has ordered TRAINING/NUTRITION bindings to distinct actual S36 IDs/hashes, the singular column/hash anchor is TRAINING, N/D and execution-basis column anchors remain exact, and the additional NUTRITION JSON reference is explicitly loaded and reconstructed by owners. Certificate expiry equals the minimum of both reconstructed resolutions; source-admission, policy, manifest and registered runtime bounds propagate through those resolution minima.",
+    "Prior DB-B01 is closed by new actual evidence, not command success alone. Eight distinct before/after controls isolate admitted-source and registered-runtime expiry independently at full validation and actual COMMIT_READY. Raw consumer_clock records show the limiting bound strictly earlier than live manifest, lease and root; both physical S36 expiry values and existing S37 expiry equal that bound. Each case has an observed pg_blocking_pids S29 waiter, bounded future completion and pass-through observation of valid ingress/current-chain guards. The after-source and after-runtime consumer cases reach full reconstruction with current_live=true and reject expired resolution; full-validation runtime after expiry reports fixture runtime inactive/expired after live current-chain guard. Before cases succeed. After cases compare complete persisted subject snapshots for zero output/receipt/event/outbox/stage/pointer effects. Equality remains pure-test evidence.",
+    "Prior DB-B02 is closed by separately prepared full certificates and actual consumer controls: real replacement-manifest publication, current-attempt pointer loss, wrong fence, actual KL024 lease takeover with greater fence, and observed post-S29 lease expiry. Raw records prove authenticated ingress; manifest reaches current-chain mismatch, attempt/fence/takeover reach the initial current-fence guard, and lease reaches post-S29 current-chain guard. None substitutes a key or lifecycle error. Each rejection uses a fresh key and complete persisted zero-effect comparison. Other source/binding/epoch/revision/execution-basis/runtime-revocation/terminal/principal negatives were checked against their actual reader/guard errors; truncation is accurately recorded at earliest source capture rather than manufactured downstream output.",
+    "Three duplicate TRAINING/NUTRITION/VALIDATION races establish an output event barrier, observe second contender blocking on S01 and complete with bounded future results; exact one output/receipt/event/outbox and immutable prior rows are asserted. Failures injected after target insertion and via PostgreSQL receipt trigger before successful bookkeeping roll back complete snapshots. ACK-loss replay after epoch loss retains exact immutable IDs/hashes, executable=false and no effects; fresh operation denies and changed same-key payload conflicts.",
+    "F2 uses actual same-root KL024 structured revision/new attempt, acquire/snapshot and forward stages, then recalculates F2/D2/N2 and both S36/full S37. Mixed old F/D/N/resolution/certificate references deny at validation/progression; old output rows remain unchanged, root budget/deadline payload persists and new COMMIT_READY succeeds without backward transition or terminal reopening. Actual own-namespace legacy TRAINING trajectory reaches COMMIT_READY and retains original UUID/profile behavior. Independently loaded protected-base pure module and recomputed the committed five-output legacy golden trajectory against both base and current computation; canonical payload bytes and content hashes match. Full-profile legacy downgrade and generic restricted-write bypass deny.",
+    "Independently SHA256-verified all fourteen raw logs against committed check entries and inspected successful command summaries: exact selector counts 1/1/1 PU, 1 owner, 52 denial, 3 replay/atomicity, 1 repair, 2 legacy, and 59 full own PostgreSQL cases with zero skip/xfail; unit 226, harness 676, HARNESS_CHECK_PASS, lint/typecheck pass. All 59 namespace/cleanup records match exact tested HEAD7/resolved-root SHA256 digest 90cbd6dddc92, current database and migration e8c2f1a6b904; inventories route bootstrap_two_phase(selected_lifecycle), reset, start and destroy with no remaining containers/volumes/networks. Nested lifecycle/connection validation is inspected; no imported foreign pytest fixture executes.",
+    "Reviewer reran only pure full-action unit checks using .venv/bin/python -B -m pytest -q -p no:cacheprovider tests/unit/workflow/test_full_action_preparation.py: 3 passed in 0.49s. No PostgreSQL lifecycle/foreign fixture, source/test/result/evidence write, commit or push was invoked by this reviewer. The only repository write is this DB_CONCURRENCY review record. No production/shadow execution, S38-S45 head/prescription/issuance/session/binding or intent success is produced by the reviewed trajectory; downstream KL077 T6/T7 and product/release gates remain separate."
+  ],
+  "prior_findings_resolution": [
+    {
+      "id": "KL079-DB-B01",
+      "status": "CLOSED",
+      "prior_reviewed_head_sha": "cf57c0a1c32d7ec84bd55be5351bf5de6ad21df0",
+      "resolution": "New distinct source/runtime limiting-expiry owner and consumer before/after PostgreSQL cases prove the required guard with live enclosing chain and observed lock crossing."
+    },
+    {
+      "id": "KL079-DB-B02",
+      "status": "CLOSED",
+      "prior_reviewed_head_sha": "cf57c0a1c32d7ec84bd55be5351bf5de6ad21df0",
+      "resolution": "New independent actual COMMIT_READY manifest/attempt/fence/takeover/post-lock lease cases prove intended current-state denial after authenticated ingress."
+    }
   ]
 }
