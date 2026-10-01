@@ -379,6 +379,20 @@ def artifact_bindings_match_activation(
     return True
 
 
+# Frozen ingress retains its closed public command set. Reservation cancellation
+# is a bounded internal CallLedgerService operation, not a new public contract.
+_INTERNAL_OWNER_SPECS: Mapping[str, OwnerSpec] = MappingProxyType(
+    {
+        "CancelUndispatched": OwnerSpec(
+            "CallLedgerService", Boundary.T8, ("S01", "S27", "S31", "S32", "S02", "S03", "S04")
+        ),
+    }
+)
+_OWNER_SPECS: Mapping[str, OwnerSpec] = MappingProxyType(
+    {**TRANSACTION_OWNER_MATRIX, **_INTERNAL_OWNER_SPECS}
+)
+
+
 # Column authority is command-specific and fail-closed.  Adding a logical table to
 # OwnerSpec does not by itself grant arbitrary column writes on that table.
 _MUTATION_COLUMNS: Mapping[str, Mapping[tuple[str, str], frozenset[str]]] = MappingProxyType(
@@ -413,7 +427,7 @@ _MUTATION_COLUMNS: Mapping[str, Mapping[tuple[str, str], frozenset[str]]] = Mapp
             )
         },
         "SettleCall": {
-            ("S27", "update"): frozenset({"status", "typed_payload"}),
+            ("S27", "update"): frozenset({"typed_payload"}),
             ("S31", "update"): frozenset({"status", "settlement_revision", "typed_payload"}),
         },
         "PermitDispatch": {
@@ -664,6 +678,7 @@ _COMMAND_OPERATIONS: Mapping[str, Mapping[str, tuple[str, ...]]] = {
     "RenewLease": {"update": ("S27",)},
     "ReserveCall": {"insert": ("S31", "S32"), "update": ("S27",)},
     "PermitDispatch": {"insert": ("S32",), "update": ("S31",)},
+    "CancelUndispatched": {"insert": ("S32",), "update": ("S27", "S31")},
     "RecordToolResult": {"insert": ("S33",)},
     "RecordProposal": {"insert": ("S34",)},
     "RecordDemandFeatures": {"insert": ("S35",)},
@@ -729,6 +744,10 @@ _UPDATE_COLUMNS: Mapping[str, Mapping[str, frozenset[str]]] = {
     },
     "RenewLease": {"S27": frozenset({"lease_expires_at", "typed_payload"})},
     "ReserveCall": {"S27": frozenset({"typed_payload"})},
+    "CancelUndispatched": {
+        "S27": frozenset({"typed_payload"}),
+        "S31": frozenset({"status", "settlement_revision", "typed_payload"}),
+    },
     "Reauthorize": {
         "S27": frozenset({"status", "result_authorization_id", "typed_payload"}),
         "S29": frozenset({"status", "completed_at", "typed_payload"}),
@@ -780,7 +799,9 @@ for _command, _columns in _S01_UPDATE_COLUMNS.items():
 _MUTATION_COLUMNS = MappingProxyType(
     {command: MappingProxyType(rules) for command, rules in _mutation_columns.items()}
 )
-MUTATION_CAPABILITY_MATRIX = _MUTATION_COLUMNS
+MUTATION_CAPABILITY_MATRIX = MappingProxyType(
+    {k: v for k, v in _MUTATION_COLUMNS.items() if k in TRANSACTION_OWNER_MATRIX}
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -1082,9 +1103,11 @@ class RestrictedSqlSession:
 
     def settlement_transition(self) -> Mapping[str, Any]:
         basis = self.__coordination_context.get("settlement_basis")
-        if self.__command_kind not in {"SettleCall", "MarkUnknown"} or not isinstance(
-            basis, dict
-        ):
+        if self.__command_kind not in {
+            "SettleCall",
+            "MarkUnknown",
+            "CancelUndispatched",
+        } or not isinstance(basis, dict):
             raise GuardRequired("T8 settlement transition was not prepared under lock")
         return {
             "reservation_id": basis["reservation_id"],
@@ -1218,13 +1241,9 @@ class RestrictedSqlSession:
             if policy is None:
                 raise GuardRequired("BuildManifest policy lacks projection requirements")
             try:
-                required_roles = set(
-                    (policy[0] or {})["manifest_projection_requirements"]
-                )
+                required_roles = set((policy[0] or {})["manifest_projection_requirements"])
             except (KeyError, TypeError) as error:
-                raise GuardRequired(
-                    "BuildManifest policy lacks projection requirements"
-                ) from error
+                raise GuardRequired("BuildManifest policy lacks projection requirements") from error
             if values.get("status") == "READY" and (
                 not candidate.get("manifest_hash")
                 or not candidate.get("dependency_basis_hash")
@@ -1298,15 +1317,21 @@ class RestrictedSqlSession:
                     or values.get("id") != planning["intent_id"]
                     or values.get("purpose") != planning["purpose"]
                     or values.get("local_date") != planning["local_date"]
-                    or values.get("root_request_identity") != (
+                    or values.get("root_request_identity")
+                    != (
                         f"{self.__coordination_context['command_actor_scope']}:"
                         f"{self.__coordination_context['command_causation_key']}"
                     )
                     or values.get("stale_restart_count") != 0
-                    or any(values.get(field) is not None for field in (
-                        "current_request_revision_id", "current_attempt_id",
-                        "result_bundle_revision_id", "result_authorization_id",
-                    ))
+                    or any(
+                        values.get(field) is not None
+                        for field in (
+                            "current_request_revision_id",
+                            "current_attempt_id",
+                            "result_bundle_revision_id",
+                            "result_authorization_id",
+                        )
+                    )
                     or values.get("status") != "ADMITTED"
                     or values.get("deadline") != planning["deadline"]
                     or self._json_value(values.get("typed_payload")) != planning["root_payload"]
@@ -1334,6 +1359,46 @@ class RestrictedSqlSession:
                 "authorization_epoch"
             ) or values.get("ref_s24_id") != self.__coordination_context.get("current_manifest_id"):
                 raise GuardRequired("S29 must capture the current epoch and manifest")
+        if self.__command_kind in {"ReserveCall", "CancelUndispatched"} and logical_id in {
+            "S31",
+            "S32",
+        }:
+            basis = self.__coordination_context.get("ledger_basis")
+            if self.__command_kind == "CancelUndispatched" and not basis:
+                raise GuardRequired("bounded ledger cancellation basis required")
+            if (
+                basis
+                and logical_id == "S31"
+                and (
+                    values.get("id") != basis["reservation_id"]
+                    or self._json_value(values.get("typed_payload")) != basis["payload"]
+                    or values.get("status") != basis["target_status"]
+                    or values.get("settlement_revision") != basis["next_revision"]
+                    or values.get("operation_slot") != basis["operation_slot"]
+                )
+            ):
+                raise GuardRequired("S31 must equal prepared reservation")
+        basis = self.__coordination_context.get("ledger_basis")
+        if (
+            basis
+            and logical_id == "S32"
+            and (
+                values.get("ref_s31_id") != basis["reservation_id"]
+                or values.get("transition_revision") != basis["next_revision"]
+                or values.get("event_type") != basis["target_status"]
+                or values.get("occurred_at") != basis["occurred_at"]
+                or values.get("receipt_identity")
+                != self.__coordination_context.get("command_causation_key")
+                or self._json_value(values.get("typed_payload"))
+                != {
+                    "accounting_version": "kl025-v1",
+                    "accounting": basis["payload"],
+                    "reserved_delta": basis["reserved_delta"],
+                    "settled_delta": basis["settled_delta"],
+                }
+            )
+        ):
+            raise GuardRequired("S32 must equal prepared ledger delta")
         if logical_id == "S31" and self.__command_kind == "ReserveCall":
             intent_id = values.get("ref_s27_id")
             verified = (
@@ -1344,7 +1409,11 @@ class RestrictedSqlSession:
         if logical_id == "S32" and self.__command_kind == "ReserveCall":
             if values.get("ref_s31_id") not in self.__inserted_ids.get("S31", set()):
                 raise GuardRequired("ReserveCall S32 must bind its same-command S31")
-        if logical_id == "S32" and self.__command_kind in {"SettleCall", "MarkUnknown"}:
+        if logical_id == "S32" and self.__command_kind in {
+            "SettleCall",
+            "MarkUnknown",
+            "CancelUndispatched",
+        }:
             basis = self.__coordination_context.get("settlement_basis", {})
             if (
                 not basis.get("allowed")
@@ -1513,10 +1582,7 @@ class RestrictedSqlSession:
                 or not values.get("causation_key")
             ):
                 raise GuardRequired("S43 must record the exact same-command supersession")
-        if (
-            logical_id == "S43"
-            and TRANSACTION_OWNER_MATRIX[self.__command_kind].boundary is Boundary.T2_IN
-        ):
+        if logical_id == "S43" and _OWNER_SPECS[self.__command_kind].boundary is Boundary.T2_IN:
             invalidated_epoch = values.get("invalidated_epoch")
             scope = values.get("scope")
             if (
@@ -1693,7 +1759,19 @@ class RestrictedSqlSession:
                 or manifest_values.get("revision_no") != values.get("head_revision")
             ):
                 raise GuardRequired("S38 must advance the exact locked head revision")
-        if logical_id == "S31" and self.__command_kind in {"SettleCall", "MarkUnknown"}:
+        ledger = self.__coordination_context.get("ledger_basis")
+        if (
+            ledger
+            and logical_id == "S31"
+            and self.__command_kind in {"SettleCall", "MarkUnknown", "CancelUndispatched"}
+        ):
+            if self._json_value(values.get("typed_payload")) != ledger["payload"]:
+                raise GuardRequired("S31 must preserve exact prepared accounting")
+        if logical_id == "S31" and self.__command_kind in {
+            "SettleCall",
+            "MarkUnknown",
+            "CancelUndispatched",
+        }:
             basis = self.__coordination_context.get("settlement_basis", {})
             if (
                 not basis.get("allowed")
@@ -1702,9 +1780,31 @@ class RestrictedSqlSession:
                 or values.get("settlement_revision") != basis.get("next_revision")
             ):
                 raise GuardRequired("S31 must apply the exact guarded settlement transition")
+        if logical_id == "S27" and self.__command_kind in {
+            "ReserveCall",
+            "SettleCall",
+            "MarkUnknown",
+            "CancelUndispatched",
+        }:
+            _cursor(self).execute(
+                "SELECT typed_payload FROM kineticloop.planning_intents WHERE subject_id=%s AND id=%s",
+                (self.__subject_id, predicates.get("id")),
+            )
+            old = _cursor(self).fetchone()
+            ledger = self.__coordination_context.get("ledger_basis")
+            if ledger or (old and "limits" in (old[0] or {})):
+                if (
+                    not ledger
+                    or set(values) != {"typed_payload"}
+                    or self._json_value(values.get("typed_payload")) != ledger["root_payload"]
+                    or predicates.get("id") != ledger["intent_id"]
+                ):
+                    raise GuardRequired(
+                        "S27 requires exact root accounting delta without business mutation"
+                    )
         if logical_id == "S27":
             object_id = predicates.get("id")
-            if self.__command_kind in {"SettleCall", "MarkUnknown"}:
+            if self.__command_kind in {"SettleCall", "MarkUnknown", "CancelUndispatched"}:
                 basis = self.__coordination_context.get("settlement_basis", {})
                 if object_id != basis.get("intent_id"):
                     raise GuardRequired("settlement accounting must update the reservation intent")
@@ -1858,19 +1958,18 @@ class RestrictedSqlSession:
                 if not any(predicate(row) for row in self.__updated_values.get(logical_id, [])):
                     raise GuardRequired(f"Reauthorize requires its mandatory {logical_id} update")
         if self.__command_kind == "PublishManifest":
-            expected_roles = set(
-                self.__coordination_context.get("publication_projections", {})
-            )
+            expected_roles = set(self.__coordination_context.get("publication_projections", {}))
             inserted_roles = {
-                row.get("projection_role")
-                for row in self.__inserted_values.get("S25", {}).values()
+                row.get("projection_role") for row in self.__inserted_values.get("S25", {}).values()
             }
             if (
                 len(self.__inserted_ids.get("S24", set())) != 1
                 or inserted_roles != expected_roles
                 or len(self.__inserted_ids.get("S25", set())) != len(expected_roles)
             ):
-                raise GuardRequired("PublishManifest requires the complete exact guarded S24/S25 basis")
+                raise GuardRequired(
+                    "PublishManifest requires the complete exact guarded S24/S25 basis"
+                )
         if self.__command_kind in {
             "DecideAssociation",
             "DecideAdmission",
@@ -1952,6 +2051,16 @@ class RestrictedSqlSession:
                     raise GuardRequired(
                         "admission must create root and debit every quota atomically"
                     )
+        ledger = self.__coordination_context.get("ledger_basis")
+        if ledger and (
+            len(self.__updated_values.get("S27", [])) != 1
+            or len(self.__inserted_ids.get("S32", set())) != 1
+            or (
+                self.__command_kind != "ReserveCall"
+                and len(self.__updated_values.get("S31", [])) != 1
+            )
+        ):
+            raise GuardRequired("ledger requires one exact root/reservation/transition mutation")
         if self.__command_kind == "ReserveCall":
             reservations = self.__inserted_values.get("S31", {})
             ledgers = self.__inserted_values.get("S32", {})
@@ -1995,7 +2104,7 @@ class RestrictedSqlSession:
             and len(self.__inserted_ids.get("S32", set())) != 1
         ):
             raise GuardRequired("PermitDispatch requires one atomic S32 ledger event")
-        if self.__command_kind in {"SettleCall", "MarkUnknown"}:
+        if self.__command_kind in {"SettleCall", "MarkUnknown", "CancelUndispatched"}:
             basis = self.__coordination_context.get("settlement_basis", {})
             reservation_id = basis.get("reservation_id")
             intent_id = basis.get("intent_id")
@@ -2060,13 +2169,14 @@ class RestrictedSqlSession:
             "ReserveCall": ("S31", "S32"),
             "SettleCall": ("S32",),
             "MarkUnknown": ("S32",),
+            "CancelUndispatched": ("S32",),
         }
         for logical_id in required_inserts.get(self.__command_kind, ()):
             if not self.__inserted_ids.get(logical_id):
                 raise GuardRequired(
                     f"{self.__command_kind} requires a mandatory {logical_id} insert"
                 )
-        if TRANSACTION_OWNER_MATRIX[self.__command_kind].boundary is Boundary.T2_IN:
+        if _OWNER_SPECS[self.__command_kind].boundary is Boundary.T2_IN:
             barriers = list(self.__inserted_values.get("S43", {}).values())
             epoch_updates = [
                 row.get("authorization_epoch")
@@ -2097,6 +2207,7 @@ class RestrictedSqlSession:
             "ReserveCall": ("S27",),
             "SettleCall": ("S27", "S31"),
             "MarkUnknown": ("S27", "S31"),
+            "CancelUndispatched": ("S27", "S31"),
         }
         for logical_id in mandatory_updates.get(self.__command_kind, ()):
             if not self.__updated_values.get(logical_id):
@@ -2167,7 +2278,7 @@ class RepositoryTransaction:
 
     def __init__(self, cursor: Cursor[Any], command_kind: str, subject_id: UUID | None):
         try:
-            self.spec = TRANSACTION_OWNER_MATRIX[command_kind]
+            self.spec = _OWNER_SPECS[command_kind]
         except KeyError as error:
             raise ValueError(f"unknown command owner surface: {command_kind}") from error
         _CURSORS[self] = cursor
@@ -2405,6 +2516,41 @@ class RepositoryTransaction:
         self._require_subject()
         if self.command_kind not in {"AdmitOrReviseIntent", "AcquireLease", "RenewLease"}:
             raise GuardRequired("planning replay belongs to planning command owners")
+        _cursor(self).execute(
+            "SELECT request_hash,status,typed_payload FROM kineticloop.command_receipts "
+            "WHERE subject_id=%s AND actor_scope=%s AND command_kind=%s AND client_key=%s",
+            (self.subject_id, actor_scope, self.command_kind, client_key),
+        )
+        prior = _cursor(self).fetchone()
+        if prior is None:
+            return None
+        if prior[0] != request_hash:
+            raise IdempotencyConflict("command key request hash mismatch")
+        if prior[1] != "SUCCEEDED" or "outcome" not in prior[2]:
+            raise IdempotencyConflict("command key has no durable successful outcome")
+        return {**prior[2]["outcome"], "replayed": True}
+
+    def ledger_historical_outcome(
+        self,
+        *,
+        actor_scope: str,
+        client_key: str,
+        request_hash: str,
+    ) -> Mapping[str, Any] | None:
+        """Close preflight-replay races before current authority guards.
+
+        S01 serializes these command owners; this bounded successful S02 read
+        acquires no lower-stage lock, and a found outcome performs no mutation.
+        """
+        self._require_subject()
+        if self.command_kind not in {
+            "ReserveCall",
+            "PermitDispatch",
+            "CancelUndispatched",
+            "SettleCall",
+            "MarkUnknown",
+        }:
+            raise GuardRequired("ledger replay belongs to ledger command owners")
         _cursor(self).execute(
             "SELECT request_hash,status,typed_payload FROM kineticloop.command_receipts "
             "WHERE subject_id=%s AND actor_scope=%s AND command_kind=%s AND client_key=%s",
@@ -3672,8 +3818,204 @@ class RepositoryTransaction:
         self._coordination_context["seal_factset_id"] = factset_id
         self._coordination_context["seal_timestamp"] = row[5]
 
+    def ledger_snapshot(
+        self, intent_id: UUID, reservation_id: UUID | None = None
+    ) -> Mapping[str, Any]:
+        """Read only the exact locked ledger chain, never a current-worker grant."""
+        self._require_subject()
+        if self.command_kind not in {
+            "ReserveCall",
+            "PermitDispatch",
+            "CancelUndispatched",
+            "SettleCall",
+            "MarkUnknown",
+        }:
+            raise GuardRequired("ledger snapshot belongs to ledger owners")
+        if intent_id not in self._locked_ids.get("planning_intents", set()):
+            raise GuardRequired("ledger requires exact intent lock")
+        _cursor(self).execute(
+            "SELECT typed_payload,lease_owner,fence_token FROM kineticloop.planning_intents WHERE subject_id=%s AND id=%s",
+            (self.subject_id, intent_id),
+        )
+        root = _cursor(self).fetchone()
+        if root is None:
+            raise GuardRequired("ledger intent absent")
+        result: dict[str, Any] = {"root_payload": root[0], "dispatch_owner": root[1], "dispatch_fence": root[2]}
+        if reservation_id is not None:
+            if reservation_id not in self._locked_ids.get("call_reservations", set()):
+                raise GuardRequired("ledger requires exact reservation lock")
+            _cursor(self).execute(
+                "SELECT r.ref_s27_id,r.ref_s29_id,r.status,r.settlement_revision,r.typed_payload,"
+                "clock_timestamp(),a.ref_s27_id FROM kineticloop.call_reservations r "
+                "JOIN kineticloop.planning_attempts a ON a.subject_id=r.subject_id AND a.id=r.ref_s29_id "
+                "WHERE r.subject_id=%s AND r.id=%s",
+                (self.subject_id, reservation_id),
+            )
+            row = _cursor(self).fetchone()
+            if row is None or row[0] != intent_id or row[6] != intent_id:
+                raise GuardRequired("ledger reservation must bind exact locked intent/attempt")
+            result.update(
+                zip(
+                    ("intent_id", "attempt_id", "status", "revision", "payload", "now"),
+                    row[:6],
+                    strict=True,
+                )
+            )
+        return copy.deepcopy(result)
+
+    def prepare_ledger_reservation(
+        self,
+        *,
+        intent_id: UUID,
+        reservation_id: UUID,
+        attempt_id: UUID,
+        operation_slot: str,
+        accounting: Any,
+        bounds: Mapping[str, int],
+    ) -> Mapping[str, Any]:
+        from dataclasses import asdict
+
+        from kineticloop.workflow.call_ledger import ACCOUNTING_VERSION, reserve_budget
+
+        if self.command_kind != "ReserveCall" or self._verified_fences.get(intent_id, ())[-1:] != (
+            attempt_id,
+        ):
+            raise GuardRequired("reservation requires exact verified attempt")
+        snapshot = self.ledger_snapshot(intent_id)
+        root = snapshot["root_payload"]
+        _cursor(self).execute(
+            "SELECT 1 FROM kineticloop.call_reservations WHERE subject_id=%s AND ref_s27_id=%s "
+            "AND ref_s29_id=%s AND operation_slot=%s",
+            (self.subject_id, intent_id, attempt_id, operation_slot),
+        )
+        if _cursor(self).fetchone() is not None:
+            raise IdempotencyConflict("operation slot already occupied")
+        _cursor(self).execute("SELECT clock_timestamp()")
+        now_row = _cursor(self).fetchone()
+        assert now_row is not None
+        now = now_row[0]
+        basis = {
+            "intent_id": intent_id,
+            "reservation_id": reservation_id,
+            "root_payload": reserve_budget(root, bounds, accounting),
+            "payload": {
+                "version": ACCOUNTING_VERSION,
+                "accounting": asdict(accounting),
+                "bounds": dict(bounds),
+                "actual": None,
+            },
+            "source_status": None,
+            "target_status": "RESERVED",
+            "next_revision": 0,
+            "occurred_at": now,
+            "operation_slot": operation_slot,
+            "attempt_id": attempt_id, "dispatch_owner": snapshot["dispatch_owner"],
+            "dispatch_fence": snapshot["dispatch_fence"],
+            "reserved_delta": dict(bounds),
+            "settled_delta": {k: 0 for k in bounds},
+        }
+        self._coordination_context["ledger_basis"] = copy.deepcopy(basis)
+        return copy.deepcopy(basis)
+
+    def prepare_ledger_change(
+        self,
+        *,
+        intent_id: UUID,
+        reservation_id: UUID,
+        expected_transition: str,
+        expected_revision: int,
+        receipt: Any = None,
+    ) -> Mapping[str, Any]:
+        from dataclasses import asdict
+
+        from kineticloop.workflow.call_ledger import (
+            ACCOUNTING_VERSION,
+            AccountingIdentity,
+            LedgerDenied,
+            ReliableReceipt,
+            next_state,
+            release_budget,
+            settle_budget,
+        )
+
+        if self.command_kind not in {"CancelUndispatched", "SettleCall", "MarkUnknown"}:
+            raise GuardRequired("invalid ledger change owner")
+        snapshot = self.ledger_snapshot(intent_id, reservation_id)
+        if snapshot["revision"] != expected_revision:
+            raise GuardRequired("ledger expected revision is stale")
+        try:
+            target = next_state(snapshot["status"], self.command_kind, expected_transition)
+        except LedgerDenied as error:
+            raise GuardRequired(str(error)) from error
+        payload = snapshot["payload"]
+        if payload.get("version") != ACCOUNTING_VERSION:
+            raise GuardRequired("typed ledger accounting basis missing")
+        identity = AccountingIdentity(**payload["accounting"])
+        root = snapshot["root_payload"]
+        if self.command_kind == "CancelUndispatched":
+            root = release_budget(root, payload["bounds"])
+        elif self.command_kind == "SettleCall":
+            if (
+                type(receipt) is not ReliableReceipt
+                or receipt.reservation_id != reservation_id
+                or receipt.accounting != identity
+            ):
+                raise GuardRequired("receipt must bind exact reservation/accounting identity")
+            root = settle_budget(root, payload["bounds"], receipt.actual)
+            payload["actual"] = dict(receipt.actual)
+            payload["receipt"] = {
+                "reservation_id": str(reservation_id),
+                "accounting": asdict(identity),
+                "actual": dict(receipt.actual),
+                "source": receipt.source,
+                "receipt_id": receipt.receipt_id,
+                "provider_request_id": receipt.provider_request_id,
+                "provenance": receipt.provenance,
+            }
+            # S01 serializes reliable provider request/receipt identities across this subject.
+            natural = hashlib.sha256(
+                json.dumps(
+                    [identity.provider, receipt.receipt_id, receipt.provider_request_id],
+                    separators=(",", ":"),
+                ).encode()
+            ).hexdigest()
+            _cursor(self).execute(
+                "SELECT id FROM kineticloop.call_reservations WHERE subject_id=%s "
+                "AND (typed_payload->'receipt'->>'receipt_id'=%s OR typed_payload->'receipt'->>'provider_request_id'=%s) "
+                "AND typed_payload->'accounting'->>'provider'=%s",
+                (
+                    self.subject_id,
+                    receipt.receipt_id,
+                    receipt.provider_request_id,
+                    identity.provider,
+                ),
+            )
+            if _cursor(self).fetchone() is not None:
+                raise IdempotencyConflict("reliable receipt/request already settled")
+            payload["receipt_identity"] = natural
+        basis = {
+            "intent_id": intent_id,
+            "reservation_id": reservation_id,
+            "root_payload": root,
+            "payload": payload,
+            "source_status": snapshot["status"],
+            "target_status": target,
+            "next_revision": expected_revision + 1,
+            "occurred_at": snapshot["now"],
+            "reserved_delta": {
+                k: root["reserved"][k] - snapshot["root_payload"]["reserved"][k]
+                for k in root["reserved"]
+            },
+            "settled_delta": {
+                k: root["settled"][k] - snapshot["root_payload"]["settled"][k]
+                for k in root["settled"]
+            },
+        }
+        self._coordination_context["ledger_basis"] = copy.deepcopy(basis)
+        return copy.deepcopy(basis)
+
     def _prepare_settlement_basis(self) -> None:
-        if self.command_kind not in {"SettleCall", "MarkUnknown"}:
+        if self.command_kind not in {"SettleCall", "MarkUnknown", "CancelUndispatched"}:
             return
         intent_ids = self._locked_ids.get("planning_intents", set())
         reservation_ids = self._locked_ids.get("call_reservations", set())
@@ -3697,6 +4039,7 @@ class RepositoryTransaction:
         expected_sources = {
             "SettleCall": {"DISPATCH_INTENT": "DISPATCH_INTENT", "UNKNOWN": "OUTCOME_UNKNOWN"},
             "MarkUnknown": {"DISPATCH_INTENT": "DISPATCH_INTENT"},
+            "CancelUndispatched": {"RESERVED": "RESERVED"},
         }
         expected_source = (
             expected_sources[self.command_kind].get(expected_transition)
@@ -3705,7 +4048,11 @@ class RepositoryTransaction:
         )
         if expected_source is None or row[2] != expected_source:
             raise GuardRequired("settlement expected transition does not match locked reservation")
-        target = "SETTLED" if self.command_kind == "SettleCall" else "OUTCOME_UNKNOWN"
+        target = {
+            "SettleCall": "SETTLED",
+            "MarkUnknown": "OUTCOME_UNKNOWN",
+            "CancelUndispatched": "CANCELLED_BEFORE_DISPATCH",
+        }[self.command_kind]
         self._coordination_context["settlement_basis"] = {
             "reservation_id": reservation_id,
             "intent_id": intent_id,
@@ -3714,7 +4061,9 @@ class RepositoryTransaction:
             "allowed": True,
             "target_status": target,
             "next_revision": int(row[3] or 0) + 1,
-            "occurred_at": row[4],
+            "occurred_at": self._coordination_context.get("ledger_basis", {}).get(
+                "occurred_at", row[4]
+            ),
         }
 
     def evaluate_execution_authorization(
@@ -4101,7 +4450,9 @@ class RepositoryTransaction:
             )
             policy = _cursor(self).fetchone()
             if policy is None:
-                raise GuardRequired("T2 invalidation classification is absent from the active policy")
+                raise GuardRequired(
+                    "T2 invalidation classification is absent from the active policy"
+                )
             try:
                 canonical_scope = (policy[0] or {})["t2_invalidation_scopes"][self.command_kind]
             except (KeyError, TypeError) as error:
@@ -4111,7 +4462,7 @@ class RepositoryTransaction:
             if invalidation_scope != canonical_scope:
                 raise GuardRequired("T2 invalidation scope must equal active-policy classification")
             self._coordination_context["invalidation_scope"] = canonical_scope
-        if self.command_kind in {"SettleCall", "MarkUnknown"}:
+        if self.command_kind in {"SettleCall", "MarkUnknown", "CancelUndispatched"}:
             self._coordination_context["expected_transition"] = expected_transition
         self._prepare_settlement_basis()
         if self.spec.boundary is Boundary.T1 and source_identity_key is None:
@@ -4302,7 +4653,7 @@ def execute_command(
 
     if connection.info.transaction_status is not TransactionStatus.IDLE:
         raise TransactionStateError("repository command requires an idle connection")
-    specification = TRANSACTION_OWNER_MATRIX.get(command_kind)
+    specification = _OWNER_SPECS.get(command_kind)
     if specification is None:
         raise ValueError(f"unknown command owner surface: {command_kind}")
     if specification.boundary in {Boundary.PREPARATION, Boundary.BUILD, Boundary.EXTERNAL}:
@@ -4366,7 +4717,7 @@ def replay_outcome(
 
     if connection.info.transaction_status is not TransactionStatus.IDLE:
         raise TransactionStateError("repository replay requires an idle connection")
-    specification = TRANSACTION_OWNER_MATRIX.get(command_kind)
+    specification = _OWNER_SPECS.get(command_kind)
     if specification is None or specification.boundary in {
         Boundary.PREPARATION,
         Boundary.BUILD,
@@ -4408,7 +4759,7 @@ def execute_preparation(
 
     if connection.info.transaction_status is not TransactionStatus.IDLE:
         raise TransactionStateError("preparation requires an idle connection")
-    specification = TRANSACTION_OWNER_MATRIX.get(command_kind)
+    specification = _OWNER_SPECS.get(command_kind)
     if specification is None or specification.boundary is not Boundary.PREPARATION:
         raise GuardRequired("command is not a preparation owner")
     with connection.transaction():
@@ -4435,7 +4786,7 @@ def execute_factset_build(
 
     if connection.info.transaction_status is not TransactionStatus.IDLE:
         raise TransactionStateError("factset build requires an idle connection")
-    specification = TRANSACTION_OWNER_MATRIX.get(command_kind)
+    specification = _OWNER_SPECS.get(command_kind)
     if specification is None or specification.boundary is not Boundary.BUILD:
         raise GuardRequired("command is not a factset-build owner")
     basis = dict(factset_build_basis or {})
@@ -4659,6 +5010,7 @@ def execute_factset_build(
                 (Jsonb(payload), subject_id, build_id),
             )
         return result
+
 
 def claim_outbox(
     connection: Connection[Any], *, destination: str, limit: int = 1
