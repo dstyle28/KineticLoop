@@ -1,0 +1,24 @@
+change_identity: harness-governance-v0.1/HG-034
+tested_commit: 3b23836da9475b1512989705c12b8778e4ba6723
+command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+exit_code: 0
+
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/davetian/.codex/worktrees/6256/KineticLoop
+configfile: pyproject.toml
+collected 265 items
+
+tests/harness/acceptance/test_registry.py .....                          [  1%]
+tests/harness/document_index/test_current_document_index.py .......      [  4%]
+tests/harness/document_index/test_evidence_manifest.py .......           [  7%]
+tests/harness/document_index/test_historical_task_map.py ......          [  9%]
+tests/harness/test_call_ledger_scope.py .........................        [ 18%]
+tests/harness/test_planning_fixture_scope.py ............                [ 23%]
+tests/harness/test_planning_subject_scope.py ........................    [ 32%]
+tests/harness/test_validator.py ........................................ [ 47%]
+........................................................................ [ 74%]
+..............................                                           [ 86%]
+tests/harness/test_wave_scope.py .....................................   [100%]
+
+======================= 265 passed in 193.65s (0:03:13) ========================

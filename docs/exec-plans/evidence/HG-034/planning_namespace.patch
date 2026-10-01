@@ -1,0 +1,25 @@
+--- a/tests/db/test_planning.py
++++ b/tests/db/test_planning.py
+@@ -2,0 +3 @@
++import os
+@@ -63,0 +65,15 @@
++def _planning_namespace(short: str) -> DatabaseNamespace:
++    if not 7 <= len(short) <= 12 or any(c not in "0123456789abcdef" for c in short):
++        raise ValueError("invalid planning fixture commit suffix")
++    owner = os.environ.get("KINETICLOOP_KL024_FIXTURE_OWNER")
++    if owner is None:
++        return DatabaseNamespace(f"kineticloop-kl024-{short}", f"kineticloop_kl024_{short}")
++    if owner != "KL-025":
++        raise ValueError("unsupported planning fixture owner")
++    suffix = DatabaseNamespace.for_worktree(ROOT).project_name[-12:]
++    return DatabaseNamespace(
++        f"kineticloop-kl025-plan-{short}-{suffix}",
++        f"kineticloop_kl025_plan_{short}_{suffix}",
++    )
++
++
+@@ -70,3 +86 @@
+-    lifecycle.namespace = DatabaseNamespace(
+-        f"kineticloop-kl024-{short}", f"kineticloop_kl024_{short}"
+-    )
++    lifecycle.namespace = _planning_namespace(short)

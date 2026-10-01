@@ -1,0 +1,96 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-034",
+  "reviewed_head_sha": "267ffea7b4b224c2ee43f45f3fa087bafc95e90d",
+  "review_type": "GENERAL",
+  "status": "PASS",
+  "review_contract_version": "v0.2",
+  "protected_base_sha": "ff57a80feebd4e539f9af277e0dcb26d942bc3e0",
+  "tested_commit": "3b23836da9475b1512989705c12b8778e4ba6723",
+  "findings": [
+    {
+      "classification": "NONBLOCKING",
+      "path": "docs/exec-plans/evidence/HG-034/diff_clean-3b23836.log",
+      "line": 5,
+      "description": "The final protected-base-to-reviewed diff reports one new blank line at EOF in the empty-stdout evidence log. Independently reproduced this formatting warning. The selected diff_clean command explicitly checks protected base through tested 3b23836, where it passes; it does not claim a clean reviewed-tree diff. This newly added evidence file is permitted by the linear tested-to-reviewed suffix contract, contains no implementation change, and does not invalidate the recorded tested PASS. No merge-blocking correction or evidence alteration is required."
+    }
+  ],
+  "evidence_refs": [
+    "AGENTS.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    ".agents/skills/pr-merge-reviewer/SKILL.md",
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+    "docs/harness/THREAD_RESULT_CONTRACT.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/harness/MERGE_GATE.md",
+    "HARNESS_CHANGE.schema.json",
+    "THREAD_REVIEW.schema.json",
+    "docs/exec-plans/governance/HG-034.yaml",
+    "docs/exec-plans/active/KL-025.md",
+    "KineticLoop_Harness_Backlog_v0.2.json",
+    "KineticLoop_Harness_Traceability_v0.3.json",
+    "HARNESS_DOCUMENT_MANIFEST.json",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_call_ledger_scope.py",
+    "src/kineticloop/db/lifecycle.py",
+    "src/kineticloop/persistence/planning.py",
+    "src/kineticloop/persistence/transactions.py",
+    "tests/db/test_planning.py",
+    "tests/db/test_transaction_interfaces.py",
+    "tests/db/test_migrations.py",
+    "tests/db/test_safety_registry.py",
+    "docs/exec-plans/completed/KL-024_RESULT.yaml",
+    "docs/exec-plans/reviews/KL-024/GENERAL.json",
+    "docs/exec-plans/reviews/KL-024/PROTOCOL.json",
+    "docs/exec-plans/reviews/KL-024/DB_CONCURRENCY.json",
+    "docs/exec-plans/milestones/M2.json",
+    "docs/exec-plans/evidence/HG-034/planning_namespace.patch",
+    "docs/exec-plans/evidence/HG-034/audit.py",
+    "docs/exec-plans/evidence/HG-034/candidate_proof.py",
+    "docs/exec-plans/evidence/HG-034/namespace_probe.py",
+    "docs/exec-plans/evidence/HG-034/isolation_plugin.py",
+    "docs/exec-plans/evidence/HG-034/checks-3b23836.json",
+    "docs/exec-plans/evidence/HG-034/candidate-checks-3b23836.json",
+    "docs/exec-plans/evidence/HG-034/merged_preflight_and_scope_audit-3b23836.log",
+    "docs/exec-plans/evidence/HG-034/candidate_isolation_proof-3b23836.log",
+    "docs/exec-plans/evidence/HG-034/scope_regressions-3b23836.log",
+    "docs/exec-plans/evidence/HG-034/harness_validation-3b23836.log",
+    "docs/exec-plans/evidence/HG-034/harness_tests-3b23836.log",
+    "docs/exec-plans/evidence/HG-034/unit_tests-3b23836.log",
+    "docs/exec-plans/evidence/HG-034/lint-3b23836.log",
+    "docs/exec-plans/evidence/HG-034/typecheck-3b23836.log",
+    "docs/exec-plans/evidence/HG-034/diff_clean-3b23836.log",
+    "docs/exec-plans/evidence/HG-034/pr62-merged.json"
+  ],
+  "review_notes": [
+    "Fresh independent GENERAL review resolved current authority through the current index, read repository instructions and reviewer skill, governance/result/review/merge contracts, schemas, complete implementation diff, refined packet, governance record and selected raw evidence. Author summaries and historical review opinions were not substituted for current verification. There are zero BLOCKER or REQUIRED_FOLLOWUP findings; the single evidence-formatting observation is NONBLOCKING.",
+    "A separate Python/Git audit validated the governance schema and proved the declared inventory exactly equals all 31 committed protected-base-to-reviewed paths, with no duplicates. Only KL025 changes in backlog/traceability; every other task and non-task field is identical. KL025 retains NOT_STARTED, hard KL024 dependency, resource keys, all previous semantic oracles and ordered GENERAL/PROTOCOL/DB_CONCURRENCY review requirements. Exactly one existing write path and one isolation check are added; only the planning regression command gains the exact selector. Packet, backlog, traceability and validator project the same 16 future checks.",
+    "Verified every current-index checksum and every manifest checksum/byte count against Git blobs at the reviewed SHA. Removing only checksum/byte fields leaves both metadata documents identical to protected base: no authority entry, path, identity or metadata is added or reclassified. Frozen Protocol/DB/baseline, requirement/acceptance/evidence registries, src, migrations, tests/db, CI, contracts, completed results, integrations, milestones, KL024 packet/evidence/reviews and all non-KL025 definitions remain byte-identical to protected base. No product, release, activation or KL025 implementation PASS is created.",
+    "Git independently confirms ff57a80 is a normal two-parent PR62 merge with KL024 head 54c201f as its second parent. KL024 result is unchanged and remains PASS/PASS/UNMERGED with thirteen passing commands. Its three required reviews share reviewed 28a47f1, which is an ancestor of protected base; reviewed-to-54c201f is allowed review-record-only bookkeeping. Result bytes at that reviewed SHA and current protected tree agree. No KL024 integration artifact is fabricated, and historical merge/bookkeeping facts are not rewritten.",
+    "Read actual planning typed commands and owner code: root limits/reserved/settled counters are initialized by admission, non-ADMIT preserves the complete original root payload and deadline, live authority binds subject/current request/current attempt/owner/fence with strict trusted-time lease/deadline comparisons, permit replay is non-sendable, and expected_transition UNKNOWN maps to OUTCOME_UNKNOWN. Those unchanged interfaces support the bounded residual packet; no authorization, lock-order, transaction-boundary or command-owner change occurs here. Complete called-fixture inspection follows planning and transaction lifecycle selection through bootstrap, role URLs, reseeding/truncation and same-project cleanup. Generic environment injection is overwritten by DatabaseLifecycle.namespace and cannot solve the original planning fixture mismatch.",
+    "Independently applied the committed zero-context proposal to a disposable checkout of exact reviewed 267ffea, compared the complete output with the validator candidate, reversed only import os/helper/assignment, and obtained the original fixture bytes exactly. All six planning test ASTs also match. The helper validates lowercase hexadecimal SHA length 7-12, accepts only unset or exact KL-025 ownership, and derives a 12-character resolved-worktree digest with bounded SQL/Compose names. A no-DB selector probe independently ran default preservation, eight invalid owners, eight invalid suffixes, different-worktree namespace separation and selected cleanup before any lifecycle runner call. Complete-file guard rejects assertion, seed, policy, bootstrap, teardown, import, selector, digest or unrelated-byte drift; the historical packet guard activates only when the new fixture path is declared.",
+    "All nine selected checks exactly match the record and selected manifests; every raw log is committed, has the exact tested 3b23836 SHA, exact command and exit_code 0. Selected outputs show preflight PASS, focused 98, harness 265, unit 204, lint/typecheck PASS and candidate 66 PostgreSQL regressions plus 25 future scope tests. Candidate tracing invokes real reset/destroy methods, rejects every other namespace, records six planning resets and one transaction reset with matching cleanup, and runs suites sequentially. Prior 0f5ad59 diagnostic evidence is retained but unselected. Candidate evidence remains prospective; all actual future KL025 implementation and product/release obligations remain NOT_RUN.",
+    "Proved protected base -> tested -> reviewed ancestry. Tested-to-reviewed is exactly one linear commit adding only HG034 record and new HG034 evidence files; all tested implementation, packet, validator, schema and metadata bytes remain unchanged and existing evidence is not overwritten. Independently reran focused 98, check-harness and the read-only merged-preflight audit at the reviewed revision. No DB/Docker command was performed by this reviewer. Only GENERAL.json is written; no implementation/evidence/record edit, commit or other-chat message was made. Specialist PASS records at this exact reviewed SHA and the final mechanical review-record-only gate remain required before merge."
+  ],
+  "independent_verification": [
+    {
+      "command": "Read-only Python/Git audit of exact reviewed blobs, inventory/schema, projections, all indexed/manifest hashes, immutable protected state, selected log binding, and revision suffix; temporary exact-patch application/reversal and no-DB namespace probe",
+      "result": "PASS",
+      "output": "Exact 31 inventory; nine selected tested-SHA/command/exit 0 logs; one linear record/new-evidence-only suffix; protected states unchanged; exact patch reverses to original bytes; all six planning ASTs identical; default/8 owner/8 SHA denials/worktree separation/cleanup proof passes."
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/kl017-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_call_ledger_scope.py tests/harness/test_planning_fixture_scope.py tests/harness/test_planning_subject_scope.py tests/harness/test_wave_scope.py",
+      "result": "PASS",
+      "output": "98 passed in 0.34s; includes immutable historical packet compatibility and exact-content negative mutations."
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness",
+      "result": "PASS",
+      "output": "HARNESS_CHECK_PASS tasks=70 active=67"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-034/audit.py",
+      "result": "PASS",
+      "output": "Current reviewed 267ffea preflight reproduces immutable protected state, KL024 normal merge/result/review binding, actual typed API/root budget/fence and complete called-fixture inventory checks; exit 0."
+    }
+  ]
+}
