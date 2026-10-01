@@ -327,3 +327,15 @@ denials. KL076 waits for its normal merge and retains only S34–S37 F/D/N scope
 KL078 starts NOT_STARTED, serializes transaction_interfaces and declares every
 helper/module explicitly. Frozen/wire/registry/coordination boundaries and all
 product/layer/release states remain unchanged. No downstream execution is added.
+
+
+## Full action evidence prerequisite — HG041
+
+KL079 is a fresh NOT_STARTED task for owner-produced TRAINING and NUTRITION
+action evidence and an exact full validation certificate through COMMIT_READY.
+S37 retains its singular TRAINING FK anchor and carries closed immutable per-action
+bindings; owners verify the additional resolution identity explicitly. KL077 waits
+for its normal merge and consumes each binding at T6, preserving ordinary pause
+and current T7 oracles. KL027 already depends transitively on KL079 through KL077.
+KL076 completed definitions/results remain immutable historical input. No product,
+M3, release, production or downstream implementation closure is claimed.
