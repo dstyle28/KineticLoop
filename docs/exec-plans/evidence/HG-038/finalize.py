@@ -14,9 +14,10 @@ def git(*args):
     return subprocess.check_output(['git', *args], text=True).strip()
 
 
-base = git('rev-parse', 'HEAD')
+base = git('rev-parse', 'origin/master')
 assert git('branch', '--show-current') == 'codex/hg038-m3-next-wave'
-assert base == git('rev-parse', 'origin/master')
+subprocess.run(['git', 'merge-base', '--is-ancestor', base, 'HEAD'], check=True)
+assert all(p.startswith('docs/exec-plans/evidence/HG-038/') for p in git('diff', '--name-only', base, 'HEAD').splitlines())
 pr = json.loads((HERE / 'pr72-merged.json').read_text())
 assert pr['state'] == 'MERGED' and not pr['isDraft']
 merge = pr['mergeCommit']['oid']
