@@ -3924,7 +3924,8 @@
         "docs/exec-plans/completed/KL-023_RESULT.yaml",
         "docs/exec-plans/completed/KL-024_RESULT.yaml",
         "docs/exec-plans/completed/KL-025_RESULT.yaml",
-        "docs/exec-plans/completed/KL-074_RESULT.yaml"
+        "docs/exec-plans/completed/KL-074_RESULT.yaml",
+        "docs/exec-plans/evidence/HG-039/PREPARATION.md"
       ],
       "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
       "merge_unit": "ONE_PR",
@@ -3954,6 +3955,7 @@
         "i07_dc",
         "i08_dc",
         "i09_dc",
+        "cancellation_identity_pu",
         "time_boundary_pu",
         "interleaving_namespace_pu",
         "interleaving_suite_dc",
@@ -4031,6 +4033,11 @@
           "check_id": "i09_dc",
           "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_expiry_vs_start",
           "pass_oracle": "Actual START before/after server-computed minimum dependency valid_until; exact equality denies in separate time_boundary_pu predicate evidence. Force expiry while START waits on real registry/user lock and demonstrate fresh trusted post-lock DB clock, not transaction-start timestamp/cached VALID/status job. Failed START has zero target/bookkeeping effects; valid historical binding/replay stays immutable and non-executable after expiry. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+        },
+        {
+          "check_id": "cancellation_identity_pu",
+          "command": "uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_cancellation_identity",
+          "pass_oracle": "Strict immutable independent TEST-local cancellation request binds trusted existing PlanningIdentity(TEST), exact isolated subject/policy/environment and registered TEST principal; canonical server-computed key/hash binds exact root/attempt/reservation/request revision/fence. Positive construction and installed candidate execute; non-TEST identity, foreign registration/scope/subject, malformed types/bounds, altered hash, wrong root/attempt/reservation, stale request/fence deny before mutation. Public TEST_ONLY CancelIntent still rejects and the public command registry/validator remain unchanged; no model_construct, public subclass, SUBJECT translation or self-attested actor/hash. Same-key conflict, concurrent same-key historical replay and terminal-success preservation require separate real-PG I03 evidence; PU never substitutes for DC."
         },
         {
           "check_id": "time_boundary_pu",
