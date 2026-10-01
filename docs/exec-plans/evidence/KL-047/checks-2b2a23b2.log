@@ -1,0 +1,110 @@
+tested_commit: 2b2a23b20f8750d581ffb718969d7994cb052a98
+UV_CACHE_DIR=/private/tmp/kl047-uv-cache
+PATH includes /private/tmp/kl001-bootstrap/bin (uv)
+
+check_id: eval_manifest_identity_and_freeze_pu
+command: uv run pytest -q tests/evaluation/test_manifest.py::test_manifest_identity_and_freeze
+tested_commit: 2b2a23b20f8750d581ffb718969d7994cb052a98
+.                                                                        [100%]
+1 passed in 0.16s
+
+exit_code: 0
+counts: ['1']
+result: PASS
+
+check_id: eval_split_and_knowledge_boundary_pu
+command: uv run pytest -q tests/evaluation/test_manifest.py::test_split_and_knowledge_boundary
+tested_commit: 2b2a23b20f8750d581ffb718969d7994cb052a98
+.                                                                        [100%]
+1 passed in 0.15s
+
+exit_code: 0
+counts: ['1']
+result: PASS
+
+check_id: eval_source_derived_cases_pu
+command: uv run pytest -q tests/evaluation/test_scorer.py::test_source_derived_cases
+tested_commit: 2b2a23b20f8750d581ffb718969d7994cb052a98
+.                                                                        [100%]
+1 passed in 0.37s
+
+exit_code: 0
+counts: ['1']
+result: PASS
+
+check_id: eval_complete_observations_pu
+command: uv run pytest -q tests/evaluation/test_scorer.py::test_complete_observations
+tested_commit: 2b2a23b20f8750d581ffb718969d7994cb052a98
+.                                                                        [100%]
+1 passed in 0.43s
+
+exit_code: 0
+counts: ['1']
+result: PASS
+
+check_id: eval_deterministic_report_pu
+command: uv run pytest -q tests/evaluation/test_report.py::test_deterministic_report
+tested_commit: 2b2a23b20f8750d581ffb718969d7994cb052a98
+.                                                                        [100%]
+1 passed in 0.23s
+
+exit_code: 0
+counts: ['1']
+result: PASS
+
+check_id: eval_no_release_or_execution_claim_pu
+command: uv run pytest -q tests/evaluation/test_report.py::test_no_release_or_execution_claim
+tested_commit: 2b2a23b20f8750d581ffb718969d7994cb052a98
+.                                                                        [100%]
+1 passed in 0.26s
+
+exit_code: 0
+counts: ['1']
+result: PASS
+
+check_id: eval_offline_suite_passes
+command: uv run pytest -q tests/evaluation
+tested_commit: 2b2a23b20f8750d581ffb718969d7994cb052a98
+........                                                                 [100%]
+8 passed in 1.63s
+
+exit_code: 0
+counts: ['8']
+result: PASS
+
+check_id: eval_existing_contract_regressions
+command: uv run pytest -q tests/unit/contracts/test_shadow.py tests/unit/contracts/test_artifact_registry.py tests/unit/primitives/test_canonical.py tests/harness/acceptance/test_registry.py
+tested_commit: 2b2a23b20f8750d581ffb718969d7994cb052a98
+......................                                                   [100%]
+22 passed in 0.12s
+
+exit_code: 0
+counts: ['22']
+result: PASS
+
+check_id: harness_validation_passes
+command: uv run kl check-harness
+tested_commit: 2b2a23b20f8750d581ffb718969d7994cb052a98
+HARNESS_CHECK_PASS tasks=70 active=67
+
+exit_code: 0
+counts: non-pytest check
+result: PASS
+
+check_id: lint_passes
+command: uv run kl lint
+tested_commit: 2b2a23b20f8750d581ffb718969d7994cb052a98
+All checks passed!
+
+exit_code: 0
+counts: non-pytest check
+result: PASS
+
+check_id: typecheck_passes
+command: uv run kl typecheck
+tested_commit: 2b2a23b20f8750d581ffb718969d7994cb052a98
+Success: no issues found in 116 source files
+
+exit_code: 0
+counts: non-pytest check
+result: PASS

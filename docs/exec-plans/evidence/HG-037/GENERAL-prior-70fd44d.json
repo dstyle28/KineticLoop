@@ -1,0 +1,75 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-037",
+  "reviewed_head_sha": "70fd44d25e61f9931fcc6cb7d4bc369885ea0f10",
+  "review_type": "GENERAL",
+  "status": "PASS",
+  "findings": [],
+  "review_contract_version": "v0.2",
+  "summary": "Fresh independent GENERAL review finds no blockers in the HG037 governance change. The installed-workflow correction removes the prospective full-suite contradiction while preserving exact-byte workflow authorization and immutable completed work.",
+  "protected_base_sha": "822322dfcac69d1042c8f9f7517cecf4903f8163",
+  "tested_commit": "e8bb2b9034e2888761ea31ad38e22dd522644184",
+  "scope_assessment": [
+    "Read AGENTS.md, current authority index, pr-merge-reviewer skill, governance/review/merge contracts, HG037 record, KL074 packet, merged KL002/KL013/KL023 prerequisite artifacts, and actual committed implementation/evidence diff without relying on previous review conclusions.",
+    "Verified exact 106-file declaration and governance schema; protected-base to tested ancestry; tested-to-reviewed linear suffix confined to HG037 governance record and newly added evidence; no implementation changes after tested_commit.",
+    "Verified current authority hashes and manifest byte counts/hashes directly against committed blobs. All pre-existing backlog and traceability task definitions are preserved; KL074 is the sole new namespaced NOT_STARTED task with six exact implementation paths, ten prospective check contracts, no requirements, and no result/review/integration/execution evidence.",
+    "Verified product source, Compose, DB/unit tests, migrations, existing CI workflows, frozen authorities/baseline, requirement state, completed results, prior task evidence and integration/review artifacts remain unchanged against protected base.",
+    "Inspected complete-byte lifecycle candidate and its baseline hash; readiness guard preserves startup namespace/credentials, socket psql, DROP/CREATE order, failure propagation and cleanup. Candidate allows only explicit container loopback TCP probes, remaining-deadline subprocess timeout, bounded backoff, optional timeout plumbing and sanitized non-replaying timeout errors. Positive compilation/AST preservation and negative endpoint/ownership/SQL/timeout mutations pass.",
+    "Corrected harness test accepts absence and exact-byte installed workflow, rejects installed drift, and leaves committed task gate additive-only. No other workflow-absence assertion exists in tests/tools. Future KL074 can install the exact proposal within its protected six-path scope and execute the required test-harness/full-suite commands without editing governance tests or validator.",
+    "Inspected proposal hash bbf7f77baa008a13660313c4af9b6ace506b41c22da7fee1737a4afd4870f6df: same-repository codex/kl074- pull_request entrypoint, explicit PR-head checkout and HEAD assertion, locked uv 0.12.17, ubuntu-latest dedicated VM, local default Docker preflight, finite job/step limits, exact coldstart/full-suite commands with pipefail, read-only token, no secrets or arbitrary inputs, task-only always-upload artifacts. Packet requires downloaded raw artifacts and run/job/head/attempt/artifact identity before result/review, and retains independent normal CI gates."
+  ],
+  "verification": [
+    {
+      "kind": "INDEPENDENT_RERUN",
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/Users/davetian/.codex/worktrees/c4cb/KineticLoop/src /private/tmp/kl017-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_readiness_scope.py",
+      "result": "PASS",
+      "observation": "65 passed; absent/present exact workflow and installed drift cases included."
+    },
+    {
+      "kind": "INDEPENDENT_RERUN",
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/Users/davetian/.codex/worktrees/c4cb/KineticLoop/src /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness",
+      "result": "PASS",
+      "observation": "HARNESS_CHECK_PASS tasks=71 active=68"
+    },
+    {
+      "kind": "INDEPENDENT_RERUN",
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/Users/davetian/.codex/worktrees/c4cb/KineticLoop/src /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-037/audit.py",
+      "result": "PASS",
+      "observation": "HG037_AUDIT_PASS at reviewed head; historical prerequisite/result and immutable-state checks passed."
+    },
+    {
+      "kind": "INDEPENDENT_ASSERTIONS",
+      "result": "PASS",
+      "observation": "Committed-object schema/file-list, ancestry, suffix, index/manifest, and all eight selected e8bb2b9 command/metadata/log bindings verified. git diff --check protected-base reviewed-head passed."
+    },
+    {
+      "kind": "COMMITTED_EVIDENCE_INSPECTED",
+      "result": "PASS",
+      "observation": "Eight selected checks bind e8bb2b9034e2888761ea31ad38e22dd522644184: focused 65, harness 440, unit 207, provenance audit, validation, lint, typecheck, diff. Full harness/unit runs were inspected rather than independently repeated."
+    }
+  ],
+  "known_limitations": [
+    "This PASS applies to governance feasibility and scope only. All ten prospective KL074 checks remain NOT_RUN; no task implementation, product/release PASS, production activation or merge fact is established.",
+    "No real Docker/PostgreSQL or broad DB suite was run in this review. Actual deployed image/entrypoint ordering, bounded isolated migrated coldstarts, cleanup, hosted full-suite success and raw artifact transport must be demonstrated by KL074.",
+    "Independent local checks use the existing kl017 virtualenv with absolute PYTHONPATH; this does not substitute for required hosted locked-uv CI and merge gates.",
+    "Final merge still requires fresh SHA-bound DB_CONCURRENCY and SECURITY_DATA_BOUNDARY reviews and normal CI/gates. Only HG037 review-record paths may follow this reviewed SHA without rereview."
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-037.yaml",
+    "docs/exec-plans/active/KL-074.md",
+    "tests/harness/test_readiness_scope.py",
+    "tools/harness/validate_harness.py",
+    "docs/exec-plans/evidence/HG-037/kl074-readiness.workflow.proposal.yml",
+    "docs/exec-plans/evidence/HG-037/HOSTED_EXECUTION_PREFLIGHT.md",
+    "docs/exec-plans/evidence/HG-037/READINESS_EVIDENCE.md",
+    "docs/exec-plans/evidence/HG-037/append_only_provenance_audit-e8bb2b9.log",
+    "docs/exec-plans/evidence/HG-037/readiness_scope_regressions-e8bb2b9.log",
+    "docs/exec-plans/evidence/HG-037/harness_validation-e8bb2b9.log",
+    "docs/exec-plans/evidence/HG-037/harness_tests-e8bb2b9.log",
+    "docs/exec-plans/evidence/HG-037/unit_tests-e8bb2b9.log",
+    "docs/exec-plans/evidence/HG-037/lint-e8bb2b9.log",
+    "docs/exec-plans/evidence/HG-037/typecheck-e8bb2b9.log",
+    "docs/exec-plans/evidence/HG-037/diff_clean-e8bb2b9.log",
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows",
+    "https://docs.github.com/en/actions/reference/runners/github-hosted-runners"
+  ]
+}
