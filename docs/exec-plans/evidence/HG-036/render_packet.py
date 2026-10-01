@@ -8,11 +8,11 @@ def bullets(values):
     return '\n'.join('- ' + value for value in values) if values else '- none'
 packet = f'''# KL-047 — {t['title']}
 
-**Task identity:** `{t['task_identity']}`  
-**Thread:** `THREAD-KL-047`  
-**Milestone:** `M7`  
-**Mode:** one fresh thread + one worktree + one PR  
-**Status:** NOT_STARTED  
+**Task identity:** `{t['task_identity']}`
+**Thread:** `THREAD-KL-047`
+**Milestone:** `M7`
+**Mode:** one fresh thread + one worktree + one PR
+**Status:** NOT_STARTED
 **Packet refinement:** ENFORCEABLE
 
 ## Goal

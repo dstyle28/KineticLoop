@@ -42,4 +42,4 @@ def fitness_evaluation_packet_errors(task, text):
 
 '''
 # Emit a legal formatted Python draft, but never apply to tools/harness here.
-(folder / 'validator_snippet_draft.py').write_text(source)
+(folder / 'validator_snippet_draft.py').write_text(source.rstrip() + '\n')

@@ -2564,7 +2564,7 @@ FITNESS_EVAL_DEFINITION_DIGESTS = {'milestone': '956e5e3d52c685ebc9a545a52bd240c
  'write_paths_status': 'bf90cfa6d2424aaea97cbc7342a33d90a3022ac6e104ade780cabd2d598818ad',
  'evidence_paths': '14bf48e02766e462a7140a262deed5c8895d4384867407c7b56a881c051c6dae',
  'check_contracts': 'ec38581c9638e7010124552a48c23d8af95c385223dac1eaf96d01b46036bc02'}
-FITNESS_EVAL_PACKET_SHA256 = 'c7ff7540dae327264dd7d1d38ea6b9b3ce8012e719faa8665fea5646b48433e0'
+FITNESS_EVAL_PACKET_SHA256 = '70a1376139605a31f1ad030c13dbc12776b92e6872de0c30f5d6ed3b24fe3aed'
 
 
 def fitness_evaluation_definition_errors(task):

@@ -1,10 +1,10 @@
 # KL-047 — Fixed predeclared Fitness evaluation foundation and mechanical scorer
 
-**Task identity:** `harness-backlog-v0.2/KL-047`  
-**Thread:** `THREAD-KL-047`  
-**Milestone:** `M7`  
-**Mode:** one fresh thread + one worktree + one PR  
-**Status:** NOT_STARTED  
+**Task identity:** `harness-backlog-v0.2/KL-047`
+**Thread:** `THREAD-KL-047`
+**Milestone:** `M7`
+**Mode:** one fresh thread + one worktree + one PR
+**Status:** NOT_STARTED
 **Packet refinement:** ENFORCEABLE
 
 ## Goal
