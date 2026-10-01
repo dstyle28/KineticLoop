@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-019
 display_task_id: KL-019
 task_definition_version: v0.2
 base_commit: 822322dfcac69d1042c8f9f7517cecf4903f8163
-tested_commit: ff073d04d1cafc507ac1a3b6364e7d73034731c1
+tested_commit: b47e71087dfebffb48bc97fb6e451cab783f7b21
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -15,51 +15,51 @@ commands_run:
 - check_id: execution_fixture_namespace_isolation_pu
   command: uv run pytest -q tests/unit/protocol/test_execution.py::test_all_fixture_namespaces_fail_before_reset
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-b47e710.log
 - check_id: execution_identity_and_wire_pu
   command: uv run pytest -q tests/unit/protocol/test_execution.py::test_identity_and_wire_scope
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-b47e710.log
 - check_id: publish_ready_build_dc
   command: uv run pytest -q tests/db/test_protocol_execution.py::test_publish_ready_build
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/publish_ready_build_dc-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/publish_ready_build_dc-b47e710.log
 - check_id: commit_test_only_bundle_dc
   command: uv run pytest -q tests/db/test_protocol_execution.py::test_commit_test_only_bundle
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-b47e710.log
 - check_id: start_new_session_dc
   command: uv run pytest -q tests/db/test_protocol_execution.py::test_start_new_session
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/start_new_session_dc-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/start_new_session_dc-b47e710.log
 - check_id: execution_stale_commit_basis_dc
   command: uv run pytest -q tests/db/test_protocol_execution.py::test_stale_commit_basis_denies
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/execution_stale_commit_basis_dc-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_stale_commit_basis_dc-b47e710.log
 - check_id: execution_current_start_denial_dc
   command: uv run pytest -q tests/db/test_protocol_execution.py::test_current_start_denial
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/execution_current_start_denial_dc-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_current_start_denial_dc-b47e710.log
 - check_id: execution_ack_loss_replay_dc
   command: uv run pytest -q tests/db/test_protocol_execution.py::test_ack_loss_replay_is_historical
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-b47e710.log
 - check_id: execution_atomic_rollback_dc
   command: uv run pytest -q tests/db/test_protocol_execution.py::test_failures_roll_back_each_boundary
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/execution_atomic_rollback_dc-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_atomic_rollback_dc-b47e710.log
 - check_id: execution_first_use_contention_dc
   command: uv run pytest -q tests/db/test_protocol_execution.py::test_first_use_contention
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/execution_first_use_contention_dc-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_first_use_contention_dc-b47e710.log
 - check_id: execution_unit_suite_passes
   command: uv run pytest -q tests/unit/protocol/test_execution.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/execution_unit_suite_passes-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_unit_suite_passes-b47e710.log
 - check_id: execution_db_suite_passes
   command: uv run pytest -q tests/db/test_protocol_execution.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/execution_db_suite_passes-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/execution_db_suite_passes-b47e710.log
 - check_id: transaction_owner_regressions_pass
   command: KINETICLOOP_KL022_COMPOSE_PROJECT="kineticloop-kl019-tx-$(git rev-parse --short HEAD)-$(uv
     run python -c 'import hashlib,os; from pathlib import Path; print(hashlib.sha256(os.fsencode(Path.cwd().resolve())).hexdigest()[:12])')"
@@ -67,37 +67,37 @@ commands_run:
     -c 'import hashlib,os; from pathlib import Path; print(hashlib.sha256(os.fsencode(Path.cwd().resolve())).hexdigest()[:12])')"
     uv run python tests/unit/protocol/test_execution.py --run-transaction-owner-regressions
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/transaction_owner_regressions_pass-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/transaction_owner_regressions_pass-b47e710.log
 - check_id: planning_prerequisite_regressions_pass
   command: KINETICLOOP_KL024_FIXTURE_OWNER=KL-019 uv run pytest -q tests/unit/workflow/test_planning.py
     tests/db/test_planning.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/planning_prerequisite_regressions_pass-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/planning_prerequisite_regressions_pass-b47e710.log
 - check_id: ledger_prerequisite_regressions_pass
   command: KINETICLOOP_KL025_FIXTURE_OWNER=KL-019 uv run pytest -q tests/unit/workflow/test_call_ledger.py
     tests/db/test_call_ledger.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/ledger_prerequisite_regressions_pass-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/ledger_prerequisite_regressions_pass-b47e710.log
 - check_id: full_unit_regressions_pass
   command: uv run kl test-unit
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/full_unit_regressions_pass-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/full_unit_regressions_pass-b47e710.log
 - check_id: full_harness_regressions_pass
   command: uv run kl test-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/full_harness_regressions_pass-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/full_harness_regressions_pass-b47e710.log
 - check_id: lint_passes
   command: uv run kl lint
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/lint_passes-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/lint_passes-b47e710.log
 - check_id: typecheck_passes
   command: uv run kl typecheck
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/typecheck_passes-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/typecheck_passes-b47e710.log
 - check_id: harness_validation_passes
   command: uv run kl check-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-019/harness_validation_passes-ff073d0.log
+  evidence_ref: docs/exec-plans/evidence/KL-019/harness_validation_passes-b47e710.log
 requirements_covered:
 - requirement_id: I01@DC
   status: NOT_RUN
@@ -121,63 +121,108 @@ files_changed:
 - docs/contracts/protocol_execution.md
 - docs/exec-plans/completed/KL-019_RESULT.yaml
 - docs/exec-plans/evidence/KL-019/checks-7cdee15.json
+- docs/exec-plans/evidence/KL-019/checks-8af107b.json
+- docs/exec-plans/evidence/KL-019/checks-b47e710.json
 - docs/exec-plans/evidence/KL-019/checks-bf00942.json
 - docs/exec-plans/evidence/KL-019/checks-c739273.json
 - docs/exec-plans/evidence/KL-019/checks-ff073d0.json
 - docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-7cdee15.log
+- docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-8af107b.log
+- docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-b47e710.log
 - docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-bf00942.log
 - docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-c739273.log
 - docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-ff073d0.log
 - docs/exec-plans/evidence/KL-019/entry-audit.json
 - docs/exec-plans/evidence/KL-019/entry-audit.py
+- docs/exec-plans/evidence/KL-019/environment-8af107b.json
+- docs/exec-plans/evidence/KL-019/environment-b47e710.json
 - docs/exec-plans/evidence/KL-019/environment-ff073d0.json
+- docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-b47e710.log
 - docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-bf00942.log
 - docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-c739273.log
 - docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-ff073d0.log
+- docs/exec-plans/evidence/KL-019/execution_atomic_rollback_dc-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_atomic_rollback_dc-b47e710.log
 - docs/exec-plans/evidence/KL-019/execution_atomic_rollback_dc-bf00942.log
 - docs/exec-plans/evidence/KL-019/execution_atomic_rollback_dc-ff073d0.log
+- docs/exec-plans/evidence/KL-019/execution_current_start_denial_dc-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_current_start_denial_dc-b47e710.log
 - docs/exec-plans/evidence/KL-019/execution_current_start_denial_dc-bf00942.log
 - docs/exec-plans/evidence/KL-019/execution_current_start_denial_dc-c739273.log
 - docs/exec-plans/evidence/KL-019/execution_current_start_denial_dc-ff073d0.log
+- docs/exec-plans/evidence/KL-019/execution_db_suite_passes-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_db_suite_passes-b47e710.log
 - docs/exec-plans/evidence/KL-019/execution_db_suite_passes-bf00942.log
 - docs/exec-plans/evidence/KL-019/execution_db_suite_passes-ff073d0.log
+- docs/exec-plans/evidence/KL-019/execution_first_use_contention_dc-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_first_use_contention_dc-b47e710.log
 - docs/exec-plans/evidence/KL-019/execution_first_use_contention_dc-bf00942.log
 - docs/exec-plans/evidence/KL-019/execution_first_use_contention_dc-ff073d0.log
 - docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-7cdee15.log
+- docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-b47e710.log
 - docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-bf00942.log
 - docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-c739273.log
 - docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-ff073d0.log
 - docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-7cdee15.log
+- docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-b47e710.log
 - docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-bf00942.log
 - docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-c739273.log
 - docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-ff073d0.log
+- docs/exec-plans/evidence/KL-019/execution_stale_commit_basis_dc-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_stale_commit_basis_dc-b47e710.log
 - docs/exec-plans/evidence/KL-019/execution_stale_commit_basis_dc-bf00942.log
 - docs/exec-plans/evidence/KL-019/execution_stale_commit_basis_dc-c739273.log
 - docs/exec-plans/evidence/KL-019/execution_stale_commit_basis_dc-ff073d0.log
+- docs/exec-plans/evidence/KL-019/execution_unit_suite_passes-8af107b.log
+- docs/exec-plans/evidence/KL-019/execution_unit_suite_passes-b47e710.log
 - docs/exec-plans/evidence/KL-019/execution_unit_suite_passes-bf00942.log
 - docs/exec-plans/evidence/KL-019/execution_unit_suite_passes-ff073d0.log
+- docs/exec-plans/evidence/KL-019/full_harness_regressions_pass-b47e710.log
 - docs/exec-plans/evidence/KL-019/full_harness_regressions_pass-bf00942.log
 - docs/exec-plans/evidence/KL-019/full_harness_regressions_pass-ff073d0.log
+- docs/exec-plans/evidence/KL-019/full_unit_regressions_pass-8af107b.log
+- docs/exec-plans/evidence/KL-019/full_unit_regressions_pass-b47e710.log
 - docs/exec-plans/evidence/KL-019/full_unit_regressions_pass-bf00942.log
 - docs/exec-plans/evidence/KL-019/full_unit_regressions_pass-ff073d0.log
+- docs/exec-plans/evidence/KL-019/harness_validation_passes-b47e710.log
 - docs/exec-plans/evidence/KL-019/harness_validation_passes-bf00942.log
 - docs/exec-plans/evidence/KL-019/harness_validation_passes-ff073d0.log
+- docs/exec-plans/evidence/KL-019/ledger_prerequisite_regressions_pass-8af107b.log
+- docs/exec-plans/evidence/KL-019/ledger_prerequisite_regressions_pass-b47e710.log
 - docs/exec-plans/evidence/KL-019/ledger_prerequisite_regressions_pass-bf00942.log
 - docs/exec-plans/evidence/KL-019/ledger_prerequisite_regressions_pass-ff073d0.log
+- docs/exec-plans/evidence/KL-019/lint_passes-b47e710.log
 - docs/exec-plans/evidence/KL-019/lint_passes-bf00942.log
 - docs/exec-plans/evidence/KL-019/lint_passes-ff073d0.log
+- docs/exec-plans/evidence/KL-019/planning_prerequisite_regressions_pass-8af107b.log
+- docs/exec-plans/evidence/KL-019/planning_prerequisite_regressions_pass-b47e710.log
 - docs/exec-plans/evidence/KL-019/planning_prerequisite_regressions_pass-bf00942.log
 - docs/exec-plans/evidence/KL-019/planning_prerequisite_regressions_pass-ff073d0.log
 - docs/exec-plans/evidence/KL-019/publish_ready_build_dc-7cdee15.log
+- docs/exec-plans/evidence/KL-019/publish_ready_build_dc-8af107b.log
+- docs/exec-plans/evidence/KL-019/publish_ready_build_dc-b47e710.log
 - docs/exec-plans/evidence/KL-019/publish_ready_build_dc-bf00942.log
 - docs/exec-plans/evidence/KL-019/publish_ready_build_dc-c739273.log
 - docs/exec-plans/evidence/KL-019/publish_ready_build_dc-ff073d0.log
+- docs/exec-plans/evidence/KL-019/result-before-review-repairs-07a6ba6.yaml
+- docs/exec-plans/evidence/KL-019/review-DB_CONCURRENCY-07a6ba6.json
+- docs/exec-plans/evidence/KL-019/review-GENERAL-07a6ba6.json
+- docs/exec-plans/evidence/KL-019/review-PROTOCOL-07a6ba6.json
 - docs/exec-plans/evidence/KL-019/run-checks.py
+- docs/exec-plans/evidence/KL-019/scope-audit-b47e710.json
+- docs/exec-plans/evidence/KL-019/start_new_session_dc-8af107b.log
+- docs/exec-plans/evidence/KL-019/start_new_session_dc-b47e710.log
 - docs/exec-plans/evidence/KL-019/start_new_session_dc-bf00942.log
 - docs/exec-plans/evidence/KL-019/start_new_session_dc-c739273.log
 - docs/exec-plans/evidence/KL-019/start_new_session_dc-ff073d0.log
+- docs/exec-plans/evidence/KL-019/transaction_owner_regressions_pass-8af107b.log
+- docs/exec-plans/evidence/KL-019/transaction_owner_regressions_pass-b47e710.log
 - docs/exec-plans/evidence/KL-019/transaction_owner_regressions_pass-bf00942.log
 - docs/exec-plans/evidence/KL-019/transaction_owner_regressions_pass-ff073d0.log
+- docs/exec-plans/evidence/KL-019/typecheck_passes-b47e710.log
 - docs/exec-plans/evidence/KL-019/typecheck_passes-bf00942.log
 - docs/exec-plans/evidence/KL-019/typecheck_passes-ff073d0.log
 - docs/exec-plans/reviews/KL-019/DB_CONCURRENCY.json
@@ -238,3 +283,25 @@ follow_up_tasks:
 - Missing upstream owners/full workflow and independent product/release acceptance belong to downstream
   packets; do not infer them from this task.
 spec_change_request: null
+review_repair_resolution:
+  prior_reviewed_commit: 07a6ba6e33e0fc20169268d07cf6167778db992a
+  historical_findings:
+  - docs/exec-plans/evidence/KL-019/review-GENERAL-07a6ba6.json
+  - docs/exec-plans/evidence/KL-019/review-PROTOCOL-07a6ba6.json
+  - docs/exec-plans/evidence/KL-019/review-DB_CONCURRENCY-07a6ba6.json
+  resolutions:
+  - Outer owner finish now rejects first-use S38/S44 unless the complete RestrictedSqlSession outcome
+    validation and succeeded receipt/bookkeeping finished; real PostgreSQL bare callbacks prove exact
+    rollback for both row types.
+  - An actual preflight miss can race original commit then revocation/expiry/membership loss. The
+    fresh path rolls back before the unchanged receipt-only owner rereads history, while authentication/registration
+    remain mandatory. Real bounded barriers prove under-S01 history for all three unchanged-authority
+    commands and receipt-only fallback after loss, original IDs/non-executable result and byte-identical
+    persisted state.
+  - Actual ApplyControl fixtures now persist canonical S18 ACTIVE and S17 HOLD/STOP. The existing
+    owner proves exact current control states and existing controls_are_eligible denies them. Real
+    read-only execution observation is denied after mandatory T2 epoch advance, and fresh START has
+    zero effects; no epoch/registry guard is suppressed.
+  - Correct requirement bookkeeping to concrete assigned layer IDs I01@DC/I02@DC/I04@DC/I04@WF/I07@DC/A03@DC,
+    all NOT_RUN; normal harness validation and full CLI/unit regressions verify the canonical known-requirement
+    mapping
