@@ -8,7 +8,7 @@ import time
 from collections.abc import Iterator, Mapping
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from threading import Barrier, Event
@@ -544,6 +544,32 @@ def persisted(urls: dict[str, str]) -> dict[str, Any]:
         }
 
 
+def assert_acceptance_event(
+    urls: dict[str, str],
+    before: dict[str, Any],
+    after: dict[str, Any],
+    owner: str,
+    before_clock: datetime,
+) -> None:
+    old_ids = {row[0]["id"] for row in before["domain_events"]}
+    events = [row[0] for row in after["domain_events"] if row[0]["id"] not in old_ids]
+    assert len(events) == 1 and events[0]["event_type"] == owner
+    accepted_at = datetime.fromisoformat(events[0]["typed_payload"]["guard_accepted_at"])
+    with connect(urls["admin"]) as db:
+        after_clock = db.execute("SELECT clock_timestamp()").fetchone()[0]
+    assert before_clock <= accepted_at <= after_clock
+    evidence(
+        {
+            "kind": "durable_guard_acceptance",
+            "owner": owner,
+            "event_id": events[0]["id"],
+            "accepted_at": accepted_at.isoformat(),
+            "before_clock": before_clock.isoformat(),
+            "after_clock": after_clock.isoformat(),
+        }
+    )
+
+
 def no_effect(urls: dict[str, str], action: Any) -> None:
     before = persisted(urls)
     with pytest.raises((RepositoryTransactionError, PlanningDenied, psycopg.Error)):
@@ -621,6 +647,7 @@ def later_inputs(
             "manifest_id": str(basis.manifest_id),
             "policy_id": str(POLICY),
             "fitness_hash": digest(fitness),
+            "action_type": "WRONG_ACTION_TYPE" if mutant == "action_type" else "TRAINING",
             "action_parameters_hash": digest(fitness["action"]),
         }
     )
@@ -649,10 +676,11 @@ def later_inputs(
             ),
         )
         db.execute(
-            "INSERT INTO kineticloop.evidence_resolutions(id,subject_id,action_type,action_parameters_hash,resolver_version,query_basis_hash,resolution_expires_at,ref_s05_id,ref_s24_id,content_hash,typed_payload) VALUES (%s,%s,'TEST_ONLY',%s,'test:placeholder',%s,%s,%s,%s,%s,%s)",
+            "INSERT INTO kineticloop.evidence_resolutions(id,subject_id,action_type,action_parameters_hash,resolver_version,query_basis_hash,resolution_expires_at,ref_s05_id,ref_s24_id,content_hash,typed_payload) VALUES (%s,%s,%s,%s,'test:placeholder',%s,%s,%s,%s,%s,%s)",
             (
                 r,
                 SUBJECT,
+                "WRONG_ACTION_TYPE" if mutant == "action_type" else "TRAINING",
                 digest(fitness["action"]),
                 resolution_basis,
                 now + timedelta(minutes=30),
@@ -689,8 +717,11 @@ def test_snapshot_owner(database_urls: dict[str, str]) -> None:
     basis = chain(urls)
     request = snapshot_request(urls, basis)
     before = persisted(urls)
+    with connect(urls["admin"]) as db:
+        before_clock = db.execute("SELECT clock_timestamp()").fetchone()[0]
     outcome = record(urls, request)
     after = persisted(urls)
+    assert_acceptance_event(urls, before, after, "RecordSnapshot", before_clock)
     assert before["planning_attempts"] == after["planning_attempts"]
     assert len(after["decision_snapshots"]) == 1
     assert len(after["command_receipts"]) == len(before["command_receipts"]) + 1
@@ -744,7 +775,11 @@ def test_snapshot_owner(database_urls: dict[str, str]) -> None:
         wrong = copy.deepcopy(selected)
         wrong[names[-1]]["hash"] = "0" * 64
         no_effect(urls, lambda: advance(urls, basis, target, wrong))
+        before_stage = persisted(urls)
+        with connect(urls["admin"]) as db:
+            before_clock = db.execute("SELECT clock_timestamp()").fetchone()[0]
         advanced = advance(urls, basis, target, selected)
+        assert_acceptance_event(urls, before_stage, persisted(urls), "AdvanceAttempt", before_clock)
         basis = replace(basis, source_state=target)
         assert advanced["state"] == target
     final = persisted(urls)
@@ -1341,6 +1376,7 @@ def test_terminal_exits(database_urls: dict[str, str], target: str) -> None:
         ("demand", "NUTRITION"),
         ("nutrition", "VALIDATING"),
         ("resolution", "COMMIT_READY"),
+        ("action_type", "COMMIT_READY"),
         ("validation", "COMMIT_READY"),
         ("execution_basis", "COMMIT_READY"),
         ("missing_semantics", "COMMIT_READY"),

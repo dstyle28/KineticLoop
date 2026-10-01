@@ -2916,7 +2916,7 @@ class RepositoryTransaction:
             "a.status,a.snapshot_id,a.typed_payload,a.started_at,"
             "m.manifest_hash,m.captured_epoch,m.ref_s05_id,m.ref_s06_id,m.valid_until,"
             "GREATEST(m.recorded_at,COALESCE(m.effective_at,m.recorded_at)),m.typed_payload,r.typed_payload,g.typed_payload,p.typed_payload,"
-            "i.status,i.lease_owner,i.fence_token,i.lease_expires_at,i.deadline,clock_timestamp() "
+            "i.status,i.lease_owner,i.fence_token,i.lease_expires_at,i.deadline,i.purpose,clock_timestamp() "
             "FROM kineticloop.planning_attempts a JOIN kineticloop.decision_manifests m "
             "ON m.subject_id=a.subject_id AND m.id=a.ref_s24_id "
             "JOIN kineticloop.planning_request_revisions r ON r.subject_id=a.subject_id AND r.id=a.ref_s28_id "
@@ -2930,7 +2930,7 @@ class RepositoryTransaction:
             raise GuardRequired("complete current progress chain required")
         (intent, revision, manifest, epoch, attempt_fence, state, snapshot, payload, started,
          manifest_hash, manifest_epoch, policy, program, valid_until, valid_from, manifest_payload,
-         request_payload, program_payload, policy_payload, root_state, owner, fence, expiry, deadline, now) = row
+         request_payload, program_payload, policy_payload, root_state, owner, fence, expiry, deadline, purpose, now) = row
         require_live(status=root_state, owner=owner, fence=fence, request=request.request_revision,
             attempt=str(request.attempt_id), expected_owner=identity.key, expected_fence=request.fence,
             expected_request=request.request_revision, expected_attempt=str(request.attempt_id),
@@ -2943,6 +2943,11 @@ class RepositoryTransaction:
             or valid_from is None or valid_until is None or not eligible_at(now, valid_from, valid_until)
             or (state != "CREATED" and attempt_fence != request.fence)):
             raise GuardRequired("attempt/request/manifest/epoch/stage basis changed or expired")
+        action_scopes = policy_payload.get("authorization_action_scopes")
+        if not isinstance(action_scopes, dict) or action_scopes.get(purpose) != "TEST_ONLY":
+            raise GuardRequired("current root action must have exact TEST_ONLY policy scope")
+        c["progress_action_type"] = purpose
+        c["progress_accepted_at"] = now
         held, controls = self._current_control_states("TEST_ONLY")
         if not controls_are_eligible(proven=held, states=controls):
             raise GuardRequired("protective control blocks planning progress")
@@ -3079,10 +3084,12 @@ class RepositoryTransaction:
                 "fitness_hash": sources["fitness"]["hash"], "demand_hash": sources["demand"]["hash"],
                 "nutrition_hash": sources["nutrition"]["hash"], "resolution_hash": sources["resolution"]["hash"],
                 "captured_epoch": request.epoch, "request_revision": request.request_revision}
-            if (r["ref_s24_id"] != str(request.manifest_id) or r["ref_s05_id"] != str(policy)
+            action_type = self._coordination_context["progress_action_type"]
+            if (r["action_type"] != action_type
+                or r["ref_s24_id"] != str(request.manifest_id) or r["ref_s05_id"] != str(policy)
                 or r["query_basis_hash"] != progress_digest({"manifest_id": str(request.manifest_id),
                     "policy_id": str(policy), "fitness_hash": sources["fitness"]["hash"],
-                    "action_parameters_hash": r["action_parameters_hash"]})
+                    "action_type": action_type, "action_parameters_hash": r["action_parameters_hash"]})
                 or not r["resolver_version"] or not v["validator_artifact"]
                 or r["content_hash"] != progress_digest(r["typed_payload"])
                 or r["resolution_expires_at"] is None or now >= datetime.fromisoformat(r["resolution_expires_at"])
@@ -5113,10 +5120,15 @@ class RepositoryTransaction:
             "VALUES (%s,%s,'IN_PROGRESS',%s,%s,%s,%s)",
             (receipt_id, self.subject_id, self.command_kind, client_key, actor_scope, request_hash),
         )
+        event_payload = (
+            {"guard_accepted_at": self._coordination_context["progress_accepted_at"].isoformat()}
+            if self.command_kind in {"RecordSnapshot", "AdvanceAttempt"}
+            else {}
+        )
         _cursor(self).execute(
             "INSERT INTO kineticloop.domain_events"
-            "(id,subject_id,aggregate_type,aggregate_identity,event_type,aggregate_revision,ref_s02_id) "
-            "VALUES (%s,%s,%s,%s,%s,%s,%s)",
+            "(id,subject_id,aggregate_type,aggregate_identity,event_type,aggregate_revision,ref_s02_id,typed_payload) "
+            "VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",
             (
                 event.event_id,
                 self.subject_id,
@@ -5125,6 +5137,7 @@ class RepositoryTransaction:
                 event.event_type,
                 event.aggregate_revision,
                 receipt_id,
+                Jsonb(event_payload),
             ),
         )
         _cursor(self).execute(

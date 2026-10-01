@@ -1,0 +1,64 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-075",
+  "reviewed_head_sha": "0fccfe2275364a07e2fdb81dc445e3659c252617",
+  "review_type": "PROTOCOL",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "findings": [
+    {
+      "id": "KL075-PROTOCOL-01",
+      "classification": "BLOCKER",
+      "priority": "P1",
+      "title": "Bind COMMIT_READY resolution to the exact action type",
+      "file": "src/kineticloop/persistence/transactions.py",
+      "start_line": 3082,
+      "end_line": 3092,
+      "description": "The new _progress_sources guard verifies the S36 manifest, policy, action_parameters_hash and query_basis_hash but never checks S36.action_type. An otherwise coherent S36/S37 pair for another action type therefore advances the attempt to COMMIT_READY. Action parameters may be identical across action types whose policy obligations differ; validating parameter bytes alone is not exact action binding. Frozen DB S36 explicitly requires the action and manifest/policy identity, and the packet requires coherent source-bound S36/S37 prerequisites.",
+      "reproduction": "Independently invoked the actual RepositoryTransaction._progress_sources at the reviewed SHA using a fake cursor supplying the exact immutable snapshot/F/D/N/resolution/validation rows and matching prior source bindings. With S36.action_type=WRONG_ACTION_TYPE, matching current execution basis, hashes, policy, manifest, request, epoch, expiry and semantic/envelope PASS, the method returned all sources without GuardRequired. This is a direct source-guard reproduction, not PostgreSQL DC evidence.",
+      "impact": "AdvanceAttempt can persist COMMIT_READY using a resolution computed for a different action policy. This finding concerns the internal progression prerequisite; no T6 authorization bypass or production execution expansion is claimed.",
+      "requested_change": "Derive the required action type from the exact authenticated TEST policy/action basis and reject mismatching S36.action_type before advancing. Bind that identity in the query/certificate basis as appropriate under the existing frozen model. Add an immutable input-only wrong-action-type mutant with otherwise self-consistent hashes, and verify actual guarded AdvanceAttempt denies with exact no effects. Rerun required task checks and obtain fresh SHA-bound reviews.",
+      "authority_refs": [
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:S36",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md:INV-05",
+        "docs/exec-plans/active/KL-075.md:Owner and interface boundary"
+      ],
+      "evidence_refs": [
+        "src/kineticloop/persistence/transactions.py:3082",
+        "tests/db/test_planning_progress.py:565",
+        "tests/db/test_planning_progress.py:1349"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "CURRENT_DOCUMENT_INDEX.json",
+    "AGENTS.md",
+    "docs/exec-plans/active/KL-075.md",
+    ".agents/skills/pr-merge-reviewer/SKILL.md",
+    ".agents/skills/protocol-guardian/SKILL.md",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md:5.3-5.6,6.1-6.9",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:S26-S29,S34-S37,3,4,5",
+    "docs/exec-plans/completed/KL-075_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-075/checks-bccbb6c.json",
+    "docs/exec-plans/evidence/KL-075/progress_suite_dc-bccbb6c.log",
+    "docs/exec-plans/evidence/KL-075/progress_suite_dc-bccbb6c.xml",
+    "docs/exec-plans/evidence/KL-075/progress_time_boundary_pu-bccbb6c.log",
+    "docs/exec-plans/evidence/KL-075/assertions-bccbb6c.json",
+    "docs/exec-plans/evidence/KL-075/entry.json"
+  ],
+  "independent_verification": {
+    "base_commit": "74cd5b3c8782f4eefb8f98a3895407300990cc27",
+    "tested_commit": "bccbb6c98eb70980c24efa47abccda6caaa85452",
+    "source_revision_binding": "Inspected complete source/test/contract diff base..reviewed; tested..reviewed changes only result/raw evidence. No implementation/test delta after tested_commit.",
+    "pure_rerun": {
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/unit/workflow/test_planning_progress.py::test_internal_identity tests/unit/workflow/test_planning_progress.py::test_frozen_transitions tests/unit/workflow/test_planning_progress.py::test_time_boundaries tests/unit/workflow/test_planning_progress.py::test_namespace",
+      "result": "4 passed in 0.27s",
+      "note": "uv was not on the review shell PATH; used the existing project Python to run the same named pure selectors."
+    },
+    "raw_evidence_integrity": "Independently verified SHA256 of every one of the 13 committed check logs and their full tested-SHA headers; verified all 8 XML counts with zero failures/errors/skips. Own DC suite reports 55 executed tests, including 27 current-guard cases, 8 atomicity cases, 9 payload denials, 4 terminal exits and 6 source-binding mutants.",
+    "time_evidence": "Read actual timing assertions and parsed committed log: 3 BEFORE_DC successes, observed AFTER_DC manifest expiry and 4 POST_LOCK_DC blocking witnesses for both operations crossing lease/deadline. Exact equality remains PU over actual eligible_at/require_live and is not relabeled DC.",
+    "boundaries": "Public 39-command registry and transaction owner mappings remain unchanged; both new operations stay INTERNAL_ONLY_OPERATIONS/PREPARATION and typed entrypoints reject generic preparation/public calls. Exact server-prepared single S26 insert/S29 update with S01/S27/S02/S29 ordering, guarded lease/fence/current request/attempt/manifest/epoch/control, no COMMITTED/success/root budget updates. No migration/SQL grants/production or shadow expansion/network wait introduced.",
+    "prerequisites": "Read merged prerequisite limitations, PASS reviews and integration artifacts; independently verified all four normal two-parent prerequisite merge commits are ancestors of the protected base.",
+    "claim_discipline": "Result has no product requirements covered, UNMERGED and null merge_commit; input-only placeholder F/D/N/S36/S37 records are disclosed, with no completeness/WF/E2E/release PASS inferred.",
+    "review_limits": "No database lifecycle, legacy DB fixture or hosted CI rerun performed by this reviewer. Reviewed committed PostgreSQL evidence and performed independent pure and direct source-guard verification. Repository/Git read-only; this JSON is the only saved review output."
+  }
+}

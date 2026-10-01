@@ -19,7 +19,9 @@ Persistence orders S01 → S27 → S02 → S29 and checks current authenticated 
 registration, active policy/program, request ID/revision, attempt, owner/fence,
 lease, deadline, current manifest/epoch, protective controls, manifest and builder
 validity. Trusted `clock_timestamp()` is read again after the aggregate row lock,
-so queue time cannot preserve expired work authority. Registry locks remain confined
+and its exact acceptance time is committed in the same S03 event payload,
+and the exact acceptance time is committed in the same S03 event payload, so queue
+time cannot preserve expired work authority. Registry locks remain confined
 to their frozen T3/T6/T7 owners. Context preparation is not authorization issuance.
 
 AcquireLease leaves S29 CREATED. AdvanceAttempt verifies that actual lease before
@@ -39,7 +41,7 @@ Replay is authenticated under S01 before current work guards. Historical replay 
 work authority. Same operation keys with changed payloads conflict. Generic public
 command and unguarded preparation entrypoints reject these internal owners.
 
-Validation additionally binds the current execution-basis event, semantic and envelope PASS, and the resolution query basis. These are progression prerequisites, never bearer authorization. Terminal exits retain prior immutable source pointers and do not terminate or reset the root.
+Validation additionally binds the current execution-basis event, semantic and envelope PASS, and the resolution query basis including its exact action type. The action type is the locked root purpose and must map to TEST_ONLY in the active policy; a different resolution action denies even with self-consistent hashes. These are progression prerequisites, never bearer authorization. Terminal exits retain prior immutable source pointers and do not terminate or reset the root.
 
 The test-only lifecycle validates `kineticloop-kl075-progress-<HEAD first7>-<root
 SHA256 first12>` and the corresponding underscored database before construction,

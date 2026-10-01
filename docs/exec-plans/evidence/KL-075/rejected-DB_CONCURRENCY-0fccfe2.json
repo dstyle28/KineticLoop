@@ -1,0 +1,59 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-075",
+  "reviewed_head_sha": "0fccfe2275364a07e2fdb81dc445e3659c252617",
+  "review_type": "DB_CONCURRENCY",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "base_commit": "74cd5b3c8782f4eefb8f98a3895407300990cc27",
+  "tested_commit": "bccbb6c98eb70980c24efa47abccda6caaa85452",
+  "findings": [
+    {
+      "finding_id": "KL075-DB-001",
+      "classification": "BLOCKER",
+      "priority": "P2",
+      "title": "Persist the post-lock guard acceptance time in every progress event",
+      "file": "src/kineticloop/persistence/transactions.py",
+      "start_line": 2933,
+      "end_line": 2937,
+      "body": "prepare_planning_progress reads the authoritative post-attempt-lock clock_timestamp into now but never persists that guard acceptance time in the RecordSnapshot/AdvanceAttempt S03 event. idempotent_outcome inserts no event typed_payload or acceptance timestamp; S03 recorded_at instead defaults to transaction_timestamp(), before a lock wait. RecordSnapshot source_cutoff is capture time, and AdvanceAttempt started_at remains the first-stage start for subsequent transitions, so neither supplies the required per-operation event acceptance time. Frozen DOC-DB-V0.2 section 4.3 explicitly requires guard acceptance time to be recorded in the event. The committed concurrent AdvanceAttempt evidence shows event 2c992c88-47ba-4291-81dd-a7c11eb54308 recorded_at=2026-10-01T07:02:00.542133+00:00 and payload={}, while actual attempt started_at=2026-10-01T07:02:00.549403+00:00. This leaves an audit timestamp earlier than the authority check despite correctly enforcing the current lease/deadline.",
+      "requested_change": "Store the exact server-derived post-lock accepted time in coordination context and persist it atomically in each internal progress event without changing public owner/wire descriptors or accepting caller time. Add real PostgreSQL assertions for both owners, including a successful bounded lock wait and historical replay preserving the original timestamp.",
+      "authority_ref": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:537",
+      "evidence_refs": [
+        "docs/exec-plans/evidence/KL-075/progress_atomicity_dc-bccbb6c.log",
+        "src/kineticloop/persistence/transactions.py:5116",
+        "migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py:653"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-075.md",
+    "docs/exec-plans/completed/KL-075_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-075/entry.json",
+    "docs/exec-plans/evidence/KL-075/checks-bccbb6c.json",
+    "docs/exec-plans/evidence/KL-075/progress_snapshot_dc-bccbb6c.log",
+    "docs/exec-plans/evidence/KL-075/progress_current_guards_dc-bccbb6c.log",
+    "docs/exec-plans/evidence/KL-075/progress_atomicity_dc-bccbb6c.log",
+    "docs/exec-plans/evidence/KL-075/progress_suite_dc-bccbb6c.log",
+    "/private/tmp/kl075-db-review-0fccfe2-rerun.log",
+    "/private/tmp/kl075-db-review-0fccfe2-rerun.xml"
+  ],
+  "verification": {
+    "method": "Fresh independent exact protected-base diff, packet/current index/frozen DB ownership-lock-time and Protocol 6.1-6.9 inspection; prerequisite PASS reviews/result/integration ancestry; committed raw evidence hashes and XML counts; own-suite rerun only.",
+    "committed_evidence": "All thirteen check log SHA256 hashes, exact command/tested-SHA identities and eight XML execution counts verified. Snapshot selector 1, guards 27, atomicity 8, own suite 55; zero errors/failures/skips. Tested-to-reviewed changes only result/evidence; implementation/test/contract bytes identical.",
+    "guard_observations": "S01 then S27 then exact S02 then S29; fresh trusted current-fence and clock_timestamp rereads after S29 lock; current request/attempt/fence/manifest/epoch/control and owner registration deny stale work. S26 insert and S29 exact prepared update capabilities have no externally supplied SQL/callback; generic internal command/preparation gateways deny. Immutable stage sources preserve earlier identities. No budgets/deadline/root reset or execution authorization.",
+    "time_evidence": "Equality is PU over actual eligible_at/require_live predicates, not DC. Committed actual-PG before/after owners and four pg_blocking_pids-observed S29 wait crossings deny after lease/deadline expiry with exact no-effect state.",
+    "atomicity": "Inspected both owners after-write injected failures and after owner/event/outbox receipt-finalization trigger failures; no_effect compares full S26/S29/S27/S28/S01/receipt/event/outbox/call/execution snapshots. ACK-loss replay after protective control and simultaneous same-operation owner calls preserve IDs, one mutation and bookkeeping event/outbox, root budgets/deadline.",
+    "namespace": "Exact lowercase HEAD first7 and SHA256(os.fsencode(resolved root)) first12; fixed progress label; constructor and nested reset/start/connection/_run/destroy validation plus explicit database assertion before own seed/reset/immutable input setup. bootstrap_two_phase receives selected lifecycle. No foreign fixture/reset/bootstrap/cleanup or target S26/S29 stage output seeds; only explicit URL immutable builders/publish owner reused.",
+    "reviewer_rerun": {
+      "command": ".venv/bin/python -m pytest -q tests/db/test_planning_progress.py --junitxml=/private/tmp/kl075-db-review-0fccfe2-rerun.xml",
+      "actual_revision": "0fccfe2275364a07e2fdb81dc445e3659c252617",
+      "namespace": "kineticloop-kl075-progress-0fccfe2-cb2e4202e692",
+      "database": "kineticloop_kl075_progress_0fccfe2_cb2e4202e692",
+      "result": "55 passed in 40.74s; errors/failures/skips=0; finally owned cleanup asserted",
+      "log_sha256": "c401d4f286d01474ae211bddb0768967fdf04a8c77d1261a50a76f6193cef5c4",
+      "xml_sha256": "e01a7e67397f6ab0b17b762c2a85dc8688a92cc06680e125cb5a76545541c3fc",
+      "initial_attempt": "uv absent from shell; .venv sandboxed attempt collected 55 but Docker API denied at setup. Authorized own-suite escalation rerun passed; initial setup errors are not PASS evidence."
+    },
+    "scope": "Only /private/tmp review/log/XML files written. No source/evidence/result/review repository mutations or commits, no foreign legacy DB fixtures or app messages. Final hosted CI and merge gates remain independent; no product/release/production PASS inferred."
+  }
+}
