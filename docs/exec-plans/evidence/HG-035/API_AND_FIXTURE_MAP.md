@@ -52,3 +52,13 @@ monkeypatch can substitute for a real required database check. Unchanged broader
 VM and its job-owned local Docker daemon; no CI modification is proposed.
 
 Preparation feedback against prospective KL025 c3966cc confirms its planning namespace isolation probe resets the selector itself and rejects empty, KL-024, lowercase kl-025, arbitrary, trailing-space KL-025 and ../KL-025; KL-019 is not in that rejection list. Preserve that probe byte-for-byte when adding the planning KL019 selector. This observation requires actual merged-byte reinspection and is not formal review or prerequisite PASS.
+
+Final merged-byte audit base: eab2b305351cf3c504f74ac74868edc58d0a3430, actual
+normal PR66 merge. The final validator pins planning baseline SHA256
+b7b185e069d94f0e67826de02ec630259881add0fa8f5366823d830f95917636 and ledger baseline
+SHA256 d3c09d2125844b1ed7e7bc138be41b43a02c0a95efd54d2bfc3012751fe615e2. The
+transaction fixture remains SHA256 722346d6e0b03087ce08f2d03bc955c227652c189bfa4ccc1a50f2b7cf3abc3a.
+The final current packet and exact validator candidate transformations are authority
+for future KL019 edits. The complete revision-bound audit supersedes prospective
+observations and validates existing owner/API, all called helper functions, actual
+merged results/reviews/evidence and unchanged production/requirement/CI bytes.

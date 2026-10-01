@@ -88,3 +88,14 @@ HG035 finding against a merged dependency or permission to modify KL025. Final
 HG035 API/fixture and regression audits must include the actual merged correction.
 
 Preparation-only correction: the actual draft contains 20 unique check contracts and matching required IDs. Removed the unnecessary transaction fixture write path/selector, updated command/oracle/inventory consistently, and retained only the two prospective planning/ledger adaptations. KL025 is still active/unmerged per coordinator preflight at c3966cc; no final validation, formal review/PASS, PR or merge is authorized before actual merge verification.
+
+## Resumed after actual prerequisite merge
+
+PR66 normally merged as eab2b305351cf3c504f74ac74868edc58d0a3430. HG035 was
+fetched/rebased onto actual origin/master at that merge. The preparation commits
+were replayed as 217ee46 and dbc2138. Final current KL019 packet/backlog/traceability
+now replace the preparation proposals; the historical draft files remain explicitly
+non-authoritative preparation records. Actual merged result/reviews, owner APIs,
+complete fixture bytes and required integration chains were re-read. The new audit
+and final checks bind the actual merged protected base and governance tested revision.
+There is no KL019 result or product/release status claim in this governance task.
