@@ -1,0 +1,35 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-074",
+  "reviewed_head_sha": "7327e653d25b5aaba56fe96f8b2cd309d4a4aaf4",
+  "review_type": "GENERAL",
+  "status": "PASS",
+  "findings": [],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-074.md",
+    "docs/exec-plans/completed/KL-074_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-074/quality_and_harness-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json",
+    "docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/archive.envelope.json",
+    "docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/run.envelope.json",
+    "docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/jobs.envelope.json",
+    "docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/full-repository.log.envelope.json",
+    "docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-1/events.jsonl.envelope.json",
+    "docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-2/events.jsonl.envelope.json",
+    "docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-3/events.jsonl.envelope.json"
+  ],
+  "review_contract_version": "v0.2",
+  "verification": [
+    "Read actual AGENTS.md, current document index, KL-074 packet, merged prerequisite results/integration, PR review skill, result/review/merge contracts, HG-037 preparation and exact source guard constants.",
+    "Independently inspected protected-base to reviewed-head diff. Actual lifecycle source is byte-identical to readiness_lifecycle_candidate(protected_base). Compose changes only the ratified healthcheck. Additive workflow matches ratified bytes/hash. Existing CI workflows, guard, migration files, frozen authorities and KL-002 result/integration are unchanged.",
+    "Verified base cfbfae0c366e654060d5d52f961a37abf956f2a0 -> tested d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7 -> reviewed 7327e653d25b5aaba56fe96f8b2cd309d4a4aaf4 ancestry. The tested-to-reviewed suffix is one linear commit adding only the task result and new task evidence files; no existing evidence is overwritten/deleted.",
+    "Ran focused deterministic lifecycle/startup tests: 17 passed, no skips. Read old-code/repaired-code virtual-clock oracle, remaining-probe deadlines, exact DROP/CREATE sequence, ambient target resistance, unchanged socket SQL, actionable missing-Docker diagnostics and separate DROP/CREATE failure/no-replay tests.",
+    "Reran lint and typecheck successfully; reran all 440 harness tests successfully with no skips; final check-harness exited 0 and printed HARNESS_CHECK_PASS tasks=71 active=68.",
+    "Using an independent read-only audit script, decoded and hash/length-verified all 42 final hosted envelopes. Downloaded archive SHA256 283e83c4a691ee524d8e23e96cbd45120503d36c0a67d0098170d061733ff3d0 matches artifact metadata; all 37 archive files are byte-identical to their committed envelopes. Verified exact head, same repository, PR workflow path/branch, run 36819284887 attempt 1, job success, ubuntu-latest labels, successful preflight/coldstart/full-suite/upload steps, artifact 11142609479 and provenance commands/local default Docker endpoint.",
+    "Independently checked all three actual coldstarts: distinct resolved temporary roots and exact SHA/path-digest namespace formulas, no preexisting resources, identical Compose bytes, image/entrypoint source/hash provenance, Docker/Compose/PostgreSQL versions, timestamped socket-init/stop/final-TCP logs, socket-ready/TCP-unready measured observer witness, monotonic event sequence, first successful TCP probe before all SQL, first SQL UTC strictly after final server readiness, exact owned DROP/CREATE counts, socket SQL targets, current_database twice, migrated revision e8c2f1a6b904, sentinel removal and empty owned cleanup resources.",
+    "Hosted coldstarts completed in 46.85183710199999 seconds. Exact full repository command produced 912 passed in 532.73 seconds with no failures/skips/xfails. Earlier failed candidate artifacts are retained separately and are not final PASS evidence. No local Docker or legacy DB suite was run."
+  ],
+  "merge_conditions": [
+    "This implementation review PASS does not assert MERGED or product/release requirement PASS.",
+    "Persist only task-scoped REVIEW_RECORD_ONLY files after the reviewed SHA and mechanically validate the linear suffix.",
+    "All required specialist reviews and final relevant-head normal CI, hosted readiness job and selected PR merge gate must PASS before merge. Final-head CI is pending review persistence; draft evidence-collection missing-result gate failures do not substitute for final gate success."
+  ]
+}

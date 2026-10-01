@@ -178,6 +178,7 @@ class DatabaseLifecycle:
         command: Sequence[str],
         *,
         check: bool = True,
+        timeout_seconds: float | None = None,
     ) -> subprocess.CompletedProcess[str]:
         try:
             return self._runner(
@@ -187,7 +188,10 @@ class DatabaseLifecycle:
                 check=check,
                 capture_output=True,
                 text=True,
+                timeout=timeout_seconds,
             )
+        except subprocess.TimeoutExpired:
+            raise DatabaseLifecycleError("database readiness command timed out") from None
         except FileNotFoundError as error:
             raise DatabaseLifecycleError(
                 "Docker with the Compose plugin is required for the local test database."
@@ -206,22 +210,30 @@ class DatabaseLifecycle:
         self._run(self.compose_command("up", "--detach", "postgres"))
         deadline = time.monotonic() + timeout_seconds
         while time.monotonic() < deadline:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                break
             result = self._run(
                 self.compose_command(
                     "exec",
                     "--no-TTY",
                     "postgres",
                     "pg_isready",
+                    "--host",
+                    "127.0.0.1",
+                    "--port",
+                    "5432",
                     "--username",
                     self.user,
                     "--dbname",
                     "postgres",
                 ),
                 check=False,
+                timeout_seconds=remaining,
             )
             if result.returncode == 0:
                 return
-            time.sleep(0.5)
+            time.sleep(min(0.5, max(0.0, deadline - time.monotonic())))
         raise DatabaseLifecycleError(
             f"PostgreSQL did not become ready within {timeout_seconds:g} seconds"
         )
@@ -269,12 +281,17 @@ class DatabaseLifecycle:
                 "--no-TTY",
                 "postgres",
                 "pg_isready",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "5432",
                 "--username",
                 self.user,
                 "--dbname",
                 self.namespace.database_name,
             ),
             check=False,
+            timeout_seconds=timeout_seconds,
         )
         if ready.returncode != 0:
             raise DatabaseLifecycleError("reset database failed its readiness probe")

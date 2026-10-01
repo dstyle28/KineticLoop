@@ -1,0 +1,38 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-074",
+  "reviewed_head_sha": "7327e653d25b5aaba56fe96f8b2cd309d4a4aaf4",
+  "review_type": "SECURITY_DATA_BOUNDARY",
+  "status": "PASS",
+  "findings": [],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-074.md",
+    "docs/exec-plans/completed/KL-074_RESULT.yaml",
+    "tools/harness/validate_harness.py",
+    ".github/workflows/kl074-readiness.yml",
+    "tools/db/verify_startup_readiness.py",
+    "tests/db/test_lifecycle.py",
+    "tests/db/test_startup_readiness.py",
+    "docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/archive.envelope.json",
+    "docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact-metadata.envelope.json",
+    "docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/run.envelope.json",
+    "docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/jobs.envelope.json",
+    "docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/hosted-provenance.json.envelope.json",
+    "docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/run.envelope.json"
+  ],
+  "review_contract_version": "v0.2",
+  "verification": {
+    "base_commit": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+    "tested_commit": "d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7",
+    "local_command": "PATH=/private/tmp/kl001-bootstrap/bin:$PATH UV_CACHE_DIR=/private/tmp/kl074-review-security-uv-cache uv run pytest -q -p no:cacheprovider tests/db/test_lifecycle.py tests/db/test_startup_readiness.py",
+    "local_outcome": "17 passed in 0.06s; no live Docker used",
+    "revision_and_scope": "Verified base -> tested -> reviewed ancestry, linear result/new-evidence-only suffix, exact ratified lifecycle candidate and workflow hash. Validator, both existing workflows and FROZEN_BASELINE remain byte-identical to base.",
+    "boundary_inspection": "Reviewed owned namespace derivation, rejection of caller/ambient namespaces, unchanged Compose/authentication/SQL/credentials, no SQL retries, finite probe/process/job deadlines, only exact owned cleanup, cleanup failure propagation, GitHub-hosted Linux/default local Docker preflight, same-repository branch/exact PR head and contents:read token, persist-credentials:false, no secrets or arbitrary workflow inputs, always-uploaded task-only evidence.",
+    "independent_raw_integrity": "Decoded and rehashed all 42 successful hosted envelopes. Archive digest 283e83c4a691ee524d8e23e96cbd45120503d36c0a67d0098170d061733ff3d0 and byte count match artifact metadata; all 37 archive files byte-match committed file envelopes, with unique safe relative names.",
+    "hosted_identity": "Run 36819284887 attempt 1, artifact 11142609479, pull_request event, same repository ID 1377771702, codex/kl074-postgres-readiness, exact tested head, successful dedicated preflight/coldstart/full-suite/upload steps.",
+    "independent_coldstart_oracles": "All three roots independently match SHA256(os.fsencode(root)) namespace digests; no preexisting containers/networks/volumes. Verified raw socket-init/stop/final TCP log ordering and measured socket=0 tcp=2 witnesses; first successful TCP probe and final-server log precede first SQL. Exact owned DROP/CREATE each occur three times, current_database results match own database, migrated revision is e8c2f1a6b904, sentinel is removed, cleanup has zero errors and empty resource inventories. Image and actual entrypoint are identical across roots; source hashes and raw container log hashes match.",
+    "credentials": "No local password literal kineticloop-local-only or kl072-local-only appears in decoded success envelopes. Lifecycle errors retain sanitized actionable SQL errors and suppress TimeoutExpired output; namespace/connection credentials and socket psql ownership remain unchanged.",
+    "full_suite": "Decoded raw exact-command full-repository.log: 912 passed in 532.73s; no skipped/failed/xfail count. Coldstart elapsed 46.85183710199999 seconds.",
+    "failure_retention": "Independently decoded initial c3d1ba5 run conclusion failure and coldstart summary FAIL; separate historical evidence is not counted as final PASS.",
+    "merge_limit": "Security/data-boundary review PASS is not merge approval. Final relevant-head normal CI, hosted readiness job and merge gate must still pass after the task-scoped review-record-only append; no final-head gate result is inferred here."
+  }
+}

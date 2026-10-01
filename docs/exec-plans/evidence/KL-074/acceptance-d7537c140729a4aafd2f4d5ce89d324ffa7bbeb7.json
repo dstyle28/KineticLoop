@@ -1,0 +1,57 @@
+{
+  "tested_commit": "d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7",
+  "status": "PASS",
+  "actual_hosted_verification": "docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/VERIFIED.json",
+  "checks": {
+    "temporary_socket_ready_not_final_ready": {
+      "command": "uv run pytest -q tests/db/test_lifecycle.py -k temporary_socket",
+      "evidence_ref": "docs/exec-plans/evidence/KL-074/temporary_socket_ready_not_final_ready-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json",
+      "status": "PASS"
+    },
+    "permanent_tcp_unready_bounded": {
+      "command": "uv run pytest -q tests/db/test_lifecycle.py -k permanent_tcp",
+      "evidence_ref": "docs/exec-plans/evidence/KL-074/permanent_tcp_unready_bounded-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json",
+      "status": "PASS"
+    },
+    "delayed_final_ready_exact_reset": {
+      "command": "uv run pytest -q tests/db/test_lifecycle.py -k delayed_final",
+      "evidence_ref": "docs/exec-plans/evidence/KL-074/delayed_final_ready_exact_reset-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json",
+      "status": "PASS"
+    },
+    "sql_failure_no_replay": {
+      "command": "uv run pytest -q tests/db/test_lifecycle.py -k sql_failure",
+      "evidence_ref": "docs/exec-plans/evidence/KL-074/sql_failure_no_replay-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json",
+      "status": "PASS"
+    },
+    "compose_and_lifecycle_tcp_alignment": {
+      "command": "uv run pytest -q tests/db/test_startup_readiness.py",
+      "evidence_ref": "docs/exec-plans/evidence/KL-074/compose_and_lifecycle_tcp_alignment-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json",
+      "status": "PASS"
+    },
+    "isolated_migrated_coldstart": {
+      "command": "uv run python tools/db/verify_startup_readiness.py --iterations 3 --startup-timeout 60 --total-timeout 300",
+      "evidence_ref": "docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/VERIFIED.json",
+      "status": "PASS"
+    },
+    "lifecycle_regressions": {
+      "command": "uv run pytest -q tests/db/test_lifecycle.py tests/db/test_startup_readiness.py",
+      "evidence_ref": "docs/exec-plans/evidence/KL-074/lifecycle_regressions-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json",
+      "status": "PASS"
+    },
+    "full_repository_regressions": {
+      "command": "uv run pytest -q -p no:cacheprovider",
+      "evidence_ref": "docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/VERIFIED.json",
+      "status": "PASS"
+    },
+    "quality_and_harness": {
+      "command": "uv run kl lint && uv run kl typecheck && uv run kl test-harness && uv run kl check-harness",
+      "evidence_ref": "docs/exec-plans/evidence/KL-074/quality_and_harness-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json",
+      "status": "PASS"
+    },
+    "hosted_entrypoint_and_evidence": {
+      "command": "uv run pytest -q tests/db/test_startup_readiness.py -k hosted_entrypoint",
+      "evidence_ref": "docs/exec-plans/evidence/KL-074/hosted_entrypoint_and_evidence-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json",
+      "status": "PASS"
+    }
+  }
+}
