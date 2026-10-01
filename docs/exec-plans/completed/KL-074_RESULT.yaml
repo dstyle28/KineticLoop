@@ -1,0 +1,186 @@
+task_identity: harness-backlog-v0.2/KL-074
+display_task_id: KL-074
+task_definition_version: v0.2
+base_commit: cfbfae0c366e654060d5d52f961a37abf956f2a0
+tested_commit: d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: Repaired PostgreSQL final-server readiness using the exact ratified lifecycle candidate, explicit
+  container loopback TCP probes and aligned Compose healthcheck. Deterministic tests fail the protected
+  old code and prove bounded unready behavior, exact owned reset SQL, unchanged socket authentication
+  and no SQL replay. Three dedicated hosted coldstarts verified actual socket-only initialization, shutdown
+  and final TCP startup with zero measured lifecycle SQL before final readiness, identical image/entrypoint
+  provenance, existing two-phase migrated bootstrap, reset sentinel removal and owned cleanup. The exact
+  hosted full repository command passed 912 tests; all ten task command/oracle checks pass at tested_commit.
+commands_run:
+- check_id: temporary_socket_ready_not_final_ready
+  command: uv run pytest -q tests/db/test_lifecycle.py -k temporary_socket
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-074/temporary_socket_ready_not_final_ready-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+- check_id: permanent_tcp_unready_bounded
+  command: uv run pytest -q tests/db/test_lifecycle.py -k permanent_tcp
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-074/permanent_tcp_unready_bounded-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+- check_id: delayed_final_ready_exact_reset
+  command: uv run pytest -q tests/db/test_lifecycle.py -k delayed_final
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-074/delayed_final_ready_exact_reset-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+- check_id: sql_failure_no_replay
+  command: uv run pytest -q tests/db/test_lifecycle.py -k sql_failure
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-074/sql_failure_no_replay-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+- check_id: compose_and_lifecycle_tcp_alignment
+  command: uv run pytest -q tests/db/test_startup_readiness.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-074/compose_and_lifecycle_tcp_alignment-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+- check_id: isolated_migrated_coldstart
+  command: uv run python tools/db/verify_startup_readiness.py --iterations 3 --startup-timeout 60 --total-timeout
+    300
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/VERIFIED.json
+- check_id: lifecycle_regressions
+  command: uv run pytest -q tests/db/test_lifecycle.py tests/db/test_startup_readiness.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-074/lifecycle_regressions-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+- check_id: full_repository_regressions
+  command: uv run pytest -q -p no:cacheprovider
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/VERIFIED.json
+- check_id: quality_and_harness
+  command: uv run kl lint && uv run kl typecheck && uv run kl test-harness && uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-074/quality_and_harness-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+- check_id: hosted_entrypoint_and_evidence
+  command: uv run pytest -q tests/db/test_startup_readiness.py -k hosted_entrypoint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-074/acceptance-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+requirements_covered: []
+files_changed:
+- .github/workflows/kl074-readiness.yml
+- compose.yaml
+- docs/exec-plans/completed/KL-074_RESULT.yaml
+- docs/exec-plans/evidence/KL-074/acceptance-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+- docs/exec-plans/evidence/KL-074/compose_and_lifecycle_tcp_alignment-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf.json
+- docs/exec-plans/evidence/KL-074/compose_and_lifecycle_tcp_alignment-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+- docs/exec-plans/evidence/KL-074/delayed_final_ready_exact_reset-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf.json
+- docs/exec-plans/evidence/KL-074/delayed_final_ready_exact_reset-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+- docs/exec-plans/evidence/KL-074/draft-merge-gate-36818856270.json
+- docs/exec-plans/evidence/KL-074/draft-merge-gate-36819284907.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/IDENTITY.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/archive.envelope.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/artifact-metadata.envelope.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/artifact/coldstart-summary.json.envelope.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/artifact/coldstart.log.envelope.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/artifact/hosted-provenance.json.envelope.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/artifact/iteration-1/actual-topology.json.envelope.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/artifact/iteration-1/assertions.json.envelope.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/artifact/iteration-1/capture-failure.json.envelope.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/artifact/iteration-1/cleanup.json.envelope.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/artifact/iteration-1/container-raw-log.json.envelope.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/artifact/iteration-1/container.log.envelope.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/artifact/iteration-1/docker-entrypoint.sh.txt.envelope.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/artifact/iteration-1/events.jsonl.envelope.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/artifact/iteration-1/image-provenance.json.envelope.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/artifact/iteration-1/ownership-before.json.envelope.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/run-log.envelope.json
+- docs/exec-plans/evidence/KL-074/failed-hosted-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf/run.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/VERIFIED.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/archive.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact-metadata.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/coldstart-summary.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/coldstart.log.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/full-repository.log.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/hosted-provenance.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-1/actual-topology.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-1/assertions.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-1/cleanup.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-1/container-raw-log.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-1/container.log.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-1/docker-entrypoint.sh.txt.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-1/events.jsonl.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-1/image-provenance.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-1/ordering.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-1/ownership-before.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-1/socket-tcp-observer.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-2/actual-topology.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-2/assertions.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-2/cleanup.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-2/container-raw-log.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-2/container.log.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-2/docker-entrypoint.sh.txt.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-2/events.jsonl.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-2/image-provenance.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-2/ordering.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-2/ownership-before.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-2/socket-tcp-observer.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-3/actual-topology.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-3/assertions.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-3/cleanup.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-3/container-raw-log.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-3/container.log.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-3/docker-entrypoint.sh.txt.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-3/events.jsonl.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-3/image-provenance.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-3/ordering.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-3/ownership-before.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/artifact/iteration-3/socket-tcp-observer.json.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/jobs.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/run-log.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7/run.envelope.json
+- docs/exec-plans/evidence/KL-074/hosted_entrypoint_and_evidence-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf.json
+- docs/exec-plans/evidence/KL-074/hosted_entrypoint_and_evidence-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+- docs/exec-plans/evidence/KL-074/lifecycle_regressions-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf.json
+- docs/exec-plans/evidence/KL-074/lifecycle_regressions-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+- docs/exec-plans/evidence/KL-074/normal-ci-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+- docs/exec-plans/evidence/KL-074/observer-repair-diagnostics.json
+- docs/exec-plans/evidence/KL-074/permanent_tcp_unready_bounded-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf.json
+- docs/exec-plans/evidence/KL-074/permanent_tcp_unready_bounded-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+- docs/exec-plans/evidence/KL-074/preparation-compose_and_lifecycle_tcp_alignment-16c65fb1a4da0c393f8c7aaadb6ebb6c1c3cbf48.json
+- docs/exec-plans/evidence/KL-074/preparation-delayed_final_ready_exact_reset-16c65fb1a4da0c393f8c7aaadb6ebb6c1c3cbf48.json
+- docs/exec-plans/evidence/KL-074/preparation-diagnostics.json
+- docs/exec-plans/evidence/KL-074/preparation-hosted_entrypoint_and_evidence-16c65fb1a4da0c393f8c7aaadb6ebb6c1c3cbf48.json
+- docs/exec-plans/evidence/KL-074/preparation-lifecycle_regressions-16c65fb1a4da0c393f8c7aaadb6ebb6c1c3cbf48.json
+- docs/exec-plans/evidence/KL-074/preparation-permanent_tcp_unready_bounded-16c65fb1a4da0c393f8c7aaadb6ebb6c1c3cbf48.json
+- docs/exec-plans/evidence/KL-074/preparation-sql_failure_no_replay-16c65fb1a4da0c393f8c7aaadb6ebb6c1c3cbf48.json
+- docs/exec-plans/evidence/KL-074/preparation-temporary_socket_ready_not_final_ready-16c65fb1a4da0c393f8c7aaadb6ebb6c1c3cbf48.json
+- docs/exec-plans/evidence/KL-074/quality_and_harness-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf.json
+- docs/exec-plans/evidence/KL-074/quality_and_harness-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+- docs/exec-plans/evidence/KL-074/sql_failure_no_replay-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf.json
+- docs/exec-plans/evidence/KL-074/sql_failure_no_replay-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+- docs/exec-plans/evidence/KL-074/temporary_socket_ready_not_final_ready-c3d1ba59af0f8ea54ab50c79fda86294949e1fcf.json
+- docs/exec-plans/evidence/KL-074/temporary_socket_ready_not_final_ready-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.json
+- docs/exec-plans/evidence/KL-074/verify_downloaded_artifact-d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7.py
+- src/kineticloop/db/lifecycle.py
+- tests/db/test_lifecycle.py
+- tests/db/test_startup_readiness.py
+- tools/db/verify_startup_readiness.py
+decisions:
+- Preserve all lifecycle bytes except readiness_lifecycle_candidate(before); retain original SQL/authentication/credentials/image/ports/volume/namespace
+  semantics.
+- Create only the byte-exact ratified additive kl074-readiness workflow; both existing workflows remain
+  byte-identical.
+- Use only dedicated GitHub-hosted local Docker for actual-image coldstarts and full legacy DB suites;
+  no developer/shared Docker execution.
+- Replace coarse socket sampling after its measured-witness failure with a bounded concurrent read-only
+  observer; lifecycle TCP/SQL is not delayed by that observer.
+- Verify run/job/head/attempt/repository identities and downloaded archive digest before recording PASS;
+  preserve all raw artifact bytes and historical failure diagnostics in envelopes.
+- Keep product requirements and release gates separate; no product/release/auto-activation PASS is claimed.
+known_limitations:
+- The first hosted candidate failed because coarse observations missed the short socket-only window; its
+  full-suite step was NOT_RUN. Its verified raw failure artifact is retained separately and never counted
+  as PASS.
+- Evidence pins the actual configured PostgreSQL image and entrypoint observed at tested_commit; no inference-only
+  or production claim is made.
+- The draft evidence-collection heads correctly failed the missing-result merge gate. Fresh independent
+  reviews, the review-record-only suffix check and every applicable final-head CI/gate must pass before
+  normal merge.
+follow_up_tasks:
+- Complete fresh SHA-bound GENERAL, DB_CONCURRENCY and SECURITY_DATA_BOUNDARY reviews; persist only task-scoped
+  review records afterward.
+- Verify final relevant-head normal CI, hosted readiness evidence job and selected merge gate before normal
+  merge.
+- Record post-merge integration separately without modifying this reviewed result.
+spec_change_request: null
