@@ -89,6 +89,17 @@ def resources(namespace: DatabaseNamespace, deadline: float) -> dict[str, list[s
         "networks": command_output(["docker", "network", "ls", "--filter", label, "--quiet"], deadline).splitlines(),
         "volumes": command_output(["docker", "volume", "ls", "--filter", label, "--quiet"], deadline).splitlines(),
     }
+    # Exact name collisions without Compose labels are foreign resources, too.
+    for kind, command, exact in (
+        ('containers', ["docker", "ps", "--all", "--format", "{{.ID}} {{.Names}}"],
+         f"{namespace.project_name}-postgres-1"),
+        ('networks', ["docker", "network", "ls", "--format", "{{.ID}} {{.Name}}"],
+         f"{namespace.project_name}_default"),
+    ):
+        for line in command_output(command, deadline).splitlines():
+            identifier, name = line.split(' ', 1)
+            if name == exact and identifier not in found[kind]:
+                found[kind].append(identifier)
     all_volumes = command_output(["docker", "volume", "ls", "--format", "{{.Name}}"], deadline).splitlines()
     exact = f"{namespace.project_name}_postgres-data"
     if exact in all_volumes and exact not in found["volumes"]:
