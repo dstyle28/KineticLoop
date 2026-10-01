@@ -1,0 +1,190 @@
+base_commit=eab2b305351cf3c504f74ac74868edc58d0a3430
+tested_commit=d0920d90b63f817d4b4000494873da4559e8a13b
+command=/private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-035/candidate_proof.py
+tested_commit=d0920d90b63f817d4b4000494873da4559e8a13b
+merged_prerequisite=eab2b305351cf3c504f74ac74868edc58d0a3430
+classification=CANDIDATE_ISOLATION_PROOF_ONLY; KL019 checks/product obligations=NOT_RUN
+BYTE_EXACT_CANDIDATE tests/db/test_planning.py semantic_test_functions=6
+BYTE_EXACT_CANDIDATE tests/db/test_call_ledger.py semantic_test_functions=6
+PASS actual fixture consumes owned namespace/cleanup tests/db/test_planning.py DatabaseNamespace(project_name='kineticloop-kl019-plan-abcdef1-cd2dac5a44a4', database_name='kineticloop_kl019_plan_abcdef1_cd2dac5a44a4')
+PASS actual fixture consumes owned namespace/cleanup tests/db/test_call_ledger.py DatabaseNamespace(project_name='kineticloop-kl019-ledger-abcdef1-cd2dac5a44a4', database_name='kineticloop_kl019_ledger_abcdef1_cd2dac5a44a4')
+PASS actual fixture consumes owned namespace/cleanup tests/db/test_transaction_interfaces.py DatabaseNamespace(project_name='kineticloop-kl019-tx-abcdef1-cd2dac5a44a4', database_name='kineticloop_kl019_tx_abcdef1_cd2dac5a44a4')
+PASS exact selector/SHA/launch denial before runner/bootstrap/reset/cleanup; no PG contacted
+..OWNED_RESET DatabaseNamespace(project_name='kineticloop-kl019-plan-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_plan_d0920d9_cd2dac5a44a4')
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+.OWNED_DESTROY DatabaseNamespace(project_name='kineticloop-kl019-plan-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_plan_d0920d9_cd2dac5a44a4')
+OWNED_RESET DatabaseNamespace(project_name='kineticloop-kl019-plan-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_plan_d0920d9_cd2dac5a44a4')
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+.OWNED_DESTROY DatabaseNamespace(project_name='kineticloop-kl019-plan-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_plan_d0920d9_cd2dac5a44a4')
+OWNED_RESET DatabaseNamespace(project_name='kineticloop-kl019-plan-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_plan_d0920d9_cd2dac5a44a4')
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+.OWNED_DESTROY DatabaseNamespace(project_name='kineticloop-kl019-plan-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_plan_d0920d9_cd2dac5a44a4')
+OWNED_RESET DatabaseNamespace(project_name='kineticloop-kl019-plan-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_plan_d0920d9_cd2dac5a44a4')
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+.OWNED_DESTROY DatabaseNamespace(project_name='kineticloop-kl019-plan-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_plan_d0920d9_cd2dac5a44a4')
+OWNED_RESET DatabaseNamespace(project_name='kineticloop-kl019-plan-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_plan_d0920d9_cd2dac5a44a4')
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+.OWNED_DESTROY DatabaseNamespace(project_name='kineticloop-kl019-plan-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_plan_d0920d9_cd2dac5a44a4')
+OWNED_RESET DatabaseNamespace(project_name='kineticloop-kl019-plan-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_plan_d0920d9_cd2dac5a44a4')
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+.OWNED_DESTROY DatabaseNamespace(project_name='kineticloop-kl019-plan-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_plan_d0920d9_cd2dac5a44a4')
+...PLANNING_NAMESPACE kineticloop-kl025-plan-abcdef1-cd2dac5a44a4 kineticloop_kl025_plan_abcdef1_cd2dac5a44a4
+.OWNED_RESET DatabaseNamespace(project_name='kineticloop-kl019-ledger-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_ledger_d0920d9_cd2dac5a44a4')
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+ROOT_BUDGET {'limits': {'calls': 3, 'tools': 10, 'tokens': 1000}, 'settled': {'calls': 0, 'tools': 0, 'tokens': 0}, 'reserved': {'calls': 2, 'tools': 8, 'tokens': 800}, 'admission_policy_id': '00000000-0000-0000-0000-0000000061ad', 'admission_policy_version': 'kl024-v1'}
+.OWNED_DESTROY DatabaseNamespace(project_name='kineticloop-kl019-ledger-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_ledger_d0920d9_cd2dac5a44a4')
+OWNED_RESET DatabaseNamespace(project_name='kineticloop-kl019-ledger-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_ledger_d0920d9_cd2dac5a44a4')
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+CANCEL_DISPATCH_LOCK_ORDERS cancel-first permit-first
+.OWNED_DESTROY DatabaseNamespace(project_name='kineticloop-kl019-ledger-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_ledger_d0920d9_cd2dac5a44a4')
+OWNED_RESET DatabaseNamespace(project_name='kineticloop-kl019-ledger-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_ledger_d0920d9_cd2dac5a44a4')
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+CURRENT_AUTHORITY old-owner/fence/request/attempt/terminal/time denied
+.OWNED_DESTROY DatabaseNamespace(project_name='kineticloop-kl019-ledger-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_ledger_d0920d9_cd2dac5a44a4')
+OWNED_RESET DatabaseNamespace(project_name='kineticloop-kl019-ledger-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_ledger_d0920d9_cd2dac5a44a4')
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+ROLLBACK_BOUNDARY reserve command_receipts
+ROLLBACK_BOUNDARY reserve domain_events
+ROLLBACK_BOUNDARY reserve outbox_deliveries
+ROLLBACK_BOUNDARY reserve call_reservations
+ROLLBACK_BOUNDARY reserve call_ledger_events
+ROLLBACK_BOUNDARY reserve planning_intents
+ROLLBACK_BOUNDARY cancel command_receipts
+ROLLBACK_BOUNDARY cancel domain_events
+ROLLBACK_BOUNDARY cancel outbox_deliveries
+ROLLBACK_BOUNDARY cancel call_reservations
+ROLLBACK_BOUNDARY cancel call_ledger_events
+ROLLBACK_BOUNDARY cancel planning_intents
+ROLLBACK_BOUNDARY permit command_receipts
+ROLLBACK_BOUNDARY permit domain_events
+ROLLBACK_BOUNDARY permit outbox_deliveries
+ROLLBACK_BOUNDARY permit call_reservations
+ROLLBACK_BOUNDARY permit call_ledger_events
+ROLLBACK_BOUNDARY mark_unknown command_receipts
+ROLLBACK_BOUNDARY mark_unknown domain_events
+ROLLBACK_BOUNDARY mark_unknown outbox_deliveries
+ROLLBACK_BOUNDARY mark_unknown call_reservations
+ROLLBACK_BOUNDARY mark_unknown call_ledger_events
+ROLLBACK_BOUNDARY mark_unknown planning_intents
+ROLLBACK_BOUNDARY settle command_receipts
+ROLLBACK_BOUNDARY settle domain_events
+ROLLBACK_BOUNDARY settle outbox_deliveries
+ROLLBACK_BOUNDARY settle call_reservations
+ROLLBACK_BOUNDARY settle call_ledger_events
+ROLLBACK_BOUNDARY settle planning_intents
+CROSS_RESERVATION_IDENTITY_LOCK_RACE receipt_id one settled; loser fully occupied; equality allows covered work
+CROSS_RESERVATION_IDENTITY_LOCK_RACE provider_request_id one settled; loser fully occupied; equality allows covered work
+ACK_LOSS_AND_ROLLBACK all five owners, exact dispatch identities, cross-row receipt/request races
+.OWNED_DESTROY DatabaseNamespace(project_name='kineticloop-kl019-ledger-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_ledger_d0920d9_cd2dac5a44a4')
+OWNED_RESET DatabaseNamespace(project_name='kineticloop-kl019-ledger-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_ledger_d0920d9_cd2dac5a44a4')
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+UNKNOWN_LATE_ACCOUNTING {'limits': {'calls': 3, 'tools': 10, 'tokens': 1000}, 'settled': {'calls': 1, 'tools': 1, 'tokens': 601}, 'reserved': {'calls': 0, 'tools': 0, 'tokens': 0}, 'admission_policy_id': '00000000-0000-0000-0000-0000000061ad', 'call_bound_violation': True, 'admission_policy_version': 'kl024-v1'} no control/authorization/attempt authority restored
+.OWNED_DESTROY DatabaseNamespace(project_name='kineticloop-kl019-ledger-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_ledger_d0920d9_cd2dac5a44a4')
+...OWNED_RESET DatabaseNamespace(project_name='kineticloop-kl019-tx-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_tx_d0920d9_cd2dac5a44a4')
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+.......................................................OWNED_DESTROY DatabaseNamespace(project_name='kineticloop-kl019-tx-d0920d9-cd2dac5a44a4', database_name='kineticloop_kl019_tx_d0920d9_cd2dac5a44a4')
+PASS all real reset/destroy calls confined to three derived owned namespaces
+
+75 passed in 73.32s (0:01:13)
+.......................................................................  [100%]
+71 passed in 0.66s
+PASS exact future two-file namespace candidates and all called real prerequisite regressions
+PASS unchanged transaction fixture/product source; selected owned resources destroyed; KL019 checks NOT_RUN
+
+exit_code=0

@@ -1,0 +1,149 @@
+change_identity: harness-governance-v0.1/HG-035
+display_change_id: HG-035
+base_commit: eab2b305351cf3c504f74ac74868edc58d0a3430
+tested_commit: d0920d90b63f817d4b4000494873da4559e8a13b
+change_status: PASS
+summary: Refine only unstarted KL019 after actual normal KL025 PR66 merge eab2b30. Pin 20 enforceable
+  checks, strict authenticated TEST identity and existing command owners, bounded first-use support, explicit
+  trusted upstream bootstrap without tested output seeds, and two byte-exact future fixture namespace
+  transformations. Preserve the transaction fixture through its existing validated overrides; prove 75
+  real prerequisite regressions and 71 scope tests in a disposable clone with owned cleanup. Append verified
+  KL024/KL025 integrations. No production implementation, existing test edit, frozen/requirement/release
+  change, or KL019 task/product PASS.
+packets_refined:
+- KL-019
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- KineticLoop_Harness_Backlog_v0.2.json
+- KineticLoop_Harness_Traceability_v0.3.json
+- docs/exec-plans/active/KL-019.md
+- docs/exec-plans/evidence/HG-035/API_AND_FIXTURE_MAP.md
+- docs/exec-plans/evidence/HG-035/KL-019.packet.draft.md
+- docs/exec-plans/evidence/HG-035/KL-019.task-definition.draft.json
+- docs/exec-plans/evidence/HG-035/PREPARATION.md
+- docs/exec-plans/evidence/HG-035/audit.py
+- docs/exec-plans/evidence/HG-035/candidate_isolation_and_regressions-c4d8daf.json
+- docs/exec-plans/evidence/HG-035/candidate_isolation_and_regressions-c4d8daf.log
+- docs/exec-plans/evidence/HG-035/candidate_isolation_and_regressions-d0920d9.json
+- docs/exec-plans/evidence/HG-035/candidate_isolation_and_regressions-d0920d9.log
+- docs/exec-plans/evidence/HG-035/candidate_proof.py
+- docs/exec-plans/evidence/HG-035/diff-clean-c4d8daf-diagnostic.json
+- docs/exec-plans/evidence/HG-035/diff-clean-ce81283-diagnostic.json
+- docs/exec-plans/evidence/HG-035/diff_clean-d0920d9.json
+- docs/exec-plans/evidence/HG-035/diff_clean-d0920d9.log
+- docs/exec-plans/evidence/HG-035/execution_scope_regressions-c4d8daf.json
+- docs/exec-plans/evidence/HG-035/execution_scope_regressions-c4d8daf.log
+- docs/exec-plans/evidence/HG-035/execution_scope_regressions-ce81283.json
+- docs/exec-plans/evidence/HG-035/execution_scope_regressions-ce81283.log
+- docs/exec-plans/evidence/HG-035/execution_scope_regressions-d0920d9.json
+- docs/exec-plans/evidence/HG-035/execution_scope_regressions-d0920d9.log
+- docs/exec-plans/evidence/HG-035/harness_tests-c4d8daf.json
+- docs/exec-plans/evidence/HG-035/harness_tests-c4d8daf.log
+- docs/exec-plans/evidence/HG-035/harness_tests-ce81283.json
+- docs/exec-plans/evidence/HG-035/harness_tests-ce81283.log
+- docs/exec-plans/evidence/HG-035/harness_tests-d0920d9.json
+- docs/exec-plans/evidence/HG-035/harness_tests-d0920d9.log
+- docs/exec-plans/evidence/HG-035/harness_validation-c4d8daf.json
+- docs/exec-plans/evidence/HG-035/harness_validation-c4d8daf.log
+- docs/exec-plans/evidence/HG-035/harness_validation-ce81283.json
+- docs/exec-plans/evidence/HG-035/harness_validation-ce81283.log
+- docs/exec-plans/evidence/HG-035/harness_validation-d0920d9.json
+- docs/exec-plans/evidence/HG-035/harness_validation-d0920d9.log
+- docs/exec-plans/evidence/HG-035/isolation_plugin.py
+- docs/exec-plans/evidence/HG-035/lint-c4d8daf.json
+- docs/exec-plans/evidence/HG-035/lint-c4d8daf.log
+- docs/exec-plans/evidence/HG-035/lint-ce81283.json
+- docs/exec-plans/evidence/HG-035/lint-ce81283.log
+- docs/exec-plans/evidence/HG-035/lint-d0920d9.json
+- docs/exec-plans/evidence/HG-035/lint-d0920d9.log
+- docs/exec-plans/evidence/HG-035/merged_scope_api_fixture_audit-c4d8daf.json
+- docs/exec-plans/evidence/HG-035/merged_scope_api_fixture_audit-c4d8daf.log
+- docs/exec-plans/evidence/HG-035/merged_scope_api_fixture_audit-ce81283.json
+- docs/exec-plans/evidence/HG-035/merged_scope_api_fixture_audit-ce81283.log
+- docs/exec-plans/evidence/HG-035/merged_scope_api_fixture_audit-d0920d9.json
+- docs/exec-plans/evidence/HG-035/merged_scope_api_fixture_audit-d0920d9.log
+- docs/exec-plans/evidence/HG-035/namespace_candidates.patch
+- docs/exec-plans/evidence/HG-035/namespace_probe.py
+- docs/exec-plans/evidence/HG-035/pr62-merged.json
+- docs/exec-plans/evidence/HG-035/pr66-merged.json
+- docs/exec-plans/evidence/HG-035/run_check.py
+- docs/exec-plans/evidence/HG-035/typecheck-c4d8daf.json
+- docs/exec-plans/evidence/HG-035/typecheck-c4d8daf.log
+- docs/exec-plans/evidence/HG-035/typecheck-ce81283.json
+- docs/exec-plans/evidence/HG-035/typecheck-ce81283.log
+- docs/exec-plans/evidence/HG-035/typecheck-d0920d9.json
+- docs/exec-plans/evidence/HG-035/typecheck-d0920d9.log
+- docs/exec-plans/evidence/HG-035/unit_tests-c4d8daf.json
+- docs/exec-plans/evidence/HG-035/unit_tests-c4d8daf.log
+- docs/exec-plans/evidence/HG-035/unit_tests-ce81283.json
+- docs/exec-plans/evidence/HG-035/unit_tests-ce81283.log
+- docs/exec-plans/evidence/HG-035/unit_tests-d0920d9.json
+- docs/exec-plans/evidence/HG-035/unit_tests-d0920d9.log
+- docs/exec-plans/governance/HG-035.yaml
+- docs/exec-plans/integrations/KL-024.json
+- docs/exec-plans/integrations/KL-025.json
+- tests/harness/test_protocol_execution_scope.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: merged_scope_api_fixture_audit
+  command: /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-035/audit.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-035/merged_scope_api_fixture_audit-d0920d9.log
+- check_id: execution_scope_regressions
+  command: /private/tmp/kl017-venv/bin/python -m pytest -q tests/harness/test_protocol_execution_scope.py
+    tests/harness/test_call_ledger_scope.py tests/harness/test_planning_fixture_scope.py tests/harness/test_planning_subject_scope.py
+    tests/harness/test_wave_scope.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-035/execution_scope_regressions-d0920d9.log
+- check_id: harness_validation
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-035/harness_validation-d0920d9.log
+- check_id: harness_tests
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-035/harness_tests-d0920d9.log
+- check_id: unit_tests
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-035/unit_tests-d0920d9.log
+- check_id: lint
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-035/lint-d0920d9.log
+- check_id: typecheck
+  command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-035/typecheck-d0920d9.log
+- check_id: diff_clean
+  command: git diff --check eab2b305351cf3c504f74ac74868edc58d0a3430 d0920d90b63f817d4b4000494873da4559e8a13b
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-035/diff_clean-d0920d9.log
+- check_id: candidate_isolation_and_regressions
+  command: /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-035/candidate_proof.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-035/candidate_isolation_and_regressions-d0920d9.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- KL019 remains NOT_STARTED. Its 20 future task checks and related I01/I02/I04/I07/A03@DC requirements
+  remain NOT_RUN; governance PASS is not release closure or production activation.
+- Future first-day S38 and first app-session S44 support is bounded to existing CommitBundle and StartSession
+  owners, frozen locks, guards and rollback. Emit SPEC_CHANGE_REQUIRED if these cannot preserve frozen
+  boundaries; no generic insertion owner is authorized.
+- AdvanceAttempt and RecordSnapshot owners are absent. Explicit synthetic upstream bootstrap supplies
+  mandatory S26 and COMMIT_READY/certificate inputs only; full owner-driven planning progression remains
+  KL027.
+- Only tests/db/test_planning.py and tests/db/test_call_ledger.py may receive the exact prospective namespace
+  transformations. The transaction fixture stays byte-identical and uses its existing two validated overrides
+  through an owned launcher. No skip or foreign namespace is authorized.
+- The disposable candidate clone applies only those two prospective namespace transformations. Product/source
+  bytes match the merged base, all existing test functions and transaction bytes are preserved, 75 PostgreSQL
+  and 71 scope regressions pass, and runtime tracing proves all three namespaces are owned and destroyed.
+  This is feasibility evidence, not KL019 implementation PASS.
+- Local uv is absent; recorded commands use the existing kl017 virtualenv and PYTHONPATH. Hosted locked-uv
+  CI remains unchanged. Earlier formatting diagnostics are preserved but unselected; the final tested
+  diff check passes.
+- Fresh independent GENERAL/PROTOCOL/DB_CONCURRENCY reviews, real applicable CI, and normal merge are
+  separate facts. Only the task-scoped review-record suffix may follow the reviewed SHA without rereview.
