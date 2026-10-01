@@ -1,0 +1,78 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-019",
+  "reviewed_head_sha": "07a6ba6e33e0fc20169268d07cf6167778db992a",
+  "review_type": "DB_CONCURRENCY",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "protected_base_sha": "822322dfcac69d1042c8f9f7517cecf4903f8163",
+  "tested_commit": "ff073d04d1cafc507ac1a3b6364e7d73034731c1",
+  "findings": [
+    {
+      "id": "KL019-DB-001",
+      "classification": "BLOCKER",
+      "title": "Require completed owner effects before committing first-use rows",
+      "file": "src/kineticloop/persistence/transactions.py",
+      "line": 4920,
+      "description": "lock_daily_head(create_first=True) and lock_execution(create_first=True) now execute real INSERTs directly on RepositoryTransaction. Their first_execution_head/first_execution_session completion checks exist only in RestrictedSqlSession.validate_completion, which runs only if the callback invokes idempotent_outcome. RepositoryTransaction.finish checks registry, subject and exact artifacts but never checks whether a newly inserted first-use row completed its owner outcome. Thus an existing internal execute_command StartSession callback can acquire the registry lease, validate its artifact identities and authenticated TEST ingress, call lock_execution on an absent exact session with create_first=True, and return. finish accepts this and the outer transaction commits a bare APP_STARTED/READY revision-zero S44 without START S45, execution-basis event, receipt, event or outbox. CommitBundle has the equivalent bare S38 path after its intent/fence/day guards. This introduces a mutation that can escape the mandatory completion boundary even though the typed service itself currently calls idempotent_outcome.",
+      "requirement": "KL-019 Existing owner reuse and bounded missing capabilities requires owner mutation/completion checks proving the exact newly inserted row and required complete effects; all first-use effects must be atomic. Frozen Protocol §2.1 and §8, DB §5 T6/T7, S38 and S44/S45 require the owner effects and bookkeeping together. The existing read-only owner/query callback use does not justify committing these newly added writes without completion.",
+      "evidence": [
+        "src/kineticloop/persistence/transactions.py:2959 first daily-head INSERT and :2970 first_execution_head marker",
+        "src/kineticloop/persistence/transactions.py:3015 first workout-session INSERT and :3020 first_execution_session marker",
+        "src/kineticloop/persistence/transactions.py:1996 and :2160 completion checks only in RestrictedSqlSession.validate_completion",
+        "src/kineticloop/persistence/transactions.py:4854 mutation followed by session.validate_completion; :4920 finish lacks first-use completion enforcement",
+        "Independent pure control-flow probe used a fake cursor and symbolic already-established owner guard state, called real RepositoryTransaction.lock_execution(create_first=True) then finish, and observed finish accepting its sole S44 INSERT without idempotent_outcome. No PostgreSQL or lifecycle operations were performed by the reviewer."
+      ],
+      "required_change": "Make the existing owner finish boundary reject every newly created S38/S44 unless the matching owner outcome completed successfully with its exact required effects. Keep read-only owner operations valid when they created no row. Add real PostgreSQL negative owner callbacks that return immediately after each first-use creation, asserting denial and exact baseline preservation; retain positive first-use and rollback evidence and rerun all exact packet checks on the repaired implementation."
+    },
+    {
+      "id": "KL019-DB-002",
+      "classification": "BLOCKER",
+      "title": "Recover historical receipt when authority changes after a missing preflight",
+      "file": "src/kineticloop/persistence/protocol_execution.py",
+      "line": 424,
+      "description": "All three execution operations call _registry before execution_historical_outcome. _registry invokes existing guards that obtain S51/S01 and enforce live current Manifest/epoch, issuance time and/or artifact revocation eligibility before returning. Consider retry R whose replay_outcome preflight obtains S01 before the original O starts and finds no receipt, then releases S01. O commits the same request while R is delayed outside coordination; a control/epoch change, expiry or registry revoke then occurs before R enters the owner. R fails the live registry guard before its under-S01 historical lookup despite the now-durable identical receipt. There is no rollback-and-read-only-replay recovery. This is distinct from a retry whose receipt already existed when replay_outcome obtained S01: that ordinary preflight path correctly returns the historical outcome and is covered by the existing tests. The new under-S01 lookup does not close the former race when current authority has been lost.",
+      "requirement": "Frozen DB §3 requires same-key same-payload historical replay and distinguishes it from current authorization; repository_transactions.md states ACK-loss replay is available without reacquiring registry/live guards. KL-019 execution_ack_loss_replay_dc requires historical START after authority loss/expiry/revocation to remain available, replayed=true and executable=false, with no remutation.",
+      "evidence": [
+        "src/kineticloop/persistence/protocol_execution.py:131-136, :235-243 and :424-432 put _registry before historical lookup",
+        "src/kineticloop/persistence/transactions.py:2385 acquire_registry_lease calls command-specific guarded registry routines before exposing the acquired S01 state",
+        "migrations/versions/a3f91c7d2e10_safety_registry_integration.py:_shared_routine_sql CommitBundle requires current Manifest epoch/time and T7 requires live issuance epoch/time; the common guard rejects revoked artifacts",
+        "src/kineticloop/persistence/transactions.py:4992 replay_outcome locks S01 then S02; a missing receipt releases those locks before the later execution owner transaction",
+        "tests/db/test_protocol_execution.py:1115 tests replay only after an outcome already exists",
+        "tests/db/test_protocol_execution.py:1260 same-key contention pauses the winner after acquiring S01; the loser therefore blocks inside its replay_outcome preflight and discovers the committed receipt there. It does not establish the missing-preflight then authority-loss interleaving."
+      ],
+      "required_change": "Preserve the existing registry algorithms and lock order, while ensuring an identical successful receipt can still be returned after an owner guard failure if it was committed after missing preflight; a bounded read-only replay after owner transaction rollback is one possible approach. Never grant a current action from that recovery and keep changed-payload conflicts distinct. Add bounded real PostgreSQL interleavings that pause the retry after a genuine missing preflight, commit the original, apply the existing control/revocation owner or trusted expiry condition, then resume the retry and assert exact historical IDs, executable=false and no persisted changes. Cover publication/commit historical identity where applicable as well as START."
+    }
+  ],
+  "review_notes": [
+    "Read actual AGENTS.md, current document index, KL-019 packet, repository review/transaction skills, named frozen Protocol and DB sections, current acceptance TEST/shadow boundaries, actual transaction/planning/call-ledger contracts and merged prerequisite artifacts. Verified KL-015/017/020/021/022/023/024/025 result PASS, fresh required review PASS and integration merge ancestry in protected base using recorded evidence plus actual Git ancestry and file hashes.",
+    "Inspected the owner diff independently. Normal service mutation paths keep S51 shared then S01, followed by intent S27, exact S38, exact S44 where needed, S02 and remaining aggregates. Missing-key creation stays at its stage and is serialized by S01 plus natural uniqueness; no new generic S38/S44 insert grants or widened owner matrix, migration, registry or planning/ledger production changes are present. Subject/date/session/calendar mismatch checks and guarded server timestamps are present, but the finish gap in KL019-DB-001 prevents approval of the owner capability as a whole.",
+    "Reviewed strict authenticated TEST actor, subject, policy/environment/principal comparisons and current expectation checks inside owner coordination. T6 binds Manifest/generation/epoch/request/attempt/fence/owner/execution basis, exact immutable snapshot/proposal/demand/resolution/certificate and root-budget inputs. The service uses real planning admission/acquisition; absent upstream snapshot/attempt/resolver/validation owners are explicitly synthetic inputs. Positive target S24/S25, S38-S42, S45 and intent success are absent before the service calls.",
+    "Inspected T6 validity closure and T7 current evaluator reuse. The positive certificate oracle independently compares each persisted dependency identity and finite end for artifacts, Manifest, resolution, validation, projections, request deadline, policy TTL, calendar and evidence admission freshness, includes complete transitive artifact closure and approved TIMELESS policy, and compares exact minimum/digest. Request shortening is exercised. Current START denial cases begin from real issuance, and control/revocation cases use available actual owners; explicit negative upstream perturbations remain labeled.",
+    "Inspected real-write injection: the wrapper executes the actual SQL before raising at each discovered INSERT/UPDATE boundary, including first S38/S44, closure, terminal intent/attempt, S01 and receipt/event/outbox/completion; each failure compares a complete persisted snapshot and then allows a real retry. Inspected contention barriers and pg_blocking_pids observation for same-key and changed-key first-use competition. This supports the ordinary serialized flow but not either blocker’s missing branch.",
+    "Independently verified the exact twenty final check IDs, commands and pass_oracles against the packet; each raw ff073d0 log hash matches its registry, includes the full tested SHA/worktree/digest, exits zero and contains no failures/skips/deselection. Logs report execution DB 8 passed, execution unit 2 passed, transaction owners 58 passed, planning 8 passed, ledger 9 passed, full unit 209 passed and full harness 375 passed. Earlier candidate/failure logs are not selected as current PASS evidence.",
+    "Verified all thirteen recorded final environment hashes against reviewed files; tested SHA is an ancestor of reviewed implementation/result SHA and the intervening changes contain final evidence/result only. Independently compared unchanged transaction fixture, lifecycle, Compose and CI bytes to protected base. Compared planning/ledger complete bytes to the validator’s exact execution_fixture_candidate transform. Inspected selected namespace construction, unchanged transaction override consumption, instrumented runner/reset/cleanup proof and nested bootstrap inventory: exec/tx/plan/ledger bind lowercase tested SHA and exact resolved-worktree digest e281d6459e62, and legacy planning KL025/unset and ledger unset behavior are preserved.",
+    "Task checks, independent review, hosted CI/merge and product acceptance remain separate. KL-019 result correctly leaves I01/I02/I04/I07/A03@DC NOT_RUN and production auto-activation/full upstream workflow outside this task. No protocol baseline change is requested to resolve these implementation defects."
+  ],
+  "limitations": [
+    "Reviewer performed read-only source, Git, authority, schema, raw-evidence and byte-binding verification and a pure fake-cursor control-flow probe. Reviewer did not run any database/Docker lifecycle or modify implementation/tests/contracts/results. Existing SHA-bound migrated PostgreSQL evidence was inspected, not independently rerun.",
+    "The incomplete-first-use path and missing-preflight authority-loss interleaving are not covered by the selected raw PostgreSQL runs. The repaired task needs fresh PostgreSQL proof, all exact checks and independent SHA-bound rereview before PASS."
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-019.md",
+    "docs/exec-plans/completed/KL-019_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-019/entry-audit.json",
+    "docs/exec-plans/evidence/KL-019/checks-ff073d0.json",
+    "docs/exec-plans/evidence/KL-019/environment-ff073d0.json",
+    "docs/exec-plans/evidence/KL-019/execution_atomic_rollback_dc-ff073d0.log",
+    "docs/exec-plans/evidence/KL-019/execution_first_use_contention_dc-ff073d0.log",
+    "docs/exec-plans/evidence/KL-019/execution_ack_loss_replay_dc-ff073d0.log",
+    "docs/exec-plans/evidence/KL-019/execution_db_suite_passes-ff073d0.log",
+    "docs/exec-plans/evidence/KL-019/transaction_owner_regressions_pass-ff073d0.log",
+    "docs/exec-plans/evidence/KL-019/planning_prerequisite_regressions_pass-ff073d0.log",
+    "docs/exec-plans/evidence/KL-019/ledger_prerequisite_regressions_pass-ff073d0.log",
+    "src/kineticloop/persistence/protocol_execution.py",
+    "src/kineticloop/persistence/transactions.py",
+    "tests/db/test_protocol_execution.py",
+    "tests/unit/protocol/test_execution.py"
+  ]
+}
