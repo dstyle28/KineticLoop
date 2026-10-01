@@ -1,15 +1,18 @@
 change_identity: harness-governance-v0.1/HG-038
 display_change_id: HG-038
 base_commit: 3c1312e5946593d73f169f6ea1ce559c27523bd2
-tested_commit: accd461dd35e2751060755b4c9989236157507a7
+tested_commit: 4363887168b123fedc3ed9cadcfd7086a36be60b
 change_status: PASS
 summary: After actual KL074 normal merge, refine unstarted KL026 to nine tests-only real PostgreSQL
-  interleavings and KL027 to a composed complete deterministic TEST demo. Append three bounded NOT_STARTED
-  owner prerequisites KL075 internal snapshot/stage guards, KL076 source-bound immutable TEST F/D/N
-  preparation, KL077 complete TEST bundle/current CONTINUE/RESUME adapters; preserve public wire registry
-  and frozen semantics. Pin exact packets/definitions, isolate suite namespaces and serialize production
-  hotspots, preserve all product/layer/release obligations. Append verified missing KL019/KL047/KL074
-  integration chains only; no historical artifact rewrite or M3 closure.
+  interleavings, including actual root cancellation plus separate guarded reservation cleanup, and KL027
+  to a composed complete deterministic TEST demo with lifecycle-valid authority denials. Append three
+  bounded NOT_STARTED owner prerequisites KL075 internal snapshot/stage guards, KL076 source-bound immutable
+  TEST F/D/N preparation, KL077 complete TEST bundle/current CONTINUE/RESUME adapters with internal
+  ordinary lifecycle PAUSE; preserve public wire registry and frozen protective-control semantics. Separate
+  deterministic PU equality from actual post-lock real-PG expiry evidence. Pin exact packets/definitions,
+  isolate suite namespaces and serialize production hotspots, preserve all product/layer/release obligations.
+  Append verified missing KL019/KL047/KL074 integration chains only; preserve rejected reviews/evidence,
+  no historical artifact rewrite or M3 closure.
 packets_refined:
 - KL-026
 - KL-027
@@ -38,11 +41,15 @@ files_changed:
 - docs/exec-plans/evidence/HG-038/KL-077.definition.draft.json
 - docs/exec-plans/evidence/HG-038/KL-077.packet.draft.md
 - docs/exec-plans/evidence/HG-038/PREPARATION.md
+- docs/exec-plans/evidence/HG-038/append_only_scope_audit-4363887.json
+- docs/exec-plans/evidence/HG-038/append_only_scope_audit-4363887.log
 - docs/exec-plans/evidence/HG-038/append_only_scope_audit-accd461.json
 - docs/exec-plans/evidence/HG-038/append_only_scope_audit-accd461.log
 - docs/exec-plans/evidence/HG-038/append_only_scope_audit-cb6ff80.json
 - docs/exec-plans/evidence/HG-038/append_only_scope_audit-cb6ff80.log
 - docs/exec-plans/evidence/HG-038/audit.py
+- docs/exec-plans/evidence/HG-038/diff_clean-4363887.json
+- docs/exec-plans/evidence/HG-038/diff_clean-4363887.log
 - docs/exec-plans/evidence/HG-038/diff_clean-accd461.json
 - docs/exec-plans/evidence/HG-038/diff_clean-accd461.log
 - docs/exec-plans/evidence/HG-038/diff_clean-cb6ff80.json
@@ -50,20 +57,28 @@ files_changed:
 - docs/exec-plans/evidence/HG-038/draft.py
 - docs/exec-plans/evidence/HG-038/finalize.py
 - docs/exec-plans/evidence/HG-038/guard.draft.py
+- docs/exec-plans/evidence/HG-038/harness_tests-4363887.json
+- docs/exec-plans/evidence/HG-038/harness_tests-4363887.log
 - docs/exec-plans/evidence/HG-038/harness_tests-accd461.json
 - docs/exec-plans/evidence/HG-038/harness_tests-accd461.log
 - docs/exec-plans/evidence/HG-038/harness_tests-cb6ff80.json
 - docs/exec-plans/evidence/HG-038/harness_tests-cb6ff80.log
+- docs/exec-plans/evidence/HG-038/harness_validation-4363887.json
+- docs/exec-plans/evidence/HG-038/harness_validation-4363887.log
 - docs/exec-plans/evidence/HG-038/harness_validation-accd461.json
 - docs/exec-plans/evidence/HG-038/harness_validation-accd461.log
 - docs/exec-plans/evidence/HG-038/harness_validation-cb6ff80.json
 - docs/exec-plans/evidence/HG-038/harness_validation-cb6ff80.log
 - docs/exec-plans/evidence/HG-038/integrate.py
 - docs/exec-plans/evidence/HG-038/integration-provenance.json
+- docs/exec-plans/evidence/HG-038/lint-4363887.json
+- docs/exec-plans/evidence/HG-038/lint-4363887.log
 - docs/exec-plans/evidence/HG-038/lint-accd461.json
 - docs/exec-plans/evidence/HG-038/lint-accd461.log
 - docs/exec-plans/evidence/HG-038/lint-cb6ff80.json
 - docs/exec-plans/evidence/HG-038/lint-cb6ff80.log
+- docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-4363887.json
+- docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-4363887.log
 - docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-accd461.json
 - docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-accd461.log
 - docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-cb6ff80.json
@@ -73,12 +88,21 @@ files_changed:
 - docs/exec-plans/evidence/HG-038/pr72-merged.json
 - docs/exec-plans/evidence/HG-038/protected-base.txt
 - docs/exec-plans/evidence/HG-038/refresh_hashes.py
+- docs/exec-plans/evidence/HG-038/rejected-c4272b1/DB_CONCURRENCY.json
+- docs/exec-plans/evidence/HG-038/rejected-c4272b1/GENERAL.json
+- docs/exec-plans/evidence/HG-038/rejected-c4272b1/PROTOCOL.json
+- docs/exec-plans/evidence/HG-038/rejected-c4272b1/governance-record.yaml
+- docs/exec-plans/evidence/HG-038/repair_review_findings.py
 - docs/exec-plans/evidence/HG-038/run_check.py
 - docs/exec-plans/evidence/HG-038/test_m3_next_wave_scope.draft.py
+- docs/exec-plans/evidence/HG-038/typecheck-4363887.json
+- docs/exec-plans/evidence/HG-038/typecheck-4363887.log
 - docs/exec-plans/evidence/HG-038/typecheck-accd461.json
 - docs/exec-plans/evidence/HG-038/typecheck-accd461.log
 - docs/exec-plans/evidence/HG-038/typecheck-cb6ff80.json
 - docs/exec-plans/evidence/HG-038/typecheck-cb6ff80.log
+- docs/exec-plans/evidence/HG-038/unit_tests-4363887.json
+- docs/exec-plans/evidence/HG-038/unit_tests-4363887.log
 - docs/exec-plans/evidence/HG-038/unit_tests-accd461.json
 - docs/exec-plans/evidence/HG-038/unit_tests-accd461.log
 - docs/exec-plans/evidence/HG-038/unit_tests-cb6ff80.json
@@ -95,35 +119,35 @@ checks_run:
 - check_id: append_only_scope_audit
   command: /private/tmp/kl017-venv/bin/python /Users/davetian/.codex/worktrees/8e3b/KineticLoop/docs/exec-plans/evidence/HG-038/audit.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-038/append_only_scope_audit-accd461.log
+  evidence_ref: docs/exec-plans/evidence/HG-038/append_only_scope_audit-4363887.log
 - check_id: next_wave_scope_regressions
   command: /private/tmp/kl017-venv/bin/python -m pytest -q tests/harness/test_m3_next_wave_scope.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-accd461.log
+  evidence_ref: docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-4363887.log
 - check_id: harness_validation
   command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-038/harness_validation-accd461.log
+  evidence_ref: docs/exec-plans/evidence/HG-038/harness_validation-4363887.log
 - check_id: harness_tests
   command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-038/harness_tests-accd461.log
+  evidence_ref: docs/exec-plans/evidence/HG-038/harness_tests-4363887.log
 - check_id: unit_tests
   command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-038/unit_tests-accd461.log
+  evidence_ref: docs/exec-plans/evidence/HG-038/unit_tests-4363887.log
 - check_id: lint
   command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-038/lint-accd461.log
+  evidence_ref: docs/exec-plans/evidence/HG-038/lint-4363887.log
 - check_id: typecheck
   command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-038/typecheck-accd461.log
+  evidence_ref: docs/exec-plans/evidence/HG-038/typecheck-4363887.log
 - check_id: diff_clean
-  command: git diff --check 3c1312e5946593d73f169f6ea1ce559c27523bd2 accd461dd35e2751060755b4c9989236157507a7
+  command: git diff --check 3c1312e5946593d73f169f6ea1ce559c27523bd2 4363887168b123fedc3ed9cadcfd7086a36be60b
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-038/diff_clean-accd461.log
+  evidence_ref: docs/exec-plans/evidence/HG-038/diff_clean-4363887.log
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
@@ -136,6 +160,15 @@ known_limitations:
 - Existing generic ApplyControl/AcceptFactRevision and projection/BuildManifest recipes are ratified
   only as exact trusted restricted TEST owner instrumentation, not public typed ingress/authentication
   implementation.
+- 'I03 uses two existing owner transactions: terminal root first, guarded RESERVED cleanup afterward.
+  No speculative CancelIntent S32 grant or atomic root-plus-ledger claim; DISPATCH_INTENT occupation
+  persists.'
+- KL077 ordinary PAUSE is a bounded internal TEST lifecycle contraction with no execution grant; protective
+  pause/STOP/hold remains frozen T2. Positive RESUME and authority denials require owner-produced valid
+  lifecycle states.
+- Exact equality is deterministic PU predicate evidence. Actual real-PG guards provide fresh clock_timestamp
+  without a controllable equality seam; DC proves before/after and expiry crossed during observed lock
+  waits. No PU-to-DC or DC-to-WF PASS substitution.
 - Deterministic TEST policy predicates and complete F/D/N fixture provenance do not establish clinical,
   model, production quality, rollout, or provider policy. Missing real-data/model/evaluation obligations
   remain unclaimed.

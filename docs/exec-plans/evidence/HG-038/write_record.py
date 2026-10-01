@@ -1,13 +1,15 @@
 """Bind exact governance diff and final PASS checks before independent review."""
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 import yaml
 
 ROOT = Path.cwd(); HERE = ROOT / 'docs/exec-plans/evidence/HG-038'
 base = (HERE/'protected-base.txt').read_text().strip()
-head = subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip()
+head = sys.argv[1] if len(sys.argv) > 1 else subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip()
+subprocess.run(['git', 'merge-base', '--is-ancestor', head, 'HEAD'], check=True)
 checks = []
 for key in ['append_only_scope_audit','next_wave_scope_regressions','harness_validation','harness_tests','unit_tests','lint','typecheck','diff_clean']:
     r = json.loads((HERE/f'{key}-{head[:7]}.json').read_text())
