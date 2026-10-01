@@ -1,0 +1,75 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-076",
+  "assessed_sha": "d0470badf0ccf6bec28a9bc7e6836b57d9df93ce",
+  "repository_root": "/Users/davetian/.codex/worktrees/99bf/KineticLoop",
+  "preliminary": true,
+  "assessment_kind": "READ_ONLY_PROTOCOL_DB_UPSTREAM_FEASIBILITY",
+  "classification": "UPSTREAM_CAPABILITY_BLOCKERS",
+  "final_review": false,
+  "task_acceptance": false,
+  "task_pass_claimed": false,
+  "product_pass_claimed": false,
+  "conclusion": "The exact packet's owner-driven canonical factset -> RecordProjection -> BuildManifest -> actual T3 -> KL024 -> KL075 trajectory cannot complete with the actual merged restricted preparation APIs. Two independent barriers require a separately bounded upstream prerequisite; raw output seeds cannot substitute.",
+  "blockers": [
+    {
+      "id": "S21_REQUIRED_REVISION_NOT_INSERTABLE",
+      "summary": "Every S21 insertion via existing RecordProjection execute_preparation is rejected before SQL.",
+      "mechanism": "S21 revision belongs to NATURAL_KEYS and therefore REQUIRED_FIELDS. Its explicit insert column capability excludes revision. Supplying revision rejects as a forbidden column; omitting revision rejects as a missing required field. Validation runs before SQL, so database DEFAULT 1 is unreachable.",
+      "references": [
+        {"path": "src/kineticloop/persistence/metadata.py", "line": 118, "claim": "S21 natural key includes revision."},
+        {"path": "src/kineticloop/persistence/metadata.py", "line": 150, "claim": "REQUIRED_FIELDS derives from NATURAL_KEYS."},
+        {"path": "src/kineticloop/persistence/transactions.py", "line": 599, "claim": "S21 explicit insert columns omit revision."},
+        {"path": "src/kineticloop/persistence/transactions.py", "line": 725, "claim": "RecordProjection insert capability derives from explicit insert columns."},
+        {"path": "src/kineticloop/persistence/transactions.py", "line": 1063, "claim": "Forbidden-column and required-field checks are contradictory for revision."},
+        {"path": "src/kineticloop/persistence/transactions.py", "line": 965, "claim": "Both checks precede SQL insertion."},
+        {"path": "migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py", "line": 545, "claim": "S21 database revision default is 1 but cannot rescue a pre-SQL rejection."}
+      ],
+      "needed_bounded_capability": "Reconcile server-generated immutable revision provenance with preparation insert completeness validation without opening caller-controlled revision writes or expanding arbitrary table/column grants. This is an upstream RecordProjection interface prerequisite, separate from KL076's explicitly scoped S34-S37 guarded capabilities."
+    },
+    {
+      "id": "PREPARATION_CANNOT_BIND_REQUIRED_SEALED_FACTSET",
+      "summary": "RecordProjection S22 FACTSET dependencies and BuildManifest S23 sealed-factset references cannot be inserted through existing execute_preparation.",
+      "mechanism": "execute_preparation supplies no locked_ids; RestrictedSqlSession stores an empty lock inventory. Its insert binding guard demands a locked factset_revisions identity for non-null ref_s15_id and exempts neither RecordProjection nor BuildManifest. S22 and both BUILDING/READY S23 inserts reject before SQL. Omitting those references cannot satisfy actual T3's exact SEALED current-factset and mandatory FACTSET-dependency checks.",
+      "references": [
+        {"path": "src/kineticloop/persistence/transactions.py", "line": 5380, "claim": "Existing preparation entrypoint supplies no coordination or locked_ids."},
+        {"path": "src/kineticloop/persistence/transactions.py", "line": 908, "claim": "Absent locked_ids becomes an empty mapping."},
+        {"path": "src/kineticloop/persistence/transactions.py", "line": 1204, "claim": "ref_s15_id requires exact factset lock; no RecordProjection/BuildManifest exemption."},
+        {"path": "src/kineticloop/persistence/transactions.py", "line": 4000, "claim": "Actual T3 joins S23 to its exact SEALED current factset."},
+        {"path": "src/kineticloop/persistence/transactions.py", "line": 4066, "claim": "Every role requires FACTSET among mandatory dependency kinds."},
+        {"path": "src/kineticloop/persistence/transactions.py", "line": 4176, "claim": "FACTSET dependency FK must match S23 exact factset."},
+        {"path": "src/kineticloop/persistence/transactions.py", "line": 5274, "claim": "execute_command rejects PREPARATION owners; it cannot provide an alternative coordination gateway."}
+      ],
+      "needed_bounded_capability": "Provide an exact existing-owner preparation capability to reference actual immutable same-subject SEALED S15 inputs from S22 and S23 while preserving independent short preparation transactions and actual T3 mutable-basis rechecks. Do not fabricate lock inventories, use raw SQL output seeds, or place computation/network waits inside coordination."
+    }
+  ],
+  "authority_references": [
+    {"path": "docs/exec-plans/active/KL-076.md", "line": 168, "claim": "Exact guarded preparation expansion is limited to S34-S37; non-workflow projection/build paths retain no-coordination behavior."},
+    {"path": "docs/exec-plans/active/KL-076.md", "line": 171, "claim": "Requires existing restricted projection/build recipes and actual owner-driven chain; missing upstream capability is separately scoped, never raw output seed workaround."},
+    {"path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md", "line": 213, "claim": "Frozen S21 owner and independent short preparation transaction."},
+    {"path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md", "line": 221, "claim": "Frozen S22 exact factset/dependency references and ProjectionService ownership."},
+    {"path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md", "line": 229, "claim": "Frozen S23 captured factset basis and DecisionPublicationService Build/Publish ownership."},
+    {"path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md", "line": 547, "claim": "Actual T3 publication guard requires sealed factset and all dependency bases."}
+  ],
+  "recommendation": "Create a separate bounded upstream prerequisite covering both preparation interface defects, then rerun KL076 feasibility against its normally merged implementation. No frozen semantic change is necessary on the evidence reviewed, so SPEC_CHANGE_REQUIRED is not indicated by these findings.",
+  "other_existing_capabilities": "Merged CanonicalViewService membership/completion/seal, ProtocolExecutionService actual T3 publish, KL024 admission/structured constraint revision/acquisition, and KL075 snapshot/stage owners exist. Their existence does not bridge the blocked S21/S22/S23 preparation path. Historical KL019 raw-seeded upstream outputs do not establish KL076 feasibility.",
+  "reviewer_actions": {
+    "database_lifecycle_invoked": false,
+    "database_opened": false,
+    "repository_edited": false,
+    "tests_executed": false,
+    "external_chat_messages_sent": false,
+    "artifact_written_only_outside_repository": "/private/tmp/kl076-upstream-feasibility-d0470ba.json"
+  },
+  "independently_inspected_parent_diagnostic": {
+    "script_path": "docs/exec-plans/evidence/KL-076/upstream_gateway_probe.py",
+    "raw_log_path": "docs/exec-plans/evidence/KL-076/upstream-gateway-d0470ba.log",
+    "actual_revision_in_log": "d0470badf0ccf6bec28a9bc7e6836b57d9df93ce",
+    "inspection_only_by_this_reviewer": true,
+    "executed_by_this_reviewer": false,
+    "layer": "PURE_GATEWAY_DIAGNOSTIC",
+    "reported_expected_exceptions": 5,
+    "reported_mock_cursor_execute_calls": 0,
+    "postgresql_or_task_acceptance_evidence": false,
+    "assessment": "Script calls actual merged execute_preparation and RestrictedSqlSession with a mocked idle connection/cursor. Raw log reproduces both S21 revision contradictions, S22 factset binding rejection, and BUILDING/READY S23 factset binding rejections. This corroborates the static gateway analysis only."
+  }
+}
