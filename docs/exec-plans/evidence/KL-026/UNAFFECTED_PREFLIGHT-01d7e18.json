@@ -1,0 +1,40 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-026",
+  "assessment_type": "INDEPENDENT_READ_ONLY_UNAFFECTED_SCENARIO_PREFLIGHT",
+  "inspected_head_sha": "01d7e18",
+  "tested_commit": "27934b5152abbbfd404a940ef4cb9634e5dd1423",
+  "reviewer": "unaffected_interleaving_preflight fresh-context subagent",
+  "final_acceptance_review": false,
+  "blockers": [],
+  "required_followups": [],
+  "nonblocking_qualifications": [
+    {
+      "requirement_id": "I04@DC",
+      "statement": "Actual acquisition caps lease expiry at root deadline. The deadline-crossing scenario legally combines lease and root expiry; it does not causally isolate the SQL deadline predicate. Do not seed a live lease beyond deadline.",
+      "references": [
+        "tests/db/test_protocol_interleavings.py:1655",
+        "src/kineticloop/persistence/planning.py:321",
+        "DOC-PROTOCOL-V1.2 section 6.5"
+      ]
+    },
+    {
+      "check_id": "time_boundary_pu",
+      "statement": "Exact lease/deadline equality is deterministic evidence over merged require_live helper. Actual T6 DC runs equivalent native SQL clock predicates separately before/after and across lock waits; do not label PU equality as SQL owner execution.",
+      "references": [
+        "tests/unit/protocol/test_interleaving_namespace.py:193",
+        "src/kineticloop/persistence/transactions.py:3277",
+        "docs/exec-plans/active/KL-026.md:134",
+        "docs/exec-plans/active/KL-026.md:198"
+      ]
+    }
+  ],
+  "verified": [
+    "All selected raw-log SHA256s match manifest",
+    "Eight unaffected DC selectors and both PU selectors each report one passing test",
+    "Both race orders have PostgreSQL blocker witnesses and 67-table persisted snapshots",
+    "Full suite records eight passes and preserved I03 failure",
+    "Test sources unchanged between tested implementation and inspected result head",
+    "I04@WF remains NOT_RUN"
+  ],
+  "pending": "I03 remedy only after actual KL075 then HG039 merge; complete new retest and fresh final acceptance reviews remain required."
+}
