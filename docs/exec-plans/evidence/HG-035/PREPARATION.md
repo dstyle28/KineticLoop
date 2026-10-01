@@ -10,7 +10,7 @@ have been run for HG035. Finalize only after actual normal KL025 merge, fetch/re
 onto actual latest master, and re-audit the committed APIs, result, reviews and all
 fixture bytes. KL025 active work and unrelated dirty KL055 must remain untouched.
 
-`KL-019.task-definition.draft.json` contains the proposed exact definition and 19
+`KL-019.task-definition.draft.json` contains the proposed exact definition and 20
 check contracts. `KL-019.packet.draft.md` carries its proposed human-readable
 boundary. `API_AND_FIXTURE_MAP.md` records preparation observations. These documents
 are proposals, not current authority. The final check/fixture guard and exact
@@ -58,9 +58,13 @@ no prospective unmerged API or fixture is promoted to a durable dependency PASS.
 
 ## Pending decisions requiring merged-byte audit
 
-The draft proposes three fixture-only existing-test paths because all three real
-owner regression suites are required locally. Authorize the smallest byte-exact
-transformations preserving unset behavior and existing KL025 planning selector;
+The draft proposes two fixture-only existing-test paths: planning and call ledger.
+The transaction regression fixture remains byte-identical and uses its existing
+KINETICLOOP_KL022_COMPOSE_PROJECT and KINETICLOOP_KL022_DATABASE overrides. The
+owned launcher/proof validates exact SHA/worktree-derived names before launch and
+proves the actual unchanged fixture consumes them; no new transaction selector or
+global legacy-override rejection is needed. Authorize the smallest byte-exact
+planning/ledger transformations preserving unset behavior and existing KL025 selector;
 all semantic tests/seeds/callbacks/cleanup must remain byte-identical. Actual final
 KL025 bytes determine the transform. If a required additional fixture or owner
 capability emerges, refine governance scope before declaring executable; do not
@@ -82,3 +86,5 @@ reservation bound must block new reservations even before total root exhaustion.
 KL025 was fixing/retesting/rereviewing it. This is a progress observation, not an
 HG035 finding against a merged dependency or permission to modify KL025. Final
 HG035 API/fixture and regression audits must include the actual merged correction.
+
+Preparation-only correction: the actual draft contains 20 unique check contracts and matching required IDs. Removed the unnecessary transaction fixture write path/selector, updated command/oracle/inventory consistently, and retained only the two prospective planning/ledger adaptations. KL025 is still active/unmerged per coordinator preflight at c3966cc; no final validation, formal review/PASS, PR or merge is authorized before actual merge verification.

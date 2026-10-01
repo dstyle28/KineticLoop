@@ -146,7 +146,6 @@
     "tests/unit/protocol/test_execution.py",
     "tests/db/test_protocol_execution.py",
     "docs/contracts/protocol_execution.md",
-    "tests/db/test_transaction_interfaces.py",
     "tests/db/test_planning.py",
     "tests/db/test_call_ledger.py"
   ],
@@ -170,7 +169,7 @@
     {
       "check_id": "execution_fixture_namespace_isolation_pu",
       "command": "uv run pytest -q tests/unit/protocol/test_execution.py::test_all_fixture_namespaces_fail_before_reset",
-      "pass_oracle": "Exercise all four actual selected fixture constructors: new protocol execution, transaction interfaces, planning and call ledger. Exact KL-019 selectors derive lowercase 7-12 hex tested SHA plus 12-hex resolved-worktree digest, with distinct exec/tx/plan/ledger prefixes. Different worktrees at the same SHA differ; invalid/empty/unknown selectors, malformed SHA and conflicting target overrides fail before reset/bootstrap/teardown calls. Unset selectors and exact KL-025 planning behavior retain byte-exact prior behavior. Instrumented runner proof covers cleanup using only the derived namespace; no lifecycle monkeypatch is used to execute a real regression against a foreign fixture."
+      "pass_oracle": "Exercise the owned launch/constructor proof for all four selected fixtures: new protocol execution, unchanged transaction interfaces, planning and call ledger. Derive lowercase 7-12 hex tested SHA plus the exact 12-hex digest of the resolved worktree, with distinct exec/tx/plan/ledger prefixes; different worktrees at the same SHA differ. Before launching the unchanged transaction fixture, the owned launcher must validate its two existing KINETICLOOP_KL022_COMPOSE_PROJECT/DATABASE values equal the exact KL019 tx derivation and reject malformed SHA/digest or mismatched targets before pytest/reset/bootstrap/teardown. Prove the actual unchanged fixture consumes those values for bootstrap/reset and cleanup. New execution/planning/ledger constructors reject invalid selectors/SHA before lifecycle work; preserve unset and exact KL-025 planning behavior. Instrumented runner proof establishes fail-before-launch/reset and selected cleanup; no lifecycle monkeypatch substitutes for a real regression, and no global override rejection or transaction fixture edit is required."
     },
     {
       "check_id": "publish_ready_build_dc",
@@ -224,8 +223,8 @@
     },
     {
       "check_id": "transaction_owner_regressions_pass",
-      "command": "KINETICLOOP_KL022_FIXTURE_OWNER=KL-019 uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py",
-      "pass_oracle": "All merged transaction/authorization/registry-consumer owner regressions pass without failures/skips/deselection in the derived KL019 tx namespace. Preserve all historical semantic assertions; only the mechanically bound fixture namespace adaptation is allowed."
+      "command": "KINETICLOOP_KL022_COMPOSE_PROJECT=\"kineticloop-kl019-tx-$(git rev-parse --short HEAD)-$(uv run python -c 'import hashlib,os; from pathlib import Path; print(hashlib.sha256(os.fsencode(Path.cwd().resolve())).hexdigest()[:12])')\" KINETICLOOP_KL022_DATABASE=\"kineticloop_kl019_tx_$(git rev-parse --short HEAD)_$(uv run python -c 'import hashlib,os; from pathlib import Path; print(hashlib.sha256(os.fsencode(Path.cwd().resolve())).hexdigest()[:12])')\" uv run python tests/unit/protocol/test_execution.py --run-transaction-owner-regressions",
+      "pass_oracle": "The owned launcher validates actual tested SHA/worktree digest and both supplied existing namespace overrides against the exact KL019 tx derivation before launching only uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py. Prove the actual byte-unchanged transaction fixture consumes both overrides for reset/bootstrap and cleanup. All merged transaction/authorization/registry-consumer owner regressions pass without failures/skips/deselection in that namespace. No fixture mutation, new transaction selector, global rejection of legacy arbitrary overrides, foreign/default namespace execution or altered semantic assertion is permitted."
     },
     {
       "check_id": "planning_prerequisite_regressions_pass",
