@@ -1,0 +1,13 @@
+{
+  "scope": "Superseded preparation, not final PASS evidence",
+  "failed_run": 36818856280,
+  "failed_tested_commit": "c3d1ba59af0f8ea54ab50c79fda86294949e1fcf",
+  "reason": "Coarse paired Docker exec observations missed the deployed image socket-only window; raw timestamped logs demonstrated the phase but required measured witness was unavailable. Full repository command was skipped and remains NOT_RUN for that run.",
+  "repair": "Continuous bounded read-only observer inside the same owned container runs concurrently with the unchanged lifecycle. It records UTC plus socket/TCP pg_isready exit codes and stops on final TCP readiness. Lifecycle SQL is not delayed by the observer; observer completion is checked after reset.",
+  "unit_iteration_failure": {
+    "test": "test_probe_root_cause_oracle_rejects_success_without_ordering",
+    "diagnostic": "Failed: DID NOT RAISE DatabaseLifecycleError; 1 failed, 16 passed in 0.08s",
+    "resolution": "Updated the negative control to omit TCP success. A final-TCP-success/SQL sequence with independent socket-only observer evidence is correctly valid."
+  },
+  "local_after_repair": "17 passed in 0.06s"
+}

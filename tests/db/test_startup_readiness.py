@@ -140,11 +140,14 @@ def test_probe_root_cause_oracle_rejects_success_without_ordering() -> None:
               {'kind': 'tcp_probe_end', 'returncode': 1},
               {'kind': 'tcp_probe_end', 'returncode': 0},
               {'kind': 'sql_begin', 'utc': '2026-10-01T00:00:06.000000+00:00'}]
-    assert probe.verify_ordering(logs, events)['status'] == 'PASS'
+    observer = '2026-10-01T00:00:01Z socket=0 tcp=2\n2026-10-01T00:00:05Z socket=0 tcp=0\n'
+    assert probe.verify_ordering(logs, events, observer)['status'] == 'PASS'
     for bad_logs, bad_events in [(logs.replace('received fast shutdown request', 'missing'), events),
-                                  (logs, events[3:]), (logs, [events[-1], *events[:-1]])]:
+                                  (logs, [*events[:3], events[-1]]), (logs, [events[-1], *events[:-1]])]:
         with pytest.raises(DatabaseLifecycleError):
-            probe.verify_ordering(bad_logs, bad_events)
+            probe.verify_ordering(bad_logs, bad_events, observer)
+    with pytest.raises(DatabaseLifecycleError, match='measurement unavailable'):
+        probe.verify_ordering(logs, events, '2026-10-01T00:00:05Z socket=0 tcp=0\n')
 
 
 def test_probe_subprocesses_honor_remaining_total_deadline(monkeypatch: pytest.MonkeyPatch) -> None:

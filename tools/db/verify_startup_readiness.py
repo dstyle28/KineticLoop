@@ -12,6 +12,7 @@ import os
 import re
 import subprocess
 import tempfile
+import threading
 import time
 from datetime import UTC, datetime
 from importlib.util import module_from_spec, spec_from_file_location
@@ -116,29 +117,50 @@ class MeasuredRunner:
         self.evidence = evidence
         self.deadline = deadline
         self.redactor = Redactor(("kineticloop-local-only", "kl072-local-only"))
+        self.lock = threading.Lock()
+        self.observer: threading.Thread | None = None
 
     def event(self, **values: object) -> None:
         record = {"utc": datetime.now(UTC).isoformat(), "monotonic": time.monotonic(), **values}
-        with (self.evidence / "events.jsonl").open("a") as output:
+        with self.lock, (self.evidence / "events.jsonl").open("a") as output:
             output.write(json.dumps(record, sort_keys=True) + "\n")
+
+    def observe(self, prefix: list[str], kwargs: dict[str, Any]) -> None:
+        # Continuous read-only sampling inside the container catches the short init
+        # window without adding a wait to the measured lifecycle's reset/SQL path.
+        script = (
+            'while :; do '
+            'pg_isready --username "$POSTGRES_USER" --dbname postgres >/dev/null 2>&1; s=$?; '
+            'pg_isready --host 127.0.0.1 --port 5432 --username "$POSTGRES_USER" '
+            '--dbname postgres >/dev/null 2>&1; t=$?; '
+            'printf "%s socket=%s tcp=%s\\n" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$s" "$t"; '
+            '[ "$t" -eq 0 ] && exit 0; done'
+        )
+        try:
+            result = bounded_run([*prefix, 'exec', '--no-TTY', 'postgres', 'sh', '-c', script],
+                                 self.deadline, **{**kwargs, 'check': False})
+            save_json(self.evidence / 'socket-tcp-observer.json', {
+                'returncode': result.returncode, 'stdout': self.redactor.text(result.stdout),
+                'stderr': self.redactor.text(result.stderr),
+                'stdout_sha256': hashlib.sha256(result.stdout.encode()).hexdigest(),
+            })
+        except Exception as error:
+            save_json(self.evidence / 'socket-tcp-observer.json', {
+                'returncode': None, 'diagnostic': str(self.redactor.exception_diagnostic(error)),
+            })
+
+    def finish_observer(self) -> None:
+        require(self.observer is not None, 'actual socket/TCP observer was not launched')
+        assert self.observer is not None
+        self.observer.join(max(0, min(30, self.deadline - time.monotonic())))
+        require(not self.observer.is_alive(), 'bounded actual socket/TCP observer unfinished')
+        observation = json.loads((self.evidence / 'socket-tcp-observer.json').read_text())
+        require(observation['returncode'] == 0, 'actual socket/TCP observer failed')
 
     def __call__(self, command: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
         category = "compose"
         if "pg_isready" in command:
             category = "tcp_probe"
-            probe_started = time.monotonic()
-            requested = kwargs.get("timeout")
-            probe_deadline = min(self.deadline, probe_started + requested) if requested is not None else self.deadline
-            # Observe the actual init socket immediately before each measured TCP probe.
-            socket_command = list(command)
-            index = socket_command.index("--host")
-            del socket_command[index:index + 4]
-            observed = bounded_run(socket_command, probe_deadline, **kwargs)
-            self.event(kind="socket_probe", returncode=observed.returncode,
-                       stdout=self.redactor.text(observed.stdout))
-            if requested is not None:
-                kwargs['timeout'] = probe_deadline - time.monotonic()
-                require(kwargs['timeout'] > 0, "measured probe exhausted readiness deadline")
         elif "psql" in command:
             category = "sql"
         safe_command = [self.redactor.text(part) for part in command]
@@ -156,6 +178,9 @@ class MeasuredRunner:
             raise
         self.event(kind=f"{category}_end", returncode=result.returncode,
                    stdout=self.redactor.text(result.stdout), stderr=self.redactor.text(result.stderr))
+        if command[-3:] == ['up', '--detach', 'postgres'] and self.observer is None:
+            self.observer = threading.Thread(target=self.observe, args=(command[:-3], kwargs), daemon=True)
+            self.observer.start()
         return result
 
 
@@ -174,6 +199,7 @@ def worker(root: Path, tested_commit: str, evidence: Path, deadline: float, star
     try:
         validate_owned(lifecycle, tested_commit)
         lifecycle.reset(timeout_seconds=startup)
+        runner.finish_observer()
         require(lifecycle.execute_sql("SELECT current_database();") == lifecycle.namespace.database_name,
                 "reset reached foreign database")
         migrations = bootstrap_module()
@@ -211,7 +237,7 @@ def worker(root: Path, tested_commit: str, evidence: Path, deadline: float, star
         raise SystemExit(1) from None
 
 
-def verify_ordering(logs: str, events: list[dict[str, Any]]) -> dict[str, object]:
+def verify_ordering(logs: str, events: list[dict[str, Any]], observer: str) -> dict[str, object]:
     lines = logs.splitlines()
     def position(fragment: str, start: int = 0) -> int:
         return next((i for i in range(start, len(lines)) if fragment in lines[i]), -1)
@@ -233,12 +259,8 @@ def verify_ordering(logs: str, events: list[dict[str, Any]]) -> dict[str, object
                         if event['kind'] == 'tcp_probe_end' and event['returncode'] == 0), -1)
     first_sql = next((i for i, event in enumerate(events) if event['kind'] == 'sql_begin'), -1)
     require(0 <= first_ready < first_sql, "SQL occurred before measured final TCP readiness")
-    socket_only = any(
-        event['kind'] == 'socket_probe' and event['returncode'] == 0
-        and any(item['kind'] == 'tcp_probe_end' and item['returncode'] != 0
-                for item in events[i + 1:i + 3])
-        for i, event in enumerate(events[:first_ready])
-    )
+    socket_only = any(re.fullmatch(r'\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ socket=0 tcp=[12]', line)
+                      for line in observer.splitlines())
     require(socket_only, "actual socket-ready/TCP-unready measurement unavailable")
     require(datetime.fromisoformat(events[first_sql]['utc'])
             > datetime.fromisoformat(lines[final_ready].split(' ', 1)[0]),
@@ -298,7 +320,9 @@ def capture(lifecycle: DatabaseLifecycle, evidence: Path, deadline: float) -> No
         "postgres_version": command_output(["docker", "exec", container, "postgres", "--version"], deadline),
     })
     events = [json.loads(line) for line in (evidence / "events.jsonl").read_text().splitlines()]
-    save_json(evidence / "ordering.json", verify_ordering(logs, events))
+    observation = json.loads((evidence / 'socket-tcp-observer.json').read_text())
+    require(observation['returncode'] == 0, 'actual socket/TCP observer did not complete')
+    save_json(evidence / "ordering.json", verify_ordering(logs, events, observation['stdout']))
 
 
 def iteration(index: int, tested_commit: str, evidence: Path, deadline: float, startup: float) -> dict[str, str]:
