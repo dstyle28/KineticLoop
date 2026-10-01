@@ -1,0 +1,158 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-038",
+  "reviewed_head_sha": "f5d671766db33795bf403cbbd54349619b09af88",
+  "review_type": "DB_CONCURRENCY",
+  "status": "PASS",
+  "findings": [],
+  "review_contract_version": "v0.2",
+  "spec_change_request": null,
+  "protected_base": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+  "tested_commit": "fdd4c26fe08e20d194428a56b86461c3f92b04ca",
+  "observations": [
+    {
+      "summary": "Exact protected-base diff has 115 declared files. Production code, migrations, DB/unit tests, lifecycle/CI, frozen authority/baseline, requirement registries, completed artifacts and historical task definitions are unchanged. Only unstarted KL026/027 are refined; KL075/076/077 start NOT_STARTED with no implementation result/evidence. Exact task/packet hashes and projections fail closed; KL026/027 are tests-only, owner prerequisites serialize transaction_interfaces/user_coordination.",
+      "sources": [
+        "docs/exec-plans/governance/HG-038.yaml:21",
+        "tests/harness/test_m3_next_wave_scope.py:63",
+        "tools/harness/validate_harness.py:3937",
+        "docs/harness/RESOURCE_LOCKS.md:40"
+      ]
+    },
+    {
+      "summary": "All eight final tested-fdd4c26 raw envelopes were independently decoded: SHA256, UTF-8 byte count, exact command, protected base, tested SHA, exit 0 and PASS attestations match governance checks. Raw counts are audit 1515, scope 179, validation 38, harness 1852, unit 2572, lint 19, typecheck 45, diff 0. Logs report 85 scope, 525 harness and 209 unit passes. The single tested-to-reviewed commit changes only newly added own evidence plus own governance record; no existing evidence is overwritten.",
+      "sources": [
+        "docs/exec-plans/evidence/HG-038/append_only_scope_audit-fdd4c26.log",
+        "docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-fdd4c26.log",
+        "docs/exec-plans/evidence/HG-038/harness_validation-fdd4c26.log",
+        "docs/exec-plans/evidence/HG-038/harness_tests-fdd4c26.log",
+        "docs/exec-plans/evidence/HG-038/unit_tests-fdd4c26.log",
+        "docs/exec-plans/evidence/HG-038/lint-fdd4c26.log",
+        "docs/exec-plans/evidence/HG-038/typecheck-fdd4c26.log",
+        "docs/exec-plans/evidence/HG-038/diff_clean-fdd4c26.log",
+        "docs/harness/THREAD_RESULT_CONTRACT.md:61",
+        "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md:1"
+      ]
+    },
+    {
+      "summary": "KL019/KL047/KL074 integration records append genuinely absent facts. Independently verified result-to-reviewed-to-review-record-to-normal-two-parent-merge-to-protected-base ancestry, byte-identical PASS results, original PASS review types and reviewed SHAs, linear task-review-only suffixes and equality of complete review-record/merge trees. No result or original review was rewritten; rejected HG038 records are archival inputs only.",
+      "sources": [
+        "docs/exec-plans/integrations/KL-019.json",
+        "docs/exec-plans/integrations/KL-047.json",
+        "docs/exec-plans/integrations/KL-074.json",
+        "docs/exec-plans/evidence/HG-038/integration-provenance.json",
+        "docs/harness/THREAD_REVIEW_CONTRACT.md:11"
+      ]
+    },
+    {
+      "summary": "KL026 I04 explicitly races actual CommitBundle T6 against AcquireLease T5, including both orders, real blocking observation, fresh post-lock expiry, no-effect stale worker rejection and retained immutable outcomes. Current T6 requires RUNNING/current attempt/request/owner/fence, live lease/deadline and current manifest/certificate basis; takeover cannot reopen terminal root. ReserveCall cannot stand in for T6, and I04@WF remains separate.",
+      "sources": [
+        "docs/exec-plans/active/KL-026.md:102",
+        "src/kineticloop/persistence/protocol_execution.py:287",
+        "src/kineticloop/persistence/transactions.py:3250",
+        "src/kineticloop/persistence/transactions.py:4550",
+        "src/kineticloop/persistence/planning.py:301",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md:514"
+      ]
+    },
+    {
+      "summary": "I03 root CancelIntent uses only existing restricted S27 cancellation under S01/intent/reservation/receipt ordering. SELECT-only same-connection instrumentation is explicitly bounded; no CancelIntent S32/accessor grant is assumed. Actual CancelUndispatched separately releases only locked RESERVED occupation, preserving terminal root. Terminal-with-RESERVED is safe because live fence/dispatch/commit deny; dispatch-first cancellation retains DISPATCH_INTENT occupation and identity, with no refund or resend.",
+      "sources": [
+        "docs/exec-plans/active/KL-026.md:195",
+        "src/kineticloop/persistence/transactions.py:235",
+        "src/kineticloop/persistence/transactions.py:739",
+        "src/kineticloop/persistence/transactions.py:4113",
+        "src/kineticloop/persistence/transactions.py:4225",
+        "src/kineticloop/persistence/call_ledger.py:330",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md:526"
+      ]
+    },
+    {
+      "summary": "KL075 assigns S26 to ContextService and S29 stage changes to PlanningWorkflowService, preserves CREATED-to-LEASED and exact forward/terminal state machine, derives guards under locks, keeps external computation outside coordination and leaves COMMITTED exclusively to T6. KL076 preserves public preparation boundaries while requiring a typed guarded short persistence path for S34-S37 and closing unguarded workflow output writes. F/D/N source identities, same-subject FK chains, immutable hashes and certificates are mandatory; repair uses a new guarded attempt under original root budget/deadline.",
+      "sources": [
+        "docs/exec-plans/active/KL-075.md:150",
+        "docs/exec-plans/active/KL-076.md:169",
+        "src/kineticloop/persistence/transactions.py:5044",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:260",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:284",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:340",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md:490"
+      ]
+    },
+    {
+      "summary": "KL077 extends the current single-training synthetic slice to complete TEST TRAINING/NUTRITION member consumption, rechecking exact action resolution/validation, artifact closure and server validity for each member in one T6. Required completeness derives from policy/certificate and cannot be downgraded by selecting the legacy adapter. Strict CONTINUE/RESUME wire models and current T7 evaluators already exist. Original START binding stays immutable, and actual ordinary owner PAUSE produces valid RESUME lifecycle. Ordinary TEST pause is a contraction under S01/exact S44/receipt with event/basis/receipt/outbox atomically, no registry read or execution grant; protective T2 controls and full S51-first RESUME guards remain distinct. Denial trajectories explicitly establish lifecycle/current-binding preconditions and assert the authorization/expiry cause with fresh keys.",
+      "sources": [
+        "docs/exec-plans/active/KL-077.md:171",
+        "docs/exec-plans/active/KL-027.md:92",
+        "src/kineticloop/contracts/commands.py:615",
+        "src/kineticloop/persistence/transactions.py:3036",
+        "src/kineticloop/persistence/transactions.py:4362",
+        "src/kineticloop/persistence/protocol_execution.py:315",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:414",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:558"
+      ]
+    },
+    {
+      "summary": "Frozen registry-S01-intent-reservation-head-session-receipt ordering remains required. Deterministic exact-equality pure predicate PU is separate from actual guarded PostgreSQL before/after and lock-wait-crossing DC. Source uses post-lock clock_timestamp and half-open comparisons; setup-time equality, caller clock, cached time and status jobs cannot substitute. No DC-to-WF or product PASS inference is admitted.",
+      "sources": [
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:505",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:537",
+        "src/kineticloop/persistence/transactions.py:3277",
+        "src/kineticloop/persistence/transactions.py:4372",
+        "src/kineticloop/protocol/authorization.py:280",
+        "src/kineticloop/workflow/planning.py:151",
+        "tests/harness/test_m3_next_wave_scope.py:120"
+      ]
+    },
+    {
+      "summary": "Every prospective suite must derive exact database and Compose namespaces from first seven HEAD hex characters plus first twelve lowercase hexadecimal SHA256 characters of the resolved root and a fixed task/suite label, validate before construction and every destructive route, audit nested bootstrap/reset/destroy and assert current_database. bootstrap_two_phase already resets its supplied lifecycle, so the explicit selected-lifecycle and nested-helper requirements are necessary. Foreign legacy fixtures are excluded locally; unchanged hosted full DB CI runs on fresh VM. No shared lifecycle or workflow edits are authorized.",
+      "sources": [
+        "docs/exec-plans/active/KL-026.md:200",
+        "docs/exec-plans/active/KL-075.md:158",
+        "docs/exec-plans/active/KL-076.md:175",
+        "docs/exec-plans/active/KL-077.md:176",
+        "src/kineticloop/db/lifecycle.py:266",
+        "src/kineticloop/db/lifecycle.py:322",
+        "tests/db/test_migrations.py:262"
+      ]
+    }
+  ],
+  "independent_validation": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/kl017-venv/bin/python -B -m pytest -p no:cacheprovider -q tests/harness/test_m3_next_wave_scope.py",
+      "result": "PASS",
+      "detail": "85 passed in 0.25s"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/kl017-venv/bin/python -B docs/exec-plans/evidence/HG-038/audit.py",
+      "result": "PASS",
+      "detail": "HG038_AUDIT_PASS at reviewed SHA"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/kl017-venv/bin/python -B -m kineticloop.db.cli check-harness",
+      "result": "PASS",
+      "detail": "HARNESS_CHECK_PASS tasks=74 active=71"
+    },
+    {
+      "command": "git diff --check 3c1312e5946593d73f169f6ea1ce559c27523bd2 f5d671766db33795bf403cbbd54349619b09af88",
+      "result": "PASS",
+      "detail": "exit 0; no output"
+    }
+  ],
+  "known_limitations": [
+    "Governance-only review: future KL026/027/075/076/077 implementation and real PostgreSQL tests remain NOT_RUN. No DB, Docker, provider, model or external messaging command was invoked.",
+    "Full harness/unit/lint/typecheck runs at tested SHA were verified through committed raw evidence, not independently rerun in full. Scope tests, audit and harness validation were rerun at reviewed SHA.",
+    "Trusted restricted TEST control/cancellation/projection recipes establish internal owner instrumentation only, not production typed ingress or authentication assurance.",
+    "Complete F/D/N, ordinary TEST lifecycle pause, guarded preparation and full T6/T7 adapters require fresh implementation reviews and actual PostgreSQL rollback/concurrency/namespace evidence before their task PASS.",
+    "This PASS grants no product/release/M3 closure, production activation, executable real-data shadow or missing WF-layer evidence."
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-038.yaml",
+    "docs/exec-plans/active/KL-026.md",
+    "docs/exec-plans/active/KL-027.md",
+    "docs/exec-plans/active/KL-075.md",
+    "docs/exec-plans/active/KL-076.md",
+    "docs/exec-plans/active/KL-077.md",
+    "docs/exec-plans/evidence/HG-038/integration-provenance.json",
+    "tests/harness/test_m3_next_wave_scope.py"
+  ]
+}

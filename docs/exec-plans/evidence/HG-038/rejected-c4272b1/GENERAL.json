@@ -1,0 +1,63 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-038",
+  "review_type": "GENERAL",
+  "reviewed_head_sha": "c4272b1804fb4ab0d6e74f0605786d65dd070e1b",
+  "review_contract_version": "v0.2",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "id": "HG038-GENERAL-001",
+      "classification": "BLOCKER",
+      "priority": "P1",
+      "title": "Supply the missing guarded PAUSE transition before requiring positive RESUME",
+      "file": "docs/exec-plans/active/KL-077.md",
+      "line": 88,
+      "description": "The required continue_resume_current_dc oracle demands a valid ResumeSession that appends a new immutable binding and forbids raw PAUSE/state seeding. At the protected base and reviewed head, ResumeSession requires an existing PAUSED session with a START binding (transactions.py:3038), while StartSession, ResumeSession and ContinueSession can write S44 only with lifecycle IN_PROGRESS (transactions.py:1725-1736). ProtocolExecutionService exposes publish/commit/start only; no source service writes PAUSED. The sole existing test setup for PAUSED is a raw administrative UPDATE (test_transaction_interfaces.py:5905), explicitly forbidden by this packet. Neither KL075/KL076 nor KL077 declares an authenticated guarded pause owner or prerequisite. A guard-only negative setup cannot satisfy the separately required valid RESUME oracle. Consequently this supposedly enforceable task cannot complete without hidden owner expansion or prohibited output seeding.",
+      "required_change": "Refine the prospective task decomposition to supply an explicitly bounded authenticated guarded pause transition, either through a separate prerequisite or an exact owner slice, including ownership, immutable START preservation, allowed lifecycle transitions, current guards, lock order, replay/atomicity and positive/negative command oracles. Preserve the closed public registry and frozen semantics. Keep positive RESUME evidence mandatory; do not use raw PAUSED setup or negative-only evidence as its substitute. Refresh exact packet/backlog/traceability/validator projections and rerun governance checks on a new tested revision before fresh review.",
+      "references": [
+        "docs/exec-plans/active/KL-077.md:88",
+        "docs/exec-plans/active/KL-077.md:160",
+        "docs/exec-plans/active/KL-077.md:163",
+        "src/kineticloop/persistence/transactions.py:1725",
+        "src/kineticloop/persistence/transactions.py:3038",
+        "src/kineticloop/persistence/protocol_execution.py:451",
+        "tests/db/test_transaction_interfaces.py:5905",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md:422"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-038.yaml",
+    "docs/exec-plans/active/KL-026.md",
+    "docs/exec-plans/active/KL-027.md",
+    "docs/exec-plans/active/KL-075.md",
+    "docs/exec-plans/active/KL-076.md",
+    "docs/exec-plans/active/KL-077.md",
+    "tests/harness/test_m3_next_wave_scope.py",
+    "tools/harness/validate_harness.py",
+    "docs/exec-plans/evidence/HG-038/append_only_scope_audit-accd461.log",
+    "docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-accd461.log",
+    "docs/exec-plans/evidence/HG-038/harness_tests-accd461.log",
+    "docs/exec-plans/evidence/HG-038/unit_tests-accd461.log",
+    "docs/exec-plans/evidence/HG-038/integration-provenance.json",
+    "docs/exec-plans/integrations/KL-019.json",
+    "docs/exec-plans/integrations/KL-047.json",
+    "docs/exec-plans/integrations/KL-074.json"
+  ],
+  "verification": {
+    "protected_base": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+    "tested_commit": "accd461dd35e2751060755b4c9989236157507a7",
+    "scope": "Only unstarted KL026/KL027 refined; exactly three unused NOT_STARTED identities appended. All other task definitions remain equal to protected base. No production implementation, frozen/product authorities, completed results/evidence/reviews or milestone records changed.",
+    "file_inventory": "74 changed files exactly equal committed governance declaration.",
+    "evidence_binding": "All eight final check metadata/envelopes match command and exact tested SHA; raw byte counts and SHA256 verified. Tested-to-reviewed suffix is linear and only own governance record/new evidence.",
+    "integration_chains": "KL019/KL047/KL074 records bind unchanged PASS result bytes, required PASS reviews and normal two-parent merged ancestry; actual merge commits precede/equal protected base.",
+    "specialist_union": [
+      "GENERAL",
+      "PROTOCOL",
+      "DB_CONCURRENCY"
+    ],
+    "independent_execution": "PYTHONDONTWRITEBYTECODE=1 /private/tmp/kl017-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_m3_next_wave_scope.py: 82 passed in 0.25s. No DB/Docker lifecycle invoked; no repository writes.",
+    "prospective_status": "All five prospective tasks remain NOT_STARTED, evidence_refs empty, no result/review/integration artifacts. Product/release/M3 obligations remain unclaimed, including I04@WF independent of I04@DC.",
+    "limitations": "GENERAL governance review only; no prospective implementation or release-layer execution was authorized or performed. Structural/harness PASS does not cure the positive RESUME feasibility blocker."
+  }
+}

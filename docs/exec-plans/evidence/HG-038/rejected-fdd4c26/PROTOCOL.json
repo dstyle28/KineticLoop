@@ -1,0 +1,95 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-038",
+  "reviewed_head_sha": "fdd4c26fe08e20d194428a56b86461c3f92b04ca",
+  "review_type": "PROTOCOL",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "title": "Post-test modification of existing evidence script invalidates governance evidence binding",
+      "file": "docs/exec-plans/evidence/HG-038/write_record.py",
+      "line": 11,
+      "description": "The recorded tested_commit is 4363887168b123fedc3ed9cadcfd7086a36be60b, but the tested-to-reviewed suffix modifies the already existing write_record.py (adds sys.argv revision selection and an ancestry check). The selected governance merge gate permits only additions in the own evidence directory after testing. Independently invoking governance_suffix_errors on the exact tested/reviewed SHAs returns governance-tested-evidence-not-addition:docs/exec-plans/evidence/HG-038/write_record.py. The current review cannot PASS even though the proposed protocol decomposition needs no frozen semantic change.",
+      "required_change": "Run the required governance checks against a revision containing this script change, bind a new tested_commit and evidence, and obtain new independent reviews. After the newly tested revision append only new evidence and the own governance record; do not edit existing evidence scripts/logs.",
+      "evidence_refs": [
+        "docs/exec-plans/governance/HG-038.yaml:3",
+        "docs/exec-plans/evidence/HG-038/write_record.py:4",
+        "docs/exec-plans/evidence/HG-038/write_record.py:11",
+        "tools/harness/validate_harness.py:1676",
+        "tools/harness/validate_harness.py:3300"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "AGENTS.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    "THREAD_REVIEW.schema.json",
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md:374",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md:421",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md:490",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md:523",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:255",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:319",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:401",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:504",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:535",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md:558",
+    "src/kineticloop/contracts/commands.py:655",
+    "src/kineticloop/contracts/commands.py:702",
+    "src/kineticloop/persistence/transactions.py:235",
+    "src/kineticloop/persistence/transactions.py:387",
+    "src/kineticloop/persistence/transactions.py:739",
+    "src/kineticloop/persistence/transactions.py:2276",
+    "src/kineticloop/persistence/transactions.py:3035",
+    "src/kineticloop/persistence/transactions.py:3250",
+    "src/kineticloop/persistence/transactions.py:3593",
+    "src/kineticloop/persistence/transactions.py:4225",
+    "src/kineticloop/persistence/transactions.py:4362",
+    "src/kineticloop/persistence/call_ledger.py:330",
+    "src/kineticloop/persistence/protocol_execution.py:317",
+    "src/kineticloop/workflow/planning.py:142",
+    "src/kineticloop/protocol/authorization.py:279",
+    "docs/exec-plans/active/KL-026.md:99",
+    "docs/exec-plans/active/KL-026.md:195",
+    "docs/exec-plans/active/KL-027.md:87",
+    "docs/exec-plans/active/KL-075.md:165",
+    "docs/exec-plans/active/KL-076.md:168",
+    "docs/exec-plans/active/KL-077.md:95",
+    "tools/harness/validate_harness.py:3937",
+    "tests/harness/test_m3_next_wave_scope.py:19"
+  ],
+  "protocol_assessment": {
+    "frozen_change_required": false,
+    "scope": "Governance definitions and prospective test/owner feasibility only; no implementation approval for unstarted tasks.",
+    "cancellation": "Existing CancelIntent owns restricted S27 status mutation and requires S27 update; it has no S32 insertion/ledger accessor. KL026 explicitly terminates the root under S01/intent/reservation then calls actual CancelUndispatched separately. Current cleanup reads only exact RESERVED and updates accounting without business status. The terminal-with-RESERVED intermediate retains occupation while current worker/T6/dispatch authority denies; dispatch-first preserves possible-call occupation and cannot be refunded. This matches Protocol6.5/6.6/6.9 and frozen command ownership.",
+    "ordinary_pause": "Protocol5.5 permits recording pause/stop reason; DB S45 places stopping events in S03 and DB5 requires execution-basis updates for T7 stopping. KL077 restricts ordinary authenticated TEST lifecycle contraction to S01/S44 plus atomic receipt/event/outbox, exact prior START-or-RESUME binding and revision; no new issuance/binding/epoch/head or eligibility grant. S01->S44->receipt takes only needed locks with no registry eligibility dependency. Protective STOP/hold remains independent T2. Existing T7 RESUME requires PAUSED+START, so owner-produced pause and independent lifecycle-valid denial runs address the actual merged guard rather than using raw PAUSE seeds.",
+    "pipeline": "The public registry contains 39 commands, and RecordSnapshot/AdvanceAttempt remain explicitly internal. KL075 adds bounded internal guarded snapshot/stage owners with CREATED->LEASED and exact frozen forward stages; KL076 guards existing preparation owners, computes immutable F->D->N and source-derived certificates; KL077 extends the actual currently synthetic single-TRAINING adapter to full TRAINING/NUTRITION T6 and existing typed CONTINUE/RESUME T7. Exact TEST policy domain blocks legacy synthetic downgrade. No migration or new public command is assumed; DB schema supports N->D->F same-subject references and immutable typed hashes.",
+    "time_layers": "Actual merged guards use trusted clock_timestamp after locks and have no deterministic equality seam. Actual pure require_live and evaluate_executability predicates reject equality. Packets separately require PU equality and actual DC before/after plus observed-lock-wait expiry; I04@WF remains unfulfilled and cannot be promoted by DC.",
+    "separation": "All five tasks retain isolated TEST subject/principal/policy/environment, no provider/model/network work inside transactions, no planned-to-actual substitution, no executable shadow or production activation. KL026 allows declared synthetic upstream guard inputs only as DC limitations; KL027 full trajectory forbids target-output seeding and waits for normally merged KL075/076/077.",
+    "projection_checks": "Independent read-only validator calls found no definition/packet errors and exact traceability projection for all five tasks (17/12/13/13/14 exact checks respectively). All remain NOT_STARTED with prospective implementation evidence unclaimed. Git diff independently shows no production src, frozen baseline/authorities, requirement set/specs/evidence manifest, completed results or milestone changes."
+  },
+  "limitations": [
+    "No DB/Docker lifecycle or prospective owner implementation was run. This review assesses packet feasibility and protocol meaning, not prospective PU/DC/E2E execution or release readiness.",
+    "Committed governance check records were inspected; I did not rerun the eight full governance commands. The suffix blocker was independently reproduced by the actual validator.",
+    "No product requirement PASS, M3/G-SHADOW/release closure, provider integration, clinical/model quality, or production ingress/authentication assurance is established.",
+    "Fresh review is required after the evidence-binding repair."
+  ],
+  "independent_checks": [
+    {
+      "name": "actual-governance-tested-suffix",
+      "result": "FAIL",
+      "output": "governance-tested-evidence-not-addition:docs/exec-plans/evidence/HG-038/write_record.py"
+    },
+    {
+      "name": "exact-five-packet-definition-traceability-projections",
+      "result": "PASS"
+    },
+    {
+      "name": "protected-production-frozen-requirement-result-milestone-diff",
+      "result": "PASS"
+    }
+  ]
+}

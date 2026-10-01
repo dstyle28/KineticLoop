@@ -33,3 +33,8 @@ otherwise the Harness definition is invalid rather than merely unschedulable.
 - `postgres_lifecycle`
 
 `postgres_lifecycle` serializes the concrete lifecycle/Compose readiness writers; it does not grant transaction, migration or shared-database authority. KL074 must use task-owned coldstart namespaces and dedicated hosted VM regression Docker.
+
+- `protocol_interleaving_suite`
+- `test_only_demo_suite`
+
+HG038 gives KL026 and KL027 tests-only suites independent task-owned databases. These resources grant no production owner writes. KL075/076/077 serialize transaction_interfaces and user_coordination; merged dependencies and exact write paths remain mandatory.

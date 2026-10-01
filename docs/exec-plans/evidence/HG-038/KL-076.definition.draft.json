@@ -1,0 +1,199 @@
+{
+  "id": "KL-076",
+  "milestone": "M3",
+  "title": "Deterministic TEST F/D/N preparation owners",
+  "owner_role": "backend",
+  "depends_on": [
+    "KL-075",
+    "KL-017",
+    "KL-022",
+    "KL-023",
+    "KL-074"
+  ],
+  "commands": [],
+  "transaction_boundaries": [
+    "T5",
+    "T6-PREPARATION"
+  ],
+  "invariant_ids": [
+    "INV-01",
+    "INV-02",
+    "INV-03",
+    "INV-04",
+    "INV-05",
+    "INV-09",
+    "INV-10",
+    "INV-13",
+    "INV-14",
+    "INV-15",
+    "INV-16",
+    "INV-17"
+  ],
+  "table_ids": [
+    "S01",
+    "S02",
+    "S03",
+    "S04",
+    "S26",
+    "S27",
+    "S28",
+    "S29",
+    "S34",
+    "S35",
+    "S36",
+    "S37"
+  ],
+  "required_test_layers": [
+    "PU",
+    "DC"
+  ],
+  "deliverables": [
+    "Deterministic TEST F/D/N preparation owners with exact owner and immutable identity contract.",
+    "Named positive/negative PU and real PostgreSQL checks with persisted rows/receipt/event/outbox assertions, bounded lock barriers and task-owned namespace inventory."
+  ],
+  "definition_of_done": "Every exact named check and oracle executes and passes on tested_commit with committed raw evidence and no skipped/xfail/zero-collection substitute; only declared scope is written, frozen guards and immutable history hold, all product/release/layer obligations remain independent. Full immutable preparation is independently validated while production planning/quality/release remains unimplemented and NOT_RUN.",
+  "entry_conditions": [
+    "Actual prerequisite PASS results, required reviews, and normal MERGED commits verified against protected base before first DB lifecycle.",
+    "M2 closure PASS: docs/exec-plans/milestones/M2.json; isolated TEST gate construction does not assume full G-SHADOW or production release closure.",
+    "KL074 actual normally merged readiness implementation verified; exclusive task resources/write paths available.",
+    "No result/review/integration for this unstarted task at protected base; every prospective check starts NOT_RUN."
+  ],
+  "status": "NOT_STARTED",
+  "evidence_refs": [],
+  "thread_id": "THREAD-KL-076",
+  "thread_mode": "INDEPENDENT_WORKTREE",
+  "context_files": [
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+    "docs/exec-plans/evidence/HG-038/PREPARATION.md",
+    "src/kineticloop/contracts/commands.py",
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/persistence/planning.py",
+    "src/kineticloop/persistence/protocol_execution.py",
+    "docs/contracts/protocol_execution.md",
+    "docs/exec-plans/completed/KL-075_RESULT.yaml",
+    "docs/exec-plans/completed/KL-017_RESULT.yaml",
+    "docs/exec-plans/completed/KL-022_RESULT.yaml",
+    "docs/exec-plans/completed/KL-023_RESULT.yaml",
+    "docs/exec-plans/completed/KL-074_RESULT.yaml"
+  ],
+  "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+  "merge_unit": "ONE_PR",
+  "handoff_artifact": "docs/exec-plans/completed/KL-076_RESULT.yaml",
+  "shared_hotspot": true,
+  "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+  "task_identity": "harness-backlog-v0.2/KL-076",
+  "requirements_covered": [],
+  "checks_required_for_this_task": [
+    "fixture_fdn_identity_pu",
+    "fixture_fdn_repair_pu",
+    "fixture_resolution_validation_pu",
+    "fixture_preparation_owners_dc",
+    "fixture_preparation_denials_dc",
+    "fixture_preparation_atomicity_dc",
+    "fixture_namespace_pu",
+    "fixture_suite_dc",
+    "harness_validation_passes",
+    "unit_regressions_pass",
+    "harness_regressions_pass",
+    "lint_passes",
+    "typecheck_passes"
+  ],
+  "resource_keys": [
+    "transaction_interfaces",
+    "user_coordination",
+    "planning_ledger"
+  ],
+  "write_paths": [
+    "src/kineticloop/persistence/deterministic_planning.py",
+    "src/kineticloop/workflow/deterministic_planning.py",
+    "src/kineticloop/persistence/transactions.py",
+    "tests/db/test_deterministic_planning.py",
+    "tests/unit/workflow/test_deterministic_planning.py",
+    "tests/fixtures/deterministic_planning.json",
+    "docs/contracts/deterministic_planning.md"
+  ],
+  "review_requirements": [
+    "DB_CONCURRENCY",
+    "GENERAL",
+    "PROTOCOL"
+  ],
+  "conditional_depends_on": [],
+  "environment_requirements": [
+    "Exact task-owned SHA/resolved-worktree-derived DB and Compose namespace per suite; isolated TEST subjects/policies/environments; no foreign legacy fixture lifecycle on shared Docker."
+  ],
+  "packet_refinement": "ENFORCEABLE",
+  "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+  "write_paths_status": "ENFORCEABLE",
+  "evidence_paths": [
+    "docs/exec-plans/evidence/KL-076/**"
+  ],
+  "check_contracts": [
+    {
+      "check_id": "fixture_fdn_identity_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_deterministic_planning.py::test_fdn_identities",
+      "pass_oracle": "Immutable typed FITNESS F, code-computed D with exact F identity/hash/method/version/window/semantic classes, N with exact F/D/manifest/policy basis; canonical content hashes reject mutation/wrong subject/stale/missing dependencies. PRESCRIBED_QUANTITY/TARGET/ESTIMATE never actual execution."
+    },
+    {
+      "check_id": "fixture_fdn_repair_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_deterministic_planning.py::test_fitness_repair",
+      "pass_oracle": "F1\u2192D1\u2192N1 then changed F2 creates new immutable F2/D2/N2; old D1/N1 cannot validate new bundle and merely swapping hash references rejects. Explicit deterministic recalculation, same root budget/accounting, original revisions unchanged; no invented stage loop."
+    },
+    {
+      "check_id": "fixture_resolution_validation_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_deterministic_planning.py::test_source_bound_validation",
+      "pass_oracle": "Resolver derives exact action-scoped support/contradiction/association/coverage/consistency/truncation/freshness from immutable manifest and declared admitted fixture evidence; agent citations cannot declare completeness. Mechanical TEST policy explicitly defines units/window/dedup/unknown exposure/actual replacement and cross-domain envelope/semantic predicates; missing/contradictory/incomplete/truncated/mismatched/expired basis rejects. No clinical recommendation, learned quality policy or real release claim."
+    },
+    {
+      "check_id": "fixture_preparation_owners_dc",
+      "command": "uv run pytest -q tests/db/test_deterministic_planning.py::test_owner_pipeline",
+      "pass_oracle": "Actual RecordProposal/RecordDemandFeatures/ResolveEvidence/RecordValidation restricted owners persist S34 F then S35 D then S34 N then S36/S37 certificates, guarded by merged KL075 current request/attempt/lease/fence and exact snapshot/manifest. Use existing same-subject N.demand_feature_id\u2192D.ref_s34_id\u2192F foreign-key chain; persist and verify duplicated F/D hashes, parent repair identity, manifest/policy and method version in immutable typed payloads. No missing direct-F column or speculative migration is assumed. Full parent/basis refs, immutable hashes and source ranges persisted; stage advances only through KL075. No target output seeds/self-PASS labels."
+    },
+    {
+      "check_id": "fixture_preparation_denials_dc",
+      "command": "uv run pytest -q tests/db/test_deterministic_planning.py::test_stale_and_incomplete",
+      "pass_oracle": "Real PG takeover/revision/epoch/manifest/expiry/terminal and wrong principal/policy/environment deny each writer with zero effects; stale F/D/N combinations, missing Nutrition, resolution/certificate mismatch fail closed. Unguarded execute_preparation insert/update attempts for S34\u2013S37 reject with zero effects while existing read-only/non-workflow preparation remains outside coordination. ACK-loss replay historical IDs only; independent new operation still guards current authority."
+    },
+    {
+      "check_id": "fixture_preparation_atomicity_dc",
+      "command": "uv run pytest -q tests/db/test_deterministic_planning.py::test_immutable_replay_rollback",
+      "pass_oracle": "Injected failure and duplicate races preserve exact immutable rows and stage/receipt/event/outbox; no silent history overwrite, success/issuance/head/binding or provider call."
+    },
+    {
+      "check_id": "fixture_namespace_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_deterministic_planning.py::test_namespace",
+      "pass_oracle": "Exact fixture label own namespace proven before lifecycle with nested bootstrap/reset/cleanup audit and peer/invalid/ambient negative controls."
+    },
+    {
+      "check_id": "fixture_suite_dc",
+      "command": "uv run pytest -q tests/db/test_deterministic_planning.py",
+      "pass_oracle": "Own real-PG suite and deterministic local fixture pipeline execute completely without skipped checks."
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "command": "uv run kl check-harness",
+      "pass_oracle": "HARNESS_CHECK_PASS; frozen/index/packet/prospective status and revision-bound scope validate."
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "command": "uv run kl test-unit",
+      "pass_oracle": "All repository unit tests pass, no newly skipped/xfail or suppressed failures."
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "command": "uv run kl test-harness",
+      "pass_oracle": "All harness regressions pass, including unchanged command/owner/frozen gates."
+    },
+    {
+      "check_id": "lint_passes",
+      "command": "uv run kl lint",
+      "pass_oracle": "Repository lint passes."
+    },
+    {
+      "check_id": "typecheck_passes",
+      "command": "uv run kl typecheck",
+      "pass_oracle": "Repository typecheck passes."
+    }
+  ]
+}

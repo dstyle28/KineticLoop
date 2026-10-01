@@ -1,0 +1,47 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-038",
+  "reviewed_head_sha": "fdd4c26fe08e20d194428a56b86461c3f92b04ca",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "findings": [
+    {
+      "classification": "BLOCKER",
+      "priority": "P1",
+      "title": "Post-test modification of existing evidence invalidates the governance tested suffix",
+      "file": "docs/exec-plans/evidence/HG-038/write_record.py",
+      "start": 4,
+      "end": 12,
+      "description": "The governance record binds tested_commit 4363887168b123fedc3ed9cadcfd7086a36be60b, but commit fdd4c26fe08e20d194428a56b86461c3f92b04ca modifies write_record.py, which already existed at the tested revision. governance_suffix_errors(root, tested, reviewed, HG-038, tested) returns governance-tested-evidence-not-addition:docs/exec-plans/evidence/HG-038/write_record.py. The eight successful check envelopes therefore do not satisfy the selected SHA-bound governance gate despite their matching raw hashes and commands.",
+      "required_change": "Run all eight checks on a revision that already contains the final script, then append only new own evidence and the updated own governance record. Obtain a fresh complete review set on the resulting final head; do not edit existing evidence in the tested-to-reviewed suffix."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-038.yaml",
+    "docs/exec-plans/evidence/HG-038/append_only_scope_audit-4363887.log",
+    "docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-4363887.log",
+    "docs/exec-plans/evidence/HG-038/harness_validation-4363887.log",
+    "docs/exec-plans/evidence/HG-038/harness_tests-4363887.log",
+    "docs/exec-plans/evidence/HG-038/unit_tests-4363887.log",
+    "docs/exec-plans/evidence/HG-038/lint-4363887.log",
+    "docs/exec-plans/evidence/HG-038/typecheck-4363887.log",
+    "docs/exec-plans/evidence/HG-038/diff_clean-4363887.log",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_m3_next_wave_scope.py"
+  ],
+  "observations": [
+    "Inspected actual AGENTS.md, current authority index, pr-merge-reviewer skill, governance/result/review/merge contracts and relevant frozen ownership, lifecycle and half-open time clauses. Compared the complete protected-base to reviewed-head inventory: exactly 95 paths match files_changed; only KL026/KL027 definitions change and KL075/KL076/KL077 identities append. All other task definitions remain byte-equivalent as parsed, all protected production/test/migration/CI/frozen/product/completed/history/milestone/review paths remain unchanged.",
+    "Verified all eight selected raw envelopes and companion metadata: exact commands/base/tested SHA, exit zero/PASS, raw UTF-8 SHA256 and byte counts. Logs report 85 scope, 525 harness, 209 unit tests with no skipped/xfail or zero-collection substitute; lint/typecheck and diff checks succeed. Historical rejected reviews/checks are preserved as own evidence, not current PASS.",
+    "Independently verified appended KL019/KL047/KL074 records against local Git ancestry, complete merge tree identity, byte-identical PASS results and the full required historical SHA-bound PASS review sets. Verified normal merged prerequisite chains KL017/KL022/KL023/KL024/KL025 against protected base.",
+    "Exact packet/definition hashes, full backlog and traceability projection checks pass. Independently ran PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/kl017-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_m3_next_wave_scope.py: 85 passed. Mutations to named ownership, oracle, scope, dependencies and packet boundaries fail closed.",
+    "Required changed-definition specialist union is GENERAL/PROTOCOL/DB_CONCURRENCY across both protected-base and reviewed-head definitions; cannot be weakened by this PR. Owner tasks serialize shared transaction interfaces; tests-only KL026/KL027 have explicit disjoint write/resource scopes, owned DB/Compose namespaces and normal hosted regression gates.",
+    "I03 explicitly composes root cancellation under existing CancelIntent followed by separate RESERVED ledger cleanup; no speculative S32 grant, refund of DISPATCH_INTENT or atomic root-plus-ledger claim. KL077 declares minimal ordinary lifecycle PAUSE with S01/S44/bookkeeping only, positive START-PAUSE-RESUME and immutable bindings. KL027/KL077 require independent valid lifecycle trajectories and exact current-auth/expiry rejection causes, rather than incidental lifecycle/key denial. Exact equality is deterministic PU predicate evidence, real-PG DC is before/after and observed post-lock expiry, and I04@WF remains independent."
+  ],
+  "known_limitations": [
+    "Governance review only. No future KL026/KL027/KL075/KL076/KL077 implementation, product/release/M3 evidence or clinical/model quality is established; prospective task checks remain NOT_RUN.",
+    "No DB/Docker lifecycle, external messages, repository writes or commits were performed in this review. Inspected committed prerequisite evidence rather than rerunning historical database tests.",
+    "Plain harness-validation PASS does not exercise the selected governance reviewed-head suffix; the direct authoritative suffix check exposes the blocker above.",
+    "Fresh required specialist artifacts and normal hosted gates must pass on the corrected final SHA before merge."
+  ],
+  "spec_change_request": null
+}
