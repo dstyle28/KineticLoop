@@ -22,7 +22,8 @@ path = ROOT / 'HARNESS_DOCUMENT_MANIFEST.json'
 d = json.loads(path.read_text()); refresh(d['files'])
 for name in ['KL-075', 'KL-076', 'KL-077']:
     new = f'docs/exec-plans/active/{name}.md'
-    assert not any(e['path'] == new for e in d['files'])
     p = ROOT / new
+    if any(e['path'] == new for e in d['files']):
+        continue
     d['files'].append({'path':new,'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()})
 path.write_text(json.dumps(d, indent=2) + '\n')
