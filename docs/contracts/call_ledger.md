@@ -52,8 +52,14 @@ reference. Its shape does not establish trust. The dedicated settlement ingress
 requires its injected trusted receipt verifier before coordination begins.
 Untrusted, duplicate and conflicting evidence cannot refund occupation twice.
 Settlement atomically removes the exact outstanding maximum and adds verified
-actual usage. Actual above a reserved maximum remains recorded without clamping;
-an overdrawn root denies subsequent reservation. Late settlement updates only
+actual usage. Actual above any configured reservation maximum remains recorded
+without clamping and atomically sets the root's accounting-only
+`call_bound_violation=true` marker. The marker irreversibly denies new reservations
+even while every aggregate root limit retains capacity. Subsequent cancellation,
+in-bound settlement, join, revision and takeover preserve the marker. An in-bound
+or exactly-at-bound receipt does not introduce it. Each receipt still accounts
+for exactly one physical call; additional physical invocations require separate
+reservations. Late settlement updates only
 accounting and immutable evidence, preserving terminal/revised intent, attempt,
 lease, control and authorization state.
 

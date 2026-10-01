@@ -1375,6 +1375,12 @@ class RestrictedSqlSession:
                     or values.get("status") != basis["target_status"]
                     or values.get("settlement_revision") != basis["next_revision"]
                     or values.get("operation_slot") != basis["operation_slot"]
+                    or values.get("ref_s27_id") != basis["intent_id"]
+                    or values.get("ref_s29_id") != basis["attempt_id"]
+                    or values.get("dispatch_owner") != basis["dispatch_owner"]
+                    or values.get("dispatch_fence") != basis["dispatch_fence"]
+                    or values.get("config_fingerprint")
+                    != basis["payload"]["accounting"]["config_fingerprint"]
                 )
             ):
                 raise GuardRequired("S31 must equal prepared reservation")

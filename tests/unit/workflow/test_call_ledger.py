@@ -18,6 +18,7 @@ from kineticloop.persistence.transactions import (
 )
 from kineticloop.workflow.call_ledger import (
     ACCOUNTING_VERSION,
+    BOUND_VIOLATION_KEY,
     OCCUPIED,
     AccountingIdentity,
     LedgerDenied,
@@ -96,6 +97,48 @@ def test_root_budget_and_charge_bounds() -> None:
     assert release_budget(root, BOUNDS)["reserved"] == {k: 0 for k in BOUNDS}
     with pytest.raises(LedgerDenied, match="occupation"):
         release_budget(release_budget(root, BOUNDS), BOUNDS)
+
+    # An individual bound can fail while aggregate capacity remains ample.
+    # Keep other reservations occupied and preserve every planning/control field.
+    generous = {**root_budget(), "limits": {k: v * 100 for k, v in BOUNDS.items()},
+                "reserved": {k: v * 3 for k, v in BOUNDS.items()},
+                "settled": {k: 0 for k in BOUNDS}, "status": "CANCELLED"}
+    for dimension in BOUNDS.keys() - {"calls"}:
+        observed = {**BOUNDS, dimension: BOUNDS[dimension] + 1}
+        violation = settle_budget(generous, BOUNDS, observed)
+        assert violation["settled"] == observed
+        assert violation["reserved"] == {k: v * 2 for k, v in BOUNDS.items()}
+        assert violation[BOUND_VIOLATION_KEY] is True
+        assert all(violation["settled"][k] + violation["reserved"][k] + BOUNDS[k]
+                   < violation["limits"][k] for k in BOUNDS)
+        for preserved in ("version", "admission_policy_id", "unrelated", "status"):
+            assert violation[preserved] == generous[preserved]
+        with pytest.raises(LedgerDenied, match="bound violation"):
+            reserve_budget(violation, BOUNDS, ACCOUNTING)
+        # Cancelling another call and settling an in-bound call cannot clear the marker.
+        released_other = release_budget(violation, BOUNDS)
+        final_settled = settle_budget(released_other, BOUNDS, BOUNDS)
+        assert released_other[BOUND_VIOLATION_KEY] is True
+        assert final_settled[BOUND_VIOLATION_KEY] is True
+        assert final_settled["reserved"] == {k: 0 for k in BOUNDS}
+        assert final_settled["settled"] == {k: observed[k] + BOUNDS[k] for k in BOUNDS}
+        with pytest.raises(LedgerDenied, match="bound violation"):
+            reserve_budget(final_settled, BOUNDS, ACCOUNTING)
+    assert BOUND_VIOLATION_KEY not in generous  # calculation itself has no partial write
+    equality = settle_budget(generous, BOUNDS, BOUNDS)
+    assert BOUND_VIOLATION_KEY not in equality
+    assert reserve_budget(equality, BOUNDS, ACCOUNTING)["reserved"] == generous["reserved"]
+    in_bound = settle_budget(generous, BOUNDS, {**BOUNDS, "tokens": 0, "cost_micros": 0})
+    assert BOUND_VIOLATION_KEY not in in_bound
+    reserve_budget(in_bound, BOUNDS, ACCOUNTING)
+    # Calls describe one physical invocation, so evidence cannot invent extra invocations.
+    for calls in (0, 2):
+        with pytest.raises(LedgerDenied, match="one covered call slot"):
+            settle_budget(generous, BOUNDS, {**BOUNDS, "calls": calls})
+    malformed_markers: tuple[Any, ...] = (None, 0, "false", {}, [])
+    for malformed_marker in malformed_markers:
+        with pytest.raises(LedgerDenied, match="bound violation"):
+            reserve_budget({**generous, BOUND_VIOLATION_KEY: malformed_marker}, BOUNDS, ACCOUNTING)
 
     receipt = ReliableReceipt(uuid4(), ACCOUNTING, BOUNDS, "PROVIDER_RECEIPT",
                               "receipt-1", "request-1", "verified-adapter-v1")

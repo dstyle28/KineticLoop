@@ -1,0 +1,22 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-025",
+  "reviewed_revision": "2200e1362c966633b98b69334052095a1c4d910f",
+  "status": "RETEST_PENDING",
+  "findings": [
+    "Persist accounting-only call_bound_violation after any actual exceeding its configured reservation bound; deny further reservation below aggregate root limits.",
+    "Compare exact prepared S31 parent intent/attempt, dispatch owner/fence and accounting configuration columns.",
+    "Prove concurrent natural receipt and provider-request identity uniqueness across distinct outstanding reservations on migrated PostgreSQL, with observed blocking and atomic rollback."
+  ],
+  "next": "All sixteen packet checks on a new committed implementation; replacement PASS result and fresh-context GENERAL/PROTOCOL/DB_CONCURRENCY review required.",
+  "scope": "Same seven authorized implementation/test/contract paths plus own result/evidence/reviews; frozen baseline, requirements, index, CI, lifecycle, Compose and foreign fixtures preserved.",
+  "prior_hosted_ci": {
+    "sha": "2200e1362c966633b98b69334052095a1c4d910f",
+    "quality_run": 36802551215,
+    "quality": "PASS",
+    "database_run": 36802551243,
+    "database": "FAIL",
+    "full_database_result": "243 passed, 1 fixture setup error",
+    "failure": "First planning fixture reset could not connect to the container-local PostgreSQL socket; subsequent planning cases passed. Ledger6 cases passed. No lifecycle/fixture/CI alteration is authorized or made. New final revision must independently pass unchanged hosted CI.",
+    "raw_log": "docs/exec-plans/evidence/KL-025/hosted-db-2200e13-failure.log"
+  }
+}

@@ -645,6 +645,22 @@ def test_ack_loss_and_payload_conflicts(
             with pytest.raises(GuardRequired):
                 reserve(url, reserve_command(root, f"malicious-{corrupted_table}"))
         assert persisted(url) == before_failure
+    for corrupted_field, corrupt_value in (
+        ("dispatch_owner", "invented-worker"),
+        ("dispatch_fence", 2),
+        ("config_fingerprint", "invented-config"),
+        ("ref_s27_id", uuid4()),
+        ("ref_s29_id", uuid4()),
+    ):
+        def bad_identity(session: Any, logical: str, values: Mapping[str, Any]) -> int:
+            if logical == "S31":
+                values = {**values, corrupted_field: corrupt_value}
+            return original_insert(session, logical, values)
+        with monkeypatch.context() as scoped:
+            scoped.setattr(RestrictedSqlSession, "insert", bad_identity)
+            with pytest.raises(GuardRequired):
+                reserve(url, reserve_command(root, f"malicious-{corrupted_field}"))
+        assert persisted(url) == before_failure
     invoke(url, "permit", target_permit)
     unknown_target = unknown_command(root, target, "rollback-unknown")
     settlement_target = settlement_command(root, target, "rollback-settle", expected="DISPATCH_INTENT", revision=1)
@@ -663,7 +679,9 @@ def test_ack_loss_and_payload_conflicts(
                 with pytest.raises(RuntimeError, match="rollback"):
                     getattr(ledger(db), method)(command)
             assert persisted(url) == before_failure
-    print("ACK_LOSS_AND_ROLLBACK", "all five owners and mutation/bookkeeping boundaries")
+    for dimension, day in (("receipt_id", 1), ("provider_request_id", 2)):
+        assert_cross_reservation_identity_race(url, monkeypatch, dimension, day)
+    print("ACK_LOSS_AND_ROLLBACK", "all five owners, exact dispatch identities, cross-row receipt/request races")
 
 
 def test_unknown_and_late_settlement_are_accounting_only(
@@ -718,11 +736,24 @@ def test_unknown_and_late_settlement_are_accounting_only(
     with pytest.raises(GuardRequired):
         invoke(url, "cancel", cancel_command(root, reserved, "cancel-after-possible-send"))
     # Reliable late evidence needs a trusted ingress verifier, even with a valid receipt shape.
-    settlement = settlement_command(root, reserved, "late-settle", tokens=2000)
+    settlement = settlement_command(root, reserved, "late-settle", tokens=601)
     before = persisted(url)
     with psycopg.connect(url) as db, pytest.raises(LedgerDenied):
         ledger(db, trusted=False).settle(settlement)
     assert persisted(url) == before
+    # A failed settlement cannot leave a fail-closed marker or fictional actual usage.
+    for boundary in ("planning_intents", "call_reservations", "call_ledger_events", "command_receipts", "domain_events", "outbox_deliveries"):
+        class FailedOverrunCursor(psycopg.Cursor[Any]):
+            def execute(self, query: Any, params: Any = None, **kwargs: Any) -> Any:
+                result = super().execute(query, params, **kwargs)
+                text = query.as_string(self.connection) if hasattr(query, "as_string") else str(query)
+                if f"kineticloop.{boundary}" in text.replace(chr(34), "") and text.lstrip().upper().startswith(("INSERT", "UPDATE")):
+                    raise RuntimeError("overrun-rollback")
+                return result
+        with psycopg.connect(url, cursor_factory=FailedOverrunCursor) as db, pytest.raises(RuntimeError, match="overrun-rollback"):
+            ledger(db).settle(settlement)
+        assert persisted(url) == before
+        assert root_payload(url).get("call_bound_violation") is not True
     entered.clear()
     release.clear()
     started.clear()
@@ -753,8 +784,10 @@ def test_unknown_and_late_settlement_are_accounting_only(
     assert read(url, "SELECT status FROM kineticloop.planning_attempts WHERE id=%s", (root["attempt_id"],)) == [("STALE",)]
     payload = root_payload(url)
     assert payload["reserved"] == {"calls": 0, "tokens": 0, "tools": 0}
-    assert payload["settled"] == {"calls": 1, "tokens": 2000, "tools": 1}
-    assert {k: v for k, v in payload.items() if k not in {"reserved", "settled"}} == {k: v for k, v in initial_budget.items() if k not in {"reserved", "settled"}}
+    assert payload["settled"] == {"calls": 1, "tokens": 601, "tools": 1}
+    assert payload["call_bound_violation"] is True
+    assert all(payload["settled"][dimension] < limit for dimension, limit in payload["limits"].items())
+    assert {k: v for k, v in payload.items() if k not in {"reserved", "settled", "call_bound_violation"}} == {k: v for k, v in initial_budget.items() if k not in {"reserved", "settled", "call_bound_violation"}}
     assert read(url, "SELECT status,settlement_revision FROM kineticloop.call_reservations") == [("SETTLED", 3)]
     assert read(url, "SELECT event_type,transition_revision FROM kineticloop.call_ledger_events ORDER BY transition_revision") == [("RESERVED", 0), ("DISPATCH_INTENT", 1), ("OUTCOME_UNKNOWN", 2), ("SETTLED", 3)]
     before = persisted(url)
@@ -772,9 +805,22 @@ def test_unknown_and_late_settlement_are_accounting_only(
     with pytest.raises(LedgerDenied, match="budget"):
         reserve(url, reserve_command(revised, "overrun-blocks"))
     assert persisted(url) == before
+    joined_overrun = admission(url, "overrun-join", constraints={"minutes": 31})
+    assert joined_overrun["attempt_id"] == revised["attempt_id"]
+    revised_again = admission(url, "overrun-revision", constraints={"minutes": 32})
+    assert root_payload(url) == payload
+    with psycopg.connect(url, autocommit=True) as db:
+        db.execute("UPDATE kineticloop.planning_intents SET lease_expires_at=clock_timestamp()")
+    takeover = acquire(url, revised_again, "overrun-takeover", identity=OTHER, owner=IDENTITY.key, fence=1)
+    assert takeover["fence"] == 2 and root_payload(url) == payload
+    before_denial = persisted(url)
+    with pytest.raises(LedgerDenied, match="budget"):
+        reserve(url, reserve_command(revised_again, "below-root-after-takeover", fence=2, tokens=1), OTHER)
+    invoke(url, "settle", settlement)
+    assert persisted(url) == before_denial
     with psycopg.connect(url, autocommit=True) as db:
         db.execute("UPDATE kineticloop.planning_intents SET status='CANCELLED',lease_expires_at=clock_timestamp()")
-        db.execute("UPDATE kineticloop.planning_attempts SET status='CANCELLED' WHERE id=%s", (revised["attempt_id"],))
+        db.execute("UPDATE kineticloop.planning_attempts SET status='CANCELLED' WHERE id=%s", (revised_again["attempt_id"],))
     control = read(url, "SELECT to_jsonb(t)-'typed_payload' FROM kineticloop.planning_intents t")
     attempts = read(url, "SELECT to_jsonb(t) FROM kineticloop.planning_attempts t ORDER BY id")
     subject_state = read(url, "SELECT to_jsonb(t) FROM kineticloop.user_decision_state t")
@@ -802,16 +848,129 @@ def test_unknown_and_late_settlement_are_accounting_only(
         db.execute("UPDATE kineticloop.planning_attempts SET status='CANCELLED' WHERE id=%s", (late_root["attempt_id"],))
     late_control = read(url, "SELECT to_jsonb(t)-'typed_payload' FROM kineticloop.planning_intents t ORDER BY id")
     late_attempts = read(url, "SELECT to_jsonb(t) FROM kineticloop.planning_attempts t ORDER BY id")
-    invoke(url, "settle", settlement_command(late_root, late_reserved, "terminal-late-settlement"))
+    invoke(url, "settle", settlement_command(late_root, late_reserved, "terminal-late-settlement", tokens=100))
     assert late_control == read(url, "SELECT to_jsonb(t)-'typed_payload' FROM kineticloop.planning_intents t ORDER BY id")
     assert late_attempts == read(url, "SELECT to_jsonb(t) FROM kineticloop.planning_attempts t ORDER BY id")
     assert subject_state == read(url, "SELECT to_jsonb(t) FROM kineticloop.user_decision_state t")
     assert authority == tuple(read(url, f"SELECT count(*) FROM kineticloop.{table}") for table in (
         "control_events", "control_heads", "authorization_issuances", "workout_sessions",
     ))
-    assert read(url, "SELECT typed_payload->'reserved',typed_payload->'settled' FROM kineticloop.planning_intents WHERE id=%s", (late_root["intent_id"],)) == [({"calls": 0, "tokens": 0, "tools": 0}, {"calls": 1, "tokens": 80, "tools": 1})]
+    assert read(url, "SELECT typed_payload->'reserved',typed_payload->'settled' FROM kineticloop.planning_intents WHERE id=%s", (late_root["intent_id"],)) == [({"calls": 0, "tokens": 0, "tools": 0}, {"calls": 1, "tokens": 100, "tools": 1})]
     # S32 immutable historical actuals reject a privileged negative control mutation.
     with psycopg.connect(url, autocommit=True) as db:
         with pytest.raises(psycopg.errors.ObjectNotInPrerequisiteState, match="IMMUTABLE"):
             db.execute("UPDATE kineticloop.call_ledger_events SET event_type='RESERVED' WHERE event_type='SETTLED'")
     print("UNKNOWN_LATE_ACCOUNTING", payload, "no control/authorization/attempt authority restored")
+
+
+def assert_cross_reservation_identity_race(
+    url: str, monkeypatch: pytest.MonkeyPatch, dimension: str, day: int,
+) -> None:
+    """S01 serializes reliable natural identities across two still-outstanding rows."""
+    root = admission(url, f"natural-root-{dimension}", local_date=date(2026, 10, day))
+    acquire(url, root, f"natural-lease-{dimension}")
+    first = reserve(url, reserve_command(root, f"natural-reserve-a-{dimension}"))
+    second = reserve(url, reserve_command(root, f"natural-reserve-b-{dimension}"))
+    invoke(url, "permit", permit_command(root, first, f"natural-permit-a-{dimension}"))
+    invoke(url, "permit", permit_command(root, second, f"natural-permit-b-{dimension}"))
+    commands = [
+        settlement_command(root, reserved, f"natural-settle-{index}-{dimension}",
+                           expected="DISPATCH_INTENT", revision=1, tokens=100)
+        for index, reserved in enumerate((first, second))
+    ]
+    shared = f"shared-{dimension}"
+    commands = [replace(command, receipt=replace(command.receipt, **{dimension: shared}))
+                for command in commands]
+    # The other natural identity is different, so each lookup branch has its own proof.
+    other_dimension = "provider_request_id" if dimension == "receipt_id" else "receipt_id"
+    assert getattr(commands[0].receipt, other_dimension) != getattr(commands[1].receipt, other_dimension)
+    before = bookkeeping(url)
+    loser_before = read(url, "SELECT to_jsonb(r) FROM kineticloop.call_reservations r WHERE id=%s",
+                        (second["reservation_id"],))
+    loser_events = read(url, "SELECT to_jsonb(e) FROM kineticloop.call_ledger_events e WHERE ref_s31_id=%s ORDER BY transition_revision",
+                        (second["reservation_id"],))
+    control_before = read(url, "SELECT to_jsonb(i)-'typed_payload' FROM kineticloop.planning_intents i ORDER BY id")
+    attempts_before = read(url, "SELECT to_jsonb(a) FROM kineticloop.planning_attempts a ORDER BY id")
+    entered, release = Event(), Event()
+    barrier, pids = Barrier(2), []
+    original = RestrictedSqlSession.update
+
+    def pause_winner(session: Any, logical: str, values: Mapping[str, Any], where: Mapping[str, Any]) -> int:
+        result = original(session, logical, values, where)
+        if logical == "S31" and values.get("status") == "SETTLED" and str(where.get("id")) == first["reservation_id"]:
+            entered.set()
+            assert release.wait(5)
+        return result
+
+    with monkeypatch.context() as scoped, ThreadPoolExecutor(2) as pool:
+        scoped.setattr(RestrictedSqlSession, "update", pause_winner)
+        winning = pool.submit(invoke, url, "settle", commands[0])
+        assert entered.wait(5)
+        scoped.setattr(RestrictedSqlSession, "update", original)
+
+        def duplicate_waiter() -> str:
+            with psycopg.connect(url) as db:
+                pids.append(db.info.backend_pid)
+                barrier.wait(timeout=5)
+                try:
+                    ledger(db).settle(commands[1])
+                except IdempotencyConflict as error:
+                    assert "reliable receipt/request already settled" in str(error)
+                    return "NATURAL_CONFLICT_AFTER_LOCK"
+                return "BAD"
+
+        losing = pool.submit(duplicate_waiter)
+        barrier.wait(timeout=5)
+        observe_block(url, pids[0])
+        release.set()
+        outcome = winning.result(timeout=10)
+        assert losing.result(timeout=10) == "NATURAL_CONFLICT_AFTER_LOCK"
+    assert outcome["reservation_id"] == first["reservation_id"] and outcome["status"] == "SETTLED"
+    assert bookkeeping(url) == (before[0], *(count + 1 for count in before[1:]))
+    assert loser_before == read(url, "SELECT to_jsonb(r) FROM kineticloop.call_reservations r WHERE id=%s",
+                               (second["reservation_id"],))
+    assert loser_events == read(url, "SELECT to_jsonb(e) FROM kineticloop.call_ledger_events e WHERE ref_s31_id=%s ORDER BY transition_revision",
+                               (second["reservation_id"],))
+    assert read(url, "SELECT status,settlement_revision,typed_payload->'actual',typed_payload->'receipt' FROM kineticloop.call_reservations WHERE id=%s",
+                (first["reservation_id"],)) == [(
+                    "SETTLED", 2, {"calls": 1, "tokens": 100, "tools": 1},
+                    {"reservation_id": first["reservation_id"],
+                     "accounting": {"provider": "fake-provider", "model": "fake-model", "config_fingerprint": "config-v1", "price_version": "price-v1", "strict_money": False, "version": "kl025-v1"},
+                     "actual": {"calls": 1, "tokens": 100, "tools": 1},
+                     "source": "PROVIDER_RECEIPT", "receipt_id": commands[0].receipt.receipt_id,
+                     "provider_request_id": commands[0].receipt.provider_request_id,
+                     "provenance": "verified:test-evidence-v1"},
+                )]
+    payload = read(url, "SELECT typed_payload FROM kineticloop.planning_intents WHERE id=%s", (root["intent_id"],))[0][0]
+    assert payload["reserved"] == {"calls": 1, "tokens": 100, "tools": 1}
+    assert payload["settled"] == {"calls": 1, "tokens": 100, "tools": 1}
+    assert payload.get("call_bound_violation") is not True
+    event = read(url, "SELECT event_type,transition_revision,typed_payload FROM kineticloop.call_ledger_events WHERE ref_s31_id=%s AND event_type='SETTLED'",
+                 (first["reservation_id"],))[0]
+    assert event[:2] == ("SETTLED", 2)
+    assert event[2]["reserved_delta"] == {"calls": -1, "tokens": -100, "tools": -1}
+    assert event[2]["settled_delta"] == {"calls": 1, "tokens": 100, "tools": 1}
+    assert event[2]["accounting"]["actual"] == {"calls": 1, "tokens": 100, "tools": 1}
+    assert read(url, "SELECT count(*) FROM kineticloop.command_receipts r JOIN kineticloop.domain_events e ON e.ref_s02_id=r.id AND e.subject_id=r.subject_id JOIN kineticloop.outbox_deliveries o ON o.ref_s03_id=e.id AND o.subject_id=e.subject_id WHERE r.command_kind='SettleCall' AND r.client_key=%s", (commands[0].key,)) == [(1,)]
+    assert read(url, "SELECT count(*) FROM kineticloop.command_receipts WHERE command_kind='SettleCall' AND client_key=%s", (commands[1].key,)) == [(0,)]
+    assert control_before == read(url, "SELECT to_jsonb(i)-'typed_payload' FROM kineticloop.planning_intents i ORDER BY id")
+    assert attempts_before == read(url, "SELECT to_jsonb(a) FROM kineticloop.planning_attempts a ORDER BY id")
+    # Lost ACK and changed actual/accounting evidence cannot settle either identity twice.
+    after = persisted(url)
+    replay = invoke(url, "settle", commands[0])
+    assert replay["reservation_id"] == outcome["reservation_id"] and replay["replayed"] is True
+    assert persisted(url) == after
+    for altered in (
+        replace(commands[0], receipt=replace(commands[0].receipt, actual={"calls": 1, "tokens": 79, "tools": 1})),
+        replace(commands[0], receipt=replace(commands[0].receipt, accounting=replace(commands[0].receipt.accounting, config_fingerprint="changed-config"))),
+    ):
+        with pytest.raises(IdempotencyConflict):
+            invoke(url, "settle", altered)
+        assert persisted(url) == after
+    # Verified actual exactly at its bound leaves remaining root capacity enforceable.
+    reserve(url, reserve_command(root, f"equality-remains-enforceable-{dimension}"))
+    equality_payload = read(url, "SELECT typed_payload FROM kineticloop.planning_intents WHERE id=%s", (root["intent_id"],))[0][0]
+    assert equality_payload["reserved"] == {"calls": 2, "tokens": 200, "tools": 2}
+    assert equality_payload["settled"] == {"calls": 1, "tokens": 100, "tools": 1}
+    assert equality_payload.get("call_bound_violation") is not True
+    print("CROSS_RESERVATION_IDENTITY_LOCK_RACE", dimension, "one settled; loser fully occupied; equality allows covered work")

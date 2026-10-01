@@ -9,6 +9,7 @@ from typing import Any, Literal
 from uuid import UUID
 
 ACCOUNTING_VERSION = "kl025-v1"
+BOUND_VIOLATION_KEY = "call_bound_violation"
 DIMENSIONS = frozenset({"calls", "tokens", "tools", "input_tokens", "output_tokens", "cost_micros"})
 OCCUPIED = frozenset({"RESERVED", "DISPATCH_INTENT", "OUTCOME_UNKNOWN"})
 ReceiptSource = Literal["PROVIDER_RECEIPT", "RECONCILIATION"]
@@ -114,6 +115,8 @@ def reserve_budget(
     accounting.__post_init__()
     limits, reserved, settled = _root(root)
     upper = _bounds(bounds, set(limits))
+    if root.get(BOUND_VIOLATION_KEY, False) is not False:
+        raise LedgerDenied("root budget exhausted after reservation bound violation")
     if any(settled[k] + reserved[k] + upper[k] > limits[k] for k in limits):
         raise LedgerDenied("root budget exhausted")
     return {**root, "limits": limits, "settled": settled,
@@ -133,10 +136,13 @@ def release_budget(root: Mapping[str, Any], bounds: Mapping[str, int]) -> dict[s
 def settle_budget(
     root: Mapping[str, Any], bounds: Mapping[str, int], actual: Mapping[str, int]
 ) -> dict[str, Any]:
-    """Record verified actuals without clamping, including observed bound overruns."""
+    """Record actuals and irreversibly close new reservations after a bound violation."""
     limits, _, settled = _root(root)
     verified = _bounds(actual, set(limits))
+    upper = _bounds(bounds, set(limits))
     released = release_budget(root, bounds)
+    if any(verified[k] > upper[k] for k in limits):
+        released[BOUND_VIOLATION_KEY] = True
     return {**released, "settled": {k: settled[k] + verified[k] for k in limits}}
 
 
