@@ -798,6 +798,9 @@ def test_stale_commit_basis_denies(urls: dict[str, str]) -> None:
         "context",
         "certificate",
         "budget",
+        "production_policy_scope",
+        "shadow_policy_scope",
+        "evaluation_policy_scope",
     )
     for case in cases:
         seed_inputs(urls)
@@ -841,9 +844,24 @@ def test_stale_commit_basis_denies(urls: dict[str, str]) -> None:
                 urls,
                 "UPDATE kineticloop.planning_intents SET typed_payload=jsonb_set(typed_payload,'{settled,calls}','4')",
             )
+        elif case.endswith("_policy_scope"):
+            # Explicit negative immutable-policy input, never a legitimate policy mutation.
+            scope = {
+                "production_policy_scope": "EXECUTION",
+                "shadow_policy_scope": "SHADOW",
+                "evaluation_policy_scope": "EVALUATION",
+            }[case]
+            perturb(
+                urls,
+                "UPDATE kineticloop.policy_bundles SET typed_payload=jsonb_set(typed_payload,'{authorization_action_scopes,TRAINING}',%s)",
+                (Jsonb(scope),),
+            )
         before = snapshot(urls)
         with connect(urls["admin"]) as db:
-            with pytest.raises((RepositoryTransactionError, ValueError, psycopg.Error)):
+            with pytest.raises(
+                (RepositoryTransactionError, ValueError, psycopg.Error),
+                match="TEST_ONLY policy scope" if case.endswith("_policy_scope") else None,
+            ):
                 service(db).commit(command)
         assert snapshot(urls) == before, case
 
@@ -1310,9 +1328,9 @@ def test_first_use_contention(urls: dict[str, str], monkeypatch: pytest.MonkeyPa
     from kineticloop.persistence.transactions import RestrictedSqlSession
 
     cmd: Any
-    for target in ("S38", "S44", "calendar", "lifecycle", "extra_column"):
+    for target in ("S38", "S44", "calendar", "lifecycle", "extra_column", "day", "session"):
         seed_inputs(urls)
-        if target in {"S38", "calendar"}:
+        if target in {"S38", "calendar", "day"}:
             cmd = upstream(urls, publish(urls))
         else:
             cmd = start_command(committed(urls)[1])
@@ -1342,12 +1360,25 @@ def test_first_use_contention(urls: dict[str, str], monkeypatch: pytest.MonkeyPa
                 values = {**values, "origin": "EXTERNAL_REPORTED"}
             return original_update(session, logical, values, where)
 
+        original_day = RepositoryTransaction.lock_daily_head
+        original_session = RepositoryTransaction.lock_execution
+
+        def day_lock(tx: RepositoryTransaction, local_date: Any, **kw: Any) -> None:
+            if target == "day" and kw.get("create_first"):
+                local_date += timedelta(days=1)
+            original_day(tx, local_date, **kw)
+
+        def session_lock(tx: RepositoryTransaction, ids: Any, **kw: Any) -> None:
+            original_session(tx, (uuid4(),) if target == "session" else ids, **kw)
+
         with monkeypatch.context() as patch:
             patch.setattr(RestrictedSqlSession, "insert", insert)
+            patch.setattr(RepositoryTransaction, "lock_daily_head", day_lock)
+            patch.setattr(RepositoryTransaction, "lock_execution", session_lock)
             patch.setattr(RestrictedSqlSession, "update", update)
             with connect(urls["admin"]) as db:
                 with pytest.raises(RepositoryTransactionError):
-                    if target in {"S38", "calendar"}:
+                    if target in {"S38", "calendar", "day"}:
                         service(db).commit(cmd)
                     else:
                         service(db).start(cmd)

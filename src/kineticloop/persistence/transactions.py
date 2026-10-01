@@ -3610,6 +3610,8 @@ class RepositoryTransaction:
                 raise GuardRequired("publication expected closure mismatch")
             return
         if self.command_kind == "CommitBundle" and type(request) is CommitBundle:
+            if c.get("authorization_scope") != "TEST_ONLY":
+                raise GuardRequired("authenticated TEST commit requires TEST_ONLY policy scope")
             if (UUID(request.manifest_id), request.expected_generation,
                 request.expected_authorization_epoch, UUID(request.policy_id),
                 UUID(request.execution_basis_event_id), request.artifact_dependency_closure_hash) != (

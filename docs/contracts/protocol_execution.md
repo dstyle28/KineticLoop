@@ -20,7 +20,9 @@ retry cannot publish a second generation.
 
 After real KL024 admission/acquisition, T6 checks the current intent/request/attempt,
 role-prefixed authenticated lease owner, fence, lease/deadline, Manifest/generation,
-epoch and execution basis. The strict wire's canonical expected_owner_id names the
+epoch and execution basis. The locked policy action scope must remain exactly
+TEST_ONLY; production, shadow and evaluation scope mappings deny without effects.
+The strict wire's canonical expected_owner_id names the
 same authenticated actor; the adapter translates it to KL024's existing role-prefixed
 lease key. Locked immutable snapshot/proposal/demand/resolution/validation inputs must
 bind that exact chain. The synthetic certificate version used by this bounded slice
