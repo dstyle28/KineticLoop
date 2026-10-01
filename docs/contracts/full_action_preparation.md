@@ -72,5 +72,12 @@ cleanup. Nested bootstrap receives that selected lifecycle. Connections assert
 current_database; logs record migration, namespace, persisted identities, observed
 blockers, finite deadlines and cleanup inventories. No imported foreign pytest
 fixture executes. Unchanged legacy DB regression coverage runs on hosted CI.
+Expiry controls use distinct source-admission and registered planning-runtime
+deadlines while the projection engine, manifest, policy, lease and root remain
+valid. Both full validation and COMMIT_READY run before and after each earlier
+bound through an observed S29 blocker; the logs identify the live current guard
+and full consumer reached. Separate consumer controls cover current-manifest
+replacement, attempt loss, stale fencing, actual takeover and post-lock lease
+expiry, with complete persisted zero-effect comparisons.
 Task checks, independent reviews, merge and product/release obligations remain
 separate facts.

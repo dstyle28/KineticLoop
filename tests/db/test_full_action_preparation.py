@@ -217,6 +217,8 @@ def seed_source(
     urls: dict[str, str],
     *,
     seconds: float = 3600,
+    admission_seconds: float | None = None,
+    runtime_seconds: float | None = None,
     full: bool = True,
     fact_changes: Any = None,
     config_changes: Any = None,
@@ -245,6 +247,8 @@ def seed_source(
         assert clock is not None
         now = clock[0]
         end = now + timedelta(seconds=seconds)
+        admission_end = now + timedelta(seconds=admission_seconds or seconds)
+        runtime_end = now + timedelta(seconds=runtime_seconds or seconds)
         config = {
             "rules": copy.deepcopy(RULES),
             "window": [(now - timedelta(days=1)).isoformat(), end.isoformat()],
@@ -344,7 +348,7 @@ def seed_source(
             "INSERT INTO kineticloop.event_association_decisions(id,subject_id,association_family_identity,association_state,ref_s11_id,content_hash,typed_payload) VALUES (%s,%s,'fixture-event','CONFIRMED',%s,%s,%s)",
             (association, subject, event, digest(assoc_body), Jsonb(assoc_body)),
         )
-        admission_body = {"fixture_admission": "ADMITTED", "valid_until": end.isoformat()}
+        admission_body = {"fixture_admission": "ADMITTED", "valid_until": admission_end.isoformat()}
         db.execute(
             "INSERT INTO kineticloop.admission_decisions(id,subject_id,action_scope,decision,ref_s05_id,ref_s09_id,ref_s10_id,content_hash,typed_payload) VALUES (%s,%s,'TEST_ONLY','ADMITTED',%s,%s,%s,%s,%s)",
             (
@@ -423,9 +427,19 @@ def seed_source(
         if full:
             with connect(urls["trusted_admin"]) as trusted:
                 registered_runtime(
-                    trusted, runtime, runtime_hash, release, now, end, (builder, release_artifact)
+                    trusted,
+                    runtime,
+                    runtime_hash,
+                    release,
+                    now,
+                    runtime_end,
+                    (builder, release_artifact),
                 )
         for dependency in (runtime, builder, release_artifact):
+            # The planning runtime is independently policy-bound. Keep the projection
+            # engine's valid registered closure longer for the isolated runtime test.
+            if dependency == runtime and runtime_seconds is not None:
+                continue
             db.execute(
                 "INSERT INTO kineticloop.safety_artifact_dependencies(artifact_id,dependency_artifact_id) VALUES (%s,%s)",
                 (engine, dependency),
@@ -440,6 +454,8 @@ def seed_source(
         "program": program,
         "policy": body,
         "end": end,
+        "admission_end": admission_end,
+        "runtime_end": runtime_end,
         "now": now,
         "builder": builder,
         "deps": deps,
@@ -1348,8 +1364,19 @@ def wait_db_time(db: Any, end: Any) -> Any:
                 "revision",
                 "control",
                 "deadline",
-                "before_expiry",
-                "after_expiry",
+                "manifest",
+                "attempt",
+                "fence",
+                "takeover",
+                "lease",
+                "source_before_expiry",
+                "source_after_expiry",
+                "runtime_before_expiry",
+                "runtime_after_expiry",
+                "validation_source_before_expiry",
+                "validation_source_after_expiry",
+                "validation_runtime_before_expiry",
+                "validation_runtime_after_expiry",
             )
         ],
     ],
@@ -1358,7 +1385,7 @@ def test_basis_denials(
     database_urls: dict[str, str], monkeypatch: pytest.MonkeyPatch, denial: str
 ) -> None:
     if denial.startswith("consumer_"):
-        consumer_denial(database_urls, denial.removeprefix("consumer_"))
+        consumer_denial(database_urls, monkeypatch, denial.removeprefix("consumer_"))
         return
     facts = {
         "contradiction": {"contradicts": True},
@@ -2085,15 +2112,55 @@ def test_legacy_and_no_authority(database_urls: dict[str, str], full: bool) -> N
         )
 
 
-def consumer_denial(database_urls: dict[str, str], consumer: str) -> None:
+def consumer_denial(
+    database_urls: dict[str, str], monkeypatch: pytest.MonkeyPatch, consumer: str
+) -> None:
+    clock_case = consumer.endswith("_expiry") or consumer == "lease"
+    validation_clock = consumer.startswith("validation_")
+    source_clock = "source_" in consumer
+    runtime_clock = "runtime_" in consumer
+    after_clock = consumer.endswith("after_expiry") or consumer == "lease"
     seed = seed_source(
-        database_urls, seconds=6 if consumer in {"before_expiry", "after_expiry"} else 3600
+        database_urls,
+        admission_seconds=8 if source_clock else None,
+        runtime_seconds=8 if runtime_clock else None,
     )
+    phase = {
+        "ingress": False,
+        "current_chain": False,
+        "current_live": False,
+        "fence_guard": False,
+        "full_consumer": False,
+    }
+    original_ingress = RepositoryTransaction.require_progress_ingress
+    original_chain = RepositoryTransaction._prepare_current_progress
+    original_full = preparation._verify_full_progress
+    original_fence = RepositoryTransaction.require_current_fence
+
+    def ingress(tx: Any, identity: Any) -> Any:
+        result = original_ingress(tx, identity)
+        phase["ingress"] = True
+        return result
+
+    def chain(tx: Any, identity: Any, request: Any) -> Any:
+        phase["current_chain"] = True
+        result = original_chain(tx, identity, request)
+        phase["current_live"] = True
+        return result
+
+    def full_consumer(*args: Any) -> Any:
+        phase["full_consumer"] = True
+        return original_full(*args)
+
+    def fence_guard(tx: Any, *args: Any, **kwargs: Any) -> Any:
+        phase["fence_guard"] = True
+        return original_fence(tx, *args, **kwargs)
+
     with connect(database_urls["admin"]) as db:
         upstream(db, seed)
-        basis, refs = begin(db, seed)
+        basis, refs = begin(db, seed, lease_seconds=3 if consumer in {"lease", "takeover"} else 600)
         op, fullrefs = preparation_chain(db, seed, basis, refs)
-        ready = prepare_validation(db, seed, op, fullrefs)
+        ready: Any = None if validation_clock else prepare_validation(db, seed, op, fullrefs)
         if consumer == "resolution_swap":
             ready = {**ready, "resolution": fullrefs["nutrition_resolution"]}
         elif consumer.startswith("foreign_"):
@@ -2101,12 +2168,64 @@ def consumer_denial(database_urls: dict[str, str], consumer: str) -> None:
             ready = {**ready, name: {"id": str(uuid4()), "hash": ready[name]["hash"]}}
         elif consumer == "runtime_revoked":
             revoke_runtime(database_urls, seed)
+        elif consumer == "manifest":
+            identity = seed["identity"]
+            owner = PreparationService(
+                db,
+                ExecutionIdentity(
+                    identity.actor,
+                    identity.subject_id,
+                    identity.policy_id,
+                    identity.environment_id,
+                    identity.principal,
+                ),
+            )
+            build = owner.build_manifest(
+                BuildManifest(
+                    "consumer-new-manifest",
+                    seed["source"],
+                    (ProjectionBinding("EXPOSURE", UUID(seed["projection"]["projection_id"])),),
+                    (seed["engine"].artifact_id,),
+                )
+            )
+            manifest = owner.complete_manifest(CompleteManifest(UUID(build["build_id"])))
+            publish(db, seed, seed["source"], manifest, "consumer-new-manifest-publication")
+        elif consumer == "attempt":
+            # Negative mutable current-pointer control; never creates an attempt/output.
+            with db.transaction():
+                db.execute(
+                    "UPDATE kineticloop.planning_intents SET current_attempt_id=NULL WHERE id=%s",
+                    (basis.intent_id,),
+                )
+        elif consumer == "fence":
+            op = replace(op, fence=op.fence + 1)
+        elif consumer == "takeover":
+            with db.transaction():
+                lease_end = db.execute(
+                    "SELECT lease_expires_at FROM kineticloop.planning_intents WHERE id=%s",
+                    (basis.intent_id,),
+                ).fetchone()[0]
+            wait_db_time(db, lease_end)
+            acquired_lease = LeaseService(
+                db, PlanningIdentity(RoleIdentity(str(uuid4()), ActorRole.TEST), basis.subject_id)
+            ).acquire_lease(
+                AcquireLease(
+                    basis.subject_id,
+                    "consumer-takeover",
+                    basis.intent_id,
+                    seed["identity"].key,
+                    basis.fence,
+                    basis.request_revision,
+                    basis.attempt_id,
+                    600,
+                )
+            )
+            assert acquired_lease["fence"] > basis.fence
         elif consumer in {"epoch", "execution_basis"}:
             if consumer == "epoch":
                 actual_input(db, seed, uuid4())
             else:
                 # Persist a real noninvalidating publication event, then move only the mutable exposure basis.
-                # This negative control is not a target output seed and preserves the valid manifest/epoch ingress.
                 with db.transaction():
                     event = db.execute(
                         "SELECT id FROM kineticloop.domain_events WHERE subject_id=%s AND event_type='MANIFEST_PUBLISHED'",
@@ -2138,10 +2257,42 @@ def consumer_denial(database_urls: dict[str, str], consumer: str) -> None:
                     (basis.intent_id,),
                 )
         before = snapshot(db, basis.subject_id)
-        if consumer in {"before_expiry", "after_expiry"}:
+        monkeypatch.setattr(RepositoryTransaction, "require_progress_ingress", ingress)
+        monkeypatch.setattr(RepositoryTransaction, "_prepare_current_progress", chain)
+        monkeypatch.setattr(preparation, "_verify_full_progress", full_consumer)
+        monkeypatch.setattr(RepositoryTransaction, "require_current_fence", fence_guard)
+        if clock_case:
             with db.transaction():
                 now = db.execute("SELECT clock_timestamp()").fetchone()[0]
-            assert now < seed["end"]
+                manifest_end = db.execute(
+                    "SELECT valid_until FROM kineticloop.decision_manifests WHERE id=%s",
+                    (basis.manifest_id,),
+                ).fetchone()[0]
+                lease_end, root_end = db.execute(
+                    "SELECT lease_expires_at,deadline FROM kineticloop.planning_intents WHERE id=%s",
+                    (basis.intent_id,),
+                ).fetchone()
+                expiry = (
+                    lease_end
+                    if consumer == "lease"
+                    else seed["admission_end" if source_clock else "runtime_end"]
+                )
+                assert now < expiry < min(manifest_end, root_end)
+                if consumer != "lease":
+                    assert expiry < lease_end
+                    persisted = db.execute(
+                        "SELECT resolution_expires_at FROM kineticloop.evidence_resolutions WHERE subject_id=%s",
+                        (basis.subject_id,),
+                    ).fetchall()
+                    assert len(persisted) == 2 and all(row[0] == expiry for row in persisted)
+                    if not validation_clock:
+                        assert (
+                            db.execute(
+                                "SELECT valid_until FROM kineticloop.validation_results WHERE id=%s",
+                                (UUID(ready["validation"]["id"]),),
+                            ).fetchone()[0]
+                            == expiry
+                        )
             with connect(database_urls["admin"]) as blocker:
                 blocker.execute(
                     "SELECT id FROM kineticloop.planning_attempts WHERE id=%s FOR UPDATE",
@@ -2151,30 +2302,50 @@ def consumer_denial(database_urls: dict[str, str], consumer: str) -> None:
 
                 def worker() -> Any:
                     with connect(database_urls["admin"], application_name=name) as connection:
+                        if validation_clock:
+                            return run(connection, seed["identity"], op)
                         return commit_ready(connection, seed, op, ready, name)
 
                 with ThreadPoolExecutor(max_workers=1) as pool:
                     future = pool.submit(worker)
                     blocked = observe_blocked(database_urls["admin"], name)
-                    if consumer == "after_expiry":
-                        crossed = wait_db_time(db, seed["end"])
-                    else:
-                        crossed = now
+                    crossed = wait_db_time(db, expiry) if after_clock else now
                     blocker.commit()
-                    if consumer == "after_expiry":
+                    if after_clock:
                         with pytest.raises((RepositoryTransactionError, PlanningDenied)) as error:
                             future.result(timeout=8)
                     else:
-                        assert future.result(timeout=8)["state"] == "COMMIT_READY"
+                        result = future.result(timeout=8)
+                        if validation_clock:
+                            output = assert_full_output(db, seed, op, result)
+                            assert output.valid_until == expiry.isoformat()
+                        else:
+                            assert result["state"] == "COMMIT_READY"
+            assert phase["ingress"] and phase["current_chain"]
+            if consumer != "lease":
+                assert phase["current_live"]
+                if not validation_clock:
+                    assert phase["full_consumer"]
+            with db.transaction():
+                checked_at = db.execute("SELECT clock_timestamp()").fetchone()[0]
+            assert checked_at < min(manifest_end, root_end)
+            if consumer != "lease":
+                assert checked_at < lease_end
             witness(
                 "consumer_clock",
                 case=consumer,
-                expiry=seed["end"],
+                expiry=expiry,
                 observed=crossed,
+                manifest_valid_until=manifest_end,
+                lease_expires_at=lease_end,
+                root_deadline=root_end,
+                source_valid_until=seed["admission_end"],
+                runtime_valid_until=seed["runtime_end"],
                 blocking_pids=blocked[1],
                 post_lock=True,
+                **phase,
             )
-            if consumer == "before_expiry":
+            if not after_clock:
                 assert_no_execution(db, basis.subject_id)
                 return
         else:
@@ -2182,10 +2353,16 @@ def consumer_denial(database_urls: dict[str, str], consumer: str) -> None:
                 commit_ready(db, seed, op, ready, "consumer-denial-" + consumer)
         assert snapshot(db, basis.subject_id) == before
         assert_no_execution(db, basis.subject_id)
+        assert phase["ingress"]
+        if consumer in {"manifest", "lease"}:
+            assert phase["current_chain"] and not phase["current_live"]
+        if consumer in {"attempt", "fence", "takeover"}:
+            assert phase["fence_guard"] and not phase["current_live"]
         witness(
             "consumer_denial",
             dimension=consumer,
             error=str(error.value),
             zero_effects=True,
-            stage="ACTUAL_COMMIT_READY_OWNER",
+            stage="FULL_VALIDATION_OWNER" if validation_clock else "ACTUAL_COMMIT_READY_OWNER",
+            **phase,
         )

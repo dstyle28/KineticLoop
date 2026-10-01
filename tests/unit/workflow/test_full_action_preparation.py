@@ -484,6 +484,39 @@ def test_resolution_semantics() -> None:
             validate_full(f, d, n, bad, config, now)
     with pytest.raises(PlanningDenied):
         validate_full(f, d, n, resolutions, config, datetime.fromisoformat(r.resolution_expires_at))
+    earliest = now + timedelta(minutes=2)
+    for limiting in ("source", "runtime"):
+        fact = Fact.model_validate_json(
+            json.dumps(
+                {
+                    **r.facts[0].payload(),
+                    "valid_until": earliest.isoformat()
+                    if limiting == "source"
+                    else config["valid_until"],
+                }
+            )
+        )
+        bounded = tuple(
+            resolve_full(
+                f,
+                d,
+                n,
+                str(uuid4()),
+                config,
+                (fact,),
+                action_type=action,
+                manifest_hash=r.manifest_hash,
+                source_id=r.source_id,
+                source_hash=r.source_hash,
+                members=r.source_members,
+                expires_at=earliest.isoformat() if limiting == "runtime" else config["valid_until"],
+            )
+            for action in ("TRAINING", "NUTRITION")
+        )
+        assert all(row.resolution_expires_at == earliest.isoformat() for row in bounded)
+        assert validate_full(f, d, n, bounded, config, now)["valid_until"] == earliest.isoformat()
+        with pytest.raises(PlanningDenied):
+            validate_full(f, d, n, bounded, config, earliest)
     for badconfig in (
         {k: v for k, v in config.items() if k not in {"contract", "required_actions"}},
         {**config, "required_actions": ["NUTRITION", "TRAINING"]},
