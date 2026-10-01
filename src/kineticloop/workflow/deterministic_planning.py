@@ -6,6 +6,7 @@ No function issues an authorization or infers actual execution from a plan.
 
 from __future__ import annotations
 
+import json
 from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime
@@ -18,6 +19,8 @@ from kineticloop.workflow.planning import PlanningDenied, digest
 from kineticloop.workflow.planning_progress import ProgressBasis, hash_identity
 
 VERSION = "kl076-mechanical-test-v1"
+FULL_VERSION: Literal["kl079-full-actions-v1"] = "kl079-full-actions-v1"
+REQUIRED_ACTIONS: tuple[Literal["TRAINING"], Literal["NUTRITION"]] = ("TRAINING", "NUTRITION")
 RULES: dict[str, Any] = {
     "version": VERSION,
     "domain": "ISOLATED_TEST_ONLY",
@@ -216,6 +219,14 @@ def instant(value: str) -> datetime:
 
 
 def policy(configuration: Mapping[str, Any]) -> None:
+    if "contract" in configuration:
+        if configuration.get("contract") != FULL_VERSION or configuration.get(
+            "required_actions"
+        ) != list(REQUIRED_ACTIONS):
+            raise PlanningDenied("exact persisted full action profile required")
+        configuration = {
+            k: v for k, v in configuration.items() if k not in {"contract", "required_actions"}
+        }
     if configuration.get("rules") != RULES or set(configuration) != {
         "rules",
         "window",
@@ -487,3 +498,298 @@ class Validation(Basis):
     replaced_slots: tuple[str, ...]
     source_ranges: tuple[str, str]
     fixture_policy_version: Literal["kl076-mechanical-test-v1"] = "kl076-mechanical-test-v1"
+
+
+class ActionBinding(Immutable):
+    action_type: Literal["TRAINING", "NUTRITION"]
+    proposal_id: str
+    proposal_hash: str
+    action_parameters_hash: str
+    resolution_id: str
+    resolution_hash: str
+    query_basis_hash: str
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class FullPreparationRequest(ProgressBasis):
+    kind: str
+    sources: Mapping[str, Mapping[str, str]]
+    action_type: str | None = None
+    proposal_id: UUID | None = None
+    proposal_hash: str | None = None
+    action_parameters_hash: str | None = None
+    action_bindings: tuple[ActionBinding, ...] = ()
+
+    def __post_init__(self) -> None:
+        ProgressBasis.__post_init__(self)
+        expected = (
+            INPUTS["RESOLUTION"]
+            if self.kind == "RESOLUTION"
+            else (INPUTS["VALIDATION"] | {"nutrition_resolution"})
+        )
+        if (
+            self.kind not in {"RESOLUTION", "VALIDATION"}
+            or self.source_state != "VALIDATING"
+            or not isinstance(self.sources, Mapping)
+            or set(self.sources) != expected
+        ):
+            raise PlanningDenied("exact full TEST owner/stage/sources required")
+        for ref in self.sources.values():
+            if set(ref) != {"id", "hash"} or str(UUID(ref["id"])) != ref["id"]:
+                raise PlanningDenied("exact source identity required")
+            hash_identity(ref["hash"])
+        if self.kind == "RESOLUTION":
+            if self.action_type not in REQUIRED_ACTIONS or type(self.proposal_id) is not UUID:
+                raise PlanningDenied("exact full action/proposal required")
+            hash_identity(self.proposal_hash)  # type: ignore[arg-type]
+            hash_identity(self.action_parameters_hash)  # type: ignore[arg-type]
+            proposal = self.sources["fitness" if self.action_type == "TRAINING" else "nutrition"]
+            if (str(self.proposal_id), self.proposal_hash) != (
+                proposal["id"],
+                proposal["hash"],
+            ) or self.action_bindings:
+                raise PlanningDenied("action must bind its exact proposal")
+        elif (
+            any(
+                v is not None
+                for v in (
+                    self.action_type,
+                    self.proposal_id,
+                    self.proposal_hash,
+                    self.action_parameters_hash,
+                )
+            )
+            or type(self.action_bindings) is not tuple
+            or len(self.action_bindings) != 2
+            or any(type(b) is not ActionBinding for b in self.action_bindings)
+            or tuple(b.action_type for b in self.action_bindings) != REQUIRED_ACTIONS
+        ):
+            raise PlanningDenied("exact ordered full validation bindings required")
+
+
+class FullResolution(Basis):
+    kind: Literal["RESOLUTION"] = "RESOLUTION"
+    id: str
+    fitness_id: str
+    fitness_hash: str
+    action_type: Literal["TRAINING", "NUTRITION"]
+    action_parameters_hash: str
+    manifest_hash: str
+    source_hash: str
+    source_ranges: tuple[str, str]
+    source_members: tuple[str, ...]
+    facts: tuple[Fact, ...]
+    supporting_events: tuple[str, ...]
+    contradicting_events: tuple[str, ...]
+    superseded_or_retracted_items: tuple[str, ...]
+    event_association_status: str
+    coverage: str
+    consistency: str
+    truncation_status: str
+    resolution_expires_at: str
+
+    contract: Literal["kl079-full-actions-v1"] = FULL_VERSION
+    proposal_id: str
+    proposal_hash: str
+    demand_id: str
+    demand_hash: str
+    nutrition_id: str
+    nutrition_hash: str
+    source_id: str
+    runtime_version: Literal["kl079-full-actions-v1"] = FULL_VERSION
+    query_basis_hash: str
+
+
+class FullValidation(Basis):
+    kind: Literal["VALIDATION"] = "VALIDATION"
+    id: str
+    fitness_hash: str
+    demand_hash: str
+    nutrition_hash: str
+    resolution_hash: str
+    execution_basis_event_id: str
+    semantic_validation: Literal["PASS"] = "PASS"
+    policy_envelope: Literal["PASS"] = "PASS"
+    valid_until: str
+    rolling_minutes: int
+    deduplicated_events: tuple[str, ...]
+    replaced_slots: tuple[str, ...]
+    source_ranges: tuple[str, str]
+
+    contract: Literal["kl079-full-actions-v1"] = FULL_VERSION
+    required_actions: tuple[Literal["TRAINING"], Literal["NUTRITION"]] = REQUIRED_ACTIONS
+    action_bindings: tuple[ActionBinding, ActionBinding]
+    fixture_policy_version: Literal["kl079-full-actions-v1"] = FULL_VERSION
+
+
+def full_policy(configuration: Mapping[str, Any]) -> None:
+    policy(configuration)
+    if configuration.get("contract") != FULL_VERSION:
+        raise PlanningDenied("persisted full profile required; no legacy fallback")
+
+
+def action_parameters(fitness: Fitness, nutrition: Nutrition, action_type: str) -> dict[str, Any]:
+    if action_type == "TRAINING":
+        return fitness.action.payload()
+    if action_type == "NUTRITION":
+        return {
+            "fuel_units": nutrition.fuel_units,
+            "semantic_class": "TARGET",
+            "units": "fixture_units",
+        }
+    raise PlanningDenied("closed mechanical action required")
+
+
+def full_query_basis(payload: Mapping[str, Any]) -> str:
+    return digest(
+        {
+            k: payload[k]
+            for k in (
+                *Basis.model_fields,
+                "contract",
+                "action_type",
+                "proposal_id",
+                "proposal_hash",
+                "action_parameters_hash",
+                "fitness_id",
+                "fitness_hash",
+                "demand_id",
+                "demand_hash",
+                "nutrition_id",
+                "nutrition_hash",
+                "manifest_hash",
+                "source_id",
+                "source_hash",
+                "source_ranges",
+                "source_members",
+                "runtime_version",
+            )
+        }
+    )
+
+
+def resolve_full(
+    fitness: Fitness,
+    demand: Demand,
+    nutrition: Nutrition,
+    output: str,
+    configuration: Mapping[str, Any],
+    facts: tuple[Fact, ...],
+    *,
+    action_type: str,
+    manifest_hash: str,
+    source_id: str,
+    source_hash: str,
+    members: tuple[str, ...],
+    expires_at: str,
+) -> FullResolution:
+    full_policy(configuration)
+    if demand != compute_demand(
+        fitness, demand.id, configuration
+    ) or nutrition != compute_nutrition(fitness, demand, nutrition.id, configuration):
+        raise PlanningDenied("exact full F/D/N computation required")
+    legacy = resolve(
+        fitness,
+        output,
+        configuration,
+        facts,
+        manifest_hash=manifest_hash,
+        source_hash=source_hash,
+        members=members,
+        expires_at=expires_at,
+    )
+    if len(legacy.facts) != len(facts):
+        raise PlanningDenied("every sealed fixture fact must be in the exact action window")
+    proposal = fitness if action_type == "TRAINING" else nutrition
+    payload = {
+        **legacy.payload(),
+        "contract": FULL_VERSION,
+        "action_type": action_type,
+        "action_parameters_hash": digest(action_parameters(fitness, nutrition, action_type)),
+        "proposal_id": proposal.id,
+        "proposal_hash": proposal.content_hash,
+        "demand_id": demand.id,
+        "demand_hash": demand.content_hash,
+        "nutrition_id": nutrition.id,
+        "nutrition_hash": nutrition.content_hash,
+        "source_id": source_id,
+        "runtime_version": FULL_VERSION,
+    }
+    payload["query_basis_hash"] = full_query_basis(payload)
+    return FullResolution.model_validate_json(json.dumps(payload))
+
+
+def binding(resolution: FullResolution) -> ActionBinding:
+    return ActionBinding(
+        action_type=resolution.action_type,
+        proposal_id=resolution.proposal_id,
+        proposal_hash=resolution.proposal_hash,
+        action_parameters_hash=resolution.action_parameters_hash,
+        resolution_id=resolution.id,
+        resolution_hash=resolution.content_hash,
+        query_basis_hash=resolution.query_basis_hash,
+    )
+
+
+def validate_full(
+    fitness: Fitness,
+    demand: Demand,
+    nutrition: Nutrition,
+    resolutions: tuple[FullResolution, ...],
+    configuration: Mapping[str, Any],
+    now: datetime,
+) -> dict[str, Any]:
+    full_policy(configuration)
+    if (
+        len(resolutions) != 2
+        or tuple(r.action_type for r in resolutions) != REQUIRED_ACTIONS
+        or (resolutions[0].id == resolutions[1].id)
+    ):
+        raise PlanningDenied("two distinct exactly ordered action resolutions required")
+    mechanical = None
+    for resolution in resolutions:
+        rebuilt = resolve_full(
+            fitness,
+            demand,
+            nutrition,
+            resolution.id,
+            configuration,
+            resolution.facts,
+            action_type=resolution.action_type,
+            manifest_hash=resolution.manifest_hash,
+            source_id=resolution.source_id,
+            source_hash=resolution.source_hash,
+            members=resolution.source_members,
+            expires_at=resolution.resolution_expires_at,
+        )
+        if rebuilt != resolution:
+            raise PlanningDenied("exact mechanically reconstructed per-action resolution required")
+        # Legacy predicates consume an actual TRAINING computation, never a relabeled S36 row.
+        training = resolve(
+            fitness,
+            resolution.id,
+            configuration,
+            resolution.facts,
+            manifest_hash=resolution.manifest_hash,
+            source_hash=resolution.source_hash,
+            members=resolution.source_members,
+            expires_at=resolution.resolution_expires_at,
+        )
+        mechanical = validate(fitness, demand, nutrition, training, configuration, now)
+    a, b = resolutions
+    if (a.source_id, a.source_hash, a.manifest_hash, a.facts, a.source_members) != (
+        b.source_id,
+        b.source_hash,
+        b.manifest_hash,
+        b.facts,
+        b.source_members,
+    ):
+        raise PlanningDenied("both actions must bind one exact sealed source closure")
+    assert mechanical is not None
+    return {
+        **mechanical,
+        "fixture_policy_version": FULL_VERSION,
+        "required_actions": list(REQUIRED_ACTIONS),
+        "action_bindings": [binding(r).payload() for r in resolutions],
+        "valid_until": min(instant(r.resolution_expires_at) for r in resolutions).isoformat(),
+    }
