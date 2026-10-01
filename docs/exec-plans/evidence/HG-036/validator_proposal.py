@@ -1,6 +1,7 @@
 """Prepare validator/task tests as drafts only; shared application needs HG035 merge."""
 import hashlib
 import json
+import pprint
 from pathlib import Path
 
 folder = Path('docs/exec-plans/evidence/HG-036')
@@ -11,7 +12,7 @@ packet_digest = hashlib.sha256((folder/'KL047_packet_draft.md').read_bytes()).he
 source = '''# HG036 binds only the unstarted KL047 offline infrastructure definition.
 # Future scope/semantic changes require separate governance; historical unrefined
 # protected bases retain their original packet and are never relabelled.
-FITNESS_EVAL_DEFINITION_DIGESTS = ''' + repr(digests) + '''
+FITNESS_EVAL_DEFINITION_DIGESTS = ''' + pprint.pformat(digests, width=100, sort_dicts=False) + '''
 FITNESS_EVAL_PACKET_SHA256 = ''' + repr(packet_digest) + '''
 
 

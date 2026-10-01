@@ -21,6 +21,7 @@ Initial resource keys:
 - `persistence_schema`
 - `python_dependency_lock`
 - `transaction_interfaces`
+- `fitness_eval_contract`
 
 Every database-writing worktree uses a unique namespace, e.g. database `kineticloop_<task>_<shortsha>` and Compose project `kineticloop-<task>-<shortsha>`, unless the task explicitly declares a shared serialized environment.
 
