@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 import time
@@ -62,6 +63,21 @@ POLICY_BODY = {
 }
 
 
+def _ledger_namespace(short: str) -> DatabaseNamespace:
+    if re.fullmatch(r"[0-9a-f]{7,12}", short) is None:
+        raise ValueError("invalid ledger fixture commit suffix")
+    owner = os.environ.get("KINETICLOOP_KL025_FIXTURE_OWNER")
+    if owner is None:
+        return DatabaseNamespace(f"kineticloop-kl025-{short}", f"kineticloop_kl025_{short}")
+    if owner != "KL-019":
+        raise ValueError("unsupported ledger fixture owner")
+    suffix = DatabaseNamespace.for_worktree(ROOT).project_name[-12:]
+    return DatabaseNamespace(
+        f"kineticloop-kl019-ledger-{short}-{suffix}",
+        f"kineticloop_kl019_ledger_{short}_{suffix}",
+    )
+
+
 @pytest.fixture()
 def database_urls() -> Iterator[dict[str, str]]:
     short = subprocess.check_output(
@@ -70,9 +86,7 @@ def database_urls() -> Iterator[dict[str, str]]:
     if re.fullmatch(r"[0-9a-f]{7,12}", short) is None:
         raise ValueError("invalid ledger fixture commit suffix")
     lifecycle = DatabaseLifecycle(ROOT)
-    lifecycle.namespace = DatabaseNamespace(
-        f"kineticloop-kl025-{short}", f"kineticloop_kl025_{short}"
-    )
+    lifecycle.namespace = _ledger_namespace(short)
     try:
         urls = _MIGRATIONS.bootstrap_two_phase(lifecycle)
         with psycopg.connect(urls["admin"], autocommit=True) as db:

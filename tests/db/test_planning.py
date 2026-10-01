@@ -68,9 +68,14 @@ def _planning_namespace(short: str) -> DatabaseNamespace:
     owner = os.environ.get("KINETICLOOP_KL024_FIXTURE_OWNER")
     if owner is None:
         return DatabaseNamespace(f"kineticloop-kl024-{short}", f"kineticloop_kl024_{short}")
-    if owner != "KL-025":
+    if owner not in {"KL-025", "KL-019"}:
         raise ValueError("unsupported planning fixture owner")
     suffix = DatabaseNamespace.for_worktree(ROOT).project_name[-12:]
+    if owner == "KL-019":
+        return DatabaseNamespace(
+            f"kineticloop-kl019-plan-{short}-{suffix}",
+            f"kineticloop_kl019_plan_{short}_{suffix}",
+        )
     return DatabaseNamespace(
         f"kineticloop-kl025-plan-{short}-{suffix}",
         f"kineticloop_kl025_plan_{short}_{suffix}",

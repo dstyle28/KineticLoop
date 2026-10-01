@@ -1,0 +1,30 @@
+TASK_IDENTITY=harness-backlog-v0.2/KL-019
+TESTED_COMMIT=949820cfd012d6d87374836e459c34ca7f971c1b
+WORKTREE=/Users/davetian/.codex/worktrees/4338/KineticLoop
+WORKTREE_DIGEST=e281d6459e62
+COMMAND=uv run kl test-harness
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/davetian/.codex/worktrees/4338/KineticLoop
+configfile: pyproject.toml
+collected 375 items
+
+tests/harness/acceptance/test_registry.py .....                          [  1%]
+tests/harness/document_index/test_current_document_index.py .......      [  3%]
+tests/harness/document_index/test_evidence_manifest.py .......           [  5%]
+tests/harness/document_index/test_historical_task_map.py ......          [  6%]
+tests/harness/test_call_ledger_scope.py .........................        [ 13%]
+tests/harness/test_fitness_evaluation_scope.py ......................... [ 20%]
+.......................................                                  [ 30%]
+tests/harness/test_planning_fixture_scope.py ............                [ 33%]
+tests/harness/test_planning_subject_scope.py ........................    [ 40%]
+tests/harness/test_protocol_execution_scope.py ......................... [ 46%]
+.....................                                                    [ 52%]
+tests/harness/test_validator.py ........................................ [ 62%]
+........................................................................ [ 82%]
+..............................                                           [ 90%]
+tests/harness/test_wave_scope.py .....................................   [100%]
+
+======================= 375 passed in 212.28s (0:03:32) ========================
+
+EXIT_CODE=0
