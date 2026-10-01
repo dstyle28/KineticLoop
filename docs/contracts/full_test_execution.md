@@ -12,7 +12,9 @@ INTERNAL_ONLY_OPERATIONS remain unchanged.
 
 T6 acquires S51, S01, the exact S27, S38, receipt and S29/S37 locks in frozen order.
 It rechecks current fence, lease, deadline, generation, epoch, request, attempt,
-manifest, controls, budget and execution basis. The merged full producer's bounded
+manifest, controls, budget and execution basis. After receipt, S29 and S37 locks,
+full T6 reruns the current owner/fence/request/attempt/live lease/deadline predicate
+with fresh trusted database time; a pre-lock lease proof cannot survive a wait. The merged full producer's bounded
 canonical reconstruction verifies exact physical F/D/N and both distinct S36 rows,
 sealed admitted source membership, policy/runtime and shared S37. D cites F; N cites
 D and F; the shared certificate's singular proposal anchor is N and its singular

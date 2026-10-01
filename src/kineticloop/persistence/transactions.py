@@ -4152,6 +4152,15 @@ class RepositoryTransaction:
         ):
             raise GuardRequired("full authenticated identity mismatch")
         command = request.command
+        # Cached pre-lock fence proof cannot survive a receipt/S29/S37 wait.
+        # Reuse the owner guard under all locks with fresh trusted database time.
+        self.require_current_fence(
+            UUID(command.intent_id),
+            owner_id=identity.key,
+            fence=command.expected_fence,
+            expected_request_revision=command.expected_request_revision,
+            expected_attempt_id=UUID(command.attempt_id),
+        )
         if (
             UUID(command.intent_id) != c["verified_intent_id"]
             or UUID(command.attempt_id) != c["verified_attempt_id"]

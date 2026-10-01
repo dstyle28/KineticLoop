@@ -149,6 +149,7 @@ def seed_source(
     seconds: float = 3600,
     admission_seconds: float | None = None,
     runtime_seconds: float | None = None,
+    deadline_seconds: int = 3600,
     full: bool = True,
     fact_changes: Any = None,
     config_changes: Any = None,
@@ -227,7 +228,7 @@ def seed_source(
                 "capacity_available": True,
                 "hourly_roots": 10,
                 "daily_roots": 10,
-                "deadline_seconds": 3600,
+                "deadline_seconds": deadline_seconds,
                 "calendar_policies": ["test:UTC-v1"],
                 "root_limits": {"calls": 3, "tokens": 1000, "tools": 10},
             },
@@ -408,11 +409,11 @@ def seed_source(
     return seed
 
 
-def ready(urls: Any, **kwargs: Any) -> tuple[Any, Any]:
+def ready(urls: Any, *, lease_seconds: int = 600, **kwargs: Any) -> tuple[Any, Any]:
     seed = seed_source(urls, **kwargs)
     with connect(urls["admin"]) as db:
         P.upstream(db, seed)
-        basis, refs = P.begin(db, seed)
+        basis, refs = P.begin(db, seed, lease_seconds=lease_seconds)
         op, fullrefs = P.preparation_chain(db, seed, basis, refs)
         refs = P.prepare_validation(db, seed, op, fullrefs)
         P.commit_ready(db, seed, op, refs)
@@ -1594,4 +1595,94 @@ def test_full_server_validity(database_urls: Any, shorten: bool) -> None:
             rows=rows,
             result=result,
             caller_cannot_extend=True,
+        )
+
+
+@pytest.mark.parametrize("bound", ["lease", "deadline"])
+@pytest.mark.parametrize("cross", [False, True])
+def test_full_post_lock_planning_bound(database_urls: Any, bound: str, cross: bool) -> None:
+    # Finite limits are admitted source policy / actual AcquireLease inputs,
+    # never a rewritten lease, deadline, clock, attempt or target output.
+    seed, request = ready(
+        database_urls,
+        lease_seconds=8 if bound == "lease" else 600,
+        deadline_seconds=8 if bound == "deadline" else 3600,
+    )
+    subject = auth(seed).subject_id
+    with connect(database_urls["admin"]) as db:
+        with db.transaction():
+            lease_end, deadline, now = db.execute(
+                "SELECT lease_expires_at,deadline,clock_timestamp() "
+                "FROM kineticloop.planning_intents WHERE subject_id=%s AND id=%s",
+                (subject, UUID(request.command.intent_id)),
+            ).fetchone()
+            other_ends = db.execute(
+                "SELECT min(resolution_expires_at) FROM kineticloop.evidence_resolutions "
+                "WHERE subject_id=%s",
+                (subject,),
+            ).fetchone()[0]
+        end = lease_end if bound == "lease" else deadline
+        assert now < end < other_ends
+        if bound == "lease":
+            assert end < deadline
+        before = P.snapshot(db, subject)
+        with connect(database_urls["admin"]) as blocker:
+            blocker.execute(
+                "SELECT id FROM kineticloop.planning_attempts WHERE id=%s FOR UPDATE",
+                (UUID(request.command.attempt_id),),
+            ).fetchone()
+            with connect(database_urls["admin"]) as clock:
+                entered = P.wait_db_time(clock, end - timedelta(seconds=0.8 if not cross else 0.5))
+                assert entered < end
+
+            def waiting() -> Any:
+                with connect(
+                    database_urls["admin"], application_name="kl077-planning-bound-waiter"
+                ) as waiter:
+                    try:
+                        return service(waiter, seed).commit_full(request)
+                    except (RepositoryTransactionError, psycopg.Error, ValueError) as error:
+                        return str(error)
+
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                future = pool.submit(waiting)
+                observed = P.observe_blocked(database_urls["admin"], "kl077-planning-bound-waiter")
+                assert "planning_attempts" in observed[2]
+                with connect(database_urls["admin"]) as clock:
+                    if cross:
+                        released = P.wait_db_time(clock, end)
+                    else:
+                        with clock.transaction():
+                            released = clock.execute("SELECT clock_timestamp()").fetchone()[0]
+                        assert released < end
+                blocker.commit()
+                outcome = future.result(timeout=12)
+        if cross:
+            assert type(outcome) is str and "stale owner/fence cannot commit" in outcome, outcome
+            assert P.snapshot(db, subject) == before
+        else:
+            assert (
+                isinstance(outcome, dict)
+                and not outcome["executable"]
+                and not outcome["replayed"]
+                and len(outcome["members"]) == 2
+            )
+            assert_event(db, seed, outcome)
+        P.witness(
+            "post_lock_planning_bound_DC",
+            bound=bound,
+            crossed=cross,
+            actual_owner_inputs={
+                "lease_seconds": 8 if bound == "lease" else 600,
+                "deadline_seconds": 8 if bound == "deadline" else 3600,
+            },
+            limiting_end=end,
+            lease_end=lease_end,
+            deadline=deadline,
+            resolution_end=other_ends,
+            entered_before_bound=entered,
+            trusted_release_time=released,
+            observed_lock=observed,
+            actual_outcome=outcome,
+            zero_effects=cross,
         )
