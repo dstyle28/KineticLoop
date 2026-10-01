@@ -1,0 +1,23 @@
+{
+  "tested_commit": "0f5ad5909e4694dc8e2095a034007537613a0030",
+  "checks": [
+    {
+      "check_id": "merged_preflight_and_scope_audit",
+      "command": "/private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-034/audit.py",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-034/merged_preflight_and_scope_audit-0f5ad59.log"
+    },
+    {
+      "check_id": "scope_regressions",
+      "command": "/private/tmp/kl017-venv/bin/python -m pytest -q tests/harness/test_call_ledger_scope.py tests/harness/test_planning_fixture_scope.py tests/harness/test_planning_subject_scope.py tests/harness/test_wave_scope.py",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-034/scope_regressions-0f5ad59.log"
+    },
+    {
+      "check_id": "harness_validation",
+      "command": "/private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness",
+      "result": "FAIL",
+      "evidence_ref": "docs/exec-plans/evidence/HG-034/harness_validation-0f5ad59.log"
+    }
+  ]
+}

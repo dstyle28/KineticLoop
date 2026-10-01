@@ -24,7 +24,7 @@ with tempfile.TemporaryDirectory(prefix='hg034-candidate-') as folder:
     subprocess.run(['git', 'clone', '--quiet', '--shared', '--no-checkout', str(root), str(clone)], check=True)
     subprocess.run(['git', 'checkout', '--quiet', '--detach', head], cwd=clone, check=True)
     patch = root / 'docs/exec-plans/evidence/HG-034/planning_namespace.patch'
-    subprocess.run(['git', 'apply', str(patch)], cwd=clone, check=True)
+    subprocess.run(['git', 'apply', '--unidiff-zero', str(patch)], cwd=clone, check=True)
     assert subprocess.check_output(['git', 'diff', '--name-only'], cwd=clone, text=True).splitlines() == [path]
     before = ast.parse(original.decode())
     after = ast.parse((clone / path).read_text())

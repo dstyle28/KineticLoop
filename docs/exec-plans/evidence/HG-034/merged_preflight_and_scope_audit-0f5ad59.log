@@ -1,0 +1,30 @@
+change_identity: harness-governance-v0.1/HG-034
+tested_commit: 0f5ad5909e4694dc8e2095a034007537613a0030
+command: /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-034/audit.py
+exit_code: 0
+
+base_commit=ff57a80feebd4e539f9af277e0dcb26d942bc3e0
+tested_commit=0f5ad5909e4694dc8e2095a034007537613a0030
+PASS frozen/product/prerequisite fixture/packet/result/evidence/CI/requirement state unchanged
+PASS only exact namespace scope/check refinements; all residual semantics/hard dependency/review union preserved
+PASS actual normal PR62 merge, result13 PASS, exact union review binding and allowed premerge suffix
+API PlanningIdentity fields=actor,subject_id
+API AdmitOrReviseIntent fields=subject_id,key,local_date,purpose,calendar_policy,constraints,explicit,trigger
+API AcquireLease fields=subject_id,key,intent_id,expected_owner,expected_fence,request_revision,attempt_id,seconds
+API RenewLease fields=subject_id,key,intent_id,fence,request_revision,attempt_id,seconds
+API admit_or_revise (self, command: 'AdmitOrReviseIntent') -> 'Mapping[str, Any]'
+API acquire_lease (self, command: 'AcquireLease') -> 'Mapping[str, Any]'
+API renew_lease (self, command: 'RenewLease') -> 'Mapping[str, Any]'
+PASS live guard binds subject/current request/attempt/owner/fence and strict trusted-time lease/deadline
+PASS actual root limits/reserved/settled payload and UNKNOWN vocabulary; generic env injection is inadequate
+FIXTURE tests/unit/workflow/test_planning.py pure unit; no lifecycle
+FIXTURE tests/unit/persistence/test_transactions.py pure unit; no lifecycle
+FIXTURE tests/db/test_planning.py:65 database_urls
+FIXTURE tests/db/test_transaction_interfaces.py:275 database_urls
+FIXTURE tests/db/test_transaction_interfaces.py:624 _reset_kl022_fixture
+FIXTURE tests/db/test_transaction_interfaces.py:296 _seed_transaction_rows
+FIXTURE tests/db/test_migrations.py:262 bootstrap_two_phase
+FIXTURE tests/db/test_safety_registry.py:98 seed
+PASS complete called fixture inventory: selected lifecycle -> bootstrap/role URLs -> seed/truncate -> same-project destroy
+LIMITATION KL024 result retains immutable premerge UNMERGED; actual merge recorded by Git. No KL024 integration artifact exists at base; HG034 does not create/change historical bookkeeping.
+LIMITATION candidate proof is prospective isolation/regression evidence only; all future KL025 implementation checks/product/release obligations NOT_RUN

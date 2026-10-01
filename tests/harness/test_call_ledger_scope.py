@@ -102,3 +102,12 @@ def test_planning_namespace_baseline_and_packet_drift_fail_closed() -> None:
     packet = (ROOT / "docs/exec-plans/active/KL-025.md").read_text()
     changed = packet.replace(v.LEDGER_PLANNING_FIXTURE_CONTRACT, "arbitrary reset target")
     assert "packet-ledger-planning-fixture-contract:KL-025" in v.packet_errors(TASK, changed)
+
+
+
+def test_historical_planning_packet_does_not_require_future_exception() -> None:
+    backlog = json.loads(v.git(ROOT, "show", BASELINE + ":" + v.BACKLOG))
+    historical = next(t for t in backlog["tasks"] if t["id"] == "KL-025")
+    packet = v.git(ROOT, "show", BASELINE + ":docs/exec-plans/active/KL-025.md").decode()
+    assert v.LEDGER_PLANNING_FIXTURE_PATH not in historical["write_paths"]
+    assert v.packet_errors(historical, packet) == []

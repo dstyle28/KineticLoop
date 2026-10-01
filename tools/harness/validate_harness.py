@@ -672,7 +672,7 @@ def packet_errors(task, text):
         if ((section(text, 'Subject-scope current-head exception') or '').strip()
                 != PLANNING_SUBJECT_SCOPE_CONTRACT):
             errors.append('packet-planning-subject-scope-contract:' + name)
-    if name == 'KL-025':
+    if name == 'KL-025' and LEDGER_PLANNING_FIXTURE_PATH in task.get('write_paths', []):
         if ((section(text, 'Planning fixture namespace exception') or '').strip()
                 != LEDGER_PLANNING_FIXTURE_CONTRACT):
             errors.append('packet-ledger-planning-fixture-contract:' + name)
