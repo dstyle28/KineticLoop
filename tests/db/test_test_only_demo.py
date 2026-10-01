@@ -2050,8 +2050,6 @@ def test_trusted_post_lock_expiry(database_urls: Any, operation: str) -> None:
             if operation == "START":
                 target = UUID(bundle["head_id"])
         before = snapshot(db, auth(seed).subject_id)
-        before_wait = wait_db_time(db, seed["admission_end"] - timedelta(seconds=2))
-        assert before_wait < seed["admission_end"]
         with connect(database_urls["admin"]) as blocker:
             blocker.execute(
                 sql.SQL("SELECT id FROM kineticloop.{} WHERE id=%s FOR UPDATE").format(
@@ -2059,6 +2057,9 @@ def test_trusted_post_lock_expiry(database_urls: Any, operation: str) -> None:
                 ),
                 (target,),
             ).fetchone()
+            # Cross expiry within the merged owner's one-second lock timeout.
+            before_wait = wait_db_time(db, seed["admission_end"] - timedelta(seconds=0.5))
+            assert before_wait < seed["admission_end"]
 
             def waiting() -> str:
                 with connect(

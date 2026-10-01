@@ -1,0 +1,120 @@
+{
+  "tested_commit": "e78a59bbff2343fa7750ae3d5925548d4962c8ce",
+  "root": "/Users/davetian/.codex/worktrees/465a/KineticLoop",
+  "compose": "kineticloop-kl027-demo-e78a59b-02d718cec5f6",
+  "database": "kineticloop_kl027_demo_e78a59b_02d718cec5f6",
+  "checks": [
+    {
+      "check_id": "demo_namespace_and_boundary_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_test_only_demo.py::test_namespace_and_boundary",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_namespace_and_boundary_pu.log",
+      "log_sha256": "7603ffc0bfb8dae777f8a3d50d844160a56b51e4f3f817d322269c9603e41d09",
+      "junit_ref": "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_namespace_and_boundary_pu.xml",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 0.8773507920559496
+    },
+    {
+      "check_id": "demo_owner_trajectory_e2e",
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_full_trajectory",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_owner_trajectory_e2e.log",
+      "log_sha256": "07d60fa458ed39d25539ed78414e8d2503d12758ba2d8fcac2bd828c483a9f11",
+      "junit_ref": "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_owner_trajectory_e2e.xml",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 5.5629192078486085
+    },
+    {
+      "check_id": "demo_revoke_denials_dc",
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_revoke_then_deny",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_revoke_denials_dc.log",
+      "log_sha256": "5a8e68ffbf278ec185ce64417e7bfce29b2c7450cb2553a96dd50bae56df09f5",
+      "junit_ref": "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_revoke_denials_dc.xml",
+      "counts": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 45.37311074999161
+    },
+    {
+      "check_id": "demo_expiry_denials_dc",
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_expiry_then_deny",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_expiry_denials_dc.log",
+      "log_sha256": "7dcedc016274c4dd19593d56bdbe1f9280935d50dd8527da60b941a01cdbb353",
+      "junit_ref": "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_expiry_denials_dc.xml",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 37.41175008309074
+    },
+    {
+      "check_id": "demo_fdn_repair_e2e",
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_fdn_repair",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_fdn_repair_e2e.log",
+      "log_sha256": "c9ce60871f6e86e7a41a3c101438a27d77abc6fce31c51a08e77e62735de7160",
+      "junit_ref": "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_fdn_repair_e2e.xml",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 6.067518834024668
+    },
+    {
+      "check_id": "demo_scope_denials_dc",
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_production_shadow_denials",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_scope_denials_dc.log",
+      "log_sha256": "0f964c91859bd2547d8cfeb39f3b32a0518e4fa666c27daf5a68e96dd6369396",
+      "junit_ref": "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_scope_denials_dc.xml",
+      "counts": {
+        "tests": 43,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 671.8346869589295
+    },
+    {
+      "check_id": "demo_suite_e2e",
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py",
+      "result": "FAIL",
+      "exit_code": 2,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_suite_e2e.log",
+      "log_sha256": "a010feab6f7ead4ce774129e3f7dd293d16a90e3d58a88f5da382e8ed67c6b8a",
+      "junit_ref": "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_suite_e2e.xml",
+      "counts": {
+        "tests": 22,
+        "failures": 4,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 160.26770204189233
+    }
+  ]
+}
