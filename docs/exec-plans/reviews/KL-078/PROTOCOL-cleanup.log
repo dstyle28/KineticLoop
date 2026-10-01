@@ -1,0 +1,49 @@
+{
+  "project": "kineticloop-kl078-prep-89249ab-97c3d06909ce",
+  "exact_resource_absence": [
+    {
+      "command": [
+        "docker",
+        "ps",
+        "-a",
+        "--filter",
+        "label=com.docker.compose.project=kineticloop-kl078-prep-89249ab-97c3d06909ce",
+        "--format",
+        "{{.ID}} {{.Names}}"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "docker",
+        "volume",
+        "ls",
+        "--filter",
+        "label=com.docker.compose.project=kineticloop-kl078-prep-89249ab-97c3d06909ce",
+        "--format",
+        "{{.Name}}"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "docker",
+        "network",
+        "ls",
+        "--filter",
+        "label=com.docker.compose.project=kineticloop-kl078-prep-89249ab-97c3d06909ce",
+        "--format",
+        "{{.Name}}"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}
+
+Own clone/runtime/cache removed and all three exact paths verified absent. No peer resource deletion.

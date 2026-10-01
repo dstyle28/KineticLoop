@@ -1,0 +1,20 @@
+REVIEWED_HEAD_SHA=89249abcfe5075d958c5e1ea4532b774ea4668de
+CLONE=/private/tmp/kl078-db-final-89249ab
+COMMAND=/private/tmp/kl001-bootstrap/bin/uv run pytest -q -s tests/db/test_preparation.py::test_immutable_replay
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-89249ab-28b3c3297249', database_name='kineticloop_kl078_prep_89249ab_28b3c3297249') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE 7ed7da1a-e05b-5c1e-bc69-eb62f7e028d0 SEALED
+PERSISTED_PROOFS {"artifact_closure_ids": ["688ffb10-5214-4e55-9a60-af9d2101e64f", "d857f801-011e-4fde-b7b1-2a03f7e171de"], "artifact_hash": "e6968fc9a21cfdbc7277956853a88ad6d7aade0ffb0a96faaef1900bb71cccad", "basis_hash": "87f10303fe156f933206f8fb0ba276a1ed6bc9ea92b662d8dad3cc388d6d5b83", "build": "f3f0906c-7f6d-50d4-8beb-0be9ff6e45d6", "dependency_basis_hash": "b35d90ff47dad1543f6111696e96d19653398c2fa018ba25927f2e064645485e", "dependency_ids": ["c0c0feda-3fbb-5ad4-bfab-81305a23af0b", "69e85ae1-5464-5318-8093-6e341a710e2b", "76428107-2a4b-545a-a7a5-522239ab8191", "38be5aa0-6e32-5bff-8b4c-993a0bccb735", "ad597e06-2d00-59e5-97c0-3f67959a9fee", "e454801d-633e-5e66-ad5c-d7a3ab6f26fa"], "manifest_hash": "2e96df160327da7cd4903a802013fea6ef1e3ea3a9cb8d78f4a18b9664747461", "projection": "9fffab51-deec-5970-a2db-3731eab48bfe", "source": "7ed7da1a-e05b-5c1e-bc69-eb62f7e028d0", "source_hash": "0461e4f76a67a9e3cbbe1d24c4aad3e342b09675296ca380050a9301b3f4431b"}
+ACTUAL_SOURCE 92ebfa78-01f0-5f82-bd5b-af7e0334c1c8 SEALED
+PERSISTED_PROOFS {"artifact_closure_ids": ["688ffb10-5214-4e55-9a60-af9d2101e64f", "d857f801-011e-4fde-b7b1-2a03f7e171de"], "artifact_hash": "e6968fc9a21cfdbc7277956853a88ad6d7aade0ffb0a96faaef1900bb71cccad", "basis_hash": "cd825e26cb699aecba1593da08f1772699609b86b8f5d328c7596144d1e415ee", "build": "1ed6f89c-f213-58fa-b86c-1155debc7bdc", "dependency_basis_hash": "9b5c3d7729c8c4987e36d8e64dddf73424ae2b2402d8cb29d329a42e6628b7ec", "dependency_ids": ["cccd59ae-9f7a-52ec-9235-047bf1a844a7", "82454180-ce9c-5cce-b534-1c75428d819f", "ab91152e-cd0a-5864-b943-34203a83f85f", "531e59ce-b7e5-5524-9ed8-5e774f2b88d1", "13e8325b-e4e4-5eec-a1ce-cd6c1d164e80", "09607afc-1aa4-5e2e-ade3-597f77349311"], "manifest_hash": "34c6cf54ff70dd18201d6c18f8c38223c4852ba5b10ecbd41abc7162305be7de", "projection": "27843cbe-fae3-5a04-b20b-644c4dc711ac", "source": "92ebfa78-01f0-5f82-bd5b-af7e0334c1c8", "source_hash": "0bcebcc0a84fdb5b681a490ef68d3fd45bf20739f65ae2bc43a5d393ec49d66a"}
+.LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 3.5178529580589384
+
+1 passed in 3.75s

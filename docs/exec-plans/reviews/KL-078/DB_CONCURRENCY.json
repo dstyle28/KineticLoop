@@ -1,0 +1,108 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-078",
+  "reviewed_head_sha": "89249abcfe5075d958c5e1ea4532b774ea4668de",
+  "review_type": "DB_CONCURRENCY",
+  "status": "PASS",
+  "findings": [],
+  "evidence_refs": [
+    "docs/exec-plans/completed/KL-078_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-078/checks-2a958c4/checks.json",
+    "docs/exec-plans/evidence/KL-078/checks-2a958c4/preparation_namespace_pu.log",
+    "docs/exec-plans/evidence/KL-078/checks-2a958c4/preparation_owner_pipeline_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-2a958c4/preparation_basis_denials_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-2a958c4/preparation_immutable_replay_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-2a958c4/preparation_duplicate_rollback_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-2a958c4/preparation_no_authority_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-2a958c4/preparation_suite_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-2a958c4/harness_validation_passes.log",
+    "docs/exec-plans/evidence/KL-078/checks-2a958c4/unit_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-078/checks-2a958c4/harness_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-078/checks-2a958c4/lint_passes.log",
+    "docs/exec-plans/evidence/KL-078/checks-2a958c4/typecheck_passes.log"
+  ],
+  "review_contract_version": "v0.2",
+  "review_scope": [
+    "Full base 7186b3024dcb5a555070391cf138b5e300819db5 -> reviewed 89249abcfe5075d958c5e1ea4532b774ea4668de diff and all KL-078 packet DoD/oracles; five declared implementation/test/contract paths plus task result/evidence/review history",
+    "Current index-resolved Protocol 5.3-5.6/6.1-6.9; named DB tables/ownership/lock order/T3; current acceptance sections 2-4; immutable source/projection/build and trusted TEST ingress boundaries",
+    "Independent actual prerequisite PASS results, required SHA-bound PASS reviews, normal two-parent MERGED commit/ancestry for KL-017/KL-019/KL-022/KL-023/KL-074; M2 closure PASS; KL074 selected-lifecycle readiness implementation",
+    "T3-PREPARATION owner-local creation/completion locks, idempotency, atomic rollback, immutable history, namespace isolation and cleanup; unchanged actual T3 publication guards and shared S51 before S01 order"
+  ],
+  "verified_behavior": [
+    "S21 revision1 supplied only by exact trusted server insertion; required fields and caller column capability unchanged; exact typed source/engine/dependency validation and caller revision/provenance rejection; no generic capability/SQL/FK bypass",
+    "Real owner-built SEALED S15/S16 sources yield immutable S21 plus complete S22 closure atomically, then locally owned BUILDING/READY S23; exact persisted source/provenance/content/dependency/role/artifact/manifest proofs independently reconstructed from actual immutable rows",
+    "Actual T3 produces S24/S25, S01 generation/head and one linked receipt/event/outbox; missing/foreign/stale factset/frontier/epoch/program/policy/dependency/artifact/validity rejects with complete unchanged state",
+    "Projection/build advisory-lock duplicate contenders and local S23 row-lock completion serialize under observed pg_blocking_pids with bounded Events/futures and no sleep ordering; exact new persisted winner proofs, cardinality, old history preservation and full authority/receipt/event/outbox snapshots pass",
+    "Failures after S21, midway S22, before/after READY and after actual T3 S01 update fully roll back observed source-bound outputs and authority/publication/receipt/event/outbox rows",
+    "Historical projection/build/READY/PUBLISHED and T3 retry preserve byte-identical identities/history and cannot repoint newer independently published S01; same identity changed content conflicts; stale candidate cannot relabel epoch/frontier",
+    "Observed S01 blocker does not block independent preparation; preparation relation locks exclude S01/S51; no generation/head/authorization/session/binding/intent success; authenticated TEST principal/policy/environment checks deny foreign/production/evaluation ingress",
+    "No migrations, public wire/matrix/metadata/CI/legacy lifecycle/frozen changes, external calls, planned-to-actual substitutions, downstream execution or production/shadow authority"
+  ],
+  "oracle_finding_closure": [
+    {
+      "prior_round": "15a6c19",
+      "finding": "Persisted source/output closure not independently asserted",
+      "status": "CLOSED",
+      "basis": "assert_prepared_rows verifies exact persisted SEALED source and FACT members, complete S21/S22/S23 provenance/refs/roles and independent source/projection/content/dependency/artifact/manifest hashes; actual positive T3 test additionally verifies persisted S24/S25 and receipt/event/outbox linkage."
+    },
+    {
+      "prior_round": "15a6c19",
+      "finding": "Denial snapshots prove counts but not zero changed rows",
+      "status": "CLOSED",
+      "basis": "state includes complete S01 plus stable row_to_json rows ordered by id for publication/receipt/event/outbox/authority and optionally all preparation tables. Required denial, stale-input, expiry/revocation and rollback equality checks compare rows, not only counts."
+    },
+    {
+      "prior_round": "15a6c19 and 154171e",
+      "finding": "Duplicate winner closure/cardinality/history and comprehensive zero-effects assertion gaps",
+      "status": "CLOSED",
+      "basis": "Each projection winner calls assert_prepared_rows with no build; each build winner directly proves its persisted BUILDING candidate; completion winner directly proves READY candidate. Assertions reconstruct semantic keys/references/source/provenance/candidate/artifact hashes without subsequent mutations, retaining exact cardinality, old-row preservation and replay byte equality. race_authority is captured after actual source sealing and setup, then compared as complete S01/receipt/event/outbox/publication/authority rows after contenders/proofs/replay."
+    }
+  ],
+  "independent_rerun": {
+    "clone": "/private/tmp/kl078-db-final-89249ab",
+    "clone_command": "git clone --no-hardlinks /Users/davetian/.codex/worktrees/68f1/KineticLoop /private/tmp/kl078-db-final-89249ab; git checkout --detach 89249abcfe5075d958c5e1ea4532b774ea4668de",
+    "runtime": "/private/tmp/kl078-db-final-env-89249ab",
+    "cache": "/private/tmp/kl078-db-final-cache-89249ab",
+    "setup_command": "UV_PROJECT_ENVIRONMENT=/private/tmp/kl078-db-final-env-89249ab UV_CACHE_DIR=/private/tmp/kl078-db-final-cache-89249ab /private/tmp/kl001-bootstrap/bin/uv sync --locked",
+    "namespace_project": "kineticloop-kl078-prep-89249ab-28b3c3297249",
+    "namespace_database": "kineticloop_kl078_prep_89249ab_28b3c3297249",
+    "migration_revision": "e8c2f1a6b904",
+    "namespace_pu_before_first_lifecycle": true,
+    "unit_command": "uv run pytest -q -s tests/unit/persistence/test_preparation.py",
+    "unit_tests_passed": 3,
+    "named_db_selectors_passed": 5,
+    "full_db_suite_tests_passed": 5,
+    "skipped": 0,
+    "xfail": 0,
+    "quality_commands": [
+      "uv run kl lint",
+      "uv run kl typecheck"
+    ],
+    "quality_results": [
+      "All checks passed!",
+      "Success: no issues found in 135 source files"
+    ],
+    "raw_commands": "DB_CONCURRENCY-raw/DB_CONCURRENCY-reruns.json",
+    "raw_provenance": "DB_CONCURRENCY-raw/DB_CONCURRENCY-static.json",
+    "raw_logs": "DB_CONCURRENCY-pu.log, DB_CONCURRENCY-test_*.log, DB_CONCURRENCY-suite.log, DB_CONCURRENCY-lint.log, DB_CONCURRENCY-typecheck.log, DB_CONCURRENCY-sync.log",
+    "cleanup_provenance": "DB_CONCURRENCY-raw/DB_CONCURRENCY-cleanup.json",
+    "cleanup_verified": true,
+    "clone_runtime_cache_removed": true,
+    "peer_resources_untouched": true
+  },
+  "committed_evidence_verification": {
+    "tested_commit": "2a958c45cc2f25605b57a5ec60e3c46327999269",
+    "all_fourteen_final_checks_verified": true,
+    "tested_to_reviewed_suffix": "Result and new task evidence only; implementation/tests/contract unchanged",
+    "unit_regression_tests": 219,
+    "harness_regression_tests": 626,
+    "junit_failures_errors_skips": 0,
+    "all_evidence_refs_committed_at_reviewed_sha": true,
+    "current_authority_hashes_match_index": true,
+    "unchanged_registry_and_publication_guard_function_bytes": true
+  },
+  "limits": [
+    "PASS is the independent implementation/result review, not MERGED or product/layer/release PASS. Existing unchanged hosted legacy DB/quality jobs and selected-task merge gate must pass on the relevant final PR head before normal merge.",
+    "Only own task DB fixtures/lifecycle ran locally; no default or peer resource/runtime was touched. No implementation edits, commits, pushes, PRs or merges were performed.",
+    "Persist this report only through the task-scoped linear REVIEW_RECORD_ONLY suffix. Any subsequent implementation/test/contract/result changes require fresh review."
+  ]
+}
