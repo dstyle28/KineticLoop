@@ -1,7 +1,7 @@
 task_identity: harness-backlog-v0.2/KL-019
 display_task_id: KL-019
 task_definition_version: v0.2
-base_commit: 62e75bac61c8f3e9b3de6cdc6d19a84ce2776908
+base_commit: dac7df4adde23cba0ac5483204a25f4b3668176d
 tested_commit: 949820cfd012d6d87374836e459c34ca7f971c1b
 merge_commit: null
 task_status: PASS
@@ -134,7 +134,6 @@ files_changed:
 - docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-bf00942.log
 - docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-c739273.log
 - docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-ff073d0.log
-- docs/exec-plans/evidence/KL-019/entry-audit-base-62e75ba.json
 - docs/exec-plans/evidence/KL-019/entry-audit.json
 - docs/exec-plans/evidence/KL-019/entry-audit.py
 - docs/exec-plans/evidence/KL-019/environment-8af107b.json
@@ -227,7 +226,6 @@ files_changed:
 - docs/exec-plans/evidence/KL-019/publish_ready_build_dc-bf00942.log
 - docs/exec-plans/evidence/KL-019/publish_ready_build_dc-c739273.log
 - docs/exec-plans/evidence/KL-019/publish_ready_build_dc-ff073d0.log
-- docs/exec-plans/evidence/KL-019/result-before-HG037-base-update-949820c.yaml
 - docs/exec-plans/evidence/KL-019/result-before-base-update-9cb6451.yaml
 - docs/exec-plans/evidence/KL-019/result-before-review-repairs-07a6ba6.yaml
 - docs/exec-plans/evidence/KL-019/review-DB_CONCURRENCY-07a6ba6.json
@@ -294,9 +292,6 @@ decisions:
 - Preserve c739273 ACK-loss setup and 7cdee15 oracle-query failure logs as historical evidence. The
   superseded bf00942 candidate passed all twenty checks; final TEST_ONLY policy scope and exact first-use
   day/session defenses were added before the final full run.
-- Incorporated normally merged HG037 at 62e75ba after its complete final CI PASS. Current authority/index/prerequisite
-  audit passed before the first new namespace reset. All twenty checks and fresh three-type review
-  will bind the final updated revision.
 known_limitations:
 - No RecordSnapshot/AdvanceAttempt owner, evidence-resolution/semantic-validation engine, full workflow/model
   loop, production activation, executable real-data shadow or provider command authority is implemented.
