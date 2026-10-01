@@ -1,0 +1,57 @@
+{
+  "tested_commit": "06e0a4802ff5a9a247d4d48291dcea025113d17c",
+  "commands_run": [
+    {
+      "check_id": "preparation_revision_pu",
+      "command": "uv run pytest -q tests/unit/persistence/test_preparation.py::test_server_revision",
+      "result": "PASS",
+      "exit_code": 0,
+      "elapsed_seconds": 0.42630712501704693,
+      "evidence_ref": "docs/exec-plans/evidence/KL-078/checks-06e0a48/preparation_revision_pu.log",
+      "tested_commit": "06e0a4802ff5a9a247d4d48291dcea025113d17c",
+      "collected_and_executed": 1,
+      "skipped": 0,
+      "failures": 0,
+      "junit_ref": "docs/exec-plans/evidence/KL-078/checks-06e0a48/preparation_revision_pu.xml"
+    },
+    {
+      "check_id": "preparation_capability_pu",
+      "command": "uv run pytest -q tests/unit/persistence/test_preparation.py::test_exact_capabilities",
+      "result": "PASS",
+      "exit_code": 0,
+      "elapsed_seconds": 0.3669988331384957,
+      "evidence_ref": "docs/exec-plans/evidence/KL-078/checks-06e0a48/preparation_capability_pu.log",
+      "tested_commit": "06e0a4802ff5a9a247d4d48291dcea025113d17c",
+      "collected_and_executed": 1,
+      "skipped": 0,
+      "failures": 0,
+      "junit_ref": "docs/exec-plans/evidence/KL-078/checks-06e0a48/preparation_capability_pu.xml"
+    },
+    {
+      "check_id": "preparation_namespace_pu",
+      "command": "uv run pytest -q tests/unit/persistence/test_preparation.py::test_namespace",
+      "result": "PASS",
+      "exit_code": 0,
+      "elapsed_seconds": 0.7563366671092808,
+      "evidence_ref": "docs/exec-plans/evidence/KL-078/checks-06e0a48/preparation_namespace_pu.log",
+      "tested_commit": "06e0a4802ff5a9a247d4d48291dcea025113d17c",
+      "collected_and_executed": 1,
+      "skipped": 0,
+      "failures": 0,
+      "junit_ref": "docs/exec-plans/evidence/KL-078/checks-06e0a48/preparation_namespace_pu.xml"
+    },
+    {
+      "check_id": "preparation_owner_pipeline_dc",
+      "command": "uv run pytest -q tests/db/test_preparation.py::test_owner_pipeline",
+      "result": "FAIL",
+      "exit_code": 1,
+      "elapsed_seconds": 3.893469874979928,
+      "evidence_ref": "docs/exec-plans/evidence/KL-078/checks-06e0a48/preparation_owner_pipeline_dc.log",
+      "tested_commit": "06e0a4802ff5a9a247d4d48291dcea025113d17c",
+      "collected_and_executed": 1,
+      "skipped": 0,
+      "failures": 1,
+      "junit_ref": "docs/exec-plans/evidence/KL-078/checks-06e0a48/preparation_owner_pipeline_dc.xml"
+    }
+  ]
+}
