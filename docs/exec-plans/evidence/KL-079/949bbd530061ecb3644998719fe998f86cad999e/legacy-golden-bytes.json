@@ -1,0 +1,222 @@
+{
+  "protected_base": "15e85921f58d2f7ea816b694bc80221bd7406ee8",
+  "tested_commit": "949bbd530061ecb3644998719fe998f86cad999e",
+  "original_module_sha256": "d1ff717a9aec167759070bcd9f5d9b8deea6af49bba31548c990e0b0fcfb8f74",
+  "exact_canonical_bytes_and_hashes_equal": true,
+  "legacy_trajectory": {
+    "FITNESS": {
+      "payload": {
+        "subject_id": "00000000-0000-0000-0000-000000000001",
+        "root_id": "00000000-0000-0000-0000-000000000002",
+        "attempt_id": "00000000-0000-0000-0000-000000000003",
+        "request_id": "00000000-0000-0000-0000-000000000004",
+        "request_revision": 1,
+        "snapshot_id": "00000000-0000-0000-0000-000000000005",
+        "context_hash": "28b8c501c87f18578903305c7401cd4442a59d22af37a90fc558e694189456fc",
+        "manifest_id": "00000000-0000-0000-0000-000000000006",
+        "policy_id": "00000000-0000-0000-0000-000000000007",
+        "policy_hash": "17ad92e63c962393c0329c658937d16eccaea13036412a3d1d0a5b6b8f29d738",
+        "captured_epoch": 0,
+        "version": "kl076-mechanical-test-v1",
+        "kind": "FITNESS",
+        "id": "00000000-0000-0000-0000-00000000000c",
+        "revision": 1,
+        "parent_id": null,
+        "parent_hash": null,
+        "action": {
+          "exercise": "fixture:cycle",
+          "minutes": 30,
+          "slot": "new-fixture-slot",
+          "semantic_class": "PRESCRIBED_QUANTITY"
+        },
+        "constraints_hash": "3045491756e10eabd6327d7ddacbd6ba10d54f51c17ec0d55f171b3e671f343a",
+        "citations": []
+      },
+      "content_hash": "4c69df9e8a38f750413aa5ff99230e5a29f05cd29b4c00414b4bfb0607c0b1b8",
+      "canonical_bytes": "{\"action\":{\"exercise\":\"fixture:cycle\",\"minutes\":30,\"semantic_class\":\"PRESCRIBED_QUANTITY\",\"slot\":\"new-fixture-slot\"},\"attempt_id\":\"00000000-0000-0000-0000-000000000003\",\"captured_epoch\":0,\"citations\":[],\"constraints_hash\":\"3045491756e10eabd6327d7ddacbd6ba10d54f51c17ec0d55f171b3e671f343a\",\"context_hash\":\"28b8c501c87f18578903305c7401cd4442a59d22af37a90fc558e694189456fc\",\"id\":\"00000000-0000-0000-0000-00000000000c\",\"kind\":\"FITNESS\",\"manifest_id\":\"00000000-0000-0000-0000-000000000006\",\"parent_hash\":null,\"parent_id\":null,\"policy_hash\":\"17ad92e63c962393c0329c658937d16eccaea13036412a3d1d0a5b6b8f29d738\",\"policy_id\":\"00000000-0000-0000-0000-000000000007\",\"request_id\":\"00000000-0000-0000-0000-000000000004\",\"request_revision\":1,\"revision\":1,\"root_id\":\"00000000-0000-0000-0000-000000000002\",\"snapshot_id\":\"00000000-0000-0000-0000-000000000005\",\"subject_id\":\"00000000-0000-0000-0000-000000000001\",\"version\":\"kl076-mechanical-test-v1\"}"
+    },
+    "DEMAND": {
+      "payload": {
+        "subject_id": "00000000-0000-0000-0000-000000000001",
+        "root_id": "00000000-0000-0000-0000-000000000002",
+        "attempt_id": "00000000-0000-0000-0000-000000000003",
+        "request_id": "00000000-0000-0000-0000-000000000004",
+        "request_revision": 1,
+        "snapshot_id": "00000000-0000-0000-0000-000000000005",
+        "context_hash": "28b8c501c87f18578903305c7401cd4442a59d22af37a90fc558e694189456fc",
+        "manifest_id": "00000000-0000-0000-0000-000000000006",
+        "policy_id": "00000000-0000-0000-0000-000000000007",
+        "policy_hash": "17ad92e63c962393c0329c658937d16eccaea13036412a3d1d0a5b6b8f29d738",
+        "captured_epoch": 0,
+        "version": "kl076-mechanical-test-v1",
+        "kind": "DEMAND",
+        "id": "00000000-0000-0000-0000-00000000000d",
+        "fitness_id": "00000000-0000-0000-0000-00000000000c",
+        "fitness_hash": "4c69df9e8a38f750413aa5ff99230e5a29f05cd29b4c00414b4bfb0607c0b1b8",
+        "method_version": "kl076-mechanical-test-v1",
+        "window": [
+          "2026-09-30T12:00:00+00:00",
+          "2026-10-01T13:00:00+00:00"
+        ],
+        "prescribed_minutes": 30,
+        "target_units": 30,
+        "estimate_interval": [
+          60,
+          61
+        ],
+        "semantic_classes": [
+          [
+            "prescribed_minutes",
+            "PRESCRIBED_QUANTITY"
+          ],
+          [
+            "target_units",
+            "TARGET"
+          ],
+          [
+            "estimate_interval",
+            "ESTIMATE"
+          ]
+        ]
+      },
+      "content_hash": "0a609bee1af198eff180fbb4235f0a89e202cfcc4065d3e83c53279a34f13305",
+      "canonical_bytes": "{\"attempt_id\":\"00000000-0000-0000-0000-000000000003\",\"captured_epoch\":0,\"context_hash\":\"28b8c501c87f18578903305c7401cd4442a59d22af37a90fc558e694189456fc\",\"estimate_interval\":[60,61],\"fitness_hash\":\"4c69df9e8a38f750413aa5ff99230e5a29f05cd29b4c00414b4bfb0607c0b1b8\",\"fitness_id\":\"00000000-0000-0000-0000-00000000000c\",\"id\":\"00000000-0000-0000-0000-00000000000d\",\"kind\":\"DEMAND\",\"manifest_id\":\"00000000-0000-0000-0000-000000000006\",\"method_version\":\"kl076-mechanical-test-v1\",\"policy_hash\":\"17ad92e63c962393c0329c658937d16eccaea13036412a3d1d0a5b6b8f29d738\",\"policy_id\":\"00000000-0000-0000-0000-000000000007\",\"prescribed_minutes\":30,\"request_id\":\"00000000-0000-0000-0000-000000000004\",\"request_revision\":1,\"root_id\":\"00000000-0000-0000-0000-000000000002\",\"semantic_classes\":[[\"prescribed_minutes\",\"PRESCRIBED_QUANTITY\"],[\"target_units\",\"TARGET\"],[\"estimate_interval\",\"ESTIMATE\"]],\"snapshot_id\":\"00000000-0000-0000-0000-000000000005\",\"subject_id\":\"00000000-0000-0000-0000-000000000001\",\"target_units\":30,\"version\":\"kl076-mechanical-test-v1\",\"window\":[\"2026-09-30T12:00:00+00:00\",\"2026-10-01T13:00:00+00:00\"]}"
+    },
+    "NUTRITION": {
+      "payload": {
+        "subject_id": "00000000-0000-0000-0000-000000000001",
+        "root_id": "00000000-0000-0000-0000-000000000002",
+        "attempt_id": "00000000-0000-0000-0000-000000000003",
+        "request_id": "00000000-0000-0000-0000-000000000004",
+        "request_revision": 1,
+        "snapshot_id": "00000000-0000-0000-0000-000000000005",
+        "context_hash": "28b8c501c87f18578903305c7401cd4442a59d22af37a90fc558e694189456fc",
+        "manifest_id": "00000000-0000-0000-0000-000000000006",
+        "policy_id": "00000000-0000-0000-0000-000000000007",
+        "policy_hash": "17ad92e63c962393c0329c658937d16eccaea13036412a3d1d0a5b6b8f29d738",
+        "captured_epoch": 0,
+        "version": "kl076-mechanical-test-v1",
+        "kind": "NUTRITION",
+        "id": "00000000-0000-0000-0000-00000000000e",
+        "fitness_id": "00000000-0000-0000-0000-00000000000c",
+        "fitness_hash": "4c69df9e8a38f750413aa5ff99230e5a29f05cd29b4c00414b4bfb0607c0b1b8",
+        "demand_id": "00000000-0000-0000-0000-00000000000d",
+        "demand_hash": "0a609bee1af198eff180fbb4235f0a89e202cfcc4065d3e83c53279a34f13305",
+        "fuel_units": 90,
+        "semantic_class": "TARGET"
+      },
+      "content_hash": "8f5b7124ea16c3d76cdbae4844476e3d5f2a96232deba7f70a71559138b6e0ba",
+      "canonical_bytes": "{\"attempt_id\":\"00000000-0000-0000-0000-000000000003\",\"captured_epoch\":0,\"context_hash\":\"28b8c501c87f18578903305c7401cd4442a59d22af37a90fc558e694189456fc\",\"demand_hash\":\"0a609bee1af198eff180fbb4235f0a89e202cfcc4065d3e83c53279a34f13305\",\"demand_id\":\"00000000-0000-0000-0000-00000000000d\",\"fitness_hash\":\"4c69df9e8a38f750413aa5ff99230e5a29f05cd29b4c00414b4bfb0607c0b1b8\",\"fitness_id\":\"00000000-0000-0000-0000-00000000000c\",\"fuel_units\":90,\"id\":\"00000000-0000-0000-0000-00000000000e\",\"kind\":\"NUTRITION\",\"manifest_id\":\"00000000-0000-0000-0000-000000000006\",\"policy_hash\":\"17ad92e63c962393c0329c658937d16eccaea13036412a3d1d0a5b6b8f29d738\",\"policy_id\":\"00000000-0000-0000-0000-000000000007\",\"request_id\":\"00000000-0000-0000-0000-000000000004\",\"request_revision\":1,\"root_id\":\"00000000-0000-0000-0000-000000000002\",\"semantic_class\":\"TARGET\",\"snapshot_id\":\"00000000-0000-0000-0000-000000000005\",\"subject_id\":\"00000000-0000-0000-0000-000000000001\",\"version\":\"kl076-mechanical-test-v1\"}"
+    },
+    "RESOLUTION": {
+      "payload": {
+        "subject_id": "00000000-0000-0000-0000-000000000001",
+        "root_id": "00000000-0000-0000-0000-000000000002",
+        "attempt_id": "00000000-0000-0000-0000-000000000003",
+        "request_id": "00000000-0000-0000-0000-000000000004",
+        "request_revision": 1,
+        "snapshot_id": "00000000-0000-0000-0000-000000000005",
+        "context_hash": "28b8c501c87f18578903305c7401cd4442a59d22af37a90fc558e694189456fc",
+        "manifest_id": "00000000-0000-0000-0000-000000000006",
+        "policy_id": "00000000-0000-0000-0000-000000000007",
+        "policy_hash": "17ad92e63c962393c0329c658937d16eccaea13036412a3d1d0a5b6b8f29d738",
+        "captured_epoch": 0,
+        "version": "kl076-mechanical-test-v1",
+        "kind": "RESOLUTION",
+        "id": "00000000-0000-0000-0000-00000000000f",
+        "fitness_id": "00000000-0000-0000-0000-00000000000c",
+        "fitness_hash": "4c69df9e8a38f750413aa5ff99230e5a29f05cd29b4c00414b4bfb0607c0b1b8",
+        "action_type": "TRAINING",
+        "action_parameters_hash": "f863709ebb1218374d5c57e23c2de587f9f616ac436ec20eb3d2f983ed1bb000",
+        "manifest_hash": "6af63d73c1c48f3b42b6e926fb67507cfe1ca255e96c7cf120a1cea4d23622e4",
+        "source_hash": "6248de8c916da2d0fe49f63c83197b5673acaf91acac3855966ff8b19d6dab03",
+        "source_ranges": [
+          "2026-09-30T12:00:00+00:00",
+          "2026-10-01T13:00:00+00:00"
+        ],
+        "source_members": [
+          "00000000-0000-0000-0000-000000000008",
+          "00000000-0000-0000-0000-000000000009",
+          "00000000-0000-0000-0000-00000000000a"
+        ],
+        "facts": [
+          {
+            "fact_id": "00000000-0000-0000-0000-000000000008",
+            "fact_hash": "c1056f50c5bd36d548f0884ee5ec133d00ff963386101f92ba1deb84a94745c0",
+            "admission_id": "00000000-0000-0000-0000-000000000009",
+            "admission_hash": "5f37bb96609f12de3e4fed376d2b235895dc8129f9997d52b775bbb89a56132e",
+            "association_id": "00000000-0000-0000-0000-00000000000a",
+            "association_hash": "e4e36336db9c0f6f20a9f326970de25b3fd32d48ed2f857e436582d856d7e297",
+            "event_id": "00000000-0000-0000-0000-00000000000b",
+            "subject_id": "00000000-0000-0000-0000-000000000001",
+            "policy_id": "00000000-0000-0000-0000-000000000007",
+            "exercise": "fixture:cycle",
+            "scope": "TEST_ONLY",
+            "admission": "ADMITTED",
+            "association": "CONFIRMED",
+            "semantic_class": "ACTUAL_EXECUTION",
+            "effective_at": "2026-10-01T11:00:00+00:00",
+            "valid_until": "2026-10-01T13:00:00+00:00",
+            "lower_minutes": 10,
+            "upper_minutes": 10,
+            "contradicts": false,
+            "replaces_slot": "prior-slot",
+            "retracted": false
+          }
+        ],
+        "supporting_events": [
+          "00000000-0000-0000-0000-00000000000b"
+        ],
+        "contradicting_events": [],
+        "superseded_or_retracted_items": [],
+        "event_association_status": "CONFIRMED",
+        "coverage": "COMPLETE_FOR_POLICY",
+        "consistency": "CONSISTENT",
+        "truncation_status": "NOT_TRUNCATED",
+        "resolution_expires_at": "2026-10-01T13:00:00+00:00"
+      },
+      "content_hash": "e3258f192cca3b5e31b5a41cd1a34103c1336dc1de84fc554843795892660c3c",
+      "canonical_bytes": "{\"action_parameters_hash\":\"f863709ebb1218374d5c57e23c2de587f9f616ac436ec20eb3d2f983ed1bb000\",\"action_type\":\"TRAINING\",\"attempt_id\":\"00000000-0000-0000-0000-000000000003\",\"captured_epoch\":0,\"consistency\":\"CONSISTENT\",\"context_hash\":\"28b8c501c87f18578903305c7401cd4442a59d22af37a90fc558e694189456fc\",\"contradicting_events\":[],\"coverage\":\"COMPLETE_FOR_POLICY\",\"event_association_status\":\"CONFIRMED\",\"facts\":[{\"admission\":\"ADMITTED\",\"admission_hash\":\"5f37bb96609f12de3e4fed376d2b235895dc8129f9997d52b775bbb89a56132e\",\"admission_id\":\"00000000-0000-0000-0000-000000000009\",\"association\":\"CONFIRMED\",\"association_hash\":\"e4e36336db9c0f6f20a9f326970de25b3fd32d48ed2f857e436582d856d7e297\",\"association_id\":\"00000000-0000-0000-0000-00000000000a\",\"contradicts\":false,\"effective_at\":\"2026-10-01T11:00:00+00:00\",\"event_id\":\"00000000-0000-0000-0000-00000000000b\",\"exercise\":\"fixture:cycle\",\"fact_hash\":\"c1056f50c5bd36d548f0884ee5ec133d00ff963386101f92ba1deb84a94745c0\",\"fact_id\":\"00000000-0000-0000-0000-000000000008\",\"lower_minutes\":10,\"policy_id\":\"00000000-0000-0000-0000-000000000007\",\"replaces_slot\":\"prior-slot\",\"retracted\":false,\"scope\":\"TEST_ONLY\",\"semantic_class\":\"ACTUAL_EXECUTION\",\"subject_id\":\"00000000-0000-0000-0000-000000000001\",\"upper_minutes\":10,\"valid_until\":\"2026-10-01T13:00:00+00:00\"}],\"fitness_hash\":\"4c69df9e8a38f750413aa5ff99230e5a29f05cd29b4c00414b4bfb0607c0b1b8\",\"fitness_id\":\"00000000-0000-0000-0000-00000000000c\",\"id\":\"00000000-0000-0000-0000-00000000000f\",\"kind\":\"RESOLUTION\",\"manifest_hash\":\"6af63d73c1c48f3b42b6e926fb67507cfe1ca255e96c7cf120a1cea4d23622e4\",\"manifest_id\":\"00000000-0000-0000-0000-000000000006\",\"policy_hash\":\"17ad92e63c962393c0329c658937d16eccaea13036412a3d1d0a5b6b8f29d738\",\"policy_id\":\"00000000-0000-0000-0000-000000000007\",\"request_id\":\"00000000-0000-0000-0000-000000000004\",\"request_revision\":1,\"resolution_expires_at\":\"2026-10-01T13:00:00+00:00\",\"root_id\":\"00000000-0000-0000-0000-000000000002\",\"snapshot_id\":\"00000000-0000-0000-0000-000000000005\",\"source_hash\":\"6248de8c916da2d0fe49f63c83197b5673acaf91acac3855966ff8b19d6dab03\",\"source_members\":[\"00000000-0000-0000-0000-000000000008\",\"00000000-0000-0000-0000-000000000009\",\"00000000-0000-0000-0000-00000000000a\"],\"source_ranges\":[\"2026-09-30T12:00:00+00:00\",\"2026-10-01T13:00:00+00:00\"],\"subject_id\":\"00000000-0000-0000-0000-000000000001\",\"superseded_or_retracted_items\":[],\"supporting_events\":[\"00000000-0000-0000-0000-00000000000b\"],\"truncation_status\":\"NOT_TRUNCATED\",\"version\":\"kl076-mechanical-test-v1\"}"
+    },
+    "VALIDATION": {
+      "payload": {
+        "subject_id": "00000000-0000-0000-0000-000000000001",
+        "root_id": "00000000-0000-0000-0000-000000000002",
+        "attempt_id": "00000000-0000-0000-0000-000000000003",
+        "request_id": "00000000-0000-0000-0000-000000000004",
+        "request_revision": 1,
+        "snapshot_id": "00000000-0000-0000-0000-000000000005",
+        "context_hash": "28b8c501c87f18578903305c7401cd4442a59d22af37a90fc558e694189456fc",
+        "manifest_id": "00000000-0000-0000-0000-000000000006",
+        "policy_id": "00000000-0000-0000-0000-000000000007",
+        "policy_hash": "17ad92e63c962393c0329c658937d16eccaea13036412a3d1d0a5b6b8f29d738",
+        "captured_epoch": 0,
+        "version": "kl076-mechanical-test-v1",
+        "kind": "VALIDATION",
+        "id": "00000000-0000-0000-0000-000000000010",
+        "fitness_hash": "4c69df9e8a38f750413aa5ff99230e5a29f05cd29b4c00414b4bfb0607c0b1b8",
+        "demand_hash": "0a609bee1af198eff180fbb4235f0a89e202cfcc4065d3e83c53279a34f13305",
+        "nutrition_hash": "8f5b7124ea16c3d76cdbae4844476e3d5f2a96232deba7f70a71559138b6e0ba",
+        "resolution_hash": "e3258f192cca3b5e31b5a41cd1a34103c1336dc1de84fc554843795892660c3c",
+        "execution_basis_event_id": "00000000-0000-0000-0000-00000000000b",
+        "semantic_validation": "PASS",
+        "policy_envelope": "PASS",
+        "valid_until": "2026-10-01T13:00:00+00:00",
+        "rolling_minutes": 40,
+        "deduplicated_events": [
+          "00000000-0000-0000-0000-00000000000b"
+        ],
+        "replaced_slots": [
+          "prior-slot"
+        ],
+        "source_ranges": [
+          "2026-09-30T12:00:00+00:00",
+          "2026-10-01T13:00:00+00:00"
+        ],
+        "fixture_policy_version": "kl076-mechanical-test-v1"
+      },
+      "content_hash": "e83902333dded3470b066ac7a5a2ecb4558a47874b7f81a984e7373578e070f7",
+      "canonical_bytes": "{\"attempt_id\":\"00000000-0000-0000-0000-000000000003\",\"captured_epoch\":0,\"context_hash\":\"28b8c501c87f18578903305c7401cd4442a59d22af37a90fc558e694189456fc\",\"deduplicated_events\":[\"00000000-0000-0000-0000-00000000000b\"],\"demand_hash\":\"0a609bee1af198eff180fbb4235f0a89e202cfcc4065d3e83c53279a34f13305\",\"execution_basis_event_id\":\"00000000-0000-0000-0000-00000000000b\",\"fitness_hash\":\"4c69df9e8a38f750413aa5ff99230e5a29f05cd29b4c00414b4bfb0607c0b1b8\",\"fixture_policy_version\":\"kl076-mechanical-test-v1\",\"id\":\"00000000-0000-0000-0000-000000000010\",\"kind\":\"VALIDATION\",\"manifest_id\":\"00000000-0000-0000-0000-000000000006\",\"nutrition_hash\":\"8f5b7124ea16c3d76cdbae4844476e3d5f2a96232deba7f70a71559138b6e0ba\",\"policy_envelope\":\"PASS\",\"policy_hash\":\"17ad92e63c962393c0329c658937d16eccaea13036412a3d1d0a5b6b8f29d738\",\"policy_id\":\"00000000-0000-0000-0000-000000000007\",\"replaced_slots\":[\"prior-slot\"],\"request_id\":\"00000000-0000-0000-0000-000000000004\",\"request_revision\":1,\"resolution_hash\":\"e3258f192cca3b5e31b5a41cd1a34103c1336dc1de84fc554843795892660c3c\",\"rolling_minutes\":40,\"root_id\":\"00000000-0000-0000-0000-000000000002\",\"semantic_validation\":\"PASS\",\"snapshot_id\":\"00000000-0000-0000-0000-000000000005\",\"source_ranges\":[\"2026-09-30T12:00:00+00:00\",\"2026-10-01T13:00:00+00:00\"],\"subject_id\":\"00000000-0000-0000-0000-000000000001\",\"valid_until\":\"2026-10-01T13:00:00+00:00\",\"version\":\"kl076-mechanical-test-v1\"}"
+    }
+  }
+}
