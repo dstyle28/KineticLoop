@@ -1,0 +1,110 @@
+TASK_IDENTITY=harness-backlog-v0.2/KL-019
+TESTED_COMMIT=7cdee15ed72817a6dcc765fc3d3ef60b1cdc886e
+WORKTREE=/Users/davetian/.codex/worktrees/4338/KineticLoop
+WORKTREE_DIGEST=e281d6459e62
+COMMAND=uv run pytest -q tests/db/test_protocol_execution.py::test_commit_test_only_bundle
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________________________ test_commit_test_only_bundle _________________________
+
+urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:55385/kineticloop_kl019_exec_7cdee15_e281d6459e62...or': 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:55385/kineticloop_kl019_exec_7cdee15_e281d6459e62', ...}
+
+    def test_commit_test_only_bundle(urls: dict[str, str]) -> None:
+        command, result = committed(urls)
+        with connect(urls["admin"]) as db:
+            assert db.execute(
+                "SELECT head_revision,current_bundle_revision_id,calendar_policy FROM kineticloop.daily_plan_heads"
+            ).fetchone() == (1, UUID(result["bundle_id"]), "test:UTC-v1")
+            assert db.execute(
+                "SELECT typed_payload->'parent_revision_id' FROM kineticloop.daily_bundle_revisions"
+            ).fetchone() == (None,)
+            assert db.execute(
+                "SELECT status,result_bundle_revision_id,result_authorization_id FROM kineticloop.planning_intents"
+            ).fetchone() == (
+                "FOUND_VALID_PLAN",
+                UUID(result["bundle_id"]),
+                UUID(result["authorization_id"]),
+            )
+            assert db.execute("SELECT status FROM kineticloop.planning_attempts").fetchone() == (
+                "COMMITTED",
+            )
+            scope, until, cert = db.execute(
+                "SELECT scope,valid_until,validity_certificate FROM kineticloop.authorization_issuances"
+            ).fetchone()
+            assert scope == "TEST_ONLY"
+            finite = [
+                datetime.fromisoformat(d["valid_until"])
+                for d in cert["dependencies"]
+                if d.get("valid_until")
+            ]
+            assert until == min(finite)
+            # Independently compare every certificate identity/bound to persisted upstream inputs.
+            actual = {(d["dependency_kind"], d["identity"]): d for d in cert["dependencies"]}
+            expected: dict[tuple[str, str], datetime | None] = {}
+            for kind, table, column in (
+                ("ARTIFACT", "safety_artifacts", "valid_until"),
+                ("MANIFEST", "decision_manifests", "valid_until"),
+                ("EVIDENCE_RESOLUTION", "evidence_resolutions", "resolution_expires_at"),
+                ("VALIDATION_ADMISSION_FRESHNESS", "validation_results", "valid_until"),
+                ("PROJECTION", "projection_versions", "valid_until"),
+                ("DEMAND_FEATURE", "prescription_demand_features", "NULL"),
+            ):
+                for identity, bound in db.execute(
+                    f"SELECT id,{column} FROM kineticloop.{table}"
+                ).fetchall():
+                    expected[(kind, str(identity))] = bound
+>           request_id, deadline = db.execute(
+                "SELECT current_request_revision_id,root_deadline_at FROM kineticloop.planning_intents"
+            ).fetchone()
+
+tests/db/test_protocol_execution.py:687: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <psycopg.Connection [BAD] at 0x1096641a0>
+query = 'SELECT current_request_revision_id,root_deadline_at FROM kineticloop.planning_intents'
+params = None
+
+    def execute(
+        self,
+        query: Query,
+        params: Params | None = None,
+        *,
+        prepare: bool | None = None,
+        binary: bool = False,
+    ) -> Cursor[Row]:
+        """Execute a query and return a cursor to read its results."""
+        try:
+            cur = self.cursor()
+            if binary:
+                cur.format = BINARY
+    
+            if isinstance(query, Template):
+                if params is not None:
+                    raise TypeError(
+                        "'execute()' with string template query doesn't support parameters"
+                    )
+                return cur.execute(query, prepare=prepare)
+            else:
+                return cur.execute(query, params, prepare=prepare)
+        except e._NO_TRACEBACK as ex:
+>           raise ex.with_traceback(None)
+E           psycopg.errors.UndefinedColumn: column "root_deadline_at" does not exist
+E           LINE 1: SELECT current_request_revision_id,root_deadline_at FROM kin...
+E                                                      ^
+
+/private/tmp/kl017-venv/lib/python3.12/site-packages/psycopg/connection.py:304: UndefinedColumn
+---------------------------- Captured stderr setup -----------------------------
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+=========================== short test summary info ============================
+FAILED tests/db/test_protocol_execution.py::test_commit_test_only_bundle - ps...
+1 failed in 3.59s
+
+EXIT_CODE=1

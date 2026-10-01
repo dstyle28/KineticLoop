@@ -1,0 +1,69 @@
+{
+  "tested_commit": "7cdee15ed72817a6dcc765fc3d3ef60b1cdc886e",
+  "worktree": "/Users/davetian/.codex/worktrees/4338/KineticLoop",
+  "worktree_digest": "e281d6459e62",
+  "namespaces": {
+    "exec": {
+      "compose_project": "kineticloop-kl019-exec-7cdee15-e281d6459e62",
+      "database": "kineticloop_kl019_exec_7cdee15_e281d6459e62"
+    },
+    "tx": {
+      "compose_project": "kineticloop-kl019-tx-7cdee15-e281d6459e62",
+      "database": "kineticloop_kl019_tx_7cdee15_e281d6459e62"
+    },
+    "plan": {
+      "compose_project": "kineticloop-kl019-plan-7cdee15-e281d6459e62",
+      "database": "kineticloop_kl019_plan_7cdee15_e281d6459e62"
+    },
+    "ledger": {
+      "compose_project": "kineticloop-kl019-ledger-7cdee15-e281d6459e62",
+      "database": "kineticloop_kl019_ledger_7cdee15_e281d6459e62"
+    }
+  },
+  "checks": [
+    {
+      "check_id": "execution_fixture_namespace_isolation_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_execution.py::test_all_fixture_namespaces_fail_before_reset",
+      "pass_oracle": "Exercise the owned launch/constructor proof for all four selected fixtures: new protocol execution, unchanged transaction interfaces, planning and call ledger. Derive lowercase 7-12 hex tested SHA plus the exact 12-hex digest of the resolved worktree, with distinct exec/tx/plan/ledger prefixes; different worktrees at the same SHA differ. Before launching the unchanged transaction fixture, the owned launcher must validate its two existing KINETICLOOP_KL022_COMPOSE_PROJECT/DATABASE values equal the exact KL019 tx derivation and reject malformed SHA/digest or mismatched targets before pytest/reset/bootstrap/teardown. Prove the actual unchanged fixture consumes those values for bootstrap/reset and cleanup. New execution/planning/ledger constructors reject invalid selectors/SHA before lifecycle work; preserve unset and exact KL-025 planning behavior. Instrumented runner proof establishes fail-before-launch/reset and selected cleanup; no lifecycle monkeypatch substitutes for a real regression, and no global override rejection or transaction fixture edit is required.",
+      "tested_commit": "7cdee15ed72817a6dcc765fc3d3ef60b1cdc886e",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-019/execution_fixture_namespace_isolation_pu-7cdee15.log",
+      "sha256": "9c1ebb8c368ae3594a1fb85b70a0c4c07c7e25796d3f02ff405a2e2054924c85",
+      "elapsed_seconds": 0.478
+    },
+    {
+      "check_id": "execution_identity_and_wire_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_execution.py::test_identity_and_wire_scope",
+      "pass_oracle": "Trusted identity is bound separately from request data. Publication service request has no authorization_scope and accepts only an authenticated registered TEST subject. Existing PublishManifest wire and TEST_ONLY-at-T6/T7 rule remain unchanged. Strict T6/T7 commands match authenticated identity plus registered subject/policy/environment; EVALUATION, production, shadow, cross-subject, actor mismatch, changed policy/environment and arbitrary extra authority fields deny. No owner connection or mutation callback is caller supplied.",
+      "tested_commit": "7cdee15ed72817a6dcc765fc3d3ef60b1cdc886e",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-019/execution_identity_and_wire_pu-7cdee15.log",
+      "sha256": "97274a230d95240d12d24feef009a3c2dca916093bb12251a5e061a66109ff47",
+      "elapsed_seconds": 0.334
+    },
+    {
+      "check_id": "publish_ready_build_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_execution.py::test_publish_ready_build",
+      "pass_oracle": "Start with a coherent READY S23 and S21/S22 basis but no S24/S25/current Manifest. Call the typed publication service through the existing T3 owner: exactly one immutable S24 at next S01 generation, complete exact S25 role/basis set, exact artifact roots/closure/registry revision, S23 PUBLISHED, S01 current pointer and one S02/S03/S04 all commit together. No direct SQL publication or generation update substitutes for the call.",
+      "tested_commit": "7cdee15ed72817a6dcc765fc3d3ef60b1cdc886e",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/KL-019/publish_ready_build_dc-7cdee15.log",
+      "sha256": "74b7e49224ca41e452fa9a00a49e38a0670d204d476d49b68e47b7cb2b5c9afb",
+      "elapsed_seconds": 3.734
+    },
+    {
+      "check_id": "commit_test_only_bundle_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_execution.py::test_commit_test_only_bundle",
+      "pass_oracle": "Publish through the service first, then use merged KL024 admission/acquire services and explicit trusted upstream bootstrap only. With no daily head, bundle, prescription, issuance or successful intent seeded, strict TEST_ONLY CommitBundle uses existing T6: one coherent S38/S39/S40/S41/S42, exact S27 FOUND_VALID_PLAN/result and S29 COMMITTED plus S02/S03/S04. P/A content and all request/attempt/manifest/epoch/fence references match. S42 server validity end equals the exact minimum of every required finite bound; complete transitive artifact and approved TIMELESS closure/certificate/digest are persisted. Caller can request shortening only. First head parent is null, revision is one and calendar comes from bound trusted policy.",
+      "tested_commit": "7cdee15ed72817a6dcc765fc3d3ef60b1cdc886e",
+      "exit_code": 1,
+      "result": "FAIL",
+      "evidence_ref": "docs/exec-plans/evidence/KL-019/commit_test_only_bundle_dc-7cdee15.log",
+      "sha256": "89a357863c4a73594842c0e241a1f8f273bd1f3c647577b71dd0df782a699c0c",
+      "elapsed_seconds": 3.767
+    }
+  ]
+}

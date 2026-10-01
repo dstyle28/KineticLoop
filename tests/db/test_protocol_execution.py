@@ -685,7 +685,7 @@ def test_commit_test_only_bundle(urls: dict[str, str]) -> None:
             ).fetchall():
                 expected[(kind, str(identity))] = bound
         request_id, deadline = db.execute(
-            "SELECT current_request_revision_id,root_deadline_at FROM kineticloop.planning_intents"
+            "SELECT current_request_revision_id,deadline FROM kineticloop.planning_intents"
         ).fetchone()
         expected[("REQUEST_DEADLINE", str(request_id))] = deadline
         head_id, calendar = db.execute(
@@ -846,6 +846,49 @@ def test_stale_commit_basis_denies(urls: dict[str, str]) -> None:
             with pytest.raises((RepositoryTransactionError, ValueError, psycopg.Error)):
                 service(db).commit(command)
         assert snapshot(urls) == before, case
+
+
+def revoke_input(urls: dict[str, str], artifact: UUID, key: str) -> None:
+    # Actual merged T2-GLOBAL revoke owner; no user fanout or synthetic event success.
+    from kineticloop.contracts.safety_registry import revocation_payload_hash
+    from kineticloop.persistence.safety_registry import revoke_artifact
+
+    with connect(urls["admin"]) as db:
+        row = db.execute(
+            "SELECT content_hash FROM kineticloop.safety_artifacts WHERE id=%s", (artifact,)
+        ).fetchone()
+    from kineticloop.contracts.commands import RevokeArtifact
+
+    with connect(urls["admin"]) as db:
+        effective = db.execute("SELECT clock_timestamp()").fetchone()[0]
+    command_payload = {
+        "schema_version": "kineticloop-command-v1",
+        "command_kind": "RevokeArtifact",
+        "boundary": "T2-GLOBAL",
+        "command_id": str(uuid4()),
+        "actor": {
+            "schema": "kineticloop-role-identity-v1",
+            "identity_id": str(uuid4()),
+            "role": "admin",
+        },
+        "idempotency_key": key,
+        "request_hash": digest(key),
+        "subject_id": None,
+        "explicit_scope": "global:safety-registry",
+        "artifact_id": str(artifact),
+        "artifact_content_hash": row[0],
+        "revocation_payload_hash": revocation_payload_hash(
+            effective_at=effective, reason_code="TEST"
+        ),
+        "causation_incident_id": str(uuid4()),
+    }
+    with connect(urls["trusted_admin"]) as db:
+        revoke_artifact(
+            db,
+            RevokeArtifact.model_validate_json(json.dumps(command_payload)),
+            effective_at=effective,
+            reason_code="TEST",
+        )
 
 
 def test_current_start_denial(urls: dict[str, str]) -> None:
@@ -1019,47 +1062,7 @@ def test_current_start_denial(urls: dict[str, str]) -> None:
             with connect(urls["admin"]) as db:
                 execute_command(db, "ApplyControl", SUBJECT, apply)
         elif case in {"root_revoke", "transitive_revoke"}:
-            # Actual merged T2-GLOBAL revoke owner; no user fanout or synthetic event success.
-            from kineticloop.contracts.safety_registry import revocation_payload_hash
-            from kineticloop.persistence.safety_registry import revoke_artifact
-
-            artifact = ROOT_ARTIFACT if case == "root_revoke" else STATIC
-            with connect(urls["admin"]) as db:
-                row = db.execute(
-                    "SELECT content_hash FROM kineticloop.safety_artifacts WHERE id=%s", (artifact,)
-                ).fetchone()
-            from kineticloop.contracts.commands import RevokeArtifact
-
-            with connect(urls["admin"]) as db:
-                effective = db.execute("SELECT clock_timestamp()").fetchone()[0]
-            command_payload = {
-                "schema_version": "kineticloop-command-v1",
-                "command_kind": "RevokeArtifact",
-                "boundary": "T2-GLOBAL",
-                "command_id": str(uuid4()),
-                "actor": {
-                    "schema": "kineticloop-role-identity-v1",
-                    "identity_id": str(uuid4()),
-                    "role": "admin",
-                },
-                "idempotency_key": case,
-                "request_hash": digest(case),
-                "subject_id": None,
-                "explicit_scope": "global:safety-registry",
-                "artifact_id": str(artifact),
-                "artifact_content_hash": row[0],
-                "revocation_payload_hash": revocation_payload_hash(
-                    effective_at=effective, reason_code="TEST"
-                ),
-                "causation_incident_id": str(uuid4()),
-            }
-            with connect(urls["trusted_admin"]) as db:
-                revoke_artifact(
-                    db,
-                    RevokeArtifact.model_validate_json(json.dumps(command_payload)),
-                    effective_at=effective,
-                    reason_code="TEST",
-                )
+            revoke_input(urls, ROOT_ARTIFACT if case == "root_revoke" else STATIC, case)
         elif case == "missing":
             perturb(urls, "DELETE FROM kineticloop.safety_artifacts WHERE id=%s", (STATIC,))
         elif case == "future":
@@ -1132,13 +1135,13 @@ def test_ack_loss_replay_is_historical(urls: dict[str, str]) -> None:
         first = start_command(issued)
         with connect(urls["admin"]) as db:
             original = service(db).start(first)
-        # Explicit negative upstream certificate/registry input; not an owner transition claim.
+        # Expiry is explicit negative certificate input; revocation uses the real owner.
         if loss == "expiry":
             perturb(
                 urls, "UPDATE kineticloop.authorization_issuances SET valid_until=clock_timestamp()"
             )
         else:
-            perturb(urls, "UPDATE kineticloop.safety_artifacts SET status='REVOKED'")
+            revoke_input(urls, ROOT_ARTIFACT, "replay-revocation")
         baseline = snapshot(urls)
         with connect(urls["admin"]) as db:
             assert service(db).start(first) == {**original, "replayed": True, "executable": False}
