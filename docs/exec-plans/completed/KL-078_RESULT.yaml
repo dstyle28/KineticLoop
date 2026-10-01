@@ -1,0 +1,238 @@
+task_identity: harness-backlog-v0.2/KL-078
+display_task_id: KL-078
+task_definition_version: v0.2
+base_commit: 7186b3024dcb5a555070391cf138b5e300819db5
+tested_commit: c2816f6c1108bf33d93b4ace1fcfb18645cfc779
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: Existing PREPARATION owners now record immutable source-bound S21/S22 and complete locally owned
+  S23 BUILDING to READY from actual CanonicalViewService SEALED inputs. Real T3 publication succeeds through
+  unchanged current-basis, validity, registry and frozen lock-order guards. No execution/production authority
+  or product/layer/release PASS is created.
+commands_run:
+- check_id: preparation_revision_pu
+  command: uv run pytest -q tests/unit/persistence/test_preparation.py::test_server_revision
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_revision_pu.log
+- check_id: preparation_capability_pu
+  command: uv run pytest -q tests/unit/persistence/test_preparation.py::test_exact_capabilities
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_capability_pu.log
+- check_id: preparation_namespace_pu
+  command: uv run pytest -q tests/unit/persistence/test_preparation.py::test_namespace
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_namespace_pu.log
+- check_id: preparation_owner_pipeline_dc
+  command: uv run pytest -q tests/db/test_preparation.py::test_owner_pipeline
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_owner_pipeline_dc.log
+- check_id: preparation_basis_denials_dc
+  command: uv run pytest -q tests/db/test_preparation.py::test_basis_denials
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_basis_denials_dc.log
+- check_id: preparation_immutable_replay_dc
+  command: uv run pytest -q tests/db/test_preparation.py::test_immutable_replay
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_immutable_replay_dc.log
+- check_id: preparation_duplicate_rollback_dc
+  command: uv run pytest -q tests/db/test_preparation.py::test_duplicate_rollback
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_duplicate_rollback_dc.log
+- check_id: preparation_no_authority_dc
+  command: uv run pytest -q tests/db/test_preparation.py::test_no_authority
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_no_authority_dc.log
+- check_id: preparation_suite_dc
+  command: uv run pytest -q tests/db/test_preparation.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_suite_dc.log
+- check_id: harness_validation_passes
+  command: uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/harness_validation_passes.log
+- check_id: unit_regressions_pass
+  command: uv run kl test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/unit_regressions_pass.log
+- check_id: harness_regressions_pass
+  command: uv run kl test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/harness_regressions_pass.log
+- check_id: lint_passes
+  command: uv run kl lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/lint_passes.log
+- check_id: typecheck_passes
+  command: uv run kl typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-078/checks-c2816f6/typecheck_passes.log
+requirements_covered: []
+files_changed:
+- docs/contracts/preparation.md
+- docs/exec-plans/completed/KL-078_RESULT.yaml
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/checks.json
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/harness_regressions_pass.log
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/harness_regressions_pass.xml
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/harness_validation_passes.log
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/lint_passes.log
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_basis_denials_dc.log
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_basis_denials_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_capability_pu.log
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_capability_pu.xml
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_duplicate_rollback_dc.log
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_duplicate_rollback_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_immutable_replay_dc.log
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_immutable_replay_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_namespace_pu.log
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_namespace_pu.xml
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_no_authority_dc.log
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_no_authority_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_owner_pipeline_dc.log
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_owner_pipeline_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_revision_pu.log
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_revision_pu.xml
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_suite_dc.log
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/preparation_suite_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/typecheck_passes.log
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/unit_regressions_pass.log
+- docs/exec-plans/evidence/KL-078/checks-c2816f6/unit_regressions_pass.xml
+- docs/exec-plans/evidence/KL-078/checks-f331731/checks.json
+- docs/exec-plans/evidence/KL-078/checks-f331731/harness_validation_passes.log
+- docs/exec-plans/evidence/KL-078/checks-f331731/interrupted.json
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_basis_denials_dc.log
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_basis_denials_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_capability_pu.log
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_capability_pu.xml
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_duplicate_rollback_dc.log
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_duplicate_rollback_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_immutable_replay_dc.log
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_immutable_replay_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_namespace_pu.log
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_namespace_pu.xml
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_no_authority_dc.log
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_no_authority_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_owner_pipeline_dc.log
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_owner_pipeline_dc.xml
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_revision_pu.log
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_revision_pu.xml
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_suite_dc.log
+- docs/exec-plans/evidence/KL-078/checks-f331731/preparation_suite_dc.xml
+- docs/exec-plans/evidence/KL-078/entry.json
+- docs/exec-plans/evidence/KL-078/protocol-impact-c2816f6.json
+- src/kineticloop/persistence/preparation.py
+- src/kineticloop/persistence/transactions.py
+- tests/db/test_preparation.py
+- tests/unit/persistence/test_preparation.py
+decisions:
+- Use separately authenticated existing TEST identity primitives and exact registered subject/policy/environment/principal
+  owner binding, with no public wire or owner matrix changes.
+- Only an internal server plan supplies S21 revision=1; caller revision/provenance stays forbidden and
+  REQUIRED_FIELDS/metadata remain complete. Natural computation identity binds canonical source/dependencies;
+  request provenance binds engine/window/content/validity.
+- Verify exact same-subject SEALED S15 inside independent short preparation transactions. Record all positive
+  and collection/absence dependencies with S21 atomically, deriving explicit references only from the
+  source.
+- Owner-local advisory identity locks serialize missing projection/build contenders; only exact S23 row
+  lock completes BUILDING to READY. Immutable history replays before current eligibility and cannot relabel
+  captured basis or restore authority.
+- Use the unchanged pure artifact activation predicate against source-captured policy/catalog/release
+  closure. Actual T3 independently rechecks current S01 basis, S51 eligibility and trusted time under
+  the unchanged frozen order.
+- Derive every local Compose/database namespace from KL078, exact tested HEAD first7 and SHA256 of resolved
+  worktree first12; validate constructor/bootstrap/nested reset/start/Compose/final cleanup and preserve
+  peer resources.
+known_limitations:
+- This bounded internal preparation ingress supports registered TEST fixtures only. Production auto-activation
+  remains disabled; EVALUATION shadow ingress has no execution authority.
+- No Fitness/Demand/Nutrition, S34-S37 workflow, T6/T7 or downstream execution implementation is included.
+  KL076 resumes only after this task is normally merged.
+- Projection content is computed before persistence by trusted ingress; this task proves source binding/immutability/atomic
+  persistence rather than any new product projection algorithm.
+- Full legacy DB regressions run only through unchanged hosted CI on a fresh runner; local runs execute
+  the own suite and read-only unit/harness quality checks.
+- Superseded partial checks-f331731 logs are retained as diagnostic evidence; only the fourteen checks-c2816f6
+  final logs establish this result.
+follow_up_tasks:
+- Coordinator may resume harness-backlog-v0.2/KL-076 after actual normal merge; no downstream task was
+  started.
+spec_change_request: null
+environment:
+  resolved_worktree: /Users/davetian/.codex/worktrees/68f1/KineticLoop
+  runtime: /private/tmp/kl078-venv
+  cache: /private/tmp/kl078-uv-cache
+  namespace_root_digest: 0b068b742ff6
+  migration_revision: e8c2f1a6b904
+  command_inventory: docs/exec-plans/evidence/KL-078/checks-c2816f6/checks.json
+evidence_summary:
+- check_id: preparation_revision_pu
+  collected_and_executed: 1
+  skipped: 0
+  failures: 0
+  elapsed_seconds: 0.503538333112374
+- check_id: preparation_capability_pu
+  collected_and_executed: 1
+  skipped: 0
+  failures: 0
+  elapsed_seconds: 0.37774170795455575
+- check_id: preparation_namespace_pu
+  collected_and_executed: 1
+  skipped: 0
+  failures: 0
+  elapsed_seconds: 0.7794625828973949
+- check_id: preparation_owner_pipeline_dc
+  collected_and_executed: 1
+  skipped: 0
+  failures: 0
+  elapsed_seconds: 3.90537912491709
+- check_id: preparation_basis_denials_dc
+  collected_and_executed: 1
+  skipped: 0
+  failures: 0
+  elapsed_seconds: 5.418104875134304
+- check_id: preparation_immutable_replay_dc
+  collected_and_executed: 1
+  skipped: 0
+  failures: 0
+  elapsed_seconds: 3.9933431670069695
+- check_id: preparation_duplicate_rollback_dc
+  collected_and_executed: 1
+  skipped: 0
+  failures: 0
+  elapsed_seconds: 4.232534124981612
+- check_id: preparation_no_authority_dc
+  collected_and_executed: 1
+  skipped: 0
+  failures: 0
+  elapsed_seconds: 4.023665374843404
+- check_id: preparation_suite_dc
+  collected_and_executed: 5
+  skipped: 0
+  failures: 0
+  elapsed_seconds: 19.801462416071445
+- check_id: harness_validation_passes
+  collected_and_executed: null
+  skipped: null
+  failures: null
+  elapsed_seconds: 58.72017824999057
+- check_id: unit_regressions_pass
+  collected_and_executed: 219
+  skipped: 0
+  failures: 0
+  elapsed_seconds: 60.14345841598697
+- check_id: harness_regressions_pass
+  collected_and_executed: 626
+  skipped: 0
+  failures: 0
+  elapsed_seconds: 208.96310529089533
+- check_id: lint_passes
+  collected_and_executed: null
+  skipped: null
+  failures: null
+  elapsed_seconds: 0.14370949985459447
+- check_id: typecheck_passes
+  collected_and_executed: null
+  skipped: null
+  failures: null
+  elapsed_seconds: 0.25516425003297627
