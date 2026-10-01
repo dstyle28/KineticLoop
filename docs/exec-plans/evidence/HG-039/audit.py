@@ -34,5 +34,7 @@ for name in ['CURRENT_DOCUMENT_INDEX.json','HARNESS_DOCUMENT_MANIFEST.json']:
   if isinstance(value,list):return [strip(v) for v in value]
   return value
  assert strip(old)==strip(new)
-assert not subprocess.run(['git','cat-file','-e',base+':docs/exec-plans/completed/KL-026_RESULT.yaml'],capture_output=True).returncode==0
+for p in ['docs/exec-plans/completed/KL-026_RESULT.yaml','docs/exec-plans/completed/KL-026_RESULT.json',
+          'docs/exec-plans/reviews/KL-026','docs/exec-plans/integrations/KL-026.json']:
+ assert subprocess.run(['git','cat-file','-e',base+':'+p],capture_output=True).returncode!=0,p
 print('HG039_SCOPE_PASS: only KL026 identity/check/context refined; existing DC oracles, public registry, production, frozen and requirements unchanged; no foreign lifecycle.')
