@@ -1,0 +1,38 @@
+[
+  {
+    "command": "/private/tmp/kl001-bootstrap/bin/uv run pytest -q -s tests/db/test_preparation.py::test_owner_pipeline",
+    "exit_code": 0,
+    "elapsed_seconds": 3.77341187489219,
+    "log": "DB_CONCURRENCY-test_owner_pipeline.log"
+  },
+  {
+    "command": "/private/tmp/kl001-bootstrap/bin/uv run pytest -q -s tests/db/test_preparation.py::test_basis_denials",
+    "exit_code": 0,
+    "elapsed_seconds": 5.427156290970743,
+    "log": "DB_CONCURRENCY-test_basis_denials.log"
+  },
+  {
+    "command": "/private/tmp/kl001-bootstrap/bin/uv run pytest -q -s tests/db/test_preparation.py::test_immutable_replay",
+    "exit_code": 0,
+    "elapsed_seconds": 3.93283654213883,
+    "log": "DB_CONCURRENCY-test_immutable_replay.log"
+  },
+  {
+    "command": "/private/tmp/kl001-bootstrap/bin/uv run pytest -q -s tests/db/test_preparation.py::test_duplicate_rollback",
+    "exit_code": 0,
+    "elapsed_seconds": 4.913620000006631,
+    "log": "DB_CONCURRENCY-test_duplicate_rollback.log"
+  },
+  {
+    "command": "/private/tmp/kl001-bootstrap/bin/uv run pytest -q -s tests/db/test_preparation.py::test_no_authority",
+    "exit_code": 0,
+    "elapsed_seconds": 5.357890124898404,
+    "log": "DB_CONCURRENCY-test_no_authority.log"
+  },
+  {
+    "command": "/private/tmp/kl001-bootstrap/bin/uv run pytest -q -s tests/db/test_preparation.py",
+    "exit_code": 0,
+    "elapsed_seconds": 23.477573833893985,
+    "log": "DB_CONCURRENCY-suite.log"
+  }
+]

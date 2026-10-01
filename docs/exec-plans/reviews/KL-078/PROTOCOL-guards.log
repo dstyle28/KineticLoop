@@ -1,0 +1,41 @@
+{
+  "byte_identical_files": [
+    "src/kineticloop/contracts/commands.py",
+    "src/kineticloop/persistence/protocol_execution.py",
+    "src/kineticloop/persistence/metadata.py",
+    "src/kineticloop/persistence/factsets.py",
+    "src/kineticloop/protocol/factsets.py",
+    "src/kineticloop/persistence/safety_registry.py",
+    "FROZEN_BASELINE.json",
+    "CURRENT_REQUIREMENT_SET.json"
+  ],
+  "changed_existing_functions": [
+    "insert",
+    "_require_columns",
+    "_require_insert_bindings",
+    "_require_update_bindings",
+    "validate_completion"
+  ],
+  "protected_functions": [
+    "lock_subject",
+    "_acquire_publish_candidate_registry_lease",
+    "_prepare_manifest_publication",
+    "execute_command",
+    "execute_preparation",
+    "replay_outcome",
+    "artifact_bindings_match_activation"
+  ],
+  "protected_sha256": {
+    "lock_subject": "989666767fc8c069fbeb992164c87157a5f06fb32e89b2a3f40cb61e45bf9415",
+    "_acquire_publish_candidate_registry_lease": "f3ad0ba883fa8b000459bdf8c178c7042de58f89e6b61ae480162af8a974f4e2",
+    "_prepare_manifest_publication": "e75cca1662c8bf9411724c72cb5e239452249201c3196e7e352fa298c651060f",
+    "execute_command": "39e4b55d45eebd0db9477e5fa30e1101886b44c2f798ce81e1304328201dca34",
+    "execute_preparation": "06ef7fd66b2872d4af29ce99d81195a4838e72fee25cb71bcefe72c25d6a1cbc",
+    "replay_outcome": "c8b6fb72eeee4ff641919337dbffbce1a1620ddaae7909b213d487895bad5655",
+    "artifact_bindings_match_activation": "b791738e82e4d6e0e96f0206eb47b6cb5eb115f4d4548a850e6530e93af9ea1a"
+  },
+  "exact_fourteen_check_contract_commands": true,
+  "review_namespace": "kineticloop-kl078-prep-89249ab-97c3d06909ce",
+  "own_pu_before_db": "PROTOCOL-unit.log:3 passed",
+  "fresh_db": "PROTOCOL-db.log:5 passed"
+}

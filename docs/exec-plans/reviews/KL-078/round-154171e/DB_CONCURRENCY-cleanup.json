@@ -1,0 +1,54 @@
+{
+  "project": "kineticloop-kl078-prep-154171e-3c92924e4a9f",
+  "docker_absent": [
+    {
+      "kind": "containers",
+      "command": [
+        "docker",
+        "ps",
+        "-a",
+        "--filter",
+        "label=com.docker.compose.project=kineticloop-kl078-prep-154171e-3c92924e4a9f",
+        "--format",
+        "{{.ID}}"
+      ],
+      "stdout": "",
+      "remaining": 0
+    },
+    {
+      "kind": "networks",
+      "command": [
+        "docker",
+        "network",
+        "ls",
+        "--filter",
+        "label=com.docker.compose.project=kineticloop-kl078-prep-154171e-3c92924e4a9f",
+        "--format",
+        "{{.ID}}"
+      ],
+      "stdout": "",
+      "remaining": 0
+    },
+    {
+      "kind": "volumes",
+      "command": [
+        "docker",
+        "volume",
+        "ls",
+        "--filter",
+        "label=com.docker.compose.project=kineticloop-kl078-prep-154171e-3c92924e4a9f",
+        "--format",
+        "{{.Name}}"
+      ],
+      "stdout": "",
+      "remaining": 0
+    }
+  ],
+  "clone_clean_before_removal": true,
+  "removed_exact_paths": [
+    "/private/tmp/kl078-db-final-154171e",
+    "/private/tmp/kl078-db-final-env-154171e",
+    "/private/tmp/kl078-db-final-cache-154171e"
+  ],
+  "peer_resources_untouched": true
+}

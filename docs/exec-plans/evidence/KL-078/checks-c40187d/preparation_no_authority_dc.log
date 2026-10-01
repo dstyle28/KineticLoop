@@ -1,0 +1,25 @@
+TASK harness-backlog-v0.2/KL-078
+TESTED_COMMIT c40187d620190dae2d78b03892912842206bf1c0
+COMMAND uv run pytest -q tests/db/test_preparation.py::test_no_authority
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-c40187d-0b068b742ff6', database_name='kineticloop_kl078_prep_c40187d_0b068b742ff6') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE c896079c-0d69-5b92-ab48-ce3f26e356b4 SEALED
+PERSISTED_PROOFS {"artifact_closure_ids": ["727abccb-b321-405a-9fe4-9aed2644de9a", "b6375b37-6094-4a66-aa7d-736f99219f93"], "artifact_hash": "b33ddf2b2243501a8dd73f0d0b106563eef688db6afde6669ec7e0c1a9f3e091", "basis_hash": "3e5530f8eaef086dc1e4621dd9180096a4c66022b8f0ae6fd0bb0a8c10e4a835", "build": "458dd720-2c9f-56cf-9cd7-9264f22a47c4", "dependency_basis_hash": "9c7342a01d51ca1eb8035a930d42047293a9ef887c50402059aae0425be2919d", "dependency_ids": ["de7d3777-4643-5cd1-b709-404c13490a6b", "01b54268-039c-54f5-9d25-9a5a1178b7e8", "373f8be2-1631-5e8e-adc4-dc6aded5e8cc", "5172f6fb-7d3a-5ffb-9987-0d58f3d50db7", "a4e120f9-ecf0-5d89-b52b-db7967f8ce13", "c9300a0f-2af3-5dd4-b385-77894a716995"], "manifest_hash": "c5129e0108f340b8c7283a11c68382eae7b1c5e55d83c3b20facdc40336cb1b8", "projection": "967e63b0-821d-5717-9930-2bff923ef0da", "source": "c896079c-0d69-5b92-ab48-ce3f26e356b4", "source_hash": "9a2c264d9148185dfea6f33e14a0b9a49770962b1df668c283b89a5a25b5f66f"}
+ACTUAL_SOURCE 42872b05-beab-53c4-b620-dfdb691ef8c7 SEALED
+OBSERVED_S01_BLOCKER 113 114
+FROZEN_T3_LOCK_ORDER 7 8
+.LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 3.591368625173345
+
+- generated xml file: /Users/davetian/.codex/worktrees/68f1/KineticLoop/docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_no_authority_dc.xml -
+1 passed in 3.83s
+
+EXIT_CODE 0
+ELAPSED_SECONDS 4.024

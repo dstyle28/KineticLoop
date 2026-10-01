@@ -1,0 +1,151 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-078",
+  "reviewed_head_sha": "154171ef87c832e08f2cd51b455bf54080b315cc",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "findings": [
+    {
+      "id": "GENERAL-03",
+      "classification": "BLOCKER",
+      "priority": 1,
+      "title": "Duplicate race winner closure and zero authority effects remain incompletely asserted",
+      "file": "tests/db/test_preparation.py",
+      "line": 1275,
+      "related_lines": [
+        1287,
+        1293,
+        1304,
+        1310,
+        1318,
+        1323
+      ],
+      "body": "At the exact reviewed SHA the post-race assertions prove cardinality, preservation of previously committed preparation rows, and replay stability, but do not independently reconstruct the newly inserted raced S21/S22 semantic keys, references, provenance and hashes or the raced BUILDING S23 candidate closure. A same-count incorrect dependency or candidate can become the stable new_history baseline and satisfy these assertions. The complete race preserves its prior candidate except the intended READY transition, but the projection/build race winners are not checked with the persisted-source oracle. Also old_history/new_history include only S21/S22/S23, and the final before[1][5:10] comparison omits S01 and receipt/event/outbox. Actual factset seals occur before each race, so a full authority snapshot must be taken after that setup and immediately around each contention. The packet requires exactly one immutable result/dependency closure/build without overwrite and zero unintended publication/authority/bookkeeping effects. The positive pipeline assertions do not establish these properties for the distinct raced rows.",
+      "required_change": "Independently assert exact persisted semantic/reference/hash closure for each raced winner, including BUILDING and READY candidate states, and compare complete S01/receipt/event/outbox/authority row snapshots immediately before and after each contender phase. Rerun all named checks and fresh reviews on the new tested/result revision."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-078.md",
+    "src/kineticloop/persistence/preparation.py",
+    "src/kineticloop/persistence/transactions.py",
+    "tests/db/test_preparation.py",
+    "tests/unit/persistence/test_preparation.py",
+    "docs/contracts/preparation.md",
+    "docs/exec-plans/completed/KL-078_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-078/entry.json",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/checks.json",
+    "docs/exec-plans/evidence/KL-078/protocol-impact-c40187d.json",
+    "docs/exec-plans/reviews/KL-078/round-15a6c19/GENERAL.json",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_revision_pu.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_capability_pu.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_namespace_pu.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_owner_pipeline_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_basis_denials_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_immutable_replay_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_duplicate_rollback_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_no_authority_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_suite_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/harness_validation_passes.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/unit_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/harness_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/lint_passes.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/typecheck_passes.log"
+  ],
+  "previous_findings": [
+    {
+      "id": "GENERAL-01",
+      "status": "CLOSED",
+      "detail": "state now captures ordered complete persisted rows for preparation/publication/receipt/event/outbox/authority tables, alongside full S01 and cardinalities. Denial and rollback comparisons detect existing-row changes."
+    },
+    {
+      "id": "GENERAL-02",
+      "status": "CLOSED",
+      "detail": "assert_prepared_rows reads actual SEALED S15 and S16 members, independently recomputes source/basis/content/request/dependency/artifact/manifest hashes, and checks exact S21/S22/S23 references and roles. Owner pipeline compares complete BUILDING/READY candidate invariance and exact S24/S25 refs and publication bookkeeping."
+    },
+    {
+      "id": "GENERAL-03",
+      "status": "PARTIALLY_CLOSED",
+      "detail": "The three races now assert exact cardinality, preservation of old rows and stable replay, with observed pg_blocking_pids. The new race winner semantic/hash closure and full authority/bookkeeping snapshots remain missing at this SHA."
+    }
+  ],
+  "verification_notes": [
+    "Fresh-context review read AGENTS/index/packet and pr-merge-reviewer, protocol-guardian and db-transaction-reviewer skills; named Protocol 5.3-5.6/6.1-6.9, DB S01-S04/S15-S16/S21-S25/S49/S51 and command ownership/lock clauses, acceptance 2-4 and HG040 preparation assessment.",
+    "Independently inspected complete protected-base to reviewed diff scope, exact owner ingress, immutable source/computation identity, server revision insertion, restricted session closure/updates, local advisory/S23 locks, and actual owner-produced fixtures. No separate implementation defect or frozen semantic change was demonstrated.",
+    "Actual KL017/KL019/KL022/KL023/KL074 result bytes/hashes and required PASS review hashes/revisions match their integration records; normal two-parent merge ancestry to base and linear review-only suffixes verified. M2 PASS and each recorded exit evidence hash verified at its stated revision; KL078 result/review/integration absent at base.",
+    "All current indexed authority hashes match actual bytes. Only five declared source/test/contract paths plus own bookkeeping differ from base. Frozen/public schema/metadata/matrices/migrations/CI and prerequisite implementation remain unchanged. Eight publication/registry/authentication/seal/replay/subject-lock functions are byte-identical to base.",
+    "All fourteen final committed c40187d logs bind exact tested SHA and commands, exit zero, and JUnit counts match with no skips/errors/failures. Result files_changed equals complete diff. Tested-to-reviewed suffix is linear and changes only result/new task evidence; implementation/tests/contract are byte-identical.",
+    "Prior diagnostic failures and round-15a6c19 CHANGES_REQUIRED artifacts are not new PASS evidence. Review raw logs are post-head bookkeeping and excluded from evidence_refs.",
+    "Shared workspace repairs started after my detached-clone reruns; findings and report remain bound solely to exact154171e bytes, not the subsequently edited shared files."
+  ],
+  "independent_reruns": {
+    "reviewed_sha": "154171ef87c832e08f2cd51b455bf54080b315cc",
+    "private_clone": "/private/tmp/kl078-general-review-154171e",
+    "runtime": "/private/tmp/kl078-general-runtime-154171e",
+    "cache": "/private/tmp/kl078-general-cache-154171e",
+    "namespace_pu_before_db": true,
+    "compose_project": "kineticloop-kl078-prep-154171e-ec8693f89348",
+    "database": "kineticloop_kl078_prep_154171e_ec8693f89348",
+    "migration_revision": "e8c2f1a6b904",
+    "commands": [
+      {
+        "command": "uv run --frozen pytest -q tests/unit/persistence/test_preparation.py",
+        "result": "PASS",
+        "executed": 3,
+        "skipped": 0,
+        "elapsed_seconds": 3.04,
+        "raw_log": "GENERAL-unit.log"
+      },
+      {
+        "command": "uv run --frozen pytest -q -s tests/db/test_preparation.py",
+        "result": "PASS",
+        "executed": 5,
+        "skipped": 0,
+        "xfail": 0,
+        "elapsed_seconds": 20.65,
+        "raw_log": "GENERAL-db-rerun.log"
+      },
+      {
+        "command": "uv run --frozen kl test-unit",
+        "result": "PASS",
+        "executed": 219,
+        "skipped": 0,
+        "elapsed_seconds": 74.29,
+        "raw_log": "GENERAL-unit-regressions.log"
+      },
+      {
+        "command": "uv run --frozen kl lint",
+        "result": "PASS",
+        "raw_log": "GENERAL-lint.log"
+      },
+      {
+        "command": "uv run --frozen kl typecheck",
+        "result": "PASS",
+        "oracle": "no issues in 135 source files",
+        "raw_log": "GENERAL-typecheck.log"
+      },
+      {
+        "command": "uv run --frozen kl check-harness",
+        "result": "PASS",
+        "oracle": "HARNESS_CHECK_PASS tasks=75 active=72",
+        "raw_log": "GENERAL-harness.log"
+      }
+    ],
+    "provenance": "git clone --no-hardlinks sharedroot private_clone; detached checkout exact reviewed SHA; /private/tmp/kl001-bootstrap/bin/uv sync --locked with private UV_PROJECT_ENVIRONMENT and UV_CACHE_DIR. Sandbox sync DNS failure is diagnostic GENERAL-sync.log; authorized network sync succeeded in GENERAL-sync-escalated.log. Authorized Docker rerun used only own test module/lifecycle, no legacy DB fixture/reset/seed/truncate/replica path.",
+    "observations": [
+      "Five actual owned lifecycle bootstrap_two_phase/reset/start/destroy paths, each validated current_database/migration and finally cleanup under bounded deadlines",
+      "Owner-driven sealed source and actual T3 publication",
+      "Observed pg_blocking_pids projection/build/completion contenders and S01 blocker; unchanged S51-before-S01 order",
+      "Independent positive persisted source/output proofs, immutable replay and rollback assertions all execute"
+    ],
+    "raw_audit": "GENERAL-evidence.log",
+    "cleanup_verified": true,
+    "cleanup_log": "GENERAL-cleanup.log",
+    "raw_logs_are_post_review_head": true,
+    "temporary_clone_runtime_cache_removed": true
+  },
+  "merge_conditions": [
+    "Repair blocker with new tested/result revision and fresh GENERAL/PROTOCOL/DB_CONCURRENCY reviews.",
+    "Unchanged hosted full legacy DB/quality CI and applicable selected-task merge gate must pass before normal merge.",
+    "No product/layer/release PASS is inferred; task PASS, review PASS and MERGED remain separate."
+  ]
+}

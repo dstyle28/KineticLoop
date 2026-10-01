@@ -1,0 +1,100 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-078",
+  "reviewed_head_sha": "154171ef87c832e08f2cd51b455bf54080b315cc",
+  "review_type": "DB_CONCURRENCY",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "classification": "BLOCKER",
+      "title": "Raced winners still lack exact persisted closure and zero-effects assertions",
+      "file": "tests/db/test_preparation.py",
+      "line": 1258,
+      "check_id": "preparation_duplicate_rollback_dc",
+      "detail": "The strengthened duplicate test now proves one S21 plus the expected S22 count, one S23, unchanged existing history, and byte-identical retries. However, newly raced rows are only counted and cached for subsequent equality. Their exact S22 semantic keys and FACT/FACTSET/POLICY/PROGRAM references, S21 source/provenance/basis, and S23 candidate hashes/roles/artifact closure are not independently asserted. assert_prepared_rows is called by pipeline for setup results but is never called for duplicate_record, duplicate_projection, duplicate_request or the raced winner. Completion preserves its prior candidate bytes without independently verifying that candidate. The race loop also lacks a before/after S01/receipt/event/outbox snapshot: its final assertion covers only authority table counts at indexes 5:10. Thus the prior duplicate-closure finding remains incompletely closed despite all reruns passing.",
+      "required_change": "For each raced result independently assert the exact persisted projection/dependency/build closure and hashes against its actual source and request, retaining existing cardinality and old-history comparisons. Assert complete unchanged S01/receipt/event/outbox and authority rows across each preparation race, capturing baselines after intentional source seal/setup effects. Any follow-on build completion used for the proof must follow verification that the raced BUILDING candidate stayed frozen. Rerun all required checks and obtain fresh SHA-bound reviews."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/completed/KL-078_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/checks.json",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_namespace_pu.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_owner_pipeline_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_basis_denials_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_immutable_replay_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_duplicate_rollback_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_no_authority_dc.log",
+    "docs/exec-plans/evidence/KL-078/checks-c40187d/preparation_suite_dc.log",
+    "docs/exec-plans/reviews/KL-078/round-15a6c19/DB_CONCURRENCY.json"
+  ],
+  "review_contract_version": "v0.2",
+  "review_scope": [
+    "Base 7186b3024dcb5a555070391cf138b5e300819db5 through exact reviewed SHA; only five declared implementation/test/contract paths and own task bookkeeping changed",
+    "Actual prerequisite PASS results, SHA-bound required reviews, two-parent normal merges and base ancestry for KL-017/KL-019/KL-022/KL-023/KL-074; M2 closure PASS",
+    "Frozen S01/S02/S03/S04/S15/S16/S21/S22/S23/S24/S25/S49/S51 ownership, idempotency, local preparation locks, unchanged T3 guard and shared S51 before S01 ordering",
+    "Exact root/SHA namespace validation before every selected lifecycle/bootstrap/reset/cleanup entry; isolated TEST fixture source ownership and no legacy fixture lifecycle"
+  ],
+  "first_round_closure": [
+    {
+      "finding": "Persisted source/output closure oracle is not independently asserted",
+      "status": "CLOSED",
+      "basis": "assert_prepared_rows independently reads persisted SEALED source, FACT members, full S21/S22/S23 rows, policy roles and recursive artifact proofs, reconstructs source/projection/content/dependency/artifact/manifest hashes and exact references/provenance. Positive publication additionally reads S24/S25 and receipt/event/outbox linkage. Independent owner selector and full suite pass."
+    },
+    {
+      "finding": "Denial snapshots do not prove zero changed rows",
+      "status": "CLOSED",
+      "basis": "state now snapshots stable row_to_json rows ordered by id in addition to full S01 and counts, including S21/S22/S23 when preparation=True and publication/receipt/event/outbox/authority rows. Required denial, stale owner input, expiry, revocation and rollback comparisons inspect complete unchanged rows. Independent basis/rollback/no-authority selectors and full suite pass."
+    },
+    {
+      "finding": "Duplicate contenders lack exact persisted cardinality/history assertions",
+      "status": "PARTIALLY_CLOSED",
+      "basis": "New row counts, old-history byte preservation, frozen completion candidate and replay byte equality are asserted; exact newly raced semantic/hash/reference closure and comprehensive authority/receipt/event/outbox zero-effects remain unasserted as described by the blocker."
+    }
+  ],
+  "independent_rerun": {
+    "clone": "/private/tmp/kl078-db-final-154171e",
+    "clone_command": "git clone --no-hardlinks /Users/davetian/.codex/worktrees/68f1/KineticLoop /private/tmp/kl078-db-final-154171e; git checkout --detach 154171ef87c832e08f2cd51b455bf54080b315cc",
+    "runtime": "/private/tmp/kl078-db-final-env-154171e",
+    "cache": "/private/tmp/kl078-db-final-cache-154171e",
+    "setup": "UV_PROJECT_ENVIRONMENT and UV_CACHE_DIR set to the unique reviewer paths; /private/tmp/kl001-bootstrap/bin/uv sync --locked, with authorized network escalation after sandbox DNS failure",
+    "namespace_project": "kineticloop-kl078-prep-154171e-3c92924e4a9f",
+    "namespace_database": "kineticloop_kl078_prep_154171e_3c92924e4a9f",
+    "migration_revision": "e8c2f1a6b904",
+    "namespace_pu_before_first_lifecycle": true,
+    "unit_command": "uv run pytest -q -s tests/unit/persistence/test_preparation.py",
+    "unit_tests_passed": 3,
+    "named_db_selectors_passed": 5,
+    "full_db_suite_tests_passed": 5,
+    "skipped": 0,
+    "xfail": 0,
+    "raw_command_results": "DB_CONCURRENCY-reruns.json",
+    "raw_logs_adjacent": "DB_CONCURRENCY-pu.log, DB_CONCURRENCY-test_*.log, DB_CONCURRENCY-suite.log, DB_CONCURRENCY-sync.log",
+    "static_provenance": "DB_CONCURRENCY-static-provenance.json",
+    "cleanup_provenance": "DB_CONCURRENCY-cleanup.json",
+    "cleanup_verified": true,
+    "clone_runtime_cache_removed": true,
+    "peer_resources_untouched": true,
+    "observations": [
+      "Actual CanonicalViewService SEALED S15 -> immutable atomic S21/S22 -> BUILDING/READY S23 -> guarded T3 succeeds; complete persisted positive hash/ref/role/artifact proofs execute",
+      "pg_blocking_pids establishes projection/build advisory contention and local S23 completion contention; bounded Events/futures release contenders without sleeps",
+      "Injected failures after S21, midway S22, before/after READY and after T3 generation/head update roll back complete observed rows",
+      "READY/PUBLISHED historical replay remains byte-identical and cannot repoint the later independently published S01 head",
+      "Observed S01 blocker does not block independent preparation; preparation relation locks exclude S01/S51; actual stale-input T3 trace preserves shared S51 -> S01 ordering",
+      "All six DB invocations record exact current_database, migration revision, source/output identities, selected lifecycle inventory and finally CLEANUP_OK; full suite runs five tests with no skip/xfail"
+    ]
+  },
+  "committed_evidence_verification": {
+    "tested_commit": "c40187d620190dae2d78b03892912842206bf1c0",
+    "tested_to_reviewed_suffix": "Only result and new task evidence; unchanged implementation, tests and contract",
+    "all_fourteen_final_checks_verified": true,
+    "unit_regression_tests": 219,
+    "harness_regression_tests": 626,
+    "committed_junit_failures_errors_skips": 0,
+    "all_evidence_refs_exist_at_reviewed_sha": true,
+    "frozen_protocol_db_hashes_match_current_index": true
+  },
+  "limits": [
+    "All independent reruns pass, but passing commands do not satisfy the remaining exact duplicate race oracle. No transaction implementation flaw was demonstrated.",
+    "Hosted legacy DB/quality and selected-task merge gates remain coordinator pre-merge obligations. No legacy/default or peer DB fixture, migration, runtime or resource was invoked.",
+    "This report creates no product, layer, release, production or shadow execution PASS. New implementation/test/result changes require fresh review."
+  ]
+}

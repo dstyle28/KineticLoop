@@ -1,0 +1,22 @@
+TASK harness-backlog-v0.2/KL-078
+TESTED_COMMIT f33173102abed0633d4c99002b610b99eaea3016
+COMMAND uv run pytest -q tests/db/test_preparation.py::test_owner_pipeline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-f331731-0b068b742ff6', database_name='kineticloop_kl078_prep_f331731_0b068b742ff6') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE 9912b71a-1e0b-54ba-b513-0d17d2d11b42 SEALED
+OWNER_OUTPUT {'projection_id': '38f85055-83b3-541b-91ac-4859375a4227', 'revision': 1, 'input_basis_hash': 'a138b6b5476dd3440f61da6292fda87d4d9c62222a505cd82801e17d11adc551', 'dependency_ids': ['21f7557f-d07b-510c-abf3-0f35fd2bc6df', '225af4ac-4edc-53ca-95aa-64a50281d8ae', '43f8e37e-a5f3-57e3-9231-b1e0abb0d0b2', '6312ba2c-c0d1-5e95-bfc1-452b7330de55', 'abca3f62-21bb-57c5-9a26-014caeb6bddc', 'b7641c0c-b314-582c-aeb8-a842dcdb5cdc'], 'executable': False} {'build_id': '48ac037e-7fb3-568f-9a79-2cf940e2d479', 'status': 'READY', 'dependency_basis_hash': '46aafdd1ff72ae3ab750827dfe15a54f9f571875fb37c4d755c9cdd53de28d59', 'artifact_dependency_closure_hash': '541c9d7ee9d25a240e997da8a4537d0a198d15832d68e5295eaacbb9945b02bd', 'manifest_hash': '54783480a212d630e3a97d68655bc31b29f55f15a064fe3157c0eb7e5d828fa3', 'executable': False} {'manifest_id': '590a1b07-c0e1-4752-a864-7d55dfebcacd', 'generation': 1, 'receipt_id': 'a5f07d0e-5e12-4c0d-a1ba-277b3bc8c15e', 'event_id': '24fbc9ec-2faa-4f55-b06e-7606e81fe5d4', 'executable': False, 'replayed': False}
+.LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 3.643328916048631
+
+- generated xml file: /Users/davetian/.codex/worktrees/68f1/KineticLoop/docs/exec-plans/evidence/KL-078/checks-f331731/preparation_owner_pipeline_dc.xml -
+1 passed in 3.88s
+
+EXIT_CODE 0
+ELAPSED_SECONDS 4.112

@@ -1,0 +1,21 @@
+REVIEWED_HEAD_SHA=89249abcfe5075d958c5e1ea4532b774ea4668de
+CLONE=/private/tmp/kl078-db-final-89249ab
+COMMAND=/private/tmp/kl001-bootstrap/bin/uv run pytest -q -s tests/db/test_preparation.py::test_no_authority
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-89249ab-28b3c3297249', database_name='kineticloop_kl078_prep_89249ab_28b3c3297249') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE 494462bd-f187-53ad-bec3-76238eff8325 SEALED
+PERSISTED_PROOFS {"artifact_closure_ids": ["34d529d4-65be-415c-baed-2a2d9eed3596", "a1291a77-50ea-44c2-aad2-3f95f576fd63"], "artifact_hash": "4256461f13ef413bc52f97950669c9803c028dd281f658b94d4d2c099608f8c3", "basis_hash": "67c397807f1ea8c1d418fe493a5df4e8c778449b455958c1a81cdf92338a1dde", "build": "e6977303-238a-5967-b2c7-91d8f55e0522", "dependency_basis_hash": "c36f41b1cce79b06047bb8e1461f4b3d86800a6185e43ec34b6aabcc4c70091e", "dependency_ids": ["78d3b49d-ac32-5ca8-8ec5-dc7e0ea4f290", "6ba0e098-2d29-5109-9778-d7c20ef340e2", "80aa442b-c37e-583d-9e02-51efea85bb55", "878bd7e7-28e4-5451-a679-dfa187fc445a", "83f6289e-f43c-585f-99be-8248b90c6896", "06d94445-1250-5be3-88b3-07308f2aad7b"], "manifest_hash": "421f669f8285a215e592450e4e3ae7e37d0450c53c968ad4ec1f9ab6d717836f", "projection": "a277104c-1c40-5080-8838-a27553cdfa85", "source": "494462bd-f187-53ad-bec3-76238eff8325", "source_hash": "94d89b0ace778c22e2ce9899ca87d4453710e1928c1ddfb3707ef4f6edeeb31a"}
+ACTUAL_SOURCE 6f78c804-eccd-57d8-898d-6d7843314874 SEALED
+OBSERVED_S01_BLOCKER 120 121
+FROZEN_T3_LOCK_ORDER 7 8
+.LIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 4.807920709019527
+
+1 passed in 5.13s

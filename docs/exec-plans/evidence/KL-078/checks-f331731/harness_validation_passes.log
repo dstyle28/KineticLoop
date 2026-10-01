@@ -1,0 +1,55 @@
+TASK harness-backlog-v0.2/KL-078
+TESTED_COMMIT f33173102abed0633d4c99002b610b99eaea3016
+COMMAND uv run kl check-harness
+Traceback (most recent call last):
+  File "/Users/davetian/.codex/worktrees/68f1/KineticLoop/tools/harness/validate_harness.py", line 3969, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/davetian/.codex/worktrees/68f1/KineticLoop/tools/harness/validate_harness.py", line 3380, in main
+    errors, count, active = validate(root, args)
+                            ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.codex/worktrees/68f1/KineticLoop/tools/harness/validate_harness.py", line 2971, in validate
+    errors.extend(integration_record_errors(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.codex/worktrees/68f1/KineticLoop/tools/harness/validate_harness.py", line 2017, in integration_record_errors
+    reviewed_result_bytes = git(root, 'show', reviewed + ':' + reviewed_result_path)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.codex/worktrees/68f1/KineticLoop/tools/harness/validate_harness.py", line 1409, in git
+    proc = subprocess.run(['git', *args], cwd=root, capture_output=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/subprocess.py", line 2115, in _communicate
+    ready = selector.select(timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/selectors.py", line 415, in select
+    fd_event_list = self._selector.poll(timeout)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/private/tmp/kl078-venv/bin/kl", line 10, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/davetian/.codex/worktrees/68f1/KineticLoop/src/kineticloop/db/cli.py", line 50, in main
+    return engineering_cli.main(arguments)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.codex/worktrees/68f1/KineticLoop/src/kineticloop/cli.py", line 36, in main
+    return subprocess.call([sys.executable, *commands[args.command], *extra], cwd=root)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/subprocess.py", line 391, in call
+    return p.wait(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/subprocess.py", line 1264, in wait
+    return self._wait(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/subprocess.py", line 2053, in _wait
+    (pid, sts) = self._try_wait(0)
+                 ^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/subprocess.py", line 2011, in _try_wait
+    (pid, sts) = os.waitpid(self.pid, wait_flags)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

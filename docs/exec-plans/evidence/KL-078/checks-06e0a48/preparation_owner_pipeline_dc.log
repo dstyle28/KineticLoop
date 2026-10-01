@@ -1,0 +1,128 @@
+TASK harness-backlog-v0.2/KL-078
+TESTED_COMMIT 06e0a4802ff5a9a247d4d48291dcea025113d17c
+COMMAND uv run pytest -q tests/db/test_preparation.py::test_owner_pipeline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+NAMESPACE DatabaseNamespace(project_name='kineticloop-kl078-prep-06e0a48-0b068b742ff6', database_name='kineticloop_kl078_prep_06e0a48_0b068b742ff6') MIGRATION e8c2f1a6b904
+ACTUAL_SOURCE 43a55877-7933-54ef-835b-cebc4de141d3 SEALED
+FLIFECYCLE ['bootstrap_two_phase(selected_lifecycle)', 'reset', 'start', 'destroy'] CLEANUP_OK elapsed 3.4454811250325292
+
+=================================== FAILURES ===================================
+_____________________________ test_owner_pipeline ______________________________
+
+database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:55684/kineticloop_kl078_prep_06e0a48_0b068b742ff6...or': 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:55684/kineticloop_kl078_prep_06e0a48_0b068b742ff6', ...}
+
+    def test_owner_pipeline(database_urls: dict[str, str]) -> None:
+        seed = seed_sources(database_urls)
+        with psycopg.connect(database_urls["admin"]) as db:
+            api = PreparationService(db, seed["identity"])
+            source = api.capture_source(factset(db, seed, "positive"))
+            before = state(db, seed["identity"].subject_id)
+            record = RecordProjection(
+                source,
+                "EXPOSURE",
+                seed["engine"],
+                ("actual-start", "actual-end"),
+                {"upper": "UNKNOWN"},
+                seed["deps"],
+                seed["end"],
+            )
+            projection = api.record_projection(record)
+            assert state(db, seed["identity"].subject_id) == before
+            build_request = BuildManifest(
+                "positive",
+                source,
+                (ProjectionBinding("EXPOSURE", UUID(projection["projection_id"])),),
+                (seed["engine"].artifact_id,),
+            )
+            building = api.build_manifest(build_request)
+            with db.transaction():
+                captured_build_result = db.execute(
+                    "SELECT row_to_json(r) FROM kineticloop.manifest_builds r WHERE id=%s",
+                    (UUID(building["build_id"]),),
+                ).fetchone()
+                assert captured_build_result is not None
+                captured_build = captured_build_result[0]
+            assert captured_build["status"] == "BUILDING"
+            assert state(db, seed["identity"].subject_id) == before
+            ready = api.complete_manifest(CompleteManifest(UUID(building["build_id"])))
+            assert state(db, seed["identity"].subject_id) == before
+            with db.transaction():
+                assert db.execute(
+                    "SELECT revision FROM kineticloop.projection_versions WHERE id=%s",
+                    (UUID(projection["projection_id"]),),
+                ).fetchone() == (1,)
+                assert db.execute(
+                    "SELECT count(*) FROM kineticloop.projection_dependencies WHERE ref_s21_id=%s",
+                    (UUID(projection["projection_id"]),),
+                ).fetchone() == (len(seed["deps"]),)
+>           assert_prepared_rows(db, seed, record, projection, build_request, ready)
+
+tests/db/test_preparation.py:803: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+db = <psycopg.Connection [BAD] at 0x10b36e8d0>
+seed = {'admission': UUID('6303f893-43c5-4833-be41-cc23ade539bf'), 'assertion': UUID('81fc1855-7c3e-44b7-8539-58eb69006e6f'),...endency(kind='FACT', key='actual-member', collection=None, fact_id=UUID('813dae22-c6cb-4986-a700-2749ae448d06'))), ...}
+record = RecordProjection(source=SourceBasis(factset_id=UUID('43a55877-7933-54ef-835b-cebc4de141d3'), source_hash='05cbf5178e2f...86-a700-2749ae448d06'))), valid_until=datetime.datetime(2026, 10, 1, 11, 38, 11, 987718, tzinfo=datetime.timezone.utc))
+projection = {'dependency_ids': ['1e1ad764-ff5e-5be4-b467-1131b99266f3', '61084010-7594-56b8-9739-6b773a811263', '726dd6a3-8588-53a...189d4032d10d43698135bc24a32d43ca524ef8f38d8fc65e69cb31f', 'projection_id': '3c994a39-1d7b-5032-ba66-3dd6d1857400', ...}
+request = BuildManifest(key='positive', source=SourceBasis(factset_id=UUID('43a55877-7933-54ef-835b-cebc4de141d3'), source_hash=...ion_id=UUID('3c994a39-1d7b-5032-ba66-3dd6d1857400')),), artifact_roots=(UUID('4184b8e9-c160-4bf7-adf2-647353ecf529'),))
+ready = {'artifact_dependency_closure_hash': 'cac579855b94d8c2c9e86258339f6532fcd9cb93b44eaf6b3d006f360e6c1c05', 'build_id': '... 'dependency_basis_hash': '447e678a8c0e7bf098a4f0c6313a9b25aff6bfda94655b25302efbcb5f699591', 'executable': False, ...}
+
+    def assert_prepared_rows(
+        db: Any,
+        seed: dict[str, Any],
+        record: RecordProjection,
+        projection: Mapping[str, Any],
+        request: BuildManifest,
+        ready: Mapping[str, Any],
+    ) -> None:
+        """Independently read source/output rows and recompute the canonical candidate proofs."""
+        from kineticloop.protocol.authorization import canonical_certificate_timestamp
+    
+        source = record.source
+        subject = seed["identity"].subject_id
+        with db.transaction():
+            actual_source = db.execute(
+                "SELECT f.status,f.membership_digest,f.typed_payload,f.ref_s20_id,m.ref_s19_id "
+                "FROM kineticloop.factset_revisions f LEFT JOIN kineticloop.exercise_mapping_decisions m "
+                "ON m.subject_id=f.subject_id AND m.id=f.ref_s20_id WHERE f.subject_id=%s AND f.id=%s",
+                (subject, source.factset_id),
+            ).fetchone()
+            assert actual_source is not None and actual_source[0] == "SEALED"
+            assert source.source_hash == digest(json_value([str(source.factset_id), *actual_source]))
+            assert actual_source[2]["captured_epoch"] == source.epoch
+            assert actual_source[2]["captured_input_frontier"] == source.frontier
+            assert actual_source[2]["program_revision_id"] == str(source.program_id)
+            assert actual_source[2]["policy_id"] == str(source.policy_id)
+            members = db.execute(
+                "SELECT ref_s14_id FROM kineticloop.factset_members WHERE subject_id=%s AND ref_s15_id=%s AND member_operation='SET' AND ref_s14_id IS NOT NULL",
+                (subject, source.factset_id),
+            ).fetchall()
+            assert {r[0] for r in members} == {
+                m.revision_id for m in seed["members"] if m.kind == "FACT"
+            }
+            projection_row = db.execute(
+                "SELECT row_to_json(r) FROM kineticloop.projection_versions r WHERE subject_id=%s AND id=%s",
+                (subject, UUID(projection["projection_id"])),
+            ).fetchone()[0]
+            assert projection_row["revision"] == 1
+            assert projection_row["projection_kind"] == record.kind
+>           assert datetime.fromisoformat(projection_row["valid_until"]) == record.valid_until
+                   ^^^^^^^^
+E           NameError: name 'datetime' is not defined. Did you forget to import 'datetime'
+
+tests/db/test_preparation.py:394: NameError
+- generated xml file: /Users/davetian/.codex/worktrees/68f1/KineticLoop/docs/exec-plans/evidence/KL-078/checks-06e0a48/preparation_owner_pipeline_dc.xml -
+=========================== short test summary info ============================
+FAILED tests/db/test_preparation.py::test_owner_pipeline - NameError: name 'd...
+1 failed in 3.70s
+
+EXIT_CODE 1
+ELAPSED_SECONDS 3.893
