@@ -1,0 +1,12 @@
+{
+  "classification": "HISTORICAL_FAILED_PATCH_FORMAT_CHECK_NOT_SELECTED",
+  "metadata": {
+    "check_id": "diff_clean",
+    "command": "git diff --check eab2b305351cf3c504f74ac74868edc58d0a3430 c4d8daf5e7715abaf69d55c0df6715a2c719daf2",
+    "result": "FAIL",
+    "evidence_ref": "docs/exec-plans/evidence/HG-035/diff_clean-c4d8daf.log",
+    "tested_commit": "c4d8daf5e7715abaf69d55c0df6715a2c719daf2",
+    "exit_code": 2
+  },
+  "raw_log_utf8": "base_commit=eab2b305351cf3c504f74ac74868edc58d0a3430\ntested_commit=c4d8daf5e7715abaf69d55c0df6715a2c719daf2\ncommand=git diff --check eab2b305351cf3c504f74ac74868edc58d0a3430 c4d8daf5e7715abaf69d55c0df6715a2c719daf2\ndocs/exec-plans/evidence/HG-035/namespace_candidates.patch:23: trailing whitespace.\n+ \ndocs/exec-plans/evidence/HG-035/namespace_candidates.patch:30: trailing whitespace.\n+ \ndocs/exec-plans/evidence/HG-035/namespace_candidates.patch:31: trailing whitespace.\n+ \n\nexit_code=2\n"
+}
