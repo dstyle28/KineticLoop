@@ -8,6 +8,13 @@ import yaml
 root=Path.cwd();here=root/'docs/exec-plans/evidence/HG-039'
 base=(here/'protected-base.txt').read_text().strip()
 tested=sys.argv[1]
+merge=json.loads((here/'KL075-normal-merge.json').read_text())
+assert merge['state']=='MERGED' and merge['headRefName']=='codex/kl075-guarded-progress'
+merge_sha=merge['mergeCommit']['oid']
+subprocess.run(['git','merge-base','--is-ancestor',merge_sha,base],check=True)
+assert len(subprocess.check_output(['git','rev-list','--parents','-n','1',merge_sha],text=True).split())==3
+prereq=yaml.safe_load(subprocess.check_output(['git','show',base+':docs/exec-plans/completed/KL-075_RESULT.yaml'],text=True))
+assert prereq['task_identity']=='harness-backlog-v0.2/KL-075' and prereq['task_status']=='PASS'
 checks=[]
 for key in ['scope_audit','identity_scope_regressions','harness_validation','harness_tests','unit_tests','lint','typecheck','diff_clean']:
  record=json.loads((here/f'{key}-{tested[:7]}.json').read_text())
@@ -22,7 +29,7 @@ record={'change_identity':'harness-governance-v0.1/HG-039','display_change_id':'
  'packets_refined':['KL-026'],'files_changed':sorted(set(files+[path])),
  'checks_run':checks,'frozen_impact':'NONE','authority_entries_added':[],
  'known_limitations':[
- 'KL075 has first merge priority and must actually normally merge before this final tested base, independent review and normal exact-head PR merge.',
+ f'KL075 normal merge {merge_sha} is verified ancestral to protected base {base}; final checks and reviews follow that merge. Only HG039-owned resources are cleaned.',
  'HG039 runs governance and pure request-feasibility checks only; no KL026 implementation, I03@DC or release/product PASS is claimed. All existing nine DC oracles remain unchanged; named cancellation_identity_pu and additional I03 negative/replay/success cases must execute in the KL026 implementation.',
  'The proposal is immutable TEST-local data/predicates only, with no DB owner or lifecycle; implementation belongs in existing exact KL026 test files. No public ingress/authentication, authorization meaning, production validator, owner permission, migration, CI or frozen file changes.',
  'Canonical hash is computed from the strict request by the trusted recipe. Caller actor, authorization grant/hash, SUBJECT relabeling, public subclass or model_construct cannot authorize cancellation.',
