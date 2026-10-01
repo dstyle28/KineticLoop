@@ -312,7 +312,7 @@ def test_contract() -> None:
     )
     assert tuple(b.action_type for b in certificate.action_bindings) == ("TRAINING", "NUTRITION")
     assert certificate.resolution_hash == r.content_hash
-    basis = dict(
+    basis: dict[str, Any] = dict(
         subject_id=UUID(f.subject_id),
         key="full-request",
         intent_id=UUID(f.root_id),
