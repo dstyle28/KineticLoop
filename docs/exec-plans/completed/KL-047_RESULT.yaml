@@ -1,0 +1,109 @@
+task_identity: harness-backlog-v0.2/KL-047
+display_task_id: KL-047
+task_definition_version: v0.2
+base_commit: 822322dfcac69d1042c8f9f7517cecf4903f8163
+tested_commit: 2b2a23b20f8750d581ffb718969d7994cb052a98
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: 'Implemented the fixed source-bound synthetic offline evaluation foundation: immutable content
+  identities, declared freeze and disjoint test-only splits, deterministic mechanical scorer, complete
+  captured observations and canonical report. All eleven exact packet commands pass; six named selectors,
+  eight evaluation tests and 22 unchanged contract regressions execute without skip/xfail/xpass. Eight
+  mandatory mechanical categories pass with negative controls. Fitness quality, model evaluation, product
+  requirements, G-REMOTE-AI, M7 and release admission remain NOT_RUN.'
+commands_run:
+- check_id: eval_manifest_identity_and_freeze_pu
+  command: uv run pytest -q tests/evaluation/test_manifest.py::test_manifest_identity_and_freeze
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-047/checks-2b2a23b2.log
+- check_id: eval_split_and_knowledge_boundary_pu
+  command: uv run pytest -q tests/evaluation/test_manifest.py::test_split_and_knowledge_boundary
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-047/checks-2b2a23b2.log
+- check_id: eval_source_derived_cases_pu
+  command: uv run pytest -q tests/evaluation/test_scorer.py::test_source_derived_cases
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-047/checks-2b2a23b2.log
+- check_id: eval_complete_observations_pu
+  command: uv run pytest -q tests/evaluation/test_scorer.py::test_complete_observations
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-047/checks-2b2a23b2.log
+- check_id: eval_deterministic_report_pu
+  command: uv run pytest -q tests/evaluation/test_report.py::test_deterministic_report
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-047/checks-2b2a23b2.log
+- check_id: eval_no_release_or_execution_claim_pu
+  command: uv run pytest -q tests/evaluation/test_report.py::test_no_release_or_execution_claim
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-047/checks-2b2a23b2.log
+- check_id: eval_offline_suite_passes
+  command: uv run pytest -q tests/evaluation
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-047/checks-2b2a23b2.log
+- check_id: eval_existing_contract_regressions
+  command: uv run pytest -q tests/unit/contracts/test_shadow.py tests/unit/contracts/test_artifact_registry.py
+    tests/unit/primitives/test_canonical.py tests/harness/acceptance/test_registry.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-047/checks-2b2a23b2.log
+- check_id: harness_validation_passes
+  command: uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-047/checks-2b2a23b2.log
+- check_id: lint_passes
+  command: uv run kl lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-047/checks-2b2a23b2.log
+- check_id: typecheck_passes
+  command: uv run kl typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-047/checks-2b2a23b2.log
+requirements_covered: []
+files_changed:
+- src/kineticloop/evaluation/__init__.py
+- src/kineticloop/evaluation/manifest.py
+- src/kineticloop/evaluation/scorer.py
+- src/kineticloop/evaluation/report.py
+- tests/evaluation/test_manifest.py
+- tests/evaluation/test_scorer.py
+- tests/evaluation/test_report.py
+- tests/evaluation/synthetic_cases.json
+- tests/evaluation/predeclared_manifest.json
+- docs/contracts/fitness_evaluation.md
+- docs/exec-plans/evidence/KL-047/checks-2b2a23b2.log
+- docs/exec-plans/evidence/KL-047/report-2b2a23b2.json
+- docs/exec-plans/completed/KL-047_RESULT.yaml
+decisions:
+- Verified merged KL-005 and KL-018 result/review/integration records on the protected base before implementation;
+  no existing KL-047 result or implementation existed.
+- Use existing canonical_json/canonical_sha256 and strict ShadowEvaluationArtifact unchanged; scorer verifies
+  externally captured actual source/scorer bytes without IO.
+- Predeclare empty train/tune and exhaustive ordered test-only membership. No model, provider, tool, database
+  or network invocation occurs; no training/tuning or independent model validation is claimed.
+- Bind model/prompt/engine/policy to explicit local unregistered synthetic fixture identities, with NO_ROLLOUT_DECISION
+  and no live targets.
+- Limit writes to the packet exact ten implementation paths and this task own result/evidence/review bookkeeping.
+  No package-marker, dependency, CLI, CI, frozen authority or requirement registry change.
+- Preserve null outputs and matching reasons for refusal/timeout/tool failure/budget exhaustion; malformed
+  and forbidden/cutoff outputs are captured and mechanically rejected.
+- Synthetic mechanical PASS is solely infrastructure evidence. Preserve all original quality/release obligations
+  in the contract; no product status is promoted.
+known_limitations:
+- Synthetic freeze timestamps are declared test metadata, not historical custody proof.
+- No measured model results or real provider/user data. No typed production FitnessProposal, release admission,
+  S48 writer, artifact registration, authorization or execution capability exists.
+- Genuine quality corpus, expert labels/reference judgments, quantitative rubric, sample-size justification,
+  weights/aggregation, predeclared quality thresholds, corpus custody and independent splits remain unresolved.
+- "G-REMOTE-AI outbound allowlist/redaction and real run capture; M7 structured proposal/bounded tools/F\u2192\
+  D\u2192N/validation/reproducible real-data shadow; S48 measured production provenance/new-release obligations\
+  \ remain open."
+- Current model broad training knowledge cannot reconstruct past model knowledge; derivations are counterfactual.
+  Protocol 7.5 causal/training-effect claims require separate research/experiment design.
+- Existing default pytest/test-unit discovery omits tests/evaluation; the explicit packet directory command
+  is required and was executed. Hosted CI remains unchanged.
+follow_up_tasks:
+- Later governance must assign the uncovered genuine quality and measured release evaluation decisions/implementation
+  scope an enforceable packet before scheduling; no downstream packet or new task identity is created
+  here.
+spec_change_request: null
