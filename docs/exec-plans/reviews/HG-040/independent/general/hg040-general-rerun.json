@@ -1,0 +1,54 @@
+[
+  {
+    "command": [
+      "/private/tmp/hg040-venv/bin/python",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-q",
+      "tests/harness/test_preparation_scope.py",
+      "tests/harness/test_m3_next_wave_scope.py"
+    ],
+    "exit_code": 0,
+    "raw_path": "/private/tmp/hg040-general-scope-negatives.log",
+    "raw_sha256": "c9508079087b94aefd5bb4f131f4f90667b60323a9edff26a7f034e14659a493",
+    "raw_byte_count": 180,
+    "last_output": "129 passed in 0.32s"
+  },
+  {
+    "command": [
+      "/private/tmp/hg040-venv/bin/python",
+      "-m",
+      "kineticloop.db.cli",
+      "check-harness"
+    ],
+    "exit_code": 0,
+    "raw_path": "/private/tmp/hg040-general-harness-current.log",
+    "raw_sha256": "ca9f77ce09e8995106b4e899417c673d47274934e2f199a331f9c371fba8d6ed",
+    "raw_byte_count": 38,
+    "last_output": "HARNESS_CHECK_PASS tasks=75 active=72"
+  },
+  {
+    "command": [
+      "/private/tmp/hg040-venv/bin/python",
+      "docs/exec-plans/evidence/HG-040/original_gateway_probe.py"
+    ],
+    "exit_code": 0,
+    "raw_path": "/private/tmp/hg040-general-original-gateway.log",
+    "raw_sha256": "1e1f2850739182a724b4556a47fcf2b119059a92b2d120099ba5aa25462527c5",
+    "raw_byte_count": 1616,
+    "last_output": "UPSTREAM_BLOCKER_REPRODUCED: 5 expected rejections, 0 SQL calls, no DB lifecycle"
+  },
+  {
+    "command": [
+      "/private/tmp/hg040-venv/bin/python",
+      "docs/exec-plans/evidence/HG-040/candidate_gateway_diagnostic.py"
+    ],
+    "exit_code": 0,
+    "raw_path": "/private/tmp/hg040-general-candidate-gateway.log",
+    "raw_sha256": "ef5429c07a2d4caccbeb9d7e37bc9597f01068b1e804b8cdcf3ac7f51f6df46c",
+    "raw_byte_count": 4483,
+    "last_output": "CANDIDATE_GATEWAY_DIAGNOSTIC_PASS: 4 positive / 9 negative controls; no implementation or PG acceptance claim"
+  }
+]

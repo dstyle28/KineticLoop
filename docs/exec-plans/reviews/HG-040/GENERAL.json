@@ -1,0 +1,48 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-040",
+  "reviewed_head_sha": "5f41d88c5f8c3142b43b3101486c1fa149394543",
+  "review_type": "GENERAL",
+  "status": "PASS",
+  "findings": [],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-040.yaml",
+    "docs/exec-plans/active/KL-078.md",
+    "docs/exec-plans/active/KL-076.md",
+    "tests/harness/test_preparation_scope.py",
+    "tools/harness/validate_harness.py",
+    "KineticLoop_Harness_Backlog_v0.2.json",
+    "KineticLoop_Harness_Traceability_v0.3.json",
+    "docs/exec-plans/evidence/HG-040/scope_audit-35044fd.log",
+    "docs/exec-plans/evidence/HG-040/upstream_scope_regressions-35044fd.log",
+    "docs/exec-plans/evidence/HG-040/original_gateway_reproduction-35044fd.log",
+    "docs/exec-plans/evidence/HG-040/candidate_gateway_feasibility-35044fd.log",
+    "docs/exec-plans/evidence/HG-040/harness_validation-35044fd.log",
+    "docs/exec-plans/evidence/HG-040/harness_tests-35044fd.log",
+    "docs/exec-plans/evidence/HG-040/unit_tests-35044fd.log",
+    "docs/exec-plans/evidence/HG-040/lint-35044fd.log",
+    "docs/exec-plans/evidence/HG-040/typecheck-35044fd.log",
+    "docs/exec-plans/evidence/HG-040/diff_clean-35044fd.log"
+  ],
+  "review_contract_version": "v0.2",
+  "observations": [
+    "Fresh independent GENERAL review inspected exact protected-base diff (84 declared paths), actual restricted preparation gateway/metadata and owner services, governance/result/review/merge contracts, both task packets, and prospective task checks. No blocking or follow-up findings.",
+    "KL078 is the sole fresh task identity, NOT_STARTED with no result/review/integration, empty requirement and evidence claims, complete exact task/packet/traceability projections, named PU/DC selectors and zero-skip oracles. KL076 changes only dependency/read context/entry condition plus matching upstream-source packet text; its checks, write/resources scope and requirement claims are unchanged. All other existing task definitions are semantically identical.",
+    "Ten final PASS checks bind tested_commit 35044fd3d94472b41b1bbe6c0313a2a7701c8063: independently verified exact record/sidecar/raw command matching, exits zero, UTF-8 byte counts and SHA256 digests. Raw recorded harness/unit results show 626 and 216 passing tests; scope regressions show 129. Tested-to-reviewed suffix is one linear commit updating only own governance record and adding twenty new own evidence files.",
+    "Independent current-head read-only reruns: 129 scope/negative regressions PASS, HARNESS_CHECK_PASS tasks=75 active=72, actual upstream gateway five expected denials before SQL, and in-memory candidate four positive/nine negative controls PASS. Candidate remains feasibility diagnostic, never PostgreSQL/task/product acceptance.",
+    "No source/migration/CI/frozen baseline/current requirement-set/acceptance/evidence manifest/historical result/review/integration edits. Index identities/metadata unchanged; manifest adds only KL078 packet and refreshes actually changed content hashes/byte counts. Shared transaction_interfaces resource serializes overlapping writer tasks.",
+    "Optional KL075 integration record remains deferred. No historical edits, evidence backdating or guard relaxation. Governance review PASS is separate from prospective KL078 implementation, product/release/requirement PASS and Git merge.",
+    "Independent local artifact /private/tmp/hg040-general-audit.py SHA256 27b2c647931b46b4a7e5d8535c1863b33db8e80a77e660a90895a7948cb4f78d. These temporary reviewer artifacts are not evidence_refs because absent at reviewed SHA.",
+    "Independent local artifact /private/tmp/hg040-general-audit.log SHA256 496745c40b348b55b48fec14385c4a7f42567eaf23ea6c8b74f99e230af457fe. These temporary reviewer artifacts are not evidence_refs because absent at reviewed SHA.",
+    "Independent local artifact /private/tmp/hg040-general-rerun.json SHA256 fa82539b161f0fb1d6f91e5300fb31b8ec1515df965041337a419cbec55406f2. These temporary reviewer artifacts are not evidence_refs because absent at reviewed SHA.",
+    "Independent local artifact /private/tmp/hg040-general-pre-review-gate.log SHA256 c54f58ae13f04d8f9321a4b46c71bdbe72b1d22a25773cc2bb5ac915633d76ee. These temporary reviewer artifacts are not evidence_refs because absent at reviewed SHA.",
+    "Independent raw /private/tmp/hg040-general-scope-negatives.log SHA256 c9508079087b94aefd5bb4f131f4f90667b60323a9edff26a7f034e14659a493; exit 0.",
+    "Independent raw /private/tmp/hg040-general-harness-current.log SHA256 ca9f77ce09e8995106b4e899417c673d47274934e2f199a331f9c371fba8d6ed; exit 0.",
+    "Independent raw /private/tmp/hg040-general-original-gateway.log SHA256 1e1f2850739182a724b4556a47fcf2b119059a92b2d120099ba5aa25462527c5; exit 0.",
+    "Independent raw /private/tmp/hg040-general-candidate-gateway.log SHA256 ef5429c07a2d4caccbeb9d7e37bc9597f01068b1e804b8cdcf3ac7f51f6df46c; exit 0.",
+    "Selected-governance semantic validation of exact protected base/reviewed head returns only governance-required-reviews-not-pass:HG-040 (expected before review-record append); 75 tasks, 72 active. All scope, files_changed, immutable completed definitions, traceability, derived metadata, frozen protection and evidence/suffix checks passed. Independent raw /private/tmp/hg040-general-selected-governance.log SHA256 2b6284d8a252da8a209684913c9026db8ef59acd89eb2f4b53f41be99ff70430."
+  ],
+  "limitations": [
+    "GENERAL governance review only. No DB, Docker, network lifecycle or foreign fixtures invoked; no repository writes. Future KL078 full typed ingress/provenance/replay/duplicate/rollback/no-authority/T3 real-PG acceptance is deliberately NOT_RUN and required by its packet.",
+    "Exact-head hosted CI/quality/merge gates and fresh PROTOCOL/DB_CONCURRENCY reviews remain separate obligations before normal merge."
+  ]
+}
