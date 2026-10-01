@@ -58,6 +58,7 @@ _T = TypeVar("_T")
 
 _LOGICAL_TABLES = {row.logical_id: row.table_name for row in LOGICAL_RELATIONS}
 _CURSORS: WeakKeyDictionary[object, Cursor[Any]] = WeakKeyDictionary()
+_PREPARATION_TOKEN = object()
 
 
 def evidence_source_identity_key(values: Mapping[str, Any]) -> str:
@@ -943,6 +944,12 @@ class RestrictedSqlSession:
         table = self._table(logical_id)
         capability_values = dict(values)
         database_values = dict(values)
+        if logical_id in {"S21", "S22", "S23"} and self.__command_kind in {
+            "RecordProjection", "BuildManifest"
+        }:
+            self._require_preparation_values(logical_id, values)
+            if logical_id == "S21":
+                database_values["revision"] = 1
         if logical_id == "S24" and self.__command_kind == "PublishManifest":
             database_values["typed_payload"] = Jsonb(
                 {
@@ -1072,6 +1079,11 @@ class RestrictedSqlSession:
             )
         if operation == "insert":
             required = REQUIRED_FIELDS.get(logical_id, frozenset())
+            # The caller capability still forbids revision. Only this exact
+            # server-owned insertion supplies it, before SQL and after plan validation.
+            if logical_id == "S21" and self.__command_kind == "RecordProjection":
+                self._require_preparation_values(logical_id, values)
+                requested = requested | {"revision"}
             if not required <= requested:
                 raise StatementRejected(
                     f"{logical_id} insert omits required fields {sorted(required - requested)}"
@@ -1201,6 +1213,18 @@ class RestrictedSqlSession:
             raise GuardRequired("CompleteFactset basis was not prepared")
         return dict(payload)
 
+    def _require_preparation_values(self, logical_id: str, values: Mapping[str, Any]) -> None:
+        context = self.__coordination_context
+        if context.get("preparation_token") is not _PREPARATION_TOKEN:
+            raise GuardRequired("exact typed source preparation required")
+        expected = context.get("preparation_inserts", {}).get(logical_id, {}).get(values.get("id"))
+        def normalize(row: Mapping[str, Any]) -> dict[str, Any]:
+            return {key: self._json_value(value) for key, value in row.items()}
+        if expected is None or normalize(values) != normalize(expected):
+            raise GuardRequired("preparation must insert the exact server-owned source closure")
+        if values.get("id") in self.__inserted_ids.get(logical_id, set()):
+            raise GuardRequired("duplicate preparation insert")
+
     def _require_insert_bindings(self, logical_id: str, values: Mapping[str, Any]) -> None:
         if self.__command_kind == "RecordSnapshot":
             self._require_progress_values("S26", values)
@@ -1235,6 +1259,12 @@ class RestrictedSqlSession:
             if field == "ref_s31_id" and referenced in self.__inserted_ids.get("S31", set()):
                 requires_lock = False
             if field == "ref_s15_id" and self.__command_kind == "PublishManifest":
+                requires_lock = False
+            if field == "ref_s15_id" and (
+                (logical_id == "S22" and self.__command_kind == "RecordProjection")
+                or (logical_id == "S23" and self.__command_kind == "BuildManifest")
+            ):
+                self._require_preparation_values(logical_id, values)
                 requires_lock = False
             if (
                 requires_lock
@@ -1730,6 +1760,15 @@ class RestrictedSqlSession:
         values: Mapping[str, Any],
         predicates: Mapping[str, Any],
     ) -> None:
+        if logical_id == "S21" and self.__command_kind == "RecordProjection":
+            raise GuardRequired("projection history is immutable")
+        if logical_id == "S23" and self.__command_kind == "BuildManifest":
+            context = self.__coordination_context
+            expected = context.get("preparation_update")
+            if (context.get("preparation_token") is not _PREPARATION_TOKEN
+                or expected != (dict(values), dict(predicates))
+                or self.__updated_values.get("S23")):
+                raise GuardRequired("only exact BUILDING to READY completion is allowed")
         if self.__command_kind == "AdvanceAttempt":
             if predicates != {"subject_id": self.__subject_id,
                 "id": self.__coordination_context.get("verified_attempt_id")}:
@@ -1979,6 +2018,15 @@ class RestrictedSqlSession:
             raise GuardRequired("progress writes must equal exact server-prepared values")
 
     def validate_completion(self) -> None:
+        if self.__command_kind in {"RecordProjection", "BuildManifest"}:
+            context = self.__coordination_context
+            if context.get("preparation_token") is not _PREPARATION_TOKEN:
+                raise GuardRequired("typed preparation closure required")
+            expected = context.get("preparation_inserts", {})
+            if self.__inserted_ids != {kind: set(rows) for kind, rows in expected.items()}:
+                raise GuardRequired("preparation closure was not recorded atomically")
+            if bool(context.get("preparation_update")) != bool(self.__updated_values.get("S23")):
+                raise GuardRequired("exact local READY transition required")
         if self.__command_kind in {"RecordSnapshot", "AdvanceAttempt"}:
             table = "S26" if self.__command_kind == "RecordSnapshot" else "S29"
             count = len(self.__inserted_ids.get(table, set())) if table == "S26" else len(self.__updated_values.get(table, []))
@@ -5375,6 +5423,30 @@ def replay_outcome(
         if command_kind in {"StartSession", "ResumeSession", "ContinueSession"}:
             outcome.update({"executable": False, "replayed": True})
         return outcome
+
+
+def _execute_source_preparation(connection: Connection[Any], identity: Any, request: Any) -> Mapping[str, Any]:
+    from kineticloop.persistence.preparation import _persist
+
+    if connection.info.transaction_status is not TransactionStatus.IDLE:
+        raise TransactionStateError("preparation requires an idle connection")
+    with connection.transaction():
+        return _persist(connection.cursor(), identity, request)
+
+
+def _source_preparation_session(
+    cursor: Cursor[Any], kind: str, subject: UUID,
+    inserts: Mapping[str, Mapping[UUID, Mapping[str, Any]]],
+    update: tuple[dict[str, Any], dict[str, Any]] | None = None,
+) -> RestrictedSqlSession:
+    if kind not in {"RecordProjection", "BuildManifest"}:
+        raise GuardRequired("exact preparation owner required")
+    locked = ({"manifest_builds": frozenset({update[1]["id"]})} if update else {})
+    return RestrictedSqlSession(cursor, _OWNER_SPECS[kind].mutation_surfaces, subject,
+        command_kind=kind, locked_ids=locked, coordination_context={
+            "preparation_token": _PREPARATION_TOKEN,
+            "preparation_inserts": inserts, "preparation_update": update,
+        })
 
 
 def execute_preparation(
