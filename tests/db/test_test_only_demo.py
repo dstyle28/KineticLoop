@@ -1046,11 +1046,18 @@ def observe_blocked(url: str, name: str) -> Any:
     with connect(url, autocommit=True) as db:
         while time.monotonic() < deadline:
             row = db.execute(
-                "SELECT pid,pg_blocking_pids(pid),query FROM pg_stat_activity WHERE application_name=%s AND cardinality(pg_blocking_pids(pid))>0",
+                "SELECT pid,pg_blocking_pids(pid),query,clock_timestamp() FROM pg_stat_activity WHERE application_name=%s AND cardinality(pg_blocking_pids(pid))>0",
                 (name,),
             ).fetchone()
             if row:
-                witness("blocked", application=name, pid=row[0], blocking_pids=row[1], query=row[2])
+                witness(
+                    "blocked",
+                    application=name,
+                    pid=row[0],
+                    blocking_pids=row[1],
+                    query=row[2],
+                    trusted_blocked_at=row[3],
+                )
                 return row
             time.sleep(0.01)
     raise AssertionError("bounded observed lock waiter missing")
@@ -2043,7 +2050,7 @@ def test_trusted_post_lock_expiry(database_urls: Any, operation: str) -> None:
             if operation == "START":
                 target = UUID(bundle["head_id"])
         before = snapshot(db, auth(seed).subject_id)
-        before_wait = wait_db_time(db, seed["admission_end"] - timedelta(seconds=0.5))
+        before_wait = wait_db_time(db, seed["admission_end"] - timedelta(seconds=2))
         assert before_wait < seed["admission_end"]
         with connect(database_urls["admin"]) as blocker:
             blocker.execute(
@@ -2071,11 +2078,16 @@ def test_trusted_post_lock_expiry(database_urls: Any, operation: str) -> None:
 
             with ThreadPoolExecutor(max_workers=1) as pool:
                 future = pool.submit(waiting)
-                observed = observe_blocked(database_urls["admin"], "kl027-expiry-waiter")
-                # Reader is independent of blocked coordination transactions.
-                with connect(database_urls["admin"]) as clock:
-                    after_time = wait_db_time(clock, seed["admission_end"])
-                blocker.commit()
+                try:
+                    observed = observe_blocked(database_urls["admin"], "kl027-expiry-waiter")
+                    # Prove this actual waiter was blocked before the immutable bound.
+                    assert before_wait <= observed[3] < seed["admission_end"], observed
+                    # Reader is independent of blocked coordination transactions.
+                    with connect(database_urls["admin"]) as clock:
+                        after_time = wait_db_time(clock, seed["admission_end"])
+                finally:
+                    # Release the owned blocker even if observation/assertion fails.
+                    blocker.rollback()
                 message = future.result(timeout=12)
         assert "expired" in message if operation == "T6" else "TIME_INELIGIBLE" in message, message
         assert snapshot(db, auth(seed).subject_id) == before
@@ -2085,6 +2097,7 @@ def test_trusted_post_lock_expiry(database_urls: Any, operation: str) -> None:
             observed_lock=observed,
             source_end=seed["admission_end"],
             trusted_before_wait=before_wait,
+            trusted_blocked_at=observed[3],
             trusted_after=after_time,
             actual_guard=message,
             other_bounds={"manifest_policy": seed["end"], "lease_seconds": 600},

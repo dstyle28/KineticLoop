@@ -46,7 +46,9 @@ executable=false and no new binding, head or issuance.
 
 Finite admitted-source expiry is server-derived and asserted to be the issuance
 minimum. Trusted database time observes before/after expiry. Bounded observed lock
-waits cross expiry inside real T6/START/CONTINUE/RESUME guards and assert fresh post-lock
+waits record trusted clock_timestamp with the actual blocking observation and require
+that observation before the immutable source expiry. With the blocker held, an
+independent reader then observes time after expiry. Real T6/START/CONTINUE/RESUME guards assert fresh post-lock
 TIME_INELIGIBLE/expiry rejection with zero effects. Exact half-open equality is
 separate pure-predicate PU for eligibility, lease and deadline; there is no DC equality
 claim, caller clock, timestamp overwrite, status job or production clock seam.

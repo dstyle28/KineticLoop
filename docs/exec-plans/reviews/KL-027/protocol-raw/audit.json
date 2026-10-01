@@ -1,0 +1,1018 @@
+{
+  "reviewed_head_sha": "1df15275291ee99b98bd063e856d45c83ccc6f81",
+  "tested_commit": "8b446eda05bfb8201fb48c89fda5d03eb40c2218",
+  "base_commit": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+  "indexed_hashes_verified": 26,
+  "scope": [
+    "docs/contracts/test_only_demo.md",
+    "docs/exec-plans/completed/KL-027_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/checks.json",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_expiry_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_expiry_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_fdn_repair_e2e.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_fdn_repair_e2e.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_namespace_and_boundary_pu.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_namespace_and_boundary_pu.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_owner_trajectory_e2e.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_owner_trajectory_e2e.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_revoke_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_revoke_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_scope_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_scope_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_suite_e2e.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_suite_e2e.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/harness_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/harness_regressions_pass.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/harness_validation_passes.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/lint_passes.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/typecheck_passes.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/unit_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/unit_regressions_pass.xml",
+    "docs/exec-plans/evidence/KL-027/entry-audit.json",
+    "docs/exec-plans/evidence/KL-027/entry-audit.py",
+    "docs/exec-plans/evidence/KL-027/preserved-baseline.json",
+    "docs/exec-plans/evidence/KL-027/run-checks.py",
+    "tests/db/test_test_only_demo.py",
+    "tests/unit/protocol/test_test_only_demo.py"
+  ],
+  "tested_to_reviewed_suffix": [
+    "docs/exec-plans/completed/KL-027_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/checks.json",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_expiry_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_expiry_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_fdn_repair_e2e.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_fdn_repair_e2e.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_namespace_and_boundary_pu.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_namespace_and_boundary_pu.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_owner_trajectory_e2e.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_owner_trajectory_e2e.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_revoke_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_revoke_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_scope_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_scope_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_suite_e2e.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_suite_e2e.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/harness_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/harness_regressions_pass.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/harness_validation_passes.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/lint_passes.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/typecheck_passes.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/unit_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/unit_regressions_pass.xml"
+  ],
+  "prerequisites": [
+    {
+      "task": "KL-017",
+      "normal_merge": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+      "source_head": "366d96f0dbc08b3f7d775d860bdce0dbe9b873e1",
+      "result_sha256": "06713a24e74beea64691d6624ea649b71b573d1339c7ae25ece3b1ae7ef32c37",
+      "reviews": [
+        {
+          "path": "docs/exec-plans/reviews/KL-017/DB_CONCURRENCY.json",
+          "reviewed_head_sha": "4aa711e0e6aa490e250c8eb3241653b90307df6d",
+          "sha256": "0e7f92dfc87b7e295b473b721c56b13f74daebac2589b4038de0c241845b791d",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-017/GENERAL.json",
+          "reviewed_head_sha": "4aa711e0e6aa490e250c8eb3241653b90307df6d",
+          "sha256": "b02f36dd5d54921be56d8b5bbb7768cb0b0225619e36816b4862f3bb42bc175f",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-017/PROTOCOL.json",
+          "reviewed_head_sha": "4aa711e0e6aa490e250c8eb3241653b90307df6d",
+          "sha256": "4d47b946503d9a75d8c1847c01de9b981a2b0fcd7c9744171556b5992cb56232",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-017/SECURITY_DATA_BOUNDARY.json",
+          "reviewed_head_sha": "4aa711e0e6aa490e250c8eb3241653b90307df6d",
+          "sha256": "8cc2c30f1afc0fab0bb3372b1e72923019683674c30e7628a44f1f16d05be826",
+          "findings": []
+        }
+      ],
+      "known_limitations": [
+        "Cluster roles, subject credentials, memberships, ownership handoff, continuous role audit, and canonical superuser event-trigger installation remain external two-phase deployment responsibilities documented in docs/contracts/subject_scope.md.",
+        "Subject principals must never receive SUPERUSER or BYPASSRLS. PostgreSQL cannot mediate SELECT after a cluster administrator grants either attribute; ALTER ROLE, event-trigger administration, and direct superuser data access remain trusted cluster-administration boundaries.",
+        "Operators must retire all classifications, bindings, and protected S38/S42/S45/S46/S47 data before downgrade.",
+        "No product requirement PASS or production auto-activation is claimed."
+      ]
+    },
+    {
+      "task": "KL-019",
+      "normal_merge": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+      "source_head": "b7f14f00e2f1fcc0524d23afa0769740851d4c2c",
+      "result_sha256": "6631a121af1458a264d31a6ec0f541590692f51a553273f88b26185d1874717e",
+      "reviews": [
+        {
+          "path": "docs/exec-plans/reviews/KL-019/DB_CONCURRENCY.json",
+          "reviewed_head_sha": "4fa4e6c661697fb3024c891c35b307dbff391f8f",
+          "sha256": "1e7def19c8f2a326b961fb0ca3c62fd85466863e29089e27fd99f7801cdb3883",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-019/GENERAL.json",
+          "reviewed_head_sha": "4fa4e6c661697fb3024c891c35b307dbff391f8f",
+          "sha256": "c356cff93491ca7c972b2648627bb542ba3471e046ea798ba053ef2b7ba74d65",
+          "findings": [
+            {
+              "id": "GENERAL-N01",
+              "classification": "NONBLOCKING",
+              "priority": 3,
+              "title": "Historical raw failure logs retain diagnostic whitespace",
+              "description": "Full base-to-reviewed git diff --check reports trailing whitespace only in retained raw failed-run logs commit_test_only_bundle_dc-7cdee15.log, execution_ack_loss_replay_dc-c739273.log and full_unit_regressions_pass-8af107b.log. Source, tests, contracts, result and final 600c901 evidence formatting checks pass. These historical logs are preserved evidence and are not the final PASS basis; rewriting their raw bytes would damage their recorded evidence hashes.",
+              "requested_change": "None for this task; preserve historical raw evidence."
+            }
+          ]
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-019/PROTOCOL.json",
+          "reviewed_head_sha": "4fa4e6c661697fb3024c891c35b307dbff391f8f",
+          "sha256": "998a17a7a21a4093649574656850d958b137e89ab2c4684fb90030e746aaddae",
+          "findings": []
+        }
+      ],
+      "known_limitations": [
+        "No RecordSnapshot/AdvanceAttempt owner, evidence-resolution/semantic-validation engine, full workflow/model loop, production activation, executable real-data shadow or provider command authority is implemented. Synthetic upstream inputs demonstrate no owner-driven planning progress.",
+        "Trusted ingress must authenticate ExecutionIdentity and supply existing privileged internal owner connections. This task compares canonical registered TEST principal metadata; it does not implement a new authentication system or grant subject-session privileges.",
+        "I01/I02/I04/I07 and every A03@DC product obligation remain NOT_RUN; passing task PU/DC checks does not meet KL027/KL028 or full integration/release trajectories.",
+        "This pre-review result records task PASS/UNMERGED. Independent reviews, unchanged hosted full database/quality CI and selected-task merge gate remain separate prerequisites."
+      ]
+    },
+    {
+      "task": "KL-022",
+      "normal_merge": "88adc5be3f7c567413be671a2b3dc5e6c802ffe8",
+      "source_head": "6cd0f6fa4d3d35792a9802e68a456ebb89c6306e",
+      "result_sha256": "6cbf38868e52d13228982fad8f3df28efd70c33407056cbbb929e2d30e1985ed",
+      "reviews": [
+        {
+          "path": "docs/exec-plans/reviews/KL-022/DB_CONCURRENCY.json",
+          "reviewed_head_sha": "63f9decb1482c7f01c7170cdf6bf3778ed4cc063",
+          "sha256": "12292acc1a809ae267065d176a402bc5179f151b1bba21c53b709cf77b3de1de",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-022/GENERAL.json",
+          "reviewed_head_sha": "63f9decb1482c7f01c7170cdf6bf3778ed4cc063",
+          "sha256": "2c6516f6cb5e01a46f1590040e2fb178d029706ebc66a6547b6a420d952744f5",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-022/PROTOCOL.json",
+          "reviewed_head_sha": "63f9decb1482c7f01c7170cdf6bf3778ed4cc063",
+          "sha256": "df90b600cca1e0f9f9a2ee1deafb2ed3d3fb6c1691d4316c3f051630e3cda307",
+          "findings": []
+        }
+      ],
+      "known_limitations": [
+        "The public eligibility E2E uses a canonically registered isolated TEST subject and intentionally stops before S45 or any execution mutation; KL-019 and KL-027 retain ownership of their broader trajectories.",
+        "Current controls are derived from the existing S18/S17 projection and policy-derived exact execution scope; this task adds no new control taxonomy or service.",
+        "Task PASS does not imply product requirement PASS, independent review PASS, CI PASS or MERGED state."
+      ]
+    },
+    {
+      "task": "KL-023",
+      "normal_merge": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+      "source_head": "01ff68828efa8007fc88def7765e14de87b582e5",
+      "result_sha256": "d3a56ffd5a1cfbe528b8074289fff7fa34e7ad0523222488d2003b1a52451d9d",
+      "reviews": [
+        {
+          "path": "docs/exec-plans/reviews/KL-023/DB_CONCURRENCY.json",
+          "reviewed_head_sha": "6cd15b03cb0206156b8e295d34516f457c7b046a",
+          "sha256": "83a9757d7875dde71f9824dba5ab68fa946c41e6d512a397a5ca3aa9a6fc7433",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-023/GENERAL.json",
+          "reviewed_head_sha": "6cd15b03cb0206156b8e295d34516f457c7b046a",
+          "sha256": "115b2f0a8c27006e693d9072e425129e2ea60b93352f82e9b552f7611704f5fb",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-023/PROTOCOL.json",
+          "reviewed_head_sha": "6cd15b03cb0206156b8e295d34516f457c7b046a",
+          "sha256": "ff168f2baf35c7a17c664770ada1ee1c4c9e75c9c9b3eb6299c6a7c7a2abe05d",
+          "findings": []
+        }
+      ],
+      "known_limitations": [
+        "B01-B03/I08, product/release acceptance and production activation remain unchanged; this task promotes no product requirement or release gate to PASS.",
+        "Trusted ingress must authenticate and bind BuilderIdentity; the Python value object is not an authentication token.",
+        "Policy bundles must explicitly supply factset_max_delta_depth for this service; unsupported/missing configuration fails closed.",
+        "Association/admission/mapping selection and downstream qualification belong to their command owners/resolver; this service retains and validates the complete explicitly selected basis."
+      ]
+    },
+    {
+      "task": "KL-024",
+      "normal_merge": "ff57a80feebd4e539f9af277e0dcb26d942bc3e0",
+      "source_head": "54c201fcb08f4686897c3b3bb44f34a43490471b",
+      "result_sha256": "660e3a31a61c763ea6f48be1d6ef0d0f81b2b9a3bfcdd151f59ad2a4bb619b9b",
+      "reviews": [
+        {
+          "path": "docs/exec-plans/reviews/KL-024/DB_CONCURRENCY.json",
+          "reviewed_head_sha": "28a47f1747c942d6b0382d3d610b8a998e2c512f",
+          "sha256": "ac732224f53314f27ae95c5da0bf6cab011b92dcc149da7fe7085b6e549984af",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-024/GENERAL.json",
+          "reviewed_head_sha": "28a47f1747c942d6b0382d3d610b8a998e2c512f",
+          "sha256": "e89b39d9b0594859079f046d65c74206e547e4bb9a2109a6ca522a1f242e99ef",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-024/PROTOCOL.json",
+          "reviewed_head_sha": "28a47f1747c942d6b0382d3d610b8a998e2c512f",
+          "sha256": "79b3a0f1a37423ac3adeb698ec72034b6e7035541f2dcebfb76db1540618a35e",
+          "findings": []
+        }
+      ],
+      "known_limitations": [
+        "Task PASS covers local implementation evidence only. No W04-W06 product/release PASS, model loop, call ledger, dispatch, downstream attempt advancement, full watchdog/reaper, authorization implementation or production activation is claimed. Expired active/terminal-attempt recovery remains downstream.",
+        "Ingress authentication supplies trusted subject/actor binding and owner connection. Runtime system/model capacity admission is represented by the versioned policy boundary and downstream enforcement; no provider/model network call occurs inside coordination.",
+        "Historical BLOCKED/CHANGES_REQUIRED records and candidate probes retain their original meanings. They are not current CI, review or release approval. Both governance-authorized fixture compatibility repairs are now exercised by actual full regression suites.",
+        "Result records UNMERGED before independent review; actual Git integration remains a separate fact and must not mutate the reviewed result."
+      ]
+    },
+    {
+      "task": "KL-025",
+      "normal_merge": "eab2b305351cf3c504f74ac74868edc58d0a3430",
+      "source_head": "2ab9c47f66730fe2bb826c09e744de6347027aa4",
+      "result_sha256": "dab5c5af4c07d26550238415cc99e04ab98d6d853e11aa94caa787f35ac544b8",
+      "reviews": [
+        {
+          "path": "docs/exec-plans/reviews/KL-025/DB_CONCURRENCY.json",
+          "reviewed_head_sha": "5f3c14b94a2aebd4e5ce97c2414c8271e9ff9ef4",
+          "sha256": "5f0d30efa169bc61a864d106d14ffe3cd3303ab90da44b66fb7e649d12081ba7",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-025/GENERAL.json",
+          "reviewed_head_sha": "5f3c14b94a2aebd4e5ce97c2414c8271e9ff9ef4",
+          "sha256": "85fee389473b3861b148c1536802a05522f6709afe16ea77562d39c542a955dd",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-025/PROTOCOL.json",
+          "reviewed_head_sha": "5f3c14b94a2aebd4e5ce97c2414c8271e9ff9ef4",
+          "sha256": "08ff6749dc31ff4486502cfc3414af9960dcaa0e5930f08711f54019310b55ee",
+          "findings": []
+        }
+      ],
+      "known_limitations": [
+        "No provider SDK/model loop, DISPATCHED diagnosis, full watchdog/reaper, generic progression, production activation, live shadow head or execution binding is implemented. Task PU/DC evidence does not discharge W01/W03/W05/W06/W08 WF/E2E or release obligations.",
+        "Trusted ingress must authenticate PlanningIdentity and supply a real reliable receipt verifier. Shape and provenance strings alone are not authentication/provider billing proof. Count/token limits are enforced; strict_money is false, including when integer cost_micros participates in arithmetic.",
+        "This immutable pre-review result records task PASS/UNMERGED. Required fresh independent reviews, hosted full database/quality CI and the selected-task merge gate remain separate prerequisites before integration.",
+        "The child-to-parent status message was actually rejected by automatic approval review for absent explicit human message authorization. No retry or workaround was used; parent monitors this chat."
+      ]
+    },
+    {
+      "task": "KL-074",
+      "normal_merge": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+      "source_head": "ed7246bd6c74edbec78edc60fe2682fc93df33e6",
+      "result_sha256": "85d09c290cbf2e9ee5e92f4aad5daf43d1164ebaf1e0c082b3847930bef3c3e8",
+      "reviews": [
+        {
+          "path": "docs/exec-plans/reviews/KL-074/DB_CONCURRENCY.json",
+          "reviewed_head_sha": "7327e653d25b5aaba56fe96f8b2cd309d4a4aaf4",
+          "sha256": "afe1839ae570c881922333be5990dd4cc578e5d243d06ac1af9f0c5011309645",
+          "findings": [
+            {
+              "classification": "REQUIRED_FOLLOWUP",
+              "id": "KL074-DB-FINAL-GATES",
+              "summary": "Before merge, verify normal CI, hosted readiness and the selected merge gate on the final relevant PR head after persisting the three independent review records.",
+              "details": "The reviewed implementation/result revision is local 7327e653d25b5aaba56fe96f8b2cd309d4a4aaf4. Durable actual-image and full-suite evidence binds tested implementation d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7; their intervening diff contains only task result/evidence. The retained draft merge gate failed while the result/reviews were absent. This is an outstanding merge obligation, not an implementation defect, and this review does not assert that final-head gates have already passed. Persist only the task-scoped REVIEW_RECORD_ONLY suffix; any other change requires fresh review."
+            }
+          ]
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-074/GENERAL.json",
+          "reviewed_head_sha": "7327e653d25b5aaba56fe96f8b2cd309d4a4aaf4",
+          "sha256": "bbb1fa4def23c42beb0dffae4d1bd9ca48db25f5178d55406a0e3419816115b2",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-074/SECURITY_DATA_BOUNDARY.json",
+          "reviewed_head_sha": "7327e653d25b5aaba56fe96f8b2cd309d4a4aaf4",
+          "sha256": "5cac4dc562202fd87ed3ab03afd2602d12cc1f5b5e974e109c52a54fcaf27417",
+          "findings": []
+        }
+      ],
+      "known_limitations": [
+        "The first hosted candidate failed because coarse observations missed the short socket-only window; its full-suite step was NOT_RUN. Its verified raw failure artifact is retained separately and never counted as PASS.",
+        "Evidence pins the actual configured PostgreSQL image and entrypoint observed at tested_commit; no inference-only or production claim is made.",
+        "The draft evidence-collection heads correctly failed the missing-result merge gate. Fresh independent reviews, the review-record-only suffix check and every applicable final-head CI/gate must pass before normal merge."
+      ]
+    },
+    {
+      "task": "KL-075",
+      "normal_merge": "d0470badf0ccf6bec28a9bc7e6836b57d9df93ce",
+      "source_head": "ec4b43e9f1cfaa96a17b231673f4549d651e6bca",
+      "result_sha256": "f7db410d2b340272b35d9cf5530bd59257f0a8626136db46556318e56306bf69",
+      "reviews": [
+        {
+          "path": "docs/exec-plans/reviews/KL-075/DB_CONCURRENCY.json",
+          "reviewed_head_sha": "5543bfb2a40a6e29c49f0325d8542a1b38a8fcca",
+          "sha256": "eaf95064f5995c3771b1ff1971e172c919f0abb5aebe2ac1a971ed0f1d8aa4ed",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-075/GENERAL.json",
+          "reviewed_head_sha": "5543bfb2a40a6e29c49f0325d8542a1b38a8fcca",
+          "sha256": "7fa6f1fb46f9bfae81306dde223593c7139f56b99cd65a2f695db953659c8a07",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-075/PROTOCOL.json",
+          "reviewed_head_sha": "5543bfb2a40a6e29c49f0325d8542a1b38a8fcca",
+          "sha256": "2cb2cab7a470452c7877d0a059099e790a6d75554f3dcadb884eebaf544a97c1",
+          "findings": []
+        }
+      ],
+      "known_limitations": [
+        "Adapters accept isolated authenticated TEST identities only. No F/D/N engines, provider/model/network work, production policy or execution expansion, migration or SQL permission changes.",
+        "Later-stage immutable fixtures are declared INPUT_ONLY guard instrumentation and not F/D/N completeness evidence. KL076 remains responsible for composed preparation. Product, WF, E2E, release and production autoactivation obligations are not claimed PASS.",
+        "Broader legacy DB regressions run only in unchanged hosted PostgreSQL CI on fresh ubuntu-latest. Required independent reviews, final-head CI and protected selected-task merge gate are merge conditions, not facts inferred from local task checks.",
+        "The immutable reviewed result retains integration_status UNMERGED and merge_commit null. Actual normal merge is a separate Git integration fact."
+      ]
+    },
+    {
+      "task": "KL-076",
+      "normal_merge": "035644e0cfb94927d7555e245223cd92c224ea5a",
+      "source_head": "d7e8f60c2530c8373279df6827bfcd08322cd832",
+      "result_sha256": "013a9f33540411a479f728ea63c68551499fc38464ae2dfe6a8ef6f0e8f239e2",
+      "reviews": [
+        {
+          "path": "docs/exec-plans/reviews/KL-076/DB_CONCURRENCY.json",
+          "reviewed_head_sha": "290a4d696d1d8247346e54aa9ff12615ce86dd6f",
+          "sha256": "842f559b811caa11c505f380e7263529dcf73679f9ce647346a30145d42e5ec6",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-076/GENERAL.json",
+          "reviewed_head_sha": "290a4d696d1d8247346e54aa9ff12615ce86dd6f",
+          "sha256": "98a81e90f230bd5153978b1207f5d3b47e106d6634f51761d6fef5a01fee993e",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-076/PROTOCOL.json",
+          "reviewed_head_sha": "290a4d696d1d8247346e54aa9ff12615ce86dd6f",
+          "sha256": "53e517dfd4096f9f56acdf1d1ae839974b379f4c014d7b2b88378ff18132b5ca",
+          "findings": []
+        }
+      ],
+      "known_limitations": [
+        "This exact isolated mechanical TEST domain is not a production/model planner or clinical/nutritional policy. Fixture units have no health interpretation; unsupported policy/evidence domains fail closed.",
+        "No product requirements are claimed by this task. Production auto-activation, real-data shadow execution, authorization issuance and downstream bundle/T7 behavior remain outside this implementation.",
+        "Full legacy database regressions execute through unchanged hosted CI rather than foreign shared-Docker lifecycle fixtures. Required reviews and final-head CI/merge gates must pass before normal merge.",
+        "The pre-integration result intentionally records merge_commit null and integration_status UNMERGED; review and merge facts are recorded independently."
+      ]
+    },
+    {
+      "task": "KL-077",
+      "normal_merge": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+      "source_head": "bb144a01a971878577f52f47517f1232a13894e5",
+      "result_sha256": "a86e81ae15f4e93ac11b2e1dc7d5a55147145967bfea9d372d544a039bf73b85",
+      "reviews": [
+        {
+          "path": "docs/exec-plans/reviews/KL-077/DB_CONCURRENCY.json",
+          "reviewed_head_sha": "03edea3c9f3666302d5eaefe6ba744ea67e64aad",
+          "sha256": "096c0c18c4bdb5bd01aba34dbd7f45b5733f81577e919f85e17b815639bc456d",
+          "findings": [
+            {
+              "id": "DB077-N01",
+              "classification": "NONBLOCKING",
+              "title": "Demand certificate proposal metadata names the validation anchor",
+              "file": "src/kineticloop/persistence/transactions.py",
+              "line": 4070,
+              "description": "The DEMAND_FEATURE certificate entry uses demand_basis[2], validation.ref_s34_id, as attributes.proposal_id. In the full profile this is N, while the demand row physically references F via demand_basis[3]. Independent inspection confirms the authoritative _progress_sources and _verify_full_progress reconstruction checks D.ref_s34_id=F, N.demand_feature_id=D, both action proposals and exact hashes. This metadata is not a guard input or evidence of action applicability; dependency identity/revision, closure digest and finite bounds remain correct. It therefore does not permit an invalid authorization, but the audit field is misleading.",
+              "requested_action": "Track a separately scoped correction or clarification of the audit attribute and verify it against the physical demand-to-F link. The task result already declares a separate follow-up; do not silently alter this reviewed revision."
+            }
+          ]
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-077/GENERAL.json",
+          "reviewed_head_sha": "03edea3c9f3666302d5eaefe6ba744ea67e64aad",
+          "sha256": "78ad7eb29f83a5a2062a9c60b2d95a7ba843c84b2d81fb519bb4ac70339a0049",
+          "findings": [
+            {
+              "classification": "NONBLOCKING",
+              "title": "DEMAND_FEATURE proposal audit attribute names the validation anchor",
+              "file": "src/kineticloop/persistence/transactions.py",
+              "line": 4070,
+              "detail": "The DEMAND_FEATURE validity dependency uses demand_basis[2] (S37.ref_s34_id, the N proposal for the full profile) as attributes.proposal_id. The physical S35 dependency is D and D.ref_s34_id names F. This is inaccurate explanatory certificate metadata. It does not replace authoritative dependency checks: _progress_sources and the merged full reconstruction require D-to-F, N-to-F/D, both exact per-action resolutions and shared S37, and issuance rows retain exact member-specific resolution and prescription content.",
+              "requested_action": "Track a separately scoped correction and regression assertion for the DEMAND_FEATURE proposal audit attribute; retain all current binding and authorization guards."
+            }
+          ]
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-077/PROTOCOL.json",
+          "reviewed_head_sha": "03edea3c9f3666302d5eaefe6ba744ea67e64aad",
+          "sha256": "f808570a076ef997449bb1183bfec916aab99fcc7a01095ab7873259db512554",
+          "findings": [
+            {
+              "id": "KL077-PROTOCOL-FINAL-GATES",
+              "classification": "REQUIRED_FOLLOWUP",
+              "priority": 2,
+              "title": "Final hosted gates remain merge conditions",
+              "description": "The exact task-local checks and protocol DoD are satisfied at this reviewed implementation/result SHA. The archived ae6564e PR and push hosted PostgreSQL runs each have 543 passed and 2 failures. Independent source/log inspection establishes that the count-one diagnostic mismatch aborts test_t6_ack_loss_replay_returns_same_issuance before the normal first-head bundle/prescription installation needed by the subsequent shared-module test_reauthorize_requires_atomic_intent_success. The reviewed branch restores the protected-base count-one diagnostic and retains all guards, but this read-only review does not rerun foreign legacy DB fixtures or assert the final hosted repair has passed.",
+              "requested_change": "Require final relevant-head quality, selected-task merge gate and both unchanged hosted PostgreSQL workflows to PASS before normal merge. Persist only the permitted linear task-scoped REVIEW_RECORD_ONLY suffix; any code/test/contract/result change requires fresh SHA-bound review.",
+              "evidence_refs": [
+                "tests/db/test_transaction_interfaces.py:274",
+                "tests/db/test_transaction_interfaces.py:3069",
+                "tests/db/test_transaction_interfaces.py:3233",
+                "tests/db/test_transaction_interfaces.py:3322",
+                "src/kineticloop/persistence/transactions.py:2141",
+                "docs/exec-plans/evidence/KL-077/development/hosted-ae6564e-pr-failure.log.gz",
+                "docs/exec-plans/evidence/KL-077/development/hosted-ae6564e-push-failure.log.gz"
+              ]
+            },
+            {
+              "id": "KL077-PROTOCOL-DEMAND-METADATA",
+              "classification": "NONBLOCKING",
+              "priority": 3,
+              "title": "Demand certificate proposal metadata names the N anchor",
+              "description": "Independent inspection of prepare_authorization_basis and the committed positive raw witness shows DEMAND_FEATURE dependency identity/revision are the exact D row, but its proposal_id attribute is copied from validation.ref_s34_id=N instead of demand.ref_s34_id=F. Positive raw evidence has D 7d670207-2f98-56cb-8ca4-c46209827aa2 physically bound to F 300dd37e-a63d-5c5e-92cb-80476e9d4b0a, while the certificate metadata names N 1832d9b0-1fc5-5a00-8759-7a9ebff47d34. This attribute is descriptive: exact guarded full reconstruction separately enforces D-to-F, N-to-D/F, both action proposals/resolutions and the shared validation. No current authorization bypass or missing dependency is found.",
+              "requested_change": "Track the task-result follow-up and correct this descriptive metadata in a separately scoped reviewed change; do not mutate immutable existing certificates.",
+              "evidence_refs": [
+                "src/kineticloop/persistence/transactions.py:3950",
+                "src/kineticloop/persistence/transactions.py:4070",
+                "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_bundle_commit_dc.log",
+                "docs/exec-plans/completed/KL-077_RESULT.yaml"
+              ]
+            }
+          ]
+        }
+      ],
+      "known_limitations": [
+        "Bounded deterministic mechanical TEST fixture; NUTRITION is fixture fuel TARGET, not clinical/intake evidence.",
+        "Production auto-activation remains disabled and real-data shadow remains non-executable.",
+        "Final hosted quality, merge-gate and both unchanged PostgreSQL workflows remain merge conditions after independent review.",
+        "M3, product/layer requirements, G-SHADOW and release gates remain independent NOT_RUN where not separately evidenced.",
+        "Prerequisite result payloads retain their original UNMERGED values; actual normal merge/review ancestry is independently verified in entry.json without rewriting them."
+      ]
+    },
+    {
+      "task": "KL-078",
+      "normal_merge": "c599ec1ef39c28bd691748698a09805f390878cf",
+      "source_head": "6a44e745f9ee22bc401c69c4c9f573265cc4cb5e",
+      "result_sha256": "86eff96043a6a034aeb6b03ddd2fcb01f468b95b259bda5c0dfcc5bad748e586",
+      "reviews": [
+        {
+          "path": "docs/exec-plans/reviews/KL-078/DB_CONCURRENCY.json",
+          "reviewed_head_sha": "89249abcfe5075d958c5e1ea4532b774ea4668de",
+          "sha256": "b79280616a961c072d944269246b95f24bff5782d5006e9d733a7d70fafdceff",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-078/GENERAL.json",
+          "reviewed_head_sha": "89249abcfe5075d958c5e1ea4532b774ea4668de",
+          "sha256": "4cc38af92f4f4e513ec387e30884c54d93ba6896746d1e4b3866a6a6ac540028",
+          "findings": []
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-078/PROTOCOL.json",
+          "reviewed_head_sha": "89249abcfe5075d958c5e1ea4532b774ea4668de",
+          "sha256": "88e160437b2396d22c4dfd3fd6759db29276bcd4d849598b458daf364dd997e7",
+          "findings": []
+        }
+      ],
+      "known_limitations": [
+        "This bounded internal preparation ingress supports registered TEST fixtures only. Production auto-activation remains disabled; EVALUATION shadow ingress has no execution authority.",
+        "No Fitness/Demand/Nutrition, S34-S37 workflow, T6/T7 or downstream execution implementation is included. KL076 resumes only after this task is normally merged.",
+        "Projection content is computed before persistence by trusted ingress; this task proves source binding/immutability/atomic persistence rather than any new product projection algorithm.",
+        "Full legacy DB regressions run only through unchanged hosted CI on a fresh runner; local runs execute the own suite and read-only unit/harness quality checks.",
+        "Superseded checks-f331731/checks-c2816f6/checks-e1ad25c/checks-06e0a48/checks-c40187d and round-15a6c19/round-154171e CHANGES_REQUIRED reviews remain diagnostic history; only the fourteen checks-2a958c4 final logs establish this result."
+      ]
+    },
+    {
+      "task": "KL-079",
+      "normal_merge": "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588",
+      "source_head": "a16fc2e037bd6cec4dbef8613092b28e9b60ecaf",
+      "result_sha256": "b6bae41144cbdad079395ef4d3dde10bdd9d0846fa7c10bed5b98739c27bdcf1",
+      "reviews": [
+        {
+          "path": "docs/exec-plans/reviews/KL-079/DB_CONCURRENCY.json",
+          "reviewed_head_sha": "056b5471f3b360eeda2eca5b1c8def107222acae",
+          "sha256": "074ad1a82b422c43eec33efbf6ddd71cb9d913415d9418a17bebded80c43760d",
+          "findings": [
+            {
+              "id": "KL079-DB-F01",
+              "classification": "REQUIRED_FOLLOWUP",
+              "priority": 2,
+              "title": "Final hosted and selected-task gates remain merge conditions",
+              "description": "The task-local implementation and required own PostgreSQL oracles pass independent review at the recorded SHA. Unchanged hosted PostgreSQL/quality jobs and the selected-task merge gate must still pass on the final relevant PR head. This review does not claim those future gates, MERGED, downstream T6/T7, product requirements or release activation have passed.",
+              "requested_change": "Persist only task-scoped REVIEW_RECORD_ONLY files after this reviewed SHA, verify the linear suffix mechanically, and require actual final-head hosted/selected-task gate success before ordinary merge. Any implementation, test, contract or result change requires fresh tests/review.",
+              "evidence_refs": [
+                "docs/exec-plans/active/KL-079.md",
+                "docs/exec-plans/completed/KL-079_RESULT.yaml",
+                "docs/harness/THREAD_REVIEW_CONTRACT.md"
+              ]
+            }
+          ]
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-079/GENERAL.json",
+          "reviewed_head_sha": "056b5471f3b360eeda2eca5b1c8def107222acae",
+          "sha256": "b46a51b42795223a914cafcf640f70456337baa6bbfa10bf48549945b9b92a8e",
+          "findings": [
+            {
+              "id": "KL079-GENERAL-03",
+              "classification": "REQUIRED_FOLLOWUP",
+              "priority": 2,
+              "title": "Final hosted and selected-task merge gates remain separate",
+              "description": "Task-local DoD is satisfied at the reviewed implementation/result SHA. Unchanged hosted PostgreSQL/quality CI and the applicable selected-task merge gate must pass at the final relevant head before ordinary merge. This GENERAL review does not assert those future gates or product/release obligations passed.",
+              "requested_change": "Retain final relevant-head hosted CI and selected-task gate evidence after all required fresh reviews and their permitted linear REVIEW_RECORD_ONLY append. Preserve reviewed implementation/result bytes.",
+              "evidence_refs": [
+                "docs/exec-plans/completed/KL-079_RESULT.yaml",
+                "docs/exec-plans/active/KL-079.md",
+                "docs/harness/MERGE_GATE.md",
+                "docs/harness/THREAD_REVIEW_CONTRACT.md"
+              ]
+            }
+          ]
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-079/PROTOCOL.json",
+          "reviewed_head_sha": "056b5471f3b360eeda2eca5b1c8def107222acae",
+          "sha256": "5dcadc1c6f752dd52afe8488495a39f3cc617eaab9e5e62f129422269fb8d599",
+          "findings": []
+        }
+      ],
+      "known_limitations": [
+        "KL079 stops at non-executable COMMIT_READY. KL077 owns full T6/T7 consumption; product, M3, G-SHADOW and production release gates remain independent.",
+        "Supporting historical context-builder/catalog seed shapes and admitted immutable input registration are fixture-only. No S15/S16, S21-S26, COMMIT_READY, S34-S37 or downstream target outputs are seeded.",
+        "Oversized sealed membership is denied by the earliest fixture preparation source capture before any F/D/N or action output; the test records that actual denial stage, not a manufactured downstream artifact.",
+        "KL075/KL076 integration records are absent at protected base; their actual normal merges, PASS results and required reviews were independently verified. This task does not rewrite their governance records.",
+        "Hosted unchanged PostgreSQL/quality and final-head selected-task merge gate must PASS before ordinary merge. Task PASS and independent review/merge/product PASS remain separate."
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "check_id": "demo_namespace_and_boundary_pu",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "c40c9d86bb08676351f2aba7634e53a41510c299d9b468deacc672ed75132964"
+    },
+    {
+      "check_id": "demo_owner_trajectory_e2e",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "ef19de47067d9c492107534f6e00e10f8b386c5a36c2daf9474d88ea1031cb43"
+    },
+    {
+      "check_id": "demo_revoke_denials_dc",
+      "counts": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "f90082c7b9bbb79ab0bda7592f7fd2e6f185eaead157c7231e51ec6e26ba5251"
+    },
+    {
+      "check_id": "demo_expiry_denials_dc",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "34f2e641cef96f3b44f507bf1b2387881ff5cde175048dbe63349d881309d966"
+    },
+    {
+      "check_id": "demo_fdn_repair_e2e",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "2986bf98bcbf4aed3fb83dba7647b8a35970706b71de522d7b36bfbcfe6a7cd2"
+    },
+    {
+      "check_id": "demo_scope_denials_dc",
+      "counts": {
+        "tests": 43,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "e4b7f17854835313f4fa7e9d85b3241fc029b9f492056518cf6ec606430f5962"
+    },
+    {
+      "check_id": "demo_suite_e2e",
+      "counts": {
+        "tests": 61,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "b9b4cca37050ee90d683c4523eddf4c013b60cae6b2257c01456384fee6b801a"
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "counts": null,
+      "verified_log_sha256": "7031cd7096b407e9318b6cae830d3876257b6c946721138560f3f3fc05f4b43c"
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "counts": {
+        "tests": 232,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "172b35ded53f5714f46b050f8ee31cd66190f68554f3414c7566fad8d92bce28"
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "counts": {
+        "tests": 676,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "0588b0a89c10cfd359e0a11a86528ecf0018549c8755cd32e3631114a1ee7d92"
+    },
+    {
+      "check_id": "lint_passes",
+      "counts": null,
+      "verified_log_sha256": "78f93f3eaa8e40377c927dc9049413643064a16c528eaa712af0af1238730062"
+    },
+    {
+      "check_id": "typecheck_passes",
+      "counts": null,
+      "verified_log_sha256": "29d3125eed10b19c9287fbf775326dcc477c243b084d90ffcce76e10a0440f49"
+    }
+  ],
+  "witness_counts": {
+    "namespace": 61,
+    "runtime_registration": 61,
+    "admitted_inputs_only": 61,
+    "atomic_receipt_event_outbox": 69,
+    "sealed_source_and_published_basis": 61,
+    "upstream": 61,
+    "forward_stage": 410,
+    "output": 174,
+    "full_output": 173,
+    "full_prepared_chain": 56,
+    "real_T7_current_eligibility_before_mutation": 3,
+    "positive_ordinary_pause_resume": 1,
+    "full_commit": 1,
+    "cleanup": 61,
+    "lifecycle_current_preconditions": 12,
+    "current_T7": 3,
+    "actual_T7_before_authority_loss": 6,
+    "ApplyControl_locked_current_epoch": 4,
+    "exact_zero_effect_denial": 44,
+    "historical_identity_only": 9,
+    "blocked": 4,
+    "trusted_post_lock_expiry_DC": 4,
+    "f2_repair": 1,
+    "scope_non_executable": 14,
+    "foreign_principal_no_capability": 3,
+    "AcceptFactRevision_locked_current_frontier_epoch": 1,
+    "incomplete_source_no_authority": 5,
+    "policy_scope_rejects_forward_stage": 2
+  },
+  "certificate_independent_recomputations": [
+    {
+      "issuance_id": "7d78321e-3c78-4c2d-a5d3-bbf4abec0bd0",
+      "prescription_id": "99d9d6d8-c9b3-47ea-ae2e-08607f355ad0",
+      "action_type": "TRAINING",
+      "resolution_id": "7ff6054f-337d-5b67-9b7b-cd63b1a93790",
+      "validation_id": "8593000a-9b8d-5587-8a25-21cddbf2a569",
+      "closure_digest": "f9cd255465e47bf2e7767f53fc01881efe84032fe04b7fdb7542f19ffef547d2",
+      "valid_until": "2026-10-01T22:56:14.634623+00:00",
+      "demand_physical_fitness_id": "063632fe-2e06-5db2-bb51-9a178aae144a",
+      "demand_audit_proposal_id": "f184607d-5905-5241-aed9-7dcf7f54c7e1"
+    },
+    {
+      "issuance_id": "8a1ac91f-ab18-47bd-831a-b2a0486df6c4",
+      "prescription_id": "09c5db35-0918-421b-801f-4aef2c0c937f",
+      "action_type": "NUTRITION",
+      "resolution_id": "1e095944-619c-51fb-988a-5fdc49ceb4e7",
+      "validation_id": "8593000a-9b8d-5587-8a25-21cddbf2a569",
+      "closure_digest": "f9cd255465e47bf2e7767f53fc01881efe84032fe04b7fdb7542f19ffef547d2",
+      "valid_until": "2026-10-01T22:56:14.634623+00:00",
+      "demand_physical_fitness_id": "063632fe-2e06-5db2-bb51-9a178aae144a",
+      "demand_audit_proposal_id": "f184607d-5905-5241-aed9-7dcf7f54c7e1"
+    }
+  ],
+  "denial_causes": [
+    {
+      "label": "CONTINUE-STOP",
+      "intended_cause": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE",
+      "actual_cause": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE\nCONTEXT:  PL/pgSQL function registry_guard_continue_session(uuid,uuid[],bigint,integer) line 106 at RAISE"
+    },
+    {
+      "label": "RESUME-STOP",
+      "intended_cause": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE",
+      "actual_cause": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE\nCONTEXT:  PL/pgSQL function registry_guard_resume_session(uuid,uuid[],bigint,integer) line 106 at RAISE"
+    },
+    {
+      "label": "START-STOP",
+      "intended_cause": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE",
+      "actual_cause": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE\nCONTEXT:  PL/pgSQL function registry_guard_start_session(uuid,uuid[],bigint,integer) line 106 at RAISE"
+    },
+    {
+      "label": "CONTINUE-artifact",
+      "intended_cause": "KL_REGISTRY_ARTIFACT_REVOKED",
+      "actual_cause": "KL_REGISTRY_ARTIFACT_REVOKED\nCONTEXT:  PL/pgSQL function registry_guard_continue_session(uuid,uuid[],bigint,integer) line 70 at RAISE"
+    },
+    {
+      "label": "RESUME-artifact",
+      "intended_cause": "KL_REGISTRY_ARTIFACT_REVOKED",
+      "actual_cause": "KL_REGISTRY_ARTIFACT_REVOKED\nCONTEXT:  PL/pgSQL function registry_guard_resume_session(uuid,uuid[],bigint,integer) line 70 at RAISE"
+    },
+    {
+      "label": "START-artifact",
+      "intended_cause": "KL_REGISTRY_ARTIFACT_REVOKED",
+      "actual_cause": "KL_REGISTRY_ARTIFACT_REVOKED\nCONTEXT:  PL/pgSQL function registry_guard_start_session(uuid,uuid[],bigint,integer) line 70 at RAISE"
+    },
+    {
+      "label": "CONTINUE-expiry",
+      "intended_cause": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE",
+      "actual_cause": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE\nCONTEXT:  PL/pgSQL function registry_guard_continue_session(uuid,uuid[],bigint,integer) line 106 at RAISE"
+    },
+    {
+      "label": "RESUME-expiry",
+      "intended_cause": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE",
+      "actual_cause": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE\nCONTEXT:  PL/pgSQL function registry_guard_resume_session(uuid,uuid[],bigint,integer) line 106 at RAISE"
+    },
+    {
+      "label": "START-expiry",
+      "intended_cause": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE",
+      "actual_cause": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE\nCONTEXT:  PL/pgSQL function registry_guard_start_session(uuid,uuid[],bigint,integer) line 106 at RAISE"
+    },
+    {
+      "label": "F2-mixed-commit-fitness",
+      "intended_cause": "earlier immutable prerequisite",
+      "actual_cause": "stage cannot silently replace an earlier immutable prerequisite"
+    },
+    {
+      "label": "F2-mixed-commit-demand",
+      "intended_cause": "earlier immutable prerequisite",
+      "actual_cause": "stage cannot silently replace an earlier immutable prerequisite"
+    },
+    {
+      "label": "F2-mixed-commit-nutrition",
+      "intended_cause": "earlier immutable prerequisite",
+      "actual_cause": "stage cannot silently replace an earlier immutable prerequisite"
+    },
+    {
+      "label": "F2-mixed-commit-resolution",
+      "intended_cause": "earlier immutable prerequisite",
+      "actual_cause": "stage cannot silently replace an earlier immutable prerequisite"
+    },
+    {
+      "label": "F2-mixed-commit-validation",
+      "intended_cause": "earlier immutable prerequisite",
+      "actual_cause": "stage cannot silently replace an earlier immutable prerequisite"
+    },
+    {
+      "label": "principal",
+      "intended_cause": "authenticated TEST registration mismatch",
+      "actual_cause": "authenticated TEST registration mismatch"
+    },
+    {
+      "label": "environment",
+      "intended_cause": "binding mismatch",
+      "actual_cause": "authenticated TEST command binding mismatch"
+    },
+    {
+      "label": "policy",
+      "intended_cause": "binding mismatch",
+      "actual_cause": "authenticated TEST command binding mismatch"
+    },
+    {
+      "label": "subject",
+      "intended_cause": "binding mismatch",
+      "actual_cause": "authenticated TEST command binding mismatch"
+    },
+    {
+      "label": "AcceptFactRevision-current-authority-loss",
+      "intended_cause": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE",
+      "actual_cause": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE\nCONTEXT:  PL/pgSQL function registry_guard_continue_session(uuid,uuid[],bigint,integer) line 106 at RAISE"
+    },
+    {
+      "label": "missing_evidence",
+      "intended_cause": "missing/contradictory/incomplete/truncated/mismatched/expired resolution",
+      "actual_cause": "missing/contradictory/incomplete/truncated/mismatched/expired resolution"
+    },
+    {
+      "label": "fixture_policy",
+      "intended_cause": "runtime",
+      "actual_cause": "exact fixture runtime version required"
+    },
+    {
+      "label": "legacy_downgrade",
+      "intended_cause": "legacy downgrade denied",
+      "actual_cause": "full persisted policy requires full execution request; legacy downgrade denied"
+    },
+    {
+      "label": "fitness_id",
+      "intended_cause": "immutable",
+      "actual_cause": "immutable stage source identity/hash missing or changed"
+    },
+    {
+      "label": "fitness_hash",
+      "intended_cause": "immutable",
+      "actual_cause": "immutable stage source identity/hash missing or changed"
+    },
+    {
+      "label": "demand_id",
+      "intended_cause": "immutable",
+      "actual_cause": "immutable stage source identity/hash missing or changed"
+    },
+    {
+      "label": "nutrition_id",
+      "intended_cause": "immutable",
+      "actual_cause": "immutable stage source identity/hash missing or changed"
+    },
+    {
+      "label": "nutrition_hash",
+      "intended_cause": "immutable",
+      "actual_cause": "immutable stage source identity/hash missing or changed"
+    },
+    {
+      "label": "training_resolution",
+      "intended_cause": "immutable",
+      "actual_cause": "immutable stage source identity/hash missing or changed"
+    },
+    {
+      "label": "nutrition_resolution",
+      "intended_cause": "full exact action binding mismatch",
+      "actual_cause": "full exact action binding mismatch"
+    },
+    {
+      "label": "validation_hash",
+      "intended_cause": "immutable",
+      "actual_cause": "immutable stage source identity/hash missing or changed"
+    },
+    {
+      "label": "policy",
+      "intended_cause": "mismatch",
+      "actual_cause": "authenticated TEST command binding mismatch"
+    },
+    {
+      "label": "subject",
+      "intended_cause": "binding mismatch",
+      "actual_cause": "authenticated TEST command binding mismatch"
+    },
+    {
+      "label": "epoch",
+      "intended_cause": "exact current",
+      "actual_cause": "stage snapshot is not bound to exact current chain"
+    },
+    {
+      "label": "generation",
+      "intended_cause": "current-basis expectations",
+      "actual_cause": "commit current-basis expectations mismatch"
+    },
+    {
+      "label": "execution_basis",
+      "intended_cause": "current-basis expectations",
+      "actual_cause": "commit current-basis expectations mismatch"
+    },
+    {
+      "label": "fence",
+      "intended_cause": "stale owner/fence",
+      "actual_cause": "stale owner/fence cannot commit"
+    },
+    {
+      "label": "control",
+      "intended_cause": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE",
+      "actual_cause": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE\nCONTEXT:  PL/pgSQL function registry_guard_commit_bundle(uuid,uuid[],bigint,integer) line 84 at RAISE"
+    },
+    {
+      "label": "runtime_revocation",
+      "intended_cause": "KL_REGISTRY_ARTIFACT_REVOKED",
+      "actual_cause": "KL_REGISTRY_ARTIFACT_REVOKED\nCONTEXT:  PL/pgSQL function registry_guard_commit_bundle(uuid,uuid[],bigint,integer) line 70 at RAISE"
+    },
+    {
+      "label": "missing_nutrition",
+      "intended_cause": "full exact action binding mismatch",
+      "actual_cause": "full exact action binding mismatch"
+    },
+    {
+      "label": "reordered",
+      "intended_cause": "earlier immutable prerequisite",
+      "actual_cause": "stage cannot silently replace an earlier immutable prerequisite"
+    },
+    {
+      "label": "foreign_certificate",
+      "intended_cause": "current immutable commit inputs missing",
+      "actual_cause": "current immutable commit inputs missing"
+    },
+    {
+      "label": "wrong_action",
+      "intended_cause": "earlier immutable prerequisite",
+      "actual_cause": "stage cannot silently replace an earlier immutable prerequisite"
+    },
+    {
+      "label": "wrong_proposal",
+      "intended_cause": "earlier immutable prerequisite",
+      "actual_cause": "stage cannot silently replace an earlier immutable prerequisite"
+    },
+    {
+      "label": "current_manifest",
+      "intended_cause": "current",
+      "actual_cause": "authorization requires a current PASS validation basis"
+    }
+  ],
+  "expiry_waits": [
+    {
+      "actual_guard": "missing/contradictory/incomplete/truncated/mismatched/expired resolution",
+      "kind": "trusted_post_lock_expiry_DC",
+      "observed_lock": [
+        169,
+        [
+          168
+        ],
+        "SELECT id FROM kineticloop.planning_attempts WHERE subject_id=$1 AND id=$2 FOR UPDATE"
+      ],
+      "operation": "T6",
+      "other_bounds": {
+        "lease_seconds": 600,
+        "manifest_policy": "2026-10-01 23:56:21.498654+00:00"
+      },
+      "source_end": "2026-10-01 22:56:29.498654+00:00",
+      "trusted_after": "2026-10-01 22:56:29.510390+00:00",
+      "trusted_before_wait": "2026-10-01 22:56:29.009858+00:00",
+      "zero_effects": true
+    },
+    {
+      "actual_guard": "exact T7 prescription/authorization is not executable: TIME_INELIGIBLE",
+      "kind": "trusted_post_lock_expiry_DC",
+      "observed_lock": [
+        171,
+        [
+          170
+        ],
+        "SELECT id,current_bundle_revision_id,local_date,head_revision FROM kineticloop.daily_plan_heads WHERE subject_id=$1 AND local_date=$2 FOR UPDATE"
+      ],
+      "operation": "START",
+      "other_bounds": {
+        "lease_seconds": 600,
+        "manifest_policy": "2026-10-01 23:56:33.994432+00:00"
+      },
+      "source_end": "2026-10-01 22:56:41.994432+00:00",
+      "trusted_after": "2026-10-01 22:56:41.997722+00:00",
+      "trusted_before_wait": "2026-10-01 22:56:41.502876+00:00",
+      "zero_effects": true
+    },
+    {
+      "actual_guard": "exact T7 prescription/authorization is not executable: TIME_INELIGIBLE",
+      "kind": "trusted_post_lock_expiry_DC",
+      "observed_lock": [
+        170,
+        [
+          169
+        ],
+        "SELECT id FROM kineticloop.workout_sessions WHERE subject_id=$1 AND id=$2 FOR UPDATE"
+      ],
+      "operation": "CONTINUE",
+      "other_bounds": {
+        "lease_seconds": 600,
+        "manifest_policy": "2026-10-01 23:56:46.480138+00:00"
+      },
+      "source_end": "2026-10-01 22:56:54.480138+00:00",
+      "trusted_after": "2026-10-01 22:56:54.483329+00:00",
+      "trusted_before_wait": "2026-10-01 22:56:53.988941+00:00",
+      "zero_effects": true
+    },
+    {
+      "actual_guard": "exact T7 prescription/authorization is not executable: TIME_INELIGIBLE",
+      "kind": "trusted_post_lock_expiry_DC",
+      "observed_lock": [
+        172,
+        [
+          170
+        ],
+        "SELECT id FROM kineticloop.workout_sessions WHERE subject_id=$1 AND id=$2 FOR UPDATE"
+      ],
+      "operation": "RESUME",
+      "other_bounds": {
+        "lease_seconds": 600,
+        "manifest_policy": "2026-10-01 23:56:58.888693+00:00"
+      },
+      "source_end": "2026-10-01 22:57:06.888693+00:00",
+      "trusted_after": "2026-10-01 22:57:06.903387+00:00",
+      "trusted_before_wait": "2026-10-01 22:57:06.393324+00:00",
+      "zero_effects": true
+    }
+  ],
+  "no_database_lifecycle_or_connections": true
+}

@@ -1,0 +1,63 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-027",
+  "reviewed_head_sha": "1df15275291ee99b98bd063e856d45c83ccc6f81",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "id": "KL027-GENERAL-B01",
+      "classification": "BLOCKER",
+      "priority": 1,
+      "title": "Timestamp the actual blocked waiter before expiry",
+      "file": "tests/db/test_test_only_demo.py",
+      "line": 2074,
+      "description": "test_trusted_post_lock_expiry observes trusted before_wait before opening the blocker connection and spawning the worker, but observe_blocked returns pid/blockers/query without a trusted database observation timestamp. No assertion establishes that this actually observed blocked state occurred before admission_end. Worker scheduling or connection delay can cross expiry before blocking and still satisfy all current assertions. The cases therefore demonstrate rejection after expiry and a blocked query, but do not establish the required expiry crossing during the bounded observed lock wait.",
+      "requested_change": "Capture trusted database clock_timestamp with the actual blocked waiter observation and assert that timestamp is strictly before the exact source expiry while the blocker remains held. Then observe trusted time after expiry, release the blocker and retain exact post-lock rejection/zero-effect assertions. Rerun all twelve packet checks and obtain fresh SHA-bound reviews after the tests-only repair/result refresh.",
+      "evidence_refs": [
+        "tests/db/test_test_only_demo.py:1052",
+        "tests/db/test_test_only_demo.py:2074",
+        "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_suite_e2e.log",
+        "docs/exec-plans/reviews/KL-027/general-raw/oracle-assessment.md"
+      ]
+    },
+    {
+      "id": "KL027-GENERAL-N01",
+      "classification": "NONBLOCKING",
+      "priority": 3,
+      "title": "Inherited DEMAND_FEATURE proposal audit attribute names N",
+      "file": "src/kineticloop/persistence/transactions.py",
+      "line": 4070,
+      "description": "Independent inspection of the committed full-suite witness confirms the certificate's DEMAND_FEATURE dependency names exact D identity/revision but copies N from validation.ref_s34_id into proposal_id, while physical D.ref_s34_id names F. Exact guarded D-to-F, N-to-F/D, per-action source-bound resolution and shared full validation reconstruction remain enforced; this descriptive attribute is not an authorization guard input. This tests-only change preserves the already declared KL077 follow-up and does not create a new bypass or weaken a gate.",
+      "requested_change": "Retain the separately scoped upstream audit metadata correction and regression assertion; do not rewrite historical immutable certificates or expand this tests-only task.",
+      "evidence_refs": [
+        "docs/exec-plans/reviews/KL-027/general-raw/oracle-assessment.md",
+        "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_suite_e2e.log",
+        "src/kineticloop/persistence/transactions.py:3940",
+        "src/kineticloop/persistence/transactions.py:4070",
+        "src/kineticloop/persistence/deterministic_planning.py:751"
+      ]
+    },
+    {
+      "id": "KL027-GENERAL-F01",
+      "classification": "REQUIRED_FOLLOWUP",
+      "priority": 2,
+      "title": "Final hosted and selected-task gates remain merge conditions",
+      "description": "Beyond the blocking lock-wait temporal oracle repair, unchanged hosted quality/PostgreSQL jobs and the applicable selected-task merge gate must pass on the final relevant head before ordinary merge. This read-only review does not assert those external final-head facts, specialist review PASS, MERGED, product requirements, M3, G-SHADOW or release closure.",
+      "requested_change": "Persist only the permitted linear task-scoped REVIEW_RECORD_ONLY suffix after all three fresh reviews; verify actual final relevant-head hosted quality/PostgreSQL and selected-task merge gate success before ordinary merge. Any substantive change requires fresh exact checks and reviews.",
+      "evidence_refs": [
+        "docs/exec-plans/active/KL-027.md",
+        "docs/exec-plans/completed/KL-027_RESULT.yaml",
+        "docs/harness/MERGE_GATE.md",
+        "docs/harness/THREAD_REVIEW_CONTRACT.md"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/KL-027/general-raw/audit.py",
+    "docs/exec-plans/reviews/KL-027/general-raw/audit.json",
+    "docs/exec-plans/reviews/KL-027/general-raw/unit-review.log",
+    "docs/exec-plans/reviews/KL-027/general-raw/oracle-assessment.md",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/checks.json"
+  ],
+  "review_contract_version": "v0.2"
+}
