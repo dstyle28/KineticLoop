@@ -808,6 +808,10 @@ def task_fixture_scope_errors(root, base, head, task_id, changed):
                 errors.extend(readiness_content_errors(
                     path, git(root, 'show', base + ':' + path),
                     git(root, 'show', head + ':' + path)))
+        if READINESS_WORKFLOW_PATH in changed:
+            errors.extend(readiness_workflow_errors(
+                git(root, 'ls-tree', '--name-only', base, '--', READINESS_WORKFLOW_PATH),
+                git(root, 'show', head + ':' + READINESS_WORKFLOW_PATH)))
         return errors
     if task_id == 'KL-019':
         errors = []
@@ -3398,14 +3402,17 @@ READINESS_TASK_DEFINITION = {'id': 'KL-074',
  'deliverables': ['explicit bounded container loopback TCP lifecycle readiness',
                   'aligned Compose and post-reset readiness probes',
                   'deterministic init-stop-final positive and negative regression tests',
-                  'isolated migrated coldstart provenance and cleanup evidence'],
+                  'isolated migrated coldstart provenance and cleanup evidence',
+                  'additive exact-head hosted workflow and durable raw artifact evidence'],
  'definition_of_done': 'Only startup readiness changes: temporary socket-only initialization '
-                       'cannot authorize reset SQL; bounded explicit container TCP readiness '
-                       'gates reset, Compose and post-reset probes align, SQL failures propagate '
-                       'without replay, and deterministic regressions plus three isolated '
-                       'migrated cold starts prove actual image ordering, ownership and cleanup. '
-                       'Full repository and normal hosted CI/gates pass without product, '
-                       'migration, authentication or frozen semantic changes.',
+                       'cannot authorize reset SQL; bounded explicit container TCP readiness gates '
+                       'reset, Compose and post-reset probes align, SQL failures propagate without '
+                       'replay, and deterministic regressions plus three isolated migrated cold '
+                       'starts prove actual image ordering, ownership and cleanup. Full repository '
+                       'and normal hosted CI/gates pass without product, migration, authentication '
+                       'or frozen semantic changes. The additive exact-head hosted entrypoint '
+                       'executes both exact commands, preserves raw failure/success artifacts and '
+                       'provenance, and leaves all existing CI/gates unchanged.',
  'entry_conditions': ['merged KL-002 result and integration: '
                       'docs/exec-plans/completed/KL-002_RESULT.yaml and '
                       'docs/exec-plans/integrations/KL-002.json',
@@ -3415,7 +3422,9 @@ READINESS_TASK_DEFINITION = {'id': 'KL-074',
                       'exclusive postgres_lifecycle resource and exact write paths available; no '
                       'overlap with active KL019 transaction resources',
                       'dedicated hosted VM for full legacy DB suites; unique task-owned isolated '
-                      'coldstart namespaces'],
+                      'coldstart namespaces',
+                      'same-repository codex/kl074- PR branch for the additive exact-head hosted '
+                      'workflow; no arbitrary inputs or shared/remote Docker'],
  'status': 'NOT_STARTED',
  'evidence_refs': [],
  'thread_id': 'THREAD-KL-074',
@@ -3429,7 +3438,11 @@ READINESS_TASK_DEFINITION = {'id': 'KL-074',
                    'tests/db/test_lifecycle.py',
                    'tests/db/test_migrations.py',
                    'docs/exec-plans/evidence/HG-037/READINESS_EVIDENCE.md',
-                   'tools/harness/validate_harness.py'],
+                   'tools/harness/validate_harness.py',
+                   '.github/workflows/ci.yml',
+                   '.github/workflows/db.yml',
+                   'docs/exec-plans/evidence/HG-037/HOSTED_EXECUTION_PREFLIGHT.md',
+                   'docs/exec-plans/evidence/HG-037/kl074-readiness.workflow.proposal.yml'],
  'max_context_policy': 'READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND',
  'merge_unit': 'ONE_PR',
  'handoff_artifact': 'docs/exec-plans/completed/KL-074_RESULT.yaml',
@@ -3445,14 +3458,16 @@ READINESS_TASK_DEFINITION = {'id': 'KL-074',
                                    'isolated_migrated_coldstart',
                                    'lifecycle_regressions',
                                    'full_repository_regressions',
-                                   'quality_and_harness'],
+                                   'quality_and_harness',
+                                   'hosted_entrypoint_and_evidence'],
  'resource_keys': ['postgres_lifecycle'],
  'write_paths': ['src/kineticloop/db/lifecycle.py',
                  'compose.yaml',
                  'tests/db/test_lifecycle.py',
                  'tests/db/test_startup_readiness.py',
-                 'tools/db/verify_startup_readiness.py'],
- 'review_requirements': ['GENERAL', 'DB_CONCURRENCY'],
+                 'tools/db/verify_startup_readiness.py',
+                 '.github/workflows/kl074-readiness.yml'],
+ 'review_requirements': ['GENERAL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'],
  'conditional_depends_on': [],
  'environment_requirements': ['ISOLATED_POSTGRESQL_NAMESPACE',
                               'TASK_OWNED_COMPOSE_NAMESPACE',
@@ -3460,16 +3475,15 @@ READINESS_TASK_DEFINITION = {'id': 'KL-074',
  'packet_refinement': 'ENFORCEABLE',
  'required_test_layers_semantics': 'COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS',
  'check_contracts': [{'check_id': 'temporary_socket_ready_not_final_ready',
-                      'command': 'uv run pytest -q tests/db/test_lifecycle.py -k '
-                                 'temporary_socket',
-                      'pass_oracle': 'A deterministic runner/clock reproduces the old '
-                                     'socket-ready init-stop race against protected-base '
-                                     'lifecycle code. Against repaired code, temporary '
-                                     'initialization accepts socket pg_isready but rejects '
-                                     'explicit 127.0.0.1:5432 TCP; zero psql/SQL occurs until '
-                                     'final TCP readiness. Same scenario fails old code and '
-                                     'passes repaired code; no sleeps or nondeterministic '
-                                     'scheduler assumptions establish this oracle.'},
+                      'command': 'uv run pytest -q tests/db/test_lifecycle.py -k temporary_socket',
+                      'pass_oracle': 'A deterministic runner/clock reproduces the old socket-ready '
+                                     'init-stop race against protected-base lifecycle code. '
+                                     'Against repaired code, temporary initialization accepts '
+                                     'socket pg_isready but rejects explicit 127.0.0.1:5432 TCP; '
+                                     'zero psql/SQL occurs until final TCP readiness. Same '
+                                     'scenario fails old code and passes repaired code; no sleeps '
+                                     'or nondeterministic scheduler assumptions establish this '
+                                     'oracle.'},
                      {'check_id': 'permanent_tcp_unready_bounded',
                       'command': 'uv run pytest -q tests/db/test_lifecycle.py -k permanent_tcp',
                       'pass_oracle': 'Socket remains ready while TCP never becomes ready. '
@@ -3483,63 +3497,62 @@ READINESS_TASK_DEFINITION = {'id': 'KL-074',
                       'pass_oracle': 'Multiple TCP failures followed by final TCP success permit '
                                      'exactly one DROP and one CREATE for the task-owned derived '
                                      'database only; post-reset readiness also explicitly uses '
-                                     'container loopback TCP port 5432. Default, foreign, '
-                                     'invalid or ambient-overridden targets cannot replace the '
-                                     'owned namespace; socket psql behavior remains unchanged.'},
+                                     'container loopback TCP port 5432. Default, foreign, invalid '
+                                     'or ambient-overridden targets cannot replace the owned '
+                                     'namespace; socket psql behavior remains unchanged.'},
                      {'check_id': 'sql_failure_no_replay',
                       'command': 'uv run pytest -q tests/db/test_lifecycle.py -k sql_failure',
-                      'pass_oracle': 'After final TCP readiness, injected DROP and CREATE '
-                                     'failures independently propagate with original redacted '
-                                     'actionable diagnostics. Neither destructive statement is '
-                                     'replayed; CREATE is never attempted after failed DROP. No '
-                                     'destructive SQL retry, reset restart, or success '
-                                     'fabrication.'},
+                      'pass_oracle': 'After final TCP readiness, injected DROP and CREATE failures '
+                                     'independently propagate with original redacted actionable '
+                                     'diagnostics. Neither destructive statement is replayed; '
+                                     'CREATE is never attempted after failed DROP. No destructive '
+                                     'SQL retry, reset restart, or success fabrication.'},
                      {'check_id': 'compose_and_lifecycle_tcp_alignment',
                       'command': 'uv run pytest -q tests/db/test_startup_readiness.py',
                       'pass_oracle': 'Structural checks inspect actual Compose healthcheck and '
                                      'both actual lifecycle probes: each explicitly targets '
-                                     '127.0.0.1 port 5432 inside postgres, not published host '
-                                     'port or socket. Tests reject a socket-healthcheck '
-                                     'regression. SQL stays on the existing '
-                                     'socket/authentication path. Namespace, secret redaction, '
-                                     'ports, volume, image, normal startup and migrations stay '
-                                     'unchanged.'},
+                                     '127.0.0.1 port 5432 inside postgres, not published host port '
+                                     'or socket. Tests reject a socket-healthcheck regression. SQL '
+                                     'stays on the existing socket/authentication path. Namespace, '
+                                     'secret redaction, ports, volume, image, normal startup and '
+                                     'migrations stay unchanged.'},
                      {'check_id': 'isolated_migrated_coldstart',
-                      'command': 'uv run python tools/db/verify_startup_readiness.py '
-                                 '--iterations 3 --startup-timeout 60 --total-timeout 300',
-                      'pass_oracle': 'Three bounded cold starts use three fresh resolved '
-                                     'temporary worktree roots with exact Compose '
+                      'command': 'uv run python tools/db/verify_startup_readiness.py --iterations '
+                                 '3 --startup-timeout 60 --total-timeout 300',
+                      'pass_oracle': 'Three bounded cold starts use three fresh resolved temporary '
+                                     'worktree roots with exact Compose '
                                      'kineticloop-kl074-cold-<shortsha>-<digest> and database '
                                      'kineticloop_kl074_cold_<shortsha>_<digest> names; shortsha '
                                      'is tested_commit first7 lowercase hex and digest is SHA256 '
                                      'of os.fsencode(resolved root) first12 lowercase hex; '
                                      'validate exact names before first reset, verify no '
                                      'preexisting owned resources/volume, and fail closed on '
-                                     'malformed/mismatched/default/foreign target. Inspect '
-                                     'actual configured image, resolved image ID/digest and '
-                                     'in-container entrypoint SHA256/source, '
-                                     'Docker/Compose/PostgreSQL versions, and timestamped '
-                                     'startup logs/probe events. Prove socket-only init start, '
-                                     'init stop, final TCP-ready start ordering for the actual '
-                                     'image, zero measured lifecycle SQL before final readiness, '
-                                     'then successful reset and existing two-phase migrated '
-                                     'bootstrap on the identical owned lifecycle. Verify '
-                                     'current_database and migrated revision, repeated reset '
-                                     'sentinel removal and namespace isolation. Each iteration '
-                                     'captures evidence before finally destroying only its exact '
-                                     'owned containers/network/volume and proving absence; '
-                                     'cleanup failure fails. Total wall time and subprocess '
-                                     'durations are bounded; no foreign/default DB reset or '
-                                     'destroy. If actual ordering/root cause cannot be '
+                                     'malformed/mismatched/default/foreign target. Inspect actual '
+                                     'configured image, resolved image ID/digest and in-container '
+                                     'entrypoint SHA256/source, Docker/Compose/PostgreSQL '
+                                     'versions, and timestamped startup logs/probe events. Prove '
+                                     'socket-only init start, init stop, final TCP-ready start '
+                                     'ordering for the actual image, zero measured lifecycle SQL '
+                                     'before final readiness, then successful reset and existing '
+                                     'two-phase migrated bootstrap on the identical owned '
+                                     'lifecycle. Verify current_database and migrated revision, '
+                                     'repeated reset sentinel removal and namespace isolation. '
+                                     'Each iteration captures evidence before finally destroying '
+                                     'only its exact owned containers/network/volume and proving '
+                                     'absence; cleanup failure fails. Total wall time and '
+                                     'subprocess durations are bounded; no foreign/default DB '
+                                     'reset or destroy. If actual ordering/root cause cannot be '
                                      'demonstrated, report FAIL/NOT_RUN with limitation, never '
-                                     'infer PASS from success alone.'},
+                                     'infer PASS from success alone. Execute through the ratified '
+                                     'exact-head hosted workflow; retain raw logs/provenance plus '
+                                     'downloaded artifacts bound to tested_commit before final '
+                                     'result/review.'},
                      {'check_id': 'lifecycle_regressions',
                       'command': 'uv run pytest -q tests/db/test_lifecycle.py '
                                  'tests/db/test_startup_readiness.py',
-                      'pass_oracle': 'All existing lifecycle assertions plus new '
-                                     'positive/negative startup checks pass without skips, '
-                                     'xfail, disabled tests or changed SQL/auth/namespace '
-                                     'semantics.'},
+                      'pass_oracle': 'All existing lifecycle assertions plus new positive/negative '
+                                     'startup checks pass without skips, xfail, disabled tests or '
+                                     'changed SQL/auth/namespace semantics.'},
                      {'check_id': 'full_repository_regressions',
                       'command': 'uv run pytest -q -p no:cacheprovider',
                       'pass_oracle': 'Entire repository suite passes with no suppressed '
@@ -3548,52 +3561,122 @@ READINESS_TASK_DEFINITION = {'id': 'KL-074',
                                      'existing DB suites; hosted VM isolates legacy prerequisite '
                                      'fixture namespaces. Do not run legacy full DB suites on '
                                      'shared developer Docker or borrow KL019/KL024/KL025 '
-                                     'resources. Preserve exact head-bound full-suite evidence.'},
+                                     'resources. Preserve exact head-bound full-suite evidence. '
+                                     'Execute through the ratified exact-head hosted workflow; '
+                                     'retain raw logs/provenance plus downloaded artifacts bound '
+                                     'to tested_commit before final result/review.'},
                      {'check_id': 'quality_and_harness',
-                      'command': 'uv run kl lint && uv run kl typecheck && uv run kl '
-                                 'test-harness && uv run kl check-harness',
+                      'command': 'uv run kl lint && uv run kl typecheck && uv run kl test-harness '
+                                 '&& uv run kl check-harness',
                       'pass_oracle': 'All four commands exit 0; check-harness prints '
                                      'HARNESS_CHECK_PASS. Every normal hosted CI and applicable '
                                      'merge gate also passes at the reviewed head; no workflow '
-                                     'weakening, retry concealment or fixed startup sleep.'}],
+                                     'weakening, retry concealment or fixed startup sleep.'},
+                     {'check_id': 'hosted_entrypoint_and_evidence',
+                      'command': 'uv run pytest -q tests/db/test_startup_readiness.py -k '
+                                 'hosted_entrypoint',
+                      'pass_oracle': 'Structural positive/negative tests prove the single new '
+                                     'workflow matches the ratified bytes/hash, explicit PR head '
+                                     'checkout, same-repository codex/kl074- entrypoint, locked '
+                                     'uv, fresh ubuntu-latest runner, local default Docker daemon '
+                                     'preflight, bounded pipefail commands and always-uploaded '
+                                     'task-only artifacts. Existing workflows and gates remain '
+                                     'byte-identical. Actual hosted '
+                                     'run/job/head/run-attempt/artifact identity and downloaded '
+                                     'raw coldstart/full-suite/provenance evidence must match '
+                                     'tested_commit; both exact commands and their oracles pass '
+                                     'without skips or continue-on-error. '
+                                     'Missing/skipped/incomplete/mismatched execution is '
+                                     'NOT_RUN/FAIL, never PASS. No new secrets, elevated token '
+                                     'permissions, remote/self-hosted daemon, arbitrary inputs or '
+                                     'command substitutions.'}],
  'evidence_paths': ['docs/exec-plans/evidence/KL-074/**'],
  'write_paths_status': 'ENFORCEABLE'}
+
 READINESS_PACKET_BOUNDARIES = {'Repair boundary': 'Use explicit container loopback TCP pg_isready --host 127.0.0.1 --port 5432 '
                     'for startup, Compose healthcheck and post-reset readiness. Retain the '
                     'existing monotonic startup deadline and normal startup handling; bound each '
                     'probe subprocess to remaining deadline so the timeout oracle is real. A '
-                    'readiness-loop backoff is allowed within that bound; no unconditional '
-                    'startup sleep. Keep psql socket usage, credentials, image, ports, volumes '
-                    'and namespaces unchanged. No destructive SQL retry, fixed sleeps, unbounded '
+                    'readiness-loop backoff is allowed within that bound; no unconditional startup '
+                    'sleep. Keep psql socket usage, credentials, image, ports, volumes and '
+                    'namespaces unchanged. No destructive SQL retry, fixed sleeps, unbounded '
                     'waits, CI suppression, migrations, transaction/authorization semantics or '
                     'product/frozen changes.',
  'Isolation and evidence boundary': 'The dedicated probe validates exact Compose '
                                     'kineticloop-kl074-cold-<shortsha>-<digest> and database '
                                     'kineticloop_kl074_cold_<shortsha>_<digest> before any '
                                     'reset/bootstrap/cleanup: shortsha is tested_commit first7 '
-                                    'lowercase hex; digest is SHA256 of os.fsencode(resolved '
-                                    'root) first12 lowercase hex. Never accept caller-supplied '
-                                    'or ambient namespaces. Use three fresh task-owned temporary '
+                                    'lowercase hex; digest is SHA256 of os.fsencode(resolved root) '
+                                    'first12 lowercase hex. Never accept caller-supplied or '
+                                    'ambient namespaces. Use three fresh task-owned temporary '
                                     'roots, the unchanged checked-in Compose file, and the '
                                     'existing tests/db/test_migrations.py '
                                     'bootstrap_two_phase(lifecycle) on that same selected '
                                     'lifecycle. Reject preexisting resources and '
-                                    'foreign/default/ambient targets. Record image/digest, '
-                                    'actual entrypoint hash/source, timestamped logs and '
-                                    'probe/SQL ordering; redact credentials. Assert migrated '
-                                    'revision, exact current_database, reset sentinel removal, '
-                                    'cross-root separation and finally cleanup absence. Bound '
-                                    'iterations, total wall time and subprocesses. Failure or '
-                                    'unavailable exact root-cause evidence must be reported; '
-                                    'source inference is not deployed-image proof. Full legacy '
-                                    'DB suites run on a dedicated hosted VM, not shared Docker; '
-                                    'never overlap KL019 transaction resources.',
+                                    'foreign/default/ambient targets. Record image/digest, actual '
+                                    'entrypoint hash/source, timestamped logs and probe/SQL '
+                                    'ordering; redact credentials. Assert migrated revision, exact '
+                                    'current_database, reset sentinel removal, cross-root '
+                                    'separation and finally cleanup absence. Bound iterations, '
+                                    'total wall time and subprocesses. Failure or unavailable '
+                                    'exact root-cause evidence must be reported; source inference '
+                                    'is not deployed-image proof. Full legacy DB suites run on a '
+                                    'dedicated hosted VM, not shared Docker; never overlap KL019 '
+                                    'transaction resources.',
+ 'Hosted execution and evidence entrypoint': 'KL074 creates only '
+                                             '.github/workflows/kl074-readiness.yml with exact '
+                                             'bytes from '
+                                             'docs/exec-plans/evidence/HG-037/kl074-readiness.workflow.proposal.yml, '
+                                             'pinned by READINESS_WORKFLOW_SHA256 in '
+                                             'tools/harness/validate_harness.py; an existing '
+                                             'baseline file or byte drift fails closed. Open a '
+                                             'same-repository codex/kl074- PR; pull_request '
+                                             'opened/synchronize/reopened/ready_for_review runs '
+                                             'before merge, with no caller inputs. The single '
+                                             'ubuntu-latest job checks out '
+                                             'github.event.pull_request.head.sha, verifies git '
+                                             'HEAD, uses uv 0.12.17 and uv sync --locked, and '
+                                             'rejects non-GitHub-hosted Linux or any '
+                                             'DOCKER_HOST/DOCKER_CONTEXT override, nondefault '
+                                             'context or nonlocal socket endpoint. Execute the '
+                                             'exact three-iteration coldstart command and uv run '
+                                             'pytest -q -p no:cacheprovider with pipefail and '
+                                             'finite step/job deadlines. No secret access, token '
+                                             'permission expansion, self-hosted/remote daemon, '
+                                             'test suppression, continue-on-error or existing '
+                                             'workflow/gate edits.\n'
+                                             '\n'
+                                             'The probe must validate '
+                                             'KINETICLOOP_KL074_TESTED_COMMIT equals git HEAD and '
+                                             'KINETICLOOP_KL074_EVIDENCE_DIR resolves exactly to '
+                                             'docs/exec-plans/evidence/KL-074/hosted-<tested_commit> '
+                                             'under the checkout before writing. Write raw '
+                                             'timestamped container logs, actual image/entrypoint '
+                                             'provenance, ordered probes/SQL, migrated/reset '
+                                             'assertions and finally-cleanup evidence below that '
+                                             'directory. This environment sets evidence output '
+                                             'only, never namespaces. The always() upload '
+                                             'preserves this directory on success/failure; '
+                                             'incomplete upload or skipped steps cannot establish '
+                                             'PASS. Before artifact expiry, download raw files (or '
+                                             'byte-exact envelopes), record run/job URLs, '
+                                             'event/head SHA, run ID/attempt and artifact '
+                                             'ID/digest, and commit them under task evidence '
+                                             'before final result/review. Verify '
+                                             'hosted-provenance/logs and both exact command '
+                                             'oracles against tested_commit. Final reviewed-head '
+                                             'normal CI/gates also pass independently; a changed '
+                                             'implementation stales checks/reviews. Missing, '
+                                             'failed, skipped, mismatched or unavailable '
+                                             'actual-image evidence is NOT_RUN/FAIL. Governance '
+                                             'ratification is not execution evidence.',
  'Non-goals': 'Do not implement downstream protocol/product work, alter completed KL002 '
-              'definitions/results/evidence, edit CI workflows, migration/schema/auth/role '
-              'ownership, other fixtures or SQL command semantics. No production/live '
-              'credentials or data. No product requirement PASS, release closure or '
-              'auto-activation claim. Stop with SPEC_CHANGE_REQUIRED for any frozen '
-              'authorization, admission, lock, transaction, provider or shadow boundary change.',
+              'definitions/results/evidence, edit existing CI workflows or any workflow except the '
+              'single additive .github/workflows/kl074-readiness.yml, migration/schema/auth/role '
+              'ownership, other fixtures or SQL command semantics. No production/live credentials '
+              'or data. No product requirement PASS, release closure or auto-activation claim. '
+              'Stop with SPEC_CHANGE_REQUIRED for any frozen authorization, admission, lock, '
+              'transaction, provider or shadow boundary change.',
  'Exact lifecycle readiness candidate': 'KL074 may change lifecycle source only to '
                                         'readiness_lifecycle_candidate(before) in '
                                         'tools/harness/validate_harness.py, anchored to '
@@ -3603,16 +3686,14 @@ READINESS_PACKET_BOUNDARIES = {'Repair boundary': 'Use explicit container loopba
                                         'monotonic deadline into each startup probe subprocess, '
                                         'bounds readiness backoff by remaining time, adds only '
                                         'optional runner timeout plumbing and a non-replaying '
-                                        'sanitized TimeoutExpired error. It preserves every '
-                                        'other byte, including normal Compose startup, '
-                                        'namespace/credential ownership, socket psql, '
-                                        'DROP/CREATE order, redaction and cleanup. Unexpected '
-                                        'baseline or any extra startup command, '
-                                        'namespace/credential mutation, SQL runner bypass, '
-                                        'foreign endpoint or timeout drift fails closed. Compose '
-                                        'changes only the exact ratified loopback healthcheck '
-                                        'test.'}
-
+                                        'sanitized TimeoutExpired error. It preserves every other '
+                                        'byte, including normal Compose startup, '
+                                        'namespace/credential ownership, socket psql, DROP/CREATE '
+                                        'order, redaction and cleanup. Unexpected baseline or any '
+                                        'extra startup command, namespace/credential mutation, SQL '
+                                        'runner bypass, foreign endpoint or timeout drift fails '
+                                        'closed. Compose changes only the exact ratified loopback '
+                                        'healthcheck test.'}
 
 def readiness_definition_errors(task):
     if task.get('id') != 'KL-074':
@@ -3836,6 +3917,17 @@ def readiness_content_errors(path, before, after):
     except (ValueError, UnicodeError):
         return ['readiness-lifecycle-baseline-unexpected']
     return [] if after == expected else ['readiness-lifecycle-content-scope']
+
+
+READINESS_WORKFLOW_PATH = '.github/workflows/kl074-readiness.yml'
+READINESS_WORKFLOW_SHA256 = 'bbf7f77baa008a13660313c4af9b6ace506b41c22da7fee1737a4afd4870f6df'
+
+
+def readiness_workflow_errors(base_listing, after):
+    """Only the new, ratified exact-head hosted entrypoint is authorized."""
+    if base_listing.strip():
+        return ['readiness-workflow-baseline-exists']
+    return [] if hashlib.sha256(after).hexdigest() == READINESS_WORKFLOW_SHA256 else ['readiness-workflow-content-scope']
 
 
 if __name__ == '__main__':

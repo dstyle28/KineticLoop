@@ -37,7 +37,7 @@ assert t['status']=='NOT_STARTED' and t['requirements_covered']==[] and t['evide
 assert v.readiness_definition_errors(t)==[]
 assert v.packet_errors(t,(ROOT/'docs/exec-plans/active/KL-074.md').read_text())==[]
 assert v.traceability_projection(t)==json.loads((ROOT/v.TRACEABILITY).read_text())['tasks'][-1]
-assert len(t['check_contracts'])==9
+assert len(t['check_contracts'])==10
 for path in v.result_paths('KL-074')+['docs/exec-plans/integrations/KL-074.json','docs/exec-plans/reviews/KL-074','docs/exec-plans/evidence/KL-074']:
  assert not (ROOT/path).exists(), path
 for tid in t['depends_on']:
@@ -65,5 +65,5 @@ assert [m['conclusion'] for m in meta]==['failure','failure','success']
 for name,needle in [('attempt1-failed','234 passed, 10 errors'),('attempt2-failed','243 passed, 1 error'),('attempt3','244 passed')]:
  assert needle in json.loads((HERE/f'run36807167973-{name}.log.json').read_text())['content']
 print('PASS same-SHA failure234/10 failure243/1 success244, retrieved reference hashes; actual image causal proof NOT_VERIFIED')
-print('PASS governance only; nine prospective KL074 checks NOT_RUN; no product/release claims')
+print('PASS governance only; ten prospective KL074 checks NOT_RUN; no product/release claims')
 print('HG037_AUDIT_PASS')
