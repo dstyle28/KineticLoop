@@ -1,0 +1,110 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-024",
+  "tested_commit": "638396cc5d7c28d5152038d08390a2de11320064",
+  "checks": [
+    {
+      "check_id": "planning_normalization_and_admission_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_planning.py::test_normalized_single_flight_and_revision_decisions",
+      "pass_oracle": "Versioned deterministic server normalization distinguishes partition from semantic fingerprint; same scope/fingerprint/current basis joins; changed constraints revise; different purpose is policy-checked; terminal intent cannot reopen; new explicit request passes root admission policy; auto triggers never bypass policy or quota.",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-024/planning_normalization_and_admission_pu-638396c.log"
+    },
+    {
+      "check_id": "planning_fence_deadline_and_terminal_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_planning.py::test_fence_deadline_and_terminal_guards",
+      "pass_oracle": "Owner/token/request/attempt/status and trusted-time guard denies old or expired workers; takeover increases fence, renewal extends only live lease within original deadline; exact lease/deadline equality denies; frozen ADMITTED and terminal meanings are explicit with no generic FAILED substitution.",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-024/planning_fence_deadline_and_terminal_pu-638396c.log"
+    },
+    {
+      "check_id": "planning_active_partition_and_quota_dc",
+      "command": "uv run pytest -q tests/db/test_planning.py::test_active_partition_and_quota_are_atomic",
+      "pass_oracle": "Migrated PostgreSQL contains a partial unique active subject/local_date/purpose index faithful to ADMITTED/RUNNING including documented legacy PENDING compatibility if retained. Two real admitted contenders cannot create duplicate active roots; root/S30/initial S28/S29/receipt/event/outbox commit atomically or fully roll back. Joined/revised intent never consumes a new root quota.",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-024/planning_active_partition_and_quota_dc-638396c.log"
+    },
+    {
+      "check_id": "planning_join_revision_budget_preservation_dc",
+      "command": "uv run pytest -q tests/db/test_planning.py::test_join_and_revision_preserve_root_authority",
+      "pass_oracle": "Service-level same-basis join returns current intent/request/attempt without extra S28/S29 or quota debit; changed constraints append one immutable S28, make the old attempt STALE and switch pointers atomically. Root counters/limits/deadline persist, and old request/attempt fails current shared-write and existing T6 guards; replay returns original result and changed payload conflicts.",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-024/planning_join_revision_budget_preservation_dc-638396c.log"
+    },
+    {
+      "check_id": "planning_takeover_and_renew_interleavings_dc",
+      "command": "uv run pytest -q tests/db/test_planning.py::test_takeover_and_renew_fence_old_workers",
+      "pass_oracle": "Bounded PostgreSQL-observed competing acquire/takeover/renew transactions prove one CAS winner, strictly larger token and server-time expiry within deadline. Old owner/token, obsolete request/attempt, lease equality/expiry and terminal intent all lose shared-write/commit authority; a renewal waiter rereads post-lock state. No model/network wait inside coordination.",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-024/planning_takeover_and_renew_interleavings_dc-638396c.log"
+    },
+    {
+      "check_id": "planning_atomicity_and_ack_loss_dc",
+      "command": "uv run pytest -q tests/db/test_planning.py::test_atomicity_and_ack_loss_replay",
+      "pass_oracle": "Injected failures roll back intent/request/attempt/quota and S02/S03/S04 together; ACK-loss replay returns exact historical identities once without current worker authority. Same key with changed payload conflicts. Revision returning to earlier constraints creates a new revision and never revives historical authority.",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-024/planning_atomicity_and_ack_loss_dc-638396c.log"
+    },
+    {
+      "check_id": "planning_unit_suite_passes",
+      "command": "uv run pytest -q tests/unit/workflow/test_planning.py",
+      "pass_oracle": "Entire file exits 0 with no failed/skipped/deselected tests.",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-024/planning_unit_suite_passes-638396c.log"
+    },
+    {
+      "check_id": "planning_db_suite_passes",
+      "command": "uv run pytest -q tests/db/test_planning.py",
+      "pass_oracle": "Entire service-level migrated PostgreSQL file exits 0 with no failed/skipped/deselected tests.",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-024/planning_db_suite_passes-638396c.log"
+    },
+    {
+      "check_id": "migration_chain_regressions_pass",
+      "command": "uv run pytest -q tests/db/test_migrations.py",
+      "pass_oracle": "The existing migration/ownership/permission/Frozen-protection suite plus the exact additive successor assertions exits 0 with no failed/skipped/deselected tests; zero-to-head rebuild includes the new active index; historical migration bytes remain unchanged.",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-024/migration_chain_regressions_pass-638396c.log"
+    },
+    {
+      "check_id": "transaction_owner_regressions_pass",
+      "command": "KINETICLOOP_KL022_COMPOSE_PROJECT=\"kineticloop-kl024-reg-$(git rev-parse --short HEAD)\" KINETICLOOP_KL022_DATABASE=\"kineticloop_kl024_reg_$(git rev-parse --short HEAD)\" uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py",
+      "pass_oracle": "Existing owner, lock-order, fencing, replay, atomicity and authorization regression suites exit 0 with no failed/skipped/deselected tests in the explicitly task-unique regression DB/Compose namespace.",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-024/transaction_owner_regressions_pass-638396c.log"
+    },
+    {
+      "check_id": "lint_passes",
+      "command": "uv run kl lint",
+      "pass_oracle": "Exit 0.",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-024/lint_passes-638396c.log"
+    },
+    {
+      "check_id": "typecheck_passes",
+      "command": "uv run kl typecheck",
+      "pass_oracle": "Exit 0.",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-024/typecheck_passes-638396c.log"
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "command": "uv run kl check-harness",
+      "pass_oracle": "Exit 0 and HARNESS_CHECK_PASS.",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-024/harness_validation_passes-638396c.log"
+    }
+  ]
+}
