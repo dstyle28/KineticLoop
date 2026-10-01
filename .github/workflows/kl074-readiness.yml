@@ -1,0 +1,89 @@
+name: KL074 exact-head readiness evidence
+
+'on':
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - src/kineticloop/db/lifecycle.py
+      - compose.yaml
+      - tests/db/test_lifecycle.py
+      - tests/db/test_startup_readiness.py
+      - tools/db/verify_startup_readiness.py
+      - .github/workflows/kl074-readiness.yml
+      - docs/exec-plans/completed/KL-074_RESULT.yaml
+      - docs/exec-plans/evidence/KL-074/**
+      - docs/exec-plans/reviews/KL-074/**
+
+permissions:
+  contents: read
+
+jobs:
+  kl074-readiness:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.head_ref, 'codex/kl074-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+    env:
+      KINETICLOOP_KL074_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+      KINETICLOOP_KL074_EVIDENCE_DIR: docs/exec-plans/evidence/KL-074/hosted-${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.17"
+          enable-cache: true
+      - run: uv sync --locked
+      - name: Exact revision and dedicated local-daemon preflight
+        run: |
+          set -euo pipefail
+          [[ "$KINETICLOOP_KL074_TESTED_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$(git rev-parse HEAD)" == "$KINETICLOOP_KL074_TESTED_COMMIT" ]]
+          [[ "$RUNNER_ENVIRONMENT" == "github-hosted" && "$RUNNER_OS" == "Linux" ]]
+          [[ -z "${DOCKER_HOST:-}" && -z "${DOCKER_CONTEXT:-}" ]]
+          [[ "$(docker context show)" == "default" ]]
+          [[ "$(docker context inspect default --format '{{.Endpoints.docker.Host}}')" == "unix:///var/run/docker.sock" ]]
+          mkdir -p "$KINETICLOOP_KL074_EVIDENCE_DIR"
+          uv run python - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = Path(os.environ['KINETICLOOP_KL074_EVIDENCE_DIR'])
+          evidence.joinpath('hosted-provenance.json').write_text(json.dumps({
+              'tested_commit': os.environ['KINETICLOOP_KL074_TESTED_COMMIT'],
+              'run_id': os.environ['GITHUB_RUN_ID'],
+              'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'runner_environment': os.environ['RUNNER_ENVIRONMENT'],
+              'runner_os': os.environ['RUNNER_OS'],
+              'docker_context': 'default',
+              'docker_endpoint': 'unix:///var/run/docker.sock',
+              'coldstart_command': 'uv run python tools/db/verify_startup_readiness.py --iterations 3 --startup-timeout 60 --total-timeout 300',
+              'full_repository_command': 'uv run pytest -q -p no:cacheprovider',
+          }, indent=2) + '\n')
+          PY
+      - name: Bounded owned migrated coldstarts
+        timeout-minutes: 6
+        run: |
+          set -euo pipefail
+          printf 'tested_commit=%s\n' "$KINETICLOOP_KL074_TESTED_COMMIT" | tee "$KINETICLOOP_KL074_EVIDENCE_DIR/coldstart.log"
+          uv run python tools/db/verify_startup_readiness.py --iterations 3 --startup-timeout 60 --total-timeout 300 2>&1 | tee -a "$KINETICLOOP_KL074_EVIDENCE_DIR/coldstart.log"
+      - name: Exact complete repository regression
+        timeout-minutes: 12
+        run: |
+          set -euo pipefail
+          printf 'tested_commit=%s\n' "$KINETICLOOP_KL074_TESTED_COMMIT" | tee "$KINETICLOOP_KL074_EVIDENCE_DIR/full-repository.log"
+          uv run pytest -q -p no:cacheprovider 2>&1 | tee -a "$KINETICLOOP_KL074_EVIDENCE_DIR/full-repository.log"
+      - name: Preserve exact-head success and failure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kl074-readiness-${{ github.event.pull_request.head.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.KINETICLOOP_KL074_EVIDENCE_DIR }}
+          if-no-files-found: error
+          retention-days: 30
