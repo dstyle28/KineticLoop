@@ -1,0 +1,36 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-037",
+  "reviewed_head_sha": "78171e730daad732ea7fc55c5dfd90e40cdfd80d",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "classification": "BLOCKER",
+      "title": "Required future hosted workflow makes the mandatory full suite fail",
+      "path": "tests/harness/test_readiness_scope.py",
+      "line": 216,
+      "description": "The committed test_hosted_entrypoint_positive_revision_commands_and_transport unconditionally asserts that .github/workflows/kl074-readiness.yml does not exist. KL-074 must create exactly that file, then run uv run pytest -q -p no:cacheprovider with the full repository suite. That suite collects this harness test and necessarily fails once the required workflow exists. KL-074 cannot edit tests/harness/test_readiness_scope.py under its ratified six-path write scope. The additive hosted workflow therefore remains infeasible as a passing implementation contract despite correct PR-head checkout, local Docker preflight and artifact transport.",
+      "required_change": "Correct this governance-owned test before merge so both governance absence and the authorized future byte-identical workflow state are accepted, while a present workflow with drift is rejected. Add a meaningful simulated future-state positive regression, rerun selected governance checks, and obtain fresh SHA-bound independent reviews."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-037.yaml",
+    "docs/exec-plans/active/KL-074.md",
+    "tests/harness/test_readiness_scope.py",
+    "tools/harness/validate_harness.py",
+    "docs/exec-plans/evidence/HG-037/kl074-readiness.workflow.proposal.yml",
+    "docs/exec-plans/evidence/HG-037/HOSTED_EXECUTION_PREFLIGHT.md",
+    "docs/exec-plans/evidence/HG-037/readiness_scope_regressions-b82c41d.log",
+    "docs/exec-plans/evidence/HG-037/harness_tests-b82c41d.log",
+    "docs/exec-plans/evidence/HG-037/unit_tests-b82c41d.log",
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows"
+  ],
+  "review_contract_version": "v0.2",
+  "review_notes": [
+    "Fresh independent inspection used committed blobs at the exact reviewed SHA and protected base 822322dfcac69d1042c8f9f7517cecf4903f8163; no prior review conclusions were adopted.",
+    "Independently verified exact files_changed against protected-base diff, byte-equivalent preexisting task projections, and all eight selected evidence metadata/log SHA bindings to tested commit b82c41d982547d7f62db18c17385cbeb46b86945. Tested-to-reviewed changes are restricted to HG-037 evidence and governance record.",
+    "Independently reran readiness_scope_regressions (63 passed), lint (PASS), typecheck (PASS, 110 source files) and protected-base-to-reviewed diff whitespace check (PASS). Broader review reruns were stopped after the confirmed blocker at coordinator request; they are not claimed PASS. Initial unit rerun used relative PYTHONPATH and encountered a subdirectory import failure, an environment mismatch not classified as a code defect.",
+    "The proposed PR event and explicit head-SHA checkout provide a prospective pre-merge execution route, supported by official GitHub event documentation; existing CI files are outside the diff. The unconditional workflow-absence assertion defeats the mandated full-suite oracle on that route.",
+    "KL-074 remains NOT_STARTED with empty requirement/evidence projections and ten prospective NOT_RUN checks. Governance/test approval cannot claim actual image causality, hosted execution, task/product/release PASS or production activation."
+  ]
+}

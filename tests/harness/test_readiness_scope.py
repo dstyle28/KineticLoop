@@ -213,7 +213,7 @@ def test_hosted_entrypoint_positive_revision_commands_and_transport() -> None:
     assert '${{ github.event.pull_request.head.sha }}' in upload['with']['name']
     assert TASK['write_paths'][-1] == v.READINESS_WORKFLOW_PATH
     assert TASK['review_requirements'] == ['GENERAL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY']
-    assert not (ROOT / v.READINESS_WORKFLOW_PATH).exists()  # governance only
+    assert_optional_installed_workflow(ROOT)
 
 
 @pytest.mark.parametrize('old,new', [
@@ -258,3 +258,23 @@ def test_gate_reads_only_new_committed_hosted_workflow(monkeypatch: pytest.Monke
     calls.clear()
     assert v.task_fixture_scope_errors(ROOT, 'base', 'head', 'KL-074', set()) == []
     assert calls == []
+
+
+def assert_optional_installed_workflow(root: Path) -> None:
+    installed = root / v.READINESS_WORKFLOW_PATH
+    if installed.exists():
+        assert v.readiness_workflow_errors(b'', installed.read_bytes()) == []
+
+
+@pytest.mark.parametrize('installed', [False, True])
+def test_hosted_entrypoint_future_installation_and_drift(tmp_path: Path, installed: bool) -> None:
+    """Governance and future task full suites both accept only authorized contents."""
+    path = tmp_path / v.READINESS_WORKFLOW_PATH
+    if installed:
+        path.parent.mkdir(parents=True)
+        path.write_bytes(WORKFLOW)
+    assert_optional_installed_workflow(tmp_path)
+    if installed:
+        path.write_bytes(WORKFLOW.replace(b'contents: read', b'contents: write'))
+        with pytest.raises(AssertionError):
+            assert_optional_installed_workflow(tmp_path)
