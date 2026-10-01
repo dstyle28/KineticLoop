@@ -579,7 +579,7 @@ def packet_errors(task, text):
     checks = section(text, 'Checks required for this task PR')
     if checks is None or sorted(bullets(checks)) != sorted(task['checks_required_for_this_task']):
         errors.append('packet-checks:' + name)
-    if (name in M2_REFINED_TASK_IDS or (name in (WAVE_REFINED_TASK_IDS | {'KL-025'})
+    if (name in M2_REFINED_TASK_IDS or (name in (WAVE_REFINED_TASK_IDS | {'KL-019', 'KL-025'})
                                       and task.get('packet_refinement') == 'ENFORCEABLE')):
         read_first = section(text, 'Read first') or ''
         if bullets(read_first) != task.get('context_files', []):
@@ -676,6 +676,7 @@ def packet_errors(task, text):
         if ((section(text, 'Planning fixture namespace exception') or '').strip()
                 != LEDGER_PLANNING_FIXTURE_CONTRACT):
             errors.append('packet-ledger-planning-fixture-contract:' + name)
+    errors.extend(execution_packet_errors(task, text))
     return errors
 
 
@@ -798,6 +799,14 @@ def ledger_planning_fixture_content_errors(before: bytes, after: bytes) -> list[
 
 
 def task_fixture_scope_errors(root, base, head, task_id, changed):
+    if task_id == 'KL-019':
+        errors = []
+        for path in EXECUTION_FIXTURE_BASE_HASHES:
+            if path in changed:
+                errors.extend(execution_fixture_content_errors(
+                    path, git(root, 'show', base + ':' + path),
+                    git(root, 'show', head + ':' + path)))
+        return errors
     if task_id == 'KL-025' and LEDGER_PLANNING_FIXTURE_PATH in changed:
         return ledger_planning_fixture_content_errors(
             git(root, 'show', base + ':' + LEDGER_PLANNING_FIXTURE_PATH),
@@ -974,6 +983,411 @@ def ledger_definition_errors(task):
         for field, value in expected.items()
         if task.get(field) != value
     ]
+
+
+EXECUTION_TASK_DEFINITION = {'task_identity': 'harness-backlog-v0.2/KL-019',
+ 'status': 'NOT_STARTED',
+ 'depends_on': ['KL-017', 'KL-020', 'KL-021', 'KL-022', 'KL-023', 'KL-024', 'KL-025'],
+ 'conditional_depends_on': [],
+ 'commands': ['PublishManifest', 'CommitBundle', 'StartSession'],
+ 'context_files': ['CURRENT_DOCUMENT_INDEX.json',
+                   'docs/exec-plans/active/KL-019.md',
+                   'docs/exec-plans/completed/KL-015_RESULT.yaml',
+                   'docs/exec-plans/completed/KL-017_RESULT.yaml',
+                   'docs/exec-plans/completed/KL-020_RESULT.yaml',
+                   'docs/exec-plans/completed/KL-021_RESULT.yaml',
+                   'docs/exec-plans/completed/KL-022_RESULT.yaml',
+                   'docs/exec-plans/completed/KL-023_RESULT.yaml',
+                   'docs/exec-plans/completed/KL-024_RESULT.yaml',
+                   'docs/exec-plans/completed/KL-025_RESULT.yaml',
+                   'docs/contracts/repository_transactions.md',
+                   'docs/contracts/planning_intents.md',
+                   'docs/contracts/call_ledger.md',
+                   '05_KineticLoop_Protocol_v1.2_FROZEN.md',
+                   '04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md'],
+ 'entry_conditions': ['M2 migration/contracts merged; G-SHADOW and G-REGISTRY closed by exact '
+                      'accepted evidence',
+                      'All hard prerequisites have actual merged PASS results and required fresh '
+                      'reviews; actual merged KL025 API and fixtures reread before scheduling',
+                      'Trusted upstream snapshot/COMMIT_READY and '
+                      'proposal/demand/resolution/validation bootstrap boundary is documented as '
+                      'synthetic input, never owner-driven planning progress',
+                      'Every selected local fixture including nested bootstrap/seed/reset/destroy '
+                      'calls is inventoried and its namespace adaptation is mechanically bounded '
+                      'before any real reset'],
+ 'invariant_ids': ['INV-07', 'INV-08', 'INV-09', 'INV-10'],
+ 'transaction_boundaries': ['T3', 'T6', 'T7'],
+ 'table_ids': ['S01',
+               'S02',
+               'S03',
+               'S04',
+               'S05',
+               'S06',
+               'S15',
+               'S18',
+               'S21',
+               'S22',
+               'S23',
+               'S24',
+               'S25',
+               'S26',
+               'S27',
+               'S28',
+               'S29',
+               'S34',
+               'S35',
+               'S36',
+               'S37',
+               'S38',
+               'S39',
+               'S40',
+               'S41',
+               'S42',
+               'S43',
+               'S44',
+               'S45',
+               'S49',
+               'S50',
+               'S51'],
+ 'requirements_covered': ['I01', 'I02', 'I04', 'I07', 'A03@DC'],
+ 'checks_required_for_this_task': ['execution_identity_and_wire_pu',
+                                   'execution_fixture_namespace_isolation_pu',
+                                   'publish_ready_build_dc',
+                                   'commit_test_only_bundle_dc',
+                                   'start_new_session_dc',
+                                   'execution_stale_commit_basis_dc',
+                                   'execution_current_start_denial_dc',
+                                   'execution_ack_loss_replay_dc',
+                                   'execution_atomic_rollback_dc',
+                                   'execution_first_use_contention_dc',
+                                   'execution_unit_suite_passes',
+                                   'execution_db_suite_passes',
+                                   'transaction_owner_regressions_pass',
+                                   'planning_prerequisite_regressions_pass',
+                                   'ledger_prerequisite_regressions_pass',
+                                   'full_unit_regressions_pass',
+                                   'full_harness_regressions_pass',
+                                   'lint_passes',
+                                   'typecheck_passes',
+                                   'harness_validation_passes'],
+ 'check_contracts': [{'check_id': 'execution_identity_and_wire_pu',
+                      'command': 'uv run pytest -q '
+                                 'tests/unit/protocol/test_execution.py::test_identity_and_wire_scope',
+                      'pass_oracle': 'Trusted identity is bound separately from request data. '
+                                     'Publication service request has no authorization_scope and '
+                                     'accepts only an authenticated registered TEST subject. '
+                                     'Existing PublishManifest wire and TEST_ONLY-at-T6/T7 rule '
+                                     'remain unchanged. Strict T6/T7 commands match authenticated '
+                                     'identity plus registered subject/policy/environment; '
+                                     'EVALUATION, production, shadow, cross-subject, actor '
+                                     'mismatch, changed policy/environment and arbitrary extra '
+                                     'authority fields deny. No owner connection or mutation '
+                                     'callback is caller supplied.'},
+                     {'check_id': 'execution_fixture_namespace_isolation_pu',
+                      'command': 'uv run pytest -q '
+                                 'tests/unit/protocol/test_execution.py::test_all_fixture_namespaces_fail_before_reset',
+                      'pass_oracle': 'Exercise the owned launch/constructor proof for all four '
+                                     'selected fixtures: new protocol execution, unchanged '
+                                     'transaction interfaces, planning and call ledger. Derive '
+                                     'lowercase 7-12 hex tested SHA plus the exact 12-hex digest '
+                                     'of the resolved worktree, with distinct exec/tx/plan/ledger '
+                                     'prefixes; different worktrees at the same SHA differ. Before '
+                                     'launching the unchanged transaction fixture, the owned '
+                                     'launcher must validate its two existing '
+                                     'KINETICLOOP_KL022_COMPOSE_PROJECT/DATABASE values equal the '
+                                     'exact KL019 tx derivation and reject malformed SHA/digest or '
+                                     'mismatched targets before pytest/reset/bootstrap/teardown. '
+                                     'Prove the actual unchanged fixture consumes those values for '
+                                     'bootstrap/reset and cleanup. New execution/planning/ledger '
+                                     'constructors reject invalid selectors/SHA before lifecycle '
+                                     'work; preserve unset and exact KL-025 planning behavior. '
+                                     'Instrumented runner proof establishes '
+                                     'fail-before-launch/reset and selected cleanup; no lifecycle '
+                                     'monkeypatch substitutes for a real regression, and no global '
+                                     'override rejection or transaction fixture edit is required.'},
+                     {'check_id': 'publish_ready_build_dc',
+                      'command': 'uv run pytest -q '
+                                 'tests/db/test_protocol_execution.py::test_publish_ready_build',
+                      'pass_oracle': 'Start with a coherent READY S23 and S21/S22 basis but no '
+                                     'S24/S25/current Manifest. Call the typed publication service '
+                                     'through the existing T3 owner: exactly one immutable S24 at '
+                                     'next S01 generation, complete exact S25 role/basis set, '
+                                     'exact artifact roots/closure/registry revision, S23 '
+                                     'PUBLISHED, S01 current pointer and one S02/S03/S04 all '
+                                     'commit together. No direct SQL publication or generation '
+                                     'update substitutes for the call.'},
+                     {'check_id': 'commit_test_only_bundle_dc',
+                      'command': 'uv run pytest -q '
+                                 'tests/db/test_protocol_execution.py::test_commit_test_only_bundle',
+                      'pass_oracle': 'Publish through the service first, then use merged KL024 '
+                                     'admission/acquire services and explicit trusted upstream '
+                                     'bootstrap only. With no daily head, bundle, prescription, '
+                                     'issuance or successful intent seeded, strict TEST_ONLY '
+                                     'CommitBundle uses existing T6: one coherent '
+                                     'S38/S39/S40/S41/S42, exact S27 FOUND_VALID_PLAN/result and '
+                                     'S29 COMMITTED plus S02/S03/S04. P/A content and all '
+                                     'request/attempt/manifest/epoch/fence references match. S42 '
+                                     'server validity end equals the exact minimum of every '
+                                     'required finite bound; complete transitive artifact and '
+                                     'approved TIMELESS closure/certificate/digest are persisted. '
+                                     'Caller can request shortening only. First head parent is '
+                                     'null, revision is one and calendar comes from bound trusted '
+                                     'policy.'},
+                     {'check_id': 'start_new_session_dc',
+                      'command': 'uv run pytest -q '
+                                 'tests/db/test_protocol_execution.py::test_start_new_session',
+                      'pass_oracle': 'Use exact newly committed P/A and no seeded S44/S45. Typed '
+                                     'StartSession enters existing T7, rechecks current '
+                                     'eligibility, creates one APP_STARTED S44 at IN_PROGRESS '
+                                     'revision one, appends one START S45 with exact '
+                                     'P/A/hash/scope, server accepted_at and same receipt, and '
+                                     'persists correct same-command S01 execution basis event and '
+                                     'S02/S03/S04. Changed-key repeated START cannot create a '
+                                     'second binding or event. No READY/PLANNED or already-started '
+                                     'session seed substitutes for first-session creation.'},
+                     {'check_id': 'execution_stale_commit_basis_dc',
+                      'command': 'uv run pytest -q '
+                                 'tests/db/test_protocol_execution.py::test_stale_commit_basis_denies',
+                      'pass_oracle': 'Independently vary stale epoch, noncurrent '
+                                     'Manifest/generation, obsolete request/attempt, owner/fence, '
+                                     'lease/deadline equality, changed execution basis and '
+                                     'mismatched validation/proposal/demand/resolution/closure. '
+                                     'Each fresh-key service commit denies with zero new '
+                                     'S38-S43/intent-success/head-switch/receipt/event/outbox '
+                                     'effects; preserve prior rows byte-for-byte. Guards use '
+                                     'locked current state and trusted post-lock time, never '
+                                     'payload-only or cached status. Negative upstream '
+                                     'perturbations are declared fixture inputs, never proof of an '
+                                     'owner-driven upstream transition.'},
+                     {'check_id': 'execution_current_start_denial_dc',
+                      'command': 'uv run pytest -q '
+                                 'tests/db/test_protocol_execution.py::test_current_start_denial',
+                      'pass_oracle': 'After real issuance, independent wrong '
+                                     'actor/subject/policy/environment, P/A/hash/scope/bundle '
+                                     'membership, epoch, active hold/stop, revoked root or '
+                                     'transitive artifact, '
+                                     'missing/undefined/future-effective/expired dependency and '
+                                     'valid_until equality all deny fresh START without '
+                                     'S44/S45/S01/S02/S03/S04 effects. Use existing '
+                                     'control/registry owner calls when available; explicitly '
+                                     'label absent upstream-owner perturbations. Recheck after '
+                                     'read-only eligibility to prove it is no bearer permission; '
+                                     'deny EVALUATION, production and shadow execution.'},
+                     {'check_id': 'execution_ack_loss_replay_dc',
+                      'command': 'uv run pytest -q '
+                                 'tests/db/test_protocol_execution.py::test_ack_loss_replay_is_historical',
+                      'pass_oracle': 'Lose the response after actual committed publish, commit and '
+                                     'START; same-key identical retries return exact historical '
+                                     'identities and no duplicate '
+                                     'generation/bundle/issuance/head-success/session/binding/events/outbox. '
+                                     'Changed payload conflicts. Natural publication build and '
+                                     'START session uniqueness survive changed-key retries. After '
+                                     'authority loss/expiry/revocation, same-key START replay '
+                                     'remains available with replayed=true and executable=false, '
+                                     'conveys no new execution authorization, and never re-mutates '
+                                     'current state; historical commit/publication observations do '
+                                     'not bypass fresh START guards.'},
+                     {'check_id': 'execution_atomic_rollback_dc',
+                      'command': 'uv run pytest -q '
+                                 'tests/db/test_protocol_execution.py::test_failures_roll_back_each_boundary',
+                      'pass_oracle': 'Inject failure within each existing owner at every '
+                                     'write/bookkeeping boundary: T3 S24/S25/S23/S01; T6 first S38 '
+                                     'and S39/S40/S41/S42/closure/S27/S29/S01; T7 first '
+                                     'S44/S45/S01; each S02/S03/S04/receipt completion. Compare '
+                                     'persisted counts, exact prior pointers/statuses and rows to '
+                                     'precommand baseline. All effects including first-use '
+                                     'coordination rows roll back; retry after rollback succeeds '
+                                     'once. No injected success or mocked PostgreSQL substitute.'},
+                     {'check_id': 'execution_first_use_contention_dc',
+                      'command': 'uv run pytest -q '
+                                 'tests/db/test_protocol_execution.py::test_first_use_contention',
+                      'pass_oracle': 'Bounded barriers and PostgreSQL-observed locks run competing '
+                                     'first-day commits and first-session START commands, '
+                                     'including same-key retry. S51 shared precedes S01 and frozen '
+                                     'remaining lock stages; S01 serializes absent S38/S44 keys, '
+                                     'natural uniqueness and current-request/session eligibility '
+                                     'leave one coherent winning outcome and no partial rows. '
+                                     'Missing-row support is exclusive to CommitBundle S38 and '
+                                     'StartSession S44; wrong owner, subject/day/session/calendar, '
+                                     'lifecycle, extra column and arbitrary unrelated insert deny. '
+                                     'Existing owner matrix, reverse lock and direct-write '
+                                     'negative controls remain effective.'},
+                     {'check_id': 'execution_unit_suite_passes',
+                      'command': 'uv run pytest -q tests/unit/protocol/test_execution.py',
+                      'pass_oracle': 'Entire deterministic domain/identity/namespace file passes '
+                                     'without failures or skips; namespace negative proof makes no '
+                                     'Docker/database call.'},
+                     {'check_id': 'execution_db_suite_passes',
+                      'command': 'uv run pytest -q tests/db/test_protocol_execution.py',
+                      'pass_oracle': 'Entire real migrated PostgreSQL execution service file '
+                                     'passes without failures/skips/deselection in the unique '
+                                     'KL019 exec namespace. The fixture audits absence of target '
+                                     'publish/commit/START outputs before owner calls and '
+                                     'separates explicit upstream bootstrap from asserted owner '
+                                     'outputs.'},
+                     {'check_id': 'transaction_owner_regressions_pass',
+                      'command': 'KINETICLOOP_KL022_COMPOSE_PROJECT="kineticloop-kl019-tx-$(git '
+                                 "rev-parse --short HEAD)-$(uv run python -c 'import hashlib,os; "
+                                 'from pathlib import Path; '
+                                 'print(hashlib.sha256(os.fsencode(Path.cwd().resolve())).hexdigest()[:12])\')" '
+                                 'KINETICLOOP_KL022_DATABASE="kineticloop_kl019_tx_$(git rev-parse '
+                                 "--short HEAD)_$(uv run python -c 'import hashlib,os; from "
+                                 'pathlib import Path; '
+                                 'print(hashlib.sha256(os.fsencode(Path.cwd().resolve())).hexdigest()[:12])\')" '
+                                 'uv run python tests/unit/protocol/test_execution.py '
+                                 '--run-transaction-owner-regressions',
+                      'pass_oracle': 'The owned launcher validates actual tested SHA/worktree '
+                                     'digest and both supplied existing namespace overrides '
+                                     'against the exact KL019 tx derivation before launching only '
+                                     'uv run pytest -q tests/db/test_transaction_interfaces.py '
+                                     'tests/unit/persistence/test_transactions.py. Prove the '
+                                     'actual byte-unchanged transaction fixture consumes both '
+                                     'overrides for reset/bootstrap and cleanup. All merged '
+                                     'transaction/authorization/registry-consumer owner '
+                                     'regressions pass without failures/skips/deselection in that '
+                                     'namespace. No fixture mutation, new transaction selector, '
+                                     'global rejection of legacy arbitrary overrides, '
+                                     'foreign/default namespace execution or altered semantic '
+                                     'assertion is permitted.'},
+                     {'check_id': 'planning_prerequisite_regressions_pass',
+                      'command': 'KINETICLOOP_KL024_FIXTURE_OWNER=KL-019 uv run pytest -q '
+                                 'tests/unit/workflow/test_planning.py tests/db/test_planning.py',
+                      'pass_oracle': 'Actual merged KL024 domain/service suites pass without '
+                                     'failures/skips/deselection in derived KL019 plan namespace; '
+                                     'all seeds, calls, guards, oracles and cleanup remain '
+                                     'unchanged except exact namespace selection.'},
+                     {'check_id': 'ledger_prerequisite_regressions_pass',
+                      'command': 'KINETICLOOP_KL025_FIXTURE_OWNER=KL-019 uv run pytest -q '
+                                 'tests/unit/workflow/test_call_ledger.py '
+                                 'tests/db/test_call_ledger.py',
+                      'pass_oracle': 'Actual merged KL025 domain/service suites pass without '
+                                     'failures/skips/deselection in derived KL019 ledger '
+                                     'namespace. Existing planning namespace isolation probe '
+                                     'retains its original selector expectations. Preserve all '
+                                     'ledger accounting, dispatch/non-sendable replay/UNKNOWN and '
+                                     'root-budget assertions; no call ledger product '
+                                     'implementation change.'},
+                     {'check_id': 'full_unit_regressions_pass',
+                      'command': 'uv run kl test-unit',
+                      'pass_oracle': 'All unit tests pass.'},
+                     {'check_id': 'full_harness_regressions_pass',
+                      'command': 'uv run kl test-harness',
+                      'pass_oracle': 'All harness positive and negative controls pass.'},
+                     {'check_id': 'lint_passes',
+                      'command': 'uv run kl lint',
+                      'pass_oracle': 'Exit 0.'},
+                     {'check_id': 'typecheck_passes',
+                      'command': 'uv run kl typecheck',
+                      'pass_oracle': 'Exit 0.'},
+                     {'check_id': 'harness_validation_passes',
+                      'command': 'uv run kl check-harness',
+                      'pass_oracle': 'Exit 0 and HARNESS_CHECK_PASS.'}],
+ 'evidence_paths': ['docs/exec-plans/evidence/KL-019/**'],
+ 'resource_keys': ['authorization_core',
+                   'registry_coordination',
+                   'transaction_interfaces',
+                   'user_coordination'],
+ 'write_paths': ['src/kineticloop/persistence/protocol_execution.py',
+                 'src/kineticloop/protocol/execution.py',
+                 'src/kineticloop/persistence/transactions.py',
+                 'tests/unit/protocol/test_execution.py',
+                 'tests/db/test_protocol_execution.py',
+                 'docs/contracts/protocol_execution.md',
+                 'tests/db/test_planning.py',
+                 'tests/db/test_call_ledger.py'],
+ 'write_paths_status': 'ENFORCEABLE',
+ 'review_requirements': ['DB_CONCURRENCY', 'GENERAL', 'PROTOCOL'],
+ 'packet_refinement': 'ENFORCEABLE',
+ 'shared_hotspot': True,
+ 'parallel_write_policy': 'SERIALIZE_WITH_OTHER_HOTSPOT_TASKS',
+ 'environment_requirements': ['ISOLATED_POSTGRESQL_NAMESPACE'],
+ 'deliverables': ['typed TEST-subject publish/commit/start service adapters over existing T3/T6/T7 '
+                  'owners',
+                  'owner-scoped first-use S38/S44 creation and real PostgreSQL atomicity, replay, '
+                  'denial and contention evidence',
+                  'exact local fixture inventory and byte-bound prerequisite namespace '
+                  'adaptations'],
+ 'definition_of_done': 'an authenticated isolated TEST subject publishes a READY build through T3, '
+                       'commits a coherent first-day TEST_ONLY bundle/issuance and intent success '
+                       'through T6, and starts a new session using the exact newly issued P/A '
+                       'through T7; existing owners, registry/evaluator and frozen lock/atomic '
+                       'boundaries remain authoritative; only explicit upstream inputs are '
+                       'bootstrapped, no tested output is seeded; strict '
+                       'identity/policy/environment denials, stale-basis and current-execution '
+                       'guards, finite server-computed validity, historical non-executable replay, '
+                       'first-use contention and complete rollback pass with isolated real '
+                       'PostgreSQL; no production activation, broader workflow or product '
+                       'requirement PASS is claimed'}
+EXECUTION_PACKET_SECTION_HASHES = {'Identity and service contract': '51fb847fb52426f5be6d0a330ec2431716dac72562d250b052359b45698a34f5', 'Existing owner reuse and bounded missing capabilities': 'c0bb590081116db74c4ff425cab87e44ea4024c444482ad6d59a060d3e7ec6a6', 'Trusted upstream bootstrap boundary': '99b84be94cb1802b0531a5eea82e9bfc73e08c42636766cd1fb50111672253ca', 'Local and hosted lifecycle boundary': 'b3f068112d3465f5e9286e5ea2c627cbca10848611445ec6dbea0d2a148a9938', 'Non-goals': 'ac82892e3bae992f0ba1b93539c6143f47b1d63d4bd9331aac6ef56aeb7dec1d'}
+EXECUTION_FIXTURE_CONTRACT = 'KL-019 may change only the exact namespace imports, helper and fixture assignment generated by execution_fixture_candidate in tools/harness/validate_harness.py for tests/db/test_planning.py and tests/db/test_call_ledger.py, anchored to their actual merged KL025 complete-byte hashes. Planning adds exact KL-019 to the existing KINETICLOOP_KL024_FIXTURE_OWNER helper, retaining unset KL024 and exact KL025 behavior. Ledger adds KINETICLOOP_KL025_FIXTURE_OWNER with unset KL025 behavior and exact KL-019 derivation. Invalid/empty/whitespace selectors or malformed short SHA fail before reset/bootstrap/teardown. Both use the exact resolved-worktree digest and bounded KL019 plan/ledger prefixes. Preserve every other byte: semantic seeds, policies, test assertions/callbacks, provisioning, cleanup, planning-selector proof and ledger accounting/non-sendable replay/UNKNOWN/dispatch guards. The transaction fixture remains byte-identical and uses its two existing namespace overrides through the owned validated launcher. No transaction selector, generic fixture repair, skip, arbitrary target or tests/db wildcard is authorized.'
+EXECUTION_FIXTURE_BASE_HASHES = {'tests/db/test_planning.py': 'b7b185e069d94f0e67826de02ec630259881add0fa8f5366823d830f95917636', 'tests/db/test_call_ledger.py': 'd3c09d2125844b1ed7e7bc138be41b43a02c0a95efd54d2bfc3012751fe615e2'}
+EXECUTION_LEDGER_NAMESPACE_HELPER = 'def _ledger_namespace(short: str) -> DatabaseNamespace:\n    if re.fullmatch(r"[0-9a-f]{7,12}", short) is None:\n        raise ValueError("invalid ledger fixture commit suffix")\n    owner = os.environ.get("KINETICLOOP_KL025_FIXTURE_OWNER")\n    if owner is None:\n        return DatabaseNamespace(f"kineticloop-kl025-{short}", f"kineticloop_kl025_{short}")\n    if owner != "KL-019":\n        raise ValueError("unsupported ledger fixture owner")\n    suffix = DatabaseNamespace.for_worktree(ROOT).project_name[-12:]\n    return DatabaseNamespace(\n        f"kineticloop-kl019-ledger-{short}-{suffix}",\n        f"kineticloop_kl019_ledger_{short}_{suffix}",\n    )\n\n\n'
+
+
+def execution_definition_errors(task):
+    """Pin the minimal KL019 slice without redefining its historical legacy packet."""
+    if task.get('id') != 'KL-019' or (
+            task.get('packet_refinement') != 'ENFORCEABLE' and 'check_contracts' not in task):
+        return []
+    return ['execution-definition-drift:' + field
+            for field, expected in EXECUTION_TASK_DEFINITION.items()
+            if task.get(field) != expected]
+
+
+def execution_packet_errors(task, text):
+    if task.get('id') != 'KL-019' or (
+            task.get('packet_refinement') != 'ENFORCEABLE' and 'check_contracts' not in task):
+        return []
+    errors = []
+    for heading, expected in EXECUTION_PACKET_SECTION_HASHES.items():
+        actual = (section(text, heading) or '').strip()
+        if hashlib.sha256(actual.encode()).hexdigest() != expected:
+            errors.append('execution-packet-boundary:' + heading)
+    if (section(text, 'Fixture-only scope exceptions') or '').strip() != EXECUTION_FIXTURE_CONTRACT:
+        errors.append('packet-execution-fixture-contract:KL-019')
+    return errors
+
+
+def execution_fixture_candidate(path: str, before: bytes) -> bytes:
+    """Only the two literal namespace transformations of actual merged KL025 bytes."""
+    expected_hash = EXECUTION_FIXTURE_BASE_HASHES.get(path)
+    if expected_hash is None or hashlib.sha256(before).hexdigest() != expected_hash:
+        raise ValueError('unexpected execution fixture baseline')
+    text = before.decode()
+    if path == 'tests/db/test_planning.py':
+        old_guard = '    if owner != "KL-025":\n'
+        new_guard = '    if owner not in {"KL-025", "KL-019"}:\n'
+        anchor = '    suffix = DatabaseNamespace.for_worktree(ROOT).project_name[-12:]\n'
+        branch = (
+            '    if owner == "KL-019":\n'
+            '        return DatabaseNamespace(\n'
+            '            f"kineticloop-kl019-plan-{short}-{suffix}",\n'
+            '            f"kineticloop_kl019_plan_{short}_{suffix}",\n'
+            '        )\n'
+        )
+        if text.count(old_guard) != 1 or text.count(anchor) != 1:
+            raise ValueError('unexpected planning helper baseline')
+        return text.replace(old_guard, new_guard, 1).replace(anchor, anchor + branch, 1).encode()
+    fixture = '@pytest.fixture()\ndef database_urls()'
+    old_assignment = (
+        '    lifecycle.namespace = DatabaseNamespace(\n'
+        '        f"kineticloop-kl025-{short}", f"kineticloop_kl025_{short}"\n'
+        '    )'
+    )
+    if (text.count('import re\n') != 1 or text.count(fixture) != 1
+            or text.count(old_assignment) != 1 or 'import os\n' in text):
+        raise ValueError('unexpected ledger helper baseline')
+    return text.replace('import re\n', 'import os\nimport re\n', 1).replace(
+        fixture, EXECUTION_LEDGER_NAMESPACE_HELPER + fixture, 1).replace(
+        old_assignment, '    lifecycle.namespace = _ledger_namespace(short)', 1).encode()
+
+
+def execution_fixture_content_errors(path: str, before: bytes, after: bytes) -> list[str]:
+    try:
+        expected = execution_fixture_candidate(path, before)
+    except (ValueError, UnicodeError):
+        return ['execution-fixture-baseline-unexpected:KL-019:' + path]
+    return [] if after == expected else ['execution-fixture-content-scope:KL-019:' + path]
 
 
 def git(root, *args):
@@ -2153,6 +2567,8 @@ def task_definition_errors(
             errors.extend(wave_definition_errors(task))
         if not revision or task.get('packet_refinement') == 'ENFORCEABLE':
             errors.extend(ledger_definition_errors(task))
+        if not revision or task.get('packet_refinement') == 'ENFORCEABLE':
+            errors.extend(execution_definition_errors(task))
         for dep in task['depends_on']:
             if dep not in tasks:
                 errors.append('unknown-dep:' + name + '->' + dep)

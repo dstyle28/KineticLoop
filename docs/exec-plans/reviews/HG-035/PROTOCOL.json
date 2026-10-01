@@ -1,0 +1,90 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-035",
+  "reviewed_head_sha": "361478d64fac1c807ae93c530d8d2cd55ea8e32a",
+  "review_type": "PROTOCOL",
+  "status": "PASS",
+  "findings": [],
+  "review_contract_version": "v0.2",
+  "base_commit": "eab2b305351cf3c504f74ac74868edc58d0a3430",
+  "tested_commit": "d0920d90b63f817d4b4000494873da4559e8a13b",
+  "review_notes": [
+    "Fresh independent protocol review resolved authority through CURRENT_DOCUMENT_INDEX, read AGENTS, KL019 packet, governance/review/merge contracts, pr-merge-reviewer and protocol-guardian skills, relevant frozen Protocol 2.1/2.1a, 4.4, 5.3/5.3a, 5.4/5.5, 6.2/6.3/6.5 and 8, and DB S23-S29/S34-S45, owner table, fixed lock order, T3/T6/T7 and validity closure. Inspected refined definition, packet, traceability, validator, negative controls, preparation records, evidence producer and selected raw logs directly rather than adopting author conclusions.",
+    "Publication preserves the strict PublishManifest/SubjectCommand wire and its TEST_ONLY-at-T6/T7 rule. The future typed publication request has no authorization_scope and binds separately authenticated registered TEST ingress, following the actual BuilderIdentity/PlanningIdentity service boundary. Strict CommitBundle/StartSession requests must match authenticated identity, subject, policy, environment, database principal and persisted basis. Caller role/flag/scope cannot authenticate itself; production, EVALUATION and shadow execution deny. No fake production actor, public mutation callback, connection, cursor, SQL or owner object is authorized.",
+    "Verified actual merged owner composition: PublishManifest is DecisionPublicationService/T3; CommitBundle is the sole T6CommitCoordinator for PrescriptionCommitService plus AuthorizationService; StartSession is ExecutionService/T7. Current lock_daily_head and lock_execution require existing rows. The packet's bounded first-use S38/S44 additions preserve the frozen S38 CommitBundle and S44 StartSession owners and Protocol 5.5 creation semantics. Exact missing keys are coordinated at their frozen lock stage after S51/S01, serialized through S01 and natural uniqueness, with trusted calendar or APP_STARTED lifecycle and complete same-transaction effects. No generic insert owner, widened mutation column/predicate, arbitrary unrelated row, changed Reauthorize/RESUME/CONTINUE/external execution semantics, or replacement registry/authorization evaluator is allowed. Frozen-incompatible implementation must emit SPEC_CHANGE_REQUIRED.",
+    "T3 must consume a coherent READY candidate and create immutable S24/S25 plus exact S23/S01 and S02-S04 atomically. T6 must recheck the current intent/request/attempt/owner/fence/lease/deadline, Manifest/generation/epoch, exposure, policy, proposal/demand/resolution/validation and complete finite validity closure before coherent S38-S42, S27 FOUND_VALID_PLAN, S29 COMMITTED and S01/S02-S04. T7 consumes exact newly issued P/A, rechecks current eligibility, and creates exact S44/S45 and same-command execution-basis bookkeeping. Client expiry may only shorten; historical replay is observable and non-executable, never another current permission. These requirements preserve INV-07 through INV-10 and existing registry-to-user lock and transaction boundaries.",
+    "Verified absence of AdvanceAttempt and RecordSnapshot in the actual owner matrix and COMMIT_READY in the T6 basis guard. The packet explicitly permits only trusted upstream S26/current-S29 context and coherent synthetic S34-S37 input after real publication plus merged planning admission/acquisition, outside target transactions and before effect measurements. It does not claim command-owned snapshot, workflow advancement, evidence resolution, validation engine or model execution. It forbids seeding S24/S25, S39-S42, successful S27/COMMITTED S29, S45 or started execution as target-output substitutes; first-use positives seed neither S38 nor S44. Historical prerequisite synthetic seeds remain separate regression evidence.",
+    "Exactly twenty future check IDs, commands and oracles agree across packet/backlog/traceability/validator. Oracles require current-basis and identity denials, exact server minimum validity, ACK-loss/natural uniqueness, complete rollback including first-use rows, and real PostgreSQL-observed contention. Required real checks cannot be replaced by instrumented namespace probes, mocks, skipped cases or sleep order. The two prospective fixture transformations are byte-bound to actual merged KL025 planning/ledger files; all semantic test functions and the transaction fixture remain unchanged. The selected candidate evidence reports 75 prerequisite regressions and 71 scope tests with owned cleanup and is explicitly feasibility evidence only.",
+    "Read actual merged prerequisite PASS results and required review identities for KL015/KL017/KL020-KL025 and verified reviewed-result byte identity and ancestor reachability. Inspected KL024/KL025 integration records and normal two-parent merges, including actual KL025 protected base eab2b30, and verified all prerequisite integration merges are ancestors of that base. Selected HG035 evidence binds all nine commands to tested d0920d9, full SHA headers, zero exit and committed bytes. Base-to-tested-to-reviewed ancestry holds; tested-to-reviewed is one linear governance/new-evidence-only commit, with no implementation/packet/definition/integration changes.",
+    "Verified the exact 72-file declaration and byte preservation of production source, migrations, existing DB/unit tests, contracts, hosted CI, frozen Protocol/DB/baseline, requirement sets, acceptance/evidence manifests and completed prerequisites. Only unstarted KL019 is refined; unrelated task definitions and traceability remain unchanged. Provider data remains evidence rather than command authority, planned values cannot fill actual execution, and production activation and real-data shadow boundaries are unchanged. HG035 governance PASS, KL019 task PASS, product obligation PASS, review PASS and MERGED remain separate; I01/I02/I04/I07 and A03@DC remain NOT_RUN. Preparation drafts and earlier diagnostic evidence are not current authority or selected PASS evidence."
+  ],
+  "independent_verification": [
+    {
+      "command": "PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 /private/tmp/kl017-venv/bin/python docs/exec-plans/evidence/HG-035/audit.py",
+      "result": "PASS",
+      "output": "HG035_AUDIT_PASS at reviewed 361478d; actual merged prerequisites, immutable source/frozen/requirement bytes, exact20, owner API and bounded gaps, two exact future fixtures and normal integration chains verified."
+    },
+    {
+      "command": "PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 /private/tmp/kl017-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_protocol_execution_scope.py tests/harness/test_call_ledger_scope.py tests/harness/test_planning_fixture_scope.py tests/harness/test_planning_subject_scope.py tests/harness/test_wave_scope.py",
+      "result": "PASS",
+      "output": "144 passed in 0.68s; deterministic scope tests only."
+    },
+    {
+      "command": "Independent read-only Git/Python committed record, selected metadata/raw-log, full inventory, frozen-byte, ancestor and governance_suffix_errors audit",
+      "result": "PASS",
+      "output": "Exact72 changed files, all9 matching commands/full tested SHA/zero exits/committed bytes, base-tested-reviewed ancestry, linear governance/new-evidence-only suffix, all prerequisite merge ancestry and unchanged frozen/requirement state verified."
+    }
+  ],
+  "limitations": [
+    "This PASS reviews the HG035 governance definition at the exact reviewed SHA. It supplies no KL019 implementation or first-use database evidence; all twenty future KL019 checks and mapped product obligations remain NOT_RUN until separately executed and accepted.",
+    "Selected migrated PostgreSQL candidate logs were inspected, not rerun. Reviewer made no DB/Docker/network lifecycle call, commit, or other-chat message, and wrote only this PROTOCOL review record.",
+    "Fresh GENERAL and DB_CONCURRENCY reviews, applicable hosted CI and merge gate remain separate requirements. Only the HG035 review-directory linear REVIEW_RECORD_ONLY suffix is allowed after this reviewed SHA."
+  ],
+  "evidence_refs": [
+    "AGENTS.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    ".agents/skills/pr-merge-reviewer/SKILL.md",
+    ".agents/skills/protocol-guardian/SKILL.md",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "12_KineticLoop_Integration_Spec_v0.1.md",
+    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/harness/MERGE_GATE.md",
+    "docs/exec-plans/governance/HG-035.yaml",
+    "docs/exec-plans/active/KL-019.md",
+    "docs/contracts/repository_transactions.md",
+    "docs/contracts/planning_intents.md",
+    "docs/contracts/call_ledger.md",
+    "src/kineticloop/contracts/commands.py",
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/persistence/planning.py",
+    "docs/exec-plans/completed/KL-015_RESULT.yaml",
+    "docs/exec-plans/completed/KL-017_RESULT.yaml",
+    "docs/exec-plans/completed/KL-020_RESULT.yaml",
+    "docs/exec-plans/completed/KL-021_RESULT.yaml",
+    "docs/exec-plans/completed/KL-022_RESULT.yaml",
+    "docs/exec-plans/completed/KL-023_RESULT.yaml",
+    "docs/exec-plans/completed/KL-024_RESULT.yaml",
+    "docs/exec-plans/completed/KL-025_RESULT.yaml",
+    "docs/exec-plans/integrations/KL-024.json",
+    "docs/exec-plans/integrations/KL-025.json",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_protocol_execution_scope.py",
+    "docs/exec-plans/evidence/HG-035/API_AND_FIXTURE_MAP.md",
+    "docs/exec-plans/evidence/HG-035/PREPARATION.md",
+    "docs/exec-plans/evidence/HG-035/audit.py",
+    "docs/exec-plans/evidence/HG-035/candidate_proof.py",
+    "docs/exec-plans/evidence/HG-035/namespace_probe.py",
+    "docs/exec-plans/evidence/HG-035/isolation_plugin.py",
+    "docs/exec-plans/evidence/HG-035/merged_scope_api_fixture_audit-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/execution_scope_regressions-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/candidate_isolation_and_regressions-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/harness_validation-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/harness_tests-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/unit_tests-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/lint-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/typecheck-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/diff_clean-d0920d9.log"
+  ]
+}

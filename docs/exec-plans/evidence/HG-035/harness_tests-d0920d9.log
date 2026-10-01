@@ -1,0 +1,26 @@
+base_commit=eab2b305351cf3c504f74ac74868edc58d0a3430
+tested_commit=d0920d90b63f817d4b4000494873da4559e8a13b
+command=/private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/davetian/.codex/worktrees/de7b/KineticLoop
+configfile: pyproject.toml
+collected 311 items
+
+tests/harness/acceptance/test_registry.py .....                          [  1%]
+tests/harness/document_index/test_current_document_index.py .......      [  3%]
+tests/harness/document_index/test_evidence_manifest.py .......           [  6%]
+tests/harness/document_index/test_historical_task_map.py ......          [  8%]
+tests/harness/test_call_ledger_scope.py .........................        [ 16%]
+tests/harness/test_planning_fixture_scope.py ............                [ 19%]
+tests/harness/test_planning_subject_scope.py ........................    [ 27%]
+tests/harness/test_protocol_execution_scope.py ......................... [ 35%]
+.....................                                                    [ 42%]
+tests/harness/test_validator.py ........................................ [ 55%]
+........................................................................ [ 78%]
+..............................                                           [ 88%]
+tests/harness/test_wave_scope.py .....................................   [100%]
+
+======================= 311 passed in 219.80s (0:03:39) ========================
+
+exit_code=0
