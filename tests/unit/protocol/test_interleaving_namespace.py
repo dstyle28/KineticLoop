@@ -479,13 +479,15 @@ def test_cancellation_identity() -> None:
     for boundary in ("T4", "T8"):
         with pytest.raises(ValidationError, match="TEST_ONLY is admitted only at T6/T7"):
             CancelIntent.model_validate_json(
-                json.dumps({
-                    **module.wire("CancelIntent"),
-                    "boundary": boundary,
-                    "intent_id": str(root),
-                    "expected_request_revision": 1,
-                    "expected_fence": 1,
-                })
+                json.dumps(
+                    {
+                        **module.wire("CancelIntent"),
+                        "boundary": boundary,
+                        "intent_id": str(root),
+                        "expected_request_revision": 1,
+                        "expected_fence": 1,
+                    }
+                )
             )
     # Public validator/registry bytes remain those of the actual merged authority.
     source = "src/kineticloop/contracts/commands.py"

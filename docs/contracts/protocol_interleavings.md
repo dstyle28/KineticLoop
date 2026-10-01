@@ -78,8 +78,8 @@ and updates only S27.status with the existing atomic receipt/event/outbox. An
 actual FOUND_VALID_PLAN returns original completed facts without cancellation
 bookkeeping. Root fields and reservation/accounting are otherwise unchanged.
 
-Both cancellation/dispatch orders run. Real stale/foreign denials leave every
-relation unchanged. Two real preflight misses are synchronized before either
+Both cancellation/dispatch orders run. Real stale/foreign denials and swapped links between two actually admitted
+roots/reservations leave every relation unchanged. Two real preflight misses are synchronized before either
 mutation; the winner commits one cancellation and the contender rechecks history
 under S01, with a PostgreSQL blocker witness and no duplicate bookkeeping. Same-key
 changed payload conflicts. The separate actual ledger cleanup releases only

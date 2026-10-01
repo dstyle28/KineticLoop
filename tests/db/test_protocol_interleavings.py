@@ -17,6 +17,7 @@ from uuid import UUID, uuid4
 
 import psycopg
 import pytest
+from psycopg.pq import TransactionStatus
 from psycopg.types.json import Jsonb
 from pydantic import BaseModel, ConfigDict, StringConstraints
 
@@ -795,6 +796,7 @@ def race(
             # Both idle-connection lookups actually miss before either mutation.
             # Delay only the loser after its real lookup, so it must use the fresh
             # S01 receipt recheck after the winning commit (ACK-loss window).
+            assert args[0].info.transaction_status is TransactionStatus.IDLE
             preflights.wait(8)
             if thread.name == "loser":
                 assert locked.wait(8), "same-key preflight winner deadline"
@@ -1551,6 +1553,79 @@ def test_cancel_vs_dispatch(urls: dict[str, str], monkeypatch: pytest.MonkeyPatc
         assert_bookkeeping(urls, "CancelIntent")
         assert_bookkeeping(urls, "ReserveCall")
         # No sender/provider is instantiated or called by this DC suite.
+
+    # Two existing roots and reservations prove cross-linkage rejection, beyond
+    # nonexistent-ID denials. Both roots come from actual admission/acquire owners.
+    commit, reserve, reservation, permit, cancellation = cancellation_case(urls)
+    with connect(urls["admin"]) as db:
+        with db.transaction():
+            now = db.execute("SELECT clock_timestamp()").fetchone()[0]
+        planning = PlanningWorkflowService(db, PlanningIdentity(IDENTITY.actor, SUBJECT))
+        other = planning.admit_or_revise(
+            AdmitOrReviseIntent(
+                SUBJECT,
+                "other-root",
+                now.date() + timedelta(days=1),
+                "TRAINING",
+                "test:UTC-v1",
+                {"minutes": 30},
+            )
+        )
+        other_root, other_attempt = UUID(other["intent_id"]), UUID(other["attempt_id"])
+        lease = planning.acquire_lease(
+            AcquireLease(
+                SUBJECT,
+                "other-lease",
+                other_root,
+                None,
+                0,
+                1,
+                other_attempt,
+                600,
+            )
+        )
+        other_reserved = ledger(db).reserve(
+            ReserveCall(
+                SUBJECT,
+                "other-reserve",
+                other_root,
+                other_attempt,
+                1,
+                lease["fence"],
+                "other-physical-request",
+                reserve.accounting,
+                reserve.bounds,
+            )
+        )
+    other_reservation = UUID(other_reserved["reservation_id"])
+    mismatched = (
+        cancel_request(
+            UUID(commit.intent_id), UUID(commit.attempt_id), other_reservation, "cross-root"
+        ),
+        cancel_request(other_root, other_attempt, reservation, "cross-root-reverse"),
+    )
+    before = snapshot(urls)
+    for request in mismatched:
+        bounded_denial(
+            urls, lambda db: cancel_intent(db, request), match="exact root/attempt/reservation"
+        )
+    assert_bookkeeping(urls, "CancelIntent", 0)
+    emit_raw(
+        "\nKL026_I03_CROSS_ROOT "
+        + json.dumps(
+            {
+                "requirement": "I03@DC",
+                "tested_commit": head_sha(),
+                "layer": "DC",
+                "existing_roots": [commit.intent_id, str(other_root)],
+                "existing_reservations": [str(reservation), str(other_reservation)],
+                "before_equals_after": snapshot(urls) == before,
+                "persisted": snapshot(urls),
+            },
+            default=str,
+        )
+        + "\n"
+    )
 
     # Two genuine preflight misses followed by one cancellation and an under-S01
     # successful historical receipt lookup. No fabricated replay or nested accessor.
