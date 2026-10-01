@@ -2,113 +2,135 @@ task_identity: harness-backlog-v0.2/KL-025
 display_task_id: KL-025
 task_definition_version: v0.2
 base_commit: d93131de0cd313199f3c787b56ff4b211f2905d7
-tested_commit: 337e932d42f4fa88da1858655f53d36dfff5c423
+tested_commit: c3966cc790e1e2aa187dfb70496e4f811404a9ee
 merge_commit: null
-task_status: BLOCKED
-task_checks_status: NOT_RUN
+task_status: PASS
+task_checks_status: PASS
 integration_status: UNMERGED
-summary: Prior local PASS at337e932 was independently reviewed at2200e13 as CHANGES_REQUIRED.
-  Same-scope repairs address per-reservation bound overrun denial, complete prepared
-  S31 bindings and migrated PostgreSQL natural identity concurrency evidence. All
-  exact packet checks must run on the new committed implementation before replacement
-  PASS and fresh reviews.
+summary: Implemented typed call reservation, non-sendable permit replay, bounded internal
+  cancellation, UNKNOWN occupation and reliable late settlement over the merged T5/T8
+  transaction owners and actual KL024 planning root. All sixteen exact local packet
+  checks and full local unit/harness regressions PASS on testedc3966cc. Full database
+  regression is required separately on unchanged GitHub-hosted ubuntu-latest CI; foreign
+  local namespaces are never used. No product/release/activation or merge PASS is
+  inferred.
 commands_run:
 - check_id: ledger_budget_dimensions_pu
   command: uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_root_budget_and_charge_bounds
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/review-repair-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_budget_dimensions_pu-c3966cc.log
 - check_id: ledger_state_and_replay_pu
   command: uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_state_machine_and_non_sendable_replay
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/review-repair-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_state_and_replay_pu-c3966cc.log
 - check_id: ledger_root_budget_atomic_dc
   command: uv run pytest -q tests/db/test_call_ledger.py::test_competing_reservations_share_root_budget
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/review-repair-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_root_budget_atomic_dc-c3966cc.log
 - check_id: ledger_cancel_dispatch_exclusion_dc
   command: uv run pytest -q tests/db/test_call_ledger.py::test_cancel_and_dispatch_have_one_winner
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/review-repair-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_cancel_dispatch_exclusion_dc-c3966cc.log
 - check_id: ledger_current_authority_dc
   command: uv run pytest -q tests/db/test_call_ledger.py::test_stale_attempt_fence_and_deadline_deny
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/review-repair-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_current_authority_dc-c3966cc.log
 - check_id: ledger_ack_loss_and_natural_identity_dc
   command: uv run pytest -q tests/db/test_call_ledger.py::test_ack_loss_and_payload_conflicts
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/review-repair-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_ack_loss_and_natural_identity_dc-c3966cc.log
 - check_id: ledger_unknown_and_late_settlement_dc
   command: uv run pytest -q tests/db/test_call_ledger.py::test_unknown_and_late_settlement_are_accounting_only
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/review-repair-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_unknown_and_late_settlement_dc-c3966cc.log
 - check_id: ledger_physical_dispatch_boundary_pu
   command: uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_dispatch_occurs_once_after_commit
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/review-repair-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_physical_dispatch_boundary_pu-c3966cc.log
 - check_id: ledger_unit_suite_passes
   command: uv run pytest -q tests/unit/workflow/test_call_ledger.py
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/review-repair-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_unit_suite_passes-c3966cc.log
 - check_id: ledger_db_suite_passes
   command: uv run pytest -q tests/db/test_call_ledger.py
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/review-repair-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/ledger_db_suite_passes-c3966cc.log
 - check_id: planning_fixture_namespace_isolation_pu
   command: uv run pytest -q tests/db/test_call_ledger.py::test_planning_fixture_namespace_isolation
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/review-repair-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/planning_fixture_namespace_isolation_pu-c3966cc.log
 - check_id: planning_prerequisite_regressions_pass
   command: KINETICLOOP_KL024_FIXTURE_OWNER=KL-025 uv run pytest -q tests/unit/workflow/test_planning.py
     tests/db/test_planning.py
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/review-repair-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/planning_prerequisite_regressions_pass-c3966cc.log
 - check_id: transaction_owner_regressions_pass
   command: KINETICLOOP_KL022_COMPOSE_PROJECT="kineticloop-kl025-reg-$(git rev-parse
     --short HEAD)" KINETICLOOP_KL022_DATABASE="kineticloop_kl025_reg_$(git rev-parse
     --short HEAD)" uv run pytest -q tests/db/test_transaction_interfaces.py tests/unit/persistence/test_transactions.py
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/review-repair-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/transaction_owner_regressions_pass-c3966cc.log
 - check_id: lint_passes
   command: uv run kl lint
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/review-repair-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/lint_passes-c3966cc.log
 - check_id: typecheck_passes
   command: uv run kl typecheck
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/review-repair-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/typecheck_passes-c3966cc.log
 - check_id: harness_validation_passes
   command: uv run kl check-harness
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/KL-025/review-repair-audit.json
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-025/harness_validation_passes-c3966cc.log
 requirements_covered: []
 files_changed:
 - docs/contracts/call_ledger.md
 - docs/exec-plans/completed/KL-025_RESULT.yaml
 - docs/exec-plans/evidence/KL-025/candidate-inventory-d93131d.json
 - docs/exec-plans/evidence/KL-025/checks-337e932.json
+- docs/exec-plans/evidence/KL-025/checks-c3966cc.json
 - docs/exec-plans/evidence/KL-025/entry-audit-d93131d.json
 - docs/exec-plans/evidence/KL-025/entry-audit.py
 - docs/exec-plans/evidence/KL-025/full_harness_regressions-337e932.log
+- docs/exec-plans/evidence/KL-025/full_harness_regressions-c3966cc.log
 - docs/exec-plans/evidence/KL-025/full_unit_regressions-337e932.log
+- docs/exec-plans/evidence/KL-025/full_unit_regressions-c3966cc.log
 - docs/exec-plans/evidence/KL-025/harness_validation_passes-337e932.log
+- docs/exec-plans/evidence/KL-025/harness_validation_passes-c3966cc.log
 - docs/exec-plans/evidence/KL-025/historical-blocked-result-41c292f.yaml
 - docs/exec-plans/evidence/KL-025/hosted-db-2200e13-failure.log
+- docs/exec-plans/evidence/KL-025/hosted-db-c3966cc-attempt1-failure.log
+- docs/exec-plans/evidence/KL-025/hosted-db-c3966cc-attempt1.json
 - docs/exec-plans/evidence/KL-025/ledger_ack_loss_and_natural_identity_dc-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_ack_loss_and_natural_identity_dc-c3966cc.log
 - docs/exec-plans/evidence/KL-025/ledger_budget_dimensions_pu-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_budget_dimensions_pu-c3966cc.log
 - docs/exec-plans/evidence/KL-025/ledger_cancel_dispatch_exclusion_dc-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_cancel_dispatch_exclusion_dc-c3966cc.log
 - docs/exec-plans/evidence/KL-025/ledger_current_authority_dc-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_current_authority_dc-c3966cc.log
 - docs/exec-plans/evidence/KL-025/ledger_db_suite_passes-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_db_suite_passes-c3966cc.log
 - docs/exec-plans/evidence/KL-025/ledger_physical_dispatch_boundary_pu-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_physical_dispatch_boundary_pu-c3966cc.log
 - docs/exec-plans/evidence/KL-025/ledger_root_budget_atomic_dc-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_root_budget_atomic_dc-c3966cc.log
 - docs/exec-plans/evidence/KL-025/ledger_state_and_replay_pu-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_state_and_replay_pu-c3966cc.log
 - docs/exec-plans/evidence/KL-025/ledger_unit_suite_passes-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_unit_suite_passes-c3966cc.log
 - docs/exec-plans/evidence/KL-025/ledger_unknown_and_late_settlement_dc-337e932.log
+- docs/exec-plans/evidence/KL-025/ledger_unknown_and_late_settlement_dc-c3966cc.log
 - docs/exec-plans/evidence/KL-025/lint_passes-337e932.log
+- docs/exec-plans/evidence/KL-025/lint_passes-c3966cc.log
 - docs/exec-plans/evidence/KL-025/message-rejection-d93131d.json
 - docs/exec-plans/evidence/KL-025/metadata-driver-note-337e932.json
 - docs/exec-plans/evidence/KL-025/namespaces-and-source-337e932.json
+- docs/exec-plans/evidence/KL-025/namespaces-and-source-c3966cc.json
 - docs/exec-plans/evidence/KL-025/planning_fixture_namespace_isolation_pu-337e932.log
+- docs/exec-plans/evidence/KL-025/planning_fixture_namespace_isolation_pu-c3966cc.log
 - docs/exec-plans/evidence/KL-025/planning_prerequisite_regressions_pass-337e932.log
+- docs/exec-plans/evidence/KL-025/planning_prerequisite_regressions_pass-c3966cc.log
 - docs/exec-plans/evidence/KL-025/result-before-review-repairs-2200e13.yaml
 - docs/exec-plans/evidence/KL-025/resume-scope-and-hosted-ci-audit.json
 - docs/exec-plans/evidence/KL-025/review-DB_CONCURRENCY-2200e13.json
@@ -118,7 +140,9 @@ files_changed:
 - docs/exec-plans/evidence/KL-025/run-checks-337e932.py
 - docs/exec-plans/evidence/KL-025/run-checks-review-repairs.py
 - docs/exec-plans/evidence/KL-025/transaction_owner_regressions_pass-337e932.log
+- docs/exec-plans/evidence/KL-025/transaction_owner_regressions_pass-c3966cc.log
 - docs/exec-plans/evidence/KL-025/typecheck_passes-337e932.log
+- docs/exec-plans/evidence/KL-025/typecheck_passes-c3966cc.log
 - docs/exec-plans/evidence/KL-025/unapplied-incomplete-candidate-d93131d.patch
 - docs/exec-plans/reviews/KL-025/DB_CONCURRENCY.json
 - docs/exec-plans/reviews/KL-025/GENERAL.json
@@ -179,4 +203,30 @@ follow_up_tasks:
   branch/worktree/resources only.
 - Downstream model loop/recovery and full release acceptance remain separate tasks;
   no downstream task is duplicated here.
+review_repair_resolution:
+  prior_reviewed_commit: 2200e1362c966633b98b69334052095a1c4d910f
+  historical_findings:
+  - docs/exec-plans/evidence/KL-025/review-GENERAL-2200e13.json
+  - docs/exec-plans/evidence/KL-025/review-PROTOCOL-2200e13.json
+  - docs/exec-plans/evidence/KL-025/review-DB_CONCURRENCY-2200e13.json
+  resolutions:
+  - Accounting-only call_bound_violation persists after actual above any enforced
+    reservation bound and denies new reservations below root limits; migrated PostgreSQL
+    proves atomic rollback and preservation through join/revision/takeover/replay.
+  - Prepared S31 guard binds exact intent, attempt, dispatch owner, fence and configuration;
+    independent malicious callbacks deny with complete rollback.
+  - Migrated PostgreSQL contenders on distinct outstanding reservations prove receipt_id
+    and provider_request_id reuse independently conflict after observed S01 blocking;
+    winner accounting/bookkeeping commits once and loser remains fully occupied.
 spec_change_request: null
+supplemental_checks:
+- check_id: full_unit_regressions
+  command: uv run kl test-unit
+  result: PASS
+  exit_code: 0
+  evidence_ref: docs/exec-plans/evidence/KL-025/full_unit_regressions-c3966cc.log
+- check_id: full_harness_regressions
+  command: uv run kl test-harness
+  result: PASS
+  exit_code: 0
+  evidence_ref: docs/exec-plans/evidence/KL-025/full_harness_regressions-c3966cc.log
