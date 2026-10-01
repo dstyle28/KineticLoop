@@ -1,7 +1,7 @@
 change_identity: harness-governance-v0.1/HG-040
 display_change_id: HG-040
-base_commit: 37de3219bc543e4fe4e554483e7e22262691f97a
-tested_commit: 20ed13ca99baf510ba29f648b6d6297b2f6391bf
+base_commit: 70dc4863ccdca95f7a44e79b68501a698262e323
+tested_commit: 35044fd3d94472b41b1bbe6c0313a2a7701c8063
 change_status: PASS
 summary: 'After actual HG039 normal merge, add complete NOT_STARTED KL078 to repair existing RecordProjection/BuildManifest
   preparation capabilities: immutable server-owned S21 revision provenance, exact actual same-subject
@@ -22,11 +22,15 @@ files_changed:
 - KineticLoop_Harness_Traceability_v0.3.json
 - docs/exec-plans/active/KL-076.md
 - docs/exec-plans/active/KL-078.md
+- docs/exec-plans/evidence/HG-040/BASE_REFRESH.md
 - docs/exec-plans/evidence/HG-040/COORDINATION_STATUS.md
 - docs/exec-plans/evidence/HG-040/HG039-normal-merge.json
 - docs/exec-plans/evidence/HG-040/HG039-status-preparation.json
 - docs/exec-plans/evidence/HG-040/KL-078.definition.draft.json
 - docs/exec-plans/evidence/HG-040/KL-078.packet.draft.md
+- docs/exec-plans/evidence/HG-040/KL026-final-head-runs.json
+- docs/exec-plans/evidence/HG-040/KL026-normal-merge.json
+- docs/exec-plans/evidence/HG-040/KL026-verified-base.json
 - docs/exec-plans/evidence/HG-040/KL075-normal-merge.json
 - docs/exec-plans/evidence/HG-040/KL076-original-BLOCKER.md
 - docs/exec-plans/evidence/HG-040/KL076-original-upstream-feasibility-d0470ba.json
@@ -38,23 +42,36 @@ files_changed:
 - docs/exec-plans/evidence/HG-040/candidate_gateway_diagnostic.py
 - docs/exec-plans/evidence/HG-040/candidate_gateway_feasibility-20ed13c.json
 - docs/exec-plans/evidence/HG-040/candidate_gateway_feasibility-20ed13c.log
+- docs/exec-plans/evidence/HG-040/candidate_gateway_feasibility-35044fd.json
+- docs/exec-plans/evidence/HG-040/candidate_gateway_feasibility-35044fd.log
 - docs/exec-plans/evidence/HG-040/diff_clean-20ed13c.json
 - docs/exec-plans/evidence/HG-040/diff_clean-20ed13c.log
+- docs/exec-plans/evidence/HG-040/diff_clean-35044fd.json
+- docs/exec-plans/evidence/HG-040/diff_clean-35044fd.log
 - docs/exec-plans/evidence/HG-040/draft.py
 - docs/exec-plans/evidence/HG-040/finalize.py
 - docs/exec-plans/evidence/HG-040/harness_tests-20ed13c.json
 - docs/exec-plans/evidence/HG-040/harness_tests-20ed13c.log
+- docs/exec-plans/evidence/HG-040/harness_tests-35044fd.json
+- docs/exec-plans/evidence/HG-040/harness_tests-35044fd.log
 - docs/exec-plans/evidence/HG-040/harness_validation-20ed13c.json
 - docs/exec-plans/evidence/HG-040/harness_validation-20ed13c.log
+- docs/exec-plans/evidence/HG-040/harness_validation-35044fd.json
+- docs/exec-plans/evidence/HG-040/harness_validation-35044fd.log
+- docs/exec-plans/evidence/HG-040/held-governance-base37de321.yaml
 - docs/exec-plans/evidence/HG-040/integrate.py
 - docs/exec-plans/evidence/HG-040/integration-provenance.json
 - docs/exec-plans/evidence/HG-040/lint-20ed13c.json
 - docs/exec-plans/evidence/HG-040/lint-20ed13c.log
+- docs/exec-plans/evidence/HG-040/lint-35044fd.json
+- docs/exec-plans/evidence/HG-040/lint-35044fd.log
 - docs/exec-plans/evidence/HG-040/original-gateway-d0470ba-rerun.log
 - docs/exec-plans/evidence/HG-040/original-gateway-d0470ba.log
 - docs/exec-plans/evidence/HG-040/original_gateway_probe.py
 - docs/exec-plans/evidence/HG-040/original_gateway_reproduction-20ed13c.json
 - docs/exec-plans/evidence/HG-040/original_gateway_reproduction-20ed13c.log
+- docs/exec-plans/evidence/HG-040/original_gateway_reproduction-35044fd.json
+- docs/exec-plans/evidence/HG-040/original_gateway_reproduction-35044fd.log
 - docs/exec-plans/evidence/HG-040/prerequisites-d0470ba.json
 - docs/exec-plans/evidence/HG-040/protected-base.txt
 - docs/exec-plans/evidence/HG-040/refresh_hashes.py
@@ -62,14 +79,22 @@ files_changed:
 - docs/exec-plans/evidence/HG-040/run_check.py
 - docs/exec-plans/evidence/HG-040/scope_audit-20ed13c.json
 - docs/exec-plans/evidence/HG-040/scope_audit-20ed13c.log
+- docs/exec-plans/evidence/HG-040/scope_audit-35044fd.json
+- docs/exec-plans/evidence/HG-040/scope_audit-35044fd.log
 - docs/exec-plans/evidence/HG-040/setup-failure.json
 - docs/exec-plans/evidence/HG-040/test_preparation_scope.draft.py
 - docs/exec-plans/evidence/HG-040/typecheck-20ed13c.json
 - docs/exec-plans/evidence/HG-040/typecheck-20ed13c.log
+- docs/exec-plans/evidence/HG-040/typecheck-35044fd.json
+- docs/exec-plans/evidence/HG-040/typecheck-35044fd.log
 - docs/exec-plans/evidence/HG-040/unit_tests-20ed13c.json
 - docs/exec-plans/evidence/HG-040/unit_tests-20ed13c.log
+- docs/exec-plans/evidence/HG-040/unit_tests-35044fd.json
+- docs/exec-plans/evidence/HG-040/unit_tests-35044fd.log
 - docs/exec-plans/evidence/HG-040/upstream_scope_regressions-20ed13c.json
 - docs/exec-plans/evidence/HG-040/upstream_scope_regressions-20ed13c.log
+- docs/exec-plans/evidence/HG-040/upstream_scope_regressions-35044fd.json
+- docs/exec-plans/evidence/HG-040/upstream_scope_regressions-35044fd.log
 - docs/exec-plans/evidence/HG-040/write_record.py
 - docs/exec-plans/governance/HG-040.yaml
 - tests/harness/test_preparation_scope.py
@@ -78,43 +103,43 @@ checks_run:
 - check_id: scope_audit
   command: /private/tmp/hg040-venv/bin/python /Users/davetian/.codex/worktrees/d804/KineticLoop/docs/exec-plans/evidence/HG-040/audit.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-040/scope_audit-20ed13c.log
+  evidence_ref: docs/exec-plans/evidence/HG-040/scope_audit-35044fd.log
 - check_id: upstream_scope_regressions
   command: /private/tmp/hg040-venv/bin/python -m pytest -q tests/harness/test_preparation_scope.py tests/harness/test_m3_next_wave_scope.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-040/upstream_scope_regressions-20ed13c.log
+  evidence_ref: docs/exec-plans/evidence/HG-040/upstream_scope_regressions-35044fd.log
 - check_id: original_gateway_reproduction
   command: /private/tmp/hg040-venv/bin/python /Users/davetian/.codex/worktrees/d804/KineticLoop/docs/exec-plans/evidence/HG-040/original_gateway_probe.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-040/original_gateway_reproduction-20ed13c.log
+  evidence_ref: docs/exec-plans/evidence/HG-040/original_gateway_reproduction-35044fd.log
 - check_id: candidate_gateway_feasibility
   command: /private/tmp/hg040-venv/bin/python /Users/davetian/.codex/worktrees/d804/KineticLoop/docs/exec-plans/evidence/HG-040/candidate_gateway_diagnostic.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-040/candidate_gateway_feasibility-20ed13c.log
+  evidence_ref: docs/exec-plans/evidence/HG-040/candidate_gateway_feasibility-35044fd.log
 - check_id: harness_validation
   command: /private/tmp/hg040-venv/bin/python -m kineticloop.db.cli check-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-040/harness_validation-20ed13c.log
+  evidence_ref: docs/exec-plans/evidence/HG-040/harness_validation-35044fd.log
 - check_id: harness_tests
   command: /private/tmp/hg040-venv/bin/python -m kineticloop.db.cli test-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-040/harness_tests-20ed13c.log
+  evidence_ref: docs/exec-plans/evidence/HG-040/harness_tests-35044fd.log
 - check_id: unit_tests
   command: /private/tmp/hg040-venv/bin/python -m kineticloop.db.cli test-unit
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-040/unit_tests-20ed13c.log
+  evidence_ref: docs/exec-plans/evidence/HG-040/unit_tests-35044fd.log
 - check_id: lint
   command: /private/tmp/hg040-venv/bin/python -m kineticloop.db.cli lint
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-040/lint-20ed13c.log
+  evidence_ref: docs/exec-plans/evidence/HG-040/lint-35044fd.log
 - check_id: typecheck
   command: /private/tmp/hg040-venv/bin/python -m kineticloop.db.cli typecheck
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-040/typecheck-20ed13c.log
+  evidence_ref: docs/exec-plans/evidence/HG-040/typecheck-35044fd.log
 - check_id: diff_clean
-  command: git diff --check 37de3219bc543e4fe4e554483e7e22262691f97a 20ed13ca99baf510ba29f648b6d6297b2f6391bf
+  command: git diff --check 70dc4863ccdca95f7a44e79b68501a698262e323 35044fd3d94472b41b1bbe6c0313a2a7701c8063
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-040/diff_clean-20ed13c.log
+  evidence_ref: docs/exec-plans/evidence/HG-040/diff_clean-35044fd.log
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
@@ -134,9 +159,10 @@ known_limitations:
 - 'KL075 normal merge and byte-identical result/review ancestry verified independently. Optional integration
   record deferred: three raw review evidence_refs were appended only after reviewed SHA, so the existing
   integration validator rejects the record. No historical edits or guard relaxation are included.'
-- KL026 has coordinator-assigned next merge priority. Before final reviews/merge wait for normal KL026
-  merge or explicit coordinator slot adjustment; rebase/retest after changed protected base. Coordinator
-  schedules KL078 in a fresh task thread after this governance merge.
+- KL026 PR76 is normally merged at70dc4863ccdca95f7a44e79b68501a698262e323. HG040 now has coordinator-assigned
+  uncontested merge priority, rebased and retested on that protected base. Coordinator schedules KL078
+  in a fresh task thread after this governance merge.
 - Fresh independent GENERAL/PROTOCOL/DB_CONCURRENCY reviews bind final governance/evidence head. Only
   own review-record suffix may follow; normal exact-head merge requires all applicable hosted CI/gates
-  PASS. Preserve dirty KL055 and blocked KL026/KL076 worktrees.
+  PASS. Preserve dirty KL055 and blocked KL076 worktrees; KL026 cleanup was already completed by its
+  owner.
