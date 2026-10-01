@@ -1,0 +1,110 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-041",
+  "reviewed_head_sha": "30f72f1c97aec63b9c915d2005bef0651458b9f0",
+  "review_type": "PROTOCOL",
+  "status": "PASS",
+  "findings": [],
+  "review_contract_version": "v0.2",
+  "spec_change_request": null,
+  "review_scope": "Fresh independent protocol review of protected-base 035644e0cfb94927d7555e245223cd92c224ea5a to exact reviewed head 30f72f1c97aec63b9c915d2005bef0651458b9f0. Read current authority, governance/review contracts, both affected packets, actual source owners, schema metadata and diff directly. This is approval of bounded future task definitions only.",
+  "observations": [
+    {
+      "topic": "Frozen authority, immutable prerequisites and prospective state",
+      "assessment": "Frozen Protocol/DB/FROZEN_BASELINE, CURRENT_REQUIREMENT_SET, application source, migrations, CI, command registry, KL076 packet/result/evidence/reviews and legacy fixture/test bytes are unchanged against protected base. KL076 backlog definition is byte-equivalent as data. KL079 is fresh NOT_STARTED with no result/review/integration and no covered requirements or evidence claims; KL077 remains NOT_STARTED and depends on KL079. Existing 39 public command ownership and production/shadow separation are preserved. All current index document and machine-readable hashes match actual bytes.",
+      "source_refs": [
+        "CURRENT_DOCUMENT_INDEX.json",
+        "docs/exec-plans/active/KL-079.md",
+        "docs/exec-plans/active/KL-077.md",
+        "KineticLoop_Harness_Backlog_v0.2.json",
+        "docs/exec-plans/completed/KL-076_RESULT.yaml",
+        "src/kineticloop/contracts/commands.py"
+      ]
+    },
+    {
+      "topic": "Action-specific evidence and policy trust",
+      "assessment": "Frozen S36 requires action/parameters/manifest/policy applicability and prohibits treating equal hashes as evidence of another action. Existing Resolution is TRAINING-only and resolve hashes F.action; existing persistence generates TRAINING S36. KL079 expressly supplies a distinct closed policy-selected full profile with separately computed TRAINING and NUTRITION rows, exact per-action proposal/parameters/query basis, F/D/N/source/manifest/policy/runtime provenance and membership-derived coverage/consistency/association/truncation/expiry. It rejects caller PASS, policy-member-only coverage, relabeled TRAINING, cross-action IDs/hashes and legacy fallback. NUTRITION is a fixture fuel TARGET derived mechanically from admitted WORKOUT_ACTUAL and exact F/D; fixture units claim neither intake nor clinical facts and cannot fill ACTUAL. Original legacy domain retains its exact identity/hash/runtime behavior.",
+      "source_refs": [
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "src/kineticloop/workflow/deterministic_planning.py",
+        "src/kineticloop/persistence/deterministic_planning.py",
+        "docs/exec-plans/active/KL-079.md"
+      ]
+    },
+    {
+      "topic": "Singular physical FK and full logical closure",
+      "assessment": "Independently built actual SQLAlchemy metadata: S37 has exactly one ref_s36_id with composite same-subject fk_s37_s36, existing S34/S35 anchors and hashed JSONB typed_payload; S42 has independent S36/S37/S40 refs. Frozen S37 describes plural resolver results and proposal hashes, individually verified obligations and a non-bearer certificate. One TRAINING FK plus ordered closed [TRAINING,NUTRITION] bindings is representable without migration or frozen change. Packet keeps ref_s34_id=N, ref_s35_id=D and ref_s36_id=TRAINING, explicitly states additional NUTRITION JSON reference is not a FK, and requires exact subject/ID/hash loading and mechanical reconstruction of both rows. Missing/extra/duplicate/reordered bindings deny, expiry is server minimum across both resolutions and all named bounds, and no anchor is repointed per issuance. Actual S36 uniqueness includes action_type and parameters hash, so the two distinct actions do not collide merely by sharing the manifest.",
+      "source_refs": [
+        "src/kineticloop/persistence/metadata.py",
+        "src/kineticloop/persistence/schema_topology.py",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "docs/exec-plans/active/KL-079.md",
+        "docs/exec-plans/evidence/HG-041/PREPARATION.md"
+      ]
+    },
+    {
+      "topic": "Staged preparation and immutable replay",
+      "assessment": "Actual AdvanceAttempt requires exactly snapshot/fitness/demand/nutrition/resolution/validation at COMMIT_READY. Keeping resolution=TRAINING anchor permits the full closure to be checked in transactions._progress_sources without a new stage or wire. The existing current guard binds authenticated TEST identity, subject/policy/environment/principal, manifest/epoch/request/attempt/fence/lease/deadline/control and fresh post-lock time. KL079 explicitly extends only that full-profile guard and deterministic preparation capability, preserving legacy branch and planning_progress modules. It requires reconstruction before coordination, locked capture/current recheck, owner-only S36/S37 plus receipt/event/outbox, immutable non-executable historical replay, payload conflict, concurrent duplicate serialization, rollback and actual forward repair under original root budget/deadline. No head, issuance, session, binding, successful intent or execution authority is created by preparation or COMMIT_READY.",
+      "source_refs": [
+        "src/kineticloop/workflow/planning_progress.py",
+        "src/kineticloop/persistence/planning_progress.py",
+        "src/kineticloop/persistence/transactions.py",
+        "src/kineticloop/persistence/deterministic_planning.py",
+        "docs/exec-plans/active/KL-079.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md"
+      ]
+    },
+    {
+      "topic": "Downstream T6/T7 and current exposure guard",
+      "assessment": "Actual downstream single-member code and guards cannot yet consume this certificate: prepare_commit_authorization compares S37 N anchor with D F, RestrictedSqlSession S42 checks a single prepared resolution/proposal, and require_execution_request validates the old synthetic certificate. These are implementation gaps expressly placed in KL077 existing transactions/protocol_execution scope, not working capability claimed by HG041 or authority granted to KL079. KL077 requires D.ref_s34_id=F and N.demand_feature_id=D, exact per-member proposal/action/resolution and shared S37 validation, complete atomic member issuance/head/success/COMMITTED bookkeeping, current execution basis/exposure, all frozen live guards and finite validity closure. S37 PASS never bypasses T6. Frozen S51 before S01 T6/T7 registry locks remain downstream; preparation gains no late S51 lock. Ordinary PAUSE contracts execution under S01/session/receipt and cannot restore authorization; RESUME/CONTINUE retain current T7 eligibility and original immutable START binding. Exact equality stays PU while DC requires observed bounded post-lock expiry crossing.",
+      "source_refs": [
+        "src/kineticloop/persistence/transactions.py",
+        "src/kineticloop/persistence/protocol_execution.py",
+        "docs/exec-plans/active/KL-077.md",
+        "docs/exec-plans/active/KL-079.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
+      ]
+    },
+    {
+      "topic": "Independent focused verification and evidence limits",
+      "assessment": "At exact reviewed HEAD independently reran .venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_full_action_scope.py tests/harness/test_m3_next_wave_scope.py tests/harness/test_preparation_scope.py tests/unit/workflow/test_deterministic_planning.py: 183 passed, zero skips. Independently checked frozen/source/command/KL076 immutability, actual S37/S42 metadata and S36 uniqueness, current index hashes, tested-to-reviewed ancestry, and all ten committed HG041 raw log base/tested/exit-zero/SHA256/byte-count bindings. Candidate controls run through the focused harness test and remain an illustrative equality/metadata diagnostic; they are not owner, ingress, PostgreSQL, concurrency or issuance proof. KL076 deferred integration evidence issue is disclosed and historical artifacts remain unchanged.",
+      "source_refs": [
+        "tests/harness/test_full_action_scope.py",
+        "tests/harness/test_m3_next_wave_scope.py",
+        "tests/harness/test_preparation_scope.py",
+        "tests/unit/workflow/test_deterministic_planning.py",
+        "docs/exec-plans/evidence/HG-041/candidate.py",
+        "docs/exec-plans/evidence/HG-041/integration-provenance.json",
+        "docs/exec-plans/governance/HG-041.yaml"
+      ]
+    }
+  ],
+  "known_limitations": [
+    "Governance PROTOCOL PASS establishes feasibility and frozen-boundary preservation of the task definitions, not implementation PASS. All KL079/KL077 prospective checks remain NOT_RUN; no product, layer, M3, release or production authority PASS is inferred.",
+    "No database, Docker lifecycle, network, external messaging, application edit or commit was performed. Only this task-scoped review record is written.",
+    "The additional JSON binding needs explicit verification by validation, COMMIT_READY and each downstream issuance owner. Future implementation must satisfy named real PostgreSQL denials, immutable replay, duplicate/rollback, repair, legacy positive checks and independent SHA-bound reviews; the pure candidate does not satisfy them.",
+    "Legacy KL076 integration bookkeeping remains deferred due to its absent-at-reviewed-SHA DB_CONCURRENCY log. This review neither rewrites that evidence nor treats the candidate as retrospective coverage."
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-041.yaml",
+    "docs/exec-plans/active/KL-079.md",
+    "docs/exec-plans/active/KL-077.md",
+    "docs/exec-plans/evidence/HG-041/PREPARATION.md",
+    "docs/exec-plans/evidence/HG-041/candidate.py",
+    "docs/exec-plans/evidence/HG-041/candidate_feasibility-700b8fc.log",
+    "docs/exec-plans/evidence/HG-041/action_scope_regressions-700b8fc.log",
+    "docs/exec-plans/evidence/HG-041/legacy_unit_regression-700b8fc.log",
+    "docs/exec-plans/evidence/HG-041/scope_audit-700b8fc.log",
+    "docs/exec-plans/evidence/HG-041/integration-provenance.json",
+    "tests/harness/test_full_action_scope.py",
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/persistence/deterministic_planning.py",
+    "src/kineticloop/workflow/deterministic_planning.py",
+    "src/kineticloop/persistence/protocol_execution.py",
+    "src/kineticloop/persistence/metadata.py",
+    "src/kineticloop/workflow/planning_progress.py",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
+  ]
+}

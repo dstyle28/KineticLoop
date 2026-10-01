@@ -5891,7 +5891,8 @@
         "KL-076",
         "KL-019",
         "KL-017",
-        "KL-074"
+        "KL-074",
+        "KL-079"
       ],
       "conditional_depends_on": [],
       "commands": [],
@@ -5946,13 +5947,17 @@
         "docs/exec-plans/completed/KL-076_RESULT.yaml",
         "docs/exec-plans/completed/KL-019_RESULT.yaml",
         "docs/exec-plans/completed/KL-017_RESULT.yaml",
-        "docs/exec-plans/completed/KL-074_RESULT.yaml"
+        "docs/exec-plans/completed/KL-074_RESULT.yaml",
+        "docs/exec-plans/completed/KL-079_RESULT.yaml",
+        "docs/contracts/full_action_preparation.md",
+        "docs/exec-plans/evidence/HG-041/PREPARATION.md"
       ],
       "entry_conditions": [
         "Actual prerequisite PASS results, required reviews, and normal MERGED commits verified against protected base before first DB lifecycle.",
         "M2 closure PASS: docs/exec-plans/milestones/M2.json; isolated TEST gate construction does not assume full G-SHADOW or production release closure.",
         "KL074 actual normally merged readiness implementation verified; exclusive task resources/write paths available.",
-        "No result/review/integration for this unstarted task at protected base; every prospective check starts NOT_RUN."
+        "No result/review/integration for this unstarted task at protected base; every prospective check starts NOT_RUN.",
+        "KL079 normally merged with exact full action S36/S37 producer contract and actual COMMIT_READY evidence; verify both TRAINING and NUTRITION bindings before scheduling, never infer applicability from shared hashes."
       ],
       "environment_requirements": [
         "Exact task-owned SHA/resolved-worktree-derived DB and Compose namespace per suite; isolated TEST subjects/policies/environments; no foreign legacy fixture lifecycle on shared Docker."
@@ -6255,6 +6260,212 @@
         "tests/unit/persistence/test_preparation.py",
         "tests/db/test_preparation.py",
         "docs/contracts/preparation.md"
+      ],
+      "write_paths_status": "ENFORCEABLE",
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED",
+      "shared_hotspot": true
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-079",
+      "id": "KL-079",
+      "milestone": "M3",
+      "depends_on": [
+        "KL-076",
+        "KL-075",
+        "KL-078",
+        "KL-024",
+        "KL-019",
+        "KL-017",
+        "KL-074"
+      ],
+      "conditional_depends_on": [],
+      "commands": [],
+      "transaction_boundaries": [
+        "T6-PREPARATION",
+        "T5"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-16",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S05",
+        "S15",
+        "S16",
+        "S24",
+        "S26",
+        "S27",
+        "S28",
+        "S29",
+        "S34",
+        "S35",
+        "S36",
+        "S37",
+        "S49",
+        "S50"
+      ],
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "docs/exec-plans/evidence/HG-041/PREPARATION.md",
+        "src/kineticloop/workflow/deterministic_planning.py",
+        "src/kineticloop/persistence/deterministic_planning.py",
+        "src/kineticloop/persistence/transactions.py",
+        "src/kineticloop/persistence/planning_progress.py",
+        "src/kineticloop/workflow/planning_progress.py",
+        "src/kineticloop/persistence/metadata.py",
+        "src/kineticloop/persistence/schema_topology.py",
+        "src/kineticloop/persistence/protocol_execution.py",
+        "docs/contracts/deterministic_planning.md",
+        "docs/exec-plans/completed/KL-076_RESULT.yaml",
+        "docs/exec-plans/completed/KL-075_RESULT.yaml",
+        "docs/exec-plans/completed/KL-078_RESULT.yaml",
+        "docs/exec-plans/completed/KL-024_RESULT.yaml",
+        "docs/exec-plans/completed/KL-019_RESULT.yaml",
+        "docs/exec-plans/completed/KL-017_RESULT.yaml",
+        "docs/exec-plans/completed/KL-074_RESULT.yaml"
+      ],
+      "entry_conditions": [
+        "Actual prerequisite PASS results, required reviews, and normal MERGED commits verified against protected base before first DB lifecycle.",
+        "M2 closure PASS: docs/exec-plans/milestones/M2.json; isolated TEST gate construction does not assume full G-SHADOW or production release closure.",
+        "KL074 actual normally merged readiness implementation verified; exclusive task resources/write paths available.",
+        "No result/review/integration for this unstarted task at protected base; every prospective check starts NOT_RUN."
+      ],
+      "environment_requirements": [
+        "Exact task-owned SHA/resolved-worktree-derived DB and Compose namespace per suite; isolated TEST subjects/policies/environments; no foreign legacy fixture lifecycle on shared Docker."
+      ],
+      "deliverables": [
+        "Full TEST action evidence and validation preparation with exact owner and immutable identity contract.",
+        "Named positive/negative PU and real PostgreSQL checks with persisted rows/receipt/event/outbox assertions, bounded lock barriers and task-owned namespace inventory."
+      ],
+      "definition_of_done": "Every exact named check and oracle executes and passes on tested_commit with committed raw evidence and no skipped/xfail/zero-collection substitute; only declared scope is written, frozen guards and immutable history hold, all product/release/layer obligations remain independent. Each named PU/DC oracle passes from actual owner inputs to two action resolutions/full validation/COMMIT_READY, preserving legacy regression behavior and immutable replay/repair. Full T6/T7 and KL027 integration are future dependent work; no circular downstream self-gate.",
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "full_action_contract_pu",
+        "full_action_resolution_pu",
+        "full_action_namespace_pu",
+        "full_action_owner_pipeline_dc",
+        "full_action_basis_denials_dc",
+        "full_action_replay_atomicity_dc",
+        "full_action_repair_dc",
+        "full_action_legacy_no_authority_dc",
+        "full_action_suite_dc",
+        "harness_validation_passes",
+        "unit_regressions_pass",
+        "harness_regressions_pass",
+        "lint_passes",
+        "typecheck_passes"
+      ],
+      "check_contracts": [
+        {
+          "check_id": "full_action_contract_pu",
+          "command": "uv run pytest -q tests/unit/workflow/test_full_action_preparation.py::test_contract",
+          "pass_oracle": "Closed full-profile request/schema; exact action discriminators/parameters/proposal hashes/ordered bindings and singular TRAINING anchor. Wrong role/principal/subject/policy/environment/action, caller PASS/completeness and legacy fallback deny. Existing 39 public wires/owners/internal-only operations unchanged."
+        },
+        {
+          "check_id": "full_action_resolution_pu",
+          "command": "uv run pytest -q tests/unit/workflow/test_full_action_preparation.py::test_resolution_semantics",
+          "pass_oracle": "Compute actual TRAINING and NUTRITION action-specific source coverage/consistency/association/truncation/expiry from sealed input shape and existing mechanical F/D/N. N TARGET units never ACTUAL; reject missing/extra/duplicate/mixed/cross-action hashes, source membership/policy-only coverage, contradiction/retraction/unknown/future evidence. Exact equality at minimum expiry denies as PU, never mislabeled DC."
+        },
+        {
+          "check_id": "full_action_namespace_pu",
+          "command": "uv run pytest -q tests/unit/workflow/test_full_action_preparation.py::test_namespace",
+          "pass_oracle": "Validate exact task/SHA/resolved-root full label namespace and all nested bootstrap/reset/cleanup before first real lifecycle; reject malformed/foreign/ambient/default targets. Existing merged fixtures remain read-only."
+        },
+        {
+          "check_id": "full_action_owner_pipeline_dc",
+          "command": "uv run pytest -q tests/db/test_full_action_preparation.py::test_owner_pipeline",
+          "pass_oracle": "Actual real-PG source-to-F/D/N→two distinct full action S36→one full S37→actual COMMIT_READY. Assert exact columns/FKs/payload hashes/source ranges/membership/ordered per-action proposal and resolution bindings, finite minimum expiry and receipt/event/outbox/stage chain. S37 TRAINING anchor and N/D column anchors persist unchanged; extra N resolution is owner-verified by ID/hash, not invented FK. No target SQL seeds or caller self-PASS."
+        },
+        {
+          "check_id": "full_action_basis_denials_dc",
+          "command": "uv run pytest -q tests/db/test_full_action_preparation.py::test_basis_denials",
+          "pass_oracle": "Real owners and actual COMMIT_READY independently reject wrong action/parameters/proposal/subject/policy/manifest/source/runtime, missing/duplicate/reordered/foreign resolution/member, stale F/D/N, partial coverage, contradiction/truncation/retraction, current execution basis/epoch/revision/attempt/fence/lease/deadline/control loss and source/runtime revocation/expiry. Assert exact zero row/bookkeeping/stage/pointer effects; current-state denial reached after valid ingress, no earlier key/lifecycle error substitute. Fresh trusted post-lock time crosses expiry with observed bounded blocker, distinct before/after cases; equality only PU."
+        },
+        {
+          "check_id": "full_action_replay_atomicity_dc",
+          "command": "uv run pytest -q tests/db/test_full_action_preparation.py::test_replay_and_atomicity",
+          "pass_oracle": "Both action owners and full validation return exact historical immutable IDs/hashes on ACK-loss replay non-executable; changed same-key payload conflicts. Concurrent duplicate contenders serialized through existing locks produce exactly one each S36/S37 plus receipt/event/outbox. Observed pg_blocking_pids/barriers/future timeouts and injected failures after output/before bookkeeping prove full rollback. No sleep establishes order, no output relabel or authority replay."
+        },
+        {
+          "check_id": "full_action_repair_dc",
+          "command": "uv run pytest -q tests/db/test_full_action_preparation.py::test_f2_repair",
+          "pass_oracle": "Actual same-root KL024 revision/new attempt and guarded forward stages create F2/D2/N2, both new S36 and full S37. Old D1/N1/resolutions/certificates deny at validation and COMMIT_READY, remain byte-identical; root budget/deadline/history unchanged, no backward jump or terminal reopening. KL077 later proves T6 denial separately."
+        },
+        {
+          "check_id": "full_action_legacy_no_authority_dc",
+          "command": "uv run pytest -q tests/db/test_full_action_preparation.py::test_legacy_and_no_authority",
+          "pass_oracle": "Preserve actual legacy TRAINING pipeline and exact historical identities/positive oracles under own namespace; full profile cannot downgrade to legacy single resolution/certificate. No S38-S45/head/P/A/session/binding/production authority/intent success; preparation and COMMIT_READY are non-executable. Production/shadow/principal/environment negatives have zero effects, planned quantities never fill actual facts."
+        },
+        {
+          "check_id": "full_action_suite_dc",
+          "command": "uv run pytest -q tests/db/test_full_action_preparation.py",
+          "pass_oracle": "Full own real-PG suite without skipped/xfail/zero collection, exact namespace/current_database/migration/cleanup/bounded timing/persisted IDs and raw logs. Existing unchanged hosted legacy DB/quality/selected-task gates PASS before normal merge."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "HARNESS_CHECK_PASS; frozen/index/packet/prospective status and revision-bound scope validate."
+        },
+        {
+          "check_id": "unit_regressions_pass",
+          "command": "uv run kl test-unit",
+          "pass_oracle": "All repository unit tests pass, no newly skipped/xfail or suppressed failures."
+        },
+        {
+          "check_id": "harness_regressions_pass",
+          "command": "uv run kl test-harness",
+          "pass_oracle": "All harness regressions pass, including unchanged command/owner/frozen gates."
+        },
+        {
+          "check_id": "lint_passes",
+          "command": "uv run kl lint",
+          "pass_oracle": "Repository lint passes."
+        },
+        {
+          "check_id": "typecheck_passes",
+          "command": "uv run kl typecheck",
+          "pass_oracle": "Repository typecheck passes."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-079/**"
+      ],
+      "resource_keys": [
+        "transaction_interfaces",
+        "user_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/workflow/deterministic_planning.py",
+        "src/kineticloop/persistence/deterministic_planning.py",
+        "src/kineticloop/persistence/transactions.py",
+        "tests/unit/workflow/test_full_action_preparation.py",
+        "tests/db/test_full_action_preparation.py",
+        "tests/fixtures/full_action_preparation.json",
+        "docs/contracts/full_action_preparation.md"
       ],
       "write_paths_status": "ENFORCEABLE",
       "review_requirements": [
