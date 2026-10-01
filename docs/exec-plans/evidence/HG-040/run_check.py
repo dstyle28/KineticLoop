@@ -9,7 +9,7 @@ from pathlib import Path
 root=Path.cwd(); here=root/'docs/exec-plans/evidence/HG-040'
 base=(here/'protected-base.txt').read_text().strip()
 tested=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
-python='/private/tmp/hg039-venv/bin/python'
+python='/private/tmp/hg040-venv/bin/python'
 checks={
  'scope_audit':[python,str(here/'audit.py')],
  'upstream_scope_regressions':[python,'-m','pytest','-q','tests/harness/test_preparation_scope.py','tests/harness/test_m3_next_wave_scope.py'],

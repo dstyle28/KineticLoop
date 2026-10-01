@@ -34,4 +34,4 @@ task['context_files'] += ['docs/exec-plans/evidence/HG-040/PREPARATION.md','src/
 p.write_text(json.dumps(task,indent=2)+'\n')
 p=here/'KL-078.packet.draft.md'; text=p.read_text().replace('- docs/exec-plans/evidence/HG-038/PREPARATION.md','- docs/exec-plans/evidence/HG-040/PREPARATION.md').replace('- src/kineticloop/persistence/planning.py\n','')
 text=text.replace('- docs/contracts/protocol_execution.md','- docs/contracts/protocol_execution.md\n- src/kineticloop/persistence/metadata.py\n- src/kineticloop/persistence/factsets.py\n- src/kineticloop/protocol/factsets.py')
-p.write_text(text)
+start=text.index('## Read first'); end=text.index('## Frozen impact map'); intro=text[start:end].split('\n- ')[0]; text=text[:start]+intro+'\n'+''.join('- '+x+'\n' for x in task['context_files'])+'\n'+text[end:]; p.write_text(text)

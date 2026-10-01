@@ -12,9 +12,10 @@ allowed={'06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md','CURRENT_DOCUMEN
 paths=subprocess.check_output(['git','diff','--name-only',base,sha],text=True).splitlines()
 assert all(p in allowed or p.startswith('docs/exec-plans/evidence/HG-040/') for p in paths),paths
 bpath='KineticLoop_Harness_Backlog_v0.2.json'; prior=json.loads(raw(bpath)); current=json.loads((root/bpath).read_text())
+assert current['task_count']==prior['task_count']+1 and current['active_task_count']==prior['active_task_count']+1
 old={t['id']:t for t in prior['tasks']}; new={t['id']:t for t in current['tasks']}
 assert set(new)-set(old)=={'KL-078'} and not set(old)-set(new)
-assert {k:v for k,v in prior.items() if k!='tasks'}=={k:v for k,v in current.items() if k!='tasks'}
+assert {k:v for k,v in prior.items() if k not in {'tasks','task_count','active_task_count'}}=={k:v for k,v in current.items() if k not in {'tasks','task_count','active_task_count'}}
 for name in old:
  if name!='KL-076':assert old[name]==new[name],name
 for field in old['KL-076']:

@@ -15,6 +15,7 @@ bpath=root/'KineticLoop_Harness_Backlog_v0.2.json'; b=json.loads(bpath.read_text
 assert 'KL-078' not in ts
 new=json.loads((here/'KL-078.definition.draft.json').read_text()); assert new['status']=='NOT_STARTED' and not new['evidence_refs']
 b['tasks'].append(new)
+b['task_count']=len(b['tasks']); b['active_task_count']=sum(t['status']!='SUPERSEDED' for t in b['tasks'])
 old=ts['KL-076']; assert old['status']=='NOT_STARTED'; assert 'KL-078' not in old['depends_on']
 old['depends_on'].append('KL-078')
 old['entry_conditions'].append('KL078 exact upstream preparation repair normally merged; owner-generated projection/dependency/READY build and actual T3 feasibility verified without target output seeds.')
@@ -49,5 +50,5 @@ plan=root/'06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md'
 plan.write_text(plan.read_text()+'''\n\n## Upstream preparation prerequisite — HG040\n\nKL078 repairs exactly existing RecordProjection/BuildManifest capabilities for\nserver-owned immutable S21 revision and actual same-subject SEALED factset inputs\nwith independent short preparation transactions and local S23 completion locks.\nIt proves actual owner-built canonical factset → projection/dependency → READY\nbuild → T3 publication, with immutable/replay/duplicate/rollback/no-authority\ndenials. KL076 waits for its normal merge and retains only S34–S37 F/D/N scope.\nKL078 starts NOT_STARTED, serializes transaction_interfaces and declares every\nhelper/module explicitly. Frozen/wire/registry/coordination boundaries and all\nproduct/layer/release states remain unchanged. No downstream execution is added.\n''')
 mpath=root/'HARNESS_DOCUMENT_MANIFEST.json'; m=json.loads(mpath.read_text()); path='docs/exec-plans/active/KL-078.md'
 assert not any(e['path']==path for e in m['files']); m['files'].append({'path':path,'bytes':0,'sha256':'0'*64})
-m['files'].sort(key=lambda e:e['path']); mpath.write_text(json.dumps(m,indent=2)+'\n')
+mpath.write_text(json.dumps(m,indent=2)+'\n')
 print('HG040_EXACT_UPSTREAM_DEFINITION_FINALIZED',base)

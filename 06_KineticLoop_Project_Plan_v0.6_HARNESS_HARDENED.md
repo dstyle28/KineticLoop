@@ -314,3 +314,16 @@ owner tasks using merged interfaces and nonoverlapping resources. No M3 closure,
 product requirement, release, production activation or executable shadow PASS is
 established by this governance refinement. Missing product/model quality and policy
 decisions remain outside these exact mechanical TEST fixture packets.
+
+
+## Upstream preparation prerequisite — HG040
+
+KL078 repairs exactly existing RecordProjection/BuildManifest capabilities for
+server-owned immutable S21 revision and actual same-subject SEALED factset inputs
+with independent short preparation transactions and local S23 completion locks.
+It proves actual owner-built canonical factset → projection/dependency → READY
+build → T3 publication, with immutable/replay/duplicate/rollback/no-authority
+denials. KL076 waits for its normal merge and retains only S34–S37 F/D/N scope.
+KL078 starts NOT_STARTED, serializes transaction_interfaces and declares every
+helper/module explicitly. Frozen/wire/registry/coordination boundaries and all
+product/layer/release states remain unchanged. No downstream execution is added.

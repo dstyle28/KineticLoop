@@ -1667,7 +1667,7 @@
       "deliverables": [
         "complete frozen lock-order repository transaction interfaces"
       ],
-      "definition_of_done": "preparation interfaces, including Factset build commands, stay outside S01 coordination; publish/commit/session-entry interfaces acquire only their applicable locks in the complete frozen order S51 (when required) \u2192 S01 \u2192 S30 \u2192 S27 \u2192 S31 \u2192 S38 \u2192 S44 \u2192 S02 / remaining aggregate rows, with stable multi-key ordering and no direct-write or reverse-order path; each applicable T1-T8 mutation atomically writes S03/S04, OutboxDispatcher never acquires S01, stale fences cannot commit, only the first DISPATCH_INTENT winner may send, and T6 ACK-loss replay returns the exact prior receipt, bundle revision, and authorization issuance without duplicate issuance, supersession, event, outbox, reservation, operation, or other natural identity",
+      "definition_of_done": "preparation interfaces, including Factset build commands, stay outside S01 coordination; publish/commit/session-entry interfaces acquire only their applicable locks in the complete frozen order S51 (when required) → S01 → S30 → S27 → S31 → S38 → S44 → S02 / remaining aggregate rows, with stable multi-key ordering and no direct-write or reverse-order path; each applicable T1-T8 mutation atomically writes S03/S04, OutboxDispatcher never acquires S01, stale fences cannot commit, only the first DISPATCH_INTENT winner may send, and T6 ACK-loss replay returns the exact prior receipt, bundle revision, and authorization issuance without duplicate issuance, supersession, event, outbox, reservation, operation, or other natural identity",
       "entry_conditions": [
         "M1 closure PASS: docs/exec-plans/milestones/M1.json",
         "G-REGISTRY closed"
@@ -1880,7 +1880,7 @@
       "deliverables": [
         "lock/gate API"
       ],
-      "definition_of_done": "shared\u2192S01 ordering is encoded and command-specifically tested for PublishManifest, CommitBundle, Reauthorize, StartSession, ResumeSession, and executable ContinueSession; every path reads current artifact and applicable authorization eligibility after acquiring the shared gate and fails closed before mutation on unavailable, timeout, revoked, expired, or stale registry state; authenticated exclusive RevokeArtifact never locks S01, atomically appends S50, advances S51, and records its management receipt/audit/outbox, with commit as the global revocation linearization point, exact same-key/same-hash replay, different-hash rejection, and effective_at prohibited from retroactive or scheduled authorization effect; STOP remains registry-independent; all behavior is testable against a task-local minimal PostgreSQL fixture without adding migrations",
+      "definition_of_done": "shared→S01 ordering is encoded and command-specifically tested for PublishManifest, CommitBundle, Reauthorize, StartSession, ResumeSession, and executable ContinueSession; every path reads current artifact and applicable authorization eligibility after acquiring the shared gate and fails closed before mutation on unavailable, timeout, revoked, expired, or stale registry state; authenticated exclusive RevokeArtifact never locks S01, atomically appends S50, advances S51, and records its management receipt/audit/outbox, with commit as the global revocation linearization point, exact same-key/same-hash replay, different-hash rejection, and effective_at prohibited from retroactive or scheduled authorization effect; STOP remains registry-independent; all behavior is testable against a task-local minimal PostgreSQL fixture without adding migrations",
       "entry_conditions": [
         "M1 closure PASS: docs/exec-plans/milestones/M1.json"
       ],
@@ -3090,7 +3090,7 @@
         {
           "check_id": "committed_revoke_controls_current_admission_not_history",
           "command": "uv run pytest -q tests/db/test_safety_registry.py::test_committed_revoke_controls_current_admission_not_history",
-          "pass_oracle": "The named PostgreSQL test commits one relevant artifact revoke and proves every migrated shared-gated current path\u2014PublishManifest, CommitBundle, Reauthorize, StartSession, ResumeSession, and ContinueSession\u2014returns ARTIFACT_REVOKED before domain mutation. Existing immutable authorization, execution-binding, receipt, event, and outbox history remains byte-identical; historical replay remains a non-mutating record and is never converted into current publish, issue, START, RESUME, CONTINUE, send, or execution permission."
+          "pass_oracle": "The named PostgreSQL test commits one relevant artifact revoke and proves every migrated shared-gated current path—PublishManifest, CommitBundle, Reauthorize, StartSession, ResumeSession, and ContinueSession—returns ARTIFACT_REVOKED before domain mutation. Existing immutable authorization, execution-binding, receipt, event, and outbox history remains byte-identical; historical replay remains a non-mutating record and is never converted into current publish, issue, START, RESUME, CONTINUE, send, or execution permission."
         },
         {
           "check_id": "safety_registry_db_suite_passes",
@@ -3899,7 +3899,7 @@
         "Nine owner-driven interleavings on real PostgreSQL with exact owner and immutable identity contract.",
         "Named positive/negative PU and real PostgreSQL checks with persisted rows/receipt/event/outbox assertions, bounded lock barriers and task-owned namespace inventory."
       ],
-      "definition_of_done": "Every exact named check and oracle executes and passes on tested_commit with committed raw evidence and no skipped/xfail/zero-collection substitute; only declared scope is written, frozen guards and immutable history hold, all product/release/layer obligations remain independent. I01\u2013I09 DC orderings hold with separate exact equality PU evidence; I04 WF and any other declared release layers stay independently NOT_RUN until their own evidence.",
+      "definition_of_done": "Every exact named check and oracle executes and passes on tested_commit with committed raw evidence and no skipped/xfail/zero-collection substitute; only declared scope is written, frozen guards and immutable history hold, all product/release/layer obligations remain independent. I01–I09 DC orderings hold with separate exact equality PU evidence; I04 WF and any other declared release layers stay independently NOT_RUN until their own evidence.",
       "entry_conditions": [
         "Actual prerequisite PASS results, required reviews, and normal MERGED commits verified against protected base before first DB lifecycle.",
         "M2 closure PASS: docs/exec-plans/milestones/M2.json; isolated TEST gate construction does not assume full G-SHADOW or production release closure.",
@@ -4052,7 +4052,7 @@
         {
           "check_id": "interleaving_suite_dc",
           "command": "uv run pytest -q tests/db/test_protocol_interleavings.py",
-          "pass_oracle": "All I01\u2013I09 DC scenarios and both race orders run with real PostgreSQL, finite barriers/timeouts, before/after and lock-wait expiry, complete persisted oracles and committed requirement/layer identities. Exact equality is separately PU; I04@WF remains NOT_RUN; DC alone cannot mark I04 globally PASS."
+          "pass_oracle": "All I01–I09 DC scenarios and both race orders run with real PostgreSQL, finite barriers/timeouts, before/after and lock-wait expiry, complete persisted oracles and committed requirement/layer identities. Exact equality is separately PU; I04@WF remains NOT_RUN; DC alone cannot mark I04 globally PASS."
         },
         {
           "check_id": "harness_validation_passes",
@@ -4247,17 +4247,17 @@
         {
           "check_id": "demo_owner_trajectory_e2e",
           "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_full_trajectory",
-          "pass_oracle": "One composed deterministic real-PG owner/service trajectory: admitted inputs\u2192factset complete/seal\u2192projection/build\u2192T3\u2192admit/acquire\u2192RecordSnapshot\u2192all frozen stages F\u2192computed D\u2192N\u2192source-bound resolution/validation\u2192T6 complete bundle/A\u2192eligibility true\u2192START. Assert full persistent identity/hash/basis and receipt/event/outbox chain, Nutrition completeness and no seeded target output. This is internal service E2E fixture evidence, no HTTP/live model/provider claim."
+          "pass_oracle": "One composed deterministic real-PG owner/service trajectory: admitted inputs→factset complete/seal→projection/build→T3→admit/acquire→RecordSnapshot→all frozen stages F→computed D→N→source-bound resolution/validation→T6 complete bundle/A→eligibility true→START. Assert full persistent identity/hash/basis and receipt/event/outbox chain, Nutrition completeness and no seeded target output. This is internal service E2E fixture evidence, no HTTP/live model/provider claim."
         },
         {
           "check_id": "demo_revoke_denials_dc",
           "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_revoke_then_deny",
-          "pass_oracle": "Independent isolated operation runs get valid A/eligibility true and actual START, plus actual KL077 ordinary PAUSE for RESUME, then exact guarded ApplyControl STOP advances epoch/control/invalidation. Positive RESUME requires actual START\u2192authenticated ordinary lifecycle PAUSE\u2192RESUME, one new immutable S45 resume revision and unchanged original START A. Authority-denial tests use independent owner-produced trajectories and fresh operation keys: CONTINUE has IN_PROGRESS plus current binding; RESUME has PAUSED plus immutable START/current binding from the pause owner; new START names a different absent session with no START binding. Establish each operation's valid lifecycle and current authorization preconditions before STOP/revoke or finite dependency expiry, then assert the exact current-authorization/expiry rejection cause. Lifecycle, existing-binding, key conflict or transport rejection cannot satisfy that oracle. Assert failed operations leave no session/revision/binding/head/issuance/receipt/event/outbox/first-use placeholder effects. Historical command replay is a separate non-executable identity oracle. Old START/bundle replay returns immutable historical IDs non-executable with zero new bindings/head/issuance/success/bookkeeping. Preserve started historical rows and source F/D/N."
+          "pass_oracle": "Independent isolated operation runs get valid A/eligibility true and actual START, plus actual KL077 ordinary PAUSE for RESUME, then exact guarded ApplyControl STOP advances epoch/control/invalidation. Positive RESUME requires actual START→authenticated ordinary lifecycle PAUSE→RESUME, one new immutable S45 resume revision and unchanged original START A. Authority-denial tests use independent owner-produced trajectories and fresh operation keys: CONTINUE has IN_PROGRESS plus current binding; RESUME has PAUSED plus immutable START/current binding from the pause owner; new START names a different absent session with no START binding. Establish each operation's valid lifecycle and current authorization preconditions before STOP/revoke or finite dependency expiry, then assert the exact current-authorization/expiry rejection cause. Lifecycle, existing-binding, key conflict or transport rejection cannot satisfy that oracle. Assert failed operations leave no session/revision/binding/head/issuance/receipt/event/outbox/first-use placeholder effects. Historical command replay is a separate non-executable identity oracle. Old START/bundle replay returns immutable historical IDs non-executable with zero new bindings/head/issuance/success/bookkeeping. Preserve started historical rows and source F/D/N."
         },
         {
           "check_id": "demo_expiry_denials_dc",
           "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_expiry_then_deny",
-          "pass_oracle": "Separate isolated operation runs get valid A/START, plus actual KL077 ordinary PAUSE for RESUME, then actual server minimum dependency expires; use trusted DB time/bounded observation, no caller-set expiry or status job. Positive RESUME requires actual START\u2192authenticated ordinary lifecycle PAUSE\u2192RESUME, one new immutable S45 resume revision and unchanged original START A. Authority-denial tests use independent owner-produced trajectories and fresh operation keys: CONTINUE has IN_PROGRESS plus current binding; RESUME has PAUSED plus immutable START/current binding from the pause owner; new START names a different absent session with no START binding. Establish each operation's valid lifecycle and current authorization preconditions before STOP/revoke or finite dependency expiry, then assert the exact current-authorization/expiry rejection cause. Lifecycle, existing-binding, key conflict or transport rejection cannot satisfy that oracle. Assert failed operations leave no session/revision/binding/head/issuance/receipt/event/outbox/first-use placeholder effects. Historical command replay is a separate non-executable identity oracle. Current eligibility false; old certificates/bindings immutable. Real-PG before/after and lock-wait expiry plus separately labeled deterministic PU equality are covered by prerequisite evidence and current fixture assertions; no equality DC claim."
+          "pass_oracle": "Separate isolated operation runs get valid A/START, plus actual KL077 ordinary PAUSE for RESUME, then actual server minimum dependency expires; use trusted DB time/bounded observation, no caller-set expiry or status job. Positive RESUME requires actual START→authenticated ordinary lifecycle PAUSE→RESUME, one new immutable S45 resume revision and unchanged original START A. Authority-denial tests use independent owner-produced trajectories and fresh operation keys: CONTINUE has IN_PROGRESS plus current binding; RESUME has PAUSED plus immutable START/current binding from the pause owner; new START names a different absent session with no START binding. Establish each operation's valid lifecycle and current authorization preconditions before STOP/revoke or finite dependency expiry, then assert the exact current-authorization/expiry rejection cause. Lifecycle, existing-binding, key conflict or transport rejection cannot satisfy that oracle. Assert failed operations leave no session/revision/binding/head/issuance/receipt/event/outbox/first-use placeholder effects. Historical command replay is a separate non-executable identity oracle. Current eligibility false; old certificates/bindings immutable. Real-PG before/after and lock-wait expiry plus separately labeled deterministic PU equality are covered by prerequisite evidence and current fixture assertions; no equality DC claim."
         },
         {
           "check_id": "demo_fdn_repair_e2e",
@@ -8121,7 +8121,8 @@
         "KL-017",
         "KL-022",
         "KL-023",
-        "KL-074"
+        "KL-074",
+        "KL-078"
       ],
       "commands": [],
       "transaction_boundaries": [
@@ -8169,7 +8170,8 @@
         "Actual prerequisite PASS results, required reviews, and normal MERGED commits verified against protected base before first DB lifecycle.",
         "M2 closure PASS: docs/exec-plans/milestones/M2.json; isolated TEST gate construction does not assume full G-SHADOW or production release closure.",
         "KL074 actual normally merged readiness implementation verified; exclusive task resources/write paths available.",
-        "No result/review/integration for this unstarted task at protected base; every prospective check starts NOT_RUN."
+        "No result/review/integration for this unstarted task at protected base; every prospective check starts NOT_RUN.",
+        "KL078 exact upstream preparation repair normally merged; owner-generated projection/dependency/READY build and actual T3 feasibility verified without target output seeds."
       ],
       "status": "NOT_STARTED",
       "evidence_refs": [],
@@ -8189,7 +8191,8 @@
         "docs/exec-plans/completed/KL-017_RESULT.yaml",
         "docs/exec-plans/completed/KL-022_RESULT.yaml",
         "docs/exec-plans/completed/KL-023_RESULT.yaml",
-        "docs/exec-plans/completed/KL-074_RESULT.yaml"
+        "docs/exec-plans/completed/KL-074_RESULT.yaml",
+        "docs/exec-plans/completed/KL-078_RESULT.yaml"
       ],
       "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
       "merge_unit": "ONE_PR",
@@ -8251,7 +8254,7 @@
         {
           "check_id": "fixture_fdn_repair_pu",
           "command": "uv run pytest -q tests/unit/workflow/test_deterministic_planning.py::test_fitness_repair",
-          "pass_oracle": "F1\u2192D1\u2192N1 then changed F2 creates new immutable F2/D2/N2; old D1/N1 cannot validate new bundle and merely swapping hash references rejects. Explicit deterministic recalculation, same root budget/accounting, original revisions unchanged; no invented stage loop."
+          "pass_oracle": "F1→D1→N1 then changed F2 creates new immutable F2/D2/N2; old D1/N1 cannot validate new bundle and merely swapping hash references rejects. Explicit deterministic recalculation, same root budget/accounting, original revisions unchanged; no invented stage loop."
         },
         {
           "check_id": "fixture_resolution_validation_pu",
@@ -8261,12 +8264,12 @@
         {
           "check_id": "fixture_preparation_owners_dc",
           "command": "uv run pytest -q tests/db/test_deterministic_planning.py::test_owner_pipeline",
-          "pass_oracle": "Actual RecordProposal/RecordDemandFeatures/ResolveEvidence/RecordValidation restricted owners persist S34 F then S35 D then S34 N then S36/S37 certificates, guarded by merged KL075 current request/attempt/lease/fence and exact snapshot/manifest. Use existing same-subject N.demand_feature_id\u2192D.ref_s34_id\u2192F foreign-key chain; persist and verify duplicated F/D hashes, parent repair identity, manifest/policy and method version in immutable typed payloads. No missing direct-F column or speculative migration is assumed. Full parent/basis refs, immutable hashes and source ranges persisted; stage advances only through KL075. No target output seeds/self-PASS labels."
+          "pass_oracle": "Actual RecordProposal/RecordDemandFeatures/ResolveEvidence/RecordValidation restricted owners persist S34 F then S35 D then S34 N then S36/S37 certificates, guarded by merged KL075 current request/attempt/lease/fence and exact snapshot/manifest. Use existing same-subject N.demand_feature_id→D.ref_s34_id→F foreign-key chain; persist and verify duplicated F/D hashes, parent repair identity, manifest/policy and method version in immutable typed payloads. No missing direct-F column or speculative migration is assumed. Full parent/basis refs, immutable hashes and source ranges persisted; stage advances only through KL075. No target output seeds/self-PASS labels."
         },
         {
           "check_id": "fixture_preparation_denials_dc",
           "command": "uv run pytest -q tests/db/test_deterministic_planning.py::test_stale_and_incomplete",
-          "pass_oracle": "Real PG takeover/revision/epoch/manifest/expiry/terminal and wrong principal/policy/environment deny each writer with zero effects; stale F/D/N combinations, missing Nutrition, resolution/certificate mismatch fail closed. Unguarded execute_preparation insert/update attempts for S34\u2013S37 reject with zero effects while existing read-only/non-workflow preparation remains outside coordination. ACK-loss replay historical IDs only; independent new operation still guards current authority."
+          "pass_oracle": "Real PG takeover/revision/epoch/manifest/expiry/terminal and wrong principal/policy/environment deny each writer with zero effects; stale F/D/N combinations, missing Nutrition, resolution/certificate mismatch fail closed. Unguarded execute_preparation insert/update attempts for S34–S37 reject with zero effects while existing read-only/non-workflow preparation remains outside coordination. ACK-loss replay historical IDs only; independent new operation still guards current authority."
         },
         {
           "check_id": "fixture_preparation_atomicity_dc",
@@ -8455,7 +8458,7 @@
         {
           "check_id": "full_bundle_commit_dc",
           "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_full_bundle_commit",
-          "pass_oracle": "Actual T6 commits complete TRAINING and NUTRITION prescription members from KL076 source-bound F/D/N/certificate, exact order/slots/content refs, immutable S39\u2013S42/closure/certificates, S38 switch and intent-success/attempt-COMMITTED with receipt/event/outbox atomically. Current generation/epoch/request/attempt/fence/lease/deadline/control/registry/evidence/envelope/semantic guards all rechecked. No hardcoded single TRAINING success or seeded P/A."
+          "pass_oracle": "Actual T6 commits complete TRAINING and NUTRITION prescription members from KL076 source-bound F/D/N/certificate, exact order/slots/content refs, immutable S39–S42/closure/certificates, S38 switch and intent-success/attempt-COMMITTED with receipt/event/outbox atomically. Current generation/epoch/request/attempt/fence/lease/deadline/control/registry/evidence/envelope/semantic guards all rechecked. No hardcoded single TRAINING success or seeded P/A."
         },
         {
           "check_id": "full_bundle_basis_denials_dc",
@@ -8470,12 +8473,12 @@
         {
           "check_id": "ordinary_pause_owner_dc",
           "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_ordinary_pause_owner",
-          "pass_oracle": "Declare a separately authenticated internal TEST-only ExecutionService ordinary lifecycle PAUSE request and exact capability in KL077; do not add a public command, change the 39 public wire types/TRANSACTION_OWNER_MATRIX or alter the existing INTERNAL_ONLY_OPERATIONS list. Use separate internal descriptors with only S01/S44 and receipt/event/outbox mutations. Bind authenticated subject/principal/role/TEST environment/policy, command key, exact APP_STARTED session, latest immutable START-or-RESUME P/A binding identity/hash, expected execution revision and nonempty ordinary-pause reason. Under S01\u2192exact S44\u2192receipt, read and verify same-subject immutable binding and IN_PROGRESS/revision, persist only PAUSED and execution_revision+1, reason in S03/payload, S01.execution_basis_event_id equal to that event, and receipt/event/outbox atomically. No S51 is needed because pause grants no execution authority and reads no registry eligibility; no late gate acquisition, current-head membership, current-A validity, provider/model/queue wait, issuance, S45 append, actual facts, head/epoch/control mutation, or generic session patch permission. Pausing a historically started session still succeeds after revocation/expiry/head change while eligibility remains denied. Protective PAUSE/STOP/hold is distinct: it uses existing frozen T2 ApplyControl/invalidation/epoch semantics and independent safety capacity, never this ordinary session operation. RESUME still uses full current T7 authorization and frozen S51\u2192S01\u2192head/session\u2192receipt order; ordinary PAUSE cannot restore A or reopen a completed session. Exact same-key replay returns original paused revision without reapplying after RESUME; changed payload conflicts, new keys recheck current state. Duplicate/wrong-state/subject/principal/environment/revision and injected failure cases prove exact scope and atomic rollback."
+          "pass_oracle": "Declare a separately authenticated internal TEST-only ExecutionService ordinary lifecycle PAUSE request and exact capability in KL077; do not add a public command, change the 39 public wire types/TRANSACTION_OWNER_MATRIX or alter the existing INTERNAL_ONLY_OPERATIONS list. Use separate internal descriptors with only S01/S44 and receipt/event/outbox mutations. Bind authenticated subject/principal/role/TEST environment/policy, command key, exact APP_STARTED session, latest immutable START-or-RESUME P/A binding identity/hash, expected execution revision and nonempty ordinary-pause reason. Under S01→exact S44→receipt, read and verify same-subject immutable binding and IN_PROGRESS/revision, persist only PAUSED and execution_revision+1, reason in S03/payload, S01.execution_basis_event_id equal to that event, and receipt/event/outbox atomically. No S51 is needed because pause grants no execution authority and reads no registry eligibility; no late gate acquisition, current-head membership, current-A validity, provider/model/queue wait, issuance, S45 append, actual facts, head/epoch/control mutation, or generic session patch permission. Pausing a historically started session still succeeds after revocation/expiry/head change while eligibility remains denied. Protective PAUSE/STOP/hold is distinct: it uses existing frozen T2 ApplyControl/invalidation/epoch semantics and independent safety capacity, never this ordinary session operation. RESUME still uses full current T7 authorization and frozen S51→S01→head/session→receipt order; ordinary PAUSE cannot restore A or reopen a completed session. Exact same-key replay returns original paused revision without reapplying after RESUME; changed payload conflicts, new keys recheck current state. Duplicate/wrong-state/subject/principal/environment/revision and injected failure cases prove exact scope and atomic rollback."
         },
         {
           "check_id": "continue_resume_current_dc",
           "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_continue_resume_rechecks",
-          "pass_oracle": "Actual typed ContinueSession and ResumeSession use existing T7 owners and exact session/P/A binding under S51\u2192S01\u2192daily head/session\u2192receipt. Valid CONTINUE updates only allowed execution metadata and valid RESUME appends exact immutable new resume binding, preserving original START A. Positive RESUME requires actual START\u2192authenticated ordinary lifecycle PAUSE\u2192RESUME, one new immutable S45 resume revision and unchanged original START A. Authority-denial tests use independent owner-produced trajectories and fresh operation keys: CONTINUE has IN_PROGRESS plus current binding; RESUME has PAUSED plus immutable START/current binding from the pause owner; new START names a different absent session with no START binding. Establish each operation's valid lifecycle and current authorization preconditions before STOP/revoke or finite dependency expiry, then assert the exact current-authorization/expiry rejection cause. Lifecycle, existing-binding, key conflict or transport rejection cannot satisfy that oracle. Assert failed operations leave no session/revision/binding/head/issuance/receipt/event/outbox/first-use placeholder effects. Historical command replay is a separate non-executable identity oracle. Read-only eligibility is never a bearer permit; no raw PAUSE/state seeding or guard-only negative substitute."
+          "pass_oracle": "Actual typed ContinueSession and ResumeSession use existing T7 owners and exact session/P/A binding under S51→S01→daily head/session→receipt. Valid CONTINUE updates only allowed execution metadata and valid RESUME appends exact immutable new resume binding, preserving original START A. Positive RESUME requires actual START→authenticated ordinary lifecycle PAUSE→RESUME, one new immutable S45 resume revision and unchanged original START A. Authority-denial tests use independent owner-produced trajectories and fresh operation keys: CONTINUE has IN_PROGRESS plus current binding; RESUME has PAUSED plus immutable START/current binding from the pause owner; new START names a different absent session with no START binding. Establish each operation's valid lifecycle and current authorization preconditions before STOP/revoke or finite dependency expiry, then assert the exact current-authorization/expiry rejection cause. Lifecycle, existing-binding, key conflict or transport rejection cannot satisfy that oracle. Assert failed operations leave no session/revision/binding/head/issuance/receipt/event/outbox/first-use placeholder effects. Historical command replay is a separate non-executable identity oracle. Read-only eligibility is never a bearer permit; no raw PAUSE/state seeding or guard-only negative substitute."
         },
         {
           "check_id": "full_execution_replay_atomicity_dc",
@@ -8518,11 +8521,211 @@
           "pass_oracle": "Repository typecheck passes."
         }
       ]
+    },
+    {
+      "id": "KL-078",
+      "milestone": "M3",
+      "title": "Source-bound projection and manifest preparation repair",
+      "owner_role": "backend",
+      "depends_on": [
+        "KL-017",
+        "KL-019",
+        "KL-022",
+        "KL-023",
+        "KL-074"
+      ],
+      "commands": [],
+      "transaction_boundaries": [
+        "T3-PREPARATION",
+        "T3"
+      ],
+      "invariant_ids": [
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "INV-10",
+        "INV-16",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S15",
+        "S16",
+        "S21",
+        "S22",
+        "S23",
+        "S24",
+        "S25",
+        "S49",
+        "S51"
+      ],
+      "required_test_layers": [
+        "PU",
+        "DC"
+      ],
+      "deliverables": [
+        "Source-bound projection and manifest preparation repair with exact owner and immutable identity contract.",
+        "Named positive/negative PU and real PostgreSQL checks with persisted rows/receipt/event/outbox assertions, bounded lock barriers and task-owned namespace inventory."
+      ],
+      "definition_of_done": "Every exact named check and oracle executes and passes on tested_commit with committed raw evidence and no skipped/xfail/zero-collection substitute; only declared scope is written, frozen guards and immutable history hold, all product/release/layer obligations remain independent. Actual owner-driven CanonicalViewService → RecordProjection → BuildManifest → T3 succeeds with immutable source binding and every denial, replay, duplicate, rollback and no-authority oracle; no new product/layer/release evidence is inferred.",
+      "entry_conditions": [
+        "Actual prerequisite PASS results, required reviews, and normal MERGED commits verified against protected base before first DB lifecycle.",
+        "M2 closure PASS: docs/exec-plans/milestones/M2.json; isolated TEST gate construction does not assume full G-SHADOW or production release closure.",
+        "KL074 actual normally merged readiness implementation verified; exclusive task resources/write paths available.",
+        "No result/review/integration for this unstarted task at protected base; every prospective check starts NOT_RUN."
+      ],
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "thread_id": "THREAD-KL-078",
+      "thread_mode": "INDEPENDENT_WORKTREE",
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "src/kineticloop/contracts/commands.py",
+        "src/kineticloop/persistence/transactions.py",
+        "src/kineticloop/persistence/protocol_execution.py",
+        "docs/contracts/protocol_execution.md",
+        "docs/exec-plans/completed/KL-017_RESULT.yaml",
+        "docs/exec-plans/completed/KL-019_RESULT.yaml",
+        "docs/exec-plans/completed/KL-022_RESULT.yaml",
+        "docs/exec-plans/completed/KL-023_RESULT.yaml",
+        "docs/exec-plans/completed/KL-074_RESULT.yaml",
+        "docs/exec-plans/evidence/HG-040/PREPARATION.md",
+        "src/kineticloop/persistence/metadata.py",
+        "src/kineticloop/persistence/factsets.py",
+        "src/kineticloop/protocol/factsets.py"
+      ],
+      "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+      "merge_unit": "ONE_PR",
+      "handoff_artifact": "docs/exec-plans/completed/KL-078_RESULT.yaml",
+      "shared_hotspot": true,
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "task_identity": "harness-backlog-v0.2/KL-078",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "preparation_revision_pu",
+        "preparation_capability_pu",
+        "preparation_namespace_pu",
+        "preparation_owner_pipeline_dc",
+        "preparation_basis_denials_dc",
+        "preparation_immutable_replay_dc",
+        "preparation_duplicate_rollback_dc",
+        "preparation_no_authority_dc",
+        "preparation_suite_dc",
+        "harness_validation_passes",
+        "unit_regressions_pass",
+        "harness_regressions_pass",
+        "lint_passes",
+        "typecheck_passes"
+      ],
+      "resource_keys": [
+        "transaction_interfaces"
+      ],
+      "write_paths": [
+        "src/kineticloop/persistence/transactions.py",
+        "src/kineticloop/persistence/preparation.py",
+        "tests/unit/persistence/test_preparation.py",
+        "tests/db/test_preparation.py",
+        "docs/contracts/preparation.md"
+      ],
+      "review_requirements": [
+        "DB_CONCURRENCY",
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "conditional_depends_on": [],
+      "environment_requirements": [
+        "Exact task-owned SHA/resolved-worktree-derived DB and Compose namespace per suite; isolated TEST subjects/policies/environments; no foreign legacy fixture lifecycle on shared Docker."
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+      "write_paths_status": "ENFORCEABLE",
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-078/**"
+      ],
+      "check_contracts": [
+        {
+          "check_id": "preparation_revision_pu",
+          "command": "uv run pytest -q tests/unit/persistence/test_preparation.py::test_server_revision",
+          "pass_oracle": "Exact RecordProjection supplies immutable server-owned S21 revision and provenance bound to authenticated subject/kind/engine/basis/window/content/computation identity. Caller revision/provenance override rejects before mutation; unchanged input returns identical identity, changed content under same identity conflicts, changed basis creates new immutable revision identity. REQUIRED_FIELDS stays complete; no caller column permission or global required-field relaxation."
+        },
+        {
+          "check_id": "preparation_capability_pu",
+          "command": "uv run pytest -q tests/unit/persistence/test_preparation.py::test_exact_capabilities",
+          "pass_oracle": "Actual gateway permits only respective RecordProjection S21/S22 and BuildManifest S23 surfaces with verified exact basis. Foreign owner/table/column, fabricated lock inventory, raw SQL access, SUBJECT translation, missing typed basis and unguarded callback inserts fail closed. Existing public wire schema, 39-command matrix, PREPARATION boundaries and execute_command rejection remain unchanged; S34-S37 workflow path is untouched."
+        },
+        {
+          "check_id": "preparation_namespace_pu",
+          "command": "uv run pytest -q tests/unit/persistence/test_preparation.py::test_namespace",
+          "pass_oracle": "Before first real lifecycle prove exact task/SHA/resolved-root namespace derivation and every nested bootstrap/reset/cleanup validation; peer root, malformed SHA/digest, wrong label, arbitrary/ambient/default/foreign project/database deny before destructive entry. bootstrap_two_phase receives own selected lifecycle and finally cleanup revalidates it."
+        },
+        {
+          "check_id": "preparation_owner_pipeline_dc",
+          "command": "uv run pytest -q tests/db/test_preparation.py::test_owner_pipeline",
+          "pass_oracle": "Real PG CanonicalViewService.begin_build/write_candidate/complete_factset/seal_factset produces exact actual SEALED S15 from registered TEST subject/program/policy and admitted immutable source inputs. Actual RecordProjection records S21 and complete S22 positive plus collection/absence dependencies atomically; BuildManifest produces complete BUILDING then READY S23 under exact local build ownership. Exact persisted hashes/refs/roles/artifact closure derive from these inputs, then actual ProtocolExecutionService.publish T3 produces S24/S25 plus S01 generation/pointer and receipt/event/outbox once. No S15/S16, S21/S22/S23 or S24/S25 output seeds. Every preparation commit leaves S01 generation/frontier/epoch/pointers and receipt/event/outbox unchanged; only actual T2 seal/T3 may advance their frozen state."
+        },
+        {
+          "check_id": "preparation_basis_denials_dc",
+          "command": "uv run pytest -q tests/db/test_preparation.py::test_basis_denials",
+          "pass_oracle": "Actual real PG owner gateways reject cross-subject/nonexistent/nonsealed S15, missing/null/foreign FACTSET references or dependencies, wrong projection parent, incomplete/duplicate role closure, wrong policy/program/artifacts and exact source hash conflict with zero new rows/changed rows. Cover BUILDING, READY and SEALED source states produced by actual builders, never raw status seeds. Exact input validation is exclusive to S22/S23 under their owners, not a blanket FK exemption. Independently show missing/stale epoch/frontier/factset/program/policy/dependency/validity/revoked artifact causes actual T3 denial with zero target/generation/receipt/event/outbox effects; stale preparation cannot be relabeled current."
+        },
+        {
+          "check_id": "preparation_immutable_replay_dc",
+          "command": "uv run pytest -q tests/db/test_preparation.py::test_immutable_replay",
+          "pass_oracle": "ACK-loss retry returns exact historical projection/dependency/build identities with no mutation or current/execution authority. Changed same-key content conflicts. Byte-identical S21/S22 and READY/PUBLISHED S23 candidate history survives replay; caller revision injection, updates/dependency replacement, READY basis/epoch relabeling, terminal reopening and unauthorized generic preparation mutations reject. T3 replay retains historical original IDs and cannot repoint S01; subsequent independent publication rechecks current basis."
+        },
+        {
+          "check_id": "preparation_duplicate_rollback_dc",
+          "command": "uv run pytest -q tests/db/test_preparation.py::test_duplicate_rollback",
+          "pass_oracle": "Real PG same-computation and same-build duplicate contenders with bounded Events/futures and observed pg_blocking_pids produce one immutable result/dependency closure/build and no overwrite. Exact S23 local locks serialize BUILDING completion; READY candidate cannot change. Inject failure after S21, midway S22 and before/after READY transition then assert full transaction rollback including unchanged S01/receipt/event/outbox. Actual T3 rollback assertions remain enforced. No sleeps establish ordering, no coordination/external waits inside preparation."
+        },
+        {
+          "check_id": "preparation_no_authority_dc",
+          "command": "uv run pytest -q tests/db/test_preparation.py::test_no_authority",
+          "pass_oracle": "Preparation holds neither S01 nor SafetyRegistry coordination locks, writes no generation/head/P/A/session/binding/intent success, and grants no execution/production authority. An observed S01 blocker does not block independent immutable preparation; actual T3 uses unchanged shared registry then S01 ordering and rejects stale captured basis after guarded owner input update. Wrong TEST principal/policy/environment and PRODUCTION/SHADOW attempts through fixture ingress reject with zero effects. Provider/network calls absent; planned values never populate actual facts."
+        },
+        {
+          "check_id": "preparation_suite_dc",
+          "command": "uv run pytest -q tests/db/test_preparation.py",
+          "pass_oracle": "Entire own real-PG preparation suite runs without skips/xfail/zero collection. Namespace inventory/current_database/migration revision/persisted source/output IDs/cleanup/deadlines and raw logs recorded. Full legacy tests/db regressions run only through existing unchanged hosted CI on fresh VM; all normal quality and selected-task merge gates pass before normal merge."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "HARNESS_CHECK_PASS; frozen/index/packet/prospective status and revision-bound scope validate."
+        },
+        {
+          "check_id": "unit_regressions_pass",
+          "command": "uv run kl test-unit",
+          "pass_oracle": "All repository unit tests pass, no newly skipped/xfail or suppressed failures."
+        },
+        {
+          "check_id": "harness_regressions_pass",
+          "command": "uv run kl test-harness",
+          "pass_oracle": "All harness regressions pass, including unchanged command/owner/frozen gates."
+        },
+        {
+          "check_id": "lint_passes",
+          "command": "uv run kl lint",
+          "pass_oracle": "Repository lint passes."
+        },
+        {
+          "check_id": "typecheck_passes",
+          "command": "uv run kl typecheck",
+          "pass_oracle": "Repository typecheck passes."
+        }
+      ]
     }
   ],
-  "task_count": 74,
+  "task_count": 75,
   "acceptance_requirement_set": "v1.2.2 + integration-v0.1",
   "task_namespace": "harness-backlog-v0.2",
   "requirement_set": "KINETICLOOP_HARNESS_REQSET_V1_2_2_INTEGRATION_V0_1",
-  "active_task_count": 71
+  "active_task_count": 72
 }

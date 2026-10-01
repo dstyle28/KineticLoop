@@ -72,3 +72,15 @@ transactions.py; all new typed owner identity/replay/closure helpers belong only
 to declared preparation.py. No separate namespace helper or fixture module is
 indispensable; helpers remain in the declared unit/DB test modules. Exact scope
 is pinned by task definition/packet hashes and explicit negative harness tests.
+
+## Optional KL075 bookkeeping disposition
+
+Actual normal PR74 merge, result byte identity, required PASS reviews and linear
+review-only suffix are independently verified in integration-provenance.json.
+However, three independent raw review files were committed only after
+reviewed_head_sha 5543bfb, and the existing integration validator requires every
+review evidence_ref to exist at reviewed_head_sha. Thus no KL075 integration
+record is appended: the optional record would not validate. This bounded repair
+does not rewrite historical review/results, backdate files or weaken guards.
+Historical KL075 normal merge remains established independently; review-evidence
+bookkeeping needs separate consideration if an integration record is required.
