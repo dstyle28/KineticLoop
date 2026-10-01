@@ -11,6 +11,8 @@ base=(here/'protected-base.txt').read_text().strip()
 tested=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
 python='/private/tmp/hg040-venv/bin/python'
 checks={
+ 'original_gateway_reproduction':[python,str(here/'original_gateway_probe.py')],
+ 'candidate_gateway_feasibility':[python,str(here/'candidate_gateway_diagnostic.py')],
  'scope_audit':[python,str(here/'audit.py')],
  'upstream_scope_regressions':[python,'-m','pytest','-q','tests/harness/test_preparation_scope.py','tests/harness/test_m3_next_wave_scope.py'],
  'harness_validation':[python,'-m','kineticloop.db.cli','check-harness'],

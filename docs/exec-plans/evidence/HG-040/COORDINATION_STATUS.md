@@ -15,3 +15,11 @@ Automatic approval review rejected the attempted outgoing status message: no
 trusted human instruction explicitly authorizing messaging another chat was found.
 No message was sent and no workaround is used. Continue with read-only status
 monitoring and durable ready state. This does not block authorized governance work.
+
+## Released finalization slot
+
+Coordinator explicitly resumed finalization after actual normal KL026 PR76 merge
+70dc4863ccdca95f7a44e79b68501a698262e323. HG040 now has next uncontested
+merge priority; the preceding hold is historical. Proceed with rebase, fresh
+checks/record/reviews, normal exact-head PR merge and own safe cleanup. Do not
+send outgoing cross-chat status or implement KL078 in this thread.

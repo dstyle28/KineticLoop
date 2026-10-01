@@ -28,6 +28,10 @@ assert (root/'docs/exec-plans/active/KL-078.md').read_bytes()==(here/'KL-078.pac
 for name in ['KL-076','KL-078']:
  for directory in ['completed','reviews','integrations']:
   prefix=f'docs/exec-plans/{directory}/{name}'
+  if directory=='completed':
+   for revision in (base,sha):
+    all_results=subprocess.check_output(['git','ls-tree','-r','--name-only',revision,'--','docs/exec-plans/completed/'],text=True).splitlines()
+    assert not any(p in {prefix+'_RESULT.yaml',prefix+'_RESULT.json'} for p in all_results)
   assert not subprocess.check_output(['git','ls-tree','-r','--name-only',base,'--',prefix],text=True).strip()
   assert not subprocess.check_output(['git','ls-tree','-r','--name-only',sha,'--',prefix],text=True).strip()
 for path in ['05_KineticLoop_Protocol_v1.2_FROZEN.md','04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md','FROZEN_BASELINE.json','CURRENT_REQUIREMENT_SET.json','KineticLoop_Acceptance_Spec_v1.2.2.json','KineticLoop_Integration_Acceptance_v0.1.json']:
