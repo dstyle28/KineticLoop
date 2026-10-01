@@ -1,0 +1,102 @@
+change_identity: harness-governance-v0.1/HG-039
+display_change_id: HG-039
+base_commit: d0470badf0ccf6bec28a9bc7e6836b57d9df93ce
+tested_commit: 2ac110456dc8d5c3dd9d712c5cfe4a80f6b80af3
+change_status: PASS
+summary: Refine unresulted KL026 I03 to a strict immutable independent TEST-local cancellation request
+  with separately trusted PlanningIdentity(TEST), exact persisted TEST subject/policy/environment/principal
+  and canonical server-computed hash. Preserve public wire rejection/39-command registry, existing restricted
+  CancelIntent owner, lock order, separate RESERVED cleanup, both race oracles and all product/layer
+  statuses. Add named PU identity selector, exact packet/backlog/traceability projection and bounded
+  governance feasibility/negative checks; no production, frozen or foreign lifecycle change.
+packets_refined:
+- KL-026
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- KineticLoop_Harness_Backlog_v0.2.json
+- KineticLoop_Harness_Traceability_v0.3.json
+- docs/exec-plans/active/KL-026.md
+- docs/exec-plans/evidence/HG-039/BASE_REFRESH.md
+- docs/exec-plans/evidence/HG-039/KL075-normal-merge.json
+- docs/exec-plans/evidence/HG-039/PRELIMINARY_CHECKS.md
+- docs/exec-plans/evidence/HG-039/PREPARATION.md
+- docs/exec-plans/evidence/HG-039/audit.py
+- docs/exec-plans/evidence/HG-039/cancel_request.proposal.py
+- docs/exec-plans/evidence/HG-039/diff_clean-2ac1104.json
+- docs/exec-plans/evidence/HG-039/diff_clean-2ac1104.log
+- docs/exec-plans/evidence/HG-039/harness_tests-2ac1104.json
+- docs/exec-plans/evidence/HG-039/harness_tests-2ac1104.log
+- docs/exec-plans/evidence/HG-039/harness_validation-2ac1104.json
+- docs/exec-plans/evidence/HG-039/harness_validation-2ac1104.log
+- docs/exec-plans/evidence/HG-039/identity_scope_regressions-2ac1104.json
+- docs/exec-plans/evidence/HG-039/identity_scope_regressions-2ac1104.log
+- docs/exec-plans/evidence/HG-039/lint-2ac1104.json
+- docs/exec-plans/evidence/HG-039/lint-2ac1104.log
+- docs/exec-plans/evidence/HG-039/protected-base.txt
+- docs/exec-plans/evidence/HG-039/refine.py
+- docs/exec-plans/evidence/HG-039/refresh_hashes.py
+- docs/exec-plans/evidence/HG-039/run_check.py
+- docs/exec-plans/evidence/HG-039/scope_audit-2ac1104.json
+- docs/exec-plans/evidence/HG-039/scope_audit-2ac1104.log
+- docs/exec-plans/evidence/HG-039/typecheck-2ac1104.json
+- docs/exec-plans/evidence/HG-039/typecheck-2ac1104.log
+- docs/exec-plans/evidence/HG-039/unit_tests-2ac1104.json
+- docs/exec-plans/evidence/HG-039/unit_tests-2ac1104.log
+- docs/exec-plans/evidence/HG-039/write_record.py
+- docs/exec-plans/governance/HG-039.yaml
+- tests/harness/test_cancel_identity_scope.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: scope_audit
+  command: /private/tmp/hg039-venv/bin/python /Users/davetian/.codex/worktrees/d2be/KineticLoop/docs/exec-plans/evidence/HG-039/audit.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-039/scope_audit-2ac1104.log
+- check_id: identity_scope_regressions
+  command: /private/tmp/hg039-venv/bin/python -m pytest -q tests/harness/test_cancel_identity_scope.py
+    tests/harness/test_m3_next_wave_scope.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-039/identity_scope_regressions-2ac1104.log
+- check_id: harness_validation
+  command: /private/tmp/hg039-venv/bin/python -m kineticloop.db.cli check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-039/harness_validation-2ac1104.log
+- check_id: harness_tests
+  command: /private/tmp/hg039-venv/bin/python -m kineticloop.db.cli test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-039/harness_tests-2ac1104.log
+- check_id: unit_tests
+  command: /private/tmp/hg039-venv/bin/python -m kineticloop.db.cli test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-039/unit_tests-2ac1104.log
+- check_id: lint
+  command: /private/tmp/hg039-venv/bin/python -m kineticloop.db.cli lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-039/lint-2ac1104.log
+- check_id: typecheck
+  command: /private/tmp/hg039-venv/bin/python -m kineticloop.db.cli typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-039/typecheck-2ac1104.log
+- check_id: diff_clean
+  command: git diff --check d0470badf0ccf6bec28a9bc7e6836b57d9df93ce 2ac110456dc8d5c3dd9d712c5cfe4a80f6b80af3
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-039/diff_clean-2ac1104.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- KL075 normal merge d0470badf0ccf6bec28a9bc7e6836b57d9df93ce is verified ancestral to protected base
+  d0470badf0ccf6bec28a9bc7e6836b57d9df93ce; final checks and reviews follow that merge. Only HG039-owned
+  resources are cleaned.
+- HG039 runs governance and pure request-feasibility checks only; no KL026 implementation, I03@DC or
+  release/product PASS is claimed. All existing nine DC oracles remain unchanged; named cancellation_identity_pu
+  and additional I03 negative/replay/success cases must execute in the KL026 implementation.
+- The proposal is immutable TEST-local data/predicates only, with no DB owner or lifecycle; implementation
+  belongs in existing exact KL026 test files. No public ingress/authentication, authorization meaning,
+  production validator, owner permission, migration, CI or frozen file changes.
+- Canonical hash is computed from the strict request by the trusted recipe. Caller actor, authorization
+  grant/hash, SUBJECT relabeling, public subclass or model_construct cannot authorize cancellation.
+- Root cancellation and actual CancelUndispatched remain separate transactions. Terminal-with-RESERVED
+  keeps occupation safely until exact cleanup; DISPATCH_INTENT never refunds/resends. Historical replay
+  and terminal success remain immutable non-executable facts.
+- Fresh independent GENERAL/PROTOCOL/DB_CONCURRENCY review binds final governance/evidence SHA. Only
+  HG039 review-record paths may follow; all normal hosted checks and merge gate must PASS.
