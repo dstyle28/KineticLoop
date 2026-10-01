@@ -1,0 +1,3 @@
+# Final HG039 protected base
+
+KL075 PR74 normally merged at d0470badf0ccf6bec28a9bc7e6836b57d9df93ce; protected base d0470badf0ccf6bec28a9bc7e6836b57d9df93ce contains its PASS result and all three required PASS reviews. The actual two-parent merge and applicable quality/database/merge-gate SUCCESS records are preserved in KL075-normal-merge.json. HG039 rebased cleanly onto latest master after that merge. No KL026 result/review/integration exists there. Only HG039 governance preparation is in this branch; no KL075/KL026 worktree code or DB lifecycle was touched. Final checks must bind the post-refresh committed SHA, and final independent reviews must bind the later governance/evidence revision.
