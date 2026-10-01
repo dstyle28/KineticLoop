@@ -1,0 +1,45 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-037",
+  "reviewed_head_sha": "db8f5e1665916008290803830a69456652c4496c",
+  "review_type": "GENERAL",
+  "status": "PASS",
+  "findings": [],
+  "review_contract_version": "v0.2",
+  "review_summary": "Fresh independent review of the exact committed governance head against protected base dac7df4adde23cba0ac5483204a25f4b3668176d and tested commit feedd8160d1a77c0d7bc7c384eed2e0d1eb68011. No BLOCKER or REQUIRED_FOLLOWUP finding. This PASS ratifies HG037 governance and prospective KL074 boundaries; it is not KL074 implementation, product requirement, release, hosted execution or merge PASS. Earlier reviews were not used as proof.",
+  "checks_verified": [
+    "Resolved current authority through CURRENT_DOCUMENT_INDEX.json and read AGENTS.md, the independent-review skill, governance/review/merge contracts, HG037 record and KL074 packet. Independently compared committed base/head trees and task definitions.",
+    "Exact protected-base-to-reviewed diff contains 126 unique files and equals the governance files_changed declaration. Protected base is an actual parent of the ordinary tested merge; base -> tested -> reviewed ancestry holds. The only tested-to-reviewed commit adds sixteen new SHA-bound evidence files and updates the HG037 governance record; no implementation, packet, guard, existing evidence or derived hash changes occur in that suffix. The governance suffix checker accepts it.",
+    "All eight selected checks independently match their committed JSON metadata and log: exact check_id, command, PASS result, evidence_ref, exit_code=0 and tested_commit=feedd8160d1a77c0d7bc7c384eed2e0d1eb68011. Committed logs report 65 focused, 440 harness and 207 unit tests passing; audit, harness validation, lint, typecheck and diff checks pass. Prior-SHA evidence is historical only.",
+    "All pre-existing backlog and traceability task objects are identical to protected base; only fresh harness-backlog-v0.2/KL-074 is appended, NOT_STARTED, with empty requirements/evidence and no result/review/integration. Its packet and traceability match the exact ratified definition, six exact implementation paths, ten prospective check/oracle contracts and GENERAL/DB_CONCURRENCY/SECURITY_DATA_BOUNDARY review requirements. Completed prerequisite results/reviews are preserved and merged.",
+    "Product source, Compose, DB/unit tests, migrations, all existing workflows, frozen files/baseline, requirements, acceptance/evidence manifest, prior completed/results/evidence/integration/milestone/contracts are unchanged relative to protected base. Index and delivery manifest hashes/bytes were recomputed independently; authority metadata and existing manifest entries are preserved, with only the new KL074 packet appended.",
+    "The future lifecycle source guard pins the baseline hash and accepts only the complete-byte bounded readiness candidate. It preserves ownership, credentials, socket psql, destructive SQL order and failure policy; explicit container loopback TCP gates startup/reset readiness. Each startup probe receives remaining monotonic time, backoff cannot exceed the remaining deadline, and TimeoutExpired is sanitized without replay. Normal Compose startup handling is retained. Compose semantic content is unchanged except the exact loopback healthcheck.",
+    "The prospective coldstart oracle requires locally derived tested-SHA/resolved-root namespaces, validation before destructive commands, absence of pre-existing resources, actual-image/entrypoint and ordered startup/probe/SQL provenance, the existing bootstrap_two_phase helper on the same owned lifecycle, migrated revision/current_database/reset-sentinel/isolation assertions, bounded subprocess/total execution and finally cleanup absence. Unproved ordering, incomplete cleanup or missing artifacts cannot establish PASS. Legacy suites require a dedicated hosted VM.",
+    "The single additive future pull_request workflow is exact-byte hash pinned and uses a same-repository codex/kl074- branch, explicit PR-head checkout and verification, locked uv 0.12.17, ubuntu-latest, local default Docker endpoint checks, finite job/step deadlines, pipefail for both exact commands and always-uploaded task evidence. YAML, Bash and embedded Python syntax checks pass. Official GitHub event and runner references support the PR-head and VM entrypoint. Actual run/job/head/attempt/artifact identity and downloaded raw logs remain mandatory future evidence; normal existing CI and merge gates remain independently required.",
+    "Independently reran the focused positive/negative mutation suite: 65 passed. This includes absent workflow acceptance, exact installed workflow acceptance and installed-byte drift rejection, resolving the prior future-full-suite contradiction. Also reran the append-only/provenance audit and check-harness at the reviewed head: HG037_AUDIT_PASS and HARNESS_CHECK_PASS tasks=71 active=68. No broader suite repeats were needed after the committed evidence and immutable suffix checks."
+  ],
+  "known_limitations": [
+    "No real Docker/PostgreSQL or broad DB suite was run for this governance review. The proposed workflow is not installed or executed by HG037. All ten KL074 implementation checks remain NOT_RUN.",
+    "The saved upstream entrypoint reference and same-SHA hosted intermittency motivate the follow-up but do not prove deployed-image causality. Actual image digest/entrypoint and timestamped init-stop-final evidence must be established by KL074 or reported FAIL/NOT_RUN.",
+    "Local selected checks use the existing /private/tmp/kl017-venv interpreter with absolute PYTHONPATH rather than uv. Locked-uv hosted CI, specialist reviews and the final merge gate remain separate obligations.",
+    "Post-review commits must touch only docs/exec-plans/reviews/HG-037/**; any other change requires fresh review."
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-037.yaml",
+    "docs/exec-plans/active/KL-074.md",
+    "docs/exec-plans/evidence/HG-037/append_only_provenance_audit-feedd81.log",
+    "docs/exec-plans/evidence/HG-037/readiness_scope_regressions-feedd81.log",
+    "docs/exec-plans/evidence/HG-037/harness_validation-feedd81.log",
+    "docs/exec-plans/evidence/HG-037/harness_tests-feedd81.log",
+    "docs/exec-plans/evidence/HG-037/unit_tests-feedd81.log",
+    "docs/exec-plans/evidence/HG-037/lint-feedd81.log",
+    "docs/exec-plans/evidence/HG-037/typecheck-feedd81.log",
+    "docs/exec-plans/evidence/HG-037/diff_clean-feedd81.log",
+    "docs/exec-plans/evidence/HG-037/READINESS_EVIDENCE.md",
+    "docs/exec-plans/evidence/HG-037/HOSTED_EXECUTION_PREFLIGHT.md",
+    "docs/exec-plans/evidence/HG-037/kl074-readiness.workflow.proposal.yml",
+    "tests/harness/test_readiness_scope.py",
+    "tools/harness/validate_harness.py",
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows",
+    "https://docs.github.com/en/actions/reference/runners/github-hosted-runners"
+  ]
+}
