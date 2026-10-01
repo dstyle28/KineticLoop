@@ -2143,6 +2143,8 @@ class RestrictedSqlSession:
             for logical_id in ("S39", "S40", "S41", "S42"):
                 count = 2 if logical_id != "S39" and self.__coordination_context.get("full_execution_members") else 1
                 if len(self.__inserted_ids.get(logical_id, set())) != count:
+                    if count == 1:
+                        raise GuardRequired(f"CommitBundle requires exactly one {logical_id} insert")
                     raise GuardRequired(f"CommitBundle requires exactly {count} {logical_id} inserts")
             if self.__coordination_context.get("full_execution_members"):
                 for table, column in (("S40", "prescription_kind"), ("S41", "member_kind")):
