@@ -127,7 +127,7 @@ Parallel write policy: **{t['parallel_write_policy']}**. Reject every overlappin
 ## Completion
 Commit {t['handoff_artifact']} under the result contract before independent review. Do not implement downstream tasks or expand write scope. Fresh fixes require fresh checks/reviews. {body.get('extra','')}
 '''
-    (HERE/f'{name}.packet.draft.md').write_text(p)
+    (HERE/f'{name}.packet.draft.md').write_text('\n'.join(line.rstrip() for line in p.splitlines()) + '\n')
 
 db='tests/db/test_protocol_interleavings.py'
 oracles=[
