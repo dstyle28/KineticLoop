@@ -1,7 +1,7 @@
 change_identity: harness-governance-v0.1/HG-037
 display_change_id: HG-037
 base_commit: 822322dfcac69d1042c8f9f7517cecf4903f8163
-tested_commit: b82c41d982547d7f62db18c17385cbeb46b86945
+tested_commit: e8bb2b9034e2888761ea31ad38e22dd522644184
 change_status: PASS
 summary: Append fresh NOT_STARTED KL074 PostgreSQL final-server readiness follow-up after normal HG036
   merge. Preserve completed KL002 and all existing definitions/results/evidence. Ratify ten future checks
@@ -19,19 +19,24 @@ files_changed:
 - docs/exec-plans/active/KL-074.md
 - docs/exec-plans/evidence/HG-037/DB_CONCURRENCY-prior-4f68c15.json
 - docs/exec-plans/evidence/HG-037/DB_CONCURRENCY-rejected-4b1533b.json
+- docs/exec-plans/evidence/HG-037/DB_CONCURRENCY-rejected-78171e7.json
 - docs/exec-plans/evidence/HG-037/GENERAL-prior-4f68c15.json
 - docs/exec-plans/evidence/HG-037/GENERAL-rejected-4b1533b.json
+- docs/exec-plans/evidence/HG-037/GENERAL-rejected-78171e7.json
 - docs/exec-plans/evidence/HG-037/HOSTED_EXECUTION_PREFLIGHT.md
 - docs/exec-plans/evidence/HG-037/KL-074.packet.draft.md
 - docs/exec-plans/evidence/HG-037/KL-074.task-definition.draft.json
 - docs/exec-plans/evidence/HG-037/PREPARATION.md
 - docs/exec-plans/evidence/HG-037/READINESS_EVIDENCE.md
+- docs/exec-plans/evidence/HG-037/SECURITY_DATA_BOUNDARY-rejected-78171e7.json
 - docs/exec-plans/evidence/HG-037/append_only_provenance_audit-87ff1dc.json
 - docs/exec-plans/evidence/HG-037/append_only_provenance_audit-87ff1dc.log
 - docs/exec-plans/evidence/HG-037/append_only_provenance_audit-b35cb88.json
 - docs/exec-plans/evidence/HG-037/append_only_provenance_audit-b35cb88.log
 - docs/exec-plans/evidence/HG-037/append_only_provenance_audit-b82c41d.json
 - docs/exec-plans/evidence/HG-037/append_only_provenance_audit-b82c41d.log
+- docs/exec-plans/evidence/HG-037/append_only_provenance_audit-e8bb2b9.json
+- docs/exec-plans/evidence/HG-037/append_only_provenance_audit-e8bb2b9.log
 - docs/exec-plans/evidence/HG-037/audit.py
 - docs/exec-plans/evidence/HG-037/boundaries.draft.json
 - docs/exec-plans/evidence/HG-037/diff_clean-87ff1dc.json
@@ -40,6 +45,8 @@ files_changed:
 - docs/exec-plans/evidence/HG-037/diff_clean-b35cb88.log
 - docs/exec-plans/evidence/HG-037/diff_clean-b82c41d.json
 - docs/exec-plans/evidence/HG-037/diff_clean-b82c41d.log
+- docs/exec-plans/evidence/HG-037/diff_clean-e8bb2b9.json
+- docs/exec-plans/evidence/HG-037/diff_clean-e8bb2b9.log
 - docs/exec-plans/evidence/HG-037/docker-entrypoint.reference.sh
 - docs/exec-plans/evidence/HG-037/draft.py
 - docs/exec-plans/evidence/HG-037/finalize.py
@@ -50,12 +57,16 @@ files_changed:
 - docs/exec-plans/evidence/HG-037/harness_tests-b35cb88.log
 - docs/exec-plans/evidence/HG-037/harness_tests-b82c41d.json
 - docs/exec-plans/evidence/HG-037/harness_tests-b82c41d.log
+- docs/exec-plans/evidence/HG-037/harness_tests-e8bb2b9.json
+- docs/exec-plans/evidence/HG-037/harness_tests-e8bb2b9.log
 - docs/exec-plans/evidence/HG-037/harness_validation-87ff1dc.json
 - docs/exec-plans/evidence/HG-037/harness_validation-87ff1dc.log
 - docs/exec-plans/evidence/HG-037/harness_validation-b35cb88.json
 - docs/exec-plans/evidence/HG-037/harness_validation-b35cb88.log
 - docs/exec-plans/evidence/HG-037/harness_validation-b82c41d.json
 - docs/exec-plans/evidence/HG-037/harness_validation-b82c41d.log
+- docs/exec-plans/evidence/HG-037/harness_validation-e8bb2b9.json
+- docs/exec-plans/evidence/HG-037/harness_validation-e8bb2b9.log
 - docs/exec-plans/evidence/HG-037/kl074-readiness.workflow.proposal.yml
 - docs/exec-plans/evidence/HG-037/lint-87ff1dc.json
 - docs/exec-plans/evidence/HG-037/lint-87ff1dc.log
@@ -63,6 +74,8 @@ files_changed:
 - docs/exec-plans/evidence/HG-037/lint-b35cb88.log
 - docs/exec-plans/evidence/HG-037/lint-b82c41d.json
 - docs/exec-plans/evidence/HG-037/lint-b82c41d.log
+- docs/exec-plans/evidence/HG-037/lint-e8bb2b9.json
+- docs/exec-plans/evidence/HG-037/lint-e8bb2b9.log
 - docs/exec-plans/evidence/HG-037/pr67.json
 - docs/exec-plans/evidence/HG-037/preparation-provenance.json
 - docs/exec-plans/evidence/HG-037/protected-base.txt
@@ -72,6 +85,8 @@ files_changed:
 - docs/exec-plans/evidence/HG-037/readiness_scope_regressions-b35cb88.log
 - docs/exec-plans/evidence/HG-037/readiness_scope_regressions-b82c41d.json
 - docs/exec-plans/evidence/HG-037/readiness_scope_regressions-b82c41d.log
+- docs/exec-plans/evidence/HG-037/readiness_scope_regressions-e8bb2b9.json
+- docs/exec-plans/evidence/HG-037/readiness_scope_regressions-e8bb2b9.log
 - docs/exec-plans/evidence/HG-037/refresh_hashes.py
 - docs/exec-plans/evidence/HG-037/run36807167973-attempt1-failed.log.json
 - docs/exec-plans/evidence/HG-037/run36807167973-attempt1.json
@@ -88,12 +103,16 @@ files_changed:
 - docs/exec-plans/evidence/HG-037/typecheck-b35cb88.log
 - docs/exec-plans/evidence/HG-037/typecheck-b82c41d.json
 - docs/exec-plans/evidence/HG-037/typecheck-b82c41d.log
+- docs/exec-plans/evidence/HG-037/typecheck-e8bb2b9.json
+- docs/exec-plans/evidence/HG-037/typecheck-e8bb2b9.log
 - docs/exec-plans/evidence/HG-037/unit_tests-87ff1dc.json
 - docs/exec-plans/evidence/HG-037/unit_tests-87ff1dc.log
 - docs/exec-plans/evidence/HG-037/unit_tests-b35cb88.json
 - docs/exec-plans/evidence/HG-037/unit_tests-b35cb88.log
 - docs/exec-plans/evidence/HG-037/unit_tests-b82c41d.json
 - docs/exec-plans/evidence/HG-037/unit_tests-b82c41d.log
+- docs/exec-plans/evidence/HG-037/unit_tests-e8bb2b9.json
+- docs/exec-plans/evidence/HG-037/unit_tests-e8bb2b9.log
 - docs/exec-plans/evidence/HG-037/write_record.py
 - docs/exec-plans/governance/HG-037.yaml
 - docs/harness/RESOURCE_LOCKS.md
@@ -103,38 +122,42 @@ checks_run:
 - check_id: append_only_provenance_audit
   command: /private/tmp/kl017-venv/bin/python /Users/davetian/.codex/worktrees/c4cb/KineticLoop/docs/exec-plans/evidence/HG-037/audit.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-037/append_only_provenance_audit-b82c41d.log
+  evidence_ref: docs/exec-plans/evidence/HG-037/append_only_provenance_audit-e8bb2b9.log
 - check_id: readiness_scope_regressions
   command: /private/tmp/kl017-venv/bin/python -m pytest -q tests/harness/test_readiness_scope.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-037/readiness_scope_regressions-b82c41d.log
+  evidence_ref: docs/exec-plans/evidence/HG-037/readiness_scope_regressions-e8bb2b9.log
 - check_id: harness_validation
   command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-037/harness_validation-b82c41d.log
+  evidence_ref: docs/exec-plans/evidence/HG-037/harness_validation-e8bb2b9.log
 - check_id: harness_tests
   command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-037/harness_tests-b82c41d.log
+  evidence_ref: docs/exec-plans/evidence/HG-037/harness_tests-e8bb2b9.log
 - check_id: unit_tests
   command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-037/unit_tests-b82c41d.log
+  evidence_ref: docs/exec-plans/evidence/HG-037/unit_tests-e8bb2b9.log
 - check_id: lint
   command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-037/lint-b82c41d.log
+  evidence_ref: docs/exec-plans/evidence/HG-037/lint-e8bb2b9.log
 - check_id: typecheck
   command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-037/typecheck-b82c41d.log
+  evidence_ref: docs/exec-plans/evidence/HG-037/typecheck-e8bb2b9.log
 - check_id: diff_clean
-  command: git diff --check 822322dfcac69d1042c8f9f7517cecf4903f8163 b82c41d982547d7f62db18c17385cbeb46b86945
+  command: git diff --check 822322dfcac69d1042c8f9f7517cecf4903f8163 e8bb2b9034e2888761ea31ad38e22dd522644184
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-037/diff_clean-b82c41d.log
+  evidence_ref: docs/exec-plans/evidence/HG-037/diff_clean-e8bb2b9.log
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
+- Fresh GENERAL/DB_CONCURRENCY/SECURITY_DATA_BOUNDARY reviews rejected 78171e7 because a governance
+  test required the future workflow to be absent. Rejected artifacts are preserved. Corrected tests
+  accept absent or present exact-byte workflow and reject installed drift, so future KL074 full suite
+  is feasible; fresh checks and reviews supersede that SHA.
 - 'Coordinator feasibility correction: former five-path scope could not execute mandatory hosted full
   suite. Six implementation paths now include only the future additive workflow; ten checks remain NOT_RUN.
   Prior PASS reviews of 4f68c15 are historical, preserved in evidence and superseded; new union reviews
