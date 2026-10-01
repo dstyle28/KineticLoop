@@ -1,0 +1,59 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-037",
+  "reviewed_head_sha": "4f68c15376611dd0ecb228627cfe63da1cac3d7e",
+  "review_type": "DB_CONCURRENCY",
+  "status": "PASS",
+  "findings": [
+    {
+      "severity": "NONBLOCKING",
+      "title": "Prior startup ownership and endpoint blockers closed",
+      "observation": "Independently loaded the validator from the exact reviewed Git blob. Its readiness_lifecycle_candidate anchors the complete baseline SHA256 and accepts only the complete-byte bounded readiness replacement. Reproducing the earlier namespace replacement, direct self._runner SQL, alternate subprocess SQL, and foreign startup endpoint concealed by an unused loopback literal now returns readiness-lifecycle-content-scope. The committed 42-case readiness scope suite independently passed 42/42 with no Docker or PostgreSQL. This new reviewed revision closes the two DB_CONCURRENCY blockers recorded against 4b1533bc6bf2052d859e2b079116e0d408013f43; the rejected review is preserved as evidence."
+    },
+    {
+      "severity": "NONBLOCKING",
+      "title": "Ratified candidate preserves database ownership and destructive SQL semantics",
+      "observation": "Compared the exact candidate to unchanged lifecycle and Compose source. Startup and post-reset pg_isready target container loopback 127.0.0.1:5432. Startup probes receive the positive remaining monotonic deadline and backoff is capped by remaining time; the timeout handler raises a sanitized error without replay. Ordinary Compose startup remains byte-preserved. Namespace derivation, environment ownership, credentials/redaction, socket psql, ON_ERROR_STOP, DROP then CREATE, connection discovery and cleanup remain otherwise byte-preserved. Independently executing the candidate only in memory with a fake runner/clock produced delayed TCP readiness followed by exactly one DROP and CREATE, permanent unready and probe-timeout termination at a two-second bound with zero SQL, failed DROP with no CREATE, and failed CREATE with neither statement replayed. These review experiments validate the ratified governance candidate only, not future KL074 execution checks."
+    },
+    {
+      "severity": "NONBLOCKING",
+      "title": "Future real PostgreSQL evidence and cleanup obligations are complete",
+      "observation": "The enforceable packet and exact backlog/traceability projection require all nine future checks, including deterministic old-code-fails/new-code-passes socket/init-stop-final regression, bounded subprocess readiness, no SQL replay, actual structural probe alignment, and three bounded migrated cold starts. Coldstarts must derive exact kineticloop-kl074-cold-<tested-first7>-<resolved-root-sha256-first12> Compose and underscore database names from fresh resolved roots, reject malformed/default/foreign/ambient targets and preexisting resources before reset, and prove namespace isolation. Actual configured image and resolved image ID/digest, actual in-container entrypoint source/hash, versions, timestamped startup/probe/SQL ordering, current_database and migrated revision, repeated-reset sentinel removal, and finally exact owned resource absence are mandatory. Read the actual unchanged bootstrap_two_phase(lifecycle): it resets the selected lifecycle, provisions roles and ownership, applies the baseline, external handoff and subject guard, then upgrades through the deployer to head. The packet requires this existing helper on the identical owned lifecycle, not a replacement or another fixture namespace. Cleanup failure and unavailable actual-image ordering cannot become PASS. Full unchanged legacy DB suites require dedicated hosted VM Docker and all normal CI/gates; shared developer Docker and KL019/KL024/KL025 resources are excluded."
+    },
+    {
+      "severity": "NONBLOCKING",
+      "title": "Governance scope preserves transaction and product authority",
+      "observation": "Independently compared protected base 822322dfcac69d1042c8f9f7517cecf4903f8163 to reviewed head. Exactly fresh harness-backlog-v0.2/KL-074 is appended as NOT_STARTED with no requirements covered, no result/review/integration artifact and GENERAL plus DB_CONCURRENCY requirements. Every preexisting backlog and traceability task is identical. Completed KL002 definitions/results/evidence/integration, product source, Compose, DB/unit tests, migrations, CI workflows, frozen Protocol/DB/baseline, current requirement registry and acceptance sets are unchanged. Therefore this change maps to no T1-T8 or coordination-row mutation and alters no SafetyRegistry/S01 lock order, idempotency, fencing, authorization, Evidence Admission, provider trust or production/shadow separation. KL074 uses only postgres_lifecycle; its exact write paths and resource keys are disjoint from KL019 authorization_core/registry_coordination/transaction_interfaces/user_coordination. No task/product/release PASS or production activation follows from this review."
+    },
+    {
+      "severity": "NONBLOCKING",
+      "title": "Evidence is revision-bound and causal limitations remain explicit",
+      "observation": "Independently verified base-to-tested b35cb88076763db9d68046d2debc1cbd53a28bce-to-reviewed linear ancestry, the single-parent tested-to-reviewed record/new-evidence-only suffix, exact declared changed paths, all eight final governance check logs and metadata tested bindings with exit-zero markers, and a clean committed diff. Saved source/envelope SHA256 and byte lengths match preparation provenance; raw log content hashes/lengths match each envelope. Hosted metadata independently shows failure/failure/success at the same 32d4d1a6ea10e09be42fa08eb56cd607ae9b2e35 head; retained failed logs contain missing socket diagnostics and the successful log reports 244 passed. This supports intermittency, not deployed-image causal proof. READINESS_EVIDENCE and provenance explicitly retain actual image/entrypoint/container timestamps NOT_VERIFIED and all nine prospective KL074 implementation checks NOT_RUN. Mutable upstream entrypoint reference remains reference-only. Docker and PostgreSQL were not executed during review, and no selected merge-gate PASS or future runtime evidence is claimed."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-037.yaml",
+    "docs/exec-plans/active/KL-074.md",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_readiness_scope.py",
+    "docs/exec-plans/evidence/HG-037/DB_CONCURRENCY-rejected-4b1533b.json",
+    "docs/exec-plans/evidence/HG-037/READINESS_EVIDENCE.md",
+    "docs/exec-plans/evidence/HG-037/preparation-provenance.json",
+    "docs/exec-plans/evidence/HG-037/readiness_scope_regressions-b35cb88.log",
+    "docs/exec-plans/evidence/HG-037/append_only_provenance_audit-b35cb88.log",
+    "docs/exec-plans/evidence/HG-037/harness_validation-b35cb88.log",
+    "src/kineticloop/db/lifecycle.py",
+    "compose.yaml",
+    "tests/db/test_lifecycle.py",
+    "tests/db/test_migrations.py",
+    "docs/exec-plans/completed/KL-002_RESULT.yaml",
+    "docs/exec-plans/integrations/KL-002.json",
+    "docs/exec-plans/completed/KL-013_RESULT.yaml",
+    "docs/exec-plans/completed/KL-023_RESULT.yaml",
+    "docs/exec-plans/active/KL-019.md",
+    "docs/harness/RESOURCE_LOCKS.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+    "docs/harness/MERGE_GATE.md"
+  ],
+  "review_contract_version": "v0.2"
+}
