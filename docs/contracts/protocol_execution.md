@@ -35,7 +35,9 @@ S38's stage, for the exact live intent day. Its date must equal the trusted data
 clock's day in the immutable policy's `execution_calendar.timezone`. Calendar policy,
 next midnight, ACTIVE lifecycle, null parent and revision zero are server controlled.
 S01 serializes the missing natural key; database uniqueness remains authoritative.
-The normal guarded T6 writes then switch that exact head to revision one and append
+The outer owner finish guard rejects any early return after first-use creation unless
+its complete validated outcome and receipt/event/outbox have finished. The normal
+guarded T6 writes then switch that exact head to revision one and append
 S39/S40/S41/S42, complete normalized artifact closure, terminal success/COMMITTED,
 execution basis and bookkeeping. No generic S38 insert capability is added.
 The existing certificate evaluator computes every finite bound; a requested absolute
@@ -52,6 +54,9 @@ back together. Existing READY/PLANNED, RESUME/CONTINUE and external-execution se
 are retained. Changed-key START cannot append another START. Successful first START
 reports its accepted outcome; every historical retry reports executable=false.
 Publication/issuance replay returns historical IDs, never a reusable current permit.
+If an actual preflight miss races an original commit and later authority loss, the
+failed fresh path fully rolls back before the existing receipt-only replay owner is
+reread. Authentication/registration stays mandatory and the fallback grants no action.
 
 The fixture seeds only registered isolated TEST upstream inputs: immutable
 policy/program/artifact/control basis, SEALED factset, projection dependencies and

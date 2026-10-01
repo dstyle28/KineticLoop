@@ -1022,7 +1022,7 @@ def test_current_start_denial(urls: dict[str, str]) -> None:
                             "control_identity": str(control),
                             "control_revision": 1,
                             "scope": "TEST_ONLY",
-                            "status": "PROTECTIVE_HOLD" if case == "hold" else "STOP",
+                            "status": "HOLD" if case == "hold" else "STOP",
                             "ref_s02_id": receipt,
                             "ref_s05_id": POLICY,
                         },
@@ -1035,7 +1035,7 @@ def test_current_start_denial(urls: dict[str, str]) -> None:
                             "control_identity": str(control),
                             "execution_scope": "TEST_ONLY",
                             "head_revision": 1,
-                            "status": "PROTECTIVE_HOLD" if case == "hold" else "STOP",
+                            "status": "ACTIVE",
                             "ref_s17_id": control,
                         },
                     )
@@ -1079,6 +1079,35 @@ def test_current_start_denial(urls: dict[str, str]) -> None:
 
             with connect(urls["admin"]) as db:
                 execute_command(db, "ApplyControl", SUBJECT, apply)
+            with connect(urls["admin"]) as db:
+                from kineticloop.protocol.authorization import controls_are_eligible
+
+                with db.transaction():
+                    tx = RepositoryTransaction(db.cursor(), "ApplyControl", SUBJECT)
+                    tx.lock_subject()
+                    proven, states = tx._current_control_states("TEST_ONLY")
+                    assert proven and states == (("HOLD" if case == "hold" else "STOP"),)
+                    assert not controls_are_eligible(proven=proven, states=states)
+                    projected = db.execute(
+                        "SELECT head.status,event.status FROM kineticloop.control_heads head JOIN kineticloop.control_events event ON event.id=head.ref_s17_id AND event.subject_id=head.subject_id WHERE head.subject_id=%s",
+                        (SUBJECT,),
+                    ).fetchone()
+                    assert projected == ("ACTIVE", "HOLD" if case == "hold" else "STOP")
+                denied = query_execution_eligibility(
+                    db,
+                    command_kind="ContinueSession",
+                    subject_id=SUBJECT,
+                    artifact_ids=[a.artifact_id for a in artifacts],
+                    artifact_identities=artifacts,
+                    local_date=local_date,
+                    session_id=UUID(first_start.session_id),
+                    prescription_id=UUID(result["prescription_id"]),
+                    authorization_id=UUID(result["authorization_id"]),
+                    execution_scope="TEST_ONLY",
+                )
+                assert not denied.is_executable and denied.denial_reasons == (
+                    "CURRENT_AUTHORITY_DENIED",
+                )
         elif case in {"root_revoke", "transitive_revoke"}:
             revoke_input(urls, ROOT_ARTIFACT if case == "root_revoke" else STATIC, case)
         elif case == "missing":
@@ -1112,7 +1141,9 @@ def test_current_start_denial(urls: dict[str, str]) -> None:
         assert snapshot(urls) == before, case
 
 
-def test_ack_loss_replay_is_historical(urls: dict[str, str]) -> None:
+def test_ack_loss_replay_is_historical(
+    urls: dict[str, str], monkeypatch: pytest.MonkeyPatch
+) -> None:
     request = publish_request(urls)
     with connect(urls["admin"]) as db:
         published = service(db).publish(request)
@@ -1166,6 +1197,95 @@ def test_ack_loss_replay_is_historical(urls: dict[str, str]) -> None:
             with pytest.raises((RepositoryTransactionError, ValueError, psycopg.Error)):
                 service(db).start(changed(first, session_id=str(uuid4()), idempotency_key=loss))
         assert snapshot(urls) == baseline, loss
+
+    # A real preflight miss releases S01 before a concurrent original and authority loss.
+    for kind, loss in (
+        ("PublishManifest", "unchanged"),
+        ("CommitBundle", "unchanged"),
+        ("StartSession", "unchanged"),
+        ("PublishManifest", "revocation"),
+        ("CommitBundle", "revocation"),
+        ("StartSession", "revocation"),
+        ("StartSession", "expiry"),
+        ("StartSession", "membership"),
+    ):
+        seed_inputs(urls)
+        race_value: Any = (
+            publish_request(urls)
+            if kind == "PublishManifest"
+            else upstream(urls, publish(urls))
+            if kind == "CommitBundle"
+            else start_command(committed(urls)[1])
+        )
+        missed, resume = Event(), Event()
+        real_replay = ProtocolExecutionService._replay
+        real_history = RepositoryTransaction.execution_historical_outcome
+        observations: list[Any] = []
+        locked_history: list[Any] = []
+
+        def replay_probe(adapter: ProtocolExecutionService, *args: Any, **kw: Any) -> Any:
+            result = real_replay(adapter, *args, **kw)
+            if (
+                adapter._connection.info.parameter_status("application_name")
+                == "kl019-preflight-miss"
+            ):
+                observations.append(result)
+                if result is None and not missed.is_set():
+                    missed.set()
+                    assert (
+                        adapter._connection.info.transaction_status
+                        == psycopg.pq.TransactionStatus.IDLE
+                    )
+                    assert resume.wait(10)
+            return result
+
+        def history(tx: RepositoryTransaction, **kw: Any) -> Any:
+            result = real_history(tx, **kw)
+            if missed.is_set() and resume.is_set():
+                locked_history.append(result)
+            return result
+
+        def call(name: str) -> Any:
+            with connect(urls["admin"], application_name=name) as db:
+                adapter = service(db)
+                return (
+                    adapter.publish(race_value)
+                    if kind == "PublishManifest"
+                    else adapter.commit(race_value)
+                    if kind == "CommitBundle"
+                    else adapter.start(race_value)
+                )
+
+        with monkeypatch.context() as patch, ThreadPoolExecutor(max_workers=1) as pool:
+            patch.setattr(ProtocolExecutionService, "_replay", replay_probe)
+            patch.setattr(RepositoryTransaction, "execution_historical_outcome", history)
+            contender = pool.submit(call, "kl019-preflight-miss")
+            assert missed.wait(10)
+            try:
+                original = call("kl019-original")
+                if loss == "revocation":
+                    revoke_input(urls, ROOT_ARTIFACT, "miss-then-revoke")
+                elif loss == "expiry":
+                    perturb(
+                        urls,
+                        "UPDATE kineticloop.authorization_issuances SET valid_until=clock_timestamp()",
+                    )
+                elif loss == "membership":
+                    perturb(
+                        urls,
+                        "UPDATE kineticloop.daily_plan_heads SET current_bundle_revision_id=NULL",
+                    )
+                baseline = snapshot(urls)
+            finally:
+                resume.set()
+            retried = contender.result(timeout=10)
+        assert retried == {**original, "replayed": True, "executable": False}, (kind, loss)
+        assert observations[0] is None
+        if loss == "unchanged":
+            assert len(observations) == 1 and locked_history == [retried]
+        else:
+            assert len(observations) == 2 and observations[1] == retried and not locked_history
+        assert snapshot(urls) == baseline
 
 
 def test_failures_roll_back_each_boundary(
@@ -1383,3 +1503,43 @@ def test_first_use_contention(urls: dict[str, str], monkeypatch: pytest.MonkeyPa
                     else:
                         service(db).start(cmd)
         assert snapshot(urls) == before, target
+
+    from kineticloop.persistence.transactions import execute_command
+
+    for kind in ("CommitBundle", "StartSession"):
+        seed_inputs(urls)
+        bare_command: Any = (
+            upstream(urls, publish(urls))
+            if kind == "CommitBundle"
+            else start_command(committed(urls)[1])
+        )
+        before = snapshot(urls)
+        with connect(urls["admin"]) as db:
+            adapter = service(db)
+            artifacts = adapter._artifacts([str(ROOT_ARTIFACT), str(STATIC), str(POLICY_ARTIFACT)])
+
+            def bare(tx: RepositoryTransaction) -> str:
+                adapter._registry(tx, artifacts)
+                if kind == "CommitBundle":
+                    tx.lock_intents((UUID(bare_command.intent_id),))
+                    tx.require_current_fence(
+                        UUID(bare_command.intent_id),
+                        owner_id=IDENTITY.key,
+                        fence=bare_command.expected_fence,
+                        expected_request_revision=bare_command.expected_request_revision,
+                        expected_attempt_id=UUID(bare_command.attempt_id),
+                    )
+                    day = db.execute(
+                        "SELECT local_date FROM kineticloop.planning_intents WHERE id=%s",
+                        (UUID(bare_command.intent_id),),
+                    ).fetchone()[0]
+                    tx.lock_daily_head(day, create_first=True)
+                else:
+                    tx.lock_execution((UUID(bare_command.session_id),), create_first=True)
+                return "early return without owner outcome"
+
+            with pytest.raises(
+                GuardRequired, match="first-use row requires complete owner outcome"
+            ):
+                execute_command(db, kind, SUBJECT, bare)
+        assert snapshot(urls) == before, kind

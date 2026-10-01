@@ -2333,6 +2333,7 @@ class RepositoryTransaction:
         "_last_stage",
         "_leased_artifacts",
         "_head_bundles",
+        "_first_use_completed",
         "_artifact_details",
         "_coordination_context",
         "_locked_ids",
@@ -2368,6 +2369,7 @@ class RepositoryTransaction:
         self._head_bundles: dict[UUID, UUID | None] = {}
         self._artifact_details: dict[UUID, Mapping[str, Any]] = {}
         self._coordination_context: dict[str, Any] = {}
+        self._first_use_completed = False
 
     @property
     def lock_trace(self) -> tuple[tuple[LockStage, str], ...]:
@@ -4860,6 +4862,7 @@ class RepositoryTransaction:
             "WHERE id=%s AND subject_id=%s",
             (Jsonb({"outcome": outcome}), receipt_id, self.subject_id),
         )
+        self._first_use_completed = True
         return outcome, False
 
     def _require_command_locks(self, aggregate_locks: Mapping[str, Sequence[UUID]]) -> None:
@@ -4918,6 +4921,10 @@ class RepositoryTransaction:
         return object_id in self._locked_ids.get(table, set())
 
     def finish(self) -> None:
+        if (self._coordination_context.get("first_execution_head") is not None
+            or self._coordination_context.get("first_execution_session") is not None
+        ) and not self._first_use_completed:
+            raise GuardRequired("first-use row requires complete owner outcome and bookkeeping")
         if self.spec.registry_required and not self._registry:
             raise GuardRequired(f"{self.command_kind} requires a shared S51 registry lease")
         if self.spec.subject_guard_required and not self._subject:
