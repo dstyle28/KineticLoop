@@ -1,0 +1,190 @@
+"""Prepare HG038 task definitions/packets only inside its own evidence directory."""
+import copy
+import json
+from pathlib import Path
+
+ROOT = Path.cwd()
+HERE = ROOT / 'docs/exec-plans/evidence/HG-038'
+tasks = {t['id']: t for t in json.loads((ROOT / 'KineticLoop_Harness_Backlog_v0.2.json').read_text())['tasks']}
+AUTHORITY = ['05_KineticLoop_Protocol_v1.2_FROZEN.md', '04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md', '09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md']
+
+ISOLATION = '''Every suite derives its own exact namespace before constructing lifecycle, bootstrap, reset or finally cleanup. Use tested_commit first7 lowercase hex from git HEAD (not arbitrary git --short length), SHA256(os.fsencode(resolved worktree root)) first12 lowercase hex, fixed suite labels and task prefixes: Compose kineticloop-klNNN-<label>-<shortsha>-<digest>, database kineticloop_klNNN_<label>_<shortsha>_<digest>. Reject malformed SHA/digest/label, mismatched root, caller/ambient namespaces and default/foreign targets before every destructive entrypoint. Inventory all nested bootstrap/seed/reset/destroy calls; bootstrap_two_phase(lifecycle) must receive the already selected lifecycle, and finally destroy only that namespace. Namespace PU tests run before the first real reset and cover peer roots, malformed/foreign/ambient values and nested cleanup. Never invoke a foreign pytest fixture because a seed helper was imported. Own DB tests may import immutable seed builders from merged tests only with explicit URLs; those helpers must not reset/bootstrap/cleanup or seed the target owner's output. Each suite validates current_database and records namespace inventory, migration revision, cleanup and elapsed deadlines. Local prerequisite regressions are read-only/unit tests; do not run foreign legacy DB fixtures on shared Docker. Full legacy tests/db run through the existing unchanged hosted PostgreSQL lifecycle job on a fresh ubuntu-latest VM; retain normal CI and gates. No KL074-only workflow reuse, new workflow, remote daemon or impossible pre-review hosted command is required. If a necessary local DB regression cannot route through the exact owned namespace, stop and obtain a separate bounded fixture refinement instead of borrowing its default resource.'''
+
+COMMON = '''Preserve frozen authorization/admission/T1–T8/lock order/provider/shadow meaning. No migrations, role grants, wire registry extensions, dependency/CI/lifecycle changes, completed task artifacts or product status changes. Production auto-activation remains disabled; real-data shadow has no head/issuance/binding. Every fixture is TEST with isolated subject/policy/environment and authenticated TEST principal. Model/network waits never occur inside coordination transactions; this task uses no model/provider/network. Missing policy/evidence/semantic completeness denies. Planned quantities never populate actual facts. Stop with SPEC_CHANGE_REQUIRED only when an exact frozen clause requires semantic change. Task PASS, product PASS, review PASS and MERGED remain separate; all new checks start NOT_RUN. Preserve all layer obligations and bind any eventual product evidence to requirement-set ID/hash, tested revision, migration, exact policy/release/artifact identities and committed raw assertions. No historical test/log reuse as new PASS. Fresh GENERAL/PROTOCOL/DB_CONCURRENCY reviews bind final implementation/result SHA; only own REVIEW_RECORD_ONLY append may follow.'''
+
+CONTROL = '''Trusted existing owner recipes, not a new public ControlService: ApplyControl calls execute_command("ApplyControl"), lock_subject, and idempotent_outcome with invalidation_scope="TEST_ONLY". Read current epoch under S01; RestrictedSqlSession inserts S17 STOP/HOLD with policy/receipt, S18 ACTIVE exact head, S43 EPOCH_INVALIDATED old epoch+1 and control/receipt references; updates S01 epoch+1 and last_control_event_id; appends receipt/event/outbox atomically. Mirror the actual merged KL019 recipe while deriving subject/policy/old epoch, never hardcoding epoch=1 after later operations. AcceptFactRevision uses actual merged KL023 input_revision recipe under execute_command/lock_subject/idempotent_outcome TEST_ONLY: valid admitted S14 revision, S43 invalidation, S01 exact frontier and old epoch+1, receipt/event/outbox. Source-bound preseeded candidate/underlying/admission may be declared inputs, not raced frontier replacement. Both recipes are test-local callbacks over the existing restricted owner. Raw SQL epoch/frontier writes cannot establish a raced operation; this DC ratification claims no public typed control ingress/authentication implementation. RevokeArtifact uses actual SafetyRegistryService with strict command/admin identity and exact immutable artifact closure. Cancellation/dispatch/acquire/publish/commit/START/seal use actual merged typed owners.'''
+
+UPSTREAM = '''KL026 may seed registered isolated TEST subject/policy/program/artifacts and upstream SEALED factset/projections/READY build. Its CommitBundle interleavings may use KL019's explicitly synthetic S26/COMMIT_READY/S34–S37 certificate input setup outside target transactions; record that limitation and prove no S24/S25/S38–S45/intent-success target output was seeded. This proves T6 DC guard races only, not KL027 full workflow. Use actual T3 publish and KL024 admission/acquire before T6. I08 starts with actual factset builder/complete outputs and valid admitted source inputs. Seeds/reads/barrier instrumentation may use trusted test connections, but assertions must inspect owner-generated rows and failed transactions must leave no target rows, receipt/event/outbox or pointer changes.'''
+
+TRAJECTORY = '''Owner-driven input boundary: registered TEST subject/policy/environment/program and immutable admitted evidence/artifacts may be explicit source inputs; compute factset membership/complete/seal using merged CanonicalViewService, preparation projections/READY build using their existing restricted execute_preparation owners, and actual T3 publication. Projection/BuildManifest test-local recipes use RestrictedSqlSession only for their exact S21/S22 and S23 input surfaces with source-bound canonical dependencies, complete role bindings and artifact closures from actual sealed inputs; no unrestricted SQL output insertion or new production service is implied. KL024 admission and acquire create current request/attempt/lease/fence. KL075 creates snapshot and stage transitions; KL076 creates F then D then N, action evidence and validation; KL077 commits complete bundle/issuances and guarded T7. Never seed S24/S25, S26, S29 COMMIT_READY, S34–S37 pipeline outputs, S38–S45, P/A or intent success to claim the target trajectory. Inputs cannot masquerade as target owner outputs. Store and assert exact IDs/hashes and stage/event/receipt/outbox chain from start to denial. No arbitrary demand string or self-reported PASS certificate. Missing upstream capability is a separately scoped prerequisite, never a raw output seed workaround. For F2 repair use actual KL024 structured constraint revision to create a new attempt under the same root budget/deadline, then acquire/snapshot and traverse the frozen forward stages; no backward stage jump or terminal reopening. Preserve F1/D1/N1 and reject them as the new attempt's mixed closure.'''
+
+def check(name, path, selector, oracle):
+    return {'check_id': name, 'command': f'uv run pytest -q {path}' + (f'::{selector}' if selector else ''), 'pass_oracle': oracle}
+
+def quality():
+    return [{'check_id': k, 'command': f'uv run kl {c}', 'pass_oracle': o} for k,c,o in [
+        ('harness_validation_passes','check-harness','HARNESS_CHECK_PASS; frozen/index/packet/prospective status and revision-bound scope validate.'),
+        ('unit_regressions_pass','test-unit','All repository unit tests pass, no newly skipped/xfail or suppressed failures.'),
+        ('harness_regressions_pass','test-harness','All harness regressions pass, including unchanged command/owner/frozen gates.'),
+        ('lint_passes','lint','Repository lint passes.'),('typecheck_passes','typecheck','Repository typecheck passes.')]]
+
+def define(name, title, deps, paths, resources, checks, boundaries, tables, invariants, body, commands=None, requirements=None):
+    t = copy.deepcopy(tasks['KL-027' if name != 'KL-026' else name])
+    t.update(id=name, task_identity='harness-backlog-v0.2/'+name, thread_id='THREAD-'+name,
+        title=title, milestone='M3', status='NOT_STARTED', depends_on=deps, conditional_depends_on=[],
+        commands=commands or [], transaction_boundaries=boundaries, table_ids=tables, invariant_ids=invariants,
+        requirements_covered=requirements or [], required_test_layers=['PU','DC'] + (['E2E'] if name=='KL-027' else []),
+        resource_keys=resources, write_paths=paths, write_paths_status='ENFORCEABLE', packet_refinement='ENFORCEABLE',
+        shared_hotspot=name not in {'KL-026','KL-027'}, parallel_write_policy='PARALLEL_IF_DEPENDENCIES_MET' if name in {'KL-026','KL-027'} else 'SERIALIZE_WITH_OTHER_HOTSPOT_TASKS',
+        handoff_artifact=f'docs/exec-plans/completed/{name}_RESULT.yaml', evidence_refs=[],
+        evidence_paths=[f'docs/exec-plans/evidence/{name}/**'], owner_role='quality' if name in {'KL-026','KL-027'} else 'backend',
+        environment_requirements=['Exact task-owned SHA/resolved-worktree-derived DB and Compose namespace per suite; isolated TEST subjects/policies/environments; no foreign legacy fixture lifecycle on shared Docker.'],
+        context_files=AUTHORITY+['docs/exec-plans/evidence/HG-038/PREPARATION.md','src/kineticloop/contracts/commands.py','src/kineticloop/persistence/transactions.py','src/kineticloop/persistence/planning.py','src/kineticloop/persistence/protocol_execution.py','docs/contracts/protocol_execution.md']+[f'docs/exec-plans/completed/{d}_RESULT.yaml' for d in deps],
+        entry_conditions=['Actual prerequisite PASS results, required reviews, and normal MERGED commits verified against protected base before first DB lifecycle.','M2 closure PASS: docs/exec-plans/milestones/M2.json; isolated TEST gate construction does not assume full G-SHADOW or production release closure.','KL074 actual normally merged readiness implementation verified; exclusive task resources/write paths available.','No result/review/integration for this unstarted task at protected base; every prospective check starts NOT_RUN.'],
+        check_contracts=checks+quality(),
+        deliverables=[title+' with exact owner and immutable identity contract.', 'Named positive/negative PU and real PostgreSQL checks with persisted rows/receipt/event/outbox assertions, bounded lock barriers and task-owned namespace inventory.'],
+        definition_of_done='Every exact named check and oracle executes and passes on tested_commit with committed raw evidence and no skipped/xfail/zero-collection substitute; only declared scope is written, frozen guards and immutable history hold, all product/release/layer obligations remain independent. '+body['done'])
+    t['checks_required_for_this_task']=[c['check_id'] for c in t['check_contracts']]
+    t['review_requirements']=['DB_CONCURRENCY','GENERAL','PROTOCOL']
+    (HERE/f'{name}.definition.draft.json').write_text(json.dumps(t,indent=2)+'\n')
+    def bullets(values): return '\n'.join('- '+v for v in values) if values else '- none'
+    p=f'''# {name} — {title}
+
+**Task identity:** `{t['task_identity']}`
+**Thread:** `{t['thread_id']}`
+**Milestone:** `M3`
+**Mode:** one fresh thread + one worktree + one PR
+**Status:** NOT_STARTED
+**Packet refinement:** ENFORCEABLE
+
+## Goal
+{title}. {body['goal']}
+
+## Dependencies
+{bullets(deps)}
+
+### Conditional dependencies
+- none
+
+## Entry conditions
+{bullets(t['entry_conditions'])}
+
+## Read first
+Read root AGENTS.md, current index and packet first; actual merged prerequisite results/reviews/integrations next. Open only Protocol 5.3–5.6/6.1–6.9, DB named tables/ownership/lock clauses, acceptance 2–4 and the exact code references needed.
+{bullets(t['context_files'])}
+
+## Frozen impact map
+- Invariants: {', '.join(invariants)}
+- Transactions: {', '.join(boundaries)}
+- Logical tables: {', '.join(tables)}
+
+## Requirements covered (does NOT mean PASS)
+{bullets(t['requirements_covered'])}
+
+## Checks required for this task PR
+{bullets(t['checks_required_for_this_task'])}
+
+## Machine-readable check contract
+```json
+{json.dumps({'check_contracts':t['check_contracts'],'evidence_paths':t['evidence_paths']},indent=2)}
+```
+
+PASS requires both command success and exact oracle. Execute every named selector and full own suite on tested_commit. Record collection/execution counts, namespaces, persisted identities and raw logs; missing/skipped/unavailable evidence is NOT_RUN/FAIL. Existing unchanged hosted DB/quality jobs and applicable selected-task merge gate must also pass before normal merge.
+
+## Resource / write isolation
+Resource keys:
+{bullets(resources)}
+
+Expected write paths:
+{bullets(paths)}
+
+Environment requirements:
+{bullets(t['environment_requirements'])}
+
+Parallel write policy: **{t['parallel_write_policy']}**. Reject every overlapping exclusive resource/write path before scheduling. Own result/evidence/review bookkeeping is separately allowed by the thread contracts.
+
+## Owner and interface boundary
+{body['owner']}
+
+## Source and output boundary
+{body['source']}
+
+## Local and hosted lifecycle boundary
+{ISOLATION.replace('klNNN','kl'+name[3:])}
+
+## Deliverables
+{bullets(t['deliverables'])}
+
+## Definition of Done
+{t['definition_of_done']}
+
+## Review requirements
+{bullets(t['review_requirements'])}
+
+## Non-goals
+{COMMON}
+
+## Completion
+Commit {t['handoff_artifact']} under the result contract before independent review. Do not implement downstream tasks or expand write scope. Fresh fixes require fresh checks/reviews. {body.get('extra','')}
+'''
+    (HERE/f'{name}.packet.draft.md').write_text(p)
+
+db='tests/db/test_protocol_interleavings.py'
+oracles=[
+('I01','publish_vs_user_revoke','Actual ProtocolExecutionService.publish(T3) versus exact guarded ApplyControl both S01 orders. Revoke-first stale READY build denied with no target/bookkeeping effects; publish-first keeps immutable historical S24/S25/receipt/event/outbox but later epoch invalidates its authority. Replay cannot repoint current manifest or regain execution.'),
+('I02','start_vs_user_revoke','Actual START and guarded ApplyControl both S01 orders. START-first exactly one immutable historical S45 binding/session and later current execution denied; revoke-first zero new session/binding/bookkeeping. Historical replay returns original IDs, non-executable, no second binding.'),
+('I03','cancel_vs_dispatch','Actual CancelUndispatched/PermitDispatch both S01+reservation orders using merged CallLedgerService. Cancel-first releases exact reserved dimensions and prevents permit; dispatch-first persists DISPATCH_INTENT and retained possible-call occupation, cannot refund or resend. Replay is non-sendable, no double counters/events; no physical provider call.'),
+('I04','takeover_vs_commit','Actual CommitBundle T6 versus actual AcquireLease takeover T5. Commit-first before lease expiry yields one atomic bundle/issuance/intent success and takeover cannot reopen terminal root. Takeover-first after expiry raises fence and old T6 denies with no effects. Independently exercise before/equal/after lease and root deadline and expiry while commit waits on lock; trusted post-lock DB clock controls denial. ReserveCall stale-fence test cannot substitute for CommitBundle. This DC evidence does not satisfy I04@WF.'),
+('I05','artifact_revoke_vs_issue','Actual global RevokeArtifact versus actual T6 CommitBundle issuance, both S51 shared/exclusive orders. Issue-first retains historical immutable S42/certificate/closure, then current authority denies; revoke-first no bundle/head/issuance/success/bookkeeping. Exact relevant transitive artifact revocation, no fake registry revision update.'),
+('I06','artifact_revoke_vs_start','Actual global RevokeArtifact versus START both S51 orders. START-first retains one historical binding but later current execution denies; revoke-first zero session/binding/bookkeeping. Assert exact artifact closure and immutable historical replay, no cached VALID allowance.'),
+('I07','artifact_revoke_vs_publish','Actual global RevokeArtifact versus actual T3 publish both S51 orders. Publish-first retains immutable manifest/bindings but loses applicable authority after revoke; revoke-first no manifest/generation/head/bookkeeping. Relevant transitive closure is actually read under registry coordination.'),
+('I08','seal_vs_input_update','Actual CanonicalViewService.seal_factset versus exact guarded AcceptFactRevision both S01 orders. Input-first stale completed build cannot seal/current-pointer advance; seal-first immutable historical SEALED membership/certificate survives while input frontier/epoch advances and old replay cannot repoint S01. No raw SQL frontier mutation substitutes for owner input update.'),
+('I09','expiry_vs_start','Actual START before/equal/after server-computed minimum dependency valid_until; equality denies. Force expiry while START waits on real registry/user lock and demonstrate fresh trusted post-lock DB clock, not transaction-start timestamp/cached VALID/status job. Failed START has zero target/bookkeeping effects; valid historical binding/replay stays immutable and non-executable after expiry.')]
+checks=[check(i.lower()+'_dc',db,'test_'+s,o+' Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory.') for i,s,o in oracles]
+checks += [check('interleaving_namespace_pu','tests/unit/protocol/test_interleaving_namespace.py','','All nine test paths and nested source helpers use only own label interleave namespace; malformed/default/foreign/ambient targets deny before lifecycle; no foreign fixture execution.'),check('interleaving_suite_dc',db,'','All I01–I09 scenarios and every required ordering/boundary run with real PostgreSQL, finite barriers/timeouts, complete persisted oracles and committed requirement/layer identities. I04@WF remains NOT_RUN; DC alone cannot mark I04 globally PASS.')]
+define('KL-026','Nine owner-driven interleavings on real PostgreSQL',['KL-019','KL-023','KL-024','KL-025','KL-074'],[db,'tests/unit/protocol/test_interleaving_namespace.py','docs/contracts/protocol_interleavings.md'],['protocol_interleaving_suite'],checks,['T2-GLOBAL','T2','T3','T5','T6','T7','T8'],['S01','S02','S03','S04','S14','S15','S16','S17','S18','S23','S24','S25','S27','S29','S31','S32','S38','S39','S40','S41','S42','S43','S44','S45','S49','S50','S51'],['INV-07','INV-08','INV-09','INV-10','INV-11','INV-12','INV-17'],dict(goal='Tests-only scope; any owner bug becomes a separate bounded fix task, not a production write here.',owner=CONTROL,source=UPSTREAM,done='I01–I09 DC orderings hold; I04 WF and any other declared release layers stay independently NOT_RUN until their own evidence.',extra='KL026 may run beside KL075/076/077 using actual merged dependencies and its independent DB; it never depends on unmerged owner changes.'),requirements=['I0'+str(n)+'@DC' for n in range(1,10)]+['I04@WF'])
+
+db='tests/db/test_planning_progress.py'; pu='tests/unit/workflow/test_planning_progress.py'
+checks=[
+ check('progress_internal_identity_pu',pu,'test_internal_identity','RecordSnapshot/AdvanceAttempt remain INTERNAL_ONLY_OPERATIONS, not public wire discriminators; 39 strict commands and original owner mappings unchanged. Wrong subject/role/policy/environment/idle connection/internal operation deny; worker cannot call arbitrary SQL or supply authority.'),
+ check('progress_state_machine_pu',pu,'test_frozen_transitions','Exact Protocol6.3 directed transitions and allowed terminal exits; no stage skip, terminal reopening, COMMITTED outside T6, success or caller-controlled fence/lease. Each mutation carries explicit current request/attempt/fence and source identities.'),
+ check('progress_snapshot_dc',db,'test_snapshot_owner','Actual ContextService.RecordSnapshot creates immutable S26 bound to current published manifest/request/attempt/epoch, full mandatory context/hash/builder artifact/cutoff/accounting. Capture computation outside coordination, recheck exact guards at short persistence transaction. Bind S29 pointer via sole AdvanceAttempt owner in explicit stage progression, no raw S26/S29 seed. Same-key ACK-loss replay returns same immutable IDs; changed payload conflicts.'),
+ check('progress_current_guards_dc',db,'test_current_guard_denials','Actual guarded persistence denies wrong owner/fence/revision/attempt, takeover, expired lease/deadline (before/equal/after and lock-wait expiry), changed manifest/epoch, control and terminal root/attempt with exact no-effect state/bookkeeping. S01/intent then receipt/aggregate order, fresh DB clock; bounded real blocking observation.'),
+ check('progress_atomicity_dc',db,'test_progress_atomicity','S26/S29/receipt/event/outbox invariants survive injected write failures/ACK loss and concurrent same operation; rollback exact state, no duplicate stage events or new root budgets/deadline. Never network wait under lock.'),
+ check('progress_namespace_pu',pu,'test_namespace','Exact progress label namespace validation before lifecycle, independent peer roots and all nested bootstrap/reset/cleanup routes.'),
+ check('progress_suite_dc',db,'','Full real-PG own suite executes all named positive/negative/concurrency oracles without skips.')]
+define('KL-075','Internal guarded snapshot and attempt-stage owners',['KL-019','KL-024','KL-025','KL-074'],['src/kineticloop/persistence/planning_progress.py','src/kineticloop/workflow/planning_progress.py','src/kineticloop/persistence/transactions.py',db,pu,'docs/contracts/planning_progress.md'],['transaction_interfaces','user_coordination','planning_ledger'],checks,['T4','T5'],['S01','S02','S03','S04','S26','S27','S28','S29'],['INV-05','INV-10','INV-11','INV-12','INV-13','INV-15','INV-16','INV-17'],dict(goal='Only missing internal S26/S29 owners and guarded stage progress; no F/D/N computation or execution.',owner='Implement separately authenticated internal typed operation requests in new planning_progress modules. ContextService owns immutable S26; PlanningWorkflowService.AdvanceAttempt owns stage/pointer metadata. Extend RepositoryTransaction only with exact internal owner descriptors/capabilities and current guard accessors needed by those operations; keep all existing public owner entries/wire contracts byte-equivalent. Capture context outside locks from exact immutable manifest/request; short transaction rereads current S01/intent/request/attempt/fence/lease/deadline and binds snapshot. Merged AcquireLease creates the actual S27 lease/fence but currently leaves S29 CREATED. AdvanceAttempt must implement CREATED→LEASED from that verified current lease, then BUILDING_CONTEXT and the remaining frozen forward stages; never assume lease acquisition already advanced S29. Progress through BUILDING_CONTEXT→FITNESS→DEMAND_FEATURES→NUTRITION→VALIDATING→COMMIT_READY only with exact owner-produced prerequisites appropriate to each stage. Generic arbitrary next-state or callback write grants are forbidden; terminal exits use frozen meanings. COMMITTED belongs to T6. Immutable operation identity/replay cannot grant current work authority. Shared SQL permission or T1–T8 boundary changes are prohibited.',source='Seed only registered TEST/program/policy/artifacts and upstream READY/SEALED inputs; actual T3 publication and KL024 admission/acquire produce target current IDs. Stage tests may declare immutable placeholder proposal/evidence inputs for later-stage guard instrumentation, explicitly input-only and not F/D/N completeness evidence. No target S26 or S29 stage output seeds.',done='Snapshot and progression owner persistence are reviewable separately from planning content and authorization; KL076 supplies full prerequisites for composed stage advancement.'))
+
+db='tests/db/test_deterministic_planning.py';pu='tests/unit/workflow/test_deterministic_planning.py'
+checks=[
+ check('fixture_fdn_identity_pu',pu,'test_fdn_identities','Immutable typed FITNESS F, code-computed D with exact F identity/hash/method/version/window/semantic classes, N with exact F/D/manifest/policy basis; canonical content hashes reject mutation/wrong subject/stale/missing dependencies. PRESCRIBED_QUANTITY/TARGET/ESTIMATE never actual execution.'),
+ check('fixture_fdn_repair_pu',pu,'test_fitness_repair','F1→D1→N1 then changed F2 creates new immutable F2/D2/N2; old D1/N1 cannot validate new bundle and merely swapping hash references rejects. Explicit deterministic recalculation, same root budget/accounting, original revisions unchanged; no invented stage loop.'),
+ check('fixture_resolution_validation_pu',pu,'test_source_bound_validation','Resolver derives exact action-scoped support/contradiction/association/coverage/consistency/truncation/freshness from immutable manifest and declared admitted fixture evidence; agent citations cannot declare completeness. Mechanical TEST policy explicitly defines units/window/dedup/unknown exposure/actual replacement and cross-domain envelope/semantic predicates; missing/contradictory/incomplete/truncated/mismatched/expired basis rejects. No clinical recommendation, learned quality policy or real release claim.'),
+ check('fixture_preparation_owners_dc',db,'test_owner_pipeline','Actual RecordProposal/RecordDemandFeatures/ResolveEvidence/RecordValidation restricted owners persist S34 F then S35 D then S34 N then S36/S37 certificates, guarded by merged KL075 current request/attempt/lease/fence and exact snapshot/manifest. Full parent/basis refs, immutable hashes and source ranges persisted; stage advances only through KL075. No target output seeds/self-PASS labels.'),
+ check('fixture_preparation_denials_dc',db,'test_stale_and_incomplete','Real PG takeover/revision/epoch/manifest/expiry/terminal and wrong principal/policy/environment deny each writer with zero effects; stale F/D/N combinations, missing Nutrition, resolution/certificate mismatch fail closed. ACK-loss replay historical IDs only; independent new operation still guards current authority.'),
+ check('fixture_preparation_atomicity_dc',db,'test_immutable_replay_rollback','Injected failure and duplicate races preserve exact immutable rows and stage/receipt/event/outbox; no silent history overwrite, success/issuance/head/binding or provider call.'),
+ check('fixture_namespace_pu',pu,'test_namespace','Exact fixture label own namespace proven before lifecycle with nested bootstrap/reset/cleanup audit and peer/invalid/ambient negative controls.'),
+ check('fixture_suite_dc',db,'','Own real-PG suite and deterministic local fixture pipeline execute completely without skipped checks.')]
+define('KL-076','Deterministic TEST F/D/N preparation owners',['KL-075','KL-017','KL-022','KL-023','KL-074'],['src/kineticloop/persistence/deterministic_planning.py','src/kineticloop/workflow/deterministic_planning.py','src/kineticloop/persistence/transactions.py',db,pu,'tests/fixtures/deterministic_planning.json','docs/contracts/deterministic_planning.md'],['transaction_interfaces','user_coordination','planning_ledger'],checks,['T5','T6-PREPARATION'],['S01','S02','S03','S04','S26','S27','S28','S29','S34','S35','S36','S37'],['INV-01','INV-02','INV-03','INV-04','INV-05','INV-09','INV-10','INV-13','INV-14','INV-15','INV-16','INV-17'],dict(goal='Bounded deterministic fixture path under separately authenticated TEST-only ingress, not a general production/model planner.',owner='Use existing named preparation owners plus exact restricted current-attempt/source-binding capabilities. New deterministic_planning modules define TEST fixture-specific typed F/D/N, mechanical demand computation, evidence resolver and semantic/cross-domain envelope validation. S34/S35/S36/S37 remain sole respective owners, short guarded persistence with immutable output revisions; no caller certificate PASS bypass, arbitrary table/column grant, public command or migration. Source computation occurs outside coordination; persistence rechecks current request/lease/fence/snapshot/manifest/epoch. Exact fixture policy may define deterministic mechanical TEST inputs/predicates required by frozen checks, never new product quality or health policy. Bind policy/artifact versions and expiry to persisted source identities; no remote provider or credential access.',source=TRAJECTORY+' This prerequisite stops at coherent owner-generated F/D/N/resolution/validation and COMMIT_READY, never issues P/A or intent success. TEST source policy must be explicit and fail closed outside its exact fixture domain.',done='Full immutable preparation is independently validated while production planning/quality/release remains unimplemented and NOT_RUN.'))
+
+db='tests/db/test_full_test_execution.py';pu='tests/unit/protocol/test_full_test_execution.py'
+checks=[
+ check('full_execution_identity_pu',pu,'test_strict_ingress','Strict separately authenticated TEST role/subject/principal/policy/environment; preserve 39 public commands/internal-only operations. Full bundle input requires exact F/D/N/resolution/validation IDs/hashes, not public command extension or hidden production activation.'),
+ check('full_bundle_commit_dc',db,'test_full_bundle_commit','Actual T6 commits complete TRAINING and NUTRITION prescription members from KL076 source-bound F/D/N/certificate, exact order/slots/content refs, immutable S39–S42/closure/certificates, S38 switch and intent-success/attempt-COMMITTED with receipt/event/outbox atomically. Current generation/epoch/request/attempt/fence/lease/deadline/control/registry/evidence/envelope/semantic guards all rechecked. No hardcoded single TRAINING success or seeded P/A.'),
+ check('full_bundle_basis_denials_dc',db,'test_full_bundle_denials','Missing N, stale F/D/N, wrong certificate/proposal/action/policy/subject, source revocation/expiry/current-basis/fence/lease/deadline loss deny entire T6 with exact zero effects. Finite server minimum validity closure for every required member; caller may shorten only. Guarded first-use/new head and declared supported existing-head semantics preserve immutable prior history; unsupported modes deny, never bypass.'),
+ check('continue_resume_current_dc',db,'test_continue_resume_rechecks','Actual typed ContinueSession and ResumeSession use existing T7 owners and exact session/P/A binding under S51→S01→daily head/session→receipt. Valid CONTINUE updates only allowed execution metadata and valid RESUME appends exact immutable new resume binding, preserving original START A. Revoke/expiry then CONTINUE/RESUME/new START independently deny with no effects; read-only eligibility is never a bearer permit. No raw PAUSE/state seeding to prove RESUME; valid service state or explicit guard-only negative setup labeled as such.'),
+ check('full_execution_replay_atomicity_dc',db,'test_replay_and_atomicity','ACK loss returns historical non-executable original bundle/member/issuance/binding IDs; changed payload conflicts. Duplicate races and injected partial member/issuance/head/success/outbox failures prove atomic rollback, no duplicate IDs or history overwrite; guarded failed current operation may read receipt history only after rollback.'),
+ check('full_execution_namespace_pu',pu,'test_namespace','Exact full label namespace validated before lifecycle and every nested bootstrap/reset/cleanup; local regressions only own suite and read-only legacy unit tests.'),
+ check('full_execution_suite_dc',db,'','Complete own real-PG suite uses actual KL075/076 progress/preparation; no synthetic snapshot/COMMIT_READY/certificate substitutions in positive trajectory.')]
+define('KL-077','Complete TEST bundle and current execution adapters',['KL-076','KL-019','KL-017','KL-074'],['src/kineticloop/persistence/protocol_execution.py','src/kineticloop/protocol/execution.py','src/kineticloop/persistence/transactions.py',db,pu,'docs/contracts/full_test_execution.md'],['transaction_interfaces','user_coordination','authorization_core','registry_coordination'],checks,['T6','T7'],['S01','S02','S03','S04','S26','S27','S29','S34','S35','S36','S37','S38','S39','S40','S41','S42','S43','S44','S45','S49','S50','S51'],['INV-07','INV-09','INV-10','INV-11','INV-12','INV-13','INV-14','INV-17'],dict(goal='Extend the existing bounded TEST adapter to consume complete deterministic preparation and enforce current continuation/resumption.',owner='Extend existing ProtocolExecutionService and exact RepositoryTransaction prepared capabilities; retain merged KL019 minimal first-day synthetic compatibility tests while exposing a strict full TEST path requiring KL075/076 outputs. Validate each immutable TRAINING/NUTRITION member/issuance against its exact action resolution and policy scope, server validity certificate and current execution basis; no single member can stand in for full completeness. Existing T6/T7 owners/authorization evaluator/lock order remain sole authority. ContinueSession/ResumeSession strict wire types already exist; use them without changing public registry. Preserve original START binding and immutable resume chain; no generic session patch method. Root success and COMMITTED only complete atomically after all required members. This slice may deny unsupported replacement/reauthorize/fallback/offline modes explicitly; cannot weaken their existing owners.',source=TRAJECTORY,done='Complete full TEST bundle and current T7 adapters are independently reviewable before KL027 composed demo; no production rollout, policy/model quality or product PASS.'))
+
+db='tests/db/test_test_only_demo.py';pu='tests/unit/protocol/test_test_only_demo.py'
+checks=[
+ check('demo_namespace_and_boundary_pu',pu,'test_namespace_and_boundary','Exact demo label namespace validates before lifecycle/nested bootstrap/reset/cleanup; no seeded target outputs, TEST subject/policy/environment isolated and production/shadow negative controls have no capability.'),
+ check('demo_owner_trajectory_e2e',db,'test_full_trajectory','One composed deterministic real-PG owner/service trajectory: admitted inputs→factset complete/seal→projection/build→T3→admit/acquire→RecordSnapshot→all frozen stages F→computed D→N→source-bound resolution/validation→T6 complete bundle/A→eligibility true→START. Assert full persistent identity/hash/basis and receipt/event/outbox chain, Nutrition completeness and no seeded target output. This is internal service E2E fixture evidence, no HTTP/live model/provider claim.'),
+ check('demo_revoke_denials_dc',db,'test_revoke_then_deny','Independent isolated run gets valid A/eligibility true and actual START, then exact guarded ApplyControl STOP advances epoch/control/invalidation. Actual CONTINUE, RESUME and fresh new START each deny under current T7 guards; old START/bundle replay returns immutable historical IDs non-executable with zero new bindings/head/issuance/success/bookkeeping. Preserve started historical rows and source F/D/N.'),
+ check('demo_expiry_denials_dc',db,'test_expiry_then_deny','Separate isolated run gets valid A/START then actual server minimum dependency expires; use trusted DB time/bounded observation, no caller-set expiry or status job. Current eligibility false and CONTINUE/RESUME/new START each deny/no effects. Old certificates/bindings immutable; exact before/equal/after and lock-wait expiry is covered by dependency evidence and current fixture assertions.'),
+ check('demo_fdn_repair_e2e',db,'test_fdn_repair','Owner-generated F1/D1/N1 then changed immutable F2 invalidates old D1/N1: validation/commit reject mixed closure, recalculate D2/N2 explicitly and validate coherent source-bound new closure through merged owners and allowed frozen progression, preserving original root budget/deadline/history. No free state-machine jump or replacing references on old rows.'),
+ check('demo_scope_denials_dc',db,'test_production_shadow_denials','TEST A cannot be consumed by production subject/role/principal/policy/environment; shadow has no live head/S42/S45 or executable result. Missing source/policy/mandatory context/N/evidence/certificate and epoch/artifact loss deny, no convenience test bypass.'),
+ check('demo_suite_e2e',db,'','All independent revoke/expiry/repair/isolation trajectories execute without skips and record raw source-to-denial audit chain; task scope execution is not M3/G-SHADOW/release closure.')]
+define('KL-027','Composed deterministic TEST-only full protocol demo',['KL-017','KL-019','KL-022','KL-023','KL-024','KL-025','KL-074','KL-075','KL-076','KL-077'],[db,pu,'docs/contracts/test_only_demo.md'],['test_only_demo_suite'],checks,['T2','T3','T4','T5','T6','T7'],['S01','S02','S03','S04','S14','S15','S16','S17','S18','S21','S22','S23','S24','S25','S26','S27','S28','S29','S34','S35','S36','S37','S38','S39','S40','S41','S42','S43','S44','S45','S49','S50','S51'],['INV-01','INV-02','INV-05','INV-07','INV-09','INV-10','INV-13','INV-14','INV-17'],dict(goal='Tests-only orchestration using all merged owners; no missing production-owner work may be hidden in this integration PR.',owner=CONTROL+' Compose only merged KL075/076/077 strict interfaces; no production source or legacy fixture edits. If an interface/owner bug blocks target flow, create a separately bounded fix task and rerun fresh integration evidence afterward.',source=TRAJECTORY,done='Independent revoke and expiry runs deny CONTINUE/RESUME/new START after actual START; complete F/D/N and full audited trajectory holds. Task PASS does not close M3, G-SHADOW, production release or acceptance layers without their separate closure evidence.'))

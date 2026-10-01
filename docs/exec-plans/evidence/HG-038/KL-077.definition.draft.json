@@ -1,0 +1,197 @@
+{
+  "id": "KL-077",
+  "milestone": "M3",
+  "title": "Complete TEST bundle and current execution adapters",
+  "owner_role": "backend",
+  "depends_on": [
+    "KL-076",
+    "KL-019",
+    "KL-017",
+    "KL-074"
+  ],
+  "commands": [],
+  "transaction_boundaries": [
+    "T6",
+    "T7"
+  ],
+  "invariant_ids": [
+    "INV-07",
+    "INV-09",
+    "INV-10",
+    "INV-11",
+    "INV-12",
+    "INV-13",
+    "INV-14",
+    "INV-17"
+  ],
+  "table_ids": [
+    "S01",
+    "S02",
+    "S03",
+    "S04",
+    "S26",
+    "S27",
+    "S29",
+    "S34",
+    "S35",
+    "S36",
+    "S37",
+    "S38",
+    "S39",
+    "S40",
+    "S41",
+    "S42",
+    "S43",
+    "S44",
+    "S45",
+    "S49",
+    "S50",
+    "S51"
+  ],
+  "required_test_layers": [
+    "PU",
+    "DC"
+  ],
+  "deliverables": [
+    "Complete TEST bundle and current execution adapters with exact owner and immutable identity contract.",
+    "Named positive/negative PU and real PostgreSQL checks with persisted rows/receipt/event/outbox assertions, bounded lock barriers and task-owned namespace inventory."
+  ],
+  "definition_of_done": "Every exact named check and oracle executes and passes on tested_commit with committed raw evidence and no skipped/xfail/zero-collection substitute; only declared scope is written, frozen guards and immutable history hold, all product/release/layer obligations remain independent. Complete full TEST bundle and current T7 adapters are independently reviewable before KL027 composed demo; no production rollout, policy/model quality or product PASS.",
+  "entry_conditions": [
+    "Actual prerequisite PASS results, required reviews, and normal MERGED commits verified against protected base before first DB lifecycle.",
+    "M2 closure PASS: docs/exec-plans/milestones/M2.json; isolated TEST gate construction does not assume full G-SHADOW or production release closure.",
+    "KL074 actual normally merged readiness implementation verified; exclusive task resources/write paths available.",
+    "No result/review/integration for this unstarted task at protected base; every prospective check starts NOT_RUN."
+  ],
+  "status": "NOT_STARTED",
+  "evidence_refs": [],
+  "thread_id": "THREAD-KL-077",
+  "thread_mode": "INDEPENDENT_WORKTREE",
+  "context_files": [
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+    "docs/exec-plans/evidence/HG-038/PREPARATION.md",
+    "src/kineticloop/contracts/commands.py",
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/persistence/planning.py",
+    "src/kineticloop/persistence/protocol_execution.py",
+    "docs/contracts/protocol_execution.md",
+    "docs/exec-plans/completed/KL-076_RESULT.yaml",
+    "docs/exec-plans/completed/KL-019_RESULT.yaml",
+    "docs/exec-plans/completed/KL-017_RESULT.yaml",
+    "docs/exec-plans/completed/KL-074_RESULT.yaml"
+  ],
+  "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+  "merge_unit": "ONE_PR",
+  "handoff_artifact": "docs/exec-plans/completed/KL-077_RESULT.yaml",
+  "shared_hotspot": true,
+  "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+  "task_identity": "harness-backlog-v0.2/KL-077",
+  "requirements_covered": [],
+  "checks_required_for_this_task": [
+    "full_execution_identity_pu",
+    "full_bundle_commit_dc",
+    "full_bundle_basis_denials_dc",
+    "continue_resume_current_dc",
+    "full_execution_replay_atomicity_dc",
+    "full_execution_namespace_pu",
+    "full_execution_suite_dc",
+    "harness_validation_passes",
+    "unit_regressions_pass",
+    "harness_regressions_pass",
+    "lint_passes",
+    "typecheck_passes"
+  ],
+  "resource_keys": [
+    "transaction_interfaces",
+    "user_coordination",
+    "authorization_core",
+    "registry_coordination"
+  ],
+  "write_paths": [
+    "src/kineticloop/persistence/protocol_execution.py",
+    "src/kineticloop/protocol/execution.py",
+    "src/kineticloop/persistence/transactions.py",
+    "tests/db/test_full_test_execution.py",
+    "tests/unit/protocol/test_full_test_execution.py",
+    "docs/contracts/full_test_execution.md"
+  ],
+  "review_requirements": [
+    "DB_CONCURRENCY",
+    "GENERAL",
+    "PROTOCOL"
+  ],
+  "conditional_depends_on": [],
+  "environment_requirements": [
+    "Exact task-owned SHA/resolved-worktree-derived DB and Compose namespace per suite; isolated TEST subjects/policies/environments; no foreign legacy fixture lifecycle on shared Docker."
+  ],
+  "packet_refinement": "ENFORCEABLE",
+  "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+  "write_paths_status": "ENFORCEABLE",
+  "evidence_paths": [
+    "docs/exec-plans/evidence/KL-077/**"
+  ],
+  "check_contracts": [
+    {
+      "check_id": "full_execution_identity_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_full_test_execution.py::test_strict_ingress",
+      "pass_oracle": "Strict separately authenticated TEST role/subject/principal/policy/environment; preserve 39 public commands/internal-only operations. Full bundle input requires exact F/D/N/resolution/validation IDs/hashes, not public command extension or hidden production activation."
+    },
+    {
+      "check_id": "full_bundle_commit_dc",
+      "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_full_bundle_commit",
+      "pass_oracle": "Actual T6 commits complete TRAINING and NUTRITION prescription members from KL076 source-bound F/D/N/certificate, exact order/slots/content refs, immutable S39\u2013S42/closure/certificates, S38 switch and intent-success/attempt-COMMITTED with receipt/event/outbox atomically. Current generation/epoch/request/attempt/fence/lease/deadline/control/registry/evidence/envelope/semantic guards all rechecked. No hardcoded single TRAINING success or seeded P/A."
+    },
+    {
+      "check_id": "full_bundle_basis_denials_dc",
+      "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_full_bundle_denials",
+      "pass_oracle": "Missing N, stale F/D/N, wrong certificate/proposal/action/policy/subject, source revocation/expiry/current-basis/fence/lease/deadline loss deny entire T6 with exact zero effects. Finite server minimum validity closure for every required member; caller may shorten only. Guarded first-use/new head and declared supported existing-head semantics preserve immutable prior history; unsupported modes deny, never bypass."
+    },
+    {
+      "check_id": "continue_resume_current_dc",
+      "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_continue_resume_rechecks",
+      "pass_oracle": "Actual typed ContinueSession and ResumeSession use existing T7 owners and exact session/P/A binding under S51\u2192S01\u2192daily head/session\u2192receipt. Valid CONTINUE updates only allowed execution metadata and valid RESUME appends exact immutable new resume binding, preserving original START A. Revoke/expiry then CONTINUE/RESUME/new START independently deny with no effects; read-only eligibility is never a bearer permit. No raw PAUSE/state seeding to prove RESUME; valid service state or explicit guard-only negative setup labeled as such."
+    },
+    {
+      "check_id": "full_execution_replay_atomicity_dc",
+      "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_replay_and_atomicity",
+      "pass_oracle": "ACK loss returns historical non-executable original bundle/member/issuance/binding IDs; changed payload conflicts. Duplicate races and injected partial member/issuance/head/success/outbox failures prove atomic rollback, no duplicate IDs or history overwrite; guarded failed current operation may read receipt history only after rollback."
+    },
+    {
+      "check_id": "full_execution_namespace_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_full_test_execution.py::test_namespace",
+      "pass_oracle": "Exact full label namespace validated before lifecycle and every nested bootstrap/reset/cleanup; local regressions only own suite and read-only legacy unit tests."
+    },
+    {
+      "check_id": "full_execution_suite_dc",
+      "command": "uv run pytest -q tests/db/test_full_test_execution.py",
+      "pass_oracle": "Complete own real-PG suite uses actual KL075/076 progress/preparation; no synthetic snapshot/COMMIT_READY/certificate substitutions in positive trajectory."
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "command": "uv run kl check-harness",
+      "pass_oracle": "HARNESS_CHECK_PASS; frozen/index/packet/prospective status and revision-bound scope validate."
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "command": "uv run kl test-unit",
+      "pass_oracle": "All repository unit tests pass, no newly skipped/xfail or suppressed failures."
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "command": "uv run kl test-harness",
+      "pass_oracle": "All harness regressions pass, including unchanged command/owner/frozen gates."
+    },
+    {
+      "check_id": "lint_passes",
+      "command": "uv run kl lint",
+      "pass_oracle": "Repository lint passes."
+    },
+    {
+      "check_id": "typecheck_passes",
+      "command": "uv run kl typecheck",
+      "pass_oracle": "Repository typecheck passes."
+    }
+  ]
+}

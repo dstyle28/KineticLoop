@@ -1,0 +1,237 @@
+{
+  "id": "KL-026",
+  "milestone": "M3",
+  "title": "Nine owner-driven interleavings on real PostgreSQL",
+  "owner_role": "quality",
+  "depends_on": [
+    "KL-019",
+    "KL-023",
+    "KL-024",
+    "KL-025",
+    "KL-074"
+  ],
+  "commands": [],
+  "transaction_boundaries": [
+    "T2-GLOBAL",
+    "T2",
+    "T3",
+    "T5",
+    "T6",
+    "T7",
+    "T8"
+  ],
+  "invariant_ids": [
+    "INV-07",
+    "INV-08",
+    "INV-09",
+    "INV-10",
+    "INV-11",
+    "INV-12",
+    "INV-17"
+  ],
+  "table_ids": [
+    "S01",
+    "S02",
+    "S03",
+    "S04",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S18",
+    "S23",
+    "S24",
+    "S25",
+    "S27",
+    "S29",
+    "S31",
+    "S32",
+    "S38",
+    "S39",
+    "S40",
+    "S41",
+    "S42",
+    "S43",
+    "S44",
+    "S45",
+    "S49",
+    "S50",
+    "S51"
+  ],
+  "required_test_layers": [
+    "PU",
+    "DC"
+  ],
+  "deliverables": [
+    "Nine owner-driven interleavings on real PostgreSQL with exact owner and immutable identity contract.",
+    "Named positive/negative PU and real PostgreSQL checks with persisted rows/receipt/event/outbox assertions, bounded lock barriers and task-owned namespace inventory."
+  ],
+  "definition_of_done": "Every exact named check and oracle executes and passes on tested_commit with committed raw evidence and no skipped/xfail/zero-collection substitute; only declared scope is written, frozen guards and immutable history hold, all product/release/layer obligations remain independent. I01\u2013I09 DC orderings hold; I04 WF and any other declared release layers stay independently NOT_RUN until their own evidence.",
+  "entry_conditions": [
+    "Actual prerequisite PASS results, required reviews, and normal MERGED commits verified against protected base before first DB lifecycle.",
+    "M2 closure PASS: docs/exec-plans/milestones/M2.json; isolated TEST gate construction does not assume full G-SHADOW or production release closure.",
+    "KL074 actual normally merged readiness implementation verified; exclusive task resources/write paths available.",
+    "No result/review/integration for this unstarted task at protected base; every prospective check starts NOT_RUN."
+  ],
+  "status": "NOT_STARTED",
+  "evidence_refs": [],
+  "thread_id": "THREAD-KL-026",
+  "thread_mode": "INDEPENDENT_WORKTREE",
+  "context_files": [
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+    "docs/exec-plans/evidence/HG-038/PREPARATION.md",
+    "src/kineticloop/contracts/commands.py",
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/persistence/planning.py",
+    "src/kineticloop/persistence/protocol_execution.py",
+    "docs/contracts/protocol_execution.md",
+    "docs/exec-plans/completed/KL-019_RESULT.yaml",
+    "docs/exec-plans/completed/KL-023_RESULT.yaml",
+    "docs/exec-plans/completed/KL-024_RESULT.yaml",
+    "docs/exec-plans/completed/KL-025_RESULT.yaml",
+    "docs/exec-plans/completed/KL-074_RESULT.yaml"
+  ],
+  "max_context_policy": "READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND",
+  "merge_unit": "ONE_PR",
+  "handoff_artifact": "docs/exec-plans/completed/KL-026_RESULT.yaml",
+  "shared_hotspot": false,
+  "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+  "task_identity": "harness-backlog-v0.2/KL-026",
+  "requirements_covered": [
+    "I01@DC",
+    "I02@DC",
+    "I03@DC",
+    "I04@DC",
+    "I05@DC",
+    "I06@DC",
+    "I07@DC",
+    "I08@DC",
+    "I09@DC",
+    "I04@WF"
+  ],
+  "checks_required_for_this_task": [
+    "i01_dc",
+    "i02_dc",
+    "i03_dc",
+    "i04_dc",
+    "i05_dc",
+    "i06_dc",
+    "i07_dc",
+    "i08_dc",
+    "i09_dc",
+    "interleaving_namespace_pu",
+    "interleaving_suite_dc",
+    "harness_validation_passes",
+    "unit_regressions_pass",
+    "harness_regressions_pass",
+    "lint_passes",
+    "typecheck_passes"
+  ],
+  "resource_keys": [
+    "protocol_interleaving_suite"
+  ],
+  "write_paths": [
+    "tests/db/test_protocol_interleavings.py",
+    "tests/unit/protocol/test_interleaving_namespace.py",
+    "docs/contracts/protocol_interleavings.md"
+  ],
+  "review_requirements": [
+    "DB_CONCURRENCY",
+    "GENERAL",
+    "PROTOCOL"
+  ],
+  "conditional_depends_on": [],
+  "environment_requirements": [
+    "Exact task-owned SHA/resolved-worktree-derived DB and Compose namespace per suite; isolated TEST subjects/policies/environments; no foreign legacy fixture lifecycle on shared Docker."
+  ],
+  "packet_refinement": "ENFORCEABLE",
+  "required_test_layers_semantics": "COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS",
+  "write_paths_status": "ENFORCEABLE",
+  "evidence_paths": [
+    "docs/exec-plans/evidence/KL-026/**"
+  ],
+  "check_contracts": [
+    {
+      "check_id": "i01_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_publish_vs_user_revoke",
+      "pass_oracle": "Actual ProtocolExecutionService.publish(T3) versus exact guarded ApplyControl both S01 orders. Revoke-first stale READY build denied with no target/bookkeeping effects; publish-first keeps immutable historical S24/S25/receipt/event/outbox but later epoch invalidates its authority. Replay cannot repoint current manifest or regain execution. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+    },
+    {
+      "check_id": "i02_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_start_vs_user_revoke",
+      "pass_oracle": "Actual START and guarded ApplyControl both S01 orders. START-first exactly one immutable historical S45 binding/session and later current execution denied; revoke-first zero new session/binding/bookkeeping. Historical replay returns original IDs, non-executable, no second binding. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+    },
+    {
+      "check_id": "i03_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_cancel_vs_dispatch",
+      "pass_oracle": "Actual CancelUndispatched/PermitDispatch both S01+reservation orders using merged CallLedgerService. Cancel-first releases exact reserved dimensions and prevents permit; dispatch-first persists DISPATCH_INTENT and retained possible-call occupation, cannot refund or resend. Replay is non-sendable, no double counters/events; no physical provider call. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+    },
+    {
+      "check_id": "i04_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_takeover_vs_commit",
+      "pass_oracle": "Actual CommitBundle T6 versus actual AcquireLease takeover T5. Commit-first before lease expiry yields one atomic bundle/issuance/intent success and takeover cannot reopen terminal root. Takeover-first after expiry raises fence and old T6 denies with no effects. Independently exercise before/equal/after lease and root deadline and expiry while commit waits on lock; trusted post-lock DB clock controls denial. ReserveCall stale-fence test cannot substitute for CommitBundle. This DC evidence does not satisfy I04@WF. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+    },
+    {
+      "check_id": "i05_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_issue",
+      "pass_oracle": "Actual global RevokeArtifact versus actual T6 CommitBundle issuance, both S51 shared/exclusive orders. Issue-first retains historical immutable S42/certificate/closure, then current authority denies; revoke-first no bundle/head/issuance/success/bookkeeping. Exact relevant transitive artifact revocation, no fake registry revision update. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+    },
+    {
+      "check_id": "i06_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_start",
+      "pass_oracle": "Actual global RevokeArtifact versus START both S51 orders. START-first retains one historical binding but later current execution denies; revoke-first zero session/binding/bookkeeping. Assert exact artifact closure and immutable historical replay, no cached VALID allowance. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+    },
+    {
+      "check_id": "i07_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_publish",
+      "pass_oracle": "Actual global RevokeArtifact versus actual T3 publish both S51 orders. Publish-first retains immutable manifest/bindings but loses applicable authority after revoke; revoke-first no manifest/generation/head/bookkeeping. Relevant transitive closure is actually read under registry coordination. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+    },
+    {
+      "check_id": "i08_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_seal_vs_input_update",
+      "pass_oracle": "Actual CanonicalViewService.seal_factset versus exact guarded AcceptFactRevision both S01 orders. Input-first stale completed build cannot seal/current-pointer advance; seal-first immutable historical SEALED membership/certificate survives while input frontier/epoch advances and old replay cannot repoint S01. No raw SQL frontier mutation substitutes for owner input update. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+    },
+    {
+      "check_id": "i09_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_expiry_vs_start",
+      "pass_oracle": "Actual START before/equal/after server-computed minimum dependency valid_until; equality denies. Force expiry while START waits on real registry/user lock and demonstrate fresh trusted post-lock DB clock, not transaction-start timestamp/cached VALID/status job. Failed START has zero target/bookkeeping effects; valid historical binding/replay stays immutable and non-executable after expiry. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+    },
+    {
+      "check_id": "interleaving_namespace_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py",
+      "pass_oracle": "All nine test paths and nested source helpers use only own label interleave namespace; malformed/default/foreign/ambient targets deny before lifecycle; no foreign fixture execution."
+    },
+    {
+      "check_id": "interleaving_suite_dc",
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py",
+      "pass_oracle": "All I01\u2013I09 scenarios and every required ordering/boundary run with real PostgreSQL, finite barriers/timeouts, complete persisted oracles and committed requirement/layer identities. I04@WF remains NOT_RUN; DC alone cannot mark I04 globally PASS."
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "command": "uv run kl check-harness",
+      "pass_oracle": "HARNESS_CHECK_PASS; frozen/index/packet/prospective status and revision-bound scope validate."
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "command": "uv run kl test-unit",
+      "pass_oracle": "All repository unit tests pass, no newly skipped/xfail or suppressed failures."
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "command": "uv run kl test-harness",
+      "pass_oracle": "All harness regressions pass, including unchanged command/owner/frozen gates."
+    },
+    {
+      "check_id": "lint_passes",
+      "command": "uv run kl lint",
+      "pass_oracle": "Repository lint passes."
+    },
+    {
+      "check_id": "typecheck_passes",
+      "command": "uv run kl typecheck",
+      "pass_oracle": "Repository typecheck passes."
+    }
+  ]
+}
