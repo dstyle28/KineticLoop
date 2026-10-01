@@ -669,6 +669,54 @@ def test_commit_test_only_bundle(urls: dict[str, str]) -> None:
             if d.get("valid_until")
         ]
         assert until == min(finite)
+        # Independently compare every certificate identity/bound to persisted upstream inputs.
+        actual = {(d["dependency_kind"], d["identity"]): d for d in cert["dependencies"]}
+        expected: dict[tuple[str, str], datetime | None] = {}
+        for kind, table, column in (
+            ("ARTIFACT", "safety_artifacts", "valid_until"),
+            ("MANIFEST", "decision_manifests", "valid_until"),
+            ("EVIDENCE_RESOLUTION", "evidence_resolutions", "resolution_expires_at"),
+            ("VALIDATION_ADMISSION_FRESHNESS", "validation_results", "valid_until"),
+            ("PROJECTION", "projection_versions", "valid_until"),
+            ("DEMAND_FEATURE", "prescription_demand_features", "NULL"),
+        ):
+            for identity, bound in db.execute(
+                f"SELECT id,{column} FROM kineticloop.{table}"
+            ).fetchall():
+                expected[(kind, str(identity))] = bound
+        request_id, deadline = db.execute(
+            "SELECT current_request_revision_id,root_deadline_at FROM kineticloop.planning_intents"
+        ).fetchone()
+        expected[("REQUEST_DEADLINE", str(request_id))] = deadline
+        head_id, calendar = db.execute(
+            "SELECT id,typed_payload FROM kineticloop.daily_plan_heads"
+        ).fetchone()
+        expected[("CALENDAR", str(head_id))] = datetime.fromisoformat(
+            calendar["calendar_valid_until"]
+        )
+        policy_entry = actual[("POLICY_TTL", str(POLICY))]
+        ttl = db.execute(
+            "SELECT (typed_payload->>'max_authorization_ttl_seconds')::int FROM kineticloop.policy_bundles WHERE id=%s",
+            (POLICY,),
+        ).fetchone()[0]
+        expected[("POLICY_TTL", str(POLICY))] = datetime.fromisoformat(
+            policy_entry["valid_from"]
+        ) + timedelta(seconds=ttl)
+        freshness = db.execute(
+            "SELECT typed_payload->'admission_freshness' FROM kineticloop.evidence_resolutions"
+        ).fetchone()[0]
+        for entry in freshness:
+            expected[("EVIDENCE_ADMISSION_FRESHNESS", entry["identity"])] = datetime.fromisoformat(
+                entry["valid_until"]
+            )
+        assert set(actual) == set(expected)
+        for key, bound in expected.items():
+            assert (
+                datetime.fromisoformat(actual[key]["valid_until"])
+                if actual[key].get("valid_until")
+                else None
+            ) == bound, key
+        assert until == min(bound for bound in expected.values() if bound is not None)
         assert cert["closure_digest"] == digest(cert["dependencies"])
         assert any(
             d.get("validity_kind") == "TIMELESS"
@@ -1079,6 +1127,7 @@ def test_ack_loss_replay_is_historical(urls: dict[str, str]) -> None:
     assert snapshot(urls) == before
 
     for loss in ("expiry", "revocation"):
+        seed_inputs(urls)
         _, issued = committed(urls)
         first = start_command(issued)
         with connect(urls["admin"]) as db:
