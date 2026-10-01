@@ -1,7 +1,7 @@
 change_identity: harness-governance-v0.1/HG-038
 display_change_id: HG-038
 base_commit: 3c1312e5946593d73f169f6ea1ce559c27523bd2
-tested_commit: fdd4c26fe08e20d194428a56b86461c3f92b04ca
+tested_commit: 4363887168b123fedc3ed9cadcfd7086a36be60b
 change_status: PASS
 summary: After actual KL074 normal merge, refine unstarted KL026 to nine tests-only real PostgreSQL
   interleavings, including actual root cancellation plus separate guarded reservation cleanup, and KL027
@@ -47,8 +47,6 @@ files_changed:
 - docs/exec-plans/evidence/HG-038/append_only_scope_audit-accd461.log
 - docs/exec-plans/evidence/HG-038/append_only_scope_audit-cb6ff80.json
 - docs/exec-plans/evidence/HG-038/append_only_scope_audit-cb6ff80.log
-- docs/exec-plans/evidence/HG-038/append_only_scope_audit-fdd4c26.json
-- docs/exec-plans/evidence/HG-038/append_only_scope_audit-fdd4c26.log
 - docs/exec-plans/evidence/HG-038/audit.py
 - docs/exec-plans/evidence/HG-038/diff_clean-4363887.json
 - docs/exec-plans/evidence/HG-038/diff_clean-4363887.log
@@ -56,8 +54,6 @@ files_changed:
 - docs/exec-plans/evidence/HG-038/diff_clean-accd461.log
 - docs/exec-plans/evidence/HG-038/diff_clean-cb6ff80.json
 - docs/exec-plans/evidence/HG-038/diff_clean-cb6ff80.log
-- docs/exec-plans/evidence/HG-038/diff_clean-fdd4c26.json
-- docs/exec-plans/evidence/HG-038/diff_clean-fdd4c26.log
 - docs/exec-plans/evidence/HG-038/draft.py
 - docs/exec-plans/evidence/HG-038/finalize.py
 - docs/exec-plans/evidence/HG-038/guard.draft.py
@@ -67,16 +63,12 @@ files_changed:
 - docs/exec-plans/evidence/HG-038/harness_tests-accd461.log
 - docs/exec-plans/evidence/HG-038/harness_tests-cb6ff80.json
 - docs/exec-plans/evidence/HG-038/harness_tests-cb6ff80.log
-- docs/exec-plans/evidence/HG-038/harness_tests-fdd4c26.json
-- docs/exec-plans/evidence/HG-038/harness_tests-fdd4c26.log
 - docs/exec-plans/evidence/HG-038/harness_validation-4363887.json
 - docs/exec-plans/evidence/HG-038/harness_validation-4363887.log
 - docs/exec-plans/evidence/HG-038/harness_validation-accd461.json
 - docs/exec-plans/evidence/HG-038/harness_validation-accd461.log
 - docs/exec-plans/evidence/HG-038/harness_validation-cb6ff80.json
 - docs/exec-plans/evidence/HG-038/harness_validation-cb6ff80.log
-- docs/exec-plans/evidence/HG-038/harness_validation-fdd4c26.json
-- docs/exec-plans/evidence/HG-038/harness_validation-fdd4c26.log
 - docs/exec-plans/evidence/HG-038/integrate.py
 - docs/exec-plans/evidence/HG-038/integration-provenance.json
 - docs/exec-plans/evidence/HG-038/lint-4363887.json
@@ -85,16 +77,12 @@ files_changed:
 - docs/exec-plans/evidence/HG-038/lint-accd461.log
 - docs/exec-plans/evidence/HG-038/lint-cb6ff80.json
 - docs/exec-plans/evidence/HG-038/lint-cb6ff80.log
-- docs/exec-plans/evidence/HG-038/lint-fdd4c26.json
-- docs/exec-plans/evidence/HG-038/lint-fdd4c26.log
 - docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-4363887.json
 - docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-4363887.log
 - docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-accd461.json
 - docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-accd461.log
 - docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-cb6ff80.json
 - docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-cb6ff80.log
-- docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-fdd4c26.json
-- docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-fdd4c26.log
 - docs/exec-plans/evidence/HG-038/pr70-merged.json
 - docs/exec-plans/evidence/HG-038/pr71-merged.json
 - docs/exec-plans/evidence/HG-038/pr72-merged.json
@@ -104,10 +92,6 @@ files_changed:
 - docs/exec-plans/evidence/HG-038/rejected-c4272b1/GENERAL.json
 - docs/exec-plans/evidence/HG-038/rejected-c4272b1/PROTOCOL.json
 - docs/exec-plans/evidence/HG-038/rejected-c4272b1/governance-record.yaml
-- docs/exec-plans/evidence/HG-038/rejected-fdd4c26/DB_CONCURRENCY.json
-- docs/exec-plans/evidence/HG-038/rejected-fdd4c26/GENERAL.json
-- docs/exec-plans/evidence/HG-038/rejected-fdd4c26/PROTOCOL.json
-- docs/exec-plans/evidence/HG-038/rejected-fdd4c26/governance-record.yaml
 - docs/exec-plans/evidence/HG-038/repair_review_findings.py
 - docs/exec-plans/evidence/HG-038/run_check.py
 - docs/exec-plans/evidence/HG-038/test_m3_next_wave_scope.draft.py
@@ -117,16 +101,12 @@ files_changed:
 - docs/exec-plans/evidence/HG-038/typecheck-accd461.log
 - docs/exec-plans/evidence/HG-038/typecheck-cb6ff80.json
 - docs/exec-plans/evidence/HG-038/typecheck-cb6ff80.log
-- docs/exec-plans/evidence/HG-038/typecheck-fdd4c26.json
-- docs/exec-plans/evidence/HG-038/typecheck-fdd4c26.log
 - docs/exec-plans/evidence/HG-038/unit_tests-4363887.json
 - docs/exec-plans/evidence/HG-038/unit_tests-4363887.log
 - docs/exec-plans/evidence/HG-038/unit_tests-accd461.json
 - docs/exec-plans/evidence/HG-038/unit_tests-accd461.log
 - docs/exec-plans/evidence/HG-038/unit_tests-cb6ff80.json
 - docs/exec-plans/evidence/HG-038/unit_tests-cb6ff80.log
-- docs/exec-plans/evidence/HG-038/unit_tests-fdd4c26.json
-- docs/exec-plans/evidence/HG-038/unit_tests-fdd4c26.log
 - docs/exec-plans/evidence/HG-038/write_record.py
 - docs/exec-plans/governance/HG-038.yaml
 - docs/exec-plans/integrations/KL-019.json
@@ -139,35 +119,35 @@ checks_run:
 - check_id: append_only_scope_audit
   command: /private/tmp/kl017-venv/bin/python /Users/davetian/.codex/worktrees/8e3b/KineticLoop/docs/exec-plans/evidence/HG-038/audit.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-038/append_only_scope_audit-fdd4c26.log
+  evidence_ref: docs/exec-plans/evidence/HG-038/append_only_scope_audit-4363887.log
 - check_id: next_wave_scope_regressions
   command: /private/tmp/kl017-venv/bin/python -m pytest -q tests/harness/test_m3_next_wave_scope.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-fdd4c26.log
+  evidence_ref: docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-4363887.log
 - check_id: harness_validation
   command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli check-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-038/harness_validation-fdd4c26.log
+  evidence_ref: docs/exec-plans/evidence/HG-038/harness_validation-4363887.log
 - check_id: harness_tests
   command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-038/harness_tests-fdd4c26.log
+  evidence_ref: docs/exec-plans/evidence/HG-038/harness_tests-4363887.log
 - check_id: unit_tests
   command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli test-unit
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-038/unit_tests-fdd4c26.log
+  evidence_ref: docs/exec-plans/evidence/HG-038/unit_tests-4363887.log
 - check_id: lint
   command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli lint
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-038/lint-fdd4c26.log
+  evidence_ref: docs/exec-plans/evidence/HG-038/lint-4363887.log
 - check_id: typecheck
   command: /private/tmp/kl017-venv/bin/python -m kineticloop.db.cli typecheck
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-038/typecheck-fdd4c26.log
+  evidence_ref: docs/exec-plans/evidence/HG-038/typecheck-4363887.log
 - check_id: diff_clean
-  command: git diff --check 3c1312e5946593d73f169f6ea1ce559c27523bd2 fdd4c26fe08e20d194428a56b86461c3f92b04ca
+  command: git diff --check 3c1312e5946593d73f169f6ea1ce559c27523bd2 4363887168b123fedc3ed9cadcfd7086a36be60b
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-038/diff_clean-fdd4c26.log
+  evidence_ref: docs/exec-plans/evidence/HG-038/diff_clean-4363887.log
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:

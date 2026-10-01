@@ -1,0 +1,63 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-038",
+  "reviewed_head_sha": "fdd4c26fe08e20d194428a56b86461c3f92b04ca",
+  "review_type": "DB_CONCURRENCY",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "title": "Existing evidence script changed after tested revision",
+      "file": "docs/exec-plans/evidence/HG-038/write_record.py",
+      "line": 4,
+      "detail": "The tested 4363887168b123fedc3ed9cadcfd7086a36be60b to reviewed fdd4c26fe08e20d194428a56b86461c3f92b04ca suffix modifies the already-existing write_record.py (adds sys.argv tested-SHA selection and ancestry check). governance_suffix_errors independently returns governance-tested-evidence-not-addition:docs/exec-plans/evidence/HG-038/write_record.py. The governance suffix permits only newly appended task evidence and the own governance record; editing existing evidence invalidates the claimed tested revision. Retest the final script/content revision and append only new evidence plus the own governance record afterward before a new SHA-bound review."
+    }
+  ],
+  "evidence_refs": [
+    "AGENTS.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md#4",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md#6",
+    "docs/exec-plans/active/KL-026.md",
+    "docs/exec-plans/active/KL-027.md",
+    "docs/exec-plans/active/KL-075.md",
+    "docs/exec-plans/active/KL-076.md",
+    "docs/exec-plans/active/KL-077.md",
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/persistence/planning.py",
+    "src/kineticloop/persistence/call_ledger.py",
+    "src/kineticloop/persistence/protocol_execution.py",
+    "src/kineticloop/workflow/planning.py",
+    "tests/db/test_protocol_execution.py",
+    "tests/db/test_factsets.py",
+    "migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py",
+    "docs/exec-plans/evidence/HG-038/append_only_scope_audit-4363887.log",
+    "docs/exec-plans/evidence/HG-038/diff_clean-4363887.log",
+    "docs/exec-plans/evidence/HG-038/harness_tests-4363887.log",
+    "docs/exec-plans/evidence/HG-038/harness_validation-4363887.log",
+    "docs/exec-plans/evidence/HG-038/lint-4363887.log",
+    "docs/exec-plans/evidence/HG-038/next_wave_scope_regressions-4363887.log",
+    "docs/exec-plans/evidence/HG-038/typecheck-4363887.log",
+    "docs/exec-plans/evidence/HG-038/unit_tests-4363887.log",
+    "docs/exec-plans/evidence/HG-038/integration-provenance.json",
+    "tests/harness/test_m3_next_wave_scope.py",
+    "tools/harness/validate_harness.py:1636"
+  ],
+  "assessment": [
+    "Governance-only diff: no production, DB migrations, frozen files, current requirement set, completed task/result/evidence, release or CI edits. KL026/027 tests-only paths are disjoint from serialized KL075/076/077 production hotspots; all five remain NOT_STARTED and have no target evidence/results.",
+    "I03 feasibility verified from current CancelIntent owner S27/S31 surfaces, mandatory S27 update and locked restricted status capability: terminal root first with no S32 grant; CallLedgerService.cancel then separately releases only locked RESERVED accounting through existing guarded CancelUndispatched. Terminal root fails require_current_fence; DISPATCH_INTENT cancellation remains nonrefundable and historical permit replay nonsendable.",
+    "I04 requires actual CommitBundle versus AcquireLease rather than reservation proxy. Current T6 and acquisition SQL read clock_timestamp after coordination and root statuses/fence/lease/deadline; commit-first terminal root cannot acquire, takeover-first denies stale T6. Bounded blocking observations, atomic rollback, receipt/event/outbox/counter oracles are explicit, with I04@WF unclaimed.",
+    "Ordinary internal TEST PAUSE is explicitly scoped S01\u2192S44\u2192receipt and exact immutable current binding/revision, state contraction/reason/execution-basis atomically; it grants no current execution authority and never acquires S51 late. Protective T2 remains separate. KL077/027 require owner-produced PAUSED for RESUME, independent lifecycle-valid CONTINUE/RESUME/absent-session START trajectories and exact current-authority rejection causes.",
+    "Internal snapshot/progression remains absent from the 39 public command registry; snapshot/stage guards implement actual frozen directed states, starting from AcquireLease leaving S29 CREATED. Preparation computes outside coordination and persists through respective guarded S34\u2013S37 owners; N\u2192D\u2192F existing same-subject FKs plus immutable typed payload hashes avoid a speculative direct-F migration. Complete bundle scope preserves legacy synthetic domain isolation and requires all TRAINING/NUTRITION members atomically.",
+    "Half-open equality is deterministic pure-predicate PU only; actual current real-PG guards have no clock injection seam and use fresh clock_timestamp. Packets separately require actual before/after and observed post-lock expiry-crossing DC, no PU\u2192DC or DC\u2192WF substitution.",
+    "Each suite requires exact HEAD first7 SHA and SHA256(os.fsencode(resolved root)) first12 with fixed task/label DB and Compose namespaces before every destructive and nested entrypoint; namespace negatives precede reset. No foreign local lifecycle fixtures/new CI or KL074-only hosted workflow reuse is authorized.",
+    "Independently rehashed all eight final raw envelopes, exact byte counts/commands/zero exits/base/tested binding valid; actual logs record 85 scope, 525 harness and 209 unit passes. Independently reran scope suite read-only with bytecode/cache disabled: 85 passed in 0.27s. Verified actual KL019/KL047/KL074 result hashes, PASS review types/exact SHAs, ancestry and full review-record/merge tree identity against protected base."
+  ],
+  "limitations": [
+    "No PostgreSQL/Docker/foreign lifecycle or external calls were run. This review assesses governance packet feasibility against existing source and preserved evidence, not prospective owner/interleaving implementation correctness or new requirement PASS.",
+    "All prospective implementation/DC/E2E/WF/product/release obligations remain NOT_RUN; M3 is not closed. No further semantic blocker found, but the tested-to-reviewed bookkeeping violation prevents PASS."
+  ],
+  "spec_change_request": null
+}
