@@ -1,0 +1,43 @@
+TASK_IDENTITY=harness-backlog-v0.2/KL-019
+TESTED_COMMIT=ff073d04d1cafc507ac1a3b6364e7d73034731c1
+WORKTREE=/Users/davetian/.codex/worktrees/4338/KineticLoop
+WORKTREE_DIGEST=e281d6459e62
+COMMAND=uv run kl test-unit
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/davetian/.codex/worktrees/4338/KineticLoop
+configfile: pyproject.toml
+collected 209 items
+
+tests/unit/config/test_secret_loader.py .                                [  0%]
+tests/unit/contracts/test_artifact_registry.py ...                       [  1%]
+tests/unit/contracts/test_commands.py ..............                     [  8%]
+tests/unit/contracts/test_errors.py .                                    [  9%]
+tests/unit/contracts/test_receipts.py ........................           [ 20%]
+tests/unit/contracts/test_results.py .....                               [ 22%]
+tests/unit/contracts/test_safety_registry.py ..                          [ 23%]
+tests/unit/contracts/test_shadow.py ...                                  [ 25%]
+tests/unit/identity/test_roles.py .............                          [ 31%]
+tests/unit/integrations/test_launch_registry.py ........                 [ 35%]
+tests/unit/integrations/test_provider.py ...........                     [ 40%]
+tests/unit/persistence/test_fact_children.py ...                         [ 42%]
+tests/unit/persistence/test_immutability.py ....                         [ 44%]
+tests/unit/persistence/test_schema_topology.py .......                   [ 47%]
+tests/unit/persistence/test_transactions.py ...                          [ 48%]
+tests/unit/primitives/test_canonical.py ...........                      [ 54%]
+tests/unit/primitives/test_hashes.py ........                            [ 57%]
+tests/unit/primitives/test_ids.py .........                              [ 62%]
+tests/unit/primitives/test_times.py .......................              [ 73%]
+tests/unit/protocol/test_authorization.py ...                            [ 74%]
+tests/unit/protocol/test_execution.py ..                                 [ 75%]
+tests/unit/protocol/test_factsets.py .....                               [ 77%]
+tests/unit/security/test_redaction.py .................................. [ 94%]
+...                                                                      [ 95%]
+tests/unit/security/test_synthetic_fixtures.py .                         [ 96%]
+tests/unit/test_cli.py ...                                               [ 97%]
+tests/unit/workflow/test_call_ledger.py ...                              [ 99%]
+tests/unit/workflow/test_planning.py ..                                  [100%]
+
+======================== 209 passed in 60.86s (0:01:00) ========================
+
+EXIT_CODE=0
