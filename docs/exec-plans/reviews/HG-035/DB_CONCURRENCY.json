@@ -1,0 +1,45 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-035",
+  "reviewed_head_sha": "361478d64fac1c807ae93c530d8d2cd55ea8e32a",
+  "review_type": "DB_CONCURRENCY",
+  "status": "PASS",
+  "findings": [],
+  "review_contract_version": "v0.2",
+  "protected_base_sha": "eab2b305351cf3c504f74ac74868edc58d0a3430",
+  "tested_commit": "d0920d90b63f817d4b4000494873da4559e8a13b",
+  "review_method": "Fresh independent review of the protected-base to reviewed-head diff, indexed frozen authority, current owner implementation, merged prerequisite artifacts, fixture lifecycle source and selected raw evidence. Read-only and pure checks only; no PostgreSQL or Docker command was run by this reviewer.",
+  "independent_observations": [
+    "The 72 protected-base diff paths exactly equal the governance files_changed declaration. Production source, migrations, existing DB and unit tests, CI, frozen Protocol/DB and FROZEN_BASELINE, product requirement/evidence state, completed results, prerequisite reviews and contracts are byte-unchanged. Only KL-019 changes in backlog/traceability; its status remains NOT_STARTED. The linear tested-to-reviewed revision changes 35 governance-record, HG-035 evidence or KL-024/KL-025 integration paths and leaves tested implementation unchanged.",
+    "Compared DB S24/S38/S44/S45, command-owner matrix, fixed lock order and T3/T6/T7 atomic boundaries with the packet and current transactions.py. PublishManifest remains DecisionPublicationService/T3, CommitBundle remains T6CommitCoordinator/T6 and StartSession remains ExecutionService/T7. Existing registry acquisition records S51 then S01; daily head and execution locks retain their frozen stages before receipts/remaining aggregates. Current CommitBundle lacks S38 INSERT and lock_daily_head rejects absent heads; current StartSession lacks S44 INSERT and lock_execution requires an existing exact READY/PLANNED session with no START. The packet honestly limits future missing-key support to these existing owners, exact authenticated subject/day or session and trusted calendar/lifecycle; S01 serialization, natural uniqueness and owner completion validation are mandatory. No generic insert, new owner or frozen lock change is authorized.",
+    "The 20 future checks separately require real PostgreSQL first-use contention with bounded barriers and observed locks, rollback at every owner/bookkeeping boundary including first S38/S44, same-key ACK-loss replay and changed-payload conflict, natural build/session uniqueness and historical START executable=false after authority loss. Current START denial checks cover exact P/A/hash/scope/membership, epoch, hold/stop, revoked transitive artifacts and dependency/time boundaries after real issuance. Locked current basis and post-lock trusted time are required; read-only eligibility cannot grant later START. Existing replay_outcome already marks T7 historical responses non-executable. Governance feasibility does not assert these future execution checks have run.",
+    "Trusted upstream bootstrap is explicitly limited to registration and READY publication inputs, then immutable S26/current COMMIT_READY and synthetic S34-S37 certificates after actual merged planning admission/acquire calls. AdvanceAttempt and RecordSnapshot are absent from the existing owner matrix. No S24/S25, S39-S42, successful S27/COMMITTED S29 or S45/started session may replace the measured owner outputs; first-use tests also cannot seed S38/S44. Target transactions remain short and exclude external/model work. Missing full workflow owners remain a declared KL027 dependency rather than an implementation claim.",
+    "Independently matched planning and ledger baseline SHA256 values to the actual merged protected-base bytes: b7b185e069d94f0e67826de02ec630259881add0fa8f5366823d830f95917636 and d3c09d2125844b1ed7e7bc138be41b43a02c0a95efd54d2bfc3012751fe615e2. Exact candidate hashes are 3669217713228edd3592b4aeedc330216a57efe476ae45dae3b17c90dacfc0de and 25142760e435fbc8f160da0c54c9939104a306a21b363242d2b970b2ec94b279. Their six test-function ASTs each remain identical. Only literal namespace helper/import/assignment transformations are accepted; byte comparison rejects assertion, seed, cleanup, provisioning, selector or extra edits. The merged ledger planning-selector probe remains unchanged and preserves its original expectations.",
+    "Executed each actual candidate namespace helper in isolation, independently exercising unset legacy behavior, preserved exact KL-025 planning behavior, KL-019 plan/ledger names with SHA and resolved-worktree SHA256 digest, different-worktree separation, and malformed selector/SHA rejection. No lifecycle was contacted. Transaction fixture SHA256 remains 722346d6e0b03087ce08f2d03bc955c227652c189bfa4ccc1a50f2b7cf3abc3a; it consumes its two existing overrides before bootstrap and uses the same lifecycle for finally cleanup. The packet requires an owned pre-pytest launcher to validate both exact derived tx overrides, without changing the legacy fixture or globally redefining arbitrary override behavior.",
+    "Traced actual selected fixtures through bootstrap_two_phase, lifecycle.reset, cluster-role provisioning, ownership handoff, Alembic upgrades and role_url. Nested bootstrap uses the supplied lifecycle and its selected database; role_url retains endpoint/database path. Transaction reset/truncate and safety seed use the returned admin URL, not the foreign-labelled safety fixture. Lifecycle Compose project, database environment, connection construction and destroy use the selected namespace. Hosted broader DB CI remains unchanged and explicitly isolated on its job-owned Docker.",
+    "Inspected candidate_proof.py, namespace_probe.py and isolation_plugin.py against the selected d0920d9 raw log. The temporary detached clone applies only the exact two future fixture candidates, verifies unchanged transaction/product bytes and test ASTs, validates tx launch, then runs the six declared prerequisite suites with real lifecycle methods. The raw log records 75 passed and 71 passed, exit_code=0, no failures/skips/deselection, and 12 matched real reset/destroy pairs: six plan, five ledger and one tx. Every real pair uses a distinct label under kineticloop-kl019-<label>-d0920d9-cd2dac5a44a4 and its matching database. Probe-only legacy namespace output does not run a real foreign lifecycle. Instrumentation delegates to original reset/destroy rather than replacing real regression execution.",
+    "Independently verified KL-024 normal two-parent merge ff57a80feebd4e539f9af277e0dcb26d942bc3e0 and KL-025 normal two-parent merge eab2b305351cf3c504f74ac74868edc58d0a3430 are ancestors of the protected base. Integration result/review/review-record/merge ancestry is correct. Their PASS results are byte-identical at result, reviewed and protected-base revisions; GENERAL, PROTOCOL and DB_CONCURRENCY PASS reviews bind the exact respective reviewed SHA and namespaced task identity. Their reviewed-to-review-record diffs contain only their own review directories. The appended integrations preserve historical results and reviews.",
+    "Reran tests/harness/test_protocol_execution_scope.py and tests/harness/test_call_ledger_scope.py with the existing Python runtime, PYTHONPATH=src, PYTHONDONTWRITEBYTECODE=1 and no cache provider: 71 passed. Also independently checked all nine selected d0920d9 evidence JSON/raw-log SHA and exit bindings and the complete reviewed diff whitespace check. The selected scope log separately records 144 passed and harness validation records HARNESS_CHECK_PASS. No KL-019 result or product requirement PASS is introduced."
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-035.yaml",
+    "docs/exec-plans/active/KL-019.md",
+    "docs/exec-plans/evidence/HG-035/API_AND_FIXTURE_MAP.md",
+    "docs/exec-plans/evidence/HG-035/namespace_candidates.patch",
+    "docs/exec-plans/evidence/HG-035/candidate_proof.py",
+    "docs/exec-plans/evidence/HG-035/namespace_probe.py",
+    "docs/exec-plans/evidence/HG-035/isolation_plugin.py",
+    "docs/exec-plans/evidence/HG-035/candidate_isolation_and_regressions-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/merged_scope_api_fixture_audit-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/execution_scope_regressions-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/harness_validation-d0920d9.log",
+    "docs/exec-plans/integrations/KL-024.json",
+    "docs/exec-plans/integrations/KL-025.json",
+    "tests/harness/test_protocol_execution_scope.py",
+    "tools/harness/validate_harness.py"
+  ],
+  "limitations": [
+    "PASS applies to HG-035 governance refinement and its bounded feasibility proof. It is not KL-019 implementation PASS, production activation or product requirement PASS.",
+    "KL-019 must independently execute all 20 required checks with real PostgreSQL and persist its own SHA-bound result and fresh reviews. I01/I02/I04/I07/A03@DC remain separate NOT_RUN obligations pending accepted evidence.",
+    "This reviewer inspected committed real-database evidence and performed pure checks; it did not rerun PostgreSQL or Docker."
+  ]
+}

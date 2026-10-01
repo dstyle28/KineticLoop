@@ -1,0 +1,40 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-035",
+  "reviewed_head_sha": "361478d64fac1c807ae93c530d8d2cd55ea8e32a",
+  "review_type": "GENERAL",
+  "status": "PASS",
+  "findings": [],
+  "review_contract_version": "v0.2",
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-035.yaml",
+    "docs/exec-plans/active/KL-019.md",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_protocol_execution_scope.py",
+    "docs/exec-plans/integrations/KL-024.json",
+    "docs/exec-plans/integrations/KL-025.json",
+    "docs/exec-plans/evidence/HG-035/merged_scope_api_fixture_audit-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/execution_scope_regressions-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/harness_validation-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/harness_tests-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/unit_tests-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/lint-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/typecheck-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/diff_clean-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/candidate_isolation_and_regressions-d0920d9.log",
+    "docs/exec-plans/evidence/HG-035/candidate_proof.py",
+    "docs/exec-plans/evidence/HG-035/namespace_probe.py",
+    "docs/exec-plans/evidence/HG-035/isolation_plugin.py"
+  ],
+  "independent_observations": [
+    "Read AGENTS.md, current authority index, independent-review skill, governance/review/merge contracts and schemas; examined the protected-base to reviewed-head diff and selected raw logs rather than accepting author PASS assertions.",
+    "Compared Git objects at protected base eab2b305351cf3c504f74ac74868edc58d0a3430 and reviewed head: the exact 72 changed paths equal the governance record inventory. Only KL-019 task definitions change; other tasks, completed artifacts, production source, migrations, existing database/unit tests, CI, frozen files, frozen baseline, requirement sets, acceptance specifications and product evidence manifest are preserved. The added KL-024/KL-025 integrations are bookkeeping.",
+    "Independently parsed the packet JSON and verified exactly 20 ordered unique check IDs and byte-equivalent command/oracle projections against the backlog. Traceability is the exact validator projection. The protected-base and reviewed-head union still requires GENERAL, PROTOCOL and DB_CONCURRENCY. KL-019 remains NOT_STARTED with no task result and its I01/I02/I04/I07/A03@DC obligations are not promoted to PASS.",
+    "Inspected and reran the definition, packet-boundary and fixture-scope controls: 144 focused tests passed in 0.70s with PYTHONDONTWRITEBYTECODE=1, PYTHONPATH=src and pytest cache disabled. Existing strict wire contracts and transaction fixtures remain unchanged; two literal namespace candidates are anchored to complete merged fixture hashes and reject all other bytes. The transaction fixture retains its two existing overrides and the packet requires an owned launcher to validate them before pytest or lifecycle operations.",
+    "Independently verified every current index hash and every manifest complete-file byte count/hash while preserving entry identities and metadata. Fresh read-only check-harness returned HARNESS_CHECK_PASS tasks=70 active=67, and git diff --check for the complete protected-base to reviewed-head diff exited zero.",
+    "Verified all nine selected raw logs start with the exact base, tested d0920d90b63f817d4b4000494873da4559e8a13b and governance command, end with exit_code=0, and agree with their committed JSON records. Read the recorded 311 harness, 207 unit, 144 focused, lint and typecheck results; earlier formatting diagnostics remain unselected.",
+    "For KL-024 and KL-025, independently proved normal result-to-reviewed-to-review-record-to-merge ancestry, byte-identical PASS results, exact required PASS review SHA/identity bindings, linear review-directory-only suffixes and two-parent merge commits ancestral to the protected base. KL-024 binds 28a47f1 / 54c201f / ff57a80; KL-025 binds 5f3c14b / 2ab9c47 / eab2b30. The integration validator also accepts both complete chains and selected result evidence.",
+    "Inspected candidate runner and real raw PostgreSQL migration/regression output: only the two future namespace transformations are applied in a disposable clone, all existing test-function ASTs and transaction/product bytes are preserved, actual reset/destroy calls are confined to the three derived plan/ledger/tx namespaces, and the combined prerequisite run reports 75 passes plus 71 scope passes. Instrumented invalid-selector and launch probes are separate from the real database run. This is candidate feasibility, not execution-service implementation or product requirement PASS; no independent PostgreSQL/Docker rerun was performed for this review.",
+    "Verified tested-to-reviewed ancestry and its single linear 361478d suffix: only the new HG-035 governance record and 34 new HG-035 evidence files are added. No tested implementation, packet, fixture, validator or existing evidence bytes change in that suffix; governance_suffix_errors returns no errors. The later review append must remain restricted to docs/exec-plans/reviews/HG-035/.",
+    "The packet explicitly limits missing S38/S44 support to existing CommitBundle/StartSession owners and requires exact frozen lock stages, natural uniqueness, current-basis guards, complete rollback and contention evidence. Synthetic S26/COMMIT_READY/certificate bootstrap is identified as upstream input, excludes target output seeding, and leaves full planning progression to KL-027. Those are future implementation obligations, not claims already demonstrated by HG-035."
+  ]
+}
