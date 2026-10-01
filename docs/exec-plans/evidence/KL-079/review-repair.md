@@ -1,0 +1,11 @@
+# Independent review oracle repair
+
+GENERAL and DB_CONCURRENCY reviewed cf57c0a1c32d7ec84bd55be5351bf5de6ad21df0 and recorded CHANGES_REQUIRED. Their original records are retained in commit 260ff8629c9b3e36ff916c98b91bad35d16ae721. PROTOCOL found no semantic change. The initial all-command PASS run did not meet the complete expiry/current-state DC oracle.
+
+The shared expiry was replaced with eight separate actual-owner PostgreSQL controls: before/after admitted-source expiry and registered planning-runtime expiry, at both full validation and COMMIT_READY. Source admission or independently policy-bound planning runtime is the earliest bound; the projection engine/manifest/policy/lease/root stay valid. Both physical S36 expiries and the owner-created S37 expiry equal that earlier bound. Observed S29 blockers establish ordering, database clock crossing establishes time, and pass-through observation records prove the authenticated ingress and live current-chain guard were reached without replacing their logic. No immutable target row is seeded or mutated.
+
+Five additional fully prepared COMMIT_READY controls independently exercise actual new-manifest publication, mutable current-attempt pointer loss, wrong fence, actual KL024 lease takeover and observed post-S29 lease expiry. Complete persisted snapshots assert zero rows, receipts/events/outbox, stage or pointer effects for the rejected operation.
+
+A dirty exploratory pilot had 10 passes and three assertion failures: current-attempt/fence/takeover correctly denied at AdvanceAttempt's existing initial require_current_fence before _prepare_current_progress. The test incorrectly required that later guard. The corrected pass-through observation records the initial authenticated current-fence guard; the three exploratory reruns passed. No exploratory run is revision-bound PASS evidence. Final named selectors and the full own suite must all execute on the subsequent committed tested revision. Pure heterogeneous minima/equality checks were also added; equality is never called DC.
+
+No application implementation, frozen authority, public owner/wire, planning_progress module, legacy fixture or hosted workflow changed during this repair. Fresh exact-SHA checks/result and fresh independent reviews are required before merge.

@@ -25,26 +25,35 @@ from kineticloop.persistence.transactions import (
     _cursor,
 )
 from kineticloop.workflow.deterministic_planning import (
+    FULL_VERSION,
     OWNERS,
+    RULES,
     VERSION,
     Basis,
     Demand,
     Fact,
     Fitness,
+    FullPreparationRequest,
+    FullResolution,
+    FullValidation,
     Nutrition,
     PreparationRequest,
     Resolution,
     Validation,
+    binding,
     compute_demand,
     compute_fitness,
     compute_nutrition,
+    full_policy,
     instant,
     policy,
     resolve,
+    resolve_full,
     validate,
+    validate_full,
 )
 from kineticloop.workflow.planning import digest
-from kineticloop.workflow.planning_progress import AdvanceAttempt, ProgressIdentity
+from kineticloop.workflow.planning_progress import AdvanceAttempt, ProgressBasis, ProgressIdentity
 
 _NAMESPACE = UUID("dd042ed1-2ad9-4800-9d51-8833c4cddc0d")
 _TABLES = {
@@ -53,6 +62,7 @@ _TABLES = {
     "demand": "prescription_demand_features",
     "nutrition": "proposal_revisions",
     "resolution": "evidence_resolutions",
+    "nutrition_resolution": "evidence_resolutions",
 }
 
 
@@ -63,7 +73,9 @@ class _Computed:
 
 
 def _inputs(
-    cursor: Cursor[Any], identity: ProgressIdentity, request: PreparationRequest
+    cursor: Cursor[Any],
+    identity: ProgressIdentity,
+    request: PreparationRequest | FullPreparationRequest,
 ) -> dict[str, Any]:
     """Immutable bounded reads. Used outside coordination; persistence verifies their hashes."""
     rows: dict[str, Any] = {}
@@ -99,11 +111,23 @@ def _inputs(
     ):
         raise GuardRequired("immutable explicit fixture policy required")
     policy(configuration)
+    full = configuration.get("contract") == FULL_VERSION
+    if request.kind in {"RESOLUTION", "VALIDATION"} and full != (
+        type(request) is FullPreparationRequest
+    ):
+        raise GuardRequired("persisted policy selects exact request profile; no downgrade")
+    if full and policy_row["typed_payload"].get("authorization_action_scopes") != {
+        "TRAINING": "TEST_ONLY",
+        "NUTRITION": "TEST_ONLY",
+    }:
+        raise GuardRequired("both full policy action scopes must be isolated TEST_ONLY")
+    version = FULL_VERSION if full else VERSION
     runtime = policy_row["typed_payload"].get("fixture_runtime")
     if (
         not isinstance(runtime, dict)
         or set(runtime) != {"id", "hash", "version"}
-        or runtime["version"] != VERSION
+        or runtime["version"] != version
+        or (full and runtime["hash"] != digest({"version": FULL_VERSION, "rules": RULES}))
     ):
         raise GuardRequired("exact fixture runtime version required")
     cursor.execute(
@@ -117,9 +141,23 @@ def _inputs(
         or artifact[1]
         or artifact[0]["artifact_kind"] != "RUNTIME"
         or artifact[0]["content_hash"] != runtime["hash"]
-        or artifact[0]["artifact_version"] != VERSION
-        or artifact[0]["typed_payload"]
-        != {"operation": "DETERMINISTIC_TEST_PREPARATION", "version": VERSION}
+        or artifact[0]["artifact_version"] != version
+        or (
+            not full
+            and artifact[0]["typed_payload"]
+            != {"operation": "DETERMINISTIC_TEST_PREPARATION", "version": VERSION}
+        )
+        or (
+            full
+            and (
+                set(artifact[0]["typed_payload"]) != {"registration_validity_spec"}
+                or artifact[0]["status"] != "REGISTERED"
+                or artifact[0]["typed_payload"]["registration_validity_spec"].get(
+                    "closure_complete"
+                )
+                is not True
+            )
+        )
         or artifact[0]["valid_from"] is None
         or artifact[0]["valid_until"] is None
     ):
@@ -209,7 +247,7 @@ def _inputs(
         )
         facts.append(fact.payload())
     parent = None
-    if request.parent_id:
+    if type(request) is PreparationRequest and request.parent_id:
         cursor.execute(
             "SELECT to_jsonb(f) FROM kineticloop.proposal_revisions f WHERE subject_id=%s AND id=%s AND proposal_kind='FITNESS'",
             (identity.subject_id, request.parent_id),
@@ -232,7 +270,9 @@ def _inputs(
 
 
 def _compute(
-    connection: Connection[Any], identity: ProgressIdentity, request: PreparationRequest
+    connection: Connection[Any],
+    identity: ProgressIdentity,
+    request: PreparationRequest | FullPreparationRequest,
 ) -> _Computed:
     with connection.transaction():
         capture = _inputs(connection.cursor(), identity, request)
@@ -243,6 +283,18 @@ def _compute(
     ).read_canonical(identity.subject_id, UUID(capture["manifest"]["ref_s15_id"]))
     if sorted(str(m.revision_id) for m in canonical.members) != capture["members"]:
         raise GuardRequired("physical source members must equal reconstructed canonical closure")
+    artifact = _artifact(identity, request, capture, now)
+    return _Computed(
+        json.dumps(capture, sort_keys=True), json.dumps(artifact.payload(), sort_keys=True)
+    )
+
+
+def _artifact(
+    identity: ProgressIdentity,
+    request: PreparationRequest | FullPreparationRequest,
+    capture: dict[str, Any],
+    now: Any,
+) -> Any:
     rows = capture["rows"]
     config = capture["policy"]["typed_payload"]["deterministic_fixture"]
     snap = rows["snapshot"]
@@ -259,7 +311,14 @@ def _compute(
         policy_hash=capture["policy"]["content_hash"],
         captured_epoch=request.epoch,
     )
-    output = str(uuid5(_NAMESPACE, f"{request.subject_id}:{request.attempt_id}:{request.kind}"))
+    suffix = (
+        f":{FULL_VERSION}:{request.action_type or 'FULL'}"
+        if type(request) is FullPreparationRequest
+        else ""
+    )
+    output = str(
+        uuid5(_NAMESPACE, f"{request.subject_id}:{request.attempt_id}:{request.kind}{suffix}")
+    )
 
     def typed(name: str, model: Any) -> Any:
         return model.model_validate_json(json.dumps(rows[name]["typed_payload"]))
@@ -281,6 +340,85 @@ def _compute(
             artifact = compute_demand(fitness, output, config)
         elif request.kind == "NUTRITION":
             artifact = compute_nutrition(fitness, typed("demand", Demand), output, config)
+        elif type(request) is FullPreparationRequest:
+            full_policy(config)
+            demand, nutrition = typed("demand", Demand), typed("nutrition", Nutrition)
+            expiry = min(
+                instant(capture["manifest"]["valid_until"]),
+                instant(capture["runtime"]["valid_until"]),
+            ).isoformat()
+
+            def build_resolution(action: str, identifier: str) -> FullResolution:
+                return resolve_full(
+                    fitness,
+                    demand,
+                    nutrition,
+                    identifier,
+                    config,
+                    tuple(Fact.model_validate_json(json.dumps(f)) for f in capture["facts"]),
+                    action_type=action,
+                    manifest_hash=capture["manifest"]["manifest_hash"],
+                    source_id=capture["factset"]["id"],
+                    source_hash=digest(capture["factset"]),
+                    members=tuple(capture["members"]),
+                    expires_at=expiry,
+                )
+
+            if request.kind == "RESOLUTION":
+                assert request.action_type is not None
+                artifact = build_resolution(request.action_type, output)
+                if (
+                    request.proposal_hash != artifact.proposal_hash
+                    or str(request.proposal_id) != artifact.proposal_id
+                    or request.action_parameters_hash != artifact.action_parameters_hash
+                ):
+                    raise GuardRequired("exact per-action proposal/parameters required")
+            else:
+                resolved = tuple(
+                    build_resolution(action, rows[name]["id"])
+                    for action, name in (
+                        ("TRAINING", "resolution"),
+                        ("NUTRITION", "nutrition_resolution"),
+                    )
+                )
+                for name, rebuilt in zip(
+                    ("resolution", "nutrition_resolution"), resolved, strict=True
+                ):
+                    row = rows[name]
+                    if (
+                        row["typed_payload"] != rebuilt.payload()
+                        or row["content_hash"] != rebuilt.content_hash
+                        or row["action_type"] != rebuilt.action_type
+                        or row["action_parameters_hash"] != rebuilt.action_parameters_hash
+                        or row["query_basis_hash"] != rebuilt.query_basis_hash
+                        or row["resolver_version"] != FULL_VERSION
+                        or row["ref_s24_id"] != base.manifest_id
+                        or row["ref_s05_id"] != base.policy_id
+                        or instant(row["resolution_expires_at"])
+                        != instant(rebuilt.resolution_expires_at)
+                    ):
+                        raise GuardRequired(
+                            "exact owner-verified full S36 columns and source reconstruction required"
+                        )
+                if tuple(binding(r) for r in resolved) != request.action_bindings:
+                    raise GuardRequired("exact ordered owner-verified action bindings required")
+                mechanical = validate_full(fitness, demand, nutrition, resolved, config, now)
+                if not capture["execution_basis_event_id"]:
+                    raise GuardRequired("actual upstream execution-basis event required")
+                artifact = FullValidation.model_validate_json(
+                    json.dumps(
+                        {
+                            **base.payload(),
+                            "id": output,
+                            "fitness_hash": fitness.content_hash,
+                            "demand_hash": demand.content_hash,
+                            "nutrition_hash": nutrition.content_hash,
+                            "resolution_hash": resolved[0].content_hash,
+                            "execution_basis_event_id": capture["execution_basis_event_id"],
+                            **mechanical,
+                        }
+                    )
+                )
         elif request.kind == "RESOLUTION":
             # F/D/N must already be coherent before resolving the action.
             if compute_nutrition(
@@ -324,9 +462,7 @@ def _compute(
                     }
                 )
             )
-    return _Computed(
-        json.dumps(capture, sort_keys=True), json.dumps(artifact.payload(), sort_keys=True)
-    )
+    return artifact
 
 
 class _Service:
@@ -338,8 +474,11 @@ class _Service:
         identity.__post_init__()
         self.connection, self.identity = connection, identity
 
-    def _run(self, request: PreparationRequest) -> Mapping[str, Any]:
-        if type(request) is not PreparationRequest or request.kind not in self.kinds:
+    def _run(self, request: PreparationRequest | FullPreparationRequest) -> Mapping[str, Any]:
+        if (
+            type(request) not in {PreparationRequest, FullPreparationRequest}
+            or request.kind not in self.kinds
+        ):
             raise GuardRequired("exact typed fixture preparation request required")
         request = replace(request, sources=copy.deepcopy(dict(request.sources)))
         request.__post_init__()
@@ -351,7 +490,10 @@ class _Service:
         if self.connection.info.transaction_status != TransactionStatus.IDLE:
             raise TransactionStateError("fixture preparation requires idle owner connection")
         command = OWNERS[request.kind][0]
-        request_hash = digest(wire(asdict(request)))
+        request_payload = asdict(request)
+        if type(request) is FullPreparationRequest:
+            request_payload["action_bindings"] = [b.payload() for b in request.action_bindings]
+        request_hash = digest(wire(request_payload))
         with self.connection.transaction():
             prior = self.connection.execute(
                 "SELECT 1 FROM kineticloop.command_receipts WHERE subject_id=%s AND command_kind=%s AND actor_scope=%s AND client_key=%s",
@@ -368,35 +510,43 @@ class _Service:
 class ProposalService(_Service):
     kinds = frozenset({"FITNESS", "NUTRITION"})
 
-    def record_proposal(self, request: PreparationRequest) -> Mapping[str, Any]:
+    def record_proposal(
+        self, request: PreparationRequest | FullPreparationRequest
+    ) -> Mapping[str, Any]:
         return self._run(request)
 
 
 class DemandFeatureService(_Service):
     kinds = frozenset({"DEMAND"})
 
-    def record_demand_features(self, request: PreparationRequest) -> Mapping[str, Any]:
+    def record_demand_features(
+        self, request: PreparationRequest | FullPreparationRequest
+    ) -> Mapping[str, Any]:
         return self._run(request)
 
 
 class EvidenceResolver(_Service):
     kinds = frozenset({"RESOLUTION"})
 
-    def resolve_evidence(self, request: PreparationRequest) -> Mapping[str, Any]:
+    def resolve_evidence(
+        self, request: PreparationRequest | FullPreparationRequest
+    ) -> Mapping[str, Any]:
         return self._run(request)
 
 
 class ValidationService(_Service):
     kinds = frozenset({"VALIDATION"})
 
-    def record_validation(self, request: PreparationRequest) -> Mapping[str, Any]:
+    def record_validation(
+        self, request: PreparationRequest | FullPreparationRequest
+    ) -> Mapping[str, Any]:
         return self._run(request)
 
 
 def _prepare_fixture(
     tx: RepositoryTransaction,
     identity: ProgressIdentity,
-    request: PreparationRequest,
+    request: PreparationRequest | FullPreparationRequest,
     computed: _Computed,
 ) -> None:
     request.__post_init__()
@@ -413,7 +563,11 @@ def _prepare_fixture(
         < instant(capture["runtime"]["valid_until"])
     ):
         raise GuardRequired("fixture runtime inactive/expired")
-    subset = {name: value for name, value in request.sources.items() if name != "resolution"}
+    subset = {
+        name: value
+        for name, value in request.sources.items()
+        if name not in {"resolution", "nutrition_resolution"}
+    }
     target = {"FITNESS": "FITNESS", "DEMAND": "DEMAND_FEATURES", "NUTRITION": "NUTRITION"}.get(
         request.kind, "VALIDATING"
     )
@@ -453,6 +607,10 @@ def _prepare_fixture(
         "RESOLUTION": Resolution,
         "VALIDATION": Validation,
     }[request.kind]
+    if type(request) is FullPreparationRequest:
+        model = FullResolution if request.kind == "RESOLUTION" else FullValidation
+        if _artifact(identity, request, capture, now).payload() != payload:
+            raise GuardRequired("full closure must still reconstruct after locks")
     model.model_validate_json(computed.payload_json)
     if request.kind in {"RESOLUTION", "VALIDATION"}:
         expiry = payload.get("valid_until", payload.get("resolution_expires_at"))
@@ -486,10 +644,12 @@ def _prepare_fixture(
         )
     elif table == "S36":
         values.update(
-            action_type="TRAINING",
+            action_type=payload["action_type"],
             action_parameters_hash=payload["action_parameters_hash"],
-            resolver_version=VERSION,
-            query_basis_hash=digest(
+            resolver_version=FULL_VERSION if type(request) is FullPreparationRequest else VERSION,
+            query_basis_hash=payload["query_basis_hash"]
+            if type(request) is FullPreparationRequest
+            else digest(
                 {
                     "manifest_id": str(request.manifest_id),
                     "policy_id": str(identity.policy_id),
@@ -527,7 +687,7 @@ def _prepare_fixture(
 def _persist_fixture(
     tx: RepositoryTransaction,
     identity: ProgressIdentity,
-    request: PreparationRequest,
+    request: PreparationRequest | FullPreparationRequest,
     request_hash: str,
     computed: _Computed | None,
 ) -> Mapping[str, Any]:
@@ -586,3 +746,59 @@ def _persist_fixture(
         ),
     )
     return {**outcome, "replayed": True} if replayed else outcome
+
+
+def _verify_full_progress(
+    cursor: Cursor[Any],
+    identity: ProgressIdentity,
+    request: AdvanceAttempt,
+    rows: Mapping[str, Any],
+    now: Any,
+) -> None:
+    """Bounded exact S36/S37 reconstruction under the existing current-chain locks."""
+    from kineticloop.workflow.deterministic_planning import ActionBinding
+
+    validation = FullValidation.model_validate_json(json.dumps(rows["validation"]["typed_payload"]))
+    bindings = validation.action_bindings
+    sources = {k: v for k, v in request.sources.items() if k != "validation"}
+    sources["nutrition_resolution"] = {
+        "id": bindings[1].resolution_id,
+        "hash": bindings[1].resolution_hash,
+    }
+    operation = FullPreparationRequest(
+        **{k: getattr(request, k) for k in ProgressBasis.__dataclass_fields__},
+        kind="VALIDATION",
+        sources=sources,
+        action_bindings=tuple(
+            ActionBinding.model_validate_json(json.dumps(b.payload())) for b in bindings
+        ),
+    )
+    capture = _inputs(cursor, identity, operation)
+    rebuilt = _artifact(identity, operation, capture, now)
+    v, r = rows["validation"], rows["resolution"]
+    runtime = capture["policy"]["typed_payload"]["fixture_runtime"]
+    expected = {
+        "id": rebuilt.id,
+        "content_hash": rebuilt.content_hash,
+        "typed_payload": rebuilt.payload(),
+        "result": "PASS",
+        "ref_s03_id": rebuilt.execution_basis_event_id,
+        "ref_s05_id": str(identity.policy_id),
+        "ref_s24_id": str(request.manifest_id),
+        "ref_s28_id": str(request.request_id),
+        "ref_s29_id": str(request.attempt_id),
+        "ref_s34_id": rows["nutrition"]["id"],
+        "ref_s35_id": rows["demand"]["id"],
+        "ref_s36_id": r["id"],
+        "validator_artifact": f"{runtime['id']}:{runtime['version']}:{runtime['hash']}",
+    }
+    if (
+        any(v.get(k) != value for k, value in expected.items())
+        or v["valid_until"] is None
+        or instant(v["valid_until"]) != instant(rebuilt.valid_until)
+        or now >= instant(rebuilt.valid_until)
+        or not instant(capture["runtime"]["valid_from"])
+        <= now
+        < instant(capture["runtime"]["valid_until"])
+    ):
+        raise GuardRequired("COMMIT_READY requires exact current full closure and finite validity")

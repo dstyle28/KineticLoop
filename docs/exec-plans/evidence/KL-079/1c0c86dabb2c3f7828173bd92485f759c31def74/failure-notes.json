@@ -1,0 +1,7 @@
+{
+  "tested_commit": "1c0c86dabb2c3f7828173bd92485f759c31def74",
+  "checks_status": "FAIL",
+  "failed_check": "typecheck_passes",
+  "reason": "The final cleanup replaced dynamic UUID imports with typed UUID imports; the heterogeneous basis dict needs an explicit dict[str, Any] annotation. All other thirteen exact checks passed; no task/product PASS is based on this run.",
+  "correction": "Annotate the unit fixture basis. Rerun every required check on a new tested_commit before committing PASS result or starting review."
+}

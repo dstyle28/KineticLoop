@@ -3237,6 +3237,13 @@ class RepositoryTransaction:
                 or any(n["typed_payload"].get(k) != v for k, v in expected.items())):
                 raise GuardRequired("NUTRITION must bind exact F/D/manifest/policy")
         if "validation" in rows:
+            _cursor(self).execute("SELECT typed_payload FROM kineticloop.policy_bundles WHERE subject_id=%s AND id=%s", (self.subject_id, policy))
+            selected_policy = _cursor(self).fetchone()
+            if selected_policy and selected_policy[0].get("deterministic_fixture", {}).get("contract") == "kl079-full-actions-v1":
+                from kineticloop.persistence.deterministic_planning import _verify_full_progress
+
+                _verify_full_progress(_cursor(self), self._coordination_context["progress_identity"], request, rows, now)
+                return sources
             r, v = rows["resolution"], rows["validation"]
             _cursor(self).execute("SELECT execution_basis_event_id FROM kineticloop.user_decision_state WHERE subject_id=%s", (self.subject_id,))
             execution_row = _cursor(self).fetchone()
