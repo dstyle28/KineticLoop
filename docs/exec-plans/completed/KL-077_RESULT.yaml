@@ -2,7 +2,7 @@ task_identity: harness-backlog-v0.2/KL-077
 display_task_id: KL-077
 task_definition_version: v0.2
 base_commit: 7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588
-tested_commit: 751c14e1aa2062c143f567062bc5457da7724c32
+tested_commit: 2c04437d46fc38eace30ea63d57e5ab5de1960e3
 merge_commit: null
 task_status: PASS
 task_checks_status: PASS
@@ -16,59 +16,59 @@ commands_run:
 - check_id: full_execution_identity_pu
   command: uv run pytest -q tests/unit/protocol/test_full_test_execution.py::test_strict_ingress
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/full_execution_identity_pu.log
+  evidence_ref: docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_identity_pu.log
 - check_id: full_bundle_commit_dc
   command: uv run pytest -q tests/db/test_full_test_execution.py::test_full_bundle_commit
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/full_bundle_commit_dc.log
+  evidence_ref: docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_bundle_commit_dc.log
 - check_id: full_bundle_basis_denials_dc
   command: uv run pytest -q tests/db/test_full_test_execution.py::test_full_bundle_denials
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/full_bundle_basis_denials_dc.log
+  evidence_ref: docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_bundle_basis_denials_dc.log
 - check_id: ordinary_pause_identity_pu
   command: uv run pytest -q tests/unit/protocol/test_full_test_execution.py::test_ordinary_pause_identity
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/ordinary_pause_identity_pu.log
+  evidence_ref: docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/ordinary_pause_identity_pu.log
 - check_id: ordinary_pause_owner_dc
   command: uv run pytest -q tests/db/test_full_test_execution.py::test_ordinary_pause_owner
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/ordinary_pause_owner_dc.log
+  evidence_ref: docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/ordinary_pause_owner_dc.log
 - check_id: continue_resume_current_dc
   command: uv run pytest -q tests/db/test_full_test_execution.py::test_continue_resume_rechecks
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/continue_resume_current_dc.log
+  evidence_ref: docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/continue_resume_current_dc.log
 - check_id: full_execution_replay_atomicity_dc
   command: uv run pytest -q tests/db/test_full_test_execution.py::test_replay_and_atomicity
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/full_execution_replay_atomicity_dc.log
+  evidence_ref: docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_replay_atomicity_dc.log
 - check_id: full_execution_namespace_pu
   command: uv run pytest -q tests/unit/protocol/test_full_test_execution.py::test_namespace
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/full_execution_namespace_pu.log
+  evidence_ref: docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_namespace_pu.log
 - check_id: full_execution_suite_dc
   command: uv run pytest -q tests/db/test_full_test_execution.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/full_execution_suite_dc.log
+  evidence_ref: docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_suite_dc.log
 - check_id: harness_validation_passes
   command: uv run kl check-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/harness_validation_passes.log
+  evidence_ref: docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/harness_validation_passes.log
 - check_id: unit_regressions_pass
   command: uv run kl test-unit
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/unit_regressions_pass.log
+  evidence_ref: docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/unit_regressions_pass.log
 - check_id: harness_regressions_pass
   command: uv run kl test-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/harness_regressions_pass.log
+  evidence_ref: docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/harness_regressions_pass.log
 - check_id: lint_passes
   command: uv run kl lint
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/lint_passes.log
+  evidence_ref: docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/lint_passes.log
 - check_id: typecheck_passes
   command: uv run kl typecheck
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/typecheck_passes.log
+  evidence_ref: docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/typecheck_passes.log
 requirements_covered: []
 files_changed:
 - docs/contracts/full_test_execution.md
@@ -90,6 +90,23 @@ files_changed:
 - docs/exec-plans/evidence/KL-077/16c9b478b445b68c97b1628accda104d08f2c1ab/result-validation.log
 - docs/exec-plans/evidence/KL-077/16c9b478b445b68c97b1628accda104d08f2c1ab/typecheck_passes.log
 - docs/exec-plans/evidence/KL-077/16c9b478b445b68c97b1628accda104d08f2c1ab/unit_regressions_pass.log
+- docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/checks.json
+- docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/continue_resume_current_dc.log
+- docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_bundle_basis_denials_dc.log
+- docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_bundle_commit_dc.log
+- docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_identity_pu.log
+- docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_namespace_pu.log
+- docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_replay_atomicity_dc.log
+- docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_suite_dc.log
+- docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/harness_regressions_pass.log
+- docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/harness_validation_passes.log
+- docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/lint_passes.log
+- docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/oracle-audit.json
+- docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/ordinary_pause_identity_pu.log
+- docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/ordinary_pause_owner_dc.log
+- docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/result-validation.log
+- docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/typecheck_passes.log
+- docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/unit_regressions_pass.log
 - docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/checks.json
 - docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/continue_resume_current_dc.log
 - docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/full_bundle_basis_denials_dc.log
@@ -108,6 +125,10 @@ files_changed:
 - docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/typecheck_passes.log
 - docs/exec-plans/evidence/KL-077/751c14e1aa2062c143f567062bc5457da7724c32/unit_regressions_pass.log
 - docs/exec-plans/evidence/KL-077/development/failures.json
+- docs/exec-plans/evidence/KL-077/development/hosted-ae6564e-failure.json
+- docs/exec-plans/evidence/KL-077/development/hosted-ae6564e-pr-failure.log.gz
+- docs/exec-plans/evidence/KL-077/development/hosted-ae6564e-push-failure.json
+- docs/exec-plans/evidence/KL-077/development/hosted-ae6564e-push-failure.log.gz
 - docs/exec-plans/evidence/KL-077/development/kl077-development-all.log.gz
 - docs/exec-plans/evidence/KL-077/development/kl077-development-all2.log.gz
 - docs/exec-plans/evidence/KL-077/development/kl077-development-critical.log.gz
@@ -122,6 +143,9 @@ files_changed:
 - docs/exec-plans/reviews/KL-077/rejected-0f63f70/DB_CONCURRENCY.json
 - docs/exec-plans/reviews/KL-077/rejected-0f63f70/GENERAL.json
 - docs/exec-plans/reviews/KL-077/rejected-0f63f70/PROTOCOL.json
+- docs/exec-plans/reviews/KL-077/stale-ae6564e/DB_CONCURRENCY.json
+- docs/exec-plans/reviews/KL-077/stale-ae6564e/GENERAL.json
+- docs/exec-plans/reviews/KL-077/stale-ae6564e/PROTOCOL.json
 - src/kineticloop/persistence/protocol_execution.py
 - src/kineticloop/persistence/transactions.py
 - src/kineticloop/protocol/execution.py
@@ -140,6 +164,9 @@ decisions:
   owner/fence/request/attempt/lease/deadline guard after receipt/S29/S37 locks.
 - Four additional owner-produced finite lease/deadline observed-lock controls prove before-bound success and
   after-bound exact zero-effect denial; prior CHANGES_REQUIRED reviews remain preserved under rejected-0f63f70.
+- Final hosted suite found a legacy count-one completion error-message regression; the original diagnostic
+  is restored without changing guards. Both failed tests and the shared-fixture cascade are retained in hosted-ae6564e
+  failure evidence, and hosted reruns remain mandatory.
 - Pause takes S01 -> exact S44 -> receipt without S51/current authority; current T7 retains frozen registry-first
   order.
 - Same-root F2 and distinct replacement fixture use actual admission/revision/acquisition/forward preparation,
@@ -158,4 +185,7 @@ known_limitations:
   independently verified in entry.json without rewriting them.
 follow_up_tasks:
 - KL-027 remains downstream; do not start its composed demo in this task.
+- 'Separately review nonblocking DEMAND_FEATURE certificate proposal_id metadata: prior GENERAL review observed
+  validation anchor copied instead of physical demand proposal link; authoritative dependency checks remain
+  exact.'
 spec_change_request: null
