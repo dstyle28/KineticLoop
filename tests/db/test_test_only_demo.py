@@ -1754,6 +1754,18 @@ def test_full_trajectory(database_urls: Any, monkeypatch: pytest.MonkeyPatch) ->
             resume_binding["binding_kind"] == "RESUME" and resume_binding["binding_revision"] == 2
         )
         after_resume = snapshot(db, auth(seed).subject_id)
+        for table in (
+            "proposal_revisions",
+            "prescription_demand_features",
+            "evidence_resolutions",
+            "validation_results",
+            "daily_bundle_revisions",
+            "prescription_revisions",
+            "bundle_prescription_members",
+            "authorization_issuances",
+            "authorization_artifact_closure",
+        ):
+            assert after_resume[table] == before_resume[table]
         assert original_start in [r[0] for r in after_resume["execution_bindings"]]
         assert (
             len(after_resume["execution_bindings"]) == len(before_resume["execution_bindings"]) + 1
@@ -1867,6 +1879,7 @@ def test_revoke_then_deny(database_urls: Any, mode: str, change: str) -> None:
             eligibility_session=started["session_id"],
             eligibility_observation="exact same P/A through existing lifecycle; fresh absent START rechecks in its own guard",
         )
+        before_authority_loss = snapshot(db, auth(seed).subject_id)
         if change in {"STOP", "artifact"}:
             if change == "STOP":
                 apply_control(db, seed)
@@ -1908,6 +1921,18 @@ def test_revoke_then_deny(database_urls: Any, mode: str, change: str) -> None:
             assert output["executable"] and not output["replayed"]
             assert_event(db, seed, output)
             after = snapshot(db, auth(seed).subject_id)
+            for table in (
+                "proposal_revisions",
+                "prescription_demand_features",
+                "evidence_resolutions",
+                "validation_results",
+                "daily_bundle_revisions",
+                "prescription_revisions",
+                "bundle_prescription_members",
+                "authorization_issuances",
+                "authorization_artifact_closure",
+            ):
+                assert after[table] == before[table]
             assert initial_binding in [row[0] for row in after["execution_bindings"]]
             assert len(after["execution_bindings"]) - len(before["execution_bindings"]) == (
                 0 if mode == "CONTINUE" else 1
@@ -1947,6 +1972,25 @@ def test_revoke_then_deny(database_urls: Any, mode: str, change: str) -> None:
             )
             assert not loss_eligibility.is_executable
             historical = snapshot(db, auth(seed).subject_id)
+            for table in (
+                "canonical_fact_revisions",
+                "factset_revisions",
+                "factset_members",
+                "decision_manifests",
+                "decision_snapshots",
+                "proposal_revisions",
+                "prescription_demand_features",
+                "evidence_resolutions",
+                "validation_results",
+                "daily_bundle_revisions",
+                "prescription_revisions",
+                "bundle_prescription_members",
+                "authorization_issuances",
+                "authorization_artifact_closure",
+                "execution_bindings",
+                "workout_sessions",
+            ):
+                assert historical[table] == before_authority_loss[table], (change, mode, table)
             replay_start = service(db, seed).start(start_command)
             replay_bundle = service(db, seed).commit_full(request)
             assert replay_start["replayed"] and not replay_start["executable"]
