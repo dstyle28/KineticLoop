@@ -42,6 +42,17 @@ from kineticloop.protocol.authorization import (
 )
 from kineticloop.protocol.execution import PublishReady, digest
 from kineticloop.protocol.factsets import certificate_basis as _factset_certificate_basis
+from kineticloop.workflow.planning import digest as progress_digest
+from kineticloop.workflow.planning import require_live
+from kineticloop.workflow.planning_progress import (
+    EXITS,
+    MANDATORY_BLOCKS,
+    POLICY_BLOCKS,
+    AdvanceAttempt,
+    ProgressIdentity,
+    RecordSnapshot,
+    eligible_at,
+)
 
 _T = TypeVar("_T")
 
@@ -386,6 +397,12 @@ def artifact_bindings_match_activation(
 # is a bounded internal CallLedgerService operation, not a new public contract.
 _INTERNAL_OWNER_SPECS: Mapping[str, OwnerSpec] = MappingProxyType(
     {
+        "RecordSnapshot": OwnerSpec(
+            "ContextService", Boundary.PREPARATION, ("S26", "S02", "S03", "S04")
+        ),
+        "AdvanceAttempt": OwnerSpec(
+            "PlanningWorkflowService", Boundary.PREPARATION, ("S29", "S02", "S03", "S04")
+        ),
         "CancelUndispatched": OwnerSpec(
             "CallLedgerService", Boundary.T8, ("S01", "S27", "S31", "S32", "S02", "S03", "S04")
         ),
@@ -594,6 +611,9 @@ _INSERT_COLUMNS: Mapping[str, frozenset[str]] = MappingProxyType(
         "S25": _fields(
             "id subject_id projection_role unavailable_reason validated_basis_hash ref_s21_id ref_s24_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
         ),
+        "S26": _fields(
+            "id subject_id revision ref_s24_id ref_s28_id ref_s29_id captured_epoch context_hash source_cutoff content_hash typed_payload"
+        ),
         "S27": _fields(
             "id subject_id root_request_identity purpose local_date deadline current_request_revision_id current_attempt_id lease_owner lease_expires_at fence_token stale_restart_count result_bundle_revision_id result_authorization_id content_hash content_schema_version effective_at hash_scheme_version status typed_payload"
         ),
@@ -655,6 +675,8 @@ _INSERT_COLUMNS: Mapping[str, frozenset[str]] = MappingProxyType(
 # Every public owner has an explicit logical-table/operation capability.  Existing
 # entries above intentionally remain narrower where multiple commands share a table.
 _COMMAND_OPERATIONS: Mapping[str, Mapping[str, tuple[str, ...]]] = {
+    "RecordSnapshot": {"insert": ("S26",)},
+    "AdvanceAttempt": {"update": ("S29",)},
     "ReceiveEvidence": {"insert": ("S09",)},
     "RecordCandidate": {"insert": ("S10",)},
     "DecideAssociation": {"insert": ("S12", "S43"), "update": ("S01",)},
@@ -715,6 +737,9 @@ for _command, _operations in _COMMAND_OPERATIONS.items():
                 _rules.setdefault((_logical_id, _operation), columns)
 
 _UPDATE_COLUMNS: Mapping[str, Mapping[str, frozenset[str]]] = {
+    "AdvanceAttempt": {"S29": frozenset({
+        "status", "fence_token", "snapshot_id", "started_at", "completed_at", "failure_code", "typed_payload"
+    })},
     "ApplyControl": {"S18": frozenset({"status", "head_revision", "ref_s17_id", "typed_payload"})},
     "ClearControl": {"S18": frozenset({"status", "head_revision", "ref_s17_id", "typed_payload"})},
     "CompleteReportedWorkout": {
@@ -1177,6 +1202,8 @@ class RestrictedSqlSession:
         return dict(payload)
 
     def _require_insert_bindings(self, logical_id: str, values: Mapping[str, Any]) -> None:
+        if self.__command_kind == "RecordSnapshot":
+            self._require_progress_values("S26", values)
         references = {
             "ref_s27_id": ("planning_intents",),
             "ref_s29_id": ("planning_attempts",),
@@ -1703,6 +1730,11 @@ class RestrictedSqlSession:
         values: Mapping[str, Any],
         predicates: Mapping[str, Any],
     ) -> None:
+        if self.__command_kind == "AdvanceAttempt":
+            if predicates != {"subject_id": self.__subject_id,
+                "id": self.__coordination_context.get("verified_attempt_id")}:
+                raise GuardRequired("AdvanceAttempt targets only its exact current attempt")
+            self._require_progress_values("S29", values)
         if logical_id == "S01" and self.__command_kind == "PublishManifest":
             if values.get("current_manifest_id") not in self.__inserted_ids.get(
                 "S24", set()
@@ -1940,7 +1972,18 @@ class RestrictedSqlSession:
                 raise ArtifactIdentityRequired("closure artifact disappeared")
         self.__closure_authorizations.add(authorization_id)
 
+    def _require_progress_values(self, logical_id: str, values: Mapping[str, Any]) -> None:
+        expected = self.__coordination_context.get("progress_values")
+        actual = {key: self._json_value(value) for key, value in values.items()}
+        if not expected or logical_id != self.__coordination_context.get("progress_table") or actual != expected:
+            raise GuardRequired("progress writes must equal exact server-prepared values")
+
     def validate_completion(self) -> None:
+        if self.__command_kind in {"RecordSnapshot", "AdvanceAttempt"}:
+            table = "S26" if self.__command_kind == "RecordSnapshot" else "S29"
+            count = len(self.__inserted_ids.get(table, set())) if table == "S26" else len(self.__updated_values.get(table, []))
+            if count != 1:
+                raise GuardRequired("progress requires exactly one complete owner mutation")
         if self.__command_kind == "BeginBuild":
             if len(self.__inserted_ids.get("S15", set())) != 1:
                 raise GuardRequired("BeginBuild requires exactly one S15 creation")
@@ -2819,6 +2862,245 @@ class RepositoryTransaction:
         self._coordination_context["planning_admission"] = basis
         return MappingProxyType(copy.deepcopy(basis))
 
+    def require_progress_ingress(self, identity: ProgressIdentity) -> None:
+        self._require_subject()
+        if self.command_kind not in {"RecordSnapshot", "AdvanceAttempt"} or type(identity) is not ProgressIdentity:
+            raise GuardRequired("exact authenticated internal progress owner required")
+        identity.__post_init__()
+        _cursor(self).execute(
+            "SELECT s.namespace,s.policy_id,s.environment_id,b.principal_name,current_user,session_user "
+            "FROM kineticloop.subject_scopes s JOIN kineticloop.subject_principal_bindings b "
+            "ON b.subject_id=s.subject_id AND b.namespace=s.namespace WHERE s.subject_id=%s",
+            (self.subject_id,),
+        )
+        row = _cursor(self).fetchone()
+        if (identity.subject_id != self.subject_id or row is None
+            or row[:4] != ("TEST", identity.policy_id, identity.environment_id, identity.principal)
+            or row[4] != row[5] or row[5] == identity.principal
+            or identity.policy_id != self._coordination_context["active_policy_bundle_id"]):
+            raise GuardRequired("TEST internal owner registration/active policy mismatch")
+        self._coordination_context["progress_identity"] = identity
+
+    def progress_historical_outcome(self, *, actor_scope: str, client_key: str,
+                                    request_hash: str) -> Mapping[str, Any] | None:
+        self._require_subject()
+        identity = self._coordination_context.get("progress_identity")
+        if identity is None or identity.key != actor_scope:
+            raise GuardRequired("authenticated progress replay required")
+        _cursor(self).execute(
+            "SELECT request_hash,status,typed_payload FROM kineticloop.command_receipts "
+            "WHERE subject_id=%s AND actor_scope=%s AND command_kind=%s AND client_key=%s",
+            (self.subject_id, actor_scope, self.command_kind, client_key),
+        )
+        row = _cursor(self).fetchone()
+        if row is None:
+            return None
+        if row[0] != request_hash or row[1] != "SUCCEEDED" or "outcome" not in row[2]:
+            raise IdempotencyConflict("progress operation identity conflict")
+        self._coordination_context["progress_historical"] = True
+        return {**row[2]["outcome"], "replayed": True, "executable": False}
+
+    def prepare_planning_progress(self, identity: ProgressIdentity,
+                                 request: RecordSnapshot | AdvanceAttempt,
+                                 output_id: UUID) -> dict[str, Any]:
+        """Post-aggregate-lock trusted clock and exact immutable source closure."""
+        c = self._coordination_context
+        if (c.get("progress_identity") != identity or self.command_kind != type(request).__name__
+            or not self.locked_identity("planning_attempts", request.attempt_id)
+            or request.subject_id != self.subject_id or request.expected_owner != identity.key):
+            raise GuardRequired("current authenticated attempt/operation required")
+        self.require_current_fence(request.intent_id, owner_id=identity.key, fence=request.fence,
+            expected_request_revision=request.request_revision, expected_attempt_id=request.attempt_id)
+        _cursor(self).execute(
+            "SELECT a.ref_s27_id,a.ref_s28_id,a.ref_s24_id,a.captured_epoch,a.fence_token,"
+            "a.status,a.snapshot_id,a.typed_payload,a.started_at,"
+            "m.manifest_hash,m.captured_epoch,m.ref_s05_id,m.ref_s06_id,m.valid_until,"
+            "GREATEST(m.recorded_at,COALESCE(m.effective_at,m.recorded_at)),m.typed_payload,r.typed_payload,g.typed_payload,p.typed_payload,"
+            "i.status,i.lease_owner,i.fence_token,i.lease_expires_at,i.deadline,clock_timestamp() "
+            "FROM kineticloop.planning_attempts a JOIN kineticloop.decision_manifests m "
+            "ON m.subject_id=a.subject_id AND m.id=a.ref_s24_id "
+            "JOIN kineticloop.planning_request_revisions r ON r.subject_id=a.subject_id AND r.id=a.ref_s28_id "
+            "JOIN kineticloop.planning_intents i ON i.subject_id=a.subject_id AND i.id=a.ref_s27_id "
+            "JOIN kineticloop.program_versions g ON g.subject_id=m.subject_id AND g.id=m.ref_s06_id "
+            "JOIN kineticloop.policy_bundles p ON p.subject_id=m.subject_id AND p.id=m.ref_s05_id "
+            "WHERE a.subject_id=%s AND a.id=%s", (self.subject_id, request.attempt_id),
+        )
+        row = _cursor(self).fetchone()
+        if row is None:
+            raise GuardRequired("complete current progress chain required")
+        (intent, revision, manifest, epoch, attempt_fence, state, snapshot, payload, started,
+         manifest_hash, manifest_epoch, policy, program, valid_until, valid_from, manifest_payload,
+         request_payload, program_payload, policy_payload, root_state, owner, fence, expiry, deadline, now) = row
+        require_live(status=root_state, owner=owner, fence=fence, request=request.request_revision,
+            attempt=str(request.attempt_id), expected_owner=identity.key, expected_fence=request.fence,
+            expected_request=request.request_revision, expected_attempt=str(request.attempt_id),
+            attempt_status=state, now=now, expiry=expiry, deadline=deadline)
+        if ((intent, revision, manifest, epoch, state) != (request.intent_id, request.request_id,
+            request.manifest_id, request.epoch, request.source_state)
+            or revision != c["verified_request_id"] or manifest != c["current_manifest_id"]
+            or epoch != c["authorization_epoch"] or manifest_epoch != epoch
+            or policy != identity.policy_id or program != c["active_program_id"]
+            or valid_from is None or valid_until is None or not eligible_at(now, valid_from, valid_until)
+            or (state != "CREATED" and attempt_fence != request.fence)):
+            raise GuardRequired("attempt/request/manifest/epoch/stage basis changed or expired")
+        held, controls = self._current_control_states("TEST_ONLY")
+        if not controls_are_eligible(proven=held, states=controls):
+            raise GuardRequired("protective control blocks planning progress")
+        if isinstance(request, RecordSnapshot):
+            _cursor(self).execute(
+                "SELECT artifact_kind,content_hash,artifact_version,valid_from,valid_until,ref_s48_id,typed_payload "
+                "FROM kineticloop.safety_artifacts b WHERE id=%s AND NOT EXISTS "
+                "(SELECT 1 FROM kineticloop.artifact_revocation_events r WHERE r.ref_s49_id=b.id)",
+                (request.builder_id,),
+            )
+            builder = _cursor(self).fetchone()
+            if (builder is None or builder[0] != "RUNTIME" or builder[1] != request.builder_hash
+                or builder[3] is None or builder[4] is None or not eligible_at(now, builder[3], builder[4])
+                or builder[6].get("operation") != "CONTEXT_BUILDER"
+                or policy_payload.get("planning_context_builder") != {"id": str(request.builder_id), "hash": request.builder_hash}):
+                raise GuardRequired("registered current context builder required")
+            context = dict(request.context)
+            blocks = context.get("blocks")
+            summaries = policy_payload.get("planning_context")
+            if (not isinstance(summaries, dict) or set(summaries) != POLICY_BLOCKS
+                or not isinstance(blocks, dict) or set(blocks) != MANDATORY_BLOCKS
+                or blocks != {**summaries, "program": program_payload, "constraints": request_payload.get("constraints")}
+                or context != {"mandatory_context": True, "manifest_id": str(manifest),
+                    "manifest_hash": manifest_hash, "request_id": str(revision),
+                    "request_revision": request.request_revision, "attempt_id": str(request.attempt_id),
+                    "epoch": epoch, "policy_id": str(policy), "program_id": str(program),
+                    "blocks": blocks, "trust_class": "NON_COMMAND_CONTEXT", "builder_id": str(request.builder_id),
+                    "builder_hash": request.builder_hash, "context_builder_version": builder[2],
+                    "accounting": dict(request.accounting), "source_cutoff": request.source_cutoff.isoformat()}
+                or progress_digest(context) != request.context_hash or request.source_cutoff > now):
+                raise GuardRequired("complete immutable mandatory context/basis required")
+            counted_context = dict(context)
+            counted_context.pop("accounting", None)
+            raw = json.dumps(counted_context, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
+            budget = policy_payload.get("planning_context_byte_budget")
+            if (type(budget) is not int or not 0 < len(raw) <= budget <= 131072
+                or dict(request.accounting) != {"method": "UTF8_BYTE_UPPER_BOUND_V1",
+                    "input_units": len(raw), "budget_units": budget, "truncated": False}):
+                raise GuardRequired("full context accounting/budget mismatch")
+            _cursor(self).execute("SELECT coalesce(max(revision),0)+1 FROM kineticloop.decision_snapshots "
+                "WHERE subject_id=%s AND ref_s29_id=%s", (self.subject_id, request.attempt_id))
+            sequence_row = _cursor(self).fetchone()
+            assert sequence_row is not None
+            sequence = sequence_row[0]
+            values = {"id": output_id, "subject_id": self.subject_id, "revision": sequence,
+                "ref_s24_id": manifest, "ref_s28_id": revision, "ref_s29_id": request.attempt_id,
+                "captured_epoch": epoch, "context_hash": request.context_hash,
+                "content_hash": request.context_hash, "source_cutoff": request.source_cutoff,
+                "typed_payload": context}
+            table = "S26"
+        else:
+            sources = self._progress_sources(request, snapshot, policy, now)
+            if request.target_state == "FITNESS":
+                snapshot = UUID(sources["snapshot"]["id"])
+            bound = dict(payload)
+            if request.target_state not in EXITS:
+                bound["progress_sources"] = sources
+            values = {"status": request.target_state, "fence_token": request.fence,
+                "snapshot_id": snapshot, "started_at": started or now, "typed_payload": bound,
+                "failure_code": request.failure_code,
+                "completed_at": now if request.target_state in EXITS else None}
+            table = "S29"
+        c["progress_values"] = copy.deepcopy(values)
+        c["progress_table"] = table
+        return values
+
+    def prepared_planning_progress(self) -> dict[str, Any]:
+        if self.command_kind not in {"RecordSnapshot", "AdvanceAttempt"} or not self._coordination_context.get("progress_values"):
+            raise GuardRequired("server-prepared progress values required")
+        return copy.deepcopy(self._coordination_context["progress_values"])
+
+    def _progress_sources(self, request: AdvanceAttempt, snapshot: UUID | None,
+                          policy: UUID, now: datetime) -> dict[str, Mapping[str, str]]:
+        sources = dict(request.sources)
+        rows: dict[str, Mapping[str, Any]] = {}
+        tables = {"snapshot": "decision_snapshots", "fitness": "proposal_revisions",
+            "demand": "prescription_demand_features", "nutrition": "proposal_revisions",
+            "resolution": "evidence_resolutions", "validation": "validation_results"}
+        for name, source in sources.items():
+            _cursor(self).execute(sql.SQL("SELECT to_jsonb(t) FROM kineticloop.{} t WHERE subject_id=%s AND id=%s").format(
+                sql.Identifier(tables[name])), (self.subject_id, UUID(source["id"])))
+            found = _cursor(self).fetchone()
+            if found is None or found[0]["content_hash"] != source["hash"]:
+                raise GuardRequired("immutable stage source identity/hash missing or changed")
+            rows[name] = found[0]
+        if not sources:
+            return sources
+        snap = rows["snapshot"]
+        if (snap["ref_s24_id"] != str(request.manifest_id) or snap["ref_s28_id"] != str(request.request_id)
+            or snap["ref_s29_id"] != str(request.attempt_id) or snap["captured_epoch"] != request.epoch
+            or snap["context_hash"] != progress_digest(snap["typed_payload"])
+            or (request.target_state != "FITNESS" and snapshot != UUID(snap["id"]))):
+            raise GuardRequired("stage snapshot is not bound to exact current chain")
+        prior_sources: Mapping[str, Any] = {}
+        _cursor(self).execute("SELECT typed_payload FROM kineticloop.planning_attempts WHERE subject_id=%s AND id=%s",
+            (self.subject_id, request.attempt_id))
+        prior_row = _cursor(self).fetchone()
+        assert prior_row is not None
+        prior_sources = prior_row[0].get("progress_sources", {})
+        for name, source in prior_sources.items():
+            if sources.get(name) != source:
+                raise GuardRequired("stage cannot silently replace an earlier immutable prerequisite")
+        if "fitness" in rows:
+            f = rows["fitness"]
+            if (f["proposal_kind"] != "FITNESS" or f["ref_s26_id"] != snap["id"]
+                or not f["producer_artifact"]
+                or f["ref_s29_id"] != str(request.attempt_id) or f["content_hash"] != progress_digest(f["typed_payload"])):
+                raise GuardRequired("FITNESS source must bind exact attempt/snapshot/content")
+        if "demand" in rows:
+            d = rows["demand"]
+            if (d["ref_s34_id"] != rows["fitness"]["id"] or d["feature_hash"] != sources["demand"]["hash"]
+                or d["basis_hash"] != sources["fitness"]["hash"]
+                or not d["method_version"]
+                or d["typed_payload"].get("fitness_hash") != sources["fitness"]["hash"]
+                or d["content_hash"] != progress_digest(d["typed_payload"])):
+                raise GuardRequired("demand must bind exact immutable FITNESS")
+        if "nutrition" in rows:
+            n = rows["nutrition"]
+            expected = {"fitness_id": sources["fitness"]["id"], "fitness_hash": sources["fitness"]["hash"],
+                "demand_id": sources["demand"]["id"], "demand_hash": sources["demand"]["hash"],
+                "manifest_id": str(request.manifest_id), "policy_id": str(policy)}
+            if (n["proposal_kind"] != "NUTRITION" or n["ref_s26_id"] != snap["id"]
+                or not n["producer_artifact"]
+                or n["ref_s29_id"] != str(request.attempt_id) or n["demand_feature_id"] != rows["demand"]["id"]
+                or n["content_hash"] != progress_digest(n["typed_payload"])
+                or any(n["typed_payload"].get(k) != v for k, v in expected.items())):
+                raise GuardRequired("NUTRITION must bind exact F/D/manifest/policy")
+        if "validation" in rows:
+            r, v = rows["resolution"], rows["validation"]
+            _cursor(self).execute("SELECT execution_basis_event_id FROM kineticloop.user_decision_state WHERE subject_id=%s", (self.subject_id,))
+            execution_row = _cursor(self).fetchone()
+            assert execution_row is not None
+            expected_validation: dict[str, Any] = {"semantic_validation": "PASS", "policy_envelope": "PASS", "execution_basis_event_id": str(execution_row[0]), "snapshot_id": snap["id"], "context_hash": sources["snapshot"]["hash"],
+                "fitness_hash": sources["fitness"]["hash"], "demand_hash": sources["demand"]["hash"],
+                "nutrition_hash": sources["nutrition"]["hash"], "resolution_hash": sources["resolution"]["hash"],
+                "captured_epoch": request.epoch, "request_revision": request.request_revision}
+            if (r["ref_s24_id"] != str(request.manifest_id) or r["ref_s05_id"] != str(policy)
+                or r["query_basis_hash"] != progress_digest({"manifest_id": str(request.manifest_id),
+                    "policy_id": str(policy), "fitness_hash": sources["fitness"]["hash"],
+                    "action_parameters_hash": r["action_parameters_hash"]})
+                or not r["resolver_version"] or not v["validator_artifact"]
+                or r["content_hash"] != progress_digest(r["typed_payload"])
+                or r["resolution_expires_at"] is None or now >= datetime.fromisoformat(r["resolution_expires_at"])
+                or r["typed_payload"].get("coverage") != "COMPLETE_FOR_POLICY"
+                or r["typed_payload"].get("consistency") != "CONSISTENT"
+                or r["typed_payload"].get("truncation_status") != "NOT_TRUNCATED"
+                or r["action_parameters_hash"] != progress_digest(rows["fitness"]["typed_payload"].get("action"))
+                or v["result"] != "PASS" or v["ref_s29_id"] != str(request.attempt_id)
+                or v["ref_s28_id"] != str(request.request_id) or v["ref_s24_id"] != str(request.manifest_id)
+                or v["ref_s03_id"] != str(execution_row[0])
+                or v["ref_s05_id"] != str(policy) or v["ref_s34_id"] != rows["nutrition"]["id"]
+                or v["ref_s35_id"] != rows["demand"]["id"] or v["ref_s36_id"] != r["id"]
+                or v["valid_until"] is None or now >= datetime.fromisoformat(v["valid_until"])
+                or v["content_hash"] != progress_digest(v["typed_payload"])
+                or any(v["typed_payload"].get(k) != value for k, value in expected_validation.items())):
+                raise GuardRequired("COMMIT_READY requires coherent unexpired source-bound S36/S37")
+        return sources
+
     def planning_lease_snapshot(self, intent_id: UUID) -> Mapping[str, Any]:
         """Trusted-time bounded read of the exact locked lease chain."""
         self._require_subject()
@@ -3105,7 +3387,8 @@ class RepositoryTransaction:
             "validation_results": "S37",
         }[table]
         if logical not in self.spec.mutation_surfaces and not (
-            self.command_kind in {"CommitBundle", "Reauthorize"} and logical == "S37"
+            (self.command_kind in {"CommitBundle", "Reauthorize"} and logical == "S37")
+            or (self.command_kind in {"RecordSnapshot", "AdvanceAttempt"} and logical in {"S27", "S29"})
         ):
             raise GuardRequired(f"{self.command_kind} cannot lock inapplicable {logical}")
         for object_id in ids:
@@ -3258,6 +3541,8 @@ class RepositoryTransaction:
     ) -> None:
         self._require_subject()
         if self.command_kind not in {
+            "RecordSnapshot",
+            "AdvanceAttempt",
             "RenewLease",
             "ReserveCall",
             "PermitDispatch",
@@ -4721,6 +5006,9 @@ class RepositoryTransaction:
         factset_seal_basis: Mapping[str, Any] | None = None,
         expected_transition: str | None = None,
         execution_request: PublishReady | CommitBundle | StartSession | None = None,
+        progress_request: RecordSnapshot | AdvanceAttempt | None = None,
+        progress_identity: ProgressIdentity | None = None,
+        progress_output_id: UUID | None = None,
     ) -> tuple[Mapping[str, Any], bool]:
         self._require_receipt_guard()
         self._require_command_locks(aggregate_locks or {})
@@ -4803,6 +5091,12 @@ class RepositoryTransaction:
             }.__getitem__,
         ):
             self.lock_remaining(table, (aggregate_locks or {})[table])
+        if self.command_kind in {"RecordSnapshot", "AdvanceAttempt"}:
+            if progress_request is None or progress_identity is None or progress_output_id is None:
+                raise GuardRequired("exact typed progress preparation required")
+            self.prepare_planning_progress(progress_identity, progress_request, progress_output_id)
+        elif progress_request is not None or progress_identity is not None or progress_output_id is not None:
+            raise GuardRequired("progress preparation belongs to its exact internal owners")
         if self.command_kind == "PublishManifest":
             self._prepare_manifest_publication()
         if self.command_kind == "SealFactset":
@@ -4885,6 +5179,8 @@ class RepositoryTransaction:
                     f"{self.command_kind} requires an applicable {logical_id} row lock"
                 )
         required_aggregates = {
+            "RecordSnapshot": {"planning_attempts"},
+            "AdvanceAttempt": {"planning_attempts"},
             "PublishManifest": {"manifest_builds"},
             "SealFactset": {"factset_revisions"},
             "CommitBundle": {"planning_attempts", "validation_results"},
@@ -4897,6 +5193,8 @@ class RepositoryTransaction:
 
     def _require_fence_guard(self) -> None:
         mode = {
+            "RecordSnapshot": "LIVE",
+            "AdvanceAttempt": "LIVE",
             "AcquireLease": "CAS",
             "RenewLease": "LIVE",
             "ReserveCall": "LIVE",
@@ -4921,6 +5219,10 @@ class RepositoryTransaction:
         return object_id in self._locked_ids.get(table, set())
 
     def finish(self) -> None:
+        if self.command_kind in {"RecordSnapshot", "AdvanceAttempt"} and not (
+            self._first_use_completed or self._coordination_context.get("progress_historical")
+        ):
+            raise GuardRequired("internal progress must finish exact persistence or historical replay")
         if (self._coordination_context.get("first_execution_head") is not None
             or self._coordination_context.get("first_execution_session") is not None
         ) and not self._first_use_completed:
@@ -4933,6 +5235,27 @@ class RepositoryTransaction:
             raise ArtifactIdentityRequired(
                 "every leased artifact requires exact kind/identity/version/hash validation"
             )
+
+
+def _execute_guarded_progress(
+    connection: Connection[Any], identity: ProgressIdentity,
+    request: RecordSnapshot | AdvanceAttempt, payload_hash: str,
+) -> Mapping[str, Any]:
+    from kineticloop.persistence.planning_progress import _persist_progress
+
+    if type(identity) is not ProgressIdentity or type(request) not in {RecordSnapshot, AdvanceAttempt}:
+        raise GuardRequired("typed internal progress only")
+    identity.__post_init__()
+    request.__post_init__()
+    if request.subject_id != identity.subject_id or request.expected_owner != identity.key:
+        raise GuardRequired("authenticated progress identity mismatch")
+    if connection.info.transaction_status != TransactionStatus.IDLE:
+        raise TransactionStateError("progress requires idle connection")
+    with connection.transaction():
+        tx = RepositoryTransaction(connection.cursor(), type(request).__name__, request.subject_id)
+        outcome = _persist_progress(tx, identity, request, payload_hash)
+        tx.finish()
+        return outcome
 
 
 def execute_command(
@@ -5052,6 +5375,8 @@ def execute_preparation(
     if connection.info.transaction_status is not TransactionStatus.IDLE:
         raise TransactionStateError("preparation requires an idle connection")
     specification = _OWNER_SPECS.get(command_kind)
+    if command_kind in {"RecordSnapshot", "AdvanceAttempt"}:
+        raise GuardRequired("internal progress requires its typed guarded entrypoint")
     if specification is None or specification.boundary is not Boundary.PREPARATION:
         raise GuardRequired("command is not a preparation owner")
     with connection.transaction():
