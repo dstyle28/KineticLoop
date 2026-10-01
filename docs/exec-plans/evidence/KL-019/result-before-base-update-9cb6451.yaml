@@ -1,7 +1,7 @@
 task_identity: harness-backlog-v0.2/KL-019
 display_task_id: KL-019
 task_definition_version: v0.2
-base_commit: dac7df4adde23cba0ac5483204a25f4b3668176d
+base_commit: 822322dfcac69d1042c8f9f7517cecf4903f8163
 tested_commit: b47e71087dfebffb48bc97fb6e451cab783f7b21
 merge_commit: null
 task_status: PASS
@@ -207,14 +207,10 @@ files_changed:
 - docs/exec-plans/evidence/KL-019/publish_ready_build_dc-bf00942.log
 - docs/exec-plans/evidence/KL-019/publish_ready_build_dc-c739273.log
 - docs/exec-plans/evidence/KL-019/publish_ready_build_dc-ff073d0.log
-- docs/exec-plans/evidence/KL-019/result-before-base-update-9cb6451.yaml
 - docs/exec-plans/evidence/KL-019/result-before-review-repairs-07a6ba6.yaml
 - docs/exec-plans/evidence/KL-019/review-DB_CONCURRENCY-07a6ba6.json
-- docs/exec-plans/evidence/KL-019/review-DB_CONCURRENCY-9cb6451.json
 - docs/exec-plans/evidence/KL-019/review-GENERAL-07a6ba6.json
-- docs/exec-plans/evidence/KL-019/review-GENERAL-9cb6451.json
 - docs/exec-plans/evidence/KL-019/review-PROTOCOL-07a6ba6.json
-- docs/exec-plans/evidence/KL-019/review-PROTOCOL-9cb6451.json
 - docs/exec-plans/evidence/KL-019/run-checks.py
 - docs/exec-plans/evidence/KL-019/scope-audit-b47e710.json
 - docs/exec-plans/evidence/KL-019/start_new_session_dc-8af107b.log
@@ -268,8 +264,6 @@ decisions:
 - Preserve c739273 ACK-loss setup and 7cdee15 oracle-query failure logs as historical evidence. The
   superseded bf00942 candidate passed all twenty checks; final TEST_ONLY policy scope and exact first-use
   day/session defenses were added before the final full run.
-- Rebased onto current protected master including unrelated KL047 merge; all twenty exact checks
-  and three fresh independent reviews will bind the new revision before PR creation.
 known_limitations:
 - No RecordSnapshot/AdvanceAttempt owner, evidence-resolution/semantic-validation engine, full workflow/model
   loop, production activation, executable real-data shadow or provider command authority is implemented.
