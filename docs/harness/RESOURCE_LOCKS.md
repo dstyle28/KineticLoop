@@ -29,3 +29,7 @@ Every database-writing worktree uses a unique namespace, e.g. database `kineticl
 `migration_chain` serializes Alembic-chain writers. A concrete path overlap is
 allowed only when every overlapping task declares a shared exclusive resource key;
 otherwise the Harness definition is invalid rather than merely unschedulable.
+
+- `postgres_lifecycle`
+
+`postgres_lifecycle` serializes the concrete lifecycle/Compose readiness writers; it does not grant transaction, migration or shared-database authority. KL074 must use task-owned coldstart namespaces and dedicated hosted VM regression Docker.
