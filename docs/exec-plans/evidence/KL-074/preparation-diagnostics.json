@@ -1,0 +1,19 @@
+{
+  "scope": "Preparation diagnostics only; not final acceptance evidence",
+  "initial_test_failure": {
+    "command": "uv run pytest -q tests/db/test_lifecycle.py tests/db/test_startup_readiness.py",
+    "exit_code": 1,
+    "test": "test_permanent_tcp_unready_is_bounded_and_executes_zero_sql[False]",
+    "diagnostic": "assert scenario.now == pytest.approx(1.25); obtained 1.3, expected 1.25 \u00b1 1.2e-06; 1 failed, 15 passed in 0.25s",
+    "resolution": "Mock probe previously ignored remaining timeout. It now raises TimeoutExpired when its modeled duration exceeds remaining time; unchanged exact candidate passes 17 lifecycle/structure tests."
+  },
+  "environment_failure": {
+    "command": "uv run pytest -q tests/db/test_lifecycle.py",
+    "diagnostic": "uv was outside default PATH. Initial sandboxed dependency fetch failed DNS to files.pythonhosted.org; locked uv sync succeeded through approved network escalation. No repository dependency changes."
+  },
+  "harness_preparation": {
+    "command": "uv run kl test-harness",
+    "diagnostic": "440 passed in 201.05s (0:03:21)",
+    "scope": "Ran during implementation preparation; final committed-head quality command is required after KL019 normal merge."
+  }
+}
