@@ -1,0 +1,561 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-026",
+  "tested_commit": "27934b5152abbbfd404a940ef4cb9634e5dd1423",
+  "layers": {
+    "DC": {
+      "I01@DC": [
+        {
+          "check_id": "i01_dc",
+          "observed_wait": {
+            "winner_pid": 121,
+            "loser_pid": 122,
+            "blockers": [
+              121
+            ],
+            "observed_at": "2026-10-01 06:55:46.529848+00:00",
+            "transaction_start": "2026-10-01 06:55:46.517926+00:00"
+          },
+          "second_denies": true
+        },
+        {
+          "check_id": "i01_dc",
+          "observed_wait": {
+            "winner_pid": 136,
+            "loser_pid": 137,
+            "blockers": [
+              136
+            ],
+            "observed_at": "2026-10-01 06:55:47.204040+00:00",
+            "transaction_start": "2026-10-01 06:55:47.189111+00:00"
+          },
+          "second_denies": false
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "observed_wait": {
+            "winner_pid": 122,
+            "loser_pid": 123,
+            "blockers": [
+              122
+            ],
+            "observed_at": "2026-10-01 06:56:49.728250+00:00",
+            "transaction_start": "2026-10-01 06:56:49.714951+00:00"
+          },
+          "second_denies": true
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "observed_wait": {
+            "winner_pid": 137,
+            "loser_pid": 138,
+            "blockers": [
+              137
+            ],
+            "observed_at": "2026-10-01 06:56:50.419907+00:00",
+            "transaction_start": "2026-10-01 06:56:50.405023+00:00"
+          },
+          "second_denies": false
+        }
+      ],
+      "I02@DC": [
+        {
+          "check_id": "i02_dc",
+          "observed_wait": {
+            "winner_pid": 127,
+            "loser_pid": 128,
+            "blockers": [
+              127
+            ],
+            "observed_at": "2026-10-01 06:55:52.537216+00:00",
+            "transaction_start": "2026-10-01 06:55:52.524782+00:00"
+          },
+          "second_denies": true
+        },
+        {
+          "check_id": "i02_dc",
+          "observed_wait": {
+            "winner_pid": 153,
+            "loser_pid": 154,
+            "blockers": [
+              153
+            ],
+            "observed_at": "2026-10-01 06:55:53.453155+00:00",
+            "transaction_start": "2026-10-01 06:55:53.436683+00:00"
+          },
+          "second_denies": false
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "observed_wait": {
+            "winner_pid": 184,
+            "loser_pid": 185,
+            "blockers": [
+              184
+            ],
+            "observed_at": "2026-10-01 06:56:52.086037+00:00",
+            "transaction_start": "2026-10-01 06:56:52.072751+00:00"
+          },
+          "second_denies": true
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "observed_wait": {
+            "winner_pid": 210,
+            "loser_pid": 211,
+            "blockers": [
+              210
+            ],
+            "observed_at": "2026-10-01 06:56:52.931775+00:00",
+            "transaction_start": "2026-10-01 06:56:52.914628+00:00"
+          },
+          "second_denies": false
+        }
+      ],
+      "I04@DC": [
+        {
+          "check_id": "i04_dc",
+          "observed_wait": {
+            "winner_pid": 126,
+            "loser_pid": 127,
+            "blockers": [
+              126
+            ],
+            "observed_at": "2026-10-01 06:56:02.926256+00:00",
+            "transaction_start": "2026-10-01 06:56:02.913289+00:00"
+          },
+          "second_denies": true
+        },
+        {
+          "check_id": "i04_dc",
+          "observed_wait": {
+            "winner_pid": 162,
+            "loser_pid": 163,
+            "blockers": [
+              162
+            ],
+            "observed_at": "2026-10-01 06:56:04.745449+00:00",
+            "transaction_start": "2026-10-01 06:56:04.732175+00:00"
+          },
+          "second_denies": true
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "observed_wait": {
+            "winner_pid": 554,
+            "loser_pid": 555,
+            "blockers": [
+              554
+            ],
+            "observed_at": "2026-10-01 06:57:05.066414+00:00",
+            "transaction_start": "2026-10-01 06:57:05.052498+00:00"
+          },
+          "second_denies": true
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "observed_wait": {
+            "winner_pid": 590,
+            "loser_pid": 591,
+            "blockers": [
+              590
+            ],
+            "observed_at": "2026-10-01 06:57:06.869746+00:00",
+            "transaction_start": "2026-10-01 06:57:06.857416+00:00"
+          },
+          "second_denies": true
+        }
+      ],
+      "I04@DC/lease": [
+        {
+          "check_id": "i04_dc",
+          "expiry": "2026-10-01 06:56:06.311993+00:00",
+          "before_wait": "2026-10-01 06:56:05.962095+00:00",
+          "after_wait": "2026-10-01 06:56:06.312149+00:00",
+          "denial": "stale owner/fence cannot commit"
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "expiry": "2026-10-01 06:57:08.448871+00:00",
+          "before_wait": "2026-10-01 06:57:08.099032+00:00",
+          "after_wait": "2026-10-01 06:57:08.448939+00:00",
+          "denial": "stale owner/fence cannot commit"
+        }
+      ],
+      "I04@DC/deadline": [
+        {
+          "check_id": "i04_dc",
+          "expiry": "2026-10-01 06:56:09.876861+00:00",
+          "before_wait": "2026-10-01 06:56:09.526938+00:00",
+          "after_wait": "2026-10-01 06:56:09.877024+00:00",
+          "denial": "stale owner/fence cannot commit"
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "expiry": "2026-10-01 06:57:12.026101+00:00",
+          "before_wait": "2026-10-01 06:57:11.676112+00:00",
+          "after_wait": "2026-10-01 06:57:12.026215+00:00",
+          "denial": "stale owner/fence cannot commit"
+        }
+      ],
+      "I05@DC": [
+        {
+          "check_id": "i05_dc",
+          "observed_wait": {
+            "winner_pid": 127,
+            "loser_pid": 128,
+            "blockers": [
+              127
+            ],
+            "observed_at": "2026-10-01 06:56:14.797485+00:00",
+            "transaction_start": "2026-10-01 06:56:14.789963+00:00"
+          },
+          "second_denies": true
+        },
+        {
+          "check_id": "i05_dc",
+          "observed_wait": {
+            "winner_pid": 158,
+            "loser_pid": 159,
+            "blockers": [
+              158
+            ],
+            "observed_at": "2026-10-01 06:56:15.791494+00:00",
+            "transaction_start": "2026-10-01 06:56:15.775197+00:00"
+          },
+          "second_denies": false
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "observed_wait": {
+            "winner_pid": 248,
+            "loser_pid": 249,
+            "blockers": [
+              248
+            ],
+            "observed_at": "2026-10-01 06:56:54.414566+00:00",
+            "transaction_start": "2026-10-01 06:56:54.407047+00:00"
+          },
+          "second_denies": true
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "observed_wait": {
+            "winner_pid": 279,
+            "loser_pid": 280,
+            "blockers": [
+              279
+            ],
+            "observed_at": "2026-10-01 06:56:55.443333+00:00",
+            "transaction_start": "2026-10-01 06:56:55.425804+00:00"
+          },
+          "second_denies": false
+        }
+      ],
+      "I06@DC": [
+        {
+          "check_id": "i06_dc",
+          "observed_wait": {
+            "winner_pid": 128,
+            "loser_pid": 129,
+            "blockers": [
+              128
+            ],
+            "observed_at": "2026-10-01 06:56:20.735812+00:00",
+            "transaction_start": "2026-10-01 06:56:20.729396+00:00"
+          },
+          "second_denies": true
+        },
+        {
+          "check_id": "i06_dc",
+          "observed_wait": {
+            "winner_pid": 160,
+            "loser_pid": 161,
+            "blockers": [
+              160
+            ],
+            "observed_at": "2026-10-01 06:56:21.793368+00:00",
+            "transaction_start": "2026-10-01 06:56:21.777754+00:00"
+          },
+          "second_denies": false
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "observed_wait": {
+            "winner_pid": 328,
+            "loser_pid": 329,
+            "blockers": [
+              328
+            ],
+            "observed_at": "2026-10-01 06:56:57.073214+00:00",
+            "transaction_start": "2026-10-01 06:56:57.066518+00:00"
+          },
+          "second_denies": true
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "observed_wait": {
+            "winner_pid": 360,
+            "loser_pid": 361,
+            "blockers": [
+              360
+            ],
+            "observed_at": "2026-10-01 06:56:58.119416+00:00",
+            "transaction_start": "2026-10-01 06:56:58.102757+00:00"
+          },
+          "second_denies": false
+        }
+      ],
+      "I07@DC": [
+        {
+          "check_id": "i07_dc",
+          "observed_wait": {
+            "winner_pid": 122,
+            "loser_pid": 123,
+            "blockers": [
+              122
+            ],
+            "observed_at": "2026-10-01 06:56:26.730798+00:00",
+            "transaction_start": "2026-10-01 06:56:26.722856+00:00"
+          },
+          "second_denies": true
+        },
+        {
+          "check_id": "i07_dc",
+          "observed_wait": {
+            "winner_pid": 142,
+            "loser_pid": 143,
+            "blockers": [
+              142
+            ],
+            "observed_at": "2026-10-01 06:56:27.586027+00:00",
+            "transaction_start": "2026-10-01 06:56:27.568832+00:00"
+          },
+          "second_denies": false
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "observed_wait": {
+            "winner_pid": 406,
+            "loser_pid": 407,
+            "blockers": [
+              406
+            ],
+            "observed_at": "2026-10-01 06:56:59.656844+00:00",
+            "transaction_start": "2026-10-01 06:56:59.648338+00:00"
+          },
+          "second_denies": true
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "observed_wait": {
+            "winner_pid": 426,
+            "loser_pid": 427,
+            "blockers": [
+              426
+            ],
+            "observed_at": "2026-10-01 06:57:00.539609+00:00",
+            "transaction_start": "2026-10-01 06:57:00.523624+00:00"
+          },
+          "second_denies": false
+        }
+      ],
+      "I08@DC": [
+        {
+          "check_id": "i08_dc",
+          "observed_wait": {
+            "winner_pid": 124,
+            "loser_pid": 125,
+            "blockers": [
+              124
+            ],
+            "observed_at": "2026-10-01 06:56:32.717613+00:00",
+            "transaction_start": "2026-10-01 06:56:32.703897+00:00"
+          },
+          "second_denies": true
+        },
+        {
+          "check_id": "i08_dc",
+          "observed_wait": {
+            "winner_pid": 148,
+            "loser_pid": 149,
+            "blockers": [
+              148
+            ],
+            "observed_at": "2026-10-01 06:56:33.435242+00:00",
+            "transaction_start": "2026-10-01 06:56:33.420461+00:00"
+          },
+          "second_denies": false
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "observed_wait": {
+            "winner_pid": 492,
+            "loser_pid": 493,
+            "blockers": [
+              492
+            ],
+            "observed_at": "2026-10-01 06:57:02.871416+00:00",
+            "transaction_start": "2026-10-01 06:57:02.858252+00:00"
+          },
+          "second_denies": true
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "observed_wait": {
+            "winner_pid": 509,
+            "loser_pid": 510,
+            "blockers": [
+              509
+            ],
+            "observed_at": "2026-10-01 06:57:03.626978+00:00",
+            "transaction_start": "2026-10-01 06:57:03.609632+00:00"
+          },
+          "second_denies": false
+        }
+      ],
+      "I09@DC": [
+        {
+          "check_id": "i09_dc",
+          "expiry": "2026-10-01 06:56:41.126848+00:00",
+          "before_wait": "2026-10-01 06:56:40.776944+00:00",
+          "after_wait": "2026-10-01 06:56:41.126980+00:00",
+          "denial": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE\nCONTEXT:  PL/pgSQL function registry_guard_start_session(uuid,uuid[],bigint,integer) line 106 at RAISE"
+        },
+        {
+          "check_id": "i09_dc",
+          "expiry": "2026-10-01 06:56:44.990194+00:00",
+          "before_wait": "2026-10-01 06:56:44.640202+00:00",
+          "after_wait": "2026-10-01 06:56:44.990229+00:00",
+          "denial": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE\nCONTEXT:  PL/pgSQL function registry_guard_start_session(uuid,uuid[],bigint,integer) line 106 at RAISE"
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "expiry": "2026-10-01 06:57:16.396353+00:00",
+          "before_wait": "2026-10-01 06:57:16.046408+00:00",
+          "after_wait": "2026-10-01 06:57:16.396474+00:00",
+          "denial": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE\nCONTEXT:  PL/pgSQL function registry_guard_start_session(uuid,uuid[],bigint,integer) line 106 at RAISE"
+        },
+        {
+          "check_id": "interleaving_suite_dc",
+          "expiry": "2026-10-01 06:57:20.233180+00:00",
+          "before_wait": "2026-10-01 06:57:19.883318+00:00",
+          "after_wait": "2026-10-01 06:57:20.233260+00:00",
+          "denial": "KL_REGISTRY_AUTHORIZATION_INELIGIBLE\nCONTEXT:  PL/pgSQL function registry_guard_start_session(uuid,uuid[],bigint,integer) line 106 at RAISE"
+        }
+      ],
+      "I03@DC": {
+        "status": "NOT_RUN",
+        "selector": "FAIL",
+        "reason": "strict TEST_ONLY CancelIntent at T4/T8 not admitted"
+      }
+    },
+    "PU": {
+      "interleaving_namespace_pu": "PASS",
+      "time_boundary_pu": "PASS"
+    },
+    "WF": {
+      "I04@WF": "NOT_RUN"
+    }
+  },
+  "namespaces": [
+    {
+      "check_id": "interleaving_namespace_pu",
+      "tested_commit": "abcdef1000000000000000000000000000000000",
+      "root": "/Users/davetian/.codex/worktrees/b89d/KineticLoop",
+      "project": "kineticloop-kl026-interleave-abcdef1-23708ac340b9",
+      "database": "kineticloop_kl026_interleave_abcdef1_23708ac340b9",
+      "cleanup": "completed",
+      "elapsed": 0.0001532500609755516
+    },
+    {
+      "check_id": "i01_dc",
+      "tested_commit": "27934b5152abbbfd404a940ef4cb9634e5dd1423",
+      "root": "/Users/davetian/.codex/worktrees/b89d/KineticLoop",
+      "project": "kineticloop-kl026-interleave-27934b5-23708ac340b9",
+      "database": "kineticloop_kl026_interleave_27934b5_23708ac340b9",
+      "cleanup": "completed",
+      "elapsed": 5.4097155830822885
+    },
+    {
+      "check_id": "i02_dc",
+      "tested_commit": "27934b5152abbbfd404a940ef4cb9634e5dd1423",
+      "root": "/Users/davetian/.codex/worktrees/b89d/KineticLoop",
+      "project": "kineticloop-kl026-interleave-27934b5-23708ac340b9",
+      "database": "kineticloop_kl026_interleave_27934b5_23708ac340b9",
+      "cleanup": "completed",
+      "elapsed": 5.9144114998634905
+    },
+    {
+      "check_id": "i03_dc",
+      "tested_commit": "27934b5152abbbfd404a940ef4cb9634e5dd1423",
+      "root": "/Users/davetian/.codex/worktrees/b89d/KineticLoop",
+      "project": "kineticloop-kl026-interleave-27934b5-23708ac340b9",
+      "database": "kineticloop_kl026_interleave_27934b5_23708ac340b9",
+      "cleanup": "completed",
+      "elapsed": 3.829510916955769
+    },
+    {
+      "check_id": "i04_dc",
+      "tested_commit": "27934b5152abbbfd404a940ef4cb9634e5dd1423",
+      "root": "/Users/davetian/.codex/worktrees/b89d/KineticLoop",
+      "project": "kineticloop-kl026-interleave-27934b5-23708ac340b9",
+      "database": "kineticloop_kl026_interleave_27934b5_23708ac340b9",
+      "cleanup": "completed",
+      "elapsed": 11.597004833165556
+    },
+    {
+      "check_id": "i05_dc",
+      "tested_commit": "27934b5152abbbfd404a940ef4cb9634e5dd1423",
+      "root": "/Users/davetian/.codex/worktrees/b89d/KineticLoop",
+      "project": "kineticloop-kl026-interleave-27934b5-23708ac340b9",
+      "database": "kineticloop_kl026_interleave_27934b5_23708ac340b9",
+      "cleanup": "completed",
+      "elapsed": 5.404398125130683
+    },
+    {
+      "check_id": "i06_dc",
+      "tested_commit": "27934b5152abbbfd404a940ef4cb9634e5dd1423",
+      "root": "/Users/davetian/.codex/worktrees/b89d/KineticLoop",
+      "project": "kineticloop-kl026-interleave-27934b5-23708ac340b9",
+      "database": "kineticloop_kl026_interleave_27934b5_23708ac340b9",
+      "cleanup": "completed",
+      "elapsed": 5.745173667091876
+    },
+    {
+      "check_id": "i07_dc",
+      "tested_commit": "27934b5152abbbfd404a940ef4cb9634e5dd1423",
+      "root": "/Users/davetian/.codex/worktrees/b89d/KineticLoop",
+      "project": "kineticloop-kl026-interleave-27934b5-23708ac340b9",
+      "database": "kineticloop_kl026_interleave_27934b5_23708ac340b9",
+      "cleanup": "completed",
+      "elapsed": 5.257344041019678
+    },
+    {
+      "check_id": "i08_dc",
+      "tested_commit": "27934b5152abbbfd404a940ef4cb9634e5dd1423",
+      "root": "/Users/davetian/.codex/worktrees/b89d/KineticLoop",
+      "project": "kineticloop-kl026-interleave-27934b5-23708ac340b9",
+      "database": "kineticloop_kl026_interleave_27934b5_23708ac340b9",
+      "cleanup": "completed",
+      "elapsed": 5.273677916964516
+    },
+    {
+      "check_id": "i09_dc",
+      "tested_commit": "27934b5152abbbfd404a940ef4cb9634e5dd1423",
+      "root": "/Users/davetian/.codex/worktrees/b89d/KineticLoop",
+      "project": "kineticloop-kl026-interleave-27934b5-23708ac340b9",
+      "database": "kineticloop_kl026_interleave_27934b5_23708ac340b9",
+      "cleanup": "completed",
+      "elapsed": 11.109209042042494
+    },
+    {
+      "check_id": "interleaving_suite_dc",
+      "tested_commit": "27934b5152abbbfd404a940ef4cb9634e5dd1423",
+      "root": "/Users/davetian/.codex/worktrees/b89d/KineticLoop",
+      "project": "kineticloop-kl026-interleave-27934b5-23708ac340b9",
+      "database": "kineticloop_kl026_interleave_27934b5_23708ac340b9",
+      "cleanup": "completed",
+      "elapsed": 35.327444083057344
+    }
+  ]
+}

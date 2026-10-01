@@ -1,0 +1,25 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-026",
+  "base_commit": "74cd5b3c8782f4eefb8f98a3895407300990cc27",
+  "tested_commit": "27934b5152abbbfd404a940ef4cb9634e5dd1423",
+  "changed_implementation_paths": [
+    "docs/contracts/protocol_interleavings.md",
+    "docs/exec-plans/evidence/KL-026/ENTRY.json",
+    "tests/db/test_protocol_interleavings.py",
+    "tests/unit/protocol/test_interleaving_namespace.py"
+  ],
+  "preserved_authorities_and_owners": {
+    "FROZEN_BASELINE.json": "bb8cd79942d3ca735e38e0363d8f56c5c45bbd79210a6618d29704aac3dd04df",
+    "CURRENT_DOCUMENT_INDEX.json": "b72d80ce913ee1da654f6b8ca50f1fe3d44d7d37f1760b747808603348c48dd6",
+    "CURRENT_REQUIREMENT_SET.json": "c7ce1793c0b5fcbdec99afc8742e33b60e42cb633eacf9424ae84c4639dfa750",
+    "src/kineticloop/persistence/transactions.py": "2331fd8fdd879f233e14b914c1fcd506ed7978f13c2aaf72aa490fc2ab1ccf4d",
+    "src/kineticloop/contracts/commands.py": "022e3fa180c6fbcd5ad8382fd5e8d1e01418c819a52b6ce706534ce594a8539e",
+    "src/kineticloop/persistence/planning.py": "9e71882238fa0bafb42869212829dbb555533232428d6e806822ef971a96cff2",
+    "src/kineticloop/persistence/protocol_execution.py": "2a8b36c0b92c406e29f1d4d2199ea2d6e8b2b534a656774ecda1dc6344a8c242"
+  },
+  "exclusive_resource": "protocol_interleaving_suite",
+  "foreign_local_db_fixtures_run": false,
+  "production_auto_activation": false,
+  "i04_wf": "NOT_RUN",
+  "final_reviews": "NOT_RUN pending actual KL075 then HG039 integration and refreshed tests"
+}

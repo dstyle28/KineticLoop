@@ -1,0 +1,35 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-026",
+  "assessment_type": "INDEPENDENT_READ_ONLY_PROTOCOL_PREFLIGHT",
+  "assessment_status": "CHANGES_REQUIRED",
+  "reviewer": "cancel_boundary_review independent fresh-context subagent",
+  "final_acceptance_review": false,
+  "blocker": "Strict CancelIntent permits T4/T8, but SubjectCommand TEST_ONLY accepts only T6/T7. ProductionScope requires SUBJECT capability and actor ID equal to subject, incompatible with independently authenticated TEST identity.",
+  "exact_rejection": "TEST_ONLY is admitted only at T6/T7 command owners",
+  "references": [
+    "src/kineticloop/contracts/commands.py:138",
+    "src/kineticloop/contracts/commands.py:146",
+    "src/kineticloop/contracts/commands.py:382",
+    "docs/contracts/role_vocabulary.md:25",
+    "docs/exec-plans/active/KL-026.md:195",
+    "docs/exec-plans/reviews/HG-038/PROTOCOL.json:27"
+  ],
+  "owner_permissions_assessment": "Existing restricted S27 root cancellation and separate CancelUndispatched cleanup are sufficient. No CancelIntent S32/accessor grant is needed or assumed.",
+  "forbidden_substitutions": [
+    "SUBJECT/production identity translation for authenticated TEST",
+    "model_construct or relaxed Pydantic validation",
+    "reservation-only cancellation instead of root cancellation",
+    "new production owner/identity contract under tests-only scope"
+  ],
+  "required_followup": "Separate bounded governance/identity-contract refinement explicitly ratifying the trusted TEST cancellation request shape, followed by actual I03 owner races and refreshed complete checks/reviews.",
+  "frozen_spec_change_required": false,
+  "i03_dc_obligation": "NOT_RUN: strict input validation prevents either owner race",
+  "i03_task_selector": "FAIL: real rejection preserved without skip/xfail",
+  "coordinator_steering": "2026-09-30 client date: preserve selector/evidence, continue independent checks, wait for reviewed remedy; KL075 retains first merge priority; no failing PR merge",
+  "assessed_authority_commit": "74cd5b3c8782f4eefb8f98a3895407300990cc27",
+  "source_sha256": {
+    "src/kineticloop/contracts/commands.py": "022e3fa180c6fbcd5ad8382fd5e8d1e01418c819a52b6ce706534ce594a8539e",
+    "docs/contracts/role_vocabulary.md": "9d9462ebbbf0286b5a98182653d894f4e47e775a27e9c50cb07277d4f6a4aade",
+    "docs/exec-plans/active/KL-026.md": "3565761f8729cf942f625020319658e861c93ec765912059f72fba323a3e46a4"
+  }
+}
