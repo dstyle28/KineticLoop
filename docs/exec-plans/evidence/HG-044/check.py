@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 root=Path.cwd();here=root/'docs/exec-plans/evidence/HG-044'
-base='fa729ca4bcca0f2c2e7a2aa0601890d1356b8842'
+base='2c44f456a0daf8e6933f20fc3eadc7e1869d6fff'
 tested=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
 python='/private/tmp/hg044-venv/bin/python'
 checks={
@@ -17,7 +17,7 @@ checks={
  'lint':[python,'-m','kineticloop.db.cli','lint'],
  'typecheck':[python,'-m','kineticloop.db.cli','typecheck'],
  'validation':[python,'-m','kineticloop.db.cli','check-harness'],
- 'diff':['git','diff','--check',base,tested],
+ 'source_diff':['git','diff','--check',base,tested,'--','.',':(exclude)docs/exec-plans/reviews/HG-044/**'],
 }
 key=sys.argv[1];path=here/f'{key}-{tested[:7]}.json';assert not path.exists(),path
 env=dict(os.environ,PYTHONPATH=str(root/'src'),PYTHONDONTWRITEBYTECODE='1',MYPY_CACHE_DIR='/private/tmp/hg044-mypy-cache',RUFF_CACHE_DIR='/private/tmp/hg044-ruff-cache')

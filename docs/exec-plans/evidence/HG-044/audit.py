@@ -5,7 +5,7 @@ import json
 import subprocess
 from pathlib import Path
 
-root=Path.cwd();base='fa729ca4bcca0f2c2e7a2aa0601890d1356b8842'
+root=Path.cwd();base='2c44f456a0daf8e6933f20fc3eadc7e1869d6fff'
 head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
 old=subprocess.check_output(['git','show',base+':tools/harness/validate_harness.py'],text=True)
 new=(root/'tools/harness/validate_harness.py').read_text()

@@ -5,7 +5,7 @@ import subprocess
 from pathlib import Path
 
 root = Path.cwd()
-base = 'fa729ca4bcca0f2c2e7a2aa0601890d1356b8842'
+base = '2c44f456a0daf8e6933f20fc3eadc7e1869d6fff'
 tested = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
 command = ['git', 'diff', '--check', base, tested, '--', '.',
            ':(exclude)docs/exec-plans/reviews/HG-044/**']

@@ -6,7 +6,7 @@ from pathlib import Path
 
 import yaml
 
-root=Path.cwd();base='fa729ca4bcca0f2c2e7a2aa0601890d1356b8842'
+root=Path.cwd();base='2c44f456a0daf8e6933f20fc3eadc7e1869d6fff'
 tested=sys.argv[1]
 assert len(tested)==40 and all(c in '0123456789abcdef' for c in tested)
 subprocess.run(['git','merge-base','--is-ancestor',tested,'HEAD'],check=True)
