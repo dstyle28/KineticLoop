@@ -1,0 +1,240 @@
+change_identity: harness-governance-v0.1/HG-046
+display_change_id: HG-046
+base_commit: 26906bd7f4444914c228e98377f2b164fee0dd5d
+tested_commit: 341333dd4b5140ac15f715ce28bd0d2a4a4ee1ec
+change_status: PASS
+summary: Prefer exact-revision full DB regression in a disposable local Linux environment; remove duplicate
+  branch-push CI and make full hosted DB explicit. Preserve complete raw evidence, fail-closed command/JUnit
+  verification and review binding.
+packets_refined: []
+files_changed:
+- .github/workflows/ci.yml
+- .github/workflows/db.yml
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- docs/exec-plans/evidence/HG-046/RUNS.md
+- docs/exec-plans/evidence/HG-046/SCOPE.md
+- docs/exec-plans/evidence/HG-046/capture.py
+- docs/exec-plans/evidence/HG-046/checks-341333d/diff_check.json
+- docs/exec-plans/evidence/HG-046/checks-341333d/diff_check.log
+- docs/exec-plans/evidence/HG-046/checks-341333d/focused.json
+- docs/exec-plans/evidence/HG-046/checks-341333d/focused.log
+- docs/exec-plans/evidence/HG-046/checks-341333d/harness.json
+- docs/exec-plans/evidence/HG-046/checks-341333d/harness.log
+- docs/exec-plans/evidence/HG-046/checks-341333d/lint.json
+- docs/exec-plans/evidence/HG-046/checks-341333d/lint.log
+- docs/exec-plans/evidence/HG-046/checks-341333d/scope_frozen.json
+- docs/exec-plans/evidence/HG-046/checks-341333d/scope_frozen.log
+- docs/exec-plans/evidence/HG-046/checks-341333d/typecheck.json
+- docs/exec-plans/evidence/HG-046/checks-341333d/typecheck.log
+- docs/exec-plans/evidence/HG-046/checks-341333d/unit.json
+- docs/exec-plans/evidence/HG-046/checks-341333d/unit.log
+- docs/exec-plans/evidence/HG-046/checks-341333d/validation.json
+- docs/exec-plans/evidence/HG-046/checks-341333d/validation.log
+- docs/exec-plans/evidence/HG-046/db-341333d/daemon.log
+- docs/exec-plans/evidence/HG-046/db-341333d/dependency_sync.log
+- docs/exec-plans/evidence/HG-046/db-341333d/executor.log
+- docs/exec-plans/evidence/HG-046/db-341333d/image_build.log
+- docs/exec-plans/evidence/HG-046/db-341333d/local-executor.json
+- docs/exec-plans/evidence/HG-046/db-341333d/run/collection.json
+- docs/exec-plans/evidence/HG-046/db-341333d/run/collection.log
+- docs/exec-plans/evidence/HG-046/db-341333d/run/compose_config_valid.log
+- docs/exec-plans/evidence/HG-046/db-341333d/run/database.xml
+- docs/exec-plans/evidence/HG-046/db-341333d/run/destroy.log
+- docs/exec-plans/evidence/HG-046/db-341333d/run/execution.json
+- docs/exec-plans/evidence/HG-046/db-341333d/run/full_database.log
+- docs/exec-plans/evidence/HG-046/db-341333d/run/lint.log
+- docs/exec-plans/evidence/HG-046/db-341333d/run/manifest.json
+- docs/exec-plans/evidence/HG-046/db-341333d/run/peer_checkout.log
+- docs/exec-plans/evidence/HG-046/db-341333d/run/peer_remove.log
+- docs/exec-plans/evidence/HG-046/db-341333d/run/postgres_ready.log
+- docs/exec-plans/evidence/HG-046/db-341333d/run/reset_idempotent.log
+- docs/exec-plans/evidence/HG-046/db-341333d/run/typecheck.log
+- docs/exec-plans/evidence/HG-046/db-341333d/run/worktree_db_isolated.log
+- docs/exec-plans/evidence/HG-046/development/checks-6600f13/focused.json
+- docs/exec-plans/evidence/HG-046/development/checks-6600f13/focused.log
+- docs/exec-plans/evidence/HG-046/development/checks-6600f13/harness.json
+- docs/exec-plans/evidence/HG-046/development/checks-6600f13/harness.log
+- docs/exec-plans/evidence/HG-046/development/checks-6600f13/typecheck.json
+- docs/exec-plans/evidence/HG-046/development/checks-6600f13/typecheck.log
+- docs/exec-plans/evidence/HG-046/development/checks-6600f13/unit.json
+- docs/exec-plans/evidence/HG-046/development/checks-6600f13/unit.log
+- docs/exec-plans/evidence/HG-046/development/checks-6a4e04f/diff_check.json
+- docs/exec-plans/evidence/HG-046/development/checks-6a4e04f/diff_check.log
+- docs/exec-plans/evidence/HG-046/development/checks-6a4e04f/focused.json
+- docs/exec-plans/evidence/HG-046/development/checks-6a4e04f/focused.log
+- docs/exec-plans/evidence/HG-046/development/checks-6a4e04f/harness.json
+- docs/exec-plans/evidence/HG-046/development/checks-6a4e04f/harness.log
+- docs/exec-plans/evidence/HG-046/development/checks-6a4e04f/lint.json
+- docs/exec-plans/evidence/HG-046/development/checks-6a4e04f/lint.log
+- docs/exec-plans/evidence/HG-046/development/checks-6a4e04f/scope_frozen.json
+- docs/exec-plans/evidence/HG-046/development/checks-6a4e04f/scope_frozen.log
+- docs/exec-plans/evidence/HG-046/development/checks-6a4e04f/typecheck.json
+- docs/exec-plans/evidence/HG-046/development/checks-6a4e04f/typecheck.log
+- docs/exec-plans/evidence/HG-046/development/checks-6a4e04f/unit.json
+- docs/exec-plans/evidence/HG-046/development/checks-6a4e04f/unit.log
+- docs/exec-plans/evidence/HG-046/development/checks-6a4e04f/validation.json
+- docs/exec-plans/evidence/HG-046/development/checks-6a4e04f/validation.log
+- docs/exec-plans/evidence/HG-046/development/checks-7338167/focused.json
+- docs/exec-plans/evidence/HG-046/development/checks-7338167/focused.log
+- docs/exec-plans/evidence/HG-046/development/checks-7338167/harness.json
+- docs/exec-plans/evidence/HG-046/development/checks-7338167/harness.log
+- docs/exec-plans/evidence/HG-046/development/checks-7338167/unit.json
+- docs/exec-plans/evidence/HG-046/development/checks-7338167/unit.log
+- docs/exec-plans/evidence/HG-046/development/checks-afca6c0/diff_check.json
+- docs/exec-plans/evidence/HG-046/development/checks-afca6c0/diff_check.log
+- docs/exec-plans/evidence/HG-046/development/checks-afca6c0/focused.json
+- docs/exec-plans/evidence/HG-046/development/checks-afca6c0/focused.log
+- docs/exec-plans/evidence/HG-046/development/checks-afca6c0/harness.json
+- docs/exec-plans/evidence/HG-046/development/checks-afca6c0/harness.log
+- docs/exec-plans/evidence/HG-046/development/checks-afca6c0/lint.json
+- docs/exec-plans/evidence/HG-046/development/checks-afca6c0/lint.log
+- docs/exec-plans/evidence/HG-046/development/checks-afca6c0/scope_frozen.json
+- docs/exec-plans/evidence/HG-046/development/checks-afca6c0/scope_frozen.log
+- docs/exec-plans/evidence/HG-046/development/checks-afca6c0/typecheck.json
+- docs/exec-plans/evidence/HG-046/development/checks-afca6c0/typecheck.log
+- docs/exec-plans/evidence/HG-046/development/checks-afca6c0/unit.json
+- docs/exec-plans/evidence/HG-046/development/checks-afca6c0/unit.log
+- docs/exec-plans/evidence/HG-046/development/checks-afca6c0/validation.json
+- docs/exec-plans/evidence/HG-046/development/checks-afca6c0/validation.log
+- docs/exec-plans/evidence/HG-046/development/checks-cc05b13/diff_check.json
+- docs/exec-plans/evidence/HG-046/development/checks-cc05b13/diff_check.log
+- docs/exec-plans/evidence/HG-046/development/checks-cc05b13/focused.json
+- docs/exec-plans/evidence/HG-046/development/checks-cc05b13/focused.log
+- docs/exec-plans/evidence/HG-046/development/checks-cc05b13/harness.json
+- docs/exec-plans/evidence/HG-046/development/checks-cc05b13/harness.log
+- docs/exec-plans/evidence/HG-046/development/checks-cc05b13/lint.json
+- docs/exec-plans/evidence/HG-046/development/checks-cc05b13/lint.log
+- docs/exec-plans/evidence/HG-046/development/checks-cc05b13/scope_frozen.json
+- docs/exec-plans/evidence/HG-046/development/checks-cc05b13/scope_frozen.log
+- docs/exec-plans/evidence/HG-046/development/checks-cc05b13/typecheck.json
+- docs/exec-plans/evidence/HG-046/development/checks-cc05b13/typecheck.log
+- docs/exec-plans/evidence/HG-046/development/checks-cc05b13/unit.json
+- docs/exec-plans/evidence/HG-046/development/checks-cc05b13/unit.log
+- docs/exec-plans/evidence/HG-046/development/checks-cc05b13/validation.json
+- docs/exec-plans/evidence/HG-046/development/checks-cc05b13/validation.log
+- docs/exec-plans/evidence/HG-046/development/db-329859b/daemon.log
+- docs/exec-plans/evidence/HG-046/development/db-329859b/dependency_sync.log
+- docs/exec-plans/evidence/HG-046/development/db-329859b/executor.log
+- docs/exec-plans/evidence/HG-046/development/db-329859b/image_build.log
+- docs/exec-plans/evidence/HG-046/development/db-329859b/local-executor.json
+- docs/exec-plans/evidence/HG-046/development/db-329859b/run/destroy.log
+- docs/exec-plans/evidence/HG-046/development/db-329859b/run/lint.log
+- docs/exec-plans/evidence/HG-046/development/db-329859b/run/manifest.json
+- docs/exec-plans/evidence/HG-046/development/db-compatible/daemon.log
+- docs/exec-plans/evidence/HG-046/development/db-compatible/dependency_sync.log
+- docs/exec-plans/evidence/HG-046/development/db-compatible/executor.log
+- docs/exec-plans/evidence/HG-046/development/db-compatible/image_build.log
+- docs/exec-plans/evidence/HG-046/development/db-compatible/local-executor.json
+- docs/exec-plans/evidence/HG-046/development/db-compatible/run/collection.json
+- docs/exec-plans/evidence/HG-046/development/db-compatible/run/collection.log
+- docs/exec-plans/evidence/HG-046/development/db-compatible/run/full_database.log
+- docs/exec-plans/evidence/HG-046/development/db-compatible/run/lint.log
+- docs/exec-plans/evidence/HG-046/development/db-compatible/run/typecheck.log
+- docs/exec-plans/evidence/HG-046/development/db-final-candidate/daemon.log
+- docs/exec-plans/evidence/HG-046/development/db-final-candidate/dependency_sync.log
+- docs/exec-plans/evidence/HG-046/development/db-final-candidate/executor.log
+- docs/exec-plans/evidence/HG-046/development/db-final-candidate/image_build.log
+- docs/exec-plans/evidence/HG-046/development/db-final-candidate/local-executor.json
+- docs/exec-plans/evidence/HG-046/development/db-final-candidate/run/destroy.log
+- docs/exec-plans/evidence/HG-046/development/db-final-candidate/run/lint.log
+- docs/exec-plans/evidence/HG-046/development/db-final-candidate/run/manifest.json
+- docs/exec-plans/evidence/HG-046/development/db-final-candidate/run/typecheck.log
+- docs/exec-plans/evidence/HG-046/development/db-initial/image_build.log
+- docs/exec-plans/evidence/HG-046/development/db-initial/local-executor.json
+- docs/exec-plans/evidence/HG-046/development/db-reviewed/daemon.log
+- docs/exec-plans/evidence/HG-046/development/db-reviewed/dependency_sync.log
+- docs/exec-plans/evidence/HG-046/development/db-reviewed/executor.log
+- docs/exec-plans/evidence/HG-046/development/db-reviewed/image_build.log
+- docs/exec-plans/evidence/HG-046/development/db-reviewed/local-executor.json
+- docs/exec-plans/evidence/HG-046/development/db-reviewed/run/collection.json
+- docs/exec-plans/evidence/HG-046/development/db-reviewed/run/collection.log
+- docs/exec-plans/evidence/HG-046/development/db-reviewed/run/database.xml
+- docs/exec-plans/evidence/HG-046/development/db-reviewed/run/destroy.log
+- docs/exec-plans/evidence/HG-046/development/db-reviewed/run/execution.json
+- docs/exec-plans/evidence/HG-046/development/db-reviewed/run/full_database.log
+- docs/exec-plans/evidence/HG-046/development/db-reviewed/run/lint.log
+- docs/exec-plans/evidence/HG-046/development/db-reviewed/run/manifest.json
+- docs/exec-plans/evidence/HG-046/development/db-reviewed/run/typecheck.log
+- docs/exec-plans/evidence/HG-046/development/db-typed/daemon.log
+- docs/exec-plans/evidence/HG-046/development/db-typed/dependency_sync.log
+- docs/exec-plans/evidence/HG-046/development/db-typed/executor.log
+- docs/exec-plans/evidence/HG-046/development/db-typed/image_build.log
+- docs/exec-plans/evidence/HG-046/development/db-typed/local-executor.json
+- docs/exec-plans/evidence/HG-046/development/db-typed/run/collection.json
+- docs/exec-plans/evidence/HG-046/development/db-typed/run/collection.log
+- docs/exec-plans/evidence/HG-046/development/db-typed/run/full_database.log
+- docs/exec-plans/evidence/HG-046/development/db-typed/run/lint.log
+- docs/exec-plans/evidence/HG-046/development/db-typed/run/typecheck.log
+- docs/exec-plans/evidence/HG-046/scope_audit.py
+- docs/exec-plans/governance/HG-046.yaml
+- docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
+- docs/harness/LOCAL_DB_CI.md
+- docs/harness/M3_CLOSURE_CONTRACT.md
+- docs/harness/MERGE_GATE.md
+- tests/db/test_startup_readiness.py
+- tests/db/test_workflow.py
+- tests/harness/test_local_db_ci.py
+- tools/harness/db_ci.py
+- tools/harness/db_ci_pytest.py
+- tools/harness/local_db/Dockerfile
+- tools/harness/local_db/entrypoint.sh
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: focused
+  command: /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_local_db_ci.py
+    tests/db/test_startup_readiness.py tests/db/test_workflow.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/checks-341333d/focused.json
+- check_id: harness
+  command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli test-harness -p no:cacheprovider --basetemp
+    /private/tmp/hg046-harness-341333d
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/checks-341333d/harness.json
+- check_id: unit
+  command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli test-unit -p no:cacheprovider --basetemp
+    /private/tmp/hg046-unit-341333d
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/checks-341333d/unit.json
+- check_id: lint
+  command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/checks-341333d/lint.json
+- check_id: typecheck
+  command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli typecheck --no-incremental --cache-dir
+    /private/tmp/hg046-mypy-341333d
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/checks-341333d/typecheck.json
+- check_id: validation
+  command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/checks-341333d/validation.json
+- check_id: scope_frozen
+  command: python3 /private/tmp/hg046_scope_audit.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/checks-341333d/scope_frozen.json
+- check_id: diff_check
+  command: git diff --check 26906bd7f4444914c228e98377f2b164fee0dd5d HEAD
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/checks-341333d/diff_check.json
+- check_id: full_database_regression
+  command: python3 tools/harness/db_ci.py local --revision HEAD --evidence-dir /private/tmp/hg046-db-final
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/db-341333d/run/manifest.json
+- check_id: local_executor_cleanup
+  command: python3 tools/harness/db_ci.py local --revision HEAD --evidence-dir /private/tmp/hg046-db-final
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/db-341333d/local-executor.json
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- Local full DB evidence is Linux ARM64, not GitHub-hosted/x64 attestation. The shared hosted command path
+  is configured but not dispatched for this task.
+- No permanent public self-hosted runner is registered. Local execution is manually started for trusted project
+  code and requires a privileged nested daemon. It never mounts host paths/socket or passes credentials.
+- Quality and merge-gate remain hosted; full DB cloud execution is manual. Existing explicit task-specific
+  hosted requirements and KL-074 workflow/provenance remain authoritative.
+- No runtime, migration, DB fixture, frozen authority, historical result, product requirement or M3/release
+  PASS change. Only two workflow compatibility tests are updated for approved generic triggers; KL-074-specific
+  checks and hosted workflow remain unchanged. HG-045 PR89 is separate and untouched.
+- Task PASS, independent review PASS, hosted CI and MERGED remain separate facts. Stop before merge for coordinator.
