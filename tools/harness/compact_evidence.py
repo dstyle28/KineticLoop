@@ -209,8 +209,11 @@ def audit(root: Path, base: str, head: str, identity: str) -> dict:
                       rev + '^{commit}').decode().strip() for rev in (base, head)]
     paths = git(root, 'diff', '--no-renames', '--name-only', '--diff-filter=ACMRT', '-z',
                 base, head, '--').decode().split('\0')[:-1]
-    prefixes = [f'docs/exec-plans/{kind}/{identity}/' for kind in ('evidence', 'reviews')]
-    paths = sorted(p for p in paths if any(p.startswith(prefix) for prefix in prefixes))
+    # The selected PR's scope gate proves ownership separately. Include every
+    # changed owned artifact (also exact-pair/remediation reviews), so moving bulk
+    # output to another identity cannot evade the PR-wide budget.
+    paths = sorted(p for p in paths if re.match(
+        r'^docs/exec-plans/(?:evidence|reviews)/(?:HG|KL)-[0-9]{3}[A-Z]?/', p))
     errors: list[str] = []
     total = 0
     payloads: set[str] = set()
@@ -231,6 +234,8 @@ def audit(root: Path, base: str, head: str, identity: str) -> dict:
                 raw = data
                 if path.endswith('.json') and embedded_raw(json.loads(data, object_pairs_hook=unique)):
                     raise ValueError('embedded-raw_utf8: capture raw once')
+            if raw.lstrip().startswith(b'diff --git '):
+                raise ValueError('full-diff-copy: record base/head instead')
             if len(raw) >= 16 * 1024:
                 key = digest(raw)
                 if key in bulk and (manifest is None or bulk[key] != manifest['payload']):

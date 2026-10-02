@@ -3770,6 +3770,8 @@ def validate(root, args):
                     root, record['tested_commit'], reviewed, change_id, 'tested'))
                 for check in record['checks_run']:
                     ref = check['evidence_ref']
+                    if not matches(ref, [evidence_pattern(change_id)]):
+                        errors.append('governance-command-evidence-scope:' + ref)
                     if (not evidence_exists(root, ref, reviewed, record['tested_commit'], check['command'], 0)
                             or git(root, 'show', reviewed + ':' + ref) != (root / ref).read_bytes()):
                         errors.append('governance-evidence-not-bound:' + ref)

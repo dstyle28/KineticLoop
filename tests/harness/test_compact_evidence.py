@@ -201,19 +201,25 @@ def test_duplicate_bulk_not_repeated_log_lines(repo):
 
 
 def test_total_budget_and_foreign_history(repo, monkeypatch):
-    root, base = repo
+    root, _ = repo
+    foreign = root / 'docs/exec-plans/evidence/HG-045/large.log'
+    foreign.parent.mkdir(parents=True)
+    foreign.write_bytes(b'x' * 1000)
+    base = commit(root)
     target = root / REF
     target.parent.mkdir(parents=True)
     for n in range(3):
         (target.parent / f'{n}.log').write_bytes(bytes([n]) * 100)
-    foreign = root / 'docs/exec-plans/evidence/HG-045/large.log'
-    foreign.parent.mkdir(parents=True)
-    foreign.write_bytes(b'x' * 1000)
     head = commit(root)
     monkeypatch.setattr(ce, 'TOTAL_LIMIT', 250)
     report = ce.audit(root, base, head, 'HG-046')
     assert report['stored_bytes'] == 300
     assert any('PR-evidence-total' in e for e in report['errors'])
+    # Scope rejects unauthorized foreign writes separately; the budget still
+    # counts changed foreign artifacts instead of allowing an identity escape.
+    foreign.write_bytes(b'y' * 1000)
+    later = commit(root)
+    assert ce.audit(root, base, later, 'HG-046')['stored_bytes'] == 1300
 
 
 def test_duplicate_manifest_keys_reject(repo):
@@ -260,3 +266,8 @@ def test_escaped_marker_cannot_disguise_missing_payload(repo):
     (root / record['payload']).unlink()
     head = commit(root)
     assert not v.evidence_exists(root, REF, head)
+
+
+def test_compressed_full_diff_cannot_bypass_name_rule(repo):
+    root, base, _, head = captured(repo, b'diff --git a/source b/source\n--- a/source\n+++ b/source\n')
+    assert any('full-diff-copy' in e for e in ce.audit(root, base, head, 'HG-046')['errors'])
