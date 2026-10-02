@@ -1,0 +1,72 @@
+F
+=================================== FAILURES ===================================
+______________________ test_b01_unsealed_canonical_denial ______________________
+
+database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:57693/kineticloop_kl028_boundary_9268fc8_3635a672... 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:57693/kineticloop_kl028_boundary_9268fc8_3635a672a23d', ...}
+
+    def test_b01_unsealed_canonical_denial(database_urls: Any) -> None:
+>       seed = seed_source(database_urls)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/db/test_boundary_acceptance.py:510: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/db/test_boundary_acceptance.py:222: in seed_source
+    seed = _ORIGINAL_SEED(urls, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/db/test_test_only_demo.py:1437: in seed_source
+    with connect(urls["trusted_admin"]) as trusted:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/db/test_boundary_acceptance.py:106: in connect
+    assert db.execute("SELECT version_num FROM alembic_version").fetchone() == (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <psycopg.Connection [BAD] at 0x10d77c0b0>
+query = 'SELECT version_num FROM alembic_version', params = None
+
+    def execute(
+        self,
+        query: Query,
+        params: Params | None = None,
+        *,
+        prepare: bool | None = None,
+        binary: bool = False,
+    ) -> Cursor[Row]:
+        """Execute a query and return a cursor to read its results."""
+        try:
+            cur = self.cursor()
+            if binary:
+                cur.format = BINARY
+    
+            if isinstance(query, Template):
+                if params is not None:
+                    raise TypeError(
+                        "'execute()' with string template query doesn't support parameters"
+                    )
+                return cur.execute(query, prepare=prepare)
+            else:
+                return cur.execute(query, params, prepare=prepare)
+        except e._NO_TRACEBACK as ex:
+>           raise ex.with_traceback(None)
+E           psycopg.errors.InsufficientPrivilege: permission denied for table alembic_version
+
+/private/tmp/kl028-venv/lib/python3.12/site-packages/psycopg/connection.py:304: InsufficientPrivilege
+---------------------------- Captured stdout setup -----------------------------
+FIXTURE_EVIDENCE {"compose": "kineticloop-kl028-boundary-9268fc8-3635a672a23d", "database": "kineticloop_kl028_boundary_9268fc8_3635a672a23d", "kind": "owned_namespace", "migration": "e8c2f1a6b904", "root": "/Users/davetian/.codex/worktrees/34e8/KineticLoop", "tested_commit": "9268fc8dd8c071c02dc5c698274dbf6fcd112776"}
+---------------------------- Captured stderr setup -----------------------------
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+--------------------------- Captured stdout teardown ---------------------------
+FIXTURE_EVIDENCE {"compose": "kineticloop-kl028-boundary-9268fc8-3635a672a23d", "database": "kineticloop_kl028_boundary_9268fc8_3635a672a23d", "inventory": ["bootstrap_two_phase(selected_lifecycle)", "reset", "start", "destroy"], "kind": "exact_owned_cleanup", "remaining": {"container": "", "network": "", "volume": ""}, "tested_commit": "9268fc8dd8c071c02dc5c698274dbf6fcd112776"}
+- generated xml file: /Users/davetian/.codex/worktrees/34e8/KineticLoop/docs/exec-plans/evidence/KL-028/exploratory/db.xml -
+=========================== short test summary info ============================
+FAILED tests/db/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed in 7.86s

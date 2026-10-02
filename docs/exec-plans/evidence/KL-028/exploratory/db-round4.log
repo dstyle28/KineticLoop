@@ -1,0 +1,69 @@
+...F
+=================================== FAILURES ===================================
+__________________ test_b03_sealed_immutability_ready_barrier __________________
+
+database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:57706/kineticloop_kl028_boundary_9268fc8_3635a672... 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:57706/kineticloop_kl028_boundary_9268fc8_3635a672a23d', ...}
+
+    def test_b03_sealed_immutability_ready_barrier(database_urls: Any) -> None:
+        seed = seed_source(database_urls)
+        with connect(database_urls["admin"]) as db:
+            cv, identity, closed = build(db, seed)
+            subject = D.auth(seed).subject_id
+    
+            def write():
+                return cv.write_candidate(
+                    WriteCandidate(
+                        subject,
+                        str(uuid4()),
+                        identity,
+                        3,
+                        Member("FACT", "correction", "TEST_ONLY", seed["fact"]),
+                    )
+                )
+    
+>           denial(db, seed, write, "closed")
+
+tests/db/test_boundary_acceptance.py:609: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+db = <psycopg.Connection [BAD] at 0x10b8d3c50>
+seed = {'a': UUID('3cad8b1a-a1b8-4d43-aac4-1b96c3d0604d'), 'admission': UUID('7aeeb90b-8065-4f13-9a2d-39b2899863fe'), 'admiss...0, 2, 6, 48, 17, 920329, tzinfo=datetime.timezone.utc), 'assertion': UUID('c5b00db6-b855-4cf2-a6e3-f8ea67119c49'), ...}
+operation = <function test_b03_sealed_immutability_ready_barrier.<locals>.write at 0x10b7a47c0>
+cause = 'closed'
+
+    def denial(db: Any, seed: Any, operation: Any, cause: str) -> None:
+        before, registry = snapshot(db, seed), global_snapshot(db)
+        with pytest.raises(ERRORS) as error:
+            operation()
+>       assert cause in str(error.value), str(error.value)
+E       AssertionError: factset build is not at the expected BUILDING revision
+E       assert 'closed' in 'factset build is not at the expected BUILDING revision'
+E        +  where 'factset build is not at the expected BUILDING revision' = str(GuardRequired('factset build is not at the expected BUILDING revision'))
+E        +    where GuardRequired('factset build is not at the expected BUILDING revision') = <ExceptionInfo GuardRequired('factset build is not at the expected BUILDING revision') tblen=4>.value
+
+tests/db/test_boundary_acceptance.py:204: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+FIXTURE_EVIDENCE {"compose": "kineticloop-kl028-boundary-9268fc8-3635a672a23d", "database": "kineticloop_kl028_boundary_9268fc8_3635a672a23d", "kind": "owned_namespace", "migration": "e8c2f1a6b904", "root": "/Users/davetian/.codex/worktrees/34e8/KineticLoop", "tested_commit": "9268fc8dd8c071c02dc5c698274dbf6fcd112776"}
+---------------------------- Captured stderr setup -----------------------------
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+----------------------------- Captured stdout call -----------------------------
+FIXTURE_EVIDENCE {"hash": "40db846eb1391543a75a0a47a3a8b864348ee9217ed1ae89e9a789e979c9c669", "id": "5e3d3d3d-f7df-457d-81b7-08d07daef4e8", "immutable_dependencies": [], "kind": "runtime_registration", "owner": "SafetyRegistry.RegisterArtifact", "version": "kl079-full-actions-v1"}
+FIXTURE_EVIDENCE {"hash": "dbf05a557086ca15a0efe325e4e98a74426e36bad590c5e8d09b2e4e7e8dd098", "id": "045d7692-8cb7-46a3-94f6-30314c3e82a1", "immutable_dependencies": ["5e3d3d3d-f7df-457d-81b7-08d07daef4e8"], "kind": "runtime_registration", "owner": "SafetyRegistry.RegisterArtifact", "version": "kl079-full-actions-v1"}
+FIXTURE_EVIDENCE {"hash": "47141293664d61f6dffde2ef2550b381be3062798b82a38a2f890be50e3c8f8a", "id": "3cad8b1a-a1b8-4d43-aac4-1b96c3d0604d", "immutable_dependencies": ["78211691-8f80-47fc-86fc-30e818111ebf", "d8c1475c-fa03-4b90-9023-8cfd8cf87076", "045d7692-8cb7-46a3-94f6-30314c3e82a1", "5e3d3d3d-f7df-457d-81b7-08d07daef4e8"], "kind": "runtime_registration", "owner": "SafetyRegistry.RegisterArtifact", "version": "kl079-full-actions-v1"}
+FIXTURE_EVIDENCE {"environment": "19fbf310-8b21-4493-92b9-33d81f230e41", "kind": "admitted_inputs_only", "persisted": {"admission_decisions": [[{"action_scope": "TEST_ONLY", "content_hash": "0229eeb1194db6334c5567c67b0a148576c9f6e5f5bfd79878fd2dbc51ad921f", "content_schema_version": 1, "decision": "ADMITTED", "effective_at": null, "hash_scheme_version": 1, "id": "7aeeb90b-8065-4f13-9a2d-39b2899863fe", "known_at": null, "recorded_at": "2026-10-02T05:48:17.927562+00:00", "ref_s05_id": "01946ac6-69fc-4009-8ec8-694978104341", "ref_s09_id": "17cba5c8-e1ba-4488-8bca-21dd6a6b6c62", "ref_s10_id": "c5b00db6-b855-4cf2-a6e3-f8ea67119c49", "revision": 1, "status": null, "subject_id": "5a4d582d-fae6-4745-8501-81a91f84ad79", "typed_payload": {"fixture_admission": "ADMITTED", "valid_until": "2026-10-02T06:48:17.920329+00:00"}}]], "authorization_artifact_closure": [], "authorization_events": [[{"causation_key": "8879f2db-279d-4179-8bee-1f3ffa678fa7", "content_hash": null, "content_schema_version": 1, "effective_at": null, "event_kind": "EPOCH_INVALIDATED", "hash_scheme_version": 1, "id": "1ee23c65-eaba-4867-ad5f-c87675737f70", "invalidated_epoch": 1, "known_at": null, "recorded_at": "2026-10-02T05:48:18.049519+00:00", "ref_s02_id": "87decf24-8d0c-4be4-98df-5ce711675e7d", "ref_s13_id": null, "ref_s17_id": null, "ref_s42_id": null, "revision": 1, "scope": "TEST_ONLY", "status": null, "subject_id": "5a4d582d-fae6-4745-8501-81a91f84ad79", "typed_payload": {}}]], "authorization_issuances": [], "bundle_prescription_members": [], "canonical_fact_revisions": [[{"content_hash": "5871811ce4b72bca940176b6f76189093f7c6de4a610cf1f501771125fbc20b8", "content_schema_version": 1, "effective_at": "2026-10-02T04:48:17.920329+00:00", "fact_kind": "WORKOUT_ACTUAL", "fact_revision": 1, "hash_scheme_version": 1, "id": "8879f2db-279d-4179-8bee-1f3ffa678fa7", "known_at": null, "recorded_at": "2026-10-02T05:48:18.049519+00:00", "ref_s10_id": "c5b00db6-b855-4cf2-a6e3-f8ea67119c49", "ref_s11_id": "4ebafeaf-9b87-4253-939f-8207530b309e", "ref_s13_id": "7aeeb90b-8065-4f13-9a2d-39b2899863fe", "revision": 1, "stable_fact_identity": "8879f2db-279d-4179-8bee-1f3ffa678fa7", "status": null, "subject_id": "5a4d582d-fae6-4745-8501-81a91f84ad79", "typed_payload": {"association_id": "2ddfe2b4-98c2-4eb2-9487-93d793497eaf", "contradicts": false, "exercise": "fixture:cycle", "lower_minutes": 10, "replaces_slot": "prior-slot", "retracted": false, "semantic_class": "ACTUAL_EXECUTION", "upper_minutes": 10}}]], "command_receipts": [[{"actor_scope": "test:b2a10b60-fa9a-487c-bdc1-9e38afd0987e", "client_key": "8879f2db-279d-4179-8bee-1f3ffa678fa7", "command_kind": "RecordActualExecution", "content_hash": null, "content_schema_version": 1, "effective_at": null, "hash_scheme_version": 1, "id": "87decf24-8d0c-4be4-98df-5ce711675e7d", "known_at": null, "recorded_at": "2026-10-02T05:48:18.049519+00:00", "request_hash": "5871811ce4b72bca940176b6f76189093f7c6de4a610cf1f501771125fbc20b8", "revision": 1, "status": "SUCCEEDED", "subject_id": "5a4d582d-fae6-4745-8501-81a91f84ad79", "typed_payload": {"outcome": {"event_id": "a93a689b-c480-425b-8575-6e81f2ea8145", "fact_id": "8879f2db-279d-4179-8bee-1f3ffa678fa7"}}}]], "control_events": [], "control_heads": [], "daily_bundle_revisions": [], "daily_plan_heads": [], "decision_manifests": [], "decision_snapshots": [], "domain_events": [[{"aggregate_identity": "8879f2db-279d-4179-8bee-1f3ffa678fa7", "aggregate_revision": 1, "aggregate_type": "FIXTURE_ACTUAL", "content_hash": null, "content_schema_version": 1, "correlation_intent_id": null, "effective_at": null, "event_type": "RecordActualExecution", "hash_scheme_version": 1, "id": "a93a689b-c480-425b-8575-6e81f2ea8145", "known_at": null, "recorded_at": "2026-10-02T05:48:18.049519+00:00", "ref_s02_id": "87decf24-8d0c-4be4-98df-5ce711675e7d", "revision": 1, "status": null, "subject_id": "5a4d582d-fae6-4745-8501-81a91f84ad79", "typed_payload": {}}]], "evidence_resolutions": [], "execution_bindings": [], "factset_members": [], "factset_revisions": [], "manifest_builds": [], "manifest_projection_bindings": [], "outbox_deliveries": [[{"attempt_count": 0, "content_hash": null, "content_schema_version": 1, "delivery_status": "PENDING", "destination": "evidence", "effective_at": null, "hash_scheme_version": 1, "id": "a40d74c5-eff5-4ff9-8d15-de1e70563fe7", "known_at": null, "next_attempt_at": null, "recorded_at": "2026-10-02T05:48:18.049519+00:00", "ref_s03_id": "a93a689b-c480-425b-8575-6e81f2ea8145", "revision": 1, "status": null, "subject_id": "5a4d582d-fae6-4745-8501-81a91f84ad79", "typed_payload": {}}]], "planning_attempts": [], "planning_intents": [], "planning_quota_buckets": [], "planning_request_revisions": [], "prescription_demand_features": [], "prescription_revisions": [], "projection_dependencies": [], "projection_versions": [], "proposal_revisions": [], "user_decision_state": [[{"active_policy_bundle_id": "01946ac6-69fc-4009-8ec8-694978104341", "active_program_id": "7c436a54-7537-4be4-8735-e87c9a14cd05", "authorization_epoch": 1, "current_factset_id": null, "current_manifest_id": null, "decision_generation": 0, "execution_basis_event_id": "a93a689b-c480-425b-8575-6e81f2ea8145", "input_frontier_hash": "b0b5570d4051cfbb9fc2cd78c62ae225334904fa765a964a62e169ba80dd2042", "last_control_event_id": null, "subject_id": "5a4d582d-fae6-4745-8501-81a91f84ad79"}]], "validation_results": [], "workout_sessions": []}, "policy": "01946ac6-69fc-4009-8ec8-694978104341", "subject": "5a4d582d-fae6-4745-8501-81a91f84ad79"}
+FIXTURE_EVIDENCE {"actual_edges": [["045d7692-8cb7-46a3-94f6-30314c3e82a1", "5e3d3d3d-f7df-457d-81b7-08d07daef4e8"], ["3cad8b1a-a1b8-4d43-aac4-1b96c3d0604d", "78211691-8f80-47fc-86fc-30e818111ebf"], ["3cad8b1a-a1b8-4d43-aac4-1b96c3d0604d", "d8c1475c-fa03-4b90-9023-8cfd8cf87076"], ["3cad8b1a-a1b8-4d43-aac4-1b96c3d0604d", "045d7692-8cb7-46a3-94f6-30314c3e82a1"], ["3cad8b1a-a1b8-4d43-aac4-1b96c3d0604d", "5e3d3d3d-f7df-457d-81b7-08d07daef4e8"]], "graph": {"a": "3cad8b1a-a1b8-4d43-aac4-1b96c3d0604d", "b": "045d7692-8cb7-46a3-94f6-30314c3e82a1", "c": "5e3d3d3d-f7df-457d-81b7-08d07daef4e8", "leaf_hash": "40db846eb1391543a75a0a47a3a8b864348ee9217ed1ae89e9a789e979c9c669", "release": "de4ac5f8-469a-42a2-a9c1-70c681de0922"}, "kind": "registered_transitive_graph", "tested_commit": "9268fc8dd8c071c02dc5c698274dbf6fcd112776"}
+--------------------------- Captured stdout teardown ---------------------------
+FIXTURE_EVIDENCE {"compose": "kineticloop-kl028-boundary-9268fc8-3635a672a23d", "database": "kineticloop_kl028_boundary_9268fc8_3635a672a23d", "inventory": ["bootstrap_two_phase(selected_lifecycle)", "reset", "start", "destroy"], "kind": "exact_owned_cleanup", "remaining": {"container": "", "network": "", "volume": ""}, "tested_commit": "9268fc8dd8c071c02dc5c698274dbf6fcd112776"}
+- generated xml file: /Users/davetian/.codex/worktrees/34e8/KineticLoop/docs/exec-plans/evidence/KL-028/exploratory/db-round4.xml -
+=========================== short test summary info ============================
+FAILED tests/db/test_boundary_acceptance.py::test_b03_sealed_immutability_ready_barrier
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 3 passed in 19.19s

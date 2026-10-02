@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="6.067" timestamp="2026-10-01T22:57:50.873913-07:00" hostname="Daves-MacBook-Pro---26.local"><testcase classname="tests.db.test_boundary_acceptance" name="test_b04_relevant_revoke_issue_reauthorize[False]" time="5.707"><failure message="KeyError: 'artifact_revision'">database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:57784/kineticloop_kl028_boundary_9268fc8_3635a672... 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:57784/kineticloop_kl028_boundary_9268fc8_3635a672a23d', ...}
+revoked = False
+
+    @pytest.mark.parametrize("revoked", [False, True])
+    def test_b04_relevant_revoke_issue_reauthorize(database_urls: Any, revoked: bool) -&gt; None:
+        seed, request = D.ready(database_urls)
+        with connect(database_urls["admin"]) as db:
+            reauthorize_probe(db, seed, revoked=False)
+            if revoked:
+                revoke_now(database_urls, seed)
+                reauthorize_probe(db, seed, revoked=True)
+                denial(
+                    db,
+                    seed,
+                    lambda: D.service(db, seed).commit_full(request),
+                    "KL_REGISTRY_ARTIFACT_REVOKED",
+                )
+            else:
+                result = D.service(db, seed).commit_full(request)
+                D.assert_event(db, seed, result)
+                issued = snapshot(db, seed)
+                assert len(issued["authorization_issuances"]) == 2
+                for issuance in issued["authorization_issuances"]:
+&gt;                   assert_exact_certificate_sources(db, seed, request, issuance[0], issued)
+
+tests/db/test_boundary_acceptance.py:798: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+db = &lt;psycopg.Connection [BAD] at 0x10b7385f0&gt;
+seed = {'a': UUID('92455623-13ac-43b4-8c61-de1cef5ade42'), 'admission': UUID('575e0b3a-42b3-4d5b-af71-459c8bc956f5'), 'admiss...0, 2, 6, 57, 55, 537030, tzinfo=datetime.timezone.utc), 'assertion': UUID('5cef29bf-9ffc-4c76-9010-738f4304832c'), ...}
+request = FullCommitRequest(command=CommitBundle(schema_version='kineticloop-command-v1', command_kind='CommitBundle', boundary=...: '1ae24d4d-89b8-546a-8428-9d06bbde58cc', 'hash': 'd50b25d5814b07f7e3b5e11ffa9e4a35492d8181418f28d2e6ed923fd030a7f6'}})
+issuance = {'artifact_dependency_closure_hash': '44a03fa069ce65ffe6669bccd15f6e7eac4cbfbe5013ccde1ca21aa16adce08e', 'bound_conten...4b165ac609544d7c59fdf8b67104428844897e8172181508102e379fa6a39', 'content_hash': None, 'content_schema_version': 1, ...}
+state = {'admission_decisions': [({'action_scope': 'TEST_ONLY', 'content_hash': '6b5fe76be62f39de6744d24af46bdf523bfc3bb520765...18374d5c57e23c2de587f9f616ac436ec20eb3d2f983ed1bb000', 'content_hash': None, 'content_schema_version': 1, ...},)], ...}
+
+    def assert_exact_certificate_sources(
+        db: Any, seed: Any, request: Any, issuance: Any, state: Any
+    ) -&gt; None:
+        entries = issuance["validity_certificate"]["dependencies"]
+        by_key = {(e["dependency_kind"], e["identity"]): e for e in entries}
+        for table, kind, end_field in (
+            ("decision_manifests", "MANIFEST", "valid_until"),
+            ("projection_versions", "PROJECTION", "valid_until"),
+            ("evidence_resolutions", "EVIDENCE_RESOLUTION", "resolution_expires_at"),
+            ("validation_results", "VALIDATION_ADMISSION_FRESHNESS", "valid_until"),
+        ):
+            for row in state[table]:
+                source = row[0]
+                entry = by_key[(kind, source["id"])]
+                assert entry["revision"] == source["revision"]
+                assert datetime.fromisoformat(entry["valid_until"]) == datetime.fromisoformat(
+                    source[end_field]
+                )
+                starts = [
+                    datetime.fromisoformat(source[field])
+                    for field in ("recorded_at", "effective_at", "computed_at")
+                    if source.get(field)
+                ]
+                assert datetime.fromisoformat(entry["valid_from"]) == max(starts)
+        freshness = by_key[("EVIDENCE_ADMISSION_FRESHNESS", str(seed["admission"]))]
+        assert datetime.fromisoformat(freshness["valid_until"]) == seed["admission_end"]
+        assert freshness["revision"] == state["admission_decisions"][0][0]["revision"]
+        request_row = state["planning_request_revisions"][0][0]
+        deadline = by_key[("REQUEST_DEADLINE", request_row["id"])]
+        assert deadline["revision"] == request_row["request_revision"]
+        assert datetime.fromisoformat(deadline["valid_until"]) == datetime.fromisoformat(
+            state["planning_intents"][0][0]["deadline"]
+        )
+        start = datetime.fromisoformat(issuance["valid_from"])
+        policy = by_key[("POLICY_TTL", str(D.auth(seed).policy_id))]
+        assert datetime.fromisoformat(policy["valid_from"]) == start
+        assert datetime.fromisoformat(policy["valid_until"]) == start + timedelta(
+            seconds=seed["policy"]["max_authorization_ttl_seconds"]
+        )
+        plan_head = state["daily_plan_heads"][0][0]
+        calendar = by_key[("CALENDAR", plan_head["id"])]
+        assert calendar["revision"] == plan_head["local_date"]
+        assert datetime.fromisoformat(calendar["valid_until"]) == datetime.fromisoformat(
+            plan_head["typed_payload"]["calendar_valid_until"]
+        )
+        with db.transaction():
+            actual = db.execute(
+                "SELECT to_jsonb(a) FROM kineticloop.safety_artifacts a WHERE id=ANY(%s)",
+                ([UUID(e["identity"]) for e in entries if e["dependency_kind"] == "ARTIFACT"],),
+            ).fetchall()
+        expected_artifacts = {e["identity"] for e in entries if e["dependency_kind"] == "ARTIFACT"}
+        materialized = [
+            row[0]
+            for row in state["authorization_artifact_closure"]
+            if row[0]["authorization_id"] == issuance["id"]
+        ]
+        assert {e["artifact_id"] for e in materialized} == expected_artifacts
+        assert expected_artifacts == set(
+            state["decision_manifests"][0][0]["typed_payload"]["artifact_closure_ids"]
+        )
+        for row in actual:
+            source = row[0]
+            entry = by_key[("ARTIFACT", source["id"])]
+&gt;           assert entry["revision"] == source["artifact_revision"]
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'artifact_revision'
+
+tests/db/test_boundary_acceptance.py:1054: KeyError</failure></testcase></testsuite></testsuites>

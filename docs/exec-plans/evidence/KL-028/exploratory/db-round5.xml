@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="4.913" timestamp="2026-10-01T22:48:49.100851-07:00" hostname="Daves-MacBook-Pro---26.local"><testcase classname="tests.db.test_boundary_acceptance" name="test_b03_sealed_immutability_ready_barrier" time="4.584"><failure message="AssertionError: KL_FACTSET_HISTORY_MUTATION_REJECTED&#10;  CONTEXT:  PL/pgSQL function kineticloop.guard_factset_revision_mutation() line 14 at RAISE&#10;assert 'immutable' in 'KL_FACTSET_HISTORY_MUTATION_REJECTED\nCONTEXT:  PL/pgSQL function kineticloop.guard_factset_revision_mutation() line 14 at RAISE'&#10; +  where 'KL_FACTSET_HISTORY_MUTATION_REJECTED\nCONTEXT:  PL/pgSQL function kineticloop.guard_factset_revision_mutation() line 14 at RAISE' = str(ObjectNotInPrerequisiteState('KL_FACTSET_HISTORY_MUTATION_REJECTED\nCONTEXT:  PL/pgSQL function kineticloop.guard_factset_revision_mutation() line 14 at RAISE'))&#10; +    where ObjectNotInPrerequisiteState('KL_FACTSET_HISTORY_MUTATION_REJECTED\nCONTEXT:  PL/pgSQL function kineticloop.guard_factset_revision_mutation() line 14 at RAISE') = &lt;ExceptionInfo ObjectNotInPrerequisiteState('KL_FACTSET_HISTORY_MUTATION_REJECTED\nCONTEXT:  PL/pgSQL function kineticloop.guard_factset_revision_mutation() line 14 at RAISE') tblen=3&gt;.value">database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:57709/kineticloop_kl028_boundary_9268fc8_3635a672... 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:57709/kineticloop_kl028_boundary_9268fc8_3635a672a23d', ...}
+
+    def test_b03_sealed_immutability_ready_barrier(database_urls: Any) -&gt; None:
+        seed = seed_source(database_urls)
+        with connect(database_urls["admin"]) as db:
+            cv, identity, closed = build(db, seed)
+            subject = D.auth(seed).subject_id
+    
+            def write():
+                return cv.write_candidate(
+                    WriteCandidate(
+                        subject,
+                        str(uuid4()),
+                        identity,
+                        3,
+                        Member("FACT", "correction", "TEST_ONLY", seed["fact"]),
+                    )
+                )
+    
+            denial(db, seed, write, "expected BUILDING revision")
+            cv.seal_factset(SealFactset(subject, "seal", identity, closed))
+            original = snapshot(db, seed)
+            denial(db, seed, write, "expected BUILDING revision")
+            for statement in (
+                "UPDATE kineticloop.factset_revisions SET content_hash='mutation' WHERE id=%s",
+                'UPDATE kineticloop.factset_revisions SET typed_payload=typed_payload||\'{"completion_certificate":"mutation"}\'::jsonb WHERE id=%s',
+                "UPDATE kineticloop.factset_members SET logical_member_key='mutation' WHERE ref_s15_id=%s",
+            ):
+    
+                def mutate() -&gt; None:
+                    with db.transaction():
+                        db.execute(statement, (identity,))
+    
+&gt;               denial(db, seed, mutate, "immutable")
+
+tests/db/test_boundary_acceptance.py:623: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+db = &lt;psycopg.Connection [BAD] at 0x10d747830&gt;
+seed = {'a': UUID('4b806cb8-c6f2-44a5-8a33-ef645118e2a5'), 'admission': UUID('a5ba2ab1-db53-4235-a408-4d19082713ae'), 'admiss...10, 2, 6, 48, 53, 91729, tzinfo=datetime.timezone.utc), 'assertion': UUID('c706eb8b-c1dc-4013-9761-f514adacae05'), ...}
+operation = &lt;function test_b03_sealed_immutability_ready_barrier.&lt;locals&gt;.mutate at 0x10d71eac0&gt;
+cause = 'immutable'
+
+    def denial(db: Any, seed: Any, operation: Any, cause: str) -&gt; None:
+        before, registry = snapshot(db, seed), global_snapshot(db)
+        with pytest.raises(ERRORS) as error:
+            operation()
+&gt;       assert cause in str(error.value), str(error.value)
+E       AssertionError: KL_FACTSET_HISTORY_MUTATION_REJECTED
+E         CONTEXT:  PL/pgSQL function kineticloop.guard_factset_revision_mutation() line 14 at RAISE
+E       assert 'immutable' in 'KL_FACTSET_HISTORY_MUTATION_REJECTED\nCONTEXT:  PL/pgSQL function kineticloop.guard_factset_revision_mutation() line 14 at RAISE'
+E        +  where 'KL_FACTSET_HISTORY_MUTATION_REJECTED\nCONTEXT:  PL/pgSQL function kineticloop.guard_factset_revision_mutation() line 14 at RAISE' = str(ObjectNotInPrerequisiteState('KL_FACTSET_HISTORY_MUTATION_REJECTED\nCONTEXT:  PL/pgSQL function kineticloop.guard_factset_revision_mutation() line 14 at RAISE'))
+E        +    where ObjectNotInPrerequisiteState('KL_FACTSET_HISTORY_MUTATION_REJECTED\nCONTEXT:  PL/pgSQL function kineticloop.guard_factset_revision_mutation() line 14 at RAISE') = &lt;ExceptionInfo ObjectNotInPrerequisiteState('KL_FACTSET_HISTORY_MUTATION_REJECTED\nCONTEXT:  PL/pgSQL function kineticloop.guard_factset_revision_mutation() line 14 at RAISE') tblen=3&gt;.value
+
+tests/db/test_boundary_acceptance.py:204: AssertionError</failure></testcase></testsuite></testsuites>
