@@ -2377,6 +2377,24 @@ class ValidatorTests(unittest.TestCase):
         self.commit('oversized review-created artifact')
         self.check(1, 'evidence-budget:', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
+    def test_ci_review_cannot_repair_preexisting_manifest_in_suffix(self):
+        self.result()
+        ref = 'docs/exec-plans/reviews/KL-001/raw/preexisting.json'
+        record = v.compact_evidence.capture(
+            self.root, ref, b'1 passed in 0.1s\n', self.base, 'fixture review', 0)
+        self.put(ref, json.dumps(dict(record, raw_sha256='0' * 64)))
+        reviewed = self.commit('result and invalid ordinary review envelope')
+        self.review(reviewed)
+        # A valid later envelope cannot repair an ordinary reference at reviewed.
+        self.put(ref, json.dumps(record))
+        review_path = self.root / 'docs/exec-plans/reviews/KL-001/GENERAL.json'
+        review = json.loads(review_path.read_text())
+        review['evidence_refs'] = [ref]
+        dump(review_path, review)
+        self.commit('repair same-path envelope in allowed review suffix')
+        self.check(1, 'review-evidence-revision:',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
     def test_code_change_after_review_rejected(self):
         _, _, reviewed = self.reviewed_result()
         self.put('src/kineticloop/entry.py')

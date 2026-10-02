@@ -251,3 +251,12 @@ def test_invalid_capture_leaves_no_evidence(repo):
     with pytest.raises(ValueError):
         ce.capture(root, REF, b'raw', '0' * 40, 'pytest', 0)
     assert not (root / 'docs').exists()
+
+
+def test_escaped_marker_cannot_disguise_missing_payload(repo):
+    root, _, record, _ = captured(repo)
+    path = root / REF
+    path.write_text(path.read_text().replace('kineticloop_evidence', 'kineticloop\\u005fevidence'))
+    (root / record['payload']).unlink()
+    head = commit(root)
+    assert not v.evidence_exists(root, REF, head)

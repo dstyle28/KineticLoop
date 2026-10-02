@@ -1714,7 +1714,7 @@ def evidence_exists(root, ref, revision=None, tested=None, command=None, exit_co
     if not ref.endswith('.json'):
         if revision is not None:
             return revision_regular_file(root, ref, revision)
-        path = root / ref
+        path = root.resolve() / ref
         return (path.is_file() and root.resolve() in path.resolve().parents
                 and not any(p.is_symlink() for p in [path, *path.parents]))
     try:
@@ -3736,6 +3736,14 @@ def validate(root, args):
             types = {r['review_type'] for r in relevant if resolve(root, r['reviewed_head_sha']) == resolve(root, args.reviewed_head)}
             if not task or not set(task['review_requirements']) <= types:
                 errors.append('required-reviews-not-pass:' + args.task_id)
+            review_suffix = not suffix_errors(root, args.reviewed_head, 'HEAD', args.task_id, 'review')
+            for review in relevant:
+                if resolve(root, review['reviewed_head_sha']) != resolve(root, args.reviewed_head):
+                    continue
+                for ref in review.get('evidence_refs', []):
+                    if not review_evidence_exists(
+                            root, ref, args.reviewed_head, 'HEAD', args.task_id, review_suffix):
+                        errors.append('review-evidence-revision:' + args.task_id + ':' + ref)
     if getattr(args, 'governance_reviewed_head', None):
         change_id = args.governance_change_id
         reviewed = resolve(root, args.governance_reviewed_head)
@@ -3786,6 +3794,14 @@ def validate(root, args):
             }
             if not required <= types:
                 errors.append('governance-required-reviews-not-pass:' + change_id)
+            review_suffix = not governance_suffix_errors(root, reviewed, 'HEAD', change_id, 'review')
+            for _, review in governance_reviews:
+                if (review['task_identity'] != 'harness-governance-v0.1/' + change_id
+                        or resolve(root, review['reviewed_head_sha']) != reviewed):
+                    continue
+                for ref in review.get('evidence_refs', []):
+                    if not review_evidence_exists(root, ref, reviewed, 'HEAD', change_id, review_suffix):
+                        errors.append('governance-review-evidence-revision:' + change_id + ':' + ref)
         emergency_task_id = getattr(args, 'emergency_task_id', None)
         if emergency_task_id:
             task = tasks.get(emergency_task_id)

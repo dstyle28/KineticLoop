@@ -47,6 +47,7 @@ def git(root: Path, *args: str) -> bytes:
 
 
 def blob(root: Path, path: str, revision: str | None, limit: int | None = None) -> bytes:
+    root = root.resolve()
     if not normalized(path):
         raise ValueError('evidence-path')
     if revision is None:
@@ -85,15 +86,17 @@ def unique(pairs):
 
 def envelope(data: bytes) -> dict[str, Any] | None:
     # Historical logs/JSON remain byte-preserving plain references.
-    if b'"kineticloop_evidence"' not in data:
+    if b'"kineticloop_evidence"' not in data and b'\\u' not in data:
         return None
-    if len(data) > PLAIN_LIMIT:
-        raise ValueError('evidence-envelope-size')
     try:
         value = json.loads(data, object_pairs_hook=unique)
     except (UnicodeError, json.JSONDecodeError):
         return None
-    return value if isinstance(value, dict) and MARKER in value else None
+    if isinstance(value, dict) and MARKER in value:
+        if len(data) > PLAIN_LIMIT:
+            raise ValueError('evidence-envelope-size')
+        return value
+    return None
 
 
 def read(root: Path, path: str, revision: str | None, *, tested: str | None = None,
@@ -150,6 +153,7 @@ def read(root: Path, path: str, revision: str | None, *, tested: str | None = No
 
 def capture(root: Path, path: str, raw: bytes, tested: str, command: str, exit_code: int,
             timestamp: str | None = None) -> dict:
+    root = root.resolve()
     owner(path)
     if (not isinstance(command, str) or not command or type(exit_code) is not int
             or not re.fullmatch(r'[0-9a-f]{40}', tested)

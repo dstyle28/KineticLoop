@@ -8,6 +8,8 @@ New command output may be referenced by a small JSON envelope with
 `kineticloop_evidence: gzip-v1`. Its sole payload is deterministic gzip (mtime zero,
 no original filename), named `<raw_sha256>.gz` in the same directory as the envelope
 under `docs/exec-plans/evidence/<owner>/` or `docs/exec-plans/reviews/<owner>/`.
+Place review envelopes in a child directory such as `raw/`; root review JSON
+filenames remain reserved for the canonical typed review records.
 The envelope contains exact stored/raw SHA256 and byte lengths, full tested commit,
 command, integer exit code, timestamp when available (otherwise null), and observed
 test counts. Counts are navigation metadata; semantic validators inspect recovered
