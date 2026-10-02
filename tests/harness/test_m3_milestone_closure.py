@@ -267,19 +267,21 @@ def test_integrated_regression_fails_closed(history, mutation):
     elif mutation == 'type':
         run['exit_code'] = False
     else:
-        # Mutate retained raw content at a new evidence revision; never ambient-only bytes.
-        path = run['junit']['path'] if mutation == 'skipped' else run['collection']['path']
-        original = (history.root / path).read_text()
-        changed = original.replace('/>', '><skipped/></testcase>') if mutation == 'skipped' else original.replace('test_namespace', 'test_other')
-        if changed == original:
-            changed = '{}'
-        history.put(path, changed)
-        revision = history.commit('negative raw oracle mutation')
-        run['junit' if mutation == 'skipped' else 'collection']['sha256'] = v.sha(history.root / path)
+        # Append new corrupt raw blobs so freshness passes and the content oracle rejects.
+        original = (history.root / run['junit' if mutation == 'skipped' else 'collection']['path']).read_text()
+        if mutation == 'skipped':
+            run['junit'] = history.raw('negative-skipped.xml', original.replace('/>', '><skipped/></testcase>'))
+        else:
+            collection = json.loads(original)
+            collection['nodeids'] = ['tests/unit/foreign.py::test_foreign']
+            collection['stdout'] = history.raw('negative-selector-collect.log',
+                                              collection['nodeids'][0] + '\n1 test collected in 0.1s\n')
+            run['collection'] = history.raw('negative-selector.json', json.dumps(collection))
+        revision = history.commit('negative appended raw oracle mutation')
         errors = v.m3_execution_evidence_errors(history.root, payload, revision, revision, records)
-        history.put(path, original)
-        history.commit('restore isolated fixture')
         assert errors
+        assert not any('stale-or-unintegrated-revision' in e for e in errors)
+        assert any(('failed-skipped' if mutation == 'skipped' else 'wrong-selector') in e for e in errors)
         return
     assert v.m3_execution_evidence_errors(history.root, payload, history.evaluated, history.evaluated, records)
 
