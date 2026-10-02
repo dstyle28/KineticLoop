@@ -606,8 +606,11 @@ def test_m3_reader_parses_checked_git_blob_not_second_ambient_read(tmp_path, mon
 
 
 @pytest.mark.parametrize('mutation', ['none', 'skipped-junit', 'wrong-collection', 'bad-log', 'wrong-tested'])
-def test_compact_regression_decodes_all_semantic_sources(history, mutation):
+def test_compact_regression_decodes_all_semantic_sources(tmp_path, mutation):
     """Compression preserves log/JUnit/collection oracles, never summary-only proof."""
+    # Earlier module-history negatives intentionally commit unrelated/frozen edits.
+    # Each compression case needs its own clean tested-to-evidence suffix.
+    history = History(tmp_path / "repo")
     payload = copy.deepcopy(history.payload)
     run = payload['executions'][0]
     collection = json.loads((history.root / run['collection']['path']).read_text())
