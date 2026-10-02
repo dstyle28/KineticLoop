@@ -245,3 +245,42 @@ def test_git_bound_evidence_ignores_ambient_edits_and_rejects_committed_symlink(
     symlink_head = commit()
     assert any("raw-not-regular-reviewed-blob" in error for error in
                guard.full_database_evidence_errors(repo, symlink_head, SHA, ref))
+
+
+@pytest.mark.parametrize("override", [False, True])
+@pytest.mark.parametrize("config", ['{"proxies":{"default":{"httpProxy":"secret-placeholder"}}}',
+                                    '{"proxies":[]}', '{"proxies":null}', '[]', '{invalid'])
+def test_local_rejects_implicit_proxy_config_before_docker(monkeypatch, tmp_path, override, config):
+    monkeypatch.delenv("BUILDX_BUILDER", raising=False)
+    monkeypatch.delenv("BUILDKIT_HOST", raising=False)
+    monkeypatch.setattr(Path, "home", lambda: tmp_path)
+    directory = tmp_path / ("custom" if override else ".docker")
+    directory.mkdir()
+    if override:
+        monkeypatch.setenv("DOCKER_CONFIG", str(directory))
+    else:
+        monkeypatch.delenv("DOCKER_CONFIG", raising=False)
+    (directory / "config.json").write_text(config)
+    monkeypatch.setattr(db_ci, "output", lambda *a, **kw: pytest.fail("Docker called"))
+    monkeypatch.setattr(db_ci, "run_capture", lambda *a, **kw: pytest.fail("build/run called"))
+    with pytest.raises(ValueError, match="without proxy forwarding") as error:
+        db_ci.local(argparse.Namespace())
+    assert "secret-placeholder" not in str(error.value)
+
+
+@pytest.mark.parametrize("override", ["BUILDX_BUILDER", "BUILDKIT_HOST"])
+def test_local_rejects_ambient_builder_before_docker(monkeypatch, override):
+    monkeypatch.setenv(override, "remote-placeholder")
+    monkeypatch.setattr(db_ci, "output", lambda *a, **kw: pytest.fail("Docker called"))
+    with pytest.raises(ValueError, match="builder overrides"):
+        db_ci.local(argparse.Namespace())
+
+
+@pytest.mark.parametrize("config", [None, '{}', '{"proxies":{}}', '{"credsStore":"desktop"}'])
+def test_local_client_accepts_no_proxy_forwarding(monkeypatch, tmp_path, config):
+    monkeypatch.delenv("BUILDX_BUILDER", raising=False)
+    monkeypatch.delenv("BUILDKIT_HOST", raising=False)
+    monkeypatch.setenv("DOCKER_CONFIG", str(tmp_path))
+    if config is not None:
+        (tmp_path / "config.json").write_text(config)
+    db_ci.local_client_preflight()

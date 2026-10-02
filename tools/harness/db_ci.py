@@ -264,7 +264,25 @@ def owned_mounts(inspect: dict[str, Any], volume: str) -> list[dict[str, str]]:
     return [{key: mounts[0][key] for key in ("Type", "Name", "Destination")}]
 
 
+def local_client_preflight() -> None:
+    """Reject implicit proxy forwarding and remote builders without exposing config."""
+    if os.environ.get("BUILDX_BUILDER") or os.environ.get("BUILDKIT_HOST"):
+        raise ValueError("local executor rejects ambient builder overrides")
+    directory = Path(os.environ.get("DOCKER_CONFIG") or Path.home() / ".docker")
+    config = directory / "config.json"
+    try:
+        value = json.loads(config.read_text()) if config.exists() else {}
+        if not isinstance(value, dict):
+            raise ValueError
+        proxies = value.get("proxies", {})
+        if not isinstance(proxies, dict) or proxies:
+            raise ValueError
+    except (ValueError, OSError):
+        raise ValueError("local executor requires readable valid Docker config without proxy forwarding") from None
+
+
 def local(args: argparse.Namespace) -> int:
+    local_client_preflight()
     if os.environ.get("DOCKER_HOST") or os.environ.get("DOCKER_CONTEXT"):
         raise ValueError("local executor rejects ambient Docker overrides")
     context = output(["docker", "context", "show"])

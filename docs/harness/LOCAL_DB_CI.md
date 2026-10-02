@@ -44,7 +44,11 @@ and is removed with the container after success or failure. The wrapper permits 
 checks there are no bind mounts/host socket/host networking, and removes both its
 container and data volume. The volume is necessary for nested overlay2 storage. The local Docker image cache is retained for subsequent runs. Docker
 needs permission for a privileged nested daemon; unrelated host containers and
-volumes are never cleaned. No registration token or repository secret is needed.
+volumes are never cleaned. No registration token or repository secret is needed. Before any Docker command,
+the wrapper rejects effective Docker client proxy forwarding (including the
+`DOCKER_CONFIG` override), unreadable/malformed config, and ambient
+`BUILDX_BUILDER`/`BUILDKIT_HOST` overrides. This prevents implicit proxy credentials
+from entering builds/containers and keeps image builds on the local daemon.
 
 The exact same `run` command is used by `.github/workflows/db.yml` on a dedicated
 GitHub Linux VM. It refuses remote Docker overrides, the wrong HEAD, a dirty
