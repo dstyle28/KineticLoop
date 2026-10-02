@@ -1,0 +1,13 @@
+..                                                                       [100%]
+==================================== PASSES ====================================
+_________________________ test_namespace_and_boundary __________________________
+----------------------------- Captured stdout call -----------------------------
+NAMESPACE_PU DatabaseNamespace(project_name='kineticloop-kl029-shadow-eed165a-01c8899b2807', database_name='kineticloop_kl029_shadow_eed165a_01c8899b2807') negative_controls=foreign_root,sha,digest,label,ambient,nested_cleanup nested_inventory ['bootstrap_two_phase(selected_lifecycle)', 'destroy']
+___________________________ test_strict_shadow_wire ____________________________
+----------------------------- Captured stdout call -----------------------------
+STRICT_WIRE_PU canonical_shadow_hash 1d74f44ab795dcf334d3f45b753b22c6f88c93908af09d51b0df9b4692949dd5 guard_reached=strict_contract/require_wire; no_T7_claim
+- generated xml file: /Users/davetian/.codex/worktrees/17d3/KineticLoop/docs/exec-plans/reviews/KL-029/protocol-raw/pu.xml -
+=========================== short test summary info ============================
+PASSED tests/unit/protocol/test_shadow_isolation.py::test_namespace_and_boundary
+PASSED tests/unit/protocol/test_shadow_isolation.py::test_strict_shadow_wire
+2 passed in 2.64s

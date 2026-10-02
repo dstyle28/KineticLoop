@@ -1,0 +1,318 @@
+{
+  "reviewed_head_sha": "eed165afbd56d3ae551c46166aaec776cf79e625",
+  "tested_commit": "b9fbf9b475e07765db62e67f0104a800036dda4d",
+  "protected_base": "9268fc8dd8c071c02dc5c698274dbf6fcd112776",
+  "prerequisites": {
+    "KL-008": {
+      "merge_commit": "2fdbd205ac35e396f1fec0edcc4ad53c1b059660",
+      "reviews": {
+        "DB_CONCURRENCY": "PASS",
+        "GENERAL": "PASS",
+        "PROTOCOL": "PASS"
+      }
+    },
+    "KL-017": {
+      "merge_commit": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+      "reviews": {
+        "DB_CONCURRENCY": "PASS",
+        "GENERAL": "PASS",
+        "PROTOCOL": "PASS",
+        "SECURITY_DATA_BOUNDARY": "PASS"
+      }
+    },
+    "KL-027": {
+      "merge_commit": "1099d85bd4aa76ec8221700e55b4e77a84479126",
+      "reviews": {
+        "DB_CONCURRENCY": "PASS",
+        "GENERAL": "PASS",
+        "PROTOCOL": "PASS"
+      }
+    }
+  },
+  "tested_to_reviewed_suffix": [
+    "eed165afbd56d3ae551c46166aaec776cf79e625"
+  ],
+  "author_checks_verified": 12,
+  "independent_suite_counts": {
+    "tests": 6,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "compose": "kineticloop-kl029-shadow-eed165a-01c8899b2807",
+  "database": "kineticloop_kl029_shadow_eed165a_01c8899b2807",
+  "raw_counts": {
+    "namespace": 4,
+    "actual_T7_positive_guard": 12,
+    "full_TEST_owner_trajectory": 4,
+    "trusted_registration": 7,
+    "declared_external_evaluation_inputs": 3,
+    "positive_scoped_lookup": 9,
+    "scope_denial": 27,
+    "live_privilege_denial": 15,
+    "cleanup": 4,
+    "zero_effect": 26,
+    "crossing_reads_zero_effect": 1
+  },
+  "zero_effect_guard_counts": {
+    "registration_guard": 3,
+    "require_wire": 5,
+    "owner_current_bundle_pre_T7": 1,
+    "strict_owner_ingress": 10,
+    "DB_storage_namespace": 7
+  },
+  "trajectories": [
+    {
+      "sources": {
+        "demand": {
+          "hash": "762f86c345538b77a8f156b4c72c9e5ef64f369a12689f2ea3f6f4e29c0fbdf2",
+          "id": "fe7c1435-d848-52ed-a849-0f07d2a77691"
+        },
+        "fitness": {
+          "hash": "bb5adb2e4f7d892c717a84e08910e5b1ab733ca137de4c0125c3873e7a9b0365",
+          "id": "c4d76496-4abe-58cb-ba80-5643afb8cfc6"
+        },
+        "nutrition": {
+          "hash": "f644af581147c1c59f4537efad20c002c616868f3f0bf0d051c3c4d1bddbe840",
+          "id": "25fd5fa5-cdbc-51d4-8b0a-edb4fdc77825"
+        },
+        "nutrition_resolution": {
+          "hash": "e2bf47d3198b7877853b0c99e6648e93cc33871209837fa03cc9c5c333c701b1",
+          "id": "60d0dfdd-a57a-5d3b-95c8-3179febfdbd4"
+        },
+        "resolution": {
+          "hash": "7c1daa570a90073f0bb74fe3e792f4d47f1a1f479c821fd944a2b6e7ebd682fd",
+          "id": "4f01c217-31c0-50ac-9d4a-3be384682a0a"
+        },
+        "snapshot": {
+          "hash": "7ffb48bc3635e18089c82183a0de13e0524e62d3ca56e237544d759bfc315a3e",
+          "id": "be393087-73cc-487a-a311-32a09621313f"
+        },
+        "validation": {
+          "hash": "d133be1bd760007df048ae4fe0421e8b11f9fbd1e921e1a2fbcc48fd568fd16f",
+          "id": "3baef6db-01a3-5c22-8260-1c57c26e7a6f"
+        }
+      },
+      "members": [
+        {
+          "action_type": "TRAINING",
+          "authorization_id": "a4ca90c6-f681-43d3-9f64-c00234ace873",
+          "content_hash": "f863709ebb1218374d5c57e23c2de587f9f616ac436ec20eb3d2f983ed1bb000",
+          "member_id": "e7f36103-e0d7-4941-af14-2135a454e5ce",
+          "member_order": 1,
+          "prescription_id": "d384271b-8976-435b-b44a-9a6cc044f306",
+          "resolution_id": "4f01c217-31c0-50ac-9d4a-3be384682a0a",
+          "session_slot": "TRAINING_1",
+          "validation_id": "3baef6db-01a3-5c22-8260-1c57c26e7a6f"
+        },
+        {
+          "action_type": "NUTRITION",
+          "authorization_id": "a0569eee-4fae-4665-ad27-efc699dd3324",
+          "content_hash": "8194b165ac609544d7c59fdf8b67104428844897e8172181508102e379fa6a39",
+          "member_id": "23261b35-52b9-4c5c-bd64-fe4020fbc3d8",
+          "member_order": 2,
+          "prescription_id": "b0b50d6d-5df6-4c3c-a042-8a98ce0f0438",
+          "resolution_id": "60d0dfdd-a57a-5d3b-95c8-3179febfdbd4",
+          "session_slot": "NUTRITION_1",
+          "validation_id": "3baef6db-01a3-5c22-8260-1c57c26e7a6f"
+        }
+      ],
+      "session_id": "a52eedba-f0bf-4e34-aff2-4da589919a2a",
+      "bindings": [
+        "b31f4b57-7888-4e87-8910-c79ec98a66c3",
+        "db40c667-95d6-4b8b-becd-787f9472240b"
+      ],
+      "receipt_event_outbox_count": 24
+    },
+    {
+      "sources": {
+        "demand": {
+          "hash": "be9faabd20a5005341c1dfa94935684e6224e832e259d4c0b76102a37a318ed3",
+          "id": "462ba80e-c979-5d15-9341-e8223f90268e"
+        },
+        "fitness": {
+          "hash": "62d743de4a5fe0546d56401a427b9e5300789bdb98330315ae509732e5fd09bf",
+          "id": "42430675-f589-5570-b521-d760a3a32fec"
+        },
+        "nutrition": {
+          "hash": "59ff92ef1e4c2d27e2649695b4292418b2bd5aeafdfb3009e7bfb1eabd761073",
+          "id": "0a10f76c-46b3-5513-b1b2-b19aef6d178f"
+        },
+        "nutrition_resolution": {
+          "hash": "8ac5f8a0e94cab42a7561089d59a831524e9b042cb9e0f770763cf42360cf324",
+          "id": "6fc4ad42-5eec-5d95-9dc5-f9231b55baf0"
+        },
+        "resolution": {
+          "hash": "57b87b681b8352f922d43acaf767d3945ceb9cc5d00a78588652f6b14e7f19d1",
+          "id": "26fa52cc-2244-5ac5-a8bf-de97727a9d0e"
+        },
+        "snapshot": {
+          "hash": "a26ec9c6a9a6ee003a0c3a85c5079c34c95a5f4c1849e98327b513bc0647c292",
+          "id": "5908ba7c-5d2b-476f-b580-41f507b66bdd"
+        },
+        "validation": {
+          "hash": "ed5fdcbc7a1fb59a44bd4feeec3a965c74c7a8440ab28ba37612942033cf4a19",
+          "id": "bceac79a-d71f-594d-a76a-7ab6c1e4ba4e"
+        }
+      },
+      "members": [
+        {
+          "action_type": "TRAINING",
+          "authorization_id": "58fb8815-ac98-42d0-88db-c0812ee20f52",
+          "content_hash": "f863709ebb1218374d5c57e23c2de587f9f616ac436ec20eb3d2f983ed1bb000",
+          "member_id": "c51473bd-2101-4e6c-bcc9-298c47cfffea",
+          "member_order": 1,
+          "prescription_id": "86127d33-22ff-4003-94f6-3a7e8f0285e2",
+          "resolution_id": "26fa52cc-2244-5ac5-a8bf-de97727a9d0e",
+          "session_slot": "TRAINING_1",
+          "validation_id": "bceac79a-d71f-594d-a76a-7ab6c1e4ba4e"
+        },
+        {
+          "action_type": "NUTRITION",
+          "authorization_id": "dc6cd15f-c96d-4ec3-a8b3-35e669374e7b",
+          "content_hash": "8194b165ac609544d7c59fdf8b67104428844897e8172181508102e379fa6a39",
+          "member_id": "52b0f0dd-e7e2-47c7-9060-ac30ff464af5",
+          "member_order": 2,
+          "prescription_id": "19da83b1-99cd-4ab9-bbe3-1752e0766c60",
+          "resolution_id": "6fc4ad42-5eec-5d95-9dc5-f9231b55baf0",
+          "session_slot": "NUTRITION_1",
+          "validation_id": "bceac79a-d71f-594d-a76a-7ab6c1e4ba4e"
+        }
+      ],
+      "session_id": "ec8cdfc4-f4b5-430b-9145-fd23ef9d2248",
+      "bindings": [
+        "5c8f56a7-2303-45b6-b887-305c5ec2a528",
+        "8e0bea63-c4e4-4039-a006-30a506d96dd5"
+      ],
+      "receipt_event_outbox_count": 24
+    },
+    {
+      "sources": {
+        "demand": {
+          "hash": "f54ea5f404aa20a815c73ed3a11979f0595531f033ee420b9c1c37830ba6bfd8",
+          "id": "3e190993-ad74-5639-a0f0-9eb0a3bdaf17"
+        },
+        "fitness": {
+          "hash": "123526ab058ab883890d508161411e36001b4100269426dbff2b69196a85fa25",
+          "id": "b053f170-b8db-5660-9dc8-0a7b44f50d2d"
+        },
+        "nutrition": {
+          "hash": "7fd73cadd0c2a82ae522f2e6a95cb43ebb6e4c81134d70db36e3d119f3f884ee",
+          "id": "657872ab-a6db-569f-8b7f-7febcca30be6"
+        },
+        "nutrition_resolution": {
+          "hash": "66f8959b7cecb6720dc63f34e89b9a5940c625b4437998c0f207744afff83546",
+          "id": "3792b742-5df6-5be0-b71d-c571902d9a46"
+        },
+        "resolution": {
+          "hash": "65b50dbf01063c587df5dbfe375b52bacb351cc0734e3281de89d7145a768236",
+          "id": "6549e065-cb38-578b-afbf-95238da2956e"
+        },
+        "snapshot": {
+          "hash": "6818e90ffa6e3ef4dd1680f3610a528db618a8de198c9efacb74876daca81eaf",
+          "id": "ff30f784-810c-403e-bb5a-cd34a0a00a9f"
+        },
+        "validation": {
+          "hash": "54216e17606d7d6ed1c5f256b2b0349dbdcd811ca642c437a3d1c5f56ba7289b",
+          "id": "1b173968-1845-5d43-8a1f-c9f8736c8760"
+        }
+      },
+      "members": [
+        {
+          "action_type": "TRAINING",
+          "authorization_id": "2549d51f-6d28-44cd-bbaf-1732e9ea9ebc",
+          "content_hash": "f863709ebb1218374d5c57e23c2de587f9f616ac436ec20eb3d2f983ed1bb000",
+          "member_id": "add82b3f-9e95-4098-9bce-293f2c6a29e6",
+          "member_order": 1,
+          "prescription_id": "681e3cf0-30a5-4664-baba-0ea892e8efae",
+          "resolution_id": "6549e065-cb38-578b-afbf-95238da2956e",
+          "session_slot": "TRAINING_1",
+          "validation_id": "1b173968-1845-5d43-8a1f-c9f8736c8760"
+        },
+        {
+          "action_type": "NUTRITION",
+          "authorization_id": "4fe55ca3-80b4-47f0-bad9-ebab52f198f8",
+          "content_hash": "8194b165ac609544d7c59fdf8b67104428844897e8172181508102e379fa6a39",
+          "member_id": "47cdc323-9e92-4b41-93d8-e806d62586f8",
+          "member_order": 2,
+          "prescription_id": "f8878306-3079-497e-8ad1-061e1aa1042b",
+          "resolution_id": "3792b742-5df6-5be0-b71d-c571902d9a46",
+          "session_slot": "NUTRITION_1",
+          "validation_id": "1b173968-1845-5d43-8a1f-c9f8736c8760"
+        }
+      ],
+      "session_id": "a17c4836-5e76-4e9f-9d29-ba6ee5eeb502",
+      "bindings": [
+        "ecd7c276-d919-42db-885d-495e62ddcd66",
+        "fb06cbf9-b64c-4561-9e6d-e26d51268b5f"
+      ],
+      "receipt_event_outbox_count": 24
+    },
+    {
+      "sources": {
+        "demand": {
+          "hash": "7b6d052c1dd76728390bc70086d9fb3acad117980812fb73733b2eff6ce69d22",
+          "id": "4f3e069e-f8b2-5b6d-8c55-bcb60a5926ba"
+        },
+        "fitness": {
+          "hash": "6d0d504d1b595a722936c4da61a401ce1429ef47e0380cf06f21af667b73e215",
+          "id": "083c1f03-5357-5c3d-a35d-49a74e4d1acb"
+        },
+        "nutrition": {
+          "hash": "cb485563234f95f3f32f618b466794beeda0427246ae58b2d2694cf91bea6b6f",
+          "id": "fc0b1de1-acd5-5e5a-956e-49401c5c3e91"
+        },
+        "nutrition_resolution": {
+          "hash": "2cabc72c72ab692ff28d0ec372366c6211cc3ecaba89b3c6cac24da7507cb835",
+          "id": "5e972814-4412-5028-a44c-f6ebf1539300"
+        },
+        "resolution": {
+          "hash": "6e26e9c5f19f6d942e308671fd1125ccc4d9e5a123903b796b21c06d304d9ebd",
+          "id": "222fd276-345d-55d1-9e4d-521bc2f03833"
+        },
+        "snapshot": {
+          "hash": "8f76fca71e351bf3532b2bcf8d9087c43c65f2a58036cecd26fb2909d668cd95",
+          "id": "603576e8-2278-45b4-9766-42eeb8ae2e10"
+        },
+        "validation": {
+          "hash": "e55bb812c9f46a1cbdb6766789772e6a6a2129e6991f64527dd5e235d5bb0db7",
+          "id": "0e8cb354-795d-5f05-9034-9438ceec2aa1"
+        }
+      },
+      "members": [
+        {
+          "action_type": "TRAINING",
+          "authorization_id": "41b61a01-301c-4deb-bf0b-deb1a01b48d0",
+          "content_hash": "f863709ebb1218374d5c57e23c2de587f9f616ac436ec20eb3d2f983ed1bb000",
+          "member_id": "9e7d2288-8727-40b1-998a-1ef7aa3e77bf",
+          "member_order": 1,
+          "prescription_id": "b527b64b-c8ca-47ad-b1c6-9b413780d937",
+          "resolution_id": "222fd276-345d-55d1-9e4d-521bc2f03833",
+          "session_slot": "TRAINING_1",
+          "validation_id": "0e8cb354-795d-5f05-9034-9438ceec2aa1"
+        },
+        {
+          "action_type": "NUTRITION",
+          "authorization_id": "72204705-3298-4415-8327-2ea726515a23",
+          "content_hash": "8194b165ac609544d7c59fdf8b67104428844897e8172181508102e379fa6a39",
+          "member_id": "92b3e074-5278-4938-a78a-dfbad6977d92",
+          "member_order": 2,
+          "prescription_id": "b90b2410-cb9b-4a3a-bad7-505bf7bde3ed",
+          "resolution_id": "5e972814-4412-5028-a44c-f6ebf1539300",
+          "session_slot": "NUTRITION_1",
+          "validation_id": "0e8cb354-795d-5f05-9034-9438ceec2aa1"
+        }
+      ],
+      "session_id": "ff76920e-a375-4663-aa15-b643abb9d6bc",
+      "bindings": [
+        "6a5028c5-d088-4035-a17f-89e5e94aceea",
+        "f369c2ee-c1f0-4b14-9179-a50cd761a91c"
+      ],
+      "receipt_event_outbox_count": 24
+    }
+  ],
+  "raw_sha256": "63af68a3810be07bb6f33629a2d3bf22e348aa73b1cd5c4d0e0121e3304b7ae0",
+  "initial_sandbox_attempt": "2 PU passed, 4 DB setup errors due Docker API permission; no DB case reached; approved ordinary escalation rerun passed",
+  "frozen_source_migration_grant_lifecycle_CI_changes": false,
+  "product_layer_pass_claims": []
+}
