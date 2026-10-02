@@ -2622,7 +2622,8 @@ def m3_execution_evidence_errors(root, payload, revision, evaluated, records):
                          else ['tests/harness'] if command == 'uv run kl test-harness'
                          else command.removeprefix('uv run pytest -q ').split())
             if (collection['command'] != 'uv run pytest --collect-only -q ' + ' '.join(selectors)
-                    or collection['tested_commit'] != tested or collection['exit_code'] != 0):
+                    or collection['tested_commit'] != tested or collection['exit_code'] != 0
+                    or isinstance(collection['exit_code'], bool)):
                 raise ValueError('collection-binding')
             nodeids = collection['nodeids']
             collected_output = raw(collection['stdout']).decode()

@@ -250,7 +250,7 @@ def test_named_task_witness_must_bind_result_oracle_and_regular_blob(history, fi
     assert v.m3_task_check_errors(history.root, witness, name, check, history.tasks[name], history.records[name], history.evaluated)
 
 
-@pytest.mark.parametrize('mutation', ['failed', 'zero', 'skipped', 'wrong-selector', 'wrong-command', 'stale', 'missing028', 'missing029', 'hash', 'type', 'provenance', 'duplicate-json'])
+@pytest.mark.parametrize('mutation', ['failed', 'zero', 'skipped', 'wrong-selector', 'wrong-command', 'stale', 'missing028', 'missing029', 'hash', 'type', 'provenance', 'duplicate-json', 'collection-type'])
 def test_integrated_regression_fails_closed(history, mutation):
     payload = copy.deepcopy(history.payload)
     records = copy.deepcopy(history.records)
@@ -274,7 +274,11 @@ def test_integrated_regression_fails_closed(history, mutation):
     else:
         # Append new corrupt raw blobs so freshness passes and the content oracle rejects.
         original = (history.root / run['junit' if mutation == 'skipped' else 'collection']['path']).read_text()
-        if mutation == 'duplicate-json':
+        if mutation == 'collection-type':
+            collection = json.loads(original)
+            collection['exit_code'] = False
+            run['collection'] = history.raw('negative-collection-type.json', json.dumps(collection))
+        elif mutation == 'duplicate-json':
             original = (history.root / run['collection']['path']).read_text()
             run['collection'] = history.raw('negative-duplicate.json', original[:-1] + ', "exit_code": 0}')
         elif mutation == 'skipped':
@@ -289,7 +293,8 @@ def test_integrated_regression_fails_closed(history, mutation):
         errors = v.m3_execution_evidence_errors(history.root, payload, revision, revision, records)
         assert errors
         assert not any('stale-or-unintegrated-revision' in e for e in errors)
-        expected_error = ('duplicate-key' if mutation == 'duplicate-json' else
+        expected_error = ('collection-binding' if mutation == 'collection-type' else
+                          'duplicate-key' if mutation == 'duplicate-json' else
                           'failed-skipped' if mutation == 'skipped' else 'wrong-selector')
         assert any(expected_error in e for e in errors)
         return
