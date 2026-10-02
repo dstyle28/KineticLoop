@@ -1,0 +1,725 @@
+{
+  "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+  "raw_stdout": {
+    "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.log",
+    "sha256": "5c94998447a516b39433e028b6ca98c64b0f8a00521db6096835210fb1209a1c"
+  },
+  "executed_cases": 106,
+  "namespaces": 106,
+  "cleanups": 106,
+  "all_owned_resources_empty": true,
+  "namespace": {
+    "compose": "kineticloop-kl080-source-d6bfb28-9a070975b04f",
+    "database": "kineticloop_kl080_source_d6bfb28_9a070975b04f",
+    "resolved_root": "/Users/davetian/.codex/worktrees/59e4/KineticLoop"
+  },
+  "migration": "e8c2f1a6b904",
+  "connection_enforcement": "Every connection in connect and the prior deployment subprocess asserts SELECT current_database() equals the selected database; wrong URL rejected before connecting. Namespace witnesses use that verified selected value.",
+  "witness_index": {
+    "kl080_namespace": {
+      "count": 106,
+      "raw_line_numbers": [
+        13,
+        26,
+        39,
+        52,
+        65,
+        78,
+        92,
+        105,
+        118,
+        131,
+        144,
+        157,
+        170,
+        183,
+        196,
+        209,
+        222,
+        236,
+        250,
+        264,
+        278,
+        292,
+        306,
+        320,
+        334,
+        348,
+        362,
+        376,
+        390,
+        404,
+        418,
+        432,
+        446,
+        460,
+        474,
+        488,
+        502,
+        516,
+        530,
+        544,
+        558,
+        572,
+        586,
+        600,
+        614,
+        628,
+        642,
+        656,
+        670,
+        684,
+        698,
+        712,
+        726,
+        740,
+        754,
+        768,
+        782,
+        796,
+        810,
+        824,
+        838,
+        852,
+        866,
+        880,
+        894,
+        907,
+        920,
+        933,
+        946,
+        959,
+        972,
+        985,
+        998,
+        1011,
+        1024,
+        1037,
+        1050,
+        1063,
+        1076,
+        1089,
+        1102,
+        1115,
+        1128,
+        1141,
+        1155,
+        1168,
+        1181,
+        1194,
+        1207,
+        1220,
+        1233,
+        1246,
+        1259,
+        1273,
+        1287,
+        1301,
+        1315,
+        1329,
+        1348,
+        1362,
+        1375,
+        1388,
+        1401,
+        1414,
+        1427,
+        1440
+      ]
+    },
+    "kl080_preparation_owner": {
+      "count": 4,
+      "raw_line_numbers": [
+        14,
+        27,
+        40,
+        53
+      ]
+    },
+    "kl080_cleanup": {
+      "count": 106,
+      "raw_line_numbers": [
+        15,
+        28,
+        41,
+        54,
+        67,
+        81,
+        94,
+        107,
+        120,
+        133,
+        146,
+        159,
+        172,
+        185,
+        198,
+        211,
+        225,
+        239,
+        253,
+        267,
+        281,
+        295,
+        309,
+        323,
+        337,
+        351,
+        365,
+        379,
+        393,
+        407,
+        421,
+        435,
+        449,
+        463,
+        477,
+        491,
+        505,
+        519,
+        533,
+        547,
+        561,
+        575,
+        589,
+        603,
+        617,
+        631,
+        645,
+        659,
+        673,
+        687,
+        701,
+        715,
+        729,
+        743,
+        757,
+        771,
+        785,
+        799,
+        813,
+        827,
+        841,
+        855,
+        869,
+        883,
+        896,
+        909,
+        922,
+        935,
+        948,
+        961,
+        974,
+        987,
+        1000,
+        1013,
+        1026,
+        1039,
+        1052,
+        1065,
+        1078,
+        1091,
+        1104,
+        1117,
+        1130,
+        1144,
+        1157,
+        1170,
+        1183,
+        1196,
+        1209,
+        1222,
+        1235,
+        1248,
+        1262,
+        1276,
+        1290,
+        1304,
+        1318,
+        1337,
+        1351,
+        1364,
+        1377,
+        1390,
+        1403,
+        1416,
+        1429,
+        1442
+      ]
+    },
+    "kl080_canonical_full_t6_exact_freshness_reached": {
+      "count": 1,
+      "raw_line_numbers": [
+        66
+      ]
+    },
+    "exact_zero_effect_denial": {
+      "count": 47,
+      "raw_line_numbers": [
+        79,
+        210,
+        895,
+        908,
+        921,
+        934,
+        947,
+        960,
+        973,
+        986,
+        999,
+        1012,
+        1025,
+        1038,
+        1051,
+        1064,
+        1077,
+        1090,
+        1103,
+        1116,
+        1129,
+        1143,
+        1156,
+        1169,
+        1182,
+        1195,
+        1208,
+        1221,
+        1234,
+        1247,
+        1260,
+        1274,
+        1289,
+        1303,
+        1317,
+        1330,
+        1331,
+        1332,
+        1333,
+        1334,
+        1335,
+        1349,
+        1389,
+        1402,
+        1415,
+        1428,
+        1441
+      ]
+    },
+    "kl080_prior_deployment_earlier_denial": {
+      "count": 1,
+      "raw_line_numbers": [
+        80
+      ]
+    },
+    "kl080_exact_predicate_support_only": {
+      "count": 7,
+      "raw_line_numbers": [
+        93,
+        106,
+        119,
+        132,
+        145,
+        158,
+        171
+      ]
+    },
+    "kl080_legacy_consumer_scope_blocker": {
+      "count": 1,
+      "raw_line_numbers": [
+        184
+      ]
+    },
+    "kl080_owner_trajectory": {
+      "count": 1,
+      "raw_line_numbers": [
+        197
+      ]
+    },
+    "kl080_failed_owner_zero_effects": {
+      "count": 48,
+      "raw_line_numbers": [
+        223,
+        237,
+        251,
+        265,
+        279,
+        293,
+        307,
+        321,
+        335,
+        349,
+        363,
+        377,
+        391,
+        405,
+        419,
+        433,
+        447,
+        461,
+        475,
+        489,
+        503,
+        517,
+        531,
+        545,
+        559,
+        573,
+        587,
+        601,
+        615,
+        629,
+        643,
+        657,
+        671,
+        685,
+        699,
+        713,
+        727,
+        741,
+        755,
+        769,
+        783,
+        797,
+        811,
+        825,
+        839,
+        853,
+        867,
+        881
+      ]
+    },
+    "kl080_source_preparation_denial": {
+      "count": 48,
+      "raw_line_numbers": [
+        224,
+        238,
+        252,
+        266,
+        280,
+        294,
+        308,
+        322,
+        336,
+        350,
+        364,
+        378,
+        392,
+        406,
+        420,
+        434,
+        448,
+        462,
+        476,
+        490,
+        504,
+        518,
+        532,
+        546,
+        560,
+        574,
+        588,
+        602,
+        616,
+        630,
+        644,
+        658,
+        672,
+        686,
+        700,
+        714,
+        728,
+        742,
+        756,
+        770,
+        784,
+        798,
+        812,
+        826,
+        840,
+        854,
+        868,
+        882
+      ]
+    },
+    "kl080_trusted_clock_crossing": {
+      "count": 4,
+      "raw_line_numbers": [
+        1142,
+        1288,
+        1302,
+        1316
+      ]
+    },
+    "kl080_source_or_runtime_loss_and_receipt_only_replay": {
+      "count": 2,
+      "raw_line_numbers": [
+        1261,
+        1275
+      ]
+    },
+    "F2_full_commit": {
+      "count": 1,
+      "raw_line_numbers": [
+        1336
+      ]
+    },
+    "historical_non_executable": {
+      "count": 1,
+      "raw_line_numbers": [
+        1350
+      ]
+    },
+    "observed_duplicate": {
+      "count": 2,
+      "raw_line_numbers": [
+        1363,
+        1376
+      ]
+    }
+  },
+  "source_denial_causes": [
+    {
+      "full": false,
+      "case": "dedup_conflict",
+      "cause": "duplicate underlying event has conflicting actual payload"
+    },
+    {
+      "full": false,
+      "case": "admission_hash",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": false,
+      "case": "association_hash",
+      "cause": "exact source event association required"
+    },
+    {
+      "full": false,
+      "case": "source_policy",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": false,
+      "case": "association_id",
+      "cause": "exact source event association required"
+    },
+    {
+      "full": false,
+      "case": "unknown_association",
+      "cause": "exact source event association required"
+    },
+    {
+      "full": false,
+      "case": "NOT_ELIGIBLE",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": false,
+      "case": "UNRESOLVED",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": false,
+      "case": "ADMITTED",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": false,
+      "case": "ACCEPTED",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": false,
+      "case": "unknown",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": false,
+      "case": "null_admission",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": false,
+      "case": "AMBIGUOUS",
+      "cause": "exact source event association required"
+    },
+    {
+      "full": false,
+      "case": "RETRACTED",
+      "cause": "exact source event association required"
+    },
+    {
+      "full": false,
+      "case": "CONFIRMED",
+      "cause": "exact source event association required"
+    },
+    {
+      "full": false,
+      "case": "null_association",
+      "cause": "exact source event association required"
+    },
+    {
+      "full": false,
+      "case": "scope",
+      "cause": "wrong subject/basis, unknown exposure or planned/actual substitution"
+    },
+    {
+      "full": false,
+      "case": "provenance",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": false,
+      "case": "target",
+      "cause": "wrong subject/basis, unknown exposure or planned/actual substitution"
+    },
+    {
+      "full": false,
+      "case": "unknown_actual",
+      "cause": "wrong subject/basis, unknown exposure or planned/actual substitution"
+    },
+    {
+      "full": false,
+      "case": "contradiction",
+      "cause": "missing/contradictory/incomplete/truncated/mismatched/expired resolution"
+    },
+    {
+      "full": false,
+      "case": "retraction",
+      "cause": "missing/contradictory/incomplete/truncated/mismatched/expired resolution"
+    },
+    {
+      "full": false,
+      "case": "membership",
+      "cause": "missing/contradictory/incomplete/truncated/mismatched/expired resolution"
+    },
+    {
+      "full": false,
+      "case": "hash",
+      "cause": "immutable fixture source identity/hash missing or changed"
+    },
+    {
+      "full": true,
+      "case": "dedup_conflict",
+      "cause": "duplicate underlying event has conflicting actual payload"
+    },
+    {
+      "full": true,
+      "case": "admission_hash",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": true,
+      "case": "association_hash",
+      "cause": "exact source event association required"
+    },
+    {
+      "full": true,
+      "case": "source_policy",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": true,
+      "case": "association_id",
+      "cause": "exact source event association required"
+    },
+    {
+      "full": true,
+      "case": "unknown_association",
+      "cause": "exact source event association required"
+    },
+    {
+      "full": true,
+      "case": "NOT_ELIGIBLE",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": true,
+      "case": "UNRESOLVED",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": true,
+      "case": "ADMITTED",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": true,
+      "case": "ACCEPTED",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": true,
+      "case": "unknown",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": true,
+      "case": "null_admission",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": true,
+      "case": "AMBIGUOUS",
+      "cause": "exact source event association required"
+    },
+    {
+      "full": true,
+      "case": "RETRACTED",
+      "cause": "exact source event association required"
+    },
+    {
+      "full": true,
+      "case": "CONFIRMED",
+      "cause": "exact source event association required"
+    },
+    {
+      "full": true,
+      "case": "null_association",
+      "cause": "exact source event association required"
+    },
+    {
+      "full": true,
+      "case": "scope",
+      "cause": "wrong subject/basis, unknown exposure or planned/actual substitution"
+    },
+    {
+      "full": true,
+      "case": "provenance",
+      "cause": "declared admitted actual fixture evidence required"
+    },
+    {
+      "full": true,
+      "case": "target",
+      "cause": "wrong subject/basis, unknown exposure or planned/actual substitution"
+    },
+    {
+      "full": true,
+      "case": "unknown_actual",
+      "cause": "wrong subject/basis, unknown exposure or planned/actual substitution"
+    },
+    {
+      "full": true,
+      "case": "contradiction",
+      "cause": "missing/contradictory/incomplete/truncated/mismatched/expired resolution"
+    },
+    {
+      "full": true,
+      "case": "retraction",
+      "cause": "missing/contradictory/incomplete/truncated/mismatched/expired resolution"
+    },
+    {
+      "full": true,
+      "case": "membership",
+      "cause": "missing/contradictory/incomplete/truncated/mismatched/expired resolution"
+    },
+    {
+      "full": true,
+      "case": "hash",
+      "cause": "immutable fixture source identity/hash missing or changed"
+    }
+  ],
+  "only_full_suite_failure": "test_owner_trajectories[legacy]",
+  "earlier_guard_vs_later_predicate_claims_separated": true,
+  "equality_timing_layer": "PU only; real PG boundary witnesses require observed database time > expiry"
+}

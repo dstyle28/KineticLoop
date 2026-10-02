@@ -1,0 +1,217 @@
+task_identity: harness-backlog-v0.2/KL-080
+display_task_id: KL-080
+task_definition_version: v0.2
+base_commit: fc8a044ffa4d15a74ce5dc59298ae411f1f4009b
+tested_commit: d6bfb285087456a1a43d6c6b856a07eee4e1746d
+merge_commit: null
+task_status: BLOCKED
+task_checks_status: FAIL
+integration_status: UNMERGED
+summary: Corrected prospective physical S13/S12 reads to ELIGIBLE/MATCHED in both deterministic preparation
+  profiles and full T6 exact freshness. Fifteen of seventeen required commands pass. The two failing commands
+  each expose the same genuine legacy mechanical T6 consumer incompatibility outside the packet runtime
+  write boundary; full composed preparation and T6/T7 pass. Task, product, release and merge PASS are
+  not claimed.
+commands_run:
+- check_id: source_matrix_pu
+  command: uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_source_matrix
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_matrix_pu.log
+- check_id: source_basis_pu
+  command: uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_basis_and_actual_separation
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_basis_pu.log
+- check_id: source_namespace_pu
+  command: uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_namespace
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_namespace_pu.log
+- check_id: source_preparation_owners_dc
+  command: uv run pytest -q tests/db/test_source_decision_conformance.py::test_preparation_owners
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_preparation_owners_dc.log
+- check_id: source_canonical_full_t6_dc
+  command: uv run pytest -q tests/db/test_source_decision_conformance.py::test_canonical_full_t6
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_canonical_full_t6_dc.log
+- check_id: source_invalid_reconstruction_dc
+  command: uv run pytest -q tests/db/test_source_decision_conformance.py::test_invalid_source_reconstruction
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_invalid_reconstruction_dc.log
+- check_id: source_freshness_predicate_support_dc
+  command: uv run pytest -q tests/db/test_source_decision_conformance.py::test_freshness_predicate_support
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_freshness_predicate_support_dc.log
+- check_id: source_owner_trajectories_dc
+  command: uv run pytest -q tests/db/test_source_decision_conformance.py::test_owner_trajectories
+  result: FAIL
+  evidence_ref: docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_owner_trajectories_dc.log
+- check_id: source_current_denials_dc
+  command: uv run pytest -q tests/db/test_source_decision_conformance.py::test_current_denials
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_current_denials_dc.log
+- check_id: source_repair_replay_expiry_dc
+  command: uv run pytest -q tests/db/test_source_decision_conformance.py::test_repair_replay_expiry
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_repair_replay_expiry_dc.log
+- check_id: source_suite_dc
+  command: uv run pytest -q tests/db/test_source_decision_conformance.py
+  result: FAIL
+  evidence_ref: docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.log
+- check_id: source_suite_pu
+  command: uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_pu.log
+- check_id: harness_validation_passes
+  command: uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/harness_validation_passes.log
+- check_id: unit_regressions_pass
+  command: uv run kl test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/unit_regressions_pass.log
+- check_id: harness_regressions_pass
+  command: uv run kl test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/harness_regressions_pass.parallel.log
+- check_id: lint_passes
+  command: uv run kl lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/lint_passes.parallel.log
+- check_id: typecheck_passes
+  command: uv run kl typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/typecheck_passes.parallel.log
+requirements_covered: []
+files_changed:
+- docs/contracts/deterministic_planning.md
+- docs/contracts/full_action_preparation.md
+- docs/contracts/full_test_execution.md
+- docs/contracts/source_decision_conformance.md
+- docs/exec-plans/completed/KL-080_RESULT.yaml
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/checks.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/execution-layout.md
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/final-checks.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/final-cleanup.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/harness_regressions_pass.parallel.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/harness_regressions_pass.parallel.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/harness_regressions_pass.parallel.xml
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/harness_validation_passes.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/legacy-scope-blocker.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/lint_passes.parallel.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/lint_passes.parallel.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/preserved-baseline.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/result-validation.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_basis_pu.collection.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_basis_pu.collection.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_basis_pu.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_basis_pu.xml
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_canonical_full_t6_dc.collection.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_canonical_full_t6_dc.collection.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_canonical_full_t6_dc.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_canonical_full_t6_dc.xml
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_current_denials_dc.collection.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_current_denials_dc.collection.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_current_denials_dc.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_current_denials_dc.xml
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_freshness_predicate_support_dc.collection.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_freshness_predicate_support_dc.collection.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_freshness_predicate_support_dc.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_freshness_predicate_support_dc.xml
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_invalid_reconstruction_dc.collection.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_invalid_reconstruction_dc.collection.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_invalid_reconstruction_dc.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_invalid_reconstruction_dc.xml
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_matrix_pu.collection.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_matrix_pu.collection.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_matrix_pu.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_matrix_pu.xml
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_namespace_pu.collection.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_namespace_pu.collection.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_namespace_pu.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_namespace_pu.xml
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_owner_trajectories_dc.collection.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_owner_trajectories_dc.collection.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_owner_trajectories_dc.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_owner_trajectories_dc.xml
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_preparation_owners_dc.collection.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_preparation_owners_dc.collection.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_preparation_owners_dc.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_preparation_owners_dc.xml
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_repair_replay_expiry_dc.collection.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_repair_replay_expiry_dc.collection.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_repair_replay_expiry_dc.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_repair_replay_expiry_dc.xml
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.collection.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.collection.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.xml
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_pu.collection.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_pu.collection.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_pu.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_pu.xml
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/typecheck_passes.parallel.json
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/typecheck_passes.parallel.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/unit_regressions_pass.log
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/unit_regressions_pass.xml
+- docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/witness-index.json
+- docs/exec-plans/evidence/KL-080/entry.json
+- src/kineticloop/persistence/deterministic_planning.py
+- src/kineticloop/persistence/transactions.py
+- src/kineticloop/workflow/deterministic_planning.py
+- tests/db/test_deterministic_planning.py
+- tests/db/test_factsets.py
+- tests/db/test_full_action_preparation.py
+- tests/db/test_full_test_execution.py
+- tests/db/test_preparation.py
+- tests/db/test_protocol_interleavings.py
+- tests/db/test_source_decision_conformance.py
+- tests/db/test_test_only_demo.py
+- tests/db/test_transaction_interfaces.py
+- tests/unit/workflow/test_deterministic_planning.py
+- tests/unit/workflow/test_full_action_preparation.py
+- tests/unit/workflow/test_source_decision_conformance.py
+decisions:
+- Keep S27 intent ADMITTED and derived S36 aggregate CONFIRMED distinct from frozen physical S13 ELIGIBLE
+  and S12 MATCHED; no aliases or migrations.
+- Use a narrowly shared internal exact freshness read helper in actual full T6 and independently labeled
+  PostgreSQL support probes; actual T6 still reconstructs owner outputs first.
+- Represent historically accepted invalid source rows via exact Git-verified protected-base deployment
+  in a separate subprocess using only current task-owned lifecycle/URLs. Its genuine owners stop at COMMIT_READY;
+  the untouched request fails corrected current reconstruction with complete zero effects.
+- Keep all actual planning and execution outputs command-owned. Seed only immutable source/support catalog
+  inputs; use canonical input/seal/projection/publication/preparation/runtime registration owners.
+- Validate actual duplicate-event positive and conflicting-quantity negative cases in both PostgreSQL
+  preparation profiles; assert exact member IDs and one deduplicated event.
+- Derive every local lifecycle and connection from the fixed source label, exact HEAD and resolved-root
+  digest, including every nested bootstrap and finally cleanup. Older DB regressions run only in unchanged
+  hosted full CI.
+- Preserve every frozen authority, current index/requirements/backlog, shared harness/CI file and historical
+  artifact. The four bounded older fixture files contain exactly six allowed source literal replacements.
+- Do not widen the legacy authorization consumer or replace the required positive oracle with expected
+  denial. Record the unresolved packet/scope contradiction as BLOCKED.
+known_limitations:
+- Positive actual legacy mechanical preparation reaches COMMIT_READY, but legacy T6 prepare_authorization_basis
+  rejects S37.ref_s34_id=N because it requires equality with D.ref_s34_id=F. Mechanical producer semantics
+  bind N.demand_feature_id=D. Static inspection also identifies a later synthetic-certificate contract
+  mismatch; that later guard was not reached. transactions.py changes outside full source checks are forbidden
+  by this packet.
+- The legacy positive owner trajectory fails once in its named selector and once in the full own suite.
+  Neither is skipped, xfailed, suppressed, or relabeled PASS. Each failure records the actual reached
+  guard and complete unchanged output/source/receipt/event/outbox/head/root/session snapshot.
+- Physical malformed values other than the historical ADMITTED+CONFIRMED representative have exhaustive
+  pure/preparation and exact predicate support coverage; support probes are not end-to-end T6 freshness
+  reach claims.
+- Canonical DB clock boundary tests wait strictly beyond expiry; exact expiry equality is covered only
+  in pure tests.
+- Hevy/HealthKit, product obligations, M3, G-SHADOW and production release status remain independent.
+  Real-data shadow and production have no task execution issuance/head/binding.
+- Hosted unchanged full PostgreSQL CI and selected-task merge gates must be assessed independently; no
+  workflow optimization or governance baseline change is included.
+follow_up_tasks:
+- Coordinator must refine the legacy positive trajectory oracle to actual legacy COMMIT_READY plus actual
+  full T6/T7, or assign/authorize a separate legacy consumer compatibility task. This task cannot become
+  PASS under its current implementation boundary.
+- Four fresh independent GENERAL, PROTOCOL, DB_CONCURRENCY and SECURITY_DATA_BOUNDARY reviews are required
+  at the committed implementation/result SHA. Only own REVIEW_RECORD_ONLY append may follow; no merge
+  is authorized.
+spec_change_request: null
