@@ -1,0 +1,93 @@
+change_identity: harness-governance-v0.1/HG-043
+display_change_id: HG-043
+base_commit: 1099d85bd4aa76ec8221700e55b4e77a84479126
+tested_commit: bd3811fb283d9cbcca9bbb1dbd8d52bb0035f3ae
+change_status: PASS
+summary: Bind ordinary integration review evidence to regular Git blobs at the reviewed SHA; bind reviewer-created
+  own-task bookkeeping to the exact review-record commit only after a strict ancestral linear exclusively
+  own-review suffix proof. Preserve result and task-test evidence guarantees, delayed review and exact-tree
+  squash semantics.
+packets_refined: []
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- docs/exec-plans/evidence/HG-043/PREPARATION.md
+- docs/exec-plans/evidence/HG-043/check.py
+- docs/exec-plans/evidence/HG-043/diff-bd3811f.json
+- docs/exec-plans/evidence/HG-043/diff-e842a53.json
+- docs/exec-plans/evidence/HG-043/harness-bd3811f.json
+- docs/exec-plans/evidence/HG-043/harness-e842a53.json
+- docs/exec-plans/evidence/HG-043/initial-replay.json
+- docs/exec-plans/evidence/HG-043/lint-bd3811f.json
+- docs/exec-plans/evidence/HG-043/lint-e842a53.json
+- docs/exec-plans/evidence/HG-043/original-HG042-preflight.json
+- docs/exec-plans/evidence/HG-043/provenance-bd3811f.json
+- docs/exec-plans/evidence/HG-043/provenance-e842a53.json
+- docs/exec-plans/evidence/HG-043/record.py
+- docs/exec-plans/evidence/HG-043/refresh.py
+- docs/exec-plans/evidence/HG-043/replay-bd3811f.json
+- docs/exec-plans/evidence/HG-043/replay-e842a53.json
+- docs/exec-plans/evidence/HG-043/replay.py
+- docs/exec-plans/evidence/HG-043/typecheck-bd3811f.json
+- docs/exec-plans/evidence/HG-043/typecheck-e842a53.json
+- docs/exec-plans/evidence/HG-043/unit-bd3811f.json
+- docs/exec-plans/evidence/HG-043/unit-e842a53.json
+- docs/exec-plans/evidence/HG-043/validation-bd3811f.json
+- docs/exec-plans/evidence/HG-043/validation-e842a53.json
+- docs/exec-plans/governance/HG-043.yaml
+- docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
+- docs/harness/THREAD_REVIEW_CONTRACT.md
+- tests/harness/test_review_evidence_provenance.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: provenance
+  command: /Users/davetian/.codex/worktrees/0f4f/KineticLoop/.venv/bin/python -m pytest -q tests/harness/test_review_evidence_provenance.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-043/provenance-bd3811f.json
+- check_id: harness
+  command: /Users/davetian/.codex/worktrees/0f4f/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-043/harness-bd3811f.json
+- check_id: unit
+  command: /Users/davetian/.codex/worktrees/0f4f/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-043/unit-bd3811f.json
+- check_id: lint
+  command: /Users/davetian/.codex/worktrees/0f4f/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-043/lint-bd3811f.json
+- check_id: typecheck
+  command: /Users/davetian/.codex/worktrees/0f4f/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-043/typecheck-bd3811f.json
+- check_id: validation
+  command: /Users/davetian/.codex/worktrees/0f4f/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-043/validation-bd3811f.json
+- check_id: replay
+  command: /Users/davetian/.codex/worktrees/0f4f/KineticLoop/.venv/bin/python /Users/davetian/.codex/worktrees/0f4f/KineticLoop/docs/exec-plans/evidence/HG-043/replay.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-043/replay-bd3811f.json
+- check_id: diff
+  command: git diff --check 1099d85bd4aa76ec8221700e55b4e77a84479126 bd3811fb283d9cbcca9bbb1dbd8d52bb0035f3ae
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-043/diff-bd3811f.json
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- Governance validator repair only. No task, product requirement, DB, release or production PASS is
+  inferred.
+- Five candidates replayed from protected Git ancestry in ephemeral fixtures; no official integration
+  records written. HG042 owns later bookkeeping.
+- Review-created logs are reviewer bookkeeping, never pre-review task acceptance evidence.
+- Delayed review with unrelated intervening commits retains ordinary reviewed evidence support but cannot
+  use the new strict suffix exception.
+- No database runtime is run locally for this validator repair; independent specialist audit and all
+  final applicable hosted PostgreSQL CI are required before ordinary merge.
+- Fresh GENERAL/PROTOCOL/DB_CONCURRENCY review binds final governance/evidence head. Only own HG043
+  review suffix follows.
