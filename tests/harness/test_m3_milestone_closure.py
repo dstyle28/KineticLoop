@@ -6,6 +6,7 @@ import importlib.util
 import json
 import os
 import subprocess
+import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -255,7 +256,7 @@ def test_named_task_witness_must_bind_result_oracle_and_regular_blob(history, fi
     assert v.m3_task_check_errors(history.root, witness, name, check, history.tasks[name], history.records[name], history.evaluated)
 
 
-@pytest.mark.parametrize('mutation', ['failed', 'zero', 'skipped', 'wrong-selector', 'wrong-command', 'stale', 'missing028', 'missing029', 'hash', 'type', 'provenance', 'duplicate-json', 'collection-type', 'float-exit', 'collection-float-exit'])
+@pytest.mark.parametrize('mutation', ['failed', 'zero', 'skipped', 'wrong-selector', 'wrong-command', 'stale', 'missing028', 'missing029', 'hash', 'type', 'provenance', 'duplicate-json', 'collection-type', 'float-exit', 'collection-float-exit', 'collection-skipped'])
 def test_integrated_regression_fails_closed(history, mutation):
     payload = copy.deepcopy(history.payload)
     records = copy.deepcopy(history.records)
@@ -283,6 +284,11 @@ def test_integrated_regression_fails_closed(history, mutation):
             collection = json.loads(original)
             collection['exit_code'] = False if mutation == 'collection-type' else 0.0
             run['collection'] = history.raw('negative-' + mutation + '.json', json.dumps(collection))
+        elif mutation == 'collection-skipped':
+            collection = json.loads(original)
+            stdout = (history.root / collection['stdout']['path']).read_text()
+            collection['stdout'] = history.raw('negative-collection-skipped.log', stdout + '1 skipped\n')
+            run['collection'] = history.raw('negative-collection-skipped.json', json.dumps(collection))
         elif mutation == 'duplicate-json':
             original = (history.root / run['collection']['path']).read_text()
             run['collection'] = history.raw('negative-duplicate.json', original[:-1] + ', "exit_code": 0}')
@@ -299,6 +305,7 @@ def test_integrated_regression_fails_closed(history, mutation):
         assert errors
         assert not any('stale-or-unintegrated-revision' in e for e in errors)
         expected_error = ('collection-binding' if mutation in ('collection-type', 'collection-float-exit') else
+                          'collection-oracle' if mutation == 'collection-skipped' else
                           'duplicate-key' if mutation == 'duplicate-json' else
                           'failed-skipped' if mutation == 'skipped' else 'wrong-selector')
         assert any(expected_error in e for e in errors)
@@ -335,6 +342,38 @@ def test_each_multiselect_suite_requires_collected_and_executed_cases(history, o
     revision = history.commit('negative hash-correct raw collection and executed suite omission')
     assert v.m3_execution_evidence_errors(history.root, payload, revision, revision,
                                           history.records) == ['milestone-m3-regression:missing-selector']
+
+
+
+@pytest.mark.parametrize('parameter_id', ['nested::id', '1 skipped', '1 error', '1 deselected'])
+def test_genuine_pytest_parameter_collection_and_junit_are_accepted(history, tmp_path, parameter_id):
+    # Generate real pytest formats independently of the validator's normalization.
+    source = tmp_path / 'tests/unit/test_parametrized_raw.py'
+    source.parent.mkdir(parents=True)
+    source.write_text('import pytest\n@pytest.mark.parametrize("value", [1], ids=[' +
+                      repr(parameter_id) + '])\ndef test_raw_format(value):\n    assert value == 1\n')
+    env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTEST_DISABLE_PLUGIN_AUTOLOAD='1')
+    env.pop('PYTEST_ADDOPTS', None)
+    def pytest_run(*args):
+        return subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider',
+                               '--rootdir', str(tmp_path), *args, 'tests/unit'],
+                              cwd=tmp_path, env=env, check=True, capture_output=True, text=True)
+    collected = pytest_run('--collect-only').stdout
+    executed = pytest_run('--junitxml', str(tmp_path / 'junit.xml')).stdout
+    nodeids = [line for line in collected.splitlines() if line.startswith('tests/unit/') and '::' in line]
+    assert len(nodeids) == 1 and parameter_id in nodeids[0]
+    payload = copy.deepcopy(history.payload)
+    run = payload['executions'][0]
+    assert run['command'] == 'uv run kl test-unit'
+    stem = 'genuine-parameter-' + str(['nested::id', '1 skipped', '1 error', '1 deselected'].index(parameter_id))
+    run['stdout'] = history.raw(stem + '.log', executed)
+    run['junit'] = history.raw(stem + '.xml', (tmp_path / 'junit.xml').read_text())
+    collection = {'command': 'uv run pytest --collect-only -q tests/unit',
+                  'tested_commit': history.tested, 'exit_code': 0, 'nodeids': nodeids,
+                  'stdout': history.raw(stem + '-collect.log', collected)}
+    run['collection'] = history.raw(stem + '-collect.json', json.dumps(collection))
+    revision = history.commit('synthetic validator input using genuine pytest parameter raw formats')
+    assert v.m3_execution_evidence_errors(history.root, payload, revision, revision, history.records) == []
 
 
 def test_legacy_m1_m2_schema_and_validator_behavior_unchanged():

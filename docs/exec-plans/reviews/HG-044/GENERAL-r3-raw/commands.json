@@ -1,0 +1,146 @@
+{
+  "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+  "protected_base_sha": "fa729ca4bcca0f2c2e7a2aa0601890d1356b8842",
+  "executions": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/private/tmp/hg044-general-r3-tests tests/harness/test_m3_milestone_closure.py -k \"each_multiselect or float or legacy_m1_m2 or existing_schema_branches or actual_closure_record or symlink_is_rejected or reader_parses_checked\"",
+      "exit_code": 0,
+      "raw": "targeted-pytest.log",
+      "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+      "raw_sha256": "d45966a0933d2c14119b2a656cfeaf654161a21a1fcafa3fd06cf7bdcf3534df"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/audit.py",
+      "exit_code": 0,
+      "raw": "audit.log",
+      "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+      "raw_sha256": "d5df1d880d88ac33a0e0f2f17d2176bd00f9f65b55c4e66dd2a084f64b4c1bae"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter_probe.py",
+      "exit_code": 0,
+      "raw": "parameter_probe.log",
+      "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+      "raw_sha256": "e6a09249a93ad3e6d4f94144c1d17584193eabf88f236a6dd62dda56c2ee8127"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/summary_probe.py",
+      "exit_code": 0,
+      "raw": "summary_probe.log",
+      "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+      "raw_sha256": "54b5ddf65ae25400df927ac67ac52396a6f7a1cabcb69eb85d8b0287c3d385c0"
+    }
+  ],
+  "retained_first_audit_attempt": {
+    "exit_code": 1,
+    "raw": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/audit-first.log",
+    "reason": "Reviewer assertion incorrectly expected only KL028 integration absent; exact tree has both KL028/KL029 absent. Corrected expected absence and reran the independent audit."
+  },
+  "files": [
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/assessment.md",
+      "sha256": "60d2bbeb8249c1559948c614a99e72ac314493c89a69581f503dff6c6556fa47",
+      "bytes": 5085
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/audit-first.log",
+      "sha256": "4190692bc41334335aa23139410900bc71c2fda412751c7770a386b078f18da2",
+      "bytes": 281
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/audit.json",
+      "sha256": "d8ab873f38e585c7fea539005ca56ec2d74cf5d9bc876a2ba8cd092c01189726",
+      "bytes": 289283
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/audit.log",
+      "sha256": "d5df1d880d88ac33a0e0f2f17d2176bd00f9f65b55c4e66dd2a084f64b4c1bae",
+      "bytes": 162
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/audit.py",
+      "sha256": "93cb6c487d1611f8cc53fa806f73faabc80e756f3ed57bff4e8d6cc5dcd705f9",
+      "bytes": 8629
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/finalize.py",
+      "sha256": "197867998106fd5142f5508c52364defa6c4d032b5288eda4a66b1b356ac751c",
+      "bytes": 8667
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter-case-collection-stdout.log",
+      "sha256": "008073fdd0cf9350f4ea2fc8b16f41798ae5c29466ef9516911526e8d5af8be5",
+      "bytes": 272838
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter-case-collection.json",
+      "sha256": "ee58c64576f2737429a251269d16cdb2750c2f214fc770c84cb93527a6b67a18",
+      "bytes": 285206
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter-case-junit.xml",
+      "sha256": "ee5b1f7a4cfc8a3723a374c95c0202ad28e74c177bdaa7b91347cfa4fd4a81fc",
+      "bytes": 303185
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter-case-stdout.log",
+      "sha256": "26b3c29aed9bf6307e19a679bd891b48bc2e423422c29fe4c0a199d26f53a761",
+      "bytes": 17
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter_probe.json",
+      "sha256": "8434467f12dddb258269f9d8bbb1755a4730ffa20942a724fcbe9de6e4b6c466",
+      "bytes": 14791
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter_probe.log",
+      "sha256": "e6a09249a93ad3e6d4f94144c1d17584193eabf88f236a6dd62dda56c2ee8127",
+      "bytes": 227
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter_probe.py",
+      "sha256": "8734178bbcc4c860ab256e7445abe4cb3be1cce3d3d3051cde9e70be2a1b3455",
+      "bytes": 3284
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/summary-case-collection.json",
+      "sha256": "5a97c46a117e8ee713423c15a1cff43437c568320bbb0fc95c7c094efab5f10d",
+      "bytes": 367
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/summary-case-collection_stdout.log",
+      "sha256": "e616568ead0e4d80e806cebc016fd33f1727ebfc4f0403d1a7aa0f9a44f66eed",
+      "bytes": 80
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/summary-case-junit.xml",
+      "sha256": "3ed4cb78a5807a43a485eb3e768bf65e9e1e521d8838bef7f731033c8dd1d331",
+      "bytes": 105
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/summary-case-stdout.log",
+      "sha256": "26b3c29aed9bf6307e19a679bd891b48bc2e423422c29fe4c0a199d26f53a761",
+      "bytes": 17
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/summary_probe.json",
+      "sha256": "2d2a716918fbc989b8ee4178587c27e94990183483893287e5a2176df13f6400",
+      "bytes": 379
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/summary_probe.log",
+      "sha256": "54b5ddf65ae25400df927ac67ac52396a6f7a1cabcb69eb85d8b0287c3d385c0",
+      "bytes": 357
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/summary_probe.py",
+      "sha256": "1bc543d9882ce629b3bfcfa167eff61c6e84731e87e489800c4deaf9a362f651",
+      "bytes": 2725
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/targeted-pytest.log",
+      "sha256": "d45966a0933d2c14119b2a656cfeaf654161a21a1fcafa3fd06cf7bdcf3534df",
+      "bytes": 126
+    }
+  ]
+}

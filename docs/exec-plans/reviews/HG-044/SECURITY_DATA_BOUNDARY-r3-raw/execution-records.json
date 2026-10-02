@@ -1,0 +1,43 @@
+{
+  "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+  "executions": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/audit.py",
+      "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+      "exit_code": 0,
+      "tool_output": "30 passed; 39 passed; diff clean; SECURITY_R3_AUDIT_PASS"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/integrations.py",
+      "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+      "exit_code": 0,
+      "tool_output": "ACTUAL_INTEGRATION_PROVENANCE_PASS 32"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/parameter_probe.py",
+      "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+      "exit_code": 0,
+      "tool_output": "REPRODUCED_PARAMETER_FALSE_REJECTIONS 1107 25 3"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/private/tmp/hg044-security-r3-shadow --junitxml=docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/shadow-pure.xml tests/unit/protocol/test_shadow_isolation.py",
+      "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+      "exit_code": 0,
+      "tool_output": "2 passed in 4.11s",
+      "junit_ref": "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/shadow-pure.xml",
+      "junit_sha256": "8d0bf2ab6f550b3aaad2c3ccc29c94841783bb8f8013abc1ae9d55d935d7e61c"
+    }
+  ],
+  "reviewer_script_diagnostics": [
+    {
+      "command": "audit.py initial attempt",
+      "exit_code": 1,
+      "reason": "Reviewer script assumed scope uses raw capture schema; corrected to verify its static scope report."
+    },
+    {
+      "command": "integrations.py initial attempt",
+      "exit_code": 1,
+      "reason": "Reviewer script asserted all integration records present; KL029 absence is intended no-closure limitation. Corrected to preserve actual M3 NOT_READY and verify only available records."
+    }
+  ]
+}

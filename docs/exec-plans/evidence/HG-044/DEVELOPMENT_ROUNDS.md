@@ -20,3 +20,8 @@ final acceptance because master advanced to fa729ca with the KL029 merge while
 reviews of 080f25c were starting. Those reviews were interrupted; partial r2 raw
 files carry no final PASS authority. Fresh checks and four fresh reviews must
 bind the refreshed protected base and committed result.
+
+The 0af3580 checks passed, but independent review at19dc5a4 found valid real
+pytest parameter IDs falsely rejected by JUnit matching and collection summary
+classification. That round is superseded; the fixes and genuine pytest-format
+tests require a new committed check round and fresh independent reviews.

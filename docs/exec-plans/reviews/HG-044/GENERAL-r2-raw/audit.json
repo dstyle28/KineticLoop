@@ -1,0 +1,771 @@
+{
+  "base": "9268fc8dd8c071c02dc5c698274dbf6fcd112776",
+  "reviewed_head": "080f25cf99eebc81701483bb801c5f2860dbd77f",
+  "tested_commit": "4302c0649c9255ac60be87d90853ee0620e9f019",
+  "diff_paths": [
+    "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    "HARNESS_DOCUMENT_MANIFEST.json",
+    "MILESTONE_CLOSURE.schema.json",
+    "docs/exec-plans/evidence/HG-044/AUTHORITY_CONFIRMATION.md",
+    "docs/exec-plans/evidence/HG-044/DEVELOPMENT_ROUNDS.md",
+    "docs/exec-plans/evidence/HG-044/PREPARATION.md",
+    "docs/exec-plans/evidence/HG-044/audit.py",
+    "docs/exec-plans/evidence/HG-044/capture-integrity-4302c06.json",
+    "docs/exec-plans/evidence/HG-044/capture-integrity-e748b37.json",
+    "docs/exec-plans/evidence/HG-044/check.py",
+    "docs/exec-plans/evidence/HG-044/diff-0874228.json",
+    "docs/exec-plans/evidence/HG-044/diff-26a9a39.json",
+    "docs/exec-plans/evidence/HG-044/diff-4302c06.json",
+    "docs/exec-plans/evidence/HG-044/diff-4a9b4c6.json",
+    "docs/exec-plans/evidence/HG-044/diff-53d94e4.json",
+    "docs/exec-plans/evidence/HG-044/diff-dccac06.json",
+    "docs/exec-plans/evidence/HG-044/diff-e748b37.json",
+    "docs/exec-plans/evidence/HG-044/focused-0874228.json",
+    "docs/exec-plans/evidence/HG-044/focused-26a9a39.json",
+    "docs/exec-plans/evidence/HG-044/focused-4302c06.json",
+    "docs/exec-plans/evidence/HG-044/focused-4a9b4c6.json",
+    "docs/exec-plans/evidence/HG-044/focused-53d94e4.json",
+    "docs/exec-plans/evidence/HG-044/focused-dccac06.json",
+    "docs/exec-plans/evidence/HG-044/focused-e748b37.json",
+    "docs/exec-plans/evidence/HG-044/harness-0874228.json",
+    "docs/exec-plans/evidence/HG-044/harness-26a9a39.json",
+    "docs/exec-plans/evidence/HG-044/harness-4302c06.json",
+    "docs/exec-plans/evidence/HG-044/harness-4a9b4c6.json",
+    "docs/exec-plans/evidence/HG-044/harness-53d94e4.json",
+    "docs/exec-plans/evidence/HG-044/harness-dccac06.json",
+    "docs/exec-plans/evidence/HG-044/harness-e748b37.json",
+    "docs/exec-plans/evidence/HG-044/implement.py",
+    "docs/exec-plans/evidence/HG-044/lint-0874228.json",
+    "docs/exec-plans/evidence/HG-044/lint-26a9a39.json",
+    "docs/exec-plans/evidence/HG-044/lint-4302c06.json",
+    "docs/exec-plans/evidence/HG-044/lint-4a9b4c6.json",
+    "docs/exec-plans/evidence/HG-044/lint-53d94e4.json",
+    "docs/exec-plans/evidence/HG-044/lint-dccac06.json",
+    "docs/exec-plans/evidence/HG-044/lint-e748b37.json",
+    "docs/exec-plans/evidence/HG-044/preflight.json",
+    "docs/exec-plans/evidence/HG-044/preflight.py",
+    "docs/exec-plans/evidence/HG-044/record.py",
+    "docs/exec-plans/evidence/HG-044/refresh.py",
+    "docs/exec-plans/evidence/HG-044/scope-0874228.json",
+    "docs/exec-plans/evidence/HG-044/scope-26a9a39.json",
+    "docs/exec-plans/evidence/HG-044/scope-4302c06.json",
+    "docs/exec-plans/evidence/HG-044/scope-4a9b4c6.json",
+    "docs/exec-plans/evidence/HG-044/scope-53d94e4.json",
+    "docs/exec-plans/evidence/HG-044/scope-dccac06.json",
+    "docs/exec-plans/evidence/HG-044/scope-e748b37.json",
+    "docs/exec-plans/evidence/HG-044/typecheck-0874228.json",
+    "docs/exec-plans/evidence/HG-044/typecheck-26a9a39.json",
+    "docs/exec-plans/evidence/HG-044/typecheck-4302c06.json",
+    "docs/exec-plans/evidence/HG-044/typecheck-4a9b4c6.json",
+    "docs/exec-plans/evidence/HG-044/typecheck-53d94e4.json",
+    "docs/exec-plans/evidence/HG-044/typecheck-dccac06.json",
+    "docs/exec-plans/evidence/HG-044/typecheck-e748b37.json",
+    "docs/exec-plans/evidence/HG-044/unit-0874228.json",
+    "docs/exec-plans/evidence/HG-044/unit-26a9a39.json",
+    "docs/exec-plans/evidence/HG-044/unit-4302c06.json",
+    "docs/exec-plans/evidence/HG-044/unit-4a9b4c6.json",
+    "docs/exec-plans/evidence/HG-044/unit-53d94e4.json",
+    "docs/exec-plans/evidence/HG-044/unit-dccac06.json",
+    "docs/exec-plans/evidence/HG-044/unit-e748b37.json",
+    "docs/exec-plans/evidence/HG-044/validation-0874228.json",
+    "docs/exec-plans/evidence/HG-044/validation-26a9a39.json",
+    "docs/exec-plans/evidence/HG-044/validation-4302c06.json",
+    "docs/exec-plans/evidence/HG-044/validation-4a9b4c6.json",
+    "docs/exec-plans/evidence/HG-044/validation-53d94e4.json",
+    "docs/exec-plans/evidence/HG-044/validation-dccac06.json",
+    "docs/exec-plans/evidence/HG-044/validation-e748b37.json",
+    "docs/exec-plans/evidence/HG-044/verify_captures.py",
+    "docs/exec-plans/governance/HG-044.yaml",
+    "docs/exec-plans/reviews/HG-044/DB_CONCURRENCY-raw/assessment.md",
+    "docs/exec-plans/reviews/HG-044/DB_CONCURRENCY-raw/audit.json",
+    "docs/exec-plans/reviews/HG-044/DB_CONCURRENCY-raw/audit.py",
+    "docs/exec-plans/reviews/HG-044/DB_CONCURRENCY.json",
+    "docs/exec-plans/reviews/HG-044/GENERAL-raw/assessment.md",
+    "docs/exec-plans/reviews/HG-044/GENERAL-raw/audit.json",
+    "docs/exec-plans/reviews/HG-044/GENERAL-raw/audit.py",
+    "docs/exec-plans/reviews/HG-044/GENERAL-raw/captures.json",
+    "docs/exec-plans/reviews/HG-044/GENERAL-raw/finalize.py",
+    "docs/exec-plans/reviews/HG-044/GENERAL-raw/focused.log",
+    "docs/exec-plans/reviews/HG-044/GENERAL-raw/hg043-provenance.log",
+    "docs/exec-plans/reviews/HG-044/GENERAL-raw/probe.json",
+    "docs/exec-plans/reviews/HG-044/GENERAL-raw/probe.py",
+    "docs/exec-plans/reviews/HG-044/GENERAL.json",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-raw/assessment.md",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-raw/audit.json",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-raw/audit.py",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-raw/omitted-selector-reproduction.json",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-raw/reproduce_omitted_selector.py",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-raw/targeted-pytest.log",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL.json",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/check-contracts.json",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/hg043-pytest.log",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/integrity.json",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/positive-full-chain.log",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/reproduce.json",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/reproduce.py",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/review-verification.json",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/targeted-pytest.log",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY.json",
+    "docs/exec-plans/reviews/HG-044/rounds/351f0ed/DB_CONCURRENCY.json",
+    "docs/exec-plans/reviews/HG-044/rounds/351f0ed/GENERAL.json",
+    "docs/exec-plans/reviews/HG-044/rounds/351f0ed/PROTOCOL.json",
+    "docs/exec-plans/reviews/HG-044/rounds/351f0ed/SECURITY_DATA_BOUNDARY.json",
+    "docs/harness/M3_CLOSURE_CONTRACT.md",
+    "tests/harness/test_m3_milestone_closure.py",
+    "tools/harness/validate_harness.py"
+  ],
+  "tested_suffix_paths": [
+    "docs/exec-plans/evidence/HG-044/capture-integrity-4302c06.json",
+    "docs/exec-plans/evidence/HG-044/diff-4302c06.json",
+    "docs/exec-plans/evidence/HG-044/focused-4302c06.json",
+    "docs/exec-plans/evidence/HG-044/harness-4302c06.json",
+    "docs/exec-plans/evidence/HG-044/lint-4302c06.json",
+    "docs/exec-plans/evidence/HG-044/scope-4302c06.json",
+    "docs/exec-plans/evidence/HG-044/typecheck-4302c06.json",
+    "docs/exec-plans/evidence/HG-044/unit-4302c06.json",
+    "docs/exec-plans/evidence/HG-044/validation-4302c06.json",
+    "docs/exec-plans/governance/HG-044.yaml"
+  ],
+  "existing_function_changes": [
+    "governance_allowed_patterns",
+    "validate"
+  ],
+  "preserved_function_hashes": {
+    "milestone_closure_errors": "76f20a6a2230d2e854bcca0d8ffdc60bdb88c301edf1ca7ff061e819426eb6ee",
+    "m2_milestone_closure_errors": "32e38dc2eb5b717b65885901400bab6e30d8c1a207bd4d055163f46bffbedcf5",
+    "m2_execution_evidence_errors": "909a9304dc03c6faa60e870fdb3d0919ac7b1c7f0e84933bd3d773a6f459e605",
+    "integration_record_errors": "9f0bab858a127dc7fde803947ac85c206e38d36064e1eba04968bc37bdaa80f0",
+    "review_evidence_exists": "295f5826e50c360eb9dc3b9838d2b861fc7e9d20728823428a1615d4a5ca04dc",
+    "semantic_result_errors": "a9c96b6e1407e2dc4dd08dca2cc3e18b98373f24084a9a1db1ca97c6cb88cc41"
+  },
+  "authority_counts": {
+    "index": 27,
+    "manifest": 161
+  },
+  "raw_captures": [
+    {
+      "path": "docs/exec-plans/evidence/HG-044/diff-0874228.json",
+      "sha256": "749cab0b406b5a7bd97e5cfbdae85f2fd6c5f0e5ef531ffb67717d0fd38a3ef4",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tested_commit": "087422875d6b1c39e9e54a2c38f8c3c28b479c76"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/diff-26a9a39.json",
+      "sha256": "83d4607a71a336be381c4214711e5ff118812eb74762640d4cc5a262e5d4b7bf",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tested_commit": "26a9a39c96bfc379ab436c33b3a0dbd0bdab1100"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/diff-4302c06.json",
+      "sha256": "9dddc174d9c16aa5356b76ecbf6d8a31c41ecec395a48796c4909fd94a8ffd9f",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tested_commit": "4302c0649c9255ac60be87d90853ee0620e9f019"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/diff-4a9b4c6.json",
+      "sha256": "ef6de8f475464660ff40747de66e27c7c2f44904ae2024ba6f8cc631d5cd9262",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tested_commit": "4a9b4c6f48c385b24efc1761a3345725463537e1"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/diff-53d94e4.json",
+      "sha256": "411705f64737103857aeb46a82770348db5f4f6dcdf91113880c6afdf88c2281",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tested_commit": "53d94e481ea6676e2d9562e55c9372566334d010"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/diff-dccac06.json",
+      "sha256": "6d1e392aec56f271a88b32bc8b8ebe15d1151dc473660f08c03483bba3004c04",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tested_commit": "dccac06d109ee23d954816823274212b13a75f65"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/diff-e748b37.json",
+      "sha256": "bdadff84fdb2a5227a3913eff80a2c42ab0d310d5ca645148e927ae7b5544817",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tested_commit": "e748b37ec92e119190afad87478b7ecb951e5b5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/focused-0874228.json",
+      "sha256": "fe1b90b80880ed22997650eab52d7c6a83c3acf7e402a13d1e1275bbf93944e1",
+      "raw_sha256": "abba96834814a435d055ecd603412530946363b4248eb8198259f2d7fb647607",
+      "tested_commit": "087422875d6b1c39e9e54a2c38f8c3c28b479c76"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/focused-26a9a39.json",
+      "sha256": "d1751de53a0e948ba50ae89aabc95c7919bc398882c839359964861c8de8e75c",
+      "raw_sha256": "321d75e5e05ffa85df3336836971e78c2e6cfc002b8f9166ce9747a63337ceb9",
+      "tested_commit": "26a9a39c96bfc379ab436c33b3a0dbd0bdab1100"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/focused-4302c06.json",
+      "sha256": "2dc376268e9914ff5804cde8a7e4a57be7c6f3fb221f61aa6773759d104bc9b8",
+      "raw_sha256": "67c48ea8327c5d70741d88cc869302e137f5394585e4406a1303fa526939181a",
+      "tested_commit": "4302c0649c9255ac60be87d90853ee0620e9f019"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/focused-4a9b4c6.json",
+      "sha256": "ebe33454ccc8a628a10a21d7e1d643493064a2b93bea884a78a493534a4f556a",
+      "raw_sha256": "f70b3e5fdcf02e16a473f71dcf9569af6bc7534aafbeecad3a0c9dc56227199f",
+      "tested_commit": "4a9b4c6f48c385b24efc1761a3345725463537e1"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/focused-53d94e4.json",
+      "sha256": "33e885b52210a7eb7d5608ca4b429a9e00cc65242298dd4952e85e6ec7cdf01e",
+      "raw_sha256": "3dc9878341fbd7ddcc4fea6f687212cdfad167eafe9fff75f3a3e1eff86bd94f",
+      "tested_commit": "53d94e481ea6676e2d9562e55c9372566334d010"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/focused-dccac06.json",
+      "sha256": "05ec338d25016ef8f5746dbdb96c5c705d57f7a278727bf1df0db3b6a81b76ce",
+      "raw_sha256": "4893dd5b97c6225de2ae1367a97a0e25354960c00c83db499e668b741f1e2509",
+      "tested_commit": "dccac06d109ee23d954816823274212b13a75f65"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/focused-e748b37.json",
+      "sha256": "7e176ecace1a16befdbfbf3d2b96548f81dcd7b65ce26c7b1cc80aaa0345a38c",
+      "raw_sha256": "d6892be37e41803b9c165cd98bd9d2b731c821b82e5f4e1f4937d7be6df847ac",
+      "tested_commit": "e748b37ec92e119190afad87478b7ecb951e5b5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/harness-0874228.json",
+      "sha256": "dd94e497428c14b8ced5218b55d81e2644077bcb395de66abc5312f51eda2022",
+      "raw_sha256": "88c0f35c5cebad7026a11e9322ec80f478b732364862ce8c0493774bcf6e0341",
+      "tested_commit": "087422875d6b1c39e9e54a2c38f8c3c28b479c76"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/harness-26a9a39.json",
+      "sha256": "50afea9d78043b09d984cfed16f3aad214e2c525507be0cb73d3e4d131eba9cb",
+      "raw_sha256": "aea4b91ee672005b90b9d3eb6f666dd2195f2d74013e0cb1f9e947d6cca7cc65",
+      "tested_commit": "26a9a39c96bfc379ab436c33b3a0dbd0bdab1100"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/harness-4302c06.json",
+      "sha256": "3d7a447161a57d0499ab56755209554d778329d01465f9336762f09175c75a25",
+      "raw_sha256": "56598f520ec3b56b9580892a4366b4f1f9b67143ca094e2c7787fcf917789f38",
+      "tested_commit": "4302c0649c9255ac60be87d90853ee0620e9f019"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/harness-4a9b4c6.json",
+      "sha256": "dd610d9e6d28fe0a33bc886bc151e41f100d43b0483425fec55bd17d75ee4fac",
+      "raw_sha256": "3d1d20f1c902ba57c04b37386009c6aff693bac68676f80b803963388aa83ef1",
+      "tested_commit": "4a9b4c6f48c385b24efc1761a3345725463537e1"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/harness-53d94e4.json",
+      "sha256": "c03465ee28487bb9ecf59cc64fdb71ca7fd54416c1bcaa370b3fcd686b01fba7",
+      "raw_sha256": "12e377034cbe297cfdb7929c8c2f4adfc3cd82e8030b7652da58398443a35375",
+      "tested_commit": "53d94e481ea6676e2d9562e55c9372566334d010"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/harness-dccac06.json",
+      "sha256": "358d6a20880dbe4ec8dcc54761ec125b7b0494f0931dad7a70dedc80d897218c",
+      "raw_sha256": "df79ac00bce9d770487b6ea5f868626828a4822bd94e6ec0de04f0a50cf1c30a",
+      "tested_commit": "dccac06d109ee23d954816823274212b13a75f65"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/harness-e748b37.json",
+      "sha256": "428b29980629b1d32f9a4997f30b0cf7fd512a26c3f8866e881274144305fb99",
+      "raw_sha256": "20049c3c1ea2d3512ce1f8fd2af00e98c1a108fad725beb6434998e06dd531bd",
+      "tested_commit": "e748b37ec92e119190afad87478b7ecb951e5b5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/lint-0874228.json",
+      "sha256": "213658e5c485912ed957d2e9a15bf938e7dced96651f3d4ad8c07a53dd3cbcfa",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "tested_commit": "087422875d6b1c39e9e54a2c38f8c3c28b479c76"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/lint-26a9a39.json",
+      "sha256": "aa4a8d5407b6eb0a3ea4e3738311d6812ae9e79dc25e65417ac58468120c8118",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "tested_commit": "26a9a39c96bfc379ab436c33b3a0dbd0bdab1100"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/lint-4302c06.json",
+      "sha256": "004e0381b7125bd14545627226d438181e5a082676abf047048cebe261c7aacf",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "tested_commit": "4302c0649c9255ac60be87d90853ee0620e9f019"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/lint-4a9b4c6.json",
+      "sha256": "4889c235d6988832dae42f2dc9999787fcc78478a57495724c2aa714b4eb84b4",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "tested_commit": "4a9b4c6f48c385b24efc1761a3345725463537e1"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/lint-53d94e4.json",
+      "sha256": "270fc918382e05b17fb90708759d4e306f1a9c89ccf571e098acba6962612d56",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "tested_commit": "53d94e481ea6676e2d9562e55c9372566334d010"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/lint-dccac06.json",
+      "sha256": "a12d462fe9d4f10ffafa6ad0e9c726066b3c6b69d601e258572069eb98b91e68",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "tested_commit": "dccac06d109ee23d954816823274212b13a75f65"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/lint-e748b37.json",
+      "sha256": "c4398b2bc0ce6db86075ac6b263d9d005c406496990ea669bb1c37e60aead880",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "tested_commit": "e748b37ec92e119190afad87478b7ecb951e5b5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/typecheck-0874228.json",
+      "sha256": "33c89ac0a7a0d88d333fb6f8e7c052218fa4f0aa611388f5e0bd6485190aedf0",
+      "raw_sha256": "e0882189711bb25ec70ba990a19f0fd4a9bc195cd7cd2484ec95ec37251d583c",
+      "tested_commit": "087422875d6b1c39e9e54a2c38f8c3c28b479c76"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/typecheck-26a9a39.json",
+      "sha256": "888bda4967d4e7f909c7af13db4f771aa5125e162e2a354a1570cecb83044311",
+      "raw_sha256": "e0882189711bb25ec70ba990a19f0fd4a9bc195cd7cd2484ec95ec37251d583c",
+      "tested_commit": "26a9a39c96bfc379ab436c33b3a0dbd0bdab1100"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/typecheck-4302c06.json",
+      "sha256": "ff085eaf467fb950840b4e555d25d8595c64ff521aa222f0832d35412b39514c",
+      "raw_sha256": "e0882189711bb25ec70ba990a19f0fd4a9bc195cd7cd2484ec95ec37251d583c",
+      "tested_commit": "4302c0649c9255ac60be87d90853ee0620e9f019"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/typecheck-4a9b4c6.json",
+      "sha256": "b9cdeb50335cda428b4e3f8b0cfeafe1721ca86829feb09dc6ff3593f75fe737",
+      "raw_sha256": "e0882189711bb25ec70ba990a19f0fd4a9bc195cd7cd2484ec95ec37251d583c",
+      "tested_commit": "4a9b4c6f48c385b24efc1761a3345725463537e1"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/typecheck-53d94e4.json",
+      "sha256": "7648a419c38c721e76e83e04c3c3cd1e5bbcc940e03215b197918750cf56e56c",
+      "raw_sha256": "e0882189711bb25ec70ba990a19f0fd4a9bc195cd7cd2484ec95ec37251d583c",
+      "tested_commit": "53d94e481ea6676e2d9562e55c9372566334d010"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/typecheck-dccac06.json",
+      "sha256": "0806e6f74d8403fdd4a55e47a003152cbec9441d9f21710f721d3d0fa340ddb2",
+      "raw_sha256": "e0882189711bb25ec70ba990a19f0fd4a9bc195cd7cd2484ec95ec37251d583c",
+      "tested_commit": "dccac06d109ee23d954816823274212b13a75f65"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/typecheck-e748b37.json",
+      "sha256": "694df850867a0a5f0fa724510f2c25ed3a9ff51dbe39b9afb4b619e6ec81f20a",
+      "raw_sha256": "e0882189711bb25ec70ba990a19f0fd4a9bc195cd7cd2484ec95ec37251d583c",
+      "tested_commit": "e748b37ec92e119190afad87478b7ecb951e5b5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/unit-0874228.json",
+      "sha256": "67ff4d237313213920636ee6cb2a75891da277fd26de82fabacbcd58448c3c64",
+      "raw_sha256": "d9b96dcfc139f3b3963cacbd3730ed6594f4cf1382ae365b030fe78015c431d7",
+      "tested_commit": "087422875d6b1c39e9e54a2c38f8c3c28b479c76"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/unit-26a9a39.json",
+      "sha256": "cec1b5a6b4de390295dd1247e853681726b58fd1b1acbc0cf83f9dfe642fee3d",
+      "raw_sha256": "8c6c09bf644b8e8e052ddacdce8742639a86344b28977badf8cc12782f83cef4",
+      "tested_commit": "26a9a39c96bfc379ab436c33b3a0dbd0bdab1100"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/unit-4302c06.json",
+      "sha256": "a802db8b6dfd2d6fddc354657bbbad30ac02ac66e8e8f3c46e9bbb6643ccb85d",
+      "raw_sha256": "830c91578d1290fdcf6be62de8a91654e3faa06401ae08072d13019cfefe4a1b",
+      "tested_commit": "4302c0649c9255ac60be87d90853ee0620e9f019"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/unit-4a9b4c6.json",
+      "sha256": "78a4bfee35a2dc4ae524b5b9b247e4423fc0318782c1b42c583493c816a66668",
+      "raw_sha256": "6ee4d14a46cf0df3b5c502dd2c85688ef903b06a3082dfe26fc1cd462aaf033e",
+      "tested_commit": "4a9b4c6f48c385b24efc1761a3345725463537e1"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/unit-53d94e4.json",
+      "sha256": "00c76b493b937c2ba98fa82e1d4c043e2052e551f4e75656ff91baf832e3e429",
+      "raw_sha256": "fdac2a6aa02b84e627395eead0f60fe45e9b820d74a538d3e7749325fd0437d9",
+      "tested_commit": "53d94e481ea6676e2d9562e55c9372566334d010"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/unit-dccac06.json",
+      "sha256": "ab6dd2ffd93aa0e6d1aead49107c40695497d3f693abc9a90201d05f0db25dd7",
+      "raw_sha256": "fd1a06732b33e76f98f09cfcd6b289276e38d39f7b06383bfc93550881cb7f7f",
+      "tested_commit": "dccac06d109ee23d954816823274212b13a75f65"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/unit-e748b37.json",
+      "sha256": "7250d4cb3f4ac426544d9818c7402fa836a9da4bb78e989f81de9cfbf2dbd6d0",
+      "raw_sha256": "032ccd1371793ab8b7b0250dc016c5f3741ced0b2ba035e6548d78b259ff3944",
+      "tested_commit": "e748b37ec92e119190afad87478b7ecb951e5b5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/validation-0874228.json",
+      "sha256": "a53bed47fa9db02db1ea5d8881f4c836249d03a8e711bd3117adcc43399f6bc6",
+      "raw_sha256": "e2a8f969d7dc25b39c3a77ad08482321186f25f23d24fce083dcd69d4740d1dc",
+      "tested_commit": "087422875d6b1c39e9e54a2c38f8c3c28b479c76"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/validation-26a9a39.json",
+      "sha256": "a75ca3d221f4b966705a918ff1fb9963049479c367495ec93b4e8a1842f2437d",
+      "raw_sha256": "e2a8f969d7dc25b39c3a77ad08482321186f25f23d24fce083dcd69d4740d1dc",
+      "tested_commit": "26a9a39c96bfc379ab436c33b3a0dbd0bdab1100"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/validation-4302c06.json",
+      "sha256": "fd3a6c398d9e3a062d831ccc43df5bdce98086fba6c6527c99e80f0b0de878ee",
+      "raw_sha256": "e2a8f969d7dc25b39c3a77ad08482321186f25f23d24fce083dcd69d4740d1dc",
+      "tested_commit": "4302c0649c9255ac60be87d90853ee0620e9f019"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/validation-4a9b4c6.json",
+      "sha256": "3a3d62ad4c6538cfb5994f25d9816f1c1ccc89554e5f584c0dc64d094e6832c5",
+      "raw_sha256": "e2a8f969d7dc25b39c3a77ad08482321186f25f23d24fce083dcd69d4740d1dc",
+      "tested_commit": "4a9b4c6f48c385b24efc1761a3345725463537e1"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/validation-53d94e4.json",
+      "sha256": "02d389e8dcf11c9291971ba60513dc6a3856d622a12f96149192e6d42ffa476b",
+      "raw_sha256": "e2a8f969d7dc25b39c3a77ad08482321186f25f23d24fce083dcd69d4740d1dc",
+      "tested_commit": "53d94e481ea6676e2d9562e55c9372566334d010"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/validation-dccac06.json",
+      "sha256": "52266965e03acb575de0948db13c68483d1dc58c9840827e2a6af450985d9bed",
+      "raw_sha256": "e2a8f969d7dc25b39c3a77ad08482321186f25f23d24fce083dcd69d4740d1dc",
+      "tested_commit": "dccac06d109ee23d954816823274212b13a75f65"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/validation-e748b37.json",
+      "sha256": "74d9994c901ff95795f59d35a3b9eff1b98a65ae6f0c0b2ba927fef258995033",
+      "raw_sha256": "e2a8f969d7dc25b39c3a77ad08482321186f25f23d24fce083dcd69d4740d1dc",
+      "tested_commit": "e748b37ec92e119190afad87478b7ecb951e5b5d"
+    }
+  ],
+  "selected_checks": [
+    {
+      "check_id": "focused",
+      "path": "docs/exec-plans/evidence/HG-044/focused-4302c06.json",
+      "raw_utf8": "........................................................................ [ 86%]\n...........                                                              [100%]\n83 passed in 542.82s (0:09:02)\n",
+      "sha256": "2dc376268e9914ff5804cde8a7e4a57be7c6f3fb221f61aa6773759d104bc9b8"
+    },
+    {
+      "check_id": "scope",
+      "path": "docs/exec-plans/evidence/HG-044/scope-4302c06.json",
+      "raw_utf8": null,
+      "sha256": "eed99c32f8c941019e44e781f12852c96d6e732cf7042c4a75179b93e33b8a56"
+    },
+    {
+      "check_id": "harness",
+      "path": "docs/exec-plans/evidence/HG-044/harness-4302c06.json",
+      "raw_utf8": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0\nrootdir: /Users/davetian/.codex/worktrees/8578/KineticLoop\nconfigfile: pyproject.toml\ncollected 873 items\n\ntests/harness/acceptance/test_registry.py .....                          [  0%]\ntests/harness/document_index/test_current_document_index.py .......      [  1%]\ntests/harness/document_index/test_evidence_manifest.py .......           [  2%]\ntests/harness/document_index/test_historical_task_map.py ......          [  2%]\ntests/harness/test_call_ledger_scope.py .........................        [  5%]\ntests/harness/test_cancel_identity_scope.py ............................ [  8%]\n.............................                                            [ 12%]\ntests/harness/test_fitness_evaluation_scope.py ......................... [ 15%]\n.......................................                                  [ 19%]\ntests/harness/test_full_action_scope.py ................................ [ 23%]\n..                                                                       [ 23%]\ntests/harness/test_m3_boundary_shadow_scope.py ......................... [ 26%]\n..................................................                       [ 32%]\ntests/harness/test_m3_milestone_closure.py ............................. [ 35%]\n......................................................                   [ 41%]\ntests/harness/test_m3_next_wave_scope.py ............................... [ 45%]\n........................................................................ [ 53%]\n..............                                                           [ 54%]\ntests/harness/test_planning_fixture_scope.py ............                [ 56%]\ntests/harness/test_planning_subject_scope.py ........................    [ 59%]\ntests/harness/test_preparation_scope.py ............................     [ 62%]\ntests/harness/test_protocol_execution_scope.py ......................... [ 65%]\n.....................                                                    [ 67%]\ntests/harness/test_readiness_scope.py .................................. [ 71%]\n...............................                                          [ 75%]\ntests/harness/test_review_evidence_provenance.py ....................... [ 77%]\n................                                                         [ 79%]\ntests/harness/test_validator.py ........................................ [ 84%]\n........................................................................ [ 92%]\n..............................                                           [ 95%]\ntests/harness/test_wave_scope.py .....................................   [100%]\n\n======================= 873 passed in 845.49s (0:14:05) ========================\n",
+      "sha256": "3d7a447161a57d0499ab56755209554d778329d01465f9336762f09175c75a25"
+    },
+    {
+      "check_id": "unit",
+      "path": "docs/exec-plans/evidence/HG-044/unit-4302c06.json",
+      "raw_utf8": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0\nrootdir: /Users/davetian/.codex/worktrees/8578/KineticLoop\nconfigfile: pyproject.toml\ncollected 232 items\n\ntests/unit/config/test_secret_loader.py .                                [  0%]\ntests/unit/contracts/test_artifact_registry.py ...                       [  1%]\ntests/unit/contracts/test_commands.py ..............                     [  7%]\ntests/unit/contracts/test_errors.py .                                    [  8%]\ntests/unit/contracts/test_receipts.py ........................           [ 18%]\ntests/unit/contracts/test_results.py .....                               [ 20%]\ntests/unit/contracts/test_safety_registry.py ..                          [ 21%]\ntests/unit/contracts/test_shadow.py ...                                  [ 22%]\ntests/unit/identity/test_roles.py .............                          [ 28%]\ntests/unit/integrations/test_launch_registry.py ........                 [ 31%]\ntests/unit/integrations/test_provider.py ...........                     [ 36%]\ntests/unit/persistence/test_fact_children.py ...                         [ 37%]\ntests/unit/persistence/test_immutability.py ....                         [ 39%]\ntests/unit/persistence/test_preparation.py ...                           [ 40%]\ntests/unit/persistence/test_schema_topology.py .......                   [ 43%]\ntests/unit/persistence/test_transactions.py ...                          [ 45%]\ntests/unit/primitives/test_canonical.py ...........                      [ 50%]\ntests/unit/primitives/test_hashes.py ........                            [ 53%]\ntests/unit/primitives/test_ids.py .........                              [ 57%]\ntests/unit/primitives/test_times.py .......................              [ 67%]\ntests/unit/protocol/test_authorization.py ...                            [ 68%]\ntests/unit/protocol/test_execution.py ..                                 [ 69%]\ntests/unit/protocol/test_factsets.py .....                               [ 71%]\ntests/unit/protocol/test_full_test_execution.py ....                     [ 73%]\ntests/unit/protocol/test_interleaving_namespace.py ...                   [ 74%]\ntests/unit/protocol/test_test_only_demo.py ..                            [ 75%]\ntests/unit/security/test_redaction.py .................................. [ 90%]\n...                                                                      [ 91%]\ntests/unit/security/test_synthetic_fixtures.py .                         [ 91%]\ntests/unit/test_cli.py ...                                               [ 93%]\ntests/unit/workflow/test_call_ledger.py ...                              [ 94%]\ntests/unit/workflow/test_deterministic_planning.py ....                  [ 96%]\ntests/unit/workflow/test_full_action_preparation.py ...                  [ 97%]\ntests/unit/workflow/test_planning.py ..                                  [ 98%]\ntests/unit/workflow/test_planning_progress.py ....                       [100%]\n\n======================= 232 passed in 173.88s (0:02:53) ========================\n",
+      "sha256": "a802db8b6dfd2d6fddc354657bbbad30ac02ac66e8e8f3c46e9bbb6643ccb85d"
+    },
+    {
+      "check_id": "lint",
+      "path": "docs/exec-plans/evidence/HG-044/lint-4302c06.json",
+      "raw_utf8": "All checks passed!\n",
+      "sha256": "004e0381b7125bd14545627226d438181e5a082676abf047048cebe261c7aacf"
+    },
+    {
+      "check_id": "typecheck",
+      "path": "docs/exec-plans/evidence/HG-044/typecheck-4302c06.json",
+      "raw_utf8": "Success: no issues found in 149 source files\n",
+      "sha256": "ff085eaf467fb950840b4e555d25d8595c64ff521aa222f0832d35412b39514c"
+    },
+    {
+      "check_id": "validation",
+      "path": "docs/exec-plans/evidence/HG-044/validation-4302c06.json",
+      "raw_utf8": "HARNESS_CHECK_PASS tasks=76 active=73\n",
+      "sha256": "fd3a6c398d9e3a062d831ccc43df5bdce98086fba6c6527c99e80f0b0de878ee"
+    },
+    {
+      "check_id": "diff",
+      "path": "docs/exec-plans/evidence/HG-044/diff-4302c06.json",
+      "raw_utf8": "",
+      "sha256": "9dddc174d9c16aa5356b76ecbf6d8a31c41ecec395a48796c4909fd94a8ffd9f"
+    }
+  ],
+  "mapping": {
+    "tasks": [
+      "KL-019",
+      "KL-020",
+      "KL-021",
+      "KL-022",
+      "KL-023",
+      "KL-024",
+      "KL-025",
+      "KL-026",
+      "KL-027",
+      "KL-028",
+      "KL-029",
+      "KL-075",
+      "KL-076",
+      "KL-077",
+      "KL-078",
+      "KL-079"
+    ],
+    "named_checks": 52,
+    "selectors": [
+      "tests/db/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial",
+      "tests/db/test_boundary_acceptance.py::test_b02_stale_frontier_seal_race",
+      "tests/db/test_boundary_acceptance.py::test_b03_sealed_immutability_ready_barrier",
+      "tests/db/test_boundary_acceptance.py::test_b04_relevant_revoke_issue_reauthorize",
+      "tests/db/test_boundary_acceptance.py::test_b05_unrelated_revoke_preserves_eligibility",
+      "tests/db/test_boundary_acceptance.py::test_b06_revoke_before_publish",
+      "tests/db/test_boundary_acceptance.py::test_b07_revoke_current_execution_denial",
+      "tests/db/test_boundary_acceptance.py::test_b09_server_minimum_certificate",
+      "tests/db/test_boundary_acceptance.py::test_b11_backdated_revoke_commit_linearization",
+      "tests/db/test_boundary_acceptance.py::test_b12_future_revoke_immediate_at_commit",
+      "tests/db/test_boundary_acceptance.py::test_b13_revoke_rollback_zero_effects",
+      "tests/db/test_boundary_acceptance.py::test_b14_registry_failclosed_stop_support",
+      "tests/db/test_boundary_acceptance.py::test_b15_fresh_registry_both_orders",
+      "tests/db/test_boundary_acceptance.py::test_b16_continue_resume_after_invalidation",
+      "tests/db/test_boundary_acceptance.py::test_b17_transitive_revoke_denied",
+      "tests/db/test_factsets.py::test_complete_serializes_with_candidate_writer",
+      "tests/db/test_factsets.py::test_seal_frontier_atomicity_and_old_replay",
+      "tests/db/test_full_test_execution.py::test_continue_resume_rechecks",
+      "tests/db/test_full_test_execution.py::test_replay_and_atomicity",
+      "tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_issue",
+      "tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_publish",
+      "tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_start",
+      "tests/db/test_protocol_interleavings.py::test_cancel_vs_dispatch",
+      "tests/db/test_protocol_interleavings.py::test_expiry_vs_start",
+      "tests/db/test_protocol_interleavings.py::test_publish_vs_user_revoke",
+      "tests/db/test_protocol_interleavings.py::test_seal_vs_input_update",
+      "tests/db/test_protocol_interleavings.py::test_start_vs_user_revoke",
+      "tests/db/test_protocol_interleavings.py::test_takeover_vs_commit",
+      "tests/db/test_safety_registry.py::test_t2_global_commit_rollback_and_effective_at_semantics",
+      "tests/db/test_shadow_isolation.py::test_declared_evaluation_storage_isolation",
+      "tests/db/test_shadow_isolation.py::test_evaluation_principal_live_denials",
+      "tests/db/test_shadow_isolation.py::test_shadow_payload_owner_denials",
+      "tests/db/test_shadow_isolation.py::test_test_authorization_crossing_denials",
+      "tests/db/test_test_only_demo.py::test_expiry_then_deny",
+      "tests/db/test_test_only_demo.py::test_fdn_repair",
+      "tests/db/test_test_only_demo.py::test_full_trajectory",
+      "tests/db/test_test_only_demo.py::test_production_shadow_denials",
+      "tests/db/test_test_only_demo.py::test_revoke_then_deny",
+      "tests/db/test_transaction_interfaces.py::test_t6_authorization_evaluator_persists_exact_minimum_certificate",
+      "tests/unit/protocol/test_authorization.py::test_timeless_dependency_requires_auditable_policy_in_same_transitive_closure",
+      "tests/unit/protocol/test_authorization.py::test_validity_closure_uses_every_bound_and_denies_missing_or_elapsed_basis",
+      "tests/unit/protocol/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial",
+      "tests/unit/protocol/test_boundary_acceptance.py::test_b08_missing_validity_denied",
+      "tests/unit/protocol/test_boundary_acceptance.py::test_b09_server_minimum_closure",
+      "tests/unit/protocol/test_boundary_acceptance.py::test_b10_expiry_without_status_job",
+      "tests/unit/protocol/test_boundary_acceptance.py::test_b17_transitive_closure_omission_denied",
+      "tests/unit/protocol/test_boundary_acceptance.py::test_b18_timeless_policy_reason_required",
+      "tests/unit/protocol/test_boundary_acceptance.py::test_boundary_namespace",
+      "tests/unit/protocol/test_interleaving_namespace.py::test_time_boundaries",
+      "tests/unit/protocol/test_shadow_isolation.py::test_namespace_and_boundary",
+      "tests/unit/protocol/test_shadow_isolation.py::test_strict_shadow_wire",
+      "tests/unit/protocol/test_test_only_demo.py::test_namespace_and_boundary"
+    ],
+    "regression_commands": 79
+  },
+  "boundary_deferred": [
+    {
+      "requirement_id": "B04",
+      "layer": "DC",
+      "status": "NOT_RUN",
+      "given": "Relevant artifact is revoked",
+      "when": "Issue/reauthorize depends transitively on revoked artifact",
+      "then": "T6 authorization issuance denied",
+      "disposition": "DEFERRED_FULL_ORACLE_WITH_GUARD_SUPPORT",
+      "check_id": "b04_dc",
+      "selector": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b04_relevant_revoke_issue_reauthorize",
+      "owner": "ProtocolExecutionService.commit_full; execute_command(Reauthorize) RestrictedSqlSession; registry_guard_reauthorize; revoke_artifact",
+      "pass_oracle": "Build actual owner-produced full current F/D/N/validation trajectory. Positive full CommitBundle creates immutable S42 certificates/materialized closure. In independent current still-live precommit trajectories, revoke exact transitive dependency then full commit denies ARTIFACT_REVOKED with zero S38\u2013S43/intent success/receipts/events/outbox. Exercise actual existing Reauthorize registry gate with positive guard and relevant revoke negative, visibly label guard support; B04@DC requirement stays NOT_RUN because the merged full TEST owner does not implement complete reauthorization; a separate bounded owner must enable real new admitted revalidation intent/current attempt/latest manifest, complete actual Reauthorize positive issuance and relevant-transitive-revoke denial before any B04@DC PASS. No reopening terminal intent, seeded S42, or bare callback no-op as full T6 evidence.",
+      "frozen_clauses": "Protocol \u00a7\u00a70.3a/5.3/8 T6; DB S42/\u00a73 Reauthorize/\u00a75 T6",
+      "qualification": "Merged full TEST owner explicitly rejects Reauthorize (transactions.py full issuance requires AI_PLAN; _prepare_full_execution only CommitBundle; require_execution_request rejects replacement/reauthorization). Full issue owner plus existing Reauthorize registry guard support is executable task support, but exact B04@DC remains NOT_RUN until a separate bounded full reauthorization owner is merged and its complete frozen oracle runs. No legacy policy downgrade, raw target seeds or fixture bypass.",
+      "check_ids": [
+        "b04_dc"
+      ],
+      "future_owner": "Separately bounded complete reauthorize composition/owner refinement if actual merged guarded T6 recipe cannot compose with owner-produced new intent/attempt/snapshot/validation and existing real prescription without raw target seeds."
+    },
+    {
+      "requirement_id": "B04",
+      "layer": "E2E",
+      "status": "NOT_RUN",
+      "given": "Relevant artifact is revoked",
+      "when": "Issue/reauthorize depends transitively on revoked artifact",
+      "then": "T6 authorization issuance denied",
+      "disposition": "DEFERRED_LAYER",
+      "reason": "No public API\u2192workflow\u2192DB\u2192eligibility/rendering owner implemented or concretely assigned. Internal service demo is not this layer.",
+      "required_future_owner": "Focused assignment of product API/rendering acceptance owner",
+      "check_ids": [],
+      "future_owner": "Focused assignment of product API/rendering acceptance owner"
+    },
+    {
+      "requirement_id": "B05",
+      "layer": "E2E",
+      "status": "NOT_RUN",
+      "given": "Unrelated artifact is revoked",
+      "when": "Existing authorization dependency closure excludes artifact",
+      "then": "Authorization remains eligible absent other invalidation",
+      "disposition": "DEFERRED_LAYER",
+      "reason": "No public API\u2192workflow\u2192DB\u2192eligibility/rendering owner implemented or concretely assigned. Internal service demo is not this layer.",
+      "required_future_owner": "Focused assignment of product API/rendering acceptance owner",
+      "check_ids": [],
+      "future_owner": "Focused assignment of product API/rendering acceptance owner"
+    },
+    {
+      "requirement_id": "B07",
+      "layer": "E2E",
+      "status": "NOT_RUN",
+      "given": "Relevant artifact revoked after prior issuance",
+      "when": "START/CONTINUE/RESUME checked",
+      "then": "Execution denied without rewriting historical START",
+      "disposition": "DEFERRED_LAYER",
+      "reason": "No public API\u2192workflow\u2192DB\u2192eligibility/rendering owner implemented or concretely assigned. Internal service demo is not this layer.",
+      "required_future_owner": "Focused assignment of product API/rendering acceptance owner",
+      "check_ids": [],
+      "future_owner": "Focused assignment of product API/rendering acceptance owner"
+    },
+    {
+      "requirement_id": "B08",
+      "layer": "E2E",
+      "status": "NOT_RUN",
+      "given": "Required dependency has no validity or approved TIMELESS basis",
+      "when": "Authorization requested",
+      "then": "Issuance denied, missing value not treated as infinite",
+      "disposition": "DEFERRED_LAYER",
+      "reason": "No public API\u2192workflow\u2192DB\u2192eligibility/rendering owner implemented or concretely assigned. Internal service demo is not this layer.",
+      "required_future_owner": "Focused assignment of product API/rendering acceptance owner",
+      "check_ids": [],
+      "future_owner": "Focused assignment of product API/rendering acceptance owner"
+    },
+    {
+      "requirement_id": "B10",
+      "layer": "E2E",
+      "status": "NOT_RUN",
+      "given": "Bound dependency expires with cached status unchanged",
+      "when": "START eligibility evaluated",
+      "then": "Execution denied without background expiry job",
+      "disposition": "DEFERRED_LAYER",
+      "reason": "No public API\u2192workflow\u2192DB\u2192eligibility/rendering owner implemented or concretely assigned. Internal service demo is not this layer.",
+      "required_future_owner": "Focused assignment of product API/rendering acceptance owner",
+      "check_ids": [],
+      "future_owner": "Focused assignment of product API/rendering acceptance owner"
+    },
+    {
+      "requirement_id": "B11",
+      "layer": "PU",
+      "status": "NOT_RUN",
+      "given": "Emergency revoke has backdated effective_at",
+      "when": "T2-GLOBAL commits now",
+      "then": "New checks deny from commit forward; past START is not retroactively rewritten",
+      "disposition": "DEFERRED_LAYER",
+      "reason": "No actual pure committed registry state/revoke linearization evaluator; hash/SQL text assertions, relabeled database checks or invented mini-model do not meet PU.",
+      "required_future_owner": "Separately bounded approved pure commit-state evaluator owner",
+      "check_ids": [],
+      "future_owner": "Separately bounded approved pure commit-state evaluator owner"
+    },
+    {
+      "requirement_id": "B12",
+      "layer": "PU",
+      "status": "NOT_RUN",
+      "given": "Emergency revoke has future effective_at",
+      "when": "T2-GLOBAL commits in V1",
+      "then": "Revoke is immediate at commit; effective_at does not schedule future behavior",
+      "disposition": "DEFERRED_LAYER",
+      "reason": "No actual pure committed registry state/revoke linearization evaluator; hash/SQL text assertions, relabeled database checks or invented mini-model do not meet PU.",
+      "required_future_owner": "Separately bounded approved pure commit-state evaluator owner",
+      "check_ids": [],
+      "future_owner": "Separately bounded approved pure commit-state evaluator owner"
+    },
+    {
+      "requirement_id": "B14",
+      "layer": "WF",
+      "status": "NOT_RUN",
+      "given": "SafetyRegistry unavailable/degraded",
+      "when": "Publish/issue/start versus STOP requested",
+      "then": "Authorization-relevant paths fail closed while STOP remains available",
+      "disposition": "DEFERRED_LAYER",
+      "reason": "Actual independent STOP lane KL039 and worker/process fault infrastructure absent; real registry degraded fault proof requires downstream work without making M3 depend cyclically on M4.",
+      "required_future_owner": "KL039 independent STOP lane + separately assigned worker/fault infrastructure",
+      "check_ids": [],
+      "future_owner": "KL039 independent STOP lane + separately assigned worker/fault infrastructure"
+    },
+    {
+      "requirement_id": "B14",
+      "layer": "E2E",
+      "status": "NOT_RUN",
+      "given": "SafetyRegistry unavailable/degraded",
+      "when": "Publish/issue/start versus STOP requested",
+      "then": "Authorization-relevant paths fail closed while STOP remains available",
+      "disposition": "DEFERRED_LAYER",
+      "reason": "No public API\u2192workflow\u2192DB\u2192eligibility/rendering owner implemented or concretely assigned. Internal service demo is not this layer.",
+      "required_future_owner": "Focused assignment of product API/rendering acceptance owner",
+      "check_ids": [],
+      "future_owner": "Focused assignment of product API/rendering acceptance owner"
+    },
+    {
+      "requirement_id": "B16",
+      "layer": "E2E",
+      "status": "NOT_RUN",
+      "given": "Session already started with old authorization",
+      "when": "CONTINUE/RESUME occurs after relevant epoch/registry invalidation",
+      "then": "Current permission is rechecked and denied as required",
+      "disposition": "DEFERRED_LAYER",
+      "reason": "No public API\u2192workflow\u2192DB\u2192eligibility/rendering owner implemented or concretely assigned. Internal service demo is not this layer.",
+      "required_future_owner": "Focused assignment of product API/rendering acceptance owner",
+      "check_ids": [],
+      "future_owner": "Focused assignment of product API/rendering acceptance owner"
+    },
+    {
+      "requirement_id": "B18",
+      "layer": "E2E",
+      "status": "NOT_RUN",
+      "given": "Artifact validity is TIMELESS without explicit approved policy/reason",
+      "when": "Registration/authorization attempted",
+      "then": "Registration or authorization basis rejected",
+      "disposition": "DEFERRED_LAYER",
+      "reason": "No public API\u2192workflow\u2192DB\u2192eligibility/rendering owner implemented or concretely assigned. Internal service demo is not this layer.",
+      "required_future_owner": "Focused assignment of product API/rendering acceptance owner",
+      "check_ids": [],
+      "future_owner": "Focused assignment of product API/rendering acceptance owner"
+    }
+  ],
+  "available_transitive_integrations": [
+    "KL-001",
+    "KL-002",
+    "KL-003",
+    "KL-004",
+    "KL-005",
+    "KL-007",
+    "KL-008",
+    "KL-010",
+    "KL-011",
+    "KL-012",
+    "KL-013",
+    "KL-014",
+    "KL-015",
+    "KL-016",
+    "KL-017",
+    "KL-018",
+    "KL-019",
+    "KL-020",
+    "KL-021",
+    "KL-022",
+    "KL-023",
+    "KL-024",
+    "KL-025",
+    "KL-026",
+    "KL-027",
+    "KL-072",
+    "KL-074",
+    "KL-075",
+    "KL-076",
+    "KL-077",
+    "KL-078",
+    "KL-079"
+  ],
+  "absent_prospective_integrations": [
+    "KL-028",
+    "KL-029"
+  ],
+  "status": "PASS"
+}

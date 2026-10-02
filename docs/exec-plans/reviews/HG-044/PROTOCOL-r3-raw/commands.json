@@ -1,0 +1,51 @@
+{
+  "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+  "temp_namespace": "/private/tmp/hg044-protocol-r3-5nx7cqbc",
+  "no_database_lifecycle": true,
+  "commands": [
+    {
+      "argv": [
+        "/private/tmp/hg044-venv/bin/python",
+        "/Users/davetian/.codex/worktrees/8578/KineticLoop/docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/audit.py"
+      ],
+      "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+      "exit_code": 0,
+      "raw_path": "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/command-0.log",
+      "raw_sha256": "64913350c157cc677a9178047b97015f030e9a2f9d3bec7af44f7f47e57eef8a",
+      "raw_byte_count": 99
+    },
+    {
+      "argv": [
+        "/private/tmp/hg044-venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/private/tmp/hg044-protocol-r3-5nx7cqbc",
+        "tests/harness/test_m3_milestone_closure.py",
+        "-k",
+        "prospective_full_git_chain or each_multiselect_suite or float_exit or existing_schema_branches or actual_closure_record or zero_skip_xfail or governance_scope or ratified_plan or reader_parses or symlink_is_rejected"
+      ],
+      "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+      "exit_code": 0,
+      "raw_path": "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/command-1.log",
+      "raw_sha256": "28a3f5c81ee87d75e6a30aa567fd3c8da2d3f7a1910bf4c157288a49c0f267a8",
+      "raw_byte_count": 126
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "fa729ca4bcca0f2c2e7a2aa0601890d1356b8842",
+        "19dc5a4f8edc8869873a76a4fe27b0280761d7c9"
+      ],
+      "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+      "exit_code": 0,
+      "raw_path": "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/command-2.log",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_byte_count": 0
+    }
+  ]
+}

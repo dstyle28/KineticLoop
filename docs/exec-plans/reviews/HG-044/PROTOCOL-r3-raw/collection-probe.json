@@ -1,0 +1,51 @@
+{
+  "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+  "probe_exit_code": 0,
+  "status": "BLOCKER_CONFIRMED",
+  "synthetic_oracle_only": true,
+  "actual_collection_sha256": "76f69785761de5440bc4772236df9300e8942aa6fc29f72163bce1ed45115e36",
+  "actual_node_count": 1107,
+  "embedded_parameter_delimiter_count": 25,
+  "disposition_text_parameter_count": 3,
+  "affected_test_prefixes": [
+    "tests/harness/test_planning_fixture_scope.py::test_fixture_or_oracle_drift_rejected",
+    "tests/harness/test_planning_subject_scope.py::test_any_other_oracle_or_file_change_fails_closed",
+    "tests/harness/test_planning_subject_scope.py::test_unexpected_protected_baseline_fails_closed"
+  ],
+  "disposition_text_nodes": [
+    "tests/harness/test_m3_milestone_closure.py::test_zero_skip_xfail_failure_cannot_supply_oracle[1 skipped]",
+    "tests/harness/test_m3_milestone_closure.py::test_zero_skip_xfail_failure_cannot_supply_oracle[1 passed, 1 skipped]",
+    "tests/harness/test_m3_milestone_closure.py::test_zero_skip_xfail_failure_cannot_supply_oracle[1 passed, 1 error]"
+  ],
+  "official_pytest_mangle_source": "def mangle_test_address(address: str) -> list[str]:\n    path, possible_open_bracket, params = address.partition(\"[\")\n    names = path.split(\"::\")\n    # Convert file path to dotted path.\n    names[0] = names[0].replace(nodes.SEP, \".\")\n    names[0] = re.sub(r\"\\.py$\", \"\", names[0])\n    # Put any params back.\n    names[-1] += possible_open_bracket + params\n    return names\n",
+  "results": [
+    {
+      "node": "tests/harness/test_probe.py::test_valid[plain]",
+      "official_pytest_junit": {
+        "classname": "tests.harness.test_probe",
+        "name": "test_valid[plain]"
+      },
+      "validator_errors": []
+    },
+    {
+      "node": "tests/harness/test_probe.py::test_valid[selector::case]",
+      "official_pytest_junit": {
+        "classname": "tests.harness.test_probe",
+        "name": "test_valid[selector::case]"
+      },
+      "validator_errors": [
+        "milestone-m3-regression:incomplete-executed-collection"
+      ]
+    },
+    {
+      "node": "tests/harness/test_m3_milestone_closure.py::test_zero_skip_xfail_failure_cannot_supply_oracle[1 skipped]",
+      "official_pytest_junit": {
+        "classname": "tests.harness.test_m3_milestone_closure",
+        "name": "test_zero_skip_xfail_failure_cannot_supply_oracle[1 skipped]"
+      },
+      "validator_errors": [
+        "milestone-m3-regression:collection-oracle"
+      ]
+    }
+  ]
+}

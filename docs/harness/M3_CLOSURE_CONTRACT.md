@@ -61,6 +61,9 @@ self-referential commit IDs). Collection JSON records exact
 hashed raw collection stdout. Positive collection counts, raw nodeids and all
 executed JUnit names/counts must agree. Every declared selector must contribute
 at least one collected and executed case; selectors cannot be replaced or omitted.
+Bracketed pytest parameter IDs retain their complete text during JUnit matching,
+including `::`. Failure/skip dispositions are read outside collection node records,
+so parameter text such as `1 skipped` cannot substitute for a disposition.
 All raw files belong to this closure governance evidence directory. No empty,
 skipped, xfail, failed, duplicate or arbitrary-check run can substitute.
 

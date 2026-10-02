@@ -2640,19 +2640,23 @@ def m3_execution_evidence_errors(root, payload, revision, evaluated, records):
             raw_nodes = [line for line in collected_output.splitlines()
                          if re.match(r'^tests/[^\s]+\.py::', line)]
             totals = re.findall(r'^([1-9][0-9]*) tests? collected in ', collected_output, re.M)
+            raw_node_lines = set(raw_nodes)
+            summary_output = '\n'.join(line for line in collected_output.splitlines()
+                                       if line not in raw_node_lines)
             if (not nodeids or len(nodeids) != len(set(nodeids)) or nodeids != raw_nodes
                     or len(totals) != 1 or int(totals[0]) != len(nodeids)
                     or re.search(r'\b[1-9][0-9]* (?:deselected|errors?|skipped)\b',
-                                 collected_output, re.I)):
+                                 summary_output, re.I)):
                 raise ValueError('collection-oracle')
             expected = []
             for node in nodeids:
-                components = node.split('::')
+                address, bracket, parameters = node.partition('[')
+                components = address.split('::')
                 if not any(node == s or node.startswith(s + '[') or node.startswith(s + '::')
                            or node.startswith(s + '/') for s in selectors):
                     raise ValueError('wrong-selector')
                 expected.append(('.'.join([components[0].removesuffix('.py').replace('/', '.'),
-                                           *components[1:-1]]), components[-1]))
+                                           *components[1:-1]]), components[-1] + bracket + parameters))
             for selector in selectors:
                 if not any(node == selector or node.startswith(selector + '[')
                            or node.startswith(selector + '::') or node.startswith(selector + '/')
