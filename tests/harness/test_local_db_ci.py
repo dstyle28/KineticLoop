@@ -220,6 +220,7 @@ def test_git_bound_evidence_ignores_ambient_edits_and_rejects_committed_symlink(
     import shutil
     shutil.copytree(directory, target)
     (repo / "tools/harness").mkdir(parents=True)
+    assert db_ci.__file__ is not None
     shutil.copyfile(Path(db_ci.__file__), repo / "tools/harness/db_ci.py")
     subprocess.run(["git", "init", "-q", str(repo)], check=True)
 
