@@ -183,11 +183,11 @@ for name, label, resource, checks in (
     bullets = lambda xs: '\n'.join('- ' + x for x in xs) if xs else '- none'
     packet = f'''# {name} — {t['title']}
 
-**Task identity:** `{t['task_identity']}`  
-**Thread:** `{t['thread_id']}`  
-**Milestone:** `M3`  
-**Mode:** one fresh thread + one worktree + one PR  
-**Status:** NOT_STARTED  
+**Task identity:** `{t['task_identity']}`{'  '}
+**Thread:** `{t['thread_id']}`{'  '}
+**Milestone:** `M3`{'  '}
+**Mode:** one fresh thread + one worktree + one PR{'  '}
+**Status:** NOT_STARTED{'  '}
 **Packet refinement:** ENFORCEABLE
 
 ## Goal
@@ -292,7 +292,9 @@ if '`boundary_acceptance_suite`' not in resources.read_text():
     resources.write_text(resources.read_text() + '\n- `boundary_acceptance_suite`\n- `shadow_isolation_suite`\n\nHG042 grants only disjoint tests-only suites using separate task/SHA7/resolved-root SHA12 databases and Compose namespaces. Shared owners are read-only; no source, grant, migration, helper, lifecycle or CI writes.\n')
 plan = ROOT / PLAN
 heading = '\n## M3 boundary and shadow readiness — HG042\n'
-plan.write_text(plan.read_text().split(heading)[0] + heading + '\n' + parallel + '\n\n' + layer_boundary + '\n\n' + shadow_boundary + '\n\n' + no_goals + '\n')
+old_plan = plan.read_text()
+outside_suffix = old_plan.partition('<!-- HG042 plan end -->')[2]
+plan.write_text(old_plan.split(heading)[0] + heading + '\n' + parallel + '\n\n' + layer_boundary + '\n\n' + shadow_boundary + '\n\n' + no_goals + '\n\n<!-- HG042 plan end -->\n' + outside_suffix)
 
 # Exact definitions and whole packet digests, guarded against silent scope drift.
 definition_hashes = {n: hashlib.sha256(json.dumps(tasks[n], ensure_ascii=False, sort_keys=True,

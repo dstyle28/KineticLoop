@@ -4059,7 +4059,11 @@ def m3_boundary_shadow_definition_errors(task):
 
 def m3_boundary_shadow_plan_errors(text):
     """Pin the explicit parallel DB plan and closure/deferred-layer limitations."""
-    block = (section(text, 'M3 boundary and shadow readiness — HG042') or '').strip()
+    scoped = section(text, 'M3 boundary and shadow readiness — HG042') or ''
+    marker = '<!-- HG042 plan end -->'
+    if scoped.count(marker) != 1:
+        return ['m3-boundary-shadow-plan']
+    block = scoped.partition(marker)[0].strip()
     return ([] if hashlib.sha256(block.encode()).hexdigest() == M3_BOUNDARY_SHADOW_PLAN_SHA256
             else ['m3-boundary-shadow-plan'])
 

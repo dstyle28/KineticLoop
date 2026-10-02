@@ -155,3 +155,9 @@ def test_parallel_and_deferred_plan_drift_fails_closed(phrase: str) -> None:
     before, block = text.split('## M3 boundary and shadow readiness — HG042', 1)
     altered = before + '## M3 boundary and shadow readiness — HG042' + block.replace(phrase, 'unsupported', 1)
     assert v.m3_boundary_shadow_plan_errors(altered) == ['m3-boundary-shadow-plan']
+
+
+def test_plan_guard_allows_unrelated_governance_after_explicit_boundary() -> None:
+    text = (ROOT / v.PROJECT_PLAN).read_text()
+    assert v.m3_boundary_shadow_plan_errors(text + '\nGovernance fixture refinement.\n') == []
+    assert v.m3_boundary_shadow_plan_errors(text.replace('<!-- HG042 plan end -->', '')) == ['m3-boundary-shadow-plan']
