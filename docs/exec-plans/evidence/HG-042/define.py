@@ -32,6 +32,21 @@ shadow_checks = []
 for match in re.finditer(r'^\d+\. (\w+) — (uv run pytest[^\n]+)\n   (.*?)(?=\n\n\d|\n\n8–12)', shadow, re.M | re.S):
     shadow_checks.append({'check_id': match[1], 'command': match[2], 'pass_oracle': match[3].strip()})
 assert len(shadow_checks) == 7
+# Merged-owner feasibility refinement; preserve the historical preflight above.
+for check in shadow_checks:
+    check['pass_oracle'] = check['pass_oracle'].replace(
+        'actual require_wire rejects shadow/non-TestOnlyScope input,',
+        'actual strict public command parser rejects shadow scope; require_wire rejects a genuine valid ProductionScope command and')
+    check['pass_oracle'] = check['pass_oracle'].replace(
+        'same SUBJECT_SCOPE_DENIED payload/timing class',
+        'same SUBJECT_SCOPE_DENIED code/payload and declared timing_class metadata BOUNDED_SCOPE_LOOKUP (no measured constant-time claim)')
+    check['pass_oracle'] = check['pass_oracle'].replace(
+        'Explicitly declare S46/S47 fixtures as external evaluation inputs only;',
+        'Explicitly declare S46/S47 and their required same-subject archived S24/S48/FK backing closure as external historical evaluation inputs only;')
+    check['pass_oracle'] = check['pass_oracle'].replace(
+        'seed only those evaluation inputs through allowed trusted fixture setup,',
+        'seed only those declared archived evaluation inputs with FK checks and triggers enabled through allowed trusted fixture setup; no session_replication_role bypass or global revision reset;')
+
 standard = [
     ('harness_validation_passes', 'check-harness', 'HARNESS_CHECK_PASS; current authorities, exact packet, scope and revision bindings validate.'),
     ('unit_regressions_pass', 'test-unit', 'All unit regressions pass without newly skipped/xfail or suppressed failures.'),
@@ -65,12 +80,12 @@ owners = ('Read-only reuse of actual merged CanonicalViewService, projection/bui
           'in for owner behavior. A missing owner or owner bug requires a separate bounded fix '
           'and leaves its exact obligation NOT_RUN; it does not authorize a fixture bypass.')
 evidence = ('Every check records exact tested SHA, namespace, selector collection/execution '
-            'counts, actual guard reached, trusted clock, complete source/output IDs and hashes, '
+            'counts and actual guard reached; as applicable to its PU/DC layer, trusted clock, complete source/output IDs and hashes, '
             'closure identities/certificate digest, frontier/epoch/revision/current heads, '
             'session lifecycle and immutable binding history, receipt/event/outbox joins and '
             'full before/after history snapshots proving exact zero-effect denial/rollback. '
             'Positive controls establish every otherwise-valid guard and lifecycle. Fresh '
-            'command keys distinguish current permission from historical replay. Registry races '
+            'command keys distinguish current permission from historical replay. Where a check includes registry races, they '
             'observe pg_blocking_pids and actual S51→S01 acquisition with bounded barriers in '
             'both orders, never sleep-based assumptions. Exact equality is PU; actual fresh '
             'post-lock PostgreSQL time is DC. No historical test/log reuse as new PASS, skips, '
@@ -108,7 +123,7 @@ shadow_boundary = ('KL008 ShadowEvaluationArtifact construction is M2 G-SHADOW c
                    'evidence, not complete real-data shadow usability. Actual shadow '
                    'store/API belongs to downstream KL045; API/rendering and R04@E2E '
                    'remain NOT_RUN. S46/S47 in this suite are explicitly declared '
-                   'external evaluation inputs, never claimed shadow-workflow outputs. '
+                   'external historical evaluation inputs together with required same-subject archived S24/S48/FK backing closure, never claimed TEST/live or shadow-workflow owner outputs. Their trusted fixture setup keeps FK checks and triggers enabled, with no global revision reset. '
                    'Strict wire/owner ingress, registration guard, DB privilege/scope '
                    'and actual T7 guard denials have distinct reach labels; an earlier '
                    'ingress rejection cannot prove a later transaction guard. TEST '
@@ -245,6 +260,8 @@ Shared hotspot: **false**
 ## Merged owner and bootstrap boundary
 {owners}
 
+{('For KL029 only, the explicitly declared external historical evaluation S46/S47 inputs may include their required same-subject archived S24/S48/FK backing closure with FK checks and triggers enabled. This closure is not a tested TEST/live manifest or a shadow workflow owner output; no trigger bypass, global revision reset or raw live target seed is allowed.' if name == 'KL-029' else '')}
+
 ## Evidence and concurrency oracles
 {evidence}
 
@@ -294,6 +311,8 @@ plan = ROOT / PLAN
 heading = '\n## M3 boundary and shadow readiness — HG042\n'
 old_plan = plan.read_text()
 outside_suffix = old_plan.partition('<!-- HG042 plan end -->')[2]
+if not outside_suffix.strip():
+    outside_suffix = ''
 plan.write_text(old_plan.split(heading)[0] + heading + '\n' + parallel + '\n\n' + layer_boundary + '\n\n' + shadow_boundary + '\n\n' + no_goals + '\n\n<!-- HG042 plan end -->\n' + outside_suffix)
 
 # Exact definitions and whole packet digests, guarded against silent scope drift.

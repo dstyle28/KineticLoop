@@ -42,7 +42,7 @@ record = {
         'B04 full issue and actual Reauthorize registry guard support cannot claim its complete DC oracle; '
         'a separate bounded owner follow-up is mandatory, without legacy downgrade or fixture bypass.',
         'Real-data shadow store/API usability belongs KL045; S46/S47 fixture inputs are declared external '
-        'evaluation inputs, never shadow owner outputs. M2 G-SHADOW construction is not that usability.',
+        'evaluation inputs with required same-subject archived S24/S48/FK backing closure under enabled constraints/triggers, never TEST/live or shadow owner outputs. M2 G-SHADOW construction is not that usability.',
         'M3 closure schema supports only M1/M2; record the separate focused governance gap without adding '
         'M3 PASS, M3-to-M4 cycle or M4 worker/outbox scope. Production activation remains disabled.',
         'Five actual normal integrations validate under merged HG043 with result hashes and exact reviewed '
@@ -52,7 +52,7 @@ record = {
         'failed generator whitespace and one existing governance-plan append regression. The corrected '
         'generator preserves packet bytes; the plan guard uses an explicit own-section end marker, '
         'allowing unrelated later governance without weakening its exact own scope. '
-        'Only the newly tested all-PASS round is selected. No local DB lifecycle or foreign resources were run.',
+        'The all-PASS 8f938e9 round was superseded by precise shadow command-parser guard and archived evaluation backing-closure wording. Only the newly tested all-PASS round is selected. No local DB lifecycle or foreign resources were run.',
         'Fresh independent GENERAL/PROTOCOL/DB_CONCURRENCY/SECURITY_DATA_BOUNDARY reviews bind the committed '
         'governance/evidence revision. Only own review suffix follows; every applicable final hosted CI '
         'must PASS before normal merge. Dirty KL055 and unrelated branches/resources remain untouched.',
