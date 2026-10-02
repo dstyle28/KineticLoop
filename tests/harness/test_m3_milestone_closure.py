@@ -29,11 +29,16 @@ class History:
         self.git('checkout', '-q', '9268fc8dd8c071c02dc5c698274dbf6fcd112776')
         self.backlog = json.loads((root / v.BACKLOG).read_text())
         self.tasks = {t['id']: t for t in self.backlog['tasks']}
-        self.records = {}
+        self.records: dict[str, dict] = {}
         for name in ('KL-028', 'KL-029'):
             self.make_task(name)
-        for name in v.M3_TASK_IDS | {'KL-074'}:
+        pending = list(v.M3_TASK_IDS | {'KL-074'})
+        while pending:
+            name = pending.pop()
+            if name in self.records:
+                continue
             self.records[name] = json.loads((root / f'docs/exec-plans/integrations/{name}.json').read_text())
+            pending.extend(self.tasks[name]['depends_on'])
         self.tested = self.git('rev-parse', 'HEAD')
         self.change = 'HG-999'
         self.prefix = 'docs/exec-plans/evidence/HG-999/'
@@ -390,13 +395,19 @@ def test_governance_scope_excludes_peer_and_runtime_and_closure_instance():
 def test_prerequisite_merge_must_precede_base_and_tested(history, mutation):
     records = copy.deepcopy(history.records)
     tasks = copy.deepcopy(history.tasks)
+    assert not v.m3_dependency_order_errors(history.root, records, tasks)
     if mutation == 'missing':
         records.pop('KL-027')
     elif mutation == 'reversed':
         records['KL-027']['merge_commit'] = history.evaluated
     else:
         tasks['KL-028']['depends_on'].append('KL-029')
-    assert v.m3_dependency_order_errors(history.root, records, tasks)
+    errors = v.m3_dependency_order_errors(history.root, records, tasks)
+    assert errors
+    if mutation == 'reversed':
+        assert any('KL-027:KL-028:base_commit' in e for e in errors)
+    elif mutation == 'base-after-dependency':
+        assert any('KL-029:KL-028:base_commit' in e for e in errors)
 
 
 def test_frozen_file_tamper_detected_at_git_revision(history):
