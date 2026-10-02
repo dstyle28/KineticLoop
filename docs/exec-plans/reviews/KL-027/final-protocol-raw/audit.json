@@ -1,0 +1,775 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-027",
+  "reviewed_head_sha": "ff93c08c7c32fba9e8dede0c161bb4f97bc98259",
+  "tested_commit": "72a9a5f3f9529028708f64ece3bbec6d791413a7",
+  "base_commit": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+  "authority_hashes": [
+    {
+      "path": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+      "sha256": "00bf3eb2e0e2e00867d114b42e147a2341d98454f08629c849ebf0b4c0c4916c"
+    },
+    {
+      "path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+      "sha256": "2158a80bdc0e16eaf9c2cd835f704bdc2f346565dc35cb0c1fc1a8c00a1b8eda"
+    },
+    {
+      "path": "12_KineticLoop_Integration_Spec_v0.1.md",
+      "sha256": "a91bf2eac9a64b70fc9cce1b7215478cfe139778cfc625ccd80840eef54cf426"
+    },
+    {
+      "path": "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+      "sha256": "c61819aef5509963b0ead8682545b7258c1da0b2360138b479157b5a2b1e7091"
+    },
+    {
+      "path": "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
+      "sha256": "9841442a9c18882f4f06241bfdd9f82a9e871371d80933f16d41dcd0e64ae28c"
+    },
+    {
+      "path": "docs/harness/HARNESS_OPERATING_MODEL.md",
+      "sha256": "53b86499e3848e044e9ef0309a786ab2d06899d7dedd0e29786b9e85f3203769"
+    },
+    {
+      "path": "docs/harness/THREAD_RESULT_CONTRACT.md",
+      "sha256": "6dc74d57e540346b3ec20e8bf65def84a7e561a73cf20f62152dac390a93ef7c"
+    },
+    {
+      "path": "docs/harness/THREAD_REVIEW_CONTRACT.md",
+      "sha256": "05b0f59a45f257b02f9c2745822923794c8db68b65492f81bfd5d3f123e55020"
+    },
+    {
+      "path": "docs/harness/MERGE_GATE.md",
+      "sha256": "aca4f3aff6c59de7d60e16597278a642a6c22b1f38989aa7b05bda82b2580e3f"
+    },
+    {
+      "path": "docs/harness/HARNESS_NEGATIVE_TEST_MATRIX.md",
+      "sha256": "ba5a0301d05aa0005fdf18b06830ab0bb28040e75161edf97aea45c3056f3f18"
+    },
+    {
+      "path": "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+      "sha256": "6fc33873f82dd6bb73529a850422106622e9015c3c5253336ce4f04aafae7540"
+    },
+    {
+      "path": "KineticLoop_Harness_Development_Workflow_v0.3.md",
+      "sha256": "c64d6a3594ed4b66825ec739e525ae94e4e24cfa9166e1134a0fe6fc0302af6c"
+    },
+    {
+      "path": "KineticLoop_Harness_Backlog_v0.2.json",
+      "sha256": "d971e630fa9e54f6c64b131a7340b25ee1089d1ba9f7fbbb8d447e4f5aa80512"
+    },
+    {
+      "path": "CURRENT_REQUIREMENT_SET.json",
+      "sha256": "c7ce1793c0b5fcbdec99afc8742e33b60e42cb633eacf9424ae84c4639dfa750"
+    },
+    {
+      "path": "HISTORICAL_TASK_ID_MAP.json",
+      "sha256": "1b5acd3e339e86175f39999a9388b7dcd0c436dd02d32dbe29e0cd9dcff04253"
+    },
+    {
+      "path": "FROZEN_BASELINE.json",
+      "sha256": "bb8cd79942d3ca735e38e0363d8f56c5c45bbd79210a6618d29704aac3dd04df"
+    },
+    {
+      "path": "KineticLoop_Acceptance_Spec_v1.2.2.json",
+      "sha256": "32481bd6eb29fe0d8ce1e5ec3cb9b90821743cc5708343e4695a446f51e78892"
+    },
+    {
+      "path": "KineticLoop_Integration_Acceptance_v0.1.json",
+      "sha256": "1b4ea126ed5cc8c45adde29a4db45fec96e9949267b21baf47934b4af69bf473"
+    },
+    {
+      "path": "KineticLoop_Harness_Traceability_v0.3.json",
+      "sha256": "3e82b0d5addde9a2a50041e3e8e8ccc950bc42c9b644ae56b828a8476e5e8594"
+    },
+    {
+      "path": "KineticLoop_Evidence_Manifest_v0.1.json",
+      "sha256": "d042e477f0224d843390b5abd1d94ca376278da390db7e7aed99a192c9a60e99"
+    },
+    {
+      "path": "THREAD_RESULT.schema.json",
+      "sha256": "4fd9ad4dd0dcd21186e349386f86ac05fac9d2023f72663cb5961746736171fa"
+    },
+    {
+      "path": "THREAD_REVIEW.schema.json",
+      "sha256": "71d40acfcc1cae40912254cf7da1970c6cdcaf20f8e9f898868f218ac9a053a0"
+    },
+    {
+      "path": "tools/harness/validate_harness.py",
+      "sha256": "bd2e5c2268896d8bad52d13082f15d3c879ab82ddd22ab26f5144330d89aa8f3"
+    },
+    {
+      "path": "HARNESS_CHANGE.schema.json",
+      "sha256": "831b8aa88e158d08f3a0d7c1ca7fc679fd7f8c6d1cae95190360a9378a08d628"
+    },
+    {
+      "path": "INTEGRATION_RECORD.schema.json",
+      "sha256": "7397a11f0ebf6cdb80a6b220d226cf02828887e870ba5fbdf967bc73df00114a"
+    },
+    {
+      "path": "MILESTONE_CLOSURE.schema.json",
+      "sha256": "b0e70474ac2bf7a7f2e3023886f01c032caeb45023b555bb50cd30c40d9d161a"
+    }
+  ],
+  "allowed_scope": [
+    "docs/contracts/test_only_demo.md",
+    "docs/exec-plans/completed/KL-027_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/checks.json",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_expiry_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_expiry_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_fdn_repair_e2e.log",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_fdn_repair_e2e.xml",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_namespace_and_boundary_pu.log",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_namespace_and_boundary_pu.xml",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_owner_trajectory_e2e.log",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_owner_trajectory_e2e.xml",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_revoke_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_revoke_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_scope_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_scope_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_suite_e2e.log",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_suite_e2e.xml",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/harness_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/harness_regressions_pass.xml",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/harness_validation_passes.log",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/lint_passes.log",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/oracle-audit.json",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/typecheck_passes.log",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/unit_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/unit_regressions_pass.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/checks.json",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_expiry_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_expiry_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_fdn_repair_e2e.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_fdn_repair_e2e.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_namespace_and_boundary_pu.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_namespace_and_boundary_pu.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_owner_trajectory_e2e.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_owner_trajectory_e2e.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_revoke_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_revoke_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_scope_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_scope_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_suite_e2e.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_suite_e2e.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/harness_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/harness_regressions_pass.xml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/harness_validation_passes.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/lint_passes.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/typecheck_passes.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/unit_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/unit_regressions_pass.xml",
+    "docs/exec-plans/evidence/KL-027/checks-e78a59b/checks.json",
+    "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_expiry_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_expiry_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_fdn_repair_e2e.log",
+    "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_fdn_repair_e2e.xml",
+    "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_namespace_and_boundary_pu.log",
+    "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_namespace_and_boundary_pu.xml",
+    "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_owner_trajectory_e2e.log",
+    "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_owner_trajectory_e2e.xml",
+    "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_revoke_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_revoke_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_scope_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_scope_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_suite_e2e.log",
+    "docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_suite_e2e.xml",
+    "docs/exec-plans/evidence/KL-027/checks-e78a59b/repair-attempt.json",
+    "docs/exec-plans/evidence/KL-027/entry-audit.json",
+    "docs/exec-plans/evidence/KL-027/entry-audit.py",
+    "docs/exec-plans/evidence/KL-027/lock-fix-72a9a5f/four-operations.log",
+    "docs/exec-plans/evidence/KL-027/lock-fix-72a9a5f/four-operations.xml",
+    "docs/exec-plans/evidence/KL-027/lock-fix-72a9a5f/run.json",
+    "docs/exec-plans/evidence/KL-027/preserved-baseline.json",
+    "docs/exec-plans/evidence/KL-027/run-checks.py",
+    "docs/exec-plans/reviews/KL-027/db-raw/audit.json",
+    "docs/exec-plans/reviews/KL-027/db-raw/namespace.log",
+    "docs/exec-plans/reviews/KL-027/db-raw/namespace.xml",
+    "docs/exec-plans/reviews/KL-027/db-raw/prerequisites.json",
+    "docs/exec-plans/reviews/KL-027/db-raw/suite.log",
+    "docs/exec-plans/reviews/KL-027/db-raw/suite.xml",
+    "docs/exec-plans/reviews/KL-027/general-raw/audit.json",
+    "docs/exec-plans/reviews/KL-027/general-raw/audit.py",
+    "docs/exec-plans/reviews/KL-027/general-raw/oracle-assessment.md",
+    "docs/exec-plans/reviews/KL-027/general-raw/unit-review.log",
+    "docs/exec-plans/reviews/KL-027/history/1df1527/DB_CONCURRENCY.json",
+    "docs/exec-plans/reviews/KL-027/history/1df1527/GENERAL.json",
+    "docs/exec-plans/reviews/KL-027/history/1df1527/PROTOCOL.json",
+    "docs/exec-plans/reviews/KL-027/protocol-raw/audit.json",
+    "docs/exec-plans/reviews/KL-027/protocol-raw/audit.log",
+    "docs/exec-plans/reviews/KL-027/protocol-raw/audit.py",
+    "docs/exec-plans/reviews/KL-027/protocol-raw/pure-rerun.log",
+    "tests/db/test_test_only_demo.py",
+    "tests/unit/protocol/test_test_only_demo.py"
+  ],
+  "tested_to_reviewed_linear_result_evidence_suffix": [
+    {
+      "commit": "ff93c08c7c32fba9e8dede0c161bb4f97bc98259",
+      "paths": [
+        "docs/exec-plans/completed/KL-027_RESULT.yaml",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/checks.json",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_expiry_denials_dc.log",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_expiry_denials_dc.xml",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_fdn_repair_e2e.log",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_fdn_repair_e2e.xml",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_namespace_and_boundary_pu.log",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_namespace_and_boundary_pu.xml",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_owner_trajectory_e2e.log",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_owner_trajectory_e2e.xml",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_revoke_denials_dc.log",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_revoke_denials_dc.xml",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_scope_denials_dc.log",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_scope_denials_dc.xml",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_suite_e2e.log",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_suite_e2e.xml",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/harness_regressions_pass.log",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/harness_regressions_pass.xml",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/harness_validation_passes.log",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/lint_passes.log",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/oracle-audit.json",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/typecheck_passes.log",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/unit_regressions_pass.log",
+        "docs/exec-plans/evidence/KL-027/checks-72a9a5f/unit_regressions_pass.xml",
+        "docs/exec-plans/evidence/KL-027/lock-fix-72a9a5f/four-operations.log",
+        "docs/exec-plans/evidence/KL-027/lock-fix-72a9a5f/four-operations.xml",
+        "docs/exec-plans/evidence/KL-027/lock-fix-72a9a5f/run.json"
+      ]
+    }
+  ],
+  "prerequisites": [
+    {
+      "task": "KL-017",
+      "tested_commit": "eb617291e58dcaa99b7873096ada0e08dc7f6f26",
+      "normal_merge": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+      "source_head": "366d96f0dbc08b3f7d775d860bdce0dbe9b873e1",
+      "required_reviews": [
+        {
+          "kind": "GENERAL",
+          "status": "PASS",
+          "reviewed_head_sha": "4aa711e0e6aa490e250c8eb3241653b90307df6d"
+        },
+        {
+          "kind": "PROTOCOL",
+          "status": "PASS",
+          "reviewed_head_sha": "4aa711e0e6aa490e250c8eb3241653b90307df6d"
+        },
+        {
+          "kind": "DB_CONCURRENCY",
+          "status": "PASS",
+          "reviewed_head_sha": "4aa711e0e6aa490e250c8eb3241653b90307df6d"
+        },
+        {
+          "kind": "SECURITY_DATA_BOUNDARY",
+          "status": "PASS",
+          "reviewed_head_sha": "4aa711e0e6aa490e250c8eb3241653b90307df6d"
+        }
+      ],
+      "result_sha256": "06713a24e74beea64691d6624ea649b71b573d1339c7ae25ece3b1ae7ef32c37"
+    },
+    {
+      "task": "KL-019",
+      "tested_commit": "600c901404a5ebcbde3cea289f6249242b2c4686",
+      "normal_merge": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+      "source_head": "b7f14f00e2f1fcc0524d23afa0769740851d4c2c",
+      "required_reviews": [
+        {
+          "kind": "GENERAL",
+          "status": "PASS",
+          "reviewed_head_sha": "4fa4e6c661697fb3024c891c35b307dbff391f8f"
+        },
+        {
+          "kind": "PROTOCOL",
+          "status": "PASS",
+          "reviewed_head_sha": "4fa4e6c661697fb3024c891c35b307dbff391f8f"
+        },
+        {
+          "kind": "DB_CONCURRENCY",
+          "status": "PASS",
+          "reviewed_head_sha": "4fa4e6c661697fb3024c891c35b307dbff391f8f"
+        }
+      ],
+      "result_sha256": "6631a121af1458a264d31a6ec0f541590692f51a553273f88b26185d1874717e"
+    },
+    {
+      "task": "KL-022",
+      "tested_commit": "fa228db83f8151f52bc4c78f43c5a7e17e0b8c48",
+      "normal_merge": "88adc5be3f7c567413be671a2b3dc5e6c802ffe8",
+      "source_head": "6cd0f6fa4d3d35792a9802e68a456ebb89c6306e",
+      "required_reviews": [
+        {
+          "kind": "GENERAL",
+          "status": "PASS",
+          "reviewed_head_sha": "63f9decb1482c7f01c7170cdf6bf3778ed4cc063"
+        },
+        {
+          "kind": "PROTOCOL",
+          "status": "PASS",
+          "reviewed_head_sha": "63f9decb1482c7f01c7170cdf6bf3778ed4cc063"
+        },
+        {
+          "kind": "DB_CONCURRENCY",
+          "status": "PASS",
+          "reviewed_head_sha": "63f9decb1482c7f01c7170cdf6bf3778ed4cc063"
+        }
+      ],
+      "result_sha256": "6cbf38868e52d13228982fad8f3df28efd70c33407056cbbb929e2d30e1985ed"
+    },
+    {
+      "task": "KL-023",
+      "tested_commit": "077c383e6a825bc6f55ece4d4311531e0bb0411f",
+      "normal_merge": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+      "source_head": "01ff68828efa8007fc88def7765e14de87b582e5",
+      "required_reviews": [
+        {
+          "kind": "GENERAL",
+          "status": "PASS",
+          "reviewed_head_sha": "6cd15b03cb0206156b8e295d34516f457c7b046a"
+        },
+        {
+          "kind": "PROTOCOL",
+          "status": "PASS",
+          "reviewed_head_sha": "6cd15b03cb0206156b8e295d34516f457c7b046a"
+        },
+        {
+          "kind": "DB_CONCURRENCY",
+          "status": "PASS",
+          "reviewed_head_sha": "6cd15b03cb0206156b8e295d34516f457c7b046a"
+        }
+      ],
+      "result_sha256": "d3a56ffd5a1cfbe528b8074289fff7fa34e7ad0523222488d2003b1a52451d9d"
+    },
+    {
+      "task": "KL-024",
+      "tested_commit": "638396cc5d7c28d5152038d08390a2de11320064",
+      "normal_merge": "ff57a80feebd4e539f9af277e0dcb26d942bc3e0",
+      "source_head": "54c201fcb08f4686897c3b3bb44f34a43490471b",
+      "required_reviews": [
+        {
+          "kind": "GENERAL",
+          "status": "PASS",
+          "reviewed_head_sha": "28a47f1747c942d6b0382d3d610b8a998e2c512f"
+        },
+        {
+          "kind": "PROTOCOL",
+          "status": "PASS",
+          "reviewed_head_sha": "28a47f1747c942d6b0382d3d610b8a998e2c512f"
+        },
+        {
+          "kind": "DB_CONCURRENCY",
+          "status": "PASS",
+          "reviewed_head_sha": "28a47f1747c942d6b0382d3d610b8a998e2c512f"
+        }
+      ],
+      "result_sha256": "660e3a31a61c763ea6f48be1d6ef0d0f81b2b9a3bfcdd151f59ad2a4bb619b9b"
+    },
+    {
+      "task": "KL-025",
+      "tested_commit": "c3966cc790e1e2aa187dfb70496e4f811404a9ee",
+      "normal_merge": "eab2b305351cf3c504f74ac74868edc58d0a3430",
+      "source_head": "2ab9c47f66730fe2bb826c09e744de6347027aa4",
+      "required_reviews": [
+        {
+          "kind": "GENERAL",
+          "status": "PASS",
+          "reviewed_head_sha": "5f3c14b94a2aebd4e5ce97c2414c8271e9ff9ef4"
+        },
+        {
+          "kind": "PROTOCOL",
+          "status": "PASS",
+          "reviewed_head_sha": "5f3c14b94a2aebd4e5ce97c2414c8271e9ff9ef4"
+        },
+        {
+          "kind": "DB_CONCURRENCY",
+          "status": "PASS",
+          "reviewed_head_sha": "5f3c14b94a2aebd4e5ce97c2414c8271e9ff9ef4"
+        }
+      ],
+      "result_sha256": "dab5c5af4c07d26550238415cc99e04ab98d6d853e11aa94caa787f35ac544b8"
+    },
+    {
+      "task": "KL-074",
+      "tested_commit": "d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7",
+      "normal_merge": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+      "source_head": "ed7246bd6c74edbec78edc60fe2682fc93df33e6",
+      "required_reviews": [
+        {
+          "kind": "GENERAL",
+          "status": "PASS",
+          "reviewed_head_sha": "7327e653d25b5aaba56fe96f8b2cd309d4a4aaf4"
+        },
+        {
+          "kind": "DB_CONCURRENCY",
+          "status": "PASS",
+          "reviewed_head_sha": "7327e653d25b5aaba56fe96f8b2cd309d4a4aaf4"
+        },
+        {
+          "kind": "SECURITY_DATA_BOUNDARY",
+          "status": "PASS",
+          "reviewed_head_sha": "7327e653d25b5aaba56fe96f8b2cd309d4a4aaf4"
+        }
+      ],
+      "result_sha256": "85d09c290cbf2e9ee5e92f4aad5daf43d1164ebaf1e0c082b3847930bef3c3e8"
+    },
+    {
+      "task": "KL-075",
+      "tested_commit": "54867864fc69b7ecbc75ad644d3baa817434598f",
+      "normal_merge": "d0470badf0ccf6bec28a9bc7e6836b57d9df93ce",
+      "source_head": "ec4b43e9f1cfaa96a17b231673f4549d651e6bca",
+      "required_reviews": [
+        {
+          "kind": "GENERAL",
+          "status": "PASS",
+          "reviewed_head_sha": "5543bfb2a40a6e29c49f0325d8542a1b38a8fcca"
+        },
+        {
+          "kind": "PROTOCOL",
+          "status": "PASS",
+          "reviewed_head_sha": "5543bfb2a40a6e29c49f0325d8542a1b38a8fcca"
+        },
+        {
+          "kind": "DB_CONCURRENCY",
+          "status": "PASS",
+          "reviewed_head_sha": "5543bfb2a40a6e29c49f0325d8542a1b38a8fcca"
+        }
+      ],
+      "result_sha256": "f7db410d2b340272b35d9cf5530bd59257f0a8626136db46556318e56306bf69"
+    },
+    {
+      "task": "KL-076",
+      "tested_commit": "509eeee298d59b29afbfacf8c40f7cefd5d02844",
+      "normal_merge": "035644e0cfb94927d7555e245223cd92c224ea5a",
+      "source_head": "d7e8f60c2530c8373279df6827bfcd08322cd832",
+      "required_reviews": [
+        {
+          "kind": "GENERAL",
+          "status": "PASS",
+          "reviewed_head_sha": "290a4d696d1d8247346e54aa9ff12615ce86dd6f"
+        },
+        {
+          "kind": "PROTOCOL",
+          "status": "PASS",
+          "reviewed_head_sha": "290a4d696d1d8247346e54aa9ff12615ce86dd6f"
+        },
+        {
+          "kind": "DB_CONCURRENCY",
+          "status": "PASS",
+          "reviewed_head_sha": "290a4d696d1d8247346e54aa9ff12615ce86dd6f"
+        }
+      ],
+      "result_sha256": "013a9f33540411a479f728ea63c68551499fc38464ae2dfe6a8ef6f0e8f239e2"
+    },
+    {
+      "task": "KL-077",
+      "tested_commit": "2c04437d46fc38eace30ea63d57e5ab5de1960e3",
+      "normal_merge": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+      "source_head": "bb144a01a971878577f52f47517f1232a13894e5",
+      "required_reviews": [
+        {
+          "kind": "GENERAL",
+          "status": "PASS",
+          "reviewed_head_sha": "03edea3c9f3666302d5eaefe6ba744ea67e64aad"
+        },
+        {
+          "kind": "PROTOCOL",
+          "status": "PASS",
+          "reviewed_head_sha": "03edea3c9f3666302d5eaefe6ba744ea67e64aad"
+        },
+        {
+          "kind": "DB_CONCURRENCY",
+          "status": "PASS",
+          "reviewed_head_sha": "03edea3c9f3666302d5eaefe6ba744ea67e64aad"
+        }
+      ],
+      "result_sha256": "a86e81ae15f4e93ac11b2e1dc7d5a55147145967bfea9d372d544a039bf73b85"
+    },
+    {
+      "task": "KL-078",
+      "tested_commit": "2a958c45cc2f25605b57a5ec60e3c46327999269",
+      "normal_merge": "c599ec1ef39c28bd691748698a09805f390878cf",
+      "source_head": "6a44e745f9ee22bc401c69c4c9f573265cc4cb5e",
+      "required_reviews": [
+        {
+          "kind": "GENERAL",
+          "status": "PASS",
+          "reviewed_head_sha": "89249abcfe5075d958c5e1ea4532b774ea4668de"
+        },
+        {
+          "kind": "PROTOCOL",
+          "status": "PASS",
+          "reviewed_head_sha": "89249abcfe5075d958c5e1ea4532b774ea4668de"
+        },
+        {
+          "kind": "DB_CONCURRENCY",
+          "status": "PASS",
+          "reviewed_head_sha": "89249abcfe5075d958c5e1ea4532b774ea4668de"
+        }
+      ],
+      "result_sha256": "86eff96043a6a034aeb6b03ddd2fcb01f468b95b259bda5c0dfcc5bad748e586"
+    },
+    {
+      "task": "KL-079",
+      "tested_commit": "1e5803836c645c90ee85980c50d9e8d245fb6cf7",
+      "normal_merge": "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588",
+      "source_head": "a16fc2e037bd6cec4dbef8613092b28e9b60ecaf",
+      "required_reviews": [
+        {
+          "kind": "GENERAL",
+          "status": "PASS",
+          "reviewed_head_sha": "056b5471f3b360eeda2eca5b1c8def107222acae"
+        },
+        {
+          "kind": "PROTOCOL",
+          "status": "PASS",
+          "reviewed_head_sha": "056b5471f3b360eeda2eca5b1c8def107222acae"
+        },
+        {
+          "kind": "DB_CONCURRENCY",
+          "status": "PASS",
+          "reviewed_head_sha": "056b5471f3b360eeda2eca5b1c8def107222acae"
+        }
+      ],
+      "result_sha256": "b6bae41144cbdad079395ef4d3dde10bdd9d0846fa7c10bed5b98739c27bdcf1"
+    }
+  ],
+  "m2": "PASS",
+  "verified_checks": [
+    {
+      "check_id": "demo_namespace_and_boundary_pu",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sha256": "3a3073d1b59d8cb40ded6c8153f516b3fe0da92ecce2552410e8f0283ce5f8ea"
+    },
+    {
+      "check_id": "demo_owner_trajectory_e2e",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sha256": "3b409091981f45c8e5e4f8aa600f9eae6939293750282e661a6559776cd2e744"
+    },
+    {
+      "check_id": "demo_revoke_denials_dc",
+      "counts": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sha256": "ca4af303f782ba9c29e70ea3ee92caf9fc9ddcd60a1089f10bb76fa2fa324bbd"
+    },
+    {
+      "check_id": "demo_expiry_denials_dc",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sha256": "7f41ac1fdd91b78c700a3955f2766d41b9ce0872bda860c2451270f7f7931093"
+    },
+    {
+      "check_id": "demo_fdn_repair_e2e",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sha256": "6846f542d2bf79e77946215696ed42b933302a8bc8e7d09e45db85fad91bd504"
+    },
+    {
+      "check_id": "demo_scope_denials_dc",
+      "counts": {
+        "tests": 43,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sha256": "07b5f66e10f3e67d1b882e6116494fb75b635db5579c3d207e39c3592fcb49a2"
+    },
+    {
+      "check_id": "demo_suite_e2e",
+      "counts": {
+        "tests": 61,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sha256": "04b7960954d89255a945d008a84def95c840aba694fd754f9e170f65fbde30ee"
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "counts": null,
+      "sha256": "7fa7e08addb11724c49e8d69701e2b776b96f52927b9e9ab241b238fd1d8a1fd"
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "counts": {
+        "tests": 232,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sha256": "e2876005714109a0ca847a397b87da996368574042203819b7cb894a328e8766"
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "counts": {
+        "tests": 676,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sha256": "60e9bc3d41ff5cf4ebfdea8bef70d50816b3b6dff09d21b9f041f28df3b59edb"
+    },
+    {
+      "check_id": "lint_passes",
+      "counts": null,
+      "sha256": "a4b5cb9a5db4e0eebb0bcd740a9fb6940aa58962ba1d3a0ba3717a9777b59fa6"
+    },
+    {
+      "check_id": "typecheck_passes",
+      "counts": null,
+      "sha256": "0cd1e4ae282b6a3e0219d3e11b35924ec1592df927f0974aa39ef2523d47057e"
+    }
+  ],
+  "suite_witness_counts": {
+    "namespace": 61,
+    "runtime_registration": 61,
+    "admitted_inputs_only": 61,
+    "atomic_receipt_event_outbox": 69,
+    "sealed_source_and_published_basis": 61,
+    "upstream": 61,
+    "forward_stage": 410,
+    "output": 174,
+    "full_output": 173,
+    "full_prepared_chain": 56,
+    "real_T7_current_eligibility_before_mutation": 3,
+    "positive_ordinary_pause_resume": 1,
+    "full_commit": 1,
+    "cleanup": 61,
+    "lifecycle_current_preconditions": 12,
+    "current_T7": 3,
+    "actual_T7_before_authority_loss": 6,
+    "ApplyControl_locked_current_epoch": 4,
+    "exact_zero_effect_denial": 44,
+    "historical_identity_only": 9,
+    "blocked": 4,
+    "trusted_post_lock_expiry_DC": 4,
+    "f2_repair": 1,
+    "scope_non_executable": 14,
+    "foreign_principal_no_capability": 3,
+    "AcceptFactRevision_locked_current_frontier_epoch": 1,
+    "incomplete_source_no_authority": 5,
+    "policy_scope_rejects_forward_stage": 2
+  },
+  "trusted_post_lock_timings": [
+    {
+      "actual_guard": "missing/contradictory/incomplete/truncated/mismatched/expired resolution",
+      "kind": "trusted_post_lock_expiry_DC",
+      "observed_lock": [
+        171,
+        [
+          121
+        ],
+        "SELECT id FROM kineticloop.planning_attempts WHERE subject_id=$1 AND id=$2 FOR UPDATE",
+        "2026-10-02 00:03:38.975735+00:00"
+      ],
+      "operation": "T6",
+      "other_bounds": {
+        "lease_seconds": 600,
+        "manifest_policy": "2026-10-02 01:03:31.409251+00:00"
+      },
+      "source_end": "2026-10-02 00:03:39.409251+00:00",
+      "trusted_after": "2026-10-02 00:03:39.419867+00:00",
+      "trusted_before_wait": "2026-10-02 00:03:38.914711+00:00",
+      "trusted_blocked_at": "2026-10-02 00:03:38.975735+00:00",
+      "zero_effects": true
+    },
+    {
+      "actual_guard": "exact T7 prescription/authorization is not executable: TIME_INELIGIBLE",
+      "kind": "trusted_post_lock_expiry_DC",
+      "observed_lock": [
+        171,
+        [
+          121
+        ],
+        "SELECT id,current_bundle_revision_id,local_date,head_revision FROM kineticloop.daily_plan_heads WHERE subject_id=$1 AND local_date=$2 FOR UPDATE",
+        "2026-10-02 00:03:51.245234+00:00"
+      ],
+      "operation": "START",
+      "other_bounds": {
+        "lease_seconds": 600,
+        "manifest_policy": "2026-10-02 01:03:43.664100+00:00"
+      },
+      "source_end": "2026-10-02 00:03:51.664100+00:00",
+      "trusted_after": "2026-10-02 00:03:51.677226+00:00",
+      "trusted_before_wait": "2026-10-02 00:03:51.179301+00:00",
+      "trusted_blocked_at": "2026-10-02 00:03:51.245234+00:00",
+      "zero_effects": true
+    },
+    {
+      "actual_guard": "exact T7 prescription/authorization is not executable: TIME_INELIGIBLE",
+      "kind": "trusted_post_lock_expiry_DC",
+      "observed_lock": [
+        171,
+        [
+          121
+        ],
+        "SELECT id FROM kineticloop.workout_sessions WHERE subject_id=$1 AND id=$2 FOR UPDATE",
+        "2026-10-02 00:04:03.460762+00:00"
+      ],
+      "operation": "CONTINUE",
+      "other_bounds": {
+        "lease_seconds": 600,
+        "manifest_policy": "2026-10-02 01:03:55.886434+00:00"
+      },
+      "source_end": "2026-10-02 00:04:03.886434+00:00",
+      "trusted_after": "2026-10-02 00:04:03.896112+00:00",
+      "trusted_before_wait": "2026-10-02 00:04:03.397582+00:00",
+      "trusted_blocked_at": "2026-10-02 00:04:03.460762+00:00",
+      "zero_effects": true
+    },
+    {
+      "actual_guard": "exact T7 prescription/authorization is not executable: TIME_INELIGIBLE",
+      "kind": "trusted_post_lock_expiry_DC",
+      "observed_lock": [
+        170,
+        [
+          120
+        ],
+        "SELECT id FROM kineticloop.workout_sessions WHERE subject_id=$1 AND id=$2 FOR UPDATE",
+        "2026-10-02 00:04:15.681023+00:00"
+      ],
+      "operation": "RESUME",
+      "other_bounds": {
+        "lease_seconds": 600,
+        "manifest_policy": "2026-10-02 01:04:08.108096+00:00"
+      },
+      "source_end": "2026-10-02 00:04:16.108096+00:00",
+      "trusted_after": "2026-10-02 00:04:16.116680+00:00",
+      "trusted_before_wait": "2026-10-02 00:04:15.618981+00:00",
+      "trusted_blocked_at": "2026-10-02 00:04:15.681023+00:00",
+      "zero_effects": true
+    }
+  ],
+  "inherited_demand_metadata": [
+    {
+      "demand_id": "d78048b2-e2c7-5543-8330-9a82f39f30d5",
+      "physical_fitness_id": "2d27029a-1958-5842-a5e4-7a7b8d73d534",
+      "descriptive_proposal_id": "aa47b607-0389-5ccb-90ee-444d2cf2315c",
+      "scope": "inherited descriptive metadata; authoritative full chain separately checked"
+    },
+    {
+      "demand_id": "d78048b2-e2c7-5543-8330-9a82f39f30d5",
+      "physical_fitness_id": "2d27029a-1958-5842-a5e4-7a7b8d73d534",
+      "descriptive_proposal_id": "aa47b607-0389-5ccb-90ee-444d2cf2315c",
+      "scope": "inherited descriptive metadata; authoritative full chain separately checked"
+    }
+  ],
+  "reviewer_db_lifecycle": "separate final-db-raw; no DB lifecycle in this audit"
+}

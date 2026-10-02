@@ -1,0 +1,337 @@
+HALF_OPEN_EQUALITY_PU actual eligibility/lease/deadline predicates; separately labeled, no DC equality claim
+NAMESPACE_PU DatabaseNamespace(project_name='kineticloop-kl027-demo-ff93c08-02d718cec5f6', database_name='kineticloop_kl027_demo_ff93c08_02d718cec5f6') negative_controls=foreign_root,sha,digest,label,ambient,nested_cleanup nested_inventory ['bootstrap_two_phase(selected_lifecycle)', 'destroy']
+EHALF_OPEN_EQUALITY_PU actual eligibility/lease/deadline predicates; separately labeled, no DC equality claim
+NAMESPACE_PU DatabaseNamespace(project_name='kineticloop-kl027-demo-ff93c08-02d718cec5f6', database_name='kineticloop_kl027_demo_ff93c08_02d718cec5f6') negative_controls=foreign_root,sha,digest,label,ambient,nested_cleanup nested_inventory ['bootstrap_two_phase(selected_lifecycle)', 'destroy']
+EHALF_OPEN_EQUALITY_PU actual eligibility/lease/deadline predicates; separately labeled, no DC equality claim
+NAMESPACE_PU DatabaseNamespace(project_name='kineticloop-kl027-demo-ff93c08-02d718cec5f6', database_name='kineticloop_kl027_demo_ff93c08_02d718cec5f6') negative_controls=foreign_root,sha,digest,label,ambient,nested_cleanup nested_inventory ['bootstrap_two_phase(selected_lifecycle)', 'destroy']
+EHALF_OPEN_EQUALITY_PU actual eligibility/lease/deadline predicates; separately labeled, no DC equality claim
+NAMESPACE_PU DatabaseNamespace(project_name='kineticloop-kl027-demo-ff93c08-02d718cec5f6', database_name='kineticloop_kl027_demo_ff93c08_02d718cec5f6') negative_controls=foreign_root,sha,digest,label,ambient,nested_cleanup nested_inventory ['bootstrap_two_phase(selected_lifecycle)', 'destroy']
+E
+==================================== ERRORS ====================================
+_____________ ERROR at setup of test_trusted_post_lock_expiry[T6] ______________
+
+    @pytest.fixture
+    def database_urls() -> Any:
+        U.test_namespace_and_boundary(
+            Path("/private/tmp/kl027-peer-root")
+            if sys.platform == "darwin"
+            else Path("/tmp/kl027-peer-root")
+        )
+        lifecycle = U.OwnedLifecycle(ROOT, current_head())
+        selected = lifecycle.namespace
+        start = time.monotonic()
+        try:
+            urls = lifecycle.bootstrap(M.bootstrap_two_phase)
+            with connect(urls["admin"]) as db:
+                assert db.execute("SELECT version_num FROM alembic_version").fetchone() == (
+                    M.HEAD_REVISION,
+                )
+            witness(
+                "namespace",
+                tested_commit=current_head(),
+                resolved_root=str(ROOT),
+                compose=selected.project_name,
+                database=selected.database_name,
+                migration=M.HEAD_REVISION,
+                nested_routes=[
+                    "selected bootstrap",
+                    "reset",
+                    "start",
+                    "current_database",
+                    "finally own destroy",
+                ],
+            )
+            yield urls
+        finally:
+>           lifecycle.destroy()
+
+tests/db/test_test_only_demo.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/protocol/test_test_only_demo.py:109: in destroy
+    super().destroy()
+src/kineticloop/db/lifecycle.py:324: in destroy
+    self._run(self.compose_command("down", "--volumes", "--remove-orphans"))
+tests/unit/protocol/test_test_only_demo.py:86: in _run
+    return super()._run(command, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <kl027_namespace.OwnedLifecycle object at 0x10d810950>
+command = ['docker', 'compose', '--project-name', 'kineticloop-kl027-demo-ff93c08-02d718cec5f6', '--file', '/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml', ...]
+
+    def _run(
+        self,
+        command: Sequence[str],
+        *,
+        check: bool = True,
+        timeout_seconds: float | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        try:
+            return self._runner(
+                list(command),
+                cwd=self.root,
+                env=self.environment,
+                check=check,
+                capture_output=True,
+                text=True,
+                timeout=timeout_seconds,
+            )
+        except subprocess.TimeoutExpired:
+            raise DatabaseLifecycleError("database readiness command timed out") from None
+        except FileNotFoundError as error:
+            raise DatabaseLifecycleError(
+                "Docker with the Compose plugin is required for the local test database."
+            ) from error
+        except subprocess.CalledProcessError as error:
+            details = Redactor((self.user, self.password)).exception_diagnostic(error)
+>           raise DatabaseLifecycleError(f"database command failed: {details}") from None
+E           kineticloop.db.lifecycle.DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl027-demo-ff93c08-02d718cec5f6', '--file', '/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml', 'down', '--volumes', '--remove-orphans']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl027-demo-ff93c08-02d718cec5f6', '--file', '/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl027-demo-ff93c08-02d718cec5f6', '--file', '/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n')
+
+src/kineticloop/db/lifecycle.py:201: DatabaseLifecycleError
+____________ ERROR at setup of test_trusted_post_lock_expiry[START] ____________
+
+    @pytest.fixture
+    def database_urls() -> Any:
+        U.test_namespace_and_boundary(
+            Path("/private/tmp/kl027-peer-root")
+            if sys.platform == "darwin"
+            else Path("/tmp/kl027-peer-root")
+        )
+        lifecycle = U.OwnedLifecycle(ROOT, current_head())
+        selected = lifecycle.namespace
+        start = time.monotonic()
+        try:
+            urls = lifecycle.bootstrap(M.bootstrap_two_phase)
+            with connect(urls["admin"]) as db:
+                assert db.execute("SELECT version_num FROM alembic_version").fetchone() == (
+                    M.HEAD_REVISION,
+                )
+            witness(
+                "namespace",
+                tested_commit=current_head(),
+                resolved_root=str(ROOT),
+                compose=selected.project_name,
+                database=selected.database_name,
+                migration=M.HEAD_REVISION,
+                nested_routes=[
+                    "selected bootstrap",
+                    "reset",
+                    "start",
+                    "current_database",
+                    "finally own destroy",
+                ],
+            )
+            yield urls
+        finally:
+>           lifecycle.destroy()
+
+tests/db/test_test_only_demo.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/protocol/test_test_only_demo.py:109: in destroy
+    super().destroy()
+src/kineticloop/db/lifecycle.py:324: in destroy
+    self._run(self.compose_command("down", "--volumes", "--remove-orphans"))
+tests/unit/protocol/test_test_only_demo.py:86: in _run
+    return super()._run(command, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <kl027_namespace.OwnedLifecycle object at 0x10da0bfb0>
+command = ['docker', 'compose', '--project-name', 'kineticloop-kl027-demo-ff93c08-02d718cec5f6', '--file', '/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml', ...]
+
+    def _run(
+        self,
+        command: Sequence[str],
+        *,
+        check: bool = True,
+        timeout_seconds: float | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        try:
+            return self._runner(
+                list(command),
+                cwd=self.root,
+                env=self.environment,
+                check=check,
+                capture_output=True,
+                text=True,
+                timeout=timeout_seconds,
+            )
+        except subprocess.TimeoutExpired:
+            raise DatabaseLifecycleError("database readiness command timed out") from None
+        except FileNotFoundError as error:
+            raise DatabaseLifecycleError(
+                "Docker with the Compose plugin is required for the local test database."
+            ) from error
+        except subprocess.CalledProcessError as error:
+            details = Redactor((self.user, self.password)).exception_diagnostic(error)
+>           raise DatabaseLifecycleError(f"database command failed: {details}") from None
+E           kineticloop.db.lifecycle.DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl027-demo-ff93c08-02d718cec5f6', '--file', '/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml', 'down', '--volumes', '--remove-orphans']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl027-demo-ff93c08-02d718cec5f6', '--file', '/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl027-demo-ff93c08-02d718cec5f6', '--file', '/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n')
+
+src/kineticloop/db/lifecycle.py:201: DatabaseLifecycleError
+__________ ERROR at setup of test_trusted_post_lock_expiry[CONTINUE] ___________
+
+    @pytest.fixture
+    def database_urls() -> Any:
+        U.test_namespace_and_boundary(
+            Path("/private/tmp/kl027-peer-root")
+            if sys.platform == "darwin"
+            else Path("/tmp/kl027-peer-root")
+        )
+        lifecycle = U.OwnedLifecycle(ROOT, current_head())
+        selected = lifecycle.namespace
+        start = time.monotonic()
+        try:
+            urls = lifecycle.bootstrap(M.bootstrap_two_phase)
+            with connect(urls["admin"]) as db:
+                assert db.execute("SELECT version_num FROM alembic_version").fetchone() == (
+                    M.HEAD_REVISION,
+                )
+            witness(
+                "namespace",
+                tested_commit=current_head(),
+                resolved_root=str(ROOT),
+                compose=selected.project_name,
+                database=selected.database_name,
+                migration=M.HEAD_REVISION,
+                nested_routes=[
+                    "selected bootstrap",
+                    "reset",
+                    "start",
+                    "current_database",
+                    "finally own destroy",
+                ],
+            )
+            yield urls
+        finally:
+>           lifecycle.destroy()
+
+tests/db/test_test_only_demo.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/protocol/test_test_only_demo.py:109: in destroy
+    super().destroy()
+src/kineticloop/db/lifecycle.py:324: in destroy
+    self._run(self.compose_command("down", "--volumes", "--remove-orphans"))
+tests/unit/protocol/test_test_only_demo.py:86: in _run
+    return super()._run(command, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <kl027_namespace.OwnedLifecycle object at 0x10dccbb00>
+command = ['docker', 'compose', '--project-name', 'kineticloop-kl027-demo-ff93c08-02d718cec5f6', '--file', '/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml', ...]
+
+    def _run(
+        self,
+        command: Sequence[str],
+        *,
+        check: bool = True,
+        timeout_seconds: float | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        try:
+            return self._runner(
+                list(command),
+                cwd=self.root,
+                env=self.environment,
+                check=check,
+                capture_output=True,
+                text=True,
+                timeout=timeout_seconds,
+            )
+        except subprocess.TimeoutExpired:
+            raise DatabaseLifecycleError("database readiness command timed out") from None
+        except FileNotFoundError as error:
+            raise DatabaseLifecycleError(
+                "Docker with the Compose plugin is required for the local test database."
+            ) from error
+        except subprocess.CalledProcessError as error:
+            details = Redactor((self.user, self.password)).exception_diagnostic(error)
+>           raise DatabaseLifecycleError(f"database command failed: {details}") from None
+E           kineticloop.db.lifecycle.DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl027-demo-ff93c08-02d718cec5f6', '--file', '/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml', 'down', '--volumes', '--remove-orphans']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl027-demo-ff93c08-02d718cec5f6', '--file', '/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl027-demo-ff93c08-02d718cec5f6', '--file', '/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n')
+
+src/kineticloop/db/lifecycle.py:201: DatabaseLifecycleError
+___________ ERROR at setup of test_trusted_post_lock_expiry[RESUME] ____________
+
+    @pytest.fixture
+    def database_urls() -> Any:
+        U.test_namespace_and_boundary(
+            Path("/private/tmp/kl027-peer-root")
+            if sys.platform == "darwin"
+            else Path("/tmp/kl027-peer-root")
+        )
+        lifecycle = U.OwnedLifecycle(ROOT, current_head())
+        selected = lifecycle.namespace
+        start = time.monotonic()
+        try:
+            urls = lifecycle.bootstrap(M.bootstrap_two_phase)
+            with connect(urls["admin"]) as db:
+                assert db.execute("SELECT version_num FROM alembic_version").fetchone() == (
+                    M.HEAD_REVISION,
+                )
+            witness(
+                "namespace",
+                tested_commit=current_head(),
+                resolved_root=str(ROOT),
+                compose=selected.project_name,
+                database=selected.database_name,
+                migration=M.HEAD_REVISION,
+                nested_routes=[
+                    "selected bootstrap",
+                    "reset",
+                    "start",
+                    "current_database",
+                    "finally own destroy",
+                ],
+            )
+            yield urls
+        finally:
+>           lifecycle.destroy()
+
+tests/db/test_test_only_demo.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/protocol/test_test_only_demo.py:109: in destroy
+    super().destroy()
+src/kineticloop/db/lifecycle.py:324: in destroy
+    self._run(self.compose_command("down", "--volumes", "--remove-orphans"))
+tests/unit/protocol/test_test_only_demo.py:86: in _run
+    return super()._run(command, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <kl027_namespace.OwnedLifecycle object at 0x10db99eb0>
+command = ['docker', 'compose', '--project-name', 'kineticloop-kl027-demo-ff93c08-02d718cec5f6', '--file', '/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml', ...]
+
+    def _run(
+        self,
+        command: Sequence[str],
+        *,
+        check: bool = True,
+        timeout_seconds: float | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        try:
+            return self._runner(
+                list(command),
+                cwd=self.root,
+                env=self.environment,
+                check=check,
+                capture_output=True,
+                text=True,
+                timeout=timeout_seconds,
+            )
+        except subprocess.TimeoutExpired:
+            raise DatabaseLifecycleError("database readiness command timed out") from None
+        except FileNotFoundError as error:
+            raise DatabaseLifecycleError(
+                "Docker with the Compose plugin is required for the local test database."
+            ) from error
+        except subprocess.CalledProcessError as error:
+            details = Redactor((self.user, self.password)).exception_diagnostic(error)
+>           raise DatabaseLifecycleError(f"database command failed: {details}") from None
+E           kineticloop.db.lifecycle.DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl027-demo-ff93c08-02d718cec5f6', '--file', '/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml', 'down', '--volumes', '--remove-orphans']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by DatabaseLifecycleError: database command failed: CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl027-demo-ff93c08-02d718cec5f6', '--file', '/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n'); caused by CalledProcessError: subprocess failed with return code 1 (returncode=1; command=['docker', 'compose', '--project-name', '[REDACTED]-kl027-demo-ff93c08-02d718cec5f6', '--file', '/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml', 'up', '--detach', 'postgres']; stdout=''; stderr='permission denied while trying to connect to the docker API at [REDACTED]\n')
+
+src/kineticloop/db/lifecycle.py:201: DatabaseLifecycleError
+- generated xml file: /Users/davetian/.codex/worktrees/465a/KineticLoop/docs/exec-plans/reviews/KL-027/final-db-raw/four-operations.xml -
+=========================== short test summary info ============================
+ERROR tests/db/test_test_only_demo.py::test_trusted_post_lock_expiry[T6] - ki...
+ERROR tests/db/test_test_only_demo.py::test_trusted_post_lock_expiry[START]
+ERROR tests/db/test_test_only_demo.py::test_trusted_post_lock_expiry[CONTINUE]
+ERROR tests/db/test_test_only_demo.py::test_trusted_post_lock_expiry[RESUME]
+4 errors in 6.71s
