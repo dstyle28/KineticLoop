@@ -1,0 +1,12 @@
+{
+  "check_id": "provenance",
+  "command": "/Users/davetian/.codex/worktrees/0f4f/KineticLoop/.venv/bin/python -m pytest -q tests/harness/test_review_evidence_provenance.py",
+  "tested_commit": "e842a5334ed1abd3454b713f19bb68f2d87f89ef",
+  "base_commit": "1099d85bd4aa76ec8221700e55b4e77a84479126",
+  "exit_code": 1,
+  "result": "FAIL",
+  "evidence_ref": "docs/exec-plans/evidence/HG-043/provenance-e842a53.json",
+  "raw_sha256": "2f402d3f6655617c9e7d90c7794df0215c08be4d4680197d728f456c88e15cb4",
+  "raw_byte_count": 1398,
+  "raw_utf8": "..............................F..                                        [100%]\n=================================== FAILURES ===================================\n_________ test_delayed_unrelated_merge_does_not_widen_created_evidence _________\n\nhistory = <test_review_evidence_provenance.History object at 0x1091b2ed0>\n\n    def test_delayed_unrelated_merge_does_not_widen_created_evidence(history: History) -> None:\n        merged = history.reviewed\n        history.put('unrelated.txt')\n        later = history.commit('later unrelated work')\n        side = history.commit_tree(history.reviewed, [history.base])\n        reintegrated = history.commit_tree(later, [later, side])\n        history.git('checkout', '-q', '--detach', reintegrated)\n        ordinary = history.review([TASK_EVIDENCE])\n>       assert history.errors(ordinary, merged) == []\nE       AssertionError: assert ['integration...01/check.log'] == []\nE         \nE         Left contains 2 more items, first extra item: 'integration-delayed-review-stale-change:docs/exec-plans/completed/KL-001_RESULT.json'\nE         Use -v to get more diff\n\ntests/harness/test_review_evidence_provenance.py:241: AssertionError\n=========================== short test summary info ============================\nFAILED tests/harness/test_review_evidence_provenance.py::test_delayed_unrelated_merge_does_not_widen_created_evidence\n1 failed, 32 passed in 34.36s\n"
+}

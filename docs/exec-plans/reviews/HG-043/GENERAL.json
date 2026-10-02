@@ -1,0 +1,51 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-043",
+  "reviewed_head_sha": "8245480918251739339987de69bfe41fa0b39af5",
+  "review_type": "GENERAL",
+  "status": "PASS",
+  "findings": [],
+  "review_contract_version": "v0.2",
+  "protected_base_sha": "1099d85bd4aa76ec8221700e55b4e77a84479126",
+  "summary": "Fresh independent GENERAL review finds no BLOCKER, REQUIRED_FOLLOWUP or NONBLOCKING findings at the exact final implementation/governance/evidence SHA. The prior nonregular-entry blocker and missing-object admission gap are closed. GENERAL recommends merge once all required specialist reviews and final applicable hosted CI pass; review PASS does not imply MERGED or product requirement PASS.",
+  "evidence_refs": [
+    "AGENTS.md",
+    ".agents/skills/pr-merge-reviewer/SKILL.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+    "docs/harness/THREAD_RESULT_CONTRACT.md",
+    "docs/harness/MERGE_GATE.md",
+    "docs/exec-plans/governance/HG-043.yaml",
+    "docs/exec-plans/evidence/HG-043/PREPARATION.md",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_review_evidence_provenance.py",
+    "tests/harness/test_validator.py",
+    "docs/exec-plans/reviews/HG-043/round-2896d24/GENERAL.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-general-raw/artifact-hashes.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-general-raw/audit.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-general-raw/audit.py",
+    "docs/exec-plans/reviews/HG-043/final-8245480-general-raw/capture.py",
+    "docs/exec-plans/reviews/HG-043/final-8245480-general-raw/focused.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-general-raw/history-audit.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-general-raw/history-audit.py",
+    "docs/exec-plans/reviews/HG-043/final-8245480-general-raw/missing-object-probe.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-general-raw/missing-object-probe.py",
+    "docs/exec-plans/reviews/HG-043/final-8245480-general-raw/prior-blocker-probe.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-general-raw/prior-blocker-probe.py",
+    "docs/exec-plans/reviews/HG-043/final-8245480-general-raw/replay.json"
+  ],
+  "verification": [
+    "Independently read AGENTS, matching review skill, authority index, Thread Review/Governance/Result/Merge contracts, own governance record and PREPARATION, and the exact protected-base-to-reviewed diff. All 75 changed paths exactly match the governance declaration. Changes are confined to the validator, focused real-Git provenance regressions, two harness contracts, legitimate derived metadata, and own HG043 governance/evidence/review artifacts; no packet, application, DB, migration, CI, product, release, frozen authority or official integration change is present.",
+    "Verified all eight final declared checks at tested_commit 97b76c7e170368c916ca79d6c7c1656259430f30: commands, check IDs, base, evidence references, zero exit/PASS, raw SHA-256 and byte counts. Checked final 715 harness tests, 232 unit tests, lint, typecheck, full harness validation and replay evidence. Implementation, tests, both changed contracts, index and manifest are byte-identical between tested and reviewed revisions; the sole intervening commit contains permitted own governance/new-evidence bookkeeping. Exact reviewed Git blobs satisfy all indexed authority hashes and manifest hashes/byte counts.",
+    "Independently reran 61 focused provenance and existing integration/delayed-review/exact-tree cases, all PASS; 120 unrelated cases deselected. Real-Git boundaries cover available regular reviewed blobs, absent own-review references bound only to the exact recorded endpoint, normalized paths, task-directory component isolation, missing and ambient/unbound additions, code/result/task-check changes including revert, ancestry and nonlinear suffix rejection, executable regular modes and literal unusual names, symlink/tree/gitlink replacement, and unavailable blobs at reviewed and review-record revisions.",
+    "Loaded validator source from the exact reviewed Git blob and independently reran the prior GENERAL symlink/directory replacement reproduction. Both paths are present and nonregular at reviewed, become regular blobs in a valid strict own-review suffix, and now reject with integration-review-evidence. The immutable-source missing-object reproduction also now rejects. Present metadata with unavailable reviewed content cannot be reclassified as absence or replaced through fallback.",
+    "Independently reran five candidates from protected Git ancestry in ephemeral fixtures. Actual two-parent normal merges contain their recorded review parent and strict own-review suffixes pass. Original review-evidence errors KL027=18, KL075=3, KL076=1 become zero; KL077/KL079 remain zero. The complete 303349-byte replay output is byte-identical to final committed evidence and has SHA-256 5da2ba036599832e877516d053c44aa0bd598558e2a3be98a3872fe74d31f110. KL027 uses actual merged PR83; the copied original hypothetical preflight remains historical. No integration or requirement state is written.",
+    "Confirmed ordinary delayed post-merge reviewed references remain supported while new reviewer-created references still require the full strict ancestral linear own-review suffix. Complete-tree squash ancestry remains exact and confined to the review-record-to-merge edge; unrelated content/mode differences and nonancestor reviewed-to-record histories reject. Existing result and task-check revision guarantees are unchanged.",
+    "Verified all three rejected 2896d24 root review records at the reviewed SHA are byte-identical to their preserved round snapshots. Historical check payload raw hashes and byte counts remain valid; failed/interrupted earlier rounds are retained separately from final PASS evidence. Old raw reproductions and snapshots were not modified or relabeled."
+  ],
+  "limitations": [
+    "Fresh GENERAL PASS binds only 8245480918251739339987de69bfe41fa0b39af5. New non-review changes require new evidence and rereview; only the own HG043 REVIEW_RECORD_ONLY suffix may follow without rereview.",
+    "No database runtime or hosted CI was executed by GENERAL. Required specialist reviews and all final applicable hosted checks must PASS before ordinary merge. Task, product requirement, release and merge states remain separate facts.",
+    "Only GENERAL.json and new raw artifacts under final-8245480-general-raw were written by this reviewer. No implementation, other review, prior task or official integration artifact was edited, and no commit was made."
+  ]
+}

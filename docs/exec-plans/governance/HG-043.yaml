@@ -1,0 +1,140 @@
+change_identity: harness-governance-v0.1/HG-043
+display_change_id: HG-043
+base_commit: 1099d85bd4aa76ec8221700e55b4e77a84479126
+tested_commit: 97b76c7e170368c916ca79d6c7c1656259430f30
+change_status: PASS
+summary: Bind ordinary integration review evidence to regular Git blobs at the reviewed SHA; bind reviewer-created
+  own-task bookkeeping absent as any Git entry at reviewed to the exact review-record commit only after
+  a strict ancestral linear exclusively own-review suffix proof. Preserve result and task-test evidence
+  guarantees, delayed review and exact-tree squash semantics.
+packets_refined: []
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- docs/exec-plans/evidence/HG-043/PREPARATION.md
+- docs/exec-plans/evidence/HG-043/check.py
+- docs/exec-plans/evidence/HG-043/diff-787663f.json
+- docs/exec-plans/evidence/HG-043/diff-97b76c7.json
+- docs/exec-plans/evidence/HG-043/diff-bd3811f.json
+- docs/exec-plans/evidence/HG-043/diff-e842a53.json
+- docs/exec-plans/evidence/HG-043/harness-787663f.json
+- docs/exec-plans/evidence/HG-043/harness-97b76c7.json
+- docs/exec-plans/evidence/HG-043/harness-bd3811f.json
+- docs/exec-plans/evidence/HG-043/harness-e842a53.json
+- docs/exec-plans/evidence/HG-043/initial-replay.json
+- docs/exec-plans/evidence/HG-043/lint-787663f.json
+- docs/exec-plans/evidence/HG-043/lint-97b76c7.json
+- docs/exec-plans/evidence/HG-043/lint-bd3811f.json
+- docs/exec-plans/evidence/HG-043/lint-e842a53.json
+- docs/exec-plans/evidence/HG-043/missing-object-787663f.json
+- docs/exec-plans/evidence/HG-043/original-HG042-preflight.json
+- docs/exec-plans/evidence/HG-043/probe_missing_object.py
+- docs/exec-plans/evidence/HG-043/provenance-787663f.json
+- docs/exec-plans/evidence/HG-043/provenance-97b76c7.json
+- docs/exec-plans/evidence/HG-043/provenance-bd3811f.json
+- docs/exec-plans/evidence/HG-043/provenance-e842a53.json
+- docs/exec-plans/evidence/HG-043/record.py
+- docs/exec-plans/evidence/HG-043/refresh.py
+- docs/exec-plans/evidence/HG-043/replay-787663f.json
+- docs/exec-plans/evidence/HG-043/replay-97b76c7.json
+- docs/exec-plans/evidence/HG-043/replay-bd3811f.json
+- docs/exec-plans/evidence/HG-043/replay-e842a53.json
+- docs/exec-plans/evidence/HG-043/replay.py
+- docs/exec-plans/evidence/HG-043/typecheck-787663f.json
+- docs/exec-plans/evidence/HG-043/typecheck-97b76c7.json
+- docs/exec-plans/evidence/HG-043/typecheck-bd3811f.json
+- docs/exec-plans/evidence/HG-043/typecheck-e842a53.json
+- docs/exec-plans/evidence/HG-043/unit-787663f.json
+- docs/exec-plans/evidence/HG-043/unit-97b76c7.json
+- docs/exec-plans/evidence/HG-043/unit-bd3811f.json
+- docs/exec-plans/evidence/HG-043/unit-e842a53.json
+- docs/exec-plans/evidence/HG-043/validation-787663f.json
+- docs/exec-plans/evidence/HG-043/validation-97b76c7.json
+- docs/exec-plans/evidence/HG-043/validation-bd3811f.json
+- docs/exec-plans/evidence/HG-043/validation-e842a53.json
+- docs/exec-plans/governance/HG-043.yaml
+- docs/exec-plans/reviews/HG-043/DB_CONCURRENCY-raw/assessment.md
+- docs/exec-plans/reviews/HG-043/DB_CONCURRENCY-raw/audit.py
+- docs/exec-plans/reviews/HG-043/DB_CONCURRENCY-raw/git-static-candidates.json
+- docs/exec-plans/reviews/HG-043/DB_CONCURRENCY-raw/nonregular-replacement.json
+- docs/exec-plans/reviews/HG-043/DB_CONCURRENCY-raw/nonregular-replacement.py
+- docs/exec-plans/reviews/HG-043/DB_CONCURRENCY-raw/provenance-regressions.json
+- docs/exec-plans/reviews/HG-043/DB_CONCURRENCY-raw/reviewer-db-classification.json
+- docs/exec-plans/reviews/HG-043/DB_CONCURRENCY-raw/validator-regressions-interrupted.json
+- docs/exec-plans/reviews/HG-043/DB_CONCURRENCY.json
+- docs/exec-plans/reviews/HG-043/GENERAL-raw/audit.json
+- docs/exec-plans/reviews/HG-043/GENERAL-raw/audit.py
+- docs/exec-plans/reviews/HG-043/GENERAL-raw/capture.py
+- docs/exec-plans/reviews/HG-043/GENERAL-raw/focused.json
+- docs/exec-plans/reviews/HG-043/GENERAL-raw/nonregular-replacement.json
+- docs/exec-plans/reviews/HG-043/GENERAL-raw/nonregular-replacement.py
+- docs/exec-plans/reviews/HG-043/GENERAL-raw/replay.json
+- docs/exec-plans/reviews/HG-043/GENERAL-raw/review-2896d24.json
+- docs/exec-plans/reviews/HG-043/GENERAL.json
+- docs/exec-plans/reviews/HG-043/PROTOCOL-raw/candidate-replay.json
+- docs/exec-plans/reviews/HG-043/PROTOCOL-raw/committed-evidence-audit.json
+- docs/exec-plans/reviews/HG-043/PROTOCOL-raw/focused-regressions.json
+- docs/exec-plans/reviews/HG-043/PROTOCOL-raw/nonregular-replacement.json
+- docs/exec-plans/reviews/HG-043/PROTOCOL-raw/probe.py
+- docs/exec-plans/reviews/HG-043/PROTOCOL.json
+- docs/exec-plans/reviews/HG-043/round-2896d24/DB_CONCURRENCY.json
+- docs/exec-plans/reviews/HG-043/round-2896d24/GENERAL.json
+- docs/exec-plans/reviews/HG-043/round-2896d24/PROTOCOL.json
+- docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
+- docs/harness/THREAD_REVIEW_CONTRACT.md
+- tests/harness/test_review_evidence_provenance.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: provenance
+  command: /Users/davetian/.codex/worktrees/0f4f/KineticLoop/.venv/bin/python -m pytest -q tests/harness/test_review_evidence_provenance.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-043/provenance-97b76c7.json
+- check_id: harness
+  command: /Users/davetian/.codex/worktrees/0f4f/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-043/harness-97b76c7.json
+- check_id: unit
+  command: /Users/davetian/.codex/worktrees/0f4f/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-043/unit-97b76c7.json
+- check_id: lint
+  command: /Users/davetian/.codex/worktrees/0f4f/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-043/lint-97b76c7.json
+- check_id: typecheck
+  command: /Users/davetian/.codex/worktrees/0f4f/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-043/typecheck-97b76c7.json
+- check_id: validation
+  command: /Users/davetian/.codex/worktrees/0f4f/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-043/validation-97b76c7.json
+- check_id: replay
+  command: /Users/davetian/.codex/worktrees/0f4f/KineticLoop/.venv/bin/python /Users/davetian/.codex/worktrees/0f4f/KineticLoop/docs/exec-plans/evidence/HG-043/replay.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-043/replay-97b76c7.json
+- check_id: diff
+  command: git diff --check 1099d85bd4aa76ec8221700e55b4e77a84479126 97b76c7e170368c916ca79d6c7c1656259430f30
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-043/diff-97b76c7.json
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- Governance validator repair only. No task, product requirement, DB, release or production PASS is
+  inferred.
+- Five candidates replayed from protected Git ancestry in ephemeral fixtures; no official integration
+  records written. HG042 owns later bookkeeping.
+- Review-created logs are reviewer bookkeeping, never pre-review task acceptance evidence.
+- Prior SHA-bound CHANGES_REQUIRED reviews and reproductions are preserved; the absence boundary is
+  repaired and requires fresh reviews at the final revision.
+- Delayed review with unrelated intervening commits retains ordinary reviewed evidence support but cannot
+  use the new strict suffix exception.
+- No database runtime is run locally for this validator repair; independent specialist audit and all
+  final applicable hosted PostgreSQL CI are required before ordinary merge.
+- Fresh GENERAL/PROTOCOL/DB_CONCURRENCY review binds final governance/evidence head. Only own HG043
+  review suffix follows.

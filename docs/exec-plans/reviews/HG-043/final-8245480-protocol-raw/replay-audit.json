@@ -1,0 +1,2662 @@
+{
+  "reviewed_head_sha": "8245480918251739339987de69bfe41fa0b39af5",
+  "purpose": "Independent raw-Git audit of replay sources; reviewer runs remain review evidence, not task acceptance",
+  "candidates": {
+    "KL-027": {
+      "record": {
+        "task_identity": "harness-backlog-v0.2/KL-027",
+        "display_task_id": "KL-027",
+        "result_commit": "ff93c08c7c32fba9e8dede0c161bb4f97bc98259",
+        "reviewed_head_sha": "ff93c08c7c32fba9e8dede0c161bb4f97bc98259",
+        "review_record_commit": "e6cd006720b0f81a1d7d5efa1105c68a06c34d96",
+        "merge_commit": "1099d85bd4aa76ec8221700e55b4e77a84479126",
+        "integration_status": "MERGED"
+      },
+      "normal_merge_parents": [
+        "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+        "e6cd006720b0f81a1d7d5efa1105c68a06c34d96"
+      ],
+      "strict_suffix_commits": [
+        {
+          "commit": "e6cd006720b0f81a1d7d5efa1105c68a06c34d96",
+          "paths": [
+            "docs/exec-plans/reviews/KL-027/DB_CONCURRENCY.json",
+            "docs/exec-plans/reviews/KL-027/GENERAL.json",
+            "docs/exec-plans/reviews/KL-027/PROTOCOL.json",
+            "docs/exec-plans/reviews/KL-027/final-db-raw/assessment.md",
+            "docs/exec-plans/reviews/KL-027/final-db-raw/audit.json",
+            "docs/exec-plans/reviews/KL-027/final-db-raw/four-operations-sandbox-unavailable.log",
+            "docs/exec-plans/reviews/KL-027/final-db-raw/four-operations-sandbox-unavailable.xml",
+            "docs/exec-plans/reviews/KL-027/final-db-raw/four-operations.log",
+            "docs/exec-plans/reviews/KL-027/final-db-raw/four-operations.xml",
+            "docs/exec-plans/reviews/KL-027/final-db-raw/namespace-cache-unavailable.log",
+            "docs/exec-plans/reviews/KL-027/final-db-raw/namespace.log",
+            "docs/exec-plans/reviews/KL-027/final-db-raw/namespace.xml",
+            "docs/exec-plans/reviews/KL-027/final-general-raw/audit.json",
+            "docs/exec-plans/reviews/KL-027/final-general-raw/audit.log",
+            "docs/exec-plans/reviews/KL-027/final-general-raw/audit.py",
+            "docs/exec-plans/reviews/KL-027/final-general-raw/oracle-assessment.md",
+            "docs/exec-plans/reviews/KL-027/final-general-raw/unit-review.log",
+            "docs/exec-plans/reviews/KL-027/final-general-raw/unit-review.xml",
+            "docs/exec-plans/reviews/KL-027/final-protocol-raw/assessment.md",
+            "docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.json",
+            "docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.log",
+            "docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.py",
+            "docs/exec-plans/reviews/KL-027/final-protocol-raw/schema-validation.json"
+          ]
+        }
+      ],
+      "ordinary_refs": [
+        {
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_suite_e2e.log",
+          "blob": "0175c787649969e53049b7940bc7783bb98c2f40"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/checks.json",
+          "blob": "f031d974c208e625aaf3ba331cd3a4069578c311"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_suite_e2e.log",
+          "blob": "0175c787649969e53049b7940bc7783bb98c2f40"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_suite_e2e.xml",
+          "blob": "1b5434ee12a17267173cb64a67826e610f026be3"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-027_RESULT.yaml",
+          "blob": "1e97cf5f0b3300e9e99aec37914dc13cd71061f1"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-027/entry-audit.json",
+          "blob": "b01cc071f977faa32f664297657c193a24139764"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/history/1df1527/GENERAL.json",
+          "blob": "0837e537dbd2b8fde8eaeeda86bcf27f0b91d482"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-027/checks-e78a59b/repair-attempt.json",
+          "blob": "d79911899742fde6f8c9a495d06cb718ed061667"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/checks.json",
+          "blob": "f031d974c208e625aaf3ba331cd3a4069578c311"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_suite_e2e.log",
+          "blob": "0175c787649969e53049b7940bc7783bb98c2f40"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-027_RESULT.yaml",
+          "blob": "1e97cf5f0b3300e9e99aec37914dc13cd71061f1"
+        }
+      ],
+      "review_created_refs": [
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-db-raw/assessment.md",
+          "blob": "8ca27f7e3424d2d92337c1547e3de1a9e5bbc8a1",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-db-raw/audit.json",
+          "blob": "9ddaff44351d39164d583ad1c681f9fda0eeb14c",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-db-raw/namespace.log",
+          "blob": "8cb0ca17b83dea28dc8110e9f909fc55cb4e3eb9",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-db-raw/namespace.xml",
+          "blob": "54bac531a8d250eb506e14b9caaf97ff8794f421",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-db-raw/four-operations.log",
+          "blob": "332b2a47a84a3d118013a98c5c3438f6c012117e",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-db-raw/four-operations.xml",
+          "blob": "8a4c37d8a0c869b0bfe69c64f163a1afcfb6c5bf",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.json",
+          "blob": "4ec10c2994bcf8167a69db964b62b06d06992914",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-general-raw/audit.py",
+          "blob": "5fe0cbebc2532b964bb3cc454a964a6481e77d1c",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-general-raw/audit.json",
+          "blob": "1285572c5daaefb5ee19adf3ea4ae1c4f590e6c0",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-general-raw/audit.log",
+          "blob": "62099cfff369626afe5d5f236fbd178aea46b8c5",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-general-raw/unit-review.log",
+          "blob": "4a756a0edc6c6ef3c3457134f66fc0c5a12ad489",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-general-raw/unit-review.xml",
+          "blob": "3860fac5e3ce6569d76d68b9128cfc7dbbbf963c",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-general-raw/oracle-assessment.md",
+          "blob": "bfda578f0080fdc767fb64cd988a15a976acfc20",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-protocol-raw/assessment.md",
+          "blob": "7e0db78e4ba5b8af851a4831eb00a9d4ed1a7bc2",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.json",
+          "blob": "4ec10c2994bcf8167a69db964b62b06d06992914",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.py",
+          "blob": "acae132bf41f88212b6204ba47b0df3f99e84c27",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.log",
+          "blob": "f8b4fda03a1ce8454950bdfca7aecc619195c314",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-db-raw/audit.json",
+          "blob": "9ddaff44351d39164d583ad1c681f9fda0eeb14c",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        }
+      ],
+      "task_check_refs_at_reviewed": [
+        {
+          "check_id": "demo_namespace_and_boundary_pu",
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_namespace_and_boundary_pu.log",
+          "blob_at_reviewed": "c68b2ab109b59903d7813464fad3ad2a981d0d53"
+        },
+        {
+          "check_id": "demo_owner_trajectory_e2e",
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_owner_trajectory_e2e.log",
+          "blob_at_reviewed": "4e6725628d034fcfe5900b3a2fd2798ff9d4e805"
+        },
+        {
+          "check_id": "demo_revoke_denials_dc",
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_revoke_denials_dc.log",
+          "blob_at_reviewed": "02984e40cea9bafd55ee4b997cd2787c6ac453bd"
+        },
+        {
+          "check_id": "demo_expiry_denials_dc",
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_expiry_denials_dc.log",
+          "blob_at_reviewed": "9428429dc591dacc45f38458d2ee5a259ee45f38"
+        },
+        {
+          "check_id": "demo_fdn_repair_e2e",
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_fdn_repair_e2e.log",
+          "blob_at_reviewed": "1b7de7f6fa26240ca67cff9a3d421050001f1a72"
+        },
+        {
+          "check_id": "demo_scope_denials_dc",
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_scope_denials_dc.log",
+          "blob_at_reviewed": "04dfe00cbb3622440ea15a39b98fb7fb5c72acf7"
+        },
+        {
+          "check_id": "demo_suite_e2e",
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_suite_e2e.log",
+          "blob_at_reviewed": "0175c787649969e53049b7940bc7783bb98c2f40"
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/harness_validation_passes.log",
+          "blob_at_reviewed": "1e87036d0de98058eab825a3860d7dd60d33fbf8"
+        },
+        {
+          "check_id": "unit_regressions_pass",
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/unit_regressions_pass.log",
+          "blob_at_reviewed": "bda53fc32b9593dd0873e8c56c8ac8f01b1db675"
+        },
+        {
+          "check_id": "harness_regressions_pass",
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/harness_regressions_pass.log",
+          "blob_at_reviewed": "49cfc59423edfde0c0fa3180aed0fa1ab256f64e"
+        },
+        {
+          "check_id": "lint_passes",
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/lint_passes.log",
+          "blob_at_reviewed": "6fd02b43478c80ad9baf424023ac5ad0637f2f46"
+        },
+        {
+          "check_id": "typecheck_passes",
+          "path": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/typecheck_passes.log",
+          "blob_at_reviewed": "6c7f2a8a7553f0e4d69052e8b10b1038df4acf15"
+        }
+      ],
+      "result_sha256": "a6f47f3160fdf9ec14037a327eb624351f87b030d430261ab3fbae4699d11fb7",
+      "old_errors": [
+        "integration-review-evidence:KL-027:DB_CONCURRENCY:docs/exec-plans/reviews/KL-027/final-db-raw/assessment.md",
+        "integration-review-evidence:KL-027:DB_CONCURRENCY:docs/exec-plans/reviews/KL-027/final-db-raw/audit.json",
+        "integration-review-evidence:KL-027:DB_CONCURRENCY:docs/exec-plans/reviews/KL-027/final-db-raw/namespace.log",
+        "integration-review-evidence:KL-027:DB_CONCURRENCY:docs/exec-plans/reviews/KL-027/final-db-raw/namespace.xml",
+        "integration-review-evidence:KL-027:DB_CONCURRENCY:docs/exec-plans/reviews/KL-027/final-db-raw/four-operations.log",
+        "integration-review-evidence:KL-027:DB_CONCURRENCY:docs/exec-plans/reviews/KL-027/final-db-raw/four-operations.xml",
+        "integration-review-evidence:KL-027:DB_CONCURRENCY:docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.json",
+        "integration-review-evidence:KL-027:GENERAL:docs/exec-plans/reviews/KL-027/final-general-raw/audit.py",
+        "integration-review-evidence:KL-027:GENERAL:docs/exec-plans/reviews/KL-027/final-general-raw/audit.json",
+        "integration-review-evidence:KL-027:GENERAL:docs/exec-plans/reviews/KL-027/final-general-raw/audit.log",
+        "integration-review-evidence:KL-027:GENERAL:docs/exec-plans/reviews/KL-027/final-general-raw/unit-review.log",
+        "integration-review-evidence:KL-027:GENERAL:docs/exec-plans/reviews/KL-027/final-general-raw/unit-review.xml",
+        "integration-review-evidence:KL-027:GENERAL:docs/exec-plans/reviews/KL-027/final-general-raw/oracle-assessment.md",
+        "integration-review-evidence:KL-027:PROTOCOL:docs/exec-plans/reviews/KL-027/final-protocol-raw/assessment.md",
+        "integration-review-evidence:KL-027:PROTOCOL:docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.json",
+        "integration-review-evidence:KL-027:PROTOCOL:docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.py",
+        "integration-review-evidence:KL-027:PROTOCOL:docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.log",
+        "integration-review-evidence:KL-027:PROTOCOL:docs/exec-plans/reviews/KL-027/final-db-raw/audit.json"
+      ],
+      "new_errors": []
+    },
+    "KL-075": {
+      "record": {
+        "task_identity": "harness-backlog-v0.2/KL-075",
+        "display_task_id": "KL-075",
+        "result_commit": "5543bfb2a40a6e29c49f0325d8542a1b38a8fcca",
+        "reviewed_head_sha": "5543bfb2a40a6e29c49f0325d8542a1b38a8fcca",
+        "review_record_commit": "ec4b43e9f1cfaa96a17b231673f4549d651e6bca",
+        "merge_commit": "d0470badf0ccf6bec28a9bc7e6836b57d9df93ce",
+        "integration_status": "MERGED"
+      },
+      "normal_merge_parents": [
+        "74cd5b3c8782f4eefb8f98a3895407300990cc27",
+        "ec4b43e9f1cfaa96a17b231673f4549d651e6bca"
+      ],
+      "strict_suffix_commits": [
+        {
+          "commit": "39b5acf8c2d0bf9fb9900c5ce3a14b6707adcc26",
+          "paths": [
+            "docs/exec-plans/reviews/KL-075/DB_CONCURRENCY.json",
+            "docs/exec-plans/reviews/KL-075/GENERAL.json",
+            "docs/exec-plans/reviews/KL-075/PROTOCOL.json",
+            "docs/exec-plans/reviews/KL-075/independent-db-5543bfb.xml"
+          ]
+        },
+        {
+          "commit": "f5e7a0f15cb6814ce82866f0a5844fbab312f454",
+          "paths": [
+            "docs/exec-plans/reviews/KL-075/independent-db-5543bfb.log",
+            "docs/exec-plans/reviews/KL-075/independent-unit-5543bfb.log"
+          ]
+        },
+        {
+          "commit": "ec4b43e9f1cfaa96a17b231673f4549d651e6bca",
+          "paths": [
+            "docs/exec-plans/reviews/KL-075/PROTOCOL.json"
+          ]
+        }
+      ],
+      "ordinary_refs": [
+        {
+          "path": "docs/exec-plans/active/KL-075.md",
+          "blob": "439460f2d824ffc98d451cf4e222bf816eb38518"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-075_RESULT.yaml",
+          "blob": "bae63424967a3e7c845e713c4168543a59a4d284"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/entry.json",
+          "blob": "16d2826a059c694d566724d70181bcd6724bd442"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/checks-5486786.json",
+          "blob": "f95c04aafa40f9cbc568407070d08e9d36755de4"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/assertions-5486786.json",
+          "blob": "c6609934a48eb9219c790776c23e1f869cd20ac6"
+        },
+        {
+          "path": "docs/contracts/planning_progress.md",
+          "blob": "af39d2942186785c6202db2150155f90e4f08054"
+        },
+        {
+          "path": "src/kineticloop/persistence/planning_progress.py",
+          "blob": "6192ff04ee55381922b7d8805a50a15514cdeeea"
+        },
+        {
+          "path": "src/kineticloop/persistence/transactions.py",
+          "blob": "6b95046c4cb3bfe3553c30f8bab6b2f58ab55bd8"
+        },
+        {
+          "path": "src/kineticloop/workflow/planning_progress.py",
+          "blob": "f5bf9eccf7fdd5638306e979aeb40a85406eafa3"
+        },
+        {
+          "path": "tests/db/test_planning_progress.py",
+          "blob": "d07665a0cf7b3fc62597e0470f0459643d09181c"
+        },
+        {
+          "path": "tests/unit/workflow/test_planning_progress.py",
+          "blob": "8969dcba9530a5f60b1a3baca122b8ae0e195d9f"
+        },
+        {
+          "path": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+          "blob": "60cc632b2e9c7269210368887b6349d80518abeb"
+        },
+        {
+          "path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+          "blob": "949bd6d487a3876d8b37e224e6882432bd75bfdf"
+        },
+        {
+          "path": "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+          "blob": "d3bd0d8b336069d8a7848655a78322fe40970405"
+        },
+        {
+          "path": "docs/exec-plans/milestones/M2.json",
+          "blob": "6a53d08d992d30c1009b4194794583c605b6fc37"
+        },
+        {
+          "path": "docs/exec-plans/integrations/KL-019.json",
+          "blob": "a8b7a8afc0b33c7cc96b4349280775b6c1c6992a"
+        },
+        {
+          "path": "docs/exec-plans/integrations/KL-024.json",
+          "blob": "2cebb88ff61471a04add96298e29a3fea6bd0b12"
+        },
+        {
+          "path": "docs/exec-plans/integrations/KL-025.json",
+          "blob": "9e60094515aab96287852621cc0acd468105099a"
+        },
+        {
+          "path": "docs/exec-plans/integrations/KL-074.json",
+          "blob": "f496e94bf76950dfb9d19ff534961d9a5fad8361"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_internal_identity_pu-5486786.log",
+          "blob": "099a16ca703d70f125579d2e350b8ad8819e37f2"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_state_machine_pu-5486786.log",
+          "blob": "c46c5271204547d48e13217916e776f95c7a2707"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_snapshot_dc-5486786.log",
+          "blob": "b41cf895e46ade0ac19a2916911e5199e161914d"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_time_boundary_pu-5486786.log",
+          "blob": "b7475dbfc8a5fd79e5d7c54913678ed36dfd3d6e"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_current_guards_dc-5486786.log",
+          "blob": "8a7b8f32d4fecbdb2a81f85a8d2a5162336dcddc"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_atomicity_dc-5486786.log",
+          "blob": "0e7d3de40b7e56aa3a5fae6a59322cba5ad7cdf2"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_namespace_pu-5486786.log",
+          "blob": "9f0f292d3ef90a99da2e361655442c8a1743d04f"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_suite_dc-5486786.log",
+          "blob": "e3a75f41cc736349ee56e958f400b73bfb281b54"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/harness_validation_passes-5486786.log",
+          "blob": "ffc68bf6cae09956b04b1b86f5e9dfcbbb3636d4"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/unit_regressions_pass-5486786.log",
+          "blob": "adb87f25bfc0c4e54a5e8f92808cd03c94849483"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/harness_regressions_pass-5486786.log",
+          "blob": "ec578e0a523dc8ee60ebffb01c11658f31113463"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/lint_passes-5486786.log",
+          "blob": "aba67e8387ad10b16de58f42aaa6e764b3d19562"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/typecheck_passes-5486786.log",
+          "blob": "8a58584b583c9be8abefb8cc6fdb3f517072d4b1"
+        },
+        {
+          "path": "migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py",
+          "blob": "b685ce13f12ace6824329354f42fd5d8eb0f06b3"
+        },
+        {
+          "path": "tests/db/test_migrations.py",
+          "blob": "dc1eac0804ec72b3dd92c86c40231487fb777cca"
+        },
+        {
+          "path": "src/kineticloop/db/lifecycle.py",
+          "blob": "e7e9ec95bddb6a0f6e7d9f218b8797296a81ee26"
+        },
+        {
+          "path": "docs/exec-plans/active/KL-075.md",
+          "blob": "439460f2d824ffc98d451cf4e222bf816eb38518"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-075_RESULT.yaml",
+          "blob": "bae63424967a3e7c845e713c4168543a59a4d284"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/entry.json",
+          "blob": "16d2826a059c694d566724d70181bcd6724bd442"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/checks-5486786.json",
+          "blob": "f95c04aafa40f9cbc568407070d08e9d36755de4"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/assertions-5486786.json",
+          "blob": "c6609934a48eb9219c790776c23e1f869cd20ac6"
+        },
+        {
+          "path": "docs/contracts/planning_progress.md",
+          "blob": "af39d2942186785c6202db2150155f90e4f08054"
+        },
+        {
+          "path": "src/kineticloop/persistence/planning_progress.py",
+          "blob": "6192ff04ee55381922b7d8805a50a15514cdeeea"
+        },
+        {
+          "path": "src/kineticloop/persistence/transactions.py",
+          "blob": "6b95046c4cb3bfe3553c30f8bab6b2f58ab55bd8"
+        },
+        {
+          "path": "src/kineticloop/workflow/planning_progress.py",
+          "blob": "f5bf9eccf7fdd5638306e979aeb40a85406eafa3"
+        },
+        {
+          "path": "tests/db/test_planning_progress.py",
+          "blob": "d07665a0cf7b3fc62597e0470f0459643d09181c"
+        },
+        {
+          "path": "tests/unit/workflow/test_planning_progress.py",
+          "blob": "8969dcba9530a5f60b1a3baca122b8ae0e195d9f"
+        },
+        {
+          "path": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+          "blob": "60cc632b2e9c7269210368887b6349d80518abeb"
+        },
+        {
+          "path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+          "blob": "949bd6d487a3876d8b37e224e6882432bd75bfdf"
+        },
+        {
+          "path": "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+          "blob": "d3bd0d8b336069d8a7848655a78322fe40970405"
+        },
+        {
+          "path": "docs/exec-plans/milestones/M2.json",
+          "blob": "6a53d08d992d30c1009b4194794583c605b6fc37"
+        },
+        {
+          "path": "docs/exec-plans/integrations/KL-019.json",
+          "blob": "a8b7a8afc0b33c7cc96b4349280775b6c1c6992a"
+        },
+        {
+          "path": "docs/exec-plans/integrations/KL-024.json",
+          "blob": "2cebb88ff61471a04add96298e29a3fea6bd0b12"
+        },
+        {
+          "path": "docs/exec-plans/integrations/KL-025.json",
+          "blob": "9e60094515aab96287852621cc0acd468105099a"
+        },
+        {
+          "path": "docs/exec-plans/integrations/KL-074.json",
+          "blob": "f496e94bf76950dfb9d19ff534961d9a5fad8361"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_internal_identity_pu-5486786.log",
+          "blob": "099a16ca703d70f125579d2e350b8ad8819e37f2"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_state_machine_pu-5486786.log",
+          "blob": "c46c5271204547d48e13217916e776f95c7a2707"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_snapshot_dc-5486786.log",
+          "blob": "b41cf895e46ade0ac19a2916911e5199e161914d"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_time_boundary_pu-5486786.log",
+          "blob": "b7475dbfc8a5fd79e5d7c54913678ed36dfd3d6e"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_current_guards_dc-5486786.log",
+          "blob": "8a7b8f32d4fecbdb2a81f85a8d2a5162336dcddc"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_atomicity_dc-5486786.log",
+          "blob": "0e7d3de40b7e56aa3a5fae6a59322cba5ad7cdf2"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_namespace_pu-5486786.log",
+          "blob": "9f0f292d3ef90a99da2e361655442c8a1743d04f"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_suite_dc-5486786.log",
+          "blob": "e3a75f41cc736349ee56e958f400b73bfb281b54"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/harness_validation_passes-5486786.log",
+          "blob": "ffc68bf6cae09956b04b1b86f5e9dfcbbb3636d4"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/unit_regressions_pass-5486786.log",
+          "blob": "adb87f25bfc0c4e54a5e8f92808cd03c94849483"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/harness_regressions_pass-5486786.log",
+          "blob": "ec578e0a523dc8ee60ebffb01c11658f31113463"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/lint_passes-5486786.log",
+          "blob": "aba67e8387ad10b16de58f42aaa6e764b3d19562"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/typecheck_passes-5486786.log",
+          "blob": "8a58584b583c9be8abefb8cc6fdb3f517072d4b1"
+        },
+        {
+          "path": "CURRENT_DOCUMENT_INDEX.json",
+          "blob": "cfa1179e92e2ad490e1125c860b5a6139624a8b8"
+        },
+        {
+          "path": "AGENTS.md",
+          "blob": "f09b811c8e02144bd311efdf247aaa3d02f7ae05"
+        },
+        {
+          "path": "docs/exec-plans/active/KL-075.md",
+          "blob": "439460f2d824ffc98d451cf4e222bf816eb38518"
+        },
+        {
+          "path": ".agents/skills/pr-merge-reviewer/SKILL.md",
+          "blob": "4872445094ae8c1ada574f0eb3bc95145086f51a"
+        },
+        {
+          "path": ".agents/skills/protocol-guardian/SKILL.md",
+          "blob": "acba55969402aaf3a8f858de7c0f0a281420167c"
+        },
+        {
+          "path": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+          "blob": "60cc632b2e9c7269210368887b6349d80518abeb"
+        },
+        {
+          "path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+          "blob": "949bd6d487a3876d8b37e224e6882432bd75bfdf"
+        },
+        {
+          "path": "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+          "blob": "d3bd0d8b336069d8a7848655a78322fe40970405"
+        },
+        {
+          "path": "docs/exec-plans/evidence/HG-038/PREPARATION.md",
+          "blob": "635a7d469e84fb333b049453897fb8f603eb25b8"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-075_RESULT.yaml",
+          "blob": "bae63424967a3e7c845e713c4168543a59a4d284"
+        },
+        {
+          "path": "docs/contracts/planning_progress.md",
+          "blob": "af39d2942186785c6202db2150155f90e4f08054"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/entry.json",
+          "blob": "16d2826a059c694d566724d70181bcd6724bd442"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/checks-5486786.json",
+          "blob": "f95c04aafa40f9cbc568407070d08e9d36755de4"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/assertions-5486786.json",
+          "blob": "c6609934a48eb9219c790776c23e1f869cd20ac6"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_snapshot_dc-5486786.log",
+          "blob": "b41cf895e46ade0ac19a2916911e5199e161914d"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_current_guards_dc-5486786.log",
+          "blob": "8a7b8f32d4fecbdb2a81f85a8d2a5162336dcddc"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_atomicity_dc-5486786.log",
+          "blob": "0e7d3de40b7e56aa3a5fae6a59322cba5ad7cdf2"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_suite_dc-5486786.log",
+          "blob": "e3a75f41cc736349ee56e958f400b73bfb281b54"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_suite_dc-5486786.xml",
+          "blob": "ec2dd3b8443b1af66a9a73fa03368a19658672a5"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/progress_time_boundary_pu-5486786.log",
+          "blob": "b7475dbfc8a5fd79e5d7c54913678ed36dfd3d6e"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/rejected-PROTOCOL-0fccfe2.json",
+          "blob": "0fe076ee1c163cc62caf0c252e628313513c5745"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/rejected-GENERAL-0fccfe2.json",
+          "blob": "077058fa70ab4a724b92d8d4bcc368917de0003a"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-075/rejected-DB_CONCURRENCY-0fccfe2.json",
+          "blob": "5616946fc255afaf8df24539fe43cff82b84885e"
+        },
+        {
+          "path": "src/kineticloop/workflow/planning_progress.py",
+          "blob": "f5bf9eccf7fdd5638306e979aeb40a85406eafa3"
+        },
+        {
+          "path": "src/kineticloop/persistence/planning_progress.py",
+          "blob": "6192ff04ee55381922b7d8805a50a15514cdeeea"
+        },
+        {
+          "path": "src/kineticloop/persistence/transactions.py",
+          "blob": "6b95046c4cb3bfe3553c30f8bab6b2f58ab55bd8"
+        },
+        {
+          "path": "tests/db/test_planning_progress.py",
+          "blob": "d07665a0cf7b3fc62597e0470f0459643d09181c"
+        },
+        {
+          "path": "docs/exec-plans/integrations/KL-019.json",
+          "blob": "a8b7a8afc0b33c7cc96b4349280775b6c1c6992a"
+        },
+        {
+          "path": "docs/exec-plans/integrations/KL-024.json",
+          "blob": "2cebb88ff61471a04add96298e29a3fea6bd0b12"
+        },
+        {
+          "path": "docs/exec-plans/integrations/KL-025.json",
+          "blob": "9e60094515aab96287852621cc0acd468105099a"
+        },
+        {
+          "path": "docs/exec-plans/integrations/KL-074.json",
+          "blob": "f496e94bf76950dfb9d19ff534961d9a5fad8361"
+        },
+        {
+          "path": "docs/exec-plans/milestones/M2.json",
+          "blob": "6a53d08d992d30c1009b4194794583c605b6fc37"
+        }
+      ],
+      "review_created_refs": [
+        {
+          "path": "docs/exec-plans/reviews/KL-075/independent-db-5543bfb.log",
+          "blob": "e7b10ac0ed310d3a8b502b1e2847e0e5c2275ad0",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-075/independent-db-5543bfb.xml",
+          "blob": "d6b1ce20200e0352f58bec12fc0182a253477a5e",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-075/independent-unit-5543bfb.log",
+          "blob": "e140a9e9b49a950db359225b9845bcbc4113ac3e",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        }
+      ],
+      "task_check_refs_at_reviewed": [
+        {
+          "check_id": "progress_internal_identity_pu",
+          "path": "docs/exec-plans/evidence/KL-075/progress_internal_identity_pu-5486786.log",
+          "blob_at_reviewed": "099a16ca703d70f125579d2e350b8ad8819e37f2"
+        },
+        {
+          "check_id": "progress_state_machine_pu",
+          "path": "docs/exec-plans/evidence/KL-075/progress_state_machine_pu-5486786.log",
+          "blob_at_reviewed": "c46c5271204547d48e13217916e776f95c7a2707"
+        },
+        {
+          "check_id": "progress_snapshot_dc",
+          "path": "docs/exec-plans/evidence/KL-075/progress_snapshot_dc-5486786.log",
+          "blob_at_reviewed": "b41cf895e46ade0ac19a2916911e5199e161914d"
+        },
+        {
+          "check_id": "progress_time_boundary_pu",
+          "path": "docs/exec-plans/evidence/KL-075/progress_time_boundary_pu-5486786.log",
+          "blob_at_reviewed": "b7475dbfc8a5fd79e5d7c54913678ed36dfd3d6e"
+        },
+        {
+          "check_id": "progress_current_guards_dc",
+          "path": "docs/exec-plans/evidence/KL-075/progress_current_guards_dc-5486786.log",
+          "blob_at_reviewed": "8a7b8f32d4fecbdb2a81f85a8d2a5162336dcddc"
+        },
+        {
+          "check_id": "progress_atomicity_dc",
+          "path": "docs/exec-plans/evidence/KL-075/progress_atomicity_dc-5486786.log",
+          "blob_at_reviewed": "0e7d3de40b7e56aa3a5fae6a59322cba5ad7cdf2"
+        },
+        {
+          "check_id": "progress_namespace_pu",
+          "path": "docs/exec-plans/evidence/KL-075/progress_namespace_pu-5486786.log",
+          "blob_at_reviewed": "9f0f292d3ef90a99da2e361655442c8a1743d04f"
+        },
+        {
+          "check_id": "progress_suite_dc",
+          "path": "docs/exec-plans/evidence/KL-075/progress_suite_dc-5486786.log",
+          "blob_at_reviewed": "e3a75f41cc736349ee56e958f400b73bfb281b54"
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "path": "docs/exec-plans/evidence/KL-075/harness_validation_passes-5486786.log",
+          "blob_at_reviewed": "ffc68bf6cae09956b04b1b86f5e9dfcbbb3636d4"
+        },
+        {
+          "check_id": "unit_regressions_pass",
+          "path": "docs/exec-plans/evidence/KL-075/unit_regressions_pass-5486786.log",
+          "blob_at_reviewed": "adb87f25bfc0c4e54a5e8f92808cd03c94849483"
+        },
+        {
+          "check_id": "harness_regressions_pass",
+          "path": "docs/exec-plans/evidence/KL-075/harness_regressions_pass-5486786.log",
+          "blob_at_reviewed": "ec578e0a523dc8ee60ebffb01c11658f31113463"
+        },
+        {
+          "check_id": "lint_passes",
+          "path": "docs/exec-plans/evidence/KL-075/lint_passes-5486786.log",
+          "blob_at_reviewed": "aba67e8387ad10b16de58f42aaa6e764b3d19562"
+        },
+        {
+          "check_id": "typecheck_passes",
+          "path": "docs/exec-plans/evidence/KL-075/typecheck_passes-5486786.log",
+          "blob_at_reviewed": "8a58584b583c9be8abefb8cc6fdb3f517072d4b1"
+        }
+      ],
+      "result_sha256": "f7db410d2b340272b35d9cf5530bd59257f0a8626136db46556318e56306bf69",
+      "old_errors": [
+        "integration-review-evidence:KL-075:DB_CONCURRENCY:docs/exec-plans/reviews/KL-075/independent-db-5543bfb.log",
+        "integration-review-evidence:KL-075:DB_CONCURRENCY:docs/exec-plans/reviews/KL-075/independent-db-5543bfb.xml",
+        "integration-review-evidence:KL-075:GENERAL:docs/exec-plans/reviews/KL-075/independent-unit-5543bfb.log"
+      ],
+      "new_errors": []
+    },
+    "KL-076": {
+      "record": {
+        "task_identity": "harness-backlog-v0.2/KL-076",
+        "display_task_id": "KL-076",
+        "result_commit": "290a4d696d1d8247346e54aa9ff12615ce86dd6f",
+        "reviewed_head_sha": "290a4d696d1d8247346e54aa9ff12615ce86dd6f",
+        "review_record_commit": "d7e8f60c2530c8373279df6827bfcd08322cd832",
+        "merge_commit": "035644e0cfb94927d7555e245223cd92c224ea5a",
+        "integration_status": "MERGED"
+      },
+      "normal_merge_parents": [
+        "c599ec1ef39c28bd691748698a09805f390878cf",
+        "d7e8f60c2530c8373279df6827bfcd08322cd832"
+      ],
+      "strict_suffix_commits": [
+        {
+          "commit": "d7e8f60c2530c8373279df6827bfcd08322cd832",
+          "paths": [
+            "docs/exec-plans/reviews/KL-076/DB_CONCURRENCY-run.log",
+            "docs/exec-plans/reviews/KL-076/DB_CONCURRENCY.json",
+            "docs/exec-plans/reviews/KL-076/GENERAL.json",
+            "docs/exec-plans/reviews/KL-076/PROTOCOL.json"
+          ]
+        }
+      ],
+      "ordinary_refs": [
+        {
+          "path": "docs/exec-plans/completed/KL-076_RESULT.yaml",
+          "blob": "72f24757638011017d1d9a6bc7bf6e92ce56d1ea"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/checks.json",
+          "blob": "29cb193e2c6e1dd00eb84aac0efd6255c129ae43"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_owners_dc.log",
+          "blob": "77b48973d2620a30db4d79594277200fb6873e73"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_denials_dc.log",
+          "blob": "66de0ddbb8e08ed22aa3210dda64895e3117bc42"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_atomicity_dc.log",
+          "blob": "08e9da97b6156c95c18c1b491ece319063d5cca7"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_suite_dc.log",
+          "blob": "7fd88699aff2f651f00cf91162ebbcb89ac58b3d"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_namespace_pu.log",
+          "blob": "bb3c9d215fc220da735bf1b467dc3aab8695f996"
+        },
+        {
+          "path": "AGENTS.md",
+          "blob": "f09b811c8e02144bd311efdf247aaa3d02f7ae05"
+        },
+        {
+          "path": "CURRENT_DOCUMENT_INDEX.json",
+          "blob": "732187bbd1e66cfd8cbe0b5124dee8952d8195b1"
+        },
+        {
+          "path": "docs/exec-plans/active/KL-076.md",
+          "blob": "2a97006734a86cfe20dc7eb1d6b8bf34cb3a00bd"
+        },
+        {
+          "path": "docs/harness/THREAD_RESULT_CONTRACT.md",
+          "blob": "baa7fc7288ff1a502d16386833a00c6ddea2267a"
+        },
+        {
+          "path": "docs/harness/THREAD_REVIEW_CONTRACT.md",
+          "blob": "137d937c723223c4571ae018027b6bd44638d682"
+        },
+        {
+          "path": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+          "blob": "60cc632b2e9c7269210368887b6349d80518abeb"
+        },
+        {
+          "path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+          "blob": "949bd6d487a3876d8b37e224e6882432bd75bfdf"
+        },
+        {
+          "path": "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+          "blob": "d3bd0d8b336069d8a7848655a78322fe40970405"
+        },
+        {
+          "path": "docs/exec-plans/milestones/M2.json",
+          "blob": "6a53d08d992d30c1009b4194794583c605b6fc37"
+        },
+        {
+          "path": "docs/exec-plans/evidence/HG-038/PREPARATION.md",
+          "blob": "635a7d469e84fb333b049453897fb8f603eb25b8"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-017_RESULT.yaml",
+          "blob": "da7924d8a9a4d1a4d32f44aa1b6d646eddcb0016"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-022_RESULT.yaml",
+          "blob": "b6c1368cfc9427e44a531eaa108204007d9dbacc"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-023_RESULT.yaml",
+          "blob": "44da90f4e7a80ce223751a4ff9945e78ca7f71f4"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-074_RESULT.yaml",
+          "blob": "c771eabfca4f63bb4e58e75f089397920f226796"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-075_RESULT.yaml",
+          "blob": "bae63424967a3e7c845e713c4168543a59a4d284"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-078_RESULT.yaml",
+          "blob": "96f656c89de687de5142d9146130bbc1808720eb"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-076_RESULT.yaml",
+          "blob": "72f24757638011017d1d9a6bc7bf6e92ce56d1ea"
+        },
+        {
+          "path": "src/kineticloop/contracts/commands.py",
+          "blob": "96e3887e9ad377fb574577795aa79abd6514e3af"
+        },
+        {
+          "path": "src/kineticloop/persistence/transactions.py",
+          "blob": "1c377fdc15dbf4a5e69b11d1ee2252402638bc8f"
+        },
+        {
+          "path": "src/kineticloop/persistence/deterministic_planning.py",
+          "blob": "8e4b1fb5ae8663488ceb5d0b3ca1d059ee26fabb"
+        },
+        {
+          "path": "src/kineticloop/workflow/deterministic_planning.py",
+          "blob": "ff1d2d35b422fc405aa793a99a98b821f1f12b97"
+        },
+        {
+          "path": "src/kineticloop/persistence/planning.py",
+          "blob": "71cf2c322a31a887799a7bfe2d569a16807f641f"
+        },
+        {
+          "path": "src/kineticloop/persistence/planning_progress.py",
+          "blob": "6192ff04ee55381922b7d8805a50a15514cdeeea"
+        },
+        {
+          "path": "src/kineticloop/persistence/protocol_execution.py",
+          "blob": "d41aee6f11291f3f5eaa170cdcded70e5e4ce8bb"
+        },
+        {
+          "path": "docs/contracts/protocol_execution.md",
+          "blob": "4e86fe0b3e248d29193f420ba5a7933fb0027d6b"
+        },
+        {
+          "path": "docs/contracts/deterministic_planning.md",
+          "blob": "cbd91b939614b96a2955c92d7fc9231c24994a69"
+        },
+        {
+          "path": "tests/db/test_deterministic_planning.py",
+          "blob": "a2d211917f524b5632c171714070942acfe1063d"
+        },
+        {
+          "path": "tests/unit/workflow/test_deterministic_planning.py",
+          "blob": "1b84dcdf5c7c5db0c5009123c0cbbead58131370"
+        },
+        {
+          "path": "tests/fixtures/deterministic_planning.json",
+          "blob": "fb1edd99866bd4f66fa50cd2ef8f3f7abb6a2786"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/resume-entry-c599ec1.json",
+          "blob": "f29e4e6fc14abd97b24f7a834780f32b7adf2229"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/checks.json",
+          "blob": "29cb193e2c6e1dd00eb84aac0efd6255c129ae43"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_fdn_identity_pu.log",
+          "blob": "1efd704e817599438423a12f371954a70752ce0a"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_fdn_repair_pu.log",
+          "blob": "b49ccf4b55cb750c15093011277e379a428ff42e"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_resolution_validation_pu.log",
+          "blob": "1bb3da69b802c0412b067c82e4d42d20b3bd8fef"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_owners_dc.log",
+          "blob": "77b48973d2620a30db4d79594277200fb6873e73"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_denials_dc.log",
+          "blob": "66de0ddbb8e08ed22aa3210dda64895e3117bc42"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_atomicity_dc.log",
+          "blob": "08e9da97b6156c95c18c1b491ece319063d5cca7"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_namespace_pu.log",
+          "blob": "bb3c9d215fc220da735bf1b467dc3aab8695f996"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_suite_dc.log",
+          "blob": "7fd88699aff2f651f00cf91162ebbcb89ac58b3d"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/harness_validation_passes.log",
+          "blob": "ef9521014654fec0a90a2b30e76aec10237ed10d"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/unit_regressions_pass.log",
+          "blob": "7272e1e104cd901e7dba6fc9f84f670ad4ef4d60"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/harness_regressions_pass.log",
+          "blob": "d5b3fb9c3be659cc89d793045cca6f7855e2a536"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/lint_passes.log",
+          "blob": "cfb970e664b09508221eab515c64dcfcf397de56"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/typecheck_passes.log",
+          "blob": "f729015394e6b1a7047582cc8f4c7d34d7b27b39"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/result-validation-509eeee.log",
+          "blob": "cd9116c92b0017318e699aabb65504896b5a3060"
+        },
+        {
+          "path": "docs/exec-plans/active/KL-076.md",
+          "blob": "2a97006734a86cfe20dc7eb1d6b8bf34cb3a00bd"
+        },
+        {
+          "path": "docs/contracts/deterministic_planning.md",
+          "blob": "cbd91b939614b96a2955c92d7fc9231c24994a69"
+        },
+        {
+          "path": "src/kineticloop/workflow/deterministic_planning.py",
+          "blob": "ff1d2d35b422fc405aa793a99a98b821f1f12b97"
+        },
+        {
+          "path": "src/kineticloop/persistence/deterministic_planning.py",
+          "blob": "8e4b1fb5ae8663488ceb5d0b3ca1d059ee26fabb"
+        },
+        {
+          "path": "src/kineticloop/persistence/transactions.py",
+          "blob": "1c377fdc15dbf4a5e69b11d1ee2252402638bc8f"
+        },
+        {
+          "path": "tests/unit/workflow/test_deterministic_planning.py",
+          "blob": "1b84dcdf5c7c5db0c5009123c0cbbead58131370"
+        },
+        {
+          "path": "tests/db/test_deterministic_planning.py",
+          "blob": "a2d211917f524b5632c171714070942acfe1063d"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-076_RESULT.yaml",
+          "blob": "72f24757638011017d1d9a6bc7bf6e92ce56d1ea"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/resume-entry-c599ec1.json",
+          "blob": "f29e4e6fc14abd97b24f7a834780f32b7adf2229"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/checks.json",
+          "blob": "29cb193e2c6e1dd00eb84aac0efd6255c129ae43"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_owners_dc.log",
+          "blob": "77b48973d2620a30db4d79594277200fb6873e73"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_denials_dc.log",
+          "blob": "66de0ddbb8e08ed22aa3210dda64895e3117bc42"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_atomicity_dc.log",
+          "blob": "08e9da97b6156c95c18c1b491ece319063d5cca7"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_suite_dc.log",
+          "blob": "7fd88699aff2f651f00cf91162ebbcb89ac58b3d"
+        }
+      ],
+      "review_created_refs": [
+        {
+          "path": "docs/exec-plans/reviews/KL-076/DB_CONCURRENCY-run.log",
+          "blob": "a72e56c9ef08ad9ae8891cc728427b38b79cb058",
+          "classification": "reviewer-created bookkeeping, not task acceptance"
+        }
+      ],
+      "task_check_refs_at_reviewed": [
+        {
+          "check_id": "fixture_fdn_identity_pu",
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_fdn_identity_pu.log",
+          "blob_at_reviewed": "1efd704e817599438423a12f371954a70752ce0a"
+        },
+        {
+          "check_id": "fixture_fdn_repair_pu",
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_fdn_repair_pu.log",
+          "blob_at_reviewed": "b49ccf4b55cb750c15093011277e379a428ff42e"
+        },
+        {
+          "check_id": "fixture_resolution_validation_pu",
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_resolution_validation_pu.log",
+          "blob_at_reviewed": "1bb3da69b802c0412b067c82e4d42d20b3bd8fef"
+        },
+        {
+          "check_id": "fixture_preparation_owners_dc",
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_owners_dc.log",
+          "blob_at_reviewed": "77b48973d2620a30db4d79594277200fb6873e73"
+        },
+        {
+          "check_id": "fixture_preparation_denials_dc",
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_denials_dc.log",
+          "blob_at_reviewed": "66de0ddbb8e08ed22aa3210dda64895e3117bc42"
+        },
+        {
+          "check_id": "fixture_preparation_atomicity_dc",
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_preparation_atomicity_dc.log",
+          "blob_at_reviewed": "08e9da97b6156c95c18c1b491ece319063d5cca7"
+        },
+        {
+          "check_id": "fixture_namespace_pu",
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_namespace_pu.log",
+          "blob_at_reviewed": "bb3c9d215fc220da735bf1b467dc3aab8695f996"
+        },
+        {
+          "check_id": "fixture_suite_dc",
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/fixture_suite_dc.log",
+          "blob_at_reviewed": "7fd88699aff2f651f00cf91162ebbcb89ac58b3d"
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/harness_validation_passes.log",
+          "blob_at_reviewed": "ef9521014654fec0a90a2b30e76aec10237ed10d"
+        },
+        {
+          "check_id": "unit_regressions_pass",
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/unit_regressions_pass.log",
+          "blob_at_reviewed": "7272e1e104cd901e7dba6fc9f84f670ad4ef4d60"
+        },
+        {
+          "check_id": "harness_regressions_pass",
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/harness_regressions_pass.log",
+          "blob_at_reviewed": "d5b3fb9c3be659cc89d793045cca6f7855e2a536"
+        },
+        {
+          "check_id": "lint_passes",
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/lint_passes.log",
+          "blob_at_reviewed": "cfb970e664b09508221eab515c64dcfcf397de56"
+        },
+        {
+          "check_id": "typecheck_passes",
+          "path": "docs/exec-plans/evidence/KL-076/checks-509eeee/typecheck_passes.log",
+          "blob_at_reviewed": "f729015394e6b1a7047582cc8f4c7d34d7b27b39"
+        }
+      ],
+      "result_sha256": "013a9f33540411a479f728ea63c68551499fc38464ae2dfe6a8ef6f0e8f239e2",
+      "old_errors": [
+        "integration-review-evidence:KL-076:DB_CONCURRENCY:docs/exec-plans/reviews/KL-076/DB_CONCURRENCY-run.log"
+      ],
+      "new_errors": []
+    },
+    "KL-077": {
+      "record": {
+        "task_identity": "harness-backlog-v0.2/KL-077",
+        "display_task_id": "KL-077",
+        "result_commit": "03edea3c9f3666302d5eaefe6ba744ea67e64aad",
+        "reviewed_head_sha": "03edea3c9f3666302d5eaefe6ba744ea67e64aad",
+        "review_record_commit": "bb144a01a971878577f52f47517f1232a13894e5",
+        "merge_commit": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+        "integration_status": "MERGED"
+      },
+      "normal_merge_parents": [
+        "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588",
+        "bb144a01a971878577f52f47517f1232a13894e5"
+      ],
+      "strict_suffix_commits": [
+        {
+          "commit": "bb144a01a971878577f52f47517f1232a13894e5",
+          "paths": [
+            "docs/exec-plans/reviews/KL-077/DB_CONCURRENCY.json",
+            "docs/exec-plans/reviews/KL-077/GENERAL.json",
+            "docs/exec-plans/reviews/KL-077/PROTOCOL.json"
+          ]
+        }
+      ],
+      "ordinary_refs": [
+        {
+          "path": "AGENTS.md",
+          "blob": "f09b811c8e02144bd311efdf247aaa3d02f7ae05"
+        },
+        {
+          "path": "CURRENT_DOCUMENT_INDEX.json",
+          "blob": "0c04e347dd9b5a0de047c8d4d2fc9af533ffcb86"
+        },
+        {
+          "path": "docs/exec-plans/active/KL-077.md",
+          "blob": "d9edcebd0880ce58e10057bcec2e2c3663a06a32"
+        },
+        {
+          "path": ".agents/skills/pr-merge-reviewer/SKILL.md",
+          "blob": "4872445094ae8c1ada574f0eb3bc95145086f51a"
+        },
+        {
+          "path": ".agents/skills/db-transaction-reviewer/SKILL.md",
+          "blob": "44b1156ea9df8759abe44c453e4c01241cd64d45"
+        },
+        {
+          "path": "docs/harness/THREAD_REVIEW_CONTRACT.md",
+          "blob": "137d937c723223c4571ae018027b6bd44638d682"
+        },
+        {
+          "path": "THREAD_REVIEW.schema.json",
+          "blob": "2ba66a62066fa9c75546e220bf98d0a9e82f34a5"
+        },
+        {
+          "path": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+          "blob": "60cc632b2e9c7269210368887b6349d80518abeb"
+        },
+        {
+          "path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+          "blob": "949bd6d487a3876d8b37e224e6882432bd75bfdf"
+        },
+        {
+          "path": "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+          "blob": "d3bd0d8b336069d8a7848655a78322fe40970405"
+        },
+        {
+          "path": "docs/exec-plans/evidence/HG-038/PREPARATION.md",
+          "blob": "635a7d469e84fb333b049453897fb8f603eb25b8"
+        },
+        {
+          "path": "docs/exec-plans/evidence/HG-041/PREPARATION.md",
+          "blob": "b87f44d62dff2dd85dbb158bad935424018934d0"
+        },
+        {
+          "path": "docs/exec-plans/milestones/M2.json",
+          "blob": "6a53d08d992d30c1009b4194794583c605b6fc37"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-017_RESULT.yaml",
+          "blob": "da7924d8a9a4d1a4d32f44aa1b6d646eddcb0016"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-019_RESULT.yaml",
+          "blob": "6979c553bab75dc1a83701c12c6d1c8a8b21453a"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-074_RESULT.yaml",
+          "blob": "c771eabfca4f63bb4e58e75f089397920f226796"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-076_RESULT.yaml",
+          "blob": "72f24757638011017d1d9a6bc7bf6e92ce56d1ea"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-079_RESULT.yaml",
+          "blob": "b123183d6ce4412cb1ca3250fbb219677e2e7152"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-077_RESULT.yaml",
+          "blob": "38f95418899cfe4d8653110b114fc331341c9050"
+        },
+        {
+          "path": "docs/contracts/full_test_execution.md",
+          "blob": "a781da1f7084f4127fbabb6e238a8f3ea7ce6dff"
+        },
+        {
+          "path": "docs/contracts/full_action_preparation.md",
+          "blob": "5df358061e2302230deca747860bc7c61847f670"
+        },
+        {
+          "path": "docs/contracts/protocol_execution.md",
+          "blob": "4e86fe0b3e248d29193f420ba5a7933fb0027d6b"
+        },
+        {
+          "path": "src/kineticloop/protocol/execution.py",
+          "blob": "d1b04c5a443ec5bbe2b162216d8c13e8dcc02682"
+        },
+        {
+          "path": "src/kineticloop/persistence/protocol_execution.py",
+          "blob": "a7197ef8cb4ffae6c0f46013aa156d9d8a369e1d"
+        },
+        {
+          "path": "src/kineticloop/persistence/transactions.py",
+          "blob": "b8e992b3c41a3386bdb64250361500a3cfc01822"
+        },
+        {
+          "path": "src/kineticloop/persistence/planning.py",
+          "blob": "71cf2c322a31a887799a7bfe2d569a16807f641f"
+        },
+        {
+          "path": "src/kineticloop/persistence/deterministic_planning.py",
+          "blob": "e590622a23e2236fc05b35dfe87a5f94733be08f"
+        },
+        {
+          "path": "src/kineticloop/protocol/authorization.py",
+          "blob": "05580a9a7bb08e150cd074d3b0d62b8397e9cf66"
+        },
+        {
+          "path": "tests/db/test_full_test_execution.py",
+          "blob": "72923e54820c75c4cc73bd1cddf59941172d5544"
+        },
+        {
+          "path": "tests/db/test_full_action_preparation.py",
+          "blob": "7dcc5ba19f72fb409847942c104a522ca19a51d7"
+        },
+        {
+          "path": "tests/db/test_transaction_interfaces.py",
+          "blob": "dd3a8f776674dc1a4d3b5edc57614dd345131c2d"
+        },
+        {
+          "path": "tests/unit/protocol/test_full_test_execution.py",
+          "blob": "a3c77d64f6248d94ae8ee550374349f1b9311b74"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/checks.json",
+          "blob": "7dd238a0dadcfc7b92e82da875831048fe43a0d7"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_bundle_commit_dc.log",
+          "blob": "5f15d900ffb657a37031ae55b9d80ee7adc95875"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_bundle_basis_denials_dc.log",
+          "blob": "12a5eb36e1e3eb7865efd4375caf15ac7696718c"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/ordinary_pause_owner_dc.log",
+          "blob": "3993a11e8549e296f99a7218531d59cf2c2df040"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/continue_resume_current_dc.log",
+          "blob": "970060e9ba0dd1c974101de1b941d5a914a208cd"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_replay_atomicity_dc.log",
+          "blob": "f1c9572c81904789ed88561b81e009334a679e45"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_suite_dc.log",
+          "blob": "2ce5d0153ad2fe823f2369145e1ae8fc113f9850"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_namespace_pu.log",
+          "blob": "0125afcd4b40663a4be2fe792412c805ed7b094f"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/development/hosted-ae6564e-pr-failure.log.gz",
+          "blob": "649d7e5ab54d061416777fe35b354783893107c7"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/development/hosted-ae6564e-push-failure.log.gz",
+          "blob": "f92faef29fb34496b4aa0a5c10bea0fc52816a0d"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/development/hosted-ae6564e-failure.json",
+          "blob": "b32d2ebd4bbe763fe86ad9043a1b3410bfb2e685"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/development/hosted-ae6564e-push-failure.json",
+          "blob": "2d802fc5aa5d1a4d437b44f4317a481448e05765"
+        },
+        {
+          "path": "AGENTS.md",
+          "blob": "f09b811c8e02144bd311efdf247aaa3d02f7ae05"
+        },
+        {
+          "path": "CURRENT_DOCUMENT_INDEX.json",
+          "blob": "0c04e347dd9b5a0de047c8d4d2fc9af533ffcb86"
+        },
+        {
+          "path": "docs/exec-plans/active/KL-077.md",
+          "blob": "d9edcebd0880ce58e10057bcec2e2c3663a06a32"
+        },
+        {
+          "path": ".agents/skills/pr-merge-reviewer/SKILL.md",
+          "blob": "4872445094ae8c1ada574f0eb3bc95145086f51a"
+        },
+        {
+          "path": ".agents/skills/protocol-guardian/SKILL.md",
+          "blob": "acba55969402aaf3a8f858de7c0f0a281420167c"
+        },
+        {
+          "path": ".agents/skills/db-transaction-reviewer/SKILL.md",
+          "blob": "44b1156ea9df8759abe44c453e4c01241cd64d45"
+        },
+        {
+          "path": "docs/harness/THREAD_REVIEW_CONTRACT.md",
+          "blob": "137d937c723223c4571ae018027b6bd44638d682"
+        },
+        {
+          "path": "THREAD_REVIEW.schema.json",
+          "blob": "2ba66a62066fa9c75546e220bf98d0a9e82f34a5"
+        },
+        {
+          "path": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+          "blob": "60cc632b2e9c7269210368887b6349d80518abeb"
+        },
+        {
+          "path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+          "blob": "949bd6d487a3876d8b37e224e6882432bd75bfdf"
+        },
+        {
+          "path": "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+          "blob": "d3bd0d8b336069d8a7848655a78322fe40970405"
+        },
+        {
+          "path": "docs/exec-plans/evidence/HG-038/PREPARATION.md",
+          "blob": "635a7d469e84fb333b049453897fb8f603eb25b8"
+        },
+        {
+          "path": "docs/exec-plans/evidence/HG-041/PREPARATION.md",
+          "blob": "b87f44d62dff2dd85dbb158bad935424018934d0"
+        },
+        {
+          "path": "docs/exec-plans/milestones/M2.json",
+          "blob": "6a53d08d992d30c1009b4194794583c605b6fc37"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-076_RESULT.yaml",
+          "blob": "72f24757638011017d1d9a6bc7bf6e92ce56d1ea"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-019_RESULT.yaml",
+          "blob": "6979c553bab75dc1a83701c12c6d1c8a8b21453a"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-017_RESULT.yaml",
+          "blob": "da7924d8a9a4d1a4d32f44aa1b6d646eddcb0016"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-074_RESULT.yaml",
+          "blob": "c771eabfca4f63bb4e58e75f089397920f226796"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-079_RESULT.yaml",
+          "blob": "b123183d6ce4412cb1ca3250fbb219677e2e7152"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-077_RESULT.yaml",
+          "blob": "38f95418899cfe4d8653110b114fc331341c9050"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/entry.json",
+          "blob": "cd45047f50b5a9f38f0ccf55e639c3863a9ded78"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/preserved-baseline.json",
+          "blob": "96c765e694c3602fbb86b2b52cd276560d324d6f"
+        },
+        {
+          "path": "docs/contracts/full_test_execution.md",
+          "blob": "a781da1f7084f4127fbabb6e238a8f3ea7ce6dff"
+        },
+        {
+          "path": "docs/contracts/full_action_preparation.md",
+          "blob": "5df358061e2302230deca747860bc7c61847f670"
+        },
+        {
+          "path": "src/kineticloop/persistence/protocol_execution.py",
+          "blob": "a7197ef8cb4ffae6c0f46013aa156d9d8a369e1d"
+        },
+        {
+          "path": "src/kineticloop/persistence/transactions.py",
+          "blob": "b8e992b3c41a3386bdb64250361500a3cfc01822"
+        },
+        {
+          "path": "src/kineticloop/protocol/execution.py",
+          "blob": "d1b04c5a443ec5bbe2b162216d8c13e8dcc02682"
+        },
+        {
+          "path": "tests/db/test_full_test_execution.py",
+          "blob": "72923e54820c75c4cc73bd1cddf59941172d5544"
+        },
+        {
+          "path": "tests/unit/protocol/test_full_test_execution.py",
+          "blob": "a3c77d64f6248d94ae8ee550374349f1b9311b74"
+        },
+        {
+          "path": "tests/db/test_full_action_preparation.py",
+          "blob": "7dcc5ba19f72fb409847942c104a522ca19a51d7"
+        },
+        {
+          "path": "tests/db/test_transaction_interfaces.py",
+          "blob": "dd3a8f776674dc1a4d3b5edc57614dd345131c2d"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/checks.json",
+          "blob": "7dd238a0dadcfc7b92e82da875831048fe43a0d7"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/oracle-audit.json",
+          "blob": "0e7e154773153a101e8827f39626c0be22c524ce"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_identity_pu.log",
+          "blob": "75fab591b56cf895a54ea4e56f6f739c1de61580"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_bundle_commit_dc.log",
+          "blob": "5f15d900ffb657a37031ae55b9d80ee7adc95875"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_bundle_basis_denials_dc.log",
+          "blob": "12a5eb36e1e3eb7865efd4375caf15ac7696718c"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/ordinary_pause_identity_pu.log",
+          "blob": "7fa354d1cdad635d506e325c7e99e49299ed7017"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/ordinary_pause_owner_dc.log",
+          "blob": "3993a11e8549e296f99a7218531d59cf2c2df040"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/continue_resume_current_dc.log",
+          "blob": "970060e9ba0dd1c974101de1b941d5a914a208cd"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_replay_atomicity_dc.log",
+          "blob": "f1c9572c81904789ed88561b81e009334a679e45"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_namespace_pu.log",
+          "blob": "0125afcd4b40663a4be2fe792412c805ed7b094f"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_suite_dc.log",
+          "blob": "2ce5d0153ad2fe823f2369145e1ae8fc113f9850"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/harness_validation_passes.log",
+          "blob": "40d82be61d3681b9eccad02ee14e994a3b351c66"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/unit_regressions_pass.log",
+          "blob": "49a74b7214e623351e1eb6f2b087d5dc9cb2342f"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/harness_regressions_pass.log",
+          "blob": "0bf71cbea16ccb961e00189a324fc7f9ecb443fa"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/lint_passes.log",
+          "blob": "e5bdee6620839adf6d0500cdbfc7bce87ed4e994"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/typecheck_passes.log",
+          "blob": "1a569f41500e1efdf76afc60d4ade3db0c3b00fb"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/development/hosted-ae6564e-pr-failure.log.gz",
+          "blob": "649d7e5ab54d061416777fe35b354783893107c7"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/development/hosted-ae6564e-push-failure.log.gz",
+          "blob": "f92faef29fb34496b4aa0a5c10bea0fc52816a0d"
+        },
+        {
+          "path": "AGENTS.md",
+          "blob": "f09b811c8e02144bd311efdf247aaa3d02f7ae05"
+        },
+        {
+          "path": "CURRENT_DOCUMENT_INDEX.json",
+          "blob": "0c04e347dd9b5a0de047c8d4d2fc9af533ffcb86"
+        },
+        {
+          "path": "CURRENT_REQUIREMENT_SET.json",
+          "blob": "fe8acced7f5a794bcfe7555d902475095d9e7778"
+        },
+        {
+          "path": "FROZEN_BASELINE.json",
+          "blob": "b3ca2a7ff5ee6875ecb1e61d246d358f14ac0ddb"
+        },
+        {
+          "path": "docs/exec-plans/active/KL-077.md",
+          "blob": "d9edcebd0880ce58e10057bcec2e2c3663a06a32"
+        },
+        {
+          "path": "docs/harness/THREAD_REVIEW_CONTRACT.md",
+          "blob": "137d937c723223c4571ae018027b6bd44638d682"
+        },
+        {
+          "path": "THREAD_REVIEW.schema.json",
+          "blob": "2ba66a62066fa9c75546e220bf98d0a9e82f34a5"
+        },
+        {
+          "path": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+          "blob": "60cc632b2e9c7269210368887b6349d80518abeb"
+        },
+        {
+          "path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+          "blob": "949bd6d487a3876d8b37e224e6882432bd75bfdf"
+        },
+        {
+          "path": "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+          "blob": "d3bd0d8b336069d8a7848655a78322fe40970405"
+        },
+        {
+          "path": "docs/exec-plans/evidence/HG-038/PREPARATION.md",
+          "blob": "635a7d469e84fb333b049453897fb8f603eb25b8"
+        },
+        {
+          "path": "docs/exec-plans/evidence/HG-041/PREPARATION.md",
+          "blob": "b87f44d62dff2dd85dbb158bad935424018934d0"
+        },
+        {
+          "path": "docs/exec-plans/milestones/M2.json",
+          "blob": "6a53d08d992d30c1009b4194794583c605b6fc37"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-076_RESULT.yaml",
+          "blob": "72f24757638011017d1d9a6bc7bf6e92ce56d1ea"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-019_RESULT.yaml",
+          "blob": "6979c553bab75dc1a83701c12c6d1c8a8b21453a"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-017_RESULT.yaml",
+          "blob": "da7924d8a9a4d1a4d32f44aa1b6d646eddcb0016"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-074_RESULT.yaml",
+          "blob": "c771eabfca4f63bb4e58e75f089397920f226796"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-079_RESULT.yaml",
+          "blob": "b123183d6ce4412cb1ca3250fbb219677e2e7152"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/entry.json",
+          "blob": "cd45047f50b5a9f38f0ccf55e639c3863a9ded78"
+        },
+        {
+          "path": "docs/contracts/protocol_execution.md",
+          "blob": "4e86fe0b3e248d29193f420ba5a7933fb0027d6b"
+        },
+        {
+          "path": "docs/contracts/full_action_preparation.md",
+          "blob": "5df358061e2302230deca747860bc7c61847f670"
+        },
+        {
+          "path": "docs/contracts/full_test_execution.md",
+          "blob": "a781da1f7084f4127fbabb6e238a8f3ea7ce6dff"
+        },
+        {
+          "path": "src/kineticloop/contracts/commands.py",
+          "blob": "96e3887e9ad377fb574577795aa79abd6514e3af"
+        },
+        {
+          "path": "src/kineticloop/persistence/planning.py",
+          "blob": "71cf2c322a31a887799a7bfe2d569a16807f641f"
+        },
+        {
+          "path": "src/kineticloop/persistence/protocol_execution.py",
+          "blob": "a7197ef8cb4ffae6c0f46013aa156d9d8a369e1d"
+        },
+        {
+          "path": "src/kineticloop/persistence/transactions.py",
+          "blob": "b8e992b3c41a3386bdb64250361500a3cfc01822"
+        },
+        {
+          "path": "src/kineticloop/protocol/execution.py",
+          "blob": "d1b04c5a443ec5bbe2b162216d8c13e8dcc02682"
+        },
+        {
+          "path": "src/kineticloop/persistence/deterministic_planning.py",
+          "blob": "e590622a23e2236fc05b35dfe87a5f94733be08f"
+        },
+        {
+          "path": "tests/db/test_full_test_execution.py",
+          "blob": "72923e54820c75c4cc73bd1cddf59941172d5544"
+        },
+        {
+          "path": "tests/unit/protocol/test_full_test_execution.py",
+          "blob": "a3c77d64f6248d94ae8ee550374349f1b9311b74"
+        },
+        {
+          "path": "tests/db/test_transaction_interfaces.py",
+          "blob": "dd3a8f776674dc1a4d3b5edc57614dd345131c2d"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-077_RESULT.yaml",
+          "blob": "38f95418899cfe4d8653110b114fc331341c9050"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/checks.json",
+          "blob": "7dd238a0dadcfc7b92e82da875831048fe43a0d7"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/oracle-audit.json",
+          "blob": "0e7e154773153a101e8827f39626c0be22c524ce"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_identity_pu.log",
+          "blob": "75fab591b56cf895a54ea4e56f6f739c1de61580"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_bundle_commit_dc.log",
+          "blob": "5f15d900ffb657a37031ae55b9d80ee7adc95875"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_bundle_basis_denials_dc.log",
+          "blob": "12a5eb36e1e3eb7865efd4375caf15ac7696718c"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/ordinary_pause_identity_pu.log",
+          "blob": "7fa354d1cdad635d506e325c7e99e49299ed7017"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/ordinary_pause_owner_dc.log",
+          "blob": "3993a11e8549e296f99a7218531d59cf2c2df040"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/continue_resume_current_dc.log",
+          "blob": "970060e9ba0dd1c974101de1b941d5a914a208cd"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_replay_atomicity_dc.log",
+          "blob": "f1c9572c81904789ed88561b81e009334a679e45"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_namespace_pu.log",
+          "blob": "0125afcd4b40663a4be2fe792412c805ed7b094f"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_suite_dc.log",
+          "blob": "2ce5d0153ad2fe823f2369145e1ae8fc113f9850"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/harness_validation_passes.log",
+          "blob": "40d82be61d3681b9eccad02ee14e994a3b351c66"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/unit_regressions_pass.log",
+          "blob": "49a74b7214e623351e1eb6f2b087d5dc9cb2342f"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/harness_regressions_pass.log",
+          "blob": "0bf71cbea16ccb961e00189a324fc7f9ecb443fa"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/lint_passes.log",
+          "blob": "e5bdee6620839adf6d0500cdbfc7bce87ed4e994"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/typecheck_passes.log",
+          "blob": "1a569f41500e1efdf76afc60d4ade3db0c3b00fb"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/development/hosted-ae6564e-pr-failure.log.gz",
+          "blob": "649d7e5ab54d061416777fe35b354783893107c7"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-077/development/hosted-ae6564e-push-failure.log.gz",
+          "blob": "f92faef29fb34496b4aa0a5c10bea0fc52816a0d"
+        }
+      ],
+      "review_created_refs": [],
+      "task_check_refs_at_reviewed": [
+        {
+          "check_id": "full_execution_identity_pu",
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_identity_pu.log",
+          "blob_at_reviewed": "75fab591b56cf895a54ea4e56f6f739c1de61580"
+        },
+        {
+          "check_id": "full_bundle_commit_dc",
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_bundle_commit_dc.log",
+          "blob_at_reviewed": "5f15d900ffb657a37031ae55b9d80ee7adc95875"
+        },
+        {
+          "check_id": "full_bundle_basis_denials_dc",
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_bundle_basis_denials_dc.log",
+          "blob_at_reviewed": "12a5eb36e1e3eb7865efd4375caf15ac7696718c"
+        },
+        {
+          "check_id": "ordinary_pause_identity_pu",
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/ordinary_pause_identity_pu.log",
+          "blob_at_reviewed": "7fa354d1cdad635d506e325c7e99e49299ed7017"
+        },
+        {
+          "check_id": "ordinary_pause_owner_dc",
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/ordinary_pause_owner_dc.log",
+          "blob_at_reviewed": "3993a11e8549e296f99a7218531d59cf2c2df040"
+        },
+        {
+          "check_id": "continue_resume_current_dc",
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/continue_resume_current_dc.log",
+          "blob_at_reviewed": "970060e9ba0dd1c974101de1b941d5a914a208cd"
+        },
+        {
+          "check_id": "full_execution_replay_atomicity_dc",
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_replay_atomicity_dc.log",
+          "blob_at_reviewed": "f1c9572c81904789ed88561b81e009334a679e45"
+        },
+        {
+          "check_id": "full_execution_namespace_pu",
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_namespace_pu.log",
+          "blob_at_reviewed": "0125afcd4b40663a4be2fe792412c805ed7b094f"
+        },
+        {
+          "check_id": "full_execution_suite_dc",
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/full_execution_suite_dc.log",
+          "blob_at_reviewed": "2ce5d0153ad2fe823f2369145e1ae8fc113f9850"
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/harness_validation_passes.log",
+          "blob_at_reviewed": "40d82be61d3681b9eccad02ee14e994a3b351c66"
+        },
+        {
+          "check_id": "unit_regressions_pass",
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/unit_regressions_pass.log",
+          "blob_at_reviewed": "49a74b7214e623351e1eb6f2b087d5dc9cb2342f"
+        },
+        {
+          "check_id": "harness_regressions_pass",
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/harness_regressions_pass.log",
+          "blob_at_reviewed": "0bf71cbea16ccb961e00189a324fc7f9ecb443fa"
+        },
+        {
+          "check_id": "lint_passes",
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/lint_passes.log",
+          "blob_at_reviewed": "e5bdee6620839adf6d0500cdbfc7bce87ed4e994"
+        },
+        {
+          "check_id": "typecheck_passes",
+          "path": "docs/exec-plans/evidence/KL-077/2c04437d46fc38eace30ea63d57e5ab5de1960e3/typecheck_passes.log",
+          "blob_at_reviewed": "1a569f41500e1efdf76afc60d4ade3db0c3b00fb"
+        }
+      ],
+      "result_sha256": "a86e81ae15f4e93ac11b2e1dc7d5a55147145967bfea9d372d544a039bf73b85",
+      "old_errors": [],
+      "new_errors": []
+    },
+    "KL-079": {
+      "record": {
+        "task_identity": "harness-backlog-v0.2/KL-079",
+        "display_task_id": "KL-079",
+        "result_commit": "056b5471f3b360eeda2eca5b1c8def107222acae",
+        "reviewed_head_sha": "056b5471f3b360eeda2eca5b1c8def107222acae",
+        "review_record_commit": "a16fc2e037bd6cec4dbef8613092b28e9b60ecaf",
+        "merge_commit": "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588",
+        "integration_status": "MERGED"
+      },
+      "normal_merge_parents": [
+        "15e85921f58d2f7ea816b694bc80221bd7406ee8",
+        "a16fc2e037bd6cec4dbef8613092b28e9b60ecaf"
+      ],
+      "strict_suffix_commits": [
+        {
+          "commit": "a16fc2e037bd6cec4dbef8613092b28e9b60ecaf",
+          "paths": [
+            "docs/exec-plans/reviews/KL-079/DB_CONCURRENCY.json",
+            "docs/exec-plans/reviews/KL-079/GENERAL.json",
+            "docs/exec-plans/reviews/KL-079/PROTOCOL.json"
+          ]
+        }
+      ],
+      "ordinary_refs": [
+        {
+          "path": "AGENTS.md",
+          "blob": "f09b811c8e02144bd311efdf247aaa3d02f7ae05"
+        },
+        {
+          "path": "CURRENT_DOCUMENT_INDEX.json",
+          "blob": "0c04e347dd9b5a0de047c8d4d2fc9af533ffcb86"
+        },
+        {
+          "path": "docs/exec-plans/active/KL-079.md",
+          "blob": "eb36dd29b6c37a23fd54b00e9a23177f49f8dd7d"
+        },
+        {
+          "path": "docs/exec-plans/evidence/HG-041/PREPARATION.md",
+          "blob": "b87f44d62dff2dd85dbb158bad935424018934d0"
+        },
+        {
+          "path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+          "blob": "949bd6d487a3876d8b37e224e6882432bd75bfdf"
+        },
+        {
+          "path": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+          "blob": "60cc632b2e9c7269210368887b6349d80518abeb"
+        },
+        {
+          "path": "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+          "blob": "d3bd0d8b336069d8a7848655a78322fe40970405"
+        },
+        {
+          "path": "docs/exec-plans/milestones/M2.json",
+          "blob": "6a53d08d992d30c1009b4194794583c605b6fc37"
+        },
+        {
+          "path": "docs/harness/THREAD_RESULT_CONTRACT.md",
+          "blob": "baa7fc7288ff1a502d16386833a00c6ddea2267a"
+        },
+        {
+          "path": "docs/harness/THREAD_REVIEW_CONTRACT.md",
+          "blob": "137d937c723223c4571ae018027b6bd44638d682"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-079_RESULT.yaml",
+          "blob": "b123183d6ce4412cb1ca3250fbb219677e2e7152"
+        },
+        {
+          "path": "docs/contracts/full_action_preparation.md",
+          "blob": "5df358061e2302230deca747860bc7c61847f670"
+        },
+        {
+          "path": "src/kineticloop/persistence/deterministic_planning.py",
+          "blob": "e590622a23e2236fc05b35dfe87a5f94733be08f"
+        },
+        {
+          "path": "src/kineticloop/persistence/transactions.py",
+          "blob": "40c0b0e1552bd3173d2695f7a8b32e559d088c30"
+        },
+        {
+          "path": "src/kineticloop/persistence/planning_progress.py",
+          "blob": "6192ff04ee55381922b7d8805a50a15514cdeeea"
+        },
+        {
+          "path": "src/kineticloop/persistence/metadata.py",
+          "blob": "dab0791de89faba6317046a448cc1b490d5e7b7c"
+        },
+        {
+          "path": "src/kineticloop/persistence/schema_topology.py",
+          "blob": "ba9f55f4e19a5a90e2e00c639754cb28c34d55eb"
+        },
+        {
+          "path": "src/kineticloop/workflow/deterministic_planning.py",
+          "blob": "3a8f9e75c23026f6f78d26ef9111b5264b1ddb2a"
+        },
+        {
+          "path": "tests/db/test_full_action_preparation.py",
+          "blob": "7dcc5ba19f72fb409847942c104a522ca19a51d7"
+        },
+        {
+          "path": "tests/unit/workflow/test_full_action_preparation.py",
+          "blob": "eb69cc699ccc51458e688ab9acf109a3f29699f2"
+        },
+        {
+          "path": "tests/fixtures/full_action_preparation.json",
+          "blob": "73901d014dff5133ffdaa12057cfafd0148797d4"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/review-repair.md",
+          "blob": "b8b6d25a3ecad5428a99dcca64e22279da366bb1"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/checks.json",
+          "blob": "eb9fb4bd1c1f48498b3025fb926f5453a13cf072"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/verification.json",
+          "blob": "00f13cbe237679333880f08892f86380db792972"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/preserved-baseline.json",
+          "blob": "3ba6bd520219517fec54d1e1633267dc3741a8f8"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/legacy-golden-bytes.json",
+          "blob": "fe49da8fb93a6ff95378118f78ff3a48391e2b45"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_contract_pu.log",
+          "blob": "242f6572c5f035396be6c512b92305a4dae9b6f3"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_resolution_pu.log",
+          "blob": "69227887f81c05315d0915fdfe35c81fb60f4703"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_namespace_pu.log",
+          "blob": "e882d8cd2d2dbbbbcae91094d9ddaac505e513c0"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_owner_pipeline_dc.log",
+          "blob": "6690e4eb1a44b681ea6c8c728c8905c627ef397e"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_basis_denials_dc.log",
+          "blob": "72780320caedca11b232dc2ac0b3252edaa7f71b"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_replay_atomicity_dc.log",
+          "blob": "8796ceee98d7aab4a9345fd42f48680fea829005"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_repair_dc.log",
+          "blob": "e1cba1c153fbc2fe3c079055087c9c614ed54f85"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_legacy_no_authority_dc.log",
+          "blob": "9787456970c43fb3e15056b475d9770e1dfbebb2"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_suite_dc.log",
+          "blob": "1fc151de401761218970274b6e69c7ebce9c65a5"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/harness_validation_passes.log",
+          "blob": "e28c4a672d378f893981a98667306e37939be42c"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/unit_regressions_pass.log",
+          "blob": "e1dc4bf21ff4821a2de5b8a63387bb56bd8335c0"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/harness_regressions_pass.log",
+          "blob": "f873235c0475a68fd273cfd75ffc15b1fd985063"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/lint_passes.log",
+          "blob": "18ada5b57ba4fad1dd8872fe65f526997084e8e8"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/typecheck_passes.log",
+          "blob": "b28b93e9b0bf3a5cf901d7ea57103f33012b782c"
+        },
+        {
+          "path": "AGENTS.md",
+          "blob": "f09b811c8e02144bd311efdf247aaa3d02f7ae05"
+        },
+        {
+          "path": ".agents/skills/pr-merge-reviewer/SKILL.md",
+          "blob": "4872445094ae8c1ada574f0eb3bc95145086f51a"
+        },
+        {
+          "path": "CURRENT_DOCUMENT_INDEX.json",
+          "blob": "0c04e347dd9b5a0de047c8d4d2fc9af533ffcb86"
+        },
+        {
+          "path": "docs/exec-plans/active/KL-079.md",
+          "blob": "eb36dd29b6c37a23fd54b00e9a23177f49f8dd7d"
+        },
+        {
+          "path": "docs/exec-plans/evidence/HG-041/PREPARATION.md",
+          "blob": "b87f44d62dff2dd85dbb158bad935424018934d0"
+        },
+        {
+          "path": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+          "blob": "60cc632b2e9c7269210368887b6349d80518abeb"
+        },
+        {
+          "path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+          "blob": "949bd6d487a3876d8b37e224e6882432bd75bfdf"
+        },
+        {
+          "path": "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+          "blob": "d3bd0d8b336069d8a7848655a78322fe40970405"
+        },
+        {
+          "path": "docs/harness/THREAD_RESULT_CONTRACT.md",
+          "blob": "baa7fc7288ff1a502d16386833a00c6ddea2267a"
+        },
+        {
+          "path": "docs/harness/THREAD_REVIEW_CONTRACT.md",
+          "blob": "137d937c723223c4571ae018027b6bd44638d682"
+        },
+        {
+          "path": "docs/harness/MERGE_GATE.md",
+          "blob": "cf2438267c60b5ba34b40c8f215c176e4cda96af"
+        },
+        {
+          "path": "THREAD_REVIEW.schema.json",
+          "blob": "2ba66a62066fa9c75546e220bf98d0a9e82f34a5"
+        },
+        {
+          "path": "docs/contracts/deterministic_planning.md",
+          "blob": "cbd91b939614b96a2955c92d7fc9231c24994a69"
+        },
+        {
+          "path": "docs/contracts/full_action_preparation.md",
+          "blob": "5df358061e2302230deca747860bc7c61847f670"
+        },
+        {
+          "path": "docs/exec-plans/milestones/M2.json",
+          "blob": "6a53d08d992d30c1009b4194794583c605b6fc37"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-076_RESULT.yaml",
+          "blob": "72f24757638011017d1d9a6bc7bf6e92ce56d1ea"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-075_RESULT.yaml",
+          "blob": "bae63424967a3e7c845e713c4168543a59a4d284"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-078_RESULT.yaml",
+          "blob": "96f656c89de687de5142d9146130bbc1808720eb"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-024_RESULT.yaml",
+          "blob": "9cd7f2da6a51aa2a6af1fe401f791588e0bea280"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-019_RESULT.yaml",
+          "blob": "6979c553bab75dc1a83701c12c6d1c8a8b21453a"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-017_RESULT.yaml",
+          "blob": "da7924d8a9a4d1a4d32f44aa1b6d646eddcb0016"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-074_RESULT.yaml",
+          "blob": "c771eabfca4f63bb4e58e75f089397920f226796"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/entry.json",
+          "blob": "71a5efa8f8524365fcc13000000ccd408291bf6c"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/review-repair.md",
+          "blob": "b8b6d25a3ecad5428a99dcca64e22279da366bb1"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-079_RESULT.yaml",
+          "blob": "b123183d6ce4412cb1ca3250fbb219677e2e7152"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/checks.json",
+          "blob": "eb9fb4bd1c1f48498b3025fb926f5453a13cf072"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/verification.json",
+          "blob": "00f13cbe237679333880f08892f86380db792972"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_contract_pu.log",
+          "blob": "242f6572c5f035396be6c512b92305a4dae9b6f3"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_resolution_pu.log",
+          "blob": "69227887f81c05315d0915fdfe35c81fb60f4703"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_namespace_pu.log",
+          "blob": "e882d8cd2d2dbbbbcae91094d9ddaac505e513c0"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_owner_pipeline_dc.log",
+          "blob": "6690e4eb1a44b681ea6c8c728c8905c627ef397e"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_basis_denials_dc.log",
+          "blob": "72780320caedca11b232dc2ac0b3252edaa7f71b"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_replay_atomicity_dc.log",
+          "blob": "8796ceee98d7aab4a9345fd42f48680fea829005"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_repair_dc.log",
+          "blob": "e1cba1c153fbc2fe3c079055087c9c614ed54f85"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_legacy_no_authority_dc.log",
+          "blob": "9787456970c43fb3e15056b475d9770e1dfbebb2"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_suite_dc.log",
+          "blob": "1fc151de401761218970274b6e69c7ebce9c65a5"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/harness_validation_passes.log",
+          "blob": "e28c4a672d378f893981a98667306e37939be42c"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/unit_regressions_pass.log",
+          "blob": "e1dc4bf21ff4821a2de5b8a63387bb56bd8335c0"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/harness_regressions_pass.log",
+          "blob": "f873235c0475a68fd273cfd75ffc15b1fd985063"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/lint_passes.log",
+          "blob": "18ada5b57ba4fad1dd8872fe65f526997084e8e8"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/typecheck_passes.log",
+          "blob": "b28b93e9b0bf3a5cf901d7ea57103f33012b782c"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/legacy-golden-bytes.json",
+          "blob": "fe49da8fb93a6ff95378118f78ff3a48391e2b45"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/preserved-baseline.json",
+          "blob": "3ba6bd520219517fec54d1e1633267dc3741a8f8"
+        },
+        {
+          "path": "src/kineticloop/workflow/deterministic_planning.py",
+          "blob": "3a8f9e75c23026f6f78d26ef9111b5264b1ddb2a"
+        },
+        {
+          "path": "src/kineticloop/persistence/deterministic_planning.py",
+          "blob": "e590622a23e2236fc05b35dfe87a5f94733be08f"
+        },
+        {
+          "path": "src/kineticloop/persistence/transactions.py",
+          "blob": "40c0b0e1552bd3173d2695f7a8b32e559d088c30"
+        },
+        {
+          "path": "src/kineticloop/persistence/planning_progress.py",
+          "blob": "6192ff04ee55381922b7d8805a50a15514cdeeea"
+        },
+        {
+          "path": "src/kineticloop/workflow/planning_progress.py",
+          "blob": "f5bf9eccf7fdd5638306e979aeb40a85406eafa3"
+        },
+        {
+          "path": "src/kineticloop/persistence/metadata.py",
+          "blob": "dab0791de89faba6317046a448cc1b490d5e7b7c"
+        },
+        {
+          "path": "src/kineticloop/persistence/schema_topology.py",
+          "blob": "ba9f55f4e19a5a90e2e00c639754cb28c34d55eb"
+        },
+        {
+          "path": "src/kineticloop/persistence/protocol_execution.py",
+          "blob": "d41aee6f11291f3f5eaa170cdcded70e5e4ce8bb"
+        },
+        {
+          "path": "tests/unit/workflow/test_full_action_preparation.py",
+          "blob": "eb69cc699ccc51458e688ab9acf109a3f29699f2"
+        },
+        {
+          "path": "tests/db/test_full_action_preparation.py",
+          "blob": "7dcc5ba19f72fb409847942c104a522ca19a51d7"
+        },
+        {
+          "path": "tests/fixtures/full_action_preparation.json",
+          "blob": "73901d014dff5133ffdaa12057cfafd0148797d4"
+        },
+        {
+          "path": "AGENTS.md",
+          "blob": "f09b811c8e02144bd311efdf247aaa3d02f7ae05"
+        },
+        {
+          "path": "CURRENT_DOCUMENT_INDEX.json",
+          "blob": "0c04e347dd9b5a0de047c8d4d2fc9af533ffcb86"
+        },
+        {
+          "path": "CURRENT_REQUIREMENT_SET.json",
+          "blob": "fe8acced7f5a794bcfe7555d902475095d9e7778"
+        },
+        {
+          "path": ".agents/skills/pr-merge-reviewer/SKILL.md",
+          "blob": "4872445094ae8c1ada574f0eb3bc95145086f51a"
+        },
+        {
+          "path": ".agents/skills/protocol-guardian/SKILL.md",
+          "blob": "acba55969402aaf3a8f858de7c0f0a281420167c"
+        },
+        {
+          "path": "docs/exec-plans/active/KL-079.md",
+          "blob": "eb36dd29b6c37a23fd54b00e9a23177f49f8dd7d"
+        },
+        {
+          "path": "docs/exec-plans/evidence/HG-041/PREPARATION.md",
+          "blob": "b87f44d62dff2dd85dbb158bad935424018934d0"
+        },
+        {
+          "path": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+          "blob": "60cc632b2e9c7269210368887b6349d80518abeb"
+        },
+        {
+          "path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+          "blob": "949bd6d487a3876d8b37e224e6882432bd75bfdf"
+        },
+        {
+          "path": "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+          "blob": "d3bd0d8b336069d8a7848655a78322fe40970405"
+        },
+        {
+          "path": "docs/harness/THREAD_RESULT_CONTRACT.md",
+          "blob": "baa7fc7288ff1a502d16386833a00c6ddea2267a"
+        },
+        {
+          "path": "docs/harness/THREAD_REVIEW_CONTRACT.md",
+          "blob": "137d937c723223c4571ae018027b6bd44638d682"
+        },
+        {
+          "path": "docs/harness/MERGE_GATE.md",
+          "blob": "cf2438267c60b5ba34b40c8f215c176e4cda96af"
+        },
+        {
+          "path": "THREAD_REVIEW.schema.json",
+          "blob": "2ba66a62066fa9c75546e220bf98d0a9e82f34a5"
+        },
+        {
+          "path": "docs/exec-plans/milestones/M2.json",
+          "blob": "6a53d08d992d30c1009b4194794583c605b6fc37"
+        },
+        {
+          "path": "docs/contracts/deterministic_planning.md",
+          "blob": "cbd91b939614b96a2955c92d7fc9231c24994a69"
+        },
+        {
+          "path": "docs/contracts/full_action_preparation.md",
+          "blob": "5df358061e2302230deca747860bc7c61847f670"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-079_RESULT.yaml",
+          "blob": "b123183d6ce4412cb1ca3250fbb219677e2e7152"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/entry.json",
+          "blob": "71a5efa8f8524365fcc13000000ccd408291bf6c"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/review-repair.md",
+          "blob": "b8b6d25a3ecad5428a99dcca64e22279da366bb1"
+        },
+        {
+          "path": "src/kineticloop/workflow/deterministic_planning.py",
+          "blob": "3a8f9e75c23026f6f78d26ef9111b5264b1ddb2a"
+        },
+        {
+          "path": "src/kineticloop/persistence/deterministic_planning.py",
+          "blob": "e590622a23e2236fc05b35dfe87a5f94733be08f"
+        },
+        {
+          "path": "src/kineticloop/persistence/transactions.py",
+          "blob": "40c0b0e1552bd3173d2695f7a8b32e559d088c30"
+        },
+        {
+          "path": "src/kineticloop/workflow/planning_progress.py",
+          "blob": "f5bf9eccf7fdd5638306e979aeb40a85406eafa3"
+        },
+        {
+          "path": "src/kineticloop/persistence/planning_progress.py",
+          "blob": "6192ff04ee55381922b7d8805a50a15514cdeeea"
+        },
+        {
+          "path": "src/kineticloop/persistence/metadata.py",
+          "blob": "dab0791de89faba6317046a448cc1b490d5e7b7c"
+        },
+        {
+          "path": "src/kineticloop/persistence/schema_topology.py",
+          "blob": "ba9f55f4e19a5a90e2e00c639754cb28c34d55eb"
+        },
+        {
+          "path": "src/kineticloop/persistence/protocol_execution.py",
+          "blob": "d41aee6f11291f3f5eaa170cdcded70e5e4ce8bb"
+        },
+        {
+          "path": "tests/unit/workflow/test_full_action_preparation.py",
+          "blob": "eb69cc699ccc51458e688ab9acf109a3f29699f2"
+        },
+        {
+          "path": "tests/db/test_full_action_preparation.py",
+          "blob": "7dcc5ba19f72fb409847942c104a522ca19a51d7"
+        },
+        {
+          "path": "tests/fixtures/full_action_preparation.json",
+          "blob": "73901d014dff5133ffdaa12057cfafd0148797d4"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-076_RESULT.yaml",
+          "blob": "72f24757638011017d1d9a6bc7bf6e92ce56d1ea"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-076/DB_CONCURRENCY.json",
+          "blob": "c6b89ce7cd88eabb0f3858d74d4402553f6d879b"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-076/GENERAL.json",
+          "blob": "30dcddd58d8376f2257efa7ed6912d2d8449204a"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-076/PROTOCOL.json",
+          "blob": "e846add66852eb1f80ed3ef0118d94ea33ebfdb7"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-075_RESULT.yaml",
+          "blob": "bae63424967a3e7c845e713c4168543a59a4d284"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-075/DB_CONCURRENCY.json",
+          "blob": "bc77193465ed23392c0511d76d56f25753c8b9e9"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-075/GENERAL.json",
+          "blob": "1fc5e77e9f89e1e0f3b4201111ef92183a9481b4"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-075/PROTOCOL.json",
+          "blob": "203543c19519fecac992507887ad2457ff2ef10c"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-078_RESULT.yaml",
+          "blob": "96f656c89de687de5142d9146130bbc1808720eb"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-078/DB_CONCURRENCY.json",
+          "blob": "e8ffeb9c4728f3ee46791336048e12a1ff7efad2"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-078/GENERAL.json",
+          "blob": "88bf074d5ee6ca2cb7fe90e69a52decda9db3484"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-078/PROTOCOL.json",
+          "blob": "6c1a96c078cbdb87d8c1c3b2701eee1c8137f6e0"
+        },
+        {
+          "path": "docs/exec-plans/integrations/KL-078.json",
+          "blob": "9da4ff1c64b349b02b253575819fdd7faf272900"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-024_RESULT.yaml",
+          "blob": "9cd7f2da6a51aa2a6af1fe401f791588e0bea280"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-024/DB_CONCURRENCY.json",
+          "blob": "05d6c0ce1d4822e0ff285b0f43c281fabb518653"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-024/GENERAL.json",
+          "blob": "92a10bb05ca7318f31604ebd16a0dab5890c7b98"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-024/PROTOCOL.json",
+          "blob": "e96e213ea55f266eb4415ba95a0d7db7e75a2b1d"
+        },
+        {
+          "path": "docs/exec-plans/integrations/KL-024.json",
+          "blob": "2cebb88ff61471a04add96298e29a3fea6bd0b12"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-019_RESULT.yaml",
+          "blob": "6979c553bab75dc1a83701c12c6d1c8a8b21453a"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-019/DB_CONCURRENCY.json",
+          "blob": "238b39b4f7b92d35449f864113bf789d92e1526a"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-019/GENERAL.json",
+          "blob": "0f8b3669279b0d472f1a5efa8728a609d0a7640e"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-019/PROTOCOL.json",
+          "blob": "6990cc645e974b560e752d5e7211bad2cc1a1c5d"
+        },
+        {
+          "path": "docs/exec-plans/integrations/KL-019.json",
+          "blob": "a8b7a8afc0b33c7cc96b4349280775b6c1c6992a"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-017_RESULT.yaml",
+          "blob": "da7924d8a9a4d1a4d32f44aa1b6d646eddcb0016"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-017/DB_CONCURRENCY.json",
+          "blob": "f74dc646cbb81519946ca7a4673c77d181da5faa"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-017/GENERAL.json",
+          "blob": "02fe1018f92dc65f69c72d36e8a840049a886cb0"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-017/PROTOCOL.json",
+          "blob": "16ee35270f83f9ffaf229b95302b0f2945941f70"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-017/SECURITY_DATA_BOUNDARY.json",
+          "blob": "740898a9ecc0200f29663284df7b646cb81ba71c"
+        },
+        {
+          "path": "docs/exec-plans/integrations/KL-017.json",
+          "blob": "e568c507cc5238d834afdc972e21709159a3a0e5"
+        },
+        {
+          "path": "docs/exec-plans/completed/KL-074_RESULT.yaml",
+          "blob": "c771eabfca4f63bb4e58e75f089397920f226796"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-074/DB_CONCURRENCY.json",
+          "blob": "234b08624bda26572466546ac070ee81df16881b"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-074/GENERAL.json",
+          "blob": "16ea0f3013a0f60f9444bf01f79ac64eb034730a"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-074/SECURITY_DATA_BOUNDARY.json",
+          "blob": "e5302c0e859b562e7dd70da6e4ecb61c65935911"
+        },
+        {
+          "path": "docs/exec-plans/integrations/KL-074.json",
+          "blob": "f496e94bf76950dfb9d19ff534961d9a5fad8361"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/checks.json",
+          "blob": "eb9fb4bd1c1f48498b3025fb926f5453a13cf072"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_basis_denials_dc.log",
+          "blob": "72780320caedca11b232dc2ac0b3252edaa7f71b"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_contract_pu.log",
+          "blob": "242f6572c5f035396be6c512b92305a4dae9b6f3"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_legacy_no_authority_dc.log",
+          "blob": "9787456970c43fb3e15056b475d9770e1dfbebb2"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_namespace_pu.log",
+          "blob": "e882d8cd2d2dbbbbcae91094d9ddaac505e513c0"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_owner_pipeline_dc.log",
+          "blob": "6690e4eb1a44b681ea6c8c728c8905c627ef397e"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_repair_dc.log",
+          "blob": "e1cba1c153fbc2fe3c079055087c9c614ed54f85"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_replay_atomicity_dc.log",
+          "blob": "8796ceee98d7aab4a9345fd42f48680fea829005"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_resolution_pu.log",
+          "blob": "69227887f81c05315d0915fdfe35c81fb60f4703"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_suite_dc.log",
+          "blob": "1fc151de401761218970274b6e69c7ebce9c65a5"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/harness_regressions_pass.log",
+          "blob": "f873235c0475a68fd273cfd75ffc15b1fd985063"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/harness_validation_passes.log",
+          "blob": "e28c4a672d378f893981a98667306e37939be42c"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/legacy-golden-bytes.json",
+          "blob": "fe49da8fb93a6ff95378118f78ff3a48391e2b45"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/lint_passes.log",
+          "blob": "18ada5b57ba4fad1dd8872fe65f526997084e8e8"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/preserved-baseline.json",
+          "blob": "3ba6bd520219517fec54d1e1633267dc3741a8f8"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/result-validation.log",
+          "blob": "5c3d2270dd6247111eb8ef8f31532c5fdc24e5b7"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/typecheck_passes.log",
+          "blob": "b28b93e9b0bf3a5cf901d7ea57103f33012b782c"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/unit_regressions_pass.log",
+          "blob": "e1dc4bf21ff4821a2de5b8a63387bb56bd8335c0"
+        },
+        {
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/verification.json",
+          "blob": "00f13cbe237679333880f08892f86380db792972"
+        }
+      ],
+      "review_created_refs": [],
+      "task_check_refs_at_reviewed": [
+        {
+          "check_id": "full_action_contract_pu",
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_contract_pu.log",
+          "blob_at_reviewed": "242f6572c5f035396be6c512b92305a4dae9b6f3"
+        },
+        {
+          "check_id": "full_action_resolution_pu",
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_resolution_pu.log",
+          "blob_at_reviewed": "69227887f81c05315d0915fdfe35c81fb60f4703"
+        },
+        {
+          "check_id": "full_action_namespace_pu",
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_namespace_pu.log",
+          "blob_at_reviewed": "e882d8cd2d2dbbbbcae91094d9ddaac505e513c0"
+        },
+        {
+          "check_id": "full_action_owner_pipeline_dc",
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_owner_pipeline_dc.log",
+          "blob_at_reviewed": "6690e4eb1a44b681ea6c8c728c8905c627ef397e"
+        },
+        {
+          "check_id": "full_action_basis_denials_dc",
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_basis_denials_dc.log",
+          "blob_at_reviewed": "72780320caedca11b232dc2ac0b3252edaa7f71b"
+        },
+        {
+          "check_id": "full_action_replay_atomicity_dc",
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_replay_atomicity_dc.log",
+          "blob_at_reviewed": "8796ceee98d7aab4a9345fd42f48680fea829005"
+        },
+        {
+          "check_id": "full_action_repair_dc",
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_repair_dc.log",
+          "blob_at_reviewed": "e1cba1c153fbc2fe3c079055087c9c614ed54f85"
+        },
+        {
+          "check_id": "full_action_legacy_no_authority_dc",
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_legacy_no_authority_dc.log",
+          "blob_at_reviewed": "9787456970c43fb3e15056b475d9770e1dfbebb2"
+        },
+        {
+          "check_id": "full_action_suite_dc",
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/full_action_suite_dc.log",
+          "blob_at_reviewed": "1fc151de401761218970274b6e69c7ebce9c65a5"
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/harness_validation_passes.log",
+          "blob_at_reviewed": "e28c4a672d378f893981a98667306e37939be42c"
+        },
+        {
+          "check_id": "unit_regressions_pass",
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/unit_regressions_pass.log",
+          "blob_at_reviewed": "e1dc4bf21ff4821a2de5b8a63387bb56bd8335c0"
+        },
+        {
+          "check_id": "harness_regressions_pass",
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/harness_regressions_pass.log",
+          "blob_at_reviewed": "f873235c0475a68fd273cfd75ffc15b1fd985063"
+        },
+        {
+          "check_id": "lint_passes",
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/lint_passes.log",
+          "blob_at_reviewed": "18ada5b57ba4fad1dd8872fe65f526997084e8e8"
+        },
+        {
+          "check_id": "typecheck_passes",
+          "path": "docs/exec-plans/evidence/KL-079/1e5803836c645c90ee85980c50d9e8d245fb6cf7/typecheck_passes.log",
+          "blob_at_reviewed": "b28b93e9b0bf3a5cf901d7ea57103f33012b782c"
+        }
+      ],
+      "result_sha256": "b6bae41144cbdad079395ef4d3dde10bdd9d0846fa7c10bed5b98739c27bdcf1",
+      "old_errors": [],
+      "new_errors": []
+    }
+  }
+}

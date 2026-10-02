@@ -1,0 +1,178 @@
+{
+  "reviewed_head_sha": "8245480918251739339987de69bfe41fa0b39af5",
+  "purpose": "Read-only classification of historic independent reviewer DB reruns; never pre-review task acceptance evidence. No DB runtime invoked.",
+  "candidates": {
+    "KL-027": {
+      "pre_review_task_checks": 12,
+      "all_task_check_refs_regular_at_reviewed_unchanged_to_record": true,
+      "review_created_db_refs": [
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-db-raw/assessment.md",
+          "source_commit": "e6cd006720b0f81a1d7d5efa1105c68a06c34d96",
+          "blob_sha256": "ce9be1264fafd256800ae4bee369484c584bfb6cba84b17a040a556042505442",
+          "classification": "INDEPENDENT_REVIEW_BOOKKEEPING"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-db-raw/audit.json",
+          "source_commit": "e6cd006720b0f81a1d7d5efa1105c68a06c34d96",
+          "blob_sha256": "169264a979a67f21cac9aa532d15f9a6307719d5bd4871f58a8fd1eb4eb4d989",
+          "classification": "INDEPENDENT_REVIEW_BOOKKEEPING",
+          "top_level_fields": [
+            "reviewed_head_sha",
+            "namespace_first",
+            "four_operations",
+            "timings",
+            "namespace_witnesses",
+            "cleanup_witnesses",
+            "files",
+            "honest_initial_attempts",
+            "resource",
+            "head_changes",
+            "production_owner_timeout_changes"
+          ]
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-db-raw/namespace.log",
+          "source_commit": "e6cd006720b0f81a1d7d5efa1105c68a06c34d96",
+          "blob_sha256": "216b3ea453c3cc6a1858526ffd3896dc3cde616e56bfc632afa2ccd6bd97fd26",
+          "classification": "INDEPENDENT_REVIEW_BOOKKEEPING",
+          "raw_tail": "predicates; separately labeled, no DC equality claim\nNAMESPACE_PU DatabaseNamespace(project_name='kineticloop-kl027-demo-ff93c08-02d718cec5f6', database_name='kineticloop_kl027_demo_ff93c08_02d718cec5f6') negative_controls=foreign_root,sha,digest,label,ambient,nested_cleanup nested_inventory ['bootstrap_two_phase(selected_lifecycle)', 'destroy']\n.\n- generated xml file: /Users/davetian/.codex/worktrees/465a/KineticLoop/docs/exec-plans/reviews/KL-027/final-db-raw/namespace.xml -\n1 passed in 0.73s\n"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-db-raw/namespace.xml",
+          "source_commit": "e6cd006720b0f81a1d7d5efa1105c68a06c34d96",
+          "blob_sha256": "82a6de5f8ba59a93f7bd9ec9d27980a99fb1e1c382a4247e4d19bbf9ded5038d",
+          "classification": "INDEPENDENT_REVIEW_BOOKKEEPING",
+          "suite_counts": [
+            {
+              "tests": "1",
+              "failures": "0",
+              "errors": "0",
+              "skipped": "0"
+            }
+          ]
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-db-raw/four-operations.log",
+          "source_commit": "e6cd006720b0f81a1d7d5efa1105c68a06c34d96",
+          "blob_sha256": "e7d92f3bfebff923a43def352de1c16c6628a2b0294696d1726a081937effdf2",
+          "classification": "INDEPENDENT_REVIEW_BOOKKEEPING",
+          "raw_tail": ": true}\n.FIXTURE_EVIDENCE {\"compose\": \"kineticloop-kl027-demo-ff93c08-02d718cec5f6\", \"database\": \"kineticloop_kl027_demo_ff93c08_02d718cec5f6\", \"elapsed\": 11.523153292015195, \"inventory\": [\"bootstrap_two_phase(selected_lifecycle)\", \"reset\", \"start\", \"destroy\"], \"kind\": \"cleanup\", \"remaining\": {\"container\": \"\", \"network\": \"\", \"volume\": \"\"}}\n\n- generated xml file: /Users/davetian/.codex/worktrees/465a/KineticLoop/docs/exec-plans/reviews/KL-027/final-db-raw/four-operations.xml -\n4 passed in 49.27s\n"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-db-raw/four-operations.xml",
+          "source_commit": "e6cd006720b0f81a1d7d5efa1105c68a06c34d96",
+          "blob_sha256": "a71aa940daa8e8eb2d750eb00444bf64b1882cb79eb8b9eee62b63583050b3cb",
+          "classification": "INDEPENDENT_REVIEW_BOOKKEEPING",
+          "suite_counts": [
+            {
+              "tests": "4",
+              "failures": "0",
+              "errors": "0",
+              "skipped": "0"
+            }
+          ]
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.json",
+          "source_commit": "e6cd006720b0f81a1d7d5efa1105c68a06c34d96",
+          "blob_sha256": "6bdb3c341dd3121a5637c30af75eb47f555d4109bab896442f72eaf8346b4b78",
+          "classification": "INDEPENDENT_REVIEW_BOOKKEEPING",
+          "top_level_fields": [
+            "task_identity",
+            "reviewed_head_sha",
+            "tested_commit",
+            "base_commit",
+            "authority_hashes",
+            "allowed_scope",
+            "tested_to_reviewed_linear_result_evidence_suffix",
+            "prerequisites",
+            "m2",
+            "verified_checks",
+            "suite_witness_counts",
+            "trusted_post_lock_timings",
+            "inherited_demand_metadata",
+            "reviewer_db_lifecycle"
+          ]
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.json",
+          "source_commit": "e6cd006720b0f81a1d7d5efa1105c68a06c34d96",
+          "blob_sha256": "6bdb3c341dd3121a5637c30af75eb47f555d4109bab896442f72eaf8346b4b78",
+          "classification": "INDEPENDENT_REVIEW_BOOKKEEPING",
+          "top_level_fields": [
+            "task_identity",
+            "reviewed_head_sha",
+            "tested_commit",
+            "base_commit",
+            "authority_hashes",
+            "allowed_scope",
+            "tested_to_reviewed_linear_result_evidence_suffix",
+            "prerequisites",
+            "m2",
+            "verified_checks",
+            "suite_witness_counts",
+            "trusted_post_lock_timings",
+            "inherited_demand_metadata",
+            "reviewer_db_lifecycle"
+          ]
+        }
+      ],
+      "task_result_status_unchanged": true
+    },
+    "KL-075": {
+      "pre_review_task_checks": 13,
+      "all_task_check_refs_regular_at_reviewed_unchanged_to_record": true,
+      "review_created_db_refs": [
+        {
+          "path": "docs/exec-plans/reviews/KL-075/independent-db-5543bfb.log",
+          "source_commit": "ec4b43e9f1cfaa96a17b231673f4549d651e6bca",
+          "blob_sha256": "acf7dfe49d86b014f6c37d9a642ef84f298ad6e35038920e606fd94f8891ca3b",
+          "classification": "INDEPENDENT_REVIEW_BOOKKEEPING",
+          "raw_tail": "tics\", \"no_effect\": true}\n.PROGRESS_EVIDENCE {\"compose\": \"kineticloop-kl075-progress-5543bfb-cb2e4202e692\", \"database\": \"kineticloop_kl075_progress_5543bfb_cb2e4202e692\", \"destroy\": \"PASS\", \"elapsed\": 44.298759332858026, \"kind\": \"cleanup\", \"lock_timeout_ms\": 8000, \"remaining_resources\": {\"container\": \"\", \"network\": \"\", \"volume\": \"\"}, \"startup_timeout_seconds\": 60, \"statement_timeout_ms\": 10000}\n\n--------- generated xml file: /private/tmp/kl075-db-review-5543bfb.xml ---------\n56 passed in 44.68s\n"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-075/independent-db-5543bfb.xml",
+          "source_commit": "ec4b43e9f1cfaa96a17b231673f4549d651e6bca",
+          "blob_sha256": "7db992fbd339762ff4a204edfe67fa7a0b55602672a7cb814a7f67f8cb710cbc",
+          "classification": "INDEPENDENT_REVIEW_BOOKKEEPING",
+          "suite_counts": [
+            {
+              "tests": "56",
+              "failures": "0",
+              "errors": "0",
+              "skipped": "0"
+            }
+          ]
+        }
+      ],
+      "task_result_status_unchanged": true
+    },
+    "KL-076": {
+      "pre_review_task_checks": 13,
+      "all_task_check_refs_regular_at_reviewed_unchanged_to_record": true,
+      "review_created_db_refs": [
+        {
+          "path": "docs/exec-plans/reviews/KL-076/DB_CONCURRENCY-run.log",
+          "source_commit": "d7e8f60c2530c8373279df6827bfcd08322cd832",
+          "blob_sha256": "d7100b1f0d69036736fd7d3fcd2370b5dc35f6e914f3d0ee78f2ecbefc52b6f0",
+          "classification": "INDEPENDENT_REVIEW_BOOKKEEPING",
+          "raw_tail": "istorical_id\": \"346d1866-8bcb-56b9-bd2c-d1fe4acbf33c\", \"kind\": \"replay\", \"writer\": \"VALIDATION\", \"zero_effects\": true}\n.FIXTURE_EVIDENCE {\"compose\": \"kineticloop-kl076-fixture-290a4d6-09d660809a11\", \"database\": \"kineticloop_kl076_fixture_290a4d6_09d660809a11\", \"elapsed\": 4.042775999987498, \"inventory\": [\"bootstrap_two_phase(selected_lifecycle)\", \"reset\", \"start\", \"destroy\"], \"kind\": \"cleanup\", \"remaining_resources\": {\"container\": \"\", \"network\": \"\", \"volume\": \"\"}}\n\n68 passed in 323.07s (0:05:23)\n"
+        }
+      ],
+      "task_result_status_unchanged": true
+    },
+    "KL-077": {
+      "pre_review_task_checks": 14,
+      "all_task_check_refs_regular_at_reviewed_unchanged_to_record": true,
+      "review_created_db_refs": [],
+      "task_result_status_unchanged": true
+    },
+    "KL-079": {
+      "pre_review_task_checks": 14,
+      "all_task_check_refs_regular_at_reviewed_unchanged_to_record": true,
+      "review_created_db_refs": [],
+      "task_result_status_unchanged": true
+    }
+  }
+}

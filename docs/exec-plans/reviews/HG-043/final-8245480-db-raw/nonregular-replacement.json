@@ -1,0 +1,42 @@
+{
+  "reviewed_head_sha": "8245480918251739339987de69bfe41fa0b39af5",
+  "result": "PRIOR_BLOCKER_CLOSED",
+  "cases": [
+    {
+      "mode": "symlink",
+      "reference": "docs/exec-plans/reviews/KL-001/replaced-evidence",
+      "reviewed": "8d3ed65a8b9cd1007f48174221f832e637d7c283",
+      "review_record": "6f7776580458141c8657787e2308341597fd98c3",
+      "entry_at_reviewed": "120000 blob bcb5fa36b27801834109be1fb778b4db8ae8a0e7\tdocs/exec-plans/reviews/KL-001/replaced-evidence\u0000",
+      "entry_at_review_record": "100644 blob da0964f94f3fa12c3cb5b5be4abed8baee81485f\tdocs/exec-plans/reviews/KL-001/replaced-evidence\u0000",
+      "integration_errors": [
+        "integration-review-evidence:KL-001:GENERAL:docs/exec-plans/reviews/KL-001/replaced-evidence"
+      ],
+      "expected": "integration-review-evidence rejection: referenced path existed as nonregular at reviewed SHA; contract permits later fallback only for an absent path"
+    },
+    {
+      "mode": "tree",
+      "reference": "docs/exec-plans/reviews/KL-001/replaced-evidence",
+      "reviewed": "37fa784df4755c72953ea6fb4f9b6da31e48f245",
+      "review_record": "cdd9c1a230b5dd1da90894e073e2ea4b5c7c32bc",
+      "entry_at_reviewed": "040000 tree 084e36e77c11bfe2ca66bdfb98f2ba068abc9665\tdocs/exec-plans/reviews/KL-001/replaced-evidence\u0000",
+      "entry_at_review_record": "100644 blob da0964f94f3fa12c3cb5b5be4abed8baee81485f\tdocs/exec-plans/reviews/KL-001/replaced-evidence\u0000",
+      "integration_errors": [
+        "integration-review-evidence:KL-001:GENERAL:docs/exec-plans/reviews/KL-001/replaced-evidence"
+      ],
+      "expected": "integration-review-evidence rejection: referenced path existed as nonregular at reviewed SHA; contract permits later fallback only for an absent path"
+    },
+    {
+      "mode": "gitlink",
+      "reference": "docs/exec-plans/reviews/KL-001/replaced-evidence",
+      "reviewed": "91ab709d49fb4cab74beae5bab8c5f48c3514318",
+      "review_record": "7d84f9ac0cd532da534b4a916df25d8be3d62986",
+      "entry_at_reviewed": "160000 commit b2c6787b8de1239d4f3725cc9353925d2a1d8d46\tdocs/exec-plans/reviews/KL-001/replaced-evidence\u0000",
+      "entry_at_review_record": "100644 blob da0964f94f3fa12c3cb5b5be4abed8baee81485f\tdocs/exec-plans/reviews/KL-001/replaced-evidence\u0000",
+      "integration_errors": [
+        "integration-review-evidence:KL-001:GENERAL:docs/exec-plans/reviews/KL-001/replaced-evidence"
+      ],
+      "expected": "integration-review-evidence rejection: referenced path existed as nonregular at reviewed SHA; contract permits later fallback only for an absent path"
+    }
+  ]
+}

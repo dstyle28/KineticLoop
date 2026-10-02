@@ -1,0 +1,28 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-043",
+  "reviewed_head_sha": "2896d2422999fdf8a2cbca75eb316798c015ad17",
+  "review_type": "PROTOCOL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "classification": "BLOCKER",
+      "title": "Present nonregular reviewed entries bypass the absent-reference boundary",
+      "file": "tools/harness/validate_harness.py",
+      "line": 1716,
+      "description": "review_evidence_exists falls back to review_record_commit whenever revision_regular_file(reviewed) is false. That conflates absence with an existing symlink or directory. Independent real-Git probes commit an own-task reference as mode 120000 or 040000 at the reviewed revision, replace it with mode 100644 in an ancestral linear own-review-only suffix, and receive zero integration errors. Thread Review Contract v0.2 permits fallback only for a reference absent at reviewed_head_sha and expressly excludes symlinks and directories; the implementation therefore accepts a source binding outside the authorized exception.",
+      "required_change": "Prove that the exact normalized path has no Git entry at the reviewed SHA before allowing review-record fallback. Keep ordinary references bound to regular reviewed blobs, and add integration regressions rejecting symlink-to-regular and directory-to-regular replacement under an otherwise valid own-review-only suffix. Rerun required checks and fresh SHA-bound reviews after the fix.",
+      "evidence_refs": [
+        "docs/exec-plans/reviews/HG-043/PROTOCOL-raw/probe.py",
+        "docs/exec-plans/reviews/HG-043/PROTOCOL-raw/nonregular-replacement.json"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/HG-043/PROTOCOL-raw/probe.py",
+    "docs/exec-plans/reviews/HG-043/PROTOCOL-raw/nonregular-replacement.json",
+    "docs/exec-plans/reviews/HG-043/PROTOCOL-raw/committed-evidence-audit.json",
+    "docs/exec-plans/reviews/HG-043/PROTOCOL-raw/focused-regressions.json",
+    "docs/exec-plans/reviews/HG-043/PROTOCOL-raw/candidate-replay.json"
+  ],
+  "review_contract_version": "v0.2"
+}

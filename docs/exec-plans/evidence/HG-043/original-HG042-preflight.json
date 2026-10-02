@@ -1,0 +1,348 @@
+{
+  "audit_head": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+  "candidates": {
+    "KL-075": {
+      "record": {
+        "task_identity": "harness-backlog-v0.2/KL-075",
+        "display_task_id": "KL-075",
+        "result_commit": "5543bfb2a40a6e29c49f0325d8542a1b38a8fcca",
+        "reviewed_head_sha": "5543bfb2a40a6e29c49f0325d8542a1b38a8fcca",
+        "review_record_commit": "ec4b43e9f1cfaa96a17b231673f4549d651e6bca",
+        "merge_commit": "d0470badf0ccf6bec28a9bc7e6836b57d9df93ce",
+        "integration_status": "MERGED"
+      },
+      "validator_errors": [
+        "integration-review-evidence:KL-075:DB_CONCURRENCY:docs/exec-plans/reviews/KL-075/independent-db-5543bfb.log",
+        "integration-review-evidence:KL-075:DB_CONCURRENCY:docs/exec-plans/reviews/KL-075/independent-db-5543bfb.xml",
+        "integration-review-evidence:KL-075:GENERAL:docs/exec-plans/reviews/KL-075/independent-unit-5543bfb.log"
+      ],
+      "review_witnesses": {
+        "DB_CONCURRENCY": {
+          "reviewed_head_sha": "5543bfb2a40a6e29c49f0325d8542a1b38a8fcca",
+          "status": "PASS",
+          "missing_at_reviewed": [
+            {
+              "reference": "docs/exec-plans/reviews/KL-075/independent-db-5543bfb.log",
+              "exists_at_review_record": true,
+              "exists_at_merge": true,
+              "first_add_commit": [
+                "f5e7a0f15cb6814ce82866f0a5844fbab312f454"
+              ]
+            },
+            {
+              "reference": "docs/exec-plans/reviews/KL-075/independent-db-5543bfb.xml",
+              "exists_at_review_record": true,
+              "exists_at_merge": true,
+              "first_add_commit": [
+                "39b5acf8c2d0bf9fb9900c5ce3a14b6707adcc26"
+              ]
+            }
+          ]
+        },
+        "GENERAL": {
+          "reviewed_head_sha": "5543bfb2a40a6e29c49f0325d8542a1b38a8fcca",
+          "status": "PASS",
+          "missing_at_reviewed": [
+            {
+              "reference": "docs/exec-plans/reviews/KL-075/independent-unit-5543bfb.log",
+              "exists_at_review_record": true,
+              "exists_at_merge": true,
+              "first_add_commit": [
+                "f5e7a0f15cb6814ce82866f0a5844fbab312f454"
+              ]
+            }
+          ]
+        },
+        "PROTOCOL": {
+          "reviewed_head_sha": "5543bfb2a40a6e29c49f0325d8542a1b38a8fcca",
+          "status": "PASS",
+          "missing_at_reviewed": []
+        }
+      },
+      "result_sha256": "f7db410d2b340272b35d9cf5530bd59257f0a8626136db46556318e56306bf69",
+      "result_byte_identical_at_reviewed": true,
+      "result_byte_identical_at_merge": true,
+      "normal_merge_parents": [
+        "74cd5b3c8782f4eefb8f98a3895407300990cc27",
+        "ec4b43e9f1cfaa96a17b231673f4549d651e6bca"
+      ],
+      "merge_is_ancestor_of_head": true,
+      "review_suffix": [
+        {
+          "commit": "39b5acf8c2d0bf9fb9900c5ce3a14b6707adcc26",
+          "parents": [
+            "5543bfb2a40a6e29c49f0325d8542a1b38a8fcca"
+          ],
+          "changed_paths": [
+            "docs/exec-plans/reviews/KL-075/DB_CONCURRENCY.json",
+            "docs/exec-plans/reviews/KL-075/GENERAL.json",
+            "docs/exec-plans/reviews/KL-075/PROTOCOL.json",
+            "docs/exec-plans/reviews/KL-075/independent-db-5543bfb.xml"
+          ]
+        },
+        {
+          "commit": "f5e7a0f15cb6814ce82866f0a5844fbab312f454",
+          "parents": [
+            "39b5acf8c2d0bf9fb9900c5ce3a14b6707adcc26"
+          ],
+          "changed_paths": [
+            "docs/exec-plans/reviews/KL-075/independent-db-5543bfb.log",
+            "docs/exec-plans/reviews/KL-075/independent-unit-5543bfb.log"
+          ]
+        },
+        {
+          "commit": "ec4b43e9f1cfaa96a17b231673f4549d651e6bca",
+          "parents": [
+            "f5e7a0f15cb6814ce82866f0a5844fbab312f454"
+          ],
+          "changed_paths": [
+            "docs/exec-plans/reviews/KL-075/PROTOCOL.json"
+          ]
+        }
+      ]
+    },
+    "KL-076": {
+      "record": {
+        "task_identity": "harness-backlog-v0.2/KL-076",
+        "display_task_id": "KL-076",
+        "result_commit": "290a4d696d1d8247346e54aa9ff12615ce86dd6f",
+        "reviewed_head_sha": "290a4d696d1d8247346e54aa9ff12615ce86dd6f",
+        "review_record_commit": "d7e8f60c2530c8373279df6827bfcd08322cd832",
+        "merge_commit": "035644e0cfb94927d7555e245223cd92c224ea5a",
+        "integration_status": "MERGED"
+      },
+      "validator_errors": [
+        "integration-review-evidence:KL-076:DB_CONCURRENCY:docs/exec-plans/reviews/KL-076/DB_CONCURRENCY-run.log"
+      ],
+      "review_witnesses": {
+        "DB_CONCURRENCY": {
+          "reviewed_head_sha": "290a4d696d1d8247346e54aa9ff12615ce86dd6f",
+          "status": "PASS",
+          "missing_at_reviewed": [
+            {
+              "reference": "docs/exec-plans/reviews/KL-076/DB_CONCURRENCY-run.log",
+              "exists_at_review_record": true,
+              "exists_at_merge": true,
+              "first_add_commit": [
+                "d7e8f60c2530c8373279df6827bfcd08322cd832"
+              ]
+            }
+          ]
+        },
+        "GENERAL": {
+          "reviewed_head_sha": "290a4d696d1d8247346e54aa9ff12615ce86dd6f",
+          "status": "PASS",
+          "missing_at_reviewed": []
+        },
+        "PROTOCOL": {
+          "reviewed_head_sha": "290a4d696d1d8247346e54aa9ff12615ce86dd6f",
+          "status": "PASS",
+          "missing_at_reviewed": []
+        }
+      },
+      "result_sha256": "013a9f33540411a479f728ea63c68551499fc38464ae2dfe6a8ef6f0e8f239e2",
+      "result_byte_identical_at_reviewed": true,
+      "result_byte_identical_at_merge": true,
+      "normal_merge_parents": [
+        "c599ec1ef39c28bd691748698a09805f390878cf",
+        "d7e8f60c2530c8373279df6827bfcd08322cd832"
+      ],
+      "merge_is_ancestor_of_head": true,
+      "review_suffix": [
+        {
+          "commit": "d7e8f60c2530c8373279df6827bfcd08322cd832",
+          "parents": [
+            "290a4d696d1d8247346e54aa9ff12615ce86dd6f"
+          ],
+          "changed_paths": [
+            "docs/exec-plans/reviews/KL-076/DB_CONCURRENCY-run.log",
+            "docs/exec-plans/reviews/KL-076/DB_CONCURRENCY.json",
+            "docs/exec-plans/reviews/KL-076/GENERAL.json",
+            "docs/exec-plans/reviews/KL-076/PROTOCOL.json"
+          ]
+        }
+      ]
+    },
+    "KL-079": {
+      "record": {
+        "task_identity": "harness-backlog-v0.2/KL-079",
+        "display_task_id": "KL-079",
+        "result_commit": "056b5471f3b360eeda2eca5b1c8def107222acae",
+        "reviewed_head_sha": "056b5471f3b360eeda2eca5b1c8def107222acae",
+        "review_record_commit": "a16fc2e037bd6cec4dbef8613092b28e9b60ecaf",
+        "merge_commit": "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588",
+        "integration_status": "MERGED"
+      },
+      "validator_errors": [],
+      "review_witnesses": {
+        "DB_CONCURRENCY": {
+          "reviewed_head_sha": "056b5471f3b360eeda2eca5b1c8def107222acae",
+          "status": "PASS",
+          "missing_at_reviewed": []
+        },
+        "GENERAL": {
+          "reviewed_head_sha": "056b5471f3b360eeda2eca5b1c8def107222acae",
+          "status": "PASS",
+          "missing_at_reviewed": []
+        },
+        "PROTOCOL": {
+          "reviewed_head_sha": "056b5471f3b360eeda2eca5b1c8def107222acae",
+          "status": "PASS",
+          "missing_at_reviewed": []
+        }
+      },
+      "result_sha256": "b6bae41144cbdad079395ef4d3dde10bdd9d0846fa7c10bed5b98739c27bdcf1",
+      "result_byte_identical_at_reviewed": true,
+      "result_byte_identical_at_merge": true,
+      "normal_merge_parents": [
+        "15e85921f58d2f7ea816b694bc80221bd7406ee8",
+        "a16fc2e037bd6cec4dbef8613092b28e9b60ecaf"
+      ],
+      "merge_is_ancestor_of_head": true,
+      "review_suffix": [
+        {
+          "commit": "a16fc2e037bd6cec4dbef8613092b28e9b60ecaf",
+          "parents": [
+            "056b5471f3b360eeda2eca5b1c8def107222acae"
+          ],
+          "changed_paths": [
+            "docs/exec-plans/reviews/KL-079/DB_CONCURRENCY.json",
+            "docs/exec-plans/reviews/KL-079/GENERAL.json",
+            "docs/exec-plans/reviews/KL-079/PROTOCOL.json"
+          ]
+        }
+      ]
+    },
+    "KL-077": {
+      "record": {
+        "task_identity": "harness-backlog-v0.2/KL-077",
+        "display_task_id": "KL-077",
+        "result_commit": "03edea3c9f3666302d5eaefe6ba744ea67e64aad",
+        "reviewed_head_sha": "03edea3c9f3666302d5eaefe6ba744ea67e64aad",
+        "review_record_commit": "bb144a01a971878577f52f47517f1232a13894e5",
+        "merge_commit": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+        "integration_status": "MERGED"
+      },
+      "validator_errors": [],
+      "review_witnesses": {
+        "DB_CONCURRENCY": {
+          "reviewed_head_sha": "03edea3c9f3666302d5eaefe6ba744ea67e64aad",
+          "status": "PASS",
+          "missing_at_reviewed": []
+        },
+        "GENERAL": {
+          "reviewed_head_sha": "03edea3c9f3666302d5eaefe6ba744ea67e64aad",
+          "status": "PASS",
+          "missing_at_reviewed": []
+        },
+        "PROTOCOL": {
+          "reviewed_head_sha": "03edea3c9f3666302d5eaefe6ba744ea67e64aad",
+          "status": "PASS",
+          "missing_at_reviewed": []
+        }
+      },
+      "result_sha256": "a86e81ae15f4e93ac11b2e1dc7d5a55147145967bfea9d372d544a039bf73b85",
+      "result_byte_identical_at_reviewed": true,
+      "result_byte_identical_at_merge": true,
+      "normal_merge_parents": [
+        "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588",
+        "bb144a01a971878577f52f47517f1232a13894e5"
+      ],
+      "merge_is_ancestor_of_head": true,
+      "review_suffix": [
+        {
+          "commit": "bb144a01a971878577f52f47517f1232a13894e5",
+          "parents": [
+            "03edea3c9f3666302d5eaefe6ba744ea67e64aad"
+          ],
+          "changed_paths": [
+            "docs/exec-plans/reviews/KL-077/DB_CONCURRENCY.json",
+            "docs/exec-plans/reviews/KL-077/GENERAL.json",
+            "docs/exec-plans/reviews/KL-077/PROTOCOL.json"
+          ]
+        }
+      ]
+    }
+  },
+  "pending": {
+    "KL-027": {
+      "pr": 83,
+      "branch_head": "e6cd006720b0f81a1d7d5efa1105c68a06c34d96",
+      "status": "AWAIT_ACTUAL_NORMAL_MERGE",
+      "hypothetical_record_not_actual_integration": {
+        "task_identity": "harness-backlog-v0.2/KL-027",
+        "display_task_id": "KL-027",
+        "result_commit": "ff93c08c7c32fba9e8dede0c161bb4f97bc98259",
+        "reviewed_head_sha": "ff93c08c7c32fba9e8dede0c161bb4f97bc98259",
+        "review_record_commit": "e6cd006720b0f81a1d7d5efa1105c68a06c34d96",
+        "merge_commit": "e6cd006720b0f81a1d7d5efa1105c68a06c34d96",
+        "integration_status": "MERGED"
+      },
+      "preflight_errors_including_expected_unmerged_ancestry": [
+        "integration-ancestry:KL-027:merge-to-head",
+        "integration-review-evidence:KL-027:DB_CONCURRENCY:docs/exec-plans/reviews/KL-027/final-db-raw/assessment.md",
+        "integration-review-evidence:KL-027:DB_CONCURRENCY:docs/exec-plans/reviews/KL-027/final-db-raw/audit.json",
+        "integration-review-evidence:KL-027:DB_CONCURRENCY:docs/exec-plans/reviews/KL-027/final-db-raw/namespace.log",
+        "integration-review-evidence:KL-027:DB_CONCURRENCY:docs/exec-plans/reviews/KL-027/final-db-raw/namespace.xml",
+        "integration-review-evidence:KL-027:DB_CONCURRENCY:docs/exec-plans/reviews/KL-027/final-db-raw/four-operations.log",
+        "integration-review-evidence:KL-027:DB_CONCURRENCY:docs/exec-plans/reviews/KL-027/final-db-raw/four-operations.xml",
+        "integration-review-evidence:KL-027:DB_CONCURRENCY:docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.json",
+        "integration-review-evidence:KL-027:GENERAL:docs/exec-plans/reviews/KL-027/final-general-raw/audit.py",
+        "integration-review-evidence:KL-027:GENERAL:docs/exec-plans/reviews/KL-027/final-general-raw/audit.json",
+        "integration-review-evidence:KL-027:GENERAL:docs/exec-plans/reviews/KL-027/final-general-raw/audit.log",
+        "integration-review-evidence:KL-027:GENERAL:docs/exec-plans/reviews/KL-027/final-general-raw/unit-review.log",
+        "integration-review-evidence:KL-027:GENERAL:docs/exec-plans/reviews/KL-027/final-general-raw/unit-review.xml",
+        "integration-review-evidence:KL-027:GENERAL:docs/exec-plans/reviews/KL-027/final-general-raw/oracle-assessment.md",
+        "integration-review-evidence:KL-027:PROTOCOL:docs/exec-plans/reviews/KL-027/final-protocol-raw/assessment.md",
+        "integration-review-evidence:KL-027:PROTOCOL:docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.json",
+        "integration-review-evidence:KL-027:PROTOCOL:docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.py",
+        "integration-review-evidence:KL-027:PROTOCOL:docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.log",
+        "integration-review-evidence:KL-027:PROTOCOL:docs/exec-plans/reviews/KL-027/final-db-raw/audit.json"
+      ],
+      "missing_review_evidence_at_reviewed": {
+        "DB_CONCURRENCY": [
+          "docs/exec-plans/reviews/KL-027/final-db-raw/assessment.md",
+          "docs/exec-plans/reviews/KL-027/final-db-raw/audit.json",
+          "docs/exec-plans/reviews/KL-027/final-db-raw/namespace.log",
+          "docs/exec-plans/reviews/KL-027/final-db-raw/namespace.xml",
+          "docs/exec-plans/reviews/KL-027/final-db-raw/four-operations.log",
+          "docs/exec-plans/reviews/KL-027/final-db-raw/four-operations.xml",
+          "docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.json"
+        ],
+        "GENERAL": [
+          "docs/exec-plans/reviews/KL-027/final-general-raw/audit.py",
+          "docs/exec-plans/reviews/KL-027/final-general-raw/audit.json",
+          "docs/exec-plans/reviews/KL-027/final-general-raw/audit.log",
+          "docs/exec-plans/reviews/KL-027/final-general-raw/unit-review.log",
+          "docs/exec-plans/reviews/KL-027/final-general-raw/unit-review.xml",
+          "docs/exec-plans/reviews/KL-027/final-general-raw/oracle-assessment.md"
+        ],
+        "PROTOCOL": [
+          "docs/exec-plans/reviews/KL-027/final-protocol-raw/assessment.md",
+          "docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.json",
+          "docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.py",
+          "docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.log",
+          "docs/exec-plans/reviews/KL-027/final-db-raw/audit.json"
+        ]
+      },
+      "warning": "merge_commit uses unmerged branch head solely to exercise provenance checks; this is not an integration record or merge claim"
+    }
+  },
+  "remediation_analysis": {
+    "existing_required_review_files_at_base": {
+      "KL-075": {
+        "DB_CONCURRENCY": true,
+        "GENERAL": true,
+        "PROTOCOL": true
+      },
+      "KL-076": {
+        "DB_CONCURRENCY": true,
+        "GENERAL": true,
+        "PROTOCOL": true
+      }
+    },
+    "current_gate": "Replacing existing required review files produces governance-task-review-not-addition; fresh required review records must have absent paths at protected governance base. Existing missing refs cannot be repaired at old reviewed SHAs without rewriting history.",
+    "minimal_route": "Separate focused governance change explicitly authorizing and validating exact existing-task review remediation before fresh integrated-tree reviews/integration records; HG042 must not relax validator or rewrite task artifacts.",
+    "five_records_achievable_under_current_contract": false
+  }
+}

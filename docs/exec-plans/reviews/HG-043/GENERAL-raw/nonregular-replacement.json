@@ -1,0 +1,26 @@
+{
+  "reviewed_head_sha": "2896d2422999fdf8a2cbca75eb316798c015ad17",
+  "finding": "BLOCKER",
+  "contract": "Fallback is allowed only for references absent at the reviewed revision.",
+  "validator_source_blob": "b4be67133a7633ad11ae38ceffa1c38f34a05dae",
+  "cases": [
+    {
+      "kind_at_reviewed": "symlink",
+      "reference": "docs/exec-plans/reviews/KL-001/independent.log",
+      "reviewed_entry": "120000 blob bcb5fa36b27801834109be1fb778b4db8ae8a0e7\tdocs/exec-plans/reviews/KL-001/independent.log\u0000",
+      "review_record_entry": "100644 blob 8f999c0b2d073e7b90ad5937b2b06f94f8ad6d43\tdocs/exec-plans/reviews/KL-001/independent.log\u0000",
+      "strict_suffix_errors": [],
+      "actual_integration_errors": [],
+      "expected": "integration-review-evidence rejection because reference was present but nonregular at reviewed SHA"
+    },
+    {
+      "kind_at_reviewed": "directory",
+      "reference": "docs/exec-plans/reviews/KL-001/independent.log",
+      "reviewed_entry": "040000 tree 67087f0065e3873ee435ee8c205ecc65754610dd\tdocs/exec-plans/reviews/KL-001/independent.log\u0000",
+      "review_record_entry": "100644 blob 8f999c0b2d073e7b90ad5937b2b06f94f8ad6d43\tdocs/exec-plans/reviews/KL-001/independent.log\u0000",
+      "strict_suffix_errors": [],
+      "actual_integration_errors": [],
+      "expected": "integration-review-evidence rejection because reference was present but nonregular at reviewed SHA"
+    }
+  ]
+}

@@ -1695,6 +1695,41 @@ def evidence_exists(root, ref, revision=None):
     return path.is_file() and root.resolve() in path.resolve().parents
 
 
+def revision_git_entry(root, ref, revision):
+    """Read an exact normalized tree entry, independently of its object's availability."""
+    if not relative_path(ref) or '\0' in ref:
+        return None
+    entries = git(root, 'ls-tree', '-z', revision, '--', ref).split(b'\0')
+    for entry in filter(None, entries):
+        metadata, name = entry.split(b'\t', 1)
+        if name == ref.encode():
+            return tuple(metadata.split())
+    return None
+
+
+def revision_regular_file(root, ref, revision):
+    """Resolve an exact regular tree entry to an available content-addressed Git blob."""
+    entry = revision_git_entry(root, ref, revision)
+    if entry is None:
+        return False
+    mode, kind, oid = entry
+    if kind != b'blob' or mode not in (b'100644', b'100755'):
+        return False
+    obj = subprocess.run(['git', 'cat-file', '-t', oid.decode()], cwd=root, capture_output=True)
+    return obj.returncode == 0 and obj.stdout.strip() == b'blob'
+
+
+def review_evidence_exists(root, ref, reviewed, review_commit, task_id, review_only_suffix):
+    """Bind ordinary evidence to reviewed; review-created bookkeeping to its recorded commit."""
+    if not relative_path(ref) or '\0' in ref:
+        return False
+    if revision_regular_file(root, ref, reviewed):
+        return True
+    return (review_only_suffix and matches(ref, review_patterns(task_id))
+            and revision_git_entry(root, ref, reviewed) is None
+            and revision_regular_file(root, ref, review_commit))
+
+
 def semantic_result_errors(obj, task, root, evidence_revision=None):
     errors = []
     if task.get('status') == 'SUPERSEDED':
@@ -2058,6 +2093,10 @@ def integration_record_errors(
                         'integration-' + issue
                         for issue in suffix_errors(
                             root, reviewed, review_commit, task_id, 'review'))
+        # This stricter proof also bounds the evidence exception for delayed reviews.
+        # Their existing scoped freshness rule is not a proof of an own-review-only suffix.
+        review_only_suffix = not suffix_errors(
+            root, reviewed, review_commit, task_id, 'review')
         for review_type in task['review_requirements']:
             review_path = f'docs/exec-plans/reviews/{task_id}/{review_type}.json'
             review = load_artifact_text(
@@ -2075,7 +2114,8 @@ def integration_record_errors(
                     or resolve(root, review.get('reviewed_head_sha', '')) != reviewed):
                 errors.append('integration-review-binding:' + task_id + ':' + review_type)
             for ref in review.get('evidence_refs', []):
-                if not evidence_exists(root, ref, reviewed):
+                if not review_evidence_exists(
+                        root, ref, reviewed, review_commit, task_id, review_only_suffix):
                     errors.append(
                         'integration-review-evidence:' + task_id + ':' + review_type + ':' + ref)
     except ValueError as ex:

@@ -1,0 +1,33 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-043",
+  "reviewed_head_sha": "8245480918251739339987de69bfe41fa0b39af5",
+  "review_type": "DB_CONCURRENCY",
+  "status": "PASS",
+  "review_contract_version": "v0.2",
+  "findings": [],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/assessment.md",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/audit.py",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/committed-replay-audit.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/diff-check.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/evidence-hashes.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/git-static-candidates.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/missing-object.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/missing-object.py",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/nonregular-replacement.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/nonregular-replacement.py",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/provenance-regressions.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/reviewer-db-classification.json"
+  ],
+  "verification": {
+    "base_commit": "1099d85bd4aa76ec8221700e55b4e77a84479126",
+    "tested_commit": "97b76c7e170368c916ca79d6c7c1656259430f30",
+    "independence": "Fresh exact-SHA specialist inspection; independent Git ancestry/tree/blob proof does not use implementation provenance helpers; independent nonregular/missing-object controls; only own DB review record/raw edited.",
+    "scope": "Validator/governance only. Frozen Protocol T1\u2013T8/DB lock order unchanged; no DB namespace touches, no implementation/other-reviewer/official integration edits.",
+    "focused_regression": "39 passed; exact reviewed validator and focused tests verified byte-identical to working sources. Independent three nonregular replacement and two missing-blob source probes rejected correctly.",
+    "final_task_evidence": "All eight final governance checks exact tested SHA, PASS, exit zero, raw byte count and SHA256 verified; complete committed harness 715 and unit 232 passes reviewed. Broad suites not redundantly rerun.",
+    "five_candidates": "All actual normal two-parent merge chains, strict own linear suffixes, immutable results and 12/13/13/14/14 task-check refs independently audited. Review-created refs 18/3/1/0/0 are reviewer bookkeeping only.",
+    "closure": "Prior CHANGES_REQUIRED nonregular-entry defect closed at new SHA; missing-object availability defect also denied by independent source controls. Original audit, failed probe and review snapshots retained.",
+    "limitations": "Applicable final hosted CI and remaining required independent review statuses remain merge conditions. No product/requirement/DB/release/production PASS or MERGED claim."
+  }
+}
