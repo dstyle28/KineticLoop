@@ -1,36 +1,33 @@
 {
   "task_identity": "harness-governance-v0.1/HG-043",
-  "reviewed_head_sha": "2896d2422999fdf8a2cbca75eb316798c015ad17",
+  "reviewed_head_sha": "8245480918251739339987de69bfe41fa0b39af5",
   "review_type": "DB_CONCURRENCY",
-  "status": "CHANGES_REQUIRED",
+  "status": "PASS",
   "review_contract_version": "v0.2",
-  "findings": [
-    {
-      "classification": "BLOCKER",
-      "title": "Require actual path absence before review-created fallback",
-      "file": "tools/harness/validate_harness.py",
-      "line": 1717,
-      "body": "The fallback tests only that reviewed evidence is not a regular blob. Replacing an existing own-review symlink, tree, or gitlink with a regular blob in a valid own-review suffix yields zero integration errors. The Thread Review contract admits this exception only when the path was absent at reviewed SHA. Explicitly reject any Git entry at reviewed before falling back; cover all three modes with real Git regressions and obtain fresh reviews.",
-      "evidence_ref": "docs/exec-plans/reviews/HG-043/DB_CONCURRENCY-raw/nonregular-replacement.json"
-    }
-  ],
+  "findings": [],
   "evidence_refs": [
-    "docs/exec-plans/reviews/HG-043/DB_CONCURRENCY-raw/assessment.md",
-    "docs/exec-plans/reviews/HG-043/DB_CONCURRENCY-raw/audit.py",
-    "docs/exec-plans/reviews/HG-043/DB_CONCURRENCY-raw/git-static-candidates.json",
-    "docs/exec-plans/reviews/HG-043/DB_CONCURRENCY-raw/reviewer-db-classification.json",
-    "docs/exec-plans/reviews/HG-043/DB_CONCURRENCY-raw/provenance-regressions.json",
-    "docs/exec-plans/reviews/HG-043/DB_CONCURRENCY-raw/nonregular-replacement.py",
-    "docs/exec-plans/reviews/HG-043/DB_CONCURRENCY-raw/nonregular-replacement.json",
-    "docs/exec-plans/reviews/HG-043/DB_CONCURRENCY-raw/validator-regressions-interrupted.json"
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/assessment.md",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/audit.py",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/committed-replay-audit.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/diff-check.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/evidence-hashes.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/git-static-candidates.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/missing-object.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/missing-object.py",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/nonregular-replacement.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/nonregular-replacement.py",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/provenance-regressions.json",
+    "docs/exec-plans/reviews/HG-043/final-8245480-db-raw/reviewer-db-classification.json"
   ],
   "verification": {
     "base_commit": "1099d85bd4aa76ec8221700e55b4e77a84479126",
-    "independence": "Fresh DB_CONCURRENCY specialist review; inspected exact protected-base diff and indexed contracts directly; actual Git ancestry/blob audit does not use implementation provenance helpers; no implementation or other reviewer edits.",
-    "db_scope": "No application, database, migrations, DB tests, CI, namespace launcher, frozen authority, task packet/result or requirement changes. Frozen Protocol section 8 and DB lock-order sections 4.1\u20134.2 unchanged. No DB namespace touched.",
-    "focused_regression": "34 passed; independent real-Git symlink/tree/gitlink replacement reproductions accepted incorrectly at exact reviewed source.",
-    "five_candidates": "KL027/KL075/KL076/KL077/KL079 actual normal merge chains, own linear suffixes and immutable pre-review task-check evidence verified independently. Review-created refs 18/3/1/0/0 respectively are independent reviewer bookkeeping, never task acceptance evidence.",
-    "limitations": "CHANGES_REQUIRED at this SHA. Corrected revision, fresh independent reviews and applicable final hosted CI required before ordinary merge; no product/requirement/DB/release/production PASS claimed.",
-    "broader_regression": "Existing validator regression run interrupted (exit 130) on coordinator request once blocker reproduced. No PASS or partial test count inferred; duplicate candidate replay NOT_RUN. Corrected revision needs fresh checks/reviews."
+    "tested_commit": "97b76c7e170368c916ca79d6c7c1656259430f30",
+    "independence": "Fresh exact-SHA specialist inspection; independent Git ancestry/tree/blob proof does not use implementation provenance helpers; independent nonregular/missing-object controls; only own DB review record/raw edited.",
+    "scope": "Validator/governance only. Frozen Protocol T1\u2013T8/DB lock order unchanged; no DB namespace touches, no implementation/other-reviewer/official integration edits.",
+    "focused_regression": "39 passed; exact reviewed validator and focused tests verified byte-identical to working sources. Independent three nonregular replacement and two missing-blob source probes rejected correctly.",
+    "final_task_evidence": "All eight final governance checks exact tested SHA, PASS, exit zero, raw byte count and SHA256 verified; complete committed harness 715 and unit 232 passes reviewed. Broad suites not redundantly rerun.",
+    "five_candidates": "All actual normal two-parent merge chains, strict own linear suffixes, immutable results and 12/13/13/14/14 task-check refs independently audited. Review-created refs 18/3/1/0/0 are reviewer bookkeeping only.",
+    "closure": "Prior CHANGES_REQUIRED nonregular-entry defect closed at new SHA; missing-object availability defect also denied by independent source controls. Original audit, failed probe and review snapshots retained.",
+    "limitations": "Applicable final hosted CI and remaining required independent review statuses remain merge conditions. No product/requirement/DB/release/production PASS or MERGED claim."
   }
 }

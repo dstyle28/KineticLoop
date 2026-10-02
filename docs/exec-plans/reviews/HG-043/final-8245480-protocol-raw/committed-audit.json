@@ -1,0 +1,81 @@
+{
+  "reviewed_head_sha": "8245480918251739339987de69bfe41fa0b39af5",
+  "protected_base": "1099d85bd4aa76ec8221700e55b4e77a84479126",
+  "checks": [
+    {
+      "check_id": "provenance",
+      "tested_commit": "97b76c7e170368c916ca79d6c7c1656259430f30",
+      "evidence_ref": "docs/exec-plans/evidence/HG-043/provenance-97b76c7.json",
+      "available_regular_blob": true,
+      "raw_digest_and_size_valid": true,
+      "output_tail": ".......................................                                  [100%]\n39 passed in 40.13s\n"
+    },
+    {
+      "check_id": "harness",
+      "tested_commit": "97b76c7e170368c916ca79d6c7c1656259430f30",
+      "evidence_ref": "docs/exec-plans/evidence/HG-043/harness-97b76c7.json",
+      "available_regular_blob": true,
+      "raw_digest_and_size_valid": true,
+      "output_tail": "           [ 94%]\ntests/harness/test_wave_scope.py .....................................   [100%]\n\n======================= 715 passed in 297.43s (0:04:57) ========================\n"
+    },
+    {
+      "check_id": "unit",
+      "tested_commit": "97b76c7e170368c916ca79d6c7c1656259430f30",
+      "evidence_ref": "docs/exec-plans/evidence/HG-043/unit-97b76c7.json",
+      "available_regular_blob": true,
+      "raw_digest_and_size_valid": true,
+      "output_tail": "           [ 98%]\ntests/unit/workflow/test_planning_progress.py ....                       [100%]\n\n======================= 232 passed in 123.12s (0:02:03) ========================\n"
+    },
+    {
+      "check_id": "lint",
+      "tested_commit": "97b76c7e170368c916ca79d6c7c1656259430f30",
+      "evidence_ref": "docs/exec-plans/evidence/HG-043/lint-97b76c7.json",
+      "available_regular_blob": true,
+      "raw_digest_and_size_valid": true,
+      "output_tail": "All checks passed!\n"
+    },
+    {
+      "check_id": "typecheck",
+      "tested_commit": "97b76c7e170368c916ca79d6c7c1656259430f30",
+      "evidence_ref": "docs/exec-plans/evidence/HG-043/typecheck-97b76c7.json",
+      "available_regular_blob": true,
+      "raw_digest_and_size_valid": true,
+      "output_tail": "Success: no issues found in 147 source files\n"
+    },
+    {
+      "check_id": "validation",
+      "tested_commit": "97b76c7e170368c916ca79d6c7c1656259430f30",
+      "evidence_ref": "docs/exec-plans/evidence/HG-043/validation-97b76c7.json",
+      "available_regular_blob": true,
+      "raw_digest_and_size_valid": true,
+      "output_tail": "HARNESS_CHECK_PASS tasks=76 active=73\n"
+    },
+    {
+      "check_id": "replay",
+      "tested_commit": "97b76c7e170368c916ca79d6c7c1656259430f30",
+      "evidence_ref": "docs/exec-plans/evidence/HG-043/replay-97b76c7.json",
+      "available_regular_blob": true,
+      "raw_digest_and_size_valid": true,
+      "output_tail": "five protected-ancestry replay candidates"
+    },
+    {
+      "check_id": "diff",
+      "tested_commit": "97b76c7e170368c916ca79d6c7c1656259430f30",
+      "evidence_ref": "docs/exec-plans/evidence/HG-043/diff-97b76c7.json",
+      "available_regular_blob": true,
+      "raw_digest_and_size_valid": true,
+      "output_tail": ""
+    }
+  ],
+  "declared_files_exact": true,
+  "tested_implementation_identical_to_reviewed": [
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_review_evidence_provenance.py",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md"
+  ],
+  "frozen_and_product_paths_unchanged": true,
+  "authority_hashes_verified": true,
+  "prior_changes_required_and_missing_object_probe_preserved": true,
+  "strict_tested_to_reviewed_governance_suffix": []
+}

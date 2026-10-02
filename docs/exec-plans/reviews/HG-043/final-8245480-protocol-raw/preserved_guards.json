@@ -1,0 +1,20 @@
+{
+  "reviewed_head_sha": "8245480918251739339987de69bfe41fa0b39af5",
+  "purpose": "Independent PROTOCOL reviewer run; not task acceptance evidence",
+  "command": [
+    "/Users/davetian/.codex/worktrees/0f4f/KineticLoop/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/harness/test_validator.py",
+    "-k",
+    "exact_complete_tree_squash_merge or review_recorded_after_merge or delayed_review_rejects_task_change_after_merge or delayed_review_must_bind_the_merge_tree or squash_tree_with_unrelated_content_change or squash_tree_with_mode_only_difference or exact_tree_exception_does_not_replace_review_binding_ancestry"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 9.18442177772522,
+  "raw_sha256": "9bfcd078f844c7d71b4e1c317a861fab8a1dd1ec5bd0daff152d5ce47a0d832d",
+  "raw_byte_count": 114,
+  "raw_utf8": ".......                                                                  [100%]\n7 passed, 135 deselected in 9.08s\n"
+}
