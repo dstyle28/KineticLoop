@@ -351,3 +351,32 @@ KL008 ShadowEvaluationArtifact construction is M2 G-SHADOW contract evidence, no
 No migrations, grants, production source, shared helpers/conftest, lifecycle, Compose, CI or dependency-lock writes. No M4 worker/outbox or shadow API/store implementation. No frozen authority changes. Production auto-activation stays disabled; real-data shadow stays non-executable; planned values never fill actual execution. No M3/release/G-SHADOW usability closure claim. The current MILESTONE_CLOSURE.schema.json supports only M1/M2: M3 closure support is a separate focused governance gap, not part of either packet.
 
 <!-- HG042 plan end -->
+
+## M3 exit-evidence mapping — HG044
+
+The M3 minimal isolated TEST demonstration exit at §M3 is mechanically evaluated
+under `docs/harness/M3_CLOSURE_CONTRACT.md` and the exact indexed
+`M3_EXIT_TASK_CHECKS` mapping. This reviewed governance ratifies that mapping; no
+closure instance or milestone PASS is created here. The earlier HG042 observation
+that the schema supported only M1/M2 describes its historical revision.
+
+Require the exact 16 M3 integrations KL019–KL029 and KL075–KL079, validated M2/M1
+prerequisite closures and separately identified M1 KL074 support. Verify every
+prerequisite merge before consumer base/tested SHA, including KL078→KL076 and
+KL079→KL077. Resolve all exits through integrated named checks, exact commands,
+oracles, tested revisions and regular Git-blob hashes. Require actual KL027 full
+F/D/N T6/T7 trajectory/repair, current revoke/expiry and valid CONTINUE/RESUME
+denials with immutable history, KL026 nine DC interleavings, KL023/KL028 barriers,
+KL028 registry/rollback/closure/validity/TIMELESS evidence and all KL029 boundaries.
+A fresh full integrated regression at one revision containing both KL028/KL029
+merges must retain raw logs, executed selectors/collection and counts with no
+skipped/xfail/empty substitutes. Preserve frozen authority and all 31 B / 10 I
+layer dispositions. The 12 deferred B layers, I04@WF, shadow usability and R04@E2E
+remain NOT_RUN. Mandatory B04 guard support does not close full B04@DC.
+
+Mechanical M3 closure is distinct from product/release PASS: product claims remain
+empty, historical model evidence unreproduced, production activation disabled and
+shadow non-executable. Preserve original reach/layer labels and all downstream
+requirements. No M3→M4 or KL029→KL045 cycle is introduced.
+
+<!-- HG044 plan end -->
