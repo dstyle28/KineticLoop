@@ -38,3 +38,8 @@ otherwise the Harness definition is invalid rather than merely unschedulable.
 - `test_only_demo_suite`
 
 HG038 gives KL026 and KL027 tests-only suites independent task-owned databases. These resources grant no production owner writes. KL075/076/077 serialize transaction_interfaces and user_coordination; merged dependencies and exact write paths remain mandatory.
+
+- `boundary_acceptance_suite`
+- `shadow_isolation_suite`
+
+HG042 grants only disjoint tests-only suites using separate task/SHA7/resolved-root SHA12 databases and Compose namespaces. Shared owners are read-only; no source, grant, migration, helper, lifecycle or CI writes.
