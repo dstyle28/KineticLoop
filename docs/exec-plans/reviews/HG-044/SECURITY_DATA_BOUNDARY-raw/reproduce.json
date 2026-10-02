@@ -1,0 +1,28 @@
+{
+  "reviewed_head_sha": "351f0eda41ad492e66115f9ea1e41e3e0f9abf3d",
+  "baseline_errors": [],
+  "accepted_omitted_selectors": [
+    {
+      "command": "uv run pytest -q tests/db/test_migrations.py tests/db/test_transaction_interfaces.py",
+      "nodeids": [
+        "tests/db/test_migrations.py::test_example"
+      ],
+      "omitted_selectors": [
+        "tests/db/test_transaction_interfaces.py"
+      ]
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py tests/db/test_shadow_isolation.py",
+      "nodeids": [
+        "tests/unit/protocol/test_shadow_isolation.py::test_example"
+      ],
+      "omitted_selectors": [
+        "tests/db/test_shadow_isolation.py"
+      ]
+    }
+  ],
+  "boolean_exit_rejected": [
+    "milestone-m3-regression:failed-or-unbound-command"
+  ],
+  "float_zero_result": []
+}

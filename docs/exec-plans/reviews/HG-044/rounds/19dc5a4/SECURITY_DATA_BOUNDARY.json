@@ -1,0 +1,60 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-044",
+  "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+  "review_type": "SECURITY_DATA_BOUNDARY",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "finding_id": "HG044-SEC-002",
+      "classification": "BLOCKER",
+      "priority": "P1",
+      "title": "Preserve parameter contents while matching pytest JUnit addresses",
+      "file": "tools/harness/validate_harness.py",
+      "start_line": 2650,
+      "end_line": 2655,
+      "description": "Splitting the entire collected node ID on :: also splits delimiter text inside parameter IDs. pytest preserves the bracketed parameter suffix in the final JUnit test name. Independent collection at this SHA finds 25 affected IDs among 1107 unit/harness nodes. A fresh, hash-correct, regular Git-blob fixture using one actually collected ID and pytest real JUnit normalization returns milestone-m3-regression:incomplete-executed-collection after a positive control and valid freshness/hash/selector preconditions. Required successful full-harness evidence therefore cannot validate.",
+      "requested_change": "Partition the parameter suffix before splitting the structural address and restore it to the final test name using pytest-compatible normalization. Add a regression using actual pytest-generated collection and JUnit bytes with :: parameter contents. Preserve exact selector, hash, revision and successful-case bindings; retest and obtain fresh review.",
+      "evidence_refs": [
+        "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/parameter_probe.py",
+        "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/parameter-probe.json",
+        "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/actual-collection.log"
+      ]
+    },
+    {
+      "finding_id": "HG044-SEC-003",
+      "classification": "BLOCKER",
+      "priority": "P1",
+      "title": "Exclude node records from collection disposition summary matching",
+      "file": "tools/harness/validate_harness.py",
+      "start_line": 2643,
+      "end_line": 2646,
+      "description": "The disposition regex searches complete collection stdout, including parameter contents in successfully collected node IDs. Independent collection finds three legitimate current IDs containing summary-looking tokens such as 1 skipped or 1 error. A fresh hash-correct regular-blob fixture using an actual ID, matching successful JUnit, integer-zero exits and correct raw collection count returns milestone-m3-regression:collection-oracle solely because parameter text matches the regex. This independently rejects required valid full-harness evidence.",
+      "requested_change": "Evaluate collection dispositions only in summary/diagnostic lines outside node records. Retain rejection of actual errors, skips and deselections. Add actual pytest collection/JUnit positive evidence with summary-looking parameter contents and a negative with a real disposition, then retest and obtain fresh SHA-bound review.",
+      "evidence_refs": [
+        "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/parameter_probe.py",
+        "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/parameter-probe.json",
+        "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/actual-collection.log"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-044.yaml",
+    "docs/harness/M3_CLOSURE_CONTRACT.md",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/audit.py",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/audit.json",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/targeted.log",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/targeted.xml",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/provenance.log",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/provenance.xml",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/diff.log",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/shadow-pure.xml",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/integrations.py",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/integrations.json",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/parameter_probe.py",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/parameter-probe.json",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/actual-collection.log",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r3-raw/execution-records.json"
+  ],
+  "review_contract_version": "v0.2",
+  "summary": "Independent exact-SHA review against protected fa729ca base. Earlier omitted-selector and strict integer-exit issues are repaired: 30 bounded regression/source/overclaim checks, 39 unchanged HG043 provenance checks and 2 pure shadow checks pass. Selected 0af3580 records correctly bind 83 focused/873 harness/234 unit checks, raw hashes and legal own governance/evidence suffix. All indexed/frozen hashes, 52 check contract digests, exact 16 M3 identities, separate M1 KL074 support, complete 31 B/10 I dispositions and unchanged M1/M2/HG043 semantics were inspected. All 32 available transitive integrations validate; KL028/KL029 integrations are absent and actual M3 remains NOT_READY. Production stays disabled, shadow non-executable/usability NOT_RUN, R04 E2E/deferred layers NOT_RUN, historical model unverified and product claims empty. No actual closure, runtime/CI/frozen change, provider-command elevation or data export occurs. Two independently reproduced false rejections of legitimate parameterized full-harness evidence block PASS. Synthetic Git fixtures are validator input only; no DB lifecycle ran. Prior failed/interrupted rounds remain retained and unselected. Repair, new exact-SHA review and final hosted CI remain required; no merge recommendation."
+}

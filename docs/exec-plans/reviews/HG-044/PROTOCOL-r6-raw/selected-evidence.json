@@ -1,0 +1,74 @@
+[
+  {
+    "check_id": "focused",
+    "ref": "docs/exec-plans/evidence/HG-044/focused-06dab6d.json",
+    "sha256": "384a4f582142f86469508b441ff6634bd38926507c6f9bd6d002689c67d2be41",
+    "raw_sha256": "6969545b12b8dc86e3573cd39ca1392d505f3b1d4a05aa1fff6e85eb9b3f2a0a",
+    "raw_bytes": 191,
+    "raw_utf8": "........................................................................ [ 80%]\n..................                                                       [100%]\n90 passed in 596.20s (0:09:56)\n"
+  },
+  {
+    "check_id": "scope",
+    "ref": "docs/exec-plans/evidence/HG-044/scope-06dab6d.json",
+    "sha256": "72fdf04d1a9730250b12e36c801d0f49782723b83c4c0b608c3fb322185a28a6",
+    "checks": {
+      "milestone_closure_errors": true,
+      "m2_milestone_closure_errors": true,
+      "m2_execution_evidence_errors": true,
+      "integration_record_errors": true,
+      "review_evidence_exists": true,
+      "semantic_result_errors": true,
+      "scope": true,
+      "plan_prefix": true,
+      "no_instance": true
+    }
+  },
+  {
+    "check_id": "harness",
+    "ref": "docs/exec-plans/evidence/HG-044/harness-06dab6d.json",
+    "sha256": "80e552adea6cdd9efcdffbdf02a23ecb6ea5852a319273ed395c836dd138fb66",
+    "raw_sha256": "34711c36cb5999507c757a1224839dc9c91d36398883ae77a0b83b87e5d9714a",
+    "raw_bytes": 2812,
+    "raw_utf8": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0\nrootdir: /Users/davetian/.codex/worktrees/8578/KineticLoop\nconfigfile: pyproject.toml\ncollected 880 items\n\ntests/harness/acceptance/test_registry.py .....                          [  0%]\ntests/harness/document_index/test_current_document_index.py .......      [  1%]\ntests/harness/document_index/test_evidence_manifest.py .......           [  2%]\ntests/harness/document_index/test_historical_task_map.py ......          [  2%]\ntests/harness/test_call_ledger_scope.py .........................        [  5%]\ntests/harness/test_cancel_identity_scope.py ............................ [  8%]\n.............................                                            [ 12%]\ntests/harness/test_fitness_evaluation_scope.py ......................... [ 15%]\n.......................................                                  [ 19%]\ntests/harness/test_full_action_scope.py ................................ [ 23%]\n..                                                                       [ 23%]\ntests/harness/test_m3_boundary_shadow_scope.py ......................... [ 26%]\n..................................................                       [ 31%]\ntests/harness/test_m3_milestone_closure.py ............................. [ 35%]\n.............................................................            [ 42%]\ntests/harness/test_m3_next_wave_scope.py ............................... [ 45%]\n........................................................................ [ 53%]\n..............                                                           [ 55%]\ntests/harness/test_planning_fixture_scope.py ............                [ 56%]\ntests/harness/test_planning_subject_scope.py ........................    [ 59%]\ntests/harness/test_preparation_scope.py ............................     [ 62%]\ntests/harness/test_protocol_execution_scope.py ......................... [ 65%]\n.....................                                                    [ 67%]\ntests/harness/test_readiness_scope.py .................................. [ 71%]\n...............................                                          [ 75%]\ntests/harness/test_review_evidence_provenance.py ....................... [ 77%]\n................                                                         [ 79%]\ntests/harness/test_validator.py ........................................ [ 84%]\n........................................................................ [ 92%]\n..............................                                           [ 95%]\ntests/harness/test_wave_scope.py .....................................   [100%]\n\n======================= 880 passed in 891.87s (0:14:51) ========================\n"
+  },
+  {
+    "check_id": "unit",
+    "ref": "docs/exec-plans/evidence/HG-044/unit-06dab6d.json",
+    "sha256": "2488011274eb663d5754dbe20ec4a7f40da36f063b6216872a205653788e8743",
+    "raw_sha256": "0d02247cec8b66eff921c9cd39885471bccc16c530a0bddc0cb83e0f87190226",
+    "raw_bytes": 3292,
+    "raw_utf8": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0\nrootdir: /Users/davetian/.codex/worktrees/8578/KineticLoop\nconfigfile: pyproject.toml\ncollected 241 items\n\ntests/unit/config/test_secret_loader.py .                                [  0%]\ntests/unit/contracts/test_artifact_registry.py ...                       [  1%]\ntests/unit/contracts/test_commands.py ..............                     [  7%]\ntests/unit/contracts/test_errors.py .                                    [  7%]\ntests/unit/contracts/test_receipts.py ........................           [ 17%]\ntests/unit/contracts/test_results.py .....                               [ 19%]\ntests/unit/contracts/test_safety_registry.py ..                          [ 20%]\ntests/unit/contracts/test_shadow.py ...                                  [ 21%]\ntests/unit/identity/test_roles.py .............                          [ 27%]\ntests/unit/integrations/test_launch_registry.py ........                 [ 30%]\ntests/unit/integrations/test_provider.py ...........                     [ 35%]\ntests/unit/persistence/test_fact_children.py ...                         [ 36%]\ntests/unit/persistence/test_immutability.py ....                         [ 38%]\ntests/unit/persistence/test_preparation.py ...                           [ 39%]\ntests/unit/persistence/test_schema_topology.py .......                   [ 42%]\ntests/unit/persistence/test_transactions.py ...                          [ 43%]\ntests/unit/primitives/test_canonical.py ...........                      [ 48%]\ntests/unit/primitives/test_hashes.py ........                            [ 51%]\ntests/unit/primitives/test_ids.py .........                              [ 55%]\ntests/unit/primitives/test_times.py .......................              [ 64%]\ntests/unit/protocol/test_authorization.py ...                            [ 65%]\ntests/unit/protocol/test_boundary_acceptance.py .......                  [ 68%]\ntests/unit/protocol/test_execution.py ..                                 [ 69%]\ntests/unit/protocol/test_factsets.py .....                               [ 71%]\ntests/unit/protocol/test_full_test_execution.py ....                     [ 73%]\ntests/unit/protocol/test_interleaving_namespace.py ...                   [ 74%]\ntests/unit/protocol/test_shadow_isolation.py ..                          [ 75%]\ntests/unit/protocol/test_test_only_demo.py ..                            [ 76%]\ntests/unit/security/test_redaction.py .................................. [ 90%]\n...                                                                      [ 91%]\ntests/unit/security/test_synthetic_fixtures.py .                         [ 92%]\ntests/unit/test_cli.py ...                                               [ 93%]\ntests/unit/workflow/test_call_ledger.py ...                              [ 94%]\ntests/unit/workflow/test_deterministic_planning.py ....                  [ 96%]\ntests/unit/workflow/test_full_action_preparation.py ...                  [ 97%]\ntests/unit/workflow/test_planning.py ..                                  [ 98%]\ntests/unit/workflow/test_planning_progress.py ....                       [100%]\n\n======================= 241 passed in 173.91s (0:02:53) ========================\n"
+  },
+  {
+    "check_id": "lint",
+    "ref": "docs/exec-plans/evidence/HG-044/lint-06dab6d.json",
+    "sha256": "73a91823e693657362ded128ed3da44bf661f2d0bcbde605469bf14a40dffe9b",
+    "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "raw_bytes": 19,
+    "raw_utf8": "All checks passed!\n"
+  },
+  {
+    "check_id": "typecheck",
+    "ref": "docs/exec-plans/evidence/HG-044/typecheck-06dab6d.json",
+    "sha256": "c19d5d8f70f3a80359cccf4d6ed139c49c39e0804c4f74a7d00e447436dc1f78",
+    "raw_sha256": "8f4c82c4def5877c120713dbd513bb61a25cdc112c496163dbfb4e922933ea7c",
+    "raw_bytes": 45,
+    "raw_utf8": "Success: no issues found in 153 source files\n"
+  },
+  {
+    "check_id": "validation",
+    "ref": "docs/exec-plans/evidence/HG-044/validation-06dab6d.json",
+    "sha256": "229c6fe96116b2e97cba4692ec125cf36caaffe034555a7254e273915fad6fdb",
+    "raw_sha256": "e2a8f969d7dc25b39c3a77ad08482321186f25f23d24fce083dcd69d4740d1dc",
+    "raw_bytes": 38,
+    "raw_utf8": "HARNESS_CHECK_PASS tasks=76 active=73\n"
+  },
+  {
+    "check_id": "source_diff",
+    "ref": "docs/exec-plans/evidence/HG-044/source_diff-06dab6d.json",
+    "sha256": "7976853f4275aaa6c614584db90822d024a07f8d977dc2f96dd49435138d0c11",
+    "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw_bytes": 0,
+    "raw_utf8": ""
+  }
+]

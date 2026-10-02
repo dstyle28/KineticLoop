@@ -80,6 +80,13 @@ HG024_ALLOWED_PATTERNS = [
     'tests/harness/test_validator.py',
     'tools/harness/validate_harness.py',
 ]
+
+# HG044 ratified M3 exit mapping. These are task checks, never aggregate product PASS.
+M3_TASK_IDS = {f'KL-{n:03d}' for n in range(19, 30)} | {f'KL-{n:03d}' for n in range(75, 80)}
+M3_EXIT_TASK_CHECKS = {'full_test_fdn_trajectory_and_repair': {'KL-027': ['demo_owner_trajectory_e2e', 'demo_fdn_repair_e2e']}, 'current_denials_and_immutable_history': {'KL-027': ['demo_revoke_denials_dc', 'demo_expiry_denials_dc'], 'KL-077': ['continue_resume_current_dc', 'full_execution_replay_atomicity_dc'], 'KL-028': ['b07_dc', 'b16_dc']}, 'nine_actual_dc_interleavings': {'KL-026': ['i01_dc', 'i02_dc', 'i03_dc', 'i04_dc', 'i05_dc', 'i06_dc', 'i07_dc', 'i08_dc', 'i09_dc', 'time_boundary_pu']}, 'ready_sealed_barriers': {'KL-023': ['factset_complete_writer_interleaving_dc', 'factset_seal_frontier_atomicity_and_replay_dc'], 'KL-028': ['b01_pu', 'b01_dc', 'b02_dc', 'b03_dc']}, 'registry_commit_freshness_and_closure': {'KL-021': ['t2_global_commit_rollback_and_effective_at_semantics'], 'KL-028': ['b04_dc', 'b05_dc', 'b06_dc', 'b11_dc', 'b12_dc', 'b13_dc', 'b14_registry_failclosed_stop_support_dc', 'b15_dc', 'b17_pu', 'b17_dc']}, 'validity_missing_timeless_and_expiry': {'KL-022': ['validity_closure_minimum_and_missing_values_pu', 'timeless_policy_dependency_closure_pu', 't6_certificate_and_minimum_closure_dc'], 'KL-028': ['b08_pu', 'b09_pu', 'b09_dc', 'b10_pu', 'b18_pu']}, 'isolated_test_and_evaluation_boundaries': {'KL-027': ['demo_namespace_and_boundary_pu', 'demo_scope_denials_dc'], 'KL-028': ['boundary_namespace_pu'], 'KL-029': ['shadow_namespace_and_boundary_pu', 'shadow_strict_wire_pu', 'shadow_evaluation_principal_live_denials_dc', 'shadow_test_authorization_crossing_denials_dc', 'shadow_owner_payload_denials_dc', 'shadow_declared_evaluation_storage_dc']}}
+M3_CHECK_CONTRACT_DIGESTS = {'KL-027:demo_owner_trajectory_e2e': '043b27b5636b361937979632e3861bbd8283c99f128b6b5fac731161d9721f3e', 'KL-027:demo_fdn_repair_e2e': '591f05baf6c7baa76dfcf07786301efb13f9802af01663db5bf55fa3d034fe23', 'KL-027:demo_revoke_denials_dc': 'b204e242a2374e3dc298da68328bab28147f714189f163de393d7a6b91a02f71', 'KL-027:demo_expiry_denials_dc': '648bd63d3b9a16766db344e7609c180eda7b82a1b56312cde45f5060a8019a7d', 'KL-077:continue_resume_current_dc': '352f9fb16bc688218d5704936e5227dcf15627e10ebc2d31a63b4400efc9c164', 'KL-077:full_execution_replay_atomicity_dc': 'c9944c8eeea23c7d167e253197ba9e65439fc89f43aa360353ed0019c8fe9a2d', 'KL-028:b07_dc': 'e246ed617b72dfeea889fa4929ab88f9da3394496d7c00b79b6e0dd511f1e1a2', 'KL-028:b16_dc': 'a1bbe7c06827c27c10504851a66fb9ccd78394d9ec8079b487d0af1dafd999dd', 'KL-026:i01_dc': '2932e90178d230d3bd2ef002933d5fece4395ab6756c4e46b9f7d65e0d19fbb8', 'KL-026:i02_dc': 'ee5a60e38ed027fd6f09aef7354e7b5ab503fe022f8837f71d4e7d1b3cd9ede5', 'KL-026:i03_dc': '2a647e52fd8fee70691e5279d3d1a2632edddb971d3c223a1c2fdd6b5dde96ae', 'KL-026:i04_dc': '4be4e09b2a3c9f9d5ae66fd0291bb9e9fcdb0c1d39c8d41f5d770b6c9e24b4d2', 'KL-026:i05_dc': '5011fb62871694abe23239063f923daa6dce59df5649036455817ed7635433be', 'KL-026:i06_dc': '65500c852227e4a2ddb6d7f39d55880a4548237a92be5ba09b7580e0a7c3cb31', 'KL-026:i07_dc': '15c1c1266d7f723631a3a0c61b516ad5f7ff79494ce690416f51ba29e5b6c8d1', 'KL-026:i08_dc': 'dbe3832eb088d50cd0d5c1ae0bba3764433133aa862542889c310ac7626c7228', 'KL-026:i09_dc': '6227a26862097ba2f06dbf4ab99e3596a3abbfdaa2e2f1bb1f0cb2133ec6010a', 'KL-026:time_boundary_pu': 'ce8e3e58e3a2ad0d67666c7681b04576473113b0d91974221a9ac9527692b674', 'KL-023:factset_complete_writer_interleaving_dc': '1b54ce3c1cb0fd1b5d117d1e7155d92ce919c218cfd56ccf36a8e0d4863723d8', 'KL-023:factset_seal_frontier_atomicity_and_replay_dc': '85ccee0e5008c8f006cb387bee09c0c441705251ab843c8f1cd20b531f4b2f64', 'KL-028:b01_pu': 'dbbaaeb4f0b1f67215c0659b0d203042c1088fc020bb31d8257dc47fa4bde2f6', 'KL-028:b01_dc': 'c0b42302bc8cfdd980187e07e6671654d46ac6d0878b9f9c08ce46a1bf110c67', 'KL-028:b02_dc': '819e95d9a8d60083f2d4143be3c1636424b59ab519be0b30852c4b7f097cf310', 'KL-028:b03_dc': '33937d58907a2abda0dfc8f9418c647c442929fa5a5f2e6fcb3a17cd54bd6f6a', 'KL-021:t2_global_commit_rollback_and_effective_at_semantics': 'a4cdb8b0847c37b1661c144e3115d8de2243a29c4913dba3d89858c1560ab855', 'KL-028:b04_dc': 'dbbee9074704daf487305816e38257798d56627d549b08a77be9e7690538e2d0', 'KL-028:b05_dc': '3fcceb7b2c85fe943707e6314616d6e3f937783e7a14868bfdc2264250463d31', 'KL-028:b06_dc': '8beb5b23a00a770d027a1c0d50c0b8d2e0ff86fae19147d1ba341566eeb3ab59', 'KL-028:b11_dc': '01ef9307f0cec128c550984172e5f49509426fe85912d1011ae58866d54e2d81', 'KL-028:b12_dc': '179302c473c7e5290f94e56941ae55e4b4311e239d8eac16b17c0f8717c6b666', 'KL-028:b13_dc': 'c5fa673aee7bf8f944a61f362e66b10558bdd28cc1daf505095b2f16a42b32de', 'KL-028:b14_registry_failclosed_stop_support_dc': '100675ab990ce9c94ed726a1b4b35ed8f2f04d618f8eded8c3e4d95915624fed', 'KL-028:b15_dc': 'cd3df20c6f6d9d4c9f499f8e033325a8341620918e54a7af9146f4ca1abe6ff5', 'KL-028:b17_pu': '512659b83a91ad16d3d05fc75e44f688036218eecd850ea93f0c59db2be43b4e', 'KL-028:b17_dc': 'be4ce4fd8cae272b9f3c710f63ff02628c6793edf1eab872300271c1e886f691', 'KL-022:validity_closure_minimum_and_missing_values_pu': '77f1f0e66c036f3a3b68610b1a1b788cf3834b8fca381276b2a10c5c853e2a0d', 'KL-022:timeless_policy_dependency_closure_pu': '661ec30174fbeb8d271d65b71723f1282bad3d92b99ff93cfcd3f951e2d8f6d1', 'KL-022:t6_certificate_and_minimum_closure_dc': '7b0537d8176fb2d010ed04e4bb4194ba52e60b83383af2b83538e1fe6ea5ce79', 'KL-028:b08_pu': '3f1c07c8f8d2d552369afc14d95acc1b5aa06fb394938a81eb1172f354fee44a', 'KL-028:b09_pu': 'abf0c2bf101bab7a7b9dfacc52cbc90d1af8c59e8aa409ed7b1d890a5be510be', 'KL-028:b09_dc': 'f3690ee3bec27585add38fae370477f70d60c4db92c7c56072152d6d9997d501', 'KL-028:b10_pu': '842c24fcb7b78cd00c33fa4d477aa1f40a916fb653aa73a771301ffafccd8502', 'KL-028:b18_pu': 'e7b63b7177b8cc20330ffaa54e4fbca3bd4c9b8ab9e3a456d3d4e72523f9f176', 'KL-027:demo_namespace_and_boundary_pu': '66647bb1b03c243b7b53945026d29c821be0d633cf017342b4690b14d86542f4', 'KL-027:demo_scope_denials_dc': '8654b63f46d0f2f8c039060dd1137637cf945efe5ab92bf9df71bbdcb91b491b', 'KL-028:boundary_namespace_pu': '8a1f0daddefc1818862deedecf9e2effa0609fd91079cb40524939441886eed3', 'KL-029:shadow_namespace_and_boundary_pu': 'b4882ae92d1328df35251a024212c6aba66ae9bb5849fc211d1bc40c97e1a98e', 'KL-029:shadow_strict_wire_pu': 'f739601de3c33239203549a8e6836ca24111055ee8f217d4ff514d6df8894f1a', 'KL-029:shadow_evaluation_principal_live_denials_dc': '9f639ac3f9f60bd05beb042cff3c83d25f41eae1a9e5ada4dbe96856633ded70', 'KL-029:shadow_test_authorization_crossing_denials_dc': '49686edec7cc25818e5b379ff97c2d3f6f52179c90086a1fd60297e88b4dab22', 'KL-029:shadow_owner_payload_denials_dc': 'b49df8a9edcf2f50351d2aff8dad4f3351516372e2af6f135b27a1f214461d01', 'KL-029:shadow_declared_evaluation_storage_dc': '3bb80c4317b9d118ad4364287dfe89701ad08368a1408ff6acd83d78f8c9b14f'}
+M3_REGRESSION_COMMANDS = ['uv run kl test-unit', 'uv run kl test-harness', 'uv run kl check-harness', 'uv run pytest -q tests/db/test_boundary_acceptance.py', 'uv run pytest -q tests/db/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial', 'uv run pytest -q tests/db/test_boundary_acceptance.py::test_b02_stale_frontier_seal_race', 'uv run pytest -q tests/db/test_boundary_acceptance.py::test_b03_sealed_immutability_ready_barrier', 'uv run pytest -q tests/db/test_boundary_acceptance.py::test_b04_relevant_revoke_issue_reauthorize', 'uv run pytest -q tests/db/test_boundary_acceptance.py::test_b05_unrelated_revoke_preserves_eligibility', 'uv run pytest -q tests/db/test_boundary_acceptance.py::test_b06_revoke_before_publish', 'uv run pytest -q tests/db/test_boundary_acceptance.py::test_b07_revoke_current_execution_denial', 'uv run pytest -q tests/db/test_boundary_acceptance.py::test_b09_server_minimum_certificate', 'uv run pytest -q tests/db/test_boundary_acceptance.py::test_b11_backdated_revoke_commit_linearization', 'uv run pytest -q tests/db/test_boundary_acceptance.py::test_b12_future_revoke_immediate_at_commit', 'uv run pytest -q tests/db/test_boundary_acceptance.py::test_b13_revoke_rollback_zero_effects', 'uv run pytest -q tests/db/test_boundary_acceptance.py::test_b14_registry_failclosed_stop_support', 'uv run pytest -q tests/db/test_boundary_acceptance.py::test_b15_fresh_registry_both_orders', 'uv run pytest -q tests/db/test_boundary_acceptance.py::test_b16_continue_resume_after_invalidation', 'uv run pytest -q tests/db/test_boundary_acceptance.py::test_b17_transitive_revoke_denied', 'uv run pytest -q tests/db/test_call_ledger.py', 'uv run pytest -q tests/db/test_deterministic_planning.py', 'uv run pytest -q tests/db/test_factsets.py', 'uv run pytest -q tests/db/test_factsets.py::test_complete_serializes_with_candidate_writer', 'uv run pytest -q tests/db/test_factsets.py::test_seal_frontier_atomicity_and_old_replay', 'uv run pytest -q tests/db/test_full_action_preparation.py', 'uv run pytest -q tests/db/test_full_test_execution.py', 'uv run pytest -q tests/db/test_full_test_execution.py::test_continue_resume_rechecks', 'uv run pytest -q tests/db/test_full_test_execution.py::test_replay_and_atomicity', 'uv run pytest -q tests/db/test_migrations.py', 'uv run pytest -q tests/db/test_migrations.py tests/db/test_transaction_interfaces.py', 'uv run pytest -q tests/db/test_planning.py', 'uv run pytest -q tests/db/test_planning_progress.py', 'uv run pytest -q tests/db/test_preparation.py', 'uv run pytest -q tests/db/test_protocol_execution.py', 'uv run pytest -q tests/db/test_protocol_interleavings.py', 'uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_issue', 'uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_publish', 'uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_start', 'uv run pytest -q tests/db/test_protocol_interleavings.py::test_cancel_vs_dispatch', 'uv run pytest -q tests/db/test_protocol_interleavings.py::test_expiry_vs_start', 'uv run pytest -q tests/db/test_protocol_interleavings.py::test_publish_vs_user_revoke', 'uv run pytest -q tests/db/test_protocol_interleavings.py::test_seal_vs_input_update', 'uv run pytest -q tests/db/test_protocol_interleavings.py::test_start_vs_user_revoke', 'uv run pytest -q tests/db/test_protocol_interleavings.py::test_takeover_vs_commit', 'uv run pytest -q tests/db/test_safety_registry.py', 'uv run pytest -q tests/db/test_safety_registry.py::test_t2_global_commit_rollback_and_effective_at_semantics', 'uv run pytest -q tests/db/test_shadow_isolation.py::test_declared_evaluation_storage_isolation', 'uv run pytest -q tests/db/test_shadow_isolation.py::test_evaluation_principal_live_denials', 'uv run pytest -q tests/db/test_shadow_isolation.py::test_shadow_payload_owner_denials', 'uv run pytest -q tests/db/test_shadow_isolation.py::test_test_authorization_crossing_denials', 'uv run pytest -q tests/db/test_test_only_demo.py', 'uv run pytest -q tests/db/test_test_only_demo.py::test_expiry_then_deny', 'uv run pytest -q tests/db/test_test_only_demo.py::test_fdn_repair', 'uv run pytest -q tests/db/test_test_only_demo.py::test_full_trajectory', 'uv run pytest -q tests/db/test_test_only_demo.py::test_production_shadow_denials', 'uv run pytest -q tests/db/test_test_only_demo.py::test_revoke_then_deny', 'uv run pytest -q tests/db/test_transaction_interfaces.py', 'uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_authorization_evaluator_persists_exact_minimum_certificate', 'uv run pytest -q tests/e2e/test_authorization_evaluator.py', 'uv run pytest -q tests/unit/protocol/test_authorization.py', 'uv run pytest -q tests/unit/protocol/test_authorization.py::test_timeless_dependency_requires_auditable_policy_in_same_transitive_closure', 'uv run pytest -q tests/unit/protocol/test_authorization.py::test_validity_closure_uses_every_bound_and_denies_missing_or_elapsed_basis', 'uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py', 'uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial', 'uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b08_missing_validity_denied', 'uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b09_server_minimum_closure', 'uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b10_expiry_without_status_job', 'uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b17_transitive_closure_omission_denied', 'uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b18_timeless_policy_reason_required', 'uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_boundary_namespace', 'uv run pytest -q tests/unit/protocol/test_execution.py', 'uv run pytest -q tests/unit/protocol/test_factsets.py', 'uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_time_boundaries', 'uv run pytest -q tests/unit/protocol/test_shadow_isolation.py tests/db/test_shadow_isolation.py', 'uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_namespace_and_boundary', 'uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_strict_shadow_wire', 'uv run pytest -q tests/unit/protocol/test_test_only_demo.py::test_namespace_and_boundary', 'uv run pytest -q tests/unit/workflow/test_call_ledger.py', 'uv run pytest -q tests/unit/workflow/test_planning.py']
+
 M1_TASK_IDS = {f'KL-{number:03d}' for number in range(1, 10)}
 M1_CLOSURE_M2_TASK_IDS = {
     'KL-010', 'KL-011', 'KL-012', 'KL-013', 'KL-014',
@@ -1459,6 +1466,12 @@ def governance_record_paths(change_id):
 
 
 def governance_allowed_patterns(change_id):
+    if change_id == 'HG-044':
+        return [MILESTONE_CLOSURE_SCHEMA, 'tools/harness/validate_harness.py',
+                'tests/harness/test_m3_milestone_closure.py',
+                'docs/harness/M3_CLOSURE_CONTRACT.md', PROJECT_PLAN, INDEX, MANIFEST,
+                'docs/exec-plans/evidence/HG-044/**', 'docs/exec-plans/reviews/HG-044/**',
+                'docs/exec-plans/governance/HG-044.yaml']
     if change_id == 'HG-024':
         return HG024_ALLOWED_PATTERNS
     return [
@@ -2485,6 +2498,341 @@ def m2_milestone_closure_errors(
     return errors
 
 
+def canonical_value_sha(value):
+    return hashlib.sha256(json.dumps(
+        value, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+
+
+def m3_closure_plan_errors(text):
+    marker = '## M3 exit-evidence mapping — HG044'
+    end = '<!-- HG044 plan end -->'
+    if text.count(marker) != 1 or text.count(end) != 1:
+        return ['m3-closure-plan']
+    block = text.split(marker, 1)[1].split(end, 1)[0]
+    return [] if hashlib.sha256(block.encode()).hexdigest() == '016ebe910b40724dc7cf7b00ab0bc384fa0d5ef6b8749ae6ea741c6126023878' else ['m3-closure-plan']
+
+
+def m3_governance_plan_prefix_errors(root, base, reviewed):
+    """Compare committed plan revisions in both ordinary and review-only PR gates."""
+    before = git(root, 'show', base + ':' + PROJECT_PLAN).decode()
+    after = git(root, 'show', reviewed + ':' + PROJECT_PLAN).decode()
+    return ([] if after.split('## M3 exit-evidence mapping — HG044', 1)[0] == before + '\n'
+            else ['governance-hg044-plan-prefix'])
+
+
+def m3_closure_record_errors(root, path, revision='HEAD'):
+    """An optional closure instance is itself a committed regular blob, never ambient evidence."""
+    try:
+        ref = str(path.relative_to(root))
+        if (path.is_symlink() or not revision_regular_file(root, ref, revision)
+                or git(root, 'show', revision + ':' + ref) != path.read_bytes()):
+            raise ValueError('not-committed-regular-unchanged-blob')
+    except (ValueError, OSError, TypeError) as ex:
+        return ['milestone-m3-record-source:' + str(ex)]
+    return []
+
+
+def m3_load_closure_record(root, path):
+    """Reject nonregular sources before parsing; parse the exact checked Git revision."""
+    head = resolve(root, 'HEAD')
+    errors = m3_closure_record_errors(root, path, head)
+    if errors:
+        return None, errors
+    ref = str(path.relative_to(root))
+    return load_artifact_text(git(root, 'show', head + ':' + ref).decode(), '.json'), []
+
+
+def m3_evidence_bytes(root, evidence, evaluated):
+    """Read only content-addressed regular Git blobs at reachable exact commits."""
+    path, revision = evidence['path'], evidence['revision']
+    if (not relative_path(path) or resolve(root, revision) != revision
+            or not is_ancestor(root, revision, evaluated)
+            or not revision_regular_file(root, path, revision)
+            or blob_sha_at_revision(root, path, revision) != evidence['sha256']):
+        raise ValueError('evidence-binding')
+    return git(root, 'show', revision + ':' + path)
+
+
+def m3_pytest_count(output):
+    summaries = re.findall(r'\b([1-9][0-9]*) passed\b', output)
+    if (not summaries or re.search(
+            r'\b[1-9][0-9]* (?:failed|skipped|errors?|deselected|xfailed|xpassed)\b',
+            output, re.I)):
+        raise ValueError('failed-skipped-or-empty-run')
+    return int(summaries[-1])
+
+
+def m3_task_check_errors(root, witness, task_id, check_id, task, record, evaluated):
+    """Resolve a named check through its integration, result, contract and raw log."""
+    try:
+        reviewed = record['reviewed_head_sha']
+        paths = result_paths_at_revision(root, task_id, reviewed)
+        if len(paths) != 1:
+            raise ValueError('result-representation')
+        result = load_artifact_at_revision(root, paths[0], reviewed)
+        commands = [c for c in result['commands_run'] if c['check_id'] == check_id]
+        contracts = [c for c in task['check_contracts'] if c['check_id'] == check_id]
+        if len(commands) != 1 or len(contracts) != 1:
+            raise ValueError('check-representation')
+        command, contract = commands[0], contracts[0]
+        if (canonical_value_sha(contract) != M3_CHECK_CONTRACT_DIGESTS[task_id + ':' + check_id]
+                or witness['task_identity'] != task['task_identity']
+                or witness['check_id'] != check_id
+                or witness['tested_commit'] != result['tested_commit']
+                or witness['result'] != 'PASS' or command['result'] != 'PASS'
+                or witness['command'] != contract['command']
+                or command['command'] != contract['command']
+                or witness['oracle_sha256'] != canonical_value_sha(contract['pass_oracle'])
+                or witness['result_artifact']['path'] != paths[0]
+                or witness['result_artifact']['revision'] != reviewed
+                or witness['raw']['path'] != command['evidence_ref']
+                or witness['raw']['revision'] != reviewed
+                or not matches(witness['raw']['path'], [evidence_pattern(task_id)])):
+            raise ValueError('check-oracle-binding')
+        m3_evidence_bytes(root, witness['result_artifact'], evaluated)
+        m3_pytest_count(m3_evidence_bytes(root, witness['raw'], evaluated).decode())
+    except (ValueError, OSError, KeyError, TypeError, UnicodeError) as ex:
+        return ['milestone-m3-task-check:' + task_id + ':' + check_id + ':' + str(ex)]
+    return []
+
+
+def m3_execution_evidence_errors(root, payload, revision, evaluated, records):
+    """Fresh integrated executions retain all selectors, collection and JUnit cases."""
+    prefix = 'milestone-m3-regression:'
+    try:
+        change = payload['change_id']
+        tested = payload['tested_commit']
+        if (not re.fullmatch(r'HG-[0-9]{3}', change)
+                or resolve(root, tested) != tested or payload['status'] != 'PASS'
+                or payload['commands'] != M3_REGRESSION_COMMANDS
+                or governance_suffix_errors(root, tested, evaluated, change, 'tested')
+                or any(not is_ancestor(root, records[n]['merge_commit'], tested)
+                       for n in M3_TASK_IDS)):
+            raise ValueError('stale-or-unintegrated-revision')
+        runs = payload['executions']
+        if (not isinstance(runs, list) or len(runs) != len(M3_REGRESSION_COMMANDS)
+                or [run['command'] for run in runs] != M3_REGRESSION_COMMANDS):
+            raise ValueError('command-set')
+        for command, run in zip(M3_REGRESSION_COMMANDS, runs):
+            if (run['tested_commit'] != tested or run['exit_code'] != 0
+                    or type(run['exit_code']) is not int):
+                raise ValueError('failed-or-unbound-command')
+            def raw(item):
+                if item.get('revision', revision) != revision or not matches(
+                        item['path'], [evidence_pattern(change)]):
+                    raise ValueError('raw-provenance')
+                return m3_evidence_bytes(root, dict(item, revision=revision), evaluated)
+            output = raw(run['stdout']).decode()
+            if command == 'uv run kl check-harness':
+                if 'HARNESS_CHECK_PASS' not in output or 'HARNESS_CHECK_FAIL' in output:
+                    raise ValueError('harness-oracle')
+                continue
+            count = m3_pytest_count(output)
+            tree = ET.fromstring(raw(run['junit']))
+            cases = list(tree.iter('testcase'))
+            actual = [(case.get('classname', ''), case.get('name', '')) for case in cases]
+            if (not cases or len(cases) != count or len(actual) != len(set(actual))
+                    or any(list(case.iter(tag)) for case in cases
+                           for tag in ('failure', 'error', 'skipped'))):
+                raise ValueError('failed-skipped-duplicate-or-empty-tests')
+            collection = load_artifact_text(raw(run['collection']).decode(), '.json')
+            selectors = (['tests/unit'] if command == 'uv run kl test-unit'
+                         else ['tests/harness'] if command == 'uv run kl test-harness'
+                         else command.removeprefix('uv run pytest -q ').split())
+            if (collection['command'] != 'uv run pytest --collect-only -q ' + ' '.join(selectors)
+                    or collection['tested_commit'] != tested or collection['exit_code'] != 0
+                    or type(collection['exit_code']) is not int):
+                raise ValueError('collection-binding')
+            nodeids = collection['nodeids']
+            collected_output = raw(collection['stdout']).decode()
+            raw_nodes = [line for line in collected_output.splitlines()
+                         if re.match(r'^tests/[^\s]+\.py::', line)]
+            totals = re.findall(r'^([1-9][0-9]*) tests? collected in ', collected_output, re.M)
+            raw_node_lines = set(raw_nodes)
+            summary_output = '\n'.join(line for line in collected_output.splitlines()
+                                       if line not in raw_node_lines)
+            if (not nodeids or len(nodeids) != len(set(nodeids)) or nodeids != raw_nodes
+                    or len(totals) != 1 or int(totals[0]) != len(nodeids)
+                    or re.search(r'\b[1-9][0-9]* (?:deselected|errors?|skipped)\b',
+                                 summary_output, re.I)):
+                raise ValueError('collection-oracle')
+            expected = []
+            for node in nodeids:
+                address, bracket, parameters = node.partition('[')
+                components = address.split('::')
+                if not any(node == s or node.startswith(s + '[') or node.startswith(s + '::')
+                           or node.startswith(s + '/') for s in selectors):
+                    raise ValueError('wrong-selector')
+                expected.append(('.'.join([components[0].removesuffix('.py').replace('/', '.'),
+                                           *components[1:-1]]), components[-1] + bracket + parameters))
+            for selector in selectors:
+                if not any(node == selector or node.startswith(selector + '[')
+                           or node.startswith(selector + '::') or node.startswith(selector + '/')
+                           for node in nodeids):
+                    raise ValueError('missing-selector')
+            if set(actual) != set(expected) or len(actual) != len(expected):
+                raise ValueError('incomplete-executed-collection')
+    except (ValueError, OSError, KeyError, TypeError, UnicodeError, ET.ParseError) as ex:
+        return [prefix + str(ex)]
+    return []
+
+
+def m3_layer_errors(root, closure, evaluated):
+    """Exact 31 B and 10 I dispositions; support never promotes missing product layers."""
+    try:
+        packet = git(root, 'show', evaluated + ':docs/exec-plans/active/KL-028.md').decode()
+        expected = packet_json_section(packet, 'Boundary layer ledger')
+        requirements = load_artifact_at_revision(
+            root, 'KineticLoop_Acceptance_Spec_v1.2.2.json', evaluated
+        )['supplemental_boundary_requirements']
+        if m3_boundary_layer_errors(expected, requirements):
+            raise ValueError('boundary-authority')
+        for row in expected:
+            if row['disposition'] == 'KL028_PLANNED_EXECUTABLE':
+                row['status'] = 'PASS'
+        if closure['boundary_layers'] != expected:
+            raise ValueError('boundary-dispositions')
+        interleavings = [dict(requirement_id=f'I{i:02}', layer='DC', status='PASS',
+                             task_identity='harness-backlog-v0.2/KL-026', check_id=f'i{i:02}_dc')
+                        for i in range(1, 10)]
+        interleavings.append(dict(requirement_id='I04', layer='WF', status='NOT_RUN',
+                                  required_future_owner='M4 worker/fault process evidence'))
+        if closure['interleaving_layers'] != interleavings:
+            raise ValueError('interleaving-dispositions')
+    except (ValueError, OSError, KeyError, TypeError) as ex:
+        return ['milestone-m3-layers:' + str(ex)]
+    return []
+
+
+def m3_dependency_order_errors(root, records, tasks):
+    """Check both base and tested ancestry without relabeling supporting membership."""
+    errors = []
+    try:
+        for name, record in records.items():
+            reviewed = record['reviewed_head_sha']
+            paths = result_paths_at_revision(root, name, reviewed)
+            if len(paths) != 1 or not revision_regular_file(root, paths[0], reviewed):
+                raise ValueError('result-representation:' + name)
+            result = load_artifact_at_revision(root, paths[0], reviewed)
+            for dep in tasks[name]['depends_on']:
+                for key in ('base_commit', 'tested_commit'):
+                    if not is_ancestor(root, records[dep]['merge_commit'], result[key]):
+                        errors.append('milestone-m3-dependency-order:' + dep + ':' + name + ':' + key)
+    except (ValueError, OSError, KeyError, TypeError) as ex:
+        errors.append('milestone-m3-dependency-order:invalid:' + str(ex))
+    return errors
+
+
+def m3_frozen_authority_errors(root, evaluated):
+    try:
+        frozen = load_artifact_at_revision(root, 'FROZEN_BASELINE.json', evaluated)
+        if frozen != load_artifact(root / 'FROZEN_BASELINE.json'):
+            raise ValueError('baseline-drift')
+        for entry in frozen['files']:
+            if (not revision_regular_file(root, entry['path'], evaluated)
+                    or blob_sha_at_revision(root, entry['path'], evaluated) != entry['sha256']):
+                raise ValueError('file-drift:' + entry['path'])
+    except (ValueError, OSError, KeyError, TypeError) as ex:
+        return ['milestone-m3-frozen-authority:' + str(ex)]
+    return []
+
+
+def m3_milestone_closure_errors(
+        root, closure, schema, integration_schema, result_schema, review_schema, backlog, tasks):
+    """Mechanical minimal TEST demonstration closure, independent of release/product PASS."""
+    errors = ['milestone-schema:M3.json:' + issue.message for issue in schema.iter_errors(closure)]
+    if errors:
+        return errors
+    try:
+        evaluated = closure['evaluated_commit']
+        if resolve(root, evaluated) != evaluated or not is_ancestor(root, evaluated, 'HEAD'):
+            raise ValueError('evaluated-unreachable')
+        evaluated_backlog = load_artifact_at_revision(root, BACKLOG, evaluated)
+        definition_errors, evaluated_tasks = task_definition_errors(root, evaluated_backlog, evaluated)
+        errors.extend('milestone-m3-task-contract:' + e for e in definition_errors)
+        active = {t['id'] for t in evaluated_tasks.values()
+                  if t['milestone'] == 'M3' and t['status'] != 'SUPERSEDED'}
+        ids = [i['display_task_id'] for i in closure['integrations']]
+        if active != M3_TASK_IDS or set(ids) != active or len(ids) != len(set(ids)):
+            return errors + ['milestone-active-task-set:M3']
+        supporting = closure['supporting_prerequisites']
+        if [i['display_task_id'] for i in supporting] != ['KL-074'] or evaluated_tasks['KL-074']['milestone'] != 'M1':
+            return errors + ['milestone-m3-supporting-prerequisites']
+        m2_ref = closure['m2_prerequisite']
+        if m2_ref['path'] != 'docs/exec-plans/milestones/M2.json' or m2_ref['revision'] != evaluated:
+            raise ValueError('m2-prerequisite-binding')
+        m2 = load_artifact_text(m3_evidence_bytes(root, m2_ref, evaluated).decode(), '.json')
+        errors.extend('milestone-m3-prerequisite:' + e for e in m2_milestone_closure_errors(
+            root, m2, schema, integration_schema, result_schema, review_schema,
+            evaluated_backlog, evaluated_tasks))
+        if not is_ancestor(root, m2['evaluated_commit'], evaluated):
+            raise ValueError('m2-prerequisite-unreachable')
+        records = {}
+        pending = list(M3_TASK_IDS | {'KL-074'})
+        declared = {i['display_task_id']: i for i in closure['integrations'] + supporting}
+        while pending:
+            name = pending.pop()
+            if name in records:
+                continue
+            path = f'docs/exec-plans/integrations/{name}.json'
+            if not revision_regular_file(root, path, evaluated):
+                raise ValueError('missing-or-nonregular-integration:' + name)
+            record = load_artifact_at_revision(root, path, evaluated)
+            records[name] = record
+            for source in result_paths_at_revision(root, name, record['result_commit']):
+                if not revision_regular_file(root, source, record['result_commit']):
+                    raise ValueError('nonregular-result:' + name)
+            for kind in evaluated_tasks[name]['review_requirements']:
+                if not revision_regular_file(root, f'docs/exec-plans/reviews/{name}/{kind}.json',
+                                             record['review_record_commit']):
+                    raise ValueError('nonregular-review:' + name + ':' + kind)
+            if name in declared:
+                item = declared[name]
+                if (item['task_identity'] != 'harness-backlog-v0.2/' + name
+                        or item['integration_record'] != path
+                        or item['sha256'] != blob_sha_at_revision(root, path, evaluated)):
+                    errors.append('milestone-m3-integration-binding:' + name)
+            errors.extend('milestone-m3-integration:' + name + ':' + e
+                          for e in integration_record_errors(
+                              root, Path(path), record, integration_schema, result_schema,
+                              review_schema, evaluated_tasks))
+            for key in ('result_commit', 'reviewed_head_sha', 'review_record_commit', 'merge_commit'):
+                if not is_ancestor(root, record[key], evaluated):
+                    errors.append('milestone-m3-integration-unreachable:' + name + ':' + key)
+            pending.extend(evaluated_tasks[name]['depends_on'])
+        errors.extend(m3_dependency_order_errors(root, records, evaluated_tasks))
+        exits = closure['exit_checks']
+        exit_ids = [e['check_id'] for e in exits]
+        if set(exit_ids) != set(M3_EXIT_TASK_CHECKS) or len(exit_ids) != len(set(exit_ids)):
+            errors.append('milestone-exit-check-set:M3')
+        for exit_check in exits:
+            exit_id = exit_check['check_id']
+            required = {(n,c) for n,ids in M3_EXIT_TASK_CHECKS[exit_id].items() for c in ids}
+            witnesses = exit_check['task_checks']
+            pairs = [(w['task_identity'].split('/')[-1], w['check_id']) for w in witnesses]
+            if set(pairs) != required or len(pairs) != len(set(pairs)):
+                errors.append('milestone-m3-exit-task-set:' + exit_id)
+            for pair, witness in zip(pairs, witnesses):
+                if pair not in required:
+                    continue
+                name, check = pair
+                errors.extend(m3_task_check_errors(
+                    root, witness, name, check, evaluated_tasks[name], records[name], evaluated))
+        errors.extend(m3_layer_errors(root, closure, evaluated))
+        errors.extend(m3_frozen_authority_errors(root, evaluated))
+        ref = closure['integrated_regression']
+        if (ref['revision'] != evaluated or not re.fullmatch(
+                r'docs/exec-plans/evidence/HG-[0-9]{3}/m3-regression-[0-9a-f]{7,40}\.json', ref['path'])):
+            raise ValueError('regression-source')
+        payload = load_artifact_text(m3_evidence_bytes(root, ref, evaluated).decode(), '.json')
+        if not matches(ref['path'], [evidence_pattern(payload['change_id'])]):
+            raise ValueError('regression-provenance')
+        errors.extend(m3_execution_evidence_errors(root, payload, evaluated, evaluated, records))
+    except (ValueError, OSError, KeyError, TypeError, IndexError, UnicodeError) as ex:
+        errors.append('milestone-m3-invalid:' + str(ex))
+    return errors
+
+
 def m2_execution_evidence_errors(root, payload, revision):
     """Require retained successful executions, including real DB test collection."""
     prefix = 'milestone-regression-execution:'
@@ -2891,6 +3239,7 @@ def validate(root, args):
             errors.append('manifest-bytes:' + entry['path'])
     task_errors, tasks = task_definition_errors(root, backlog)
     errors.extend(task_errors)
+    errors.extend(m3_closure_plan_errors((root / PROJECT_PLAN).read_text()))
 
     schemas = {}
     known_requirements = requirement_ids(root)
@@ -2909,10 +3258,16 @@ def validate(root, args):
             raise ValueError('invalid-schema:' + kind + ':' + str(ex)) from ex
         schemas[kind] = Draft202012Validator(schema)
     milestone_dir = root / 'docs/exec-plans/milestones'
-    milestone_records: dict[str, list[tuple[Path, Any]]] = {'M1': [], 'M2': []}
+    milestone_records: dict[str, list[tuple[Path, Any]]] = {'M1': [], 'M2': [], 'M3': []}
     if milestone_dir.exists():
         for path in sorted(milestone_dir.glob('*.json')):
-            record = load_artifact(path)
+            if path.stem == 'M3':
+                record, source_errors = m3_load_closure_record(root, path)
+                errors.extend(source_errors)
+                if source_errors:
+                    continue
+            else:
+                record = load_artifact(path)
             milestone_id = record.get('display_milestone_id') if isinstance(record, dict) else None
             if path.stem in milestone_records:
                 milestone_records[path.stem].append((path, record))
@@ -2941,6 +3296,16 @@ def validate(root, args):
         if closure_path.name != 'M2.json':
             errors.append('milestone-closure-path:M2:' + closure_path.name)
         errors.extend(m2_milestone_closure_errors(
+            root, closure, schemas['MILESTONE'], schemas['INTEGRATION'],
+            schemas['RESULT'], schemas['REVIEW'], backlog, tasks))
+    if len(milestone_records['M3']) > 1:
+        errors.append('milestone-closure-count:M3:' + str(len(milestone_records['M3'])))
+    elif milestone_records['M3']:
+        closure_path, closure = milestone_records['M3'][0]
+        if closure_path.name != 'M3.json':
+            errors.append('milestone-closure-path:M3:' + closure_path.name)
+        errors.extend(m3_closure_record_errors(root, closure_path))
+        errors.extend(m3_milestone_closure_errors(
             root, closure, schemas['MILESTONE'], schemas['INTEGRATION'],
             schemas['RESULT'], schemas['REVIEW'], backlog, tasks))
     for task in tasks.values():
@@ -3111,6 +3476,9 @@ def validate(root, args):
                 for path in sorted(governance_changed if review_only else ()):
                     if not matches(path, governance_allowed_patterns(change_id)):
                         errors.append('governance-write-scope:' + change_id + ':' + path)
+                if change_id == 'HG-044':
+                    errors.extend(m3_governance_plan_prefix_errors(
+                        root, governance_base, reviewed))
                 declared = set(record['files_changed'])
                 if declared != governance_changed:
                     errors.append('governance-files-changed-mismatch:' + change_id)
@@ -3368,6 +3736,8 @@ def validate(root, args):
             required = {'GENERAL'}
             old_tasks = getattr(args, 'governance_base_tasks', {})
             reviewed_tasks = getattr(args, 'governance_reviewed_tasks', tasks)
+            if change_id == 'HG-044':
+                required.update({'PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'})
             changed_task_ids = getattr(args, 'governance_changed_task_ids', set())
             for task_id in changed_task_ids:
                 required.update(old_tasks.get(task_id, {}).get('review_requirements', []))

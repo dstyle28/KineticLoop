@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "normal_ci_discovery": {
+    "change_id": "HG-044",
+    "reviewed": "027bc2368e36e28aa9956489cb57af297882d671",
+    "note": "Existing historical GENERAL review supplies its historical SHA until fresh review persistence."
+  },
+  "branches": [
+    {
+      "mode": "normal",
+      "protected_base": "2c44f456a0daf8e6933f20fc3eadc7e1869d6fff",
+      "observed_guard_call": {
+        "base": "2c44f456a0daf8e6933f20fc3eadc7e1869d6fff",
+        "reviewed": "cf0b99359d04c136d01fd4c5eeec8a23cd0bbc54",
+        "errors": []
+      },
+      "diagnostics": [
+        "git-worktree-not-clean",
+        "governance-required-reviews-not-pass:HG-044"
+      ],
+      "task_count": 76,
+      "active_count": 73
+    },
+    {
+      "mode": "review-only",
+      "protected_base": "cf0b99359d04c136d01fd4c5eeec8a23cd0bbc54",
+      "observed_guard_call": {
+        "base": "2c44f456a0daf8e6933f20fc3eadc7e1869d6fff",
+        "reviewed": "cf0b99359d04c136d01fd4c5eeec8a23cd0bbc54",
+        "errors": []
+      },
+      "diagnostics": [
+        "git-worktree-not-clean",
+        "governance-required-reviews-not-pass:HG-044"
+      ],
+      "task_count": 76,
+      "active_count": 73
+    }
+  ],
+  "note": "Direct validate calls select the exact r6 reviewed SHA; all real committed plan reads and branch bodies run. Review-only CI discovery is unchanged byte-identical baseline code."
+}

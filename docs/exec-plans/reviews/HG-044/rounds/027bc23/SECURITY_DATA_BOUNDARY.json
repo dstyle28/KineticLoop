@@ -1,0 +1,29 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-044",
+  "reviewed_head_sha": "027bc2368e36e28aa9956489cb57af297882d671",
+  "review_type": "SECURITY_DATA_BOUNDARY",
+  "status": "PASS",
+  "findings": [],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-044.yaml",
+    "docs/harness/M3_CLOSURE_CONTRACT.md",
+    "docs/exec-plans/evidence/HG-044/capture-integrity-7206b60.json",
+    "docs/exec-plans/evidence/HG-044/RAW_DIFF_SCOPE.md",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r5-raw/audit.py",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r5-raw/audit.json",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r5-raw/complete-diff.patch",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r5-raw/reviewed-result-guard.py",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r5-raw/reviewed-result-guard.json",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r5-raw/run.py",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r5-raw/bounded-probes.json",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r5-raw/bounded-probes.stdout",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r5-raw/bounded-probes.stderr",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r5-raw/bounded-probes.xml",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r5-raw/source-diff.stdout",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r5-raw/source-diff.stderr",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r5-raw/assessment.md",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r5-raw/finalize.py"
+  ],
+  "review_contract_version": "v0.2",
+  "summary": "Independent security/data boundary PASS: exact committed blob provenance, selected capture integrity, legal tested suffix, 32 available integrations/dependency chains and 52 pinned check contracts verified; 24 bounded repaired-selector/strict-exit/real pytest parameter/source probes pass. M1/M2/HG043/frozen semantics remain intact. No actual M3 closure, product/release PASS, production activation, executable shadow, provider command elevation, credential exposure or data export. Missing KL028/KL029 integration records still reject closure; deferred layers and historical evaluation limits remain truthful. Raw evidence preserved; final hosted CI and merge serialization remain required."
+}

@@ -1,0 +1,59 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-044",
+  "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+  "review_type": "PROTOCOL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "finding_id": "HG044-PROTOCOL-R3-001",
+      "severity": "BLOCKER",
+      "priority": 1,
+      "title": "Preserve parameter suffixes when matching pytest JUnit names",
+      "file": "tools/harness/validate_harness.py",
+      "start": 2650,
+      "end": 2655,
+      "body": "Required full-harness evidence contains 25 current parameter IDs with '::' inside brackets. Pytest partitions the parameter suffix before splitting the address, but this validator splits the entire node. A valid tests/harness/test_probe.py::test_valid[selector::case] collection and official pytest JUnit name is rejected as incomplete-executed-collection. The same error affects the current full-harness suite, so valid fresh mandatory regression cannot close M3. Partition '[' first, split only the address, and restore the full parameter suffix to the final test name using pytest-compatible semantics; add both class-based and parameter-delimiter positive evidence tests and rerun at a new implementation SHA.",
+      "evidence_refs": [
+        "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/collection-probe.py",
+        "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/collection-probe.json"
+      ]
+    },
+    {
+      "finding_id": "HG044-PROTOCOL-R3-002",
+      "severity": "BLOCKER",
+      "priority": 1,
+      "title": "Do not interpret collected node parameter text as a skip summary",
+      "file": "tools/harness/validate_harness.py",
+      "start": 2645,
+      "end": 2646,
+      "body": "The disposition regex searches the entire raw collection output, including node records. Three current HG044 harness cases legitimately have parameter IDs containing '1 skipped' or '1 error'; successful collection of these nodes has integer zero exit and no skipped/error disposition. A valid collected/executed case named test_zero_skip_xfail_failure_cannot_supply_oracle[1 skipped] is rejected as collection-oracle. Thus required full-harness regression cannot validate even after the JUnit delimiter fix. Exclude node record lines before checking disposition summaries and keep strict rejection of genuine skipped/error/deselected summary records; add a positive parameter-text case and genuine negative summary cases at a new reviewed SHA.",
+      "evidence_refs": [
+        "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/collection-probe.py",
+        "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/collection-probe.json"
+      ]
+    }
+  ],
+  "review_contract_version": "v0.2",
+  "evidence_refs": [
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/ancestry.json",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/ancestry.log",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/ancestry.py",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/assessment.md",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/audit.json",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/audit.py",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/collection-probe.json",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/collection-probe.log",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/collection-probe.py",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/command-0.log",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/command-1.log",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/command-2.log",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/commands.json",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/complete-diff.patch",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/finalize.py",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/run.py",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/strict-exit-probe.json",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/strict-exit-probe.log",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/strict-exit-probe.py",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/supplemental-commands.json"
+  ]
+}

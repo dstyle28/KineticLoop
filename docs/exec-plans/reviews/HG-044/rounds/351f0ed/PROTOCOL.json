@@ -1,0 +1,32 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-044",
+  "reviewed_head_sha": "351f0eda41ad492e66115f9ea1e41e3e0f9abf3d",
+  "review_type": "PROTOCOL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "finding_id": "HG044-PROTOCOL-001",
+      "severity": "BLOCKER",
+      "priority": 1,
+      "title": "Require every requested regression selector to execute",
+      "file": "tools/harness/validate_harness.py",
+      "start": 2648,
+      "end": 2657,
+      "body": "The fresh-regression validator only verifies that each retained node belongs to any selector and that JUnit agrees with that retained collection. It accepts a correctly hashed, fresh multi-path run containing cases from only the first path. Independent synthetic Git reproduction returns no errors for the KL029 combined shadow unit/DB suite with zero DB shadow cases, and for combined migrations/transaction-interface regression with the second file omitted. This violates M3_CLOSURE_CONTRACT.md's full integrated-regression requirement that selectors cannot be omitted. Require every selector to have collected/executed cases, correct the positive fixture's split()[0] truncation, and add an omitted-selector negative that passes freshness/hash/JUnit preconditions before failing the coverage oracle. Retest and rereview the repaired revision.",
+      "evidence_refs": [
+        "docs/exec-plans/reviews/HG-044/PROTOCOL-raw/omitted-selector-reproduction.json",
+        "docs/exec-plans/reviews/HG-044/PROTOCOL-raw/reproduce_omitted_selector.py",
+        "tests/harness/test_m3_milestone_closure.py"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-raw/assessment.md",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-raw/audit.py",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-raw/audit.json",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-raw/targeted-pytest.log",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-raw/reproduce_omitted_selector.py",
+    "docs/exec-plans/reviews/HG-044/PROTOCOL-raw/omitted-selector-reproduction.json"
+  ],
+  "review_contract_version": "v0.2"
+}

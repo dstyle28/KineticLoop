@@ -1,0 +1,938 @@
+[
+  {
+    "task": "KL-075",
+    "check_id": "progress_internal_identity_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_planning_progress.py::test_internal_identity",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-075",
+    "check_id": "progress_state_machine_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_planning_progress.py::test_frozen_transitions",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-075",
+    "check_id": "progress_snapshot_dc",
+    "command": "uv run pytest -q tests/db/test_planning_progress.py::test_snapshot_owner",
+    "covering_command": "uv run pytest -q tests/db/test_planning_progress.py"
+  },
+  {
+    "task": "KL-075",
+    "check_id": "progress_time_boundary_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_planning_progress.py::test_time_boundaries",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-075",
+    "check_id": "progress_current_guards_dc",
+    "command": "uv run pytest -q tests/db/test_planning_progress.py::test_current_guard_denials",
+    "covering_command": "uv run pytest -q tests/db/test_planning_progress.py"
+  },
+  {
+    "task": "KL-075",
+    "check_id": "progress_atomicity_dc",
+    "command": "uv run pytest -q tests/db/test_planning_progress.py::test_progress_atomicity",
+    "covering_command": "uv run pytest -q tests/db/test_planning_progress.py"
+  },
+  {
+    "task": "KL-075",
+    "check_id": "progress_namespace_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_planning_progress.py::test_namespace",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-075",
+    "check_id": "progress_suite_dc",
+    "command": "uv run pytest -q tests/db/test_planning_progress.py",
+    "covering_command": "uv run pytest -q tests/db/test_planning_progress.py"
+  },
+  {
+    "task": "KL-077",
+    "check_id": "full_execution_identity_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_full_test_execution.py::test_strict_ingress",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-077",
+    "check_id": "full_bundle_commit_dc",
+    "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_full_bundle_commit",
+    "covering_command": "uv run pytest -q tests/db/test_full_test_execution.py"
+  },
+  {
+    "task": "KL-077",
+    "check_id": "full_bundle_basis_denials_dc",
+    "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_full_bundle_denials",
+    "covering_command": "uv run pytest -q tests/db/test_full_test_execution.py"
+  },
+  {
+    "task": "KL-077",
+    "check_id": "ordinary_pause_identity_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_full_test_execution.py::test_ordinary_pause_identity",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-077",
+    "check_id": "ordinary_pause_owner_dc",
+    "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_ordinary_pause_owner",
+    "covering_command": "uv run pytest -q tests/db/test_full_test_execution.py"
+  },
+  {
+    "task": "KL-077",
+    "check_id": "continue_resume_current_dc",
+    "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_continue_resume_rechecks",
+    "covering_command": "uv run pytest -q tests/db/test_full_test_execution.py::test_continue_resume_rechecks"
+  },
+  {
+    "task": "KL-077",
+    "check_id": "full_execution_replay_atomicity_dc",
+    "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_replay_and_atomicity",
+    "covering_command": "uv run pytest -q tests/db/test_full_test_execution.py::test_replay_and_atomicity"
+  },
+  {
+    "task": "KL-077",
+    "check_id": "full_execution_namespace_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_full_test_execution.py::test_namespace",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-077",
+    "check_id": "full_execution_suite_dc",
+    "command": "uv run pytest -q tests/db/test_full_test_execution.py",
+    "covering_command": "uv run pytest -q tests/db/test_full_test_execution.py"
+  },
+  {
+    "task": "KL-020",
+    "check_id": "transaction_owner_matrix_remains_complete",
+    "command": "uv run pytest -q tests/unit/persistence/test_transactions.py::test_transaction_owner_matrix_complete",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-020",
+    "check_id": "t2_t7_subject_commands_share_s01_linearization",
+    "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_t2_t7_subject_commands_share_s01_linearization",
+    "covering_command": "uv run pytest -q tests/db/test_transaction_interfaces.py"
+  },
+  {
+    "task": "KL-020",
+    "check_id": "concurrent_same_key_same_hash_replays_one_outcome",
+    "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_concurrent_same_key_same_hash_replays_one_outcome",
+    "covering_command": "uv run pytest -q tests/db/test_transaction_interfaces.py"
+  },
+  {
+    "task": "KL-020",
+    "check_id": "concurrent_same_key_different_hash_rejects_conflict",
+    "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_concurrent_same_key_different_hash_rejects_conflict",
+    "covering_command": "uv run pytest -q tests/db/test_transaction_interfaces.py"
+  },
+  {
+    "task": "KL-020",
+    "check_id": "historical_replay_preserves_guard_boundary",
+    "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_historical_replay_preserves_guard_boundary",
+    "covering_command": "uv run pytest -q tests/db/test_transaction_interfaces.py"
+  },
+  {
+    "task": "KL-020",
+    "check_id": "receipt_lock_order_guards_remain_enforced",
+    "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_complete_frozen_lock_order_enforced tests/db/test_transaction_interfaces.py::test_multi_key_lock_order_is_stable tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected tests/db/test_transaction_interfaces.py::test_receipt_before_s01_is_rejected",
+    "covering_command": "uv run pytest -q tests/db/test_transaction_interfaces.py"
+  },
+  {
+    "task": "KL-020",
+    "check_id": "transaction_interface_db_suite_passes",
+    "command": "uv run pytest -q tests/db/test_transaction_interfaces.py",
+    "covering_command": "uv run pytest -q tests/db/test_transaction_interfaces.py"
+  },
+  {
+    "task": "KL-024",
+    "check_id": "planning_normalization_and_admission_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_planning.py::test_normalized_single_flight_and_revision_decisions",
+    "covering_command": "uv run pytest -q tests/unit/workflow/test_planning.py"
+  },
+  {
+    "task": "KL-024",
+    "check_id": "planning_fence_deadline_and_terminal_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_planning.py::test_fence_deadline_and_terminal_guards",
+    "covering_command": "uv run pytest -q tests/unit/workflow/test_planning.py"
+  },
+  {
+    "task": "KL-024",
+    "check_id": "planning_active_partition_and_quota_dc",
+    "command": "uv run pytest -q tests/db/test_planning.py::test_active_partition_and_quota_are_atomic",
+    "covering_command": "uv run pytest -q tests/db/test_planning.py"
+  },
+  {
+    "task": "KL-024",
+    "check_id": "planning_join_revision_budget_preservation_dc",
+    "command": "uv run pytest -q tests/db/test_planning.py::test_join_and_revision_preserve_root_authority",
+    "covering_command": "uv run pytest -q tests/db/test_planning.py"
+  },
+  {
+    "task": "KL-024",
+    "check_id": "planning_takeover_and_renew_interleavings_dc",
+    "command": "uv run pytest -q tests/db/test_planning.py::test_takeover_and_renew_fence_old_workers",
+    "covering_command": "uv run pytest -q tests/db/test_planning.py"
+  },
+  {
+    "task": "KL-024",
+    "check_id": "planning_atomicity_and_ack_loss_dc",
+    "command": "uv run pytest -q tests/db/test_planning.py::test_atomicity_and_ack_loss_replay",
+    "covering_command": "uv run pytest -q tests/db/test_planning.py"
+  },
+  {
+    "task": "KL-024",
+    "check_id": "planning_unit_suite_passes",
+    "command": "uv run pytest -q tests/unit/workflow/test_planning.py",
+    "covering_command": "uv run pytest -q tests/unit/workflow/test_planning.py"
+  },
+  {
+    "task": "KL-024",
+    "check_id": "planning_db_suite_passes",
+    "command": "uv run pytest -q tests/db/test_planning.py",
+    "covering_command": "uv run pytest -q tests/db/test_planning.py"
+  },
+  {
+    "task": "KL-024",
+    "check_id": "migration_chain_regressions_pass",
+    "command": "uv run pytest -q tests/db/test_migrations.py",
+    "covering_command": "uv run pytest -q tests/db/test_migrations.py"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "boundary_namespace_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_boundary_namespace",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_boundary_namespace"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b14_registry_failclosed_stop_support_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b14_registry_failclosed_stop_support",
+    "covering_command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b14_registry_failclosed_stop_support"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b01_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b01_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial",
+    "covering_command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b02_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b02_stale_frontier_seal_race",
+    "covering_command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b02_stale_frontier_seal_race"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b03_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b03_sealed_immutability_ready_barrier",
+    "covering_command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b03_sealed_immutability_ready_barrier"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b04_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b04_relevant_revoke_issue_reauthorize",
+    "covering_command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b04_relevant_revoke_issue_reauthorize"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b05_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b05_unrelated_revoke_preserves_eligibility",
+    "covering_command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b05_unrelated_revoke_preserves_eligibility"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b06_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b06_revoke_before_publish",
+    "covering_command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b06_revoke_before_publish"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b07_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b07_revoke_current_execution_denial",
+    "covering_command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b07_revoke_current_execution_denial"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b08_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b08_missing_validity_denied",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b08_missing_validity_denied"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b09_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b09_server_minimum_closure",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b09_server_minimum_closure"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b09_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b09_server_minimum_certificate",
+    "covering_command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b09_server_minimum_certificate"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b10_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b10_expiry_without_status_job",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b10_expiry_without_status_job"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b11_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b11_backdated_revoke_commit_linearization",
+    "covering_command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b11_backdated_revoke_commit_linearization"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b12_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b12_future_revoke_immediate_at_commit",
+    "covering_command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b12_future_revoke_immediate_at_commit"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b13_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b13_revoke_rollback_zero_effects",
+    "covering_command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b13_revoke_rollback_zero_effects"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b15_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b15_fresh_registry_both_orders",
+    "covering_command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b15_fresh_registry_both_orders"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b16_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b16_continue_resume_after_invalidation",
+    "covering_command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b16_continue_resume_after_invalidation"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b17_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b17_transitive_closure_omission_denied",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b17_transitive_closure_omission_denied"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b17_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b17_transitive_revoke_denied",
+    "covering_command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b17_transitive_revoke_denied"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "b18_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b18_timeless_policy_reason_required",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b18_timeless_policy_reason_required"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "boundary_full_unit_suite",
+    "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py"
+  },
+  {
+    "task": "KL-028",
+    "check_id": "boundary_full_db_suite",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py",
+    "covering_command": "uv run pytest -q tests/db/test_boundary_acceptance.py"
+  },
+  {
+    "task": "KL-029",
+    "check_id": "shadow_namespace_and_boundary_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_namespace_and_boundary",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_namespace_and_boundary"
+  },
+  {
+    "task": "KL-029",
+    "check_id": "shadow_strict_wire_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_strict_shadow_wire",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_strict_shadow_wire"
+  },
+  {
+    "task": "KL-029",
+    "check_id": "shadow_evaluation_principal_live_denials_dc",
+    "command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_evaluation_principal_live_denials",
+    "covering_command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_evaluation_principal_live_denials"
+  },
+  {
+    "task": "KL-029",
+    "check_id": "shadow_test_authorization_crossing_denials_dc",
+    "command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_test_authorization_crossing_denials",
+    "covering_command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_test_authorization_crossing_denials"
+  },
+  {
+    "task": "KL-029",
+    "check_id": "shadow_owner_payload_denials_dc",
+    "command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_shadow_payload_owner_denials",
+    "covering_command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_shadow_payload_owner_denials"
+  },
+  {
+    "task": "KL-029",
+    "check_id": "shadow_declared_evaluation_storage_dc",
+    "command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_declared_evaluation_storage_isolation",
+    "covering_command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_declared_evaluation_storage_isolation"
+  },
+  {
+    "task": "KL-029",
+    "check_id": "shadow_suite_dc",
+    "command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py tests/db/test_shadow_isolation.py",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py tests/db/test_shadow_isolation.py"
+  },
+  {
+    "task": "KL-023",
+    "check_id": "factset_reconstruction_and_closed_digest_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_factsets.py::test_full_delta_reconstruction_and_digest",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_factsets.py"
+  },
+  {
+    "task": "KL-023",
+    "check_id": "factset_build_idempotency_and_canonical_reads_dc",
+    "command": "uv run pytest -q tests/db/test_factsets.py::test_build_replay_and_sealed_only_reads",
+    "covering_command": "uv run pytest -q tests/db/test_factsets.py"
+  },
+  {
+    "task": "KL-023",
+    "check_id": "factset_complete_writer_interleaving_dc",
+    "command": "uv run pytest -q tests/db/test_factsets.py::test_complete_serializes_with_candidate_writer",
+    "covering_command": "uv run pytest -q tests/db/test_factsets.py::test_complete_serializes_with_candidate_writer"
+  },
+  {
+    "task": "KL-023",
+    "check_id": "factset_seal_frontier_atomicity_and_replay_dc",
+    "command": "uv run pytest -q tests/db/test_factsets.py::test_seal_frontier_atomicity_and_old_replay",
+    "covering_command": "uv run pytest -q tests/db/test_factsets.py::test_seal_frontier_atomicity_and_old_replay"
+  },
+  {
+    "task": "KL-023",
+    "check_id": "factset_unit_suite_passes",
+    "command": "uv run pytest -q tests/unit/protocol/test_factsets.py",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_factsets.py"
+  },
+  {
+    "task": "KL-023",
+    "check_id": "factset_db_suite_passes",
+    "command": "uv run pytest -q tests/db/test_factsets.py",
+    "covering_command": "uv run pytest -q tests/db/test_factsets.py"
+  },
+  {
+    "task": "KL-025",
+    "check_id": "ledger_budget_dimensions_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_root_budget_and_charge_bounds",
+    "covering_command": "uv run pytest -q tests/unit/workflow/test_call_ledger.py"
+  },
+  {
+    "task": "KL-025",
+    "check_id": "ledger_state_and_replay_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_state_machine_and_non_sendable_replay",
+    "covering_command": "uv run pytest -q tests/unit/workflow/test_call_ledger.py"
+  },
+  {
+    "task": "KL-025",
+    "check_id": "ledger_root_budget_atomic_dc",
+    "command": "uv run pytest -q tests/db/test_call_ledger.py::test_competing_reservations_share_root_budget",
+    "covering_command": "uv run pytest -q tests/db/test_call_ledger.py"
+  },
+  {
+    "task": "KL-025",
+    "check_id": "ledger_cancel_dispatch_exclusion_dc",
+    "command": "uv run pytest -q tests/db/test_call_ledger.py::test_cancel_and_dispatch_have_one_winner",
+    "covering_command": "uv run pytest -q tests/db/test_call_ledger.py"
+  },
+  {
+    "task": "KL-025",
+    "check_id": "ledger_current_authority_dc",
+    "command": "uv run pytest -q tests/db/test_call_ledger.py::test_stale_attempt_fence_and_deadline_deny",
+    "covering_command": "uv run pytest -q tests/db/test_call_ledger.py"
+  },
+  {
+    "task": "KL-025",
+    "check_id": "ledger_ack_loss_and_natural_identity_dc",
+    "command": "uv run pytest -q tests/db/test_call_ledger.py::test_ack_loss_and_payload_conflicts",
+    "covering_command": "uv run pytest -q tests/db/test_call_ledger.py"
+  },
+  {
+    "task": "KL-025",
+    "check_id": "ledger_unknown_and_late_settlement_dc",
+    "command": "uv run pytest -q tests/db/test_call_ledger.py::test_unknown_and_late_settlement_are_accounting_only",
+    "covering_command": "uv run pytest -q tests/db/test_call_ledger.py"
+  },
+  {
+    "task": "KL-025",
+    "check_id": "ledger_physical_dispatch_boundary_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_call_ledger.py::test_dispatch_occurs_once_after_commit",
+    "covering_command": "uv run pytest -q tests/unit/workflow/test_call_ledger.py"
+  },
+  {
+    "task": "KL-025",
+    "check_id": "ledger_unit_suite_passes",
+    "command": "uv run pytest -q tests/unit/workflow/test_call_ledger.py",
+    "covering_command": "uv run pytest -q tests/unit/workflow/test_call_ledger.py"
+  },
+  {
+    "task": "KL-025",
+    "check_id": "ledger_db_suite_passes",
+    "command": "uv run pytest -q tests/db/test_call_ledger.py",
+    "covering_command": "uv run pytest -q tests/db/test_call_ledger.py"
+  },
+  {
+    "task": "KL-025",
+    "check_id": "planning_fixture_namespace_isolation_pu",
+    "command": "uv run pytest -q tests/db/test_call_ledger.py::test_planning_fixture_namespace_isolation",
+    "covering_command": "uv run pytest -q tests/db/test_call_ledger.py"
+  },
+  {
+    "task": "KL-021",
+    "check_id": "t2_global_commit_rollback_and_effective_at_semantics",
+    "command": "uv run pytest -q tests/db/test_safety_registry.py::test_t2_global_commit_rollback_and_effective_at_semantics",
+    "covering_command": "uv run pytest -q tests/db/test_safety_registry.py::test_t2_global_commit_rollback_and_effective_at_semantics"
+  },
+  {
+    "task": "KL-021",
+    "check_id": "t2_global_shared_exclusive_commit_order",
+    "command": "uv run pytest -q tests/db/test_safety_registry.py::test_exclusive_global_gate_serializes",
+    "covering_command": "uv run pytest -q tests/db/test_safety_registry.py"
+  },
+  {
+    "task": "KL-021",
+    "check_id": "t2_global_has_no_subject_or_user_fanout_dependency",
+    "command": "uv run pytest -q tests/db/test_safety_registry.py::test_t2_global_has_no_subject_or_user_fanout_dependency",
+    "covering_command": "uv run pytest -q tests/db/test_safety_registry.py"
+  },
+  {
+    "task": "KL-021",
+    "check_id": "t2_global_authenticated_admin_boundary",
+    "command": "uv run pytest -q tests/db/test_safety_registry.py::test_migrated_registry_role_owner_boundary tests/db/test_safety_registry.py::test_migrated_registry_command_routine_privileges",
+    "covering_command": "uv run pytest -q tests/db/test_safety_registry.py"
+  },
+  {
+    "task": "KL-021",
+    "check_id": "t2_global_idempotency_and_unknown_commit_reconciliation",
+    "command": "uv run pytest -q tests/db/test_safety_registry.py::test_revoke_artifact_atomic_linearization_and_idempotency tests/db/test_safety_registry.py::test_revoke_ack_loss_reconciles_by_command_key",
+    "covering_command": "uv run pytest -q tests/db/test_safety_registry.py"
+  },
+  {
+    "task": "KL-021",
+    "check_id": "committed_revoke_controls_current_admission_not_history",
+    "command": "uv run pytest -q tests/db/test_safety_registry.py::test_committed_revoke_controls_current_admission_not_history",
+    "covering_command": "uv run pytest -q tests/db/test_safety_registry.py"
+  },
+  {
+    "task": "KL-021",
+    "check_id": "safety_registry_db_suite_passes",
+    "command": "uv run pytest -q tests/db/test_safety_registry.py",
+    "covering_command": "uv run pytest -q tests/db/test_safety_registry.py"
+  },
+  {
+    "task": "KL-026",
+    "check_id": "i01_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_publish_vs_user_revoke",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_publish_vs_user_revoke"
+  },
+  {
+    "task": "KL-026",
+    "check_id": "i02_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_start_vs_user_revoke",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_start_vs_user_revoke"
+  },
+  {
+    "task": "KL-026",
+    "check_id": "i03_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_cancel_vs_dispatch",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_cancel_vs_dispatch"
+  },
+  {
+    "task": "KL-026",
+    "check_id": "i04_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_takeover_vs_commit",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_takeover_vs_commit"
+  },
+  {
+    "task": "KL-026",
+    "check_id": "i05_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_issue",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_issue"
+  },
+  {
+    "task": "KL-026",
+    "check_id": "i06_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_start",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_start"
+  },
+  {
+    "task": "KL-026",
+    "check_id": "i07_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_publish",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_publish"
+  },
+  {
+    "task": "KL-026",
+    "check_id": "i08_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_seal_vs_input_update",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_seal_vs_input_update"
+  },
+  {
+    "task": "KL-026",
+    "check_id": "i09_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_expiry_vs_start",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_expiry_vs_start"
+  },
+  {
+    "task": "KL-026",
+    "check_id": "cancellation_identity_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_cancellation_identity",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-026",
+    "check_id": "time_boundary_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_time_boundaries",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_time_boundaries"
+  },
+  {
+    "task": "KL-026",
+    "check_id": "interleaving_namespace_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_namespace",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-026",
+    "check_id": "interleaving_suite_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_interleavings.py"
+  },
+  {
+    "task": "KL-079",
+    "check_id": "full_action_contract_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_full_action_preparation.py::test_contract",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-079",
+    "check_id": "full_action_resolution_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_full_action_preparation.py::test_resolution_semantics",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-079",
+    "check_id": "full_action_namespace_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_full_action_preparation.py::test_namespace",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-079",
+    "check_id": "full_action_owner_pipeline_dc",
+    "command": "uv run pytest -q tests/db/test_full_action_preparation.py::test_owner_pipeline",
+    "covering_command": "uv run pytest -q tests/db/test_full_action_preparation.py"
+  },
+  {
+    "task": "KL-079",
+    "check_id": "full_action_basis_denials_dc",
+    "command": "uv run pytest -q tests/db/test_full_action_preparation.py::test_basis_denials",
+    "covering_command": "uv run pytest -q tests/db/test_full_action_preparation.py"
+  },
+  {
+    "task": "KL-079",
+    "check_id": "full_action_replay_atomicity_dc",
+    "command": "uv run pytest -q tests/db/test_full_action_preparation.py::test_replay_and_atomicity",
+    "covering_command": "uv run pytest -q tests/db/test_full_action_preparation.py"
+  },
+  {
+    "task": "KL-079",
+    "check_id": "full_action_repair_dc",
+    "command": "uv run pytest -q tests/db/test_full_action_preparation.py::test_f2_repair",
+    "covering_command": "uv run pytest -q tests/db/test_full_action_preparation.py"
+  },
+  {
+    "task": "KL-079",
+    "check_id": "full_action_legacy_no_authority_dc",
+    "command": "uv run pytest -q tests/db/test_full_action_preparation.py::test_legacy_and_no_authority",
+    "covering_command": "uv run pytest -q tests/db/test_full_action_preparation.py"
+  },
+  {
+    "task": "KL-079",
+    "check_id": "full_action_suite_dc",
+    "command": "uv run pytest -q tests/db/test_full_action_preparation.py",
+    "covering_command": "uv run pytest -q tests/db/test_full_action_preparation.py"
+  },
+  {
+    "task": "KL-078",
+    "check_id": "preparation_revision_pu",
+    "command": "uv run pytest -q tests/unit/persistence/test_preparation.py::test_server_revision",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-078",
+    "check_id": "preparation_capability_pu",
+    "command": "uv run pytest -q tests/unit/persistence/test_preparation.py::test_exact_capabilities",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-078",
+    "check_id": "preparation_namespace_pu",
+    "command": "uv run pytest -q tests/unit/persistence/test_preparation.py::test_namespace",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-078",
+    "check_id": "preparation_owner_pipeline_dc",
+    "command": "uv run pytest -q tests/db/test_preparation.py::test_owner_pipeline",
+    "covering_command": "uv run pytest -q tests/db/test_preparation.py"
+  },
+  {
+    "task": "KL-078",
+    "check_id": "preparation_basis_denials_dc",
+    "command": "uv run pytest -q tests/db/test_preparation.py::test_basis_denials",
+    "covering_command": "uv run pytest -q tests/db/test_preparation.py"
+  },
+  {
+    "task": "KL-078",
+    "check_id": "preparation_immutable_replay_dc",
+    "command": "uv run pytest -q tests/db/test_preparation.py::test_immutable_replay",
+    "covering_command": "uv run pytest -q tests/db/test_preparation.py"
+  },
+  {
+    "task": "KL-078",
+    "check_id": "preparation_duplicate_rollback_dc",
+    "command": "uv run pytest -q tests/db/test_preparation.py::test_duplicate_rollback",
+    "covering_command": "uv run pytest -q tests/db/test_preparation.py"
+  },
+  {
+    "task": "KL-078",
+    "check_id": "preparation_no_authority_dc",
+    "command": "uv run pytest -q tests/db/test_preparation.py::test_no_authority",
+    "covering_command": "uv run pytest -q tests/db/test_preparation.py"
+  },
+  {
+    "task": "KL-078",
+    "check_id": "preparation_suite_dc",
+    "command": "uv run pytest -q tests/db/test_preparation.py",
+    "covering_command": "uv run pytest -q tests/db/test_preparation.py"
+  },
+  {
+    "task": "KL-022",
+    "check_id": "validity_closure_minimum_and_missing_values_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_authorization.py::test_validity_closure_uses_every_bound_and_denies_missing_or_elapsed_basis",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_authorization.py::test_validity_closure_uses_every_bound_and_denies_missing_or_elapsed_basis"
+  },
+  {
+    "task": "KL-022",
+    "check_id": "timeless_policy_dependency_closure_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_authorization.py::test_timeless_dependency_requires_auditable_policy_in_same_transitive_closure",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_authorization.py::test_timeless_dependency_requires_auditable_policy_in_same_transitive_closure"
+  },
+  {
+    "task": "KL-022",
+    "check_id": "executable_guard_dimensions_and_time_boundary_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_authorization.py::test_is_executable_requires_subject_content_scope_epoch_control_and_strict_time",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_authorization.py"
+  },
+  {
+    "task": "KL-022",
+    "check_id": "t6_certificate_and_minimum_closure_dc",
+    "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_authorization_evaluator_persists_exact_minimum_certificate",
+    "covering_command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_authorization_evaluator_persists_exact_minimum_certificate"
+  },
+  {
+    "task": "KL-022",
+    "check_id": "t6_t7_transitive_revoke_and_current_registry_dc",
+    "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_t7_deny_revoked_transitive_dependency_after_current_registry_read",
+    "covering_command": "uv run pytest -q tests/db/test_transaction_interfaces.py"
+  },
+  {
+    "task": "KL-022",
+    "check_id": "t7_current_epoch_scope_control_and_time_dc",
+    "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_t7_executability_rereads_epoch_scope_control_and_time",
+    "covering_command": "uv run pytest -q tests/db/test_transaction_interfaces.py"
+  },
+  {
+    "task": "KL-022",
+    "check_id": "test_subject_current_non_bearer_eligibility_e2e",
+    "command": "uv run pytest -q tests/e2e/test_authorization_evaluator.py::test_test_subject_eligibility_query_is_current_and_non_bearer",
+    "covering_command": "uv run pytest -q tests/e2e/test_authorization_evaluator.py"
+  },
+  {
+    "task": "KL-022",
+    "check_id": "authorization_unit_suite_passes",
+    "command": "uv run pytest -q tests/unit/protocol/test_authorization.py",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_authorization.py"
+  },
+  {
+    "task": "KL-022",
+    "check_id": "transaction_interface_db_suite_passes",
+    "command": "uv run pytest -q tests/db/test_transaction_interfaces.py",
+    "covering_command": "uv run pytest -q tests/db/test_transaction_interfaces.py"
+  },
+  {
+    "task": "KL-022",
+    "check_id": "authorization_e2e_suite_passes",
+    "command": "uv run pytest -q tests/e2e/test_authorization_evaluator.py",
+    "covering_command": "uv run pytest -q tests/e2e/test_authorization_evaluator.py"
+  },
+  {
+    "task": "KL-019",
+    "check_id": "execution_identity_and_wire_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_execution.py::test_identity_and_wire_scope",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_execution.py"
+  },
+  {
+    "task": "KL-019",
+    "check_id": "execution_fixture_namespace_isolation_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_execution.py::test_all_fixture_namespaces_fail_before_reset",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_execution.py"
+  },
+  {
+    "task": "KL-019",
+    "check_id": "publish_ready_build_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_execution.py::test_publish_ready_build",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_execution.py"
+  },
+  {
+    "task": "KL-019",
+    "check_id": "commit_test_only_bundle_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_execution.py::test_commit_test_only_bundle",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_execution.py"
+  },
+  {
+    "task": "KL-019",
+    "check_id": "start_new_session_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_execution.py::test_start_new_session",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_execution.py"
+  },
+  {
+    "task": "KL-019",
+    "check_id": "execution_stale_commit_basis_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_execution.py::test_stale_commit_basis_denies",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_execution.py"
+  },
+  {
+    "task": "KL-019",
+    "check_id": "execution_current_start_denial_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_execution.py::test_current_start_denial",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_execution.py"
+  },
+  {
+    "task": "KL-019",
+    "check_id": "execution_ack_loss_replay_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_execution.py::test_ack_loss_replay_is_historical",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_execution.py"
+  },
+  {
+    "task": "KL-019",
+    "check_id": "execution_atomic_rollback_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_execution.py::test_failures_roll_back_each_boundary",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_execution.py"
+  },
+  {
+    "task": "KL-019",
+    "check_id": "execution_first_use_contention_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_execution.py::test_first_use_contention",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_execution.py"
+  },
+  {
+    "task": "KL-019",
+    "check_id": "execution_unit_suite_passes",
+    "command": "uv run pytest -q tests/unit/protocol/test_execution.py",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_execution.py"
+  },
+  {
+    "task": "KL-019",
+    "check_id": "execution_db_suite_passes",
+    "command": "uv run pytest -q tests/db/test_protocol_execution.py",
+    "covering_command": "uv run pytest -q tests/db/test_protocol_execution.py"
+  },
+  {
+    "task": "KL-076",
+    "check_id": "fixture_fdn_identity_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_deterministic_planning.py::test_fdn_identities",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-076",
+    "check_id": "fixture_fdn_repair_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_deterministic_planning.py::test_fitness_repair",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-076",
+    "check_id": "fixture_resolution_validation_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_deterministic_planning.py::test_source_bound_validation",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-076",
+    "check_id": "fixture_preparation_owners_dc",
+    "command": "uv run pytest -q tests/db/test_deterministic_planning.py::test_owner_pipeline",
+    "covering_command": "uv run pytest -q tests/db/test_deterministic_planning.py"
+  },
+  {
+    "task": "KL-076",
+    "check_id": "fixture_preparation_denials_dc",
+    "command": "uv run pytest -q tests/db/test_deterministic_planning.py::test_stale_and_incomplete",
+    "covering_command": "uv run pytest -q tests/db/test_deterministic_planning.py"
+  },
+  {
+    "task": "KL-076",
+    "check_id": "fixture_preparation_atomicity_dc",
+    "command": "uv run pytest -q tests/db/test_deterministic_planning.py::test_immutable_replay_rollback",
+    "covering_command": "uv run pytest -q tests/db/test_deterministic_planning.py"
+  },
+  {
+    "task": "KL-076",
+    "check_id": "fixture_namespace_pu",
+    "command": "uv run pytest -q tests/unit/workflow/test_deterministic_planning.py::test_namespace",
+    "covering_command": "uv run kl test-unit"
+  },
+  {
+    "task": "KL-076",
+    "check_id": "fixture_suite_dc",
+    "command": "uv run pytest -q tests/db/test_deterministic_planning.py",
+    "covering_command": "uv run pytest -q tests/db/test_deterministic_planning.py"
+  },
+  {
+    "task": "KL-027",
+    "check_id": "demo_namespace_and_boundary_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_test_only_demo.py::test_namespace_and_boundary",
+    "covering_command": "uv run pytest -q tests/unit/protocol/test_test_only_demo.py::test_namespace_and_boundary"
+  },
+  {
+    "task": "KL-027",
+    "check_id": "demo_owner_trajectory_e2e",
+    "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_full_trajectory",
+    "covering_command": "uv run pytest -q tests/db/test_test_only_demo.py::test_full_trajectory"
+  },
+  {
+    "task": "KL-027",
+    "check_id": "demo_revoke_denials_dc",
+    "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_revoke_then_deny",
+    "covering_command": "uv run pytest -q tests/db/test_test_only_demo.py::test_revoke_then_deny"
+  },
+  {
+    "task": "KL-027",
+    "check_id": "demo_expiry_denials_dc",
+    "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_expiry_then_deny",
+    "covering_command": "uv run pytest -q tests/db/test_test_only_demo.py::test_expiry_then_deny"
+  },
+  {
+    "task": "KL-027",
+    "check_id": "demo_fdn_repair_e2e",
+    "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_fdn_repair",
+    "covering_command": "uv run pytest -q tests/db/test_test_only_demo.py::test_fdn_repair"
+  },
+  {
+    "task": "KL-027",
+    "check_id": "demo_scope_denials_dc",
+    "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_production_shadow_denials",
+    "covering_command": "uv run pytest -q tests/db/test_test_only_demo.py::test_production_shadow_denials"
+  },
+  {
+    "task": "KL-027",
+    "check_id": "demo_suite_e2e",
+    "command": "uv run pytest -q tests/db/test_test_only_demo.py",
+    "covering_command": "uv run pytest -q tests/db/test_test_only_demo.py"
+  }
+]

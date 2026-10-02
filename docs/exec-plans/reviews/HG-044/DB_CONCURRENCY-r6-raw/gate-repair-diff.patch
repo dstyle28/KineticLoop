@@ -1,0 +1,68 @@
+diff --git a/tests/harness/test_m3_milestone_closure.py b/tests/harness/test_m3_milestone_closure.py
+index b742570..7a1ab9a 100644
+--- a/tests/harness/test_m3_milestone_closure.py
++++ b/tests/harness/test_m3_milestone_closure.py
+@@ -385,6 +385,31 @@ def test_legacy_m1_m2_schema_and_validator_behavior_unchanged():
+     assert v.m2_milestone_closure_errors(ROOT, m2, *SCHEMAS, b, tasks) == []
+ 
+ 
++@pytest.mark.parametrize('edited_prefix', [False, True])
++def test_hg044_plan_prefix_reads_committed_reviewed_revision(tmp_path, edited_prefix):
++    def local_git(*args):
++        return subprocess.check_output([
++            'git', '-c', 'user.name=HG044 Fixture', '-c', 'user.email=test@example.invalid',
++            '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', *args,
++        ], cwd=tmp_path, env=dict(os.environ, GIT_CONFIG_NOSYSTEM='1',
++                                 GIT_CONFIG_GLOBAL=os.devnull), stderr=subprocess.STDOUT).decode().strip()
++    local_git('init', '-q')
++    plan = tmp_path / v.PROJECT_PLAN
++    original = 'Committed protected plan\n'
++    plan.write_text(original)
++    local_git('add', '.')
++    local_git('commit', '-qm', 'protected plan')
++    base = local_git('rev-parse', 'HEAD')
++    prefix = 'Edited protected plan\n' if edited_prefix else original
++    plan.write_text(prefix + '\n## M3 exit-evidence mapping — HG044\nAddendum\n')
++    local_git('add', '.')
++    local_git('commit', '-qm', 'reviewed addendum')
++    reviewed = local_git('rev-parse', 'HEAD')
++    plan.write_text('Ambient working-tree content cannot supply the reviewed plan\n')
++    assert v.m3_governance_plan_prefix_errors(tmp_path, base, reviewed) == (
++        ['governance-hg044-plan-prefix'] if edited_prefix else [])
++
++
+ @pytest.mark.parametrize('mutation', ['unmerged', 'missing-review', 'stale-review', 'result-type', 'result-hash', 'reverse-ancestry'])
+ def test_integrated_chain_rejects_bad_result_review_and_ancestry(history, mutation):
+     record = copy.deepcopy(history.records['KL-028'])
+diff --git a/tools/harness/validate_harness.py b/tools/harness/validate_harness.py
+index 9b2586e..ff7db2c 100755
+--- a/tools/harness/validate_harness.py
++++ b/tools/harness/validate_harness.py
+@@ -2512,6 +2512,14 @@ def m3_closure_plan_errors(text):
+     return [] if hashlib.sha256(block.encode()).hexdigest() == '016ebe910b40724dc7cf7b00ab0bc384fa0d5ef6b8749ae6ea741c6126023878' else ['m3-closure-plan']
+ 
+ 
++def m3_governance_plan_prefix_errors(root, base, reviewed):
++    """Compare committed plan revisions in both ordinary and review-only PR gates."""
++    before = git(root, 'show', base + ':' + PROJECT_PLAN).decode()
++    after = git(root, 'show', reviewed + ':' + PROJECT_PLAN).decode()
++    return ([] if after.split('## M3 exit-evidence mapping — HG044', 1)[0] == before + '\n'
++            else ['governance-hg044-plan-prefix'])
++
++
+ def m3_closure_record_errors(root, path, revision='HEAD'):
+     """An optional closure instance is itself a committed regular blob, never ambient evidence."""
+     try:
+@@ -3469,10 +3477,8 @@ def validate(root, args):
+                     if not matches(path, governance_allowed_patterns(change_id)):
+                         errors.append('governance-write-scope:' + change_id + ':' + path)
+                 if change_id == 'HG-044':
+-                    before_plan = git(root, 'show', governance_base + ':' + PROJECT_PLAN).decode()
+-                    after_plan = git(root, 'show', governance_target + ':' + PROJECT_PLAN).decode()
+-                    if after_plan.split('## M3 exit-evidence mapping — HG044', 1)[0] != before_plan + '\n':
+-                        errors.append('governance-hg044-plan-prefix')
++                    errors.extend(m3_governance_plan_prefix_errors(
++                        root, governance_base, reviewed))
+                 declared = set(record['files_changed'])
+                 if declared != governance_changed:
+                     errors.append('governance-files-changed-mismatch:' + change_id)

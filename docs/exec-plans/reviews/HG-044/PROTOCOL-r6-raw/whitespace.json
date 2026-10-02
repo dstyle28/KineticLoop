@@ -1,0 +1,44 @@
+[
+  {
+    "name": "broad-whitespace",
+    "argv": [
+      "git",
+      "diff",
+      "--check",
+      "2c44f456a0daf8e6933f20fc3eadc7e1869d6fff",
+      "cf0b99359d04c136d01fd4c5eeec8a23cd0bbc54"
+    ],
+    "exit_code": 2,
+    "stdout_sha256": "3773f3ae3b0b2e131cecf395ba35239e6c3d6fe8dea4c4378c459bc012c03fc0",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "warning_count": 308,
+    "affected_paths": [
+      "docs/exec-plans/reviews/HG-044/DB_CONCURRENCY-r5-raw/broad-diff.stdout",
+      "docs/exec-plans/reviews/HG-044/DB_CONCURRENCY-r5-raw/complete-diff.patch",
+      "docs/exec-plans/reviews/HG-044/GENERAL-r5-raw/complete-diff.patch",
+      "docs/exec-plans/reviews/HG-044/GENERAL-r5-raw/targeted-pytest.log",
+      "docs/exec-plans/reviews/HG-044/PROTOCOL-r3-raw/complete-diff.patch",
+      "docs/exec-plans/reviews/HG-044/PROTOCOL-r5-raw/broad-diff.stdout.log",
+      "docs/exec-plans/reviews/HG-044/PROTOCOL-r5-raw/complete-diff.patch",
+      "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-r5-raw/complete-diff.patch"
+    ]
+  },
+  {
+    "name": "source-whitespace",
+    "argv": [
+      "git",
+      "diff",
+      "--check",
+      "2c44f456a0daf8e6933f20fc3eadc7e1869d6fff",
+      "cf0b99359d04c136d01fd4c5eeec8a23cd0bbc54",
+      "--",
+      ".",
+      ":(exclude)docs/exec-plans/reviews/HG-044/**"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "warning_count": 0,
+    "affected_paths": []
+  }
+]

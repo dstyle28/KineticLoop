@@ -1,0 +1,83 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-044",
+  "reviewed_head_sha": "19dc5a4f8edc8869873a76a4fe27b0280761d7c9",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "protected_base_sha": "fa729ca4bcca0f2c2e7a2aa0601890d1356b8842",
+  "summary": "Fresh independent GENERAL review found a new blocker: the fresh-regression oracle rejects valid current pytest parameterized collection/JUnit evidence. Prior selector-coverage and integer-exit findings are resolved; scope, exact evidence bindings, legacy semantics and deferred layer dispositions remain preserved.",
+  "findings": [
+    {
+      "finding_id": "HG044-GENERAL-R3-001",
+      "classification": "BLOCKER",
+      "severity": "BLOCKER",
+      "priority": 1,
+      "title": "Accept valid parameter IDs when correlating collection with JUnit",
+      "file": "tools/harness/validate_harness.py",
+      "start": 2643,
+      "end": 2655,
+      "body": "The required fresh full-harness regression cannot validate existing successful pytest cases. Current real harness/unit collection has 25 parameter IDs containing :: inside brackets; line 2650 splits those parameter suffixes, whereas pytest partitions at [ before splitting and restores the complete suffix. On an otherwise valid full-command integrated Git fixture, replacing only the harness case with one actual current node ID and correct pytest JUnit addressing yields exactly milestone-m3-regression:incomplete-executed-collection. Lines 2645-2646 also scan node text for error/skip disposition words; current collected parameter text includes 1 error/1 skipped, and successful [1 skipped] parameter evidence yields exactly collection-oracle. Baseline validation returns no errors, and all hash/freshness, integer-zero, selector and successful-count guards pass in both reproductions. These false rejections block the mandatory integrated regression without changing frozen semantics.",
+      "required_change": "Normalize node addresses according to pytest parameter-aware JUnit addressing: split only the nonparameter address and preserve the entire bracket suffix. Check collection disposition/summary records separately from collected node content while retaining strict rejection of actual failures/errors/skips, incomplete selectors and case mismatches. Add real pytest-generated collection/JUnit positive coverage for parameter IDs containing :: and summary-looking words, plus the existing negative oracle coverage. Record new selected tested evidence and fresh exact-SHA reviews.",
+      "evidence_refs": [
+        "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter_probe.json",
+        "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter_probe.py",
+        "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter-case-junit.xml",
+        "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter-case-collection.json",
+        "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/summary_probe.json",
+        "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/summary_probe.py"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "AGENTS.md",
+    ".agents/skills/pr-merge-reviewer/SKILL.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/harness/MERGE_GATE.md",
+    "docs/harness/M3_CLOSURE_CONTRACT.md",
+    "docs/exec-plans/governance/HG-044.yaml",
+    "docs/exec-plans/evidence/HG-044/capture-integrity-0af3580.json",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_m3_milestone_closure.py",
+    "MILESTONE_CLOSURE.schema.json",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/assessment.md",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/audit-first.log",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/audit.json",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/audit.log",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/audit.py",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/commands.json",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/finalize.py",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter-case-collection-stdout.log",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter-case-collection.json",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter-case-junit.xml",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter-case-stdout.log",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter_probe.json",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter_probe.log",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/parameter_probe.py",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/summary-case-collection.json",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/summary-case-collection_stdout.log",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/summary-case-junit.xml",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/summary-case-stdout.log",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/summary_probe.json",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/summary_probe.log",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/summary_probe.py",
+    "docs/exec-plans/reviews/HG-044/GENERAL-r3-raw/targeted-pytest.log"
+  ],
+  "verification": [
+    "Exact protected-base diff has 124 declared allowed paths. Tested suffix is legal; no actual M3, frozen/runtime/CI/requirement/task-definition changes exist.",
+    "Verified 27 index entries, 161 manifest byte/hash entries, 56 retained raw captures, seven selected raw captures plus structured scope PASS and integrity bindings. Selected 0af3580 evidence records 83 focused/873 harness/234 unit plus lint/type/validation/scope/diff PASS.",
+    "Existing M1/M2 schema branches and all 70 existing validator function sources except scoped governance allowlist/main orchestration remain unchanged. M1/M2 validate; all 52 named-check contract digests match authority.",
+    "Validated 32 recursive integration chains and dependency merges before consumer base/tested revisions; KL028/KL029 integration records are absent, so actual M3 closure remains premature. Exact 16 M3 identities, separate KL074, 31 B/10 I and all deferred dispositions are preserved.",
+    "Independent targeted pure/Git tests passed 13 selected cases. Complete content-oracle probes independently reproduced both valid-parameter false rejections after a successful full-command baseline. No local DB lifecycle was run."
+  ],
+  "resolved_prior_findings": [
+    "HG044-GENERAL-001: per-selector collected/executed contribution now mandatory; hash-correct omission negatives reject at missing-selector after freshness passes.",
+    "HG044-GENERAL-002: both execution and collection exits now require exact integer type; float-zero negative tests pass."
+  ],
+  "limitations": [
+    "CHANGES_REQUIRED is not merge approval. A repair must receive new selected check evidence and fresh reviews at its committed result SHA.",
+    "Final applicable hosted isolated PostgreSQL CI and the other independent specialist reviews remain separate gates.",
+    "Only own GENERAL review and GENERAL-r3-raw bookkeeping paths were written; no implementation edit, commit, push, app message or peer-resource mutation occurred."
+  ]
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "label": "audit",
+    "command": [
+      "/private/tmp/hg044-venv/bin/python",
+      "/Users/davetian/.codex/worktrees/8578/KineticLoop/docs/exec-plans/reviews/HG-044/DB_CONCURRENCY-r5-raw/audit.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "label": "bounded-pytest",
+    "command": [
+      "/private/tmp/hg044-venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=/private/tmp/hg044d5",
+      "--junitxml=/Users/davetian/.codex/worktrees/8578/KineticLoop/docs/exec-plans/reviews/HG-044/DB_CONCURRENCY-r5-raw/bounded.xml",
+      "tests/harness/test_m3_milestone_closure.py",
+      "-k",
+      "prerequisite_merge_must_precede or each_multiselect_suite or genuine_pytest_parameter or zero_skip_xfail or governance_scope or existing_schema or m3_reader or m3_symlink or actual_closure_record or ratified_plan or integrated_regression_fails_closed"
+    ],
+    "exit_code": 0
+  }
+]

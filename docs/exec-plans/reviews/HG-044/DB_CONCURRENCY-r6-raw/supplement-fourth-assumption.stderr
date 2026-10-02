@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Users/davetian/.codex/worktrees/8578/KineticLoop/docs/exec-plans/reviews/HG-044/DB_CONCURRENCY-r6-raw/supplement.py", line 56, in <module>
+    assert command in v.M3_REGRESSION_COMMANDS or full_suite in v.M3_REGRESSION_COMMANDS or aggregate in v.M3_REGRESSION_COMMANDS, (name,command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('KL-020', 'uv run pytest -q tests/db/test_transaction_interfaces.py::test_complete_frozen_lock_order_enforced tests/db/test_transaction_interfaces.py::test_multi_key_lock_order_is_stable tests/db/test_transaction_interfaces.py::test_reverse_lock_order_is_rejected tests/db/test_transaction_interfaces.py::test_receipt_before_s01_is_rejected')

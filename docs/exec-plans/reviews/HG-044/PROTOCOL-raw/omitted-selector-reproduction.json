@@ -1,0 +1,29 @@
+{
+  "reviewed_head_sha": "351f0eda41ad492e66115f9ea1e41e3e0f9abf3d",
+  "synthetic_input_only": true,
+  "validator_errors": [],
+  "finding": "Multi-selector regression commands accept evidence with omitted requested files",
+  "omissions": [
+    {
+      "command": "uv run pytest -q tests/db/test_migrations.py tests/db/test_transaction_interfaces.py",
+      "recorded_nodeids": [
+        "tests/db/test_migrations.py::test_example"
+      ],
+      "omitted_selectors": [
+        "tests/db/test_transaction_interfaces.py"
+      ]
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py tests/db/test_shadow_isolation.py",
+      "recorded_nodeids": [
+        "tests/unit/protocol/test_shadow_isolation.py::test_example"
+      ],
+      "omitted_selectors": [
+        "tests/db/test_shadow_isolation.py"
+      ]
+    }
+  ],
+  "synthetic_git_repo": "/private/tmp/hg044-protocol-omission-_ifv169j",
+  "synthetic_tested_commit": "b4cd489d1dae5fce339b5abc80b4a07f4a7383a9",
+  "synthetic_evaluated_commit": "ecb59a8356b37a2d651acfbdd765a9430d7ea296"
+}
