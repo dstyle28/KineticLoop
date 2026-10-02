@@ -9,7 +9,10 @@ HG-045 PR89 is an unrelated open reviewed PR and is untouched.
 Identity: harness-governance-v0.1/HG-046. Scope is .github/workflows/ci.yml and
 db.yml; tools/harness/db_ci.py, db_ci_pytest.py and local_db image; corresponding
 tests/harness tests; local DB CI and merge/M3 execution policy docs; derived index/
-manifest hashes; own governance/evidence/review records. No runtime, migrations,
+manifest hashes; own governance/evidence/review records. One compatibility assertion block in tests/db/test_startup_readiness.py may
+replace the two obsolete generic-workflow hashes with the approved new policy
+assertions; the governance contract and exact HG-046 allowlist declare this.
+No runtime, migrations,
 fixture rewrites, frozen files, historical results, product PASS or branch
 protection edits. GENERAL, DB_CONCURRENCY and SECURITY_DATA_BOUNDARY reviews are
 required by this task's risk surfaces.

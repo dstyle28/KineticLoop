@@ -284,3 +284,17 @@ def test_local_client_accepts_no_proxy_forwarding(monkeypatch, tmp_path, config)
     if config is not None:
         (tmp_path / "config.json").write_text(config)
     db_ci.local_client_preflight()
+
+
+def test_hg046_scope_admits_only_named_workflow_compatibility_test():
+    spec = importlib.util.spec_from_file_location(
+        "scope_guard", Path(__file__).parents[2] / "tools/harness/validate_harness.py")
+    assert spec is not None and spec.loader is not None
+    guard = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(guard)
+    allowed = guard.governance_allowed_patterns("HG-046")
+    assert guard.matches("tests/db/test_startup_readiness.py", allowed)
+    for path in ("tests/db/conftest.py", "tests/db/test_other.py", "src/kineticloop/db/lifecycle.py",
+                 "docs/exec-plans/completed/KL-074_RESULT.yaml", ".github/workflows/kl074-readiness.yml"):
+        assert not guard.matches(path, allowed)
+    assert not guard.matches("tests/db/test_startup_readiness.py", guard.governance_allowed_patterns("HG-047"))

@@ -67,7 +67,9 @@ gh workflow run db.yml --ref master -f revision=FULL_COMMIT_SHA
 
 No daily hosted run is required. The retired KL-002 branch-specific auto-commit
 job is removed; CI never rewrites an old task result. The special KL-074 workflow
-and its explicitly hosted evidence remain unchanged.
+and its explicitly hosted evidence remain unchanged. The startup-readiness test
+retains all KL-074 checks; only its two legacy generic-workflow hash pins are
+replaced with assertions for the prospectively approved HG-046 CI policy.
 
 ## Evidence and review
 

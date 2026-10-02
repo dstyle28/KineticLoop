@@ -121,3 +121,15 @@ accepted only when `reviewed_head_sha` equals `merge_commit` exactly and
 `merge_commit` is an ancestor of `review_record_commit`; this records a genuinely
 post-merge review of the integrated tree without relabeling a later commit as the
 historical merge.
+
+
+## HG-046 workflow compatibility
+
+The authorized prospective local-first CI change has an exact task-specific scope.
+It may update only the final generic `ci.yml`/`db.yml` compatibility assertions in
+`tests/db/test_startup_readiness.py`, replacing the legacy workflow hashes with
+structural assertions for the new approved triggers and hosted fallback. All
+KL-074-specific exact workflow bytes/hash, negative mutations, hosted provenance,
+probe behavior, fixtures, packets and historical results remain unchanged. This
+named test path does not authorize other database test or runtime edits, and the
+exception applies only to HG-046. The full DB suite must pass at the new tested SHA.
