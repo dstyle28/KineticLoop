@@ -14,3 +14,9 @@ be used as clean final SHA-bound acceptance authority, even when the process res
 says PASS. The governance record references only its selected fresh round.
 The initial uncommitted42PASS focused run is likewise not selected evidence.
 No historical/development fixture logs are reused as new PASS.
+
+The 4302c06 round passed at its original protected base. It is superseded for
+final acceptance because master advanced to fa729ca with the KL029 merge while
+reviews of 080f25c were starting. Those reviews were interrupted; partial r2 raw
+files carry no final PASS authority. Fresh checks and four fresh reviews must
+bind the refreshed protected base and committed result.

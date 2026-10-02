@@ -5,7 +5,7 @@ from pathlib import Path
 
 import yaml
 
-root=Path.cwd();base='9268fc8dd8c071c02dc5c698274dbf6fcd112776'
+root=Path.cwd();base='fa729ca4bcca0f2c2e7a2aa0601890d1356b8842'
 tested=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
 here=root/'docs/exec-plans/evidence/HG-044';checks=[]
 for key in ('focused','scope','harness','unit','lint','typecheck','validation','diff'):

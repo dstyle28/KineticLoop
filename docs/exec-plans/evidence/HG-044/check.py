@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 root=Path.cwd();here=root/'docs/exec-plans/evidence/HG-044'
-base='9268fc8dd8c071c02dc5c698274dbf6fcd112776'
+base='fa729ca4bcca0f2c2e7a2aa0601890d1356b8842'
 tested=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
 python='/private/tmp/hg044-venv/bin/python'
 checks={
