@@ -494,12 +494,12 @@ def test_zero_skip_xfail_failure_cannot_supply_oracle(output):
         v.m3_pytest_count(output)
 
 
-def test_premature_real_revision_without028029_rejects(history):
+def test_premature_real_revision_before_corrective_membership_rejects(history):
     closure = copy.deepcopy(history.closure)
     base = v.resolve(ROOT, '9268fc8dd8c071c02dc5c698274dbf6fcd112776')
     closure['evaluated_commit'] = base
     closure['m2_prerequisite'] = history.evidence('docs/exec-plans/milestones/M2.json', base)
-    assert any('KL-028' in e or 'KL-029' in e for e in history.errors(closure))
+    assert history.errors(closure) == ['milestone-active-task-set:M3']
 
 
 def test_governance_scope_excludes_peer_and_runtime_and_closure_instance():
@@ -635,3 +635,18 @@ def test_corrective_prerequisite_and_checks_cannot_be_omitted_or_weakened(histor
         else:
             exit['task_checks'][6]['oracle_sha256' if mutation == 'oracle' else 'command'] = 'weakened'
     assert history.errors(closure)
+
+
+@pytest.mark.parametrize('name', ['KL-028', 'KL-029', 'KL-080'])
+def test_actual_required_integration_omission_rejects(history, name):
+    path = f'docs/exec-plans/integrations/{name}.json'
+    original = (history.root / path).read_text()
+    (history.root / path).unlink()
+    evaluated = history.commit('synthetic omitted required integration')
+    closure = copy.deepcopy(history.closure)
+    closure['evaluated_commit'] = evaluated
+    closure['m2_prerequisite']['revision'] = evaluated
+    errors = history.errors(closure)
+    history.put(path, original)
+    history.commit('restore synthetic required integration')
+    assert any('missing-or-nonregular-integration:' + name in error for error in errors)

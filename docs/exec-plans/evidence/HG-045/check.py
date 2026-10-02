@@ -31,12 +31,20 @@ path = here/f'{key}-{tested[:7]}.json'
 assert not path.exists(), path
 env = dict(os.environ,PYTHONPATH=str(root)+':'+str(root/'src'),PYTHONDONTWRITEBYTECODE='1',
            MYPY_CACHE_DIR='/private/tmp/hg045-mypy-cache',RUFF_CACHE_DIR='/private/tmp/hg045-ruff-cache')
-run = subprocess.run(checks[key],env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
-raw = run.stdout
+raw_path = here/f'{key}-{tested[:7]}.log'
+assert not raw_path.exists(), raw_path
+with raw_path.open('wb') as output:
+    run = subprocess.Popen(checks[key],env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+    assert run.stdout is not None
+    for line in run.stdout:
+        output.write(line)
+        output.flush()
+    run.wait()
+raw = raw_path.read_bytes()
 record = dict(check_id=key,command=' '.join(checks[key]),tested_commit=tested,base_commit=base,
               exit_code=run.returncode,result='PASS' if run.returncode==0 else 'FAIL',
               evidence_ref=str(path.relative_to(root)),raw_sha256=hashlib.sha256(raw).hexdigest(),
-              raw_byte_count=len(raw),raw_utf8=raw.decode())
+              raw_byte_count=len(raw),raw_utf8=raw.decode(),raw_log=str(raw_path.relative_to(root)))
 path.write_text(json.dumps(record,indent=2)+'\n')
 print(key,record['result'],tested,raw.decode()[-3500:] if run.returncode else raw.decode()[-150:])
 raise SystemExit(run.returncode)

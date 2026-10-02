@@ -6925,6 +6925,7 @@
         "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
         "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
         "docs/exec-plans/evidence/HG-045/SOURCE_AUDIT.md",
+        "docs/exec-plans/evidence/HG-045/FEASIBILITY.md",
         "docs/harness/M3_CLOSURE_CONTRACT.md",
         "docs/exec-plans/completed/KL-076_RESULT.yaml",
         "docs/exec-plans/completed/KL-079_RESULT.yaml",
@@ -7005,7 +7006,7 @@
         {
           "check_id": "source_invalid_reconstruction_dc",
           "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_invalid_source_reconstruction",
-          "pass_oracle": "Invalid-source full T6 denied at actual earlier _progress_sources -> _verify_full_progress reconstruction guard after otherwise valid ingress/current basis. Complete zero-effect output/receipt/event/outbox/head/root/session comparison; immutable malformed old sources cannot support fresh operations. Label earlier denial honestly, never later freshness reach; unrelated lifecycle/key/hash mismatch is insufficient."
+          "pass_oracle": "Invalid-source full T6 denied at actual earlier _progress_sources -> _verify_full_progress reconstruction guard after otherwise valid ingress/current basis. Complete zero-effect output/receipt/event/outbox/head/root/session comparison; immutable malformed old sources cannot support fresh operations. Label earlier denial honestly, never later freshness reach; unrelated lifecycle/key/hash mismatch is insufficient. Use the historically accepted ADMITTED+CONFIRMED representative as an actual prior-deployment owner fixture: exact protected-base Git-verified runtime/helper blobs in separate task-owned subprocess, current KL080 selected lifecycle and explicit own URLs, genuine owners through COMMIT_READY only, then corrected current T6 receives the untouched unconsumed request. No old/foreign lifecycle, runtime patches, target seeds, row edits or historical acceptance recertification. Other malformed values remain exhaustive pure/preparation denials and exact predicate support."
         },
         {
           "check_id": "source_freshness_predicate_support_dc",

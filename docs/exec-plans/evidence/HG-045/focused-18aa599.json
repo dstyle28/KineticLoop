@@ -1,0 +1,12 @@
+{
+  "check_id": "focused",
+  "command": "/private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_source_decision_scope.py tests/harness/test_m3_milestone_closure.py --basetemp /private/tmp/hg045-focused-18aa599",
+  "tested_commit": "18aa5995c5e44cd22b0c55384648a03ab5bf16eb",
+  "base_commit": "26906bd7f4444914c228e98377f2b164fee0dd5d",
+  "exit_code": 1,
+  "result": "FAIL",
+  "evidence_ref": "docs/exec-plans/evidence/HG-045/focused-18aa599.json",
+  "raw_sha256": "25fd91b8c05f80cc2018c0d82f87eff4d8c21cc4a01d18d869ed21bed2263550",
+  "raw_byte_count": 1256,
+  "raw_utf8": "........................................................................ [ 55%]\n.....................................F....................               [100%]\n=================================== FAILURES ===================================\n______________ test_premature_real_revision_without028029_rejects ______________\n\nhistory = <test_m3_milestone_closure.History object at 0x106b5d760>\n\n    def test_premature_real_revision_without028029_rejects(history):\n        closure = copy.deepcopy(history.closure)\n        base = v.resolve(ROOT, '9268fc8dd8c071c02dc5c698274dbf6fcd112776')\n        closure['evaluated_commit'] = base\n        closure['m2_prerequisite'] = history.evidence('docs/exec-plans/milestones/M2.json', base)\n>       assert any('KL-028' in e or 'KL-029' in e for e in history.errors(closure))\nE       assert False\nE        +  where False = any(<generator object test_premature_real_revision_without028029_rejects.<locals>.<genexpr> at 0x107363ed0>)\n\ntests/harness/test_m3_milestone_closure.py:502: AssertionError\n=========================== short test summary info ============================\nFAILED tests/harness/test_m3_milestone_closure.py::test_premature_real_revision_without028029_rejects\n1 failed, 129 passed in 1094.57s (0:18:14)\n"
+}
