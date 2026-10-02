@@ -272,6 +272,9 @@ def local(args: argparse.Namespace) -> int:
     destination.mkdir(parents=True)
     name = "kineticloop-db-ci-" + revision[:7] + "-" + uuid.uuid4().hex[:12]
     image = "kineticloop-local-db:" + revision[:12]
+    volume = name + "-data"
+    volume_created = False
+    container_created = False
     envelope: dict[str, Any] = {"tested_commit": revision, "container": name, "status": "FAIL"}
     try:
         build = run_capture(["docker", "build", "--tag", image, "tools/harness/local_db"],
@@ -279,16 +282,31 @@ def local(args: argparse.Namespace) -> int:
         if build["exit_code"]:
             raise ValueError("image build failed; see image_build.log")
         envelope["image"] = json.loads(output(["docker", "image", "inspect", image]))[0]["Id"]
-        # No volumes, bind mounts, host network, host PID namespace or environment credentials.
+        # Fresh owned data volume supports overlay2; never reuse another run's data.
+        if subprocess.run(["docker", "volume", "inspect", volume], capture_output=True).returncode == 0:
+            raise ValueError("refusing a pre-existing executor data volume")
+        output(["docker", "volume", "create", "--label", "kineticloop.owner=" + name, volume])
+        volume_created = True
+        # No bind mounts, host socket/network/PID namespace or environment credentials.
         output(["docker", "run", "--detach", "--privileged", "--name", name,
+                "--mount", "type=volume,source=" + volume + ",target=/var/lib/docker",
                 "--label", "kineticloop.owner=local-db-ci", image])
+        container_created = True
         inspect = json.loads(output(["docker", "inspect", name]))[0]
-        if inspect["Mounts"] or inspect["HostConfig"]["NetworkMode"] == "host":
+        mounts = inspect["Mounts"]
+        if (len(mounts) != 1 or mounts[0]["Type"] != "volume"
+                or mounts[0]["Name"] != volume or mounts[0]["Destination"] != "/var/lib/docker"
+                or inspect["HostConfig"]["NetworkMode"] == "host"):
             raise ValueError("unexpected shared container resources")
+        envelope["owned_volume"] = volume
+        envelope["mounts"] = [{key: mounts[0][key] for key in ("Type", "Name", "Destination")}]
+
         for _ in range(60):
             check = subprocess.run(["docker", "exec", name, "docker", "info"], capture_output=True)
             if check.returncode == 0:
                 break
+            if output(["docker", "inspect", "--format", "{{.State.Running}}", name]) != "true":
+                raise ValueError("owned daemon exited; see daemon.log")
             time.sleep(1)
         else:
             raise ValueError("owned daemon failed to become ready")
@@ -315,13 +333,23 @@ def local(args: argparse.Namespace) -> int:
     except (ValueError, OSError, subprocess.SubprocessError, KeyboardInterrupt) as error:
         envelope["error"] = str(error)
     finally:
-        # Try to preserve failures even if execution was interrupted before copying.
-        if not (destination / "run").exists():
-            subprocess.run(["docker", "cp", name + ":/evidence/run", str(destination / "run")],
-                           capture_output=True)
-        cleanup = subprocess.run(["docker", "rm", "--force", "--volumes", name], capture_output=True)
-        envelope["container_removed"] = cleanup.returncode == 0
-        if not envelope["container_removed"]:
+        # Preserve daemon failures and partial evidence before own-resource cleanup.
+        if container_created:
+            with (destination / "daemon.log").open("wb") as log:
+                subprocess.run(["docker", "logs", name], stdout=log, stderr=subprocess.STDOUT)
+            if not (destination / "run").exists():
+                subprocess.run(["docker", "cp", name + ":/evidence/run", str(destination / "run")],
+                               capture_output=True)
+            cleanup = subprocess.run(["docker", "rm", "--force", "--volumes", name], capture_output=True)
+            envelope["container_removed"] = cleanup.returncode == 0
+        else:
+            envelope["container_removed"] = True
+        if volume_created:
+            removed = subprocess.run(["docker", "volume", "rm", volume], capture_output=True)
+            envelope["volume_removed"] = removed.returncode == 0
+        else:
+            envelope["volume_removed"] = True
+        if not envelope["container_removed"] or not envelope["volume_removed"]:
             envelope["status"] = "FAIL"
         write_json(destination / "local-executor.json", envelope)
     print(f"LOCAL_DB_CI_{envelope['status']} evidence={destination}", flush=True)

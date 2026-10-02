@@ -40,9 +40,9 @@ python3 tools/harness/db_ci.py verify --revision FULL_COMMIT_SHA --evidence-dir 
 
 The host wrapper copies a Git bundle into one disposable Linux container. Its
 nested Docker daemon starts empty, uses the Unix socket inside that container,
-and is removed with the container after success or failure. The wrapper checks
-there are no host mounts or host networking; cleanup names only the unique owned
-container. The local Docker image cache is retained for subsequent runs. Docker
+and is removed with the container after success or failure. The wrapper permits only its fresh uniquely named Docker data volume,
+checks there are no bind mounts/host socket/host networking, and removes both its
+container and data volume. The volume is necessary for nested overlay2 storage. The local Docker image cache is retained for subsequent runs. Docker
 needs permission for a privileged nested daemon; unrelated host containers and
 volumes are never cleaned. No registration token or repository secret is needed.
 

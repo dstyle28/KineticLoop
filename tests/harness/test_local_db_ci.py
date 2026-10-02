@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
+import importlib.util
 import json
 import sys
 from pathlib import Path
@@ -191,7 +192,9 @@ def test_no_credentials_or_host_mounts_in_executor_source():
     # The process-boundary check complements real Docker integration proof.
     root = Path(__file__).parents[2]
     source = (root / "tools/harness/db_ci.py").read_text()
-    assert '"--volume"' not in source and '"--mount"' not in source
+    assert '"type=volume,source=" + volume + ",target=/var/lib/docker"' in source
+    assert 'mounts[0]["Type"] != "volume"' in source
+    assert 'mounts[0]["Name"] != volume' in source
     assert '"--network", "host"' not in source
     assert '"--env"' not in source
     assert 'inspect["Mounts"]' in source
