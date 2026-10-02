@@ -1,0 +1,145 @@
+change_identity: harness-governance-v0.1/HG-042
+display_change_id: HG-042
+base_commit: 93b38f20a3f3d71206515fb0f4d852f5b0b6d344
+tested_commit: e4134f963450db1522fd6c3339e4cb036fcf5ffe
+change_status: PASS
+summary: Replace broad unstarted KL028/KL029 source-writing packets and generic checks with enforceable
+  disjoint tests-only scopes, exact executable selectors/oracles, isolated task/SHA/worktree DB namespaces,
+  truthful complete 31-layer ledger and negative scope/claim guards. Preserve 19 prospective executable
+  layers and explicitly defer 12, including unsupported full TEST reauthorization. Add justified KL029
+  security review and five actual verified integration records under merged HG043 provenance rules.
+  No completed task, frozen, production, M3 closure, release or downstream implementation changes.
+packets_refined:
+- KL-028
+- KL-029
+files_changed:
+- 06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- KineticLoop_Harness_Backlog_v0.2.json
+- KineticLoop_Harness_Traceability_v0.3.json
+- docs/exec-plans/active/KL-028.md
+- docs/exec-plans/active/KL-029.md
+- docs/exec-plans/evidence/HG-042/PREPARATION.md
+- docs/exec-plans/evidence/HG-042/READINESS.md
+- docs/exec-plans/evidence/HG-042/audit.py
+- docs/exec-plans/evidence/HG-042/boundary-preflight.json
+- docs/exec-plans/evidence/HG-042/boundary_shadow-2ee2b0d.json
+- docs/exec-plans/evidence/HG-042/boundary_shadow-8f938e9.json
+- docs/exec-plans/evidence/HG-042/boundary_shadow-e4134f9.json
+- docs/exec-plans/evidence/HG-042/check.py
+- docs/exec-plans/evidence/HG-042/define.py
+- docs/exec-plans/evidence/HG-042/diff-2ee2b0d.json
+- docs/exec-plans/evidence/HG-042/diff-8f938e9.json
+- docs/exec-plans/evidence/HG-042/diff-e4134f9.json
+- docs/exec-plans/evidence/HG-042/harness-2ee2b0d.json
+- docs/exec-plans/evidence/HG-042/harness-8f938e9.json
+- docs/exec-plans/evidence/HG-042/harness-e4134f9.json
+- docs/exec-plans/evidence/HG-042/integrate.py
+- docs/exec-plans/evidence/HG-042/integration-preflight.json
+- docs/exec-plans/evidence/HG-042/integration-provenance.json
+- docs/exec-plans/evidence/HG-042/integrations-2ee2b0d.json
+- docs/exec-plans/evidence/HG-042/integrations-8f938e9.json
+- docs/exec-plans/evidence/HG-042/integrations-e4134f9.json
+- docs/exec-plans/evidence/HG-042/lint-2ee2b0d.json
+- docs/exec-plans/evidence/HG-042/lint-8f938e9.json
+- docs/exec-plans/evidence/HG-042/lint-e4134f9.json
+- docs/exec-plans/evidence/HG-042/merged-owner-audit.md
+- docs/exec-plans/evidence/HG-042/packet-pins.json
+- docs/exec-plans/evidence/HG-042/record.py
+- docs/exec-plans/evidence/HG-042/refresh_hashes.py
+- docs/exec-plans/evidence/HG-042/scope-2ee2b0d.json
+- docs/exec-plans/evidence/HG-042/scope-8f938e9.json
+- docs/exec-plans/evidence/HG-042/scope-e4134f9.json
+- docs/exec-plans/evidence/HG-042/shadow-feasibility-8f938e9.md
+- docs/exec-plans/evidence/HG-042/shadow-preflight.json
+- docs/exec-plans/evidence/HG-042/shadow-preflight.md
+- docs/exec-plans/evidence/HG-042/shadow-wording-regression.md
+- docs/exec-plans/evidence/HG-042/typecheck-2ee2b0d.json
+- docs/exec-plans/evidence/HG-042/typecheck-8f938e9.json
+- docs/exec-plans/evidence/HG-042/typecheck-e4134f9.json
+- docs/exec-plans/evidence/HG-042/unit-2ee2b0d.json
+- docs/exec-plans/evidence/HG-042/unit-8f938e9.json
+- docs/exec-plans/evidence/HG-042/unit-e4134f9.json
+- docs/exec-plans/evidence/HG-042/validation-2ee2b0d.json
+- docs/exec-plans/evidence/HG-042/validation-8f938e9.json
+- docs/exec-plans/evidence/HG-042/validation-e4134f9.json
+- docs/exec-plans/governance/HG-042.yaml
+- docs/exec-plans/integrations/KL-027.json
+- docs/exec-plans/integrations/KL-075.json
+- docs/exec-plans/integrations/KL-076.json
+- docs/exec-plans/integrations/KL-077.json
+- docs/exec-plans/integrations/KL-079.json
+- docs/harness/RESOURCE_LOCKS.md
+- tests/harness/test_m3_boundary_shadow_scope.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: boundary_shadow
+  command: /Users/davetian/.codex/worktrees/67b8/KineticLoop/.venv/bin/python -m pytest -q -p no:cacheprovider
+    tests/harness/test_m3_boundary_shadow_scope.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-042/boundary_shadow-e4134f9.json
+- check_id: scope
+  command: /Users/davetian/.codex/worktrees/67b8/KineticLoop/.venv/bin/python /Users/davetian/.codex/worktrees/67b8/KineticLoop/docs/exec-plans/evidence/HG-042/audit.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-042/scope-e4134f9.json
+- check_id: integrations
+  command: /Users/davetian/.codex/worktrees/67b8/KineticLoop/.venv/bin/python /Users/davetian/.codex/worktrees/67b8/KineticLoop/docs/exec-plans/evidence/HG-042/integrate.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-042/integrations-e4134f9.json
+- check_id: harness
+  command: /Users/davetian/.codex/worktrees/67b8/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-042/harness-e4134f9.json
+- check_id: unit
+  command: /Users/davetian/.codex/worktrees/67b8/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-042/unit-e4134f9.json
+- check_id: lint
+  command: /Users/davetian/.codex/worktrees/67b8/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-042/lint-e4134f9.json
+- check_id: typecheck
+  command: /Users/davetian/.codex/worktrees/67b8/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-042/typecheck-e4134f9.json
+- check_id: validation
+  command: /Users/davetian/.codex/worktrees/67b8/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-042/validation-e4134f9.json
+- check_id: diff
+  command: git diff --check 93b38f20a3f3d71206515fb0f4d852f5b0b6d344 e4134f963450db1522fd6c3339e4cb036fcf5ffe
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-042/diff-e4134f9.json
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- Governance PASS only. KL028/KL029 remain NOT_STARTED/ENFORCEABLE, every prospective check and all31
+  B layer statuses NOT_RUN. Task PASS, requirement PASS, review PASS and MERGED are separate facts.
+- 'Nineteen exact layer obligations have merged mechanical owners (6PU+13DC); twelve are deferred: eight
+  API/workflow/DB/eligibility-rendering E2E, B14 WF independent KL039 STOP lane plus worker/fault infrastructure,
+  B11/B12 absent pure commit-state evaluator and B04 full TEST reauthorization. B04 full issue and actual
+  Reauthorize registry guard support cannot claim its complete DC oracle; a separate bounded owner follow-up
+  is mandatory, without legacy downgrade or fixture bypass.'
+- Real-data shadow store/API usability belongs KL045; S46/S47 fixture inputs are declared external evaluation
+  inputs with required same-subject archived S24/S48/FK backing closure under enabled constraints/triggers,
+  never TEST/live or shadow owner outputs. M2 G-SHADOW construction is not that usability.
+- M3 closure schema supports only M1/M2; record the separate focused governance gap without adding M3
+  PASS, M3-to-M4 cycle or M4 worker/outbox scope. Production activation remains disabled.
+- Five actual normal integrations validate under merged HG043 with result hashes and exact reviewed
+  or proven review-record-only regular Git-blob reference sources; historical completed definitions,
+  results/reviews/test evidence remain unchanged with historical UNMERGED result statuses.
+- Historical preparation/provenance failures are preserved. The first final check round at2ee2b0d failed
+  generator whitespace and one existing governance-plan append regression. The corrected generator preserves
+  packet bytes; the plan guard uses an explicit own-section end marker, allowing unrelated later governance
+  without weakening its exact own scope. The all-PASS 8f938e9 round was superseded by precise shadow
+  command-parser guard and archived evaluation backing-closure wording. Only the newly tested all-PASS
+  round is selected. No local DB lifecycle or foreign resources were run.
+- Fresh independent GENERAL/PROTOCOL/DB_CONCURRENCY/SECURITY_DATA_BOUNDARY reviews bind the committed
+  governance/evidence revision. Only own review suffix follows; every applicable final hosted CI must
+  PASS before normal merge. Dirty KL055 and unrelated branches/resources remain untouched.
