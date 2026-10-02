@@ -1,0 +1,1543 @@
+{
+  "missing_integrations": [
+    "KL-028",
+    "KL-029"
+  ],
+  "validated": [
+    {
+      "task": "KL-001",
+      "integration_sha256": "9b70f7fcafdf220d26dbb48b7ad8db78693402ece9466256dc8e11961f99cdbf",
+      "result_path": "docs/exec-plans/completed/KL-001_RESULT.yaml",
+      "result_sha256": "85f88f81b302ee99662b9509a4847dfcf3654e6e057138e17ab7782cb9da0105",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-001",
+        "display_task_id": "KL-001",
+        "result_commit": "bf93b20995dd0fc8d48840220e1f1ad5bd799e43",
+        "reviewed_head_sha": "bf93b20995dd0fc8d48840220e1f1ad5bd799e43",
+        "review_record_commit": "97f28cacb0433cac84bd8a98d636f32f48ed64e5",
+        "merge_commit": "7aa52e06bba8271eb3ae56ba2a4c27782377ee7e",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": []
+    },
+    {
+      "task": "KL-002",
+      "integration_sha256": "2130c8e0d46b545738bcc4a37a43850e906ca183f7b9eeb50f7a5e39c4d69636",
+      "result_path": "docs/exec-plans/completed/KL-002_RESULT.yaml",
+      "result_sha256": "ba7098f56e6b4d2618d2ddb3fa14c3a2eb894ed716cca4552431a536d44570bb",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-002",
+        "display_task_id": "KL-002",
+        "result_commit": "e6f7a36485e4a9557297a9c282eb38c6ac37e72c",
+        "reviewed_head_sha": "e6f7a36485e4a9557297a9c282eb38c6ac37e72c",
+        "review_record_commit": "bf2e9e086ec29dbfd1e58e1e082f396a19526983",
+        "merge_commit": "e6f7a36485e4a9557297a9c282eb38c6ac37e72c",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-001",
+          "merge": "7aa52e06bba8271eb3ae56ba2a4c27782377ee7e",
+          "consumer_base": "28cc7407f1d4184cf3407db0bcd09794cb60fa5b",
+          "consumer_tested": "28cc7407f1d4184cf3407db0bcd09794cb60fa5b",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-003",
+      "integration_sha256": "22f9cdaab18d59682e83308554df72e1cac5ad63d296ac8d09ab8893668ed8cc",
+      "result_path": "docs/exec-plans/completed/KL-003_RESULT.yaml",
+      "result_sha256": "76ec34fcca3931a09f206e2f3c3705e76c1bcea1bc04119220e0b74592e2b939",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-003",
+        "display_task_id": "KL-003",
+        "result_commit": "defafa2ad0cfcb62f5db7fc44c816197aeae91ac",
+        "reviewed_head_sha": "defafa2ad0cfcb62f5db7fc44c816197aeae91ac",
+        "review_record_commit": "92b7bb7ff25b5a88a7ce3de1b48c7c8e7cfa86f6",
+        "merge_commit": "cc6008f5a591d851dcc5a1dcf526c5393dc66cff",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-001",
+          "merge": "7aa52e06bba8271eb3ae56ba2a4c27782377ee7e",
+          "consumer_base": "1fd56e3f8e9207f0d63ae03647c93e54563d1abc",
+          "consumer_tested": "36ebdf32a27a0a568453c6c06bcec4ae921639c8",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-004",
+      "integration_sha256": "792d192bc3c193f11b9840ef808298cbaecb07c7003d532a7dd5e511e6e22d4d",
+      "result_path": "docs/exec-plans/completed/KL-004_RESULT.yaml",
+      "result_sha256": "971502c973301e335424eb75c3ad4727a95a8d958756ff3768b2ed720b38c39c",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-004",
+        "display_task_id": "KL-004",
+        "result_commit": "21df1542ff54dc6ccf6df710a70ca924d713fb89",
+        "reviewed_head_sha": "21df1542ff54dc6ccf6df710a70ca924d713fb89",
+        "review_record_commit": "c22d3ff49f2ba6ab9dd4e3a3993a26395b57b162",
+        "merge_commit": "1fc97cbcecabf4c32cda2f20160489661fa3677b",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-003",
+          "merge": "cc6008f5a591d851dcc5a1dcf526c5393dc66cff",
+          "consumer_base": "faa29f162ca0ccd9ecf0ccfdb2dfa1916b04ed21",
+          "consumer_tested": "ac41a590d85300bc0f10adc33dc0a7441478722e",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-005",
+      "integration_sha256": "d90f022d2beac939b5f88c0d8a9e808bcfe410920437cb7042af0976650f480b",
+      "result_path": "docs/exec-plans/completed/KL-005_RESULT.yaml",
+      "result_sha256": "b26ddd9798cea0ba2908ef85f43e83b176e5e4086dd87a0d68f3c4f306318261",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-005",
+        "display_task_id": "KL-005",
+        "result_commit": "9f14d725b9abab54fa45f5e91492c93889334649",
+        "reviewed_head_sha": "9f14d725b9abab54fa45f5e91492c93889334649",
+        "review_record_commit": "a159dec2f4c7c0a3a14fc45b4feae046a940e484",
+        "merge_commit": "2e84dfb5904449351da9ff8f9d7d944d34fefb11",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-001",
+          "merge": "7aa52e06bba8271eb3ae56ba2a4c27782377ee7e",
+          "consumer_base": "2b8d42f09a635e2e206b32d38285d0052d3f89de",
+          "consumer_tested": "2b8d42f09a635e2e206b32d38285d0052d3f89de",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-007",
+      "integration_sha256": "c61f0039eb55ade04cedf8187709bf074b242e7486e1a89e5eadd5011037e83e",
+      "result_path": "docs/exec-plans/completed/KL-007_RESULT.yaml",
+      "result_sha256": "239d24f3892e18c9646071610325221c72aa18a486715cd060ed6c8ff5e8b2fd",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-007",
+        "display_task_id": "KL-007",
+        "result_commit": "c23a38ac0f0e7043417316136fdb728eac7b73c9",
+        "reviewed_head_sha": "c23a38ac0f0e7043417316136fdb728eac7b73c9",
+        "review_record_commit": "a98083abbfac28212eb2d2c493e7aea6784ee41f",
+        "merge_commit": "6a6f04103cc02d32d5eb086d65bbc2a60fbc9f43",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-001",
+          "merge": "7aa52e06bba8271eb3ae56ba2a4c27782377ee7e",
+          "consumer_base": "7da20cdd24720705f3bb6584921f5413d9aa18f4",
+          "consumer_tested": "94ecc00a2748fc85e224ccb6789e7d69049d4ad7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-008",
+      "integration_sha256": "32a4bccef426bd806ccd0714d9f21e5048e4e1c2fea3201f431cca56a25f72eb",
+      "result_path": "docs/exec-plans/completed/KL-008_RESULT.yaml",
+      "result_sha256": "d231f43ba07f337279bd179dbe72fee489942733aa174653fd5b531ca7108579",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-008",
+        "display_task_id": "KL-008",
+        "result_commit": "d0924a71a33a52bd1dc1ad8eb69063b3bc0914e4",
+        "reviewed_head_sha": "d0924a71a33a52bd1dc1ad8eb69063b3bc0914e4",
+        "review_record_commit": "13dfb41593d78babca799f2c877ec4d6810baf91",
+        "merge_commit": "2fdbd205ac35e396f1fec0edcc4ad53c1b059660",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-005",
+          "merge": "2e84dfb5904449351da9ff8f9d7d944d34fefb11",
+          "consumer_base": "fb9e54a62400c97f3dfae6596ad8a40554de377e",
+          "consumer_tested": "efec6102a4a29c4d5f263205f6b74ac567e61db1",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-007",
+          "merge": "6a6f04103cc02d32d5eb086d65bbc2a60fbc9f43",
+          "consumer_base": "fb9e54a62400c97f3dfae6596ad8a40554de377e",
+          "consumer_tested": "efec6102a4a29c4d5f263205f6b74ac567e61db1",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-010",
+      "integration_sha256": "9372388a4d9a5a823e5086296704ca39e5b576541199d4a38f963c86fe29a983",
+      "result_path": "docs/exec-plans/completed/KL-010_RESULT.yaml",
+      "result_sha256": "3063e763920e4d5c789a3a45c56294df9e9c007ce35aaed27b1b457eaba6ac86",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-010",
+        "display_task_id": "KL-010",
+        "result_commit": "6f398ccf411bbe4320ec4e43335944976fff3eee",
+        "reviewed_head_sha": "6f398ccf411bbe4320ec4e43335944976fff3eee",
+        "review_record_commit": "cdaf61efc310b4d40c5866af73b41bf8b30546c4",
+        "merge_commit": "bac21cf6a920859c74e3906383626557b379e758",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-002",
+          "merge": "e6f7a36485e4a9557297a9c282eb38c6ac37e72c",
+          "consumer_base": "3896db8d5b0ee6b9b74514ecaec817bf0e0a437e",
+          "consumer_tested": "178dc5da967eb0b3e62b196890c5b0be7206a7a4",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-003",
+          "merge": "cc6008f5a591d851dcc5a1dcf526c5393dc66cff",
+          "consumer_base": "3896db8d5b0ee6b9b74514ecaec817bf0e0a437e",
+          "consumer_tested": "178dc5da967eb0b3e62b196890c5b0be7206a7a4",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-011",
+      "integration_sha256": "b142bee95d295b90d31d2d402e2e790339ef0517f659fceb4eea4182a3763a61",
+      "result_path": "docs/exec-plans/completed/KL-011_RESULT.yaml",
+      "result_sha256": "2830a46a1131b087e5ed1b443d567d56575f1b04ad4f70c003f808a50a201a52",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-011",
+        "display_task_id": "KL-011",
+        "result_commit": "598a228bc7a64b5ef2ee32cb50c1b499ce9c8aa6",
+        "reviewed_head_sha": "598a228bc7a64b5ef2ee32cb50c1b499ce9c8aa6",
+        "review_record_commit": "3474f4192ab1f160e1360882b05a67f3a75220a0",
+        "merge_commit": "2b5f8c594ea3f74b042dd53657d8f14f1e54e49f",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-010",
+          "merge": "bac21cf6a920859c74e3906383626557b379e758",
+          "consumer_base": "bac21cf6a920859c74e3906383626557b379e758",
+          "consumer_tested": "e68aacbc47a47fe6cb6b25f9d25bf8097e98352e",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-012",
+      "integration_sha256": "25497ef59c3132e1c82ba62040b7153ad5da49f8d75e1780b581e8dc3396411d",
+      "result_path": "docs/exec-plans/completed/KL-012_RESULT.yaml",
+      "result_sha256": "c68ae416fff0665ec5fbf6e54aa966554ffa35082a4f33001c3b9ed71528e21c",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-012",
+        "display_task_id": "KL-012",
+        "result_commit": "1a33743a1a34c12f7dc08eca09de2f4651dbee9c",
+        "reviewed_head_sha": "1a33743a1a34c12f7dc08eca09de2f4651dbee9c",
+        "review_record_commit": "fe729fac168d70535bf6dbdd16e706acd1e2e19e",
+        "merge_commit": "cdf812680490469480cf8e64f4e1959e8fca7ae9",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-007",
+          "merge": "6a6f04103cc02d32d5eb086d65bbc2a60fbc9f43",
+          "consumer_base": "bac21cf6a920859c74e3906383626557b379e758",
+          "consumer_tested": "8568eb4175f89d7947ebe92118b78fae092f47c3",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-010",
+          "merge": "bac21cf6a920859c74e3906383626557b379e758",
+          "consumer_base": "bac21cf6a920859c74e3906383626557b379e758",
+          "consumer_tested": "8568eb4175f89d7947ebe92118b78fae092f47c3",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-013",
+      "integration_sha256": "40fba30730669fd696955591c807bdedb6350ef249bd4e4063ced6a1a68a9025",
+      "result_path": "docs/exec-plans/completed/KL-013_RESULT.yaml",
+      "result_sha256": "714d94cf72a4a36d842c71135059eb59e0b875872d9e39f1b953c79bd48c724d",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-013",
+        "display_task_id": "KL-013",
+        "result_commit": "2f5174ca5fbdde847f314bd50be067749401a2b0",
+        "reviewed_head_sha": "2f5174ca5fbdde847f314bd50be067749401a2b0",
+        "review_record_commit": "328e7cd2bc32803a2bd4d86114d8dfb34ba5375c",
+        "merge_commit": "b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-010",
+          "merge": "bac21cf6a920859c74e3906383626557b379e758",
+          "consumer_base": "033cc3361d77a5d9853c940a7d50cb3abeef9743",
+          "consumer_tested": "b0c5d4abd7ecffb98088a8245cc8dea1ccdea2f5",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-011",
+          "merge": "2b5f8c594ea3f74b042dd53657d8f14f1e54e49f",
+          "consumer_base": "033cc3361d77a5d9853c940a7d50cb3abeef9743",
+          "consumer_tested": "b0c5d4abd7ecffb98088a8245cc8dea1ccdea2f5",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-012",
+          "merge": "cdf812680490469480cf8e64f4e1959e8fca7ae9",
+          "consumer_base": "033cc3361d77a5d9853c940a7d50cb3abeef9743",
+          "consumer_tested": "b0c5d4abd7ecffb98088a8245cc8dea1ccdea2f5",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-016",
+          "merge": "033cc3361d77a5d9853c940a7d50cb3abeef9743",
+          "consumer_base": "033cc3361d77a5d9853c940a7d50cb3abeef9743",
+          "consumer_tested": "b0c5d4abd7ecffb98088a8245cc8dea1ccdea2f5",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-014",
+      "integration_sha256": "aebc5f5f7961158f3ba88379e7060ae523d78e518859206e8123aec3b560d522",
+      "result_path": "docs/exec-plans/completed/KL-014_RESULT.yaml",
+      "result_sha256": "ad62718a47e8df293378c94190518be1c591a7b21b5b4b805283a2f8d9d1432b",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-014",
+        "display_task_id": "KL-014",
+        "result_commit": "6ca25b197b1d7c6bdfd59c1c474d33ba53b1e20a",
+        "reviewed_head_sha": "6ca25b197b1d7c6bdfd59c1c474d33ba53b1e20a",
+        "review_record_commit": "5752408249db0fb74e3f415d2a9912d1b824f56f",
+        "merge_commit": "6bb5b07b155cbd66a005788e0b66978e8711a6e4",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-004",
+          "merge": "1fc97cbcecabf4c32cda2f20160489661fa3677b",
+          "consumer_base": "bac21cf6a920859c74e3906383626557b379e758",
+          "consumer_tested": "b6b6c6cacab80edd1424a95fec405bece038d6db",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-008",
+          "merge": "2fdbd205ac35e396f1fec0edcc4ad53c1b059660",
+          "consumer_base": "bac21cf6a920859c74e3906383626557b379e758",
+          "consumer_tested": "b6b6c6cacab80edd1424a95fec405bece038d6db",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-015",
+      "integration_sha256": "3fa1246ba3848539cfd9fc4af0fcfffc2e4e8dd3c0d5d88a601f0c67e55ba712",
+      "result_path": "docs/exec-plans/completed/KL-015_RESULT.yaml",
+      "result_sha256": "d78f516a7ad41e80ae1763ee183462e4ff0dc95b1ff7310e2a3af1d72a44a56a",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-015",
+        "display_task_id": "KL-015",
+        "result_commit": "a7cf0af8bae32df8b1cd845c9e1d1159049b4b24",
+        "reviewed_head_sha": "a7cf0af8bae32df8b1cd845c9e1d1159049b4b24",
+        "review_record_commit": "fc68aba2de14661ccc48d5290fa229e347f8d1dd",
+        "merge_commit": "7623c20bb267a39b8d02c29845b4ee054714d2b1",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-013",
+          "merge": "b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f",
+          "consumer_base": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "consumer_tested": "cdc6243de229ab55a66b8c01c7aa7b9abba4ead2",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-014",
+          "merge": "6bb5b07b155cbd66a005788e0b66978e8711a6e4",
+          "consumer_base": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "consumer_tested": "cdc6243de229ab55a66b8c01c7aa7b9abba4ead2",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-016",
+          "merge": "033cc3361d77a5d9853c940a7d50cb3abeef9743",
+          "consumer_base": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "consumer_tested": "cdc6243de229ab55a66b8c01c7aa7b9abba4ead2",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-017",
+          "merge": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "consumer_base": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "consumer_tested": "cdc6243de229ab55a66b8c01c7aa7b9abba4ead2",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-018",
+          "merge": "8d93fbd603a71c02c4b291194843b2cfb35e1078",
+          "consumer_base": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "consumer_tested": "cdc6243de229ab55a66b8c01c7aa7b9abba4ead2",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-016",
+      "integration_sha256": "646bdae4a773cb0f90eac2c426d78eb71df23c6e1fb3ea9788fd0ca3f5fcb5fb",
+      "result_path": "docs/exec-plans/completed/KL-016_RESULT.yaml",
+      "result_sha256": "0b0d4821dcc43316aabd61409b17a1f1b510e13fd55cbb50516b23b10821bfc9",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-016",
+        "display_task_id": "KL-016",
+        "result_commit": "8caf0b6ce6368ddb0b43b81d05029e463232c0f5",
+        "reviewed_head_sha": "8caf0b6ce6368ddb0b43b81d05029e463232c0f5",
+        "review_record_commit": "9ce7883eda9def4d5e59ccdb388eabbd9d04bc69",
+        "merge_commit": "033cc3361d77a5d9853c940a7d50cb3abeef9743",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-010",
+          "merge": "bac21cf6a920859c74e3906383626557b379e758",
+          "consumer_base": "6bb5b07b155cbd66a005788e0b66978e8711a6e4",
+          "consumer_tested": "89727c8d0f47bc21a4f1def8e1c509f0e8af5e72",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-017",
+      "integration_sha256": "a07eef618e0afa3fbda6699e7619234c79b67aee4355a874933a3ef41ca60148",
+      "result_path": "docs/exec-plans/completed/KL-017_RESULT.yaml",
+      "result_sha256": "06713a24e74beea64691d6624ea649b71b573d1339c7ae25ece3b1ae7ef32c37",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-017",
+        "display_task_id": "KL-017",
+        "result_commit": "4aa711e0e6aa490e250c8eb3241653b90307df6d",
+        "reviewed_head_sha": "4aa711e0e6aa490e250c8eb3241653b90307df6d",
+        "review_record_commit": "366d96f0dbc08b3f7d775d860bdce0dbe9b873e1",
+        "merge_commit": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-007",
+          "merge": "6a6f04103cc02d32d5eb086d65bbc2a60fbc9f43",
+          "consumer_base": "a2602123a539787ed2a6bed25b892109474d0395",
+          "consumer_tested": "eb617291e58dcaa99b7873096ada0e08dc7f6f26",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-008",
+          "merge": "2fdbd205ac35e396f1fec0edcc4ad53c1b059660",
+          "consumer_base": "a2602123a539787ed2a6bed25b892109474d0395",
+          "consumer_tested": "eb617291e58dcaa99b7873096ada0e08dc7f6f26",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-013",
+          "merge": "b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f",
+          "consumer_base": "a2602123a539787ed2a6bed25b892109474d0395",
+          "consumer_tested": "eb617291e58dcaa99b7873096ada0e08dc7f6f26",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-072",
+          "merge": "77cf294a467a0a54e0a32653f911a93760ad1e97",
+          "consumer_base": "a2602123a539787ed2a6bed25b892109474d0395",
+          "consumer_tested": "eb617291e58dcaa99b7873096ada0e08dc7f6f26",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-018",
+          "merge": "8d93fbd603a71c02c4b291194843b2cfb35e1078",
+          "consumer_base": "a2602123a539787ed2a6bed25b892109474d0395",
+          "consumer_tested": "eb617291e58dcaa99b7873096ada0e08dc7f6f26",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-018",
+      "integration_sha256": "06e9468f0874de210345455f168348f876a7f2478ccdb458100daac057af1420",
+      "result_path": "docs/exec-plans/completed/KL-018_RESULT.yaml",
+      "result_sha256": "0735a233842556d263474b3e9f5dfe4ae33d70f16e531603a2fa76960a30b844",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-018",
+        "display_task_id": "KL-018",
+        "result_commit": "d81fd99aac1941f309537e911d5f78bb1ace5eaa",
+        "reviewed_head_sha": "d81fd99aac1941f309537e911d5f78bb1ace5eaa",
+        "review_record_commit": "5d5a99436ae9357601602affc1e1c8bb60a1e5e8",
+        "merge_commit": "8d93fbd603a71c02c4b291194843b2cfb35e1078",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-013",
+          "merge": "b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f",
+          "consumer_base": "2100f5998ae428112f90205647882280bce48809",
+          "consumer_tested": "b2eb57894dfb906db1ddfcb6fd490c59b03acb6b",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-016",
+          "merge": "033cc3361d77a5d9853c940a7d50cb3abeef9743",
+          "consumer_base": "2100f5998ae428112f90205647882280bce48809",
+          "consumer_tested": "b2eb57894dfb906db1ddfcb6fd490c59b03acb6b",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-072",
+          "merge": "77cf294a467a0a54e0a32653f911a93760ad1e97",
+          "consumer_base": "2100f5998ae428112f90205647882280bce48809",
+          "consumer_tested": "b2eb57894dfb906db1ddfcb6fd490c59b03acb6b",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-019",
+      "integration_sha256": "7cc2ab288c8f1507c48517905afebfbdd1020f25db61c41e9b6b2116787f551a",
+      "result_path": "docs/exec-plans/completed/KL-019_RESULT.yaml",
+      "result_sha256": "6631a121af1458a264d31a6ec0f541590692f51a553273f88b26185d1874717e",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-019",
+        "display_task_id": "KL-019",
+        "result_commit": "4fa4e6c661697fb3024c891c35b307dbff391f8f",
+        "reviewed_head_sha": "4fa4e6c661697fb3024c891c35b307dbff391f8f",
+        "review_record_commit": "b7f14f00e2f1fcc0524d23afa0769740851d4c2c",
+        "merge_commit": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-017",
+          "merge": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "consumer_base": "62e75bac61c8f3e9b3de6cdc6d19a84ce2776908",
+          "consumer_tested": "600c901404a5ebcbde3cea289f6249242b2c4686",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-020",
+          "merge": "7982c30230d2f0e0a5aa4a7ae6299aaa1386a6da",
+          "consumer_base": "62e75bac61c8f3e9b3de6cdc6d19a84ce2776908",
+          "consumer_tested": "600c901404a5ebcbde3cea289f6249242b2c4686",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-021",
+          "merge": "ad0c4373e6f64cc753af989c798636f7c365359b",
+          "consumer_base": "62e75bac61c8f3e9b3de6cdc6d19a84ce2776908",
+          "consumer_tested": "600c901404a5ebcbde3cea289f6249242b2c4686",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-022",
+          "merge": "88adc5be3f7c567413be671a2b3dc5e6c802ffe8",
+          "consumer_base": "62e75bac61c8f3e9b3de6cdc6d19a84ce2776908",
+          "consumer_tested": "600c901404a5ebcbde3cea289f6249242b2c4686",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-023",
+          "merge": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+          "consumer_base": "62e75bac61c8f3e9b3de6cdc6d19a84ce2776908",
+          "consumer_tested": "600c901404a5ebcbde3cea289f6249242b2c4686",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-024",
+          "merge": "ff57a80feebd4e539f9af277e0dcb26d942bc3e0",
+          "consumer_base": "62e75bac61c8f3e9b3de6cdc6d19a84ce2776908",
+          "consumer_tested": "600c901404a5ebcbde3cea289f6249242b2c4686",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-025",
+          "merge": "eab2b305351cf3c504f74ac74868edc58d0a3430",
+          "consumer_base": "62e75bac61c8f3e9b3de6cdc6d19a84ce2776908",
+          "consumer_tested": "600c901404a5ebcbde3cea289f6249242b2c4686",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-020",
+      "integration_sha256": "653ed2f8622714e3e54863b1f96442a18153b730a12d5d442dc95ddb4c542c22",
+      "result_path": "docs/exec-plans/completed/KL-020_RESULT.yaml",
+      "result_sha256": "6887690c5570e19ed5a58230196bea3845fe5cb70638f4e745e9587248319221",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-020",
+        "display_task_id": "KL-020",
+        "result_commit": "6f41d8e910facda3e8a4e501c4f5a0b9ba0fa452",
+        "reviewed_head_sha": "6f41d8e910facda3e8a4e501c4f5a0b9ba0fa452",
+        "review_record_commit": "9062ecfe0ac10be22716f22dbb1361a40bd25fb7",
+        "merge_commit": "7982c30230d2f0e0a5aa4a7ae6299aaa1386a6da",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-015",
+          "merge": "7623c20bb267a39b8d02c29845b4ee054714d2b1",
+          "consumer_base": "b7ab4fab8dd7d340b5f191493c5c4874a84f6573",
+          "consumer_tested": "b5bbf280082dac1c2912ca161287e89dd57a191b",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-021",
+      "integration_sha256": "e9ca8bc11daaebbb51c3ba1251d63dbb9146b402f3184201822ce5fae389d228",
+      "result_path": "docs/exec-plans/completed/KL-021_RESULT.yaml",
+      "result_sha256": "25ad14189e5929e52cc150b3f69e7d045f940d60a999b693efacecd0d0eb4811",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-021",
+        "display_task_id": "KL-021",
+        "result_commit": "2e3209349f9cf9ef372f2869486336b8015c5efb",
+        "reviewed_head_sha": "2e3209349f9cf9ef372f2869486336b8015c5efb",
+        "review_record_commit": "bc7aa8d0408128f3748ff4c869551524d07fc79d",
+        "merge_commit": "ad0c4373e6f64cc753af989c798636f7c365359b",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-016",
+          "merge": "033cc3361d77a5d9853c940a7d50cb3abeef9743",
+          "consumer_base": "ec264bb0d8a8114a73ef85340537b1ead0c74c6e",
+          "consumer_tested": "675697f0f455757d8efb548e0ac4ec6d48ca1908",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-018",
+          "merge": "8d93fbd603a71c02c4b291194843b2cfb35e1078",
+          "consumer_base": "ec264bb0d8a8114a73ef85340537b1ead0c74c6e",
+          "consumer_tested": "675697f0f455757d8efb548e0ac4ec6d48ca1908",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-020",
+          "merge": "7982c30230d2f0e0a5aa4a7ae6299aaa1386a6da",
+          "consumer_base": "ec264bb0d8a8114a73ef85340537b1ead0c74c6e",
+          "consumer_tested": "675697f0f455757d8efb548e0ac4ec6d48ca1908",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-022",
+      "integration_sha256": "98f5ff9bf462a482f5c8d095f5ff28e414ebfbd27fe36d3ff9ebe710a3907e47",
+      "result_path": "docs/exec-plans/completed/KL-022_RESULT.yaml",
+      "result_sha256": "6cbf38868e52d13228982fad8f3df28efd70c33407056cbbb929e2d30e1985ed",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-022",
+        "display_task_id": "KL-022",
+        "result_commit": "63f9decb1482c7f01c7170cdf6bf3778ed4cc063",
+        "reviewed_head_sha": "63f9decb1482c7f01c7170cdf6bf3778ed4cc063",
+        "review_record_commit": "6cd0f6fa4d3d35792a9802e68a456ebb89c6306e",
+        "merge_commit": "88adc5be3f7c567413be671a2b3dc5e6c802ffe8",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-015",
+          "merge": "7623c20bb267a39b8d02c29845b4ee054714d2b1",
+          "consumer_base": "08e743c3ada23ea226bfaacb1dae5e080b6a71bb",
+          "consumer_tested": "fa228db83f8151f52bc4c78f43c5a7e17e0b8c48",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-018",
+          "merge": "8d93fbd603a71c02c4b291194843b2cfb35e1078",
+          "consumer_base": "08e743c3ada23ea226bfaacb1dae5e080b6a71bb",
+          "consumer_tested": "fa228db83f8151f52bc4c78f43c5a7e17e0b8c48",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-021",
+          "merge": "ad0c4373e6f64cc753af989c798636f7c365359b",
+          "consumer_base": "08e743c3ada23ea226bfaacb1dae5e080b6a71bb",
+          "consumer_tested": "fa228db83f8151f52bc4c78f43c5a7e17e0b8c48",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-023",
+      "integration_sha256": "4aa407757aa9b75e538f96bc38fc89386afcbbeaf5e2f39937b08c8796d18458",
+      "result_path": "docs/exec-plans/completed/KL-023_RESULT.yaml",
+      "result_sha256": "d3a56ffd5a1cfbe528b8074289fff7fa34e7ad0523222488d2003b1a52451d9d",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-023",
+        "display_task_id": "KL-023",
+        "result_commit": "6cd15b03cb0206156b8e295d34516f457c7b046a",
+        "reviewed_head_sha": "6cd15b03cb0206156b8e295d34516f457c7b046a",
+        "review_record_commit": "01ff68828efa8007fc88def7765e14de87b582e5",
+        "merge_commit": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-015",
+          "merge": "7623c20bb267a39b8d02c29845b4ee054714d2b1",
+          "consumer_base": "e97a0488515f16e840b3328c13e4b5bba6196ccf",
+          "consumer_tested": "077c383e6a825bc6f55ece4d4311531e0bb0411f",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-024",
+      "integration_sha256": "bf14ab17505eda16142e020a21c201df4a63d75e87981c84701b588921a9c2e5",
+      "result_path": "docs/exec-plans/completed/KL-024_RESULT.yaml",
+      "result_sha256": "660e3a31a61c763ea6f48be1d6ef0d0f81b2b9a3bfcdd151f59ad2a4bb619b9b",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-024",
+        "display_task_id": "KL-024",
+        "result_commit": "28a47f1747c942d6b0382d3d610b8a998e2c512f",
+        "reviewed_head_sha": "28a47f1747c942d6b0382d3d610b8a998e2c512f",
+        "review_record_commit": "54c201fcb08f4686897c3b3bb44f34a43490471b",
+        "merge_commit": "ff57a80feebd4e539f9af277e0dcb26d942bc3e0",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-015",
+          "merge": "7623c20bb267a39b8d02c29845b4ee054714d2b1",
+          "consumer_base": "8ebeab3e509793b4c08968fb59758fea86370c05",
+          "consumer_tested": "638396cc5d7c28d5152038d08390a2de11320064",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-025",
+      "integration_sha256": "b5f6fd0e47ecf97962e3efd94ac0269033c1b51eececa9ad7d7fe5844f9a9c02",
+      "result_path": "docs/exec-plans/completed/KL-025_RESULT.yaml",
+      "result_sha256": "dab5c5af4c07d26550238415cc99e04ab98d6d853e11aa94caa787f35ac544b8",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-025",
+        "display_task_id": "KL-025",
+        "result_commit": "5f3c14b94a2aebd4e5ce97c2414c8271e9ff9ef4",
+        "reviewed_head_sha": "5f3c14b94a2aebd4e5ce97c2414c8271e9ff9ef4",
+        "review_record_commit": "2ab9c47f66730fe2bb826c09e744de6347027aa4",
+        "merge_commit": "eab2b305351cf3c504f74ac74868edc58d0a3430",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-024",
+          "merge": "ff57a80feebd4e539f9af277e0dcb26d942bc3e0",
+          "consumer_base": "d93131de0cd313199f3c787b56ff4b211f2905d7",
+          "consumer_tested": "c3966cc790e1e2aa187dfb70496e4f811404a9ee",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-026",
+      "integration_sha256": "84306c19fbd60f884f1dbb999c4bbf0e030b89af16bc1d8dd6056d7dd89b95fc",
+      "result_path": "docs/exec-plans/completed/KL-026_RESULT.yaml",
+      "result_sha256": "8be63172f7abe5f2794a8a76e4f8b15fe3a797faab6d1bd5843c0842b80150f4",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-026",
+        "display_task_id": "KL-026",
+        "result_commit": "ceb069baa6bd850d7439860d3ac4421e22bc398b",
+        "reviewed_head_sha": "ceb069baa6bd850d7439860d3ac4421e22bc398b",
+        "review_record_commit": "aed3029a35d55b3594d7d736da56d1bd63e9c3f1",
+        "merge_commit": "70dc4863ccdca95f7a44e79b68501a698262e323",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-019",
+          "merge": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+          "consumer_base": "37de3219bc543e4fe4e554483e7e22262691f97a",
+          "consumer_tested": "1059fe77cd8c13ee98b47be2b5c16b7ee626d75c",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-023",
+          "merge": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+          "consumer_base": "37de3219bc543e4fe4e554483e7e22262691f97a",
+          "consumer_tested": "1059fe77cd8c13ee98b47be2b5c16b7ee626d75c",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-024",
+          "merge": "ff57a80feebd4e539f9af277e0dcb26d942bc3e0",
+          "consumer_base": "37de3219bc543e4fe4e554483e7e22262691f97a",
+          "consumer_tested": "1059fe77cd8c13ee98b47be2b5c16b7ee626d75c",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-025",
+          "merge": "eab2b305351cf3c504f74ac74868edc58d0a3430",
+          "consumer_base": "37de3219bc543e4fe4e554483e7e22262691f97a",
+          "consumer_tested": "1059fe77cd8c13ee98b47be2b5c16b7ee626d75c",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-074",
+          "merge": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+          "consumer_base": "37de3219bc543e4fe4e554483e7e22262691f97a",
+          "consumer_tested": "1059fe77cd8c13ee98b47be2b5c16b7ee626d75c",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-027",
+      "integration_sha256": "5d12b1f014b0e8b02913bdeb584399d189482bf370c8c882a50d7791658d7955",
+      "result_path": "docs/exec-plans/completed/KL-027_RESULT.yaml",
+      "result_sha256": "a6f47f3160fdf9ec14037a327eb624351f87b030d430261ab3fbae4699d11fb7",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-027",
+        "display_task_id": "KL-027",
+        "result_commit": "ff93c08c7c32fba9e8dede0c161bb4f97bc98259",
+        "reviewed_head_sha": "ff93c08c7c32fba9e8dede0c161bb4f97bc98259",
+        "review_record_commit": "e6cd006720b0f81a1d7d5efa1105c68a06c34d96",
+        "merge_commit": "1099d85bd4aa76ec8221700e55b4e77a84479126",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-017",
+          "merge": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "consumer_base": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+          "consumer_tested": "72a9a5f3f9529028708f64ece3bbec6d791413a7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-019",
+          "merge": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+          "consumer_base": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+          "consumer_tested": "72a9a5f3f9529028708f64ece3bbec6d791413a7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-022",
+          "merge": "88adc5be3f7c567413be671a2b3dc5e6c802ffe8",
+          "consumer_base": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+          "consumer_tested": "72a9a5f3f9529028708f64ece3bbec6d791413a7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-023",
+          "merge": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+          "consumer_base": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+          "consumer_tested": "72a9a5f3f9529028708f64ece3bbec6d791413a7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-024",
+          "merge": "ff57a80feebd4e539f9af277e0dcb26d942bc3e0",
+          "consumer_base": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+          "consumer_tested": "72a9a5f3f9529028708f64ece3bbec6d791413a7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-025",
+          "merge": "eab2b305351cf3c504f74ac74868edc58d0a3430",
+          "consumer_base": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+          "consumer_tested": "72a9a5f3f9529028708f64ece3bbec6d791413a7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-074",
+          "merge": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+          "consumer_base": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+          "consumer_tested": "72a9a5f3f9529028708f64ece3bbec6d791413a7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-075",
+          "merge": "d0470badf0ccf6bec28a9bc7e6836b57d9df93ce",
+          "consumer_base": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+          "consumer_tested": "72a9a5f3f9529028708f64ece3bbec6d791413a7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-076",
+          "merge": "035644e0cfb94927d7555e245223cd92c224ea5a",
+          "consumer_base": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+          "consumer_tested": "72a9a5f3f9529028708f64ece3bbec6d791413a7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-077",
+          "merge": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+          "consumer_base": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+          "consumer_tested": "72a9a5f3f9529028708f64ece3bbec6d791413a7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-072",
+      "integration_sha256": "5db3b6f3721fe5c182c0ae284a2a2c58f450ca0260d79015b136dcf6165176e3",
+      "result_path": "docs/exec-plans/completed/KL-072_RESULT.yaml",
+      "result_sha256": "9d40c9a76b34eea7b6844f80b202276e1cb7487a2306c7116c27ccba30f61949",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-072",
+        "display_task_id": "KL-072",
+        "result_commit": "decbc03ce0cb895b69a154e4e92b65acce30ab26",
+        "reviewed_head_sha": "decbc03ce0cb895b69a154e4e92b65acce30ab26",
+        "review_record_commit": "39195179815c0fa4357f0055321ee95ac19d75ce",
+        "merge_commit": "77cf294a467a0a54e0a32653f911a93760ad1e97",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-013",
+          "merge": "b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f",
+          "consumer_base": "038d198c2f31a373a7be5fa950eb05ba4e6f7f94",
+          "consumer_tested": "200ae79165fb7efc403aca4b2111c43eb64c5075",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-016",
+          "merge": "033cc3361d77a5d9853c940a7d50cb3abeef9743",
+          "consumer_base": "038d198c2f31a373a7be5fa950eb05ba4e6f7f94",
+          "consumer_tested": "200ae79165fb7efc403aca4b2111c43eb64c5075",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-074",
+      "integration_sha256": "0a7e595158ace87c3435d94c5d88d7531aef07d83322da26bae42e88203a8db4",
+      "result_path": "docs/exec-plans/completed/KL-074_RESULT.yaml",
+      "result_sha256": "85d09c290cbf2e9ee5e92f4aad5daf43d1164ebaf1e0c082b3847930bef3c3e8",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-074",
+        "display_task_id": "KL-074",
+        "result_commit": "7327e653d25b5aaba56fe96f8b2cd309d4a4aaf4",
+        "reviewed_head_sha": "7327e653d25b5aaba56fe96f8b2cd309d4a4aaf4",
+        "review_record_commit": "ed7246bd6c74edbec78edc60fe2682fc93df33e6",
+        "merge_commit": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-002",
+          "merge": "e6f7a36485e4a9557297a9c282eb38c6ac37e72c",
+          "consumer_base": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+          "consumer_tested": "d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-013",
+          "merge": "b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f",
+          "consumer_base": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+          "consumer_tested": "d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-023",
+          "merge": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+          "consumer_base": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+          "consumer_tested": "d7537c140729a4aafd2f4d5ce89d324ffa7bbeb7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-075",
+      "integration_sha256": "78bc452cf470fb3a53ae8c779d7bfc7ae8e1fd3086786ecd25315e32c7101ad6",
+      "result_path": "docs/exec-plans/completed/KL-075_RESULT.yaml",
+      "result_sha256": "f7db410d2b340272b35d9cf5530bd59257f0a8626136db46556318e56306bf69",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-075",
+        "display_task_id": "KL-075",
+        "result_commit": "5543bfb2a40a6e29c49f0325d8542a1b38a8fcca",
+        "reviewed_head_sha": "5543bfb2a40a6e29c49f0325d8542a1b38a8fcca",
+        "review_record_commit": "ec4b43e9f1cfaa96a17b231673f4549d651e6bca",
+        "merge_commit": "d0470badf0ccf6bec28a9bc7e6836b57d9df93ce",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-019",
+          "merge": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+          "consumer_base": "74cd5b3c8782f4eefb8f98a3895407300990cc27",
+          "consumer_tested": "54867864fc69b7ecbc75ad644d3baa817434598f",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-024",
+          "merge": "ff57a80feebd4e539f9af277e0dcb26d942bc3e0",
+          "consumer_base": "74cd5b3c8782f4eefb8f98a3895407300990cc27",
+          "consumer_tested": "54867864fc69b7ecbc75ad644d3baa817434598f",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-025",
+          "merge": "eab2b305351cf3c504f74ac74868edc58d0a3430",
+          "consumer_base": "74cd5b3c8782f4eefb8f98a3895407300990cc27",
+          "consumer_tested": "54867864fc69b7ecbc75ad644d3baa817434598f",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-074",
+          "merge": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+          "consumer_base": "74cd5b3c8782f4eefb8f98a3895407300990cc27",
+          "consumer_tested": "54867864fc69b7ecbc75ad644d3baa817434598f",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-076",
+      "integration_sha256": "d82e83ab8d3df0f31b09f877ad32bf8369ed28a97ecc6cc90414fa4c66038a3a",
+      "result_path": "docs/exec-plans/completed/KL-076_RESULT.yaml",
+      "result_sha256": "013a9f33540411a479f728ea63c68551499fc38464ae2dfe6a8ef6f0e8f239e2",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-076",
+        "display_task_id": "KL-076",
+        "result_commit": "290a4d696d1d8247346e54aa9ff12615ce86dd6f",
+        "reviewed_head_sha": "290a4d696d1d8247346e54aa9ff12615ce86dd6f",
+        "review_record_commit": "d7e8f60c2530c8373279df6827bfcd08322cd832",
+        "merge_commit": "035644e0cfb94927d7555e245223cd92c224ea5a",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-075",
+          "merge": "d0470badf0ccf6bec28a9bc7e6836b57d9df93ce",
+          "consumer_base": "c599ec1ef39c28bd691748698a09805f390878cf",
+          "consumer_tested": "509eeee298d59b29afbfacf8c40f7cefd5d02844",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-017",
+          "merge": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "consumer_base": "c599ec1ef39c28bd691748698a09805f390878cf",
+          "consumer_tested": "509eeee298d59b29afbfacf8c40f7cefd5d02844",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-022",
+          "merge": "88adc5be3f7c567413be671a2b3dc5e6c802ffe8",
+          "consumer_base": "c599ec1ef39c28bd691748698a09805f390878cf",
+          "consumer_tested": "509eeee298d59b29afbfacf8c40f7cefd5d02844",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-023",
+          "merge": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+          "consumer_base": "c599ec1ef39c28bd691748698a09805f390878cf",
+          "consumer_tested": "509eeee298d59b29afbfacf8c40f7cefd5d02844",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-074",
+          "merge": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+          "consumer_base": "c599ec1ef39c28bd691748698a09805f390878cf",
+          "consumer_tested": "509eeee298d59b29afbfacf8c40f7cefd5d02844",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-078",
+          "merge": "c599ec1ef39c28bd691748698a09805f390878cf",
+          "consumer_base": "c599ec1ef39c28bd691748698a09805f390878cf",
+          "consumer_tested": "509eeee298d59b29afbfacf8c40f7cefd5d02844",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-077",
+      "integration_sha256": "5f8ea4722ed688ab6a42c974da468865a9f3822df1b6bd6fc8984900230d1758",
+      "result_path": "docs/exec-plans/completed/KL-077_RESULT.yaml",
+      "result_sha256": "a86e81ae15f4e93ac11b2e1dc7d5a55147145967bfea9d372d544a039bf73b85",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-077",
+        "display_task_id": "KL-077",
+        "result_commit": "03edea3c9f3666302d5eaefe6ba744ea67e64aad",
+        "reviewed_head_sha": "03edea3c9f3666302d5eaefe6ba744ea67e64aad",
+        "review_record_commit": "bb144a01a971878577f52f47517f1232a13894e5",
+        "merge_commit": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-076",
+          "merge": "035644e0cfb94927d7555e245223cd92c224ea5a",
+          "consumer_base": "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588",
+          "consumer_tested": "2c04437d46fc38eace30ea63d57e5ab5de1960e3",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-019",
+          "merge": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+          "consumer_base": "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588",
+          "consumer_tested": "2c04437d46fc38eace30ea63d57e5ab5de1960e3",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-017",
+          "merge": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "consumer_base": "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588",
+          "consumer_tested": "2c04437d46fc38eace30ea63d57e5ab5de1960e3",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-074",
+          "merge": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+          "consumer_base": "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588",
+          "consumer_tested": "2c04437d46fc38eace30ea63d57e5ab5de1960e3",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-079",
+          "merge": "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588",
+          "consumer_base": "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588",
+          "consumer_tested": "2c04437d46fc38eace30ea63d57e5ab5de1960e3",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-078",
+      "integration_sha256": "19fb61eeb93e012073c2a486d1188eae517ce7943f622fba1d9fd0ee3d24bb28",
+      "result_path": "docs/exec-plans/completed/KL-078_RESULT.yaml",
+      "result_sha256": "86eff96043a6a034aeb6b03ddd2fcb01f468b95b259bda5c0dfcc5bad748e586",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-078",
+        "display_task_id": "KL-078",
+        "result_commit": "89249abcfe5075d958c5e1ea4532b774ea4668de",
+        "reviewed_head_sha": "89249abcfe5075d958c5e1ea4532b774ea4668de",
+        "review_record_commit": "6a44e745f9ee22bc401c69c4c9f573265cc4cb5e",
+        "merge_commit": "c599ec1ef39c28bd691748698a09805f390878cf",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-017",
+          "merge": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "consumer_base": "7186b3024dcb5a555070391cf138b5e300819db5",
+          "consumer_tested": "2a958c45cc2f25605b57a5ec60e3c46327999269",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-019",
+          "merge": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+          "consumer_base": "7186b3024dcb5a555070391cf138b5e300819db5",
+          "consumer_tested": "2a958c45cc2f25605b57a5ec60e3c46327999269",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-022",
+          "merge": "88adc5be3f7c567413be671a2b3dc5e6c802ffe8",
+          "consumer_base": "7186b3024dcb5a555070391cf138b5e300819db5",
+          "consumer_tested": "2a958c45cc2f25605b57a5ec60e3c46327999269",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-023",
+          "merge": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+          "consumer_base": "7186b3024dcb5a555070391cf138b5e300819db5",
+          "consumer_tested": "2a958c45cc2f25605b57a5ec60e3c46327999269",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-074",
+          "merge": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+          "consumer_base": "7186b3024dcb5a555070391cf138b5e300819db5",
+          "consumer_tested": "2a958c45cc2f25605b57a5ec60e3c46327999269",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    },
+    {
+      "task": "KL-079",
+      "integration_sha256": "54726641546d96f76ac6d79977a2504a33e43d6ff5d0294ebffad461a4cabf14",
+      "result_path": "docs/exec-plans/completed/KL-079_RESULT.yaml",
+      "result_sha256": "b6bae41144cbdad079395ef4d3dde10bdd9d0846fa7c10bed5b98739c27bdcf1",
+      "revisions": {
+        "task_identity": "harness-backlog-v0.2/KL-079",
+        "display_task_id": "KL-079",
+        "result_commit": "056b5471f3b360eeda2eca5b1c8def107222acae",
+        "reviewed_head_sha": "056b5471f3b360eeda2eca5b1c8def107222acae",
+        "review_record_commit": "a16fc2e037bd6cec4dbef8613092b28e9b60ecaf",
+        "merge_commit": "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588",
+        "integration_status": "MERGED"
+      },
+      "validated_integration_errors": [],
+      "dependencies": [
+        {
+          "task": "KL-076",
+          "merge": "035644e0cfb94927d7555e245223cd92c224ea5a",
+          "consumer_base": "15e85921f58d2f7ea816b694bc80221bd7406ee8",
+          "consumer_tested": "1e5803836c645c90ee85980c50d9e8d245fb6cf7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-075",
+          "merge": "d0470badf0ccf6bec28a9bc7e6836b57d9df93ce",
+          "consumer_base": "15e85921f58d2f7ea816b694bc80221bd7406ee8",
+          "consumer_tested": "1e5803836c645c90ee85980c50d9e8d245fb6cf7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-078",
+          "merge": "c599ec1ef39c28bd691748698a09805f390878cf",
+          "consumer_base": "15e85921f58d2f7ea816b694bc80221bd7406ee8",
+          "consumer_tested": "1e5803836c645c90ee85980c50d9e8d245fb6cf7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-024",
+          "merge": "ff57a80feebd4e539f9af277e0dcb26d942bc3e0",
+          "consumer_base": "15e85921f58d2f7ea816b694bc80221bd7406ee8",
+          "consumer_tested": "1e5803836c645c90ee85980c50d9e8d245fb6cf7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-019",
+          "merge": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+          "consumer_base": "15e85921f58d2f7ea816b694bc80221bd7406ee8",
+          "consumer_tested": "1e5803836c645c90ee85980c50d9e8d245fb6cf7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-017",
+          "merge": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "consumer_base": "15e85921f58d2f7ea816b694bc80221bd7406ee8",
+          "consumer_tested": "1e5803836c645c90ee85980c50d9e8d245fb6cf7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        },
+        {
+          "task": "KL-074",
+          "merge": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+          "consumer_base": "15e85921f58d2f7ea816b694bc80221bd7406ee8",
+          "consumer_tested": "1e5803836c645c90ee85980c50d9e8d245fb6cf7",
+          "edges": {
+            "base_commit": true,
+            "tested_commit": true
+          }
+        }
+      ]
+    }
+  ]
+}

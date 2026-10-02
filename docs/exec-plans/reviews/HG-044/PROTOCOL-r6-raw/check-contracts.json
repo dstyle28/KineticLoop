@@ -1,0 +1,418 @@
+[
+  {
+    "exit_id": "full_test_fdn_trajectory_and_repair",
+    "task_identity": "harness-backlog-v0.2/KL-027",
+    "digest": "043b27b5636b361937979632e3861bbd8283c99f128b6b5fac731161d9721f3e",
+    "check_id": "demo_owner_trajectory_e2e",
+    "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_full_trajectory",
+    "pass_oracle": "One composed deterministic real-PG owner/service trajectory: admitted inputs\u2192factset complete/seal\u2192projection/build\u2192T3\u2192admit/acquire\u2192RecordSnapshot\u2192all frozen stages F\u2192computed D\u2192N\u2192source-bound resolution/validation\u2192T6 complete bundle/A\u2192eligibility true\u2192START. Assert full persistent identity/hash/basis and receipt/event/outbox chain, Nutrition completeness and no seeded target output. This is internal service E2E fixture evidence, no HTTP/live model/provider claim."
+  },
+  {
+    "exit_id": "full_test_fdn_trajectory_and_repair",
+    "task_identity": "harness-backlog-v0.2/KL-027",
+    "digest": "591f05baf6c7baa76dfcf07786301efb13f9802af01663db5bf55fa3d034fe23",
+    "check_id": "demo_fdn_repair_e2e",
+    "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_fdn_repair",
+    "pass_oracle": "Owner-generated F1/D1/N1 then changed immutable F2 invalidates old D1/N1: validation/commit reject mixed closure, recalculate D2/N2 explicitly and validate coherent source-bound new closure through merged owners and allowed frozen progression, preserving original root budget/deadline/history. No free state-machine jump or replacing references on old rows."
+  },
+  {
+    "exit_id": "current_denials_and_immutable_history",
+    "task_identity": "harness-backlog-v0.2/KL-027",
+    "digest": "b204e242a2374e3dc298da68328bab28147f714189f163de393d7a6b91a02f71",
+    "check_id": "demo_revoke_denials_dc",
+    "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_revoke_then_deny",
+    "pass_oracle": "Independent isolated operation runs get valid A/eligibility true and actual START, plus actual KL077 ordinary PAUSE for RESUME, then exact guarded ApplyControl STOP advances epoch/control/invalidation. Positive RESUME requires actual START\u2192authenticated ordinary lifecycle PAUSE\u2192RESUME, one new immutable S45 resume revision and unchanged original START A. Authority-denial tests use independent owner-produced trajectories and fresh operation keys: CONTINUE has IN_PROGRESS plus current binding; RESUME has PAUSED plus immutable START/current binding from the pause owner; new START names a different absent session with no START binding. Establish each operation's valid lifecycle and current authorization preconditions before STOP/revoke or finite dependency expiry, then assert the exact current-authorization/expiry rejection cause. Lifecycle, existing-binding, key conflict or transport rejection cannot satisfy that oracle. Assert failed operations leave no session/revision/binding/head/issuance/receipt/event/outbox/first-use placeholder effects. Historical command replay is a separate non-executable identity oracle. Old START/bundle replay returns immutable historical IDs non-executable with zero new bindings/head/issuance/success/bookkeeping. Preserve started historical rows and source F/D/N."
+  },
+  {
+    "exit_id": "current_denials_and_immutable_history",
+    "task_identity": "harness-backlog-v0.2/KL-027",
+    "digest": "648bd63d3b9a16766db344e7609c180eda7b82a1b56312cde45f5060a8019a7d",
+    "check_id": "demo_expiry_denials_dc",
+    "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_expiry_then_deny",
+    "pass_oracle": "Separate isolated operation runs get valid A/START, plus actual KL077 ordinary PAUSE for RESUME, then actual server minimum dependency expires; use trusted DB time/bounded observation, no caller-set expiry or status job. Positive RESUME requires actual START\u2192authenticated ordinary lifecycle PAUSE\u2192RESUME, one new immutable S45 resume revision and unchanged original START A. Authority-denial tests use independent owner-produced trajectories and fresh operation keys: CONTINUE has IN_PROGRESS plus current binding; RESUME has PAUSED plus immutable START/current binding from the pause owner; new START names a different absent session with no START binding. Establish each operation's valid lifecycle and current authorization preconditions before STOP/revoke or finite dependency expiry, then assert the exact current-authorization/expiry rejection cause. Lifecycle, existing-binding, key conflict or transport rejection cannot satisfy that oracle. Assert failed operations leave no session/revision/binding/head/issuance/receipt/event/outbox/first-use placeholder effects. Historical command replay is a separate non-executable identity oracle. Current eligibility false; old certificates/bindings immutable. Real-PG before/after and lock-wait expiry plus separately labeled deterministic PU equality are covered by prerequisite evidence and current fixture assertions; no equality DC claim."
+  },
+  {
+    "exit_id": "current_denials_and_immutable_history",
+    "task_identity": "harness-backlog-v0.2/KL-077",
+    "digest": "352f9fb16bc688218d5704936e5227dcf15627e10ebc2d31a63b4400efc9c164",
+    "check_id": "continue_resume_current_dc",
+    "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_continue_resume_rechecks",
+    "pass_oracle": "Actual typed ContinueSession and ResumeSession use existing T7 owners and exact session/P/A binding under S51\u2192S01\u2192daily head/session\u2192receipt. Valid CONTINUE updates only allowed execution metadata and valid RESUME appends exact immutable new resume binding, preserving original START A. Positive RESUME requires actual START\u2192authenticated ordinary lifecycle PAUSE\u2192RESUME, one new immutable S45 resume revision and unchanged original START A. Authority-denial tests use independent owner-produced trajectories and fresh operation keys: CONTINUE has IN_PROGRESS plus current binding; RESUME has PAUSED plus immutable START/current binding from the pause owner; new START names a different absent session with no START binding. Establish each operation's valid lifecycle and current authorization preconditions before STOP/revoke or finite dependency expiry, then assert the exact current-authorization/expiry rejection cause. Lifecycle, existing-binding, key conflict or transport rejection cannot satisfy that oracle. Assert failed operations leave no session/revision/binding/head/issuance/receipt/event/outbox/first-use placeholder effects. Historical command replay is a separate non-executable identity oracle. Read-only eligibility is never a bearer permit; no raw PAUSE/state seeding or guard-only negative substitute."
+  },
+  {
+    "exit_id": "current_denials_and_immutable_history",
+    "task_identity": "harness-backlog-v0.2/KL-077",
+    "digest": "c9944c8eeea23c7d167e253197ba9e65439fc89f43aa360353ed0019c8fe9a2d",
+    "check_id": "full_execution_replay_atomicity_dc",
+    "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_replay_and_atomicity",
+    "pass_oracle": "ACK loss returns historical non-executable original bundle/member/issuance/binding IDs; changed payload conflicts. Duplicate races and injected partial member/issuance/head/success/outbox failures prove atomic rollback, no duplicate IDs or history overwrite; guarded failed current operation may read receipt history only after rollback."
+  },
+  {
+    "exit_id": "current_denials_and_immutable_history",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "e246ed617b72dfeea889fa4929ab88f9da3394496d7c00b79b6e0dd511f1e1a2",
+    "check_id": "b07_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b07_revoke_current_execution_denial",
+    "pass_oracle": "ProtocolExecutionService.start/continue_session/pause/resume + revoke_artifact: Independent actual full A+START trajectories for each operation. CONTINUE has IN_PROGRESS+current binding; RESUME actual authenticated ordinary PAUSE yields PAUSED+immutable START/current binding; new START names absent session. Establish successful control for each, then relevant transitive revoke and fresh key denies revoked/current authorization cause. Preserve entire historical START and source F/D/N; zero failed session/revision/binding/head/issuance/receipt/event/outbox/placeholder effects. Key/lifecycle mismatch or replay cannot satisfy denial."
+  },
+  {
+    "exit_id": "current_denials_and_immutable_history",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "a1bbe7c06827c27c10504851a66fb9ccd78394d9ec8079b487d0af1dafd999dd",
+    "check_id": "b16_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b16_continue_resume_after_invalidation",
+    "pass_oracle": "ProtocolExecutionService.start/continue_session/pause/resume + ApplyControl restricted T2 recipe/revoke_artifact: Independent actual lifecycle-valid CONTINUE and RESUME per epoch STOP and registry revoke. Actual START plus ordinary PAUSE for RESUME, positive operation before loss and fresh key after loss. Actual merged ApplyControl derives current epoch, writes control/invalidation/epoch/event/receipt atomically; registry revoke uses real global owner. Post-loss rejects exact epoch/current registry cause; original START/A/P remain immutable and failed operation zero session/binding/head/issuance/bookkeeping effects."
+  },
+  {
+    "exit_id": "nine_actual_dc_interleavings",
+    "task_identity": "harness-backlog-v0.2/KL-026",
+    "digest": "2932e90178d230d3bd2ef002933d5fece4395ab6756c4e46b9f7d65e0d19fbb8",
+    "check_id": "i01_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_publish_vs_user_revoke",
+    "pass_oracle": "Actual ProtocolExecutionService.publish(T3) versus exact guarded ApplyControl both S01 orders. Revoke-first stale READY build denied with no target/bookkeeping effects; publish-first keeps immutable historical S24/S25/receipt/event/outbox but later epoch invalidates its authority. Replay cannot repoint current manifest or regain execution. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+  },
+  {
+    "exit_id": "nine_actual_dc_interleavings",
+    "task_identity": "harness-backlog-v0.2/KL-026",
+    "digest": "ee5a60e38ed027fd6f09aef7354e7b5ab503fe022f8837f71d4e7d1b3cd9ede5",
+    "check_id": "i02_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_start_vs_user_revoke",
+    "pass_oracle": "Actual START and guarded ApplyControl both S01 orders. START-first exactly one immutable historical S45 binding/session and later current execution denied; revoke-first zero new session/binding/bookkeeping. Historical replay returns original IDs, non-executable, no second binding. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+  },
+  {
+    "exit_id": "nine_actual_dc_interleavings",
+    "task_identity": "harness-backlog-v0.2/KL-026",
+    "digest": "2a647e52fd8fee70691e5279d3d1a2632edddb971d3c223a1c2fdd6b5dde96ae",
+    "check_id": "i03_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_cancel_vs_dispatch",
+    "pass_oracle": "Actual guarded CancelIntent root termination versus PermitDispatch in both S01/intent/reservation orders. Cancel-first root CANCELLED immediately denies permit/new reservation/T6, then separate actual CancelUndispatched cleanup releases exact RESERVED dimensions with S31/S32/receipt/event/outbox. Prove intermediate terminal-with-RESERVED is safe and both transactions preserve terminal root. Dispatch-first root cancellation succeeds but DISPATCH_INTENT occupation/identity remains unchanged; cleanup denies/no effects, never refunds/resends. Replay is historical/non-sendable; no double counters/events or provider call. Reservation-only cancellation cannot substitute for I03. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+  },
+  {
+    "exit_id": "nine_actual_dc_interleavings",
+    "task_identity": "harness-backlog-v0.2/KL-026",
+    "digest": "4be4e09b2a3c9f9d5ae66fd0291bb9e9fcdb0c1d39c8d41f5d770b6c9e24b4d2",
+    "check_id": "i04_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_takeover_vs_commit",
+    "pass_oracle": "Actual CommitBundle T6 versus actual AcquireLease takeover T5. Commit-first before lease expiry yields one atomic bundle/issuance/intent success and takeover cannot reopen terminal root. Takeover-first after expiry raises fence and old T6 denies with no effects. Independently exercise real-PG before/after lease and root deadline plus expiry while commit waits on lock; trusted post-lock DB clock controls denial. Exact equality belongs to the separate time_boundary_pu predicate check, never inferred from setup time. ReserveCall stale-fence test cannot substitute for CommitBundle. This DC evidence does not satisfy I04@WF. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+  },
+  {
+    "exit_id": "nine_actual_dc_interleavings",
+    "task_identity": "harness-backlog-v0.2/KL-026",
+    "digest": "5011fb62871694abe23239063f923daa6dce59df5649036455817ed7635433be",
+    "check_id": "i05_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_issue",
+    "pass_oracle": "Actual global RevokeArtifact versus actual T6 CommitBundle issuance, both S51 shared/exclusive orders. Issue-first retains historical immutable S42/certificate/closure, then current authority denies; revoke-first no bundle/head/issuance/success/bookkeeping. Exact relevant transitive artifact revocation, no fake registry revision update. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+  },
+  {
+    "exit_id": "nine_actual_dc_interleavings",
+    "task_identity": "harness-backlog-v0.2/KL-026",
+    "digest": "65500c852227e4a2ddb6d7f39d55880a4548237a92be5ba09b7580e0a7c3cb31",
+    "check_id": "i06_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_start",
+    "pass_oracle": "Actual global RevokeArtifact versus START both S51 orders. START-first retains one historical binding but later current execution denies; revoke-first zero session/binding/bookkeeping. Assert exact artifact closure and immutable historical replay, no cached VALID allowance. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+  },
+  {
+    "exit_id": "nine_actual_dc_interleavings",
+    "task_identity": "harness-backlog-v0.2/KL-026",
+    "digest": "15c1c1266d7f723631a3a0c61b516ad5f7ff79494ce690416f51ba29e5b6c8d1",
+    "check_id": "i07_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_publish",
+    "pass_oracle": "Actual global RevokeArtifact versus actual T3 publish both S51 orders. Publish-first retains immutable manifest/bindings but loses applicable authority after revoke; revoke-first no manifest/generation/head/bookkeeping. Relevant transitive closure is actually read under registry coordination. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+  },
+  {
+    "exit_id": "nine_actual_dc_interleavings",
+    "task_identity": "harness-backlog-v0.2/KL-026",
+    "digest": "dbe3832eb088d50cd0d5c1ae0bba3764433133aa862542889c310ac7626c7228",
+    "check_id": "i08_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_seal_vs_input_update",
+    "pass_oracle": "Actual CanonicalViewService.seal_factset versus exact guarded AcceptFactRevision both S01 orders. Input-first stale completed build cannot seal/current-pointer advance; seal-first immutable historical SEALED membership/certificate survives while input frontier/epoch advances and old replay cannot repoint S01. No raw SQL frontier mutation substitutes for owner input update. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+  },
+  {
+    "exit_id": "nine_actual_dc_interleavings",
+    "task_identity": "harness-backlog-v0.2/KL-026",
+    "digest": "6227a26862097ba2f06dbf4ab99e3596a3abbfdaa2e2f1bb1f0cb2133ec6010a",
+    "check_id": "i09_dc",
+    "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_expiry_vs_start",
+    "pass_oracle": "Actual START before/after server-computed minimum dependency valid_until; exact equality denies in separate time_boundary_pu predicate evidence. Force expiry while START waits on real registry/user lock and demonstrate fresh trusted post-lock DB clock, not transaction-start timestamp/cached VALID/status job. Failed START has zero target/bookkeeping effects; valid historical binding/replay stays immutable and non-executable after expiry. Both ordered contenders use bounded Events/barriers/future timeouts and pg_blocking_pids observations; no sleep establishes race order. Persisted state/receipt/event/outbox and exact rollback assertions are mandatory."
+  },
+  {
+    "exit_id": "nine_actual_dc_interleavings",
+    "task_identity": "harness-backlog-v0.2/KL-026",
+    "digest": "ce8e3e58e3a2ad0d67666c7681b04576473113b0d91974221a9ac9527692b674",
+    "check_id": "time_boundary_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_time_boundaries",
+    "pass_oracle": "Exact equality is deterministic PU evidence over the actual pure eligibility/lease/deadline predicates: before allows, now==valid_until/lease expiry/deadline denies, after denies, retaining the half-open interval. Real PostgreSQL DC separately exercises actual guarded owners before and after expiry plus expiry crossed during a bounded observed lock wait, using fresh trusted post-lock clock_timestamp. No current controllable trusted-clock seam exists. Setting expiry=clock_timestamp during setup cannot prove a later guard observed equality; no caller-supplied clock, timestamp overwrite, cached time, or production seam is authorized. Record PU and DC separately; never label PU equality as DC or missing WF/product evidence PASS."
+  },
+  {
+    "exit_id": "ready_sealed_barriers",
+    "task_identity": "harness-backlog-v0.2/KL-023",
+    "digest": "1b54ce3c1cb0fd1b5d117d1e7155d92ce919c218cfd56ccf36a8e0d4863723d8",
+    "check_id": "factset_complete_writer_interleaving_dc",
+    "command": "uv run pytest -q tests/db/test_factsets.py::test_complete_serializes_with_candidate_writer",
+    "pass_oracle": "Bounded PostgreSQL-observed S15 barrier proves writer vs Complete produces a certificate for exactly one closed revision/count/digest; the losing writer cannot append or reuse a stale completion. No sleep-based oracle; no S01 lock during bulk reconstruction."
+  },
+  {
+    "exit_id": "ready_sealed_barriers",
+    "task_identity": "harness-backlog-v0.2/KL-023",
+    "digest": "85ccee0e5008c8f006cb387bee09c0c441705251ab843c8f1cd20b531f4b2f64",
+    "check_id": "factset_seal_frontier_atomicity_and_replay_dc",
+    "command": "uv run pytest -q tests/db/test_factsets.py::test_seal_frontier_atomicity_and_old_replay",
+    "pass_oracle": "Real T2-IN/frontier or epoch change vs T2-SEAL yields only legal serial outcomes. Stale/mismatched completion rejects with S01/S15/S02/S03/S04 unchanged. Injected failure rolls back all writes. ACK-loss replay returns original seal result after a newer head, never repoints it. Prove seal performs no full S16 member scan/recompute under S01."
+  },
+  {
+    "exit_id": "ready_sealed_barriers",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "dbbaaeb4f0b1f67215c0659b0d203042c1088fc020bb31d8257dc47fa4bde2f6",
+    "check_id": "b01_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial",
+    "pass_oracle": "protocol.factsets.reconstruct(canonical=True): Construct identical valid closed BUILDING, READY, SEALED chains. BUILDING/READY both deny canonical reconstruction; SEALED reconstructs exact membership digest/count; unsealed ancestor denies."
+  },
+  {
+    "exit_id": "ready_sealed_barriers",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "c0b42302bc8cfdd980187e07e6671654d46ac6d0878b9f9c08ce46a1bf110c67",
+    "check_id": "b01_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial",
+    "pass_oracle": "CanonicalViewService begin_build/write_candidate/complete_factset/read_canonical + PreparationService.capture_source: Use actual owner-built BUILDING then READY chain. Actual read_canonical and PreparationService.capture_source reject each with exact unsealed-canonical/SEALED-source cause, before any projection/build/publication/authorization may use it; no source head/projection/build/T3/receipt/event/outbox changes. Actual seal then read_canonical and capture_source positive succeed, followed by actual successful publication. Persist S15/S16 exact digest/count/revision/certificate. A request mismatch on an otherwise SEALED source cannot substitute for reaching the unsealed source guard."
+  },
+  {
+    "exit_id": "ready_sealed_barriers",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "819e95d9a8d60083f2d4143be3c1636424b59ab519be0b30852c4b7f097cf310",
+    "check_id": "b02_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b02_stale_frontier_seal_race",
+    "pass_oracle": "CanonicalViewService.seal_factset + merged AcceptFactRevision restricted T2-IN recipe: Actual READY build captures frontier/epoch; race actual admitted input update before seal in both serial orders using S01/build barriers and observed pg_blocking_pids. Update-first seal denies, no stale current pointer or bookkeeping; seal-first immutable committed old seal remains historical and later input change invalidates basis. New rebuild against current frontier seals successfully."
+  },
+  {
+    "exit_id": "ready_sealed_barriers",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "33937d58907a2abda0dfc8f9418c647c442929fa5a5f2e6fcb3a17cd54bd6f6a",
+    "check_id": "b03_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b03_sealed_immutability_ready_barrier",
+    "pass_oracle": "CanonicalViewService.write_candidate/complete_factset/seal_factset + migrated S15/S16 permissions: Actual READY closes builder writes; actual SEALED rejects member/content/certificate mutation through both authenticated owner and permitted DB principal. New build/revision accepts legitimate correction and seals, original S15/S16/certificate/hash/count immutable; no denied command receipt/event/outbox. Never disable triggers or mutate target to build the positive control."
+  },
+  {
+    "exit_id": "registry_commit_freshness_and_closure",
+    "task_identity": "harness-backlog-v0.2/KL-021",
+    "digest": "a4cdb8b0847c37b1661c144e3115d8de2243a29c4913dba3d89858c1560ab855",
+    "check_id": "t2_global_commit_rollback_and_effective_at_semantics",
+    "command": "uv run pytest -q tests/db/test_safety_registry.py::test_t2_global_commit_rollback_and_effective_at_semantics",
+    "pass_oracle": "The named real-PostgreSQL test invokes the public RevokeArtifact persistence owner through the migrated trusted-admin routine, proves a successful outer transaction commit is the only revoke linearization point for both backdated and future effective_at values, and injects a post-S50 pre-completion failure that rolls back S50, S51, management receipt, audit event, and outbox state completely. Rollback leaves a fresh protected admission eligible; commit makes the same relevant admission fail closed. effective_at remains audit metadata and neither rewrites historical state nor schedules future eligibility."
+  },
+  {
+    "exit_id": "registry_commit_freshness_and_closure",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "dbbee9074704daf487305816e38257798d56627d549b08a77be9e7690538e2d0",
+    "check_id": "b04_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b04_relevant_revoke_issue_reauthorize",
+    "pass_oracle": "ProtocolExecutionService.commit_full; execute_command(Reauthorize) RestrictedSqlSession; registry_guard_reauthorize; revoke_artifact: Build actual owner-produced full current F/D/N/validation trajectory. Positive full CommitBundle creates immutable S42 certificates/materialized closure. In independent current still-live precommit trajectories, revoke exact transitive dependency then full commit denies ARTIFACT_REVOKED with zero S38\u2013S43/intent success/receipts/events/outbox. Exercise actual existing Reauthorize registry gate with positive guard and relevant revoke negative, visibly label guard support; B04@DC requirement stays NOT_RUN because the merged full TEST owner does not implement complete reauthorization; a separate bounded owner must enable real new admitted revalidation intent/current attempt/latest manifest, complete actual Reauthorize positive issuance and relevant-transitive-revoke denial before any B04@DC PASS. No reopening terminal intent, seeded S42, or bare callback no-op as full T6 evidence."
+  },
+  {
+    "exit_id": "registry_commit_freshness_and_closure",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "3fcceb7b2c85fe943707e6314616d6e3f937783e7a14868bfdc2264250463d31",
+    "check_id": "b05_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b05_unrelated_revoke_preserves_eligibility",
+    "pass_oracle": "ProtocolExecutionService.commit_full + query_execution_eligibility + revoke_artifact: Actual owner-created A has exact materialized closure; register unrelated artifact outside it and revoke. Registry revision increases but A remains currently eligible without other invalidation. Actual fresh permitted T7 positive succeeds, historical A/certificate/START unchanged, no global-revision-equality dependency. Control relevant revoke then denies exact current permission."
+  },
+  {
+    "exit_id": "registry_commit_freshness_and_closure",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "8beb5b23a00a770d027a1c0d50c0b8d2e0ff86fae19147d1ba341566eeb3ab59",
+    "check_id": "b06_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b06_revoke_before_publish",
+    "pass_oracle": "ProtocolExecutionService.publish + revoke_artifact: Actual sealed factset/owner-generated READY build with complete transitive artifact closure; hold exclusive registry revoke then observe typed publish blocked, commit revoke and publish denies revoked cause. No S24/S25/generation/current pointer/success/bookkeeping. Independent valid publication positive succeeds."
+  },
+  {
+    "exit_id": "registry_commit_freshness_and_closure",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "01ef9307f0cec128c550984172e5f49509426fe85912d1011ae58866d54e2d81",
+    "check_id": "b11_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b11_backdated_revoke_commit_linearization",
+    "pass_oracle": "revoke_artifact + ProtocolExecutionService T7 owners: Actual A+START before revoke. Independent transaction emergency revoke with effective_at safely before trusted DB now; while uncommitted observe affected waiter blocked on S51, after commit fresh T3/T6/T7 relevant checks deny. Persist effective_at<recorded_at, S50/S51 management receipt/audit/outbox atomic, preserve past immutable START/A/P. No retroactive edit or claim precommit current path permission while exclusive held."
+  },
+  {
+    "exit_id": "registry_commit_freshness_and_closure",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "179302c473c7e5290f94e56941ae55e4b4311e239d8eac16b17c0f8717c6b666",
+    "check_id": "b12_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b12_future_revoke_immediate_at_commit",
+    "pass_oracle": "revoke_artifact + ProtocolExecutionService T3/T6/T7 owners: Same real owner preconditions, emergency effective_at later than DB now. Success commit immediately denies relevant fresh T3/T6/T7 without waiting for effective_at; persist effective_at>recorded_at and exact atomic S50/S51/management chain. Independent unrevoked positive succeeds; no scheduled job/status update or historical rewrite."
+  },
+  {
+    "exit_id": "registry_commit_freshness_and_closure",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "c5fa673aee7bf8f944a61f362e66b10558bdd28cc1daf505095b2f16a42b32de",
+    "check_id": "b13_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b13_revoke_rollback_zero_effects",
+    "pass_oracle": "revoke_artifact + real ProtocolExecutionService publish/commit_full/start: Task-local instrumented cursor/connection injects failure after actual registry_revoke_artifact routine has executed all S50/S51/management writes but before revoke_artifact transaction context commits. Actual trusted admin owner must roll back. Entire S50/S51/management receipt/audit/outbox equals before snapshot; independent real T3/fullT6/T7 whose closure would be affected remain eligible and succeed. Record injected failure/cause/persisted positive effects; no schema/role/target output mutation or no-op callback."
+  },
+  {
+    "exit_id": "registry_commit_freshness_and_closure",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "100675ab990ce9c94ed726a1b4b35ed8f2f04d618f8eded8c3e4d95915624fed",
+    "check_id": "b14_registry_failclosed_stop_support_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b14_registry_failclosed_stop_support",
+    "pass_oracle": "Actual shared T3/fullT6/T7 owners deny on unavailable/timed-out gate with zero effects while exact merged ApplyControl STOP recipe through independent S01 completes with S17/S18/S43/epoch+receipt/event/outbox. This is task DC support only; B14 has no DC obligation and WF/E2E remainNOT_RUN. No claimed full real degraded worker proof."
+  },
+  {
+    "exit_id": "registry_commit_freshness_and_closure",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "cd3df20c6f6d9d4c9f499f8e033325a8341620918e54a7af9146f4ca1abe6ff5",
+    "check_id": "b15_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b15_fresh_registry_both_orders",
+    "pass_oracle": "ProtocolExecutionService.publish/commit_full/start + revoke_artifact: For each actual T3/fullT6/T7, both serial orders with exact A\u2192B\u2192C closure, bounded task-local barriers and pg_blocking_pids proving actual S51 blocker/waiter. Revoke-first relevant waiter denies and has zero target+receipt/event/outbox effects; operation-first commits once then revoke commits and later fresh current check denies. Snapshot cannot predate gate; assert lock trace S51\u2192S01 and S50/S51 exact revision. No sleeps or repeated revision read as race oracle. The three-node transitive path may also contain the registration-required A\u2192C closure edge; do not require an exclusively two-edge graph."
+  },
+  {
+    "exit_id": "registry_commit_freshness_and_closure",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "512659b83a91ad16d3d05fc75e44f688036218eecd850ea93f0c59db2be43b4e",
+    "check_id": "b17_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b17_transitive_closure_omission_denied",
+    "pass_oracle": "contracts.artifacts.validate_complete_dependency_closure + protocol.authorization.evaluate_validity_closure: Actual pure closure contract rejects A-only/direct-only declared closure for A\u2192B\u2192C and accepts exact A/B/C identities. Feed that complete graph to the actual validity evaluator with leaf C revoked=True: denial is dependency current admission unprovable despite unrevoked direct A/B. All-unrevoked complete bounded graph succeeds with exact certificate IDs/digest; no caller boolean or invented graph evaluator substitutes. Actual PostgreSQL revoke remains separate DC. The three-node transitive path may also contain the registration-required A\u2192C closure edge; do not require an exclusively two-edge graph."
+  },
+  {
+    "exit_id": "registry_commit_freshness_and_closure",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "be4ce4fd8cae272b9f3c710f63ff02628c6793edf1eab872300271c1e886f691",
+    "check_id": "b17_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b17_transitive_revoke_denied",
+    "pass_oracle": "artifact registration + revoke_artifact + ProtocolExecutionService T3/T6/T7: Register exact A\u2192B\u2192C through merged artifact owner, bind all identities in actual owner-produced manifest/A/materialized authorization closure. Revoke leaf C then affected actual T3/T6/T7 deny despite direct A unrevoked; positive unrevoked graph succeeds; closure omission through actual guard denies missing closure, with all identities/hashes and zero affected target/success effects. The three-node transitive path may also contain the registration-required A\u2192C closure edge; do not require an exclusively two-edge graph."
+  },
+  {
+    "exit_id": "validity_missing_timeless_and_expiry",
+    "task_identity": "harness-backlog-v0.2/KL-022",
+    "digest": "77f1f0e66c036f3a3b68610b1a1b788cf3834b8fca381276b2a10c5c853e2a0d",
+    "check_id": "validity_closure_minimum_and_missing_values_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_authorization.py::test_validity_closure_uses_every_bound_and_denies_missing_or_elapsed_basis",
+    "pass_oracle": "The pure evaluator uses authoritative issuance time and returns the exact minimum of requested absolute end, manifest, evidence-resolution, validation/admission freshness, every relevant projection, every bounded transitive artifact, policy TTL, request/intent deadline, and calendar/session boundary. The request may only shorten the result. A missing, unparsable, not-yet-effective, equal-to-now, or expired required bound denies; NULL is never treated as infinity; the resulting S42 interval is finite and strictly valid_from < valid_until."
+  },
+  {
+    "exit_id": "validity_missing_timeless_and_expiry",
+    "task_identity": "harness-backlog-v0.2/KL-022",
+    "digest": "661ec30174fbeb8d271d65b71723f1282bad3d92b99ff93cfcd3f951e2d8f6d1",
+    "check_id": "timeless_policy_dependency_closure_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_authorization.py::test_timeless_dependency_requires_auditable_policy_in_same_transitive_closure",
+    "pass_oracle": "The pure evaluator accepts a TIMELESS artifact only when it has a nonempty auditable reason and names an exact POLICY or POLICY_BUNDLE artifact that is present in the same complete transitive certificate closure. Missing, malformed, absent, expired, or revoked approval policy denies. TIMELESS contributes no artificial end, remains revocable, and cannot make the finite authorization interval outlive the remaining bounded dependencies."
+  },
+  {
+    "exit_id": "validity_missing_timeless_and_expiry",
+    "task_identity": "harness-backlog-v0.2/KL-022",
+    "digest": "7b0537d8176fb2d010ed04e4bb4194ba52e60b83383af2b83538e1fe6ea5ce79",
+    "check_id": "t6_certificate_and_minimum_closure_dc",
+    "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_authorization_evaluator_persists_exact_minimum_certificate",
+    "pass_oracle": "Against migrated PostgreSQL, the existing CommitBundle and Reauthorize owners acquire S51 then S01 and invoke the evaluator under those locks. The test varies each finite dependency independently, proves S42.valid_until equals the earliest bound, verifies the immutable certificate contains exact identity/revision/validity entries and one deterministic closure digest, and proves an omitted or undefined required dependency rolls back S39-S43, S27/S29, S38, S02/S03/S04 with no partial issuance."
+  },
+  {
+    "exit_id": "validity_missing_timeless_and_expiry",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "3f1c07c8f8d2d552369afc14d95acc1b5aa06fb394938a81eb1172f354fee44a",
+    "check_id": "b08_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b08_missing_validity_denied",
+    "pass_oracle": "protocol.authorization.evaluate_validity_closure: Actual pure evaluator rejects each required missing start/end, unknown validity, expired/future/nonincreasing window; bounded valid closure succeeds. Missing validity is not infinity. Assert certificate identity/revision and no result returned on denial."
+  },
+  {
+    "exit_id": "validity_missing_timeless_and_expiry",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "abf0c2bf101bab7a7b9dfacc52cbc90d1af8c59e8aa409ed7b1d890a5be510be",
+    "check_id": "b09_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b09_server_minimum_closure",
+    "pass_oracle": "protocol.authorization.evaluate_validity_closure: Independently make each required dependency shortest, check exact minimum, deterministic ordered certificate entries/method/digest, client shortening allowed and lengthening ineffective. Missing/expired dependency denies."
+  },
+  {
+    "exit_id": "validity_missing_timeless_and_expiry",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "f3690ee3bec27585add38fae370477f70d60c4db92c7c56072152d6d9997d501",
+    "check_id": "b09_dc",
+    "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b09_server_minimum_certificate",
+    "pass_oracle": "ProtocolExecutionService.commit_full + RepositoryTransaction prepare_authorization_basis: Owner-produced inputs with independently varied declared finite bounds; successful real T6 writes S42.valid_until exact server minimum incl manifest/projection/resolver/admission/artifact/policy TTL/request deadline/calendar/client shortening. Assert trusted post-lock valid_from, exact certificate IDs/revisions/windows/method/hash/materialized closure; positive client extension cannot override min. Never timestamp-overwrite target owner outputs to create evidence. Inherited or tied minima from upstream-computed manifest/projection/artifact bounds are valid; never require every bound to be independently unique. Assert all required certificate bounds and exact minimum instead."
+  },
+  {
+    "exit_id": "validity_missing_timeless_and_expiry",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "842c24fcb7b78cd00c33fa4d477aa1f40a916fb653aa73a771301ffafccd8502",
+    "check_id": "b10_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b10_expiry_without_status_job",
+    "pass_oracle": "protocol.authorization.evaluate_executability: Same otherwise-valid current basis with cached ACTIVE: before valid_until permits; exactly at valid_until and afterward deny TIME_INELIGIBLE. No status update; observation non_bearer true. Pure equality is PU only."
+  },
+  {
+    "exit_id": "validity_missing_timeless_and_expiry",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "e7b63b7177b8cc20330ffaa54e4fbca3bd4c9b8ab9e3a456d3d4e72523f9f176",
+    "check_id": "b18_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b18_timeless_policy_reason_required",
+    "pass_oracle": "contracts.artifacts.ArtifactValiditySpec + protocol.authorization.evaluate_validity_closure: Registration validity contract rejects absent approved policy/reason. Actual closure evaluator rejects missing approval policy in exact closure, non-policy identity, revoked/inadmissible approval, missing dependency edge; approved static TIMELESS with live policy and another finite bound succeeds. TIMELESS does not remove finite bound or revoke eligibility."
+  },
+  {
+    "exit_id": "isolated_test_and_evaluation_boundaries",
+    "task_identity": "harness-backlog-v0.2/KL-027",
+    "digest": "66647bb1b03c243b7b53945026d29c821be0d633cf017342b4690b14d86542f4",
+    "check_id": "demo_namespace_and_boundary_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_test_only_demo.py::test_namespace_and_boundary",
+    "pass_oracle": "Exact demo label namespace validates before lifecycle/nested bootstrap/reset/cleanup; no seeded target outputs, TEST subject/policy/environment isolated and production/shadow negative controls have no capability."
+  },
+  {
+    "exit_id": "isolated_test_and_evaluation_boundaries",
+    "task_identity": "harness-backlog-v0.2/KL-027",
+    "digest": "8654b63f46d0f2f8c039060dd1137637cf945efe5ab92bf9df71bbdcb91b491b",
+    "check_id": "demo_scope_denials_dc",
+    "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_production_shadow_denials",
+    "pass_oracle": "TEST A cannot be consumed by production subject/role/principal/policy/environment; shadow has no live head/S42/S45 or executable result. Missing source/policy/mandatory context/N/evidence/certificate and epoch/artifact loss deny, no convenience test bypass."
+  },
+  {
+    "exit_id": "isolated_test_and_evaluation_boundaries",
+    "task_identity": "harness-backlog-v0.2/KL-028",
+    "digest": "8a1f0daddefc1818862deedecf9e2effa0609fd91079cb40524939441886eed3",
+    "check_id": "boundary_namespace_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_boundary_namespace",
+    "pass_oracle": "Reject malformedSHA/digest/label, peerroot/mismatchedroot, default/foreign/ambient namespaces before lifecycle incl nested cleanup."
+  },
+  {
+    "exit_id": "isolated_test_and_evaluation_boundaries",
+    "task_identity": "harness-backlog-v0.2/KL-029",
+    "digest": "b4882ae92d1328df35251a024212c6aba66ae9bb5849fc211d1bc40c97e1a98e",
+    "check_id": "shadow_namespace_and_boundary_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_namespace_and_boundary",
+    "pass_oracle": "Exact namespace kineticloop-kl029-shadow-<HEAD7>-<SHA256(os.fsencode(resolved-root))12>, DB same underscore spelling. Exact ROOT, 40 lowercase-hex HEAD, label shadow, digest and runtime git HEAD validated before lifecycle construction/bootstrap/reset/start/connect/destroy and nested cleanup. Foreign/default/postgres/ambient namespace, peer root, malformed SHA/digest/label fail before any runner call. bootstrap_two_phase receives selected lifecycle; no imported foreign fixture runs. This is PU safety, not a DB isolation result."
+  },
+  {
+    "exit_id": "isolated_test_and_evaluation_boundaries",
+    "task_identity": "harness-backlog-v0.2/KL-029",
+    "digest": "f739601de3c33239203549a8e6836ca24111055ee8f217d4ff514d6df8894f1a",
+    "check_id": "shadow_strict_wire_pu",
+    "command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_strict_shadow_wire",
+    "pass_oracle": "Real ShadowEvaluationArtifact construction + from_payload/from_json rejects every non-null live target, extra/missing/duplicate field and unknown schema/mode/disposition/storage boundary. Positive canonical roundtrip preserves exact null targets and SHADOW_ONLY/NOT_EXECUTABLE. TestOnlyAuthorizationScope rejects EVALUATION/SUBJECT/ADMIN actor and production/evaluation subject/policy/environment boundaries, direct-write flag and disabled owner-guard flag. Real ExecutionIdentity rejects evaluation/shadow role and evaluation principal; actual strict public command parser rejects shadow scope; require_wire rejects a genuine valid ProductionScope command and separately authenticated actor/subject/policy/environment mismatch and altered request hash. Do not invent a commit-state evaluator or mini-model."
+  },
+  {
+    "exit_id": "isolated_test_and_evaluation_boundaries",
+    "task_identity": "harness-backlog-v0.2/KL-029",
+    "digest": "9f639ac3f9f60bd05beb042cff3c83d25f41eae1a9e5ada4dbe96856633ded70",
+    "check_id": "shadow_evaluation_principal_live_denials_dc",
+    "command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_evaluation_principal_live_denials",
+    "pass_oracle": "Registered EVALUATION principal via actual trusted-admin registration on own database cannot lookup owner-produced TEST live S38/S42/S45 or missing IDs (SQL NULL for both); read_scoped_object returns same SUBJECT_SCOPE_DENIED code/payload and declared timing_class metadata BOUNDED_SCOPE_LOOKUP (no measured constant-time claim) with no foreign IDs. Direct SELECT/INSERT/UPDATE/DELETE/TRUNCATE on live tables reject by actual privilege/storage boundary; statement parameters target actual owner-produced TEST rows and explicitly declared evaluation identity, never raw seeded live rows. Assert full before/after TEST live history equality after each rollback. Any runtime read denial must label exact DB scope/privilege guard; not a T6/T7 guard claim. Positive control same TEST principal reads its exact owner-produced head/A/binding via actual lookup and wrapper; EVALUATION reads its own declared S46/S47 fixtures."
+  },
+  {
+    "exit_id": "isolated_test_and_evaluation_boundaries",
+    "task_identity": "harness-backlog-v0.2/KL-029",
+    "digest": "49686edec7cc25818e5b379ff97c2d3f6f52179c90086a1fd60297e88b4dab22",
+    "check_id": "shadow_test_authorization_crossing_denials_dc",
+    "command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_test_authorization_crossing_denials",
+    "pass_oracle": "Actual owner-produced full TEST T6 authorization and valid START (then ordinary pause/resume or continue as required) supply positive control. Fresh keys prevent replay masking. Independently authenticated TEST identity mismatch for principal/policy/environment with command wire rebuilt to match reaches _guard exact TEST registration mismatch; wire mismatch cases separately reach require_wire; wrong subject B with B identity/wire using A authorization reaches exact current bundle membership missing. EVALUATION/production actors reject exact TEST identity construction; their registered principals cannot consume/read A through lookup. Do not claim later T7 transaction guard reached when earlier ingress rejected. Successful full T6 and START/CONTINUE/RESUME record exact member/P/A/validation/resolution/closure/basis/session/binding/receipt/event/outbox identities; each forbidden fresh operation leaves complete histories, revision/epoch/head/intent and zero new receipt/event/outbox unchanged."
+  },
+  {
+    "exit_id": "isolated_test_and_evaluation_boundaries",
+    "task_identity": "harness-backlog-v0.2/KL-029",
+    "digest": "b49df8a9edcf2f50351d2aff8dad4f3351516372e2af6f135b27a1f214461d01",
+    "check_id": "shadow_owner_payload_denials_dc",
+    "command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_shadow_payload_owner_denials",
+    "pass_oracle": "On valid idle actual owner connection with verified TEST registration and existing live history, feed actual ShadowEvaluationArtifact and its canonical payload to commit_full/commit and start/continue_session/resume entrypoints. Exact typed checks raise GuardRequired (closed full commit request/strict CommitBundle/strict StartSession/strict ContinueSession/strict ResumeSession), no transaction effects. Also parse attempted ShadowEvaluationArtifact/altered boundary wire as genuine public command model and assert strict schema rejection before owner; successful valid command positive control persists its expected owner output. Report as strict owner ingress denial, not downstream registry/T6/T7 eligibility denial."
+  },
+  {
+    "exit_id": "isolated_test_and_evaluation_boundaries",
+    "task_identity": "harness-backlog-v0.2/KL-029",
+    "digest": "3bb80c4317b9d118ad4364287dfe89701ad08368a1408ff6acd83d78f8c9b14f",
+    "check_id": "shadow_declared_evaluation_storage_dc",
+    "command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_declared_evaluation_storage_isolation",
+    "pass_oracle": "Explicitly declare S46/S47 and their required same-subject archived S24/S48/FK backing closure as external historical evaluation inputs only; do not label them shadow workflow owner outputs. Register separate EVALUATION A/B, seed only those declared archived evaluation inputs with FK checks and triggers enabled through allowed trusted fixture setup; no session_replication_role bypass or global revision reset; record hashes/IDs/source refs and mode/cutoff. Actual principal lookup/wrapper sees own S46/S47 only; second EVALUATION/TEST/production sees no foreign rows and same non-enumerating denial. Actual storage guard refuses live S38/S42/S45 attributed to evaluation subject and S46/S47 attributed to TEST/production. Assert full TEST history unchanged. No new replay writer API, role grants, migration/source/lifecycle/CI helper changes."
+  }
+]
