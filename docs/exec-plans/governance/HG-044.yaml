@@ -1,7 +1,7 @@
 change_identity: harness-governance-v0.1/HG-044
 display_change_id: HG-044
 base_commit: 9268fc8dd8c071c02dc5c698274dbf6fcd112776
-tested_commit: e748b37ec92e119190afad87478b7ecb951e5b5d
+tested_commit: 4302c0649c9255ac60be87d90853ee0620e9f019
 change_status: PASS
 summary: Ratify minimal isolated TEST M3 exit mapping and mechanically validate exact integrations/prerequisites,
   dependency ancestry, integrated named task checks and raw provenance, one fresh integrated regression
@@ -17,22 +17,26 @@ files_changed:
 - docs/exec-plans/evidence/HG-044/DEVELOPMENT_ROUNDS.md
 - docs/exec-plans/evidence/HG-044/PREPARATION.md
 - docs/exec-plans/evidence/HG-044/audit.py
+- docs/exec-plans/evidence/HG-044/capture-integrity-4302c06.json
 - docs/exec-plans/evidence/HG-044/capture-integrity-e748b37.json
 - docs/exec-plans/evidence/HG-044/check.py
 - docs/exec-plans/evidence/HG-044/diff-0874228.json
 - docs/exec-plans/evidence/HG-044/diff-26a9a39.json
+- docs/exec-plans/evidence/HG-044/diff-4302c06.json
 - docs/exec-plans/evidence/HG-044/diff-4a9b4c6.json
 - docs/exec-plans/evidence/HG-044/diff-53d94e4.json
 - docs/exec-plans/evidence/HG-044/diff-dccac06.json
 - docs/exec-plans/evidence/HG-044/diff-e748b37.json
 - docs/exec-plans/evidence/HG-044/focused-0874228.json
 - docs/exec-plans/evidence/HG-044/focused-26a9a39.json
+- docs/exec-plans/evidence/HG-044/focused-4302c06.json
 - docs/exec-plans/evidence/HG-044/focused-4a9b4c6.json
 - docs/exec-plans/evidence/HG-044/focused-53d94e4.json
 - docs/exec-plans/evidence/HG-044/focused-dccac06.json
 - docs/exec-plans/evidence/HG-044/focused-e748b37.json
 - docs/exec-plans/evidence/HG-044/harness-0874228.json
 - docs/exec-plans/evidence/HG-044/harness-26a9a39.json
+- docs/exec-plans/evidence/HG-044/harness-4302c06.json
 - docs/exec-plans/evidence/HG-044/harness-4a9b4c6.json
 - docs/exec-plans/evidence/HG-044/harness-53d94e4.json
 - docs/exec-plans/evidence/HG-044/harness-dccac06.json
@@ -40,6 +44,7 @@ files_changed:
 - docs/exec-plans/evidence/HG-044/implement.py
 - docs/exec-plans/evidence/HG-044/lint-0874228.json
 - docs/exec-plans/evidence/HG-044/lint-26a9a39.json
+- docs/exec-plans/evidence/HG-044/lint-4302c06.json
 - docs/exec-plans/evidence/HG-044/lint-4a9b4c6.json
 - docs/exec-plans/evidence/HG-044/lint-53d94e4.json
 - docs/exec-plans/evidence/HG-044/lint-dccac06.json
@@ -50,30 +55,68 @@ files_changed:
 - docs/exec-plans/evidence/HG-044/refresh.py
 - docs/exec-plans/evidence/HG-044/scope-0874228.json
 - docs/exec-plans/evidence/HG-044/scope-26a9a39.json
+- docs/exec-plans/evidence/HG-044/scope-4302c06.json
 - docs/exec-plans/evidence/HG-044/scope-4a9b4c6.json
 - docs/exec-plans/evidence/HG-044/scope-53d94e4.json
 - docs/exec-plans/evidence/HG-044/scope-dccac06.json
 - docs/exec-plans/evidence/HG-044/scope-e748b37.json
 - docs/exec-plans/evidence/HG-044/typecheck-0874228.json
 - docs/exec-plans/evidence/HG-044/typecheck-26a9a39.json
+- docs/exec-plans/evidence/HG-044/typecheck-4302c06.json
 - docs/exec-plans/evidence/HG-044/typecheck-4a9b4c6.json
 - docs/exec-plans/evidence/HG-044/typecheck-53d94e4.json
 - docs/exec-plans/evidence/HG-044/typecheck-dccac06.json
 - docs/exec-plans/evidence/HG-044/typecheck-e748b37.json
 - docs/exec-plans/evidence/HG-044/unit-0874228.json
 - docs/exec-plans/evidence/HG-044/unit-26a9a39.json
+- docs/exec-plans/evidence/HG-044/unit-4302c06.json
 - docs/exec-plans/evidence/HG-044/unit-4a9b4c6.json
 - docs/exec-plans/evidence/HG-044/unit-53d94e4.json
 - docs/exec-plans/evidence/HG-044/unit-dccac06.json
 - docs/exec-plans/evidence/HG-044/unit-e748b37.json
 - docs/exec-plans/evidence/HG-044/validation-0874228.json
 - docs/exec-plans/evidence/HG-044/validation-26a9a39.json
+- docs/exec-plans/evidence/HG-044/validation-4302c06.json
 - docs/exec-plans/evidence/HG-044/validation-4a9b4c6.json
 - docs/exec-plans/evidence/HG-044/validation-53d94e4.json
 - docs/exec-plans/evidence/HG-044/validation-dccac06.json
 - docs/exec-plans/evidence/HG-044/validation-e748b37.json
 - docs/exec-plans/evidence/HG-044/verify_captures.py
 - docs/exec-plans/governance/HG-044.yaml
+- docs/exec-plans/reviews/HG-044/DB_CONCURRENCY-raw/assessment.md
+- docs/exec-plans/reviews/HG-044/DB_CONCURRENCY-raw/audit.json
+- docs/exec-plans/reviews/HG-044/DB_CONCURRENCY-raw/audit.py
+- docs/exec-plans/reviews/HG-044/DB_CONCURRENCY.json
+- docs/exec-plans/reviews/HG-044/GENERAL-raw/assessment.md
+- docs/exec-plans/reviews/HG-044/GENERAL-raw/audit.json
+- docs/exec-plans/reviews/HG-044/GENERAL-raw/audit.py
+- docs/exec-plans/reviews/HG-044/GENERAL-raw/captures.json
+- docs/exec-plans/reviews/HG-044/GENERAL-raw/finalize.py
+- docs/exec-plans/reviews/HG-044/GENERAL-raw/focused.log
+- docs/exec-plans/reviews/HG-044/GENERAL-raw/hg043-provenance.log
+- docs/exec-plans/reviews/HG-044/GENERAL-raw/probe.json
+- docs/exec-plans/reviews/HG-044/GENERAL-raw/probe.py
+- docs/exec-plans/reviews/HG-044/GENERAL.json
+- docs/exec-plans/reviews/HG-044/PROTOCOL-raw/assessment.md
+- docs/exec-plans/reviews/HG-044/PROTOCOL-raw/audit.json
+- docs/exec-plans/reviews/HG-044/PROTOCOL-raw/audit.py
+- docs/exec-plans/reviews/HG-044/PROTOCOL-raw/omitted-selector-reproduction.json
+- docs/exec-plans/reviews/HG-044/PROTOCOL-raw/reproduce_omitted_selector.py
+- docs/exec-plans/reviews/HG-044/PROTOCOL-raw/targeted-pytest.log
+- docs/exec-plans/reviews/HG-044/PROTOCOL.json
+- docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/check-contracts.json
+- docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/hg043-pytest.log
+- docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/integrity.json
+- docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/positive-full-chain.log
+- docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/reproduce.json
+- docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/reproduce.py
+- docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/review-verification.json
+- docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/targeted-pytest.log
+- docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY.json
+- docs/exec-plans/reviews/HG-044/rounds/351f0ed/DB_CONCURRENCY.json
+- docs/exec-plans/reviews/HG-044/rounds/351f0ed/GENERAL.json
+- docs/exec-plans/reviews/HG-044/rounds/351f0ed/PROTOCOL.json
+- docs/exec-plans/reviews/HG-044/rounds/351f0ed/SECURITY_DATA_BOUNDARY.json
 - docs/harness/M3_CLOSURE_CONTRACT.md
 - tests/harness/test_m3_milestone_closure.py
 - tools/harness/validate_harness.py
@@ -81,35 +124,35 @@ checks_run:
 - check_id: focused
   command: /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_m3_milestone_closure.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-044/focused-e748b37.json
+  evidence_ref: docs/exec-plans/evidence/HG-044/focused-4302c06.json
 - check_id: scope
   command: /private/tmp/hg044-venv/bin/python docs/exec-plans/evidence/HG-044/audit.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-044/scope-e748b37.json
+  evidence_ref: docs/exec-plans/evidence/HG-044/scope-4302c06.json
 - check_id: harness
   command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli test-harness -p no:cacheprovider
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-044/harness-e748b37.json
+  evidence_ref: docs/exec-plans/evidence/HG-044/harness-4302c06.json
 - check_id: unit
   command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli test-unit -p no:cacheprovider
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-044/unit-e748b37.json
+  evidence_ref: docs/exec-plans/evidence/HG-044/unit-4302c06.json
 - check_id: lint
   command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli lint
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-044/lint-e748b37.json
+  evidence_ref: docs/exec-plans/evidence/HG-044/lint-4302c06.json
 - check_id: typecheck
   command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli typecheck
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-044/typecheck-e748b37.json
+  evidence_ref: docs/exec-plans/evidence/HG-044/typecheck-4302c06.json
 - check_id: validation
   command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli check-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-044/validation-e748b37.json
+  evidence_ref: docs/exec-plans/evidence/HG-044/validation-4302c06.json
 - check_id: diff
-  command: git diff --check 9268fc8dd8c071c02dc5c698274dbf6fcd112776 e748b37ec92e119190afad87478b7ecb951e5b5d
+  command: git diff --check 9268fc8dd8c071c02dc5c698274dbf6fcd112776 4302c0649c9255ac60be87d90853ee0620e9f019
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-044/diff-e748b37.json
+  evidence_ref: docs/exec-plans/evidence/HG-044/diff-4302c06.json
 frozen_impact: NONE
 authority_entries_added:
 - docs/harness/M3_CLOSURE_CONTRACT.md
