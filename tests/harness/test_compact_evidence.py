@@ -1,4 +1,5 @@
 """Isolated Git security/provenance and prospective budget tests."""
+import codecs
 import gzip
 import importlib.util
 import json
@@ -411,3 +412,46 @@ def test_wrapped_storage_object_cannot_be_plain_proof(repo, wrapper, encoding):
     head = commit(root)
     assert not v.evidence_exists(root, REF, head)
     assert ce.audit(root, base, head, 'HG-046')['errors']
+
+
+BOM_ENCODINGS = [(codecs.BOM_UTF8, 'utf-8'),
+                 (codecs.BOM_UTF16_LE, 'utf-16-le'),
+                 (codecs.BOM_UTF16_BE, 'utf-16-be'),
+                 (codecs.BOM_UTF32_LE, 'utf-32-le'),
+                 (codecs.BOM_UTF32_BE, 'utf-32-be')]
+CONFLICTING_ENCODINGS = [(bom, body) for bom, declared in BOM_ENCODINGS
+                        for _, body in BOM_ENCODINGS if body != declared]
+
+
+@pytest.mark.parametrize('bom,body', CONFLICTING_ENCODINGS)
+@pytest.mark.parametrize('marker_form', ['literal', 'escaped', 'removed'])
+def test_conflicting_bom_body_cannot_hide_reserved_storage(repo, bom, body, marker_form):
+    root, base, record, _ = captured(repo)
+    if marker_form == 'removed':
+        record.pop('kineticloop_evidence')
+    text = json.dumps(record)
+    if marker_form == 'escaped':
+        text = text.replace('kineticloop_evidence', 'kineticloop\\u005fevidence')
+    raw = bom + text.encode(body)
+    with pytest.raises(ValueError):
+        ce.envelope(raw)
+    (root / REF).write_bytes(raw)
+    (root / record['payload']).unlink()
+    head = commit(root)
+    with pytest.raises(ValueError):
+        ce.read(root, REF, head)
+    assert not v.evidence_exists(root, REF, head, base, 'pytest', 0)
+    assert not v.evidence_exists(root, REF, head, head, 'wrong-command', 1)
+    assert ce.audit(root, base, head, 'HG-046')['errors']
+
+
+@pytest.mark.parametrize('bom,body', CONFLICTING_ENCODINGS)
+def test_conflicting_encoding_without_reserved_content_stays_opaque(repo, bom, body):
+    root, _ = repo
+    path = root / REF
+    path.parent.mkdir(parents=True)
+    raw = bom + 'opaque historical \\u005f text, not JSON\n'.encode(body)
+    path.write_bytes(raw)
+    head = commit(root)
+    assert ce.read(root, REF, head) == raw
+    assert v.evidence_exists(root, REF, head)

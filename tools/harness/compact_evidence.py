@@ -84,13 +84,25 @@ def unique(pairs):
     return result
 
 
+def reserved_ascii(data: bytes) -> bool:
+    # Classification only: neither escape nor NUL normalization accepts bytes.
+    data = re.sub(rb'\\u([0-9a-fA-F]{4})',
+                  lambda m: bytes([int(m[1], 16)]) if int(m[1], 16) < 128
+                  else m[0], data)
+    return (b'"kineticloop_evidence"' in data or
+            all(k in data for k in (b'"payload"', b'"stored_sha256"', b'"raw_sha256"')))
+
+
 def envelope(data: bytes) -> dict[str, Any] | None:
+    original = data
     original_bytes = len(data)
     encoding = json.detect_encoding(data)
     if encoding != 'utf-8':
         try:
             data = data.decode(encoding).encode('utf-8')
         except UnicodeError as ex:
+            if reserved_ascii(original.replace(b'\0', b'')):
+                raise ValueError('evidence-envelope-encoding') from ex
             # Replacement is only for classification, never accepted decoding.
             if envelope(data.decode(encoding, errors='replace').encode('utf-8')) is not None:
                 raise ValueError('evidence-envelope-encoding') from ex
@@ -99,6 +111,12 @@ def envelope(data: bytes) -> dict[str, Any] | None:
     keys = (b'"payload"', b'"stored_sha256"', b'"raw_sha256"')
     marker = b'"kineticloop_evidence"'
     if marker not in data and not all(k in data for k in keys) and b'\\u' not in data:
+        # A conflicting BOM/body can decode without error into NUL-interleaved
+        # or wrong-endian text. Recognizable reserved bytes cannot fall back to
+        # opaque evidence merely because that decoding hid their keys.
+        if ((encoding != 'utf-8' or b'\0' in original)
+                and reserved_ascii(original.replace(b'\0', b''))):
+            raise ValueError('evidence-envelope-encoding')
         return None
     reserved = False
     def storage_pairs(pairs):
@@ -111,10 +129,8 @@ def envelope(data: bytes) -> dict[str, Any] | None:
     except (UnicodeError, json.JSONDecodeError) as ex:
         # Decode ASCII key escapes only to classify a malformed storage record.
         # Opaque historical bytes containing unrelated \u text stay plain.
-        unescaped = re.sub(rb'\\u([0-9a-fA-F]{4})',
-                           lambda m: bytes([int(m[1], 16)]) if int(m[1], 16) < 128
-                           else m[0], data)
-        if marker in unescaped or all(k in unescaped for k in keys):
+        if (reserved_ascii(data) or
+                reserved_ascii(original.replace(b'\0', b''))):
             raise ValueError('evidence-envelope-json') from ex
         return None
     if isinstance(value, dict) and (MARKER in value or
