@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="9.987" timestamp="2026-10-01T22:47:36.146686-07:00" hostname="Daves-MacBook-Pro---26.local"><testcase classname="tests.db.test_boundary_acceptance" name="test_b01_unsealed_canonical_denial" time="4.983" /><testcase classname="tests.db.test_boundary_acceptance" name="test_b02_stale_frontier_seal_race[True]" time="4.657"><failure message="AssertionError: factset completion basis is stale, incomplete, or mismatched&#10;assert (True and 'frontier' in 'factset completion basis is stale, incomplete, or mismatched')&#10; +  where True = isinstance(GuardRequired('factset completion basis is stale, incomplete, or mismatched'), (&lt;class 'kineticloop.persistence.transactions.RepositoryTransactionError'&gt;, &lt;class 'psycopg.Error'&gt;, &lt;class 'ValueError'&gt;, &lt;class 'kineticloop.contracts.safety_registry.RegistryDenied'&gt;))&#10; +  and   'factset completion basis is stale, incomplete, or mismatched' = str(GuardRequired('factset completion basis is stale, incomplete, or mismatched'))">database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:57700/kineticloop_kl028_boundary_9268fc8_3635a672... 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:57700/kineticloop_kl028_boundary_9268fc8_3635a672a23d', ...}
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x109fb7ad0&gt;
+update_first = True
+
+    @pytest.mark.parametrize("update_first", [True, False])
+    def test_b02_stale_frontier_seal_race(
+        database_urls: Any, monkeypatch: Any, update_first: bool
+    ) -&gt; None:
+        seed = seed_source(database_urls)
+        with connect(database_urls["admin"]) as db:
+            _, identity, closed = build(db, seed)
+        subject = D.auth(seed).subject_id
+    
+        def seal(db):
+            return CanonicalViewService(
+                db, BuilderIdentity(seed["identity"].actor, subject)
+            ).seal_factset(SealFactset(subject, "seal", identity, closed))
+    
+        def update(db):
+            return D.input_revision(db, seed, "input-" + str(uuid4()))
+    
+&gt;       race(
+            database_urls,
+            seed,
+            monkeypatch,
+            update if update_first else seal,
+            seal if update_first else update,
+            cause="frontier" if update_first else None,
+        )
+
+tests/db/test_boundary_acceptance.py:570: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:57700/kineticloop_kl028_boundary_9268fc8_3635a672... 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:57700/kineticloop_kl028_boundary_9268fc8_3635a672a23d', ...}
+seed = {'a': UUID('3c7fa65b-0ed4-4a31-9eb1-e86ca567a3c9'), 'admission': UUID('90dd2d5f-00b6-4f3a-92c8-a09e9fd6c731'), 'admiss...0, 2, 6, 47, 45, 229886, tzinfo=datetime.timezone.utc), 'assertion': UUID('11cfc9ab-d9ac-418b-9c95-6277623b7737'), ...}
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x109fb7ad0&gt;
+first = &lt;function test_b02_stale_frontier_seal_race.&lt;locals&gt;.update at 0x109afa340&gt;
+second = &lt;function test_b02_stale_frontier_seal_race.&lt;locals&gt;.seal at 0x109afa8e0&gt;
+
+    def race(
+        urls: Any,
+        seed: Any,
+        monkeypatch: Any,
+        first: Any,
+        second: Any,
+        *,
+        first_registry: bool = False,
+        second_registry: bool = False,
+        cause: str | None = None,
+    ) -&gt; Any:
+        held, release, entered = Event(), Event(), Event()
+        thread = local()
+        pids: dict[str, int] = {}
+        winners: dict[str, Any] = {}
+        traces: list[Any] = []
+        original_finish = RepositoryTransaction.finish
+        with connect(urls["admin"]) as db:
+            baseline = snapshot(db, seed)
+    
+        def wait_winner(db: Any) -&gt; None:
+            if thread.name == "winner":
+                winners["state"] = baseline if first_registry else snapshot(db, seed)
+                held.set()
+                assert release.wait(8), "winner release deadline"
+    
+        def finish(tx: Any) -&gt; None:
+            original_finish(tx)
+            traces.append({"command": tx.command_kind, "trace": tx.lock_trace})
+            wait_winner(thread.db)
+    
+        class Cursor(psycopg.Cursor[Any]):
+            def execute(self, query: Any, params: Any = None, **kwargs: Any) -&gt; Any:
+                result = super().execute(query, params, **kwargs)
+                if "registry_revoke_artifact(" in str(query):
+                    wait_winner(self.connection)
+                return result
+    
+        def run(operation: Any, name: str, registry: bool) -&gt; Any:
+            with connect(
+                urls["trusted_admin"] if registry else urls["admin"],
+                cursor_factory=Cursor,
+                application_name="kl028-" + name,
+            ) as db:
+                thread.name, thread.db = name, db
+                pids[name] = db.info.backend_pid
+                if name == "loser":
+                    entered.set()
+                try:
+                    return operation(db)
+                except ERRORS as error:
+                    return error
+    
+        with monkeypatch.context() as patch, ThreadPoolExecutor(max_workers=2) as pool:
+            patch.setattr(RepositoryTransaction, "finish", finish)
+            winner = pool.submit(run, first, "winner", first_registry)
+            try:
+                assert held.wait(8), (
+                    winner.result(timeout=1) if winner.done() else "winner guard missing"
+                )
+                loser = pool.submit(run, second, "loser", second_registry)
+                assert entered.wait(8)
+                with connect(urls["admin"], autocommit=True) as observer:
+                    deadline = time.monotonic() + 0.8
+                    blocked = None
+                    while time.monotonic() &lt; deadline:
+                        row = observer.execute(
+                            "SELECT pg_blocking_pids(%s),clock_timestamp(),(SELECT query FROM pg_stat_activity WHERE pid=%s)",
+                            (pids["loser"], pids["loser"]),
+                        ).fetchone()
+                        if pids["winner"] in row[0]:
+                            blocked = row
+                            break
+                    assert blocked is not None, "actual PostgreSQL blocking missing"
+            finally:
+                release.set()
+            a, b = winner.result(timeout=12), loser.result(timeout=12)
+        assert not isinstance(a, ERRORS), a
+        if cause:
+&gt;           assert isinstance(b, ERRORS) and cause in str(b), str(b)
+E           AssertionError: factset completion basis is stale, incomplete, or mismatched
+E           assert (True and 'frontier' in 'factset completion basis is stale, incomplete, or mismatched')
+E            +  where True = isinstance(GuardRequired('factset completion basis is stale, incomplete, or mismatched'), (&lt;class 'kineticloop.persistence.transactions.RepositoryTransactionError'&gt;, &lt;class 'psycopg.Error'&gt;, &lt;class 'ValueError'&gt;, &lt;class 'kineticloop.contracts.safety_registry.RegistryDenied'&gt;))
+E            +  and   'factset completion basis is stale, incomplete, or mismatched' = str(GuardRequired('factset completion basis is stale, incomplete, or mismatched'))
+
+tests/db/test_boundary_acceptance.py:478: AssertionError</failure></testcase></testsuite></testsuites>

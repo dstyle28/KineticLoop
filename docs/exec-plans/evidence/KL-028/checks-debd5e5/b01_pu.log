@@ -1,0 +1,12 @@
+{"tested_commit": "debd5e58f98b4b20a2dd1ae132799d2373797622", "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial", "resolved_root": "/Users/davetian/.codex/worktrees/34e8/KineticLoop", "oracle": "protocol.factsets.reconstruct(canonical=True): Construct identical valid closed BUILDING, READY, SEALED chains. BUILDING/READY both deny canonical reconstruction; SEALED reconstructs exact membership digest/count; unsealed ancestor denies.", "pytest_addopts": "-rA --junitxml=/Users/davetian/.codex/worktrees/34e8/KineticLoop/docs/exec-plans/evidence/KL-028/checks-debd5e5/b01_pu.xml"}
+.                                                                        [100%]
+==================================== PASSES ====================================
+______________________ test_b01_unsealed_canonical_denial ______________________
+----------------------------- Captured stdout call -----------------------------
+BOUNDARY_PU {"cause": "unsealed chain", "label": "canonical_denial", "status": "BUILDING"}
+BOUNDARY_PU {"cause": "unsealed chain", "label": "canonical_denial", "status": "READY"}
+BOUNDARY_PU {"count": 1, "digest": "b46898b8b41ac1d956fb010ea72e5792b61ee0e7ae861968c5c8ce67d6dfa2e1", "label": "sealed_exact_membership"}
+- generated xml file: /Users/davetian/.codex/worktrees/34e8/KineticLoop/docs/exec-plans/evidence/KL-028/checks-debd5e5/b01_pu.xml -
+=========================== short test summary info ============================
+PASSED tests/unit/protocol/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial
+1 passed in 0.16s

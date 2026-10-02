@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="4" time="19.190" timestamp="2026-10-01T22:47:59.520933-07:00" hostname="Daves-MacBook-Pro---26.local"><testcase classname="tests.db.test_boundary_acceptance" name="test_b01_unsealed_canonical_denial" time="4.598" /><testcase classname="tests.db.test_boundary_acceptance" name="test_b02_stale_frontier_seal_race[True]" time="4.884" /><testcase classname="tests.db.test_boundary_acceptance" name="test_b02_stale_frontier_seal_race[False]" time="4.788" /><testcase classname="tests.db.test_boundary_acceptance" name="test_b03_sealed_immutability_ready_barrier" time="4.587"><failure message="AssertionError: factset build is not at the expected BUILDING revision&#10;assert 'closed' in 'factset build is not at the expected BUILDING revision'&#10; +  where 'factset build is not at the expected BUILDING revision' = str(GuardRequired('factset build is not at the expected BUILDING revision'))&#10; +    where GuardRequired('factset build is not at the expected BUILDING revision') = &lt;ExceptionInfo GuardRequired('factset build is not at the expected BUILDING revision') tblen=4&gt;.value">database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:57706/kineticloop_kl028_boundary_9268fc8_3635a672... 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:57706/kineticloop_kl028_boundary_9268fc8_3635a672a23d', ...}
+
+    def test_b03_sealed_immutability_ready_barrier(database_urls: Any) -&gt; None:
+        seed = seed_source(database_urls)
+        with connect(database_urls["admin"]) as db:
+            cv, identity, closed = build(db, seed)
+            subject = D.auth(seed).subject_id
+    
+            def write():
+                return cv.write_candidate(
+                    WriteCandidate(
+                        subject,
+                        str(uuid4()),
+                        identity,
+                        3,
+                        Member("FACT", "correction", "TEST_ONLY", seed["fact"]),
+                    )
+                )
+    
+&gt;           denial(db, seed, write, "closed")
+
+tests/db/test_boundary_acceptance.py:609: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+db = &lt;psycopg.Connection [BAD] at 0x10b8d3c50&gt;
+seed = {'a': UUID('3cad8b1a-a1b8-4d43-aac4-1b96c3d0604d'), 'admission': UUID('7aeeb90b-8065-4f13-9a2d-39b2899863fe'), 'admiss...0, 2, 6, 48, 17, 920329, tzinfo=datetime.timezone.utc), 'assertion': UUID('c5b00db6-b855-4cf2-a6e3-f8ea67119c49'), ...}
+operation = &lt;function test_b03_sealed_immutability_ready_barrier.&lt;locals&gt;.write at 0x10b7a47c0&gt;
+cause = 'closed'
+
+    def denial(db: Any, seed: Any, operation: Any, cause: str) -&gt; None:
+        before, registry = snapshot(db, seed), global_snapshot(db)
+        with pytest.raises(ERRORS) as error:
+            operation()
+&gt;       assert cause in str(error.value), str(error.value)
+E       AssertionError: factset build is not at the expected BUILDING revision
+E       assert 'closed' in 'factset build is not at the expected BUILDING revision'
+E        +  where 'factset build is not at the expected BUILDING revision' = str(GuardRequired('factset build is not at the expected BUILDING revision'))
+E        +    where GuardRequired('factset build is not at the expected BUILDING revision') = &lt;ExceptionInfo GuardRequired('factset build is not at the expected BUILDING revision') tblen=4&gt;.value
+
+tests/db/test_boundary_acceptance.py:204: AssertionError</failure></testcase></testsuite></testsuites>
