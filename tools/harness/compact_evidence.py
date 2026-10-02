@@ -85,14 +85,24 @@ def unique(pairs):
 
 
 def envelope(data: bytes) -> dict[str, Any] | None:
-    # Historical logs/JSON remain byte-preserving plain references.
-    if b'"kineticloop_evidence"' not in data and b'\\u' not in data:
+    # Storage fields identify damaged envelopes even if their marker is removed.
+    keys = (b'"payload"', b'"stored_sha256"', b'"raw_sha256"')
+    marker = b'"kineticloop_evidence"'
+    if marker not in data and not all(k in data for k in keys) and b'\\u' not in data:
         return None
     try:
         value = json.loads(data, object_pairs_hook=unique)
     except (UnicodeError, json.JSONDecodeError) as ex:
-        raise ValueError('evidence-envelope-json') from ex
-    if isinstance(value, dict) and MARKER in value:
+        # Decode ASCII key escapes only to classify a malformed storage record.
+        # Opaque historical bytes containing unrelated \u text stay plain.
+        unescaped = re.sub(rb'\\u([0-9a-fA-F]{4})',
+                           lambda m: bytes([int(m[1], 16)]) if int(m[1], 16) < 128
+                           else m[0], data)
+        if marker in unescaped or all(k in unescaped for k in keys):
+            raise ValueError('evidence-envelope-json') from ex
+        return None
+    if isinstance(value, dict) and (MARKER in value or
+                                   {'payload', 'stored_sha256', 'raw_sha256'} <= set(value)):
         if len(data) > PLAIN_LIMIT:
             raise ValueError('evidence-envelope-size')
         return value

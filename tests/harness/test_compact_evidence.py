@@ -279,3 +279,25 @@ def test_truncated_envelope_does_not_become_plain_proof(repo):
     path.write_bytes(path.read_bytes()[:-3])
     head = commit(root)
     assert not v.evidence_exists(root, REF, head)
+
+
+@pytest.mark.parametrize('mutation', ['removed', 'renamed'])
+def test_damaged_marker_does_not_turn_manifest_into_plain_proof(repo, mutation):
+    root, _, record, _ = captured(repo)
+    if mutation == 'removed':
+        record.pop('kineticloop_evidence')
+    else:
+        record['damaged_marker'] = record.pop('kineticloop_evidence')
+    head = replace_record(root, record)
+    assert not v.evidence_exists(root, REF, head)
+
+
+def test_unmarked_opaque_historical_json_bytes_remain_lossless(repo):
+    root, _ = repo
+    path = root / REF
+    path.parent.mkdir(parents=True)
+    raw = b'opaque historical \\u005f text, not JSON\xff\n'
+    path.write_bytes(raw)
+    head = commit(root)
+    assert ce.read(root, REF, head) == raw
+    assert v.evidence_exists(root, REF, head)
