@@ -245,13 +245,18 @@ def denial(db: Any, seed: Any, operation: Any, cause: str) -> None:
     with pytest.raises(ERRORS) as error:
         operation()
     assert cause in str(error.value), str(error.value)
-    assert snapshot(db, seed) == before and global_snapshot(db) == registry
+    after, registry_after = snapshot(db, seed), global_snapshot(db)
+    assert after == before and registry_after == registry
     witness(
         "exact_guard_zero_effect",
         cause=str(error.value),
         intended=cause,
         persisted=before,
         global_history=registry,
+        before=before,
+        after=after,
+        global_before=registry,
+        global_after=registry_after,
     )
 
 
@@ -526,10 +531,12 @@ def race(
             release.set()
         a, b = winner.result(timeout=12), loser.result(timeout=12)
     assert not isinstance(a, ERRORS), a
+    with connect(urls["admin"]) as db:
+        after_loser = snapshot(db, seed)
+        global_after_loser = global_snapshot(db)
     if cause:
         assert isinstance(b, ERRORS) and cause in str(b), str(b)
-        with connect(urls["admin"]) as db:
-            assert snapshot(db, seed) == winners["state"]
+        assert after_loser == winners["state"]
     else:
         assert not isinstance(b, ERRORS), b
     for item in traces:
@@ -546,6 +553,8 @@ def race(
         second_result=str(b) if isinstance(b, ERRORS) else b,
         traces=traces,
         winner_uncommitted_history=winners["state"],
+        after_loser=after_loser,
+        global_after_loser=global_after_loser,
         zero_effects_after_winner=bool(cause),
     )
     return a, b
@@ -1225,10 +1234,16 @@ def _timed_revoke(urls: Any, monkeypatch: Any, kind: str, future: bool, positive
     assert (result.effective_at > result.recorded_at) is future
     with connect(urls["admin"]) as db:
         assert_revoke(db, before, result)
-        assert snapshot(db, seed) == history
+        after = snapshot(db, seed)
+        assert after == history
         denial(db, seed, lambda: operation(db), revoked_cause(kind))
     witness(
-        "effective_at_audit_only", future=future, kind=kind, result=asdict(result), history=history
+        "effective_at_audit_only",
+        future=future,
+        kind=kind,
+        result=asdict(result),
+        history=history,
+        after=after,
     )
 
 
@@ -1327,21 +1342,27 @@ def test_b14_registry_failclosed_stop_support(database_urls: Any, kind: str, fau
                     assert isinstance(result, ERRORS) and (
                         "lock timeout" if kind == "T3" else "KL_REGISTRY_TIMEOUT"
                     ) in str(result), str(result)
-                    assert snapshot(db, seed) == before
+                    after = snapshot(db, seed)
+                    assert after == before
                     witness(
                         "actual_gate_timeout_STOP_support",
                         observed=observed,
                         cause=str(result),
                         persisted=before,
+                        before=before,
+                        after=after,
                     )
                 blocker.rollback()
-        assert global_snapshot(db) == registry_before
+        registry_after = global_snapshot(db)
+        assert registry_after == registry_before
         witness(
             "DC_support_only_registry_fault_STOP",
             kind=kind,
             fault=fault,
             reached=reached,
             persisted=snapshot(db, seed),
+            global_before=registry_before,
+            global_after=registry_after,
             B14_WF="NOT_RUN",
             B14_E2E="NOT_RUN",
         )
