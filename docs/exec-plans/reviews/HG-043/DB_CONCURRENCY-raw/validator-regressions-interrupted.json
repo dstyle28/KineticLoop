@@ -1,0 +1,19 @@
+{
+  "reviewed_head_sha": "2896d2422999fdf8a2cbca75eb316798c015ad17",
+  "exit_code": 130,
+  "result": "INTERRUPTED",
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/harness/test_validator.py"
+  ],
+  "raw_sha256": "771c732e184b54114048648a1e4508d92119e98c00a4ffe372ee2b2180e02acc",
+  "raw_utf8": "provenance-regressions 0 ..................................                                       [100%]\n34 passed in 31.20s\n\nTraceback: audit.py line 142, run validator-regressions; subprocess.run -> communicate -> selector.select -> poll raised KeyboardInterrupt. Exit code 130. The remaining broader validator run was safely interrupted after the reproduced blocker, on review coordinator instruction. Its captured pytest pipe was not returned before interruption; no partial test counts or PASS are inferred.\n",
+  "raw_content_note": "Completed focus output plus summarized visible interruption traceback, not pytest test output.",
+  "candidate_replay": "NOT_RUN; not reached after interruption; independently audited static candidate chains are complete.",
+  "reason": "Do not finish duplicate broad tests on a rejected SHA; corrected revision requires tests and fresh review."
+}
