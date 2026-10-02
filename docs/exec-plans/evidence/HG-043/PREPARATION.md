@@ -51,3 +51,11 @@ history. The corrected fallback additionally proves the exact path has no Git
 entry at reviewed, with explicit real-Git symlink/tree/gitlink replacement
 regressions. This repair requires new checks and fresh SHA-bound reviews; prior
 CHANGES_REQUIRED evidence is never relabeled as PASS.
+
+A further temporary-fixture probe at 787663f showed that ls-tree metadata alone
+could pass a reference whose blob object was unavailable. The immutable-source
+probe and original result are retained. Exact tree-entry presence now proves the
+absence prerequisite independently of object availability; regular entries also
+require an available blob object. Real-Git missing-object controls cover reviewed
+and recorded-review sources, including an attempted replacement of a missing
+reviewed object. The obsolete full-harness round was interrupted and is not PASS.

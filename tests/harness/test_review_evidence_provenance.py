@@ -302,3 +302,28 @@ def test_present_nonregular_entry_cannot_be_replaced_through_exception(
     assert v.suffix_errors(history.root, history.reviewed, review, 'KL-001', 'review') == []
     assert v.revision_regular_file(history.root, ref, review)
     assert 'integration-review-evidence:KL-001:GENERAL:' + ref in history.errors(review)
+
+
+@pytest.mark.parametrize('source', ['reviewed', 'review_record'])
+def test_missing_blob_is_not_available_evidence_or_an_absent_path(
+        history: History, source: str) -> None:
+    ref = OWN + 'unique-object.log'
+    if source == 'reviewed':
+        history.put(ref, 'unique original reviewed blob\n')
+        history.reviewed = history.commit('ordinary reviewed evidence')
+        oid = history.git('rev-parse', history.reviewed + ':' + ref)
+        history.put(ref, 'replacement cannot supply missing reviewed blob\n')
+        review = history.review([ref])
+        bound = history.reviewed
+    else:
+        history.put(ref, 'unique review-created blob\n')
+        review = history.review([ref])
+        oid = history.git('rev-parse', review + ':' + ref)
+        bound = review
+    # Corrupt only this isolated fixture's loose object; never the real repository.
+    object_path = history.root / '.git/objects' / oid[:2] / oid[2:]
+    assert history.root.resolve() in object_path.resolve().parents
+    object_path.unlink()
+    assert v.revision_git_entry(history.root, ref, bound) is not None
+    assert not v.revision_regular_file(history.root, ref, bound)
+    assert 'integration-review-evidence:KL-001:GENERAL:' + ref in history.errors(review)

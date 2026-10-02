@@ -1695,18 +1695,28 @@ def evidence_exists(root, ref, revision=None):
     return path.is_file() and root.resolve() in path.resolve().parents
 
 
-def revision_regular_file(root, ref, revision):
-    """Resolve a normalized path to an exact, regular Git blob (never a symlink/tree)."""
+def revision_git_entry(root, ref, revision):
+    """Read an exact normalized tree entry, independently of its object's availability."""
     if not relative_path(ref) or '\0' in ref:
-        return False
+        return None
     entries = git(root, 'ls-tree', '-z', revision, '--', ref).split(b'\0')
     for entry in filter(None, entries):
         metadata, name = entry.split(b'\t', 1)
-        mode, kind, _oid = metadata.split()
-        if (name == ref.encode() and kind == b'blob'
-                and mode in (b'100644', b'100755')):
-            return True
-    return False
+        if name == ref.encode():
+            return tuple(metadata.split())
+    return None
+
+
+def revision_regular_file(root, ref, revision):
+    """Resolve an exact regular tree entry to an available content-addressed Git blob."""
+    entry = revision_git_entry(root, ref, revision)
+    if entry is None:
+        return False
+    mode, kind, oid = entry
+    if kind != b'blob' or mode not in (b'100644', b'100755'):
+        return False
+    obj = subprocess.run(['git', 'cat-file', '-t', oid.decode()], cwd=root, capture_output=True)
+    return obj.returncode == 0 and obj.stdout.strip() == b'blob'
 
 
 def review_evidence_exists(root, ref, reviewed, review_commit, task_id, review_only_suffix):
@@ -1716,7 +1726,7 @@ def review_evidence_exists(root, ref, reviewed, review_commit, task_id, review_o
     if revision_regular_file(root, ref, reviewed):
         return True
     return (review_only_suffix and matches(ref, review_patterns(task_id))
-            and not evidence_exists(root, ref, reviewed)
+            and revision_git_entry(root, ref, reviewed) is None
             and revision_regular_file(root, ref, review_commit))
 
 
