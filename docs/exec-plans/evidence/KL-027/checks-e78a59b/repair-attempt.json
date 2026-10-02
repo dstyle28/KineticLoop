@@ -1,0 +1,27 @@
+{
+  "tested_commit": "e78a59bbff2343fa7750ae3d5925548d4962c8ce",
+  "status": "FAIL",
+  "named_selectors_completed": 6,
+  "full_suite": {
+    "completed": 22,
+    "passed": 18,
+    "failed": 4,
+    "errors": 0,
+    "skipped": 0,
+    "not_run": 39,
+    "interrupted": true
+  },
+  "failure_cause": "Two-second launch margin exceeded unchanged merged owner one-second lock timeout; exact rejection oracle correctly failed.",
+  "fix": "Restore half-second margin after blocker setup, retain actual blocked_at < immutable expiry assertion and finally rollback. No source timeout override.",
+  "owned_namespace": "kineticloop-kl027-demo-e78a59b-02d718cec5f6",
+  "explicit_post_interrupt_inventory_before_cleanup": {
+    "containers": "",
+    "volumes": "",
+    "networks": ""
+  },
+  "explicit_post_interrupt_inventory_after_cleanup": {
+    "containers": "",
+    "volumes": "",
+    "networks": ""
+  }
+}

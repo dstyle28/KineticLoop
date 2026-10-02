@@ -1,0 +1,258 @@
+{
+  "reviewed_head_sha": "ff93c08c7c32fba9e8dede0c161bb4f97bc98259",
+  "namespace_first": {
+    "tests": 1,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "four_operations": {
+    "tests": 4,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "timings": [
+    {
+      "actual_guard": "missing/contradictory/incomplete/truncated/mismatched/expired resolution",
+      "kind": "trusted_post_lock_expiry_DC",
+      "observed_lock": [
+        172,
+        [
+          121
+        ],
+        "SELECT id FROM kineticloop.planning_attempts WHERE subject_id=$1 AND id=$2 FOR UPDATE",
+        "2026-10-02 00:29:35.012899+00:00"
+      ],
+      "operation": "T6",
+      "other_bounds": {
+        "lease_seconds": 600,
+        "manifest_policy": "2026-10-02 01:29:27.433663+00:00"
+      },
+      "source_end": "2026-10-02 00:29:35.433663+00:00",
+      "trusted_after": "2026-10-02 00:29:35.441073+00:00",
+      "trusted_before_wait": "2026-10-02 00:29:34.947318+00:00",
+      "trusted_blocked_at": "2026-10-02 00:29:35.012899+00:00",
+      "zero_effects": true
+    },
+    {
+      "actual_guard": "exact T7 prescription/authorization is not executable: TIME_INELIGIBLE",
+      "kind": "trusted_post_lock_expiry_DC",
+      "observed_lock": [
+        170,
+        [
+          120
+        ],
+        "SELECT id,current_bundle_revision_id,local_date,head_revision FROM kineticloop.daily_plan_heads WHERE subject_id=$1 AND local_date=$2 FOR UPDATE",
+        "2026-10-02 00:29:47.246857+00:00"
+      ],
+      "operation": "START",
+      "other_bounds": {
+        "lease_seconds": 600,
+        "manifest_policy": "2026-10-02 01:29:39.673467+00:00"
+      },
+      "source_end": "2026-10-02 00:29:47.673467+00:00",
+      "trusted_after": "2026-10-02 00:29:47.684507+00:00",
+      "trusted_before_wait": "2026-10-02 00:29:47.178019+00:00",
+      "trusted_blocked_at": "2026-10-02 00:29:47.246857+00:00",
+      "zero_effects": true
+    },
+    {
+      "actual_guard": "exact T7 prescription/authorization is not executable: TIME_INELIGIBLE",
+      "kind": "trusted_post_lock_expiry_DC",
+      "observed_lock": [
+        171,
+        [
+          121
+        ],
+        "SELECT id FROM kineticloop.workout_sessions WHERE subject_id=$1 AND id=$2 FOR UPDATE",
+        "2026-10-02 00:29:59.383727+00:00"
+      ],
+      "operation": "CONTINUE",
+      "other_bounds": {
+        "lease_seconds": 600,
+        "manifest_policy": "2026-10-02 01:29:51.819174+00:00"
+      },
+      "source_end": "2026-10-02 00:29:59.819174+00:00",
+      "trusted_after": "2026-10-02 00:29:59.824831+00:00",
+      "trusted_before_wait": "2026-10-02 00:29:59.323069+00:00",
+      "trusted_blocked_at": "2026-10-02 00:29:59.383727+00:00",
+      "zero_effects": true
+    },
+    {
+      "actual_guard": "exact T7 prescription/authorization is not executable: TIME_INELIGIBLE",
+      "kind": "trusted_post_lock_expiry_DC",
+      "observed_lock": [
+        171,
+        [
+          121
+        ],
+        "SELECT id FROM kineticloop.workout_sessions WHERE subject_id=$1 AND id=$2 FOR UPDATE",
+        "2026-10-02 00:30:11.585030+00:00"
+      ],
+      "operation": "RESUME",
+      "other_bounds": {
+        "lease_seconds": 600,
+        "manifest_policy": "2026-10-02 01:30:04.014086+00:00"
+      },
+      "source_end": "2026-10-02 00:30:12.014086+00:00",
+      "trusted_after": "2026-10-02 00:30:12.025125+00:00",
+      "trusted_before_wait": "2026-10-02 00:30:11.521204+00:00",
+      "trusted_blocked_at": "2026-10-02 00:30:11.585030+00:00",
+      "zero_effects": true
+    }
+  ],
+  "namespace_witnesses": [
+    {
+      "compose": "kineticloop-kl027-demo-ff93c08-02d718cec5f6",
+      "database": "kineticloop_kl027_demo_ff93c08_02d718cec5f6",
+      "kind": "namespace",
+      "migration": "e8c2f1a6b904",
+      "nested_routes": [
+        "selected bootstrap",
+        "reset",
+        "start",
+        "current_database",
+        "finally own destroy"
+      ],
+      "resolved_root": "/Users/davetian/.codex/worktrees/465a/KineticLoop",
+      "tested_commit": "ff93c08c7c32fba9e8dede0c161bb4f97bc98259"
+    },
+    {
+      "compose": "kineticloop-kl027-demo-ff93c08-02d718cec5f6",
+      "database": "kineticloop_kl027_demo_ff93c08_02d718cec5f6",
+      "kind": "namespace",
+      "migration": "e8c2f1a6b904",
+      "nested_routes": [
+        "selected bootstrap",
+        "reset",
+        "start",
+        "current_database",
+        "finally own destroy"
+      ],
+      "resolved_root": "/Users/davetian/.codex/worktrees/465a/KineticLoop",
+      "tested_commit": "ff93c08c7c32fba9e8dede0c161bb4f97bc98259"
+    },
+    {
+      "compose": "kineticloop-kl027-demo-ff93c08-02d718cec5f6",
+      "database": "kineticloop_kl027_demo_ff93c08_02d718cec5f6",
+      "kind": "namespace",
+      "migration": "e8c2f1a6b904",
+      "nested_routes": [
+        "selected bootstrap",
+        "reset",
+        "start",
+        "current_database",
+        "finally own destroy"
+      ],
+      "resolved_root": "/Users/davetian/.codex/worktrees/465a/KineticLoop",
+      "tested_commit": "ff93c08c7c32fba9e8dede0c161bb4f97bc98259"
+    },
+    {
+      "compose": "kineticloop-kl027-demo-ff93c08-02d718cec5f6",
+      "database": "kineticloop_kl027_demo_ff93c08_02d718cec5f6",
+      "kind": "namespace",
+      "migration": "e8c2f1a6b904",
+      "nested_routes": [
+        "selected bootstrap",
+        "reset",
+        "start",
+        "current_database",
+        "finally own destroy"
+      ],
+      "resolved_root": "/Users/davetian/.codex/worktrees/465a/KineticLoop",
+      "tested_commit": "ff93c08c7c32fba9e8dede0c161bb4f97bc98259"
+    }
+  ],
+  "cleanup_witnesses": [
+    {
+      "compose": "kineticloop-kl027-demo-ff93c08-02d718cec5f6",
+      "database": "kineticloop_kl027_demo_ff93c08_02d718cec5f6",
+      "elapsed": 11.750045666936785,
+      "inventory": [
+        "bootstrap_two_phase(selected_lifecycle)",
+        "reset",
+        "start",
+        "destroy"
+      ],
+      "kind": "cleanup",
+      "remaining": {
+        "container": "",
+        "network": "",
+        "volume": ""
+      }
+    },
+    {
+      "compose": "kineticloop-kl027-demo-ff93c08-02d718cec5f6",
+      "database": "kineticloop_kl027_demo_ff93c08_02d718cec5f6",
+      "elapsed": 11.50239970907569,
+      "inventory": [
+        "bootstrap_two_phase(selected_lifecycle)",
+        "reset",
+        "start",
+        "destroy"
+      ],
+      "kind": "cleanup",
+      "remaining": {
+        "container": "",
+        "network": "",
+        "volume": ""
+      }
+    },
+    {
+      "compose": "kineticloop-kl027-demo-ff93c08-02d718cec5f6",
+      "database": "kineticloop_kl027_demo_ff93c08_02d718cec5f6",
+      "elapsed": 11.47040483308956,
+      "inventory": [
+        "bootstrap_two_phase(selected_lifecycle)",
+        "reset",
+        "start",
+        "destroy"
+      ],
+      "kind": "cleanup",
+      "remaining": {
+        "container": "",
+        "network": "",
+        "volume": ""
+      }
+    },
+    {
+      "compose": "kineticloop-kl027-demo-ff93c08-02d718cec5f6",
+      "database": "kineticloop_kl027_demo_ff93c08_02d718cec5f6",
+      "elapsed": 11.523153292015195,
+      "inventory": [
+        "bootstrap_two_phase(selected_lifecycle)",
+        "reset",
+        "start",
+        "destroy"
+      ],
+      "kind": "cleanup",
+      "remaining": {
+        "container": "",
+        "network": "",
+        "volume": ""
+      }
+    }
+  ],
+  "files": {
+    "namespace-cache-unavailable.log": "efec0660417ab2ecbedde9f18c87e29a854a5f1d882b11fe0320858b70f6a862",
+    "four-operations-sandbox-unavailable.xml": "6d7845fe587c095f34f90842f5a021c01a2c2f7bddb8bf40341ccdb3e7cd3888",
+    "namespace.log": "216b3ea453c3cc6a1858526ffd3896dc3cde616e56bfc632afa2ccd6bd97fd26",
+    "four-operations.log": "e7d92f3bfebff923a43def352de1c16c6628a2b0294696d1726a081937effdf2",
+    "four-operations-sandbox-unavailable.log": "672b65f85e3ed2442f2bf4683cdd6f194e78b06746919d9d56b52f640b37ca1b",
+    "namespace.xml": "82a6de5f8ba59a93f7bd9ec9d27980a99fb1e1c382a4247e4d19bbf9ded5038d",
+    "four-operations.xml": "a71aa940daa8e8eb2d750eb00444bf64b1882cb79eb8b9eee62b63583050b3cb"
+  },
+  "honest_initial_attempts": {
+    "namespace-cache-unavailable.log": "uv cache denied before collection; rerun with writable UV_CACHE_DIR",
+    "four-operations-sandbox-unavailable.xml": {
+      "tests": 4,
+      "errors": 4,
+      "failures": 0,
+      "skipped": 0
+    }
+  },
+  "resource": "test_only_demo_suite; released after four empty owned cleanup witnesses",
+  "head_changes": false,
+  "production_owner_timeout_changes": false
+}

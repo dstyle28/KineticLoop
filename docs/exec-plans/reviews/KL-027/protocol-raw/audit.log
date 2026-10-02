@@ -1,0 +1,167 @@
+{
+  "status": "PASS",
+  "reviewed_head_sha": "1df15275291ee99b98bd063e856d45c83ccc6f81",
+  "indexed_hashes_verified": 26,
+  "prerequisites_verified": 12,
+  "checks": [
+    {
+      "check_id": "demo_namespace_and_boundary_pu",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "c40c9d86bb08676351f2aba7634e53a41510c299d9b468deacc672ed75132964"
+    },
+    {
+      "check_id": "demo_owner_trajectory_e2e",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "ef19de47067d9c492107534f6e00e10f8b386c5a36c2daf9474d88ea1031cb43"
+    },
+    {
+      "check_id": "demo_revoke_denials_dc",
+      "counts": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "f90082c7b9bbb79ab0bda7592f7fd2e6f185eaead157c7231e51ec6e26ba5251"
+    },
+    {
+      "check_id": "demo_expiry_denials_dc",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "34f2e641cef96f3b44f507bf1b2387881ff5cde175048dbe63349d881309d966"
+    },
+    {
+      "check_id": "demo_fdn_repair_e2e",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "2986bf98bcbf4aed3fb83dba7647b8a35970706b71de522d7b36bfbcfe6a7cd2"
+    },
+    {
+      "check_id": "demo_scope_denials_dc",
+      "counts": {
+        "tests": 43,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "e4b7f17854835313f4fa7e9d85b3241fc029b9f492056518cf6ec606430f5962"
+    },
+    {
+      "check_id": "demo_suite_e2e",
+      "counts": {
+        "tests": 61,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "b9b4cca37050ee90d683c4523eddf4c013b60cae6b2257c01456384fee6b801a"
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "counts": null,
+      "verified_log_sha256": "7031cd7096b407e9318b6cae830d3876257b6c946721138560f3f3fc05f4b43c"
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "counts": {
+        "tests": 232,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "172b35ded53f5714f46b050f8ee31cd66190f68554f3414c7566fad8d92bce28"
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "counts": {
+        "tests": 676,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "verified_log_sha256": "0588b0a89c10cfd359e0a11a86528ecf0018549c8755cd32e3631114a1ee7d92"
+    },
+    {
+      "check_id": "lint_passes",
+      "counts": null,
+      "verified_log_sha256": "78f93f3eaa8e40377c927dc9049413643064a16c528eaa712af0af1238730062"
+    },
+    {
+      "check_id": "typecheck_passes",
+      "counts": null,
+      "verified_log_sha256": "29d3125eed10b19c9287fbf775326dcc477c243b084d90ffcce76e10a0440f49"
+    }
+  ],
+  "witness_counts": {
+    "namespace": 61,
+    "runtime_registration": 61,
+    "admitted_inputs_only": 61,
+    "atomic_receipt_event_outbox": 69,
+    "sealed_source_and_published_basis": 61,
+    "upstream": 61,
+    "forward_stage": 410,
+    "output": 174,
+    "full_output": 173,
+    "full_prepared_chain": 56,
+    "real_T7_current_eligibility_before_mutation": 3,
+    "positive_ordinary_pause_resume": 1,
+    "full_commit": 1,
+    "cleanup": 61,
+    "lifecycle_current_preconditions": 12,
+    "current_T7": 3,
+    "actual_T7_before_authority_loss": 6,
+    "ApplyControl_locked_current_epoch": 4,
+    "exact_zero_effect_denial": 44,
+    "historical_identity_only": 9,
+    "blocked": 4,
+    "trusted_post_lock_expiry_DC": 4,
+    "f2_repair": 1,
+    "scope_non_executable": 14,
+    "foreign_principal_no_capability": 3,
+    "AcceptFactRevision_locked_current_frontier_epoch": 1,
+    "incomplete_source_no_authority": 5,
+    "policy_scope_rejects_forward_stage": 2
+  },
+  "certificates": [
+    {
+      "issuance_id": "7d78321e-3c78-4c2d-a5d3-bbf4abec0bd0",
+      "prescription_id": "99d9d6d8-c9b3-47ea-ae2e-08607f355ad0",
+      "action_type": "TRAINING",
+      "resolution_id": "7ff6054f-337d-5b67-9b7b-cd63b1a93790",
+      "validation_id": "8593000a-9b8d-5587-8a25-21cddbf2a569",
+      "closure_digest": "f9cd255465e47bf2e7767f53fc01881efe84032fe04b7fdb7542f19ffef547d2",
+      "valid_until": "2026-10-01T22:56:14.634623+00:00",
+      "demand_physical_fitness_id": "063632fe-2e06-5db2-bb51-9a178aae144a",
+      "demand_audit_proposal_id": "f184607d-5905-5241-aed9-7dcf7f54c7e1"
+    },
+    {
+      "issuance_id": "8a1ac91f-ab18-47bd-831a-b2a0486df6c4",
+      "prescription_id": "09c5db35-0918-421b-801f-4aef2c0c937f",
+      "action_type": "NUTRITION",
+      "resolution_id": "1e095944-619c-51fb-988a-5fdc49ceb4e7",
+      "validation_id": "8593000a-9b8d-5587-8a25-21cddbf2a569",
+      "closure_digest": "f9cd255465e47bf2e7767f53fc01881efe84032fe04b7fdb7542f19ffef547d2",
+      "valid_until": "2026-10-01T22:56:14.634623+00:00",
+      "demand_physical_fitness_id": "063632fe-2e06-5db2-bb51-9a178aae144a",
+      "demand_audit_proposal_id": "f184607d-5905-5241-aed9-7dcf7f54c7e1"
+    }
+  ]
+}

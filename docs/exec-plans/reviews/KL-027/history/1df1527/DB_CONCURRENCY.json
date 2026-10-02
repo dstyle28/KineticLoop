@@ -1,0 +1,101 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-027",
+  "reviewed_head_sha": "1df15275291ee99b98bd063e856d45c83ccc6f81",
+  "review_type": "DB_CONCURRENCY",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "findings": [
+    {
+      "id": "DB027-B01",
+      "classification": "BLOCKER",
+      "title": "Prove the observed waiter blocks before dependency expiry",
+      "file": "tests/db/test_test_only_demo.py",
+      "line": 2074,
+      "description": "The required expiry-crossing oracle is not established. trusted_before_wait is observed at lines 2046-2047 before creating the blocker connection and launching the worker. observe_blocked (1044-1054) returns only pid, blocking pids and query; neither it nor the caller asserts a trusted time below the immutable admission_end when the actual worker is blocked. If connection setup or scheduling delays the worker beyond the remaining 0.5-second interval, it can reach the lock after expiry, be observed blocked, then deny and leave zero effects while this test still passes. The original four raw records and the independent four records have no blocked-at trusted timestamp, so they cannot distinguish that false-positive ordering from expiry crossed during a lock wait. The actual merged guard uses fresh post-lock clock_timestamp, but this regression oracle would not reliably prove that requirement.",
+      "requested_action": "In this task-owned test, capture a trusted database clock alongside observation of the real blocking waiter and assert that blocked_at precedes the original immutable source_end before crossing the bound and releasing the blocker. Preserve the four T6/START/CONTINUE/RESUME exact denial and unchanged-inventory assertions, bounded waits, and absence of caller clocks/timestamp overwrites. Regenerate every required task check on the new implementation SHA and obtain fresh independent reviews."
+    }
+  ],
+  "evidence_refs": [
+    "AGENTS.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    "docs/exec-plans/active/KL-027.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "THREAD_REVIEW.schema.json",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+    "docs/exec-plans/evidence/HG-038/PREPARATION.md",
+    "docs/exec-plans/completed/KL-027_RESULT.yaml",
+    "docs/contracts/test_only_demo.md",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/checks.json",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_suite_e2e.log",
+    "tests/db/test_test_only_demo.py",
+    "tests/unit/protocol/test_test_only_demo.py",
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/persistence/protocol_execution.py",
+    "src/kineticloop/persistence/planning.py",
+    "src/kineticloop/contracts/commands.py",
+    "docs/exec-plans/reviews/KL-027/db-raw/audit.json",
+    "docs/exec-plans/reviews/KL-027/db-raw/namespace.log",
+    "docs/exec-plans/reviews/KL-027/db-raw/namespace.xml",
+    "docs/exec-plans/reviews/KL-027/db-raw/prerequisites.json",
+    "docs/exec-plans/reviews/KL-027/db-raw/suite.log",
+    "docs/exec-plans/reviews/KL-027/db-raw/suite.xml"
+  ],
+  "independent_verification": {
+    "scope_revision": "Protected base 6d1348c5a731afb74fdf6f2345109a446cdb597c; tested implementation 8b446eda05bfb8201fb48c89fda5d03eb40c2218; reviewed result/head 1df15275291ee99b98bd063e856d45c83ccc6f81. All three test/contract implementation blobs are identical between tested and reviewed; suffix changes own result/evidence only. No production, migration, role, CI, frozen or registry change. All indexed authority hashes match. Reviewer wrote only this canonical record and db-raw files and made no commits.",
+    "entry": "Independently parsed all twelve prerequisite PASS results, PASS review records and actual two-parent normal merge ancestry against protected base, including per-commit linear review-only suffix validation. M2 closure PASS. No first lifecycle before prerequisite and namespace validation. Stored exact prerequisite records in db-raw/prerequisites.json.",
+    "owners": "Actual source-only TEST metadata/admitted evidence/artifacts feed restricted RecordActualExecution, CanonicalView complete/seal, preparation projections/READY, T3, KL024 admission/acquire, KL075 snapshot/forward stages, KL076 F/D/N and KL079 full resolution/shared validation. No target output seeds. Restricted ApplyControl/AcceptFactRevision derive current locked epoch/frontier and append exact S43/control/receipt/event/outbox; SafetyRegistry revoke uses actual strict admin owner. No model/network waits occur in coordination transactions.",
+    "guards_and_history": "Actual T6 reconstructs full immutable chain, ordered TRAINING/NUTRITION prescriptions/members/issuances, server minimum finite certificates, root success/attempt COMMITTED/head/basis and receipt/event/outbox atomically. T7 retains S51 then S01 then S38/S44/receipt and current evaluator using fresh clock_timestamp. Independent completed cases include actual START, positive ordinary PAUSE/RESUME, distinct absent new START, valid current CONTINUE/RESUME lifecycles, exact authority/artifact/expiry denial, complete row equality including placeholders, immutable history and non-executable old START/bundle replay. Same-root structured F2 produces fresh attempt and forward recomputation, rejects mixed old closure and retains original root budget/deadline. Equality is separately labeled pure-predicate PU, never DC.",
+    "original_evidence": "Independently verified all twelve original check hashes/exit codes/JUnit counts against exact-tested raw files: namespace 1, trajectory 1, revoke 9, expiry 3, repair 1, scope 43, own DB suite 61, unit 232, harness 676, all with zero failed/error/skipped. Original raw full suite contains 61 namespace/cleanup records, 44 exact denials, four real blockers, four expiry outcomes and one F2 repair. All 173 full output payload hashes and cleanup strings independently recomputed. Command PASS alone does not resolve DB027-B01.",
+    "independent_execution": {
+      "collected_cases": 61,
+      "completed_passed": 31,
+      "remaining_not_run": 30,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 2,
+      "status": "INTERRUPTED_NOT_PASS",
+      "reason": "Coordinator explicitly authorized SIGINT to only exact pytest PID 83230 after independent blocking review finding; fixture finally cleanup completed.",
+      "witness_counts": {
+        "namespace": 31,
+        "runtime_registration": 31,
+        "admitted_inputs_only": 31,
+        "atomic_receipt_event_outbox": 39,
+        "sealed_source_and_published_basis": 31,
+        "upstream": 31,
+        "forward_stage": 224,
+        "output": 96,
+        "full_output": 96,
+        "full_prepared_chain": 31,
+        "real_T7_current_eligibility_before_mutation": 3,
+        "positive_ordinary_pause_resume": 1,
+        "full_commit": 1,
+        "cleanup": 31,
+        "lifecycle_current_preconditions": 12,
+        "current_T7": 3,
+        "actual_T7_before_authority_loss": 6,
+        "ApplyControl_locked_current_epoch": 3,
+        "exact_zero_effect_denial": 18,
+        "historical_identity_only": 9,
+        "blocked": 4,
+        "trusted_post_lock_expiry_DC": 4,
+        "f2_repair": 1,
+        "scope_non_executable": 13,
+        "foreign_principal_no_capability": 3
+      }
+    },
+    "namespace_cleanup": {
+      "fixture_cleanup_records": 31,
+      "all_empty": true,
+      "read_only_final_docker_inventory": {
+        "container": "",
+        "volume": "",
+        "network": ""
+      },
+      "exclusive_resource_released": true
+    },
+    "claim_boundaries": "No task/review/merge/product conflation. No product requirements are covered. Production activation, shadow execution, M3/G-SHADOW/layer/release closure are not established by this review. Independent interrupted suite is explicitly NOT_PASS despite 31 passing completed cases."
+  }
+}

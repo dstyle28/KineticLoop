@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="22" time="160.014" timestamp="2026-10-01T16:49:12.063852-07:00" hostname="Daves-MacBook-Pro---26.local"><testcase classname="tests.db.test_test_only_demo" name="test_full_trajectory" time="4.875" /><testcase classname="tests.db.test_test_only_demo" name="test_revoke_then_deny[positive-CONTINUE]" time="4.818" /><testcase classname="tests.db.test_test_only_demo" name="test_revoke_then_deny[positive-RESUME]" time="4.862" /><testcase classname="tests.db.test_test_only_demo" name="test_revoke_then_deny[positive-START]" time="4.835" /><testcase classname="tests.db.test_test_only_demo" name="test_revoke_then_deny[STOP-CONTINUE]" time="4.899" /><testcase classname="tests.db.test_test_only_demo" name="test_revoke_then_deny[STOP-RESUME]" time="4.936" /><testcase classname="tests.db.test_test_only_demo" name="test_revoke_then_deny[STOP-START]" time="4.943" /><testcase classname="tests.db.test_test_only_demo" name="test_revoke_then_deny[artifact-CONTINUE]" time="4.894" /><testcase classname="tests.db.test_test_only_demo" name="test_revoke_then_deny[artifact-RESUME]" time="4.886" /><testcase classname="tests.db.test_test_only_demo" name="test_revoke_then_deny[artifact-START]" time="4.942" /><testcase classname="tests.db.test_test_only_demo" name="test_expiry_then_deny[CONTINUE]" time="12.300" /><testcase classname="tests.db.test_test_only_demo" name="test_expiry_then_deny[RESUME]" time="12.301" /><testcase classname="tests.db.test_test_only_demo" name="test_expiry_then_deny[START]" time="12.447" /><testcase classname="tests.db.test_test_only_demo" name="test_trusted_post_lock_expiry[T6]" time="12.286"><failure message="AssertionError: canceling statement due to lock timeout&#10;  CONTEXT:  while locking tuple (0,8) in relation &quot;planning_attempts&quot;&#10;assert False">database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:57549/kineticloop_kl027_demo_e78a59b_02d718cec5f6...or': 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:57549/kineticloop_kl027_demo_e78a59b_02d718cec5f6', ...}
+operation = 'T6'
+
+    @pytest.mark.parametrize("operation", ["T6", "START", "CONTINUE", "RESUME"])
+    def test_trusted_post_lock_expiry(database_urls: Any, operation: str) -&gt; None:
+        seed, request = ready(database_urls, admission_seconds=8)
+        with connect(database_urls["admin"]) as db:
+            if operation == "T6":
+                target = UUID(request.command.attempt_id)
+                table = "planning_attempts"
+            else:
+                bundle = service(db, seed).commit_full(request)
+                started = service(db, seed).start(session_command(seed, bundle))
+                initial = current_binding(db, seed, started["session_id"])
+                if operation == "RESUME":
+                    service(db, seed).pause(pause_request(db, seed, started["session_id"]))
+                model = {"START": StartSession, "CONTINUE": ContinueSession, "RESUME": ResumeSession}[
+                    operation
+                ]
+                command = session_command(
+                    seed,
+                    bundle,
+                    model,
+                    session_id=started["session_id"] if operation != "START" else None,
+                    binding=initial if operation != "START" else None,
+                )
+                target = UUID(command.session_id)
+                # New START has no row to lock: S38 precedes first-use creation and guard.
+                table = "daily_plan_heads" if operation == "START" else "workout_sessions"
+                if operation == "START":
+                    target = UUID(bundle["head_id"])
+            before = snapshot(db, auth(seed).subject_id)
+            before_wait = wait_db_time(db, seed["admission_end"] - timedelta(seconds=2))
+            assert before_wait &lt; seed["admission_end"]
+            with connect(database_urls["admin"]) as blocker:
+                blocker.execute(
+                    sql.SQL("SELECT id FROM kineticloop.{} WHERE id=%s FOR UPDATE").format(
+                        sql.Identifier(table)
+                    ),
+                    (target,),
+                ).fetchone()
+    
+                def waiting() -&gt; str:
+                    with connect(
+                        database_urls["admin"], application_name="kl027-expiry-waiter"
+                    ) as waiter:
+                        method = {
+                            "T6": lambda: service(waiter, seed).commit_full(request),
+                            "START": lambda: service(waiter, seed).start(command),
+                            "CONTINUE": lambda: service(waiter, seed).continue_session(command),
+                            "RESUME": lambda: service(waiter, seed).resume(command),
+                        }[operation]
+                        try:
+                            method()
+                        except (RepositoryTransactionError, psycopg.Error, ValueError) as error:
+                            return str(error)
+                        raise AssertionError("expired operation unexpectedly accepted")
+    
+                with ThreadPoolExecutor(max_workers=1) as pool:
+                    future = pool.submit(waiting)
+                    try:
+                        observed = observe_blocked(database_urls["admin"], "kl027-expiry-waiter")
+                        # Prove this actual waiter was blocked before the immutable bound.
+                        assert before_wait &lt;= observed[3] &lt; seed["admission_end"], observed
+                        # Reader is independent of blocked coordination transactions.
+                        with connect(database_urls["admin"]) as clock:
+                            after_time = wait_db_time(clock, seed["admission_end"])
+                    finally:
+                        # Release the owned blocker even if observation/assertion fails.
+                        blocker.rollback()
+                    message = future.result(timeout=12)
+&gt;           assert "expired" in message if operation == "T6" else "TIME_INELIGIBLE" in message, message
+E           AssertionError: canceling statement due to lock timeout
+E             CONTEXT:  while locking tuple (0,8) in relation "planning_attempts"
+E           assert False
+
+tests/db/test_test_only_demo.py:2092: AssertionError</failure></testcase><testcase classname="tests.db.test_test_only_demo" name="test_trusted_post_lock_expiry[START]" time="12.194"><failure message="AssertionError: canceling statement due to lock timeout&#10;  CONTEXT:  while locking tuple (0,2) in relation &quot;daily_plan_heads&quot;&#10;assert False">database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:57550/kineticloop_kl027_demo_e78a59b_02d718cec5f6...or': 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:57550/kineticloop_kl027_demo_e78a59b_02d718cec5f6', ...}
+operation = 'START'
+
+    @pytest.mark.parametrize("operation", ["T6", "START", "CONTINUE", "RESUME"])
+    def test_trusted_post_lock_expiry(database_urls: Any, operation: str) -&gt; None:
+        seed, request = ready(database_urls, admission_seconds=8)
+        with connect(database_urls["admin"]) as db:
+            if operation == "T6":
+                target = UUID(request.command.attempt_id)
+                table = "planning_attempts"
+            else:
+                bundle = service(db, seed).commit_full(request)
+                started = service(db, seed).start(session_command(seed, bundle))
+                initial = current_binding(db, seed, started["session_id"])
+                if operation == "RESUME":
+                    service(db, seed).pause(pause_request(db, seed, started["session_id"]))
+                model = {"START": StartSession, "CONTINUE": ContinueSession, "RESUME": ResumeSession}[
+                    operation
+                ]
+                command = session_command(
+                    seed,
+                    bundle,
+                    model,
+                    session_id=started["session_id"] if operation != "START" else None,
+                    binding=initial if operation != "START" else None,
+                )
+                target = UUID(command.session_id)
+                # New START has no row to lock: S38 precedes first-use creation and guard.
+                table = "daily_plan_heads" if operation == "START" else "workout_sessions"
+                if operation == "START":
+                    target = UUID(bundle["head_id"])
+            before = snapshot(db, auth(seed).subject_id)
+            before_wait = wait_db_time(db, seed["admission_end"] - timedelta(seconds=2))
+            assert before_wait &lt; seed["admission_end"]
+            with connect(database_urls["admin"]) as blocker:
+                blocker.execute(
+                    sql.SQL("SELECT id FROM kineticloop.{} WHERE id=%s FOR UPDATE").format(
+                        sql.Identifier(table)
+                    ),
+                    (target,),
+                ).fetchone()
+    
+                def waiting() -&gt; str:
+                    with connect(
+                        database_urls["admin"], application_name="kl027-expiry-waiter"
+                    ) as waiter:
+                        method = {
+                            "T6": lambda: service(waiter, seed).commit_full(request),
+                            "START": lambda: service(waiter, seed).start(command),
+                            "CONTINUE": lambda: service(waiter, seed).continue_session(command),
+                            "RESUME": lambda: service(waiter, seed).resume(command),
+                        }[operation]
+                        try:
+                            method()
+                        except (RepositoryTransactionError, psycopg.Error, ValueError) as error:
+                            return str(error)
+                        raise AssertionError("expired operation unexpectedly accepted")
+    
+                with ThreadPoolExecutor(max_workers=1) as pool:
+                    future = pool.submit(waiting)
+                    try:
+                        observed = observe_blocked(database_urls["admin"], "kl027-expiry-waiter")
+                        # Prove this actual waiter was blocked before the immutable bound.
+                        assert before_wait &lt;= observed[3] &lt; seed["admission_end"], observed
+                        # Reader is independent of blocked coordination transactions.
+                        with connect(database_urls["admin"]) as clock:
+                            after_time = wait_db_time(clock, seed["admission_end"])
+                    finally:
+                        # Release the owned blocker even if observation/assertion fails.
+                        blocker.rollback()
+                    message = future.result(timeout=12)
+&gt;           assert "expired" in message if operation == "T6" else "TIME_INELIGIBLE" in message, message
+E           AssertionError: canceling statement due to lock timeout
+E             CONTEXT:  while locking tuple (0,2) in relation "daily_plan_heads"
+E           assert False
+
+tests/db/test_test_only_demo.py:2092: AssertionError</failure></testcase><testcase classname="tests.db.test_test_only_demo" name="test_trusted_post_lock_expiry[CONTINUE]" time="12.171"><failure message="AssertionError: canceling statement due to lock timeout&#10;  CONTEXT:  while locking tuple (0,2) in relation &quot;workout_sessions&quot;&#10;assert False">database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:57551/kineticloop_kl027_demo_e78a59b_02d718cec5f6...or': 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:57551/kineticloop_kl027_demo_e78a59b_02d718cec5f6', ...}
+operation = 'CONTINUE'
+
+    @pytest.mark.parametrize("operation", ["T6", "START", "CONTINUE", "RESUME"])
+    def test_trusted_post_lock_expiry(database_urls: Any, operation: str) -&gt; None:
+        seed, request = ready(database_urls, admission_seconds=8)
+        with connect(database_urls["admin"]) as db:
+            if operation == "T6":
+                target = UUID(request.command.attempt_id)
+                table = "planning_attempts"
+            else:
+                bundle = service(db, seed).commit_full(request)
+                started = service(db, seed).start(session_command(seed, bundle))
+                initial = current_binding(db, seed, started["session_id"])
+                if operation == "RESUME":
+                    service(db, seed).pause(pause_request(db, seed, started["session_id"]))
+                model = {"START": StartSession, "CONTINUE": ContinueSession, "RESUME": ResumeSession}[
+                    operation
+                ]
+                command = session_command(
+                    seed,
+                    bundle,
+                    model,
+                    session_id=started["session_id"] if operation != "START" else None,
+                    binding=initial if operation != "START" else None,
+                )
+                target = UUID(command.session_id)
+                # New START has no row to lock: S38 precedes first-use creation and guard.
+                table = "daily_plan_heads" if operation == "START" else "workout_sessions"
+                if operation == "START":
+                    target = UUID(bundle["head_id"])
+            before = snapshot(db, auth(seed).subject_id)
+            before_wait = wait_db_time(db, seed["admission_end"] - timedelta(seconds=2))
+            assert before_wait &lt; seed["admission_end"]
+            with connect(database_urls["admin"]) as blocker:
+                blocker.execute(
+                    sql.SQL("SELECT id FROM kineticloop.{} WHERE id=%s FOR UPDATE").format(
+                        sql.Identifier(table)
+                    ),
+                    (target,),
+                ).fetchone()
+    
+                def waiting() -&gt; str:
+                    with connect(
+                        database_urls["admin"], application_name="kl027-expiry-waiter"
+                    ) as waiter:
+                        method = {
+                            "T6": lambda: service(waiter, seed).commit_full(request),
+                            "START": lambda: service(waiter, seed).start(command),
+                            "CONTINUE": lambda: service(waiter, seed).continue_session(command),
+                            "RESUME": lambda: service(waiter, seed).resume(command),
+                        }[operation]
+                        try:
+                            method()
+                        except (RepositoryTransactionError, psycopg.Error, ValueError) as error:
+                            return str(error)
+                        raise AssertionError("expired operation unexpectedly accepted")
+    
+                with ThreadPoolExecutor(max_workers=1) as pool:
+                    future = pool.submit(waiting)
+                    try:
+                        observed = observe_blocked(database_urls["admin"], "kl027-expiry-waiter")
+                        # Prove this actual waiter was blocked before the immutable bound.
+                        assert before_wait &lt;= observed[3] &lt; seed["admission_end"], observed
+                        # Reader is independent of blocked coordination transactions.
+                        with connect(database_urls["admin"]) as clock:
+                            after_time = wait_db_time(clock, seed["admission_end"])
+                    finally:
+                        # Release the owned blocker even if observation/assertion fails.
+                        blocker.rollback()
+                    message = future.result(timeout=12)
+&gt;           assert "expired" in message if operation == "T6" else "TIME_INELIGIBLE" in message, message
+E           AssertionError: canceling statement due to lock timeout
+E             CONTEXT:  while locking tuple (0,2) in relation "workout_sessions"
+E           assert False
+
+tests/db/test_test_only_demo.py:2092: AssertionError</failure></testcase><testcase classname="tests.db.test_test_only_demo" name="test_trusted_post_lock_expiry[RESUME]" time="12.207"><failure message="AssertionError: canceling statement due to lock timeout&#10;  CONTEXT:  while locking tuple (0,3) in relation &quot;workout_sessions&quot;&#10;assert False">database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:57552/kineticloop_kl027_demo_e78a59b_02d718cec5f6...or': 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:57552/kineticloop_kl027_demo_e78a59b_02d718cec5f6', ...}
+operation = 'RESUME'
+
+    @pytest.mark.parametrize("operation", ["T6", "START", "CONTINUE", "RESUME"])
+    def test_trusted_post_lock_expiry(database_urls: Any, operation: str) -&gt; None:
+        seed, request = ready(database_urls, admission_seconds=8)
+        with connect(database_urls["admin"]) as db:
+            if operation == "T6":
+                target = UUID(request.command.attempt_id)
+                table = "planning_attempts"
+            else:
+                bundle = service(db, seed).commit_full(request)
+                started = service(db, seed).start(session_command(seed, bundle))
+                initial = current_binding(db, seed, started["session_id"])
+                if operation == "RESUME":
+                    service(db, seed).pause(pause_request(db, seed, started["session_id"]))
+                model = {"START": StartSession, "CONTINUE": ContinueSession, "RESUME": ResumeSession}[
+                    operation
+                ]
+                command = session_command(
+                    seed,
+                    bundle,
+                    model,
+                    session_id=started["session_id"] if operation != "START" else None,
+                    binding=initial if operation != "START" else None,
+                )
+                target = UUID(command.session_id)
+                # New START has no row to lock: S38 precedes first-use creation and guard.
+                table = "daily_plan_heads" if operation == "START" else "workout_sessions"
+                if operation == "START":
+                    target = UUID(bundle["head_id"])
+            before = snapshot(db, auth(seed).subject_id)
+            before_wait = wait_db_time(db, seed["admission_end"] - timedelta(seconds=2))
+            assert before_wait &lt; seed["admission_end"]
+            with connect(database_urls["admin"]) as blocker:
+                blocker.execute(
+                    sql.SQL("SELECT id FROM kineticloop.{} WHERE id=%s FOR UPDATE").format(
+                        sql.Identifier(table)
+                    ),
+                    (target,),
+                ).fetchone()
+    
+                def waiting() -&gt; str:
+                    with connect(
+                        database_urls["admin"], application_name="kl027-expiry-waiter"
+                    ) as waiter:
+                        method = {
+                            "T6": lambda: service(waiter, seed).commit_full(request),
+                            "START": lambda: service(waiter, seed).start(command),
+                            "CONTINUE": lambda: service(waiter, seed).continue_session(command),
+                            "RESUME": lambda: service(waiter, seed).resume(command),
+                        }[operation]
+                        try:
+                            method()
+                        except (RepositoryTransactionError, psycopg.Error, ValueError) as error:
+                            return str(error)
+                        raise AssertionError("expired operation unexpectedly accepted")
+    
+                with ThreadPoolExecutor(max_workers=1) as pool:
+                    future = pool.submit(waiting)
+                    try:
+                        observed = observe_blocked(database_urls["admin"], "kl027-expiry-waiter")
+                        # Prove this actual waiter was blocked before the immutable bound.
+                        assert before_wait &lt;= observed[3] &lt; seed["admission_end"], observed
+                        # Reader is independent of blocked coordination transactions.
+                        with connect(database_urls["admin"]) as clock:
+                            after_time = wait_db_time(clock, seed["admission_end"])
+                    finally:
+                        # Release the owned blocker even if observation/assertion fails.
+                        blocker.rollback()
+                    message = future.result(timeout=12)
+&gt;           assert "expired" in message if operation == "T6" else "TIME_INELIGIBLE" in message, message
+E           AssertionError: canceling statement due to lock timeout
+E             CONTEXT:  while locking tuple (0,3) in relation "workout_sessions"
+E           assert False
+
+tests/db/test_test_only_demo.py:2092: AssertionError</failure></testcase><testcase classname="tests.db.test_test_only_demo" name="test_fdn_repair" time="5.685" /><testcase classname="tests.db.test_test_only_demo" name="test_production_shadow_denials[identity_principal]" time="4.818" /><testcase classname="tests.db.test_test_only_demo" name="test_production_shadow_denials[identity_environment]" time="4.760" /><testcase classname="tests.db.test_test_only_demo" name="test_production_shadow_denials[identity_policy]" time="4.812" /><testcase classname="tests.db.test_test_only_demo" name="test_production_shadow_denials[identity_subject]" time="4.295" /></testsuite></testsuites>

@@ -1,0 +1,99 @@
+{
+  "tested_commit": "72a9a5f3f9529028708f64ece3bbec6d791413a7",
+  "all_twelve_log_hashes_verified": true,
+  "namespace_witnesses": 61,
+  "cleanup_witnesses": 61,
+  "all_owned_namespace_inventory_empty": true,
+  "trusted_blocked_before_immutable_expiry_before_after_time": [
+    {
+      "actual_guard": "missing/contradictory/incomplete/truncated/mismatched/expired resolution",
+      "kind": "trusted_post_lock_expiry_DC",
+      "observed_lock": [
+        171,
+        [
+          121
+        ],
+        "SELECT id FROM kineticloop.planning_attempts WHERE subject_id=$1 AND id=$2 FOR UPDATE",
+        "2026-10-02 00:03:38.975735+00:00"
+      ],
+      "operation": "T6",
+      "other_bounds": {
+        "lease_seconds": 600,
+        "manifest_policy": "2026-10-02 01:03:31.409251+00:00"
+      },
+      "source_end": "2026-10-02 00:03:39.409251+00:00",
+      "trusted_after": "2026-10-02 00:03:39.419867+00:00",
+      "trusted_before_wait": "2026-10-02 00:03:38.914711+00:00",
+      "trusted_blocked_at": "2026-10-02 00:03:38.975735+00:00",
+      "zero_effects": true
+    },
+    {
+      "actual_guard": "exact T7 prescription/authorization is not executable: TIME_INELIGIBLE",
+      "kind": "trusted_post_lock_expiry_DC",
+      "observed_lock": [
+        171,
+        [
+          121
+        ],
+        "SELECT id,current_bundle_revision_id,local_date,head_revision FROM kineticloop.daily_plan_heads WHERE subject_id=$1 AND local_date=$2 FOR UPDATE",
+        "2026-10-02 00:03:51.245234+00:00"
+      ],
+      "operation": "START",
+      "other_bounds": {
+        "lease_seconds": 600,
+        "manifest_policy": "2026-10-02 01:03:43.664100+00:00"
+      },
+      "source_end": "2026-10-02 00:03:51.664100+00:00",
+      "trusted_after": "2026-10-02 00:03:51.677226+00:00",
+      "trusted_before_wait": "2026-10-02 00:03:51.179301+00:00",
+      "trusted_blocked_at": "2026-10-02 00:03:51.245234+00:00",
+      "zero_effects": true
+    },
+    {
+      "actual_guard": "exact T7 prescription/authorization is not executable: TIME_INELIGIBLE",
+      "kind": "trusted_post_lock_expiry_DC",
+      "observed_lock": [
+        171,
+        [
+          121
+        ],
+        "SELECT id FROM kineticloop.workout_sessions WHERE subject_id=$1 AND id=$2 FOR UPDATE",
+        "2026-10-02 00:04:03.460762+00:00"
+      ],
+      "operation": "CONTINUE",
+      "other_bounds": {
+        "lease_seconds": 600,
+        "manifest_policy": "2026-10-02 01:03:55.886434+00:00"
+      },
+      "source_end": "2026-10-02 00:04:03.886434+00:00",
+      "trusted_after": "2026-10-02 00:04:03.896112+00:00",
+      "trusted_before_wait": "2026-10-02 00:04:03.397582+00:00",
+      "trusted_blocked_at": "2026-10-02 00:04:03.460762+00:00",
+      "zero_effects": true
+    },
+    {
+      "actual_guard": "exact T7 prescription/authorization is not executable: TIME_INELIGIBLE",
+      "kind": "trusted_post_lock_expiry_DC",
+      "observed_lock": [
+        170,
+        [
+          120
+        ],
+        "SELECT id FROM kineticloop.workout_sessions WHERE subject_id=$1 AND id=$2 FOR UPDATE",
+        "2026-10-02 00:04:15.681023+00:00"
+      ],
+      "operation": "RESUME",
+      "other_bounds": {
+        "lease_seconds": 600,
+        "manifest_policy": "2026-10-02 01:04:08.108096+00:00"
+      },
+      "source_end": "2026-10-02 00:04:16.108096+00:00",
+      "trusted_after": "2026-10-02 00:04:16.116680+00:00",
+      "trusted_before_wait": "2026-10-02 00:04:15.618981+00:00",
+      "trusted_blocked_at": "2026-10-02 00:04:15.681023+00:00",
+      "zero_effects": true
+    }
+  ],
+  "source": "demo_suite_e2e.log",
+  "status": "PASS"
+}

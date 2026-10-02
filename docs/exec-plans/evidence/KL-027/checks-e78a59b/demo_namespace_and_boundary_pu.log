@@ -1,0 +1,11 @@
+{"tested_commit": "e78a59bbff2343fa7750ae3d5925548d4962c8ce", "command": "uv run pytest -q tests/unit/protocol/test_test_only_demo.py::test_namespace_and_boundary", "resolved_root": "/Users/davetian/.codex/worktrees/465a/KineticLoop", "oracle": "Exact demo label namespace validates before lifecycle/nested bootstrap/reset/cleanup; no seeded target outputs, TEST subject/policy/environment isolated and production/shadow negative controls have no capability.", "pytest_addopts": "-rA --junitxml=/Users/davetian/.codex/worktrees/465a/KineticLoop/docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_namespace_and_boundary_pu.xml"}
+.                                                                        [100%]
+==================================== PASSES ====================================
+_________________________ test_namespace_and_boundary __________________________
+----------------------------- Captured stdout call -----------------------------
+HALF_OPEN_EQUALITY_PU actual eligibility/lease/deadline predicates; separately labeled, no DC equality claim
+NAMESPACE_PU DatabaseNamespace(project_name='kineticloop-kl027-demo-e78a59b-02d718cec5f6', database_name='kineticloop_kl027_demo_e78a59b_02d718cec5f6') negative_controls=foreign_root,sha,digest,label,ambient,nested_cleanup nested_inventory ['bootstrap_two_phase(selected_lifecycle)', 'destroy']
+- generated xml file: /Users/davetian/.codex/worktrees/465a/KineticLoop/docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_namespace_and_boundary_pu.xml -
+=========================== short test summary info ============================
+PASSED tests/unit/protocol/test_test_only_demo.py::test_namespace_and_boundary
+1 passed in 0.74s

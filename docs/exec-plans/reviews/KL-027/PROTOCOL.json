@@ -1,0 +1,38 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-027",
+  "reviewed_head_sha": "ff93c08c7c32fba9e8dede0c161bb4f97bc98259",
+  "status": "PASS",
+  "review_contract_version": "v0.2",
+  "review_type": "PROTOCOL",
+  "findings": [
+    {
+      "id": "KL027-FINAL-HOSTED-GATES",
+      "classification": "REQUIRED_FOLLOWUP",
+      "priority": 2,
+      "title": "Final hosted and selected-task gates remain merge conditions",
+      "description": "The task-local implementation/result satisfies the independently reviewed packet oracles at this exact SHA. Normal unchanged hosted quality/PostgreSQL checks and the selected-task merge gate must pass at the final relevant PR head before normal merge. This review does not assert MERGED, product, M3, G-SHADOW or release closure. Only the linear task-scoped REVIEW_RECORD_ONLY append may follow without rereview.",
+      "requested_change": "Require actual final relevant-head CI and selected-task gate success; preserve reviewed implementation/result bytes."
+    },
+    {
+      "id": "KL027-INHERITED-DEMAND-AUDIT-METADATA",
+      "classification": "NONBLOCKING",
+      "priority": 3,
+      "title": "Inherited demand certificate descriptive proposal metadata names N",
+      "file": "src/kineticloop/persistence/transactions.py",
+      "line": 4070,
+      "description": "Independent final source/raw inspection confirms DEMAND_FEATURE dependency identity/revision names the actual D row, while proposal_id is copied from validation.ref_s34_id=N rather than physical D.ref_s34_id=F. Exact _progress_sources and full reconstruction independently enforce D-to-F, N-to-F/D, both action proposals/resolutions and the shared validation; the descriptive attribute is not a permit input. No authorization bypass or missing dependency is found. This inherited KL077 issue is already declared as a separate follow-up in the task result.",
+      "requested_change": "Retain the separately scoped upstream correction/regression follow-up; do not mutate immutable historical certificates or expand this tests-only task."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/KL-027/final-protocol-raw/assessment.md",
+    "docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.json",
+    "docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.py",
+    "docs/exec-plans/reviews/KL-027/final-protocol-raw/audit.log",
+    "docs/exec-plans/reviews/KL-027/final-db-raw/audit.json",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/checks.json",
+    "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_suite_e2e.log",
+    "docs/exec-plans/completed/KL-027_RESULT.yaml"
+  ],
+  "assessment": "No Protocol BLOCKER or SPEC_CHANGE_REQUIRED. Independent review verifies tests-only scope, frozen authority hashes, twelve normally merged prerequisites, exact twelve PASS checks/61 DB cases/no skips, full source-to-two-action closure, ordinary PAUSE/RESUME, valid preloss operation lifecycles, exact STOP/artifact/finite-expiry denial with zero effects, immutable history/non-executable replay, same-root forward F2 repair and production/shadow denials. Historical missing actual waiter timestamp blocker is closed by trusted timestamp in the actual blocking query and independently rerun four operation witnesses at reviewed HEAD. Tested-to-reviewed suffix is linear result/evidence/review bookkeeping with unchanged implementation/contract."
+}

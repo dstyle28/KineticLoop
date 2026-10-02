@@ -1,0 +1,90 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-027",
+  "reviewed_head_sha": "1df15275291ee99b98bd063e856d45c83ccc6f81",
+  "review_type": "PROTOCOL",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "findings": [
+    {
+      "classification": "BLOCKER",
+      "title": "Trusted time is missing at the actual expiry blocking observation",
+      "file": "tests/db/test_test_only_demo.py",
+      "line": 2074,
+      "detail": "At reviewed SHA 1df15275291ee99b98bd063e856d45c83ccc6f81, test_trusted_post_lock_expiry obtains before_wait at line 2046 before blocker connection/row acquisition and waiter setup, then observe_blocked records only pid, blocking_pids and query. No trusted DB timestamp is obtained and asserted below the immutable source_end at the actual blocking observation. Consequently the persisted trusted_before_wait < source_end < trusted_after inequality can hold even if the waiter begins waiting after expiry. The exact TIME_INELIGIBLE/expired denial still proves rejection after expiry, but does not prove the packet's required expiry-crossed-during-an-observed-lock-wait oracle. Independently inspected observe_blocked at lines 1044-1056 and all four raw trusted_post_lock_expiry_DC witnesses; their blocking tuples contain no clock observation. This is an evidence/oracle defect, not a request to change production semantics.",
+      "requested_action": "Obtain fresh trusted database time with the actual pg_blocking_pids observation and require observed_blocked_at < immutable source_end before holding the blocker across expiry. Persist that observation and the post-release denial for all four T6/START/CONTINUE/RESUME cases. Fail or safely reconstruct a new owner trajectory if setup misses the bound; do not edit persisted expiry or inject caller time. Rerun all exact packet checks on a new tested commit and obtain fresh reviews."
+    },
+    {
+      "classification": "NONBLOCKING",
+      "title": "Inherited DEMAND_FEATURE explanatory proposal metadata remains inaccurate",
+      "file": "src/kineticloop/persistence/transactions.py",
+      "line": 4070,
+      "detail": "Independently verified the current implementation and KL027 raw certificates: the DEMAND_FEATURE dependency identity is the exact S35 D, but its explanatory proposal_id is copied from S37's N validation anchor rather than S35.ref_s34_id's F. The actual _progress_sources checks require D.ref_s34_id and basis_hash to match the immutable F, require N's exact F/D/Manifest/policy chain, and the full validation and T6 reconstruction check both action resolutions and member-specific proposals. KL027 changes none of these owners. This metadata issue does not grant executable authority or weaken the composed oracle, so it remains a separately scoped inherited follow-up.",
+      "requested_action": "Preserve the separately scoped upstream metadata correction and regression follow-up; do not expand this tests-only task."
+    }
+  ],
+  "evidence_refs": [
+    "AGENTS.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    "docs/exec-plans/active/KL-027.md",
+    ".agents/skills/pr-merge-reviewer/SKILL.md",
+    ".agents/skills/protocol-guardian/SKILL.md",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "THREAD_REVIEW.schema.json",
+    "docs/exec-plans/evidence/HG-038/PREPARATION.md",
+    "docs/exec-plans/milestones/M2.json",
+    "docs/exec-plans/evidence/KL-027/entry-audit.json",
+    "docs/exec-plans/completed/KL-027_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/checks.json",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_owner_trajectory_e2e.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_revoke_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_expiry_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_fdn_repair_e2e.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_scope_denials_dc.log",
+    "docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_suite_e2e.log",
+    "docs/exec-plans/reviews/KL-027/protocol-raw/audit.py",
+    "docs/exec-plans/reviews/KL-027/protocol-raw/audit.json",
+    "docs/exec-plans/reviews/KL-027/protocol-raw/audit.log",
+    "docs/exec-plans/reviews/KL-027/protocol-raw/pure-rerun.log",
+    "tests/db/test_test_only_demo.py",
+    "tests/unit/protocol/test_test_only_demo.py",
+    "docs/contracts/test_only_demo.md",
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/persistence/protocol_execution.py",
+    "src/kineticloop/persistence/planning.py",
+    "docs/contracts/protocol_execution.md"
+  ],
+  "verification": {
+    "independence_and_scope": "Fresh independent packet/authority/source/raw-evidence review of the explicit implementation/result SHA. No implementation edits, commits, database connections, lifecycle or DB pytest runs, foreign fixtures, external model/network waits, or app chat messages occurred. Wrote only this PROTOCOL review and its protocol-raw directory. Protected-base diff is restricted to the three declared tests/contract paths and own result/evidence. Source/schema/migrations/CI/frozen/requirement/product status are unchanged. git diff --check passed. Tested-to-reviewed suffix contains only the own committed result and new raw evidence; all three tested implementation blobs equal reviewed blobs.",
+    "authority_and_entry": "Resolved authority through the index and recomputed all 26 indexed hashes. Read Protocol 5.3-5.6/6.1-6.9 and pertinent frozen DB named tables, owner/atomic/lock/time clauses and acceptance 2-4. Independently checked all twelve direct/transitive prerequisite namespaced PASS results, required PASS reviews, reviewed-head ancestry and linear task-only review suffixes against actual two-parent normal Git merges ancestral to protected base 6d1348c5a731afb74fdf6f2345109a446cdb597c. M2 PASS evaluated commit is ancestral. Preserved prerequisite result UNMERGED fields; did not infer integration from them. Audit records merge identities and independently read limitations/review findings.",
+    "source_to_full_commit": "tests/db/test_test_only_demo.py:225/306/480/583/924/943/1505/1651 use admitted USER_REPORTED evidence, exact immutable source/program/TEST policy/environment/artifacts and restricted RecordActualExecution; no planned-to-actual conversion or target output seeds. Actual CanonicalViewService membership/Complete/Seal produces SEALED S15/S16, merged PreparationService produces source-bound projection/dependencies/READY, actual T3 publishes, KL024 creates intent/request/attempt/lease/fence, KL075 records snapshot and every frozen forward stage, and KL076 computes F/D/N. Two action-specific full resolutions and shared full validation lead to real COMMIT_READY. Actual full T6 produces one S39, ordered TRAINING/NUTRITION S40/S41/S42, head/root success/COMMITTED and receipt/event/outbox. Real T7 observer returns the unmodified evaluator decision and proves eligibility true followed by START for both action members. Persisted source IDs/hashes/basis and atomic bookkeeping are asserted, not self-reported certificate PASS.",
+    "authorization_and_owners": "Frozen S51-before-S01 and subsequent intent/head/execution/receipt boundaries remain in unchanged owners. The full T6 implementation rechecks exact current lease/fence/request/attempt/deadline after receipt/S29/S37 acquisition, reconstructs source closure and tests complete full policy scope, current Manifest/generation/epoch/control/execution basis, semantic/envelope validity and root budget. Both issuances bind their own action resolution and shared S37. Independently recomputed raw prescription content hashes, both validity closure digests, both exact resolution dependencies, admission freshness dependency and minimum finite expiration. Ordinary PAUSE is the actual separately authenticated KL077 owner taking S01->S44->receipt, with no grant of new A/head/binding/epoch. No preparation owner writes executable outputs or bypasses command ownership.",
+    "loss_and_history": "tests/db/test_test_only_demo.py:1791/2013/2018 create independent owner trajectories with actual START, actual ordinary PAUSE for RESUME, current exact P/A eligibility, valid IN_PROGRESS or PAUSED state, and distinct absent new-START target before loss. CONTINUE/RESUME also execute successfully before loss and then use fresh keys/current bindings. ApplyControl derives the locked current epoch and writes S17 STOP/S18 ACTIVE/S43 invalidation/S01 epoch+1/control plus receipt/event/outbox atomically. AcceptFactRevision follows the merged KL023 restricted admitted-S14/current-frontier/epoch recipe. Artifact loss invokes actual strict admin SafetyRegistry revoke. Subsequent failures assert current authorization/artifact causes and exhaustive unchanged persisted tables, including first-use heads/sessions, receipts/events/outbox, issuances/bindings. Historical START and bundle replay returns original immutable IDs, replayed=true, executable=false with no new effects; source F/D/N and started history remain intact.",
+    "expiry_and_equality": "Finite admitted source validity is generated from trusted DB time and proved the issuance minimum before bounded clock observation. Actual PostgreSQL T6/START/CONTINUE/RESUME lock waiters are observed with pg_blocking_pids, and the owners reject after release for expired resolution/TIME_INELIGIBLE, with zero effects. The recorded pre-setup/post-expiry times straddle the source bound, but no trusted timestamp at actual blocking proves the waiter was blocked before expiry; this is the blocking finding. Pure tests separately exercise actual half-open eligibility, lease and deadline predicates at before/equality/after. No caller expiry, cached guard time, timestamp overwrite, status job, production clock seam or equality-DC claim is present.",
+    "f2_repair": "tests/db/test_test_only_demo.py:2095 uses actual structured KL024 revision under the same live root, creates a different attempt and performs acquire/snapshot/all forward stages. F2 records immutable parent F1; D2/N2 are explicitly recalculated. Old F1/D1/N1/resolutions/validation remain unchanged; mixed sources reject at preparation/COMMIT_READY/T6 and backward stage/old-attempt continuation reject. Root typed budget/accounting and original deadline compare equal. Coherent F2 closure commits and starts through actual owners.",
+    "isolation_and_claims": "TEST actor, registered subject/policy/environment/principal, authenticated connection and exact TEST_ONLY full policy are mandatory. Foreign production/evaluation identities/connections, shadow/production scopes, policy downgrade, missing mandatory context/evidence/N/certificates and stale basis/artifacts deny. Shadow-policy fixtures have no S38/S42/S45 or executable result. Exact owned namespace and current_database checks precede nested bootstrap/reset/start/cleanup; all 61 raw cleanup inventories are empty. Internal service E2E/DC and mechanical Nutrition TARGET make no HTTP/provider/model/clinical/production/real-shadow claim. requirements_covered remains empty; M3/G-SHADOW/product/layer/release/MERGED facts remain separate.",
+    "raw_evidence": "Independently verified all twelve final logs' SHA256, exact command/tested-SHA headers and JUnit counts. Named selector counts are 1 namespace PU, 1 trajectory, 9 revoke, 3 expiry, 1 repair and 43 scope; complete own suite is 61, unit 232, harness 676, all zero failures/errors/skips. Source suite witnesses independently parsed and checked: 61 admitted input/sealed source/runtime/namespace/cleanup sets, 410 legal forward transitions, 174 F/D/N outputs, 173 full outputs, 56 prepared chains, 44 exact-cause zero-effect denials, 12 lifecycle-valid preconditions, 6 actual pre-loss T7 successes, 9 non-executable historical replays, 4 observed expiry waiters, and same-root F2 repair. Audit recomputes raw output hashes and both complete issuance certificates; its mechanical success does not discharge the missing observed-blocking-time oracle. Pure independent rerun passed 22 tests with zero skips. No DB lifecycle was invoked by this reviewer."
+  },
+  "independent_reruns": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/unit/protocol/test_test_only_demo.py tests/unit/protocol/test_full_test_execution.py tests/unit/protocol/test_execution.py tests/unit/contracts/test_commands.py",
+      "status": "PASS",
+      "passed": 22,
+      "skipped": 0,
+      "evidence_ref": "docs/exec-plans/reviews/KL-027/protocol-raw/pure-rerun.log"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python docs/exec-plans/reviews/KL-027/protocol-raw/audit.py",
+      "status": "PASS",
+      "evidence_ref": "docs/exec-plans/reviews/KL-027/protocol-raw/audit.json"
+    }
+  ],
+  "limitations": [
+    "Read-only new-START pre-loss eligibility uses the exact P/A through the already live session because the inherited read-only API requires a lifecycle; its distinct absent target is separately asserted, positive new START executes in an independent positive trajectory and each actual new START rechecks its own guarded authorization. This is disclosed and does not substitute lifecycle rejection for authority denial.",
+    "Pure checks were independently rerun and committed real-PG raw evidence audited; DB_CONCURRENCY owns the shared DB review resource. This protocol review makes no claim to independently rerunning DB cases.",
+    "Final unchanged hosted PostgreSQL/quality/selected-task gates and fresh GENERAL/DB_CONCURRENCY reviews remain separate merge conditions. Only task-scoped linear REVIEW_RECORD_ONLY suffixes may follow without rereview."
+  ],
+  "merge_recommendation": "CHANGES_REQUIRED. Repair the actual blocking-time oracle, rerun exact packet checks on the corrected tested revision, and obtain fresh required reviews before normal merge."
+}

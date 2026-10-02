@@ -1,0 +1,201 @@
+task_identity: harness-backlog-v0.2/KL-027
+display_task_id: KL-027
+task_definition_version: v0.2
+base_commit: 6d1348c5a731afb74fdf6f2345109a446cdb597c
+tested_commit: 72a9a5f3f9529028708f64ece3bbec6d791413a7
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: Tests-only composition of the normally merged source, publication, planning, full-action preparation and
+  TEST execution owners. All twelve exact packet checks and 61 independent real-PostgreSQL demo cases pass with
+  zero skips/xfails. Complete TRAINING/NUTRITION, ordinary PAUSE/RESUME, lifecycle-valid authority-loss denials,
+  source expiry/post-lock denial, immutable history, same-root F2 repair and non-executable scope boundaries are
+  covered. No product, M3, G-SHADOW or release closure is inferred.
+commands_run:
+- check_id: demo_namespace_and_boundary_pu
+  command: uv run pytest -q tests/unit/protocol/test_test_only_demo.py::test_namespace_and_boundary
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_namespace_and_boundary_pu.log
+- check_id: demo_owner_trajectory_e2e
+  command: uv run pytest -q tests/db/test_test_only_demo.py::test_full_trajectory
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_owner_trajectory_e2e.log
+- check_id: demo_revoke_denials_dc
+  command: uv run pytest -q tests/db/test_test_only_demo.py::test_revoke_then_deny
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_revoke_denials_dc.log
+- check_id: demo_expiry_denials_dc
+  command: uv run pytest -q tests/db/test_test_only_demo.py::test_expiry_then_deny
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_expiry_denials_dc.log
+- check_id: demo_fdn_repair_e2e
+  command: uv run pytest -q tests/db/test_test_only_demo.py::test_fdn_repair
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_fdn_repair_e2e.log
+- check_id: demo_scope_denials_dc
+  command: uv run pytest -q tests/db/test_test_only_demo.py::test_production_shadow_denials
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_scope_denials_dc.log
+- check_id: demo_suite_e2e
+  command: uv run pytest -q tests/db/test_test_only_demo.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_suite_e2e.log
+- check_id: harness_validation_passes
+  command: uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-027/checks-72a9a5f/harness_validation_passes.log
+- check_id: unit_regressions_pass
+  command: uv run kl test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-027/checks-72a9a5f/unit_regressions_pass.log
+- check_id: harness_regressions_pass
+  command: uv run kl test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-027/checks-72a9a5f/harness_regressions_pass.log
+- check_id: lint_passes
+  command: uv run kl lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-027/checks-72a9a5f/lint_passes.log
+- check_id: typecheck_passes
+  command: uv run kl typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-027/checks-72a9a5f/typecheck_passes.log
+requirements_covered: []
+files_changed:
+- docs/contracts/test_only_demo.md
+- docs/exec-plans/completed/KL-027_RESULT.yaml
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/checks.json
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_expiry_denials_dc.log
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_expiry_denials_dc.xml
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_fdn_repair_e2e.log
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_fdn_repair_e2e.xml
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_namespace_and_boundary_pu.log
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_namespace_and_boundary_pu.xml
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_owner_trajectory_e2e.log
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_owner_trajectory_e2e.xml
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_revoke_denials_dc.log
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_revoke_denials_dc.xml
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_scope_denials_dc.log
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_scope_denials_dc.xml
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_suite_e2e.log
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_suite_e2e.xml
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/harness_regressions_pass.log
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/harness_regressions_pass.xml
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/harness_validation_passes.log
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/lint_passes.log
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/oracle-audit.json
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/typecheck_passes.log
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/unit_regressions_pass.log
+- docs/exec-plans/evidence/KL-027/checks-72a9a5f/unit_regressions_pass.xml
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/checks.json
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_expiry_denials_dc.log
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_expiry_denials_dc.xml
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_fdn_repair_e2e.log
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_fdn_repair_e2e.xml
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_namespace_and_boundary_pu.log
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_namespace_and_boundary_pu.xml
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_owner_trajectory_e2e.log
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_owner_trajectory_e2e.xml
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_revoke_denials_dc.log
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_revoke_denials_dc.xml
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_scope_denials_dc.log
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_scope_denials_dc.xml
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_suite_e2e.log
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/demo_suite_e2e.xml
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/harness_regressions_pass.log
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/harness_regressions_pass.xml
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/harness_validation_passes.log
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/lint_passes.log
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/typecheck_passes.log
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/unit_regressions_pass.log
+- docs/exec-plans/evidence/KL-027/checks-8b446ed/unit_regressions_pass.xml
+- docs/exec-plans/evidence/KL-027/checks-e78a59b/checks.json
+- docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_expiry_denials_dc.log
+- docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_expiry_denials_dc.xml
+- docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_fdn_repair_e2e.log
+- docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_fdn_repair_e2e.xml
+- docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_namespace_and_boundary_pu.log
+- docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_namespace_and_boundary_pu.xml
+- docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_owner_trajectory_e2e.log
+- docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_owner_trajectory_e2e.xml
+- docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_revoke_denials_dc.log
+- docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_revoke_denials_dc.xml
+- docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_scope_denials_dc.log
+- docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_scope_denials_dc.xml
+- docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_suite_e2e.log
+- docs/exec-plans/evidence/KL-027/checks-e78a59b/demo_suite_e2e.xml
+- docs/exec-plans/evidence/KL-027/checks-e78a59b/repair-attempt.json
+- docs/exec-plans/evidence/KL-027/entry-audit.json
+- docs/exec-plans/evidence/KL-027/entry-audit.py
+- docs/exec-plans/evidence/KL-027/lock-fix-72a9a5f/four-operations.log
+- docs/exec-plans/evidence/KL-027/lock-fix-72a9a5f/four-operations.xml
+- docs/exec-plans/evidence/KL-027/lock-fix-72a9a5f/run.json
+- docs/exec-plans/evidence/KL-027/preserved-baseline.json
+- docs/exec-plans/evidence/KL-027/run-checks.py
+- docs/exec-plans/reviews/KL-027/db-raw/audit.json
+- docs/exec-plans/reviews/KL-027/db-raw/namespace.log
+- docs/exec-plans/reviews/KL-027/db-raw/namespace.xml
+- docs/exec-plans/reviews/KL-027/db-raw/prerequisites.json
+- docs/exec-plans/reviews/KL-027/db-raw/suite.log
+- docs/exec-plans/reviews/KL-027/db-raw/suite.xml
+- docs/exec-plans/reviews/KL-027/general-raw/audit.json
+- docs/exec-plans/reviews/KL-027/general-raw/audit.py
+- docs/exec-plans/reviews/KL-027/general-raw/oracle-assessment.md
+- docs/exec-plans/reviews/KL-027/general-raw/unit-review.log
+- docs/exec-plans/reviews/KL-027/history/1df1527/DB_CONCURRENCY.json
+- docs/exec-plans/reviews/KL-027/history/1df1527/GENERAL.json
+- docs/exec-plans/reviews/KL-027/history/1df1527/PROTOCOL.json
+- docs/exec-plans/reviews/KL-027/protocol-raw/audit.json
+- docs/exec-plans/reviews/KL-027/protocol-raw/audit.log
+- docs/exec-plans/reviews/KL-027/protocol-raw/audit.py
+- docs/exec-plans/reviews/KL-027/protocol-raw/pure-rerun.log
+- tests/db/test_test_only_demo.py
+- tests/unit/protocol/test_test_only_demo.py
+decisions:
+- Read current frozen authorities, all twelve direct/transitive prerequisite results/reviews and M2 closure; verified
+  actual normal protected-base merges, ancestry and review-only suffixes. Old UNMERGED result fields were not rewritten.
+- Use only own tests/contract/result/evidence. Import only own namespace PU and the merged migration bootstrap,
+  passing the selected owned lifecycle; no foreign fixture, default namespace, raw target output seed, production
+  source, schema or CI changes.
+- Exact fixed demo label binds HEAD first7 and SHA256(resolved-root bytes) first12. Namespace/boundary PU precedes
+  every bootstrap/reset/start/cleanup, every URL/current_database is validated, and finally exact labeled containers/volumes/networks
+  are empty.
+- Actual admitted input -> CanonicalView membership/complete/seal -> projection/build -> T3 -> KL024 admit/acquire
+  -> snapshot and all frozen forward stages -> F/D/N -> both full resolutions/shared validation -> COMMIT_READY
+  -> complete T6 -> real guard eligibility true -> START. Observer-only instrumentation returns the unmodified actual
+  T7 decision.
+- Restricted ApplyControl and AcceptFactRevision recipes read actual locked current epoch/frontier and atomically
+  append invalidation/control/receipt/event/outbox. Artifact loss uses the merged strict SafetyRegistry revoke owner.
+- Independent CONTINUE/RESUME/new START trajectories establish current eligibility and valid live/paused/distinct
+  absent lifecycle before loss; exact authority causes and exhaustive zero-effect row comparisons exclude lifecycle/key/transport
+  substitutes. Historical replay is identity-only, executable=false.
+- Half-open equality is separately labeled actual pure-predicate PU. PostgreSQL before/after and bounded observed
+  post-lock expiry use trusted time without timestamp overwrite, injected production clock, caller expiry or status
+  job.
+- Same-root structured revision creates a new attempt through real forward owners, explicitly regenerates F2/D2/N2,
+  rejects mixed closure at preparation/progression/T6 and preserves original immutable history/root budget/deadline.
+- Initial independent reviews found the actual lock-wait observation lacked a trusted pre-expiry timestamp. Preserved
+  CHANGES_REQUIRED review history; added clock_timestamp to actual blocking observation and asserted before_wait
+  <= blocked_at < immutable source expiry < later trusted time. Blocker cleanup is finally-safe. An intermediate
+  two-second margin correctly failed the existing one-second owner lock timeout; its interrupted FAIL evidence is
+  retained. Restored the half-second launch margin after blocker setup without changing owner timeouts, then reran
+  all twelve checks on this corrected tested SHA.
+- All required checks execute on the tested implementation SHA. Result and newly generated raw evidence are appended
+  before independent GENERAL/PROTOCOL/DB_CONCURRENCY review; only REVIEW_RECORD_ONLY bookkeeping may follow. Normal
+  merge remains conditional on final unchanged hosted quality/PostgreSQL/PR gates.
+known_limitations:
+- 'Internal service E2E/DC fixture evidence only: no HTTP, external provider/model, clinical policy, production
+  activation, real-data shadow execution, acceptance-layer PASS, M3 or release closure.'
+- Existing read-only execution eligibility requires an existing lifecycle. New START pre-loss observations use the
+  same exact P/A through the live session while its distinct target session is absent; the actual new START independently
+  rechecks current authority in its guarded owner.
+- KL077 GENERAL records an inherited nonblocking DEMAND_FEATURE certificate proposal_id audit-attribute mismatch.
+  Authoritative D->F and full action bindings remain guarded; this tests-only task does not alter that metadata
+  or upstream implementation.
+- Final hosted legacy PostgreSQL regression and final PR gates are externally durable CI facts required before normal
+  merge; they are separate from local task check PASS and fresh review PASS.
+follow_up_tasks:
+- Preserve the independently scoped inherited KL077 demand-feature audit metadata follow-up; no downstream implementation
+  or governance was performed.
+spec_change_request: null
