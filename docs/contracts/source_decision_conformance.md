@@ -4,6 +4,10 @@ The mechanical legacy and full preparation readers consume frozen physical S13
 ELIGIBLE and S12 MATCHED. NOT_ELIGIBLE, UNRESOLVED, ADMITTED, ACCEPTED, unknown or
 null S13 decisions do not authorize preparation. AMBIGUOUS, RETRACTED, CONFIRMED,
 unknown or null physical S12 states cannot produce an authoritative validation.
+Both real preparation profiles deduplicate two owner-produced actual facts for one
+event to one exposure; conflicting quantities deny. Wrong immutable source hashes,
+policy references, association identity and provenance deny with
+complete failed-command snapshots.
 There is no enum conversion, migration, new runtime identity or caller certificate.
 S27 intent ADMITTED and derived S36 aggregate CONFIRMED retain their distinct meanings.
 N remains TARGET; actual exposure requires actual canonical facts and provenance.

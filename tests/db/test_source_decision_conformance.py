@@ -184,6 +184,10 @@ def seed_source(
     association_value: Any = "MATCHED",
     scope: str = "TEST_ONLY",
     provenance: str = "USER_REPORTED",
+    extra_fact_changes: Any = None,
+    corrupt_admission_hash: bool = False,
+    corrupt_association_hash: bool = False,
+    wrong_source_policy: bool = False,
 ) -> dict[str, Any]:
     (
         subject,
@@ -202,6 +206,7 @@ def seed_source(
         admission,
         fact,
     ) = [uuid4() for _ in range(15)]
+    extra_fact = uuid4() if extra_fact_changes is not None else None
     actor = P.RoleIdentity(str(uuid4()), P.ActorRole.TEST)
     identity = P.ProgressIdentity(actor, subject, policy_id, environment, "kl_test_subject_1_login")
     with connect(urls["admin"], autocommit=True) as db:
@@ -218,6 +223,9 @@ def seed_source(
             "reservations": {"prior-slot": 50},
             "valid_until": end.isoformat(),
         }
+        if extra_fact:
+            config["required_members"].append(str(extra_fact))
+            config["required_members"].sort()
         if full:
             config.update(contract=P.FULL_VERSION, required_actions=["TRAINING", "NUTRITION"])
         config.update(config_changes or {})
@@ -225,7 +233,7 @@ def seed_source(
         runtime_hash = (
             digest({"version": P.FULL_VERSION, "rules": P.RULES}) if full else digest(P.RULES)
         )
-        deps = (
+        deps: tuple[Any, ...] = (
             P.Dependency("COLLECTION", "fixture-facts", "all-fixture-facts-and-absence:v1"),
             P.Dependency("ENGINE", f"test:kl079-engine-{subject}:1"),
             P.Dependency("FACTSET", "sealed-input"),
@@ -233,6 +241,8 @@ def seed_source(
             P.Dependency("PROGRAM", "selected-program"),
             P.Dependency("FACT", "actual-member", fact_id=fact),
         )
+        if extra_fact:
+            deps += (P.Dependency("FACT", "duplicate-event-fact", fact_id=extra_fact),)
         body = {
             "deterministic_fixture": config,
             "fixture_runtime": {
@@ -288,6 +298,13 @@ def seed_source(
             "INSERT INTO kineticloop.policy_bundles(id,subject_id,policy_namespace,policy_version,content_hash,typed_payload) VALUES (%s,%s,'test:kl079','1',%s,%s)",
             (policy_id, subject, digest(body), Jsonb(body)),
         )
+        source_policy = policy_id
+        if wrong_source_policy:
+            source_policy = uuid4()
+            db.execute(
+                "INSERT INTO kineticloop.policy_bundles(id,subject_id,policy_namespace,policy_version,content_hash,typed_payload) VALUES (%s,%s,'test:kl080-other-policy','1',%s,%s)",
+                (source_policy, subject, digest(body), Jsonb(body)),
+            )
         db.execute(
             "INSERT INTO kineticloop.program_versions(id,subject_id,program_identity,program_revision) VALUES (%s,%s,'test:kl079',1)",
             (program, subject),
@@ -311,7 +328,14 @@ def seed_source(
         assoc_body = {"fixture_association": association_value, "event_id": str(event)}
         db.execute(
             "INSERT INTO kineticloop.event_association_decisions(id,subject_id,association_family_identity,association_state,ref_s11_id,content_hash,typed_payload) VALUES (%s,%s,'fixture-event',%s,%s,%s,%s)",
-            (association, subject, association_value, event, digest(assoc_body), Jsonb(assoc_body)),
+            (
+                association,
+                subject,
+                association_value,
+                event,
+                digest("wrong-source-hash") if corrupt_association_hash else digest(assoc_body),
+                Jsonb(assoc_body),
+            ),
         )
         admission_body = {
             "fixture_admission": admission_value,
@@ -324,10 +348,10 @@ def seed_source(
                 subject,
                 scope,
                 admission_value,
-                policy_id,
+                source_policy,
                 evidence,
                 assertion,
-                digest(admission_body),
+                digest("wrong-source-hash") if corrupt_admission_hash else digest(admission_body),
                 Jsonb(admission_body),
             ),
         )
@@ -428,6 +452,7 @@ def seed_source(
         "builder": builder,
         "deps": deps,
         "fact": fact,
+        "extra_fact": extra_fact,
         "association": association,
         "admission": admission,
         "assertion": assertion,
@@ -442,7 +467,99 @@ def seed_source(
     }
     with connect(urls["admin"]) as db:
         P.actual_input(db, seed, fact)
+        if extra_fact:
+            P.actual_input(db, {**seed, "fact_changes": extra_fact_changes}, extra_fact)
     return seed
+
+
+def upstream_with_duplicate(db: Any, seed: Any, key: str = "source") -> Any:
+    identity = seed["identity"]
+    subject = identity.subject_id
+    cv = P.CanonicalViewService(db, P.BuilderIdentity(identity.actor, subject))
+    with db.transaction():
+        frontier, epoch = db.execute(
+            "SELECT input_frontier_hash,authorization_epoch FROM kineticloop.user_decision_state WHERE subject_id=%s",
+            (subject,),
+        ).fetchone()
+    factset_id = UUID(
+        cv.begin_build(
+            P.BeginBuild(
+                subject,
+                key,
+                frontier,
+                epoch,
+                seed["program"],
+                identity.policy_id,
+                P.EvidenceBasis(
+                    (seed["association"],),
+                    (seed["admission"],),
+                    (),
+                    seed["now"].isoformat(),
+                    "TEST_ONLY",
+                ),
+                max_delta_depth=1,
+            )
+        )["build_id"]
+    )
+    members: tuple[Any, ...] = (
+        P.Member("ASSOCIATION", "fixture-event", "TEST_ONLY", seed["association"]),
+        P.Member("ADMISSION", "fixture-admitted", "TEST_ONLY", seed["admission"]),
+        P.Member("FACT", "fixture-actual", "TEST_ONLY", seed["fact"]),
+    )
+    members += (P.Member("FACT", "second-actual-same-event", "TEST_ONLY", seed["extra_fact"]),)
+    members += tuple(
+        P.Member("FACT", f"extra-fixture-{i}", "TEST_ONLY", seed["fact"])
+        for i in range(seed.get("extra_members", 0))
+    )
+    for n, member in enumerate(members):
+        cv.write_candidate(P.WriteCandidate(subject, f"member-{n}", factset_id, n, member))
+    complete = cv.complete_factset(P.CompleteFactset(subject, "complete", factset_id, len(members)))
+    cv.seal_factset(P.SealFactset(subject, "seal", factset_id, complete))
+    ingress = P.PreparationService(
+        db,
+        ExecutionIdentity(
+            identity.actor, subject, identity.policy_id, identity.environment_id, identity.principal
+        ),
+    )
+    source = ingress.capture_source(factset_id)
+    projection = ingress.record_projection(
+        P.RecordProjection(
+            source,
+            "EXPOSURE",
+            seed["engine"],
+            tuple(seed["policy"]["deterministic_fixture"]["window"]),
+            {
+                "actual_minutes_lower": 10,
+                "actual_minutes_upper": 10,
+                "dedup_event_ids": [str(seed["event"])],
+                "semantic_class": "ACTUAL_EXECUTION",
+                "source_fact_ids": [str(seed["fact"]), str(seed["extra_fact"])],
+            },
+            seed["deps"],
+            seed["end"],
+        )
+    )
+    request = P.BuildManifest(
+        "build",
+        source,
+        (P.ProjectionBinding("EXPOSURE", UUID(projection["projection_id"])),),
+        (seed["engine"].artifact_id,),
+    )
+    build = ingress.build_manifest(request)
+    ready = ingress.complete_manifest(P.CompleteManifest(UUID(build["build_id"])))
+    result = P.publish(db, seed, source, ready, "publish")
+    seed.update(source=source, projection=projection, ready=ready, manifest=result)
+    P.witness(
+        "upstream",
+        subject=subject,
+        factset=factset_id,
+        membership_digest=complete["membership_digest"],
+        projection=projection,
+        ready=ready,
+        publication=result,
+        epoch=source.epoch,
+    )
+    return result
 
 
 def ready(urls: Any, **kwargs: Any) -> tuple[Any, Any]:
@@ -500,6 +617,7 @@ def source_rows(db: Any, seed: Any) -> Any:
     rows = P.snapshot(db, auth(seed).subject_id)
     assert rows["admission_decisions"][0][0]["decision"] == "ELIGIBLE"
     assert rows["event_association_decisions"][0][0]["association_state"] == "MATCHED"
+    assert all(row["command_authority"] == "NONE" for (row,) in rows["evidence_revisions"])
     for table in ("admission_decisions", "event_association_decisions", "canonical_fact_revisions"):
         for (row,) in rows[table]:
             assert digest(row["typed_payload"]) == row["content_hash"]
@@ -507,10 +625,11 @@ def source_rows(db: Any, seed: Any) -> Any:
 
 
 @pytest.mark.parametrize("full", [False, True], ids=["legacy", "full"])
-def test_preparation_owners(database_urls: Any, full: bool) -> None:
-    seed = seed_source(database_urls, full=full)
+@pytest.mark.parametrize("duplicate", [False, True], ids=["single-event", "duplicate-event"])
+def test_preparation_owners(database_urls: Any, full: bool, duplicate: bool) -> None:
+    seed = seed_source(database_urls, full=full, extra_fact_changes={} if duplicate else None)
     with connect(database_urls["admin"]) as db:
-        P.upstream(db, seed)
+        upstream_with_duplicate(db, seed) if duplicate else P.upstream(db, seed)
         basis, refs = P.begin(db, seed)
         if full:
             op, fullrefs = P.preparation_chain(db, seed, basis, refs)
@@ -526,6 +645,11 @@ def test_preparation_owners(database_urls: Any, full: bool) -> None:
             assert row["typed_payload"]["event_association_status"] == "CONFIRMED"
             assert row["typed_payload"]["facts"][0]["admission_id"] == str(seed["admission"])
         assert rows["validation_results"][0][0]["valid_until"] is not None
+        assert rows["validation_results"][0][0]["typed_payload"]["rolling_minutes"] == 40
+        assert len(rows["canonical_fact_revisions"]) == (2 if duplicate else 1)
+        assert rows["validation_results"][0][0]["typed_payload"]["deduplicated_events"] == [
+            str(seed["event"])
+        ]
         P.assert_no_execution(db, auth(seed).subject_id)
         P.witness("kl080_preparation_owner", full=full, refs=refs, persisted=rows)
 
@@ -888,6 +1012,12 @@ assert_event = E.assert_event
     "case",
     [
         "request_revision",
+        "source_legacy_dedup_conflict",
+        "source_legacy_admission_hash",
+        "source_legacy_association_hash",
+        "source_legacy_source_policy",
+        "source_legacy_association_id",
+        "source_legacy_unknown_association",
         "source_legacy_NOT_ELIGIBLE",
         "source_legacy_UNRESOLVED",
         "source_legacy_ADMITTED",
@@ -906,6 +1036,12 @@ assert_event = E.assert_event
         "source_legacy_retraction",
         "source_legacy_membership",
         "source_legacy_hash",
+        "source_full_dedup_conflict",
+        "source_full_admission_hash",
+        "source_full_association_hash",
+        "source_full_source_policy",
+        "source_full_association_id",
+        "source_full_unknown_association",
         "source_full_NOT_ELIGIBLE",
         "source_full_UNRESOLVED",
         "source_full_ADMITTED",
@@ -1163,6 +1299,8 @@ def source_preparation_denial(database_urls: Any, case: str, full: bool) -> None
         values["admission_value"] = None if case == "null_admission" else case
     elif case in ("AMBIGUOUS", "RETRACTED", "CONFIRMED", "null_association"):
         values["association_value"] = None if case == "null_association" else case
+    elif case == "unknown_association":
+        values["association_value"] = "unknown"
     elif case == "scope":
         values["scope"] = "EXECUTION"
     elif case == "provenance":
@@ -1175,11 +1313,21 @@ def source_preparation_denial(database_urls: Any, case: str, full: bool) -> None
         values["fact_changes"] = {"contradicts": True}
     elif case == "retraction":
         values["fact_changes"] = {"retracted": True}
+    elif case == "dedup_conflict":
+        values["extra_fact_changes"] = {"lower_minutes": 11, "upper_minutes": 11}
+    elif case == "admission_hash":
+        values["corrupt_admission_hash"] = True
+    elif case == "association_hash":
+        values["corrupt_association_hash"] = True
+    elif case == "source_policy":
+        values["wrong_source_policy"] = True
+    elif case == "association_id":
+        values["fact_changes"] = {"association_id": str(uuid4())}
     elif case == "membership":
         values["config_changes"] = {"required_members": [str(uuid4())]}
     seed = seed_source(database_urls, **values)
     with connect(database_urls["admin"]) as db:
-        P.upstream(db, seed)
+        upstream_with_duplicate(db, seed) if seed.get("extra_fact") else P.upstream(db, seed)
         basis, refs = P.begin(db, seed)
         if case == "hash":
             refs = {**refs, "snapshot": {**refs["snapshot"], "hash": digest("wrong")}}
