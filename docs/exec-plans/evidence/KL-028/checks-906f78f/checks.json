@@ -1,0 +1,248 @@
+{
+  "tested_commit": "906f78f62ee0fec248a8961b9fbfc1063fcb0be2",
+  "root": "/Users/davetian/.codex/worktrees/34e8/KineticLoop",
+  "compose": "kineticloop-kl028-boundary-906f78f-3635a672a23d",
+  "database": "kineticloop_kl028_boundary_906f78f_3635a672a23d",
+  "checks": [
+    {
+      "check_id": "boundary_namespace_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_boundary_namespace",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/boundary_namespace_pu.log",
+      "log_sha256": "b483940b553479b8149ec33511db4789e5d41cf0ae79c7db1f7b0824b9b1264e",
+      "junit_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/boundary_namespace_pu.xml",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 1.3116412500385195
+    },
+    {
+      "check_id": "b14_registry_failclosed_stop_support_dc",
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b14_registry_failclosed_stop_support",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b14_registry_failclosed_stop_support_dc.log",
+      "log_sha256": "80a9cdb59441b68930bd0438aa26e62dfbb285951383d3e01c37a360d73bfea2",
+      "junit_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b14_registry_failclosed_stop_support_dc.xml",
+      "counts": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 52.2468115829397
+    },
+    {
+      "check_id": "b01_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b01_pu.log",
+      "log_sha256": "36cc927b7bce0e19f0767b4ffd7e6707cd2c54ad91e77a2da74bdbaef68e21ce",
+      "junit_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b01_pu.xml",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 0.23757883301004767
+    },
+    {
+      "check_id": "b01_dc",
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b01_dc.log",
+      "log_sha256": "30189f9274df76e04ef1fc890c56ddc872e8f921c90e628e1b57802e37755d4c",
+      "junit_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b01_dc.xml",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 5.854585957946256
+    },
+    {
+      "check_id": "b02_dc",
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b02_stale_frontier_seal_race",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b02_dc.log",
+      "log_sha256": "40bb2b49e07e73db7f992802e71c968483ae77dccf4e88a0f0bb1fea60004ab0",
+      "junit_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b02_dc.xml",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 11.464684749953449
+    },
+    {
+      "check_id": "b03_dc",
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b03_sealed_immutability_ready_barrier",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b03_dc.log",
+      "log_sha256": "ee65e48fc6cb2aedfab61520a61759991d3bdeac02b0cb842cc1e1dd16a581f8",
+      "junit_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b03_dc.xml",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 5.729878125013784
+    },
+    {
+      "check_id": "b04_dc",
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b04_relevant_revoke_issue_reauthorize",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b04_dc.log",
+      "log_sha256": "faffb3900bc321487ccdba5b423d816b80777af997dd23b055b15fae4372ea9f",
+      "junit_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b04_dc.xml",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 13.01302979211323
+    },
+    {
+      "check_id": "b05_dc",
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b05_unrelated_revoke_preserves_eligibility",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b05_dc.log",
+      "log_sha256": "0c3709b300e16c03c56c75612cf3e96748ce75680e09b1ba37a6ca775172cec2",
+      "junit_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b05_dc.xml",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 6.35852108290419
+    },
+    {
+      "check_id": "b06_dc",
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b06_revoke_before_publish",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b06_dc.log",
+      "log_sha256": "e301c332342bab65c3eab94c58dc56a0d1181838e7d0c4bdb6a0a64e53ecb911",
+      "junit_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b06_dc.xml",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 11.377130541019142
+    },
+    {
+      "check_id": "b07_dc",
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b07_revoke_current_execution_denial",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b07_dc.log",
+      "log_sha256": "4f99b9923d8a7e47b4961397cd939d69b7807ec5bb317fd2b0a4a353328a5c92",
+      "junit_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b07_dc.xml",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 17.45049933413975
+    },
+    {
+      "check_id": "b08_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b08_missing_validity_denied",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b08_pu.log",
+      "log_sha256": "3ce06f206a47facf03ebb574234f06f0319f58c0607bee9f4b8b3b5a7a438f48",
+      "junit_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b08_pu.xml",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 0.22818154213018715
+    },
+    {
+      "check_id": "b09_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b09_server_minimum_closure",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b09_pu.log",
+      "log_sha256": "ce9267eb6c0b580d45662157a94007ec8335c5fb4477806bf221eddcb0503c58",
+      "junit_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b09_pu.xml",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 0.235759082948789
+    },
+    {
+      "check_id": "b09_dc",
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b09_server_minimum_certificate",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b09_dc.log",
+      "log_sha256": "2c133dad1731b726dc92a73b5af69f702c29d342e985b999047b023a4d6af983",
+      "junit_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b09_dc.xml",
+      "counts": {
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 66.81218608398922
+    },
+    {
+      "check_id": "b10_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b10_expiry_without_status_job",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b10_pu.log",
+      "log_sha256": "2004c946088df46ed856dd92ee9c245fc5702f4767952fda3016f0f9935a0f31",
+      "junit_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b10_pu.xml",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 0.23063520900905132
+    },
+    {
+      "check_id": "b11_dc",
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b11_backdated_revoke_commit_linearization",
+      "result": "FAIL",
+      "exit_code": 1,
+      "evidence_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b11_dc.log",
+      "log_sha256": "2112895c461f01a8328927bd9788bef9ff50574ffde3f68d014aed1a6370138f",
+      "junit_ref": "docs/exec-plans/evidence/KL-028/checks-906f78f/b11_dc.xml",
+      "counts": {
+        "tests": 6,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 35.443988875020295
+    }
+  ]
+}

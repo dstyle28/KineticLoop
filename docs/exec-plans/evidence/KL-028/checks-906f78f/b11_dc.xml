@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="6" time="35.214" timestamp="2026-10-01T23:02:13.287766-07:00" hostname="Daves-MacBook-Pro---26.local"><testcase classname="tests.db.test_boundary_acceptance" name="test_b11_backdated_revoke_commit_linearization[False-T3]" time="5.563" /><testcase classname="tests.db.test_boundary_acceptance" name="test_b11_backdated_revoke_commit_linearization[False-T6]" time="5.984"><failure message="AssertionError: assert '2026-10-02T0...4.39092+00:00' == '2026-10-02T0....390920+00:00'&#10;  &#10;  - 2026-10-02T06:02:24.390920+00:00&#10;  ?                          -&#10;  + 2026-10-02T06:02:24.39092+00:00">database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:57821/kineticloop_kl028_boundary_906f78f_3635a672... 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:57821/kineticloop_kl028_boundary_906f78f_3635a672a23d', ...}
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x109a9bb00&gt;
+kind = 'T6', positive = False
+
+    @pytest.mark.parametrize("kind", ["T3", "T6", "T7"])
+    @pytest.mark.parametrize("positive", [False, True])
+    def test_b11_backdated_revoke_commit_linearization(
+        database_urls: Any, monkeypatch: Any, kind: str, positive: bool
+    ) -&gt; None:
+&gt;       _timed_revoke(database_urls, monkeypatch, kind, False, positive)
+
+tests/db/test_boundary_acceptance.py:1157: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/db/test_boundary_acceptance.py:1219: in _timed_revoke
+    assert_revoke(db, before, result)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+db = &lt;psycopg.Connection [BAD] at 0x109955a60&gt;
+before = {'artifact_revocation_events': [], 'registry_audit_events': [], 'registry_management_receipts': [], 'registry_outbox': [], ...}
+result = RevocationResult(revocation_id='9552fea6-8efd-44e3-849b-48a78c5fc7e0', registry_revision=1, artifact_id='d6287569-0def...nfo=datetime.timezone.utc), recorded_at=datetime.datetime(2026, 10, 2, 6, 2, 24, 390920, tzinfo=datetime.timezone.utc))
+
+    def assert_revoke(db: Any, before: Any, result: Any) -&gt; None:
+        after = global_snapshot(db)
+        assert after["safety_artifacts"] == before["safety_artifacts"]
+        assert after["safety_artifact_dependencies"] == before["safety_artifact_dependencies"]
+        old = before["safety_registry_state"][0][0]
+        state = after["safety_registry_state"][0][0]
+        assert state["registry_revision"] == old["registry_revision"] + 1 == result.registry_revision
+        assert state["last_revocation_id"] == result.revocation_id
+        for table in (
+            "artifact_revocation_events",
+            "registry_management_receipts",
+            "registry_audit_events",
+            "registry_outbox",
+        ):
+            assert len(after[table]) == len(before[table]) + 1
+            assert all(row in after[table] for row in before[table])
+        rev = next(
+            row[0]
+            for row in after["artifact_revocation_events"]
+            if row[0]["id"] == result.revocation_id
+        )
+        receipt = next(
+            row[0]
+            for row in after["registry_management_receipts"]
+            if row[0]["revocation_id"] == result.revocation_id
+        )
+        audit = next(
+            row[0]
+            for row in after["registry_audit_events"]
+            if row[0]["revocation_id"] == result.revocation_id
+        )
+        outbox = next(
+            row[0]
+            for row in after["registry_outbox"]
+            if row[0]["revocation_id"] == result.revocation_id
+        )
+        assert rev["registry_revision"] == receipt["registry_revision"] == result.registry_revision
+        assert rev["ref_s49_id"] == receipt["artifact_id"] == result.artifact_id
+        assert (
+            rev["command_key"] == receipt["command_key"]
+            and rev["request_hash"] == receipt["request_hash"]
+        )
+        assert (
+            rev["operator_identity"]
+            == receipt["operator_identity"]
+            == audit["operator_identity"]
+            == "kl_trusted_admin_login"
+        )
+        assert (
+            rev["causation_incident_id"]
+            == receipt["causation_incident_id"]
+            == audit["causation_incident_id"]
+        )
+        assert rev["outbox_delivery_id"] == receipt["outbox_delivery_id"] == outbox["delivery_id"]
+        assert rev["effective_at"] == receipt["effective_at"] == result.effective_at.isoformat()
+&gt;       assert rev["recorded_at"] == receipt["recorded_at"] == result.recorded_at.isoformat()
+E       AssertionError: assert '2026-10-02T0...4.39092+00:00' == '2026-10-02T0....390920+00:00'
+E         
+E         - 2026-10-02T06:02:24.390920+00:00
+E         ?                          -
+E         + 2026-10-02T06:02:24.39092+00:00
+
+tests/db/test_boundary_acceptance.py:609: AssertionError</failure></testcase><testcase classname="tests.db.test_boundary_acceptance" name="test_b11_backdated_revoke_commit_linearization[False-T7]" time="6.641" /><testcase classname="tests.db.test_boundary_acceptance" name="test_b11_backdated_revoke_commit_linearization[True-T3]" time="5.559" /><testcase classname="tests.db.test_boundary_acceptance" name="test_b11_backdated_revoke_commit_linearization[True-T6]" time="5.610" /><testcase classname="tests.db.test_boundary_acceptance" name="test_b11_backdated_revoke_commit_linearization[True-T7]" time="5.558" /></testsuite></testsuites>

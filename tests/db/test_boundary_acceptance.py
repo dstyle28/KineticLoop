@@ -605,8 +605,16 @@ def assert_revoke(db: Any, before: Any, result: Any) -> None:
         == audit["causation_incident_id"]
     )
     assert rev["outbox_delivery_id"] == receipt["outbox_delivery_id"] == outbox["delivery_id"]
-    assert rev["effective_at"] == receipt["effective_at"] == result.effective_at.isoformat()
-    assert rev["recorded_at"] == receipt["recorded_at"] == result.recorded_at.isoformat()
+    assert (
+        datetime.fromisoformat(rev["effective_at"])
+        == datetime.fromisoformat(receipt["effective_at"])
+        == result.effective_at
+    )
+    assert (
+        datetime.fromisoformat(rev["recorded_at"])
+        == datetime.fromisoformat(receipt["recorded_at"])
+        == result.recorded_at
+    )
     witness("atomic_global_commit", result=asdict(result), before=before, after=after)
 
 
