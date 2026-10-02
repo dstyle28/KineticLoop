@@ -6,6 +6,7 @@ import importlib.util
 import json
 import os
 import subprocess
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import jsonschema
@@ -46,21 +47,25 @@ class History:
                         'commands': v.M3_REGRESSION_COMMANDS, 'executions': []}
         for i, command in enumerate(v.M3_REGRESSION_COMMANDS):
             run = {'command': command, 'tested_commit': self.tested, 'exit_code': 0}
-            run['stdout'] = self.raw(f'{i}.log', 'HARNESS_CHECK_PASS\n' if command.endswith('check-harness') else '1 passed in 0.1s\n')
-            if not command.endswith('check-harness'):
-                selector = ('tests/unit/example.py::test_example' if command.endswith('test-unit')
-                            else 'tests/harness/example.py::test_example' if command.endswith('test-harness')
-                            else command.removeprefix('uv run pytest -q ').split()[0])
-                if '::' not in selector:
-                    selector += '::test_example'
-                parts = selector.split('::')
-                classname = '.'.join([parts[0].removesuffix('.py').replace('/', '.'), *parts[1:-1]])
-                run['junit'] = self.raw(f'{i}.xml', f'<testsuite><testcase classname="{classname}" name="{parts[-1]}"/></testsuite>')
-                selectors = ('tests/unit' if command.endswith('test-unit') else 'tests/harness'
-                             if command.endswith('test-harness') else command.removeprefix('uv run pytest -q '))
-                collection = {'command': 'uv run pytest --collect-only -q ' + selectors,
-                              'tested_commit': self.tested, 'exit_code': 0, 'nodeids': [selector],
-                              'stdout': self.raw(f'{i}-collect.log', selector + '\n1 test collected in 0.1s\n')}
+            if command.endswith('check-harness'):
+                run['stdout'] = self.raw(f'{i}.log', 'HARNESS_CHECK_PASS\n')
+            else:
+                selectors = (['tests/unit'] if command.endswith('test-unit') else ['tests/harness']
+                             if command.endswith('test-harness') else command.removeprefix('uv run pytest -q ').split())
+                nodeids = [selector + '/example.py::test_example' if selector in ('tests/unit', 'tests/harness')
+                           else selector if '::' in selector else selector + '::test_example'
+                           for selector in selectors]
+                run['stdout'] = self.raw(f'{i}.log', f'{len(nodeids)} passed in 0.1s\n')
+                tree = ET.Element('testsuite')
+                for node in nodeids:
+                    parts = node.split('::')
+                    classname = '.'.join([parts[0].removesuffix('.py').replace('/', '.'), *parts[1:-1]])
+                    ET.SubElement(tree, 'testcase', classname=classname, name=parts[-1])
+                run['junit'] = self.raw(f'{i}.xml', ET.tostring(tree, encoding='unicode'))
+                collection = {'command': 'uv run pytest --collect-only -q ' + ' '.join(selectors),
+                              'tested_commit': self.tested, 'exit_code': 0, 'nodeids': nodeids,
+                              'stdout': self.raw(f'{i}-collect.log', '\n'.join(nodeids) +
+                                                 f'\n{len(nodeids)} tests collected in 0.1s\n')}
                 run['collection'] = self.raw(f'{i}-collect.json', json.dumps(collection))
             self.payload['executions'].append(run)
         self.regression_path = self.prefix + 'm3-regression-' + self.tested[:7] + '.json'
@@ -250,7 +255,7 @@ def test_named_task_witness_must_bind_result_oracle_and_regular_blob(history, fi
     assert v.m3_task_check_errors(history.root, witness, name, check, history.tasks[name], history.records[name], history.evaluated)
 
 
-@pytest.mark.parametrize('mutation', ['failed', 'zero', 'skipped', 'wrong-selector', 'wrong-command', 'stale', 'missing028', 'missing029', 'hash', 'type', 'provenance', 'duplicate-json', 'collection-type'])
+@pytest.mark.parametrize('mutation', ['failed', 'zero', 'skipped', 'wrong-selector', 'wrong-command', 'stale', 'missing028', 'missing029', 'hash', 'type', 'provenance', 'duplicate-json', 'collection-type', 'float-exit', 'collection-float-exit'])
 def test_integrated_regression_fails_closed(history, mutation):
     payload = copy.deepcopy(history.payload)
     records = copy.deepcopy(history.records)
@@ -269,15 +274,15 @@ def test_integrated_regression_fails_closed(history, mutation):
         run['stdout']['sha256'] = '0' * 64
     elif mutation == 'provenance':
         run['stdout'] = {'path': 'docs/exec-plans/evidence/KL-028/b01_pu.log', 'sha256': '0' * 64}
-    elif mutation == 'type':
-        run['exit_code'] = False
+    elif mutation in ('type', 'float-exit'):
+        run['exit_code'] = False if mutation == 'type' else 0.0
     else:
         # Append new corrupt raw blobs so freshness passes and the content oracle rejects.
         original = (history.root / run['junit' if mutation == 'skipped' else 'collection']['path']).read_text()
-        if mutation == 'collection-type':
+        if mutation in ('collection-type', 'collection-float-exit'):
             collection = json.loads(original)
-            collection['exit_code'] = False
-            run['collection'] = history.raw('negative-collection-type.json', json.dumps(collection))
+            collection['exit_code'] = False if mutation == 'collection-type' else 0.0
+            run['collection'] = history.raw('negative-' + mutation + '.json', json.dumps(collection))
         elif mutation == 'duplicate-json':
             original = (history.root / run['collection']['path']).read_text()
             run['collection'] = history.raw('negative-duplicate.json', original[:-1] + ', "exit_code": 0}')
@@ -293,12 +298,43 @@ def test_integrated_regression_fails_closed(history, mutation):
         errors = v.m3_execution_evidence_errors(history.root, payload, revision, revision, records)
         assert errors
         assert not any('stale-or-unintegrated-revision' in e for e in errors)
-        expected_error = ('collection-binding' if mutation == 'collection-type' else
+        expected_error = ('collection-binding' if mutation in ('collection-type', 'collection-float-exit') else
                           'duplicate-key' if mutation == 'duplicate-json' else
                           'failed-skipped' if mutation == 'skipped' else 'wrong-selector')
         assert any(expected_error in e for e in errors)
         return
-    assert v.m3_execution_evidence_errors(history.root, payload, history.evaluated, history.evaluated, records)
+    errors = v.m3_execution_evidence_errors(history.root, payload, history.evaluated, history.evaluated, records)
+    assert errors
+    if mutation == 'float-exit':
+        assert errors == ['milestone-m3-regression:failed-or-unbound-command']
+
+
+@pytest.mark.parametrize('omitted', ['tests/db/test_transaction_interfaces.py', 'tests/db/test_shadow_isolation.py'])
+def test_each_multiselect_suite_requires_collected_and_executed_cases(history, omitted):
+    payload = copy.deepcopy(history.payload)
+    command = next(command for command in v.M3_REGRESSION_COMMANDS
+                   if omitted in command.split() and len(command.removeprefix('uv run pytest -q ').split()) > 1)
+    run = next(run for run in payload['executions'] if run['command'] == command)
+    assert not v.m3_execution_evidence_errors(history.root, payload, history.evaluated,
+                                              history.evaluated, history.records)
+    collection = json.loads((history.root / run['collection']['path']).read_text())
+    nodeids = [node for node in collection['nodeids'] if not node.startswith(omitted + '::')]
+    assert nodeids and len(nodeids) < len(collection['nodeids'])
+    stem = 'negative-omitted-' + Path(omitted).stem
+    run['stdout'] = history.raw(stem + '.log', f'{len(nodeids)} passed in 0.1s\n')
+    tree = ET.Element('testsuite')
+    for node in nodeids:
+        parts = node.split('::')
+        classname = '.'.join([parts[0].removesuffix('.py').replace('/', '.'), *parts[1:-1]])
+        ET.SubElement(tree, 'testcase', classname=classname, name=parts[-1])
+    run['junit'] = history.raw(stem + '.xml', ET.tostring(tree, encoding='unicode'))
+    collection['nodeids'] = nodeids
+    collection['stdout'] = history.raw(stem + '-collect.log', '\n'.join(nodeids) +
+                                       f'\n{len(nodeids)} tests collected in 0.1s\n')
+    run['collection'] = history.raw(stem + '-collect.json', json.dumps(collection))
+    revision = history.commit('negative hash-correct raw collection and executed suite omission')
+    assert v.m3_execution_evidence_errors(history.root, payload, revision, revision,
+                                          history.records) == ['milestone-m3-regression:missing-selector']
 
 
 def test_legacy_m1_m2_schema_and_validator_behavior_unchanged():

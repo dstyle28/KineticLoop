@@ -1,0 +1,35 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-044",
+  "reviewed_head_sha": "351f0eda41ad492e66115f9ea1e41e3e0f9abf3d",
+  "review_type": "SECURITY_DATA_BOUNDARY",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "finding_id": "HG044-SEC-001",
+      "classification": "BLOCKER",
+      "priority": "P1",
+      "title": "Require every declared regression selector to contribute executed tests",
+      "file": "tools/harness/validate_harness.py",
+      "start_line": 2648,
+      "end_line": 2657,
+      "description": "The collection oracle checks only that every supplied node matches some selector. It never checks that every selector supplies nodes. A fully committed and hashed regression payload therefore validates with only tests/db/test_migrations.py collected for the required migrations+transaction-interfaces command and only the PU shadow suite collected for the required PU+DB shadow command. The existing positive synthetic fixture constructs exactly these omissions, and an independent invocation of the actual regression validator at the reviewed SHA returns no errors. This accepts incomplete fresh integrated regression evidence contrary to M3_CLOSURE_CONTRACT.md, which requires retained selectors and forbids omitted selectors. Separate required commands do not prove that the required combined commands actually collected both inputs.",
+      "requested_change": "Require each declared selector to match at least one collected node whose JUnit case executed successfully; update the positive synthetic fixture to cover both inputs of every multi-selector command and add negatives for omission of either input. Keep exact command, revision, regular Git blob, hash, raw collection and JUnit bindings. Rerun required checks and obtain fresh SHA-bound review after the repair.",
+      "evidence_refs": [
+        "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/reproduce.py",
+        "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/reproduce.json"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/integrity.json",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/check-contracts.json",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/reproduce.py",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/reproduce.json",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/targeted-pytest.log",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/hg043-pytest.log",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/positive-full-chain.log",
+    "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/review-verification.json"
+  ],
+  "review_contract_version": "v0.2",
+  "summary": "Fresh independent SECURITY_DATA_BOUNDARY review at the exact requested implementation/governance SHA. One BLOCKER prevents PASS. Captured 79 focused/869 harness/232 unit runs and guard records match their selected committed hashes, raw hashes and byte counts; tested-to-reviewed suffix is only own governance/evidence bookkeeping. Git regular-object/path provenance, checked-blob M3 parsing, strict duplicate-key handling, boolean exit rejection, exact namespace/check/command/oracle bindings and production/shadow/product overclaim guards were inspected. Unchanged HG043 provenance, integration and M1/M2 functions are AST-identical to protected base; 10 targeted source/schema/scope tests and all 39 HG043 provenance tests pass. All 52 exit check contract digests match current authoritative contracts, including all six named KL029 isolation boundary selectors. No runtime, frozen file, actual M3 instance or data export is introduced. Synthetic fixtures are validator input only; no DB lifecycle or foreign task namespace ran. The independent full-chain positive fixture also passed, confirming the current prospective closure accepts that fixture with the documented omitted regression selectors."
+}

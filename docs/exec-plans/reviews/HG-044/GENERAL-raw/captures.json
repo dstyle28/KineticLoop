@@ -1,0 +1,24 @@
+[
+  {
+    "check_id": "focused",
+    "command": "PYTHONPATH=<repository>/src PYTHONPYCACHEPREFIX=/private/tmp/hg044-general-pycache /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/private/tmp/hg044-general-tests tests/harness/test_m3_milestone_closure.py",
+    "reviewed_head_sha": "351f0eda41ad492e66115f9ea1e41e3e0f9abf3d",
+    "exit_code": 0,
+    "result": "PASS",
+    "passed": 79,
+    "raw_path": "docs/exec-plans/reviews/HG-044/GENERAL-raw/focused.log",
+    "raw_sha256": "3990c45ab7b7c43d5f1e9e42b0d85c19b7b8c43b4863132183f74842b6218b96",
+    "raw_byte_count": 191
+  },
+  {
+    "check_id": "hg043-provenance",
+    "command": "PYTHONPATH=<repository>/src PYTHONPYCACHEPREFIX=/private/tmp/hg044-general-pycache /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/private/tmp/hg044-general-provenance tests/harness/test_review_evidence_provenance.py",
+    "reviewed_head_sha": "351f0eda41ad492e66115f9ea1e41e3e0f9abf3d",
+    "exit_code": 0,
+    "result": "PASS",
+    "passed": 39,
+    "raw_path": "docs/exec-plans/reviews/HG-044/GENERAL-raw/hg043-provenance.log",
+    "raw_sha256": "96f683eab92aff539329181dadcf812dee9418b560d80278c1d9bae062af0946",
+    "raw_byte_count": 100
+  }
+]

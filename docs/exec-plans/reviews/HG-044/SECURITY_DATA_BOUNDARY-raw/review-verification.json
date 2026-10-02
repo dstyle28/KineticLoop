@@ -1,0 +1,67 @@
+{
+  "reviewed_head_sha": "351f0eda41ad492e66115f9ea1e41e3e0f9abf3d",
+  "current_head_sha": "351f0eda41ad492e66115f9ea1e41e3e0f9abf3d",
+  "checks": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_m3_milestone_closure.py -k \"actual_closure_record or symlink_is_rejected or reader_parses_checked or schema_branches or ratified_plan or governance_scope\" tests/harness/test_review_evidence_provenance.py",
+      "exit_code": 0,
+      "raw_ref": "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/targeted-pytest.log",
+      "result": "10 passed, 108 deselected (intentional review selection)"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_review_evidence_provenance.py",
+      "exit_code": 0,
+      "raw_ref": "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/hg043-pytest.log",
+      "result": "39 passed"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_m3_milestone_closure.py::test_prospective_full_git_chain_validates_without_actual_closure",
+      "exit_code": 0,
+      "raw_ref": "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/positive-full-chain.log",
+      "result": "1 passed"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/reproduce.py",
+      "exit_code": 0,
+      "raw_ref": "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/reproduce.json",
+      "result": "Actual regression oracle accepts omission; boolean exit rejects"
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/check-contracts.json",
+      "sha256": "b7e33a9e6bcf630e1b60474c2057b333acfa95c74bcfcfb8c66af2d7ca6a50da",
+      "bytes": 12537
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/hg043-pytest.log",
+      "sha256": "9da3916dbb54f8d848cdfbee5f80d4a65d3d39a2f5c5a9dbb9c41a80cd490772",
+      "bytes": 100
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/integrity.json",
+      "sha256": "a1e2bdd076b4d14d08f83de5df8637474d84c88fa83cae4e398263c5188b0946",
+      "bytes": 12053
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/positive-full-chain.log",
+      "sha256": "19e2804cc8412e87be950fc00f490af12c65087640a9da7c5e944c71698081cb",
+      "bytes": 110
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/reproduce.json",
+      "sha256": "e810247a4e3f23d491843dc3dce39e557cbccae55e7522bca3e1622c0410aea7",
+      "bytes": 842
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/reproduce.py",
+      "sha256": "0362af3f796a98d05a77e2c810c8eb87d211f9313ab0024daeba0d1e465558fe",
+      "bytes": 1705
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-044/SECURITY_DATA_BOUNDARY-raw/targeted-pytest.log",
+      "sha256": "a9cd52a9e1553d1469e776391e30b46310b2e964b9c7bb5a21e8d89b4e1463fb",
+      "bytes": 115
+    }
+  ]
+}

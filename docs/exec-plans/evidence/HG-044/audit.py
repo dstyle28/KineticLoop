@@ -17,7 +17,7 @@ preserved=['milestone_closure_errors','m2_milestone_closure_errors','m2_executio
 checks={name:before[name]==after[name] for name in preserved}
 changed=subprocess.check_output(['git','diff','--name-only',base,head],text=True).splitlines()
 allowed={'MILESTONE_CLOSURE.schema.json','tools/harness/validate_harness.py','tests/harness/test_m3_milestone_closure.py','docs/harness/M3_CLOSURE_CONTRACT.md','06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md','CURRENT_DOCUMENT_INDEX.json','HARNESS_DOCUMENT_MANIFEST.json'}
-checks['scope']=all(p in allowed or p.startswith('docs/exec-plans/evidence/HG-044/') or p=='docs/exec-plans/governance/HG-044.yaml' for p in changed)
+checks['scope']=all(p in allowed or p.startswith('docs/exec-plans/evidence/HG-044/') or p.startswith('docs/exec-plans/reviews/HG-044/') or p=='docs/exec-plans/governance/HG-044.yaml' for p in changed)
 old_plan=subprocess.check_output(['git','show',base+':06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md'],text=True)
 new_plan=(root/'06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md').read_text()
 checks['plan_prefix']=new_plan.split('## M3 exit-evidence mapping — HG044',1)[0]==old_plan+'\n'

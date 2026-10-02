@@ -57,9 +57,10 @@ Every execution has command, tested SHA, integer zero exit code and hashed stdou
 Pytest executions also have hashed JUnit and collection JSON. Raw references within
 this record are `{path, sha256}` bound to the containing evidence revision (no
 self-referential commit IDs). Collection JSON records exact
-`uv run pytest --collect-only -q <selectors>`, tested SHA, zero exit, nodeids and
+`uv run pytest --collect-only -q <selectors>`, tested SHA, integer zero exit, nodeids and
 hashed raw collection stdout. Positive collection counts, raw nodeids and all
-executed JUnit names/counts must agree; selectors cannot be replaced or omitted.
+executed JUnit names/counts must agree. Every declared selector must contribute
+at least one collected and executed case; selectors cannot be replaced or omitted.
 All raw files belong to this closure governance evidence directory. No empty,
 skipped, xfail, failed, duplicate or arbitrary-check run can substitute.
 

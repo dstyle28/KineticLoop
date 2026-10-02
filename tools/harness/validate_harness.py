@@ -2607,7 +2607,7 @@ def m3_execution_evidence_errors(root, payload, revision, evaluated, records):
             raise ValueError('command-set')
         for command, run in zip(M3_REGRESSION_COMMANDS, runs):
             if (run['tested_commit'] != tested or run['exit_code'] != 0
-                    or isinstance(run['exit_code'], bool)):
+                    or type(run['exit_code']) is not int):
                 raise ValueError('failed-or-unbound-command')
             def raw(item):
                 if item.get('revision', revision) != revision or not matches(
@@ -2633,7 +2633,7 @@ def m3_execution_evidence_errors(root, payload, revision, evaluated, records):
                          else command.removeprefix('uv run pytest -q ').split())
             if (collection['command'] != 'uv run pytest --collect-only -q ' + ' '.join(selectors)
                     or collection['tested_commit'] != tested or collection['exit_code'] != 0
-                    or isinstance(collection['exit_code'], bool)):
+                    or type(collection['exit_code']) is not int):
                 raise ValueError('collection-binding')
             nodeids = collection['nodeids']
             collected_output = raw(collection['stdout']).decode()
@@ -2653,6 +2653,11 @@ def m3_execution_evidence_errors(root, payload, revision, evaluated, records):
                     raise ValueError('wrong-selector')
                 expected.append(('.'.join([components[0].removesuffix('.py').replace('/', '.'),
                                            *components[1:-1]]), components[-1]))
+            for selector in selectors:
+                if not any(node == selector or node.startswith(selector + '[')
+                           or node.startswith(selector + '::') or node.startswith(selector + '/')
+                           for node in nodeids):
+                    raise ValueError('missing-selector')
             if set(actual) != set(expected) or len(actual) != len(expected):
                 raise ValueError('incomplete-executed-collection')
     except (ValueError, OSError, KeyError, TypeError, UnicodeError, ET.ParseError) as ex:

@@ -1,0 +1,34 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-044",
+  "reviewed_head_sha": "351f0eda41ad492e66115f9ea1e41e3e0f9abf3d",
+  "review_type": "DB_CONCURRENCY",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "findings": [
+    {
+      "id": "HG044-DB-001",
+      "classification": "BLOCKER",
+      "file": "tools/harness/validate_harness.py",
+      "line": 2651,
+      "title": "Require collected execution coverage for every declared selector",
+      "body": "At the reviewed SHA, m3_execution_evidence_errors only proves each nodeid belongs to any selector. The exact legacy DB regression command names tests/db/test_migrations.py and tests/db/test_transaction_interfaces.py, but a collection/stdout/JUnit record containing only a migrations case is accepted with no errors. This omits the transaction-interface regression while representing the whole required command as PASS. M3_CLOSURE_CONTRACT requires selectors cannot be omitted. Require every declared selector to contribute collected and executed cases and add a negative regression.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-044/DB_CONCURRENCY-raw/audit.json"
+    },
+    {
+      "id": "HG044-DB-002",
+      "classification": "BLOCKER",
+      "file": "tools/harness/validate_harness.py",
+      "line": 2609,
+      "title": "Reject noninteger execution and collection exit codes",
+      "body": "The contract requires an integer zero exit code. Execution and collection checks use numeric equality to zero and reject bool only; JSON 0.0 therefore passes both checks. The immutable-source bounded probes accept float execution and float collection exit codes with no errors. Enforce exact integer type and zero for both records, with negative regression tests.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-044/DB_CONCURRENCY-raw/audit.json"
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-044.yaml",
+    "docs/harness/M3_CLOSURE_CONTRACT.md",
+    "docs/exec-plans/reviews/HG-044/DB_CONCURRENCY-raw/audit.py",
+    "docs/exec-plans/reviews/HG-044/DB_CONCURRENCY-raw/audit.json",
+    "docs/exec-plans/reviews/HG-044/DB_CONCURRENCY-raw/assessment.md"
+  ]
+}

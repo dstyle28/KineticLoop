@@ -1,0 +1,2299 @@
+{
+  "reviewed_head_sha": "351f0eda41ad492e66115f9ea1e41e3e0f9abf3d",
+  "base_commit": "9268fc8dd8c071c02dc5c698274dbf6fcd112776",
+  "tested_commit": "e748b37ec92e119190afad87478b7ecb951e5b5d",
+  "authority_hashes": [
+    {
+      "path": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+      "valid": true
+    },
+    {
+      "path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+      "valid": true
+    },
+    {
+      "path": "12_KineticLoop_Integration_Spec_v0.1.md",
+      "valid": true
+    },
+    {
+      "path": "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+      "valid": true
+    },
+    {
+      "path": "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/HARNESS_OPERATING_MODEL.md",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/THREAD_RESULT_CONTRACT.md",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/THREAD_REVIEW_CONTRACT.md",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/MERGE_GATE.md",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/HARNESS_NEGATIVE_TEST_MATRIX.md",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+      "valid": true
+    },
+    {
+      "path": "KineticLoop_Harness_Development_Workflow_v0.3.md",
+      "valid": true
+    },
+    {
+      "path": "KineticLoop_Harness_Backlog_v0.2.json",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/M3_CLOSURE_CONTRACT.md",
+      "valid": true
+    },
+    {
+      "path": "CURRENT_REQUIREMENT_SET.json",
+      "valid": true
+    },
+    {
+      "path": "HISTORICAL_TASK_ID_MAP.json",
+      "valid": true
+    },
+    {
+      "path": "FROZEN_BASELINE.json",
+      "valid": true
+    },
+    {
+      "path": "KineticLoop_Acceptance_Spec_v1.2.2.json",
+      "valid": true
+    },
+    {
+      "path": "KineticLoop_Integration_Acceptance_v0.1.json",
+      "valid": true
+    },
+    {
+      "path": "KineticLoop_Harness_Traceability_v0.3.json",
+      "valid": true
+    },
+    {
+      "path": "KineticLoop_Evidence_Manifest_v0.1.json",
+      "valid": true
+    },
+    {
+      "path": "THREAD_RESULT.schema.json",
+      "valid": true
+    },
+    {
+      "path": "THREAD_REVIEW.schema.json",
+      "valid": true
+    },
+    {
+      "path": "tools/harness/validate_harness.py",
+      "valid": true
+    },
+    {
+      "path": "HARNESS_CHANGE.schema.json",
+      "valid": true
+    },
+    {
+      "path": "INTEGRATION_RECORD.schema.json",
+      "valid": true
+    },
+    {
+      "path": "MILESTONE_CLOSURE.schema.json",
+      "valid": true
+    }
+  ],
+  "manifest_hashes": [
+    {
+      "path": ".agents/skills/acceptance-test-writer/SKILL.md",
+      "valid": true
+    },
+    {
+      "path": ".agents/skills/db-transaction-reviewer/SKILL.md",
+      "valid": true
+    },
+    {
+      "path": ".agents/skills/pr-merge-reviewer/SKILL.md",
+      "valid": true
+    },
+    {
+      "path": ".agents/skills/protocol-guardian/SKILL.md",
+      "valid": true
+    },
+    {
+      "path": ".agents/skills/provider-adapter-builder/SKILL.md",
+      "valid": true
+    },
+    {
+      "path": ".agents/skills/task-thread-runner/SKILL.md",
+      "valid": true
+    },
+    {
+      "path": "00_KineticLoop_Master_Spec_v1.2.2_DEV_READY.md",
+      "valid": true
+    },
+    {
+      "path": "01_KineticLoop_PRD_v1.2.2_DEV_READY.md",
+      "valid": true
+    },
+    {
+      "path": "02_KineticLoop_System_Design_v1.2.2_DEV_READY.md",
+      "valid": true
+    },
+    {
+      "path": "03_KineticLoop_Technical_Spec_v1.2.2_DEV_READY.md",
+      "valid": true
+    },
+    {
+      "path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+      "valid": true
+    },
+    {
+      "path": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+      "valid": true
+    },
+    {
+      "path": "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
+      "valid": true
+    },
+    {
+      "path": "07_KineticLoop_Protocol_Freeze_Review.md",
+      "valid": true
+    },
+    {
+      "path": "08_KineticLoop_ADR_and_Change_Control_v1.2.2.md",
+      "valid": true
+    },
+    {
+      "path": "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+      "valid": true
+    },
+    {
+      "path": "10_KineticLoop_Evidence_Handoff_v0.1.md",
+      "valid": true
+    },
+    {
+      "path": "11_KineticLoop_Development_Readiness_Review_Source.md",
+      "valid": true
+    },
+    {
+      "path": "12_KineticLoop_Integration_Spec_v0.1.md",
+      "valid": true
+    },
+    {
+      "path": "AGENTS.md",
+      "valid": true
+    },
+    {
+      "path": "ARCHITECTURE.md",
+      "valid": true
+    },
+    {
+      "path": "CURRENT_DOCUMENT_INDEX.json",
+      "valid": true
+    },
+    {
+      "path": "CURRENT_REQUIREMENT_SET.json",
+      "valid": true
+    },
+    {
+      "path": "FROZEN_BASELINE.json",
+      "valid": true
+    },
+    {
+      "path": "HARNESS_HARDENING_REPORT_v0.3.md",
+      "valid": true
+    },
+    {
+      "path": "HISTORICAL_TASK_ID_MAP.json",
+      "valid": true
+    },
+    {
+      "path": "KineticLoop_Acceptance_Spec_v1.2.2.json",
+      "valid": true
+    },
+    {
+      "path": "KineticLoop_Evidence_Manifest_v0.1.json",
+      "valid": true
+    },
+    {
+      "path": "KineticLoop_Harness_Backlog_v0.2.json",
+      "valid": true
+    },
+    {
+      "path": "KineticLoop_Harness_Development_Workflow_v0.3.md",
+      "valid": true
+    },
+    {
+      "path": "KineticLoop_Harness_Traceability_v0.3.json",
+      "valid": true
+    },
+    {
+      "path": "KineticLoop_Integration_Acceptance_v0.1.json",
+      "valid": true
+    },
+    {
+      "path": "KineticLoop_Integration_Matrix_v0.1.json",
+      "valid": true
+    },
+    {
+      "path": "KineticLoop_Task_Thread_Index.md",
+      "valid": true
+    },
+    {
+      "path": "README.md",
+      "valid": true
+    },
+    {
+      "path": "RELEASE_NOTES_v1.2.2.md",
+      "valid": true
+    },
+    {
+      "path": "RELEASE_NOTES_v1.2.3.md",
+      "valid": true
+    },
+    {
+      "path": "RELEASE_NOTES_v1.2.4.md",
+      "valid": true
+    },
+    {
+      "path": "RELEASE_NOTES_v1.2.5.md",
+      "valid": true
+    },
+    {
+      "path": "THREAD_RESULT.schema.json",
+      "valid": true
+    },
+    {
+      "path": "THREAD_REVIEW.schema.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-001.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-002.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-003.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-004.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-005.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-006.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-007.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-008.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-009.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-010.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-011.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-012.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-013.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-014.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-015.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-016.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-017.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-018.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-019.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-020.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-021.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-022.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-023.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-024.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-025.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-026.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-027.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-028.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-029.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-030.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-031.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-032.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-033.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-034.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-035.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-036.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-037.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-038.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-039.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-040.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-041.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-042.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-043.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-044.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-045.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-046.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-047.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-048.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-049.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-050.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-051.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-052.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-053.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-054.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-055.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-056.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-057.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-058.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-059.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-060.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-061.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-062.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-063.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-064.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-065.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-066.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-070.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-071.md",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/CONTEXT_PACKET_SPEC.md",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/HARNESS_NEGATIVE_TEST_MATRIX.md",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/HARNESS_OPERATING_MODEL.md",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/MERGE_GATE.md",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/RESOURCE_LOCKS.md",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/TASK_STATE_MODEL.md",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/TASK_THREAD_PROMPT_TEMPLATE.md",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/THREAD_RESULT_CONTRACT.md",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/THREAD_REVIEW_CONTRACT.md",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/THREAD_ROUTING.md",
+      "valid": true
+    },
+    {
+      "path": "docs/history/v1.2.2/DOCUMENT_INDEX.json",
+      "valid": true
+    },
+    {
+      "path": "docs/history/v1.2.2/KineticLoop_Implementation_Traceability_v0.1.json",
+      "valid": true
+    },
+    {
+      "path": "docs/history/v1.2.2/KineticLoop_Project_Backlog_v0.3.json",
+      "valid": true
+    },
+    {
+      "path": "docs/history/v1.2.2/README.md",
+      "valid": true
+    },
+    {
+      "path": "docs/history/v1.2.3-harness/06_KineticLoop_Project_Plan_v0.3.md",
+      "valid": true
+    },
+    {
+      "path": "docs/history/v1.2.3-harness/06_KineticLoop_Project_Plan_v0.4_HARNESS.md",
+      "valid": true
+    },
+    {
+      "path": "docs/history/v1.2.3-harness/KineticLoop_Harness_Backlog_v0.1.json",
+      "valid": true
+    },
+    {
+      "path": "docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md",
+      "valid": true
+    },
+    {
+      "path": "docs/history/v1.2.3-harness/README.md",
+      "valid": true
+    },
+    {
+      "path": "docs/history/v1.2.4-harness/06_KineticLoop_Project_Plan_v0.3.md",
+      "valid": true
+    },
+    {
+      "path": "docs/history/v1.2.4-harness/06_KineticLoop_Project_Plan_v0.4_HARNESS.md",
+      "valid": true
+    },
+    {
+      "path": "docs/history/v1.2.4-harness/06_KineticLoop_Project_Plan_v0.5_HARNESS_HARDENED.md",
+      "valid": true
+    },
+    {
+      "path": "docs/history/v1.2.4-harness/HARNESS_HARDENING_REPORT_v0.2.md",
+      "valid": true
+    },
+    {
+      "path": "docs/history/v1.2.4-harness/KineticLoop_Harness_Development_Workflow_v0.1.md",
+      "valid": true
+    },
+    {
+      "path": "docs/history/v1.2.4-harness/KineticLoop_Harness_Development_Workflow_v0.2.md",
+      "valid": true
+    },
+    {
+      "path": "docs/history/v1.2.4-harness/KineticLoop_Harness_Traceability_v0.2.json",
+      "valid": true
+    },
+    {
+      "path": "tools/harness/validate_harness.py",
+      "valid": true
+    },
+    {
+      "path": "MILESTONE_CLOSURE.schema.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/milestones/M1.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-072.md",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+      "valid": true
+    },
+    {
+      "path": "tests/harness/test_validator.py",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-073.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/milestones/M2.json",
+      "valid": true
+    },
+    {
+      "path": "tests/harness/test_wave_scope.py",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-074.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-075.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-076.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-077.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-078.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/active/KL-079.md",
+      "valid": true
+    },
+    {
+      "path": "tests/harness/test_review_evidence_provenance.py",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-043/PREPARATION.md",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-043/check.py",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-043/initial-replay.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-043/original-HG042-preflight.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-043/record.py",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-043/refresh.py",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-043/replay.py",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-043/missing-object-787663f.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-043/probe_missing_object.py",
+      "valid": true
+    },
+    {
+      "path": "docs/harness/M3_CLOSURE_CONTRACT.md",
+      "valid": true
+    }
+  ],
+  "declared_exact": true,
+  "write_scope_exact": true,
+  "tested_suffix_errors": [],
+  "head_exact": true,
+  "selected_captures": [
+    {
+      "check_id": "focused",
+      "path": "docs/exec-plans/evidence/HG-044/focused-e748b37.json",
+      "sha256": "7e176ecace1a16befdbfbf3d2b96548f81dcd7b65ce26c7b1cc80aaa0345a38c",
+      "result": "PASS",
+      "raw_sha256": "d6892be37e41803b9c165cd98bd9d2b731c821b82e5f4e1f4937d7be6df847ac",
+      "raw_count": 191,
+      "valid_raw": true,
+      "valid_binding": true,
+      "raw_summary": "........................................................................ [ 91%]\n.......                                                                  [100%]\n79 passed in 494.99s (0:08:14)\n"
+    },
+    {
+      "check_id": "scope",
+      "path": "docs/exec-plans/evidence/HG-044/scope-e748b37.json",
+      "sha256": "c0d6c4729d5db93dee8e5b89e60c8d75f762f4d55eb3b7210e3a3f59eb7ea7d2",
+      "result": "PASS",
+      "valid_raw": true,
+      "valid_binding": true
+    },
+    {
+      "check_id": "harness",
+      "path": "docs/exec-plans/evidence/HG-044/harness-e748b37.json",
+      "sha256": "428b29980629b1d32f9a4997f30b0cf7fd512a26c3f8866e881274144305fb99",
+      "result": "PASS",
+      "raw_sha256": "20049c3c1ea2d3512ce1f8fd2af00e98c1a108fad725beb6434998e06dd531bd",
+      "raw_count": 2812,
+      "valid_raw": true,
+      "valid_binding": true,
+      "raw_summary": ".......... [ 77%]\n................                                                         [ 79%]\ntests/harness/test_validator.py ........................................ [ 84%]\n........................................................................ [ 92%]\n..............................                                           [ 95%]\ntests/harness/test_wave_scope.py .....................................   [100%]\n\n======================= 869 passed in 923.29s (0:15:23) ========================\n"
+    },
+    {
+      "check_id": "unit",
+      "path": "docs/exec-plans/evidence/HG-044/unit-e748b37.json",
+      "sha256": "7250d4cb3f4ac426544d9818c7402fa836a9da4bb78e989f81de9cfbf2dbd6d0",
+      "result": "PASS",
+      "raw_sha256": "032ccd1371793ab8b7b0250dc016c5f3741ced0b2ba035e6548d78b259ff3944",
+      "raw_count": 3132,
+      "valid_raw": true,
+      "valid_binding": true,
+      "raw_summary": "           [ 93%]\ntests/unit/workflow/test_call_ledger.py ...                              [ 94%]\ntests/unit/workflow/test_deterministic_planning.py ....                  [ 96%]\ntests/unit/workflow/test_full_action_preparation.py ...                  [ 97%]\ntests/unit/workflow/test_planning.py ..                                  [ 98%]\ntests/unit/workflow/test_planning_progress.py ....                       [100%]\n\n======================= 232 passed in 246.92s (0:04:06) ========================\n"
+    },
+    {
+      "check_id": "lint",
+      "path": "docs/exec-plans/evidence/HG-044/lint-e748b37.json",
+      "sha256": "c4398b2bc0ce6db86075ac6b263d9d005c406496990ea669bb1c37e60aead880",
+      "result": "PASS",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_count": 19,
+      "valid_raw": true,
+      "valid_binding": true,
+      "raw_summary": "All checks passed!\n"
+    },
+    {
+      "check_id": "typecheck",
+      "path": "docs/exec-plans/evidence/HG-044/typecheck-e748b37.json",
+      "sha256": "694df850867a0a5f0fa724510f2c25ed3a9ff51dbe39b9afb4b619e6ec81f20a",
+      "result": "PASS",
+      "raw_sha256": "e0882189711bb25ec70ba990a19f0fd4a9bc195cd7cd2484ec95ec37251d583c",
+      "raw_count": 45,
+      "valid_raw": true,
+      "valid_binding": true,
+      "raw_summary": "Success: no issues found in 149 source files\n"
+    },
+    {
+      "check_id": "validation",
+      "path": "docs/exec-plans/evidence/HG-044/validation-e748b37.json",
+      "sha256": "74d9994c901ff95795f59d35a3b9eff1b98a65ae6f0c0b2ba927fef258995033",
+      "result": "PASS",
+      "raw_sha256": "e2a8f969d7dc25b39c3a77ad08482321186f25f23d24fce083dcd69d4740d1dc",
+      "raw_count": 38,
+      "valid_raw": true,
+      "valid_binding": true,
+      "raw_summary": "HARNESS_CHECK_PASS tasks=76 active=73\n"
+    },
+    {
+      "check_id": "diff",
+      "path": "docs/exec-plans/evidence/HG-044/diff-e748b37.json",
+      "sha256": "bdadff84fdb2a5227a3913eff80a2c42ab0d310d5ca645148e927ae7b5544817",
+      "result": "PASS",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_count": 0,
+      "valid_raw": true,
+      "valid_binding": true,
+      "raw_summary": ""
+    }
+  ],
+  "all_raw_captures": [
+    {
+      "path": "docs/exec-plans/evidence/HG-044/diff-0874228.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/diff-26a9a39.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/diff-4a9b4c6.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/diff-53d94e4.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/diff-dccac06.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/diff-e748b37.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/focused-0874228.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/focused-26a9a39.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/focused-4a9b4c6.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/focused-53d94e4.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/focused-dccac06.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/focused-e748b37.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/harness-0874228.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/harness-26a9a39.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/harness-4a9b4c6.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/harness-53d94e4.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/harness-dccac06.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/harness-e748b37.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/lint-0874228.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/lint-26a9a39.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/lint-4a9b4c6.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/lint-53d94e4.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/lint-dccac06.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/lint-e748b37.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/typecheck-0874228.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/typecheck-26a9a39.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/typecheck-4a9b4c6.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/typecheck-53d94e4.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/typecheck-dccac06.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/typecheck-e748b37.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/unit-0874228.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/unit-26a9a39.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/unit-4a9b4c6.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/unit-53d94e4.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/unit-dccac06.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/unit-e748b37.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/validation-0874228.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/validation-26a9a39.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/validation-4a9b4c6.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/validation-53d94e4.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/validation-dccac06.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/validation-e748b37.json",
+      "valid": true
+    }
+  ],
+  "existing_functions_changed": [
+    "governance_allowed_patterns",
+    "validate"
+  ],
+  "m1_m2_schema_preserved": true,
+  "m3_absent": true,
+  "m1_errors": [],
+  "m2_errors": [],
+  "named_check_digests": [
+    {
+      "key": "KL-027:demo_owner_trajectory_e2e",
+      "valid": true
+    },
+    {
+      "key": "KL-027:demo_fdn_repair_e2e",
+      "valid": true
+    },
+    {
+      "key": "KL-027:demo_revoke_denials_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-027:demo_expiry_denials_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-077:continue_resume_current_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-077:full_execution_replay_atomicity_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b07_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b16_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-026:i01_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-026:i02_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-026:i03_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-026:i04_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-026:i05_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-026:i06_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-026:i07_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-026:i08_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-026:i09_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-026:time_boundary_pu",
+      "valid": true
+    },
+    {
+      "key": "KL-023:factset_complete_writer_interleaving_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-023:factset_seal_frontier_atomicity_and_replay_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b01_pu",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b01_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b02_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b03_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-021:t2_global_commit_rollback_and_effective_at_semantics",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b04_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b05_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b06_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b11_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b12_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b13_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b14_registry_failclosed_stop_support_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b15_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b17_pu",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b17_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-022:validity_closure_minimum_and_missing_values_pu",
+      "valid": true
+    },
+    {
+      "key": "KL-022:timeless_policy_dependency_closure_pu",
+      "valid": true
+    },
+    {
+      "key": "KL-022:t6_certificate_and_minimum_closure_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b08_pu",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b09_pu",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b09_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b10_pu",
+      "valid": true
+    },
+    {
+      "key": "KL-028:b18_pu",
+      "valid": true
+    },
+    {
+      "key": "KL-027:demo_namespace_and_boundary_pu",
+      "valid": true
+    },
+    {
+      "key": "KL-027:demo_scope_denials_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-028:boundary_namespace_pu",
+      "valid": true
+    },
+    {
+      "key": "KL-029:shadow_namespace_and_boundary_pu",
+      "valid": true
+    },
+    {
+      "key": "KL-029:shadow_strict_wire_pu",
+      "valid": true
+    },
+    {
+      "key": "KL-029:shadow_evaluation_principal_live_denials_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-029:shadow_test_authorization_crossing_denials_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-029:shadow_owner_payload_denials_dc",
+      "valid": true
+    },
+    {
+      "key": "KL-029:shadow_declared_evaluation_storage_dc",
+      "valid": true
+    }
+  ],
+  "integrations": [
+    {
+      "task": "KL-001",
+      "result_path": "docs/exec-plans/completed/KL-001_RESULT.yaml",
+      "result_sha256": "85f88f81b302ee99662b9509a4847dfcf3654e6e057138e17ab7782cb9da0105",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": []
+    },
+    {
+      "task": "KL-002",
+      "result_path": "docs/exec-plans/completed/KL-002_RESULT.yaml",
+      "result_sha256": "ba7098f56e6b4d2618d2ddb3fa14c3a2eb894ed716cca4552431a536d44570bb",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-001",
+          "merge_commit": "7aa52e06bba8271eb3ae56ba2a4c27782377ee7e",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-003",
+      "result_path": "docs/exec-plans/completed/KL-003_RESULT.yaml",
+      "result_sha256": "76ec34fcca3931a09f206e2f3c3705e76c1bcea1bc04119220e0b74592e2b939",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-001",
+          "merge_commit": "7aa52e06bba8271eb3ae56ba2a4c27782377ee7e",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-004",
+      "result_path": "docs/exec-plans/completed/KL-004_RESULT.yaml",
+      "result_sha256": "971502c973301e335424eb75c3ad4727a95a8d958756ff3768b2ed720b38c39c",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-003",
+          "merge_commit": "cc6008f5a591d851dcc5a1dcf526c5393dc66cff",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-005",
+      "result_path": "docs/exec-plans/completed/KL-005_RESULT.yaml",
+      "result_sha256": "b26ddd9798cea0ba2908ef85f43e83b176e5e4086dd87a0d68f3c4f306318261",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-001",
+          "merge_commit": "7aa52e06bba8271eb3ae56ba2a4c27782377ee7e",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-007",
+      "result_path": "docs/exec-plans/completed/KL-007_RESULT.yaml",
+      "result_sha256": "239d24f3892e18c9646071610325221c72aa18a486715cd060ed6c8ff5e8b2fd",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-001",
+          "merge_commit": "7aa52e06bba8271eb3ae56ba2a4c27782377ee7e",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-008",
+      "result_path": "docs/exec-plans/completed/KL-008_RESULT.yaml",
+      "result_sha256": "d231f43ba07f337279bd179dbe72fee489942733aa174653fd5b531ca7108579",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-005",
+          "merge_commit": "2e84dfb5904449351da9ff8f9d7d944d34fefb11",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-007",
+          "merge_commit": "6a6f04103cc02d32d5eb086d65bbc2a60fbc9f43",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-010",
+      "result_path": "docs/exec-plans/completed/KL-010_RESULT.yaml",
+      "result_sha256": "3063e763920e4d5c789a3a45c56294df9e9c007ce35aaed27b1b457eaba6ac86",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-002",
+          "merge_commit": "e6f7a36485e4a9557297a9c282eb38c6ac37e72c",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-003",
+          "merge_commit": "cc6008f5a591d851dcc5a1dcf526c5393dc66cff",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-011",
+      "result_path": "docs/exec-plans/completed/KL-011_RESULT.yaml",
+      "result_sha256": "2830a46a1131b087e5ed1b443d567d56575f1b04ad4f70c003f808a50a201a52",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-010",
+          "merge_commit": "bac21cf6a920859c74e3906383626557b379e758",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-012",
+      "result_path": "docs/exec-plans/completed/KL-012_RESULT.yaml",
+      "result_sha256": "c68ae416fff0665ec5fbf6e54aa966554ffa35082a4f33001c3b9ed71528e21c",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-007",
+          "merge_commit": "6a6f04103cc02d32d5eb086d65bbc2a60fbc9f43",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-010",
+          "merge_commit": "bac21cf6a920859c74e3906383626557b379e758",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-013",
+      "result_path": "docs/exec-plans/completed/KL-013_RESULT.yaml",
+      "result_sha256": "714d94cf72a4a36d842c71135059eb59e0b875872d9e39f1b953c79bd48c724d",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-010",
+          "merge_commit": "bac21cf6a920859c74e3906383626557b379e758",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-011",
+          "merge_commit": "2b5f8c594ea3f74b042dd53657d8f14f1e54e49f",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-012",
+          "merge_commit": "cdf812680490469480cf8e64f4e1959e8fca7ae9",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-016",
+          "merge_commit": "033cc3361d77a5d9853c940a7d50cb3abeef9743",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-014",
+      "result_path": "docs/exec-plans/completed/KL-014_RESULT.yaml",
+      "result_sha256": "ad62718a47e8df293378c94190518be1c591a7b21b5b4b805283a2f8d9d1432b",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-004",
+          "merge_commit": "1fc97cbcecabf4c32cda2f20160489661fa3677b",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-008",
+          "merge_commit": "2fdbd205ac35e396f1fec0edcc4ad53c1b059660",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-015",
+      "result_path": "docs/exec-plans/completed/KL-015_RESULT.yaml",
+      "result_sha256": "d78f516a7ad41e80ae1763ee183462e4ff0dc95b1ff7310e2a3af1d72a44a56a",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-013",
+          "merge_commit": "b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-014",
+          "merge_commit": "6bb5b07b155cbd66a005788e0b66978e8711a6e4",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-016",
+          "merge_commit": "033cc3361d77a5d9853c940a7d50cb3abeef9743",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-017",
+          "merge_commit": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-018",
+          "merge_commit": "8d93fbd603a71c02c4b291194843b2cfb35e1078",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-016",
+      "result_path": "docs/exec-plans/completed/KL-016_RESULT.yaml",
+      "result_sha256": "0b0d4821dcc43316aabd61409b17a1f1b510e13fd55cbb50516b23b10821bfc9",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-010",
+          "merge_commit": "bac21cf6a920859c74e3906383626557b379e758",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-017",
+      "result_path": "docs/exec-plans/completed/KL-017_RESULT.yaml",
+      "result_sha256": "06713a24e74beea64691d6624ea649b71b573d1339c7ae25ece3b1ae7ef32c37",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-007",
+          "merge_commit": "6a6f04103cc02d32d5eb086d65bbc2a60fbc9f43",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-008",
+          "merge_commit": "2fdbd205ac35e396f1fec0edcc4ad53c1b059660",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-013",
+          "merge_commit": "b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-072",
+          "merge_commit": "77cf294a467a0a54e0a32653f911a93760ad1e97",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-018",
+          "merge_commit": "8d93fbd603a71c02c4b291194843b2cfb35e1078",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-018",
+      "result_path": "docs/exec-plans/completed/KL-018_RESULT.yaml",
+      "result_sha256": "0735a233842556d263474b3e9f5dfe4ae33d70f16e531603a2fa76960a30b844",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-013",
+          "merge_commit": "b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-016",
+          "merge_commit": "033cc3361d77a5d9853c940a7d50cb3abeef9743",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-072",
+          "merge_commit": "77cf294a467a0a54e0a32653f911a93760ad1e97",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-019",
+      "result_path": "docs/exec-plans/completed/KL-019_RESULT.yaml",
+      "result_sha256": "6631a121af1458a264d31a6ec0f541590692f51a553273f88b26185d1874717e",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-017",
+          "merge_commit": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-020",
+          "merge_commit": "7982c30230d2f0e0a5aa4a7ae6299aaa1386a6da",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-021",
+          "merge_commit": "ad0c4373e6f64cc753af989c798636f7c365359b",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-022",
+          "merge_commit": "88adc5be3f7c567413be671a2b3dc5e6c802ffe8",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-023",
+          "merge_commit": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-024",
+          "merge_commit": "ff57a80feebd4e539f9af277e0dcb26d942bc3e0",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-025",
+          "merge_commit": "eab2b305351cf3c504f74ac74868edc58d0a3430",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-020",
+      "result_path": "docs/exec-plans/completed/KL-020_RESULT.yaml",
+      "result_sha256": "6887690c5570e19ed5a58230196bea3845fe5cb70638f4e745e9587248319221",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-015",
+          "merge_commit": "7623c20bb267a39b8d02c29845b4ee054714d2b1",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-021",
+      "result_path": "docs/exec-plans/completed/KL-021_RESULT.yaml",
+      "result_sha256": "25ad14189e5929e52cc150b3f69e7d045f940d60a999b693efacecd0d0eb4811",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-016",
+          "merge_commit": "033cc3361d77a5d9853c940a7d50cb3abeef9743",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-018",
+          "merge_commit": "8d93fbd603a71c02c4b291194843b2cfb35e1078",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-020",
+          "merge_commit": "7982c30230d2f0e0a5aa4a7ae6299aaa1386a6da",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-022",
+      "result_path": "docs/exec-plans/completed/KL-022_RESULT.yaml",
+      "result_sha256": "6cbf38868e52d13228982fad8f3df28efd70c33407056cbbb929e2d30e1985ed",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-015",
+          "merge_commit": "7623c20bb267a39b8d02c29845b4ee054714d2b1",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-018",
+          "merge_commit": "8d93fbd603a71c02c4b291194843b2cfb35e1078",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-021",
+          "merge_commit": "ad0c4373e6f64cc753af989c798636f7c365359b",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-023",
+      "result_path": "docs/exec-plans/completed/KL-023_RESULT.yaml",
+      "result_sha256": "d3a56ffd5a1cfbe528b8074289fff7fa34e7ad0523222488d2003b1a52451d9d",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-015",
+          "merge_commit": "7623c20bb267a39b8d02c29845b4ee054714d2b1",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-024",
+      "result_path": "docs/exec-plans/completed/KL-024_RESULT.yaml",
+      "result_sha256": "660e3a31a61c763ea6f48be1d6ef0d0f81b2b9a3bfcdd151f59ad2a4bb619b9b",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-015",
+          "merge_commit": "7623c20bb267a39b8d02c29845b4ee054714d2b1",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-025",
+      "result_path": "docs/exec-plans/completed/KL-025_RESULT.yaml",
+      "result_sha256": "dab5c5af4c07d26550238415cc99e04ab98d6d853e11aa94caa787f35ac544b8",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-024",
+          "merge_commit": "ff57a80feebd4e539f9af277e0dcb26d942bc3e0",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-026",
+      "result_path": "docs/exec-plans/completed/KL-026_RESULT.yaml",
+      "result_sha256": "8be63172f7abe5f2794a8a76e4f8b15fe3a797faab6d1bd5843c0842b80150f4",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-019",
+          "merge_commit": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-023",
+          "merge_commit": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-024",
+          "merge_commit": "ff57a80feebd4e539f9af277e0dcb26d942bc3e0",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-025",
+          "merge_commit": "eab2b305351cf3c504f74ac74868edc58d0a3430",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-074",
+          "merge_commit": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-027",
+      "result_path": "docs/exec-plans/completed/KL-027_RESULT.yaml",
+      "result_sha256": "a6f47f3160fdf9ec14037a327eb624351f87b030d430261ab3fbae4699d11fb7",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-017",
+          "merge_commit": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-019",
+          "merge_commit": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-022",
+          "merge_commit": "88adc5be3f7c567413be671a2b3dc5e6c802ffe8",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-023",
+          "merge_commit": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-024",
+          "merge_commit": "ff57a80feebd4e539f9af277e0dcb26d942bc3e0",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-025",
+          "merge_commit": "eab2b305351cf3c504f74ac74868edc58d0a3430",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-074",
+          "merge_commit": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-075",
+          "merge_commit": "d0470badf0ccf6bec28a9bc7e6836b57d9df93ce",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-076",
+          "merge_commit": "035644e0cfb94927d7555e245223cd92c224ea5a",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-077",
+          "merge_commit": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-072",
+      "result_path": "docs/exec-plans/completed/KL-072_RESULT.yaml",
+      "result_sha256": "9d40c9a76b34eea7b6844f80b202276e1cb7487a2306c7116c27ccba30f61949",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-013",
+          "merge_commit": "b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-016",
+          "merge_commit": "033cc3361d77a5d9853c940a7d50cb3abeef9743",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-074",
+      "result_path": "docs/exec-plans/completed/KL-074_RESULT.yaml",
+      "result_sha256": "85d09c290cbf2e9ee5e92f4aad5daf43d1164ebaf1e0c082b3847930bef3c3e8",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-002",
+          "merge_commit": "e6f7a36485e4a9557297a9c282eb38c6ac37e72c",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-013",
+          "merge_commit": "b4f1a3bf4e619f86bd1ce8ff3ad7f148a2705e5f",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-023",
+          "merge_commit": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-075",
+      "result_path": "docs/exec-plans/completed/KL-075_RESULT.yaml",
+      "result_sha256": "f7db410d2b340272b35d9cf5530bd59257f0a8626136db46556318e56306bf69",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-019",
+          "merge_commit": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-024",
+          "merge_commit": "ff57a80feebd4e539f9af277e0dcb26d942bc3e0",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-025",
+          "merge_commit": "eab2b305351cf3c504f74ac74868edc58d0a3430",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-074",
+          "merge_commit": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-076",
+      "result_path": "docs/exec-plans/completed/KL-076_RESULT.yaml",
+      "result_sha256": "013a9f33540411a479f728ea63c68551499fc38464ae2dfe6a8ef6f0e8f239e2",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-075",
+          "merge_commit": "d0470badf0ccf6bec28a9bc7e6836b57d9df93ce",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-017",
+          "merge_commit": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-022",
+          "merge_commit": "88adc5be3f7c567413be671a2b3dc5e6c802ffe8",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-023",
+          "merge_commit": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-074",
+          "merge_commit": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-078",
+          "merge_commit": "c599ec1ef39c28bd691748698a09805f390878cf",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-077",
+      "result_path": "docs/exec-plans/completed/KL-077_RESULT.yaml",
+      "result_sha256": "a86e81ae15f4e93ac11b2e1dc7d5a55147145967bfea9d372d544a039bf73b85",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-076",
+          "merge_commit": "035644e0cfb94927d7555e245223cd92c224ea5a",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-019",
+          "merge_commit": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-017",
+          "merge_commit": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-074",
+          "merge_commit": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-079",
+          "merge_commit": "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-078",
+      "result_path": "docs/exec-plans/completed/KL-078_RESULT.yaml",
+      "result_sha256": "86eff96043a6a034aeb6b03ddd2fcb01f468b95b259bda5c0dfcc5bad748e586",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-017",
+          "merge_commit": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-019",
+          "merge_commit": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-022",
+          "merge_commit": "88adc5be3f7c567413be671a2b3dc5e6c802ffe8",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-023",
+          "merge_commit": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-074",
+          "merge_commit": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    },
+    {
+      "task": "KL-079",
+      "result_path": "docs/exec-plans/completed/KL-079_RESULT.yaml",
+      "result_sha256": "b6bae41144cbdad079395ef4d3dde10bdd9d0846fa7c10bed5b98739c27bdcf1",
+      "errors": [],
+      "reachable": {
+        "result_commit": true,
+        "reviewed_head_sha": true,
+        "review_record_commit": true,
+        "merge_commit": true
+      },
+      "dependencies": [
+        {
+          "task": "KL-076",
+          "merge_commit": "035644e0cfb94927d7555e245223cd92c224ea5a",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-075",
+          "merge_commit": "d0470badf0ccf6bec28a9bc7e6836b57d9df93ce",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-078",
+          "merge_commit": "c599ec1ef39c28bd691748698a09805f390878cf",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-024",
+          "merge_commit": "ff57a80feebd4e539f9af277e0dcb26d942bc3e0",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-019",
+          "merge_commit": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-017",
+          "merge_commit": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+          "before_base": true,
+          "before_tested": true
+        },
+        {
+          "task": "KL-074",
+          "merge_commit": "3c1312e5946593d73f169f6ea1ce559c27523bd2",
+          "before_base": true,
+          "before_tested": true
+        }
+      ]
+    }
+  ],
+  "missing_prospective": [
+    "KL-028",
+    "KL-029"
+  ],
+  "capture_integrity_records": [
+    {
+      "path": "docs/exec-plans/evidence/HG-044/focused-e748b37.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/harness-e748b37.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/unit-e748b37.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/lint-e748b37.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/typecheck-e748b37.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/validation-e748b37.json",
+      "valid": true
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-044/diff-e748b37.json",
+      "valid": true
+    }
+  ]
+}
