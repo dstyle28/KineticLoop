@@ -131,5 +131,7 @@ It may update only the final generic `ci.yml`/`db.yml` compatibility assertions 
 structural assertions for the new approved triggers and hosted fallback. All
 KL-074-specific exact workflow bytes/hash, negative mutations, hosted provenance,
 probe behavior, fixtures, packets and historical results remain unchanged. This
-named test path does not authorize other database test or runtime edits, and the
+named compatibility scope also updates the old `paths-ignore` string check in
+`tests/db/test_workflow.py` to require exclusively manual full-DB dispatch and no
+historical auto-writeback. These two exact test paths do not authorize other database test or runtime edits, and the
 exception applies only to HG-046. The full DB suite must pass at the new tested SHA.

@@ -69,7 +69,9 @@ No daily hosted run is required. The retired KL-002 branch-specific auto-commit
 job is removed; CI never rewrites an old task result. The special KL-074 workflow
 and its explicitly hosted evidence remain unchanged. The startup-readiness test
 retains all KL-074 checks; only its two legacy generic-workflow hash pins are
-replaced with assertions for the prospectively approved HG-046 CI policy.
+replaced with assertions for the prospectively approved HG-046 CI policy. The
+workflow test similarly replaces its old review-only paths-ignore string check
+with exclusive manual dispatch and no historical auto-writeback assertions.
 
 ## Evidence and review
 
