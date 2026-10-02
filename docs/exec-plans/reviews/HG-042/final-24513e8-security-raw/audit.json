@@ -1,0 +1,127 @@
+{
+  "reviewed_head_sha": "24513e86d90799edb951fa2bdf52ba433c59318a",
+  "tested_commit": "e4134f963450db1522fd6c3339e4cb036fcf5ffe",
+  "protected_base": "93b38f20a3f3d71206515fb0f4d852f5b0b6d344",
+  "checks": "PASS",
+  "declared_changed_files": 60,
+  "changed_tasks": [
+    "KL-028",
+    "KL-029"
+  ],
+  "boundary_layers": {
+    "total": 31,
+    "prospective_executable": 19,
+    "deferred": 12,
+    "all_statuses": "NOT_RUN"
+  },
+  "evidence": [
+    {
+      "check_id": "boundary_shadow",
+      "raw_sha256": "486263449e67e2f727eaaf760c7a6f55d4e9b6253c4252be9187f8f2f3e1c924",
+      "raw_byte_count": 179
+    },
+    {
+      "check_id": "scope",
+      "raw_sha256": "7e852833e9692d9f1fa642d9c5e95faa8a8e3c069de20e9c05298d5446d6578d",
+      "raw_byte_count": 3142
+    },
+    {
+      "check_id": "integrations",
+      "raw_sha256": "90a0650ceb4ca0b2bf7b6b887719201d9491728d67aa50dccd101ddbd9e02271",
+      "raw_byte_count": 202707
+    },
+    {
+      "check_id": "harness",
+      "raw_sha256": "052b65486051ef0efcef7ee785ef139056899d4ed8616dda323beb0a7c3da529",
+      "raw_byte_count": 2652
+    },
+    {
+      "check_id": "unit",
+      "raw_sha256": "4fd06c3a4218ddf25bd1a456c1a946b776682863db973958e948c2d137e1e40b",
+      "raw_byte_count": 3132
+    },
+    {
+      "check_id": "lint",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_byte_count": 19
+    },
+    {
+      "check_id": "typecheck",
+      "raw_sha256": "1a34d57e130f0972e66df1e34a837955fc0928b625aa07e745b55cd43c587b4e",
+      "raw_byte_count": 45
+    },
+    {
+      "check_id": "validation",
+      "raw_sha256": "e2a8f969d7dc25b39c3a77ad08482321186f25f23d24fce083dcd69d4740d1dc",
+      "raw_byte_count": 38
+    },
+    {
+      "check_id": "diff",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_byte_count": 0
+    }
+  ],
+  "integrations": [
+    {
+      "task_id": "KL-027",
+      "merge_commit": "1099d85bd4aa76ec8221700e55b4e77a84479126",
+      "normal_merge": true,
+      "reference_counts": {
+        "REVIEWED": 11,
+        "REVIEW_RECORD_ONLY": 18
+      },
+      "historical_result_unchanged": true
+    },
+    {
+      "task_id": "KL-075",
+      "merge_commit": "d0470badf0ccf6bec28a9bc7e6836b57d9df93ce",
+      "normal_merge": true,
+      "reference_counts": {
+        "REVIEWED": 99,
+        "REVIEW_RECORD_ONLY": 3
+      },
+      "historical_result_unchanged": true
+    },
+    {
+      "task_id": "KL-076",
+      "merge_commit": "035644e0cfb94927d7555e245223cd92c224ea5a",
+      "normal_merge": true,
+      "reference_counts": {
+        "REVIEWED": 66,
+        "REVIEW_RECORD_ONLY": 1
+      },
+      "historical_result_unchanged": true
+    },
+    {
+      "task_id": "KL-077",
+      "merge_commit": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+      "normal_merge": true,
+      "reference_counts": {
+        "REVIEWED": 143,
+        "REVIEW_RECORD_ONLY": 0
+      },
+      "historical_result_unchanged": true
+    },
+    {
+      "task_id": "KL-079",
+      "merge_commit": "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588",
+      "normal_merge": true,
+      "reference_counts": {
+        "REVIEWED": 178,
+        "REVIEW_RECORD_ONLY": 0
+      },
+      "historical_result_unchanged": true
+    }
+  ],
+  "source_sha256": {
+    "src/kineticloop/contracts/shadow.py": "ce2b78955316e53fc130b560aebc16771b9fe9800372dec54901c7f469ba878b",
+    "src/kineticloop/contracts/commands.py": "022e3fa180c6fbcd5ad8382fd5e8d1e01418c819a52b6ce706534ce594a8539e",
+    "src/kineticloop/protocol/execution.py": "63c5b7a944017c8734d8f79a12e00b7d0c3bf342c079ba79c098bff8ccd9f154",
+    "src/kineticloop/persistence/protocol_execution.py": "7e74e8639b7db90693b320e425cd2f732ff764c475c03c22c67c91635e094378",
+    "src/kineticloop/persistence/subject_scope.py": "e620ea4543aa5461dcca1e08743f2cf2a55f8fee7d74628e31e4babab695e8d6",
+    "src/kineticloop/persistence/transactions.py": "425e3afa4080d471b094abeac7f11e5648a57ffc95dc9de0342659496fbb0f3f",
+    "migrations/versions/d4c1a9e7b203_subject_scope.py": "df01715d74dba368b683644b3a602c9b1a687fbe34d19b56c5c6242f93e6fe6e",
+    "migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py": "e81176a33577fca549a3b523d4ba43d8bc7a60cff8b0b97e23ee89df8756f3f1"
+  },
+  "db_runtime_executed": false
+}
