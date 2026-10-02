@@ -178,6 +178,8 @@ def test_plain_history_retained_and_budget_is_prospective(repo):
     ('a.log', b'x' * (ce.PLAIN_LIMIT + 1), 'evidence-size'),
     ('complete-diff.patch', b'patch', 'full-diff-copy'),
     ('a.json', b'{"nested":[{"raw_utf8":"copy"}]}', 'embedded-raw_utf8'),
+    ('a.log', b'{"nested":[{"raw_utf8":"copy"}]}', 'embedded-raw_utf8'),
+    ('a.txt', b'{"nested":[{"raw_utf8":"copy"}]}', 'embedded-raw_utf8'),
     ('orphan.gz', b'not compressed', 'unreferenced-payload'),
 ])
 def test_budget_rejects_bulk_and_duplicate_metadata(repo, filename, data, error):
@@ -321,3 +323,26 @@ def test_symbolic_revision_is_frozen_for_manifest_and_payload(repo, monkeypatch)
     monkeypatch.setattr(ce, 'git', advance_after_resolution)
     with pytest.raises(ValueError, match='evidence-missing'):
         ce.read(root, REF, 'moving')
+
+
+@pytest.mark.parametrize('extension', ['log', 'txt', 'opaque'])
+@pytest.mark.parametrize('mutation', ['missing', 'tampered'])
+def test_renamed_envelope_keeps_metadata_and_payload_guards(repo, extension, mutation):
+    root, base, record, _ = captured(repo)
+    renamed = REF.removesuffix('json') + extension
+    (root / REF).rename(root / renamed)
+    head = commit(root)
+    assert ce.read(root, renamed, head) == b'1 passed in 0.01s\n'
+    assert v.evidence_exists(root, renamed, head, base, 'pytest', 0)
+    assert not v.evidence_exists(root, renamed, head, head, 'pytest', 0)
+    assert not v.evidence_exists(root, renamed, head, base, 'other-command', 0)
+    assert not v.evidence_exists(root, renamed, head, base, 'pytest', 1)
+    assert not ce.audit(root, base, head, 'HG-046')['errors']
+    payload = root / record['payload']
+    if mutation == 'missing':
+        payload.unlink()
+    else:
+        payload.write_bytes(b'not the recorded gzip bytes')
+    bad = commit(root)
+    assert not v.evidence_exists(root, renamed, bad, base, 'pytest', 0)
+    assert ce.audit(root, base, bad, 'HG-046')['errors']

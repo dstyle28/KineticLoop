@@ -31,6 +31,9 @@ its own linear REVIEW_RECORD_ONLY suffix is proven. A present manifest with an
 absent or invalid payload cannot satisfy evidence availability or PASS. M3 reads
 logs, JUnit, collection JSON and collection stdout through this same decoder;
 selector, case, count, skip/failure and provenance rules still apply.
+Reserved compact content is recognized regardless of filename extension; renaming
+an envelope cannot turn its metadata into plain execution proof. Ancillary M3
+envelopes also bind the execution or exact collection command, as appropriate.
 
 The protected-base `kl check-harness` gate budgets only added/changed evidence and
 review artifacts owned by the selected task/governance PR, including its review
@@ -50,7 +53,8 @@ diff copies should instead be one recorded base/head pair. Source/test changes a
 generated evidence bytes must be reported separately in the PR.
 
 The gate rejects `complete-diff.patch`, recursive `raw_utf8` in new plain JSON,
-orphan gzip payloads and exact duplicate bulk artifacts (at least 16 KiB).
+orphan gzip payloads and exact duplicate bulk artifacts (at least 16 KiB). JSON
+content is checked for `raw_utf8` regardless of its filename extension.
 Shared content-addressed payloads are permitted. Store base/head SHAs and inspect
 `git diff <base> <head>` on demand; do not persist complete diff dumps. Do not
 truncate, fabricate PASS, waive CI or change historical evidence to fit a budget.

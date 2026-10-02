@@ -1,0 +1,34 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-046",
+  "reviewed_head_sha": "5ae6b31ac4c4639fbfe2fd7ca3df029abdfae323",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "finding_id": "HG046-GENERAL-01",
+      "classification": "BLOCKER",
+      "title": "Renaming a compact envelope bypasses missing-payload validation",
+      "file": "tools/harness/compact_evidence.py",
+      "line": 118,
+      "detail": "Compact recognition depends on the .json extension in read/audit, while evidence_exists returns regular-file availability directly for other extensions. In an isolated Git fixture, a valid gzip-v1 envelope renamed to run.log with its gzip payload deleted still returned evidence_exists=True and budget errors=[]. This permits a manifest without raw proof to satisfy evidence availability, contrary to the prospective storage policy. The bypass also skips exact tested/command/exit binding.",
+      "requested_change": "Recognize reserved compact storage content independently of filename and enforce its required envelope format and payload validation across read, availability, audit and review paths. Add a regression covering renamed/non-json manifests with missing or tampered payloads.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-046/GENERAL-r1-raw/extension-probe.json"
+    },
+    {
+      "finding_id": "HG046-GENERAL-02",
+      "classification": "NONBLOCKING",
+      "title": "Ancillary M3 envelopes do not cross-check execution command metadata",
+      "file": "tools/harness/validate_harness.py",
+      "line": 2655,
+      "detail": "The M3 reader checks the command for stdout, but passes no expected command when reading JUnit, collection JSON or collection stdout. An isolated fixture accepted JUnit and collection envelopes declaring unrelated-command, with validator errors=[]. Decoded collection command, selectors, nodeids and executed JUnit cases remain enforced, so this is a metadata hardening opportunity rather than a demonstrated relaxation of the pre-existing semantic oracle.",
+      "requested_change": "Consider checking JUnit envelopes against the execution command and collection envelopes/stdout against the exact collection command, with focused mismatch tests.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-046/GENERAL-r1-raw/verification.json"
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/HG-046/GENERAL-r1-raw/verification.json",
+    "docs/exec-plans/reviews/HG-046/GENERAL-r1-raw/extension-probe.json",
+    "docs/exec-plans/reviews/HG-046/GENERAL-r1-raw/assessment.md"
+  ],
+  "review_contract_version": "v0.2"
+}

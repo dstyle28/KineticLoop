@@ -1711,12 +1711,6 @@ def governance_suffix_errors(root, start, end, change_id, kind):
 def evidence_exists(root, ref, revision=None, tested=None, command=None, exit_code=None):
     if not relative_path(ref) or '\0' in ref:
         return False
-    if not ref.endswith('.json'):
-        if revision is not None:
-            return revision_regular_file(root, ref, revision)
-        path = root.resolve() / ref
-        return (path.is_file() and root.resolve() in path.resolve().parents
-                and not any(p.is_symlink() for p in [path, *path.parents]))
     try:
         compact_evidence.read(root, ref, revision, tested=tested, command=command,
                               exit_code=exit_code)
@@ -2652,23 +2646,24 @@ def m3_execution_evidence_errors(root, payload, revision, evaluated, records):
                     raise ValueError('harness-oracle')
                 continue
             count = m3_pytest_count(output)
-            tree = ET.fromstring(raw(run['junit']))
+            tree = ET.fromstring(raw(run['junit'], command))
             cases = list(tree.iter('testcase'))
             actual = [(case.get('classname', ''), case.get('name', '')) for case in cases]
             if (not cases or len(cases) != count or len(actual) != len(set(actual))
                     or any(list(case.iter(tag)) for case in cases
                            for tag in ('failure', 'error', 'skipped'))):
                 raise ValueError('failed-skipped-duplicate-or-empty-tests')
-            collection = load_artifact_text(raw(run['collection']).decode(), '.json')
             selectors = (['tests/unit'] if command == 'uv run kl test-unit'
                          else ['tests/harness'] if command == 'uv run kl test-harness'
                          else command.removeprefix('uv run pytest -q ').split())
-            if (collection['command'] != 'uv run pytest --collect-only -q ' + ' '.join(selectors)
+            collect_command = 'uv run pytest --collect-only -q ' + ' '.join(selectors)
+            collection = load_artifact_text(raw(run['collection'], collect_command).decode(), '.json')
+            if (collection['command'] != collect_command
                     or collection['tested_commit'] != tested or collection['exit_code'] != 0
                     or type(collection['exit_code']) is not int):
                 raise ValueError('collection-binding')
             nodeids = collection['nodeids']
-            collected_output = raw(collection['stdout']).decode()
+            collected_output = raw(collection['stdout'], collect_command).decode()
             raw_nodes = [line for line in collected_output.splitlines()
                          if re.match(r'^tests/[^\s]+\.py::', line)]
             totals = re.findall(r'^([1-9][0-9]*) tests? collected in ', collected_output, re.M)

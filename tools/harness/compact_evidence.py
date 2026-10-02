@@ -115,7 +115,7 @@ def read(root: Path, path: str, revision: str | None, *, tested: str | None = No
         revision = git(root, 'rev-parse', '--verify', '--end-of-options',
                        revision + '^{commit}').decode().strip()
     data = blob(root, path, revision)
-    manifest = envelope(data) if path.endswith('.json') else None
+    manifest = envelope(data)
     if manifest is None:
         return data
     fields = {MARKER, 'payload', 'stored_sha256', 'stored_bytes', 'raw_sha256', 'raw_bytes',
@@ -239,13 +239,18 @@ def audit(root: Path, base: str, head: str, identity: str) -> dict:
                 continue
             if Path(path).name == 'complete-diff.patch':
                 raise ValueError('full-diff-copy: record base/head instead')
-            manifest = envelope(data) if path.endswith('.json') else None
+            manifest = envelope(data)
             if manifest is not None:
                 raw = read(root, path, head)
                 payloads.add(manifest['payload'])
             else:
                 raw = data
-                if path.endswith('.json') and embedded_raw(json.loads(data, object_pairs_hook=unique)):
+                # JSON content remains JSON evidence even under a .log/.txt name.
+                try:
+                    value = json.loads(data, object_pairs_hook=unique)
+                except (UnicodeError, json.JSONDecodeError):
+                    value = None
+                if embedded_raw(value):
                     raise ValueError('embedded-raw_utf8: capture raw once')
             if raw.lstrip().startswith(b'diff --git '):
                 raise ValueError('full-diff-copy: record base/head instead')

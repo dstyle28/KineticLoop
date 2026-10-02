@@ -605,7 +605,10 @@ def test_m3_reader_parses_checked_git_blob_not_second_ambient_read(tmp_path, mon
     assert not errors and record == {'source': 'committed'}
 
 
-@pytest.mark.parametrize('mutation', ['none', 'skipped-junit', 'wrong-collection', 'bad-log', 'wrong-tested'])
+@pytest.mark.parametrize('mutation', [
+    'none', 'skipped-junit', 'wrong-collection', 'bad-log', 'wrong-tested',
+    'renamed-envelope', 'junit-command', 'collection-command', 'collection-stdout-command',
+])
 def test_compact_regression_decodes_all_semantic_sources(tmp_path, mutation):
     """Compression preserves log/JUnit/collection oracles, never summary-only proof."""
     # Earlier module-history negatives intentionally commit unrelated/frozen edits.
@@ -625,7 +628,7 @@ def test_compact_regression_decodes_all_semantic_sources(tmp_path, mutation):
     junit = (history.root / run['junit']['path']).read_bytes()
     if mutation == 'skipped-junit':
         junit = junit.replace(b'/>', b'><skipped/></testcase>')
-    if mutation == 'bad-log':
+    if mutation in ('bad-log', 'renamed-envelope'):
         stdout = b'1 skipped\n'
     if mutation == 'wrong-collection':
         collection['nodeids'] = ['tests/unit/foreign.py::test_foreign']
@@ -641,6 +644,27 @@ def test_compact_regression_decodes_all_semantic_sources(tmp_path, mutation):
         manifest['tested_commit'] = history.evaluated
         path.write_text(json.dumps(manifest))
         run['stdout']['sha256'] = v.sha(path)
+    if mutation == 'renamed-envelope':
+        path = history.root / run['stdout']['path']
+        manifest = json.loads(path.read_text())
+        manifest['timestamp'] = '1 passed in 0.01s'
+        path.write_text(json.dumps(manifest))
+        renamed = path.with_suffix('.log')
+        path.rename(renamed)
+        run['stdout'] = {'path': str(renamed.relative_to(history.root)), 'sha256': v.sha(renamed)}
+    if mutation in ('junit-command', 'collection-command', 'collection-stdout-command'):
+        item = (run['junit'] if mutation == 'junit-command' else run['collection']
+                if mutation == 'collection-command' else collection['stdout'])
+        path = history.root / item['path']
+        manifest = json.loads(path.read_text())
+        manifest['command'] = 'unrelated-command'
+        path.write_text(json.dumps(manifest))
+        item['sha256'] = v.sha(path)
+        if mutation == 'collection-stdout-command':
+            # Rebind the outer collection to the changed stdout envelope hash.
+            outer = history.root / run['collection']['path']
+            outer.unlink()
+            run['collection'] = compressed('collection', json.dumps(collection).encode(), collection['command'])
     revision = history.commit('synthetic compact semantic sources')
     errors = v.m3_execution_evidence_errors(history.root, payload, revision, revision, history.records)
     assert bool(errors) == (mutation != 'none'), errors
