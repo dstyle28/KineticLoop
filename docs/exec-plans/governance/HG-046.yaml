@@ -1,0 +1,95 @@
+change_identity: harness-governance-v0.1/HG-046
+display_change_id: HG-046
+base_commit: 26906bd7f4444914c228e98377f2b164fee0dd5d
+tested_commit: 0d0a23c245af154db389c0876d65a98c26903939
+change_status: PASS
+summary: Prospective lossless content-addressed gzip evidence, revision-bound safe retrieval, M3 semantic decoding
+  and protected-base PR evidence budget.
+packets_refined: []
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- docs/exec-plans/evidence/HG-046/2727ee8d3f0c55c9da0ff0f7f46088f0cce9a781e7b5edc5215fc4eaad924839.gz
+- docs/exec-plans/evidence/HG-046/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-046/aa3f3fffc890fbcbb1d545ae3b1643de0f1d19181264830ef57f9f7f6e5a2ce4.gz
+- docs/exec-plans/evidence/HG-046/authority.json
+- docs/exec-plans/evidence/HG-046/b440aba3396a228da223ab9fac05c14a677684b57b158dfa215dbab2f36ea7ae.gz
+- docs/exec-plans/evidence/HG-046/calibration.json
+- docs/exec-plans/evidence/HG-046/d527e9607e674b178ab63d9585a6db776a31084f9b55b831e9bede85aa8419de.gz
+- docs/exec-plans/evidence/HG-046/e2a8f969d7dc25b39c3a77ad08482321186f25f23d24fce083dcd69d4740d1dc.gz
+- docs/exec-plans/evidence/HG-046/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-046/focused.json
+- docs/exec-plans/evidence/HG-046/harness.json
+- docs/exec-plans/evidence/HG-046/lint.json
+- docs/exec-plans/evidence/HG-046/source_diff.json
+- docs/exec-plans/evidence/HG-046/typecheck.json
+- docs/exec-plans/evidence/HG-046/unit.json
+- docs/exec-plans/governance/HG-046.yaml
+- docs/harness/EVIDENCE_STORAGE_POLICY.md
+- docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
+- docs/harness/M3_CLOSURE_CONTRACT.md
+- docs/harness/MERGE_GATE.md
+- docs/harness/THREAD_RESULT_CONTRACT.md
+- docs/harness/THREAD_REVIEW_CONTRACT.md
+- tests/harness/test_compact_evidence.py
+- tests/harness/test_m3_milestone_closure.py
+- tests/harness/test_review_evidence_provenance.py
+- tests/harness/test_validator.py
+- tools/harness/README.md
+- tools/harness/compact_evidence.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: focused
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m
+    pytest -q tests/harness/test_compact_evidence.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/focused.json
+- check_id: harness
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m
+    kineticloop.db.cli test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/harness.json
+- check_id: unit
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m
+    kineticloop.db.cli test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/unit.json
+- check_id: lint
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m
+    kineticloop.db.cli lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/lint.json
+- check_id: typecheck
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m
+    kineticloop.db.cli typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/typecheck.json
+- check_id: authority
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m
+    kineticloop.db.cli check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/authority.json
+- check_id: source_diff
+  command: git diff --check 26906bd7f4444914c228e98377f2b164fee0dd5d HEAD
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/source_diff.json
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- Storage/governance only. No runtime, migration, frozen baseline, task packet, backlog, requirement status, production
+  activation or executable shadow changes. Related product/release requirements remain NOT_RUN.
+- Historical evidence/reviews are unchanged. This is a prospective policy, not a historical archive or deletion
+  migration.
+- All required local checks bind the exact tested implementation SHA. Raw output is retained once in deterministic
+  gzip with length/hash and command/exit/count/timestamp metadata; the same bound Git revision supplies both envelope
+  and payload.
+- The host has no uv executable on PATH. Stable kl engineering entrypoints ran through the existing pinned Python
+  3.12 development environment with an absolute PYTHONPATH. The initial relative-PYTHONPATH development unit failure
+  was an environment issue and is superseded by the selected final run.
+- Hosted applicable CI remains mandatory and is not waived. GitHub billing/spending-limit failures reported by the
+  coordinator may prevent jobs from starting; exact final PR status must be inspected before merge.
+- Fresh independent GENERAL, PROTOCOL and SECURITY_DATA_BOUNDARY reviews must bind the committed governance/evidence
+  revision. Only the own REVIEW_RECORD_ONLY suffix may follow; stop before merge for coordinator serialization and
+  protected-base refresh.
+- Capture metadata does not certify truth or create PASS. M3 still requires actual raw-log counts, JUnit cases,
+  exact selectors and collection correspondence; summaries alone never substitute for proof.
