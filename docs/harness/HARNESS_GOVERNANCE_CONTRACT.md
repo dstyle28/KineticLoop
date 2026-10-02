@@ -93,6 +93,13 @@ conform to the result schema. The reviewed head must contain the same representa
 with byte-identical content. The bound result must be PASS and satisfy all semantic
 result checks, including required task checks and revision-bound evidence.
 
+Integration review references follow the precise source binding in the Thread Review
+Contract: regular Git blobs at the reviewed SHA, or review-created bookkeeping blobs
+at the exact recorded review commit after proof of a linear, exclusively own-task
+REVIEW_RECORD_ONLY suffix. This never substitutes reviewer logs for the task's
+pre-review test evidence or uses later unbound additions. Neither delayed post-merge
+review nor exact-tree squash relaxes that proof for review-created references.
+
 An already-merged task that lacks required review or integration bookkeeping may be
 closed by one governance remediation PR. That PR may add only the task's required
 review records together with its integration record; a changed task review directory
