@@ -301,3 +301,23 @@ def test_unmarked_opaque_historical_json_bytes_remain_lossless(repo):
     head = commit(root)
     assert ce.read(root, REF, head) == raw
     assert v.evidence_exists(root, REF, head)
+
+
+def test_symbolic_revision_is_frozen_for_manifest_and_payload(repo, monkeypatch):
+    root, _, record, _ = captured(repo)
+    payload = root / record['payload']
+    saved = payload.read_bytes()
+    payload.unlink()
+    missing = commit(root)
+    payload.write_bytes(saved)
+    restored = commit(root)
+    git(root, 'update-ref', 'refs/heads/moving', missing)
+    original = ce.git
+    def advance_after_resolution(root, *args):
+        result = original(root, *args)
+        if args == ('rev-parse', '--verify', '--end-of-options', 'moving^{commit}'):
+            git(root, 'update-ref', 'refs/heads/moving', restored)
+        return result
+    monkeypatch.setattr(ce, 'git', advance_after_resolution)
+    with pytest.raises(ValueError, match='evidence-missing'):
+        ce.read(root, REF, 'moving')

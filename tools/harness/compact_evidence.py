@@ -111,6 +111,9 @@ def envelope(data: bytes) -> dict[str, Any] | None:
 
 def read(root: Path, path: str, revision: str | None, *, tested: str | None = None,
          command: str | None = None, exit_code: int | None = None) -> bytes:
+    if revision is not None:
+        revision = git(root, 'rev-parse', '--verify', '--end-of-options',
+                       revision + '^{commit}').decode().strip()
     data = blob(root, path, revision)
     manifest = envelope(data) if path.endswith('.json') else None
     if manifest is None:
