@@ -2512,6 +2512,18 @@ def m3_closure_plan_errors(text):
     return [] if hashlib.sha256(block.encode()).hexdigest() == '016ebe910b40724dc7cf7b00ab0bc384fa0d5ef6b8749ae6ea741c6126023878' else ['m3-closure-plan']
 
 
+def m3_closure_record_errors(root, path):
+    """An optional closure instance is itself a committed regular blob, never ambient evidence."""
+    try:
+        ref = str(path.relative_to(root))
+        if (path.is_symlink() or not revision_regular_file(root, ref, 'HEAD')
+                or git(root, 'show', 'HEAD:' + ref) != path.read_bytes()):
+            raise ValueError('not-committed-regular-unchanged-blob')
+    except (ValueError, OSError, TypeError) as ex:
+        return ['milestone-m3-record-source:' + str(ex)]
+    return []
+
+
 def m3_evidence_bytes(root, evidence, evaluated):
     """Read only content-addressed regular Git blobs at reachable exact commits."""
     path, revision = evidence['path'], evidence['revision']
@@ -2605,7 +2617,7 @@ def m3_execution_evidence_errors(root, payload, revision, evaluated, records):
                     or any(list(case.iter(tag)) for case in cases
                            for tag in ('failure', 'error', 'skipped'))):
                 raise ValueError('failed-skipped-duplicate-or-empty-tests')
-            collection = json.loads(raw(run['collection']))
+            collection = load_artifact_text(raw(run['collection']).decode(), '.json')
             selectors = (['tests/unit'] if command == 'uv run kl test-unit'
                          else ['tests/harness'] if command == 'uv run kl test-harness'
                          else command.removeprefix('uv run pytest -q ').split())
@@ -2721,7 +2733,7 @@ def m3_milestone_closure_errors(
         m2_ref = closure['m2_prerequisite']
         if m2_ref['path'] != 'docs/exec-plans/milestones/M2.json' or m2_ref['revision'] != evaluated:
             raise ValueError('m2-prerequisite-binding')
-        m2 = json.loads(m3_evidence_bytes(root, m2_ref, evaluated))
+        m2 = load_artifact_text(m3_evidence_bytes(root, m2_ref, evaluated).decode(), '.json')
         errors.extend('milestone-m3-prerequisite:' + e for e in m2_milestone_closure_errors(
             root, m2, schema, integration_schema, result_schema, review_schema,
             evaluated_backlog, evaluated_tasks))
@@ -2784,7 +2796,7 @@ def m3_milestone_closure_errors(
         if (ref['revision'] != evaluated or not re.fullmatch(
                 r'docs/exec-plans/evidence/HG-[0-9]{3}/m3-regression-[0-9a-f]{7,40}\.json', ref['path'])):
             raise ValueError('regression-source')
-        payload = json.loads(m3_evidence_bytes(root, ref, evaluated))
+        payload = load_artifact_text(m3_evidence_bytes(root, ref, evaluated).decode(), '.json')
         if not matches(ref['path'], [evidence_pattern(payload['change_id'])]):
             raise ValueError('regression-provenance')
         errors.extend(m3_execution_evidence_errors(root, payload, evaluated, evaluated, records))
@@ -3258,6 +3270,7 @@ def validate(root, args):
         closure_path, closure = milestone_records['M3'][0]
         if closure_path.name != 'M3.json':
             errors.append('milestone-closure-path:M3:' + closure_path.name)
+        errors.extend(m3_closure_record_errors(root, closure_path))
         errors.extend(m3_milestone_closure_errors(
             root, closure, schemas['MILESTONE'], schemas['INTEGRATION'],
             schemas['RESULT'], schemas['REVIEW'], backlog, tasks))

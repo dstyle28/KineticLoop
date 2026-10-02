@@ -250,7 +250,7 @@ def test_named_task_witness_must_bind_result_oracle_and_regular_blob(history, fi
     assert v.m3_task_check_errors(history.root, witness, name, check, history.tasks[name], history.records[name], history.evaluated)
 
 
-@pytest.mark.parametrize('mutation', ['failed', 'zero', 'skipped', 'wrong-selector', 'wrong-command', 'stale', 'missing028', 'missing029', 'hash', 'type', 'provenance'])
+@pytest.mark.parametrize('mutation', ['failed', 'zero', 'skipped', 'wrong-selector', 'wrong-command', 'stale', 'missing028', 'missing029', 'hash', 'type', 'provenance', 'duplicate-json'])
 def test_integrated_regression_fails_closed(history, mutation):
     payload = copy.deepcopy(history.payload)
     records = copy.deepcopy(history.records)
@@ -274,7 +274,10 @@ def test_integrated_regression_fails_closed(history, mutation):
     else:
         # Append new corrupt raw blobs so freshness passes and the content oracle rejects.
         original = (history.root / run['junit' if mutation == 'skipped' else 'collection']['path']).read_text()
-        if mutation == 'skipped':
+        if mutation == 'duplicate-json':
+            original = (history.root / run['collection']['path']).read_text()
+            run['collection'] = history.raw('negative-duplicate.json', original[:-1] + ', "exit_code": 0}')
+        elif mutation == 'skipped':
             run['junit'] = history.raw('negative-skipped.xml', original.replace('/>', '><skipped/></testcase>'))
         else:
             collection = json.loads(original)
@@ -286,7 +289,9 @@ def test_integrated_regression_fails_closed(history, mutation):
         errors = v.m3_execution_evidence_errors(history.root, payload, revision, revision, records)
         assert errors
         assert not any('stale-or-unintegrated-revision' in e for e in errors)
-        assert any(('failed-skipped' if mutation == 'skipped' else 'wrong-selector') in e for e in errors)
+        expected_error = ('duplicate-key' if mutation == 'duplicate-json' else
+                          'failed-skipped' if mutation == 'skipped' else 'wrong-selector')
+        assert any(expected_error in e for e in errors)
         return
     assert v.m3_execution_evidence_errors(history.root, payload, history.evaluated, history.evaluated, records)
 
@@ -435,3 +440,29 @@ def test_ratified_plan_mapping_guard_preserves_addendum():
     assert v.m3_closure_plan_errors(text.replace('<!-- HG044 plan end -->', ''))
     before, block = text.split('## M3 exit-evidence mapping — HG044', 1)
     assert v.m3_closure_plan_errors(before + '## M3 exit-evidence mapping — HG044' + block.replace('12 deferred', 'zero deferred'))
+
+
+@pytest.mark.parametrize('mode', ['valid', 'symlink', 'directory', 'untracked', 'ambient-tamper'])
+def test_actual_closure_record_requires_unchanged_regular_head_blob(tmp_path, mode):
+    source = History.__new__(History)
+    source.root = tmp_path
+    source.git('init', '-q')
+    path = 'docs/exec-plans/milestones/M3.json'
+    source.put('fixture.json', '{}')
+    target = source.root / path
+    if mode == 'directory':
+        source.put(path + '/child', '{}')
+    elif mode == 'symlink':
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.symlink_to('../../../fixture.json')
+    else:
+        source.put(path, '{}')
+    if mode == 'untracked':
+        source.git('add', 'fixture.json')
+        source.git('commit', '-qm', 'base without closure record')
+    else:
+        source.commit('synthetic source record')
+    if mode == 'ambient-tamper':
+        target.write_text('{"tampered": true}')
+    errors = v.m3_closure_record_errors(source.root, target)
+    assert not errors if mode == 'valid' else errors

@@ -5,7 +5,9 @@ creates no product/release PASS, production activation, executable real-data sha
 or reproduced historical model evidence. This contract ratifies the exit mapping;
 a later governance PR may create `docs/exec-plans/milestones/M3.json` only after all
 prerequisites and fresh integrated executions exist. HG044 creates no instance.
-M1/M2 representations and validators retain their existing meaning.
+M1/M2 representations and validators retain their existing meaning. An M3 instance
+itself must be an unchanged regular Git blob committed at HEAD; symlinks and ambient
+working-tree substitutes cannot supply a closure. JSON sources reject duplicate keys.
 
 The evaluated full Git commit must contain exactly these active M3 identities:
 `harness-backlog-v0.2/KL-019` through `KL-029`, and `KL-075` through `KL-079` (16).
