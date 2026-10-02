@@ -32,7 +32,17 @@ class History:
         self.backlog = json.loads((root / v.BACKLOG).read_text())
         self.tasks = {t['id']: t for t in self.backlog['tasks']}
         self.records: dict[str, dict] = {}
-        for name in ('KL-028', 'KL-029'):
+        corrective = next(t for t in json.loads((ROOT / v.BACKLOG).read_text())['tasks']
+                          if t['id'] == 'KL-080')
+        self.backlog['tasks'].append(copy.deepcopy(corrective))
+        self.backlog['task_count'] += 1
+        self.backlog['active_task_count'] += 1
+        self.tasks['KL-080'] = self.backlog['tasks'][-1]
+        self.put(v.BACKLOG, json.dumps(self.backlog))
+        self.put('docs/exec-plans/active/KL-080.md',
+                 (ROOT / 'docs/exec-plans/active/KL-080.md').read_text())
+        self.commit('synthetic prospective corrective task definition')
+        for name in ('KL-028', 'KL-029', 'KL-080'):
             self.make_task(name)
         pending = list(v.M3_TASK_IDS | {'KL-074'})
         while pending:
@@ -603,3 +613,25 @@ def test_m3_reader_parses_checked_git_blob_not_second_ambient_read(tmp_path, mon
     monkeypatch.setattr(v, 'm3_closure_record_errors', check_then_change)
     record, errors = v.m3_load_closure_record(tmp_path, target)
     assert not errors and record == {'source': 'committed'}
+
+
+@pytest.mark.parametrize('mutation', ['task', 'exit', 'check', 'oracle', 'command', 'regression'])
+def test_corrective_prerequisite_and_checks_cannot_be_omitted_or_weakened(history, mutation):
+    closure = copy.deepcopy(history.closure)
+    if mutation == 'task':
+        closure['integrations'] = [r for r in closure['integrations'] if r['display_task_id'] != 'KL-080']
+    elif mutation == 'exit':
+        closure['exit_checks'] = [r for r in closure['exit_checks'] if r['check_id'] != 'source_decision_conformance']
+    elif mutation == 'regression':
+        payload = copy.deepcopy(history.payload)
+        payload['commands'] = [c for c in payload['commands'] if 'source_decision' not in c]
+        assert v.m3_execution_evidence_errors(history.root, payload, history.evaluated,
+                                             history.evaluated, history.records)
+        return
+    else:
+        exit = next(r for r in closure['exit_checks'] if r['check_id'] == 'source_decision_conformance')
+        if mutation == 'check':
+            exit['task_checks'].pop(6)
+        else:
+            exit['task_checks'][6]['oracle_sha256' if mutation == 'oracle' else 'command'] = 'weakened'
+    assert history.errors(closure)

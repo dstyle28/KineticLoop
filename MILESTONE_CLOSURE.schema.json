@@ -313,8 +313,8 @@
             "evaluated_commit": {},
             "integrations": {
               "type": "array",
-              "minItems": 16,
-              "maxItems": 16,
+              "minItems": 17,
+              "maxItems": 17,
               "items": {
                 "$ref": "#/$defs/integration"
               }
@@ -332,8 +332,8 @@
             },
             "exit_checks": {
               "type": "array",
-              "minItems": 7,
-              "maxItems": 7,
+              "minItems": 8,
+              "maxItems": 8,
               "items": {
                 "type": "object",
                 "additionalProperties": false,
@@ -351,7 +351,8 @@
                       "ready_sealed_barriers",
                       "registry_commit_freshness_and_closure",
                       "validity_missing_timeless_and_expiry",
-                      "isolated_test_and_evaluation_boundaries"
+                      "isolated_test_and_evaluation_boundaries",
+                      "source_decision_conformance"
                     ]
                   },
                   "result": {
