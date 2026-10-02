@@ -1,0 +1,819 @@
+{
+  "reviewed_head_sha": "994cf425360c75a366f186e91857a5d75ed02ebe",
+  "tested_commit": "debd5e58f98b4b20a2dd1ae132799d2373797622",
+  "base_commit": "9268fc8dd8c071c02dc5c698274dbf6fcd112776",
+  "implementation_blobs_equal": true,
+  "tested_to_reviewed_new_evidence_result_only": true,
+  "scope_paths_checked": 172,
+  "current_authority_hashes_verified": [
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "12_KineticLoop_Integration_Spec_v0.1.md",
+    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+    "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
+    "docs/harness/HARNESS_OPERATING_MODEL.md",
+    "docs/harness/THREAD_RESULT_CONTRACT.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/harness/MERGE_GATE.md",
+    "docs/harness/HARNESS_NEGATIVE_TEST_MATRIX.md",
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+    "KineticLoop_Harness_Development_Workflow_v0.3.md",
+    "KineticLoop_Harness_Backlog_v0.2.json",
+    "CURRENT_REQUIREMENT_SET.json",
+    "HISTORICAL_TASK_ID_MAP.json",
+    "FROZEN_BASELINE.json",
+    "KineticLoop_Acceptance_Spec_v1.2.2.json",
+    "KineticLoop_Integration_Acceptance_v0.1.json",
+    "KineticLoop_Harness_Traceability_v0.3.json",
+    "KineticLoop_Evidence_Manifest_v0.1.json",
+    "THREAD_RESULT.schema.json",
+    "THREAD_REVIEW.schema.json",
+    "tools/harness/validate_harness.py",
+    "HARNESS_CHANGE.schema.json",
+    "INTEGRATION_RECORD.schema.json",
+    "MILESTONE_CLOSURE.schema.json"
+  ],
+  "prerequisites": [
+    {
+      "task": "KL-021",
+      "merge": "ad0c4373e6f64cc753af989c798636f7c365359b",
+      "result_tested_commit": "675697f0f455757d8efb548e0ac4ec6d48ca1908",
+      "normal_merge_ancestor": true,
+      "sha_bound_reviews_pass": true
+    },
+    {
+      "task": "KL-022",
+      "merge": "88adc5be3f7c567413be671a2b3dc5e6c802ffe8",
+      "result_tested_commit": "fa228db83f8151f52bc4c78f43c5a7e17e0b8c48",
+      "normal_merge_ancestor": true,
+      "sha_bound_reviews_pass": true
+    },
+    {
+      "task": "KL-023",
+      "merge": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+      "result_tested_commit": "077c383e6a825bc6f55ece4d4311531e0bb0411f",
+      "normal_merge_ancestor": true,
+      "sha_bound_reviews_pass": true
+    },
+    {
+      "task": "KL-027",
+      "merge": "1099d85bd4aa76ec8221700e55b4e77a84479126",
+      "result_tested_commit": "72a9a5f3f9529028708f64ece3bbec6d791413a7",
+      "normal_merge_ancestor": true,
+      "sha_bound_reviews_pass": true
+    }
+  ],
+  "all_29_records": [
+    {
+      "check_id": "boundary_namespace_pu",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 1
+      }
+    },
+    {
+      "check_id": "b14_registry_failclosed_stop_support_dc",
+      "counts": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 9,
+        "owned_namespace": 9,
+        "runtime_registration": 27,
+        "admitted_inputs_only": 9,
+        "registered_transitive_graph": 9,
+        "blocked": 3,
+        "ApplyControl_locked_current_epoch": 6,
+        "actual_gate_timeout_STOP_support": 3,
+        "DC_support_only_registry_fault_STOP": 6,
+        "exact_owned_cleanup": 9,
+        "atomic_receipt_event_outbox": 9,
+        "sealed_source_and_published_basis": 6,
+        "upstream": 6,
+        "forward_stage": 42,
+        "output": 18,
+        "full_output": 18,
+        "full_prepared_chain": 6,
+        "exact_guard_zero_effect": 3,
+        "registry_fault_unrevoked_positive_control": 3
+      }
+    },
+    {
+      "check_id": "b01_pu",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "canonical_denial": 2,
+        "sealed_exact_membership": 1
+      }
+    },
+    {
+      "check_id": "b01_dc",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 1,
+        "owned_namespace": 1,
+        "runtime_registration": 3,
+        "admitted_inputs_only": 1,
+        "registered_transitive_graph": 1,
+        "exact_guard_zero_effect": 4,
+        "atomic_receipt_event_outbox": 1,
+        "sealed_positive": 1,
+        "exact_owned_cleanup": 1
+      }
+    },
+    {
+      "check_id": "b02_dc",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 2,
+        "owned_namespace": 2,
+        "runtime_registration": 6,
+        "admitted_inputs_only": 2,
+        "registered_transitive_graph": 2,
+        "observed_real_race": 2,
+        "fresh_frontier_rebuild": 2,
+        "exact_owned_cleanup": 2
+      }
+    },
+    {
+      "check_id": "b03_dc",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 1,
+        "owned_namespace": 1,
+        "runtime_registration": 3,
+        "admitted_inputs_only": 1,
+        "registered_transitive_graph": 1,
+        "exact_guard_zero_effect": 5,
+        "immutable_original_new_correction": 1,
+        "exact_owned_cleanup": 1
+      }
+    },
+    {
+      "check_id": "b04_dc",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 2,
+        "owned_namespace": 2,
+        "runtime_registration": 6,
+        "admitted_inputs_only": 2,
+        "registered_transitive_graph": 2,
+        "atomic_receipt_event_outbox": 3,
+        "sealed_source_and_published_basis": 2,
+        "upstream": 2,
+        "forward_stage": 14,
+        "output": 6,
+        "full_output": 6,
+        "full_prepared_chain": 2,
+        "Reauthorize_registry_guard_support_only": 2,
+        "exact_guard_zero_effect": 4,
+        "real_full_issuance_positive": 1,
+        "exact_owned_cleanup": 2
+      }
+    },
+    {
+      "check_id": "b05_dc",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 1,
+        "owned_namespace": 1,
+        "runtime_registration": 4,
+        "admitted_inputs_only": 1,
+        "registered_transitive_graph": 1,
+        "atomic_receipt_event_outbox": 2,
+        "sealed_source_and_published_basis": 1,
+        "upstream": 1,
+        "forward_stage": 7,
+        "output": 3,
+        "full_output": 3,
+        "full_prepared_chain": 1,
+        "atomic_global_commit": 1,
+        "exact_guard_zero_effect": 1,
+        "unrelated_revision_preserves_eligibility": 1,
+        "exact_owned_cleanup": 1
+      }
+    },
+    {
+      "check_id": "b06_dc",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 2,
+        "owned_namespace": 2,
+        "runtime_registration": 6,
+        "admitted_inputs_only": 2,
+        "registered_transitive_graph": 2,
+        "observed_real_race": 2,
+        "atomic_global_commit": 2,
+        "both_registry_orders": 2,
+        "exact_owned_cleanup": 2,
+        "atomic_receipt_event_outbox": 1,
+        "exact_guard_zero_effect": 1
+      }
+    },
+    {
+      "check_id": "b07_dc",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 3,
+        "owned_namespace": 3,
+        "runtime_registration": 9,
+        "admitted_inputs_only": 3,
+        "registered_transitive_graph": 3,
+        "atomic_receipt_event_outbox": 6,
+        "sealed_source_and_published_basis": 3,
+        "upstream": 3,
+        "forward_stage": 21,
+        "output": 9,
+        "full_output": 9,
+        "full_prepared_chain": 3,
+        "exact_guard_zero_effect": 3,
+        "lifecycle_valid_fresh_authority_loss": 3,
+        "exact_owned_cleanup": 3
+      }
+    },
+    {
+      "check_id": "b08_pu",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "exact_certificate": 1,
+        "required_validity_denied": 63
+      }
+    },
+    {
+      "check_id": "b09_pu",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "exact_certificate": 18
+      }
+    },
+    {
+      "check_id": "b09_dc",
+      "counts": {
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 12,
+        "owned_namespace": 12,
+        "runtime_registration": 36,
+        "admitted_inputs_only": 12,
+        "registered_transitive_graph": 12,
+        "atomic_receipt_event_outbox": 24,
+        "sealed_source_and_published_basis": 12,
+        "upstream": 12,
+        "forward_stage": 84,
+        "output": 36,
+        "full_output": 36,
+        "full_prepared_chain": 12,
+        "server_exact_minimum_full_certificate": 12,
+        "exact_owned_cleanup": 12
+      }
+    },
+    {
+      "check_id": "b10_pu",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "half_open_PU": 3
+      }
+    },
+    {
+      "check_id": "b11_dc",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 6,
+        "owned_namespace": 6,
+        "runtime_registration": 18,
+        "admitted_inputs_only": 6,
+        "registered_transitive_graph": 6,
+        "observed_real_race": 3,
+        "atomic_global_commit": 3,
+        "exact_guard_zero_effect": 3,
+        "effective_at_audit_only": 3,
+        "exact_owned_cleanup": 6,
+        "atomic_receipt_event_outbox": 7,
+        "sealed_source_and_published_basis": 4,
+        "upstream": 4,
+        "forward_stage": 28,
+        "output": 12,
+        "full_output": 12,
+        "full_prepared_chain": 4,
+        "unrevoked_timing_positive_control": 3
+      }
+    },
+    {
+      "check_id": "b12_dc",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 6,
+        "owned_namespace": 6,
+        "runtime_registration": 18,
+        "admitted_inputs_only": 6,
+        "registered_transitive_graph": 6,
+        "observed_real_race": 3,
+        "atomic_global_commit": 3,
+        "exact_guard_zero_effect": 3,
+        "effective_at_audit_only": 3,
+        "exact_owned_cleanup": 6,
+        "atomic_receipt_event_outbox": 7,
+        "sealed_source_and_published_basis": 4,
+        "upstream": 4,
+        "forward_stage": 28,
+        "output": 12,
+        "full_output": 12,
+        "full_prepared_chain": 4,
+        "unrevoked_timing_positive_control": 3
+      }
+    },
+    {
+      "check_id": "b13_dc",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 3,
+        "owned_namespace": 3,
+        "runtime_registration": 9,
+        "admitted_inputs_only": 3,
+        "registered_transitive_graph": 3,
+        "all_revoke_writes_executed_before_injected_abort": 3,
+        "atomic_receipt_event_outbox": 5,
+        "rollback_complete_global_zero_effect_positive_owner": 3,
+        "exact_owned_cleanup": 3,
+        "sealed_source_and_published_basis": 2,
+        "upstream": 2,
+        "forward_stage": 14,
+        "output": 6,
+        "full_output": 6,
+        "full_prepared_chain": 2
+      }
+    },
+    {
+      "check_id": "b15_dc",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 6,
+        "owned_namespace": 6,
+        "runtime_registration": 18,
+        "admitted_inputs_only": 6,
+        "registered_transitive_graph": 6,
+        "observed_real_race": 6,
+        "atomic_global_commit": 6,
+        "both_registry_orders": 6,
+        "exact_owned_cleanup": 6,
+        "atomic_receipt_event_outbox": 7,
+        "sealed_source_and_published_basis": 4,
+        "upstream": 4,
+        "forward_stage": 28,
+        "output": 12,
+        "full_output": 12,
+        "full_prepared_chain": 4,
+        "exact_guard_zero_effect": 3
+      }
+    },
+    {
+      "check_id": "b16_dc",
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 4,
+        "owned_namespace": 4,
+        "runtime_registration": 12,
+        "admitted_inputs_only": 4,
+        "registered_transitive_graph": 4,
+        "atomic_receipt_event_outbox": 8,
+        "sealed_source_and_published_basis": 4,
+        "upstream": 4,
+        "forward_stage": 28,
+        "output": 12,
+        "full_output": 12,
+        "full_prepared_chain": 4,
+        "exact_guard_zero_effect": 4,
+        "lifecycle_valid_fresh_authority_loss": 4,
+        "exact_owned_cleanup": 4,
+        "ApplyControl_locked_current_epoch": 2
+      }
+    },
+    {
+      "check_id": "b17_pu",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "exact_certificate": 1,
+        "transitive_leaf_denial": 1
+      }
+    },
+    {
+      "check_id": "b17_dc",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 6,
+        "owned_namespace": 6,
+        "runtime_registration": 18,
+        "admitted_inputs_only": 6,
+        "registered_transitive_graph": 6,
+        "exact_guard_zero_effect": 9,
+        "atomic_receipt_event_outbox": 7,
+        "complete_unrevoked_transitive_positive": 3,
+        "exact_owned_cleanup": 6,
+        "sealed_source_and_published_basis": 4,
+        "upstream": 4,
+        "forward_stage": 28,
+        "output": 12,
+        "full_output": 12,
+        "full_prepared_chain": 4,
+        "transitive_direct_unrevoked_leaf_revoked": 3
+      }
+    },
+    {
+      "check_id": "b18_pu",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "exact_certificate": 1,
+        "timeless_denied": 6
+      }
+    },
+    {
+      "check_id": "boundary_full_unit_suite",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 1,
+        "canonical_denial": 2,
+        "sealed_exact_membership": 1,
+        "exact_certificate": 21,
+        "required_validity_denied": 63,
+        "half_open_PU": 3,
+        "transitive_leaf_denial": 1,
+        "timeless_denied": 6
+      }
+    },
+    {
+      "check_id": "boundary_full_db_suite",
+      "counts": {
+        "tests": 64,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 64,
+        "owned_namespace": 64,
+        "runtime_registration": 193,
+        "admitted_inputs_only": 64,
+        "registered_transitive_graph": 64,
+        "exact_guard_zero_effect": 43,
+        "atomic_receipt_event_outbox": 87,
+        "sealed_positive": 1,
+        "exact_owned_cleanup": 64,
+        "observed_real_race": 16,
+        "fresh_frontier_rebuild": 2,
+        "immutable_original_new_correction": 1,
+        "sealed_source_and_published_basis": 46,
+        "upstream": 46,
+        "forward_stage": 322,
+        "output": 138,
+        "full_output": 138,
+        "full_prepared_chain": 46,
+        "Reauthorize_registry_guard_support_only": 2,
+        "real_full_issuance_positive": 1,
+        "atomic_global_commit": 15,
+        "unrelated_revision_preserves_eligibility": 1,
+        "both_registry_orders": 8,
+        "lifecycle_valid_fresh_authority_loss": 7,
+        "server_exact_minimum_full_certificate": 12,
+        "effective_at_audit_only": 6,
+        "unrevoked_timing_positive_control": 6,
+        "all_revoke_writes_executed_before_injected_abort": 3,
+        "rollback_complete_global_zero_effect_positive_owner": 3,
+        "blocked": 3,
+        "ApplyControl_locked_current_epoch": 8,
+        "actual_gate_timeout_STOP_support": 3,
+        "DC_support_only_registry_fault_STOP": 6,
+        "registry_fault_unrevoked_positive_control": 3,
+        "complete_unrevoked_transitive_positive": 3,
+        "transitive_direct_unrevoked_leaf_revoked": 3
+      }
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "counts": null,
+      "hash_header_selector_verified": true,
+      "witness_counts": {}
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "counts": {
+        "tests": 239,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {
+        "namespace_guard_PU": 1,
+        "canonical_denial": 2,
+        "sealed_exact_membership": 1,
+        "exact_certificate": 21,
+        "required_validity_denied": 63,
+        "half_open_PU": 3,
+        "transitive_leaf_denial": 1,
+        "timeless_denied": 6
+      }
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "counts": {
+        "tests": 790,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hash_header_selector_verified": true,
+      "witness_counts": {}
+    },
+    {
+      "check_id": "lint_passes",
+      "counts": null,
+      "hash_header_selector_verified": true,
+      "witness_counts": {}
+    },
+    {
+      "check_id": "typecheck_passes",
+      "counts": null,
+      "hash_header_selector_verified": true,
+      "witness_counts": {}
+    }
+  ],
+  "all_31_layers": [
+    {
+      "requirement_id": "B01@PU",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B01@DC",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B02@DC",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B03@DC",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B04@DC",
+      "status": "NOT_RUN"
+    },
+    {
+      "requirement_id": "B04@E2E",
+      "status": "NOT_RUN"
+    },
+    {
+      "requirement_id": "B05@DC",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B05@E2E",
+      "status": "NOT_RUN"
+    },
+    {
+      "requirement_id": "B06@DC",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B07@DC",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B07@E2E",
+      "status": "NOT_RUN"
+    },
+    {
+      "requirement_id": "B08@PU",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B08@E2E",
+      "status": "NOT_RUN"
+    },
+    {
+      "requirement_id": "B09@PU",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B09@DC",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B10@PU",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B10@E2E",
+      "status": "NOT_RUN"
+    },
+    {
+      "requirement_id": "B11@PU",
+      "status": "NOT_RUN"
+    },
+    {
+      "requirement_id": "B11@DC",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B12@PU",
+      "status": "NOT_RUN"
+    },
+    {
+      "requirement_id": "B12@DC",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B13@DC",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B14@WF",
+      "status": "NOT_RUN"
+    },
+    {
+      "requirement_id": "B14@E2E",
+      "status": "NOT_RUN"
+    },
+    {
+      "requirement_id": "B15@DC",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B16@DC",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B16@E2E",
+      "status": "NOT_RUN"
+    },
+    {
+      "requirement_id": "B17@PU",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B17@DC",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B18@PU",
+      "status": "PASS"
+    },
+    {
+      "requirement_id": "B18@E2E",
+      "status": "NOT_RUN"
+    }
+  ],
+  "layer_counts": {
+    "PASS": 19,
+    "NOT_RUN": 12
+  },
+  "db_rerun": false,
+  "audit_status": "PASS",
+  "independent_persisted_oracles": {
+    "receipt_event_outbox_snapshots": 736,
+    "exact_minimum_full_certificates": 48,
+    "lifecycle_valid_history_loss_records": 14
+  },
+  "merged_helper_blobs": {
+    "tests/db/test_test_only_demo.py": "d7d5301c4d5764d27655bda5b15d5352ac044d4b645712bf8fa34be98bd1080e",
+    "tests/db/test_migrations.py": "d6bfb6bde2ec795bf0676f1a3943860076469d4571fa92694b3f3e6eb7570fa9",
+    "tests/db/test_full_test_execution.py": "97d4168e54fba46b39ad1189ddf27385e987b1e56c0243ff753e1e060c6cba0a",
+    "tests/db/test_protocol_interleavings.py": "4269d45705d246d241dbb4bcfa53ed2d01eadeeadd36269e751edb6d60979d02"
+  }
+}
