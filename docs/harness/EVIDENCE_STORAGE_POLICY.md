@@ -34,6 +34,10 @@ selector, case, count, skip/failure and provenance rules still apply.
 Reserved compact content is recognized regardless of filename extension; renaming
 an envelope cannot turn its metadata into plain execution proof. Ancillary M3
 envelopes also bind the execution or exact collection command, as appropriate.
+Recognition covers JSON's UTF-8, UTF-16 and UTF-32 encodings, including BOM and
+byte-order variants. Malformed reserved encodings fail; opaque plain bytes stay lossless.
+Wrapping a reserved storage object inside a list or another object is invalid;
+it cannot convert a missing-payload manifest into plain evidence.
 
 The protected-base `kl check-harness` gate budgets only added/changed evidence and
 review artifacts owned by the selected task/governance PR, including its review

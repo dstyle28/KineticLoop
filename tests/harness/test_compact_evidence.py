@@ -346,3 +346,68 @@ def test_renamed_envelope_keeps_metadata_and_payload_guards(repo, extension, mut
     bad = commit(root)
     assert not v.evidence_exists(root, renamed, bad, base, 'pytest', 0)
     assert ce.audit(root, base, bad, 'HG-046')['errors']
+
+
+ENCODINGS = ['utf-8-sig', 'utf-16', 'utf-16-le', 'utf-16-be',
+             'utf-32', 'utf-32-le', 'utf-32-be']
+
+
+@pytest.mark.parametrize('encoding', ENCODINGS)
+@pytest.mark.parametrize('extension', ['json', 'log'])
+@pytest.mark.parametrize('mutation', ['none', 'missing', 'truncated'])
+def test_encoded_envelope_keeps_payload_and_metadata_guards(repo, encoding, extension, mutation):
+    root, base, record, _ = captured(repo)
+    path = REF.removesuffix('json') + extension
+    (root / REF).unlink()
+    encoded = json.dumps(record).encode(encoding)
+    if mutation == 'truncated':
+        encoded = encoded[:-3]
+    (root / path).write_bytes(encoded)
+    if mutation == 'missing':
+        (root / record['payload']).unlink()
+    head = commit(root)
+    if mutation == 'none':
+        assert ce.read(root, path, head) == b'1 passed in 0.01s\n'
+        assert v.evidence_exists(root, path, head, base, 'pytest', 0)
+        assert not v.evidence_exists(root, path, head, head, 'pytest', 0)
+        assert not v.evidence_exists(root, path, head, base, 'other-command', 0)
+        assert not v.evidence_exists(root, path, head, base, 'pytest', 1)
+        assert not ce.audit(root, base, head, 'HG-046')['errors']
+    else:
+        assert not v.evidence_exists(root, path, head, base, 'pytest', 0)
+        assert ce.audit(root, base, head, 'HG-046')['errors']
+
+
+@pytest.mark.parametrize('encoding', ENCODINGS)
+def test_opaque_historical_encoded_bytes_are_not_transcoded(repo, encoding):
+    root, _ = repo
+    path = root / REF
+    path.parent.mkdir(parents=True)
+    raw = 'opaque historical \\u005f text, not JSON\n'.encode(encoding) + b'\xff'
+    path.write_bytes(raw)
+    head = commit(root)
+    assert ce.read(root, REF, head) == raw
+    assert v.evidence_exists(root, REF, head)
+
+
+@pytest.mark.parametrize('encoding', ['utf-16-le', 'utf-32-le'])
+def test_invalid_encoded_manifest_never_accepts_replacement_text(repo, encoding):
+    root, _, record, _ = captured(repo)
+    invalid = b'\x00\xd8' if encoding == 'utf-16-le' else b'\x00\x00\x11\x00'
+    encoded = json.dumps(record).encode(encoding)
+    encoded = encoded.replace('2026'.encode(encoding), invalid + '026'.encode(encoding))
+    (root / REF).write_bytes(encoded)
+    head = commit(root)
+    assert not v.evidence_exists(root, REF, head)
+
+
+@pytest.mark.parametrize('wrapper', ['list', 'dict'])
+@pytest.mark.parametrize('encoding', ['utf-8', 'utf-16'])
+def test_wrapped_storage_object_cannot_be_plain_proof(repo, wrapper, encoding):
+    root, base, record, _ = captured(repo)
+    value = [record] if wrapper == 'list' else {'wrapped': record}
+    (root / REF).write_bytes(json.dumps(value).encode(encoding))
+    (root / record['payload']).unlink()
+    head = commit(root)
+    assert not v.evidence_exists(root, REF, head)
+    assert ce.audit(root, base, head, 'HG-046')['errors']

@@ -1,0 +1,24 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-046",
+  "reviewed_head_sha": "5182feb0ad33319336efd913f63bf8c01c74b6a7",
+  "review_type": "PROTOCOL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "finding_id": "HG046-PROTOCOL-002",
+      "classification": "BLOCKER",
+      "file": "tools/harness/compact_evidence.py",
+      "title": "Encoded JSON compact manifests bypass payload validation",
+      "description": "envelope() checks UTF-8 byte markers, storage keys and ASCII escape bytes before json.loads. UTF-16/32 encoded JSON manifests lack those byte sequences and return None, so shared availability and budget validation treat them as plain evidence without decoding or checking their payload. A missing-payload manifest can therefore satisfy evidence availability, violating the lossless storage policy's fail-closed proof guarantee. Independently confirmed by static control-flow inspection following the SECURITY reviewer's executable finding.",
+      "required_change": "Classify supported JSON encodings before applying reserved-field detection, or reject encoded reserved storage records. Add regressions for UTF-16/32 encoded manifests with missing/corrupt payloads and command/tested/exit mismatch, including availability, retrieval, budget and M3 metadata-count paths. Preserve genuine historical plain evidence.",
+      "evidence_refs": [
+        "docs/exec-plans/reviews/HG-046/PROTOCOL-r2-raw/assessment.md"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/HG-046/PROTOCOL-r2-raw/assessment.md",
+    "docs/exec-plans/reviews/HG-046/PROTOCOL-r2-raw/m3-compact.json"
+  ],
+  "review_contract_version": "v0.2"
+}

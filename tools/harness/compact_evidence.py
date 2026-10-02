@@ -85,13 +85,29 @@ def unique(pairs):
 
 
 def envelope(data: bytes) -> dict[str, Any] | None:
+    original_bytes = len(data)
+    encoding = json.detect_encoding(data)
+    if encoding != 'utf-8':
+        try:
+            data = data.decode(encoding).encode('utf-8')
+        except UnicodeError as ex:
+            # Replacement is only for classification, never accepted decoding.
+            if envelope(data.decode(encoding, errors='replace').encode('utf-8')) is not None:
+                raise ValueError('evidence-envelope-encoding') from ex
+            return None
     # Storage fields identify damaged envelopes even if their marker is removed.
     keys = (b'"payload"', b'"stored_sha256"', b'"raw_sha256"')
     marker = b'"kineticloop_evidence"'
     if marker not in data and not all(k in data for k in keys) and b'\\u' not in data:
         return None
+    reserved = False
+    def storage_pairs(pairs):
+        nonlocal reserved
+        value = unique(pairs)
+        reserved = reserved or MARKER in value or {'payload', 'stored_sha256', 'raw_sha256'} <= set(value)
+        return value
     try:
-        value = json.loads(data, object_pairs_hook=unique)
+        value = json.loads(data, object_pairs_hook=storage_pairs)
     except (UnicodeError, json.JSONDecodeError) as ex:
         # Decode ASCII key escapes only to classify a malformed storage record.
         # Opaque historical bytes containing unrelated \u text stay plain.
@@ -103,9 +119,11 @@ def envelope(data: bytes) -> dict[str, Any] | None:
         return None
     if isinstance(value, dict) and (MARKER in value or
                                    {'payload', 'stored_sha256', 'raw_sha256'} <= set(value)):
-        if len(data) > PLAIN_LIMIT:
+        if original_bytes > PLAIN_LIMIT:
             raise ValueError('evidence-envelope-size')
         return value
+    if reserved:
+        raise ValueError('evidence-envelope-shape')
     return None
 
 
