@@ -471,3 +471,35 @@ def test_actual_closure_record_requires_unchanged_regular_head_blob(tmp_path, mo
         target.write_text('{"tampered": true}')
     errors = v.m3_closure_record_errors(source.root, target)
     assert not errors if mode == 'valid' else errors
+
+
+def test_m3_symlink_is_rejected_before_target_parsing(tmp_path, monkeypatch):
+    source = History.__new__(History)
+    source.root = tmp_path
+    source.git('init', '-q')
+    source.put('private.json', '{"must_not_parse": true}')
+    target = tmp_path / 'docs/exec-plans/milestones/M3.json'
+    target.parent.mkdir(parents=True)
+    target.symlink_to('../../../private.json')
+    source.commit('synthetic nonregular source')
+    def forbidden_parser(*args):
+        raise AssertionError('nonregular target must never be parsed')
+    monkeypatch.setattr(v, 'load_artifact_text', forbidden_parser)
+    record, errors = v.m3_load_closure_record(tmp_path, target)
+    assert record is None and errors
+
+
+def test_m3_reader_parses_checked_git_blob_not_second_ambient_read(tmp_path, monkeypatch):
+    source = History.__new__(History)
+    source.root = tmp_path
+    source.git('init', '-q')
+    target = source.put('docs/exec-plans/milestones/M3.json', '{"source": "committed"}')
+    source.commit('synthetic regular source')
+    original = v.m3_closure_record_errors
+    def check_then_change(root, path, revision):
+        errors = original(root, path, revision)
+        path.write_text('{"source": "ambient"}')
+        return errors
+    monkeypatch.setattr(v, 'm3_closure_record_errors', check_then_change)
+    record, errors = v.m3_load_closure_record(tmp_path, target)
+    assert not errors and record == {'source': 'committed'}

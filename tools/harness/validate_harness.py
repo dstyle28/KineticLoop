@@ -2512,16 +2512,26 @@ def m3_closure_plan_errors(text):
     return [] if hashlib.sha256(block.encode()).hexdigest() == '016ebe910b40724dc7cf7b00ab0bc384fa0d5ef6b8749ae6ea741c6126023878' else ['m3-closure-plan']
 
 
-def m3_closure_record_errors(root, path):
+def m3_closure_record_errors(root, path, revision='HEAD'):
     """An optional closure instance is itself a committed regular blob, never ambient evidence."""
     try:
         ref = str(path.relative_to(root))
-        if (path.is_symlink() or not revision_regular_file(root, ref, 'HEAD')
-                or git(root, 'show', 'HEAD:' + ref) != path.read_bytes()):
+        if (path.is_symlink() or not revision_regular_file(root, ref, revision)
+                or git(root, 'show', revision + ':' + ref) != path.read_bytes()):
             raise ValueError('not-committed-regular-unchanged-blob')
     except (ValueError, OSError, TypeError) as ex:
         return ['milestone-m3-record-source:' + str(ex)]
     return []
+
+
+def m3_load_closure_record(root, path):
+    """Reject nonregular sources before parsing; parse the exact checked Git revision."""
+    head = resolve(root, 'HEAD')
+    errors = m3_closure_record_errors(root, path, head)
+    if errors:
+        return None, errors
+    ref = str(path.relative_to(root))
+    return load_artifact_text(git(root, 'show', head + ':' + ref).decode(), '.json'), []
 
 
 def m3_evidence_bytes(root, evidence, evaluated):
@@ -3234,7 +3244,13 @@ def validate(root, args):
     milestone_records: dict[str, list[tuple[Path, Any]]] = {'M1': [], 'M2': [], 'M3': []}
     if milestone_dir.exists():
         for path in sorted(milestone_dir.glob('*.json')):
-            record = load_artifact(path)
+            if path.stem == 'M3':
+                record, source_errors = m3_load_closure_record(root, path)
+                errors.extend(source_errors)
+                if source_errors:
+                    continue
+            else:
+                record = load_artifact(path)
             milestone_id = record.get('display_milestone_id') if isinstance(record, dict) else None
             if path.stem in milestone_records:
                 milestone_records[path.stem].append((path, record))
