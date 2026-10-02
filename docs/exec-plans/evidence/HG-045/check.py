@@ -13,8 +13,7 @@ tested = subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
 python = '/private/tmp/hg044-venv/bin/python'
 checks = {
     'focused': [python,'-m','pytest','-q','-p','no:cacheprovider',
-                'tests/harness/test_source_decision_scope.py',
-                'tests/harness/test_m3_milestone_closure.py'],
+                'tests/harness/test_source_decision_scope.py'],
     'harness': [python,'-m','kineticloop.db.cli','test-harness','-p','no:cacheprovider'],
     'unit': [python,'-m','kineticloop.db.cli','test-unit','-p','no:cacheprovider'],
     'lint': [python,'-m','kineticloop.db.cli','lint'],

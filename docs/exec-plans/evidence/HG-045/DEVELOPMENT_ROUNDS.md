@@ -27,3 +27,21 @@ incomplete/NOT_RUN. Their partial streamed .log files are retained byte-for-byte
 neither supplies selected PASS evidence. The completed 241-unit/lint/type/validation/
 integration/scope/diff captures from this round are historical diagnostics only.
 Final required checks execute again at the next immutable SHA with this guard.
+
+## Completed superseded round at d6603c6
+
+At d6603c6a4280b58fef634cdd7c3da1dfbc99b2bc, all 134 focused source/M3 tests and
+241 unit tests passed. Full harness returned 904 PASS / 20 FAIL; every failure was
+packet:KL-080. Generic ValidatorTests copy only delivery-manifest files, so the new
+packet needed its own derived SHA/byte-count manifest entry. A read-only mocked
+manifest diagnostic made three representative failures pass without validator changes.
+Append only the new packet's derived hash entry and a source-scope regression test
+requiring it. Do not modify test_validator.py or relax its existing gates. Full raw
+failed output is retained, not selected as final PASS.
+
+The final focused capture runs the source scope/pinning/negative/delivery tests.
+The full harness capture includes all M3 feasibility/provenance/omission cases;
+that mandatory full execution supplies final M3 regression evidence without running
+the entire expensive M3 suite twice. Every required check reruns at the next immutable
+SHA. Superseded rounds, including successful earlier M3/unit outputs, remain diagnostic
+context only; selected PASS references all bind the final tested SHA.

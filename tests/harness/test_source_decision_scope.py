@@ -133,3 +133,12 @@ def test_corrective_task_cannot_omit_any_required_fixture_file():
     errors = v.task_fixture_scope_errors(ROOT, BASE, 'HEAD', 'KL-080', set())
     assert set(errors) == {'source-fixture-correction-missing:KL-080:' + path for path in paths}
     assert v.task_fixture_scope_errors(ROOT, BASE, 'HEAD', 'HG-045', set()) == []
+
+
+def test_new_packet_is_in_the_hashed_delivery_manifest():
+    manifest = json.loads((ROOT / v.MANIFEST).read_text())
+    entries = [e for e in manifest['files'] if e['path'] == 'docs/exec-plans/active/KL-080.md']
+    assert len(entries) == 1
+    path = ROOT / entries[0]['path']
+    assert entries[0]['sha256'] == v.sha(path)
+    assert entries[0]['bytes'] == path.stat().st_size
