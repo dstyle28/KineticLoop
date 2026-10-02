@@ -1,0 +1,10 @@
+{"tested_commit": "b9fbf9b475e07765db62e67f0104a800036dda4d", "command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_namespace_and_boundary", "resolved_root": "/Users/davetian/.codex/worktrees/17d3/KineticLoop", "oracle": "Exact namespace kineticloop-kl029-shadow-<HEAD7>-<SHA256(os.fsencode(resolved-root))12>, DB same underscore spelling. Exact ROOT, 40 lowercase-hex HEAD, label shadow, digest and runtime git HEAD validated before lifecycle construction/bootstrap/reset/start/connect/destroy and nested cleanup. Foreign/default/postgres/ambient namespace, peer root, malformed SHA/digest/label fail before any runner call. bootstrap_two_phase receives selected lifecycle; no imported foreign fixture runs. This is PU safety, not a DB isolation result.", "pytest_addopts": "-rA --junitxml=/Users/davetian/.codex/worktrees/17d3/KineticLoop/docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_namespace_and_boundary_pu.xml"}
+.                                                                        [100%]
+==================================== PASSES ====================================
+_________________________ test_namespace_and_boundary __________________________
+----------------------------- Captured stdout call -----------------------------
+NAMESPACE_PU DatabaseNamespace(project_name='kineticloop-kl029-shadow-b9fbf9b-01c8899b2807', database_name='kineticloop_kl029_shadow_b9fbf9b_01c8899b2807') negative_controls=foreign_root,sha,digest,label,ambient,nested_cleanup nested_inventory ['bootstrap_two_phase(selected_lifecycle)', 'destroy']
+- generated xml file: /Users/davetian/.codex/worktrees/17d3/KineticLoop/docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_namespace_and_boundary_pu.xml -
+=========================== short test summary info ============================
+PASSED tests/unit/protocol/test_shadow_isolation.py::test_namespace_and_boundary
+1 passed in 2.18s
