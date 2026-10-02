@@ -272,3 +272,33 @@ def test_multiple_own_review_appends_bind_the_recorded_endpoint(history: History
     history.commit('later own bookkeeping')
     assert history.errors(endpoint) == []
     assert v.git(history.root, 'show', endpoint + ':' + ref) == b'final reviewer log\n'
+
+
+@pytest.mark.parametrize('kind', ['symlink', 'directory', 'gitlink'])
+def test_present_nonregular_entry_cannot_be_replaced_through_exception(
+        history: History, kind: str) -> None:
+    ref = OWN + 'present'
+    target = history.root / ref
+    if kind == 'gitlink':
+        history.git('update-index', '--add', '--cacheinfo', f'160000,{history.base},{ref}')
+        history.git('commit', '-qm', 'reviewed gitlink entry')
+        history.reviewed = history.git('rev-parse', 'HEAD')
+    else:
+        if kind == 'directory':
+            history.put(ref + '/child')
+        else:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.symlink_to('../../../evidence/KL-001/check.log')
+        history.reviewed = history.commit('reviewed nonregular entry')
+        if kind == 'directory':
+            (target / 'child').unlink()
+            target.rmdir()
+        else:
+            target.unlink()
+    assert v.evidence_exists(history.root, ref, history.reviewed)
+    assert not v.revision_regular_file(history.root, ref, history.reviewed)
+    history.put(ref, 'review-only replacement\n')
+    review = history.review([ref])
+    assert v.suffix_errors(history.root, history.reviewed, review, 'KL-001', 'review') == []
+    assert v.revision_regular_file(history.root, ref, review)
+    assert 'integration-review-evidence:KL-001:GENERAL:' + ref in history.errors(review)

@@ -42,3 +42,12 @@ existing scoped freshness guard. The fixture now branches after the integrated
 result, so unrelated merge behavior is tested without task-content changes. The
 failed focused run and interrupted obsolete full-harness run are retained; neither
 is PASS evidence. Final check evidence is bound to the corrected commit.
+
+All three independent reviews of 2896d24 found an absence-versus-nonregular
+boundary defect. A reviewed symlink/tree/gitlink replaced with a regular own-review
+blob passed the original fallback despite the contract requiring absence. The
+rejected reviews and raw probes are retained in the own review directory and Git
+history. The corrected fallback additionally proves the exact path has no Git
+entry at reviewed, with explicit real-Git symlink/tree/gitlink replacement
+regressions. This repair requires new checks and fresh SHA-bound reviews; prior
+CHANGES_REQUIRED evidence is never relabeled as PASS.

@@ -21,7 +21,7 @@ record = {
     'change_identity': 'harness-governance-v0.1/HG-043', 'display_change_id': 'HG-043',
     'base_commit': base, 'tested_commit': tested, 'change_status': 'PASS',
     'summary': 'Bind ordinary integration review evidence to regular Git blobs at the reviewed SHA; '
-               'bind reviewer-created own-task bookkeeping to the exact review-record commit only '
+               'bind reviewer-created own-task bookkeeping absent as any Git entry at reviewed to the exact review-record commit only '
                'after a strict ancestral linear exclusively own-review suffix proof. Preserve result '
                'and task-test evidence guarantees, delayed review and exact-tree squash semantics.',
     'packets_refined': [], 'files_changed': sorted(set(files + [path])), 'checks_run': checks,
@@ -30,6 +30,7 @@ record = {
         'Governance validator repair only. No task, product requirement, DB, release or production PASS is inferred.',
         'Five candidates replayed from protected Git ancestry in ephemeral fixtures; no official integration records written. HG042 owns later bookkeeping.',
         'Review-created logs are reviewer bookkeeping, never pre-review task acceptance evidence.',
+        'Prior SHA-bound CHANGES_REQUIRED reviews and reproductions are preserved; the absence boundary is repaired and requires fresh reviews at the final revision.',
         'Delayed review with unrelated intervening commits retains ordinary reviewed evidence support but cannot use the new strict suffix exception.',
         'No database runtime is run locally for this validator repair; independent specialist audit and all final applicable hosted PostgreSQL CI are required before ordinary merge.',
         'Fresh GENERAL/PROTOCOL/DB_CONCURRENCY review binds final governance/evidence head. Only own HG043 review suffix follows.',

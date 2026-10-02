@@ -1711,9 +1711,12 @@ def revision_regular_file(root, ref, revision):
 
 def review_evidence_exists(root, ref, reviewed, review_commit, task_id, review_only_suffix):
     """Bind ordinary evidence to reviewed; review-created bookkeeping to its recorded commit."""
+    if not relative_path(ref) or '\0' in ref:
+        return False
     if revision_regular_file(root, ref, reviewed):
         return True
     return (review_only_suffix and matches(ref, review_patterns(task_id))
+            and not evidence_exists(root, ref, reviewed)
             and revision_regular_file(root, ref, review_commit))
 
 
