@@ -1,0 +1,523 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-028",
+  "base_commit": "9268fc8dd8c071c02dc5c698274dbf6fcd112776",
+  "tested_commit": "debd5e58f98b4b20a2dd1ae132799d2373797622",
+  "reviewed_head_sha": "994cf425360c75a366f186e91857a5d75ed02ebe",
+  "verified_task_checks": 29,
+  "all_raw_hashes_and_junit_counts_valid": true,
+  "tested_to_reviewed_executable_bytes_unchanged": true,
+  "prerequisites": [
+    {
+      "task": "KL-021",
+      "merge": "ad0c4373e6f64cc753af989c798636f7c365359b",
+      "parents": [
+        "ec264bb0d8a8114a73ef85340537b1ead0c74c6e",
+        "bc7aa8d0408128f3748ff4c869551524d07fc79d"
+      ],
+      "ancestor_of_base": true,
+      "reviews": [
+        {
+          "path": "docs/exec-plans/reviews/KL-021/GENERAL.json",
+          "status": "PASS",
+          "reviewed": "2e3209349f9cf9ef372f2869486336b8015c5efb"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-021/PROTOCOL.json",
+          "status": "PASS",
+          "reviewed": "2e3209349f9cf9ef372f2869486336b8015c5efb"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-021/DB_CONCURRENCY.json",
+          "status": "PASS",
+          "reviewed": "2e3209349f9cf9ef372f2869486336b8015c5efb"
+        }
+      ]
+    },
+    {
+      "task": "KL-022",
+      "merge": "88adc5be3f7c567413be671a2b3dc5e6c802ffe8",
+      "parents": [
+        "08e743c3ada23ea226bfaacb1dae5e080b6a71bb",
+        "6cd0f6fa4d3d35792a9802e68a456ebb89c6306e"
+      ],
+      "ancestor_of_base": true,
+      "reviews": [
+        {
+          "path": "docs/exec-plans/reviews/KL-022/GENERAL.json",
+          "status": "PASS",
+          "reviewed": "63f9decb1482c7f01c7170cdf6bf3778ed4cc063"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-022/PROTOCOL.json",
+          "status": "PASS",
+          "reviewed": "63f9decb1482c7f01c7170cdf6bf3778ed4cc063"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-022/DB_CONCURRENCY.json",
+          "status": "PASS",
+          "reviewed": "63f9decb1482c7f01c7170cdf6bf3778ed4cc063"
+        }
+      ]
+    },
+    {
+      "task": "KL-023",
+      "merge": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+      "parents": [
+        "e97a0488515f16e840b3328c13e4b5bba6196ccf",
+        "01ff68828efa8007fc88def7765e14de87b582e5"
+      ],
+      "ancestor_of_base": true,
+      "reviews": [
+        {
+          "path": "docs/exec-plans/reviews/KL-023/GENERAL.json",
+          "status": "PASS",
+          "reviewed": "6cd15b03cb0206156b8e295d34516f457c7b046a"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-023/PROTOCOL.json",
+          "status": "PASS",
+          "reviewed": "6cd15b03cb0206156b8e295d34516f457c7b046a"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-023/DB_CONCURRENCY.json",
+          "status": "PASS",
+          "reviewed": "6cd15b03cb0206156b8e295d34516f457c7b046a"
+        }
+      ]
+    },
+    {
+      "task": "KL-027",
+      "merge": "1099d85bd4aa76ec8221700e55b4e77a84479126",
+      "parents": [
+        "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+        "e6cd006720b0f81a1d7d5efa1105c68a06c34d96"
+      ],
+      "ancestor_of_base": true,
+      "reviews": [
+        {
+          "path": "docs/exec-plans/reviews/KL-027/GENERAL.json",
+          "status": "PASS",
+          "reviewed": "ff93c08c7c32fba9e8dede0c161bb4f97bc98259"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/PROTOCOL.json",
+          "status": "PASS",
+          "reviewed": "ff93c08c7c32fba9e8dede0c161bb4f97bc98259"
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-027/DB_CONCURRENCY.json",
+          "status": "PASS",
+          "reviewed": "ff93c08c7c32fba9e8dede0c161bb4f97bc98259"
+        }
+      ]
+    }
+  ],
+  "final_task_db_log": "docs/exec-plans/evidence/KL-028/checks-debd5e5/boundary_full_db_suite.log",
+  "final_task_db_log_sha256": "063efa05cd7eaef83aed8fc2a999288f5c7ef908937c2fe3443214e97379aaf4",
+  "witness_counts": {
+    "owned_namespace": 64,
+    "runtime_registration": 193,
+    "admitted_inputs_only": 64,
+    "registered_transitive_graph": 64,
+    "exact_guard_zero_effect": 43,
+    "atomic_receipt_event_outbox": 87,
+    "sealed_positive": 1,
+    "exact_owned_cleanup": 64,
+    "observed_real_race": 16,
+    "fresh_frontier_rebuild": 2,
+    "immutable_original_new_correction": 1,
+    "sealed_source_and_published_basis": 46,
+    "upstream": 46,
+    "forward_stage": 322,
+    "output": 138,
+    "full_output": 138,
+    "full_prepared_chain": 46,
+    "Reauthorize_registry_guard_support_only": 2,
+    "real_full_issuance_positive": 1,
+    "atomic_global_commit": 15,
+    "unrelated_revision_preserves_eligibility": 1,
+    "both_registry_orders": 8,
+    "lifecycle_valid_fresh_authority_loss": 7,
+    "server_exact_minimum_full_certificate": 12,
+    "effective_at_audit_only": 6,
+    "unrevoked_timing_positive_control": 6,
+    "all_revoke_writes_executed_before_injected_abort": 3,
+    "rollback_complete_global_zero_effect_positive_owner": 3,
+    "blocked": 3,
+    "ApplyControl_locked_current_epoch": 8,
+    "actual_gate_timeout_STOP_support": 3,
+    "DC_support_only_registry_fault_STOP": 6,
+    "registry_fault_unrevoked_positive_control": 3,
+    "complete_unrevoked_transitive_positive": 3,
+    "transitive_direct_unrevoked_leaf_revoked": 3
+  },
+  "all_recorded_denials_full_before_after_equal": true,
+  "all_recorded_races_observed_postgresql_blocker": true,
+  "operation_success_lock_traces_S51_S01": true,
+  "all_64_namespace_and_empty_cleanup_witnesses_valid": true,
+  "direct_prerequisite_review_only_suffixes_verified": true,
+  "layer_ledger_matches_result": true,
+  "layer_statuses": {
+    "PASS": 19,
+    "NOT_RUN": 12
+  },
+  "deferred_obligations": [
+    "B04@DC",
+    "B04@E2E",
+    "B05@E2E",
+    "B07@E2E",
+    "B08@E2E",
+    "B10@E2E",
+    "B11@PU",
+    "B12@PU",
+    "B14@WF",
+    "B14@E2E",
+    "B16@E2E",
+    "B18@E2E"
+  ],
+  "no_global_product_or_release_pass_claim": true,
+  "protected_base_to_reviewed_scope_verified": true,
+  "race_summaries": [
+    {
+      "first_registry": false,
+      "second_registry": false,
+      "winner_pid": 123,
+      "loser_pid": 124,
+      "blockers": [
+        123
+      ],
+      "blocked_sql": "SELECT subject_id,authorization_epoch,current_factset_id,input_frontier_hash,active_policy_bundle_id,active_program_id,current_manifest_id FROM kineticloop.user_decision_state WHERE subject_id=$1 FOR UPDATE",
+      "zero_effect_denial": true,
+      "successful_owner_traces": [
+        {
+          "command": "AcceptFactRevision",
+          "trace": [
+            [
+              20,
+              "S01"
+            ],
+            [
+              80,
+              "S02:test:5985cbfb-b8c2-467e-bfba-f20f4e4682ab:AcceptFactRevision:input-c05d73c5-5847-4d3a-8900-2506c0830744"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "first_registry": false,
+      "second_registry": false,
+      "winner_pid": 131,
+      "loser_pid": 132,
+      "blockers": [
+        131
+      ],
+      "blocked_sql": "SELECT subject_id,authorization_epoch,current_factset_id,input_frontier_hash,active_policy_bundle_id,active_program_id,current_manifest_id FROM kineticloop.user_decision_state WHERE subject_id=$1 FOR UPDATE",
+      "zero_effect_denial": false,
+      "successful_owner_traces": [
+        {
+          "command": "SealFactset",
+          "trace": [
+            [
+              20,
+              "S01"
+            ],
+            [
+              80,
+              "S02:test:fc74103b-9215-4132-b03e-baa605cdd025:SealFactset:seal"
+            ],
+            [
+              90,
+              "S15:7e8688ee-fa71-5e4b-aa41-04a755dc9fb1"
+            ]
+          ]
+        },
+        {
+          "command": "AcceptFactRevision",
+          "trace": [
+            [
+              20,
+              "S01"
+            ],
+            [
+              80,
+              "S02:test:fc74103b-9215-4132-b03e-baa605cdd025:AcceptFactRevision:input-d4bb5d0c-b6b2-4d52-b8c4-ff1b8e9f79df"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "first_registry": true,
+      "second_registry": false,
+      "winner_pid": 132,
+      "loser_pid": 134,
+      "blockers": [
+        132
+      ],
+      "blocked_sql": "SELECT registry_revision,clock_timestamp() FROM kineticloop.safety_registry_state WHERE id=1 FOR SHARE",
+      "zero_effect_denial": true,
+      "successful_owner_traces": []
+    },
+    {
+      "first_registry": false,
+      "second_registry": true,
+      "winner_pid": 133,
+      "loser_pid": 134,
+      "blockers": [
+        133
+      ],
+      "blocked_sql": "\n                SELECT revocation_id, registry_revision, artifact_id,\n                       effective_at, recorded_at\n                FROM kineticloop.registry_revoke_artifact(\n                    $1, $2, $3, $4, $5, $6, $7, $8, $9\n                )\n                ",
+      "zero_effect_denial": false,
+      "successful_owner_traces": [
+        {
+          "command": "PublishManifest",
+          "trace": [
+            [
+              10,
+              "S51"
+            ],
+            [
+              20,
+              "S01"
+            ],
+            [
+              80,
+              "S02:test:6784cd20-6fab-4492-9063-3384c1c33353:PublishManifest:474844e5-dc11-4f58-9d93-74c5fd151e98"
+            ],
+            [
+              90,
+              "S23:00ff60db-66cb-5e07-bdc1-0f1dd6c03c86"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "first_registry": true,
+      "second_registry": false,
+      "winner_pid": 125,
+      "loser_pid": 127,
+      "blockers": [
+        125
+      ],
+      "blocked_sql": "SELECT registry_revision,clock_timestamp() FROM kineticloop.safety_registry_state WHERE id=1 FOR SHARE",
+      "zero_effect_denial": true,
+      "successful_owner_traces": []
+    },
+    {
+      "first_registry": true,
+      "second_registry": false,
+      "winner_pid": 132,
+      "loser_pid": 134,
+      "blockers": [
+        132
+      ],
+      "blocked_sql": "SELECT kineticloop.registry_guard_commit_bundle($1,$2,$3,$4)",
+      "zero_effect_denial": true,
+      "successful_owner_traces": []
+    },
+    {
+      "first_registry": true,
+      "second_registry": false,
+      "winner_pid": 133,
+      "loser_pid": 135,
+      "blockers": [
+        133
+      ],
+      "blocked_sql": "SELECT kineticloop.registry_guard_continue_session($1,$2,$3,$4)",
+      "zero_effect_denial": true,
+      "successful_owner_traces": []
+    },
+    {
+      "first_registry": true,
+      "second_registry": false,
+      "winner_pid": 123,
+      "loser_pid": 125,
+      "blockers": [
+        123
+      ],
+      "blocked_sql": "SELECT registry_revision,clock_timestamp() FROM kineticloop.safety_registry_state WHERE id=1 FOR SHARE",
+      "zero_effect_denial": true,
+      "successful_owner_traces": []
+    },
+    {
+      "first_registry": true,
+      "second_registry": false,
+      "winner_pid": 125,
+      "loser_pid": 127,
+      "blockers": [
+        125
+      ],
+      "blocked_sql": "SELECT kineticloop.registry_guard_commit_bundle($1,$2,$3,$4)",
+      "zero_effect_denial": true,
+      "successful_owner_traces": []
+    },
+    {
+      "first_registry": true,
+      "second_registry": false,
+      "winner_pid": 126,
+      "loser_pid": 128,
+      "blockers": [
+        126
+      ],
+      "blocked_sql": "SELECT kineticloop.registry_guard_continue_session($1,$2,$3,$4)",
+      "zero_effect_denial": true,
+      "successful_owner_traces": []
+    },
+    {
+      "first_registry": true,
+      "second_registry": false,
+      "winner_pid": 124,
+      "loser_pid": 126,
+      "blockers": [
+        124
+      ],
+      "blocked_sql": "SELECT registry_revision,clock_timestamp() FROM kineticloop.safety_registry_state WHERE id=1 FOR SHARE",
+      "zero_effect_denial": true,
+      "successful_owner_traces": []
+    },
+    {
+      "first_registry": true,
+      "second_registry": false,
+      "winner_pid": 125,
+      "loser_pid": 127,
+      "blockers": [
+        125
+      ],
+      "blocked_sql": "SELECT kineticloop.registry_guard_commit_bundle($1,$2,$3,$4)",
+      "zero_effect_denial": true,
+      "successful_owner_traces": []
+    },
+    {
+      "first_registry": true,
+      "second_registry": false,
+      "winner_pid": 126,
+      "loser_pid": 128,
+      "blockers": [
+        126
+      ],
+      "blocked_sql": "SELECT kineticloop.registry_guard_start_session($1,$2,$3,$4)",
+      "zero_effect_denial": true,
+      "successful_owner_traces": []
+    },
+    {
+      "first_registry": false,
+      "second_registry": true,
+      "winner_pid": 125,
+      "loser_pid": 126,
+      "blockers": [
+        125
+      ],
+      "blocked_sql": "\n                SELECT revocation_id, registry_revision, artifact_id,\n                       effective_at, recorded_at\n                FROM kineticloop.registry_revoke_artifact(\n                    $1, $2, $3, $4, $5, $6, $7, $8, $9\n                )\n                ",
+      "zero_effect_denial": false,
+      "successful_owner_traces": [
+        {
+          "command": "PublishManifest",
+          "trace": [
+            [
+              10,
+              "S51"
+            ],
+            [
+              20,
+              "S01"
+            ],
+            [
+              80,
+              "S02:test:9e72b1d4-d1cf-48a7-829a-4abe864a3d23:PublishManifest:5560e3dd-375f-434e-a333-eb4f7b6c3edb"
+            ],
+            [
+              90,
+              "S23:1265fbcf-0ec4-52e7-b8ef-0d97b08f17df"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "first_registry": false,
+      "second_registry": true,
+      "winner_pid": 125,
+      "loser_pid": 126,
+      "blockers": [
+        125
+      ],
+      "blocked_sql": "\n                SELECT revocation_id, registry_revision, artifact_id,\n                       effective_at, recorded_at\n                FROM kineticloop.registry_revoke_artifact(\n                    $1, $2, $3, $4, $5, $6, $7, $8, $9\n                )\n                ",
+      "zero_effect_denial": false,
+      "successful_owner_traces": [
+        {
+          "command": "CommitBundle",
+          "trace": [
+            [
+              10,
+              "S51"
+            ],
+            [
+              20,
+              "S01"
+            ],
+            [
+              40,
+              "S27:aa601bdc-46d0-4fe4-8e5e-b1b6a9f3c913"
+            ],
+            [
+              60,
+              "S38:2026-10-02"
+            ],
+            [
+              80,
+              "S02:test:098f175c-f6eb-43c2-8067-310b7ee8b3e4:CommitBundle:99d97e08-3f1c-442c-84b0-045ae187fc7b"
+            ],
+            [
+              90,
+              "S29:d262b077-717e-480f-9f4f-729c54fc532d"
+            ],
+            [
+              90,
+              "S37:05ed4c44-507a-54d2-9057-30719eb4b717"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "first_registry": false,
+      "second_registry": true,
+      "winner_pid": 127,
+      "loser_pid": 128,
+      "blockers": [
+        127
+      ],
+      "blocked_sql": "\n                SELECT revocation_id, registry_revision, artifact_id,\n                       effective_at, recorded_at\n                FROM kineticloop.registry_revoke_artifact(\n                    $1, $2, $3, $4, $5, $6, $7, $8, $9\n                )\n                ",
+      "zero_effect_denial": false,
+      "successful_owner_traces": [
+        {
+          "command": "StartSession",
+          "trace": [
+            [
+              10,
+              "S51"
+            ],
+            [
+              20,
+              "S01"
+            ],
+            [
+              60,
+              "S38:2026-10-02"
+            ],
+            [
+              70,
+              "S44:a1f05b2c-33d9-40e7-80cf-7b22a5e2cc84"
+            ],
+            [
+              80,
+              "S02:test:14111d5a-3046-4d70-9778-6eda6ee3ad53:StartSession:2453cd9f-0641-4f0f-9662-c8b4b9edccac"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

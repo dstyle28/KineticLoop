@@ -1,0 +1,742 @@
+{
+  "reviewed_head_sha": "994cf425360c75a366f186e91857a5d75ed02ebe",
+  "tested_commit": "debd5e58f98b4b20a2dd1ae132799d2373797622",
+  "base_commit": "9268fc8dd8c071c02dc5c698274dbf6fcd112776",
+  "source_tree_unchanged_after_tested": true,
+  "authority_hashes_verified": true,
+  "prerequisites": [
+    {
+      "task": "KL-021",
+      "normal_merge": "ad0c4373e6f64cc753af989c798636f7c365359b",
+      "ancestor_of_base": true,
+      "reviews": [
+        "GENERAL",
+        "PROTOCOL",
+        "DB_CONCURRENCY"
+      ]
+    },
+    {
+      "task": "KL-022",
+      "normal_merge": "88adc5be3f7c567413be671a2b3dc5e6c802ffe8",
+      "ancestor_of_base": true,
+      "reviews": [
+        "GENERAL",
+        "PROTOCOL",
+        "DB_CONCURRENCY"
+      ]
+    },
+    {
+      "task": "KL-023",
+      "normal_merge": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5",
+      "ancestor_of_base": true,
+      "reviews": [
+        "GENERAL",
+        "PROTOCOL",
+        "DB_CONCURRENCY"
+      ]
+    },
+    {
+      "task": "KL-027",
+      "normal_merge": "1099d85bd4aa76ec8221700e55b4e77a84479126",
+      "ancestor_of_base": true,
+      "reviews": [
+        "GENERAL",
+        "PROTOCOL",
+        "DB_CONCURRENCY"
+      ]
+    }
+  ],
+  "all_29_packet_commands_oracles_hashes_counts_verified": true,
+  "layers": [
+    {
+      "obligation": "B01@PU",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B01@DC",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B02@DC",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B03@DC",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B04@DC",
+      "status": "NOT_RUN"
+    },
+    {
+      "obligation": "B04@E2E",
+      "status": "NOT_RUN"
+    },
+    {
+      "obligation": "B05@DC",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B05@E2E",
+      "status": "NOT_RUN"
+    },
+    {
+      "obligation": "B06@DC",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B07@DC",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B07@E2E",
+      "status": "NOT_RUN"
+    },
+    {
+      "obligation": "B08@PU",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B08@E2E",
+      "status": "NOT_RUN"
+    },
+    {
+      "obligation": "B09@PU",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B09@DC",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B10@PU",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B10@E2E",
+      "status": "NOT_RUN"
+    },
+    {
+      "obligation": "B11@PU",
+      "status": "NOT_RUN"
+    },
+    {
+      "obligation": "B11@DC",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B12@PU",
+      "status": "NOT_RUN"
+    },
+    {
+      "obligation": "B12@DC",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B13@DC",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B14@WF",
+      "status": "NOT_RUN"
+    },
+    {
+      "obligation": "B14@E2E",
+      "status": "NOT_RUN"
+    },
+    {
+      "obligation": "B15@DC",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B16@DC",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B16@E2E",
+      "status": "NOT_RUN"
+    },
+    {
+      "obligation": "B17@PU",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B17@DC",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B18@PU",
+      "status": "PASS"
+    },
+    {
+      "obligation": "B18@E2E",
+      "status": "NOT_RUN"
+    }
+  ],
+  "layer_counts": {
+    "PASS": 19,
+    "NOT_RUN": 12
+  },
+  "checks": [
+    {
+      "check_id": "boundary_namespace_pu",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "8299ad9846513dc3e13dcc532e434cd1413fab574e5df92f1bc8f2d2da8178ed",
+      "witness_counts": {}
+    },
+    {
+      "check_id": "b14_registry_failclosed_stop_support_dc",
+      "counts": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "739194d9879c8a315e5dd3fcc85c5e6460b398021652344e3ddee88978b8a325",
+      "witness_counts": {
+        "owned_namespace": 9,
+        "runtime_registration": 27,
+        "admitted_inputs_only": 9,
+        "registered_transitive_graph": 9,
+        "blocked": 3,
+        "ApplyControl_locked_current_epoch": 6,
+        "actual_gate_timeout_STOP_support": 3,
+        "DC_support_only_registry_fault_STOP": 6,
+        "exact_owned_cleanup": 9,
+        "atomic_receipt_event_outbox": 9,
+        "sealed_source_and_published_basis": 6,
+        "upstream": 6,
+        "forward_stage": 42,
+        "output": 18,
+        "full_output": 18,
+        "full_prepared_chain": 6,
+        "exact_guard_zero_effect": 3,
+        "registry_fault_unrevoked_positive_control": 3
+      }
+    },
+    {
+      "check_id": "b01_pu",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "79c236cc8e0d2df96337d7c8213b3dd4dc585e3c8eace1fc7dba846be0a177e8",
+      "witness_counts": {}
+    },
+    {
+      "check_id": "b01_dc",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "f2b961fb324b3f5807fd047c329ca04211ac94f043c079753d44a2897122095c",
+      "witness_counts": {
+        "owned_namespace": 1,
+        "runtime_registration": 3,
+        "admitted_inputs_only": 1,
+        "registered_transitive_graph": 1,
+        "exact_guard_zero_effect": 4,
+        "atomic_receipt_event_outbox": 1,
+        "sealed_positive": 1,
+        "exact_owned_cleanup": 1
+      }
+    },
+    {
+      "check_id": "b02_dc",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "c82f1b4ccefcf248e615f0fcfdfaa380275b26a91c7d42f777598f1986a77c62",
+      "witness_counts": {
+        "owned_namespace": 2,
+        "runtime_registration": 6,
+        "admitted_inputs_only": 2,
+        "registered_transitive_graph": 2,
+        "observed_real_race": 2,
+        "fresh_frontier_rebuild": 2,
+        "exact_owned_cleanup": 2
+      }
+    },
+    {
+      "check_id": "b03_dc",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "a3a5a0cc7a231dc709f3c8ad70ef26a71bcdd4365785ae40cc5da156a3719c7d",
+      "witness_counts": {
+        "owned_namespace": 1,
+        "runtime_registration": 3,
+        "admitted_inputs_only": 1,
+        "registered_transitive_graph": 1,
+        "exact_guard_zero_effect": 5,
+        "immutable_original_new_correction": 1,
+        "exact_owned_cleanup": 1
+      }
+    },
+    {
+      "check_id": "b04_dc",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "a4023886e7721ef10142b65a18ec9d7a9612407aef7a9ab9382ebdcda61d4b75",
+      "witness_counts": {
+        "owned_namespace": 2,
+        "runtime_registration": 6,
+        "admitted_inputs_only": 2,
+        "registered_transitive_graph": 2,
+        "atomic_receipt_event_outbox": 3,
+        "sealed_source_and_published_basis": 2,
+        "upstream": 2,
+        "forward_stage": 14,
+        "output": 6,
+        "full_output": 6,
+        "full_prepared_chain": 2,
+        "Reauthorize_registry_guard_support_only": 2,
+        "exact_guard_zero_effect": 4,
+        "real_full_issuance_positive": 1,
+        "exact_owned_cleanup": 2
+      }
+    },
+    {
+      "check_id": "b05_dc",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "b0c861a698a56be81f45489b6b47e37316fbb2ad76caa7ee3d1b38acdf6f8a42",
+      "witness_counts": {
+        "owned_namespace": 1,
+        "runtime_registration": 4,
+        "admitted_inputs_only": 1,
+        "registered_transitive_graph": 1,
+        "atomic_receipt_event_outbox": 2,
+        "sealed_source_and_published_basis": 1,
+        "upstream": 1,
+        "forward_stage": 7,
+        "output": 3,
+        "full_output": 3,
+        "full_prepared_chain": 1,
+        "atomic_global_commit": 1,
+        "exact_guard_zero_effect": 1,
+        "unrelated_revision_preserves_eligibility": 1,
+        "exact_owned_cleanup": 1
+      }
+    },
+    {
+      "check_id": "b06_dc",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "d38296a1eacd0a38cde5cdc15c9cf5a2c9da7c0710d21dead3ee4c1705ca4c63",
+      "witness_counts": {
+        "owned_namespace": 2,
+        "runtime_registration": 6,
+        "admitted_inputs_only": 2,
+        "registered_transitive_graph": 2,
+        "observed_real_race": 2,
+        "atomic_global_commit": 2,
+        "both_registry_orders": 2,
+        "exact_owned_cleanup": 2,
+        "atomic_receipt_event_outbox": 1,
+        "exact_guard_zero_effect": 1
+      }
+    },
+    {
+      "check_id": "b07_dc",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "d52ff88584f63ea6054de1e50baaabf4bfbc691aafa5e2d72d2ea1b2dd4bff4d",
+      "witness_counts": {
+        "owned_namespace": 3,
+        "runtime_registration": 9,
+        "admitted_inputs_only": 3,
+        "registered_transitive_graph": 3,
+        "atomic_receipt_event_outbox": 6,
+        "sealed_source_and_published_basis": 3,
+        "upstream": 3,
+        "forward_stage": 21,
+        "output": 9,
+        "full_output": 9,
+        "full_prepared_chain": 3,
+        "exact_guard_zero_effect": 3,
+        "lifecycle_valid_fresh_authority_loss": 3,
+        "exact_owned_cleanup": 3
+      }
+    },
+    {
+      "check_id": "b08_pu",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "4d0ca2085cd2133343400e2cdccddf42ffb3644a72ccd9fb9deae2edd1884a92",
+      "witness_counts": {}
+    },
+    {
+      "check_id": "b09_pu",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "da5836f71365253a69ac773ada2f4f2e22855c723950f025bf38dda3367c0ae2",
+      "witness_counts": {}
+    },
+    {
+      "check_id": "b09_dc",
+      "counts": {
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "2a9a31e619a188113558238db51c3b627989ffb6c54867128579a8f66ecd3d7e",
+      "witness_counts": {
+        "owned_namespace": 12,
+        "runtime_registration": 36,
+        "admitted_inputs_only": 12,
+        "registered_transitive_graph": 12,
+        "atomic_receipt_event_outbox": 24,
+        "sealed_source_and_published_basis": 12,
+        "upstream": 12,
+        "forward_stage": 84,
+        "output": 36,
+        "full_output": 36,
+        "full_prepared_chain": 12,
+        "server_exact_minimum_full_certificate": 12,
+        "exact_owned_cleanup": 12
+      }
+    },
+    {
+      "check_id": "b10_pu",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "cde12c5c3bcedfffcd3bcb9e6d666039597ce442692d84d816bbc30b025bcd93",
+      "witness_counts": {}
+    },
+    {
+      "check_id": "b11_dc",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "2d577a1cf8ea00de895b606558b704da191a5de43972d9e9d04ed2f5f239f110",
+      "witness_counts": {
+        "owned_namespace": 6,
+        "runtime_registration": 18,
+        "admitted_inputs_only": 6,
+        "registered_transitive_graph": 6,
+        "observed_real_race": 3,
+        "atomic_global_commit": 3,
+        "exact_guard_zero_effect": 3,
+        "effective_at_audit_only": 3,
+        "exact_owned_cleanup": 6,
+        "atomic_receipt_event_outbox": 7,
+        "sealed_source_and_published_basis": 4,
+        "upstream": 4,
+        "forward_stage": 28,
+        "output": 12,
+        "full_output": 12,
+        "full_prepared_chain": 4,
+        "unrevoked_timing_positive_control": 3
+      }
+    },
+    {
+      "check_id": "b12_dc",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "b6fb485e6ed895fb2d7fbf2947ed55cff6019c443ca3e47fcc611b2050fcf40a",
+      "witness_counts": {
+        "owned_namespace": 6,
+        "runtime_registration": 18,
+        "admitted_inputs_only": 6,
+        "registered_transitive_graph": 6,
+        "observed_real_race": 3,
+        "atomic_global_commit": 3,
+        "exact_guard_zero_effect": 3,
+        "effective_at_audit_only": 3,
+        "exact_owned_cleanup": 6,
+        "atomic_receipt_event_outbox": 7,
+        "sealed_source_and_published_basis": 4,
+        "upstream": 4,
+        "forward_stage": 28,
+        "output": 12,
+        "full_output": 12,
+        "full_prepared_chain": 4,
+        "unrevoked_timing_positive_control": 3
+      }
+    },
+    {
+      "check_id": "b13_dc",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "17b9027cec8235a5b90a292868ac07e832db393e2dcf7831348a8fef9165d5f4",
+      "witness_counts": {
+        "owned_namespace": 3,
+        "runtime_registration": 9,
+        "admitted_inputs_only": 3,
+        "registered_transitive_graph": 3,
+        "all_revoke_writes_executed_before_injected_abort": 3,
+        "atomic_receipt_event_outbox": 5,
+        "rollback_complete_global_zero_effect_positive_owner": 3,
+        "exact_owned_cleanup": 3,
+        "sealed_source_and_published_basis": 2,
+        "upstream": 2,
+        "forward_stage": 14,
+        "output": 6,
+        "full_output": 6,
+        "full_prepared_chain": 2
+      }
+    },
+    {
+      "check_id": "b15_dc",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "59f87243c9f844f0ee1603c70f567b8f290ef2ab41a86420ff82491191289fde",
+      "witness_counts": {
+        "owned_namespace": 6,
+        "runtime_registration": 18,
+        "admitted_inputs_only": 6,
+        "registered_transitive_graph": 6,
+        "observed_real_race": 6,
+        "atomic_global_commit": 6,
+        "both_registry_orders": 6,
+        "exact_owned_cleanup": 6,
+        "atomic_receipt_event_outbox": 7,
+        "sealed_source_and_published_basis": 4,
+        "upstream": 4,
+        "forward_stage": 28,
+        "output": 12,
+        "full_output": 12,
+        "full_prepared_chain": 4,
+        "exact_guard_zero_effect": 3
+      }
+    },
+    {
+      "check_id": "b16_dc",
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "d31471a12e05bff78a128f9d541d38c107a12ee426f0898936ef7f582200b89d",
+      "witness_counts": {
+        "owned_namespace": 4,
+        "runtime_registration": 12,
+        "admitted_inputs_only": 4,
+        "registered_transitive_graph": 4,
+        "atomic_receipt_event_outbox": 8,
+        "sealed_source_and_published_basis": 4,
+        "upstream": 4,
+        "forward_stage": 28,
+        "output": 12,
+        "full_output": 12,
+        "full_prepared_chain": 4,
+        "exact_guard_zero_effect": 4,
+        "lifecycle_valid_fresh_authority_loss": 4,
+        "exact_owned_cleanup": 4,
+        "ApplyControl_locked_current_epoch": 2
+      }
+    },
+    {
+      "check_id": "b17_pu",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "f4f741827cea743522c1f8555165fc00f346aaab0ee730ce27b326cc23463020",
+      "witness_counts": {}
+    },
+    {
+      "check_id": "b17_dc",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "6b321b52da39664214af930332e5b33a956404362e5eb5f99d7d5d3f7ccb02ee",
+      "witness_counts": {
+        "owned_namespace": 6,
+        "runtime_registration": 18,
+        "admitted_inputs_only": 6,
+        "registered_transitive_graph": 6,
+        "exact_guard_zero_effect": 9,
+        "atomic_receipt_event_outbox": 7,
+        "complete_unrevoked_transitive_positive": 3,
+        "exact_owned_cleanup": 6,
+        "sealed_source_and_published_basis": 4,
+        "upstream": 4,
+        "forward_stage": 28,
+        "output": 12,
+        "full_output": 12,
+        "full_prepared_chain": 4,
+        "transitive_direct_unrevoked_leaf_revoked": 3
+      }
+    },
+    {
+      "check_id": "b18_pu",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "622de033b1908232ddbbc031dd469371b8ade323af74603dc8d4f65150b54958",
+      "witness_counts": {}
+    },
+    {
+      "check_id": "boundary_full_unit_suite",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "daaba94144c05a705def1dbf95f2f56cf0197e68f0e84be2a459ddb326d3fbef",
+      "witness_counts": {}
+    },
+    {
+      "check_id": "boundary_full_db_suite",
+      "counts": {
+        "tests": 64,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "063efa05cd7eaef83aed8fc2a999288f5c7ef908937c2fe3443214e97379aaf4",
+      "witness_counts": {
+        "owned_namespace": 64,
+        "runtime_registration": 193,
+        "admitted_inputs_only": 64,
+        "registered_transitive_graph": 64,
+        "exact_guard_zero_effect": 43,
+        "atomic_receipt_event_outbox": 87,
+        "sealed_positive": 1,
+        "exact_owned_cleanup": 64,
+        "observed_real_race": 16,
+        "fresh_frontier_rebuild": 2,
+        "immutable_original_new_correction": 1,
+        "sealed_source_and_published_basis": 46,
+        "upstream": 46,
+        "forward_stage": 322,
+        "output": 138,
+        "full_output": 138,
+        "full_prepared_chain": 46,
+        "Reauthorize_registry_guard_support_only": 2,
+        "real_full_issuance_positive": 1,
+        "atomic_global_commit": 15,
+        "unrelated_revision_preserves_eligibility": 1,
+        "both_registry_orders": 8,
+        "lifecycle_valid_fresh_authority_loss": 7,
+        "server_exact_minimum_full_certificate": 12,
+        "effective_at_audit_only": 6,
+        "unrevoked_timing_positive_control": 6,
+        "all_revoke_writes_executed_before_injected_abort": 3,
+        "rollback_complete_global_zero_effect_positive_owner": 3,
+        "blocked": 3,
+        "ApplyControl_locked_current_epoch": 8,
+        "actual_gate_timeout_STOP_support": 3,
+        "DC_support_only_registry_fault_STOP": 6,
+        "registry_fault_unrevoked_positive_control": 3,
+        "complete_unrevoked_transitive_positive": 3,
+        "transitive_direct_unrevoked_leaf_revoked": 3
+      }
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "counts": null,
+      "raw_sha256": "1d90cc15cec784b2061d6a2a83e529513f3938bc0837bee8b0ccf792044141a9",
+      "witness_counts": {}
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "counts": {
+        "tests": 239,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "ce33bdb0139e1903e61dbc0203faaa09e057097a98fc98aceb48650989aec553",
+      "witness_counts": {}
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "counts": {
+        "tests": 790,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "raw_sha256": "5ebe746866f849edc0a4e2eafa51c809a429b74bcfc87a1ee6931be06dda31d1",
+      "witness_counts": {}
+    },
+    {
+      "check_id": "lint_passes",
+      "counts": null,
+      "raw_sha256": "126e2b968dfd74b7d5d5b378f2cc8ad8ac11aba643809239c083cb0289cf8a19",
+      "witness_counts": {}
+    },
+    {
+      "check_id": "typecheck_passes",
+      "counts": null,
+      "raw_sha256": "34f7281528b45228e0ba8060ccab6b782057efe790494b75a15157eaeb2c1056",
+      "witness_counts": {}
+    }
+  ],
+  "limitations": [
+    "Read-only inspection of submitted DC raw evidence; no DB lifecycle or foreign fixture executed.",
+    "Independent pure suite rerun runs at reviewed HEAD; it is review evidence, not replacement task evidence."
+  ]
+}

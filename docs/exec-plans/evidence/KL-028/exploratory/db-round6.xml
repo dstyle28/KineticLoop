@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="3" time="15.309" timestamp="2026-10-01T22:49:19.814905-07:00" hostname="Daves-MacBook-Pro---26.local"><testcase classname="tests.db.test_boundary_acceptance" name="test_b03_sealed_immutability_ready_barrier" time="4.881" /><testcase classname="tests.db.test_boundary_acceptance" name="test_b04_relevant_revoke_issue_reauthorize[False]" time="5.018" /><testcase classname="tests.db.test_boundary_acceptance" name="test_b04_relevant_revoke_issue_reauthorize[True]" time="5.057"><failure message="pydantic_core._pydantic_core.ValidationError: 1 validation error for RevokeArtifact&#10;actor.role&#10;  Input should be an instance of ActorRole [type=is_instance_of, input_value='ADMIN', input_type=str]&#10;    For further information visit https://errors.pydantic.dev/2.11/v/is_instance_of">database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:57714/kineticloop_kl028_boundary_9268fc8_3635a672... 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:57714/kineticloop_kl028_boundary_9268fc8_3635a672a23d', ...}
+revoked = True
+
+    @pytest.mark.parametrize("revoked", [False, True])
+    def test_b04_relevant_revoke_issue_reauthorize(database_urls: Any, revoked: bool) -&gt; None:
+        seed, request = D.ready(database_urls)
+        with connect(database_urls["admin"]) as db:
+            reauthorize_probe(db, seed, revoked=False)
+            if revoked:
+&gt;               revoke_now(database_urls, seed)
+
+tests/db/test_boundary_acceptance.py:672: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/db/test_boundary_acceptance.py:290: in revoke_now
+    return revoke(db, revocation(seed))
+                      ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+seed = {'a': UUID('74cb234f-aa0b-40d8-89ef-794727e24d79'), 'admission': UUID('3a727486-3451-46ca-816d-8a5591efcbbb'), 'admiss...0, 2, 6, 49, 33, 890279, tzinfo=datetime.timezone.utc), 'assertion': UUID('b55d634b-68bf-4ca5-a0d5-105dac8195cb'), ...}
+effective = datetime.datetime(2026, 10, 2, 5, 49, 33, 890279, tzinfo=datetime.timezone.utc)
+artifact = None, content_hash = None
+
+    def revocation(
+        seed: Any,
+        effective: datetime | None = None,
+        artifact: UUID | None = None,
+        content_hash: str | None = None,
+    ) -&gt; tuple[Any, datetime]:
+        effective = effective or seed["now"]
+        key = str(uuid4())
+&gt;       command = RevokeArtifact.model_validate(
+            dict(
+                schema_version="kineticloop-command-v1",
+                command_kind="RevokeArtifact",
+                boundary="T2-GLOBAL",
+                command_id=str(uuid4()),
+                actor={
+                    "schema": "kineticloop-role-identity-v1",
+                    "identity_id": str(uuid4()),
+                    "role": "ADMIN",
+                },
+                idempotency_key=key,
+                request_hash=digest(key),
+                subject_id=None,
+                explicit_scope="global:safety-registry",
+                artifact_id=str(artifact or seed["c"]),
+                artifact_content_hash=content_hash or seed["leaf_hash"],
+                revocation_payload_hash=revocation_payload_hash(
+                    effective_at=effective, reason_code="BOUNDARY_EMERGENCY"
+                ),
+                causation_incident_id=str(uuid4()),
+            )
+        )
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for RevokeArtifact
+E       actor.role
+E         Input should be an instance of ActorRole [type=is_instance_of, input_value='ADMIN', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.11/v/is_instance_of
+
+tests/db/test_boundary_acceptance.py:257: ValidationError</failure></testcase></testsuite></testsuites>

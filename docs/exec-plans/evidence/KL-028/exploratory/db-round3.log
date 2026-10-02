@@ -1,0 +1,154 @@
+.F
+=================================== FAILURES ===================================
+___________________ test_b02_stale_frontier_seal_race[True] ____________________
+
+database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:57700/kineticloop_kl028_boundary_9268fc8_3635a672... 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:57700/kineticloop_kl028_boundary_9268fc8_3635a672a23d', ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x109fb7ad0>
+update_first = True
+
+    @pytest.mark.parametrize("update_first", [True, False])
+    def test_b02_stale_frontier_seal_race(
+        database_urls: Any, monkeypatch: Any, update_first: bool
+    ) -> None:
+        seed = seed_source(database_urls)
+        with connect(database_urls["admin"]) as db:
+            _, identity, closed = build(db, seed)
+        subject = D.auth(seed).subject_id
+    
+        def seal(db):
+            return CanonicalViewService(
+                db, BuilderIdentity(seed["identity"].actor, subject)
+            ).seal_factset(SealFactset(subject, "seal", identity, closed))
+    
+        def update(db):
+            return D.input_revision(db, seed, "input-" + str(uuid4()))
+    
+>       race(
+            database_urls,
+            seed,
+            monkeypatch,
+            update if update_first else seal,
+            seal if update_first else update,
+            cause="frontier" if update_first else None,
+        )
+
+tests/db/test_boundary_acceptance.py:570: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:57700/kineticloop_kl028_boundary_9268fc8_3635a672... 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:57700/kineticloop_kl028_boundary_9268fc8_3635a672a23d', ...}
+seed = {'a': UUID('3c7fa65b-0ed4-4a31-9eb1-e86ca567a3c9'), 'admission': UUID('90dd2d5f-00b6-4f3a-92c8-a09e9fd6c731'), 'admiss...0, 2, 6, 47, 45, 229886, tzinfo=datetime.timezone.utc), 'assertion': UUID('11cfc9ab-d9ac-418b-9c95-6277623b7737'), ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x109fb7ad0>
+first = <function test_b02_stale_frontier_seal_race.<locals>.update at 0x109afa340>
+second = <function test_b02_stale_frontier_seal_race.<locals>.seal at 0x109afa8e0>
+
+    def race(
+        urls: Any,
+        seed: Any,
+        monkeypatch: Any,
+        first: Any,
+        second: Any,
+        *,
+        first_registry: bool = False,
+        second_registry: bool = False,
+        cause: str | None = None,
+    ) -> Any:
+        held, release, entered = Event(), Event(), Event()
+        thread = local()
+        pids: dict[str, int] = {}
+        winners: dict[str, Any] = {}
+        traces: list[Any] = []
+        original_finish = RepositoryTransaction.finish
+        with connect(urls["admin"]) as db:
+            baseline = snapshot(db, seed)
+    
+        def wait_winner(db: Any) -> None:
+            if thread.name == "winner":
+                winners["state"] = baseline if first_registry else snapshot(db, seed)
+                held.set()
+                assert release.wait(8), "winner release deadline"
+    
+        def finish(tx: Any) -> None:
+            original_finish(tx)
+            traces.append({"command": tx.command_kind, "trace": tx.lock_trace})
+            wait_winner(thread.db)
+    
+        class Cursor(psycopg.Cursor[Any]):
+            def execute(self, query: Any, params: Any = None, **kwargs: Any) -> Any:
+                result = super().execute(query, params, **kwargs)
+                if "registry_revoke_artifact(" in str(query):
+                    wait_winner(self.connection)
+                return result
+    
+        def run(operation: Any, name: str, registry: bool) -> Any:
+            with connect(
+                urls["trusted_admin"] if registry else urls["admin"],
+                cursor_factory=Cursor,
+                application_name="kl028-" + name,
+            ) as db:
+                thread.name, thread.db = name, db
+                pids[name] = db.info.backend_pid
+                if name == "loser":
+                    entered.set()
+                try:
+                    return operation(db)
+                except ERRORS as error:
+                    return error
+    
+        with monkeypatch.context() as patch, ThreadPoolExecutor(max_workers=2) as pool:
+            patch.setattr(RepositoryTransaction, "finish", finish)
+            winner = pool.submit(run, first, "winner", first_registry)
+            try:
+                assert held.wait(8), (
+                    winner.result(timeout=1) if winner.done() else "winner guard missing"
+                )
+                loser = pool.submit(run, second, "loser", second_registry)
+                assert entered.wait(8)
+                with connect(urls["admin"], autocommit=True) as observer:
+                    deadline = time.monotonic() + 0.8
+                    blocked = None
+                    while time.monotonic() < deadline:
+                        row = observer.execute(
+                            "SELECT pg_blocking_pids(%s),clock_timestamp(),(SELECT query FROM pg_stat_activity WHERE pid=%s)",
+                            (pids["loser"], pids["loser"]),
+                        ).fetchone()
+                        if pids["winner"] in row[0]:
+                            blocked = row
+                            break
+                    assert blocked is not None, "actual PostgreSQL blocking missing"
+            finally:
+                release.set()
+            a, b = winner.result(timeout=12), loser.result(timeout=12)
+        assert not isinstance(a, ERRORS), a
+        if cause:
+>           assert isinstance(b, ERRORS) and cause in str(b), str(b)
+E           AssertionError: factset completion basis is stale, incomplete, or mismatched
+E           assert (True and 'frontier' in 'factset completion basis is stale, incomplete, or mismatched')
+E            +  where True = isinstance(GuardRequired('factset completion basis is stale, incomplete, or mismatched'), (<class 'kineticloop.persistence.transactions.RepositoryTransactionError'>, <class 'psycopg.Error'>, <class 'ValueError'>, <class 'kineticloop.contracts.safety_registry.RegistryDenied'>))
+E            +  and   'factset completion basis is stale, incomplete, or mismatched' = str(GuardRequired('factset completion basis is stale, incomplete, or mismatched'))
+
+tests/db/test_boundary_acceptance.py:478: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+FIXTURE_EVIDENCE {"compose": "kineticloop-kl028-boundary-9268fc8-3635a672a23d", "database": "kineticloop_kl028_boundary_9268fc8_3635a672a23d", "kind": "owned_namespace", "migration": "e8c2f1a6b904", "root": "/Users/davetian/.codex/worktrees/34e8/KineticLoop", "tested_commit": "9268fc8dd8c071c02dc5c698274dbf6fcd112776"}
+---------------------------- Captured stderr setup -----------------------------
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 76fd67f76bd4, frozen S01-S51 baseline
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 76fd67f76bd4 -> a3f91c7d2e10, migrated SafetyRegistry integration and role-owner hardening
+INFO  [alembic.runtime.migration] Running upgrade a3f91c7d2e10 -> b6e4d8a1c927, trusted artifact registration and bounded dependency admission
+INFO  [alembic.runtime.migration] Running upgrade b6e4d8a1c927 -> d4c1a9e7b203, production, test, and evaluation subject namespace isolation
+INFO  [alembic.runtime.migration] Running upgrade d4c1a9e7b203 -> e8c2f1a6b904, Materialize frozen S27 active partition uniqueness (legacy PENDING = ADMITTED).
+----------------------------- Captured stdout call -----------------------------
+FIXTURE_EVIDENCE {"hash": "ba392cdbe8969a4ab6b339622372f708e1510781ec42f2ea20dca51aa14614f3", "id": "2c2a6019-f121-4364-9461-b2c28aae0bc3", "immutable_dependencies": [], "kind": "runtime_registration", "owner": "SafetyRegistry.RegisterArtifact", "version": "kl079-full-actions-v1"}
+FIXTURE_EVIDENCE {"hash": "29a4711f6dbeb5f2c9a93f838f0cd8ee8338f44760c328c615776b6293752df5", "id": "551edb6c-b649-46e2-8911-08755612dfb9", "immutable_dependencies": ["2c2a6019-f121-4364-9461-b2c28aae0bc3"], "kind": "runtime_registration", "owner": "SafetyRegistry.RegisterArtifact", "version": "kl079-full-actions-v1"}
+FIXTURE_EVIDENCE {"hash": "47141293664d61f6dffde2ef2550b381be3062798b82a38a2f890be50e3c8f8a", "id": "3c7fa65b-0ed4-4a31-9eb1-e86ca567a3c9", "immutable_dependencies": ["0f401956-fbe0-4d08-b944-0ba27b51ae88", "76c75cf3-71b9-4e79-9c3a-1cd0c47b2281", "551edb6c-b649-46e2-8911-08755612dfb9", "2c2a6019-f121-4364-9461-b2c28aae0bc3"], "kind": "runtime_registration", "owner": "SafetyRegistry.RegisterArtifact", "version": "kl079-full-actions-v1"}
+FIXTURE_EVIDENCE {"environment": "841aecf1-b81d-43a7-bbbb-a8102ee9eabc", "kind": "admitted_inputs_only", "persisted": {"admission_decisions": [[{"action_scope": "TEST_ONLY", "content_hash": "2a008563f2d536b1d081224c53aeeebe3917c3e244c7d5803f5be33f0f215a14", "content_schema_version": 1, "decision": "ADMITTED", "effective_at": null, "hash_scheme_version": 1, "id": "90dd2d5f-00b6-4f3a-92c8-a09e9fd6c731", "known_at": null, "recorded_at": "2026-10-02T05:47:45.236787+00:00", "ref_s05_id": "e82a1a4a-6d5c-45c3-ad95-2b46fa1d5f3d", "ref_s09_id": "8ba4546a-3087-4c45-ae84-81ebe228be6f", "ref_s10_id": "11cfc9ab-d9ac-418b-9c95-6277623b7737", "revision": 1, "status": null, "subject_id": "e3fe4cdd-457b-429a-9a83-d95eb4c205bd", "typed_payload": {"fixture_admission": "ADMITTED", "valid_until": "2026-10-02T06:47:45.229886+00:00"}}]], "authorization_artifact_closure": [], "authorization_events": [[{"causation_key": "24a606a4-36d0-44d6-81a8-5eac1969be8f", "content_hash": null, "content_schema_version": 1, "effective_at": null, "event_kind": "EPOCH_INVALIDATED", "hash_scheme_version": 1, "id": "03bd1d8a-d192-4a52-9ff3-92e680e6a5e6", "invalidated_epoch": 1, "known_at": null, "recorded_at": "2026-10-02T05:47:45.369854+00:00", "ref_s02_id": "92379ee8-768f-45b3-8862-ea9de9f30423", "ref_s13_id": null, "ref_s17_id": null, "ref_s42_id": null, "revision": 1, "scope": "TEST_ONLY", "status": null, "subject_id": "e3fe4cdd-457b-429a-9a83-d95eb4c205bd", "typed_payload": {}}]], "authorization_issuances": [], "bundle_prescription_members": [], "canonical_fact_revisions": [[{"content_hash": "29b2b8d63e7b240ec04af812eb70e7ede96df23a3543cf90b422d2b0212f79bb", "content_schema_version": 1, "effective_at": "2026-10-02T04:47:45.229886+00:00", "fact_kind": "WORKOUT_ACTUAL", "fact_revision": 1, "hash_scheme_version": 1, "id": "24a606a4-36d0-44d6-81a8-5eac1969be8f", "known_at": null, "recorded_at": "2026-10-02T05:47:45.369854+00:00", "ref_s10_id": "11cfc9ab-d9ac-418b-9c95-6277623b7737", "ref_s11_id": "fcab107c-664d-4a33-8678-04bd70eacdf4", "ref_s13_id": "90dd2d5f-00b6-4f3a-92c8-a09e9fd6c731", "revision": 1, "stable_fact_identity": "24a606a4-36d0-44d6-81a8-5eac1969be8f", "status": null, "subject_id": "e3fe4cdd-457b-429a-9a83-d95eb4c205bd", "typed_payload": {"association_id": "d71cc8db-7ae5-4340-8be1-884ddddab7a8", "contradicts": false, "exercise": "fixture:cycle", "lower_minutes": 10, "replaces_slot": "prior-slot", "retracted": false, "semantic_class": "ACTUAL_EXECUTION", "upper_minutes": 10}}]], "command_receipts": [[{"actor_scope": "test:af3b374c-6776-4009-ad03-d51f467c7435", "client_key": "24a606a4-36d0-44d6-81a8-5eac1969be8f", "command_kind": "RecordActualExecution", "content_hash": null, "content_schema_version": 1, "effective_at": null, "hash_scheme_version": 1, "id": "92379ee8-768f-45b3-8862-ea9de9f30423", "known_at": null, "recorded_at": "2026-10-02T05:47:45.369854+00:00", "request_hash": "29b2b8d63e7b240ec04af812eb70e7ede96df23a3543cf90b422d2b0212f79bb", "revision": 1, "status": "SUCCEEDED", "subject_id": "e3fe4cdd-457b-429a-9a83-d95eb4c205bd", "typed_payload": {"outcome": {"event_id": "18c33efb-c6c8-4ff8-a99e-1a6b1c92668e", "fact_id": "24a606a4-36d0-44d6-81a8-5eac1969be8f"}}}]], "control_events": [], "control_heads": [], "daily_bundle_revisions": [], "daily_plan_heads": [], "decision_manifests": [], "decision_snapshots": [], "domain_events": [[{"aggregate_identity": "24a606a4-36d0-44d6-81a8-5eac1969be8f", "aggregate_revision": 1, "aggregate_type": "FIXTURE_ACTUAL", "content_hash": null, "content_schema_version": 1, "correlation_intent_id": null, "effective_at": null, "event_type": "RecordActualExecution", "hash_scheme_version": 1, "id": "18c33efb-c6c8-4ff8-a99e-1a6b1c92668e", "known_at": null, "recorded_at": "2026-10-02T05:47:45.369854+00:00", "ref_s02_id": "92379ee8-768f-45b3-8862-ea9de9f30423", "revision": 1, "status": null, "subject_id": "e3fe4cdd-457b-429a-9a83-d95eb4c205bd", "typed_payload": {}}]], "evidence_resolutions": [], "execution_bindings": [], "factset_members": [], "factset_revisions": [], "manifest_builds": [], "manifest_projection_bindings": [], "outbox_deliveries": [[{"attempt_count": 0, "content_hash": null, "content_schema_version": 1, "delivery_status": "PENDING", "destination": "evidence", "effective_at": null, "hash_scheme_version": 1, "id": "f758e31a-40fd-4435-bad2-b93d774d9a17", "known_at": null, "next_attempt_at": null, "recorded_at": "2026-10-02T05:47:45.369854+00:00", "ref_s03_id": "18c33efb-c6c8-4ff8-a99e-1a6b1c92668e", "revision": 1, "status": null, "subject_id": "e3fe4cdd-457b-429a-9a83-d95eb4c205bd", "typed_payload": {}}]], "planning_attempts": [], "planning_intents": [], "planning_quota_buckets": [], "planning_request_revisions": [], "prescription_demand_features": [], "prescription_revisions": [], "projection_dependencies": [], "projection_versions": [], "proposal_revisions": [], "user_decision_state": [[{"active_policy_bundle_id": "e82a1a4a-6d5c-45c3-ad95-2b46fa1d5f3d", "active_program_id": "fefed8d7-a1a2-4929-8993-f5ac5ada5364", "authorization_epoch": 1, "current_factset_id": null, "current_manifest_id": null, "decision_generation": 0, "execution_basis_event_id": "18c33efb-c6c8-4ff8-a99e-1a6b1c92668e", "input_frontier_hash": "b0b5570d4051cfbb9fc2cd78c62ae225334904fa765a964a62e169ba80dd2042", "last_control_event_id": null, "subject_id": "e3fe4cdd-457b-429a-9a83-d95eb4c205bd"}]], "validation_results": [], "workout_sessions": []}, "policy": "e82a1a4a-6d5c-45c3-ad95-2b46fa1d5f3d", "subject": "e3fe4cdd-457b-429a-9a83-d95eb4c205bd"}
+FIXTURE_EVIDENCE {"actual_edges": [["551edb6c-b649-46e2-8911-08755612dfb9", "2c2a6019-f121-4364-9461-b2c28aae0bc3"], ["3c7fa65b-0ed4-4a31-9eb1-e86ca567a3c9", "0f401956-fbe0-4d08-b944-0ba27b51ae88"], ["3c7fa65b-0ed4-4a31-9eb1-e86ca567a3c9", "76c75cf3-71b9-4e79-9c3a-1cd0c47b2281"], ["3c7fa65b-0ed4-4a31-9eb1-e86ca567a3c9", "551edb6c-b649-46e2-8911-08755612dfb9"], ["3c7fa65b-0ed4-4a31-9eb1-e86ca567a3c9", "2c2a6019-f121-4364-9461-b2c28aae0bc3"]], "graph": {"a": "3c7fa65b-0ed4-4a31-9eb1-e86ca567a3c9", "b": "551edb6c-b649-46e2-8911-08755612dfb9", "c": "2c2a6019-f121-4364-9461-b2c28aae0bc3", "leaf_hash": "ba392cdbe8969a4ab6b339622372f708e1510781ec42f2ea20dca51aa14614f3", "release": "73a89f48-e71c-4d66-a5f3-400d53429834"}, "kind": "registered_transitive_graph", "tested_commit": "9268fc8dd8c071c02dc5c698274dbf6fcd112776"}
+--------------------------- Captured stdout teardown ---------------------------
+FIXTURE_EVIDENCE {"compose": "kineticloop-kl028-boundary-9268fc8-3635a672a23d", "database": "kineticloop_kl028_boundary_9268fc8_3635a672a23d", "inventory": ["bootstrap_two_phase(selected_lifecycle)", "reset", "start", "destroy"], "kind": "exact_owned_cleanup", "remaining": {"container": "", "network": "", "volume": ""}, "tested_commit": "9268fc8dd8c071c02dc5c698274dbf6fcd112776"}
+- generated xml file: /Users/davetian/.codex/worktrees/34e8/KineticLoop/docs/exec-plans/evidence/KL-028/exploratory/db-round3.xml -
+=========================== short test summary info ============================
+FAILED tests/db/test_boundary_acceptance.py::test_b02_stale_frontier_seal_race[True]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 1 passed in 9.99s

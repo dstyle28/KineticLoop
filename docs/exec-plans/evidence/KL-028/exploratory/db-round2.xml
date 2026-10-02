@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="4.931" timestamp="2026-10-01T22:46:46.517096-07:00" hostname="Daves-MacBook-Pro---26.local"><testcase classname="tests.db.test_boundary_acceptance" name="test_b01_unsealed_canonical_denial" time="4.597"><failure message="TypeError: CanonicalViewService.read_canonical() missing 1 required positional argument: 'factset_id'">database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:57694/kineticloop_kl028_boundary_9268fc8_3635a672... 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:57694/kineticloop_kl028_boundary_9268fc8_3635a672a23d', ...}
+
+    def test_b01_unsealed_canonical_denial(database_urls: Any) -&gt; None:
+        seed = seed_source(database_urls)
+        with connect(database_urls["admin"]) as db:
+            cv, identity, _ = build(db, seed, complete=False)
+            subject = D.auth(seed).subject_id
+            for status in ("BUILDING", "READY"):
+&gt;               denial(db, seed, lambda: cv.read_canonical(identity), "unsealed")
+
+tests/db/test_boundary_acceptance.py:527: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/db/test_boundary_acceptance.py:203: in denial
+    operation()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+&gt;   denial(db, seed, lambda: cv.read_canonical(identity), "unsealed")
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: CanonicalViewService.read_canonical() missing 1 required positional argument: 'factset_id'
+
+tests/db/test_boundary_acceptance.py:527: TypeError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,71 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-028",
+  "reviewed_head_sha": "994cf425360c75a366f186e91857a5d75ed02ebe",
+  "review_type": "PROTOCOL",
+  "status": "PASS",
+  "findings": [],
+  "review_contract_version": "v0.2",
+  "base_commit": "9268fc8dd8c071c02dc5c698274dbf6fcd112776",
+  "tested_commit": "debd5e58f98b4b20a2dd1ae132799d2373797622",
+  "summary": "Independent fresh-context protocol review finds no blocker. The three implementation paths are tests/contract only; all 29 packet commands have exact final raw evidence bound to tested_commit. All 31 acceptance obligations are retained with 19 supported mechanical PASS and 12 explicit deferred NOT_RUN. No production, real-data-shadow, product E2E, M3 or release closure is asserted.",
+  "review_method": "Read AGENTS, current index/requirement set, task packet, prerequisite results and named frozen/acceptance clauses; independently inspect the complete test/contract/result diff, actual merged owner paths and final raw evidence. Independently validate current authority hashes, normal merged prerequisite ancestry and reviews, post-tested source equality, packet commands/oracles, log hashes, JUnit counts, namespace/cleanup witnesses, exact guard snapshots, blocking traces, timing semantics, certificate minima/digests/materialized closure and all layer dispositions. Rerun only the pure suite at reviewed HEAD, with 7 passing cases and zero skips. No DB lifecycle, foreign fixture, implementation/result edits, commits or HEAD change performed.",
+  "frozen_scope": {
+    "invariants": ["INV-06", "INV-08", "INV-09", "INV-10", "INV-17"],
+    "transactions": ["T2-GLOBAL", "T2-IN", "T2-SEAL", "T3", "T6", "T7"],
+    "logical_tables": ["S15", "S16", "S38", "S42", "S45", "S46", "S47", "S49", "S50", "S51"],
+    "clauses": ["Protocol 0.3a", "Protocol 2.1a/2.3", "Protocol 4.1a", "Protocol 5.3/5.3a/5.4/5.5/5.6", "Protocol 7.4", "DB 4.1/4.3/5", "DB S15/S16/S42/S45/S49/S50/S51", "Acceptance 2-3 and B01-B18 declared layers"]
+  },
+  "oracle_assessment": [
+    {
+      "checks": ["boundary_namespace_pu", "b01_pu", "b01_dc", "b02_dc", "b03_dc"],
+      "conclusion": "Runtime full SHA/resolved-root/label guards protect own lifecycle and nested cleanup. Canonical BUILDING/READY denial reaches read_canonical and capture_source, followed by actual seal/publication. Both S01 input/seal orders are observed; the stale seal cannot become current. READY/SEALED mutation denials preserve history, and correction uses a new owner-built revision. No trigger disable or target-output seed."
+    },
+    {
+      "checks": ["b04_dc", "b05_dc", "b06_dc", "b07_dc", "b16_dc"],
+      "conclusion": "Merged full TEST preparation produces real snapshot/F/D/N, both distinct resolutions, shared validation, CommitBundle and both immutable issuances. Relevant transitive revocation denies actual T3/full T6/T7; unrelated revision advance leaves eligibility intact. CONTINUE uses IN_PROGRESS/current binding; RESUME follows authenticated ordinary PAUSE and preserves START. Fresh keys and exact current-authorization/artifact causes distinguish denials from replay or lifecycle mismatch. Actual restricted ApplyControl derives the current locked epoch and atomically writes S17/S18/S43, epoch and bookkeeping."
+    },
+    {
+      "checks": ["b08_pu", "b09_pu", "b09_dc", "b10_pu", "b18_pu"],
+      "conclusion": "Actual pure evaluators deny missing/unknown/future/expired validity and invalid TIMELESS approvals. PU equality exercises [valid_from, valid_until) with cached ACTIVE unchanged. Owner-issued DC certificates bind persisted identities/revisions/windows for both resolutions, validation/admission, manifest/projection, policy TTL, request deadline, calendar and artifacts, with the exact server minimum, trusted issuance clock, deterministic digest/order and materialized closure. Client shortening is honored and extension cannot override finite minima. Inherited/tied upstream bounds remain valid under the packet."
+    },
+    {
+      "checks": ["b11_dc", "b12_dc", "b13_dc", "b15_dc", "b17_pu", "b17_dc"],
+      "conclusion": "Trusted RevokeArtifact performs actual S50/S51 and management receipt/audit/outbox writes. Backdated and future effective_at are audit metadata; waiter permission is denied after actual commit and historical START/A/P is unchanged. Injected abort occurs after the actual routine's writes and rolls back all global effects, after which real T3/full T6/T7 succeed. Both shared/exclusive orders use bounded barriers and pg_blocking_pids rather than sleep or revision polling. Registered A/B/C complete closure includes A-to-B, B-to-C and registration-required A-to-C; omission and leaf revocation reach actual consumer guards."
+    },
+    {
+      "checks": ["b04_dc", "b14_registry_failclosed_stop_support_dc"],
+      "conclusion": "Reauthorize probe uses execute_command and the actual registry_guard_reauthorize, then explicitly aborts without issuance. Existing full composition only accepts CommitBundle and cannot provide complete reauthorization; B04@DC remains NOT_RUN. B14 unavailable-query injection and actual shared-gate timeout deny actual owners with zero effects, while independent S01 ApplyControl STOP completes. This is task DC support; B14 has only WF/E2E declared obligations and neither is promoted."
+    }
+  ],
+  "state_discipline": {
+    "task_check_count": 29,
+    "full_db_case_count": 64,
+    "full_pure_case_count": 7,
+    "mechanical_requirement_pass_count": 19,
+    "deferred_requirement_not_run_count": 12,
+    "deferred_obligations": ["B04@DC", "B04@E2E", "B05@E2E", "B07@E2E", "B08@E2E", "B10@E2E", "B11@PU", "B12@PU", "B14@WF", "B14@E2E", "B16@E2E", "B18@E2E"],
+    "integration_status": "UNMERGED",
+    "product_or_release_pass_inferred": false,
+    "spec_change_required": false
+  },
+  "limitations": [
+    "Database evidence was independently inspected and verified against source and raw persisted records; no independent real-PostgreSQL rerun was authorized for this reviewer.",
+    "Complete full TEST Reauthorize, pure committed-registry evaluator, independent worker STOP/fault infrastructure and public API/rendering E2E remain the packet's explicitly deferred owner gaps.",
+    "Hosted final-head CI and normal merge are separate downstream facts. This PASS binds the exact implementation/result SHA only, subject to the task-scoped REVIEW_RECORD_ONLY rule."
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-028.md",
+    "docs/contracts/boundary_acceptance.md",
+    "tests/db/test_boundary_acceptance.py",
+    "tests/unit/protocol/test_boundary_acceptance.py",
+    "docs/exec-plans/completed/KL-028_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-028/checks-debd5e5/checks.json",
+    "docs/exec-plans/evidence/KL-028/checks-debd5e5/boundary_full_db_suite.log",
+    "docs/exec-plans/evidence/KL-028/checks-debd5e5/boundary_full_unit_suite.log",
+    "docs/exec-plans/evidence/KL-028/checks-debd5e5/layer-ledger.json",
+    "docs/exec-plans/reviews/KL-028/protocol-raw/audit.py",
+    "docs/exec-plans/reviews/KL-028/protocol-raw/audit.json",
+    "docs/exec-plans/reviews/KL-028/protocol-raw/pure-rerun.log",
+    "docs/exec-plans/reviews/KL-028/protocol-raw/pure-rerun.xml"
+  ]
+}

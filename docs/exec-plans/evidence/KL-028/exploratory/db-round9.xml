@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="5.293" timestamp="2026-10-01T22:51:26.461145-07:00" hostname="Daves-MacBook-Pro---26.local"><testcase classname="tests.db.test_boundary_acceptance" name="test_b06_revoke_before_publish[True]" time="4.958"><failure message="TypeError: witness() got multiple values for argument 'kind'">database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:57726/kineticloop_kl028_boundary_9268fc8_3635a672... 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:57726/kineticloop_kl028_boundary_9268fc8_3635a672a23d', ...}
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x10d982300&gt;
+revoke_first = True
+
+    @pytest.mark.parametrize("revoke_first", [True, False])
+    def test_b06_revoke_before_publish(database_urls: Any, monkeypatch: Any, revoke_first: bool) -&gt; None:
+&gt;       _registry_race(database_urls, monkeypatch, "T3", revoke_first)
+
+tests/db/test_boundary_acceptance.py:781: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/db/test_boundary_acceptance.py:1179: in _registry_race
+    witness(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+label = 'both_registry_orders'
+values = {'kind': 'T3', 'persisted': {'admission_decisions': [({'action_scope': 'TEST_ONLY', 'content_hash': '17756f9d96149eb06... 'content_schema_version': 1, 'effective_at': None, ...},)], 'authorization_issuances': [], ...}, 'revoke_first': True}
+
+    def witness(label: str, **values: Any) -&gt; None:
+&gt;       D.witness(label, tested_commit=head(), **values)
+E       TypeError: witness() got multiple values for argument 'kind'
+
+tests/db/test_boundary_acceptance.py:88: TypeError</failure></testcase></testsuite></testsuites>
