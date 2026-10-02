@@ -2512,6 +2512,14 @@ def m3_closure_plan_errors(text):
     return [] if hashlib.sha256(block.encode()).hexdigest() == '016ebe910b40724dc7cf7b00ab0bc384fa0d5ef6b8749ae6ea741c6126023878' else ['m3-closure-plan']
 
 
+def m3_governance_plan_prefix_errors(root, base, reviewed):
+    """Compare committed plan revisions in both ordinary and review-only PR gates."""
+    before = git(root, 'show', base + ':' + PROJECT_PLAN).decode()
+    after = git(root, 'show', reviewed + ':' + PROJECT_PLAN).decode()
+    return ([] if after.split('## M3 exit-evidence mapping — HG044', 1)[0] == before + '\n'
+            else ['governance-hg044-plan-prefix'])
+
+
 def m3_closure_record_errors(root, path, revision='HEAD'):
     """An optional closure instance is itself a committed regular blob, never ambient evidence."""
     try:
@@ -3469,10 +3477,8 @@ def validate(root, args):
                     if not matches(path, governance_allowed_patterns(change_id)):
                         errors.append('governance-write-scope:' + change_id + ':' + path)
                 if change_id == 'HG-044':
-                    before_plan = git(root, 'show', governance_base + ':' + PROJECT_PLAN).decode()
-                    after_plan = git(root, 'show', governance_target + ':' + PROJECT_PLAN).decode()
-                    if after_plan.split('## M3 exit-evidence mapping — HG044', 1)[0] != before_plan + '\n':
-                        errors.append('governance-hg044-plan-prefix')
+                    errors.extend(m3_governance_plan_prefix_errors(
+                        root, governance_base, reviewed))
                 declared = set(record['files_changed'])
                 if declared != governance_changed:
                     errors.append('governance-files-changed-mismatch:' + change_id)

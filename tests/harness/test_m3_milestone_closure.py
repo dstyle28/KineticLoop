@@ -385,6 +385,31 @@ def test_legacy_m1_m2_schema_and_validator_behavior_unchanged():
     assert v.m2_milestone_closure_errors(ROOT, m2, *SCHEMAS, b, tasks) == []
 
 
+@pytest.mark.parametrize('edited_prefix', [False, True])
+def test_hg044_plan_prefix_reads_committed_reviewed_revision(tmp_path, edited_prefix):
+    def local_git(*args):
+        return subprocess.check_output([
+            'git', '-c', 'user.name=HG044 Fixture', '-c', 'user.email=test@example.invalid',
+            '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', *args,
+        ], cwd=tmp_path, env=dict(os.environ, GIT_CONFIG_NOSYSTEM='1',
+                                 GIT_CONFIG_GLOBAL=os.devnull), stderr=subprocess.STDOUT).decode().strip()
+    local_git('init', '-q')
+    plan = tmp_path / v.PROJECT_PLAN
+    original = 'Committed protected plan\n'
+    plan.write_text(original)
+    local_git('add', '.')
+    local_git('commit', '-qm', 'protected plan')
+    base = local_git('rev-parse', 'HEAD')
+    prefix = 'Edited protected plan\n' if edited_prefix else original
+    plan.write_text(prefix + '\n## M3 exit-evidence mapping — HG044\nAddendum\n')
+    local_git('add', '.')
+    local_git('commit', '-qm', 'reviewed addendum')
+    reviewed = local_git('rev-parse', 'HEAD')
+    plan.write_text('Ambient working-tree content cannot supply the reviewed plan\n')
+    assert v.m3_governance_plan_prefix_errors(tmp_path, base, reviewed) == (
+        ['governance-hg044-plan-prefix'] if edited_prefix else [])
+
+
 @pytest.mark.parametrize('mutation', ['unmerged', 'missing-review', 'stale-review', 'result-type', 'result-hash', 'reverse-ancestry'])
 def test_integrated_chain_rejects_bad_result_review_and_ancestry(history, mutation):
     record = copy.deepcopy(history.records['KL-028'])

@@ -19,6 +19,8 @@ checks={
  'validation':[python,'-m','kineticloop.db.cli','check-harness'],
  'source_diff':['git','diff','--check',base,tested,'--','.',':(exclude)docs/exec-plans/reviews/HG-044/**'],
 }
+for suite in ('focused','harness','unit'):
+ checks[suite].extend(['--basetemp',f'/private/tmp/hg044-{suite}-{tested[:7]}'])
 key=sys.argv[1];path=here/f'{key}-{tested[:7]}.json';assert not path.exists(),path
 env=dict(os.environ,PYTHONPATH=str(root/'src'),PYTHONDONTWRITEBYTECODE='1',MYPY_CACHE_DIR='/private/tmp/hg044-mypy-cache',RUFF_CACHE_DIR='/private/tmp/hg044-ruff-cache')
 run=subprocess.run(checks[key],env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
