@@ -1,0 +1,266 @@
+{
+  "reviewed_head_sha": "eed165afbd56d3ae551c46166aaec776cf79e625",
+  "tested_commit": "b9fbf9b475e07765db62e67f0104a800036dda4d",
+  "protected_base": "9268fc8dd8c071c02dc5c698274dbf6fcd112776",
+  "implementation_equal_at_tested_and_reviewed": true,
+  "linear_result_evidence_suffix": {
+    "eed165afbd56d3ae551c46166aaec776cf79e625": [
+      "A\tdocs/exec-plans/completed/KL-029_RESULT.yaml",
+      "A\tdocs/exec-plans/evidence/KL-029/audit-evidence.py",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/checks.json",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/harness_regressions_pass.log",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/harness_regressions_pass.xml",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/harness_validation_passes.log",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/lint_passes.log",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/oracle-audit.json",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_declared_evaluation_storage_dc.log",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_declared_evaluation_storage_dc.xml",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_evaluation_principal_live_denials_dc.log",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_evaluation_principal_live_denials_dc.xml",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_namespace_and_boundary_pu.log",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_namespace_and_boundary_pu.xml",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_owner_payload_denials_dc.log",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_owner_payload_denials_dc.xml",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_strict_wire_pu.log",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_strict_wire_pu.xml",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_suite_dc.log",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_suite_dc.xml",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_test_authorization_crossing_denials_dc.log",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_test_authorization_crossing_denials_dc.xml",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/typecheck_passes.log",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/unit_regressions_pass.log",
+      "A\tdocs/exec-plans/evidence/KL-029/checks-b9fbf9b/unit_regressions_pass.xml"
+    ]
+  },
+  "changed_paths": [
+    "docs/contracts/shadow_isolation.md",
+    "docs/exec-plans/completed/KL-029_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-029/audit-evidence.py",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/checks.json",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/harness_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/harness_regressions_pass.xml",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/harness_validation_passes.log",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/lint_passes.log",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/oracle-audit.json",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_declared_evaluation_storage_dc.log",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_declared_evaluation_storage_dc.xml",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_evaluation_principal_live_denials_dc.log",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_evaluation_principal_live_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_namespace_and_boundary_pu.log",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_namespace_and_boundary_pu.xml",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_owner_payload_denials_dc.log",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_owner_payload_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_strict_wire_pu.log",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_strict_wire_pu.xml",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_suite_dc.log",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_suite_dc.xml",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_test_authorization_crossing_denials_dc.log",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_test_authorization_crossing_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/typecheck_passes.log",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/unit_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/unit_regressions_pass.xml",
+    "docs/exec-plans/evidence/KL-029/entry-audit.json",
+    "docs/exec-plans/evidence/KL-029/run-checks.py",
+    "tests/db/test_shadow_isolation.py",
+    "tests/unit/protocol/test_shadow_isolation.py"
+  ],
+  "authority_hashes_verified": true,
+  "schema_valid_result": true,
+  "product_pass_claims": [],
+  "committed_checks": [
+    {
+      "check_id": "shadow_namespace_and_boundary_pu",
+      "sha256": "3b9b8f906fddc568af1c39804cb6d0a5a34a51f5ab7876ba72e3b44b17a6dd3d",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "witness_counts": {}
+    },
+    {
+      "check_id": "shadow_strict_wire_pu",
+      "sha256": "cf071d089ebe46731cdb71b58b132ea7e03e96fb1b40afae6f9ffec6eaea2a0e",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "witness_counts": {}
+    },
+    {
+      "check_id": "shadow_evaluation_principal_live_denials_dc",
+      "sha256": "bbdea68e16d3bad34fa76b2c605498ce6a2347808be4f6493a6f701ed23afe98",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "witness_counts": {
+        "namespace": 1,
+        "actual_T7_positive_guard": 3,
+        "full_TEST_owner_trajectory": 1,
+        "trusted_registration": 1,
+        "declared_external_evaluation_inputs": 1,
+        "positive_scoped_lookup": 5,
+        "scope_denial": 6,
+        "live_privilege_denial": 15,
+        "cleanup": 1
+      }
+    },
+    {
+      "check_id": "shadow_test_authorization_crossing_denials_dc",
+      "sha256": "dcf187c0442d0884126b05ff5dfc398a0646159ef22fb0cb6906e944a5051a91",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "witness_counts": {
+        "namespace": 1,
+        "actual_T7_positive_guard": 3,
+        "full_TEST_owner_trajectory": 1,
+        "trusted_registration": 3,
+        "zero_effect": 9,
+        "scope_denial": 9,
+        "crossing_reads_zero_effect": 1,
+        "cleanup": 1
+      }
+    },
+    {
+      "check_id": "shadow_owner_payload_denials_dc",
+      "sha256": "c4b9762499aece9727c43beeb21a18afb971b589caec7e89dbfdf4afb95f35b9",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "witness_counts": {
+        "namespace": 1,
+        "actual_T7_positive_guard": 3,
+        "full_TEST_owner_trajectory": 1,
+        "zero_effect": 10,
+        "cleanup": 1
+      }
+    },
+    {
+      "check_id": "shadow_declared_evaluation_storage_dc",
+      "sha256": "e64309f5512af7dcec424f033a2abf7db44512cfecaf8218b32d7fb14c7c2769",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "witness_counts": {
+        "namespace": 1,
+        "actual_T7_positive_guard": 3,
+        "full_TEST_owner_trajectory": 1,
+        "trusted_registration": 3,
+        "declared_external_evaluation_inputs": 2,
+        "positive_scoped_lookup": 4,
+        "scope_denial": 12,
+        "zero_effect": 7,
+        "cleanup": 1
+      }
+    },
+    {
+      "check_id": "shadow_suite_dc",
+      "sha256": "4739e66e4b6f5986feba77ea192b13994d9b8360a998b9b925ecaa42afb4716e",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "witness_counts": {
+        "namespace": 4,
+        "actual_T7_positive_guard": 12,
+        "full_TEST_owner_trajectory": 4,
+        "trusted_registration": 7,
+        "declared_external_evaluation_inputs": 3,
+        "positive_scoped_lookup": 9,
+        "scope_denial": 27,
+        "live_privilege_denial": 15,
+        "cleanup": 4,
+        "zero_effect": 26,
+        "crossing_reads_zero_effect": 1
+      }
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "sha256": "03983555b0216560beec1b1447e57a594dea143180bcf87f9d5c6631f8c7c6a7",
+      "counts": null,
+      "witness_counts": {}
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "sha256": "0c5f0035059a93a473d599abf17f97be1f7b7e442191f9cfa90b8bd342a497f4",
+      "counts": {
+        "tests": 234,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "witness_counts": {}
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "sha256": "16e178fbca7ec23df34853e3964dbaae57f1e0f18f9e3053f09510777dd8b528",
+      "counts": {
+        "tests": 790,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "witness_counts": {}
+    },
+    {
+      "check_id": "lint_passes",
+      "sha256": "f4f426adcc4bddf22a49153a3d33b51ea63b24d735a2d2332d10316dbe74c27c",
+      "counts": null,
+      "witness_counts": {}
+    },
+    {
+      "check_id": "typecheck_passes",
+      "sha256": "58f3dfc9768b0e0a70e54ef2a034873bf2a432173b8f59f4bd24cfe39e09793a",
+      "counts": null,
+      "witness_counts": {}
+    }
+  ],
+  "suite_witness_counts": {
+    "namespace": 4,
+    "actual_T7_positive_guard": 12,
+    "full_TEST_owner_trajectory": 4,
+    "trusted_registration": 7,
+    "declared_external_evaluation_inputs": 3,
+    "positive_scoped_lookup": 9,
+    "scope_denial": 27,
+    "live_privilege_denial": 15,
+    "cleanup": 4,
+    "zero_effect": 26,
+    "crossing_reads_zero_effect": 1
+  },
+  "suite_guard_counts": {
+    "DB_scope_lookup/application_scope": 27,
+    "DB_table_privilege": 15,
+    "registration_guard": 3,
+    "require_wire": 5,
+    "owner_current_bundle_pre_T7": 1,
+    "strict_owner_ingress": 10,
+    "DB_storage_namespace": 7
+  },
+  "fresh_pure_checks": {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "fresh_DB_rerun": false,
+  "DB_rerun_reason": "exclusive resource owned by DB reviewer; source and committed raw evidence audited independently"
+}

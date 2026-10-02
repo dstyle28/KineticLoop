@@ -1,0 +1,10 @@
+{"tested_commit": "b9fbf9b475e07765db62e67f0104a800036dda4d", "command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_strict_shadow_wire", "resolved_root": "/Users/davetian/.codex/worktrees/17d3/KineticLoop", "oracle": "Real ShadowEvaluationArtifact construction + from_payload/from_json rejects every non-null live target, extra/missing/duplicate field and unknown schema/mode/disposition/storage boundary. Positive canonical roundtrip preserves exact null targets and SHADOW_ONLY/NOT_EXECUTABLE. TestOnlyAuthorizationScope rejects EVALUATION/SUBJECT/ADMIN actor and production/evaluation subject/policy/environment boundaries, direct-write flag and disabled owner-guard flag. Real ExecutionIdentity rejects evaluation/shadow role and evaluation principal; actual strict public command parser rejects shadow scope; require_wire rejects a genuine valid ProductionScope command and separately authenticated actor/subject/policy/environment mismatch and altered request hash. Do not invent a commit-state evaluator or mini-model.", "pytest_addopts": "-rA --junitxml=/Users/davetian/.codex/worktrees/17d3/KineticLoop/docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_strict_wire_pu.xml"}
+.                                                                        [100%]
+==================================== PASSES ====================================
+___________________________ test_strict_shadow_wire ____________________________
+----------------------------- Captured stdout call -----------------------------
+STRICT_WIRE_PU canonical_shadow_hash 8b2735f973e1143a6f49c0950cde3cecc439665ca434fd3aedc55d30c4e6d87c guard_reached=strict_contract/require_wire; no_T7_claim
+- generated xml file: /Users/davetian/.codex/worktrees/17d3/KineticLoop/docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_strict_wire_pu.xml -
+=========================== short test summary info ============================
+PASSED tests/unit/protocol/test_shadow_isolation.py::test_strict_shadow_wire
+1 passed in 0.10s

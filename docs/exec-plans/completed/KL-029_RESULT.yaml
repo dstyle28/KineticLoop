@@ -1,0 +1,139 @@
+task_identity: harness-backlog-v0.2/KL-029
+display_task_id: KL-029
+task_definition_version: v0.2
+base_commit: 9268fc8dd8c071c02dc5c698274dbf6fcd112776
+tested_commit: b9fbf9b475e07765db62e67f0104a800036dda4d
+merge_commit: null
+task_status: PASS
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: Tests-only shadow isolation over the actual full TEST owner trajectory. All twelve exact packet checks
+  pass on the tested implementation, with no skips/xfails. Registered evaluation confidentiality, non-enumeration,
+  storage separation, strict wire/owner ingress and fresh TEST crossing denials preserve complete immutable histories.
+  No shadow API/store, product, M3 or release PASS is inferred.
+commands_run:
+- check_id: shadow_namespace_and_boundary_pu
+  command: uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_namespace_and_boundary
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_namespace_and_boundary_pu.log
+- check_id: shadow_strict_wire_pu
+  command: uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_strict_shadow_wire
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_strict_wire_pu.log
+- check_id: shadow_evaluation_principal_live_denials_dc
+  command: uv run pytest -q tests/db/test_shadow_isolation.py::test_evaluation_principal_live_denials
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_evaluation_principal_live_denials_dc.log
+- check_id: shadow_test_authorization_crossing_denials_dc
+  command: uv run pytest -q tests/db/test_shadow_isolation.py::test_test_authorization_crossing_denials
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_test_authorization_crossing_denials_dc.log
+- check_id: shadow_owner_payload_denials_dc
+  command: uv run pytest -q tests/db/test_shadow_isolation.py::test_shadow_payload_owner_denials
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_owner_payload_denials_dc.log
+- check_id: shadow_declared_evaluation_storage_dc
+  command: uv run pytest -q tests/db/test_shadow_isolation.py::test_declared_evaluation_storage_isolation
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_declared_evaluation_storage_dc.log
+- check_id: shadow_suite_dc
+  command: uv run pytest -q tests/unit/protocol/test_shadow_isolation.py tests/db/test_shadow_isolation.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_suite_dc.log
+- check_id: harness_validation_passes
+  command: uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-029/checks-b9fbf9b/harness_validation_passes.log
+- check_id: unit_regressions_pass
+  command: uv run kl test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-029/checks-b9fbf9b/unit_regressions_pass.log
+- check_id: harness_regressions_pass
+  command: uv run kl test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-029/checks-b9fbf9b/harness_regressions_pass.log
+- check_id: lint_passes
+  command: uv run kl lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-029/checks-b9fbf9b/lint_passes.log
+- check_id: typecheck_passes
+  command: uv run kl typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-029/checks-b9fbf9b/typecheck_passes.log
+requirements_covered: []
+files_changed:
+- docs/contracts/shadow_isolation.md
+- docs/exec-plans/completed/KL-029_RESULT.yaml
+- docs/exec-plans/evidence/KL-029/audit-evidence.py
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/checks.json
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/harness_regressions_pass.log
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/harness_regressions_pass.xml
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/harness_validation_passes.log
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/lint_passes.log
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/oracle-audit.json
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_declared_evaluation_storage_dc.log
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_declared_evaluation_storage_dc.xml
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_evaluation_principal_live_denials_dc.log
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_evaluation_principal_live_denials_dc.xml
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_namespace_and_boundary_pu.log
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_namespace_and_boundary_pu.xml
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_owner_payload_denials_dc.log
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_owner_payload_denials_dc.xml
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_strict_wire_pu.log
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_strict_wire_pu.xml
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_suite_dc.log
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_suite_dc.xml
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_test_authorization_crossing_denials_dc.log
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_test_authorization_crossing_denials_dc.xml
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/typecheck_passes.log
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/unit_regressions_pass.log
+- docs/exec-plans/evidence/KL-029/checks-b9fbf9b/unit_regressions_pass.xml
+- docs/exec-plans/evidence/KL-029/entry-audit.json
+- docs/exec-plans/evidence/KL-029/run-checks.py
+- tests/db/test_shadow_isolation.py
+- tests/unit/protocol/test_shadow_isolation.py
+decisions:
+- Verified protected master 9268fc8, clean fresh entry, no duplicate task PR, normal KL008/KL017/KL027 merges and
+  their SHA-bound reviews, and M2 mechanical closure before editing. Own shadow_isolation_suite resource and three
+  implementation paths remain disjoint from concurrent KL028.
+- Fixed shadow namespace binds exact runtime 40-hex HEAD and SHA256(os.fsencode(resolved-root))12. Malformed/foreign/default/ambient/peer-root
+  targets fail before lifecycle runner calls, including nested cleanup. Selected lifecycle is explicitly passed
+  through merged two-phase bootstrap. Nested Python migration and owner connections validate the actual database
+  and bounded timeouts; owner verifier asserts migration head.
+- Read-only merged demo recipes use only the explicitly selected KL029 connection adapter. No imported foreign pytest
+  lifecycle runs. Actual admitted execution input, canonical membership/complete/seal, projection/build/publication,
+  planning acquire/snapshot/progress, full F/D/N, both resolutions/shared validation, T6 and T7 produce the TEST
+  source/output history.
+- Four independent combined-suite positive trajectories yield twelve actual successful T7 eligibility observations,
+  complete ordered TRAINING/NUTRITION member/P/A/validation/resolution/closure/certificate identities, START/CONTINUE/ordinary
+  PAUSE/RESUME and immutable START retention, with atomic receipt/event/outbox joins.
+- Rebuilt fresh wire reaches exact TEST registration mismatch for principal/policy/environment; separately authenticated
+  wire mismatch cases reach require_wire; registered TEST B with initial upstream coordination and B wire using
+  A authorization reaches exact current bundle membership missing before T7. Fresh UUID keys exclude historical
+  replay masking.
+- Registered evaluation lookup and wrapper return identical foreign/missing denials with declared BOUNDED_SCOPE_LOOKUP
+  metadata, never a measured constant-time claim. Positive principal reads establish own TEST live and own EVALUATION
+  archived objects; actual ACL and namespace storage denials remain separately labeled.
+- Only explicitly declared external historical S46/S47 inputs and required same-subject archived S24/S48/FK backing
+  closure are fixtures. Their external source refs, row hashes, IDs, recorded-output mode and cutoff are logged;
+  FK checks/triggers remain enabled and global registry revision is unchanged. They are not live TEST target seeds
+  or shadow workflow outputs.
+- Raw evidence audit verifies 15 privilege denials, 26 full before/after history equalities, 27 scope denials, four
+  empty cleanup inventories and distinct ingress/registration/privilege/scope/current-bundle/positive-T7 reach labels.
+  No source, migration, role grant, shared helper/conftest, lifecycle, CI, lockfile or governance write occurred.
+known_limitations:
+- Actual real shadow store/API usability is NOT_RUN and remains assigned to downstream KL045. API/rendering, R04@E2E,
+  G-SHADOW usability, M3 and release closure are NOT_RUN. All product requirement statuses remain unchanged; production
+  auto-activation stays disabled.
+- Earlier ingress/registration/DB privilege/storage rejections do not establish later T6/T7 eligibility denial.
+  TEST-B current bundle membership is an owner pre-T7 denial. Positive actual T7 guard observations are explicitly
+  distinguished.
+- Evaluation archival backing fixtures establish storage boundaries only; they are not evidence of a ReplayService
+  writer, end-to-end evaluation workflow, canonical archived content reconstruction or knowledge-cutoff tool policy.
+- Trusted cluster administration/provisioning remains the existing boundary; these tests grant no new runtime roles
+  and do not claim protection against a superuser operator.
+follow_up_tasks:
+- KL045 must implement and verify real isolated shadow store/API usability under its own packet.
+- Coordinator must serialize normal merge, master synchronization and worktree cleanup with KL028 after all required
+  independent reviews and final-head hosted CI.
+spec_change_request: null
