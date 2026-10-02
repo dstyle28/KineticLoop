@@ -1,7 +1,7 @@
 change_identity: harness-governance-v0.1/HG-046
 display_change_id: HG-046
 base_commit: 26906bd7f4444914c228e98377f2b164fee0dd5d
-tested_commit: 0d0a23c245af154db389c0876d65a98c26903939
+tested_commit: 58de0f7dfbf39947f2c2c1852cc927823e79b4c3
 change_status: PASS
 summary: Prospective lossless content-addressed gzip evidence, revision-bound safe retrieval, M3 semantic decoding
   and protected-base PR evidence budget.
@@ -21,10 +21,47 @@ files_changed:
 - docs/exec-plans/evidence/HG-046/focused.json
 - docs/exec-plans/evidence/HG-046/harness.json
 - docs/exec-plans/evidence/HG-046/lint.json
+- docs/exec-plans/evidence/HG-046/selected-58de0f7/63c4e850e1190c5caa3c4bdb8ca45e8ec26506e718668a5dbdddbbb361664495.gz
+- docs/exec-plans/evidence/HG-046/selected-58de0f7/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-046/selected-58de0f7/9296287337fb3d5c6096859eb1530d1f884e6565d61c955097df8bda24c78636.gz
+- docs/exec-plans/evidence/HG-046/selected-58de0f7/aa3f3fffc890fbcbb1d545ae3b1643de0f1d19181264830ef57f9f7f6e5a2ce4.gz
+- docs/exec-plans/evidence/HG-046/selected-58de0f7/authority.json
+- docs/exec-plans/evidence/HG-046/selected-58de0f7/cdbe5606f22cc97fcfb9ab19ad06c7829a6cde89c5dc534a12264801f1f2cadc.gz
+- docs/exec-plans/evidence/HG-046/selected-58de0f7/e2a8f969d7dc25b39c3a77ad08482321186f25f23d24fce083dcd69d4740d1dc.gz
+- docs/exec-plans/evidence/HG-046/selected-58de0f7/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-046/selected-58de0f7/focused.json
+- docs/exec-plans/evidence/HG-046/selected-58de0f7/harness.json
+- docs/exec-plans/evidence/HG-046/selected-58de0f7/lint.json
+- docs/exec-plans/evidence/HG-046/selected-58de0f7/source_diff.json
+- docs/exec-plans/evidence/HG-046/selected-58de0f7/typecheck.json
+- docs/exec-plans/evidence/HG-046/selected-58de0f7/unit.json
 - docs/exec-plans/evidence/HG-046/source_diff.json
 - docs/exec-plans/evidence/HG-046/typecheck.json
 - docs/exec-plans/evidence/HG-046/unit.json
 - docs/exec-plans/governance/HG-046.yaml
+- docs/exec-plans/reviews/HG-046/GENERAL-r1-raw/1ff9ddee3051c5e079ac812aad2513a94b974ab5165bdb6264ec23c5da44e281.gz
+- docs/exec-plans/reviews/HG-046/GENERAL-r1-raw/assessment.md
+- docs/exec-plans/reviews/HG-046/GENERAL-r1-raw/de0e4da14da77faa8a2698c2766b1a3915524c6db7b5b2a047c5644a27343588.gz
+- docs/exec-plans/reviews/HG-046/GENERAL-r1-raw/extension-probe.json
+- docs/exec-plans/reviews/HG-046/GENERAL-r1-raw/review.json
+- docs/exec-plans/reviews/HG-046/GENERAL-r1-raw/verification.json
+- docs/exec-plans/reviews/HG-046/PROTOCOL-r1-raw/3c74e37bc499d80d090529fb4b72dddc134146ba0cb5a5087e2feb1a343ed004.gz
+- docs/exec-plans/reviews/HG-046/PROTOCOL-r1-raw/50874f749a412d3d3cc41e3283a8a55af821961bf316faa573f89d26aef02ee7.gz
+- docs/exec-plans/reviews/HG-046/PROTOCOL-r1-raw/assessment.md
+- docs/exec-plans/reviews/HG-046/PROTOCOL-r1-raw/bbdba15a52473d1c877b19368a7ebf28eeb4c70891978c64a163cb12946d2322.gz
+- docs/exec-plans/reviews/HG-046/PROTOCOL-r1-raw/provenance.json
+- docs/exec-plans/reviews/HG-046/PROTOCOL-r1-raw/provenance.py
+- docs/exec-plans/reviews/HG-046/PROTOCOL-r1-raw/reproduce-m3.py
+- docs/exec-plans/reviews/HG-046/PROTOCOL-r1-raw/reproduce.py
+- docs/exec-plans/reviews/HG-046/PROTOCOL-r1-raw/reproduction-success.json
+- docs/exec-plans/reviews/HG-046/PROTOCOL-r1-raw/reproduction.json
+- docs/exec-plans/reviews/HG-046/PROTOCOL-r1-raw/review.json
+- docs/exec-plans/reviews/HG-046/SECURITY_DATA_BOUNDARY-r1-raw/5b83e4526d5401415d40a954ebdd31f9860c6c4c36ccf737105966ab93317213.gz
+- docs/exec-plans/reviews/HG-046/SECURITY_DATA_BOUNDARY-r1-raw/68c06629c0b31ca92afdd3d37cc15f06a2b50d456a43a03fb1e9009fdb481150.gz
+- docs/exec-plans/reviews/HG-046/SECURITY_DATA_BOUNDARY-r1-raw/adversarial.json
+- docs/exec-plans/reviews/HG-046/SECURITY_DATA_BOUNDARY-r1-raw/assessment.md
+- docs/exec-plans/reviews/HG-046/SECURITY_DATA_BOUNDARY-r1-raw/checks.json
+- docs/exec-plans/reviews/HG-046/SECURITY_DATA_BOUNDARY-r1-raw/review.json
 - docs/harness/EVIDENCE_STORAGE_POLICY.md
 - docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
 - docs/harness/M3_CLOSURE_CONTRACT.md
@@ -43,39 +80,43 @@ checks_run:
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m
     pytest -q tests/harness/test_compact_evidence.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/focused.json
+  evidence_ref: docs/exec-plans/evidence/HG-046/selected-58de0f7/focused.json
 - check_id: harness
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m
     kineticloop.db.cli test-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/harness.json
+  evidence_ref: docs/exec-plans/evidence/HG-046/selected-58de0f7/harness.json
 - check_id: unit
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m
     kineticloop.db.cli test-unit
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/unit.json
+  evidence_ref: docs/exec-plans/evidence/HG-046/selected-58de0f7/unit.json
 - check_id: lint
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m
     kineticloop.db.cli lint
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/lint.json
+  evidence_ref: docs/exec-plans/evidence/HG-046/selected-58de0f7/lint.json
 - check_id: typecheck
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m
     kineticloop.db.cli typecheck
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/typecheck.json
+  evidence_ref: docs/exec-plans/evidence/HG-046/selected-58de0f7/typecheck.json
 - check_id: authority
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m
     kineticloop.db.cli check-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/authority.json
+  evidence_ref: docs/exec-plans/evidence/HG-046/selected-58de0f7/authority.json
 - check_id: source_diff
   command: git diff --check 26906bd7f4444914c228e98377f2b164fee0dd5d HEAD
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/source_diff.json
+  evidence_ref: docs/exec-plans/evidence/HG-046/selected-58de0f7/source_diff.json
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
+- Initial independent reviews rejected an extension-based compact-envelope bypass. Those findings and exact reproductions
+  are retained in own r1 review child directories. The corrected implementation recognizes reserved storage content
+  independent of extension, checks JSON raw_utf8 independent of names, and binds ancillary M3 command metadata;
+  fresh reviews are required for this revision.
 - Storage/governance only. No runtime, migration, frozen baseline, task packet, backlog, requirement status, production
   activation or executable shadow changes. Related product/release requirements remain NOT_RUN.
 - Historical evidence/reviews are unchanged. This is a prospective policy, not a historical archive or deletion
