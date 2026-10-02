@@ -4026,13 +4026,13 @@ def m3_next_wave_packet_errors(task, text):
 
 
 M3_BOUNDARY_SHADOW_IDS = frozenset({'KL-028', 'KL-029'})
-M3_BOUNDARY_SHADOW_PLAN_SHA256 = 'c949ba30bcbabe0847ebe6e17b62d986ae75b69672f30cb70f158f912194ca38'
+M3_BOUNDARY_SHADOW_PLAN_SHA256 = 'cddb7b0fa3b6ca3debe76e923e76ccf7b431cd03a54729fb8119b3c695dcbe52'
 M3_BOUNDARY_SHADOW_DEFINITION_HASHES = {
-    'KL-028': '838383ca8d8e0ff857ba8861f3c3e98d0a463b8d8a5852c0936d07a489d62fd0',
+    'KL-028': '275b2e7138e4248e87655938e00a0b31a43fb2e408fb8a7e75f14d15bf9ba2a6',
     'KL-029': '5476a35e643bf738bf61eaebef492ccc6a72207a31fbfa661920d963da8ee8ad',
 }
 M3_BOUNDARY_SHADOW_PACKET_HASHES = {
-    'KL-028': 'dfcd8fa7fe018ff850d40c7df6d908e3f77d415dab28a8a820c714602c05cbcf',
+    'KL-028': 'cd6aea064279ce79d41858677dd2d3f2b3454fa32d66c99e8f5ab709dc21a374',
     'KL-029': '03de05bd3e31c65344630a6f7a651872b5c326cbea7b76b611940f78f618e393',
 }
 B_LAYER_OBLIGATIONS = {
@@ -4088,7 +4088,7 @@ def m3_boundary_layer_errors(ledger, requirements=None):
         deferred = layer in ('WF', 'E2E') or (rid in ('B11', 'B12') and layer == 'PU')
         disposition = 'DEFERRED_LAYER' if deferred else 'KL028_PLANNED_EXECUTABLE'
         if rid == 'B04' and layer == 'DC':
-            disposition = 'CONDITIONAL_DC_FULL_ORACLE_OR_DEFERRED'
+            disposition = 'DEFERRED_FULL_ORACLE_WITH_GUARD_SUPPORT'
         if (row.get('disposition') != disposition
                 or (deferred and (not row.get('reason') or not row.get('required_future_owner')))
                 or (not deferred and any(not row.get(field) for field in

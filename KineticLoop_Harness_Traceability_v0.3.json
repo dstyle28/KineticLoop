@@ -3661,7 +3661,7 @@
         {
           "check_id": "b04_dc",
           "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b04_relevant_revoke_issue_reauthorize",
-          "pass_oracle": "ProtocolExecutionService.commit_full; execute_command(Reauthorize) RestrictedSqlSession; registry_guard_reauthorize; revoke_artifact: Build actual owner-produced full current F/D/N/validation trajectory. Positive full CommitBundle creates immutable S42 certificates/materialized closure. In independent current still-live precommit trajectories, revoke exact transitive dependency then full commit denies ARTIFACT_REVOKED with zero S38–S43/intent success/receipts/events/outbox. Exercise actual existing Reauthorize registry gate with positive guard and relevant revoke negative, visibly label guard support; B04@DC requirement stays NOT_RUN unless real new admitted revalidation intent/current attempt/latest manifest enables complete actual Reauthorize owner positive issuance and relevant-transitive-revoke denial. No reopening terminal intent, seeded S42, or bare callback no-op as full T6 evidence."
+          "pass_oracle": "ProtocolExecutionService.commit_full; execute_command(Reauthorize) RestrictedSqlSession; registry_guard_reauthorize; revoke_artifact: Build actual owner-produced full current F/D/N/validation trajectory. Positive full CommitBundle creates immutable S42 certificates/materialized closure. In independent current still-live precommit trajectories, revoke exact transitive dependency then full commit denies ARTIFACT_REVOKED with zero S38–S43/intent success/receipts/events/outbox. Exercise actual existing Reauthorize registry gate with positive guard and relevant revoke negative, visibly label guard support; B04@DC requirement stays NOT_RUN because the merged full TEST owner does not implement complete reauthorization; a separate bounded owner must enable real new admitted revalidation intent/current attempt/latest manifest, complete actual Reauthorize positive issuance and relevant-transitive-revoke denial before any B04@DC PASS. No reopening terminal intent, seeded S42, or bare callback no-op as full T6 evidence."
         },
         {
           "check_id": "b05_dc",
@@ -3691,7 +3691,7 @@
         {
           "check_id": "b09_dc",
           "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b09_server_minimum_certificate",
-          "pass_oracle": "ProtocolExecutionService.commit_full + RepositoryTransaction prepare_authorization_basis: Owner-produced inputs with independently varied declared finite bounds; successful real T6 writes S42.valid_until exact server minimum incl manifest/projection/resolver/admission/artifact/policy TTL/request deadline/calendar/client shortening. Assert trusted post-lock valid_from, exact certificate IDs/revisions/windows/method/hash/materialized closure; positive client extension cannot override min. Never timestamp-overwrite target owner outputs to create evidence."
+          "pass_oracle": "ProtocolExecutionService.commit_full + RepositoryTransaction prepare_authorization_basis: Owner-produced inputs with independently varied declared finite bounds; successful real T6 writes S42.valid_until exact server minimum incl manifest/projection/resolver/admission/artifact/policy TTL/request deadline/calendar/client shortening. Assert trusted post-lock valid_from, exact certificate IDs/revisions/windows/method/hash/materialized closure; positive client extension cannot override min. Never timestamp-overwrite target owner outputs to create evidence. Inherited or tied minima from upstream-computed manifest/projection/artifact bounds are valid; never require every bound to be independently unique. Assert all required certificate bounds and exact minimum instead."
         },
         {
           "check_id": "b10_pu",
@@ -3716,7 +3716,7 @@
         {
           "check_id": "b15_dc",
           "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b15_fresh_registry_both_orders",
-          "pass_oracle": "ProtocolExecutionService.publish/commit_full/start + revoke_artifact: For each actual T3/fullT6/T7, both serial orders with exact A→B→C closure, bounded task-local barriers and pg_blocking_pids proving actual S51 blocker/waiter. Revoke-first relevant waiter denies and has zero target+receipt/event/outbox effects; operation-first commits once then revoke commits and later fresh current check denies. Snapshot cannot predate gate; assert lock trace S51→S01 and S50/S51 exact revision. No sleeps or repeated revision read as race oracle."
+          "pass_oracle": "ProtocolExecutionService.publish/commit_full/start + revoke_artifact: For each actual T3/fullT6/T7, both serial orders with exact A→B→C closure, bounded task-local barriers and pg_blocking_pids proving actual S51 blocker/waiter. Revoke-first relevant waiter denies and has zero target+receipt/event/outbox effects; operation-first commits once then revoke commits and later fresh current check denies. Snapshot cannot predate gate; assert lock trace S51→S01 and S50/S51 exact revision. No sleeps or repeated revision read as race oracle. The three-node transitive path may also contain the registration-required A→C closure edge; do not require an exclusively two-edge graph."
         },
         {
           "check_id": "b16_dc",
@@ -3726,12 +3726,12 @@
         {
           "check_id": "b17_pu",
           "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b17_transitive_closure_omission_denied",
-          "pass_oracle": "contracts.artifacts.validate_complete_dependency_closure + protocol.authorization.evaluate_validity_closure: Actual pure closure contract rejects A-only/direct-only declared closure for A→B→C and accepts exact A/B/C identities. Feed that complete graph to the actual validity evaluator with leaf C revoked=True: denial is dependency current admission unprovable despite unrevoked direct A/B. All-unrevoked complete bounded graph succeeds with exact certificate IDs/digest; no caller boolean or invented graph evaluator substitutes. Actual PostgreSQL revoke remains separate DC."
+          "pass_oracle": "contracts.artifacts.validate_complete_dependency_closure + protocol.authorization.evaluate_validity_closure: Actual pure closure contract rejects A-only/direct-only declared closure for A→B→C and accepts exact A/B/C identities. Feed that complete graph to the actual validity evaluator with leaf C revoked=True: denial is dependency current admission unprovable despite unrevoked direct A/B. All-unrevoked complete bounded graph succeeds with exact certificate IDs/digest; no caller boolean or invented graph evaluator substitutes. Actual PostgreSQL revoke remains separate DC. The three-node transitive path may also contain the registration-required A→C closure edge; do not require an exclusively two-edge graph."
         },
         {
           "check_id": "b17_dc",
           "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b17_transitive_revoke_denied",
-          "pass_oracle": "artifact registration + revoke_artifact + ProtocolExecutionService T3/T6/T7: Register exact A→B→C through merged artifact owner, bind all identities in actual owner-produced manifest/A/materialized authorization closure. Revoke leaf C then affected actual T3/T6/T7 deny despite direct A unrevoked; positive unrevoked graph succeeds; closure omission through actual guard denies missing closure, with all identities/hashes and zero affected target/success effects."
+          "pass_oracle": "artifact registration + revoke_artifact + ProtocolExecutionService T3/T6/T7: Register exact A→B→C through merged artifact owner, bind all identities in actual owner-produced manifest/A/materialized authorization closure. Revoke leaf C then affected actual T3/T6/T7 deny despite direct A unrevoked; positive unrevoked graph succeeds; closure omission through actual guard denies missing closure, with all identities/hashes and zero affected target/success effects. The three-node transitive path may also contain the registration-required A→C closure edge; do not require an exclusively two-edge graph."
         },
         {
           "check_id": "b18_pu",

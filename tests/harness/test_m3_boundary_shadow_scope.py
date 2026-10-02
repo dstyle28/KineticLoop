@@ -94,6 +94,9 @@ def test_all_31_given_when_then_layers_and_truthful_dispositions() -> None:
             assert row['reason'] and row['required_future_owner']
     b04 = next(row for row in ledger if (row['requirement_id'], row['layer']) == ('B04', 'DC'))
     assert 'guard support' in b04['qualification'] and 'NOT_RUN' in b04['qualification']
+    assert b04['disposition'] == 'DEFERRED_FULL_ORACLE_WITH_GUARD_SUPPORT'
+    assert 'explicitly rejects Reauthorize' in b04['qualification']
+    assert len(deferred) + 1 == 12
 
 
 @pytest.mark.parametrize('mutation', ['omit', 'duplicate', 'relabel', 'pass', 'skip', 'weaken', 'remove_owner', 'promote_deferred', 'remove_b04_qualification'])
@@ -130,7 +133,7 @@ def test_packet_boundary_drift(name: str, heading: str) -> None:
 
 def test_real_guard_and_missing_layer_distinctions() -> None:
     boundary, shadow = PACKETS['KL-028'], PACKETS['KL-029']
-    for phrase in ('19 obligations', 'conditional B04', 'or 12', 'API→workflow→DB→eligibility/rendering',
+    for phrase in ('19 obligations', '12 layers are deferred', 'explicitly reject', 'API→workflow→DB→eligibility/rendering',
                    'B11/B12 PU', 'KL039', 'M3→M4 cycle', 'only M1/M2', 'not every B product requirement PASS'):
         assert phrase in boundary
         assert phrase in (ROOT / v.PROJECT_PLAN).read_text()
@@ -142,7 +145,7 @@ def test_real_guard_and_missing_layer_distinctions() -> None:
     assert v.task_definition_errors(ROOT, BACKLOG)[0] == []
 
 
-@pytest.mark.parametrize('phrase', ['19 obligations', 'conditional B04', 'API→workflow→DB→eligibility/rendering',
+@pytest.mark.parametrize('phrase', ['19 obligations', '12 layers are deferred', 'API→workflow→DB→eligibility/rendering',
                                    'M3→M4 cycle', 'only M1/M2', 'read-only shared source'])
 def test_parallel_and_deferred_plan_drift_fails_closed(phrase: str) -> None:
     text = (ROOT / v.PROJECT_PLAN).read_text()

@@ -130,13 +130,13 @@
       "given": "Relevant artifact is revoked",
       "when": "Issue/reauthorize depends transitively on revoked artifact",
       "then": "T6 authorization issuance denied",
-      "disposition": "CONDITIONAL_DC_FULL_ORACLE_OR_DEFERRED",
+      "disposition": "DEFERRED_FULL_ORACLE_WITH_GUARD_SUPPORT",
       "check_id": "b04_dc",
       "selector": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b04_relevant_revoke_issue_reauthorize",
       "owner": "ProtocolExecutionService.commit_full; execute_command(Reauthorize) RestrictedSqlSession; registry_guard_reauthorize; revoke_artifact",
-      "pass_oracle": "Build actual owner-produced full current F/D/N/validation trajectory. Positive full CommitBundle creates immutable S42 certificates/materialized closure. In independent current still-live precommit trajectories, revoke exact transitive dependency then full commit denies ARTIFACT_REVOKED with zero S38\u2013S43/intent success/receipts/events/outbox. Exercise actual existing Reauthorize registry gate with positive guard and relevant revoke negative, visibly label guard support; B04@DC requirement stays NOT_RUN unless real new admitted revalidation intent/current attempt/latest manifest enables complete actual Reauthorize owner positive issuance and relevant-transitive-revoke denial. No reopening terminal intent, seeded S42, or bare callback no-op as full T6 evidence.",
+      "pass_oracle": "Build actual owner-produced full current F/D/N/validation trajectory. Positive full CommitBundle creates immutable S42 certificates/materialized closure. In independent current still-live precommit trajectories, revoke exact transitive dependency then full commit denies ARTIFACT_REVOKED with zero S38\u2013S43/intent success/receipts/events/outbox. Exercise actual existing Reauthorize registry gate with positive guard and relevant revoke negative, visibly label guard support; B04@DC requirement stays NOT_RUN because the merged full TEST owner does not implement complete reauthorization; a separate bounded owner must enable real new admitted revalidation intent/current attempt/latest manifest, complete actual Reauthorize positive issuance and relevant-transitive-revoke denial before any B04@DC PASS. No reopening terminal intent, seeded S42, or bare callback no-op as full T6 evidence.",
       "frozen_clauses": "Protocol \u00a7\u00a70.3a/5.3/8 T6; DB S42/\u00a73 Reauthorize/\u00a75 T6",
-      "qualification": "Full issue owner plus reauthorize guard support is executable. Exact B04@DC evidence remains NOT_RUN if complete reauthorize oracle cannot be reached; do not weaken then semantics.",
+      "qualification": "Merged full TEST owner explicitly rejects Reauthorize (transactions.py full issuance requires AI_PLAN; _prepare_full_execution only CommitBundle; require_execution_request rejects replacement/reauthorization). Full issue owner plus existing Reauthorize registry guard support is executable task support, but exact B04@DC remains NOT_RUN until a separate bounded full reauthorization owner is merged and its complete frozen oracle runs. No legacy policy downgrade, raw target seeds or fixture bypass.",
       "check_ids": [
         "b04_dc"
       ],
@@ -290,7 +290,7 @@
       "check_id": "b09_dc",
       "selector": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b09_server_minimum_certificate",
       "owner": "ProtocolExecutionService.commit_full + RepositoryTransaction prepare_authorization_basis",
-      "pass_oracle": "Owner-produced inputs with independently varied declared finite bounds; successful real T6 writes S42.valid_until exact server minimum incl manifest/projection/resolver/admission/artifact/policy TTL/request deadline/calendar/client shortening. Assert trusted post-lock valid_from, exact certificate IDs/revisions/windows/method/hash/materialized closure; positive client extension cannot override min. Never timestamp-overwrite target owner outputs to create evidence.",
+      "pass_oracle": "Owner-produced inputs with independently varied declared finite bounds; successful real T6 writes S42.valid_until exact server minimum incl manifest/projection/resolver/admission/artifact/policy TTL/request deadline/calendar/client shortening. Assert trusted post-lock valid_from, exact certificate IDs/revisions/windows/method/hash/materialized closure; positive client extension cannot override min. Never timestamp-overwrite target owner outputs to create evidence. Inherited or tied minima from upstream-computed manifest/projection/artifact bounds are valid; never require every bound to be independently unique. Assert all required certificate bounds and exact minimum instead.",
       "frozen_clauses": "Protocol \u00a75.3a; DB S42/\u00a712",
       "check_ids": [
         "b09_dc"
@@ -440,7 +440,7 @@
       "check_id": "b15_dc",
       "selector": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b15_fresh_registry_both_orders",
       "owner": "ProtocolExecutionService.publish/commit_full/start + revoke_artifact",
-      "pass_oracle": "For each actual T3/fullT6/T7, both serial orders with exact A\u2192B\u2192C closure, bounded task-local barriers and pg_blocking_pids proving actual S51 blocker/waiter. Revoke-first relevant waiter denies and has zero target+receipt/event/outbox effects; operation-first commits once then revoke commits and later fresh current check denies. Snapshot cannot predate gate; assert lock trace S51\u2192S01 and S50/S51 exact revision. No sleeps or repeated revision read as race oracle.",
+      "pass_oracle": "For each actual T3/fullT6/T7, both serial orders with exact A\u2192B\u2192C closure, bounded task-local barriers and pg_blocking_pids proving actual S51 blocker/waiter. Revoke-first relevant waiter denies and has zero target+receipt/event/outbox effects; operation-first commits once then revoke commits and later fresh current check denies. Snapshot cannot predate gate; assert lock trace S51\u2192S01 and S50/S51 exact revision. No sleeps or repeated revision read as race oracle. The three-node transitive path may also contain the registration-required A\u2192C closure edge; do not require an exclusively two-edge graph.",
       "frozen_clauses": "Protocol \u00a72.1a; DB \u00a74.1/\u00a75.1",
       "check_ids": [
         "b15_dc"
@@ -487,7 +487,7 @@
       "check_id": "b17_pu",
       "selector": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b17_transitive_closure_omission_denied",
       "owner": "contracts.artifacts.validate_complete_dependency_closure + protocol.authorization.evaluate_validity_closure",
-      "pass_oracle": "Actual pure closure contract rejects A-only/direct-only declared closure for A\u2192B\u2192C and accepts exact A/B/C identities. Feed that complete graph to the actual validity evaluator with leaf C revoked=True: denial is dependency current admission unprovable despite unrevoked direct A/B. All-unrevoked complete bounded graph succeeds with exact certificate IDs/digest; no caller boolean or invented graph evaluator substitutes. Actual PostgreSQL revoke remains separate DC.",
+      "pass_oracle": "Actual pure closure contract rejects A-only/direct-only declared closure for A\u2192B\u2192C and accepts exact A/B/C identities. Feed that complete graph to the actual validity evaluator with leaf C revoked=True: denial is dependency current admission unprovable despite unrevoked direct A/B. All-unrevoked complete bounded graph succeeds with exact certificate IDs/digest; no caller boolean or invented graph evaluator substitutes. Actual PostgreSQL revoke remains separate DC. The three-node transitive path may also contain the registration-required A\u2192C closure edge; do not require an exclusively two-edge graph.",
       "frozen_clauses": "Protocol \u00a7\u00a70.3a/5.3/5.4; DB S49",
       "check_ids": [
         "b17_pu"
@@ -504,7 +504,7 @@
       "check_id": "b17_dc",
       "selector": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b17_transitive_revoke_denied",
       "owner": "artifact registration + revoke_artifact + ProtocolExecutionService T3/T6/T7",
-      "pass_oracle": "Register exact A\u2192B\u2192C through merged artifact owner, bind all identities in actual owner-produced manifest/A/materialized authorization closure. Revoke leaf C then affected actual T3/T6/T7 deny despite direct A unrevoked; positive unrevoked graph succeeds; closure omission through actual guard denies missing closure, with all identities/hashes and zero affected target/success effects.",
+      "pass_oracle": "Register exact A\u2192B\u2192C through merged artifact owner, bind all identities in actual owner-produced manifest/A/materialized authorization closure. Revoke leaf C then affected actual T3/T6/T7 deny despite direct A unrevoked; positive unrevoked graph succeeds; closure omission through actual guard denies missing closure, with all identities/hashes and zero affected target/success effects. The three-node transitive path may also contain the registration-required A\u2192C closure edge; do not require an exclusively two-edge graph.",
       "frozen_clauses": "Protocol \u00a7\u00a70.3a/2.1a/5.3/5.4; DB S49/S50/S51",
       "check_ids": [
         "b17_dc"
