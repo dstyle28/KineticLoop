@@ -35,3 +35,10 @@ whitespace checks. The tested implementation commit precedes check evidence and 
 PASS governance record. Fresh independent GENERAL, PROTOCOL, DB_CONCURRENCY reviews
 bind the final implementation/governance/evidence revision; only HG043 review paths
 may follow. All applicable final hosted CI must pass before ordinary merge.
+
+The first committed check round at e842a53 had one erroneous delayed-merge test
+fixture: its side branch reintroduced result/evidence, correctly rejected by the
+existing scoped freshness guard. The fixture now branches after the integrated
+result, so unrelated merge behavior is tested without task-content changes. The
+failed focused run and interrupted obsolete full-harness run are retained; neither
+is PASS evidence. Final check evidence is bound to the corrected commit.

@@ -93,7 +93,8 @@ def history(tmp_path: Path) -> History:
 def test_ordinary_and_review_created_refs_bind_exact_revisions(history: History) -> None:
     ref = OWN + 'independent.log'
     history.put(ref)
-    review = history.review([TASK_EVIDENCE, ref])
+    review = history.review([TASK_EVIDENCE, v.result_paths('KL-001')[1],
+                             'src/kineticloop/cli.py', ref])
     assert not v.revision_regular_file(history.root, ref, history.reviewed)
     assert v.revision_regular_file(history.root, ref, review)
     assert history.errors(review) == []
@@ -234,7 +235,7 @@ def test_delayed_unrelated_merge_does_not_widen_created_evidence(history: Histor
     merged = history.reviewed
     history.put('unrelated.txt')
     later = history.commit('later unrelated work')
-    side = history.commit_tree(history.reviewed, [history.base])
+    side = history.commit_tree(history.reviewed, [history.reviewed])
     reintegrated = history.commit_tree(later, [later, side])
     history.git('checkout', '-q', '--detach', reintegrated)
     ordinary = history.review([TASK_EVIDENCE])
@@ -258,3 +259,16 @@ def test_executable_regular_blob_with_literal_unusual_name(history: History) -> 
     target.chmod(0o755)
     review = history.review([ref])
     assert history.errors(review) == []
+
+
+def test_multiple_own_review_appends_bind_the_recorded_endpoint(history: History) -> None:
+    ref = OWN + 'independent.log'
+    history.put(ref, 'first reviewer draft\n')
+    history.commit('first own review append')
+    history.put(ref, 'final reviewer log\n')
+    endpoint = history.review([ref])
+    assert history.errors(endpoint) == []
+    history.put(ref, 'later unbound replacement\n')
+    history.commit('later own bookkeeping')
+    assert history.errors(endpoint) == []
+    assert v.git(history.root, 'show', endpoint + ':' + ref) == b'final reviewer log\n'
