@@ -137,7 +137,7 @@ def test_real_guard_and_missing_layer_distinctions() -> None:
                    'B11/B12 PU', 'KL039', 'M3→M4 cycle', 'only M1/M2', 'not every B product requirement PASS'):
         assert phrase in boundary
         assert phrase in (ROOT / v.PROJECT_PLAN).read_text()
-    for phrase in ('M2 G-SHADOW contract', 'KL045', 'external evaluation inputs',
+    for phrase in ('M2 G-SHADOW contract', 'KL045', 'external historical evaluation inputs', 'archived S24/S48/FK backing closure',
                    'distinct reach labels', 'complete source/issuance/START', 'SECURITY_DATA_BOUNDARY'):
         assert phrase in shadow
     assert 'guard support' in boundary and 'pg_blocking_pids' in boundary
