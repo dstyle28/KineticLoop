@@ -1,0 +1,31 @@
+{
+  "tested_commit": "b9fbf9b475e07765db62e67f0104a800036dda4d",
+  "raw_log": "docs/exec-plans/evidence/KL-029/checks-b9fbf9b/shadow_suite_dc.log",
+  "log_sha256": "4739e66e4b6f5986feba77ea192b13994d9b8360a998b9b925ecaa42afb4716e",
+  "witness_counts": {
+    "namespace": 4,
+    "actual_T7_positive_guard": 12,
+    "full_TEST_owner_trajectory": 4,
+    "trusted_registration": 7,
+    "declared_external_evaluation_inputs": 3,
+    "positive_scoped_lookup": 9,
+    "scope_denial": 27,
+    "live_privilege_denial": 15,
+    "cleanup": 4,
+    "zero_effect": 26,
+    "crossing_reads_zero_effect": 1
+  },
+  "guard_reach_counts": {
+    "DB_scope_lookup/application_scope": 27,
+    "DB_table_privilege": 15,
+    "registration_guard": 3,
+    "require_wire": 5,
+    "owner_current_bundle_pre_T7": 1,
+    "strict_owner_ingress": 10,
+    "DB_storage_namespace": 7
+  },
+  "full_history_equalities": 26,
+  "cleanup_empty": 4,
+  "external_archives_not_shadow_API": true,
+  "product_pass_claims": []
+}

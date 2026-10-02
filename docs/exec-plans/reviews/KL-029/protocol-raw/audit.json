@@ -1,0 +1,165 @@
+{
+  "reviewed_head_sha": "eed165afbd56d3ae551c46166aaec776cf79e625",
+  "tested_commit": "b9fbf9b475e07765db62e67f0104a800036dda4d",
+  "implementation_bytes_unchanged_since_tests": true,
+  "scope_and_frozen_authority_unchanged": true,
+  "prerequisites": [
+    {
+      "task": "KL-008",
+      "normal_merge": "2fdbd205ac35e396f1fec0edcc4ad53c1b059660",
+      "sha_bound_reviews": true
+    },
+    {
+      "task": "KL-017",
+      "normal_merge": "21ec0b508959d8ce24dfe1a0e4d59a0820394068",
+      "sha_bound_reviews": true
+    },
+    {
+      "task": "KL-027",
+      "normal_merge": "1099d85bd4aa76ec8221700e55b4e77a84479126",
+      "sha_bound_reviews": true
+    }
+  ],
+  "checks": [
+    {
+      "check": "shadow_namespace_and_boundary_pu",
+      "hash_valid": true,
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check": "shadow_strict_wire_pu",
+      "hash_valid": true,
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check": "shadow_evaluation_principal_live_denials_dc",
+      "hash_valid": true,
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check": "shadow_test_authorization_crossing_denials_dc",
+      "hash_valid": true,
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check": "shadow_owner_payload_denials_dc",
+      "hash_valid": true,
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check": "shadow_declared_evaluation_storage_dc",
+      "hash_valid": true,
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check": "shadow_suite_dc",
+      "hash_valid": true,
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check": "harness_validation_passes",
+      "hash_valid": true,
+      "counts": null
+    },
+    {
+      "check": "unit_regressions_pass",
+      "hash_valid": true,
+      "counts": {
+        "tests": 234,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check": "harness_regressions_pass",
+      "hash_valid": true,
+      "counts": {
+        "tests": 790,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check": "lint_passes",
+      "hash_valid": true,
+      "counts": null
+    },
+    {
+      "check": "typecheck_passes",
+      "hash_valid": true,
+      "counts": null
+    }
+  ],
+  "combined_suite_witness_counts": {
+    "namespace": 4,
+    "actual_T7_positive_guard": 12,
+    "full_TEST_owner_trajectory": 4,
+    "trusted_registration": 7,
+    "declared_external_evaluation_inputs": 3,
+    "positive_scoped_lookup": 9,
+    "scope_denial": 27,
+    "live_privilege_denial": 15,
+    "cleanup": 4,
+    "zero_effect": 26,
+    "crossing_reads_zero_effect": 1
+  },
+  "guard_reach_counts": {
+    "DB_scope_lookup/application_scope": 27,
+    "DB_table_privilege": 15,
+    "registration_guard": 3,
+    "require_wire": 5,
+    "owner_current_bundle_pre_T7": 1,
+    "strict_owner_ingress": 10,
+    "DB_storage_namespace": 7
+  },
+  "merged_recipe_witness_counts": {
+    "runtime_registration": 4,
+    "admitted_inputs_only": 4,
+    "atomic_receipt_event_outbox": 24,
+    "sealed_source_and_published_basis": 4,
+    "upstream": 4,
+    "forward_stage": 28,
+    "output": 12,
+    "full_output": 12,
+    "full_prepared_chain": 4
+  },
+  "db_rerun": "Not performed by PROTOCOL reviewer; DB_CONCURRENCY owns exclusive lifecycle.",
+  "result": "PASS"
+}
