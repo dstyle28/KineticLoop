@@ -1,0 +1,318 @@
+{"tested_commit": "72a9a5f3f9529028708f64ece3bbec6d791413a7", "command": "uv run kl test-unit", "resolved_root": "/Users/davetian/.codex/worktrees/465a/KineticLoop", "oracle": "All repository unit tests pass, no newly skipped/xfail or suppressed failures.", "pytest_addopts": "-rA --junitxml=/Users/davetian/.codex/worktrees/465a/KineticLoop/docs/exec-plans/evidence/KL-027/checks-72a9a5f/unit_regressions_pass.xml"}
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/davetian/.codex/worktrees/465a/KineticLoop
+configfile: pyproject.toml
+collected 232 items
+
+tests/unit/config/test_secret_loader.py .                                [  0%]
+tests/unit/contracts/test_artifact_registry.py ...                       [  1%]
+tests/unit/contracts/test_commands.py ..............                     [  7%]
+tests/unit/contracts/test_errors.py .                                    [  8%]
+tests/unit/contracts/test_receipts.py ........................           [ 18%]
+tests/unit/contracts/test_results.py .....                               [ 20%]
+tests/unit/contracts/test_safety_registry.py ..                          [ 21%]
+tests/unit/contracts/test_shadow.py ...                                  [ 22%]
+tests/unit/identity/test_roles.py .............                          [ 28%]
+tests/unit/integrations/test_launch_registry.py ........                 [ 31%]
+tests/unit/integrations/test_provider.py ...........                     [ 36%]
+tests/unit/persistence/test_fact_children.py ...                         [ 37%]
+tests/unit/persistence/test_immutability.py ....                         [ 39%]
+tests/unit/persistence/test_preparation.py ...                           [ 40%]
+tests/unit/persistence/test_schema_topology.py .......                   [ 43%]
+tests/unit/persistence/test_transactions.py ...                          [ 45%]
+tests/unit/primitives/test_canonical.py ...........                      [ 50%]
+tests/unit/primitives/test_hashes.py ........                            [ 53%]
+tests/unit/primitives/test_ids.py .........                              [ 57%]
+tests/unit/primitives/test_times.py .......................              [ 67%]
+tests/unit/protocol/test_authorization.py ...                            [ 68%]
+tests/unit/protocol/test_execution.py ..                                 [ 69%]
+tests/unit/protocol/test_factsets.py .....                               [ 71%]
+tests/unit/protocol/test_full_test_execution.py ....                     [ 73%]
+tests/unit/protocol/test_interleaving_namespace.py ...                   [ 74%]
+tests/unit/protocol/test_test_only_demo.py ..                            [ 75%]
+tests/unit/security/test_redaction.py .................................. [ 90%]
+...                                                                      [ 91%]
+tests/unit/security/test_synthetic_fixtures.py .                         [ 91%]
+tests/unit/test_cli.py ...                                               [ 93%]
+tests/unit/workflow/test_call_ledger.py ...                              [ 94%]
+tests/unit/workflow/test_deterministic_planning.py ....                  [ 96%]
+tests/unit/workflow/test_full_action_preparation.py ...                  [ 97%]
+tests/unit/workflow/test_planning.py ..                                  [ 98%]
+tests/unit/workflow/test_planning_progress.py ....                       [100%]
+
+==================================== PASSES ====================================
+________________________________ test_namespace ________________________________
+----------------------------- Captured stdout call -----------------------------
+NAMESPACE_PU DatabaseNamespace(project_name='kineticloop-kl077-full-72a9a5f-02d718cec5f6', database_name='kineticloop_kl077_full_72a9a5f_02d718cec5f6') negative_controls=foreign_root,sha,digest,label,ambient,nested_cleanup nested_inventory ['bootstrap_two_phase(selected_lifecycle)', 'destroy']
+_____________________________ test_strict_ingress ______________________________
+----------------------------- Captured stdout call -----------------------------
+STRICT_FULL_INGRESS_PU public39 unchanged exact seven immutable sources; separate authenticated TEST
+_________________________ test_ordinary_pause_identity _________________________
+----------------------------- Captured stdout call -----------------------------
+ORDINARY_PAUSE_PU bounded exact non-granting identity/session/binding/revision/reason
+___________________________ test_half_open_equality ____________________________
+----------------------------- Captured stdout call -----------------------------
+HALF_OPEN_EQUALITY_PU actual eligibility/lease/deadline predicates; separately labeled, no DC equality claim
+________________________________ test_namespace ________________________________
+----------------------------- Captured stdout call -----------------------------
+
+KL026_LIFECYCLE {"tested_commit": "abcdef1000000000000000000000000000000000", "root": "/Users/davetian/.codex/worktrees/465a/KineticLoop", "project": "kineticloop-kl026-interleave-abcdef1-02d718cec5f6", "database": "kineticloop_kl026_interleave_abcdef1_02d718cec5f6", "commands": [["docker", "compose", "--project-name", "kineticloop-kl026-interleave-abcdef1-02d718cec5f6", "--file", "/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml", "config", "--quiet"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-abcdef1-02d718cec5f6", "--file", "/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml", "up", "--detach", "postgres"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-abcdef1-02d718cec5f6", "--file", "/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml", "exec", "--no-TTY", "postgres", "pg_isready", "--host", "127.0.0.1", "--port", "5432", "--username", "kineticloop", "--dbname", "postgres"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-abcdef1-02d718cec5f6", "--file", "/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml", "exec", "--no-TTY", "postgres", "psql", "--username", "kineticloop", "--dbname", "postgres", "--set", "ON_ERROR_STOP=1", "--tuples-only", "--no-align", "--command", "DROP DATABASE IF EXISTS \"kineticloop_kl026_interleave_abcdef1_02d718cec5f6\" WITH (FORCE);"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-abcdef1-02d718cec5f6", "--file", "/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml", "exec", "--no-TTY", "postgres", "psql", "--username", "kineticloop", "--dbname", "postgres", "--set", "ON_ERROR_STOP=1", "--tuples-only", "--no-align", "--command", "CREATE DATABASE \"kineticloop_kl026_interleave_abcdef1_02d718cec5f6\" OWNER \"kineticloop\";"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-abcdef1-02d718cec5f6", "--file", "/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml", "exec", "--no-TTY", "postgres", "pg_isready", "--host", "127.0.0.1", "--port", "5432", "--username", "kineticloop", "--dbname", "kineticloop_kl026_interleave_abcdef1_02d718cec5f6"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-abcdef1-02d718cec5f6", "--file", "/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml", "port", "postgres", "5432"], ["docker", "compose", "--project-name", "kineticloop-kl026-interleave-abcdef1-02d718cec5f6", "--file", "/Users/davetian/.codex/worktrees/465a/KineticLoop/compose.yaml", "down", "--volumes", "--remove-orphans"]], "cleanup": "completed", "elapsed": 0.0002030839677900076}
+
+__________________________ test_cancellation_identity __________________________
+----------------------------- Captured stdout call -----------------------------
+KL026_PU {"check": "cancellation_identity_pu", "strict_negative_cases": 22, "basis_negative_cases": 11, "installed_candidate": true, "public_commands": 39, "layer": "PU"}
+_________________________ test_namespace_and_boundary __________________________
+----------------------------- Captured stdout call -----------------------------
+HALF_OPEN_EQUALITY_PU actual eligibility/lease/deadline predicates; separately labeled, no DC equality claim
+NAMESPACE_PU DatabaseNamespace(project_name='kineticloop-kl027-demo-72a9a5f-02d718cec5f6', database_name='kineticloop_kl027_demo_72a9a5f_02d718cec5f6') negative_controls=foreign_root,sha,digest,label,ambient,nested_cleanup nested_inventory ['bootstrap_two_phase(selected_lifecycle)', 'destroy']
+___________________________ test_half_open_equality ____________________________
+----------------------------- Captured stdout call -----------------------------
+HALF_OPEN_EQUALITY_PU actual eligibility/lease/deadline predicates; separately labeled, no DC equality claim
+________________________________ test_namespace ________________________________
+----------------------------- Captured stdout call -----------------------------
+NAMESPACE_PU DatabaseNamespace(project_name='kineticloop-kl076-fixture-72a9a5f-02d718cec5f6', database_name='kineticloop_kl076_fixture_72a9a5f_02d718cec5f6') negative_controls=foreign_root,sha,digest,label,ambient,nested_cleanup nested_inventory ['bootstrap_two_phase(selected_lifecycle)', 'destroy']
+________________________________ test_namespace ________________________________
+----------------------------- Captured stdout call -----------------------------
+NAMESPACE_PU DatabaseNamespace(project_name='kineticloop-kl079-full-72a9a5f-02d718cec5f6', database_name='kineticloop_kl079_full_72a9a5f_02d718cec5f6') negative_controls=foreign_root,sha,digest,label,ambient,nested_cleanup nested_inventory ['bootstrap_two_phase(selected_lifecycle)', 'destroy']
+________________________________ test_contract _________________________________
+----------------------------- Captured stdout call -----------------------------
+FULL_CONTRACT_PU exact_order=TRAINING,NUTRITION singular_anchor=TRAINING commands=39 non_executable=true
+__________________________ test_resolution_semantics ___________________________
+----------------------------- Captured stdout call -----------------------------
+FULL_RESOLUTION_PU actual_membership=true target_never_actual=true equality_denies=true negative_controls=source,action,policy,contradiction,retraction,unknown,future,hash,ordering
+- generated xml file: /Users/davetian/.codex/worktrees/465a/KineticLoop/docs/exec-plans/evidence/KL-027/checks-72a9a5f/unit_regressions_pass.xml -
+=========================== short test summary info ============================
+PASSED tests/unit/config/test_secret_loader.py::test_config_secret_sources_are_separated
+PASSED tests/unit/contracts/test_artifact_registry.py::test_artifact_registration_requires_management_capability
+PASSED tests/unit/contracts/test_artifact_registry.py::test_artifact_dependency_closure_required
+PASSED tests/unit/contracts/test_artifact_registry.py::test_t3_t6_t7_require_artifact_refs
+PASSED tests/unit/contracts/test_commands.py::test_strict_t1_t8_contract_matrix
+PASSED tests/unit/contracts/test_commands.py::test_build_preparation_stays_outside_t2
+PASSED tests/unit/contracts/test_commands.py::test_preparation_and_registry_management_stay_outside_atomic_boundaries
+PASSED tests/unit/contracts/test_commands.py::test_identity_idempotency_and_basis_fields
+PASSED tests/unit/contracts/test_commands.py::test_cancel_intent_supports_only_t4_and_t8
+PASSED tests/unit/contracts/test_commands.py::test_nutrition_proposal_requires_cross_domain_basis
+PASSED tests/unit/contracts/test_commands.py::test_tool_results_are_non_command_and_times_are_canonical_utc
+PASSED tests/unit/contracts/test_commands.py::test_input_frontier_is_an_immutable_hash[DecideAssociation-expected_input_frontier_hash]
+PASSED tests/unit/contracts/test_commands.py::test_input_frontier_is_an_immutable_hash[DecideAdmission-expected_input_frontier_hash]
+PASSED tests/unit/contracts/test_commands.py::test_input_frontier_is_an_immutable_hash[AcceptFactRevision-expected_input_frontier_hash]
+PASSED tests/unit/contracts/test_commands.py::test_input_frontier_is_an_immutable_hash[BeginBuild-captured_input_frontier_hash]
+PASSED tests/unit/contracts/test_commands.py::test_input_frontier_is_an_immutable_hash[SealFactset-captured_input_frontier_hash]
+PASSED tests/unit/contracts/test_commands.py::test_input_frontier_is_an_immutable_hash[PublishManifest-expected_input_frontier_hash]
+PASSED tests/unit/contracts/test_commands.py::test_shadow_and_test_scope_fail_closed
+PASSED tests/unit/contracts/test_errors.py::test_error_registry_wire_values_valid
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_identity_contract_valid
+PASSED tests/unit/contracts/test_receipts.py::test_same_key_same_hash_replays_original_result
+PASSED tests/unit/contracts/test_receipts.py::test_same_key_different_hash_rejected[ReceiveEvidence-IDEMPOTENCY_KEY_REUSE_WITH_DIFFERENT_PAYLOAD]
+PASSED tests/unit/contracts/test_receipts.py::test_same_key_different_hash_rejected[BeginBuild-IDEMPOTENCY_CONFLICT]
+PASSED tests/unit/contracts/test_receipts.py::test_same_key_different_hash_rejected[WriteCandidate-IDEMPOTENCY_CONFLICT]
+PASSED tests/unit/contracts/test_receipts.py::test_same_key_different_hash_rejected[RevokeArtifact-IDEMPOTENCY_CONFLICT]
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected[<lambda>0]
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected[<lambda>1]
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected[<lambda>2]
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected[<lambda>3]
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected[<lambda>4]
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected[<lambda>5]
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected[<lambda>6]
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected[<lambda>7]
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected[<lambda>8]
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected[<lambda>9]
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected[<lambda>10]
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected[<lambda>11]
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected[<lambda>12]
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected[<lambda>13]
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected[<lambda>14]
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected[<lambda>15]
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected_without_inventing_lifecycle_correlation
+PASSED tests/unit/contracts/test_receipts.py::test_receipt_invalid_input_rejected_for_binding_or_identity_mismatch
+PASSED tests/unit/contracts/test_results.py::test_command_result_roundtrip
+PASSED tests/unit/contracts/test_results.py::test_dispatch_replay_never_grants_second_provider_send
+PASSED tests/unit/contracts/test_results.py::test_lease_results_return_fencing_authority[AcquireLease]
+PASSED tests/unit/contracts/test_results.py::test_lease_results_return_fencing_authority[RenewLease]
+PASSED tests/unit/contracts/test_results.py::test_result_times_require_canonical_utc
+PASSED tests/unit/contracts/test_safety_registry.py::test_registry_unavailable_or_timeout_denies
+PASSED tests/unit/contracts/test_safety_registry.py::test_stop_has_no_registry_dependency
+PASSED tests/unit/contracts/test_shadow.py::test_shadow_contract_schema_valid
+PASSED tests/unit/contracts/test_shadow.py::test_real_data_shadow_forbids_live_head_issuance_binding
+PASSED tests/unit/contracts/test_shadow.py::test_test_only_scope_requires_isolation
+PASSED tests/unit/identity/test_roles.py::test_role_vocabulary_valid
+PASSED tests/unit/identity/test_roles.py::test_capability_matrix_enforced
+PASSED tests/unit/identity/test_roles.py::test_nonproduction_actor_rejected[test]
+PASSED tests/unit/identity/test_roles.py::test_nonproduction_actor_rejected[evaluation]
+PASSED tests/unit/identity/test_roles.py::test_production_actor_categories_still_require_exact_capability[subject]
+PASSED tests/unit/identity/test_roles.py::test_production_actor_categories_still_require_exact_capability[admin]
+PASSED tests/unit/identity/test_roles.py::test_nonproduction_capability_rejected_at_production_boundary
+PASSED tests/unit/identity/test_roles.py::test_serialization_round_trip
+PASSED tests/unit/identity/test_roles.py::test_serialization_rejects_escalating_or_ambiguous_input[{"schema":"kineticloop-role-identity-v1","identity_id":"8c7d83ee-49db-4b2c-9df2-0b0f158c328f","role":"subject","capabilities":["administer_production"]}]
+PASSED tests/unit/identity/test_roles.py::test_serialization_rejects_escalating_or_ambiguous_input[{"schema":"kineticloop-role-identity-v1","identity_id":"8c7d83ee-49db-4b2c-9df2-0b0f158c328f","role":"production"}]
+PASSED tests/unit/identity/test_roles.py::test_serialization_rejects_escalating_or_ambiguous_input[{"schema":"kineticloop-role-identity-v1","identity_id":"8C7D83EE-49DB-4B2C-9DF2-0B0F158C328F","role":"subject"}]
+PASSED tests/unit/identity/test_roles.py::test_serialization_rejects_escalating_or_ambiguous_input[{"schema":"kineticloop-role-identity-v1","identity_id":"8c7d83ee-49db-4b2c-9df2-0b0f158c328f","role":"test","role":"subject"}]
+PASSED tests/unit/identity/test_roles.py::test_identity_constructor_rejects_untyped_role
+PASSED tests/unit/integrations/test_launch_registry.py::test_launch_scope_required_sources
+PASSED tests/unit/integrations/test_launch_registry.py::test_optional_sources_do_not_block_launch
+PASSED tests/unit/integrations/test_launch_registry.py::test_registry_rejects_invalid_duplicate_unknown_entries
+PASSED tests/unit/integrations/test_launch_registry.py::test_registry_version_and_digest_are_deterministic
+PASSED tests/unit/integrations/test_launch_registry.py::test_registry_cannot_grant_command_or_fact_authority
+PASSED tests/unit/integrations/test_launch_registry.py::test_oura_ai_exposure_remains_gated
+PASSED tests/unit/integrations/test_launch_registry.py::test_scope_membership_is_not_health_coverage_or_launch_ready
+PASSED tests/unit/integrations/test_launch_registry.py::test_registry_is_hermetic
+PASSED tests/unit/integrations/test_provider.py::test_provider_and_stream_ids_are_canonical
+PASSED tests/unit/integrations/test_provider.py::test_provider_subject_source_binding_is_trusted
+PASSED tests/unit/integrations/test_provider.py::test_evidence_provenance_and_times_required
+PASSED tests/unit/integrations/test_provider.py::test_evidence_envelope_closed_s09_schema
+PASSED tests/unit/integrations/test_provider.py::test_server_assigns_known_at
+PASSED tests/unit/integrations/test_provider.py::test_provider_has_no_fact_or_command_authority
+PASSED tests/unit/integrations/test_provider.py::test_provider_credentials_do_not_cross_evidence_or_diagnostic_boundary
+PASSED tests/unit/integrations/test_provider.py::test_transport_health_differs_from_coverage
+PASSED tests/unit/integrations/test_provider.py::test_provider_contract_is_hermetic
+PASSED tests/unit/integrations/test_provider.py::test_provider_fixtures_pass_hardened_synthetic_guard
+PASSED tests/unit/integrations/test_provider.py::test_synthetic_provider_fixtures_pass
+PASSED tests/unit/persistence/test_fact_children.py::test_typed_fact_children_are_closed
+PASSED tests/unit/persistence/test_fact_children.py::test_actual_unknown_zero_are_distinct
+PASSED tests/unit/persistence/test_fact_children.py::test_fact_child_provenance_is_mandatory
+PASSED tests/unit/persistence/test_immutability.py::test_permission_matrix_enforced
+PASSED tests/unit/persistence/test_immutability.py::test_split_and_atomic_command_ownership_is_explicit
+PASSED tests/unit/persistence/test_immutability.py::test_lifecycle_guard_requirements_are_machine_readable
+PASSED tests/unit/persistence/test_immutability.py::test_command_guards_bind_to_divergent_transaction_paths
+PASSED tests/unit/persistence/test_preparation.py::test_server_revision
+PASSED tests/unit/persistence/test_preparation.py::test_exact_capabilities
+PASSED tests/unit/persistence/test_preparation.py::test_namespace
+PASSED tests/unit/persistence/test_schema_topology.py::test_all_logical_relations_mapped_once
+PASSED tests/unit/persistence/test_schema_topology.py::test_fk_dependency_graph_is_acyclic
+PASSED tests/unit/persistence/test_schema_topology.py::test_authority_roots_precede_dependents
+PASSED tests/unit/persistence/test_schema_topology.py::test_creation_order_follows_references_not_logical_numbers
+PASSED tests/unit/persistence/test_schema_topology.py::test_deferred_authority_references_form_a_valid_second_phase
+PASSED tests/unit/persistence/test_schema_topology.py::test_post_base_reference_plans_are_typed_and_closed
+PASSED tests/unit/persistence/test_schema_topology.py::test_topological_order_rejects_unknown_and_cyclic_dependencies
+PASSED tests/unit/persistence/test_transactions.py::test_transaction_owner_matrix_complete
+PASSED tests/unit/persistence/test_transactions.py::test_every_public_owner_has_explicit_non_infrastructure_dml_capabilities
+PASSED tests/unit/persistence/test_transactions.py::test_catalog_mapping_and_release_owner_boundaries_complete
+PASSED tests/unit/primitives/test_canonical.py::test_canonical_serialization_deterministic_across_key_order_and_unicode_forms
+PASSED tests/unit/primitives/test_canonical.py::test_invalid_input_rejected_for_noncanonical_json_values[1.0]
+PASSED tests/unit/primitives/test_canonical.py::test_invalid_input_rejected_for_noncanonical_json_values[nan]
+PASSED tests/unit/primitives/test_canonical.py::test_invalid_input_rejected_for_noncanonical_json_values[value2]
+PASSED tests/unit/primitives/test_canonical.py::test_invalid_input_rejected_for_noncanonical_json_values[value3]
+PASSED tests/unit/primitives/test_canonical.py::test_invalid_input_rejected_for_noncanonical_json_values[value4]
+PASSED tests/unit/primitives/test_canonical.py::test_invalid_input_rejected_for_noncanonical_json_values[9223372036854775808]
+PASSED tests/unit/primitives/test_canonical.py::test_invalid_input_rejected_for_cycles_and_normalized_key_collisions
+PASSED tests/unit/primitives/test_canonical.py::test_invalid_input_rejected_for_mapping_with_substituting_items[value0]
+PASSED tests/unit/primitives/test_canonical.py::test_invalid_input_rejected_for_mapping_with_substituting_items[value1]
+PASSED tests/unit/primitives/test_canonical.py::test_canonical_serialization_returns_exact_builtin_wire_types
+PASSED tests/unit/primitives/test_hashes.py::test_hash_deterministic_and_bound_to_the_versioned_canonical_payload
+PASSED tests/unit/primitives/test_hashes.py::test_hash_deterministic_returns_exact_builtin_wire_types
+PASSED tests/unit/primitives/test_hashes.py::test_invalid_input_rejected_for_noncanonical_hashes[AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA]
+PASSED tests/unit/primitives/test_hashes.py::test_invalid_input_rejected_for_noncanonical_hashes[000000000000000000000000000000000000000000000000000000000000000]
+PASSED tests/unit/primitives/test_hashes.py::test_invalid_input_rejected_for_noncanonical_hashes[sha256:0000000000000000000000000000000000000000000000000000000000000000]
+PASSED tests/unit/primitives/test_hashes.py::test_invalid_input_rejected_for_noncanonical_hashes[123]
+PASSED tests/unit/primitives/test_hashes.py::test_invalid_input_rejected_for_nonbyte_raw_hash_input
+PASSED tests/unit/primitives/test_hashes.py::test_invalid_input_rejected_for_digest_subclass_with_substituted_identity
+PASSED tests/unit/primitives/test_ids.py::test_id_format_valid_for_generated_and_existing_ids
+PASSED tests/unit/primitives/test_ids.py::test_invalid_input_rejected_for_noncanonical_ids[8C7D83EE-49DB-4B2C-9DF2-0B0F158C328F]
+PASSED tests/unit/primitives/test_ids.py::test_invalid_input_rejected_for_noncanonical_ids[8c7d83ee49db4b2c9df20b0f158c328f]
+PASSED tests/unit/primitives/test_ids.py::test_invalid_input_rejected_for_noncanonical_ids[ 8c7d83ee-49db-4b2c-9df2-0b0f158c328f]
+PASSED tests/unit/primitives/test_ids.py::test_invalid_input_rejected_for_noncanonical_ids[00000000-0000-0000-0000-000000000000]
+PASSED tests/unit/primitives/test_ids.py::test_invalid_input_rejected_for_uuid_subclass_with_noncanonical_text
+PASSED tests/unit/primitives/test_ids.py::test_invalid_input_rejected_for_uuid_subclass_that_substitutes_identity
+PASSED tests/unit/primitives/test_ids.py::test_invalid_input_rejected_for_string_subclass_that_substitutes_identity
+PASSED tests/unit/primitives/test_ids.py::test_id_format_valid_returns_exact_string_accepted_by_canonical_json
+PASSED tests/unit/primitives/test_times.py::test_utc_time_normalized_from_offset_and_rfc3339_inputs
+PASSED tests/unit/primitives/test_times.py::test_utc_time_normalized_preserves_known_rfc3339_offsets[2026-01-01T00:00:00Z-2026-01-01T00:00:00.000000Z]
+PASSED tests/unit/primitives/test_times.py::test_utc_time_normalized_preserves_known_rfc3339_offsets[2026-01-01T00:00:00+00:00-2026-01-01T00:00:00.000000Z]
+PASSED tests/unit/primitives/test_times.py::test_utc_time_normalized_preserves_known_rfc3339_offsets[2026-01-01T00:00:00.1Z-2026-01-01T00:00:00.100000Z]
+PASSED tests/unit/primitives/test_times.py::test_utc_time_normalized_preserves_known_rfc3339_offsets[2026-01-01T00:00:00.123456+00:00-2026-01-01T00:00:00.123456Z]
+PASSED tests/unit/primitives/test_times.py::test_utc_time_normalized_preserves_known_rfc3339_offsets[2026-01-01T00:00:00.25+05:30-2025-12-31T18:30:00.250000Z]
+PASSED tests/unit/primitives/test_times.py::test_utc_time_normalized_preserves_known_rfc3339_offsets[2026-01-01T00:00:00-00:01-2026-01-01T00:01:00.000000Z]
+PASSED tests/unit/primitives/test_times.py::test_utc_time_normalized_preserves_known_rfc3339_offsets[2026-01-01T00:00:00+23:59-2025-12-31T00:01:00.000000Z]
+PASSED tests/unit/primitives/test_times.py::test_invalid_input_rejected_for_unknown_rfc3339_offset[2026-01-01T00:00:00-00:00]
+PASSED tests/unit/primitives/test_times.py::test_invalid_input_rejected_for_unknown_rfc3339_offset[2026-01-01T00:00:00.1-00:00]
+PASSED tests/unit/primitives/test_times.py::test_invalid_input_rejected_for_unknown_rfc3339_offset[2026-01-01T00:00:00.123456-00:00]
+PASSED tests/unit/primitives/test_times.py::test_invalid_input_rejected_for_untrusted_times[value0]
+PASSED tests/unit/primitives/test_times.py::test_invalid_input_rejected_for_untrusted_times[2026-01-01T00:00:00]
+PASSED tests/unit/primitives/test_times.py::test_invalid_input_rejected_for_untrusted_times[2026-01-01 00:00:00Z]
+PASSED tests/unit/primitives/test_times.py::test_invalid_input_rejected_for_untrusted_times[2026-02-30T00:00:00Z]
+PASSED tests/unit/primitives/test_times.py::test_invalid_input_rejected_for_untrusted_times[2026-01-01T00:00:00+24:00]
+PASSED tests/unit/primitives/test_times.py::test_invalid_input_rejected_for_untrusted_times[2026-01-01T00:00:00+00:60]
+PASSED tests/unit/primitives/test_times.py::test_invalid_input_rejected_for_untrusted_times[2026-01-01T00:00:00.1234567Z]
+PASSED tests/unit/primitives/test_times.py::test_invalid_input_rejected_for_untrusted_times[2026-01-01T00:00:00z]
+PASSED tests/unit/primitives/test_times.py::test_invalid_input_rejected_for_string_subclass_with_method_substitution
+PASSED tests/unit/primitives/test_times.py::test_invalid_input_rejected_for_datetime_subclass_with_method_substitution
+PASSED tests/unit/primitives/test_times.py::test_invalid_input_rejected_for_stateful_timezone_across_repeated_calls
+PASSED tests/unit/primitives/test_times.py::test_utc_time_normalized_returns_exact_builtin_wire_types
+PASSED tests/unit/protocol/test_authorization.py::test_validity_closure_uses_every_bound_and_denies_missing_or_elapsed_basis
+PASSED tests/unit/protocol/test_authorization.py::test_timeless_dependency_requires_auditable_policy_in_same_transitive_closure
+PASSED tests/unit/protocol/test_authorization.py::test_is_executable_requires_subject_content_scope_epoch_control_and_strict_time
+PASSED tests/unit/protocol/test_execution.py::test_identity_and_wire_scope
+PASSED tests/unit/protocol/test_execution.py::test_all_fixture_namespaces_fail_before_reset
+PASSED tests/unit/protocol/test_factsets.py::test_full_delta_reconstruction_and_digest
+PASSED tests/unit/protocol/test_factsets.py::test_invalid_members[PLANNED-a-s-revision0-SET]
+PASSED tests/unit/protocol/test_factsets.py::test_invalid_members[FACT--s-revision1-SET]
+PASSED tests/unit/protocol/test_factsets.py::test_invalid_members[FACT-a-s-None-SET]
+PASSED tests/unit/protocol/test_factsets.py::test_invalid_members[FACT-a-s-revision3-REMOVE]
+PASSED tests/unit/protocol/test_full_test_execution.py::test_namespace
+PASSED tests/unit/protocol/test_full_test_execution.py::test_strict_ingress
+PASSED tests/unit/protocol/test_full_test_execution.py::test_ordinary_pause_identity
+PASSED tests/unit/protocol/test_full_test_execution.py::test_half_open_equality
+PASSED tests/unit/protocol/test_interleaving_namespace.py::test_time_boundaries
+PASSED tests/unit/protocol/test_interleaving_namespace.py::test_namespace
+PASSED tests/unit/protocol/test_interleaving_namespace.py::test_cancellation_identity
+PASSED tests/unit/protocol/test_test_only_demo.py::test_namespace_and_boundary
+PASSED tests/unit/protocol/test_test_only_demo.py::test_half_open_equality
+PASSED tests/unit/security/test_redaction.py::test_nested_redaction_is_non_mutating_and_authority_neutral
+PASSED tests/unit/security/test_redaction.py::test_multiple_schemeless_authorities_each_redact_userinfo[ ]
+PASSED tests/unit/security/test_redaction.py::test_multiple_schemeless_authorities_each_redact_userinfo[,]
+PASSED tests/unit/security/test_redaction.py::test_multiple_schemeless_authorities_each_redact_userinfo[;]
+PASSED tests/unit/security/test_redaction.py::test_multiple_schemeless_authorities_each_redact_userinfo[/]
+PASSED tests/unit/security/test_redaction.py::test_multiple_schemeless_authorities_each_redact_userinfo[-]
+PASSED tests/unit/security/test_redaction.py::test_multiple_schemeless_authorities_each_redact_userinfo[+]
+PASSED tests/unit/security/test_redaction.py::test_multiple_schemeless_authorities_each_redact_userinfo[.]
+PASSED tests/unit/security/test_redaction.py::test_multiple_schemeless_authorities_each_redact_userinfo[_]
+PASSED tests/unit/security/test_redaction.py::test_multiple_schemeless_authorities_each_redact_userinfo[~]
+PASSED tests/unit/security/test_redaction.py::test_multiple_schemeless_authorities_each_redact_userinfo[%]
+PASSED tests/unit/security/test_redaction.py::test_multiple_schemeless_authorities_each_redact_userinfo[:]
+PASSED tests/unit/security/test_redaction.py::test_nested_query_credentials_are_redacted_recursively
+PASSED tests/unit/security/test_redaction.py::test_nested_brace_format_fields_redact_outer_credential_arguments
+PASSED tests/unit/security/test_redaction.py::test_subprocess_return_codes_cannot_bypass_redaction
+PASSED tests/unit/security/test_redaction.py::test_string_subclass_sequence_relationships_fail_closed
+PASSED tests/unit/security/test_redaction.py::test_over_depth_mapping_keys_suppress_associated_values
+PASSED tests/unit/security/test_redaction.py::test_hostile_sequence_containers_are_snapshotted_once
+PASSED tests/unit/security/test_redaction.py::test_extensible_authorization_schemes_fail_closed
+PASSED tests/unit/security/test_redaction.py::test_malformed_sensitive_formats_suppress_unresolved_arguments
+PASSED tests/unit/security/test_redaction.py::test_extensible_text_authorization_and_dotted_assignments_are_redacted
+PASSED tests/unit/security/test_redaction.py::test_over_depth_sequence_token_suppresses_all_unresolved_arguments
+PASSED tests/unit/security/test_redaction.py::test_composite_mapping_keys_are_snapshotted_once
+PASSED tests/unit/security/test_redaction.py::test_empty_delimiter_authorization_suppresses_scheme_and_credential
+PASSED tests/unit/security/test_redaction.py::test_mixed_format_dialects_suppress_unresolved_arguments
+PASSED tests/unit/security/test_redaction.py::test_unresolved_sensitive_fields_and_authorization_formats_fail_closed
+PASSED tests/unit/security/test_redaction.py::test_hostile_dict_subclasses_use_trusted_snapshot_without_mutation
+PASSED tests/unit/security/test_redaction.py::test_split_authorization_suppresses_all_trailing_components
+PASSED tests/unit/security/test_redaction.py::test_encoded_delimiters_cannot_escape_credential_redaction
+PASSED tests/unit/security/test_redaction.py::test_single_and_combined_authorization_values_fail_closed
+PASSED tests/unit/security/test_redaction.py::test_colon_delimited_sensitive_query_values_are_redacted
+PASSED tests/unit/security/test_redaction.py::test_set_subclasses_use_trusted_snapshots_without_mutation
+PASSED tests/unit/security/test_redaction.py::test_exception_state_uses_trusted_base_descriptors
+PASSED tests/unit/security/test_redaction.py::test_prefixed_sensitive_formats_redact_credential_arguments
+PASSED tests/unit/security/test_redaction.py::test_sensitive_command_formats_suppress_all_credential_arguments
+PASSED tests/unit/security/test_redaction.py::test_exception_chain_never_executes_cause_truthiness
+PASSED tests/unit/security/test_redaction.py::test_recursive_object_graphs_are_cycle_and_depth_bounded
+PASSED tests/unit/security/test_synthetic_fixtures.py::test_synthetic_security_fixtures_have_provenance
+PASSED tests/unit/test_cli.py::test_harness_entrypoint_from_subdirectory
+PASSED tests/unit/test_cli.py::test_protocol_model_is_explicitly_not_run
+PASSED tests/unit/test_cli.py::test_invalid_harness_argument_propagates_failure
+PASSED tests/unit/workflow/test_call_ledger.py::test_root_budget_and_charge_bounds
+PASSED tests/unit/workflow/test_call_ledger.py::test_state_machine_and_non_sendable_replay
+PASSED tests/unit/workflow/test_call_ledger.py::test_dispatch_occurs_once_after_commit
+PASSED tests/unit/workflow/test_deterministic_planning.py::test_fdn_identities
+PASSED tests/unit/workflow/test_deterministic_planning.py::test_fitness_repair
+PASSED tests/unit/workflow/test_deterministic_planning.py::test_source_bound_validation
+PASSED tests/unit/workflow/test_deterministic_planning.py::test_namespace
+PASSED tests/unit/workflow/test_full_action_preparation.py::test_namespace
+PASSED tests/unit/workflow/test_full_action_preparation.py::test_contract
+PASSED tests/unit/workflow/test_full_action_preparation.py::test_resolution_semantics
+PASSED tests/unit/workflow/test_planning.py::test_normalized_single_flight_and_revision_decisions
+PASSED tests/unit/workflow/test_planning.py::test_fence_deadline_and_terminal_guards
+PASSED tests/unit/workflow/test_planning_progress.py::test_internal_identity
+PASSED tests/unit/workflow/test_planning_progress.py::test_frozen_transitions
+PASSED tests/unit/workflow/test_planning_progress.py::test_time_boundaries
+PASSED tests/unit/workflow/test_planning_progress.py::test_namespace
+======================== 232 passed in 95.06s (0:01:35) ========================

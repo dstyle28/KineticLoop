@@ -1,0 +1,185 @@
+{
+  "tested_commit": "72a9a5f3f9529028708f64ece3bbec6d791413a7",
+  "root": "/Users/davetian/.codex/worktrees/465a/KineticLoop",
+  "compose": "kineticloop-kl027-demo-72a9a5f-02d718cec5f6",
+  "database": "kineticloop_kl027_demo_72a9a5f_02d718cec5f6",
+  "checks": [
+    {
+      "check_id": "demo_namespace_and_boundary_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_test_only_demo.py::test_namespace_and_boundary",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_namespace_and_boundary_pu.log",
+      "log_sha256": "3a3073d1b59d8cb40ded6c8153f516b3fe0da92ecce2552410e8f0283ce5f8ea",
+      "junit_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_namespace_and_boundary_pu.xml",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 0.8566379579715431
+    },
+    {
+      "check_id": "demo_owner_trajectory_e2e",
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_full_trajectory",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_owner_trajectory_e2e.log",
+      "log_sha256": "3b409091981f45c8e5e4f8aa600f9eae6939293750282e661a6559776cd2e744",
+      "junit_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_owner_trajectory_e2e.xml",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 5.184054374927655
+    },
+    {
+      "check_id": "demo_revoke_denials_dc",
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_revoke_then_deny",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_revoke_denials_dc.log",
+      "log_sha256": "ca4af303f782ba9c29e70ea3ee92caf9fc9ddcd60a1089f10bb76fa2fa324bbd",
+      "junit_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_revoke_denials_dc.xml",
+      "counts": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 44.867221999913454
+    },
+    {
+      "check_id": "demo_expiry_denials_dc",
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_expiry_then_deny",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_expiry_denials_dc.log",
+      "log_sha256": "7f41ac1fdd91b78c700a3955f2766d41b9ce0872bda860c2451270f7f7931093",
+      "junit_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_expiry_denials_dc.xml",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 37.43139862501994
+    },
+    {
+      "check_id": "demo_fdn_repair_e2e",
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_fdn_repair",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_fdn_repair_e2e.log",
+      "log_sha256": "6846f542d2bf79e77946215696ed42b933302a8bc8e7d09e45db85fad91bd504",
+      "junit_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_fdn_repair_e2e.xml",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 6.110911834053695
+    },
+    {
+      "check_id": "demo_scope_denials_dc",
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_production_shadow_denials",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_scope_denials_dc.log",
+      "log_sha256": "07b5f66e10f3e67d1b882e6116494fb75b635db5579c3d207e39c3592fcb49a2",
+      "junit_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_scope_denials_dc.xml",
+      "counts": {
+        "tests": 43,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 320.1055067498237
+    },
+    {
+      "check_id": "demo_suite_e2e",
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_suite_e2e.log",
+      "log_sha256": "04b7960954d89255a945d008a84def95c840aba694fd754f9e170f65fbde30ee",
+      "junit_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/demo_suite_e2e.xml",
+      "counts": {
+        "tests": 61,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 921.0671083331108
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "command": "uv run kl check-harness",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/harness_validation_passes.log",
+      "log_sha256": "7fa7e08addb11724c49e8d69701e2b776b96f52927b9e9ab241b238fd1d8a1fd",
+      "junit_ref": null,
+      "counts": null,
+      "elapsed_seconds": 92.71748145809397
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "command": "uv run kl test-unit",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/unit_regressions_pass.log",
+      "log_sha256": "e2876005714109a0ca847a397b87da996368574042203819b7cb894a328e8766",
+      "junit_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/unit_regressions_pass.xml",
+      "counts": {
+        "tests": 232,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 95.41852670907974
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "command": "uv run kl test-harness",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/harness_regressions_pass.log",
+      "log_sha256": "60e9bc3d41ff5cf4ebfdea8bef70d50816b3b6dff09d21b9f041f28df3b59edb",
+      "junit_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/harness_regressions_pass.xml",
+      "counts": {
+        "tests": 676,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "elapsed_seconds": 282.91848037508316
+    },
+    {
+      "check_id": "lint_passes",
+      "command": "uv run kl lint",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/lint_passes.log",
+      "log_sha256": "a4b5cb9a5db4e0eebb0bcd740a9fb6940aa58962ba1d3a0ba3717a9777b59fa6",
+      "junit_ref": null,
+      "counts": null,
+      "elapsed_seconds": 0.13141704094596207
+    },
+    {
+      "check_id": "typecheck_passes",
+      "command": "uv run kl typecheck",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-027/checks-72a9a5f/typecheck_passes.log",
+      "log_sha256": "0cd1e4ae282b6a3e0219d3e11b35924ec1592df927f0974aa39ef2523d47057e",
+      "junit_ref": null,
+      "counts": null,
+      "elapsed_seconds": 0.4934943749103695
+    }
+  ]
+}
