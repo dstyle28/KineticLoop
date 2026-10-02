@@ -1,0 +1,284 @@
+{
+  "reviewed": "027bc2368e36e28aa9956489cb57af297882d671",
+  "absent_prospective_integrations": [
+    "KL-028",
+    "KL-029"
+  ],
+  "integrations": [
+    {
+      "task": "KL-027",
+      "errors": []
+    },
+    {
+      "task": "KL-077",
+      "errors": []
+    },
+    {
+      "task": "KL-079",
+      "errors": []
+    },
+    {
+      "task": "KL-074",
+      "errors": []
+    },
+    {
+      "task": "KL-023",
+      "errors": []
+    },
+    {
+      "task": "KL-015",
+      "errors": []
+    },
+    {
+      "task": "KL-018",
+      "errors": []
+    },
+    {
+      "task": "KL-072",
+      "errors": []
+    },
+    {
+      "task": "KL-016",
+      "errors": []
+    },
+    {
+      "task": "KL-010",
+      "errors": []
+    },
+    {
+      "task": "KL-003",
+      "errors": []
+    },
+    {
+      "task": "KL-001",
+      "errors": []
+    },
+    {
+      "task": "KL-002",
+      "errors": []
+    },
+    {
+      "task": "KL-013",
+      "errors": []
+    },
+    {
+      "task": "KL-012",
+      "errors": []
+    },
+    {
+      "task": "KL-007",
+      "errors": []
+    },
+    {
+      "task": "KL-011",
+      "errors": []
+    },
+    {
+      "task": "KL-017",
+      "errors": []
+    },
+    {
+      "task": "KL-008",
+      "errors": []
+    },
+    {
+      "task": "KL-005",
+      "errors": []
+    },
+    {
+      "task": "KL-014",
+      "errors": []
+    },
+    {
+      "task": "KL-004",
+      "errors": []
+    },
+    {
+      "task": "KL-019",
+      "errors": []
+    },
+    {
+      "task": "KL-025",
+      "errors": []
+    },
+    {
+      "task": "KL-024",
+      "errors": []
+    },
+    {
+      "task": "KL-022",
+      "errors": []
+    },
+    {
+      "task": "KL-021",
+      "errors": []
+    },
+    {
+      "task": "KL-020",
+      "errors": []
+    },
+    {
+      "task": "KL-078",
+      "errors": []
+    },
+    {
+      "task": "KL-075",
+      "errors": []
+    },
+    {
+      "task": "KL-076",
+      "errors": []
+    },
+    {
+      "task": "KL-026",
+      "errors": []
+    }
+  ],
+  "dependency_order_errors": [],
+  "available_exit_witnesses": [
+    {
+      "exit": "full_test_fdn_trajectory_and_repair",
+      "task": "KL-027",
+      "check": "demo_owner_trajectory_e2e",
+      "errors": []
+    },
+    {
+      "exit": "full_test_fdn_trajectory_and_repair",
+      "task": "KL-027",
+      "check": "demo_fdn_repair_e2e",
+      "errors": []
+    },
+    {
+      "exit": "current_denials_and_immutable_history",
+      "task": "KL-027",
+      "check": "demo_revoke_denials_dc",
+      "errors": []
+    },
+    {
+      "exit": "current_denials_and_immutable_history",
+      "task": "KL-027",
+      "check": "demo_expiry_denials_dc",
+      "errors": []
+    },
+    {
+      "exit": "current_denials_and_immutable_history",
+      "task": "KL-077",
+      "check": "continue_resume_current_dc",
+      "errors": []
+    },
+    {
+      "exit": "current_denials_and_immutable_history",
+      "task": "KL-077",
+      "check": "full_execution_replay_atomicity_dc",
+      "errors": []
+    },
+    {
+      "exit": "nine_actual_dc_interleavings",
+      "task": "KL-026",
+      "check": "i01_dc",
+      "errors": []
+    },
+    {
+      "exit": "nine_actual_dc_interleavings",
+      "task": "KL-026",
+      "check": "i02_dc",
+      "errors": []
+    },
+    {
+      "exit": "nine_actual_dc_interleavings",
+      "task": "KL-026",
+      "check": "i03_dc",
+      "errors": []
+    },
+    {
+      "exit": "nine_actual_dc_interleavings",
+      "task": "KL-026",
+      "check": "i04_dc",
+      "errors": []
+    },
+    {
+      "exit": "nine_actual_dc_interleavings",
+      "task": "KL-026",
+      "check": "i05_dc",
+      "errors": []
+    },
+    {
+      "exit": "nine_actual_dc_interleavings",
+      "task": "KL-026",
+      "check": "i06_dc",
+      "errors": []
+    },
+    {
+      "exit": "nine_actual_dc_interleavings",
+      "task": "KL-026",
+      "check": "i07_dc",
+      "errors": []
+    },
+    {
+      "exit": "nine_actual_dc_interleavings",
+      "task": "KL-026",
+      "check": "i08_dc",
+      "errors": []
+    },
+    {
+      "exit": "nine_actual_dc_interleavings",
+      "task": "KL-026",
+      "check": "i09_dc",
+      "errors": []
+    },
+    {
+      "exit": "nine_actual_dc_interleavings",
+      "task": "KL-026",
+      "check": "time_boundary_pu",
+      "errors": []
+    },
+    {
+      "exit": "ready_sealed_barriers",
+      "task": "KL-023",
+      "check": "factset_complete_writer_interleaving_dc",
+      "errors": []
+    },
+    {
+      "exit": "ready_sealed_barriers",
+      "task": "KL-023",
+      "check": "factset_seal_frontier_atomicity_and_replay_dc",
+      "errors": []
+    },
+    {
+      "exit": "registry_commit_freshness_and_closure",
+      "task": "KL-021",
+      "check": "t2_global_commit_rollback_and_effective_at_semantics",
+      "errors": []
+    },
+    {
+      "exit": "validity_missing_timeless_and_expiry",
+      "task": "KL-022",
+      "check": "validity_closure_minimum_and_missing_values_pu",
+      "errors": []
+    },
+    {
+      "exit": "validity_missing_timeless_and_expiry",
+      "task": "KL-022",
+      "check": "timeless_policy_dependency_closure_pu",
+      "errors": []
+    },
+    {
+      "exit": "validity_missing_timeless_and_expiry",
+      "task": "KL-022",
+      "check": "t6_certificate_and_minimum_closure_dc",
+      "errors": []
+    },
+    {
+      "exit": "isolated_test_and_evaluation_boundaries",
+      "task": "KL-027",
+      "check": "demo_namespace_and_boundary_pu",
+      "errors": []
+    },
+    {
+      "exit": "isolated_test_and_evaluation_boundaries",
+      "task": "KL-027",
+      "check": "demo_scope_denials_dc",
+      "errors": []
+    }
+  ]
+}

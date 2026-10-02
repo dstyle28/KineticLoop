@@ -1,0 +1,76 @@
+{
+  "reviewed_head_sha": "027bc2368e36e28aa9956489cb57af297882d671",
+  "scope": "Pure format/content oracle probe. Git/provenance functions are isolated here and independently audited against actual history in audit.json. Synthetic baseline is validator input only.",
+  "commands": [
+    {
+      "command": [
+        "/private/tmp/hg044-venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--rootdir",
+        "/Users/davetian/.codex/worktrees/8578/KineticLoop/docs/exec-plans/reviews/HG-044/PROTOCOL-r5-raw/probe-case",
+        "--confcutdir",
+        "/Users/davetian/.codex/worktrees/8578/KineticLoop/docs/exec-plans/reviews/HG-044/PROTOCOL-r5-raw/probe-case",
+        "--collect-only",
+        "tests/unit"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e502d719714b0b61d068672d7528b0f1d9c9624a1ab58dfb5b337ae4840ec49f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/private/tmp/hg044-venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--rootdir",
+        "/Users/davetian/.codex/worktrees/8578/KineticLoop/docs/exec-plans/reviews/HG-044/PROTOCOL-r5-raw/probe-case",
+        "--confcutdir",
+        "/Users/davetian/.codex/worktrees/8578/KineticLoop/docs/exec-plans/reviews/HG-044/PROTOCOL-r5-raw/probe-case",
+        "--junitxml",
+        "/Users/davetian/.codex/worktrees/8578/KineticLoop/docs/exec-plans/reviews/HG-044/PROTOCOL-r5-raw/genuine-junit.xml",
+        "tests/unit"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "4e4b63f6d8da21d06414bc47d57f48c99db8e384f08c2cbfa0a874d3c3d94a5d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "outcomes": {
+    "genuine_parameter_names": [
+      "tests/unit/test_parameter.py::test_parameter[nested::id]",
+      "tests/unit/test_parameter.py::test_parameter[1 skipped]",
+      "tests/unit/test_parameter.py::test_parameter[1 error]",
+      "tests/unit/test_parameter.py::test_parameter[1 deselected]"
+    ],
+    "genuine_validation": [],
+    "execution_exit_False": [
+      "milestone-m3-regression:failed-or-unbound-command"
+    ],
+    "collection_exit_False": [
+      "milestone-m3-regression:collection-binding"
+    ],
+    "execution_exit_0.0": [
+      "milestone-m3-regression:failed-or-unbound-command"
+    ],
+    "collection_exit_0.0": [
+      "milestone-m3-regression:collection-binding"
+    ],
+    "real_skip_disposition": [
+      "milestone-m3-regression:collection-oracle"
+    ],
+    "omitted_tests/db/test_transaction_interfaces.py": [
+      "milestone-m3-regression:missing-selector"
+    ],
+    "omitted_tests/db/test_shadow_isolation.py": [
+      "milestone-m3-regression:missing-selector"
+    ]
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,2248 @@
+EEEEEEEEEEEEEEEEEEEEEE..                                                 [100%]
+==================================== ERRORS ====================================
+______ ERROR at setup of test_integrated_regression_fails_closed[failed] _______
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+_______ ERROR at setup of test_integrated_regression_fails_closed[zero] ________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+______ ERROR at setup of test_integrated_regression_fails_closed[skipped] ______
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+__ ERROR at setup of test_integrated_regression_fails_closed[wrong-selector] ___
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+___ ERROR at setup of test_integrated_regression_fails_closed[wrong-command] ___
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+_______ ERROR at setup of test_integrated_regression_fails_closed[stale] _______
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+____ ERROR at setup of test_integrated_regression_fails_closed[missing028] _____
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+____ ERROR at setup of test_integrated_regression_fails_closed[missing029] _____
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+_______ ERROR at setup of test_integrated_regression_fails_closed[hash] ________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+_______ ERROR at setup of test_integrated_regression_fails_closed[type] ________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+____ ERROR at setup of test_integrated_regression_fails_closed[provenance] _____
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+__ ERROR at setup of test_integrated_regression_fails_closed[duplicate-json] ___
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+__ ERROR at setup of test_integrated_regression_fails_closed[collection-type] __
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+____ ERROR at setup of test_integrated_regression_fails_closed[float-exit] _____
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+_ ERROR at setup of test_integrated_regression_fails_closed[collection-float-exit] _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+_ ERROR at setup of test_integrated_regression_fails_closed[collection-skipped] _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+_ ERROR at setup of test_each_multiselect_suite_requires_collected_and_executed_cases[tests/db/test_transaction_interfaces.py] _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+_ ERROR at setup of test_each_multiselect_suite_requires_collected_and_executed_cases[tests/db/test_shadow_isolation.py] _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+_ ERROR at setup of test_genuine_pytest_parameter_collection_and_junit_are_accepted[nested::id] _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+_ ERROR at setup of test_genuine_pytest_parameter_collection_and_junit_are_accepted[1 skipped] _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+_ ERROR at setup of test_genuine_pytest_parameter_collection_and_junit_are_accepted[1 error] _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+_ ERROR at setup of test_genuine_pytest_parameter_collection_and_junit_are_accepted[1 deselected] _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x10b065340>, _basetemp=PosixPath...ders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def history(tmp_path_factory):
+>       return History(tmp_path_factory.mktemp('hg044') / 'repo')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/harness/test_m3_milestone_closure.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_m3_milestone_closure.py:36: in __init__
+    self.make_task(name)
+tests/harness/test_m3_milestone_closure.py:117: in make_task
+    reviewed = self.commit('synthetic task result and test evidence')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/harness/test_m3_milestone_closure.py:91: in commit
+    self.git('add', '.')
+tests/harness/test_m3_milestone_closure.py:79: in git
+    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)
+kwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1697/hg0440/repo...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}
+process = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>
+stdout = b"error: unable to create temporary file: Invalid argument\nerror: docs/history/v1.2.3-harness/KineticLoop_Harness_Dev...ex file 'docs/history/v1.2.3-harness/KineticLoop_Harness_Development_Workflow_v0.1.md'\nfatal: updating files failed\n"
+stderr = None, retcode = 128
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.
+
+../../../../.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: CalledProcessError
+=========================== short test summary info ============================
+ERROR tests/harness/test_m3_milestone_closure.py::test_integrated_regression_fails_closed[failed]
+ERROR tests/harness/test_m3_milestone_closure.py::test_integrated_regression_fails_closed[zero]
+ERROR tests/harness/test_m3_milestone_closure.py::test_integrated_regression_fails_closed[skipped]
+ERROR tests/harness/test_m3_milestone_closure.py::test_integrated_regression_fails_closed[wrong-selector]
+ERROR tests/harness/test_m3_milestone_closure.py::test_integrated_regression_fails_closed[wrong-command]
+ERROR tests/harness/test_m3_milestone_closure.py::test_integrated_regression_fails_closed[stale]
+ERROR tests/harness/test_m3_milestone_closure.py::test_integrated_regression_fails_closed[missing028]
+ERROR tests/harness/test_m3_milestone_closure.py::test_integrated_regression_fails_closed[missing029]
+ERROR tests/harness/test_m3_milestone_closure.py::test_integrated_regression_fails_closed[hash]
+ERROR tests/harness/test_m3_milestone_closure.py::test_integrated_regression_fails_closed[type]
+ERROR tests/harness/test_m3_milestone_closure.py::test_integrated_regression_fails_closed[provenance]
+ERROR tests/harness/test_m3_milestone_closure.py::test_integrated_regression_fails_closed[duplicate-json]
+ERROR tests/harness/test_m3_milestone_closure.py::test_integrated_regression_fails_closed[collection-type]
+ERROR tests/harness/test_m3_milestone_closure.py::test_integrated_regression_fails_closed[float-exit]
+ERROR tests/harness/test_m3_milestone_closure.py::test_integrated_regression_fails_closed[collection-float-exit]
+ERROR tests/harness/test_m3_milestone_closure.py::test_integrated_regression_fails_closed[collection-skipped]
+ERROR tests/harness/test_m3_milestone_closure.py::test_each_multiselect_suite_requires_collected_and_executed_cases[tests/db/test_transaction_interfaces.py]
+ERROR tests/harness/test_m3_milestone_closure.py::test_each_multiselect_suite_requires_collected_and_executed_cases[tests/db/test_shadow_isolation.py]
+ERROR tests/harness/test_m3_milestone_closure.py::test_genuine_pytest_parameter_collection_and_junit_are_accepted[nested::id]
+ERROR tests/harness/test_m3_milestone_closure.py::test_genuine_pytest_parameter_collection_and_junit_are_accepted[1 skipped]
+ERROR tests/harness/test_m3_milestone_closure.py::test_genuine_pytest_parameter_collection_and_junit_are_accepted[1 error]
+ERROR tests/harness/test_m3_milestone_closure.py::test_genuine_pytest_parameter_collection_and_junit_are_accepted[1 deselected]
+2 passed, 64 deselected, 22 errors in 46.56s

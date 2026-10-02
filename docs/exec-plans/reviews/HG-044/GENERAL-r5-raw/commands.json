@@ -1,0 +1,45 @@
+[
+  {
+    "check": "audit-first",
+    "exit_code": 1,
+    "result": "FAIL",
+    "raw": "audit-first.log",
+    "note": "Retained overstrict reviewer assertion; corrected to ratified suite/mapped-selector contract.",
+    "raw_sha256": "6238d65dcf1b45c0b761cb82c207b273ff7ddf67a9b17942523bdfa85fc9aace",
+    "raw_byte_count": 1451
+  },
+  {
+    "check": "audit",
+    "exit_code": 0,
+    "result": "PASS",
+    "raw": "audit.log",
+    "raw_sha256": "9454d85c3e05ca3c98a97f9195cabca7b539540a83e36260bf88f0d615b7f41c",
+    "raw_byte_count": 652
+  },
+  {
+    "check": "integrations",
+    "exit_code": 0,
+    "result": "PASS",
+    "raw": "integrations.log",
+    "raw_sha256": "52bf329f147c7d6d54fc24e86fbb7a6090634e67bcb537d562ce25ad12d6ef09",
+    "raw_byte_count": 117
+  },
+  {
+    "check": "targeted-default-temp",
+    "exit_code": 1,
+    "result": "FAIL",
+    "raw": "targeted-pytest.log",
+    "note": "22 temporary Git fixture setup errors; raw preserved.",
+    "raw_sha256": "714db538c0839414b9ec4a73af9d66f738d8ca80d95aab6210adec374ac9bbd5",
+    "raw_byte_count": 137161
+  },
+  {
+    "check": "targeted-short-temp",
+    "exit_code": 0,
+    "result": "PASS",
+    "raw": "targeted-short-temp.log",
+    "command": "PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 TMPDIR=/private/tmp /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/private/tmp/hg044-general-r5-pytest tests/harness/test_m3_milestone_closure.py -k 'genuine_pytest_parameter or each_multiselect or integrated_regression_fails_closed or legacy_m1_m2 or existing_schema_branches'",
+    "raw_sha256": "4088f004f0b7aaf1e4010723b5cba9f61dc77d351acf55fa867b654f43b0e26c",
+    "raw_byte_count": 126
+  }
+]
