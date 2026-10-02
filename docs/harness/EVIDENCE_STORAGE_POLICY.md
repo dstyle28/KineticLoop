@@ -61,12 +61,12 @@ reviewed governance; splitting real independent executions is acceptable.
 ```sh
 # First execute a real check, preserving its exit code and exact stdout/stderr.
 uv run kl test-harness > /tmp/hg046-harness.log 2>&1
-status=$?
+kl_capture_exit=$?
 python tools/harness/compact_evidence.py capture \
   --input /tmp/hg046-harness.log \
   --output docs/exec-plans/evidence/HG-046/harness.json \
   --tested "$(git rev-parse HEAD)" --command 'uv run kl test-harness' \
-  --exit-code "$status"
+  --exit-code "$kl_capture_exit"
 # Commit both envelope and payload before review. Retrieval requires their bound SHA.
 python tools/harness/compact_evidence.py read \
   docs/exec-plans/evidence/HG-046/harness.json --revision <bound-sha> > /tmp/recovered.log
