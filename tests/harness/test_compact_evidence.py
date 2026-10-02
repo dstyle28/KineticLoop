@@ -271,3 +271,11 @@ def test_escaped_marker_cannot_disguise_missing_payload(repo):
 def test_compressed_full_diff_cannot_bypass_name_rule(repo):
     root, base, _, head = captured(repo, b'diff --git a/source b/source\n--- a/source\n+++ b/source\n')
     assert any('full-diff-copy' in e for e in ce.audit(root, base, head, 'HG-046')['errors'])
+
+
+def test_truncated_envelope_does_not_become_plain_proof(repo):
+    root, _, _, _ = captured(repo)
+    path = root / REF
+    path.write_bytes(path.read_bytes()[:-3])
+    head = commit(root)
+    assert not v.evidence_exists(root, REF, head)

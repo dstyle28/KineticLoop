@@ -90,8 +90,8 @@ def envelope(data: bytes) -> dict[str, Any] | None:
         return None
     try:
         value = json.loads(data, object_pairs_hook=unique)
-    except (UnicodeError, json.JSONDecodeError):
-        return None
+    except (UnicodeError, json.JSONDecodeError) as ex:
+        raise ValueError('evidence-envelope-json') from ex
     if isinstance(value, dict) and MARKER in value:
         if len(data) > PLAIN_LIMIT:
             raise ValueError('evidence-envelope-size')
