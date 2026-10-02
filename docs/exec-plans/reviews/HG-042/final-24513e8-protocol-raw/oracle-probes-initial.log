@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/davetian/.codex/worktrees/67b8/KineticLoop/docs/exec-plans/reviews/HG-042/final-24513e8-protocol-raw/oracle-probes.py", line 48, in <module>
+    production = StartSession.model_validate_json(json.dumps(payload))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.codex/worktrees/67b8/KineticLoop/.venv/lib/python3.12/site-packages/pydantic/main.py", line 746, in model_validate_json
+    return cls.__pydantic_validator__.validate_json(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for StartSession
+  Value error, production subject commands require the authenticated actor identity to match the command subject [type=value_error, input_value={'schema_version': 'kinet...cccccccccccccccccccccc'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/value_error

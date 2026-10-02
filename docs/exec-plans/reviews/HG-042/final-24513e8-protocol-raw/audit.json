@@ -1,0 +1,127 @@
+{
+  "reviewed_head_sha": "24513e86d90799edb951fa2bdf52ba433c59318a",
+  "protected_base": "93b38f20a3f3d71206515fb0f4d852f5b0b6d344",
+  "tested_commit": "e4134f963450db1522fd6c3339e4cb036fcf5ffe",
+  "frozen_and_production_unchanged": true,
+  "changed_task_definitions": [
+    "KL-028",
+    "KL-029"
+  ],
+  "layer_count": 31,
+  "prospective_executable_layers": {
+    "PU": 6,
+    "DC": 13
+  },
+  "deferred_layers": 12,
+  "requirement_statuses": [
+    "NOT_RUN"
+  ],
+  "raw_final_checks": [
+    {
+      "check_id": "boundary_shadow",
+      "raw_sha256": "486263449e67e2f727eaaf760c7a6f55d4e9b6253c4252be9187f8f2f3e1c924",
+      "raw_byte_count": 179,
+      "terminal_output": [
+        "75 passed in 1.93s"
+      ]
+    },
+    {
+      "check_id": "scope",
+      "raw_sha256": "7e852833e9692d9f1fa642d9c5e95faa8a8e3c069de20e9c05298d5446d6578d",
+      "raw_byte_count": 3142,
+      "terminal_output": [
+        "}"
+      ]
+    },
+    {
+      "check_id": "integrations",
+      "raw_sha256": "90a0650ceb4ca0b2bf7b6b887719201d9491728d67aa50dccd101ddbd9e02271",
+      "raw_byte_count": 202707,
+      "terminal_output": [
+        "}"
+      ]
+    },
+    {
+      "check_id": "harness",
+      "raw_sha256": "052b65486051ef0efcef7ee785ef139056899d4ed8616dda323beb0a7c3da529",
+      "raw_byte_count": 2652,
+      "terminal_output": [
+        "======================= 790 passed in 311.72s (0:05:11) ========================"
+      ]
+    },
+    {
+      "check_id": "unit",
+      "raw_sha256": "4fd06c3a4218ddf25bd1a456c1a946b776682863db973958e948c2d137e1e40b",
+      "raw_byte_count": 3132,
+      "terminal_output": [
+        "======================= 232 passed in 138.72s (0:02:18) ========================"
+      ]
+    },
+    {
+      "check_id": "lint",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_byte_count": 19,
+      "terminal_output": [
+        "All checks passed!"
+      ]
+    },
+    {
+      "check_id": "typecheck",
+      "raw_sha256": "1a34d57e130f0972e66df1e34a837955fc0928b625aa07e745b55cd43c587b4e",
+      "raw_byte_count": 45,
+      "terminal_output": [
+        "Success: no issues found in 148 source files"
+      ]
+    },
+    {
+      "check_id": "validation",
+      "raw_sha256": "e2a8f969d7dc25b39c3a77ad08482321186f25f23d24fce083dcd69d4740d1dc",
+      "raw_byte_count": 38,
+      "terminal_output": [
+        "HARNESS_CHECK_PASS tasks=76 active=73"
+      ]
+    },
+    {
+      "check_id": "diff",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_byte_count": 0,
+      "terminal_output": []
+    }
+  ],
+  "hg043_provenance_functions_unchanged": true,
+  "actual_normal_integrations": [
+    {
+      "task": "KL-027",
+      "errors": [],
+      "normal_merge": "1099d85bd4aa76ec8221700e55b4e77a84479126",
+      "historical_result_status": "UNMERGED"
+    },
+    {
+      "task": "KL-075",
+      "errors": [],
+      "normal_merge": "d0470badf0ccf6bec28a9bc7e6836b57d9df93ce",
+      "historical_result_status": "UNMERGED"
+    },
+    {
+      "task": "KL-076",
+      "errors": [],
+      "normal_merge": "035644e0cfb94927d7555e245223cd92c224ea5a",
+      "historical_result_status": "UNMERGED"
+    },
+    {
+      "task": "KL-077",
+      "errors": [],
+      "normal_merge": "6d1348c5a731afb74fdf6f2345109a446cdb597c",
+      "historical_result_status": "UNMERGED"
+    },
+    {
+      "task": "KL-079",
+      "errors": [],
+      "normal_merge": "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588",
+      "historical_result_status": "UNMERGED"
+    }
+  ],
+  "tested_to_reviewed_bookkeeping_commits": [
+    "24513e86d90799edb951fa2bdf52ba433c59318a"
+  ]
+}

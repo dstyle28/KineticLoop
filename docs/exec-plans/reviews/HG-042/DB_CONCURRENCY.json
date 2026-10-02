@@ -1,0 +1,41 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-042",
+  "reviewed_head_sha": "24513e86d90799edb951fa2bdf52ba433c59318a",
+  "review_type": "DB_CONCURRENCY",
+  "status": "PASS",
+  "findings": [
+    {
+      "id": "HG042-DB-01",
+      "classification": "REQUIRED_FOLLOWUP",
+      "title": "Full TEST reauthorization must remain a separate owner obligation",
+      "path": "docs/exec-plans/active/KL-028.md",
+      "body": "Already correctly bounded in this packet; no HG042 revision requested. Existing full TEST basis/request/issuance code rejects Reauthorize. The mandatory initial full issuance plus actual restricted Reauthorize registry-guard support can pass as task support only. B04@DC remains NOT_RUN until a separate bounded owner supplies actual new admitted revalidation intent/current attempt/latest manifest/validation and complete real issuance/relevant-revoke denial. No callback no-op, terminal reopening, raw issuance seed or legacy downgrade closes it."
+    },
+    {
+      "id": "HG042-DB-02",
+      "classification": "NONBLOCKING",
+      "title": "Prospective isolated PostgreSQL tests remain unexecuted",
+      "body": "This governance change supplies enforceable packets and focused definition regressions. The downstream suites must still produce fresh own-task PostgreSQL guard/time/lock/history/cleanup evidence. All 31 layer statuses and prospective checks are NOT_RUN; this review makes no downstream runtime, product-layer, real shadow usability, M3 or release PASS claim."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/governance/HG-042.yaml",
+    "docs/exec-plans/active/KL-028.md",
+    "docs/exec-plans/active/KL-029.md",
+    "src/kineticloop/persistence/protocol_execution.py",
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/persistence/subject_scope.py",
+    "migrations/versions/76fd67f76bd4_frozen_s01_s51_baseline.py",
+    "migrations/versions/d4c1a9e7b203_subject_scope.py",
+    "migrations/versions/b6e4d8a1c927_artifact_registry.py",
+    "docs/exec-plans/completed/KL-027_RESULT.yaml",
+    "docs/exec-plans/evidence/HG-042/merged-owner-audit.md",
+    "docs/exec-plans/evidence/HG-042/integration-provenance.json",
+    "docs/exec-plans/reviews/HG-042/final-24513e8-db-raw/audit.py",
+    "docs/exec-plans/reviews/HG-042/final-24513e8-db-raw/audit.json",
+    "docs/exec-plans/reviews/HG-042/final-24513e8-db-raw/focused.json",
+    "docs/exec-plans/reviews/HG-042/final-24513e8-db-raw/assessment.md",
+    "docs/exec-plans/reviews/HG-042/final-24513e8-db-raw/schema-and-references.json"
+  ],
+  "review_contract_version": "v0.2"
+}

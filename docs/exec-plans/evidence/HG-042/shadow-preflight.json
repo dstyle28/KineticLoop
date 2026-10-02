@@ -1,0 +1,140 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-029",
+  "status": "NOT_STARTED",
+  "packet_refinement": "ENFORCEABLE",
+  "write_paths": [
+    "tests/db/test_shadow_isolation.py",
+    "tests/unit/protocol/test_shadow_isolation.py",
+    "docs/contracts/shadow_isolation.md"
+  ],
+  "resource_keys": [
+    "shadow_isolation_suite"
+  ],
+  "shared_hotspot": false,
+  "parallel_write_policy": "PARALLEL_IF_DEPENDENCIES_MET",
+  "review_requirements": [
+    "GENERAL",
+    "PROTOCOL",
+    "DB_CONCURRENCY",
+    "SECURITY_DATA_BOUNDARY"
+  ],
+  "check_contracts": [
+    {
+      "check_id": "shadow_namespace_and_boundary_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_namespace_and_boundary",
+      "status": "NOT_RUN",
+      "owner": "kineticloop.db.lifecycle.DatabaseLifecycle and task-local namespace wrapper",
+      "positive_control": "own namespace allowed before selected-lifecycle bootstrap; no destructive action in PU",
+      "guard_depth": "before lifecycle/runner",
+      "zero_effect": "no runner calls for every foreign/default/ambient/root/SHA/digest/label or nested cleanup rejection",
+      "pass_oracle": "Exact Compose kineticloop-kl029-shadow-<HEAD7>-<SHA256(os.fsencode(resolved-root))12> and underscore database; root and full SHA exact; reject foreign/default/ambient and nested targets before every lifecycle action; bootstrap receives selected lifecycle."
+    },
+    {
+      "check_id": "shadow_strict_wire_pu",
+      "command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_strict_shadow_wire",
+      "status": "NOT_RUN",
+      "owner": "contracts.shadow.ShadowEvaluationArtifact/TestOnlyAuthorizationScope; protocol.execution.ExecutionIdentity.require_wire",
+      "positive_control": "canonical shadow roundtrip preserves null S38/S42/S45/intent targets and SHADOW_ONLY/NOT_EXECUTABLE; TEST identity accepts exact command",
+      "guard_depth": "strict contract/identity construction and wire binding only",
+      "zero_effect": "no DB or fake evaluator",
+      "pass_oracle": "Actual strict parsers reject live targets, missing/extra/duplicate fields, mode/disposition/schema/storage boundary changes; TEST scope rejects evaluation/production actor/boundaries and guard disabling; actual ExecutionIdentity rejects evaluation role/principal; actual require_wire denies non-TEST scope/actor/subject/policy/environment/hash mismatch."
+    },
+    {
+      "check_id": "shadow_evaluation_principal_live_denials_dc",
+      "command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_evaluation_principal_live_denials",
+      "status": "NOT_RUN",
+      "owner": "persistence.subject_scope.read_scoped_object; d4 subject_scope_lookup/RLS/storage guards",
+      "positive_control": "same TEST principal reads owner-produced S38/S42/S45; EVALUATION reads own declared S46/S47 input",
+      "guard_depth": "registered session_user storage/read/privilege boundary, no T6/T7 reach claim",
+      "zero_effect": "full TEST history equal after each rejected operation and rollback",
+      "pass_oracle": "Real registered EVALUATION principal cannot read/lookup owner-produced TEST live S38/S42/S45 or mutate INSERT/UPDATE/DELETE/TRUNCATE; lookup foreign/missing is NULL and wrapper same SUBJECT_SCOPE_DENIED non-enumerating payload/timing, no foreign IDs. Direct SELECT/DML errors identify exact privilege/storage guard."
+    },
+    {
+      "check_id": "shadow_test_authorization_crossing_denials_dc",
+      "command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_test_authorization_crossing_denials",
+      "status": "NOT_RUN",
+      "owner": "protocol.execution.ExecutionIdentity.require_wire; persistence.protocol_execution.ProtocolExecutionService._guard/_execute_session; real KL077 T6/T7",
+      "positive_control": "actual full TEST T6 produces A/P then START succeeds; appropriate real PAUSE/CONTINUE/RESUME lifecycle if those paths tested",
+      "guard_depth": "wire mismatch=>require_wire; consistent wrong principal/policy/environment=>_guard TEST registration mismatch; subject B identity/wire with A issuance=>exact current bundle membership missing; evaluation/production role=>TEST identity constructor",
+      "zero_effect": "complete live histories, head/epoch/basis/revision/intent unchanged and zero new receipt/event/outbox; fresh idempotency/action keys",
+      "pass_oracle": "Owner-produced TEST A cannot cross actor/subject/principal/policy/environment. Rebuilt authenticated wrong identity command reaches declared guard; early wire/identity failures distinguished from T7 eligibility. Persist exact owner output P/A/member/closure/validation/resolution/source/basis/session/binding/receipt/event/outbox IDs/hashes; no seeded target outputs."
+    },
+    {
+      "check_id": "shadow_owner_payload_denials_dc",
+      "command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_shadow_payload_owner_denials",
+      "status": "NOT_RUN",
+      "owner": "persistence.protocol_execution.ProtocolExecutionService.commit_full/commit/start/continue_session/resume; contracts.commands strict parsers",
+      "positive_control": "valid full TEST commit/session owner operation persists expected exact identities",
+      "guard_depth": "strict owner ingress type guards before transaction; command parser schema check before owner",
+      "zero_effect": "existing complete TEST histories unchanged, zero receipt/event/outbox/session/binding or intent transition",
+      "pass_oracle": "Actual ShadowEvaluationArtifact and canonical payload denied by real typed owners: closed FullCommitRequest, strict CommitBundle/StartSession/ContinueSession/ResumeSession checks. Shadow/altered boundary payload cannot parse as actual public command model. Label ingress rejection, never downstream registry/T6/T7 guard."
+    },
+    {
+      "check_id": "shadow_declared_evaluation_storage_dc",
+      "command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_declared_evaluation_storage_isolation",
+      "status": "NOT_RUN",
+      "owner": "persistence.subject_scope.read_scoped_object and d4 subject_scope_lookup/storage guards",
+      "positive_control": "EVALUATION A own S46/S47 declared input lookup succeeds and verifies mode/cutoff/identity/hash/source refs",
+      "guard_depth": "actual registered evaluation/TEST/production storage namespace boundary; no shadow workflow owner claim",
+      "zero_effect": "full TEST histories unchanged, no live S38/S42/S45 rows for EVALUATION and no foreign evaluation writes",
+      "pass_oracle": "Two registered EVALUATION principals isolate declared S46/S47 fixture inputs; foreign EVALUATION/TEST/production lookup gives NULL and identical non-enumerating denial. Actual storage guards refuse evaluation-subject live rows and TEST/production evaluation rows. Declared external inputs only, not real shadow workflow outputs."
+    },
+    {
+      "check_id": "shadow_suite_dc",
+      "command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py tests/db/test_shadow_isolation.py",
+      "status": "NOT_RUN",
+      "owner": "all real owners above with task-local lifecycle and merged explicit-URL builders only",
+      "positive_control": "all named positive controls execute alongside all negatives",
+      "guard_depth": "assert exact guard per negative; do not relabel service/PU as product E2E",
+      "zero_effect": "only own Compose labels inventoried/cleaned and none remain; full history equality witness after denials",
+      "pass_oracle": "All selectors and full own suites execute without skip/xfail; namespace PU before first reset; current_database/migration/tested HEAD verified; bounded statement/lock/wall deadlines; raw source/output hashes/IDs, collection counts, guard depth, snapshots/zeroeffect deltas and own cleanup recorded."
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "command": "uv run kl check-harness",
+      "status": "NOT_RUN",
+      "pass_oracle": "HARNESS_CHECK_PASS; frozen/index/packet/scope/status checks valid."
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "command": "uv run kl test-unit",
+      "status": "NOT_RUN",
+      "pass_oracle": "All unit tests pass without newly skipped/xfail/suppressed failures."
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "command": "uv run kl test-harness",
+      "status": "NOT_RUN",
+      "pass_oracle": "All harness regressions pass including unchanged frozen/owner/command gates."
+    },
+    {
+      "check_id": "lint_passes",
+      "command": "uv run kl lint",
+      "status": "NOT_RUN",
+      "pass_oracle": "Repository lint passes."
+    },
+    {
+      "check_id": "typecheck_passes",
+      "command": "uv run kl typecheck",
+      "status": "NOT_RUN",
+      "pass_oracle": "Repository typecheck passes."
+    }
+  ],
+  "evidence_paths": [
+    "docs/exec-plans/evidence/KL-029/**"
+  ],
+  "constraints": [
+    "No source/migration/grants/shared helper/conftest/lifecycle/CI edits.",
+    "No imported foreign pytest fixtures or lifecycle; immutable merged builders take explicit own URLs and do not seed target owner outputs.",
+    "Namespace task label shadow, exact HEAD7 and resolved-root SHA256 first12; reject default/foreign/ambient before every destructive action.",
+    "Separate KL028 and KL029 isolated DB/Compose namespaces and disjoint resources/files may run in parallel only after KL027 actual normal merge.",
+    "Final reverify actual KL027 merged source/results/reviews/evidence on refreshed protected base before tests/review.",
+    "Any missing owner bug requires a separate bounded fix; no bypass.",
+    "All prospective checks NOT_RUN; task PASS needs all named checks PASS; no product/release/M3/G-SHADOW closure claims."
+  ],
+  "deferred": [
+    "Real-data shadow store/API and AI_GENERATED_CURRENT rendering usability: KL045, NOT_RUN.",
+    "R04 product E2E and full real-data shadow gate: NOT_RUN.",
+    "S46/S47 tests use explicitly declared external evaluation inputs, not shadow workflow output."
+  ]
+}

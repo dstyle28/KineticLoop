@@ -580,7 +580,7 @@ def packet_errors(task, text):
     if checks is None or sorted(bullets(checks)) != sorted(task['checks_required_for_this_task']):
         errors.append('packet-checks:' + name)
     if (name in M2_REFINED_TASK_IDS or (name == 'KL-047'
-            and task.get('packet_refinement') == 'ENFORCEABLE') or (name in (WAVE_REFINED_TASK_IDS | {'KL-019', 'KL-025', 'KL-074', 'KL-026', 'KL-027', 'KL-075', 'KL-076', 'KL-077', 'KL-078', 'KL-079'})
+            and task.get('packet_refinement') == 'ENFORCEABLE') or (name in (WAVE_REFINED_TASK_IDS | {'KL-019', 'KL-025', 'KL-074', 'KL-026', 'KL-027', 'KL-075', 'KL-076', 'KL-077', 'KL-078', 'KL-079', 'KL-028', 'KL-029'})
                                       and task.get('packet_refinement') == 'ENFORCEABLE')):
         read_first = section(text, 'Read first') or ''
         if bullets(read_first) != task.get('context_files', []):
@@ -680,6 +680,7 @@ def packet_errors(task, text):
     errors.extend(m3_next_wave_packet_errors(task, text))
     errors.extend(readiness_packet_errors(task, text))
     errors.extend(execution_packet_errors(task, text))
+    errors.extend(m3_boundary_shadow_packet_errors(task, text))
     return errors
 
 
@@ -2663,6 +2664,11 @@ def task_definition_errors(
     resource_text = (git(root, 'show', revision + ':' + resource_path).decode()
                      if revision else (root / resource_path).read_text())
     known_resources = set(re.findall(r'^- `([^`]+)`$', resource_text, re.M))
+    if all(tasks.get(name, {}).get('packet_refinement') == 'ENFORCEABLE'
+           for name in M3_BOUNDARY_SHADOW_IDS):
+        plan_text = (git(root, 'show', revision + ':' + PROJECT_PLAN).decode()
+                     if revision else (root / PROJECT_PLAN).read_text())
+        errors.extend(m3_boundary_shadow_plan_errors(plan_text))
     for task in backlog['tasks']:
         name = task['id']
         if (name == 'KL-047' and (not revision
@@ -2683,12 +2689,26 @@ def task_definition_errors(
                 errors.extend(packet_errors(task, packet.read_text()))
             elif task['status'] != 'SUPERSEDED':
                 errors.append('packet:' + name)
+        if name == 'KL-028' and task.get('packet_refinement') == 'ENFORCEABLE':
+            try:
+                packet_text = (git(root, 'show', revision + ':' + packet_path).decode()
+                               if revision else (root / packet_path).read_text())
+                authority_path = 'KineticLoop_Acceptance_Spec_v1.2.2.json'
+                authority = (json.loads(git(root, 'show', revision + ':' + authority_path))
+                             if revision else json.loads((root / authority_path).read_text()))
+                errors.extend(m3_boundary_layer_errors(
+                    packet_json_section(packet_text, 'Boundary layer ledger'),
+                    authority['supplemental_boundary_requirements']))
+            except (ValueError, OSError, KeyError, TypeError):
+                errors.append('m3-boundary-layer-authority-read')
         if not revision or task.get('packet_refinement') == 'ENFORCEABLE':
             errors.extend(wave_definition_errors(task))
         if not revision or task.get('packet_refinement') == 'ENFORCEABLE':
             errors.extend(ledger_definition_errors(task))
         if not revision or task.get('packet_refinement') == 'ENFORCEABLE':
             errors.extend(execution_definition_errors(task))
+        if not revision or task.get('packet_refinement') == 'ENFORCEABLE':
+            errors.extend(m3_boundary_shadow_definition_errors(task))
         errors.extend(m3_next_wave_definition_errors(task))
         errors.extend(readiness_definition_errors(task))
         for dep in task['depends_on']:
@@ -4003,6 +4023,108 @@ def m3_next_wave_packet_errors(task, text):
     actual = hashlib.sha256(text.encode()).hexdigest()
     return ([] if actual == M3_NEXT_WAVE_PACKET_HASHES[name]
             else ['m3-next-wave-packet:' + name])
+
+
+M3_BOUNDARY_SHADOW_IDS = frozenset({'KL-028', 'KL-029'})
+M3_BOUNDARY_SHADOW_PLAN_SHA256 = '538045ee80d1e08b01829dc128cb7d9b48ebce0cb6f3c250acd128bf45effa2e'
+M3_BOUNDARY_SHADOW_DEFINITION_HASHES = {'KL-028': '275b2e7138e4248e87655938e00a0b31a43fb2e408fb8a7e75f14d15bf9ba2a6', 'KL-029': '89fa038dddb353f5c71ce6d2389b9cbb3ef369932294ac20d15b23171e9f448d'}
+M3_BOUNDARY_SHADOW_PACKET_HASHES = {'KL-028': 'cca391611cf96ca2590bee303eb1c519c53a42546ca7a9d1fe6bb5b29e32bb8d', 'KL-029': '27137bfbe5b338da563195704c36ef41990de0779ee90858db38a8de297ffe72'}
+B_LAYER_OBLIGATIONS = {
+    'B01': ('PU', 'DC'), 'B02': ('DC',), 'B03': ('DC',),
+    'B04': ('DC', 'E2E'), 'B05': ('DC', 'E2E'), 'B06': ('DC',),
+    'B07': ('DC', 'E2E'), 'B08': ('PU', 'E2E'), 'B09': ('PU', 'DC'),
+    'B10': ('PU', 'E2E'), 'B11': ('PU', 'DC'), 'B12': ('PU', 'DC'),
+    'B13': ('DC',), 'B14': ('WF', 'E2E'), 'B15': ('DC',),
+    'B16': ('DC', 'E2E'), 'B17': ('PU', 'DC'), 'B18': ('PU', 'E2E'),
+}
+
+
+def m3_boundary_shadow_definition_errors(task):
+    """Pin disjoint tests-only ownership and every prospective check/oracle."""
+    name = task.get('id')
+    if name not in M3_BOUNDARY_SHADOW_IDS:
+        return []
+    actual = hashlib.sha256(json.dumps(
+        task, ensure_ascii=False, sort_keys=True, separators=(',', ':'),
+    ).encode()).hexdigest()
+    return ([] if actual == M3_BOUNDARY_SHADOW_DEFINITION_HASHES[name]
+            else ['m3-boundary-shadow-definition:' + name])
+
+
+def m3_boundary_shadow_plan_errors(text):
+    """Pin the explicit parallel DB plan and closure/deferred-layer limitations."""
+    scoped = section(text, 'M3 boundary and shadow readiness — HG042') or ''
+    marker = '<!-- HG042 plan end -->'
+    if scoped.count(marker) != 1:
+        return ['m3-boundary-shadow-plan']
+    block = scoped.partition(marker)[0].strip()
+    return ([] if hashlib.sha256(block.encode()).hexdigest() == M3_BOUNDARY_SHADOW_PLAN_SHA256
+            else ['m3-boundary-shadow-plan'])
+
+
+def packet_json_section(text, heading):
+    block = section(text, heading) or ''
+    match = re.fullmatch(r'\s*```json\s*\n(.*?)\n```\s*', block, re.S)
+    if match is None:
+        raise ValueError('missing JSON section: ' + heading)
+    return json.loads(match[1], object_pairs_hook=unique_mapping)
+
+
+def m3_boundary_layer_errors(ledger, requirements=None):
+    """Keep all 31 frozen Given/When/Then obligations, without inferred PASS."""
+    if not isinstance(ledger, list) or any(not isinstance(row, dict) for row in ledger):
+        return ['m3-boundary-layer-ledger']
+    expected = [(rid, layer) for rid, layers in B_LAYER_OBLIGATIONS.items() for layer in layers]
+    actual = [(row.get('requirement_id'), row.get('layer')) for row in ledger]
+    errors = []
+    if actual != expected:
+        errors.append('m3-boundary-layer-obligations')
+    if any(row.get('status') != 'NOT_RUN' for row in ledger):
+        errors.append('m3-boundary-layer-status')
+    for row in ledger:
+        rid, layer = row.get('requirement_id'), row.get('layer')
+        deferred = layer in ('WF', 'E2E') or (rid in ('B11', 'B12') and layer == 'PU')
+        disposition = 'DEFERRED_LAYER' if deferred else 'KL028_PLANNED_EXECUTABLE'
+        if rid == 'B04' and layer == 'DC':
+            disposition = 'DEFERRED_FULL_ORACLE_WITH_GUARD_SUPPORT'
+        if (row.get('disposition') != disposition
+                or (deferred and (not row.get('reason') or not row.get('required_future_owner')))
+                or (not deferred and any(not row.get(field) for field in
+                                        ('check_id', 'selector', 'owner', 'pass_oracle', 'frozen_clauses')))
+                or (rid == 'B04' and layer == 'DC' and
+                    (not row.get('qualification') or not row.get('future_owner')))):
+            errors.append('m3-boundary-layer-disposition:' + str(rid) + '@' + str(layer))
+    if requirements is not None:
+        authority = {r['requirement_id']: r for r in requirements}
+        if list(authority) != list(B_LAYER_OBLIGATIONS) or any(
+                list(layers) != authority.get(rid, {}).get('layers')
+                for rid, layers in B_LAYER_OBLIGATIONS.items()):
+            errors.append('m3-boundary-layer-authority-set')
+        for row in ledger:
+            rid = row.get('requirement_id')
+            if any(row.get(field) != authority.get(rid, {}).get(field)
+                   for field in ('given', 'when', 'then')):
+                errors.append('m3-boundary-layer-authority:' + str(rid))
+    return errors
+
+
+def m3_boundary_shadow_packet_errors(task, text):
+    name = task.get('id')
+    if name not in M3_BOUNDARY_SHADOW_IDS or (
+            task.get('packet_refinement') != 'ENFORCEABLE' and 'check_contracts' not in task):
+        return []
+    errors = []
+    if hashlib.sha256(text.encode()).hexdigest() != M3_BOUNDARY_SHADOW_PACKET_HASHES[name]:
+        errors.append('m3-boundary-shadow-packet:' + name)
+    try:
+        statuses = packet_json_section(text, 'Prospective check status')
+        if statuses != {cid: 'NOT_RUN' for cid in task['checks_required_for_this_task']}:
+            errors.append('m3-boundary-shadow-prospective-status:' + name)
+        if name == 'KL-028':
+            errors.extend(m3_boundary_layer_errors(packet_json_section(text, 'Boundary layer ledger')))
+    except (KeyError, ValueError, TypeError):
+        errors.append('m3-boundary-shadow-ledger-json:' + name)
+    return errors
 
 
 if __name__ == '__main__':
