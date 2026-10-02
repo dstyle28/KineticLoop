@@ -25,8 +25,8 @@ The fixture requires an explicit immutable policy, the bounded unrevoked runtime
 artifact identity/hash/version, a published manifest and its real SEALED FULL
 factset with at most 64 members. The merged canonical reader verifies reconstruction
 outside coordination. Persistence rechecks the captured immutable rows and runtime.
-Only admitted, same-policy, USER_REPORTED evidence with command authority NONE,
-confirmed same-event associations and canonical WORKOUT_ACTUAL source facts can
+Only physical S13 ELIGIBLE, same-policy, USER_REPORTED evidence with command authority NONE,
+physical S12 MATCHED same-event associations and canonical WORKOUT_ACTUAL source facts can
 supply actual quantities. Sealed membership includes the facts and their admission
 and association revisions. Missing provenance or source/hash mismatches deny.
 
@@ -80,3 +80,8 @@ resources. Legacy DB regressions remain in the unchanged hosted CI lifecycle.
 Task checks, independent review, integration and product/release status remain
 separate. This mechanical fixture makes no product quality, clinical, production
 activation or real-data shadow release claim.
+
+KL080 corrects prospective source decisions to frozen S13 ELIGIBLE and S12 MATCHED.
+There are no aliases from ADMITTED or CONFIRMED. S27 ADMITTED remains an intent
+state, and S36 derives CONFIRMED separately. New canonical source bytes and
+dependent hashes change; historical rows and recorded evidence remain untouched.

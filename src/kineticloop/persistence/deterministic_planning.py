@@ -202,6 +202,7 @@ def _inputs(
             f["fact_kind"] != "WORKOUT_ACTUAL"
             or a["id"] not in member_ids
             or a["ref_s05_id"] != str(identity.policy_id)
+            or a["decision"] != "ELIGIBLE"
             or e["command_authority"] != "NONE"
             or e["trust_class"] != "USER_REPORTED"
             or not isinstance(data, dict)
@@ -218,6 +219,7 @@ def _inputs(
             not association
             or association[0]["id"] not in member_ids
             or association[0]["ref_s11_id"] != f["ref_s11_id"]
+            or association[0]["association_state"] != "MATCHED"
             or digest(association[0]["typed_payload"]) != association[0]["content_hash"]
         ):
             raise GuardRequired("exact source event association required")

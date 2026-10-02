@@ -1352,14 +1352,14 @@ def seed_source(
             "INSERT INTO kineticloop.underlying_events(id,subject_id,event_identity) VALUES (%s,%s,'fixture-actual-event')",
             (event, subject),
         )
-        assoc_body = {"fixture_association": "CONFIRMED", "event_id": str(event)}
+        assoc_body = {"fixture_association": "MATCHED", "event_id": str(event)}
         db.execute(
-            "INSERT INTO kineticloop.event_association_decisions(id,subject_id,association_family_identity,association_state,ref_s11_id,content_hash,typed_payload) VALUES (%s,%s,'fixture-event','CONFIRMED',%s,%s,%s)",
+            "INSERT INTO kineticloop.event_association_decisions(id,subject_id,association_family_identity,association_state,ref_s11_id,content_hash,typed_payload) VALUES (%s,%s,'fixture-event','MATCHED',%s,%s,%s)",
             (association, subject, event, digest(assoc_body), Jsonb(assoc_body)),
         )
-        admission_body = {"fixture_admission": "ADMITTED", "valid_until": admission_end.isoformat()}
+        admission_body = {"fixture_admission": "ELIGIBLE", "valid_until": admission_end.isoformat()}
         db.execute(
-            "INSERT INTO kineticloop.admission_decisions(id,subject_id,action_scope,decision,ref_s05_id,ref_s09_id,ref_s10_id,content_hash,typed_payload) VALUES (%s,%s,'TEST_ONLY','ADMITTED',%s,%s,%s,%s,%s)",
+            "INSERT INTO kineticloop.admission_decisions(id,subject_id,action_scope,decision,ref_s05_id,ref_s09_id,ref_s10_id,content_hash,typed_payload) VALUES (%s,%s,'TEST_ONLY','ELIGIBLE',%s,%s,%s,%s,%s)",
             (
                 admission,
                 subject,
@@ -1498,7 +1498,7 @@ def seed_source(
         assert factrow["ref_s13_id"] == str(admission) and factrow["ref_s10_id"] == str(assertion)
         assert factrow["content_hash"] == digest(factrow["typed_payload"])
         assert factrow["typed_payload"]["semantic_class"] == "ACTUAL_EXECUTION"
-        assert audit["admission_decisions"][0][0]["decision"] == "ADMITTED"
+        assert audit["admission_decisions"][0][0]["decision"] == "ELIGIBLE"
         witness(
             "admitted_inputs_only",
             subject=subject,
