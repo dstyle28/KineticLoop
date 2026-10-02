@@ -817,10 +817,15 @@ def ledger_planning_fixture_content_errors(before: bytes, after: bytes) -> list[
 
 def task_fixture_scope_errors(root, base, head, task_id, changed):
     if task_id == 'KL-080':
-        return [issue for path in sorted(changed & set(SOURCE_FIXTURE_REPLACEMENTS))
-                for issue in source_fixture_content_errors(
+        errors = []
+        for path in sorted(SOURCE_FIXTURE_REPLACEMENTS):
+            if path not in changed:
+                errors.append('source-fixture-correction-missing:KL-080:' + path)
+            else:
+                errors.extend(source_fixture_content_errors(
                     path, git(root, 'show', base + ':' + path),
-                    git(root, 'show', head + ':' + path))]
+                    git(root, 'show', head + ':' + path)))
+        return errors
     if task_id == 'KL-074':
         errors = []
         for path in ('compose.yaml', 'src/kineticloop/db/lifecycle.py'):

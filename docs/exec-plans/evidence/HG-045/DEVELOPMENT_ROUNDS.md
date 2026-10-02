@@ -15,3 +15,15 @@ hash and added FEASIBILITY to context. No runtime, test fixture implementation,
 historical artifact, immutable row or frozen authority changed. Final selected checks
 must execute anew at the next immutable implementation SHA; no 18aa599 evidence is
 promoted to final PASS, and reviewer evidence binds the later result revision.
+
+## Incomplete round at 6bf24b3
+
+After self-review found that a changed-files-only fixture guard could omit one of the
+four mandatory older corrections, strengthened the KL080 selected-task gate to
+require all four paths in addition to exact six-literal content. Added a negative
+omission test. This fixes enforceability, not runtime or fixture implementation.
+Focused/full harness runs at 6bf24b3448c58727d09904fd6dad41059e4b1e65 were interrupted
+incomplete/NOT_RUN. Their partial streamed .log files are retained byte-for-byte;
+neither supplies selected PASS evidence. The completed 241-unit/lint/type/validation/
+integration/scope/diff captures from this round are historical diagnostics only.
+Final required checks execute again at the next immutable SHA with this guard.

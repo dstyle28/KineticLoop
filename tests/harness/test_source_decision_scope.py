@@ -126,3 +126,10 @@ def test_current_harness_cannot_omit_corrective_task():
     backlog['active_task_count'] -= 1
     errors, _ = v.task_definition_errors(ROOT, backlog)
     assert 'source-decision-task-missing:KL-080' in errors
+
+
+def test_corrective_task_cannot_omit_any_required_fixture_file():
+    paths = set(v.SOURCE_FIXTURE_REPLACEMENTS)
+    errors = v.task_fixture_scope_errors(ROOT, BASE, 'HEAD', 'KL-080', set())
+    assert set(errors) == {'source-fixture-correction-missing:KL-080:' + path for path in paths}
+    assert v.task_fixture_scope_errors(ROOT, BASE, 'HEAD', 'HG-045', set()) == []
