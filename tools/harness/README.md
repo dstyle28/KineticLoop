@@ -54,3 +54,6 @@ Evidence references are repository-relative regular files, not URLs or unchecked
 `CURRENT_DOCUMENT_INDEX.json` and `HARNESS_DOCUMENT_MANIFEST.json` have a restricted derived-hash allowance. Relative to the trusted baseline, their entries, ordering, identities and metadata must stay unchanged; only hashes/byte counts for already-listed, actually changed, authorized implementation files may refresh. The package manifest may also refresh the current index's checksum. Neither allowance can change frozen authority entries or authorize additional implementation paths. Adding current-index entries requires a separately authorized task definition.
 
 The checked-in package manifest describes the original package files with refreshed checksums; newly added implementation/tests need not be appended to that delivery inventory. The original ZIP remains a historical package, not a current working-tree snapshot.
+
+For lossless capture, validated retrieval and the prospective protected-base PR
+budget, see [Evidence Storage Policy](../../docs/harness/EVIDENCE_STORAGE_POLICY.md).

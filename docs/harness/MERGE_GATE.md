@@ -27,3 +27,6 @@ frozen authority.
 Derived-hash bookkeeping is permitted for `CURRENT_DOCUMENT_INDEX.json` and `HARNESS_DOCUMENT_MANIFEST.json`: only checksums/byte counts of already-indexed, actually changed, task-authorized implementation files may refresh. No entry, path, identity, authority metadata or frozen hash may be changed under this allowance. The package manifest may refresh the current index checksum after an allowed refresh. The trusted Git baseline supplies the task write scope and frozen paths; a PR cannot authorize itself by editing its task definition.
 
 Harness-definition changes use the separate `HARNESS_GOVERNANCE_CONTRACT.md` path. CI must derive exactly one task result or one governance record from the protected-base diff; mixing change types fails. Governance changes require a PASS committed record, exact file declaration, protected-base write allowlist, bound evidence, required independent reviews and an unchanged Frozen baseline. Required governance review types are the union of the protected-base and reviewed-head requirements for every changed task definition, so the PR cannot weaken its own review gate.
+
+Prospective compact evidence follows [Evidence Storage Policy](EVIDENCE_STORAGE_POLICY.md);
+all existing revision bindings and PASS oracles remain mandatory.

@@ -2367,6 +2367,16 @@ class ValidatorTests(unittest.TestCase):
         })
         self.check(1, 'integration-result-representation-count:KL-001:0')
 
+    def test_ci_prospective_evidence_budget_includes_review_suffix(self):
+        self.result()
+        reviewed = self.commit('fixture result and evidence')
+        self.review(reviewed)
+        self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+        self.put('docs/exec-plans/reviews/KL-001/huge.log',
+                 'x' * (v.compact_evidence.PLAIN_LIMIT + 1))
+        self.commit('oversized review-created artifact')
+        self.check(1, 'evidence-budget:', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
     def test_code_change_after_review_rejected(self):
         _, _, reviewed = self.reviewed_result()
         self.put('src/kineticloop/entry.py')

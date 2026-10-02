@@ -121,3 +121,6 @@ accepted only when `reviewed_head_sha` equals `merge_commit` exactly and
 `merge_commit` is an ancestor of `review_record_commit`; this records a genuinely
 post-merge review of the integrated tree without relabeling a later commit as the
 historical merge.
+
+Prospective compact evidence follows [Evidence Storage Policy](EVIDENCE_STORAGE_POLICY.md);
+all existing revision bindings and PASS oracles remain mandatory.

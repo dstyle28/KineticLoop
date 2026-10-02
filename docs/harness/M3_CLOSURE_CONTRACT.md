@@ -94,3 +94,6 @@ authority. `product_requirement_pass_claims` is empty;
 reproducibility false. Deferred product/release work remains assigned downstream.
 Closure sequencing requires the minimal TEST evidence above; it introduces no
 M3→M4 or KL029→KL045 dependency cycle and waives no later release requirement.
+
+Prospective compact evidence follows [Evidence Storage Policy](EVIDENCE_STORAGE_POLICY.md);
+all existing revision bindings and PASS oracles remain mandatory.

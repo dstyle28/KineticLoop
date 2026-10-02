@@ -603,3 +603,42 @@ def test_m3_reader_parses_checked_git_blob_not_second_ambient_read(tmp_path, mon
     monkeypatch.setattr(v, 'm3_closure_record_errors', check_then_change)
     record, errors = v.m3_load_closure_record(tmp_path, target)
     assert not errors and record == {'source': 'committed'}
+
+
+@pytest.mark.parametrize('mutation', ['none', 'skipped-junit', 'wrong-collection', 'bad-log', 'wrong-tested'])
+def test_compact_regression_decodes_all_semantic_sources(history, mutation):
+    """Compression preserves log/JUnit/collection oracles, never summary-only proof."""
+    payload = copy.deepcopy(history.payload)
+    run = payload['executions'][0]
+    collection = json.loads((history.root / run['collection']['path']).read_text())
+
+    def compressed(label, raw, command):
+        path = history.prefix + f'compact-{mutation}-{label}.json'
+        # Parameter fixtures append uniquely named envelopes; same raw hashes reuse payloads.
+        v.compact_evidence.capture(history.root, path, raw, history.tested, command, 0)
+        return {'path': path, 'sha256': v.sha(history.root / path)}
+
+    stdout = (history.root / run['stdout']['path']).read_bytes()
+    junit = (history.root / run['junit']['path']).read_bytes()
+    if mutation == 'skipped-junit':
+        junit = junit.replace(b'/>', b'><skipped/></testcase>')
+    if mutation == 'bad-log':
+        stdout = b'1 skipped\n'
+    if mutation == 'wrong-collection':
+        collection['nodeids'] = ['tests/unit/foreign.py::test_foreign']
+    collection['stdout'] = compressed(
+        'collection-log', (history.root / collection['stdout']['path']).read_bytes(),
+        collection['command'])
+    run['stdout'] = compressed('log', stdout, run['command'])
+    run['junit'] = compressed('junit', junit, run['command'])
+    run['collection'] = compressed('collection', json.dumps(collection).encode(), collection['command'])
+    if mutation == 'wrong-tested':
+        path = history.root / run['stdout']['path']
+        manifest = json.loads(path.read_text())
+        manifest['tested_commit'] = history.evaluated
+        path.write_text(json.dumps(manifest))
+        run['stdout']['sha256'] = v.sha(path)
+    revision = history.commit('synthetic compact semantic sources')
+    errors = v.m3_execution_evidence_errors(history.root, payload, revision, revision, history.records)
+    assert bool(errors) == (mutation != 'none'), errors
+    assert not any('stale-or-unintegrated-revision' in e for e in errors)
