@@ -31,7 +31,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def output(argv: list[str], *, cwd: Path = ROOT) -> str:
-    return subprocess.check_output(argv, cwd=cwd, text=True).strip()
+    return subprocess.check_output(argv, cwd=cwd, text=True, timeout=120).strip()
 
 
 def resolve_revision(value: str, root: Path = ROOT) -> str:
@@ -255,6 +255,15 @@ def execute(args: argparse.Namespace) -> int:
     return 0 if manifest["status"] == "PASS" else 1
 
 
+def owned_mounts(inspect: dict[str, Any], volume: str) -> list[dict[str, str]]:
+    mounts = inspect["Mounts"]
+    if (len(mounts) != 1 or mounts[0]["Type"] != "volume"
+            or mounts[0]["Name"] != volume or mounts[0]["Destination"] != "/var/lib/docker"
+            or inspect["HostConfig"]["NetworkMode"] == "host"):
+        raise ValueError("unexpected shared container resources")
+    return [{key: mounts[0][key] for key in ("Type", "Name", "Destination")}]
+
+
 def local(args: argparse.Namespace) -> int:
     if os.environ.get("DOCKER_HOST") or os.environ.get("DOCKER_CONTEXT"):
         raise ValueError("local executor rejects ambient Docker overrides")
@@ -293,14 +302,8 @@ def local(args: argparse.Namespace) -> int:
                 "--label", "kineticloop.owner=local-db-ci", image])
         container_created = True
         inspect = json.loads(output(["docker", "inspect", name]))[0]
-        mounts = inspect["Mounts"]
-        if (len(mounts) != 1 or mounts[0]["Type"] != "volume"
-                or mounts[0]["Name"] != volume or mounts[0]["Destination"] != "/var/lib/docker"
-                or inspect["HostConfig"]["NetworkMode"] == "host"):
-            raise ValueError("unexpected shared container resources")
+        envelope["mounts"] = owned_mounts(inspect, volume)
         envelope["owned_volume"] = volume
-        envelope["mounts"] = [{key: mounts[0][key] for key in ("Type", "Name", "Destination")}]
-
         for _ in range(60):
             check = subprocess.run(["docker", "exec", name, "docker", "info"], capture_output=True)
             if check.returncode == 0:

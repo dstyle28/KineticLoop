@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
-import importlib.util
 import json
 import sys
 from pathlib import Path
@@ -188,14 +187,60 @@ def test_workflows_local_default_and_explicit_hosted_fallback():
     assert steps[-1]["if"] == "always()"
 
 
-def test_no_credentials_or_host_mounts_in_executor_source():
-    # The process-boundary check complements real Docker integration proof.
-    root = Path(__file__).parents[2]
-    source = (root / "tools/harness/db_ci.py").read_text()
-    assert '"type=volume,source=" + volume + ",target=/var/lib/docker"' in source
-    assert 'mounts[0]["Type"] != "volume"' in source
-    assert 'mounts[0]["Name"] != volume' in source
-    assert '"--network", "host"' not in source
-    assert '"--env"' not in source
-    assert 'inspect["Mounts"]' in source
-    assert '"--label", "kineticloop.owner=local-db-ci"' in source
+@pytest.mark.parametrize("change", ["bind", "extra", "foreign", "socket", "host_network"])
+def test_mount_guard_rejects_shared_resources(change):
+    inspect: dict[str, Any] = {"Mounts": [{"Type": "volume", "Name": "owned", "Destination": "/var/lib/docker"}],
+               "HostConfig": {"NetworkMode": "default"}}
+    if change == "bind":
+        inspect["Mounts"][0]["Type"] = "bind"
+    elif change == "extra":
+        inspect["Mounts"].append({"Type": "bind", "Name": "", "Destination": "/host"})
+    elif change == "foreign":
+        inspect["Mounts"][0]["Name"] = "another-task"
+    elif change == "socket":
+        inspect["Mounts"][0]["Destination"] = "/var/run/docker.sock"
+    else:
+        inspect["HostConfig"]["NetworkMode"] = "host"
+    with pytest.raises(ValueError):
+        db_ci.owned_mounts(inspect, "owned")
+
+
+def test_mount_guard_accepts_only_own_data_volume():
+    inspect: dict[str, Any] = {"Mounts": [{"Type": "volume", "Name": "owned", "Destination": "/var/lib/docker"}],
+               "HostConfig": {"NetworkMode": "default"}}
+    assert db_ci.owned_mounts(inspect, "owned") == inspect["Mounts"]
+
+
+def test_git_bound_evidence_ignores_ambient_edits_and_rejects_committed_symlink(evidence, tmp_path):
+    import subprocess
+    directory, _ = evidence
+    repo = tmp_path / "repo"
+    target = repo / "docs/exec-plans/evidence/HG-046/db"
+    target.parent.mkdir(parents=True)
+    import shutil
+    shutil.copytree(directory, target)
+    (repo / "tools/harness").mkdir(parents=True)
+    shutil.copyfile(Path(db_ci.__file__), repo / "tools/harness/db_ci.py")
+    subprocess.run(["git", "init", "-q", str(repo)], check=True)
+
+    def commit():
+        subprocess.run(["git", "add", "."], cwd=repo, check=True)
+        subprocess.run(["git", "-c", "user.name=Test", "-c", "user.email=test@example.invalid",
+                        "commit", "-qm", "evidence"], cwd=repo, check=True)
+        return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True).strip()
+
+    reviewed = commit()
+    spec = importlib.util.spec_from_file_location(
+        "review_guard", Path(__file__).parents[2] / "tools/harness/validate_harness.py")
+    assert spec is not None and spec.loader is not None
+    guard = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(guard)
+    ref = "docs/exec-plans/evidence/HG-046/db/manifest.json"
+    assert guard.full_database_evidence_errors(repo, reviewed, SHA, ref) == []
+    (target / "lint.log").write_text("ambient edited bytes")
+    assert guard.full_database_evidence_errors(repo, reviewed, SHA, ref) == []
+    (target / "lint.log").unlink()
+    (target / "lint.log").symlink_to("typecheck.log")
+    symlink_head = commit()
+    assert any("raw-not-regular-reviewed-blob" in error for error in
+               guard.full_database_evidence_errors(repo, symlink_head, SHA, ref))
