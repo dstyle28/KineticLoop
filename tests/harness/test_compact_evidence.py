@@ -911,3 +911,18 @@ def test_archive_history_rewrite_cannot_supply_original_verification(archival):
     assert list(ce.validate_archive(root, mapping, unrelated).values()) == raws
     with pytest.raises(ValueError):
         ce.validate_archive(root, mapping, unrelated, verify_originals=True)
+
+
+@pytest.mark.parametrize('mutation', ['all-deleted', 'plain-truncation'])
+def test_archive_complete_deletion_or_plain_substitution_cannot_evade_audit(archival, mutation):
+    root, old, _, mapping, head, _ = archival
+    for entry in mapping['entries']:
+        path = root / entry['original']['path']
+        path.unlink()
+        (root / entry['storage']['payload']).unlink()
+        if mutation == 'plain-truncation':
+            path.write_bytes(b'1 passed in 0.1s\n')
+    (root / ce.MAPPING_PATH).unlink()
+    later = commit(root)
+    assert ce.audit(root, old, later, 'KL-080')['errors']
+    assert ce.audit(root, head, later, 'HG-999')['errors']

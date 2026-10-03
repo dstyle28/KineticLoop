@@ -4,6 +4,7 @@ from __future__ import annotations
 import concurrent.futures
 import json
 import os
+import shlex
 import subprocess
 import time
 from pathlib import Path
@@ -21,7 +22,7 @@ def main():
     env['PATH'] = '/private/tmp/hg048-tools/bin:' + str(ROOT / '.venv/bin') + ':' + env['PATH']
     env['UV_CACHE_DIR'] = '/private/tmp/hg050-uv-cache'
     commands = {
-        'focused': 'uv run pytest -q tests/harness/test_compact_evidence.py tests/harness/test_source_decision_scope.py tests/harness/test_review_evidence_provenance.py tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -n 2 --junitxml=' + str(out / 'focused.xml') + ' --basetemp=' + str(out / 'focused-temp'),
+        'focused': 'uv run pytest -q tests/harness/test_compact_evidence.py tests/harness/test_source_decision_scope.py tests/harness/test_review_evidence_provenance.py tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -k 'archiv or hg051 or source_decision_scope or manifest_tamper or bounded_single_member or decoded_reserved or exact_retrieval' -n 2 --junitxml=' + str(out / 'focused.xml') + ' --basetemp=' + str(out / 'focused-temp'),
         'harness': 'uv run kl test-harness --workers 2 --evidence-dir ' + str(out / 'harness') + ' -q --basetemp=' + str(out / 'harness-temp'),
         'unit': 'uv run kl test-unit -q --junitxml=' + str(out / 'unit.xml'),
         'authority': 'uv run kl check-harness',
@@ -37,7 +38,7 @@ def main():
         name, command = item
         start = time.time()
         with (out / (name + '.log')).open('wb') as log:
-            result = subprocess.run(command.split(), cwd=ROOT, env=env, stdout=log,
+            result = subprocess.run(shlex.split(command), cwd=ROOT, env=env, stdout=log,
                                     stderr=subprocess.STDOUT)
         record = dict(check_id=name, command=command, exit_code=result.returncode,
                       tested_commit=sha, elapsed_seconds=time.time() - start,

@@ -494,6 +494,38 @@ def audit(root: Path, base: str, head: str, identity: str) -> dict:
     archive_errors, archive_payloads = archive_audit(root, head)
     errors.extend(archive_errors)
     payloads.update(archive_payloads)
+    # Deleting the complete archival representation must not disappear from an
+    # ACMRT-only budget diff. Once merged, these storage bindings are immutable.
+    if git(root, 'ls-tree', base, '--', MAPPING_PATH).strip():
+        historical_paths = {MAPPING_PATH}
+        for original in historical_originals():
+            historical_paths.add(original['path'])
+            historical_paths.add(str(Path(original['path']).parent / (original['raw_sha256'] + '.gz')))
+        for historical_path in sorted(historical_paths):
+            try:
+                if blob(root, historical_path, base) != blob(root, historical_path, head):
+                    raise ValueError('archive-history-rebound')
+            except ValueError as ex:
+                errors.append(historical_path + ':archive-history-deleted-or-rebound:' + str(ex))
+    elif identity == 'KL-080':
+        # Before the first merge, original artifacts may be PR additions. Their
+        # introduction commits still prove that deleting/truncating all copies
+        # cannot evade the narrowly authorized representation migration.
+        for original in historical_originals():
+            try:
+                git(root, 'merge-base', '--is-ancestor', original['revision'], head)
+            except ValueError:
+                continue
+            try:
+                data = blob(root, original['path'], head, RAW_LIMIT)
+                manifest = envelope(data)
+                if manifest is None and (digest(data) != original['raw_sha256']
+                                         or len(data) != original['raw_bytes']):
+                    raise ValueError('archive-original-current-integrity')
+                if manifest is not None and manifest.get(MARKER) != HISTORICAL_FORMAT:
+                    raise ValueError('archive-original-current-format')
+            except ValueError as ex:
+                errors.append(original['path'] + ':archive-original-current-missing-or-changed:' + str(ex))
     bulk: dict[str, str] = {}
     for path in paths:
         try:
