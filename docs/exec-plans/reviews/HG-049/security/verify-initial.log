@@ -1,0 +1,224 @@
+{
+  "status": "PASS",
+  "review_type": "SECURITY_DATA_BOUNDARY",
+  "reviewed_head_sha": "ceed78db431a348aae0b599a5e1b09bb082fb968",
+  "base_commit": "95ddd75d3eb410b7dffa15a1017276c504adc9a6",
+  "tested_commit": "4db695230c2158f67394c8ac79a5f0fdf511849a",
+  "source_hashes": {
+    "src/kineticloop/protocol/execution.py": "63c5b7a944017c8734d8f79a12e00b7d0c3bf342c079ba79c098bff8ccd9f154",
+    "src/kineticloop/persistence/protocol_execution.py": "7e74e8639b7db90693b320e425cd2f732ff764c475c03c22c67c91635e094378",
+    "src/kineticloop/persistence/transactions.py": "425e3afa4080d471b094abeac7f11e5648a57ffc95dc9de0342659496fbb0f3f",
+    "src/kineticloop/persistence/deterministic_planning.py": "2a28fd731f5dab8915a6fb0fb87f01379fffd3f3858983d4f2e2da4b0c8f6b9c",
+    "docs/contracts/deterministic_planning.md": "697198605e42c419b446c7796ec62da2c4f50b278ed8808603beaff34bff3ece",
+    "docs/contracts/full_action_preparation.md": "fb60a7eef8649804de3bcfccba7d3f06e0a5935ddce9bab23673a1261044281c",
+    "docs/contracts/full_test_execution.md": "e7308289ad4ef4068860015de6b6d5aa30e872b45f2d13fffde9b9f1142ebd1d",
+    "docs/contracts/protocol_execution.md": "92e9b38b8c8bd2875c76b184d3be366c251f39b095f453db95835674cc932c52"
+  },
+  "evidence_budget": {
+    "identity": "HG-049",
+    "base": "95ddd75d3eb410b7dffa15a1017276c504adc9a6",
+    "head": "ceed78db431a348aae0b599a5e1b09bb082fb968",
+    "stored_bytes": 3252716,
+    "files": 45,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "decoded_evidence": [
+    {
+      "path": "docs/exec-plans/evidence/HG-049/SCOPE.md",
+      "blob_sha256": "e6284071a05903551c2924ecff0404319d9167ce847dfc8cd1464094f38e4a62",
+      "decoded_sha256": "e6284071a05903551c2924ecff0404319d9167ce847dfc8cd1464094f38e4a62",
+      "decoded_bytes": 2612,
+      "exit_code": null
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/checks-4db6952/EXECUTION.json",
+      "blob_sha256": "df57dd00547275939c54198ecaf480cdcd5eca727cb60848b9a6ec924ac51239",
+      "decoded_sha256": "df57dd00547275939c54198ecaf480cdcd5eca727cb60848b9a6ec924ac51239",
+      "decoded_bytes": 3255,
+      "exit_code": null
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/checks-4db6952/PRECOMMIT_CAPTURE.json",
+      "blob_sha256": "f116521ae66f564e462eba8ea52aba9841e647aacaba419e8827441077f8c2db",
+      "decoded_sha256": "f116521ae66f564e462eba8ea52aba9841e647aacaba419e8827441077f8c2db",
+      "decoded_bytes": 730,
+      "exit_code": null
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/checks-4db6952/authority.json",
+      "blob_sha256": "fc5872f21efbecd152ca122d841c81c6bc405116b2aba2acf7a6dd39d9d2f40c",
+      "decoded_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "decoded_bytes": 38,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/checks-4db6952/diff.json",
+      "blob_sha256": "b24dcd96d13949f7808e9dd3690b49fa07b85259064738d5916d5ba25b9ae334",
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decoded_bytes": 0,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/checks-4db6952/driver.py",
+      "blob_sha256": "d197b07eb621590c92999eaceb9178a2084c753edf3ee6703e90db795ddc7018",
+      "decoded_sha256": "d197b07eb621590c92999eaceb9178a2084c753edf3ee6703e90db795ddc7018",
+      "decoded_bytes": 1515,
+      "exit_code": null
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/checks-4db6952/harness-collection-json.json",
+      "blob_sha256": "40c3ca7c573084ffde4ffe90c5440af96535ca5fc0da6e94c03d4b8e08a32e74",
+      "decoded_sha256": "c0501f9c7beca03b300bfa12666f1a037c60cd5adbbb5154585a72d002350707",
+      "decoded_bytes": 3301902,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/checks-4db6952/harness-collection-log.json",
+      "blob_sha256": "3f5e52392895883b08ecca7cdbde99d2462d664accd052c9a45b81f4a42e854f",
+      "decoded_sha256": "97290513c71aa894cf86b856d72837834d15d997c15901ae3990b9dcae79851a",
+      "decoded_bytes": 1166,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/checks-4db6952/harness-execution-json.json",
+      "blob_sha256": "41babee8b91f0b028a1e9658e337282a517e2cbc99dba9057e1f7d2050658321",
+      "decoded_sha256": "ed1ebb6011c755d059e2f4ac05192fbba952323573c17bb25717b2f8729fdbf4",
+      "decoded_bytes": 20363042,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/checks-4db6952/harness-junit-xml.json",
+      "blob_sha256": "8ae7155f44b79f3f1cb54037702b31aed4ef6e64a1c9a0f6a32e9cd1159f4d40",
+      "decoded_sha256": "aa0632cedfc329461c1ded1032f5e89e2b0a90152175356152036d62eb7fa9e2",
+      "decoded_bytes": 3520025,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/checks-4db6952/harness-manifest-json.json",
+      "blob_sha256": "9d46c152be4a38a7cf7d01c4b94f457bdc0663c3b662b6b4806e6f852d9993a9",
+      "decoded_sha256": "1e07d6f9dfe167e674b4b6815297e48d16af1455decb5edf60bfe6bdd0029dc2",
+      "decoded_bytes": 2114,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/checks-4db6952/harness-pytest-log.json",
+      "blob_sha256": "0d87afcbbbd3ca22be6806ce8240cae8a0e19031b68cc73142045b7d1d156e5f",
+      "decoded_sha256": "c83122b67fea4a4cdd29997d71c24e2430c27f17a5071b334856304c21daaa4d",
+      "decoded_bytes": 1678,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/checks-4db6952/harness.json",
+      "blob_sha256": "0d87afcbbbd3ca22be6806ce8240cae8a0e19031b68cc73142045b7d1d156e5f",
+      "decoded_sha256": "c83122b67fea4a4cdd29997d71c24e2430c27f17a5071b334856304c21daaa4d",
+      "decoded_bytes": 1678,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/checks-4db6952/lint.json",
+      "blob_sha256": "cd5459cae32c7fe21fa8ac9b48b5cfb4e39e988a2b32a2d93e668af65af262e4",
+      "decoded_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "decoded_bytes": 19,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/checks-4db6952/scope.json",
+      "blob_sha256": "60fef494e658d477aea5d120d394cf9f2bf956b601726e22520cdbb7ee4c161c",
+      "decoded_sha256": "c87f4257799dfd6139dc34f88f479ed1d63f64f5c0780c1b851d59b7f2854289",
+      "decoded_bytes": 3522,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/checks-4db6952/typecheck.json",
+      "blob_sha256": "eda1420c66cb273c3cec7d1e18d8badadb2383a4b5e5d86a4554236d7f377d95",
+      "decoded_sha256": "866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445",
+      "decoded_bytes": 45,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/checks-4db6952/unit-junit.json",
+      "blob_sha256": "0f961065fe10795847de7567f0383fcce14a3f7e0e83a1cfa9b61e4a7abd3f13",
+      "decoded_sha256": "4d43c82d4d0c06ac1f95567f85e0d3d9e4bfff9e915f844f6aa49b0110039696",
+      "decoded_bytes": 33807,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/checks-4db6952/unit.json",
+      "blob_sha256": "14f717005fdde8f35f97331dc06bfd3a9c25cf9dd405d0cd076907ac3faefe3b",
+      "decoded_sha256": "5e3870d421e42d2a04cc5334b27e743993328e8931a0b9141067e21fbf46df1b",
+      "decoded_bytes": 433,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/precommit/PROBES.json",
+      "blob_sha256": "0ee8ff2f0d36733b7eb4faf37b965919a27e56e66082c9efe1a0bf6bd34c0dd8",
+      "decoded_sha256": "0ee8ff2f0d36733b7eb4faf37b965919a27e56e66082c9efe1a0bf6bd34c0dd8",
+      "decoded_bytes": 859,
+      "exit_code": null
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/precommit/authority-pre.json",
+      "blob_sha256": "8e1a4bd9ccfe8123e80bc750ad2fdd4d9e8035efdc6e99ed2f6700dd499c2c1b",
+      "decoded_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "decoded_bytes": 38,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/precommit/focused-pre.json",
+      "blob_sha256": "c438c2be988b86884551df33a86231c01356cd839c0ed774477182da9b167bb1",
+      "decoded_sha256": "486a334edccc1de011b9eabb8fb51495afc7968616be160024dbe7b563311ee6",
+      "decoded_bytes": 99,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/precommit/lint-pre.json",
+      "blob_sha256": "7fad4c276fa8f05f037979bf55403cdab9a4a13ba6a5244c33cb73b40b373e17",
+      "decoded_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "decoded_bytes": 19,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/precommit/scope-pre-2.json",
+      "blob_sha256": "6495ca77875997cc7cbb4398753ff59f427ea42d3959376be1f1579a527d7642",
+      "decoded_sha256": "294df99f8277ac7b407e754d6ba2e0e46293d71eb5bd43512b8b5f59debbc7be",
+      "decoded_bytes": 445,
+      "exit_code": 1
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/precommit/scope-pre.json",
+      "blob_sha256": "07596d0f0edc7fe641875f17e0e794fe0653b2b2b5290f51853723324ff2c251",
+      "decoded_sha256": "2de6ef854e4a6bd8d95db0d82f14cdc4c50ba556d8c77359ca56723d8979c1c6",
+      "decoded_bytes": 513,
+      "exit_code": 1
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/precommit/system-import-tool-output.json",
+      "blob_sha256": "6123a40ebd5353a92ab2f645eb6f266acaf9c0df561a40475d991093d8275e44",
+      "decoded_sha256": "f2869381fd489ac77d65cb93e3be473d987a1155b749620e2b134b4c351b3258",
+      "decoded_bytes": 478,
+      "exit_code": 1
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/scope_audit.py",
+      "blob_sha256": "053d5df16ac61ed2d0b127aa904881bf0bf02da1facfff26d5e492cb0827c3bb",
+      "decoded_sha256": "053d5df16ac61ed2d0b127aa904881bf0bf02da1facfff26d5e492cb0827c3bb",
+      "decoded_bytes": 8174,
+      "exit_code": null
+    }
+  ],
+  "preserved_history_paths": 3896,
+  "prior_protocol_bytes_sha256": {
+    "docs/exec-plans/reviews/HG-049/protocol/REPORT.md": "43d7360ea028cd042035d087a6e97bb6acb92e1992646acc8d1cdd979ca4585e",
+    "docs/exec-plans/reviews/HG-049/protocol/focused.log": "96f0680a8163d6c5c64e91e64e209cc0d2e1b1b7b17e5242b9fbbde6de235918",
+    "docs/exec-plans/reviews/HG-049/protocol/focused.xml": "6a4c55182f67ed1ddb81cfcf020e04c9bfaa2a18e638e9142f01383639eff64a",
+    "docs/exec-plans/reviews/HG-049/protocol/record-audit.log": "9e854f3bcc2b9489b0dd7663ce1af775259ed53b9a30e0af7c73f6e5bf36d822",
+    "docs/exec-plans/reviews/HG-049/protocol/verify-initial.log": "9e30deb641fb9436e66ba68e6e700a94ed9168f42b1de75f1cedefd0e39623d5",
+    "docs/exec-plans/reviews/HG-049/protocol/verify.py": "321ac80f2a0fa57b2902912cacb78812029d9ae32e302a9ad107b2de8474ccba",
+    "docs/exec-plans/reviews/HG-049/PROTOCOL.json": "6df634b07b8f47228287d51108203f3d2d2e9aaec64cc7cf01bdd629a88d33f8"
+  },
+  "harness_passed": 1347,
+  "unit_passed": 241,
+  "credential_scan": "No private-key, AWS-access-key or GitHub-token candidate in new decoded evidence",
+  "limitations": "Static source/governance review, no DB guard execution; exact-head hosted/App/fullDB gates pending"
+}

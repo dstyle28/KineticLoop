@@ -1,0 +1,22 @@
+{
+  "purpose": "Uncommitted worktree probes, not revision-bound task PASS. Base field identifies starting revision only.",
+  "base_commit": "95ddd75d3eb410b7dffa15a1017276c504adc9a6",
+  "probes": [
+    {
+      "envelope": "scope-pre.json",
+      "command": ".venv/bin/python docs/exec-plans/evidence/HG-049/scope_audit.py",
+      "exit_code": 1
+    },
+    {
+      "envelope": "focused-pre.json",
+      "command": ".venv/bin/python -m pytest -q tests/harness/test_source_decision_scope.py",
+      "exit_code": 0
+    },
+    {
+      "envelope": "lint-pre.json",
+      "command": ".venv/bin/python -m kineticloop.db.cli lint",
+      "exit_code": 0
+    }
+  ],
+  "system_python_import_failure": "Python 3.9 rejected types.GenericAlias | NoneType before validator import; tool invocation had no captured file and is recorded in chat tool output; no PASS claimed."
+}

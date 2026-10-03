@@ -1,0 +1,93 @@
+{
+  "status": "PASS",
+  "review_scope": "Independent GENERAL governance review; merge and exact-head external gates remain pending",
+  "base_commit": "95ddd75d3eb410b7dffa15a1017276c504adc9a6",
+  "tested_commit": "4db695230c2158f67394c8ac79a5f0fdf511849a",
+  "reviewed_head_sha": "ceed78db431a348aae0b599a5e1b09bb082fb968",
+  "files_changed_count": 53,
+  "tested_reviewed_linear_new_evidence_suffix": true,
+  "source_changed_paths": [
+    "CURRENT_DOCUMENT_INDEX.json",
+    "HARNESS_DOCUMENT_MANIFEST.json",
+    "KineticLoop_Harness_Backlog_v0.2.json",
+    "KineticLoop_Harness_Traceability_v0.3.json",
+    "docs/exec-plans/active/KL-080.md",
+    "tests/harness/test_source_decision_scope.py",
+    "tools/harness/validate_harness.py"
+  ],
+  "harness_collected": 1347,
+  "harness_completed": 1347,
+  "harness_reports": 4041,
+  "harness_junit_cases": 1347,
+  "focused_cases_in_complete_run": 59,
+  "m3_cases_in_complete_run": 115,
+  "unit_junit_cases": 241,
+  "all_seven_checks_bound_and_passed": true,
+  "check_raw_hashes": {
+    "harness": "c83122b67fea4a4cdd29997d71c24e2430c27f17a5071b334856304c21daaa4d",
+    "unit": "5e3870d421e42d2a04cc5334b27e743993328e8931a0b9141067e21fbf46df1b",
+    "authority": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+    "lint": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "typecheck": "866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445",
+    "scope": "c87f4257799dfd6139dc34f88f479ed1d63f64f5c0780c1b851d59b7f2854289",
+    "diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "execution_driver_hash": "d197b07eb621590c92999eaceb9178a2084c753edf3ee6703e90db795ddc7018",
+  "precommit_lossless_dirty_probe_records": [
+    {
+      "path": "docs/exec-plans/evidence/HG-049/precommit/authority-pre.json",
+      "exit_code": 0,
+      "raw_hash": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/precommit/focused-pre.json",
+      "exit_code": 0,
+      "raw_hash": "486a334edccc1de011b9eabb8fb51495afc7968616be160024dbe7b563311ee6"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/precommit/lint-pre.json",
+      "exit_code": 0,
+      "raw_hash": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/precommit/scope-pre-2.json",
+      "exit_code": 1,
+      "raw_hash": "294df99f8277ac7b407e754d6ba2e0e46293d71eb5bd43512b8b5f59debbc7be"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/precommit/scope-pre.json",
+      "exit_code": 1,
+      "raw_hash": "2de6ef854e4a6bd8d95db0d82f14cdc4c50ba556d8c77359ca56723d8979c1c6"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-049/precommit/system-import-tool-output.json",
+      "exit_code": 1,
+      "raw_hash": "f2869381fd489ac77d65cb93e3be473d987a1155b749620e2b134b4c351b3258"
+    }
+  ],
+  "compact_budget": {
+    "identity": "HG-049",
+    "base": "95ddd75d3eb410b7dffa15a1017276c504adc9a6",
+    "head": "ceed78db431a348aae0b599a5e1b09bb082fb968",
+    "stored_bytes": 3252716,
+    "files": 45,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "focused_review_command": [
+    "/Users/davetian/.codex/worktrees/a9f7/KineticLoop/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/harness/test_source_decision_scope.py"
+  ],
+  "focused_review_exit_code": 0,
+  "audit_source_hash": "36528071a760ec4d6c6dae4b5035624aafb9e2997afd62737ac4696646d0af5e",
+  "limitations": [
+    "No complete historical harness rerun; retained SHA-bound collection, per-phase observer, JUnit and raw output inspected",
+    "No PostgreSQL owner execution by this governance review; prospective KL080 and product/release checks NOT_RUN",
+    "Normal exact-head hosted CI, trusted App controller admission/publication and complete isolated DB gates remain required and unwaived"
+  ]
+}
