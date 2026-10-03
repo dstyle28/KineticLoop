@@ -1,0 +1,58 @@
+{
+  "status": "PASS",
+  "reviewed": "589e538579f519bc10d178fa02dff12332931ba7",
+  "committed_envelopes": 70,
+  "selected_checks": 9,
+  "budget": {
+    "identity": "HG-047",
+    "base": "391c9198fa8ec647e377a0572700bc7568468c85",
+    "head": "589e538579f519bc10d178fa02dff12332931ba7",
+    "stored_bytes": 2241854,
+    "files": 176,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "development_execution": {
+    "mode": "DEVELOPMENT_NO_PUBLICATION",
+    "status": "PASS",
+    "architecture": "arm64",
+    "counts": {
+      "unit": {
+        "tests": 241,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "harness": {
+        "tests": 1306,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "all_receipt_artifact_hashes_verified": 11,
+    "all_host_observed_commands_verified": 7,
+    "controller_assets_verified": 11,
+    "controller_assets_identical_to_tested_source": true,
+    "collection_equals_observed_nodeids": true,
+    "id_only_ast_equivalence": true,
+    "fixed_case_count": 10,
+    "fixed_case_max_bytes": 105,
+    "recorded_container_removed": true,
+    "recorded_volume_removed": true,
+    "no_host_bind_or_socket_mount": true,
+    "publication": false,
+    "full_database": "NOT_RUN",
+    "initial_metadata_hash_verified": true,
+    "final_metadata_preserved_separately": true
+  },
+  "preserved_failed_app_gate": {
+    "head": "8a78241e9b752247c3c4f4a43c4fe54bad72ef6c",
+    "conclusion": "failure",
+    "test_cases": 1306,
+    "passed": 1304,
+    "errors": 2,
+    "cleanup_recorded": true,
+    "selected_as_current_pass": false
+  }
+}

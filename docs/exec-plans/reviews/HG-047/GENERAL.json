@@ -1,6 +1,6 @@
 {
   "task_identity": "harness-governance-v0.1/HG-047",
-  "reviewed_head_sha": "b7370940c8b9165f471322baaeef7d9e250dfac6",
+  "reviewed_head_sha": "589e538579f519bc10d178fa02dff12332931ba7",
   "review_type": "GENERAL",
   "status": "PASS",
   "findings": [
@@ -10,21 +10,25 @@
       "title": "Unreserved duplicate-key JSON is rejected when Unicode escapes trigger inspection",
       "file": "tools/harness/compact_evidence.py",
       "line": 129,
-      "description": "The storage_pairs hook invokes unique before establishing reserved storage identity. Ordinary duplicate-key JSON remains raw when literal, but the same nonreserved object with a Unicode-escaped string raises evidence-duplicate-key. This is a narrow fail-closed availability limitation; it does not alter accepted bytes, bypass PASS provenance, or affect selected checks.",
-      "suggested_change": "In a future compatibility correction, validate duplicate keys for reserved storage objects while preserving unreserved ordinary raw bytes, with literal/escaped parity coverage."
+      "description": "Independently reproduced at this SHA: storage_pairs applies unique before establishing reserved storage identity. Ordinary duplicate-key JSON with literal text is returned as plain, while Unicode-escaped nonreserved text raises evidence-duplicate-key. This narrow fail-closed availability limitation does not change accepted bytes, bypass PASS provenance, or affect the selected evidence.",
+      "suggested_change": "In a prospective compatibility correction, enforce duplicate keys for reserved storage objects while preserving ordinary nonreserved bytes; add literal/escaped parity coverage."
     }
   ],
   "evidence_refs": [
     "docs/exec-plans/governance/HG-047.yaml",
     "docs/exec-plans/evidence/HG-047/SCOPE.md",
-    "docs/exec-plans/evidence/HG-047/round2-536c9b7/execution.json",
-    "docs/exec-plans/evidence/HG-047/round2-536c9b7/harness.json",
-    "docs/exec-plans/evidence/HG-047/round2-536c9b7/unit.json",
-    "docs/exec-plans/evidence/HG-047/round2-536c9b7/performance.json",
-    "docs/exec-plans/reviews/HG-047/general_round2/GENERAL_REPORT.md",
-    "docs/exec-plans/reviews/HG-047/general_round2/verification.json",
-    "docs/exec-plans/reviews/HG-047/general_round2/focused.log",
-    "docs/exec-plans/reviews/HG-047/general_round2/ordinary_json_probe.json"
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/execution.json",
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/harness.json",
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/unit.json",
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/collection.json",
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--harness-xml.json",
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--unit-xml.json",
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker-receipt-json.json",
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/performance.json",
+    "docs/exec-plans/reviews/HG-047/general_round3/REPORT.md",
+    "docs/exec-plans/reviews/HG-047/general_round3/verification.json",
+    "docs/exec-plans/reviews/HG-047/general_round3/verify.py",
+    "docs/exec-plans/reviews/HG-047/general_round3/focused.log"
   ],
   "review_contract_version": "v0.2"
 }
