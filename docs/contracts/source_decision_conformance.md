@@ -35,6 +35,9 @@ preflight precedes reset; every nested migration bootstrap receives that lifecyc
 and every psycopg connection asserts current_database. Cleanup checks only the own
 Compose label and proves no owned containers, volumes or networks remain. Imported
 immutable builder helpers receive explicit own URLs; their pytest lifecycles never run.
+The own fixture process uses UTC to match the registered test:UTC-v1 calendar,
+including the prior-deployment child, and restores its timezone after cleanup.
+The real clock and trusted calendar guard remain unchanged.
 The four older fixture files are content-guarded against protected Git bytes plus
 exactly six source literal replacements. Historical artifacts and frozen files are unchanged.
 

@@ -8,6 +8,7 @@ import os
 import subprocess
 import sys
 import tarfile
+import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from datetime import datetime, timedelta
@@ -118,6 +119,11 @@ def database_urls() -> Any:
     lifecycle = N.OwnedLifecycle(ROOT, P.current_head())
     selected = lifecycle.namespace
     original_connect = psycopg.connect
+    original_timezone = os.environ.get("TZ")
+    # Immutable builders use date.today(); their registered test calendar is UTC.
+    # Align this fixture process with that actual calendar, without changing its clock.
+    os.environ["TZ"] = "UTC"
+    time.tzset()
     setattr(psycopg, "connect", connect)
     try:
         urls = lifecycle.bootstrap(M.bootstrap_two_phase)
@@ -133,32 +139,40 @@ def database_urls() -> Any:
             database=selected.database_name,
             migration=M.HEAD_REVISION,
             nested_bootstrap="selected lifecycle",
+            calendar_timezone="UTC",
         )
         yield urls
     finally:
         setattr(psycopg, "connect", original_connect)
-        lifecycle.destroy()
-        remaining = {
-            kind: lifecycle._run(
-                [
-                    "docker",
-                    kind,
-                    "ls",
-                    "--filter",
-                    "label=com.docker.compose.project=" + selected.project_name,
-                    "--quiet",
-                ]
-            ).stdout.strip()
-            for kind in ("container", "volume", "network")
-        }
-        assert not any(remaining.values())
-        P.witness(
-            "kl080_cleanup",
-            compose=selected.project_name,
-            database=selected.database_name,
-            inventory=lifecycle.inventory,
-            remaining=remaining,
-        )
+        try:
+            lifecycle.destroy()
+            remaining = {
+                kind: lifecycle._run(
+                    [
+                        "docker",
+                        kind,
+                        "ls",
+                        "--filter",
+                        "label=com.docker.compose.project=" + selected.project_name,
+                        "--quiet",
+                    ]
+                ).stdout.strip()
+                for kind in ("container", "volume", "network")
+            }
+            assert not any(remaining.values())
+            P.witness(
+                "kl080_cleanup",
+                compose=selected.project_name,
+                database=selected.database_name,
+                inventory=lifecycle.inventory,
+                remaining=remaining,
+            )
+        finally:
+            if original_timezone is None:
+                os.environ.pop("TZ", None)
+            else:
+                os.environ["TZ"] = original_timezone
+            time.tzset()
 
 
 def auth(seed: Any) -> ExecutionIdentity:
