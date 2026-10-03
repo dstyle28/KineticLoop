@@ -1,0 +1,55 @@
+{
+  "reviewed_head_sha": "26482f7f7147fe33cf37d8028574196c97c82ec6",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m pytest tests/harness/test_local_gate.py -q --basetemp=/private/tmp/hg050-general-review/pytest --junitxml=/private/tmp/hg050-general-review/focused.xml",
+      "exit_code": 0,
+      "output_ref": "docs/exec-plans/reviews/HG-050/general/focused.log",
+      "sha256": "4ea6b3a91f0a43bfc58f022c7272dc1d0f7028b0fb719e5d84a47ed545c45796",
+      "bytes": 261
+    },
+    {
+      "command": ".venv/bin/python docs/exec-plans/reviews/HG-050/general/audit.py",
+      "exit_code": 0,
+      "output_ref": "docs/exec-plans/reviews/HG-050/general/audit.log",
+      "sha256": "4761a4c682662065749d10b10161a3e0071e68141e7f7edd688c811be91cad52",
+      "bytes": 328
+    },
+    {
+      "command": ".venv/bin/python docs/exec-plans/reviews/HG-050/general/gate_probe.py",
+      "exit_code": 0,
+      "output_ref": "docs/exec-plans/reviews/HG-050/general/gate-probe.log",
+      "sha256": "fe8042a589b90ee59ca4a8d7b09fddd60b2551e4eaea5d74e8ef7a11c80c0722",
+      "bytes": 1445
+    },
+    {
+      "command": ".venv/bin/python tools/harness/compact_evidence.py audit --base 034d6301316d0dade784a61b159c027b83fbce3a --head 26482f7f7147fe33cf37d8028574196c97c82ec6 --identity HG-050",
+      "exit_code": 0,
+      "output_ref": "docs/exec-plans/reviews/HG-050/general/budget.log",
+      "sha256": "3ff09f0e70e4ae0c5404601c9a357ed380226cd8b12c1cd97336038c56d5e848",
+      "bytes": 264
+    }
+  ],
+  "focused_counts": {
+    "tests": 102,
+    "passed": 102,
+    "skipped": 0,
+    "failures": 0,
+    "errors": 0
+  },
+  "full_suite_rerun": false,
+  "live_credentials_network_controller_operations": false,
+  "review_created_evidence": true,
+  "failed_reviewer_attempts": [
+    {
+      "path": "audit-attempt-1.log",
+      "exit_code": 1,
+      "cause": "review script assumed wrong unit count; corrected from raw JUnit"
+    },
+    {
+      "path": "gate-probe-attempt-1.log",
+      "exit_code": 1,
+      "cause": "review script assumed shared missing-review diagnostic; corrected to observed early GENERAL gate"
+    }
+  ]
+}
