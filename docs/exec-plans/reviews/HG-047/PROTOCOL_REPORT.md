@@ -79,3 +79,15 @@ Task-local check PASS, independent review, merge, M3, product and release PASS r
 separate. Production auto-activation stays disabled; real-data shadow remains
 non-executable; related product/release requirements remain NOT_RUN. No live
 configuration, installation, credential, source/result or other review was changed.
+
+## Round-one evidence-reference bookkeeping correction
+
+Removed `tools/harness/compact_evidence.py` from the review JSON's `evidence_refs`:
+its source text contains reserved storage markers and is rejected by the evidence
+decoder as `evidence-envelope-json`; it is not execution evidence. Source citations
+remain in this report. The report and bound raw-proof envelopes support this
+review; the remaining references validate at their original bound revisions.
+The original round-one record remains in Git at `0fd0f3d`. This bookkeeping change
+preserves CHANGES_REQUIRED, BLOCKER P-01 and reviewed SHA
+`47de76d206df89124ffe41c59b0b983af4defc97`. It is not a review of the later fix and
+does not close the finding or grant PASS.
