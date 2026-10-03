@@ -161,3 +161,22 @@ def test_aggregation_rejects_partial_or_mismatched_worker_evidence() -> None:
     assert "execution-collection-mismatch" in errors
     assert "missing-or-duplicate-call" in errors
     assert "missing-worker-collection" in runner.evidence_errors(record, 4, False)
+
+
+def test_legacy_junit_export_and_collection_only_mode(tmp_path: Path) -> None:
+    root = repository(tmp_path, "def test_case():\n    pass\n")
+    for workers in (1, 2):
+        directory = tmp_path / ("run-" + str(workers))
+        exported = tmp_path / ("legacy-" + str(workers) + ".xml")
+        result = run(root, workers, directory, "--junitxml", str(exported))
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert exported.read_bytes() == (directory / "junit.xml").read_bytes()
+        manifest = json.loads((directory / "manifest.json").read_text())
+        assert manifest["mode"] == "EXECUTION" and manifest["execution_complete"] is True
+    collection = run(root, 2, tmp_path / "collection", "--collect-only")
+    assert collection.returncode == 0, collection.stdout + collection.stderr
+    manifest = json.loads((tmp_path / "collection/manifest.json").read_text())
+    assert manifest["mode"] == "COLLECTION_ONLY" and manifest["execution_complete"] is False
+    inside = run(root, 2, root / "new-evidence")
+    assert inside.returncode == 2 and "outside the source checkout" in inside.stderr
+    assert not (root / "new-evidence").exists()

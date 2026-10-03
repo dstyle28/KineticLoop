@@ -10,6 +10,7 @@ import importlib.metadata
 import json
 import os
 import platform
+import shutil
 import signal
 import subprocess
 import sys
@@ -59,14 +60,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--workers", type=int, choices=range(1, MAX_WORKERS + 1),
                         default=DEFAULT_WORKERS)
     parser.add_argument("--evidence-dir", type=Path)
+    parser.add_argument("--junitxml", "--junit-xml", type=Path)
     args, extra = parser.parse_known_args(argv)
+    if args.evidence_dir and args.evidence_dir.resolve().is_relative_to(ROOT):
+        parser.error("Record evidence outside the source checkout, then commit it after execution")
     # One entrypoint owns process topology; arbitrary pytest selectors/options remain available.
     controlled = ("-n", "-d", "--numprocesses", "--dist", "--tx", "--px", "--maxprocesses",
-                  "--max-worker-restart", "--maxschedchunk", "--junitxml", "--junit-xml")
+                  "--max-worker-restart", "--maxschedchunk")
     if any(arg == "-d" or arg.startswith("-n") or
            any(arg == name or arg.startswith(name + "=") for name in controlled[2:])
            for arg in extra):
-        parser.error("Use --workers to configure local concurrency; JUnit is owned by the runner")
+        parser.error("Use --workers to configure local concurrency")
     if args.workers > 1 and "-s" in extra:
         parser.error("xdist does not support -s; use --workers 1")
     revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
@@ -141,7 +145,7 @@ def main(argv: list[str] | None = None) -> int:
                 errors.append("interrupted")
         try:
             observer = json.loads((directory / "execution.json").read_text())
-            if observer["exit_code"] != status:
+            if observer["exit_code"] != process.returncode:
                 errors.append("observer-exit-mismatch")
             errors.extend(evidence_errors(observer, 1 if collect_only else args.workers, collect_only))
             expected = collection["collections"]["serial"]
@@ -165,6 +169,12 @@ def main(argv: list[str] | None = None) -> int:
         current_dirty = bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT))
         if current_revision != revision or (not dirty and current_dirty):
             errors.append("source-changed-during-execution")
+        if args.junitxml and args.junitxml.resolve() != (directory / "junit.xml").resolve():
+            try:
+                args.junitxml.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(directory / "junit.xml", args.junitxml)
+            except OSError as error:
+                errors.append("junit-export-failed: " + str(error))
         # Preserve pytest's failure code; missing/partial evidence cannot create success.
         result = status if status != 0 else 1 if errors else 0
         files = [file_record(path) for path in sorted(directory.iterdir()) if path.is_file()]
@@ -176,7 +186,10 @@ def main(argv: list[str] | None = None) -> int:
                          for name in ("pytest", "pytest-xdist", "execnet")},
             "collection_command": collection_command,
             "collection_wall_seconds": collection_wall,
-            "wall_seconds": time.monotonic() - started, "pytest_exit_code": status,
+            "wall_seconds": time.monotonic() - started, "pytest_exit_code": process.returncode,
+            "mode": "COLLECTION_ONLY" if collect_only else "EXECUTION",
+            "execution_complete": not collect_only and result == 0,
+            "requested_junitxml": str(args.junitxml) if args.junitxml else None,
             "exit_code": result, "errors": errors, "files": files,
             "evidence_scope": "developer-harness; App-bound local-db-gate still required",
         }, indent=2) + "\n")
