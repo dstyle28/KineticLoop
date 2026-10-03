@@ -1,0 +1,183 @@
+{
+  "reviewed_head_sha": "ceed78db431a348aae0b599a5e1b09bb082fb968",
+  "base_commit": "95ddd75d3eb410b7dffa15a1017276c504adc9a6",
+  "status": "PASS",
+  "source_hashes": {
+    "src/kineticloop/persistence/deterministic_planning.py": "2a28fd731f5dab8915a6fb0fb87f01379fffd3f3858983d4f2e2da4b0c8f6b9c",
+    "src/kineticloop/persistence/transactions.py": "425e3afa4080d471b094abeac7f11e5648a57ffc95dc9de0342659496fbb0f3f",
+    "src/kineticloop/persistence/protocol_execution.py": "7e74e8639b7db90693b320e425cd2f732ff764c475c03c22c67c91635e094378",
+    "docs/contracts/deterministic_planning.md": "697198605e42c419b446c7796ec62da2c4f50b278ed8808603beaff34bff3ece",
+    "docs/contracts/full_action_preparation.md": "fb60a7eef8649804de3bcfccba7d3f06e0a5935ddce9bab23673a1261044281c",
+    "docs/contracts/full_test_execution.md": "e7308289ad4ef4068860015de6b6d5aa30e872b45f2d13fffde9b9f1142ebd1d",
+    "docs/contracts/protocol_execution.md": "92e9b38b8c8bd2875c76b184d3be366c251f39b095f453db95835674cc932c52"
+  },
+  "preserved_history_paths": 3896,
+  "prerequisites": [
+    {
+      "task_identity": "harness-backlog-v0.2/KL-076",
+      "merge_commit": "035644e0cfb94927d7555e245223cd92c224ea5a"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-079",
+      "merge_commit": "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-077",
+      "merge_commit": "6d1348c5a731afb74fdf6f2345109a446cdb597c"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-027",
+      "merge_commit": "1099d85bd4aa76ec8221700e55b4e77a84479126"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-078",
+      "merge_commit": "c599ec1ef39c28bd691748698a09805f390878cf"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-026",
+      "merge_commit": "70dc4863ccdca95f7a44e79b68501a698262e323"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-023",
+      "merge_commit": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-022",
+      "merge_commit": "88adc5be3f7c567413be671a2b3dc5e6c802ffe8"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-028",
+      "merge_commit": "2c44f456a0daf8e6933f20fc3eadc7e1869d6fff"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-029",
+      "merge_commit": "fa729ca4bcca0f2c2e7a2aa0601890d1356b8842"
+    }
+  ],
+  "decoded_recorded_evidence": {
+    "docs/exec-plans/evidence/HG-049/checks-4db6952/unit.json": {
+      "decoded_sha256": "5e3870d421e42d2a04cc5334b27e743993328e8931a0b9141067e21fbf46df1b",
+      "bytes": 433,
+      "exit_code": 0,
+      "tested_commit": "4db695230c2158f67394c8ac79a5f0fdf511849a"
+    },
+    "docs/exec-plans/evidence/HG-049/checks-4db6952/lint.json": {
+      "decoded_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19,
+      "exit_code": 0,
+      "tested_commit": "4db695230c2158f67394c8ac79a5f0fdf511849a"
+    },
+    "docs/exec-plans/evidence/HG-049/precommit/authority-pre.json": {
+      "decoded_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "bytes": 38,
+      "exit_code": 0,
+      "tested_commit": "95ddd75d3eb410b7dffa15a1017276c504adc9a6"
+    },
+    "docs/exec-plans/evidence/HG-049/checks-4db6952/harness-junit-xml.json": {
+      "decoded_sha256": "aa0632cedfc329461c1ded1032f5e89e2b0a90152175356152036d62eb7fa9e2",
+      "bytes": 3520025,
+      "exit_code": 0,
+      "tested_commit": "4db695230c2158f67394c8ac79a5f0fdf511849a"
+    },
+    "docs/exec-plans/evidence/HG-049/checks-4db6952/harness.json": {
+      "decoded_sha256": "c83122b67fea4a4cdd29997d71c24e2430c27f17a5071b334856304c21daaa4d",
+      "bytes": 1678,
+      "exit_code": 0,
+      "tested_commit": "4db695230c2158f67394c8ac79a5f0fdf511849a"
+    },
+    "docs/exec-plans/evidence/HG-049/checks-4db6952/unit-junit.json": {
+      "decoded_sha256": "4d43c82d4d0c06ac1f95567f85e0d3d9e4bfff9e915f844f6aa49b0110039696",
+      "bytes": 33807,
+      "exit_code": 0,
+      "tested_commit": "4db695230c2158f67394c8ac79a5f0fdf511849a"
+    },
+    "docs/exec-plans/evidence/HG-049/checks-4db6952/harness-pytest-log.json": {
+      "decoded_sha256": "c83122b67fea4a4cdd29997d71c24e2430c27f17a5071b334856304c21daaa4d",
+      "bytes": 1678,
+      "exit_code": 0,
+      "tested_commit": "4db695230c2158f67394c8ac79a5f0fdf511849a"
+    },
+    "docs/exec-plans/evidence/HG-049/checks-4db6952/harness-execution-json.json": {
+      "decoded_sha256": "ed1ebb6011c755d059e2f4ac05192fbba952323573c17bb25717b2f8729fdbf4",
+      "bytes": 20363042,
+      "exit_code": 0,
+      "tested_commit": "4db695230c2158f67394c8ac79a5f0fdf511849a"
+    },
+    "docs/exec-plans/evidence/HG-049/checks-4db6952/authority.json": {
+      "decoded_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "bytes": 38,
+      "exit_code": 0,
+      "tested_commit": "4db695230c2158f67394c8ac79a5f0fdf511849a"
+    },
+    "docs/exec-plans/evidence/HG-049/checks-4db6952/harness-manifest-json.json": {
+      "decoded_sha256": "1e07d6f9dfe167e674b4b6815297e48d16af1455decb5edf60bfe6bdd0029dc2",
+      "bytes": 2114,
+      "exit_code": 0,
+      "tested_commit": "4db695230c2158f67394c8ac79a5f0fdf511849a"
+    },
+    "docs/exec-plans/evidence/HG-049/precommit/scope-pre.json": {
+      "decoded_sha256": "2de6ef854e4a6bd8d95db0d82f14cdc4c50ba556d8c77359ca56723d8979c1c6",
+      "bytes": 513,
+      "exit_code": 1,
+      "tested_commit": "95ddd75d3eb410b7dffa15a1017276c504adc9a6"
+    },
+    "docs/exec-plans/evidence/HG-049/checks-4db6952/diff.json": {
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "exit_code": 0,
+      "tested_commit": "4db695230c2158f67394c8ac79a5f0fdf511849a"
+    },
+    "docs/exec-plans/evidence/HG-049/precommit/system-import-tool-output.json": {
+      "decoded_sha256": "f2869381fd489ac77d65cb93e3be473d987a1155b749620e2b134b4c351b3258",
+      "bytes": 478,
+      "exit_code": 1,
+      "tested_commit": "95ddd75d3eb410b7dffa15a1017276c504adc9a6"
+    },
+    "docs/exec-plans/evidence/HG-049/checks-4db6952/harness-collection-json.json": {
+      "decoded_sha256": "c0501f9c7beca03b300bfa12666f1a037c60cd5adbbb5154585a72d002350707",
+      "bytes": 3301902,
+      "exit_code": 0,
+      "tested_commit": "4db695230c2158f67394c8ac79a5f0fdf511849a"
+    },
+    "docs/exec-plans/evidence/HG-049/checks-4db6952/typecheck.json": {
+      "decoded_sha256": "866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445",
+      "bytes": 45,
+      "exit_code": 0,
+      "tested_commit": "4db695230c2158f67394c8ac79a5f0fdf511849a"
+    },
+    "docs/exec-plans/evidence/HG-049/checks-4db6952/harness-collection-log.json": {
+      "decoded_sha256": "97290513c71aa894cf86b856d72837834d15d997c15901ae3990b9dcae79851a",
+      "bytes": 1166,
+      "exit_code": 0,
+      "tested_commit": "4db695230c2158f67394c8ac79a5f0fdf511849a"
+    },
+    "docs/exec-plans/evidence/HG-049/precommit/focused-pre.json": {
+      "decoded_sha256": "486a334edccc1de011b9eabb8fb51495afc7968616be160024dbe7b563311ee6",
+      "bytes": 99,
+      "exit_code": 0,
+      "tested_commit": "95ddd75d3eb410b7dffa15a1017276c504adc9a6"
+    },
+    "docs/exec-plans/evidence/HG-049/precommit/scope-pre-2.json": {
+      "decoded_sha256": "294df99f8277ac7b407e754d6ba2e0e46293d71eb5bd43512b8b5f59debbc7be",
+      "bytes": 445,
+      "exit_code": 1,
+      "tested_commit": "95ddd75d3eb410b7dffa15a1017276c504adc9a6"
+    },
+    "docs/exec-plans/evidence/HG-049/precommit/lint-pre.json": {
+      "decoded_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19,
+      "exit_code": 0,
+      "tested_commit": "95ddd75d3eb410b7dffa15a1017276c504adc9a6"
+    },
+    "docs/exec-plans/evidence/HG-049/checks-4db6952/scope.json": {
+      "decoded_sha256": "c87f4257799dfd6139dc34f88f479ed1d63f64f5c0780c1b851d59b7f2854289",
+      "bytes": 3522,
+      "exit_code": 0,
+      "tested_commit": "4db695230c2158f67394c8ac79a5f0fdf511849a"
+    }
+  },
+  "harness_passed": 1347,
+  "unit_passed": 241,
+  "scope": "Prospective governance and static consumer audit; no database reach executed",
+  "pending": "Exact-head hosted/App/full DB gates; KL080/M3/product/release remain separate"
+}
