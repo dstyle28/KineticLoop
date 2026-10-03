@@ -1,0 +1,64 @@
+{
+  "protected_base": "26906bd7f4444914c228e98377f2b164fee0dd5d",
+  "probe": "existing pure pipelines; no lifecycle or target writes",
+  "rows": [
+    {
+      "profile": "legacy",
+      "s13": "ADMITTED",
+      "s12": "CONFIRMED",
+      "accepted": true,
+      "derived_s36": "CONFIRMED",
+      "rolling_minutes": 40
+    },
+    {
+      "profile": "legacy",
+      "s13": "ELIGIBLE",
+      "s12": "CONFIRMED",
+      "accepted": false,
+      "error": "wrong subject/basis, unknown exposure or planned/actual substitution"
+    },
+    {
+      "profile": "legacy",
+      "s13": "ADMITTED",
+      "s12": "MATCHED",
+      "accepted": false,
+      "error": "missing/contradictory/incomplete/truncated/mismatched/expired resolution"
+    },
+    {
+      "profile": "legacy",
+      "s13": "ELIGIBLE",
+      "s12": "MATCHED",
+      "accepted": false,
+      "error": "wrong subject/basis, unknown exposure or planned/actual substitution"
+    },
+    {
+      "profile": "full",
+      "s13": "ADMITTED",
+      "s12": "CONFIRMED",
+      "accepted": true,
+      "derived_s36": "CONFIRMED,CONFIRMED",
+      "rolling_minutes": 40
+    },
+    {
+      "profile": "full",
+      "s13": "ELIGIBLE",
+      "s12": "CONFIRMED",
+      "accepted": false,
+      "error": "wrong subject/basis, unknown exposure or planned/actual substitution"
+    },
+    {
+      "profile": "full",
+      "s13": "ADMITTED",
+      "s12": "MATCHED",
+      "accepted": false,
+      "error": "missing/contradictory/incomplete/truncated/mismatched/expired resolution"
+    },
+    {
+      "profile": "full",
+      "s13": "ELIGIBLE",
+      "s12": "MATCHED",
+      "accepted": false,
+      "error": "wrong subject/basis, unknown exposure or planned/actual substitution"
+    }
+  ]
+}

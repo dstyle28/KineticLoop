@@ -380,3 +380,23 @@ shadow non-executable. Preserve original reach/layer labels and all downstream
 requirements. No M3→M4 or KL029→KL045 cycle is introduced.
 
 <!-- HG044 plan end -->
+
+## Prospective source-decision conformance — HG045
+
+KL-080 is a fresh NOT_STARTED corrective M3 task under Protocol 3.2–3.3 and DB
+S12–S13. Existing completed tasks/artifacts remain immutable. The exact active M3
+set now adds KL-080 (17 tasks); M2 closure and merged prerequisites are entry
+conditions, never M3 closure. The source_decision_conformance exit requires every
+named KL080 source check, preserving each HG044 exit, selector, contribution, raw
+provenance/collection/JUnit and transitive ancestry rule. Integrated regression
+adds the exact prospective PU/DC conformance suite and named selectors plus the
+existing deterministic/full preparation unit suites. No M3 instance or PASS is
+created here; all KL080 checks remain NOT_RUN.
+
+Canonical S13 ELIGIBLE and S12 MATCHED are source authority; S27 ADMITTED and S36
+derived CONFIRMED retain their distinct meaning. Earlier full T6 reconstruction
+denial and separate real-PG exact freshness support are never mislabeled as later
+guard reach. The four pinned older fixture edits preserve ambiguous/denied intent.
+Hevy and HealthKit remain mandatory; retired spreadsheet policy and all production,
+shadow, admission, owner, lock, history and actual-vs-target rules remain intact.
+<!-- HG045 plan end -->

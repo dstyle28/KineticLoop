@@ -1,0 +1,472 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/davetian/.codex/worktrees/eaff/KineticLoop
+configfile: pyproject.toml
+collected 924 items
+
+tests/harness/acceptance/test_registry.py .....                          [  0%]
+tests/harness/document_index/test_current_document_index.py .......      [  1%]
+tests/harness/document_index/test_evidence_manifest.py .......           [  2%]
+tests/harness/document_index/test_historical_task_map.py ......          [  2%]
+tests/harness/test_call_ledger_scope.py .........................        [  5%]
+tests/harness/test_cancel_identity_scope.py ............................ [  8%]
+.............................                                            [ 11%]
+tests/harness/test_fitness_evaluation_scope.py ......................... [ 14%]
+.......................................                                  [ 18%]
+tests/harness/test_full_action_scope.py ................................ [ 21%]
+..                                                                       [ 22%]
+tests/harness/test_m3_boundary_shadow_scope.py ......................... [ 24%]
+..................................................                       [ 30%]
+tests/harness/test_m3_milestone_closure.py ............................. [ 33%]
+......................................................................   [ 41%]
+tests/harness/test_m3_next_wave_scope.py ............................... [ 44%]
+........................................................................ [ 52%]
+..............                                                           [ 53%]
+tests/harness/test_planning_fixture_scope.py ............                [ 54%]
+tests/harness/test_planning_subject_scope.py ........................    [ 57%]
+tests/harness/test_preparation_scope.py ............................     [ 60%]
+tests/harness/test_protocol_execution_scope.py ......................... [ 63%]
+.....................                                                    [ 65%]
+tests/harness/test_readiness_scope.py .................................. [ 69%]
+...............................                                          [ 72%]
+tests/harness/test_review_evidence_provenance.py ....................... [ 75%]
+................                                                         [ 76%]
+tests/harness/test_source_decision_scope.py ............................ [ 79%]
+.......                                                                  [ 80%]
+tests/harness/test_validator.py F.FFFF.FF............................F.. [ 84%]
+....F....FF......F...............F..FFFF.................F.............. [ 92%]
+....................F........F                                           [ 95%]
+tests/harness/test_wave_scope.py .....................................   [100%]
+
+=================================== FAILURES ===================================
+______________ ValidatorTests.test_authorized_hash_refresh_passes ______________
+
+self = <test_validator.ValidatorTests testMethod=test_authorized_hash_refresh_passes>
+
+    def test_authorized_hash_refresh_passes(self):
+        p = self.root / 'tools/harness/validate_harness.py'
+        p.write_text(p.read_text() + '\n# implementation fixture\n')
+        refresh(self.root)
+        self.commit('implementation with derived checksums')
+>       self.check(0, '', '--protected-base', self.base, '--task-id', 'KL-001')
+
+tests/harness/test_validator.py:1274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+___ ValidatorTests.test_ci_governance_allows_current_project_plan_refinement ___
+
+self = <test_validator.ValidatorTests testMethod=test_ci_governance_allows_current_project_plan_refinement>
+
+    def test_ci_governance_allows_current_project_plan_refinement(self):
+        plan = self.root / v.PROJECT_PLAN
+        plan.write_text(plan.read_text() + '\nGovernance fixture refinement.\n')
+        self.governance_change()
+>       self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+tests/harness/test_validator.py:2082: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+_ ValidatorTests.test_ci_governance_allows_explicit_unstarted_task_retirement __
+
+self = <test_validator.ValidatorTests testMethod=test_ci_governance_allows_explicit_unstarted_task_retirement>
+
+    def test_ci_governance_allows_explicit_unstarted_task_retirement(self):
+        task = self.retire_task()
+        refresh(self.root)
+        tested = self.commit('retire unneeded Google Sheet migration task')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+>       self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+tests/harness/test_validator.py:1500: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+_____ ValidatorTests.test_ci_governance_allows_new_follow_up_task_identity _____
+
+self = <test_validator.ValidatorTests testMethod=test_ci_governance_allows_new_follow_up_task_identity>
+
+    def test_ci_governance_allows_new_follow_up_task_identity(self):
+        task = self.add_governance_task()
+        tested = self.commit('add explicit follow-up task')
+        self.persist_governance_change(
+            'HG-999', tested, [task['id']], task['review_requirements'])
+>       self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+tests/harness/test_validator.py:1433: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+____ ValidatorTests.test_ci_governance_allows_refined_traceability_metadata ____
+
+self = <test_validator.ValidatorTests testMethod=test_ci_governance_allows_refined_traceability_metadata>
+
+    def test_ci_governance_allows_refined_traceability_metadata(self):
+        task_id = 'KL-008'
+        task = self.refine_task(task_id)
+        refresh(self.root)
+        tested = self.commit('refine packet and derived traceability metadata')
+        self.persist_governance_change(
+            'HG-999', tested, [task_id], task['review_requirements'])
+>       self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+tests/harness/test_validator.py:1492: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+_ ValidatorTests.test_ci_governance_ignores_unrelated_unresolvable_review_sha __
+
+self = <test_validator.ValidatorTests testMethod=test_ci_governance_ignores_unrelated_unresolvable_review_sha>
+
+    def test_ci_governance_ignores_unrelated_unresolvable_review_sha(self):
+        self.governance_review('HG-998', 'f' * 40)
+        self.base = self.commit('historical governance review with unavailable revision')
+        self.governance_change()
+>       self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+tests/harness/test_validator.py:1820: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+____ ValidatorTests.test_ci_governance_merge_gate_binds_record_and_reviews _____
+
+self = <test_validator.ValidatorTests testMethod=test_ci_governance_merge_gate_binds_record_and_reviews>
+
+    def test_ci_governance_merge_gate_binds_record_and_reviews(self):
+        self.governance_change()
+>       self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+tests/harness/test_validator.py:1341: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+_ ValidatorTests.test_ci_governance_review_only_accepts_exact_tree_post_merge_review _
+
+self = <test_validator.ValidatorTests testMethod=test_ci_governance_review_only_accepts_exact_tree_post_merge_review>
+
+    def test_ci_governance_review_only_accepts_exact_tree_post_merge_review(self):
+        self.put('tools/harness/post_merge_fixture.py')
+        tested = self.commit('governance implementation')
+        evidence = 'docs/exec-plans/evidence/HG-999/checks.log'
+        record_path = 'docs/exec-plans/governance/HG-999.yaml'
+        self.put(evidence, 'governance checks passed\n')
+        self.save_result(self.root / record_path, {
+            'change_identity': 'harness-governance-v0.1/HG-999',
+            'display_change_id': 'HG-999',
+            'base_commit': self.base,
+            'tested_commit': tested,
+            'change_status': 'PASS',
+            'summary': 'Fixture governance change reviewed after merge',
+            'packets_refined': [],
+            'files_changed': sorted((
+                'tools/harness/post_merge_fixture.py', evidence, record_path)),
+            'checks_run': [{
+                'check_id': 'governance_contract_valid',
+                'command': 'fixture governance check',
+                'result': 'PASS',
+                'evidence_ref': evidence,
+            }],
+            'frozen_impact': 'NONE',
+            'authority_entries_added': [],
+        })
+        record_commit = self.commit('record governance result')
+        merge_commit = self.merge_commit(
+            record_commit, self.base, record_commit, message='merge governance before review')
+        self.git('checkout', '-q', '--detach', merge_commit)
+        self.governance_review('HG-999', merge_commit)
+        self.commit('persist post-merge governance review')
+>       self.check(0, '', '--ci-pr-base', merge_commit, '--ci-pr-head', 'HEAD')
+
+tests/harness/test_validator.py:1853: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+E   packet:KL-080
+_ ValidatorTests.test_ci_governance_review_only_replays_reviewed_tree_from_later_base _
+
+self = <test_validator.ValidatorTests testMethod=test_ci_governance_review_only_replays_reviewed_tree_from_later_base>
+
+    def test_ci_governance_review_only_replays_reviewed_tree_from_later_base(self):
+        self.put('tools/harness/post_merge_fixture.py')
+        tested = self.commit('governance implementation')
+        evidence = 'docs/exec-plans/evidence/HG-999/checks.log'
+        record_path = 'docs/exec-plans/governance/HG-999.yaml'
+        self.put(evidence, 'governance checks passed\n')
+        self.save_result(self.root / record_path, {
+            'change_identity': 'harness-governance-v0.1/HG-999',
+            'display_change_id': 'HG-999',
+            'base_commit': self.base,
+            'tested_commit': tested,
+            'change_status': 'PASS',
+            'summary': 'Fixture governance change reviewed after a later integration',
+            'packets_refined': [],
+            'files_changed': sorted((
+                'tools/harness/post_merge_fixture.py', evidence, record_path)),
+            'checks_run': [{
+                'check_id': 'governance_contract_valid',
+                'command': 'fixture governance check',
+                'result': 'PASS',
+                'evidence_ref': evidence,
+            }],
+            'frozen_impact': 'NONE',
+            'authority_entries_added': [],
+        })
+        record_commit = self.commit('record governance result')
+        reviewed = self.merge_commit(
+            record_commit, self.base, record_commit, message='merge governance before review')
+        self.git('checkout', '-q', '--detach', reviewed)
+    
+        validator = self.root / 'tools/harness/validate_harness.py'
+        validator.write_text(validator.read_text() + '\n# later governance fixture\n')
+        refresh(self.root)
+        later_tip = self.commit('later governance change')
+        protected_base = self.merge_commit(
+            later_tip, reviewed, later_tip, message='merge later governance change')
+        self.git('checkout', '-q', '--detach', protected_base)
+        self.governance_review('HG-999', reviewed)
+        self.commit('persist delayed governance review')
+    
+>       self.check(0, '', '--ci-pr-base', protected_base, '--ci-pr-head', 'HEAD')
+
+tests/harness/test_validator.py:1895: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+E   packet:KL-080
+___ ValidatorTests.test_ci_merge_gate_binds_base_task_and_reviewed_revision ____
+
+self = <test_validator.ValidatorTests testMethod=test_ci_merge_gate_binds_base_task_and_reviewed_revision>
+
+    def test_ci_merge_gate_binds_base_task_and_reviewed_revision(self):
+        self.reviewed_result()
+>       self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+tests/harness/test_validator.py:1312: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+_____ ValidatorTests.test_ci_merge_gate_rejects_coordinated_frozen_tamper ______
+
+self = <test_validator.ValidatorTests testMethod=test_ci_merge_gate_rejects_coordinated_frozen_tamper>
+
+    def test_ci_merge_gate_rejects_coordinated_frozen_tamper(self):
+        baseline = self.root / 'FROZEN_BASELINE.json'
+        frozen = json.loads(baseline.read_text())
+        protected = self.root / frozen['files'][0]['path']
+        protected.write_text(protected.read_text() + '\ncoordinated CI tamper\n')
+        frozen['files'][0]['sha256'] = v.sha(protected)
+        dump(baseline, frozen)
+        refresh(self.root)
+        tested = self.commit('coordinated frozen tamper')
+        self.result(tested=tested)
+        reviewed = self.commit('record tampered result')
+        self.review(reviewed)
+>       self.check(0)
+
+tests/harness/test_validator.py:1326: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+_________________ ValidatorTests.test_current_structure_passes _________________
+
+self = <test_validator.ValidatorTests testMethod=test_current_structure_passes>
+
+    def test_current_structure_passes(self):
+>       self.check()
+
+tests/harness/test_validator.py:384: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+______ ValidatorTests.test_historical_review_is_not_compared_to_new_head _______
+
+self = <test_validator.ValidatorTests testMethod=test_historical_review_is_not_compared_to_new_head>
+
+    def test_historical_review_is_not_compared_to_new_head(self):
+        self.reviewed_result()
+        self.put('src/kineticloop/later_task.py')
+        self.commit('later integrated work')
+>       self.check()
+
+tests/harness/test_validator.py:2440: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+___ ValidatorTests.test_integration_accepts_exact_complete_tree_squash_merge ___
+
+self = <test_validator.ValidatorTests testMethod=test_integration_accepts_exact_complete_tree_squash_merge>
+
+    def test_integration_accepts_exact_complete_tree_squash_merge(self):
+        self.result(tested=self.base)
+        result_commit = self.commit('persist result')
+        review_commit = self.review(result_commit)
+        merge_commit = self.sibling_commit(review_commit)
+        self.git('checkout', '-q', '--detach', merge_commit)
+        self.integration_record(result_commit, result_commit, review_commit, merge_commit)
+>       self.check()
+
+tests/harness/test_validator.py:2199: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+_______ ValidatorTests.test_integration_accepts_exactly_one_json_result ________
+
+self = <test_validator.ValidatorTests testMethod=test_integration_accepts_exactly_one_json_result>
+
+    def test_integration_accepts_exactly_one_json_result(self):
+        self.result(ext='json', tested=self.base)
+        result_commit = self.commit('persist JSON result')
+        review_commit = self.review(result_commit)
+        dump(self.root / 'docs/exec-plans/integrations/KL-001.json', {
+            'task_identity': self.task['task_identity'],
+            'display_task_id': 'KL-001',
+            'result_commit': result_commit,
+            'reviewed_head_sha': result_commit,
+            'review_record_commit': review_commit,
+            'merge_commit': review_commit,
+            'integration_status': 'MERGED',
+        })
+>       self.check()
+
+tests/harness/test_validator.py:2125: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+_____ ValidatorTests.test_integration_accepts_review_recorded_after_merge ______
+
+self = <test_validator.ValidatorTests testMethod=test_integration_accepts_review_recorded_after_merge>
+
+    def test_integration_accepts_review_recorded_after_merge(self):
+        self.result(tested=self.base)
+        merge_commit = self.commit('merge result before review')
+        self.put('later.txt', 'later integrated work\n')
+        self.commit('integrate unrelated later work')
+        review_commit = self.review(merge_commit)
+        self.integration_record(merge_commit, merge_commit, review_commit, merge_commit)
+>       self.check()
+
+tests/harness/test_validator.py:2208: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+_ ValidatorTests.test_integration_allows_unrelated_task_bookkeeping_after_tested_commit _
+
+self = <test_validator.ValidatorTests testMethod=test_integration_allows_unrelated_task_bookkeeping_after_tested_commit>
+
+    def test_integration_allows_unrelated_task_bookkeeping_after_tested_commit(self):
+        self.put('docs/exec-plans/evidence/KL-002/unrelated.log')
+        self.commit('persist unrelated task bookkeeping')
+        self.result(tested=self.base)
+        reviewed = self.commit('persist result after unrelated bookkeeping')
+        review_commit = self.review(reviewed)
+        self.integration_record(reviewed, reviewed, review_commit, review_commit)
+>       self.check()
+
+tests/harness/test_validator.py:2181: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+________ ValidatorTests.test_legal_implementation_and_bookkeeping_pass _________
+
+self = <test_validator.ValidatorTests testMethod=test_legal_implementation_and_bookkeeping_pass>
+
+    def test_legal_implementation_and_bookkeeping_pass(self):
+        self.put('src/kineticloop/entry.py')
+        tested = self.commit('implementation')
+        self.result(tested=tested)
+        self.commit('result and evidence')
+>       self.check(0, '', '--protected-base', self.base, '--task-id', 'KL-001')
+
+tests/harness/test_validator.py:1267: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+__________ ValidatorTests.test_result_then_review_only_suffix_passes ___________
+
+self = <test_validator.ValidatorTests testMethod=test_result_then_review_only_suffix_passes>
+
+    def test_result_then_review_only_suffix_passes(self):
+        _, _, reviewed = self.reviewed_result()
+>       self.check(0, '', '--protected-base', self.base, '--task-id', 'KL-001', '--reviewed-head', reviewed)
+
+tests/harness/test_validator.py:1308: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+_____________ ValidatorTests.test_yaml_and_json_valid_results_pass _____________
+
+self = <test_validator.ValidatorTests testMethod=test_yaml_and_json_valid_results_pass>
+
+    def test_yaml_and_json_valid_results_pass(self):
+        for ext in ('yaml', 'json'):
+            path, _ = self.result(ext)
+>           self.check()
+
+tests/harness/test_validator.py:389: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/harness/test_validator.py:117: in check
+    self.assertEqual(code, expected, out.getvalue())
+E   AssertionError: 1 != 0 : HARNESS_CHECK_FAIL
+E   packet:KL-080
+=========================== short test summary info ============================
+FAILED tests/harness/test_validator.py::ValidatorTests::test_authorized_hash_refresh_passes
+FAILED tests/harness/test_validator.py::ValidatorTests::test_ci_governance_allows_current_project_plan_refinement
+FAILED tests/harness/test_validator.py::ValidatorTests::test_ci_governance_allows_explicit_unstarted_task_retirement
+FAILED tests/harness/test_validator.py::ValidatorTests::test_ci_governance_allows_new_follow_up_task_identity
+FAILED tests/harness/test_validator.py::ValidatorTests::test_ci_governance_allows_refined_traceability_metadata
+FAILED tests/harness/test_validator.py::ValidatorTests::test_ci_governance_ignores_unrelated_unresolvable_review_sha
+FAILED tests/harness/test_validator.py::ValidatorTests::test_ci_governance_merge_gate_binds_record_and_reviews
+FAILED tests/harness/test_validator.py::ValidatorTests::test_ci_governance_review_only_accepts_exact_tree_post_merge_review
+FAILED tests/harness/test_validator.py::ValidatorTests::test_ci_governance_review_only_replays_reviewed_tree_from_later_base
+FAILED tests/harness/test_validator.py::ValidatorTests::test_ci_merge_gate_binds_base_task_and_reviewed_revision
+FAILED tests/harness/test_validator.py::ValidatorTests::test_ci_merge_gate_rejects_coordinated_frozen_tamper
+FAILED tests/harness/test_validator.py::ValidatorTests::test_current_structure_passes
+FAILED tests/harness/test_validator.py::ValidatorTests::test_historical_review_is_not_compared_to_new_head
+FAILED tests/harness/test_validator.py::ValidatorTests::test_integration_accepts_exact_complete_tree_squash_merge
+FAILED tests/harness/test_validator.py::ValidatorTests::test_integration_accepts_exactly_one_json_result
+FAILED tests/harness/test_validator.py::ValidatorTests::test_integration_accepts_review_recorded_after_merge
+FAILED tests/harness/test_validator.py::ValidatorTests::test_integration_allows_unrelated_task_bookkeeping_after_tested_commit
+FAILED tests/harness/test_validator.py::ValidatorTests::test_legal_implementation_and_bookkeeping_pass
+FAILED tests/harness/test_validator.py::ValidatorTests::test_result_then_review_only_suffix_passes
+FAILED tests/harness/test_validator.py::ValidatorTests::test_yaml_and_json_valid_results_pass
+================= 20 failed, 904 passed in 2097.27s (0:34:57) ==================

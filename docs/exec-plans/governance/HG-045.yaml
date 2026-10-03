@@ -1,0 +1,175 @@
+change_identity: harness-governance-v0.1/HG-045
+display_change_id: HG-045
+base_commit: 26906bd7f4444914c228e98377f2b164fee0dd5d
+tested_commit: 263c82e761747b88ac56f96be014e158f494dae0
+change_status: PASS
+summary: Define fresh enforceable NOT_STARTED KL080 to repair prospective frozen S12/S13 source conformance
+  under existing isolated TEST preparation/full execution. Pin exact scope, resource serialization, canonical/invalid/freshness
+  support oracles and fixture-only edits; require corrective M3 prerequisite and fresh integrated regression
+  while preserving every HG044 gate. Append verified KL028/029 integrations without rewriting historical
+  results.
+packets_refined:
+- KL-080
+files_changed:
+- 06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- KineticLoop_Harness_Backlog_v0.2.json
+- KineticLoop_Harness_Traceability_v0.3.json
+- MILESTONE_CLOSURE.schema.json
+- docs/exec-plans/active/KL-080.md
+- docs/exec-plans/evidence/HG-045/DEVELOPMENT_ROUNDS.md
+- docs/exec-plans/evidence/HG-045/EVIDENCE_FORMAT.md
+- docs/exec-plans/evidence/HG-045/FEASIBILITY.md
+- docs/exec-plans/evidence/HG-045/PREPARATION.md
+- docs/exec-plans/evidence/HG-045/SOURCE_AUDIT.md
+- docs/exec-plans/evidence/HG-045/capture-integrity-263c82e.json
+- docs/exec-plans/evidence/HG-045/check.py
+- docs/exec-plans/evidence/HG-045/focused-18aa599.json
+- docs/exec-plans/evidence/HG-045/focused-263c82e.json
+- docs/exec-plans/evidence/HG-045/focused-263c82e.log
+- docs/exec-plans/evidence/HG-045/focused-6bf24b3.log
+- docs/exec-plans/evidence/HG-045/focused-d6603c6.json
+- docs/exec-plans/evidence/HG-045/focused-d6603c6.log
+- docs/exec-plans/evidence/HG-045/harness-263c82e.json
+- docs/exec-plans/evidence/HG-045/harness-263c82e.log
+- docs/exec-plans/evidence/HG-045/harness-6bf24b3.log
+- docs/exec-plans/evidence/HG-045/harness-d6603c6.json
+- docs/exec-plans/evidence/HG-045/harness-d6603c6.log
+- docs/exec-plans/evidence/HG-045/integration-provenance-26906bd.json
+- docs/exec-plans/evidence/HG-045/integration_audit.py
+- docs/exec-plans/evidence/HG-045/integration_provenance-18aa599.json
+- docs/exec-plans/evidence/HG-045/integration_provenance-263c82e.json
+- docs/exec-plans/evidence/HG-045/integration_provenance-263c82e.log
+- docs/exec-plans/evidence/HG-045/integration_provenance-6bf24b3.json
+- docs/exec-plans/evidence/HG-045/integration_provenance-6bf24b3.log
+- docs/exec-plans/evidence/HG-045/integration_provenance-d6603c6.json
+- docs/exec-plans/evidence/HG-045/integration_provenance-d6603c6.log
+- docs/exec-plans/evidence/HG-045/lint-18aa599.json
+- docs/exec-plans/evidence/HG-045/lint-263c82e.json
+- docs/exec-plans/evidence/HG-045/lint-263c82e.log
+- docs/exec-plans/evidence/HG-045/lint-6bf24b3.json
+- docs/exec-plans/evidence/HG-045/lint-6bf24b3.log
+- docs/exec-plans/evidence/HG-045/lint-d6603c6.json
+- docs/exec-plans/evidence/HG-045/lint-d6603c6.log
+- docs/exec-plans/evidence/HG-045/scope_audit.py
+- docs/exec-plans/evidence/HG-045/scope_frozen-18aa599.json
+- docs/exec-plans/evidence/HG-045/scope_frozen-263c82e.json
+- docs/exec-plans/evidence/HG-045/scope_frozen-263c82e.log
+- docs/exec-plans/evidence/HG-045/scope_frozen-6bf24b3.json
+- docs/exec-plans/evidence/HG-045/scope_frozen-6bf24b3.log
+- docs/exec-plans/evidence/HG-045/scope_frozen-d6603c6.json
+- docs/exec-plans/evidence/HG-045/scope_frozen-d6603c6.log
+- docs/exec-plans/evidence/HG-045/source-probe-26906bd.json
+- docs/exec-plans/evidence/HG-045/source_diff-18aa599.json
+- docs/exec-plans/evidence/HG-045/source_diff-263c82e.json
+- docs/exec-plans/evidence/HG-045/source_diff-263c82e.log
+- docs/exec-plans/evidence/HG-045/source_diff-6bf24b3.json
+- docs/exec-plans/evidence/HG-045/source_diff-6bf24b3.log
+- docs/exec-plans/evidence/HG-045/source_diff-d6603c6.json
+- docs/exec-plans/evidence/HG-045/source_diff-d6603c6.log
+- docs/exec-plans/evidence/HG-045/source_diff_preserved_raw-263c82e.json
+- docs/exec-plans/evidence/HG-045/source_diff_preserved_raw-263c82e.log
+- docs/exec-plans/evidence/HG-045/source_probe.py
+- docs/exec-plans/evidence/HG-045/typecheck-18aa599.json
+- docs/exec-plans/evidence/HG-045/typecheck-263c82e.json
+- docs/exec-plans/evidence/HG-045/typecheck-263c82e.log
+- docs/exec-plans/evidence/HG-045/typecheck-6bf24b3.json
+- docs/exec-plans/evidence/HG-045/typecheck-6bf24b3.log
+- docs/exec-plans/evidence/HG-045/typecheck-d6603c6.json
+- docs/exec-plans/evidence/HG-045/typecheck-d6603c6.log
+- docs/exec-plans/evidence/HG-045/unit-18aa599.json
+- docs/exec-plans/evidence/HG-045/unit-263c82e.json
+- docs/exec-plans/evidence/HG-045/unit-263c82e.log
+- docs/exec-plans/evidence/HG-045/unit-6bf24b3.json
+- docs/exec-plans/evidence/HG-045/unit-6bf24b3.log
+- docs/exec-plans/evidence/HG-045/unit-d6603c6.json
+- docs/exec-plans/evidence/HG-045/unit-d6603c6.log
+- docs/exec-plans/evidence/HG-045/validation-18aa599.json
+- docs/exec-plans/evidence/HG-045/validation-263c82e.json
+- docs/exec-plans/evidence/HG-045/validation-263c82e.log
+- docs/exec-plans/evidence/HG-045/validation-6bf24b3.json
+- docs/exec-plans/evidence/HG-045/validation-6bf24b3.log
+- docs/exec-plans/evidence/HG-045/validation-d6603c6.json
+- docs/exec-plans/evidence/HG-045/validation-d6603c6.log
+- docs/exec-plans/governance/HG-045.yaml
+- docs/exec-plans/integrations/KL-028.json
+- docs/exec-plans/integrations/KL-029.json
+- docs/harness/M3_CLOSURE_CONTRACT.md
+- tests/harness/test_m3_milestone_closure.py
+- tests/harness/test_source_decision_scope.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: focused
+  command: /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_source_decision_scope.py
+    --basetemp /private/tmp/hg045-focused-263c82e
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-045/focused-263c82e.json
+- check_id: harness
+  command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli test-harness -p no:cacheprovider --basetemp
+    /private/tmp/hg045-harness-263c82e
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-045/harness-263c82e.json
+- check_id: unit
+  command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli test-unit -p no:cacheprovider --basetemp
+    /private/tmp/hg045-unit-263c82e
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-045/unit-263c82e.json
+- check_id: lint
+  command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-045/lint-263c82e.json
+- check_id: typecheck
+  command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-045/typecheck-263c82e.json
+- check_id: validation
+  command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-045/validation-263c82e.json
+- check_id: source_diff_preserved_raw
+  command: git diff --check 26906bd7f4444914c228e98377f2b164fee0dd5d 263c82e761747b88ac56f96be014e158f494dae0
+    -- . ':(exclude)docs/exec-plans/evidence/HG-045/harness-d6603c6.log'
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-045/source_diff_preserved_raw-263c82e.json
+- check_id: integration_provenance
+  command: /private/tmp/hg044-venv/bin/python /Users/davetian/.codex/worktrees/eaff/KineticLoop/docs/exec-plans/evidence/HG-045/integration_audit.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-045/integration_provenance-263c82e.json
+- check_id: scope_frozen
+  command: /private/tmp/hg044-venv/bin/python /Users/davetian/.codex/worktrees/eaff/KineticLoop/docs/exec-plans/evidence/HG-045/scope_audit.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-045/scope_frozen-263c82e.json
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- 'Governance only: runtime and test fixtures remain unchanged. The protected-base actual legacy/full
+  pure pipelines accept malformed ADMITTED+CONFIRMED and reject frozen canonical ELIGIBLE+MATCHED; committed
+  diagnostic is defect evidence, never conformance PASS.'
+- Every future KL080 task check is NOT_RUN. No completed definition/result/review/raw log or immutable
+  runtime row is rewritten or newly certified. Prospective canonical source bytes and dependent hashes
+  may change only under the new corrective task.
+- No M3.json or M3/product/release PASS is created. Exact 17-task M3 closure must include normally merged
+  KL080 and every pinned source check plus fresh integrated regression. All prior exits/selectors/digests,
+  raw collection/JUnit integrity, 31-row boundary/10-row interleaving ledgers, KL074 support and M1/M2
+  prerequisites remain.
+- Invalid-source full T6 reconstructs before later freshness query. KL080 must separately prove canonical
+  T6 reach, actual earlier invalid reconstruction denial with zero effects, and explicitly labeled exact
+  real-PG freshness support; no bypass/forged certificates or later-reach claim.
+- The four older fixture files need exactly six source literal corrections; audit found no directly dependent
+  literal assertions. Content guards preserve every other byte and uncertain sources remain AMBIGUOUS.
+- KL028/029 integrations bind verified normal merge/review-only chains; historical result payloads remain
+  immutable UNMERGED. HG043 regular-blob provenance and transitive merged-prerequisite ancestry remain
+  mandatory.
+- No local DB lifecycle, foreign task namespace, production or real-data-shadow head/issuance/binding,
+  model call/provider adapter or CI/runtime/migration/frozen/product-status change is made. Isolated TEST
+  owner outputs are required in future corrective trajectories. Hevy/HealthKit and retired spreadsheet
+  policy are preserved.
+- Source diff checks all changed paths except the exact preserved pytest failure stdout harness-d6603c6.log,
+  whose literal trailing traceback spaces remain unchanged. Scope/frozen checks include every path. The
+  broad whitespace failure is retained and unselected. Final checks bind immutable implementation SHA
+  above; complete raw output is committed. Development diagnostics are not selected PASS evidence. Fresh
+  independent GENERAL/PROTOCOL/DB_CONCURRENCY/SECURITY_DATA_BOUNDARY reviews bind final governance/evidence
+  SHA, followed only by own review-record suffix.
+- Unchanged hosted full DB/quality and selected governance gates must pass at final PR head. Stop before
+  merge for coordinator; dirty unrelated KL055 and all nonancestor branches are untouched.

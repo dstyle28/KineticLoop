@@ -6846,6 +6846,268 @@
       "packet_refinement": "ENFORCEABLE",
       "status": "NOT_STARTED",
       "shared_hotspot": true
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-080",
+      "id": "KL-080",
+      "milestone": "M3",
+      "depends_on": [
+        "KL-076",
+        "KL-079",
+        "KL-077",
+        "KL-027",
+        "KL-078",
+        "KL-026",
+        "KL-023",
+        "KL-022",
+        "KL-028",
+        "KL-029"
+      ],
+      "conditional_depends_on": [],
+      "commands": [],
+      "transaction_boundaries": [
+        "T6-PREPARATION",
+        "T5",
+        "T6",
+        "T7"
+      ],
+      "invariant_ids": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-04",
+        "INV-05",
+        "INV-09",
+        "INV-10",
+        "INV-11",
+        "INV-12",
+        "INV-13",
+        "INV-14",
+        "INV-16",
+        "INV-17"
+      ],
+      "table_ids": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S05",
+        "S09",
+        "S10",
+        "S11",
+        "S12",
+        "S13",
+        "S14",
+        "S15",
+        "S16",
+        "S24",
+        "S26",
+        "S27",
+        "S28",
+        "S29",
+        "S34",
+        "S35",
+        "S36",
+        "S37",
+        "S38",
+        "S39",
+        "S40",
+        "S41",
+        "S42",
+        "S43",
+        "S44",
+        "S45",
+        "S49",
+        "S50"
+      ],
+      "context_files": [
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+        "docs/exec-plans/evidence/HG-045/SOURCE_AUDIT.md",
+        "docs/exec-plans/evidence/HG-045/FEASIBILITY.md",
+        "docs/harness/M3_CLOSURE_CONTRACT.md",
+        "docs/exec-plans/completed/KL-076_RESULT.yaml",
+        "docs/exec-plans/completed/KL-079_RESULT.yaml",
+        "docs/exec-plans/completed/KL-077_RESULT.yaml",
+        "docs/exec-plans/completed/KL-027_RESULT.yaml",
+        "docs/exec-plans/completed/KL-078_RESULT.yaml",
+        "docs/exec-plans/completed/KL-026_RESULT.yaml",
+        "docs/exec-plans/completed/KL-023_RESULT.yaml",
+        "docs/exec-plans/completed/KL-022_RESULT.yaml",
+        "docs/exec-plans/completed/KL-028_RESULT.yaml",
+        "docs/exec-plans/completed/KL-029_RESULT.yaml",
+        "src/kineticloop/workflow/deterministic_planning.py",
+        "src/kineticloop/persistence/deterministic_planning.py",
+        "src/kineticloop/persistence/transactions.py"
+      ],
+      "entry_conditions": [
+        "Actual prerequisite PASS results, required SHA-bound reviews and normal MERGED integrations verified against protected base, including transitive prerequisites, before first DB lifecycle.",
+        "M2 closure PASS: docs/exec-plans/milestones/M2.json; M3 closure is not an entry condition and must not create a cycle.",
+        "Exclusive task resources and exact write paths available; serialize transaction_interfaces, user_coordination, protocol_interleaving_suite, test_only_demo_suite, authorization_core and canonical_fact_schema. Additional actual shared keys planning_ledger and registry_coordination are exclusive.",
+        "No result/review/integration for KL-080 at protected base; every prospective named check starts NOT_RUN."
+      ],
+      "environment_requirements": [
+        "Before any DB lifecycle derive task+fixed label+HEAD7+SHA256(os.fsencode(resolved root))12; Compose kineticloop-kl080-<label>-<sha7>-<digest12>, database kineticloop_kl080_<label>_<sha7>_<digest12>. Reject malformed/default/foreign/ambient namespaces before nested bootstrap/reset/finally cleanup; assert current_database on every connection; inventory and destroy only owned resources.",
+        "Local real-PG proofs use only own integration suite and immutable source builders with explicit owned URLs, never imported foreign pytest lifecycles. Older DB regression uses unchanged hosted full DB CI on its supported isolated VM lifecycle."
+      ],
+      "deliverables": [
+        "Canonical prospective S13 ELIGIBLE and S12 MATCHED source readers and fixture corpus; invalid source rows fail closed, no mutable aliases or historical rewrites.",
+        "Named PU and real-PG owner trajectories, correctly labeled reconstruction denials and separate exact freshness-query support, immutable replay/repair/expiry regression and committed raw evidence."
+      ],
+      "definition_of_done": "Every named command and exact oracle passes at immutable tested_commit with positive collection/execution counts and raw output/JUnit/namespace/provenance evidence, no skips/xfail/zero collection; unchanged hosted full DB CI and all normal gates pass. Historical completed definitions/results/reviews/raw logs and immutable rows remain unchanged. Fresh independent GENERAL, PROTOCOL, DB_CONCURRENCY and SECURITY_DATA_BOUNDARY reviews bind implementation/result SHA; only own REVIEW_RECORD_ONLY suffix follows. Task PASS, review PASS, MERGED, M3 and product/release status remain separate; no product PASS claim.",
+      "parallel_write_policy": "SERIALIZE_WITH_OTHER_HOTSPOT_TASKS",
+      "requirements_covered": [],
+      "checks_required_for_this_task": [
+        "source_matrix_pu",
+        "source_basis_pu",
+        "source_namespace_pu",
+        "source_preparation_owners_dc",
+        "source_canonical_full_t6_dc",
+        "source_invalid_reconstruction_dc",
+        "source_freshness_predicate_support_dc",
+        "source_owner_trajectories_dc",
+        "source_current_denials_dc",
+        "source_repair_replay_expiry_dc",
+        "source_suite_dc",
+        "source_suite_pu",
+        "harness_validation_passes",
+        "unit_regressions_pass",
+        "harness_regressions_pass",
+        "lint_passes",
+        "typecheck_passes"
+      ],
+      "check_contracts": [
+        {
+          "check_id": "source_matrix_pu",
+          "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_source_matrix",
+          "pass_oracle": "Both actual legacy and full pure pipelines: ELIGIBLE+MATCHED succeeds; S13 NOT_ELIGIBLE/UNRESOLVED/ADMITTED/ACCEPTED/unknown/null denies; S12 AMBIGUOUS/RETRACTED/CONFIRMED/unknown/null never authoritative PASS. Preserve S27 ADMITTED and distinct derived S36 CONFIRMED, TEST_ONLY scope, mechanical identifiers/rules/request shapes and runtime registration; no decision aliases."
+        },
+        {
+          "check_id": "source_basis_pu",
+          "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_basis_and_actual_separation",
+          "pass_oracle": "Same-subject/policy/scope/provenance, source ID/hash/membership, freshness, dedup/contradiction/retraction and actual-vs-target semantics remain fail-closed for both profiles. Planned values never fill actual execution; equality at expiry is PU only."
+        },
+        {
+          "check_id": "source_namespace_pu",
+          "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_namespace",
+          "pass_oracle": "Own task/label/HEAD7/resolved-root SHA12 preflight rejects default/foreign/ambient/malformed namespaces before every lifecycle. All nested bootstrap_two_phase receives selected lifecycle; cleanup inventories only own resources and each DB connection asserts current_database. Run before first DB reset."
+        },
+        {
+          "check_id": "source_preparation_owners_dc",
+          "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_preparation_owners",
+          "pass_oracle": "Real PostgreSQL canonical S12 MATCHED/S13 ELIGIBLE source rows through actual legacy and full preparation owners, F/D/N, two distinct full S36 and shared S37 to actual COMMIT_READY. Capture source values/IDs/hashes, finite validity and exact S13 revisions, columns/FKs/bindings/stage/receipt/event/outbox. No target output SQL seeds or caller PASS; retain N TARGET separation."
+        },
+        {
+          "check_id": "source_canonical_full_t6_dc",
+          "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_canonical_full_t6",
+          "pass_oracle": "Canonical-input full T6 succeeds through actual reconstruction and reaches/passes the actual exact source freshness query. Assert persisted full member bindings, exact S13 revisions and finite minimum validity. No bypassed reconstruction or forged PASS certificate; isolated TEST outputs only."
+        },
+        {
+          "check_id": "source_invalid_reconstruction_dc",
+          "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_invalid_source_reconstruction",
+          "pass_oracle": "Invalid-source full T6 denied at actual earlier _progress_sources -> _verify_full_progress reconstruction guard after otherwise valid ingress/current basis. Complete zero-effect output/receipt/event/outbox/head/root/session comparison; immutable malformed old sources cannot support fresh operations. Label earlier denial honestly, never later freshness reach; unrelated lifecycle/key/hash mismatch is insufficient. Use the historically accepted ADMITTED+CONFIRMED representative as an actual prior-deployment owner fixture: exact protected-base Git-verified runtime/helper blobs in separate task-owned subprocess, current KL080 selected lifecycle and explicit own URLs, genuine owners through COMMIT_READY only, then corrected current T6 receives the untouched unconsumed request. No old/foreign lifecycle, runtime patches, target seeds, row edits or historical acceptance recertification. Other malformed values remain exhaustive pure/preparation denials and exact predicate support."
+        },
+        {
+          "check_id": "source_freshness_predicate_support_dc",
+          "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_freshness_predicate_support",
+          "pass_oracle": "Separate labeled real-PostgreSQL support query tests exact T6 freshness predicate against independently seeded immutable non-ELIGIBLE S13 rows (NOT_ELIGIBLE/UNRESOLVED/ADMITTED/ACCEPTED/unknown/null) and wrong subject/policy/id, plus canonical positive. A narrowly extracted internal read helper in transactions.py shared by actual T6 and this test is allowed. No reconstruction bypass or forged certificate, no end-to-end claim for this support check."
+        },
+        {
+          "check_id": "source_owner_trajectories_dc",
+          "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_owner_trajectories",
+          "pass_oracle": "Actual legacy and two-action full owner trajectories through T6 and START/ordinary PAUSE/RESUME/CONTINUE, plus composed full F/D/N trajectory. Real canonical source rows, no target seeding/caller PASS; isolated TEST heads/issuances/bindings required, production and real-data-shadow have none."
+        },
+        {
+          "check_id": "source_current_denials_dc",
+          "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_current_denials",
+          "pass_oracle": "Lifecycle-valid current-state denials: source/provenance/scope/hash/membership/freshness/dedup/actual separation, current epoch/basis/revision/attempt/fence/lease/control, revocation and expiry; complete zero effects and reached guard recorded. No ingress error substitutes; bounded real-PG timing, equality only PU."
+        },
+        {
+          "check_id": "source_repair_replay_expiry_dc",
+          "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_repair_replay_expiry",
+          "pass_oracle": "F2 repair via actual same-root new revision/attempt and forward owners, stale mixed source/old certificate denial, receipt-only non-executable historical replay, ACK-loss/concurrent dedup/rollback, source/runtime revocation and finite expiry. Historical rows byte-identical; prospective canonical source bytes and dependent hashes may change. Never mutate old rows, relabel old logs, seed historical target outputs or require invalid certificates to pass fresh reconstruction."
+        },
+        {
+          "check_id": "source_suite_dc",
+          "command": "uv run pytest -q tests/db/test_source_decision_conformance.py",
+          "pass_oracle": "All own real-PG conformance cases execute with positive counts, no skip/xfail, exact namespace/migration/current_database/cleanup inventory, captured rows and raw JUnit/collection logs. Existing legacy/full preparation/execution/demo/factset/preparation/interleaving/transaction-interface suites remain positive with corrected fixtures through unchanged hosted full DB CI; no foreign local lifecycle."
+        },
+        {
+          "check_id": "source_suite_pu",
+          "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py",
+          "pass_oracle": "Full own PU suite executes without skipped/xfail/zero collection; both profiles and preserved S27/S36 meanings covered."
+        },
+        {
+          "check_id": "harness_validation_passes",
+          "command": "uv run kl check-harness",
+          "pass_oracle": "HARNESS_CHECK_PASS; frozen/index/packet/prospective status and revision-bound scope validate."
+        },
+        {
+          "check_id": "unit_regressions_pass",
+          "command": "uv run kl test-unit",
+          "pass_oracle": "All repository unit tests pass, no newly skipped/xfail or suppressed failures."
+        },
+        {
+          "check_id": "harness_regressions_pass",
+          "command": "uv run kl test-harness",
+          "pass_oracle": "All harness regressions pass, including unchanged command/owner/frozen gates."
+        },
+        {
+          "check_id": "lint_passes",
+          "command": "uv run kl lint",
+          "pass_oracle": "Repository lint passes."
+        },
+        {
+          "check_id": "typecheck_passes",
+          "command": "uv run kl typecheck",
+          "pass_oracle": "Repository typecheck passes."
+        }
+      ],
+      "evidence_paths": [
+        "docs/exec-plans/evidence/KL-080/**"
+      ],
+      "resource_keys": [
+        "transaction_interfaces",
+        "user_coordination",
+        "protocol_interleaving_suite",
+        "test_only_demo_suite",
+        "authorization_core",
+        "canonical_fact_schema",
+        "planning_ledger",
+        "registry_coordination"
+      ],
+      "write_paths": [
+        "src/kineticloop/workflow/deterministic_planning.py",
+        "src/kineticloop/persistence/deterministic_planning.py",
+        "src/kineticloop/persistence/transactions.py",
+        "tests/unit/workflow/test_deterministic_planning.py",
+        "tests/unit/workflow/test_full_action_preparation.py",
+        "tests/unit/workflow/test_source_decision_conformance.py",
+        "tests/db/test_deterministic_planning.py",
+        "tests/db/test_full_action_preparation.py",
+        "tests/db/test_full_test_execution.py",
+        "tests/db/test_test_only_demo.py",
+        "tests/db/test_source_decision_conformance.py",
+        "tests/db/test_factsets.py",
+        "tests/db/test_preparation.py",
+        "tests/db/test_protocol_interleavings.py",
+        "tests/db/test_transaction_interfaces.py",
+        "docs/contracts/deterministic_planning.md",
+        "docs/contracts/full_action_preparation.md",
+        "docs/contracts/full_test_execution.md",
+        "docs/contracts/source_decision_conformance.md"
+      ],
+      "write_paths_status": "ENFORCEABLE",
+      "review_requirements": [
+        "GENERAL",
+        "PROTOCOL",
+        "DB_CONCURRENCY",
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "packet_refinement": "ENFORCEABLE",
+      "status": "NOT_STARTED",
+      "shared_hotspot": true
     }
   ]
 }
