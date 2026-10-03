@@ -1,96 +1,80 @@
-# HG-046 SECURITY_DATA_BOUNDARY independent review
+# HG-046 independent SECURITY_DATA_BOUNDARY review
 
-Verdict: PASS. No BLOCKER or REQUIRED_FOLLOWUP findings in the security scope.
-
-Reviewed implementation/result: `dedf063f909419dd05e0f49e8a7e646903e3548a`.
+Verdict: PASS. No BLOCKER or REQUIRED_FOLLOWUP implementation findings.
+Reviewed implementation/result: `65ab5bfc3608b477a301ded604ab6a63374a247a`.
+Tested implementation: `8fb35e9364deb5cfbe1424535f046c744bf3b369`.
 Protected base: `fc8a044ffa4d15a74ce5dc59298ae411f1f4009b`.
-Selected tested implementation: `c91d2635427a13a97a53fe4e52ec4655e1e7d866`.
-Identity: `harness-governance-v0.1/HG-046`; contract v0.2.
 
-This fresh-context review followed AGENTS.md, CURRENT_DOCUMENT_INDEX.json and the
-pr-merge-reviewer skill. HG-046 is a governance task: its packet/result authority
-is docs/exec-plans/governance/HG-046.yaml plus its approved SCOPE.md extension.
-I independently inspected the changed controller, App client, worker wrappers,
-classifier, evidence validation, workflow policies, focused tests and selected
-execution records. I did not read private configuration, admission or key files,
-use credentials, install a controller, publish a check, or run another DB suite.
+This fresh-context review independently inspected the complete change and current
+proof under the pr-merge-reviewer skill, indexed authorities, scope and review/result
+contracts. Prior PASS records were not treated as evidence of current correctness.
+The tested-to-reviewed suffix is one linear commit containing only the own
+HG-046 governance result and newly added own-task evidence. Runtime, migrations,
+frozen baseline, current requirement set and historical completed results are
+unchanged from the protected base.
 
-## Trust and credential boundaries
+## Security boundaries checked
 
-The installed controller loads its sibling trusted modules and pins all ten
-assets. Its worker invokes the installed validator and pytest observer by absolute
-paths under isolated Python. Candidate runner manifests cannot request a verdict
-or bypass the host-owned command plan. Operator admission binds repository, PR,
-live master, head and controller identity and requires an owner-only regular file.
-It rejects fork/wrong-repository/closed PRs, incomplete pins and mismatched
-admission before worker execution. The operator and installed files remain trusted.
+- The external installation owns the classifier, command plan, observer, validator,
+  verdict and publisher. Its ten asset hashes recompute to receipt controller
+  identity `013d08d7a39ae1e6edc66ac490a4d5cca2cd772ad8c7ebc45a50fc03ec5eb319`.
+  Exact repository/PR/base/head/controller admission is required before execution.
+- The signer enforces owner-only regular configuration/key/admission files,
+  selected installation and exact limited App permissions. Tokens remain in memory;
+  no credentials enter worker argv, bundles, mounts or copied controller assets.
+  API proxies and redirects are disabled. The committed diff contains no observed
+  token/JWT/private-key payload; key-header literals are audit guard expressions.
+- Only reviewed trusted project code is admitted. Privileged Docker is explicitly
+  not a hostile-code sandbox. Administrator, installation and key integrity remain
+  trust assumptions; the worker does not receive host bind/socket/network shares.
+  Fresh labelled outer container/data-volume names and an initially empty nested
+  daemon separate this run from unrelated databases. Ambient client proxy/builder
+  and remote Docker overrides are rejected or removed by controller sanitation.
+- Full live master-to-head diff classification is conservative, including both
+  rename sides and executable/symlink/submodule modes. Only the declared narrow
+  inert document/review paths are exempt. Unknown and evidence paths require DB.
+- The host observes each command exit; uploaded candidate receipts cannot authorize
+  publication. Copied artifact trees reject links, special files and oversized
+  data before parsing. Exact DB collection/execution/JUnit identities, failure and
+  skip counts are checked. Trusted project tests and dependencies remain inside
+  the explicit code-admission boundary.
+- Live repository/head/base identities are checked before execution and again
+  before publication; master ancestry is required. The controller creates an
+  App-owned in-progress check and patches that same ID. Wrong App/head/name/ID,
+  stale refs, failed work, invalid artifacts or cleanup failure cannot yield its
+  successful verdict. Effective recorded master rules require App5169734 for
+  local-db-gate, strict freshness, existing quality/merge-gate and no bypass actors.
+- Manual local cleanup reserves resources before uncertain creation, checks exact
+  owner labels and verifies absence. Diagnostic failures do not skip the two
+  cleanup attempts; foreign resources are not removed. The controller likewise
+  limits cleanup to its own labelled resources.
 
-Privileged nested Docker is expressly restricted to reviewed trusted project code.
-Candidate tests and dependencies run with substantial worker privileges; the
-mechanism does not claim to resist hostile candidate code or a compromised
-administrator. Public automatic execution needs the separately documented worker
-boundary. This limitation is material and adequately disclosed for the approved
-operator-admitted scope.
+## Independently verified evidence
 
-The signer uses owner-only regular key/config files, an eight-minute JWT and a
-repository-restricted installation token. The client verifies App/installation,
-selected-repository mode, account and exact checks-write/contents-read/PR-read/
-metadata-read permissions before minting a token. Requests use a fixed HTTPS API
-origin, disable proxies and redirects, and redact HTTP error bodies. Tokens remain
-in memory; signing uses stdin and captured output, not token-bearing command-line
-arguments. Worker commands and source bundles do not receive App configuration,
-admission, private key or authentication tokens. Changed tracked files were
-pattern-scanned for PEM keys and GitHub token prefixes; the sole match was a
-literal private-key detection pattern in controller_scope_audit.py, not a key.
+The current committed controller-8fb35e9 receipt, worker receipt and raw blobs were
+read at the reviewed SHA. Repository/PR/base/head/tree identities, controller pins,
+all 16 successful non-interrupted command records and their planned argument
+suffixes, all 21 worker artifact hashes, raw log byte counts/hashes and four focused
+check records match. DB collection/execution/JUnit validation confirms 674 tests;
+JUnit confirms 1053 harness and 241 unit tests, each with zero errors, failures or
+skips. Both outer resources are marked removed, and the separate committed
+Linux ARM64 image/readback records them absent.
 
-## Worker evidence, cleanup and publication
+The reviewer also independently ran:
+`PYTHONDONTWRITEBYTECODE=1 /private/tmp/hg044-venv/bin/python -B -m pytest -q -p no:cacheprovider tests/harness/test_local_gate.py tests/harness/test_db_policy.py tests/harness/test_local_db_ci.py`
+Result: 128 passed in 2.78 seconds. No full DB rerun, credentials, installation,
+publication or remote mutation was performed by this reviewer.
 
-The controller owns its build context, command ordering, observed process exits,
-verdict parser and dedicated labelled container/volume. It rejects unexpected
-mounts/network sharing, populated nested daemons and implicit Docker proxy
-forwarding. Copied evidence rejects symlinks, devices and oversized files before
-parsing. DB collection/execution/JUnit identities must agree without skip/failure;
-quality JUnit must be nonempty without skip/failure. Cleanup includes uncertain
-creation outcomes and checks exact ownership before removal. Cleanup failure
-cannot publish success, and foreign resources are not removed.
+## Publication distinction
 
-The controller reads current master independently of PR base metadata, requires
-master ancestry, and rereads head/base after work and immediately before
-publication. It creates one App-owned check, then PATCHes that exact check ID;
-response validation binds App, head, name and ID. Missing, failed or interrupted
-execution cannot produce a success verdict. The narrow inert-file classifier
-preserves both sides of renames and makes unknown/executable/link/submodule paths
-require DB. Every classification still executes quality and merge validation.
+The selected full run has `test_only: true`; its merge-gate invocation omits PR
+review admission and publishes no GitHub check. This review PASS approves the
+reviewed implementation/result security boundary. It does not establish final
+activation, product requirement PASS, hosted/x64 release evidence or MERGED state.
+The already planned exact-final-head controller run without --test-only must still
+pass and publish the dedicated App check after all review records are committed.
+No old receipt can be imported as success. PR90 must remain unmerged until that
+separate enforcement step and the coordinator's remaining gates succeed.
 
-Committed applied/effective rules snapshots show master PR-only protection,
-strict required-check freshness, no bypass actors, no force push/deletion, and
-local-db-gate bound to App 5169734 alongside quality/merge-gate from App 15368.
-This review inspects those recorded snapshots; it does not claim a new live API
-readback or independent use of the App credentials.
-
-## Independent verification and state
-
-I reran `/private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider
- tests/harness/test_local_gate.py tests/harness/test_db_policy.py
- tests/harness/test_local_db_ci.py`: 112 passed in 2.69 seconds. Coverage includes
-admission/pin/permission refusal, plugin shadowing, artifact rejection, freshness,
-wrong publication identity, same-ID PATCH, worker failure and owned cleanup.
-
-I recalculated all selected controller command-log sizes/SHA256 values and all
-worker artifact hashes, checked nested receipt equality and every command suffix
-against the trusted test-only plan. Controller identity
-`f3525a8ca06c09da26620640c6ea24d0823d41771dc2b2c86f5d32603b17754a`
-matches the reviewed asset bytes. Independent artifact parsing confirms 674 DB,
-241 unit and 1,037 harness cases with zero failures/errors/skips. The receipts bind
-the expected base/head/repository/PR, report dedicated volume-only mounts and
-successful outer container/volume removal; the environment readback says Linux
-ARM64 and confirms resource absence. No executable/controller changes occur from
-the tested SHA to the reviewed result SHA.
-
-The selected receipt explicitly says test_only=true. It demonstrates quality,
-DB and lifecycle execution, not final independent-review validation or GitHub
-publication. This PASS approves the reviewed implementation within its documented
-trusted-code boundary. It does not assert production controller activation,
-current-head check success, MERGED, hosted/x64 evidence, or product/release PASS.
-Fresh admission and a full exact-current-head publication run remain required
-operational steps after all reviews; prior receipts cannot be imported as success.
+The JSON references current committed result/new-run proof, not the older report
+present at the reviewed SHA. This report and JSON are review bookkeeping only.

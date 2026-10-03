@@ -1,29 +1,21 @@
 {
   "task_identity": "harness-governance-v0.1/HG-046",
-  "reviewed_head_sha": "dedf063f909419dd05e0f49e8a7e646903e3548a",
+  "reviewed_head_sha": "65ab5bfc3608b477a301ded604ab6a63374a247a",
   "review_type": "DB_CONCURRENCY",
-  "status": "CHANGES_REQUIRED",
-  "findings": [
-    {
-      "id": "HG046-DB-001",
-      "severity": "BLOCKER",
-      "path": "tools/harness/db_ci.py",
-      "line": 327,
-      "summary": "Manual local executor skips cleanup after uncertain volume/container creation and falsely records resource removal.",
-      "required_change": "Reserve ownership before uncertain creation, verify exact ownership and absence during both cleanups, and cover volume-create timeout and container-start/ACK-loss failures."
-    }
-  ],
+  "status": "PASS",
+  "findings": [],
   "evidence_refs": [
-    "docs/exec-plans/reviews/HG-046/DB_CONCURRENCY_REPORT.md",
     "docs/exec-plans/governance/HG-046.yaml",
     "docs/exec-plans/evidence/HG-046/SCOPE.md",
-    "docs/exec-plans/evidence/HG-046/CONTROLLER_RUNS.md",
-    "docs/exec-plans/evidence/HG-046/controller-c91d263/receipt.json",
-    "docs/exec-plans/evidence/HG-046/controller-c91d263/worker-receipt.json",
-    "docs/exec-plans/evidence/HG-046/controller-c91d263/worker/run/collection.json",
-    "docs/exec-plans/evidence/HG-046/controller-c91d263/worker/run/execution.json",
-    "docs/exec-plans/evidence/HG-046/controller-c91d263/worker/run/database.xml",
-    "docs/exec-plans/evidence/HG-046/controller-c91d263/environment-readback.json"
+    "docs/exec-plans/evidence/HG-046/CONTROLLER_8fb35e9.md",
+    "docs/exec-plans/evidence/HG-046/checks-8fb35e9/focused.json",
+    "docs/exec-plans/evidence/HG-046/checks-8fb35e9/scope_frozen.json",
+    "docs/exec-plans/evidence/HG-046/controller-8fb35e9/receipt.json",
+    "docs/exec-plans/evidence/HG-046/controller-8fb35e9/worker-receipt.json",
+    "docs/exec-plans/evidence/HG-046/controller-8fb35e9/worker/run/collection.json",
+    "docs/exec-plans/evidence/HG-046/controller-8fb35e9/worker/run/execution.json",
+    "docs/exec-plans/evidence/HG-046/controller-8fb35e9/worker/run/database.xml",
+    "docs/exec-plans/evidence/HG-046/controller-8fb35e9/environment-readback.json"
   ],
   "review_contract_version": "v0.2"
 }
