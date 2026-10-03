@@ -100,7 +100,7 @@ A local hook alone cannot provide this enforcement because hooks can be skipped.
 
 The administrator installs an independently reviewed revision of `local_gate.py`,
 `github_app.py`, `db_policy.py`, `db_ci.py`, `db_ci_pytest.py`, `gate_validate.py`,
-`gate_pytest.py`, `validate_harness.py`, and the `local_db/` Docker build files into
+`gate_pytest.py`, `validate_harness.py`, `compact_evidence.py`, and the `local_db/` Docker build files into
 one versioned directory outside any candidate checkout. `controller_files` pins
 exact SHA256 bytes of every file named by `local_gate.ASSETS`. The configuration
 and private key are owner-only regular files, outside Git, source bundles and
@@ -153,3 +153,21 @@ on master; PR admission tests the head containing current master. Release/platfo
 qualification may still explicitly invoke the hosted fallback. Passing tests
 reduces regression risk; it never proves bug-free software. The administrator,
 trusted-code admission and signing key are explicit trust boundaries.
+
+## HG-047 compact-evidence compatibility
+
+The integrated validator reads compact envelopes through its own installed
+`compact_evidence.py`. The controller pins that decoder in `controller_files`
+and copies it with the installed validator into `/gate/tools/harness/` inside
+the worker. It must never import a decoder from the candidate checkout. Missing,
+changed or symlinked installed decoder bytes fail the same installation check
+as other trusted assets.
+
+Before HG-047 can receive a successful App gate, an administrator must install
+the independently reviewed validator, controller and decoder as one new reviewed
+release, update the complete exact `controller_files` map and create a new
+revision/controller-bound admission. An old validator does not understand compact
+proof; installing only the new validator leaves its required import unavailable.
+This repository change does not update the active installation, pins, signing key,
+admission or protection settings. The ordinary required full DB/controller gate
+still applies to the final reviewed PR head.

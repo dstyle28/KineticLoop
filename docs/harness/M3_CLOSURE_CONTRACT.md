@@ -103,3 +103,6 @@ Its prospective PU/DC suite and each named selector are mandatory fresh integrat
 regression contributions; existing deterministic/full preparation unit suites also
 remain covered. All HG044 exits/selectors/provenance and layer ledgers are preserved.
 All KL080 checks are NOT_RUN until fresh execution. No closure is created by HG045.
+
+Prospective compact evidence follows [Evidence Storage Policy](EVIDENCE_STORAGE_POLICY.md);
+all existing revision bindings and PASS oracles remain mandatory.

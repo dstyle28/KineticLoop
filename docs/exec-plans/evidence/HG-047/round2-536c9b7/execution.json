@@ -1,0 +1,108 @@
+{
+  "base_commit": "391c9198fa8ec647e377a0572700bc7568468c85",
+  "tested_commit": "536c9b7b7c5bfa9b36a0b38e513bce34ed6eb31d",
+  "checks": {
+    "harness": {
+      "tested": "536c9b7b7c5bfa9b36a0b38e513bce34ed6eb31d",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli test-harness",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T05:15:54.737691+00:00",
+      "seconds": 2305.047681249911,
+      "envelope": "docs/exec-plans/evidence/HG-047/round2-536c9b7/harness.json",
+      "test_counts": {
+        "passed": 1306
+      }
+    },
+    "unit": {
+      "tested": "536c9b7b7c5bfa9b36a0b38e513bce34ed6eb31d",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli test-unit",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T05:12:49.918145+00:00",
+      "seconds": 184.73429899988696,
+      "envelope": "docs/exec-plans/evidence/HG-047/round2-536c9b7/unit.json",
+      "test_counts": {
+        "passed": 241
+      }
+    },
+    "lint": {
+      "tested": "536c9b7b7c5bfa9b36a0b38e513bce34ed6eb31d",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli lint",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T05:09:58.753060+00:00",
+      "seconds": 0.0825625411234796,
+      "envelope": "docs/exec-plans/evidence/HG-047/round2-536c9b7/lint.json",
+      "test_counts": {}
+    },
+    "typecheck": {
+      "tested": "536c9b7b7c5bfa9b36a0b38e513bce34ed6eb31d",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli typecheck",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T05:09:58.883840+00:00",
+      "seconds": 0.22604283294640481,
+      "envelope": "docs/exec-plans/evidence/HG-047/round2-536c9b7/typecheck.json",
+      "test_counts": {}
+    },
+    "authority": {
+      "tested": "536c9b7b7c5bfa9b36a0b38e513bce34ed6eb31d",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli check-harness",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T05:10:01.821782+00:00",
+      "seconds": 168.00717862485908,
+      "envelope": "docs/exec-plans/evidence/HG-047/round2-536c9b7/authority.json",
+      "test_counts": {}
+    },
+    "scope": {
+      "tested": "536c9b7b7c5bfa9b36a0b38e513bce34ed6eb31d",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python docs/exec-plans/evidence/HG-047/audit.py 391c9198fa8ec647e377a0572700bc7568468c85 536c9b7b7c5bfa9b36a0b38e513bce34ed6eb31d",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T05:09:59.159684+00:00",
+      "seconds": 0.6128518751356751,
+      "envelope": "docs/exec-plans/evidence/HG-047/round2-536c9b7/scope.json",
+      "test_counts": {}
+    },
+    "source_diff": {
+      "tested": "536c9b7b7c5bfa9b36a0b38e513bce34ed6eb31d",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src git diff --check 391c9198fa8ec647e377a0572700bc7568468c85 536c9b7b7c5bfa9b36a0b38e513bce34ed6eb31d",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T05:09:59.822728+00:00",
+      "seconds": 0.027651249896734953,
+      "envelope": "docs/exec-plans/evidence/HG-047/round2-536c9b7/source_diff.json",
+      "test_counts": {}
+    },
+    "performance": {
+      "tested": "536c9b7b7c5bfa9b36a0b38e513bce34ed6eb31d",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python docs/exec-plans/evidence/HG-047/benchmark.py",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T05:09:59.937962+00:00",
+      "seconds": 1.8334915831219405,
+      "envelope": "docs/exec-plans/evidence/HG-047/round2-536c9b7/performance.json",
+      "test_counts": {}
+    }
+  },
+  "focused_coverage": "The full harness includes all compact/controller/M3 regressions and 35 new P-01 cases. No second focused execution is claimed as exact-source proof.",
+  "full_database": "NOT_RUN: final reviewed-head trusted controller run required by unchanged HG-046 classifier"
+}

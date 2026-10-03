@@ -1,0 +1,17 @@
+{
+  "reviewed_head": "b7370940c8b9165f471322baaeef7d9e250dfac6",
+  "classification": "NONBLOCKING",
+  "finding_id": "G-01",
+  "cases": [
+    {
+      "case": "literal",
+      "sample": "{\"event\":\"a\",\"x\":1,\"x\":2}",
+      "observed": "byte_identical"
+    },
+    {
+      "case": "escaped",
+      "sample": "{\"event\":\"\\u0061\",\"x\":1,\"x\":2}",
+      "observed": "evidence-duplicate-key"
+    }
+  ]
+}

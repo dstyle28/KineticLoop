@@ -1,0 +1,13 @@
+{
+  "kineticloop_evidence": "gzip-v1",
+  "payload": "docs/exec-plans/reviews/HG-047/general_round4/5d249f03832c531c45179e362be03ce851ec240531a04460be389375edf4e2c7.gz",
+  "stored_sha256": "e3d16b880ebc34374444aaef87208c74da232112ef4b6467d3788c3adaef1678",
+  "stored_bytes": 2896,
+  "raw_sha256": "5d249f03832c531c45179e362be03ce851ec240531a04460be389375edf4e2c7",
+  "raw_bytes": 24817,
+  "tested_commit": "b71d2d63f8bc27ab0e905b0be8a0cea5f0122a91",
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_review_evidence_provenance.py tests/harness/test_parallel_runner.py tests/harness/test_m3_milestone_closure.py::test_compact_nested_storage_cannot_supply_m3_execution_stdout --basetemp=/private/tmp/hg047-general-r4/targeted-pytest --junitxml=/private/tmp/hg047-general-r4/targeted.xml",
+  "exit_code": 1,
+  "timestamp": "2026-10-03T01:44:43.668719-07:00",
+  "test_counts": {}
+}

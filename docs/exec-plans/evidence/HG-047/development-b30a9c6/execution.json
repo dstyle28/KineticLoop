@@ -1,0 +1,78 @@
+{
+  "tested_commit": "b30a9c65e8ca99293a16a65a35caef76f13730f3",
+  "status": "FAIL",
+  "selection": "Historical failed authority run; not current-source PASS.",
+  "reason": "The pending BLOCKED governance record selected a known FAIL unit check. Existing governance validation requires each selected checks_run entry to be PASS. Preserve failed run separately, select only completed successful checks while pending, and retain BLOCKED until fresh full checks complete. No validator rule is changed.",
+  "checks": {
+    "authority": {
+      "tested": "b30a9c65e8ca99293a16a65a35caef76f13730f3",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli check-harness",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 1,
+      "timestamp": "2026-10-03T05:05:24.512303+00:00",
+      "seconds": 166.76703241700307,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-b30a9c6/authority.json"
+    },
+    "lint": {
+      "tested": "b30a9c65e8ca99293a16a65a35caef76f13730f3",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli lint",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T05:01:46.497541+00:00",
+      "seconds": 0.0956322499550879,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-b30a9c6/lint.json"
+    },
+    "typecheck": {
+      "tested": "b30a9c65e8ca99293a16a65a35caef76f13730f3",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli typecheck",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T05:01:46.621804+00:00",
+      "seconds": 0.2043649998959154,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-b30a9c6/typecheck.json"
+    },
+    "scope": {
+      "tested": "b30a9c65e8ca99293a16a65a35caef76f13730f3",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python docs/exec-plans/evidence/HG-047/audit.py 391c9198fa8ec647e377a0572700bc7568468c85 b30a9c65e8ca99293a16a65a35caef76f13730f3",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T05:01:46.854986+00:00",
+      "seconds": 0.5660522920079529,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-b30a9c6/scope.json"
+    },
+    "source_diff": {
+      "tested": "b30a9c65e8ca99293a16a65a35caef76f13730f3",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src git diff --check 391c9198fa8ec647e377a0572700bc7568468c85 b30a9c65e8ca99293a16a65a35caef76f13730f3",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T05:01:47.448066+00:00",
+      "seconds": 0.018346041906625032,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-b30a9c6/source_diff.json"
+    },
+    "performance": {
+      "tested": "b30a9c65e8ca99293a16a65a35caef76f13730f3",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python docs/exec-plans/evidence/HG-047/benchmark.py",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T05:01:47.493132+00:00",
+      "seconds": 1.6369978331495076,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-b30a9c6/performance.json"
+    }
+  },
+  "not_run": [
+    "unit",
+    "harness"
+  ]
+}

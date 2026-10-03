@@ -1,0 +1,714 @@
+{
+  "reviewed": "589e538579f519bc10d178fa02dff12332931ba7",
+  "base": "391c9198fa8ec647e377a0572700bc7568468c85",
+  "tested": "f29ffa97d9057eacc4bda7ad593b843c9c52c5a2",
+  "status": "PASS",
+  "scope": {
+    "changed_paths": [
+      "CURRENT_DOCUMENT_INDEX.json",
+      "HARNESS_DOCUMENT_MANIFEST.json",
+      "docs/exec-plans/evidence/HG-047/HISTORY.md",
+      "docs/exec-plans/evidence/HG-047/PERFORMANCE.md",
+      "docs/exec-plans/evidence/HG-047/ROUND2_SELF_REVIEW.md",
+      "docs/exec-plans/evidence/HG-047/ROUND3_SELF_REVIEW.md",
+      "docs/exec-plans/evidence/HG-047/SCOPE.md",
+      "docs/exec-plans/evidence/HG-047/SELF_REVIEW.md",
+      "docs/exec-plans/evidence/HG-047/audit.py",
+      "docs/exec-plans/evidence/HG-047/benchmark.py",
+      "docs/exec-plans/evidence/HG-047/development-070f94f/018e4a38e63b20c2400b44164688200c5d96aece661aacaf4c0688b8d2b32c9c.gz",
+      "docs/exec-plans/evidence/HG-047/development-070f94f/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz",
+      "docs/exec-plans/evidence/HG-047/development-070f94f/2fce8fc15f14442c1aba3b70bbab0b709b5789c13c2f22a46b65406c5b8c2c8d.gz",
+      "docs/exec-plans/evidence/HG-047/development-070f94f/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz",
+      "docs/exec-plans/evidence/HG-047/development-070f94f/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz",
+      "docs/exec-plans/evidence/HG-047/development-070f94f/authority.json",
+      "docs/exec-plans/evidence/HG-047/development-070f94f/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz",
+      "docs/exec-plans/evidence/HG-047/development-070f94f/ec398076317ede9a83d347455c37df313e466d200da75f2215a0d737647cd6dd.gz",
+      "docs/exec-plans/evidence/HG-047/development-070f94f/execution.json",
+      "docs/exec-plans/evidence/HG-047/development-070f94f/harness.json",
+      "docs/exec-plans/evidence/HG-047/development-070f94f/lint.json",
+      "docs/exec-plans/evidence/HG-047/development-070f94f/scope.json",
+      "docs/exec-plans/evidence/HG-047/development-070f94f/source_diff.json",
+      "docs/exec-plans/evidence/HG-047/development-070f94f/typecheck.json",
+      "docs/exec-plans/evidence/HG-047/development-070f94f/unit.json",
+      "docs/exec-plans/evidence/HG-047/development-166bf3e/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz",
+      "docs/exec-plans/evidence/HG-047/development-166bf3e/41e0abda72912ce9120aa93b64d6e8ca1177d9c0de1ad5e818641e9cefc0eda3.gz",
+      "docs/exec-plans/evidence/HG-047/development-166bf3e/57c1b5e9f0548004a7656a329f7b0dce54193596231a7c2e59e15b5d297a7cff.gz",
+      "docs/exec-plans/evidence/HG-047/development-166bf3e/80a17c64b7e9e2a66730b13c0ff1d12fe5cdd8ddc0d369470d81e95c62ba0923.gz",
+      "docs/exec-plans/evidence/HG-047/development-166bf3e/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz",
+      "docs/exec-plans/evidence/HG-047/development-166bf3e/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz",
+      "docs/exec-plans/evidence/HG-047/development-166bf3e/execution.json",
+      "docs/exec-plans/evidence/HG-047/development-166bf3e/lint.json",
+      "docs/exec-plans/evidence/HG-047/development-166bf3e/performance.json",
+      "docs/exec-plans/evidence/HG-047/development-166bf3e/scope.json",
+      "docs/exec-plans/evidence/HG-047/development-166bf3e/source_diff.json",
+      "docs/exec-plans/evidence/HG-047/development-166bf3e/typecheck.json",
+      "docs/exec-plans/evidence/HG-047/development-166bf3e/unit.json",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/239ca62409d4760647d4ff292bcae8ec9391491dd89da8bb986a9ee19edb3224.gz",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/2418d1ed3be3d024503a476cc21a5b48e1f7524ee42eb15a269d268ac3dcc532.gz",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/2ccde75680815ea87461d562f4da58bf3de876ec3f580001fa28b1e7881765b8.gz",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/8f19c7a9dcf64f492d9d4e28a73da31b28706d3945915fc1362cbb1889f81397.gz",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/99f04a3dcb93af973800ae0196ee52999386952238c364af20e1f311a8be0801.gz",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/README.md",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/a730cda6907c4717427b553a7924437e894a66c21917f73de10ae04a78761fa0.gz",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/b5c418cef01ed3a8de82e7d9983807edac0cc9f7f419a00c165c48f6e365decb.gz",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/c8f469e0b97241a935b73f937b7a54e9b671b0bbb35308122b7637d0bf2c5f99.gz",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/dac78b5c1ef1a4a6463a9cb0ff77e106086f50800e308494bd9c8176b8213591.gz",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/dependency_sync-log.json",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/fe0b6f075ba4044225c5dfed1b1b38e3cf6209b8a69683a2a07c4dacf646e193.gz",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/harness-log.json",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/image_build-log.json",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/lint-log.json",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/published-check-json.json",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/receipt-json.json",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/typecheck-log.json",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/unit-log.json",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/worker--harness-xml.json",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/worker--run--execution-json.json",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/worker--unit-xml.json",
+      "docs/exec-plans/evidence/HG-047/development-8a78241/worker-receipt-json.json",
+      "docs/exec-plans/evidence/HG-047/development-ab4f21b/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz",
+      "docs/exec-plans/evidence/HG-047/development-ab4f21b/source_diff.json",
+      "docs/exec-plans/evidence/HG-047/development-b30a9c6/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz",
+      "docs/exec-plans/evidence/HG-047/development-b30a9c6/5fd2649c8ac66712b86f471fe955c689123b9f1668b4e65c2db0ef2e4ff48384.gz",
+      "docs/exec-plans/evidence/HG-047/development-b30a9c6/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz",
+      "docs/exec-plans/evidence/HG-047/development-b30a9c6/authority.json",
+      "docs/exec-plans/evidence/HG-047/development-b30a9c6/c5be17ddc17097849aea0d2f20521ec52f6fee67e664539dc08992ac7881361a.gz",
+      "docs/exec-plans/evidence/HG-047/development-b30a9c6/dabf0ccdf57320cd56ebd0a81e5e78a2d83658a6a0ba1f460b6c10408db3d394.gz",
+      "docs/exec-plans/evidence/HG-047/development-b30a9c6/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz",
+      "docs/exec-plans/evidence/HG-047/development-b30a9c6/execution.json",
+      "docs/exec-plans/evidence/HG-047/development-b30a9c6/lint.json",
+      "docs/exec-plans/evidence/HG-047/development-b30a9c6/performance.json",
+      "docs/exec-plans/evidence/HG-047/development-b30a9c6/scope.json",
+      "docs/exec-plans/evidence/HG-047/development-b30a9c6/source_diff.json",
+      "docs/exec-plans/evidence/HG-047/development-b30a9c6/typecheck.json",
+      "docs/exec-plans/evidence/HG-047/round2-536c9b7/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz",
+      "docs/exec-plans/evidence/HG-047/round2-536c9b7/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz",
+      "docs/exec-plans/evidence/HG-047/round2-536c9b7/4a3753070a66c3301beb7d1831adddfd95c85cbc284d28daaa02f1cb7c73781f.gz",
+      "docs/exec-plans/evidence/HG-047/round2-536c9b7/562f011d3d8775cff98a08ba5c1ee818c40a43aa77f6e24c7ae8784311e07528.gz",
+      "docs/exec-plans/evidence/HG-047/round2-536c9b7/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz",
+      "docs/exec-plans/evidence/HG-047/round2-536c9b7/8772e603fd11dc1288c9dc2bc95925f941b00d9c30da501a9ff8ef8b18985534.gz",
+      "docs/exec-plans/evidence/HG-047/round2-536c9b7/a308a76b0ba7607029658a014521a48e259e9f0e15aa716acc8a3236a5d2d7e3.gz",
+      "docs/exec-plans/evidence/HG-047/round2-536c9b7/authority.json",
+      "docs/exec-plans/evidence/HG-047/round2-536c9b7/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz",
+      "docs/exec-plans/evidence/HG-047/round2-536c9b7/execution.json",
+      "docs/exec-plans/evidence/HG-047/round2-536c9b7/harness.json",
+      "docs/exec-plans/evidence/HG-047/round2-536c9b7/lint.json",
+      "docs/exec-plans/evidence/HG-047/round2-536c9b7/performance.json",
+      "docs/exec-plans/evidence/HG-047/round2-536c9b7/scope.json",
+      "docs/exec-plans/evidence/HG-047/round2-536c9b7/source_diff.json",
+      "docs/exec-plans/evidence/HG-047/round2-536c9b7/typecheck.json",
+      "docs/exec-plans/evidence/HG-047/round2-536c9b7/unit.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/11d14f640d135aa2c4cde163312292e080304a20647807f2f14cd8f6a67212a4.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/13bfddc73de6b7e9c11a642cd5cdc48777abcee1ca9f44f290a9bb9e37a6ac0c.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/18dc2cc3c1562697f20f72e3f3d7c9cb7d519d60a0e43e1774ad8aca4a049596.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/1e8140f19eb7c36de0517dd7da6c8db8d4b24ebd7eed4f0a42546d5bcfb41c10.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/3247b6d1c35e694cf6323bc0292ac026b4a2e09766c7d212a12f35a140668c53.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/46bc0c081ef69813d8d1b1ee785c9238f494b4b8804283088f60e86103375bbb.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/5fa7825273e579293760c41253a5a5129709b44e327e635a25fadd76c07fd723.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/6fbf94451955adca5c6d48cbbedb887203968b392302ecf421411317c369cf6d.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/83dc3ad93ecbb0e9f04627d94359122643675889c5fb1c5e113ffe41be4691a5.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/8bef81e1d5c0eb2551fbd7dceffca01eaa6e8f68fa898982e89ff52df43137ad.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/99d907b8d0c716fcc67b087c982c04da81f2e5b885966e7f2d39510fef0e82e4.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/9d8210154b3b9cb1ee5970b9a9b336fe2aa5472e5ef1c31f85b06a5d33234880.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/ac82800c046e05e0204bed6617044ab2e2e0f869139bb3d87c38a8d05abec14e.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/c8149d94c8ea96a9690f9187312b7af3c624079716ec66f7ff79e7d67d989a86.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/ccdfb01542bd4a1ddbc1afc48e31dbbc6f4cb2802c6b74197ca0a910c5c14b09.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/cf9319c8c2dc44d3e8d22a494eac2b523b3a6349f9c08050ab5f4227382374c5.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/collection.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/dependency_sync.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/development-driver-py.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/development-final-json.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/development-json.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/driver-log.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/e432dad1f2ac64e920307d7938aea1f7e392a105d6cdbb40710f0b3e76fa2096.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/eedc247e695f8e669491600816c594da3de121a0d53f320a16102f9cf880ca1a.gz",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/execution.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/harness.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/host--checks-json.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/host-check-driver-py.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/image_build.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/lint.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/merge_gate.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/metadata-capture-note-txt.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/performance.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/scope.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/source_diff.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/typecheck.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/unit.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--harness-xml.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--run--execution-json.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--unit-xml.json",
+      "docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker-receipt-json.json",
+      "docs/exec-plans/evidence/HG-047/selected-2dc15b7/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz",
+      "docs/exec-plans/evidence/HG-047/selected-2dc15b7/25a6e726ed95412b24e5e8a848509fe0ca5ed66a57b2f38f0182faccb2e8d4c6.gz",
+      "docs/exec-plans/evidence/HG-047/selected-2dc15b7/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz",
+      "docs/exec-plans/evidence/HG-047/selected-2dc15b7/7b6201eb374ae5dabb204502b0a33dee17590bc219a875173d05f9f9dcf71261.gz",
+      "docs/exec-plans/evidence/HG-047/selected-2dc15b7/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz",
+      "docs/exec-plans/evidence/HG-047/selected-2dc15b7/authority.json",
+      "docs/exec-plans/evidence/HG-047/selected-2dc15b7/c580149911452d739085d76d53e29c74d64b4dd095c854f098a2decdc2daec27.gz",
+      "docs/exec-plans/evidence/HG-047/selected-2dc15b7/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz",
+      "docs/exec-plans/evidence/HG-047/selected-2dc15b7/e849815ff60a88bfd9e83f2cdad49ca263983d505a364d5120748538e844e428.gz",
+      "docs/exec-plans/evidence/HG-047/selected-2dc15b7/execution.json",
+      "docs/exec-plans/evidence/HG-047/selected-2dc15b7/harness.json",
+      "docs/exec-plans/evidence/HG-047/selected-2dc15b7/lint.json",
+      "docs/exec-plans/evidence/HG-047/selected-2dc15b7/performance.json",
+      "docs/exec-plans/evidence/HG-047/selected-2dc15b7/scope.json",
+      "docs/exec-plans/evidence/HG-047/selected-2dc15b7/source_diff.json",
+      "docs/exec-plans/evidence/HG-047/selected-2dc15b7/typecheck.json",
+      "docs/exec-plans/evidence/HG-047/selected-2dc15b7/unit.json",
+      "docs/exec-plans/governance/HG-047.yaml",
+      "docs/exec-plans/reviews/HG-047/GENERAL.json",
+      "docs/exec-plans/reviews/HG-047/GENERAL_REPORT.md",
+      "docs/exec-plans/reviews/HG-047/PROTOCOL.json",
+      "docs/exec-plans/reviews/HG-047/PROTOCOL_REPORT.md",
+      "docs/exec-plans/reviews/HG-047/SECURITY_DATA_BOUNDARY.json",
+      "docs/exec-plans/reviews/HG-047/SECURITY_DATA_BOUNDARY_REPORT.md",
+      "docs/exec-plans/reviews/HG-047/general_round2/GENERAL_REPORT.md",
+      "docs/exec-plans/reviews/HG-047/general_round2/focused.log",
+      "docs/exec-plans/reviews/HG-047/general_round2/ordinary_json_probe.json",
+      "docs/exec-plans/reviews/HG-047/general_round2/ordinary_json_probe.py",
+      "docs/exec-plans/reviews/HG-047/general_round2/verification.json",
+      "docs/exec-plans/reviews/HG-047/general_round2/verify.py",
+      "docs/exec-plans/reviews/HG-047/protocol_round2/REPORT.md",
+      "docs/exec-plans/reviews/HG-047/protocol_round2/focused-pytest.log",
+      "docs/exec-plans/reviews/HG-047/protocol_round2/probe.json",
+      "docs/exec-plans/reviews/HG-047/security_round2/budget.log",
+      "docs/exec-plans/reviews/HG-047/security_round2/decoder-security.log",
+      "docs/exec-plans/reviews/HG-047/security_round2/m3-regression.log",
+      "docs/exec-plans/reviews/HG-047/security_round2/new-cases-collection.log",
+      "docs/exec-plans/reviews/HG-047/security_round2/verification.log",
+      "docs/exec-plans/reviews/HG-047/security_round2/verify.py",
+      "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+      "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+      "docs/harness/LOCAL_DB_CI.md",
+      "docs/harness/M3_CLOSURE_CONTRACT.md",
+      "docs/harness/MERGE_GATE.md",
+      "docs/harness/THREAD_RESULT_CONTRACT.md",
+      "docs/harness/THREAD_REVIEW_CONTRACT.md",
+      "tests/harness/test_compact_evidence.py",
+      "tests/harness/test_local_gate.py",
+      "tests/harness/test_m3_milestone_closure.py",
+      "tests/harness/test_review_evidence_provenance.py",
+      "tests/harness/test_validator.py",
+      "tools/harness/README.md",
+      "tools/harness/compact_evidence.py",
+      "tools/harness/local_gate.py",
+      "tools/harness/validate_harness.py"
+    ],
+    "source_paths": [
+      "CURRENT_DOCUMENT_INDEX.json",
+      "HARNESS_DOCUMENT_MANIFEST.json",
+      "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+      "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+      "docs/harness/LOCAL_DB_CI.md",
+      "docs/harness/M3_CLOSURE_CONTRACT.md",
+      "docs/harness/MERGE_GATE.md",
+      "docs/harness/THREAD_RESULT_CONTRACT.md",
+      "docs/harness/THREAD_REVIEW_CONTRACT.md",
+      "tests/harness/test_compact_evidence.py",
+      "tests/harness/test_local_gate.py",
+      "tests/harness/test_m3_milestone_closure.py",
+      "tests/harness/test_review_evidence_provenance.py",
+      "tests/harness/test_validator.py",
+      "tools/harness/README.md",
+      "tools/harness/compact_evidence.py",
+      "tools/harness/local_gate.py",
+      "tools/harness/validate_harness.py"
+    ],
+    "protected_paths_verified_unchanged": [
+      ".github/workflows",
+      "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+      "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+      "CURRENT_REQUIREMENT_SET.json",
+      "FROZEN_BASELINE.json",
+      "KineticLoop_Harness_Backlog_v0.2.json",
+      "KineticLoop_Harness_Traceability_v0.3.json",
+      "MILESTONE_CLOSURE.schema.json",
+      "docs/exec-plans/active/KL-080.md",
+      "docs/exec-plans/evidence/HG-045",
+      "docs/exec-plans/evidence/HG-046",
+      "docs/exec-plans/governance/HG-045.yaml",
+      "docs/exec-plans/governance/HG-046.yaml",
+      "docs/exec-plans/reviews/HG-045",
+      "docs/exec-plans/reviews/HG-046",
+      "migrations",
+      "src",
+      "tests/db",
+      "tools/harness/db_ci.py",
+      "tools/harness/db_ci_pytest.py",
+      "tools/harness/db_policy.py",
+      "tools/harness/gate_pytest.py",
+      "tools/harness/gate_validate.py",
+      "tools/harness/github_app.py",
+      "tools/harness/local_db"
+    ],
+    "tested_result_suffix_valid": true,
+    "source_matches_tested": true
+  },
+  "budget": {
+    "identity": "HG-047",
+    "base": "391c9198fa8ec647e377a0572700bc7568468c85",
+    "head": "589e538579f519bc10d178fa02dff12332931ba7",
+    "stored_bytes": 2241854,
+    "files": 176,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "all_committed_envelopes": [
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-070f94f/authority.json",
+      "raw_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "raw_bytes": 38
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-070f94f/harness.json",
+      "raw_sha256": "018e4a38e63b20c2400b44164688200c5d96aece661aacaf4c0688b8d2b32c9c",
+      "raw_bytes": 2414
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-070f94f/lint.json",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_bytes": 19
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-070f94f/scope.json",
+      "raw_sha256": "2fce8fc15f14442c1aba3b70bbab0b709b5789c13c2f22a46b65406c5b8c2c8d",
+      "raw_bytes": 4402
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-070f94f/source_diff.json",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-070f94f/typecheck.json",
+      "raw_sha256": "1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe",
+      "raw_bytes": 45
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-070f94f/unit.json",
+      "raw_sha256": "ec398076317ede9a83d347455c37df313e466d200da75f2215a0d737647cd6dd",
+      "raw_bytes": 3292
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-166bf3e/lint.json",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_bytes": 19
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-166bf3e/performance.json",
+      "raw_sha256": "57c1b5e9f0548004a7656a329f7b0dce54193596231a7c2e59e15b5d297a7cff",
+      "raw_bytes": 2352
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-166bf3e/scope.json",
+      "raw_sha256": "80a17c64b7e9e2a66730b13c0ff1d12fe5cdd8ddc0d369470d81e95c62ba0923",
+      "raw_bytes": 8762
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-166bf3e/source_diff.json",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-166bf3e/typecheck.json",
+      "raw_sha256": "1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe",
+      "raw_bytes": 45
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-166bf3e/unit.json",
+      "raw_sha256": "41e0abda72912ce9120aa93b64d6e8ca1177d9c0de1ad5e818641e9cefc0eda3",
+      "raw_bytes": 4379
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-8a78241/dependency_sync-log.json",
+      "raw_sha256": "2ccde75680815ea87461d562f4da58bf3de876ec3f580001fa28b1e7881765b8",
+      "raw_bytes": 1338
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-8a78241/harness-log.json",
+      "raw_sha256": "c8f469e0b97241a935b73f937b7a54e9b671b0bbb35308122b7637d0bf2c5f99",
+      "raw_bytes": 2551488
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-8a78241/image_build-log.json",
+      "raw_sha256": "2418d1ed3be3d024503a476cc21a5b48e1f7524ee42eb15a269d268ac3dcc532",
+      "raw_bytes": 2304
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-8a78241/lint-log.json",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_bytes": 19
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-8a78241/published-check-json.json",
+      "raw_sha256": "99f04a3dcb93af973800ae0196ee52999386952238c364af20e1f311a8be0801",
+      "raw_bytes": 3720
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-8a78241/receipt-json.json",
+      "raw_sha256": "8f19c7a9dcf64f492d9d4e28a73da31b28706d3945915fc1362cbb1889f81397",
+      "raw_bytes": 20528
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-8a78241/typecheck-log.json",
+      "raw_sha256": "1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe",
+      "raw_bytes": 45
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-8a78241/unit-log.json",
+      "raw_sha256": "b5c418cef01ed3a8de82e7d9983807edac0cc9f7f419a00c165c48f6e365decb",
+      "raw_bytes": 422
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-8a78241/worker--harness-xml.json",
+      "raw_sha256": "dac78b5c1ef1a4a6463a9cb0ff77e106086f50800e308494bd9c8176b8213591",
+      "raw_bytes": 4797259
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-8a78241/worker--run--execution-json.json",
+      "raw_sha256": "239ca62409d4760647d4ff292bcae8ec9391491dd89da8bb986a9ee19edb3224",
+      "raw_bytes": 4561434
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-8a78241/worker--unit-xml.json",
+      "raw_sha256": "fe0b6f075ba4044225c5dfed1b1b38e3cf6209b8a69683a2a07c4dacf646e193",
+      "raw_bytes": 33789
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-8a78241/worker-receipt-json.json",
+      "raw_sha256": "a730cda6907c4717427b553a7924437e894a66c21917f73de10ae04a78761fa0",
+      "raw_bytes": 5881
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-ab4f21b/source_diff.json",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-b30a9c6/authority.json",
+      "raw_sha256": "dabf0ccdf57320cd56ebd0a81e5e78a2d83658a6a0ba1f460b6c10408db3d394",
+      "raw_bytes": 57
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-b30a9c6/lint.json",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_bytes": 19
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-b30a9c6/performance.json",
+      "raw_sha256": "5fd2649c8ac66712b86f471fe955c689123b9f1668b4e65c2db0ef2e4ff48384",
+      "raw_bytes": 2350
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-b30a9c6/scope.json",
+      "raw_sha256": "c5be17ddc17097849aea0d2f20521ec52f6fee67e664539dc08992ac7881361a",
+      "raw_bytes": 10032
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-b30a9c6/source_diff.json",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/development-b30a9c6/typecheck.json",
+      "raw_sha256": "1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe",
+      "raw_bytes": 45
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round2-536c9b7/authority.json",
+      "raw_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "raw_bytes": 38
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round2-536c9b7/harness.json",
+      "raw_sha256": "8772e603fd11dc1288c9dc2bc95925f941b00d9c30da501a9ff8ef8b18985534",
+      "raw_bytes": 3773
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round2-536c9b7/lint.json",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_bytes": 19
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round2-536c9b7/performance.json",
+      "raw_sha256": "4a3753070a66c3301beb7d1831adddfd95c85cbc284d28daaa02f1cb7c73781f",
+      "raw_bytes": 2350
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round2-536c9b7/scope.json",
+      "raw_sha256": "a308a76b0ba7607029658a014521a48e259e9f0e15aa716acc8a3236a5d2d7e3",
+      "raw_bytes": 11307
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round2-536c9b7/source_diff.json",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round2-536c9b7/typecheck.json",
+      "raw_sha256": "1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe",
+      "raw_bytes": 45
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round2-536c9b7/unit.json",
+      "raw_sha256": "562f011d3d8775cff98a08ba5c1ee818c40a43aa77f6e24c7ae8784311e07528",
+      "raw_bytes": 3292
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/collection.json",
+      "raw_sha256": "5fa7825273e579293760c41253a5a5129709b44e327e635a25fadd76c07fd723",
+      "raw_bytes": 3154753
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/dependency_sync.json",
+      "raw_sha256": "c8149d94c8ea96a9690f9187312b7af3c624079716ec66f7ff79e7d67d989a86",
+      "raw_bytes": 1338
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/development-driver-py.json",
+      "raw_sha256": "8bef81e1d5c0eb2551fbd7dceffca01eaa6e8f68fa898982e89ff52df43137ad",
+      "raw_bytes": 2984
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/development-final-json.json",
+      "raw_sha256": "eedc247e695f8e669491600816c594da3de121a0d53f320a16102f9cf880ca1a",
+      "raw_bytes": 3199
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/development-json.json",
+      "raw_sha256": "83dc3ad93ecbb0e9f04627d94359122643675889c5fb1c5e113ffe41be4691a5",
+      "raw_bytes": 2724
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/driver-log.json",
+      "raw_sha256": "3247b6d1c35e694cf6323bc0292ac026b4a2e09766c7d212a12f35a140668c53",
+      "raw_bytes": 858
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/harness.json",
+      "raw_sha256": "6fbf94451955adca5c6d48cbbedb887203968b392302ecf421411317c369cf6d",
+      "raw_bytes": 1634
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/host--checks-json.json",
+      "raw_sha256": "18dc2cc3c1562697f20f72e3f3d7c9cb7d519d60a0e43e1774ad8aca4a049596",
+      "raw_bytes": 3806
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/host-check-driver-py.json",
+      "raw_sha256": "99d907b8d0c716fcc67b087c982c04da81f2e5b885966e7f2d39510fef0e82e4",
+      "raw_bytes": 2903
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/image_build.json",
+      "raw_sha256": "11d14f640d135aa2c4cde163312292e080304a20647807f2f14cd8f6a67212a4",
+      "raw_bytes": 2160
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/lint.json",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_bytes": 19
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/merge_gate.json",
+      "raw_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "raw_bytes": 38
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/metadata-capture-note-txt.json",
+      "raw_sha256": "9d8210154b3b9cb1ee5970b9a9b336fe2aa5472e5ef1c31f85b06a5d33234880",
+      "raw_bytes": 657
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/performance.json",
+      "raw_sha256": "ac82800c046e05e0204bed6617044ab2e2e0f869139bb3d87c38a8d05abec14e",
+      "raw_bytes": 2353
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/scope.json",
+      "raw_sha256": "46bc0c081ef69813d8d1b1ee785c9238f494b4b8804283088f60e86103375bbb",
+      "raw_bytes": 18637
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/source_diff.json",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/typecheck.json",
+      "raw_sha256": "1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe",
+      "raw_bytes": 45
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/unit.json",
+      "raw_sha256": "e432dad1f2ac64e920307d7938aea1f7e392a105d6cdbb40710f0b3e76fa2096",
+      "raw_bytes": 422
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--harness-xml.json",
+      "raw_sha256": "1e8140f19eb7c36de0517dd7da6c8db8d4b24ebd7eed4f0a42546d5bcfb41c10",
+      "raw_bytes": 3513255
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--run--execution-json.json",
+      "raw_sha256": "cf9319c8c2dc44d3e8d22a494eac2b523b3a6349f9c08050ab5f4227382374c5",
+      "raw_bytes": 3293764
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--unit-xml.json",
+      "raw_sha256": "13bfddc73de6b7e9c11a642cd5cdc48777abcee1ca9f44f290a9bb9e37a6ac0c",
+      "raw_bytes": 33788
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker-receipt-json.json",
+      "raw_sha256": "ccdfb01542bd4a1ddbc1afc48e31dbbc6f4cb2802c6b74197ca0a910c5c14b09",
+      "raw_bytes": 6828
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/selected-2dc15b7/authority.json",
+      "raw_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "raw_bytes": 38
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/selected-2dc15b7/harness.json",
+      "raw_sha256": "e849815ff60a88bfd9e83f2cdad49ca263983d505a364d5120748538e844e428",
+      "raw_bytes": 3773
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/selected-2dc15b7/lint.json",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_bytes": 19
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/selected-2dc15b7/performance.json",
+      "raw_sha256": "7b6201eb374ae5dabb204502b0a33dee17590bc219a875173d05f9f9dcf71261",
+      "raw_bytes": 2351
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/selected-2dc15b7/scope.json",
+      "raw_sha256": "c580149911452d739085d76d53e29c74d64b4dd095c854f098a2decdc2daec27",
+      "raw_bytes": 5975
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/selected-2dc15b7/source_diff.json",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/selected-2dc15b7/typecheck.json",
+      "raw_sha256": "1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe",
+      "raw_bytes": 45
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-047/selected-2dc15b7/unit.json",
+      "raw_sha256": "25a6e726ed95412b24e5e8a848509fe0ca5ed66a57b2f38f0182faccb2e8d4c6",
+      "raw_bytes": 3292
+    }
+  ],
+  "selected_checks": [
+    {
+      "id": "lint",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19,
+      "command": "docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run --no-sync python -m ruff check ."
+    },
+    {
+      "id": "typecheck",
+      "sha256": "1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe",
+      "bytes": 45,
+      "command": "docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run --no-sync python -m mypy --no-incremental"
+    },
+    {
+      "id": "unit",
+      "sha256": "e432dad1f2ac64e920307d7938aea1f7e392a105d6cdbb40710f0b3e76fa2096",
+      "bytes": 422,
+      "command": "docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run --no-sync python -I /gate/tools/harness/gate_pytest.py -q tests/unit -o xfail_strict=true --junitxml=/evidence/unit.xml"
+    },
+    {
+      "id": "harness",
+      "sha256": "6fbf94451955adca5c6d48cbbedb887203968b392302ecf421411317c369cf6d",
+      "bytes": 1634,
+      "command": "docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run --no-sync python -I /gate/tools/harness/gate_pytest.py -q tests/harness -o xfail_strict=true --junitxml=/evidence/harness.xml"
+    },
+    {
+      "id": "authority",
+      "sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "bytes": 38,
+      "command": "docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run --no-sync python -I /gate/tools/harness/gate_validate.py"
+    },
+    {
+      "id": "scope",
+      "sha256": "46bc0c081ef69813d8d1b1ee785c9238f494b4b8804283088f60e86103375bbb",
+      "bytes": 18637,
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python docs/exec-plans/evidence/HG-047/audit.py 391c9198fa8ec647e377a0572700bc7568468c85 f29ffa97d9057eacc4bda7ad593b843c9c52c5a2"
+    },
+    {
+      "id": "source_diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src git diff --check 391c9198fa8ec647e377a0572700bc7568468c85 f29ffa97d9057eacc4bda7ad593b843c9c52c5a2"
+    },
+    {
+      "id": "collection",
+      "sha256": "5fa7825273e579293760c41253a5a5129709b44e327e635a25fadd76c07fd723",
+      "bytes": 3154753,
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m pytest --collect-only -q tests/harness"
+    },
+    {
+      "id": "performance",
+      "sha256": "ac82800c046e05e0204bed6617044ab2e2e0f869139bb3d87c38a8d05abec14e",
+      "bytes": 2353,
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python docs/exec-plans/evidence/HG-047/benchmark.py"
+    }
+  ],
+  "development_execution": {
+    "mode": "DEVELOPMENT_NO_PUBLICATION",
+    "status": "PASS",
+    "architecture": "arm64",
+    "counts": {
+      "unit": {
+        "tests": 241,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "harness": {
+        "tests": 1306,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "all_receipt_artifact_hashes_verified": 11,
+    "all_host_observed_commands_verified": 7,
+    "controller_assets_verified": 11,
+    "controller_assets_identical_to_tested_source": true,
+    "collection_equals_observed_nodeids": true,
+    "id_only_ast_equivalence": true,
+    "fixed_case_count": 10,
+    "fixed_case_max_bytes": 105,
+    "recorded_container_removed": true,
+    "recorded_volume_removed": true,
+    "no_host_bind_or_socket_mount": true,
+    "publication": false,
+    "full_database": "NOT_RUN",
+    "initial_metadata_hash_verified": true,
+    "final_metadata_preserved_separately": true
+  },
+  "preserved_failed_app_gate": {
+    "head": "8a78241e9b752247c3c4f4a43c4fe54bad72ef6c",
+    "conclusion": "failure",
+    "test_cases": 1306,
+    "passed": 1304,
+    "errors": 2,
+    "cleanup_recorded": true,
+    "selected_as_current_pass": false
+  }
+}

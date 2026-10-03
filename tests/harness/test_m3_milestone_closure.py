@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import copy
+import gzip
 import importlib.util
 import json
 import os
@@ -615,6 +616,71 @@ def test_m3_reader_parses_checked_git_blob_not_second_ambient_read(tmp_path, mon
     assert not errors and record == {'source': 'committed'}
 
 
+@pytest.mark.parametrize('mutation', [
+    'none', 'skipped-junit', 'wrong-collection', 'bad-log', 'wrong-tested',
+    'renamed-envelope', 'junit-command', 'collection-command', 'collection-stdout-command',
+])
+def test_compact_regression_decodes_all_semantic_sources(tmp_path, mutation):
+    """Compression preserves log/JUnit/collection oracles, never summary-only proof."""
+    # Earlier module-history negatives intentionally commit unrelated/frozen edits.
+    # Each compression case needs its own clean tested-to-evidence suffix.
+    history = History(tmp_path / "repo")
+    payload = copy.deepcopy(history.payload)
+    run = payload['executions'][0]
+    collection = json.loads((history.root / run['collection']['path']).read_text())
+
+    def compressed(label, raw, command):
+        path = history.prefix + f'compact-{mutation}-{label}.json'
+        # Parameter fixtures append uniquely named envelopes; same raw hashes reuse payloads.
+        v.compact_evidence.capture(history.root, path, raw, history.tested, command, 0)
+        return {'path': path, 'sha256': v.sha(history.root / path)}
+
+    stdout = (history.root / run['stdout']['path']).read_bytes()
+    junit = (history.root / run['junit']['path']).read_bytes()
+    if mutation == 'skipped-junit':
+        junit = junit.replace(b'/>', b'><skipped/></testcase>')
+    if mutation in ('bad-log', 'renamed-envelope'):
+        stdout = b'1 skipped\n'
+    if mutation == 'wrong-collection':
+        collection['nodeids'] = ['tests/unit/foreign.py::test_foreign']
+    collection['stdout'] = compressed(
+        'collection-log', (history.root / collection['stdout']['path']).read_bytes(),
+        collection['command'])
+    run['stdout'] = compressed('log', stdout, run['command'])
+    run['junit'] = compressed('junit', junit, run['command'])
+    run['collection'] = compressed('collection', json.dumps(collection).encode(), collection['command'])
+    if mutation == 'wrong-tested':
+        path = history.root / run['stdout']['path']
+        manifest = json.loads(path.read_text())
+        manifest['tested_commit'] = history.evaluated
+        path.write_text(json.dumps(manifest))
+        run['stdout']['sha256'] = v.sha(path)
+    if mutation == 'renamed-envelope':
+        path = history.root / run['stdout']['path']
+        manifest = json.loads(path.read_text())
+        manifest['timestamp'] = '1 passed in 0.01s'
+        path.write_text(json.dumps(manifest))
+        renamed = path.with_suffix('.log')
+        path.rename(renamed)
+        run['stdout'] = {'path': str(renamed.relative_to(history.root)), 'sha256': v.sha(renamed)}
+    if mutation in ('junit-command', 'collection-command', 'collection-stdout-command'):
+        item = (run['junit'] if mutation == 'junit-command' else run['collection']
+                if mutation == 'collection-command' else collection['stdout'])
+        path = history.root / item['path']
+        manifest = json.loads(path.read_text())
+        manifest['command'] = 'unrelated-command'
+        path.write_text(json.dumps(manifest))
+        item['sha256'] = v.sha(path)
+        if mutation == 'collection-stdout-command':
+            # Rebind the outer collection to the changed stdout envelope hash.
+            outer = history.root / run['collection']['path']
+            outer.unlink()
+            run['collection'] = compressed('collection', json.dumps(collection).encode(), collection['command'])
+    revision = history.commit('synthetic compact semantic sources')
+    errors = v.m3_execution_evidence_errors(history.root, payload, revision, revision, history.records)
+    assert bool(errors) == (mutation != 'none'), errors
+    assert not any('stale-or-unintegrated-revision' in e for e in errors)
+
 @pytest.mark.parametrize('mutation', ['task', 'exit', 'check', 'oracle', 'command', 'regression'])
 def test_corrective_prerequisite_and_checks_cannot_be_omitted_or_weakened(history, mutation):
     closure = copy.deepcopy(history.closure)
@@ -650,3 +716,49 @@ def test_actual_required_integration_omission_rejects(history, name):
     history.put(path, original)
     history.commit('restore synthetic required integration')
     assert any('missing-or-nonregular-integration:' + name in error for error in errors)
+
+
+
+@pytest.mark.parametrize('mutation', ['missing', 'corrupt', 'command', 'tested', 'exit', 'list', 'dict'])
+def test_compact_nested_storage_cannot_supply_m3_execution_stdout(tmp_path, mutation):
+    history = History(tmp_path / 'repo')
+    payload = copy.deepcopy(history.payload)
+    run = payload['executions'][0]
+    ce = v.compact_evidence
+    inner_path = history.prefix + 'inner.json'
+    inner = ce.capture(history.root, inner_path, b'1 skipped\n', history.tested,
+                       run['command'], 0, '1 passed in 0.1s')
+    if mutation == 'missing':
+        (history.root / inner['payload']).unlink()
+    elif mutation == 'corrupt':
+        (history.root / inner['payload']).write_bytes(b'corrupt')
+    elif mutation in ('command', 'tested', 'exit'):
+        field, value = {'command': ('command', 'other'),
+                        'tested': ('tested_commit', history.evaluated),
+                        'exit': ('exit_code', 1)}[mutation]
+        inner[field] = value
+    value = [inner] if mutation == 'list' else {'wrapped': inner} if mutation == 'dict' else inner
+    raw = json.dumps(value).encode()
+    (history.root / inner_path).write_bytes(raw)
+    # Construct an otherwise valid outer envelope without the capture writer's
+    # own rejection, representing bytes committed by an untrusted producer.
+    outer_path = history.prefix + 'outer.json'
+    stored = gzip.compress(raw, mtime=0)
+    stored_path = history.prefix + ce.digest(raw) + '.gz'
+    outer = dict(inner, payload=stored_path, raw_sha256=ce.digest(raw), raw_bytes=len(raw),
+                 stored_sha256=ce.digest(stored), stored_bytes=len(stored),
+                 tested_commit=history.tested, command=run['command'], exit_code=0)
+    (history.root / stored_path).write_bytes(stored)
+    history.put(outer_path, json.dumps(outer))
+    revision = history.commit('synthetic nested compact storage metadata')
+    for path in (inner_path, outer_path):
+        run['stdout'] = {'path': path, 'sha256': v.sha(history.root / path)}
+        errors = v.m3_execution_evidence_errors(history.root, payload, revision, revision, history.records)
+        assert errors, (mutation, path)
+        if path == outer_path:
+            reason = ('evidence-envelope-shape' if mutation in ('list', 'dict')
+                      else 'evidence-nested-envelope')
+            assert errors == ['milestone-m3-regression:' + reason]
+        assert not any('stale-or-unintegrated-revision' in error for error in errors)
+    errors = ce.audit(history.root, history.tested, revision, history.change)['errors']
+    assert any(error.startswith(outer_path + ':evidence-') for error in errors), errors

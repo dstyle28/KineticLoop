@@ -1,0 +1,68 @@
+{
+  "reviewed_head_sha": "589e538579f519bc10d178fa02dff12332931ba7",
+  "timestamp": "2026-10-03T07:23:09.810544+00:00",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+  "checks": [
+    {
+      "label": "focused",
+      "argv": [
+        "/private/tmp/hg044-venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/harness/test_compact_evidence.py",
+        "tests/harness/test_local_gate.py",
+        "tests/harness/test_review_evidence_provenance.py",
+        "tests/harness/test_m3_milestone_closure.py",
+        "-k",
+        "compact or evidence_provenance",
+        "--basetemp=/private/tmp/hg047-security-r3-pytest",
+        "--junitxml=docs/exec-plans/reviews/HG-047/security_round3/focused.xml"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "src"
+      },
+      "exit_code": 0,
+      "passed": 289,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "log_sha256": "97cf420d861feb7d7631c7455a257b427838511f8fd50e143e5328ef33fce83c",
+      "junit_sha256": "91ecd0044cde9c46f9ba472a58ba70fb34c7f9656fd175dbcf8d2a7479786f0e"
+    },
+    {
+      "label": "controller-copy",
+      "argv": [
+        "/private/tmp/hg044-venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/harness/test_local_gate.py::test_worker_copies_decoder_from_installed_release",
+        "tests/harness/test_local_gate.py::test_failed_start_still_attempts_both_owned_cleanups",
+        "--basetemp=/private/tmp/hg047-security-r3-copy-pytest",
+        "--junitxml=docs/exec-plans/reviews/HG-047/security_round3/controller-copy.xml"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "src"
+      },
+      "exit_code": 0,
+      "passed": 2,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "log_sha256": "8ada189176115b2d4084a51867c6e6efe490d84091fd790cab061ea1fc6c01f9",
+      "junit_sha256": "16cdbf7567f717495aec3cc6d5bcccf90aa3d1008c4aa0814feac9d6bd6a51c8"
+    }
+  ],
+  "independent_audit": {
+    "script": "docs/exec-plans/reviews/HG-047/security_round3/verify.py",
+    "exit_code": 0
+  }
+}

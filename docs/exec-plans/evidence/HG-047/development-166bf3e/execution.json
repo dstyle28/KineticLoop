@@ -1,0 +1,78 @@
+{
+  "tested_commit": "166bf3edb3c3ecca2c9e0facb7c94195f394d997",
+  "status": "FAIL",
+  "selection": "Historical failed source, not selected current PASS evidence.",
+  "reason": "Unit CLI authority rejects round1 review references to compact_evidence.py: its Python literals are classified as malformed reserved storage content. The source at original47de76d also fails the same classification. No classifier bypass or raw-proof relaxation is authorized.",
+  "checks": {
+    "unit": {
+      "tested": "166bf3edb3c3ecca2c9e0facb7c94195f394d997",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli test-unit",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 1,
+      "timestamp": "2026-10-03T04:47:09.355775+00:00",
+      "seconds": 203.2493615830317,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-166bf3e/unit.json"
+    },
+    "lint": {
+      "tested": "166bf3edb3c3ecca2c9e0facb7c94195f394d997",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli lint",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T04:47:06.238438+00:00",
+      "seconds": 0.09490279201418161,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-166bf3e/lint.json"
+    },
+    "typecheck": {
+      "tested": "166bf3edb3c3ecca2c9e0facb7c94195f394d997",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli typecheck",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T04:47:06.361957+00:00",
+      "seconds": 0.3946353329811245,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-166bf3e/typecheck.json"
+    },
+    "scope": {
+      "tested": "166bf3edb3c3ecca2c9e0facb7c94195f394d997",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python docs/exec-plans/evidence/HG-047/audit.py 391c9198fa8ec647e377a0572700bc7568468c85 166bf3edb3c3ecca2c9e0facb7c94195f394d997",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T04:47:06.787497+00:00",
+      "seconds": 0.627106417203322,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-166bf3e/scope.json"
+    },
+    "source_diff": {
+      "tested": "166bf3edb3c3ecca2c9e0facb7c94195f394d997",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src git diff --check 391c9198fa8ec647e377a0572700bc7568468c85 166bf3edb3c3ecca2c9e0facb7c94195f394d997",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T04:47:07.444031+00:00",
+      "seconds": 0.01900654099881649,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-166bf3e/source_diff.json"
+    },
+    "performance": {
+      "tested": "166bf3edb3c3ecca2c9e0facb7c94195f394d997",
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python docs/exec-plans/evidence/HG-047/benchmark.py",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T04:47:07.491739+00:00",
+      "seconds": 1.8347416250035167,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-166bf3e/performance.json"
+    }
+  },
+  "not_run": [
+    "harness",
+    "authority"
+  ]
+}

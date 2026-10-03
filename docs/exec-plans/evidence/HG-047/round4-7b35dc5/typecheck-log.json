@@ -1,0 +1,13 @@
+{
+  "kineticloop_evidence": "gzip-v1",
+  "payload": "docs/exec-plans/evidence/HG-047/round4-7b35dc5/866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445.gz",
+  "stored_sha256": "5923bdbab468ac8b006511bee239a5de02d10fb931c1706d51e6dcd36fbb922a",
+  "stored_bytes": 65,
+  "raw_sha256": "866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445",
+  "raw_bytes": 45,
+  "tested_commit": "7b35dc5dd7c488b60651175574e37b5d9389d335",
+  "command": "docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-b355dd07b10a4bca839f8287ca55ddf1 uv run --no-sync python -m mypy --no-incremental",
+  "exit_code": 0,
+  "timestamp": "2026-10-03T08:23:25.682254+00:00",
+  "test_counts": {}
+}

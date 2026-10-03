@@ -1,0 +1,30 @@
+{
+  "reviewed_head_sha": "b71d2d63f8bc27ab0e905b0be8a0cea5f0122a91",
+  "verdict_unchanged": "PASS",
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_review_evidence_provenance.py tests/harness/test_parallel_runner.py tests/harness/test_m3_milestone_closure.py::test_compact_nested_storage_cannot_supply_m3_execution_stdout --basetemp=/private/tmp/hg047-general-r4/targeted-pytest --junitxml=/private/tmp/hg047-general-r4/targeted.xml",
+  "exit_code": 1,
+  "timestamp": "2026-10-03T01:44:43.668719-07:00",
+  "timestamp_source": "Original targeted JUnit testsuite timestamp",
+  "conversions": [
+    {
+      "old_uncommitted_path": "docs/exec-plans/reviews/HG-047/general_round4/targeted.log",
+      "envelope": "docs/exec-plans/reviews/HG-047/general_round4/targeted-log.json",
+      "payload": "docs/exec-plans/reviews/HG-047/general_round4/e8c58eb11fd011d6f97c0af70a1c1109b8bea2a45a829ab425bf1e0cd4147175.gz",
+      "raw_bytes": 11760,
+      "raw_sha256": "e8c58eb11fd011d6f97c0af70a1c1109b8bea2a45a829ab425bf1e0cd4147175",
+      "envelope_sha256": "cb07ada53543068a5cda80673833cf5d334a689f5ccab91fea6d49952df19ea4",
+      "exit_code": 1,
+      "exact_roundtrip": true
+    },
+    {
+      "old_uncommitted_path": "docs/exec-plans/reviews/HG-047/general_round4/targeted.xml",
+      "envelope": "docs/exec-plans/reviews/HG-047/general_round4/targeted-xml.json",
+      "payload": "docs/exec-plans/reviews/HG-047/general_round4/5d249f03832c531c45179e362be03ce851ec240531a04460be389375edf4e2c7.gz",
+      "raw_bytes": 24817,
+      "raw_sha256": "5d249f03832c531c45179e362be03ce851ec240531a04460be389375edf4e2c7",
+      "envelope_sha256": "438b52ac5660566edba6efb2570e31e1b2ed452601816340dece38e392af5e67",
+      "exit_code": 1,
+      "exact_roundtrip": true
+    }
+  ]
+}

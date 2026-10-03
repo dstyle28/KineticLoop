@@ -37,3 +37,6 @@ allowlist in `LOCAL_DB_CI.md`; evidence/configuration changes are not blanket ex
 The result and independent review must bind the complete local manifest, raw logs,
 collection/JUnit and outer cleanup envelope. This is not a GitHub-hosted claim.
 Existing task-specific hosted requirements and KL-074 provenance remain unchanged.
+
+Prospective compact evidence follows [Evidence Storage Policy](EVIDENCE_STORAGE_POLICY.md);
+all existing revision bindings and PASS oracles remain mandatory.

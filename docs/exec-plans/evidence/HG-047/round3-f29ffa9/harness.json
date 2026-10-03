@@ -1,0 +1,15 @@
+{
+  "kineticloop_evidence": "gzip-v1",
+  "payload": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/6fbf94451955adca5c6d48cbbedb887203968b392302ecf421411317c369cf6d.gz",
+  "stored_sha256": "298d6d05aef0601831745ad42c48680896b20ecf33b7ad1b1bd8fa0306fb6e62",
+  "stored_bytes": 178,
+  "raw_sha256": "6fbf94451955adca5c6d48cbbedb887203968b392302ecf421411317c369cf6d",
+  "raw_bytes": 1634,
+  "tested_commit": "f29ffa97d9057eacc4bda7ad593b843c9c52c5a2",
+  "command": "docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run --no-sync python -I /gate/tools/harness/gate_pytest.py -q tests/harness -o xfail_strict=true --junitxml=/evidence/harness.xml",
+  "exit_code": 0,
+  "timestamp": "2026-10-03T07:07:06.161995+00:00",
+  "test_counts": {
+    "passed": 1306
+  }
+}

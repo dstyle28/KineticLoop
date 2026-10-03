@@ -3,7 +3,9 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import shutil
 import subprocess
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -302,3 +304,91 @@ def test_failed_start_still_attempts_both_owned_cleanups(tmp_path, monkeypatch):
     record = json.loads((tmp_path / 'worker-receipt.json').read_text())
     assert record['status'] == 'FAIL'
     assert record['container_removed'] and record['volume_removed']
+
+
+@pytest.mark.parametrize('mutation', ['missing_pin', 'missing_file', 'changed', 'symlink'])
+def test_installed_compact_decoder_is_required_and_exact(tmp_path, mutation):
+    for name in gate.ASSETS:
+        path = tmp_path / name
+        path.parent.mkdir(exist_ok=True, parents=True)
+        path.write_text('trusted')
+    config = {'controller_files': {name: gate.digest(tmp_path / name) for name in gate.ASSETS}}
+    assert gate.installed(config, tmp_path)
+    path = tmp_path / 'compact_evidence.py'
+    if mutation == 'missing_pin':
+        del config['controller_files']['compact_evidence.py']
+    elif mutation == 'missing_file':
+        path.unlink()
+    elif mutation == 'changed':
+        path.write_text('candidate decoder')
+    else:
+        path.unlink()
+        path.symlink_to(tmp_path / 'db_policy.py')
+    with pytest.raises(ValueError, match='installation'):
+        gate.installed(config, tmp_path)
+
+
+@pytest.mark.parametrize('missing', [False, True])
+def test_isolated_validator_never_uses_candidate_compact_decoder(tmp_path, missing):
+    installed = tmp_path / 'installed/tools/harness'
+    installed.mkdir(parents=True)
+    for name in ('validate_harness.py', 'compact_evidence.py'):
+        shutil.copyfile(gate.HERE / name, installed / name)
+    candidate = tmp_path / 'candidate'
+    candidate.mkdir()
+    (candidate / 'compact_evidence.py').write_text('raise RuntimeError("CANDIDATE DECODER RAN")')
+    if missing:
+        (installed / 'compact_evidence.py').unlink()
+    probe = (
+        'import importlib.util, sys; '
+        's = importlib.util.spec_from_file_location("trusted_validator", sys.argv[1]); '
+        'v = importlib.util.module_from_spec(s); s.loader.exec_module(v); '
+        'print(v.compact_evidence.__file__)'
+    )
+    result = subprocess.run([sys.executable, '-I', '-c', probe,
+                             str(installed / 'validate_harness.py')], cwd=candidate,
+                            capture_output=True, text=True)
+    assert 'CANDIDATE DECODER RAN' not in result.stdout + result.stderr
+    if missing:
+        assert result.returncode != 0 and 'FileNotFoundError' in result.stderr
+    else:
+        assert result.returncode == 0, result.stderr
+        assert result.stdout.strip() == str(installed / 'compact_evidence.py')
+
+
+def test_worker_copies_decoder_from_installed_release(tmp_path, monkeypatch):
+    installed = tmp_path / 'installed'
+    candidate = tmp_path / 'candidate'
+    installed.mkdir()
+    candidate.mkdir()
+    (installed / 'compact_evidence.py').write_text('installed decoder')
+    (candidate / 'compact_evidence.py').write_text('candidate decoder')
+    monkeypatch.setattr(gate.db_ci, 'local_client_preflight', lambda: None)
+    monkeypatch.setattr(gate.db_ci, 'owned_mounts', lambda *_: [])
+    monkeypatch.setattr(gate, 'resource_exists', lambda *_: False)
+    monkeypatch.setattr(gate, 'cleanup_resource', lambda *_: True)
+    monkeypatch.setattr(gate, 'cleanup_owned', lambda *_: True)
+    monkeypatch.setattr(gate.subprocess, 'run', lambda *a, **k: SimpleNamespace(returncode=0))
+    monkeypatch.delenv('DOCKER_HOST', raising=False)
+    monkeypatch.delenv('DOCKER_CONTEXT', raising=False)
+    copies = []
+    def checked(argv, source):
+        assert source == candidate
+        if argv[1:3] == ['context', 'show']:
+            return 'default'
+        if argv[1:3] == ['context', 'inspect']:
+            return 'unix:///socket'
+        if argv[1:3] == ['image', 'inspect']:
+            return '[{"Id":"sha256:image"}]'
+        if argv[1] == 'inspect':
+            return '[{}]'
+        if argv[1] == 'cp':
+            copies.append(argv[2:])
+        return ''
+    monkeypatch.setattr(gate, 'checked', checked)
+    monkeypatch.setattr(gate.db_ci, 'run_capture', lambda argv, dest, label, **kwargs:
+                        {'exit_code': 1 if label == 'dependency_sync' else 0})
+    with pytest.raises(ValueError, match='dependency sync failed'):
+        gate.run_worker(candidate, B, A, False, tmp_path, here=installed)
+    decoder = [pair for pair in copies if pair[1].endswith('/gate/tools/harness/compact_evidence.py')]
+    assert len(decoder) == 1 and decoder[0][0] == str(installed / 'compact_evidence.py')

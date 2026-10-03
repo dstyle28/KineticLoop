@@ -36,7 +36,7 @@ db_ci, db_policy, github_app = (module(name) for name in ('db_ci', 'db_policy', 
 CONTEXT = 'local-db-gate'
 SHA = re.compile(r'[0-9a-f]{40}')
 ASSETS = ('local_gate.py', 'github_app.py', 'db_ci.py', 'db_policy.py',
-          'db_ci_pytest.py', 'validate_harness.py', 'gate_validate.py', 'gate_pytest.py', 'local_db/Dockerfile',
+          'db_ci_pytest.py', 'validate_harness.py', 'compact_evidence.py', 'gate_validate.py', 'gate_pytest.py', 'local_db/Dockerfile',
           'local_db/entrypoint.sh')
 HERE = Path(__file__).resolve().parent
 WORKSPACE = '/workspace/KineticLoop'
@@ -209,7 +209,7 @@ def run_worker(source: Path, head: str, base: str, full_db: bool, destination: P
         checked(['docker', 'exec', name, 'git', 'clone', '/source.bundle', WORKSPACE], source)
         checked(['docker', 'exec', '-w', WORKSPACE, name, 'git', 'checkout', '--detach', head], source)
         checked(['docker', 'exec', name, 'mkdir', '-p', '/gate/tools/harness', '/evidence/run'], source)
-        for asset in ('validate_harness.py', 'db_ci_pytest.py', 'db_ci.py', 'gate_validate.py', 'gate_pytest.py'):
+        for asset in ('validate_harness.py', 'compact_evidence.py', 'db_ci_pytest.py', 'db_ci.py', 'gate_validate.py', 'gate_pytest.py'):
             checked(['docker', 'cp', str(here / asset), name + ':/gate/tools/harness/' + asset], source)
         prefix = ['docker', 'exec', '-w', WORKSPACE,
                   '-e', 'PYTHONPATH=/gate/tools/harness:' + WORKSPACE + ':' + WORKSPACE + '/src']
