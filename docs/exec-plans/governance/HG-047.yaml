@@ -16,6 +16,7 @@ files_changed:
 - docs/exec-plans/evidence/HG-047/ROUND2_SELF_REVIEW.md
 - docs/exec-plans/evidence/HG-047/ROUND3_SELF_REVIEW.md
 - docs/exec-plans/evidence/HG-047/ROUND4_SELF_REVIEW.md
+- docs/exec-plans/evidence/HG-047/ROUND4_VERIFICATION.json
 - docs/exec-plans/evidence/HG-047/SCOPE.md
 - docs/exec-plans/evidence/HG-047/SELF_REVIEW.md
 - docs/exec-plans/evidence/HG-047/audit.py
@@ -349,6 +350,10 @@ checks_run:
   command: /private/tmp/hg044-venv/bin/python /private/tmp/hg047-round4-identity.py
   result: PASS
   evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--identity-log.json
+- check_id: committed_evidence_integrity
+  command: /private/tmp/hg044-venv/bin/python /private/tmp/hg047-round4-verify.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/ROUND4_VERIFICATION.json
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
