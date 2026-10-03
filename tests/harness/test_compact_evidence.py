@@ -554,3 +554,76 @@ def test_validation_session_is_bounded_nested_and_cleared_on_error(repo, monkeyp
                 assert v._evidence_verdicts.get() is outer
             raise RuntimeError('interrupted validation')
     assert v._evidence_verdicts.get() is None
+
+
+def unchecked_storage(root, path, raw, tested, command='pytest'):
+    """Construct attacker-controlled storage without the safe capture writer."""
+    stored = gzip.compress(raw, mtime=0)
+    payload = str(Path(path).parent / (ce.digest(raw) + '.gz'))
+    record = {ce.MARKER: ce.FORMAT, 'payload': payload,
+              'stored_sha256': ce.digest(stored), 'stored_bytes': len(stored),
+              'raw_sha256': ce.digest(raw), 'raw_bytes': len(raw),
+              'tested_commit': tested, 'command': command, 'exit_code': 0,
+              'timestamp': '1 passed in 0.1s', 'test_counts': {'passed': 1}}
+    (root / payload).write_bytes(stored)
+    (root / path).write_text(json.dumps(record))
+
+
+@pytest.mark.parametrize('encoding', ['utf-8', 'utf-16', 'utf-32'])
+@pytest.mark.parametrize('mutation', [
+    'missing', 'corrupt', 'command', 'tested', 'exit', 'list', 'dict', 'truncated',
+])
+def test_decoded_reserved_storage_cannot_bypass_direct_rejection(repo, encoding, mutation):
+    root, base, record, previous = captured(repo, b'1 skipped\n')
+    record['timestamp'] = '1 passed in 0.1s'
+    payload = root / record['payload']
+    if mutation == 'missing':
+        payload.unlink()
+    elif mutation == 'corrupt':
+        payload.write_bytes(b'corrupt')
+    elif mutation in ('command', 'tested', 'exit'):
+        field, value = {'command': ('command', 'other'), 'tested': ('tested_commit', previous),
+                        'exit': ('exit_code', 1)}[mutation]
+        record[field] = value
+    value = [record] if mutation == 'list' else {'wrapped': record} if mutation == 'dict' else record
+    raw = json.dumps(value).encode(encoding)
+    if mutation == 'truncated':
+        raw = raw[:-3]
+    (root / REF).write_bytes(raw)
+    outer = str(Path(REF).with_name('outer.json'))
+    unchecked_storage(root, outer, raw, base)
+    head = commit(root)
+    for ref in (REF, outer):
+        with pytest.raises(ValueError):
+            ce.read(root, ref, head, tested=base, command='pytest', exit_code=0)
+        assert not v.evidence_exists(root, ref, head, base, 'pytest', 0)
+    errors = ce.audit(root, base, head, 'HG-047')['errors']
+    assert any(error.startswith(outer + ':evidence-') for error in errors), errors
+
+
+def test_even_valid_nested_storage_is_rejected_and_capture_cleans_up(repo):
+    root, base, _, head = captured(repo, b'1 skipped\n')
+    raw = (root / REF).read_bytes()
+    assert ce.read(root, REF, head) == b'1 skipped\n'
+    output = str(Path(REF).parent / 'new/nested.json')
+    with pytest.raises(ValueError, match='evidence-nested-envelope'):
+        ce.capture(root, output, raw, base, 'pytest', 0)
+    assert list((root / output).parent.iterdir()) == []
+    outer = str(Path(REF).with_name('outer.json'))
+    unchecked_storage(root, outer, raw, base)
+    head = commit(root)
+    with pytest.raises(ValueError, match='evidence-nested-envelope'):
+        ce.read(root, outer, head)
+
+
+@pytest.mark.parametrize('encoding', ['utf-8', 'utf-16', 'utf-32'])
+def test_nonreserved_encoded_raw_is_lossless_in_plain_and_compact_forms(repo, encoding):
+    raw = json.dumps({'events': [{'payload': 'ordinary command data'}],
+                      'stdout': '1 passed in 0.1s'}).encode(encoding)
+    root, base, _, _ = captured(repo, raw)
+    plain = str(Path(REF).with_name('ordinary.log'))
+    (root / plain).write_bytes(raw)
+    head = commit(root)
+    for ref in (REF, plain):
+        assert ce.read(root, ref, head, tested=base, command='pytest', exit_code=0) == raw
+        assert v.evidence_exists(root, ref, head, base, 'pytest', 0)

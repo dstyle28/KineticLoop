@@ -2,7 +2,7 @@ change_identity: harness-governance-v0.1/HG-047
 display_change_id: HG-047
 base_commit: 391c9198fa8ec647e377a0572700bc7568468c85
 tested_commit: 2dc15b7c79b835197449ca705f82f221eee6f05d
-change_status: PASS
+change_status: BLOCKED
 summary: Prospective lossless content-addressed gzip evidence with revision/owner/hash checks, bounded UTF8/16/32-safe
   retrieval, preserved M3 proof semantics and PR budgets; integrate merged HG045/HG046 unchanged and pin/copy
   the decoder for trusted CI.
@@ -51,6 +51,12 @@ files_changed:
 - docs/exec-plans/evidence/HG-047/selected-2dc15b7/typecheck.json
 - docs/exec-plans/evidence/HG-047/selected-2dc15b7/unit.json
 - docs/exec-plans/governance/HG-047.yaml
+- docs/exec-plans/reviews/HG-047/GENERAL.json
+- docs/exec-plans/reviews/HG-047/GENERAL_REPORT.md
+- docs/exec-plans/reviews/HG-047/PROTOCOL.json
+- docs/exec-plans/reviews/HG-047/PROTOCOL_REPORT.md
+- docs/exec-plans/reviews/HG-047/SECURITY_DATA_BOUNDARY.json
+- docs/exec-plans/reviews/HG-047/SECURITY_DATA_BOUNDARY_REPORT.md
 - docs/harness/EVIDENCE_STORAGE_POLICY.md
 - docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
 - docs/harness/LOCAL_DB_CI.md
@@ -111,6 +117,9 @@ checks_run:
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
+- Round1 PROTOCOL BLOCKER P-01 requires rejecting decoded nested storage metadata before raw evidence oracles.
+  Prior source2dc15b7 checks and reviews of47de76d are historical; fresh source-bound checks/result and all
+  three fresh independent reviews are required after correction.
 - The bounded performance benchmark and freshness/integrity negatives cover the new per-operation immutable
   verdict cache. Git object contents are treated as immutable within one validation operation; no cache survives
   its exit, and working-tree/mutable refs always reread.

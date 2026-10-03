@@ -204,6 +204,10 @@ def read(root: Path, path: str, revision: str | None, *, tested: str | None = No
     if (len(raw) != manifest['raw_bytes'] or not decoder.eof or decoder.unused_data
             or decoder.unconsumed_tail or digest(raw) != manifest['raw_sha256']):
         raise ValueError('evidence-raw-integrity-or-bound')
+    # Storage metadata is never command output, even inside a valid payload.
+    # Classify once; nested/wrapped envelopes cannot supply a raw PASS oracle.
+    if envelope(raw) is not None:
+        raise ValueError('evidence-nested-envelope')
     return raw
 
 
