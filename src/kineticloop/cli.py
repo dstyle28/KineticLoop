@@ -31,7 +31,7 @@ def main(argv: list[str] | None = None) -> int:
         "lint": ["-m", "ruff", "check", "."],
         "typecheck": ["-m", "mypy"],
         "test-unit": ["-m", "pytest", "tests/unit"],
-        "test-harness": ["-m", "pytest", "tests/harness"],
+        "test-harness": [str(root / "tools/harness/run_harness_tests.py")],
     }
     return subprocess.call([sys.executable, *commands[args.command], *extra], cwd=root)
 
