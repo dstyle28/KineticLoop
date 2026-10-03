@@ -1,0 +1,102 @@
+{
+  "reviewed_head_sha": "b71d2d63f8bc27ab0e905b0be8a0cea5f0122a91",
+  "prior_review_record_commit": "89b3d3f55de1c8e9882bfb7f5b109eb4c15da3c2",
+  "path": "docs/exec-plans/reviews/HG-047/security_round4/verify.py",
+  "prior_sha256": "4cf3ac5099746bdbdb9b3051e73d4d41df6f78252b477096d250928c5733d752",
+  "corrected_sha256": "4bfcade49d7803ee057d319741713cface4a173297b32a91fda6b568c6231d06",
+  "change": "Construct the three identical synthetic JSON strings at runtime instead of embedding reserved storage literals in raw Python source.",
+  "prior_classification": "evidence-envelope-json",
+  "corrected_classification": "plain byte-identical Python source",
+  "runtime_probe_strings_equal": true,
+  "ast_equal_except_equivalent_probe_list_construction": true,
+  "runtime_rejection_checks": 21,
+  "outcomes": [
+    {
+      "encoding": "utf-8",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-8",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-8",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-16",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-16",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-16",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-16-le",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-16-le",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-16-le",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-16-be",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-16-be",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-16-be",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-32",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-32",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-32",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-32-le",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-32-le",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-32-le",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-32-be",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-32-be",
+      "reason": "evidence-envelope-shape"
+    },
+    {
+      "encoding": "utf-32-be",
+      "reason": "evidence-envelope-shape"
+    }
+  ],
+  "no_implementation_result_reviewed_sha_or_verdict_change": true,
+  "original_full_audit_and_tests_preserved": true,
+  "rerun_scope": "Only source classification, exact runtime probe equivalence, and all 21 encoding rejection probes. Full audit and test suites were not repeated."
+}

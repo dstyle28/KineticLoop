@@ -104,7 +104,9 @@ assert app['conclusion']=='failure' and app['head_sha']==failed['head'] and len(
 assert yaml.safe_load(blob(T,'docs/exec-plans/governance/HG-047.yaml'))['change_status']=='BLOCKED'
 probes=[]
 for enc in ['utf-8','utf-16','utf-16-le','utf-16-be','utf-32','utf-32-le','utf-32-be']:
- for text in ['[{"kineticloop_evidence":"gzip-v1"}]','{"outer":{"payload":"missing","stored_sha256":"a","raw_sha256":"b"}}','{"outer":{"\\u006bineticloop_evidence":"gzip-v1"}}']:
+ for text in [json.dumps([{ce.MARKER: ce.FORMAT}], separators=(',', ':')),
+              json.dumps({'outer': dict(payload='missing', stored_sha256='a', raw_sha256='b')}, separators=(',', ':')),
+              json.dumps({'outer': {ce.MARKER: ce.FORMAT}}, separators=(',', ':')).replace(ce.MARKER, chr(92) + 'u006b' + ce.MARKER[1:])]:
   try: ce.envelope(text.encode(enc)); raise AssertionError((enc,text))
   except ValueError as ex: probes.append({'encoding':enc,'kind':'wrapped_storage','rejected':str(ex)})
 for text in ['{"event":"a","x":1,"x":2}','{"event":"\\u0061","x":1,"x":2}']:

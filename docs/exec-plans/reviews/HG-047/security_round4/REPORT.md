@@ -95,3 +95,17 @@ mandatory before merge. This review relies on the documented trusted operator/pr
 model and recorded execution evidence; it does not assert hostile-code sandboxing
 or remote attestation. No product requirement, release or production/shadow authority
 is advanced by this review.
+
+## Review-record storage correction
+
+The final local gate at review-record commit `89b3d3f55de1c8e9882bfb7f5b109eb4c15da3c2`
+rejected the verifier's raw Python source because its synthetic reserved JSON
+literals triggered compact-storage classification. Only the representation of
+those three probe strings is changed to runtime construction. Their bytes are
+identical, the remaining AST is identical, all 21 encoding rejection probes pass,
+and the verifier file now classifies and reads as plain exact Python bytes.
+`storage-classification-correction.json` records both source hashes and proof.
+Original audit/test execution results, implementation/result SHA and review verdict
+remain unchanged. The old source stays retrievable at the prior committed path;
+the failed final gate remains retained by the root coordinator. No full suite was
+repeated for this review-bookkeeping representation correction.
