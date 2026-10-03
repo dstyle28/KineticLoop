@@ -1,16 +1,18 @@
 change_identity: harness-governance-v0.1/HG-046
 display_change_id: HG-046
 base_commit: fc8a044ffa4d15a74ce5dc59298ae411f1f4009b
-tested_commit: fc8a044ffa4d15a74ce5dc59298ae411f1f4009b
-change_status: BLOCKED
-summary: Mandatory local CI hardening in progress. Earlier test records cover only the initial local DB runner.
-  The new controller requires fresh complete validation and independent reviews before PASS or publication.
+tested_commit: c91d2635427a13a97a53fe4e52ec4655e1e7d866
+change_status: PASS
+summary: Move full PostgreSQL regression to local isolated execution; enforce every PR through a pinned external
+  controller and dedicated App-bound required check with conservative diff selection, exact revision admission,
+  independent review validation and freshness checks.
 packets_refined: []
 files_changed:
 - .github/workflows/ci.yml
 - .github/workflows/db.yml
 - CURRENT_DOCUMENT_INDEX.json
 - HARNESS_DOCUMENT_MANIFEST.json
+- docs/exec-plans/evidence/HG-046/CONTROLLER_RUNS.md
 - docs/exec-plans/evidence/HG-046/HARDENING_PLAN.md
 - docs/exec-plans/evidence/HG-046/RUNS.md
 - docs/exec-plans/evidence/HG-046/SCOPE.md
@@ -31,6 +33,39 @@ files_changed:
 - docs/exec-plans/evidence/HG-046/checks-341333d/unit.log
 - docs/exec-plans/evidence/HG-046/checks-341333d/validation.json
 - docs/exec-plans/evidence/HG-046/checks-341333d/validation.log
+- docs/exec-plans/evidence/HG-046/checks-c91d263/focused.json
+- docs/exec-plans/evidence/HG-046/checks-c91d263/focused.log
+- docs/exec-plans/evidence/HG-046/checks-c91d263/lint.json
+- docs/exec-plans/evidence/HG-046/checks-c91d263/lint.log
+- docs/exec-plans/evidence/HG-046/checks-c91d263/scope_frozen.json
+- docs/exec-plans/evidence/HG-046/checks-c91d263/scope_frozen.log
+- docs/exec-plans/evidence/HG-046/checks-c91d263/typecheck.json
+- docs/exec-plans/evidence/HG-046/checks-c91d263/typecheck.log
+- docs/exec-plans/evidence/HG-046/controller-c91d263/collection.log
+- docs/exec-plans/evidence/HG-046/controller-c91d263/compose_config_valid.log
+- docs/exec-plans/evidence/HG-046/controller-c91d263/dependency_sync.log
+- docs/exec-plans/evidence/HG-046/controller-c91d263/destroy.log
+- docs/exec-plans/evidence/HG-046/controller-c91d263/environment-readback.json
+- docs/exec-plans/evidence/HG-046/controller-c91d263/full_database.log
+- docs/exec-plans/evidence/HG-046/controller-c91d263/harness.log
+- docs/exec-plans/evidence/HG-046/controller-c91d263/image_build.log
+- docs/exec-plans/evidence/HG-046/controller-c91d263/lint.log
+- docs/exec-plans/evidence/HG-046/controller-c91d263/merge_gate.log
+- docs/exec-plans/evidence/HG-046/controller-c91d263/peer_checkout.log
+- docs/exec-plans/evidence/HG-046/controller-c91d263/peer_remove.log
+- docs/exec-plans/evidence/HG-046/controller-c91d263/postgres_ready.log
+- docs/exec-plans/evidence/HG-046/controller-c91d263/receipt.json
+- docs/exec-plans/evidence/HG-046/controller-c91d263/reset_idempotent.log
+- docs/exec-plans/evidence/HG-046/controller-c91d263/typecheck.log
+- docs/exec-plans/evidence/HG-046/controller-c91d263/unit.log
+- docs/exec-plans/evidence/HG-046/controller-c91d263/worker-receipt.json
+- docs/exec-plans/evidence/HG-046/controller-c91d263/worker/harness.xml
+- docs/exec-plans/evidence/HG-046/controller-c91d263/worker/run/collection.json
+- docs/exec-plans/evidence/HG-046/controller-c91d263/worker/run/database.xml
+- docs/exec-plans/evidence/HG-046/controller-c91d263/worker/run/execution.json
+- docs/exec-plans/evidence/HG-046/controller-c91d263/worker/unit.xml
+- docs/exec-plans/evidence/HG-046/controller-c91d263/worktree_db_isolated.log
+- docs/exec-plans/evidence/HG-046/controller_scope_audit.py
 - docs/exec-plans/evidence/HG-046/db-341333d/daemon.log
 - docs/exec-plans/evidence/HG-046/db-341333d/dependency_sync.log
 - docs/exec-plans/evidence/HG-046/db-341333d/executor.log
@@ -113,6 +148,29 @@ files_changed:
 - docs/exec-plans/evidence/HG-046/development/checks-cc05b13/unit.log
 - docs/exec-plans/evidence/HG-046/development/checks-cc05b13/validation.json
 - docs/exec-plans/evidence/HG-046/development/checks-cc05b13/validation.log
+- docs/exec-plans/evidence/HG-046/development/controller-00df4ff/dependency_sync.log
+- docs/exec-plans/evidence/HG-046/development/controller-00df4ff/image_build.log
+- docs/exec-plans/evidence/HG-046/development/controller-00df4ff/lint.log
+- docs/exec-plans/evidence/HG-046/development/controller-00df4ff/receipt.json
+- docs/exec-plans/evidence/HG-046/development/controller-00df4ff/typecheck.log
+- docs/exec-plans/evidence/HG-046/development/controller-00df4ff/worker-receipt.json
+- docs/exec-plans/evidence/HG-046/development/controller-57f2581/image_build.log
+- docs/exec-plans/evidence/HG-046/development/controller-57f2581/receipt.json
+- docs/exec-plans/evidence/HG-046/development/controller-57f2581/worker-receipt.json
+- docs/exec-plans/evidence/HG-046/development/controller-checks-00df4ff/lint.json
+- docs/exec-plans/evidence/HG-046/development/controller-checks-00df4ff/lint.log
+- docs/exec-plans/evidence/HG-046/development/controller-checks-00df4ff/scope_frozen.json
+- docs/exec-plans/evidence/HG-046/development/controller-checks-00df4ff/scope_frozen.log
+- docs/exec-plans/evidence/HG-046/development/controller-checks-00df4ff/typecheck.json
+- docs/exec-plans/evidence/HG-046/development/controller-checks-00df4ff/typecheck.log
+- docs/exec-plans/evidence/HG-046/development/controller-checks-57f2581/focused.json
+- docs/exec-plans/evidence/HG-046/development/controller-checks-57f2581/focused.log
+- docs/exec-plans/evidence/HG-046/development/controller-checks-57f2581/lint.json
+- docs/exec-plans/evidence/HG-046/development/controller-checks-57f2581/lint.log
+- docs/exec-plans/evidence/HG-046/development/controller-checks-57f2581/scope_frozen.json
+- docs/exec-plans/evidence/HG-046/development/controller-checks-57f2581/scope_frozen.log
+- docs/exec-plans/evidence/HG-046/development/controller-checks-57f2581/typecheck.json
+- docs/exec-plans/evidence/HG-046/development/controller-checks-57f2581/typecheck.log
 - docs/exec-plans/evidence/HG-046/development/db-329859b/daemon.log
 - docs/exec-plans/evidence/HG-046/development/db-329859b/dependency_sync.log
 - docs/exec-plans/evidence/HG-046/development/db-329859b/executor.log
@@ -204,65 +262,44 @@ files_changed:
 - tools/harness/local_gate.py
 - tools/harness/validate_harness.py
 checks_run:
-- check_id: focused
-  command: /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_local_db_ci.py
-    tests/db/test_startup_readiness.py tests/db/test_workflow.py
-  result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/checks-341333d/focused.json
-- check_id: harness
-  command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli test-harness -p no:cacheprovider --basetemp
-    /private/tmp/hg046-harness-341333d
-  result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/checks-341333d/harness.json
-- check_id: unit
-  command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli test-unit -p no:cacheprovider --basetemp
-    /private/tmp/hg046-unit-341333d
-  result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/checks-341333d/unit.json
-- check_id: lint
-  command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli lint
-  result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/checks-341333d/lint.json
-- check_id: typecheck
-  command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli typecheck --no-incremental --cache-dir
-    /private/tmp/hg046-mypy-341333d
-  result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/checks-341333d/typecheck.json
-- check_id: validation
-  command: /private/tmp/hg044-venv/bin/python -m kineticloop.db.cli check-harness
-  result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/checks-341333d/validation.json
 - check_id: scope_frozen
-  command: python3 /private/tmp/hg046_scope_audit.py
+  command: python3 /private/tmp/hg046-controller-scope.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/checks-341333d/scope_frozen.json
-- check_id: diff_check
-  command: git diff --check 26906bd7f4444914c228e98377f2b164fee0dd5d HEAD
+  evidence_ref: docs/exec-plans/evidence/HG-046/checks-c91d263/scope_frozen.json
+- check_id: focused
+  command: /private/tmp/hg044-venv/bin/python -m pytest -q tests/harness/test_local_gate.py tests/harness/test_db_policy.py
+    tests/harness/test_local_db_ci.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/checks-341333d/diff_check.json
-- check_id: full_database_regression
-  command: python3 tools/harness/db_ci.py local --revision HEAD --evidence-dir /private/tmp/hg046-db-final
+  evidence_ref: docs/exec-plans/evidence/HG-046/checks-c91d263/focused.json
+- check_id: lint
+  command: /private/tmp/hg044-venv/bin/python -m ruff check .
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/db-341333d/run/manifest.json
-- check_id: local_executor_cleanup
-  command: python3 tools/harness/db_ci.py local --revision HEAD --evidence-dir /private/tmp/hg046-db-final
+  evidence_ref: docs/exec-plans/evidence/HG-046/checks-c91d263/lint.json
+- check_id: typecheck
+  command: /private/tmp/hg044-venv/bin/python -m mypy --no-incremental --cache-dir /private/tmp/hg046-mypy-current
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/db-341333d/local-executor.json
+  evidence_ref: docs/exec-plans/evidence/HG-046/checks-c91d263/typecheck.json
+- check_id: trusted_local_quality_database_lifecycle
+  command: python3 -I /Users/davetian/.config/kineticloop-local-ci/releases/c91d2635427a13a97a53fe4e52ec4655e1e7d866/local_gate.py
+    --config /Users/davetian/.config/kineticloop-local-ci/candidate-c91d263.json --admission /Users/davetian/.config/kineticloop-local-ci/admission-test-c91d263.json
+    --pr 90 --test-only --evidence-dir /private/tmp/hg046-controller-c91d263
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-046/controller-c91d263/receipt.json
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
-- Master advanced through merged HG-045 PR89. This BLOCKED preparation record uses the new protected base as
-  placeholder tested revision; new controller validation has not passed. Older run references remain development
-  history only.
-- Current extension is not yet validated; previous reviewed SHA and full DB PASS are historical development
-  evidence, not approval of the controller.
-- Local full DB evidence is Linux ARM64, not GitHub-hosted/x64 attestation. The shared hosted command path
-  is configured but not dispatched for this task.
-- No permanent public self-hosted runner is registered. Local execution is manually started for trusted project
-  code and requires a privileged nested daemon. It never mounts host paths/socket or passes credentials.
-- Quality and merge-gate remain hosted; full DB cloud execution is manual. Existing explicit task-specific
-  hosted requirements and KL-074 workflow/provenance remain authoritative.
-- No runtime, migration, DB fixture, frozen authority, historical result, product requirement or M3/release
-  PASS change. Only two workflow compatibility tests are updated for approved generic triggers; KL-074-specific
-  checks and hosted workflow remain unchanged. HG-045 PR89 is separate and untouched.
-- Task PASS, independent review PASS, hosted CI and MERGED remain separate facts. Stop before merge for coordinator.
+- 'Selected controller run is --test-only: it validates quality/full DB/lifecycle but does not assert independent
+  review admission or publish GitHub success. Final activation/publication must follow fresh reviews and exact-head
+  execution.'
+- Privileged Docker admits explicitly reviewed trusted project code only; hostile public PR execution requires
+  a separate disposable worker. Administrator/key compromise is outside this guarantee. Passing tests cannot
+  prove absence of all bugs.
+- No automatic laptop execution occurs at PR creation; missing local-db-gate blocks merging. Trusted operator
+  admission and invocation are required.
+- Master required checks are bound to App5169734 (local-db-gate) and GitHub Actions15368 (quality/merge-gate),
+  strict up-to-date with no bypass. No automatic full DB master rerun; manual hosted fallback and existing
+  task-specific hosted requirements remain.
+- Linux ARM64 local evidence is not hosted/x64 release evidence. Task/product/review/merge/activation states
+  remain separate. PR90 stays draft and unmerged for coordinator.
+- Runtime, migrations, DB fixtures, frozen baselines, historical results and merged HG045 source-decision definitions
+  remain unchanged. Only the two explicitly authorized generic workflow compatibility assertions differ.

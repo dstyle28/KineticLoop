@@ -1,0 +1,34 @@
+{
+  "artifacts": {
+    "image_build.log": "7e00b5dd4742510caf4f42c0fbcd86c063fbcb3eb9f1c8a15bb26606a8f1baa7"
+  },
+  "base": "fc8a044ffa4d15a74ce5dc59298ae411f1f4009b",
+  "checks": [
+    {
+      "argv": [
+        "docker",
+        "build",
+        "-t",
+        "kl-gate-4abca0c2e4fd4418b10ddbc01f7884c0",
+        "/Users/davetian/.config/kineticloop-local-ci/releases/57f2581a7c4a23fd660d452e2b527cec4e882517/local_db"
+      ],
+      "check_id": "image_build",
+      "duration_seconds": 1.143,
+      "exit_code": 0,
+      "interrupted": false,
+      "stdout": {
+        "bytes": 2310,
+        "path": "image_build.log",
+        "sha256": "7e00b5dd4742510caf4f42c0fbcd86c063fbcb3eb9f1c8a15bb26606a8f1baa7"
+      }
+    }
+  ],
+  "container": "kl-gate-4abca0c2e4fd4418b10ddbc01f7884c0",
+  "container_removed": true,
+  "full_database_required": true,
+  "head": "57f2581a7c4a23fd660d452e2b527cec4e882517",
+  "image": "sha256:e7cea0b7f2f7538643831bca77ad7fb471d6e7c5011ca1d954bda3ac5566c629",
+  "status": "FAIL",
+  "volume": "kl-gate-4abca0c2e4fd4418b10ddbc01f7884c0-data",
+  "volume_removed": false
+}
