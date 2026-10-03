@@ -20,7 +20,7 @@ dependencies = [
 kl = "kineticloop.db.cli:main"
 
 [dependency-groups]
-dev = ["pytest>=8.3,<9", "ruff>=0.11,<1", "mypy>=1.15,<2", "types-PyYAML", "types-jsonschema"]
+dev = ["pytest>=8.3,<9", "pytest-xdist==3.8.0", "ruff>=0.11,<1", "mypy>=1.15,<2", "types-PyYAML", "types-jsonschema"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests/unit", "tests/harness", "tests/db"]

@@ -1,0 +1,454 @@
+{
+  "tested_commit": "0045808352507b7af67a3a2135408421d8bcc6bc",
+  "base_commit": "391c9198fa8ec647e377a0572700bc7568468c85",
+  "codec_source": {
+    "upstream_pr": 91,
+    "source_git_blob": "6a27ad70e847e8662d5f28a79256982f34dbdcc2",
+    "sha256": "d0b8c7fd40f5ca5a6ab91641ea04678027af29cb80935d1bbc72f69097e9da6a",
+    "use": "Read-only capture/retrieval of own developer benchmark evidence; no upstream implementation or installation modified.",
+    "source_revision": "c4b89e8a7c40954fbc984cb7ccf6046e705ba6c4"
+  },
+  "final_runs": [
+    {
+      "label": "initial-w2",
+      "tested_commit": "0045808352507b7af67a3a2135408421d8bcc6bc",
+      "workers": 2,
+      "exit_code": 0,
+      "wall_seconds": 606.6795724579133,
+      "command": "/Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli test-harness --workers 2 --evidence-dir /private/tmp/hg048-final-measurements/initial-w2 -q --durations=20",
+      "artifacts": {
+        "collection.json": "docs/exec-plans/evidence/HG-048/raw/final-initial-w2-collection-json.json",
+        "collection.log": "docs/exec-plans/evidence/HG-048/raw/final-initial-w2-collection-log.json",
+        "execution.json": "docs/exec-plans/evidence/HG-048/raw/final-initial-w2-execution-json.json",
+        "junit.xml": "docs/exec-plans/evidence/HG-048/raw/final-initial-w2-junit-xml.json",
+        "manifest.json": "docs/exec-plans/evidence/HG-048/raw/final-initial-w2-manifest-json.json",
+        "pytest.log": "docs/exec-plans/evidence/HG-048/raw/final-initial-w2-pytest-log.json"
+      },
+      "nodes_sha256": "7c24c9dea8c9909f8a279273a03f92f4ddc80da30218594d5e4d9508a2993aff",
+      "tests": 1071
+    },
+    {
+      "label": "w4",
+      "tested_commit": "0045808352507b7af67a3a2135408421d8bcc6bc",
+      "workers": 4,
+      "exit_code": 0,
+      "wall_seconds": 378.61376625020057,
+      "command": "/Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli test-harness --workers 4 --evidence-dir /private/tmp/hg048-final-measurements/w4 -q --durations=20",
+      "artifacts": {
+        "collection.json": "docs/exec-plans/evidence/HG-048/raw/final-w4-collection-json.json",
+        "collection.log": "docs/exec-plans/evidence/HG-048/raw/final-w4-collection-log.json",
+        "execution.json": "docs/exec-plans/evidence/HG-048/raw/final-w4-execution-json.json",
+        "junit.xml": "docs/exec-plans/evidence/HG-048/raw/final-w4-junit-xml.json",
+        "manifest.json": "docs/exec-plans/evidence/HG-048/raw/final-w4-manifest-json.json",
+        "pytest.log": "docs/exec-plans/evidence/HG-048/raw/final-w4-pytest-log.json"
+      },
+      "nodes_sha256": "7c24c9dea8c9909f8a279273a03f92f4ddc80da30218594d5e4d9508a2993aff",
+      "tests": 1071
+    },
+    {
+      "label": "serial",
+      "tested_commit": "0045808352507b7af67a3a2135408421d8bcc6bc",
+      "workers": 1,
+      "exit_code": 0,
+      "wall_seconds": 1124.2083040829748,
+      "command": "/Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli test-harness --workers 1 --evidence-dir /private/tmp/hg048-final-measurements/serial -q --durations=20",
+      "artifacts": {
+        "collection.json": "docs/exec-plans/evidence/HG-048/raw/final-serial-collection-json.json",
+        "collection.log": "docs/exec-plans/evidence/HG-048/raw/final-serial-collection-log.json",
+        "execution.json": "docs/exec-plans/evidence/HG-048/raw/final-serial-execution-json.json",
+        "junit.xml": "docs/exec-plans/evidence/HG-048/raw/final-serial-junit-xml.json",
+        "manifest.json": "docs/exec-plans/evidence/HG-048/raw/final-serial-manifest-json.json",
+        "pytest.log": "docs/exec-plans/evidence/HG-048/raw/final-serial-pytest-log.json"
+      },
+      "nodes_sha256": "7c24c9dea8c9909f8a279273a03f92f4ddc80da30218594d5e4d9508a2993aff",
+      "tests": 1071
+    },
+    {
+      "label": "repeat-w2",
+      "tested_commit": "0045808352507b7af67a3a2135408421d8bcc6bc",
+      "workers": 2,
+      "exit_code": 0,
+      "wall_seconds": 587.3611114579253,
+      "command": "/Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli test-harness --workers 2 --evidence-dir /private/tmp/hg048-final-measurements/repeat-w2 -q --durations=20",
+      "artifacts": {
+        "collection.json": "docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-collection-json.json",
+        "collection.log": "docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-collection-log.json",
+        "execution.json": "docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-execution-json.json",
+        "junit.xml": "docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-junit-xml.json",
+        "manifest.json": "docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-manifest-json.json",
+        "pytest.log": "docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-pytest-log.json"
+      },
+      "nodes_sha256": "7c24c9dea8c9909f8a279273a03f92f4ddc80da30218594d5e4d9508a2993aff",
+      "tests": 1071
+    }
+  ],
+  "development_runs": [
+    {
+      "label": "initial-w2",
+      "tested_commit": "7a411c9e237ffe9df49eb1467f4ec6bbbf019ca9",
+      "workers": 2,
+      "exit_code": 0,
+      "wall_seconds": 813.157666250132,
+      "command": "/Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli test-harness --workers 2 --evidence-dir /private/tmp/hg048-measurements/initial-w2 -q --durations=20",
+      "artifacts": {
+        "collection.json": "docs/exec-plans/evidence/HG-048/raw/development-initial-w2-collection-json.json",
+        "collection.log": "docs/exec-plans/evidence/HG-048/raw/development-initial-w2-collection-log.json",
+        "junit.xml": "docs/exec-plans/evidence/HG-048/raw/development-initial-w2-junit-xml.json",
+        "manifest.json": "docs/exec-plans/evidence/HG-048/raw/development-initial-w2-manifest-json.json",
+        "pytest.log": "docs/exec-plans/evidence/HG-048/raw/development-initial-w2-pytest-log.json"
+      }
+    },
+    {
+      "label": "w4",
+      "tested_commit": "7a411c9e237ffe9df49eb1467f4ec6bbbf019ca9",
+      "workers": 4,
+      "exit_code": 0,
+      "wall_seconds": 356.47062041587196,
+      "command": "/Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli test-harness --workers 4 --evidence-dir /private/tmp/hg048-measurements/w4 -q --durations=20",
+      "artifacts": {
+        "collection.json": "docs/exec-plans/evidence/HG-048/raw/development-w4-collection-json.json",
+        "collection.log": "docs/exec-plans/evidence/HG-048/raw/development-w4-collection-log.json",
+        "junit.xml": "docs/exec-plans/evidence/HG-048/raw/development-w4-junit-xml.json",
+        "manifest.json": "docs/exec-plans/evidence/HG-048/raw/development-w4-manifest-json.json",
+        "pytest.log": "docs/exec-plans/evidence/HG-048/raw/development-w4-pytest-log.json"
+      }
+    },
+    {
+      "label": "serial",
+      "tested_commit": "7a411c9e237ffe9df49eb1467f4ec6bbbf019ca9",
+      "workers": 1,
+      "exit_code": 130,
+      "wall_seconds": 396.75116387498565,
+      "command": "/Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli test-harness --workers 1 --evidence-dir /private/tmp/hg048-measurements/serial -q --durations=20",
+      "artifacts": {
+        "collection.json": "docs/exec-plans/evidence/HG-048/raw/development-serial-collection-json.json",
+        "collection.log": "docs/exec-plans/evidence/HG-048/raw/development-serial-collection-log.json",
+        "execution.json": "docs/exec-plans/evidence/HG-048/raw/development-serial-execution-json.json",
+        "junit.xml": "docs/exec-plans/evidence/HG-048/raw/development-serial-junit-xml.json",
+        "manifest.json": "docs/exec-plans/evidence/HG-048/raw/development-serial-manifest-json.json",
+        "pytest.log": "docs/exec-plans/evidence/HG-048/raw/development-serial-pytest-log.json"
+      }
+    }
+  ],
+  "quality": {
+    "lint": {
+      "command": "/Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli lint",
+      "exit_code": 0,
+      "wall_seconds": 0.10295441699963703,
+      "artifacts": {
+        "lint.log": "docs/exec-plans/evidence/HG-048/raw/quality-lint-lint-log.json",
+        "lint.json": "docs/exec-plans/evidence/HG-048/raw/quality-lint-lint-json.json"
+      }
+    },
+    "typecheck": {
+      "command": "/Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli typecheck --no-incremental --cache-dir /private/tmp/hg048-final-mypy",
+      "exit_code": 0,
+      "wall_seconds": 4.361735334000059,
+      "artifacts": {
+        "typecheck.log": "docs/exec-plans/evidence/HG-048/raw/quality-typecheck-typecheck-log.json",
+        "typecheck.json": "docs/exec-plans/evidence/HG-048/raw/quality-typecheck-typecheck-json.json"
+      }
+    },
+    "unit": {
+      "command": "/Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli test-unit -q --junitxml=/private/tmp/hg048-final-quality/0045808352507b7af67a3a2135408421d8bcc6bc/unit.xml",
+      "exit_code": 0,
+      "wall_seconds": 107.75194541699966,
+      "artifacts": {
+        "unit.log": "docs/exec-plans/evidence/HG-048/raw/quality-unit-unit-log.json",
+        "unit.json": "docs/exec-plans/evidence/HG-048/raw/quality-unit-unit-json.json",
+        "unit.xml": "docs/exec-plans/evidence/HG-048/raw/quality-unit-junit.json"
+      }
+    },
+    "authority": {
+      "command": "/Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli check-harness",
+      "exit_code": 0,
+      "wall_seconds": 100.12209179199999,
+      "artifacts": {
+        "authority.log": "docs/exec-plans/evidence/HG-048/raw/quality-authority-authority-log.json",
+        "authority.json": "docs/exec-plans/evidence/HG-048/raw/quality-authority-authority-json.json"
+      }
+    },
+    "diff": {
+      "command": "git diff --check 391c9198fa8ec647e377a0572700bc7568468c85 0045808352507b7af67a3a2135408421d8bcc6bc",
+      "exit_code": 0,
+      "wall_seconds": 0.013636915999995836,
+      "artifacts": {
+        "diff.log": "docs/exec-plans/evidence/HG-048/raw/quality-diff-diff-log.json",
+        "diff.json": "docs/exec-plans/evidence/HG-048/raw/quality-diff-diff-json.json"
+      }
+    }
+  },
+  "roundtrips": [
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-initial-w2-collection-json.json",
+      "raw_sha256": "297233bcb5d2b7d0bdcf3c2b0c3f66578850635f81b05ecfe966157e9b78c58e",
+      "raw_bytes": 3267447
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-initial-w2-collection-log.json",
+      "raw_sha256": "6b5bfde24298ffc0004b82bdb4ad329f7d61a22697a6612afc8410f70c979e30",
+      "raw_bytes": 1121
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-initial-w2-execution-json.json",
+      "raw_sha256": "97c48c7ddb0820a24583fa118c029ce500701794b1ec4de159544a31948ae257",
+      "raw_bytes": 20043921
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-initial-w2-junit-xml.json",
+      "raw_sha256": "ac4beaa6647644b3a73efff1fcd79f47fa05311f6084d60f7b98a7f70118add7",
+      "raw_bytes": 3477231
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-initial-w2-manifest-json.json",
+      "raw_sha256": "8d2ea6b6b38bea22c12c978d1200c4bd1f1abda26a2796007b4e0c0c5fbe1bb4",
+      "raw_bytes": 2195
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-initial-w2-pytest-log.json",
+      "raw_sha256": "d24095e82ee7055b8a036f312da8cb41812718597f5ef32a9bfafe2992ab329b",
+      "raw_bytes": 4081
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-w4-collection-json.json",
+      "raw_sha256": "297233bcb5d2b7d0bdcf3c2b0c3f66578850635f81b05ecfe966157e9b78c58e",
+      "raw_bytes": 3267447
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-w4-collection-log.json",
+      "raw_sha256": "6b5bfde24298ffc0004b82bdb4ad329f7d61a22697a6612afc8410f70c979e30",
+      "raw_bytes": 1121
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-w4-execution-json.json",
+      "raw_sha256": "709a29df0d1afbd453ab8b933e4ac9cba8130014d695f75f7e5ddf3fe43fec68",
+      "raw_bytes": 26578527
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-w4-junit-xml.json",
+      "raw_sha256": "0650a2ab0508f1be77026cee3b97b7e6cea66a6bfdb3edf81b85bb992c94d666",
+      "raw_bytes": 3477234
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-w4-manifest-json.json",
+      "raw_sha256": "cb04aad8793111416d82693ff9104ff0565ba3708b978f42ab9a51e8c0573fcc",
+      "raw_bytes": 2188
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-w4-pytest-log.json",
+      "raw_sha256": "1211f6ec85e0ea21e943f0ff485a4058cdae6b4533d558accf0ec355525f2f78",
+      "raw_bytes": 4082
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-serial-collection-json.json",
+      "raw_sha256": "297233bcb5d2b7d0bdcf3c2b0c3f66578850635f81b05ecfe966157e9b78c58e",
+      "raw_bytes": 3267447
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-serial-collection-log.json",
+      "raw_sha256": "6b5bfde24298ffc0004b82bdb4ad329f7d61a22697a6612afc8410f70c979e30",
+      "raw_bytes": 1121
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-serial-execution-json.json",
+      "raw_sha256": "f34f3a7f5eb3f2844c9c6f31b377ca3ff8db0d6bbb63554d3d6ae5c0a8e7dd1c",
+      "raw_bytes": 16786143
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-serial-junit-xml.json",
+      "raw_sha256": "528d88de6f496583a006d559742bcaeadada082ed1a468c3303178bb15267ea9",
+      "raw_bytes": 3477232
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-serial-manifest-json.json",
+      "raw_sha256": "c747842370ae9a24ec838d2ab0e98659596bef40835320a63139e2afc82d209a",
+      "raw_bytes": 2192
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-serial-pytest-log.json",
+      "raw_sha256": "e0e730d1c9f5e8aba25e12dfe0774f60e92729cee753879f754451e2f67db648",
+      "raw_bytes": 4050
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-collection-json.json",
+      "raw_sha256": "297233bcb5d2b7d0bdcf3c2b0c3f66578850635f81b05ecfe966157e9b78c58e",
+      "raw_bytes": 3267447
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-collection-log.json",
+      "raw_sha256": "6b5bfde24298ffc0004b82bdb4ad329f7d61a22697a6612afc8410f70c979e30",
+      "raw_bytes": 1121
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-execution-json.json",
+      "raw_sha256": "e9550151215ebfbab93ad28baa9e826bec456827e6f2765a7a9d414685dc308e",
+      "raw_bytes": 20043906
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-junit-xml.json",
+      "raw_sha256": "7ba97dee2196f4cd6e24cf2f0ca42166551999fe3de505462ed39f5409780aad",
+      "raw_bytes": 3477231
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-manifest-json.json",
+      "raw_sha256": "37de23aa05609ec684a8c1cbf1d61677a8c6f16373dd22b915f9ec499db97a1a",
+      "raw_bytes": 2194
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-pytest-log.json",
+      "raw_sha256": "7a8730a522c93ce07261b8abc3d221bd5a3b44cf473399565e6aea4d419dc5e4",
+      "raw_bytes": 4093
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/development-initial-w2-collection-json.json",
+      "raw_sha256": "b9e2ae176425c63dbbd1ece02003c69fe53fa86fd9f0e68fdc15d306339a99fe",
+      "raw_bytes": 3267349
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/development-initial-w2-collection-log.json",
+      "raw_sha256": "20c39b0066d897e48ac25c82757637efea56b23cc967c73587af7a9a1f419397",
+      "raw_bytes": 1121
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/development-initial-w2-junit-xml.json",
+      "raw_sha256": "d5a917480fe60042e1acd41f59eae0f27e80f161f800356f4c44e9ef860750c5",
+      "raw_bytes": 3477105
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/development-initial-w2-manifest-json.json",
+      "raw_sha256": "d894c82a8090ae1208a148c189fae2401e297a46d9c13308e01cfd078c05bc10",
+      "raw_bytes": 2104
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/development-initial-w2-pytest-log.json",
+      "raw_sha256": "ceceba27379697b210b1025224251c577c0a380197e7d9e3fb74300be354d2f4",
+      "raw_bytes": 4095
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/development-w4-collection-json.json",
+      "raw_sha256": "b9e2ae176425c63dbbd1ece02003c69fe53fa86fd9f0e68fdc15d306339a99fe",
+      "raw_bytes": 3267349
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/development-w4-collection-log.json",
+      "raw_sha256": "20c39b0066d897e48ac25c82757637efea56b23cc967c73587af7a9a1f419397",
+      "raw_bytes": 1121
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/development-w4-junit-xml.json",
+      "raw_sha256": "d0142914c0e05eb34cbfb6e4f290ad540a8f12e2c37ee0fcb12565335493df82",
+      "raw_bytes": 3477103
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/development-w4-manifest-json.json",
+      "raw_sha256": "878656b5a26f3779970a57863250193e731f1bd1bf76832590e1d40eba63ac0e",
+      "raw_bytes": 2099
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/development-w4-pytest-log.json",
+      "raw_sha256": "efb9d7e0414add83f55f72fea15a01a33d1647ae2f5da30b5f78a15f394ca6e2",
+      "raw_bytes": 4093
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/development-serial-collection-json.json",
+      "raw_sha256": "b9e2ae176425c63dbbd1ece02003c69fe53fa86fd9f0e68fdc15d306339a99fe",
+      "raw_bytes": 3267349
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/development-serial-collection-log.json",
+      "raw_sha256": "20c39b0066d897e48ac25c82757637efea56b23cc967c73587af7a9a1f419397",
+      "raw_bytes": 1121
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/development-serial-execution-json.json",
+      "raw_sha256": "b17c882001d807e44772a242518c5d31e6030d9649fdd0880962781901e0ca9e",
+      "raw_bytes": 3720422
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/development-serial-junit-xml.json",
+      "raw_sha256": "5441e59e19b2617088c0c21da4ad19281edf1d90639daa2de4063388dc2b1abf",
+      "raw_bytes": 76641
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/development-serial-manifest-json.json",
+      "raw_sha256": "8f1b69ce2f53e62d743fe3911133ff11f4a1f49d8cb8cb6880f0811762567369",
+      "raw_bytes": 2336
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/development-serial-pytest-log.json",
+      "raw_sha256": "552e857082df56be932970f114428b81ff760510b359f9107fc365d3bd9f06f2",
+      "raw_bytes": 480
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/quality-lint-lint-log.json",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_bytes": 19
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/quality-lint-lint-json.json",
+      "raw_sha256": "26e0e4e4bdca69f2c10bedfc2e3eb01a022ce1ac5d5dffe7c8112a681c10b4c3",
+      "raw_bytes": 438
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/quality-typecheck-typecheck-log.json",
+      "raw_sha256": "2e3b0067b08542b005b33bb0e67155489543202bbb6fe03b2ec56e6fc9acdce1",
+      "raw_bytes": 45
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/quality-typecheck-typecheck-json.json",
+      "raw_sha256": "c90ec573418db8e36f220cd5c4f935afc7b5e3a5125dc276062b43deff9d3672",
+      "raw_bytes": 521
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/quality-unit-unit-log.json",
+      "raw_sha256": "94af6316983041132a24e97ee9e8d27e1dd61cf98d4865ee32660ff767460007",
+      "raw_bytes": 459
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/quality-unit-unit-json.json",
+      "raw_sha256": "9bf11eb2c32c27d72660c213874d32026848506cae1fb150cc59fae46c4ceab7",
+      "raw_bytes": 554
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/quality-unit-junit.json",
+      "raw_sha256": "7a8770b117624280536f9060667935eac2239d8bdfafe65a2b8d3a636fd9a10e",
+      "raw_bytes": 33807
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/quality-authority-authority-log.json",
+      "raw_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "raw_bytes": 38
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/quality-authority-authority-json.json",
+      "raw_sha256": "521bc515d695d0dd678d600605338c784b772ac57f56dd76f4013d6d6b466c85",
+      "raw_bytes": 446
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/quality-diff-diff-log.json",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "ref": "docs/exec-plans/evidence/HG-048/raw/quality-diff-diff-json.json",
+      "raw_sha256": "e4b2763636730901294ad1b079186cd88e033087346884358fe1889cd4a4d8a5",
+      "raw_bytes": 435
+    }
+  ],
+  "excluded_development_artifacts": [
+    {
+      "label": "initial-w2",
+      "original_path": "/private/tmp/hg048-measurements/initial-w2/execution.json",
+      "raw_sha256": "1d09eec65992db507c6be4f5844b7fc711e35ee329e01c7c6b63b1135b317b8b",
+      "raw_bytes": 20042840,
+      "reason": "Obsolete successful prototype phase record excluded from PR budget; full raw logs, JUnit, collection and manifest retained. Complete final and interrupted-run phase records are committed."
+    },
+    {
+      "label": "w4",
+      "original_path": "/private/tmp/hg048-measurements/w4/execution.json",
+      "raw_sha256": "8429e19c88a4543bc060d3e5fdfb1f2628db2082b4ba935f74fd21a624fe4ade",
+      "raw_bytes": 26577275,
+      "reason": "Obsolete successful prototype phase record excluded from PR budget; full raw logs, JUnit, collection and manifest retained. Complete final and interrupted-run phase records are committed."
+    }
+  ]
+}

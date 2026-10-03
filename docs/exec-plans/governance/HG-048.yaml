@@ -1,0 +1,199 @@
+change_identity: harness-governance-v0.1/HG-048
+display_change_id: HG-048
+base_commit: 391c9198fa8ec647e377a0572700bc7568468c85
+tested_commit: 0045808352507b7af67a3a2135408421d8bcc6bc
+change_status: PASS
+summary: Bound developer harness execution to one through four local processes (default two), preserve complete
+  collection/execution/JUnit evidence and fail closed on incomplete worker outcomes; measure unchanged coverage
+  on serial and parallel runs.
+packets_refined: []
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- docs/exec-plans/evidence/HG-048/BENCHMARK_COMMANDS.py
+- docs/exec-plans/evidence/HG-048/BENCHMARK_INDEX.json
+- docs/exec-plans/evidence/HG-048/CAPTURE_COMMANDS.py
+- docs/exec-plans/evidence/HG-048/CODEC_SOURCE.json
+- docs/exec-plans/evidence/HG-048/COMPARISON.json
+- docs/exec-plans/evidence/HG-048/CONTROLLER_HANDOFF.md
+- docs/exec-plans/evidence/HG-048/HISTORY.md
+- docs/exec-plans/evidence/HG-048/IDENTITY_COMMANDS.py
+- docs/exec-plans/evidence/HG-048/PERFORMANCE.md
+- docs/exec-plans/evidence/HG-048/QUALITY.json
+- docs/exec-plans/evidence/HG-048/QUALITY_COMMANDS.py
+- docs/exec-plans/evidence/HG-048/RAW_RETRIEVAL.md
+- docs/exec-plans/evidence/HG-048/SCOPE.md
+- docs/exec-plans/evidence/HG-048/SCOPE_AUDIT.json
+- docs/exec-plans/evidence/HG-048/SCOPE_AUDIT.py
+- docs/exec-plans/evidence/HG-048/SELF_REVIEW.md
+- docs/exec-plans/evidence/HG-048/raw/0650a2ab0508f1be77026cee3b97b7e6cea66a6bfdb3edf81b85bb992c94d666.gz
+- docs/exec-plans/evidence/HG-048/raw/1211f6ec85e0ea21e943f0ff485a4058cdae6b4533d558accf0ec355525f2f78.gz
+- docs/exec-plans/evidence/HG-048/raw/20c39b0066d897e48ac25c82757637efea56b23cc967c73587af7a9a1f419397.gz
+- docs/exec-plans/evidence/HG-048/raw/26e0e4e4bdca69f2c10bedfc2e3eb01a022ce1ac5d5dffe7c8112a681c10b4c3.gz
+- docs/exec-plans/evidence/HG-048/raw/297233bcb5d2b7d0bdcf3c2b0c3f66578850635f81b05ecfe966157e9b78c58e.gz
+- docs/exec-plans/evidence/HG-048/raw/2e3b0067b08542b005b33bb0e67155489543202bbb6fe03b2ec56e6fc9acdce1.gz
+- docs/exec-plans/evidence/HG-048/raw/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/HG-048/raw/37de23aa05609ec684a8c1cbf1d61677a8c6f16373dd22b915f9ec499db97a1a.gz
+- docs/exec-plans/evidence/HG-048/raw/521bc515d695d0dd678d600605338c784b772ac57f56dd76f4013d6d6b466c85.gz
+- docs/exec-plans/evidence/HG-048/raw/528d88de6f496583a006d559742bcaeadada082ed1a468c3303178bb15267ea9.gz
+- docs/exec-plans/evidence/HG-048/raw/5441e59e19b2617088c0c21da4ad19281edf1d90639daa2de4063388dc2b1abf.gz
+- docs/exec-plans/evidence/HG-048/raw/552e857082df56be932970f114428b81ff760510b359f9107fc365d3bd9f06f2.gz
+- docs/exec-plans/evidence/HG-048/raw/6b5bfde24298ffc0004b82bdb4ad329f7d61a22697a6612afc8410f70c979e30.gz
+- docs/exec-plans/evidence/HG-048/raw/709a29df0d1afbd453ab8b933e4ac9cba8130014d695f75f7e5ddf3fe43fec68.gz
+- docs/exec-plans/evidence/HG-048/raw/7a8730a522c93ce07261b8abc3d221bd5a3b44cf473399565e6aea4d419dc5e4.gz
+- docs/exec-plans/evidence/HG-048/raw/7a8770b117624280536f9060667935eac2239d8bdfafe65a2b8d3a636fd9a10e.gz
+- docs/exec-plans/evidence/HG-048/raw/7ba97dee2196f4cd6e24cf2f0ca42166551999fe3de505462ed39f5409780aad.gz
+- docs/exec-plans/evidence/HG-048/raw/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-048/raw/878656b5a26f3779970a57863250193e731f1bd1bf76832590e1d40eba63ac0e.gz
+- docs/exec-plans/evidence/HG-048/raw/8d2ea6b6b38bea22c12c978d1200c4bd1f1abda26a2796007b4e0c0c5fbe1bb4.gz
+- docs/exec-plans/evidence/HG-048/raw/8f1b69ce2f53e62d743fe3911133ff11f4a1f49d8cb8cb6880f0811762567369.gz
+- docs/exec-plans/evidence/HG-048/raw/94af6316983041132a24e97ee9e8d27e1dd61cf98d4865ee32660ff767460007.gz
+- docs/exec-plans/evidence/HG-048/raw/97c48c7ddb0820a24583fa118c029ce500701794b1ec4de159544a31948ae257.gz
+- docs/exec-plans/evidence/HG-048/raw/9bf11eb2c32c27d72660c213874d32026848506cae1fb150cc59fae46c4ceab7.gz
+- docs/exec-plans/evidence/HG-048/raw/ac4beaa6647644b3a73efff1fcd79f47fa05311f6084d60f7b98a7f70118add7.gz
+- docs/exec-plans/evidence/HG-048/raw/b17c882001d807e44772a242518c5d31e6030d9649fdd0880962781901e0ca9e.gz
+- docs/exec-plans/evidence/HG-048/raw/b9e2ae176425c63dbbd1ece02003c69fe53fa86fd9f0e68fdc15d306339a99fe.gz
+- docs/exec-plans/evidence/HG-048/raw/c747842370ae9a24ec838d2ab0e98659596bef40835320a63139e2afc82d209a.gz
+- docs/exec-plans/evidence/HG-048/raw/c90ec573418db8e36f220cd5c4f935afc7b5e3a5125dc276062b43deff9d3672.gz
+- docs/exec-plans/evidence/HG-048/raw/cb04aad8793111416d82693ff9104ff0565ba3708b978f42ab9a51e8c0573fcc.gz
+- docs/exec-plans/evidence/HG-048/raw/ceceba27379697b210b1025224251c577c0a380197e7d9e3fb74300be354d2f4.gz
+- docs/exec-plans/evidence/HG-048/raw/d0142914c0e05eb34cbfb6e4f290ad540a8f12e2c37ee0fcb12565335493df82.gz
+- docs/exec-plans/evidence/HG-048/raw/d24095e82ee7055b8a036f312da8cb41812718597f5ef32a9bfafe2992ab329b.gz
+- docs/exec-plans/evidence/HG-048/raw/d5a917480fe60042e1acd41f59eae0f27e80f161f800356f4c44e9ef860750c5.gz
+- docs/exec-plans/evidence/HG-048/raw/d894c82a8090ae1208a148c189fae2401e297a46d9c13308e01cfd078c05bc10.gz
+- docs/exec-plans/evidence/HG-048/raw/development-initial-w2-collection-json.json
+- docs/exec-plans/evidence/HG-048/raw/development-initial-w2-collection-log.json
+- docs/exec-plans/evidence/HG-048/raw/development-initial-w2-junit-xml.json
+- docs/exec-plans/evidence/HG-048/raw/development-initial-w2-manifest-json.json
+- docs/exec-plans/evidence/HG-048/raw/development-initial-w2-pytest-log.json
+- docs/exec-plans/evidence/HG-048/raw/development-serial-collection-json.json
+- docs/exec-plans/evidence/HG-048/raw/development-serial-collection-log.json
+- docs/exec-plans/evidence/HG-048/raw/development-serial-execution-json.json
+- docs/exec-plans/evidence/HG-048/raw/development-serial-junit-xml.json
+- docs/exec-plans/evidence/HG-048/raw/development-serial-manifest-json.json
+- docs/exec-plans/evidence/HG-048/raw/development-serial-pytest-log.json
+- docs/exec-plans/evidence/HG-048/raw/development-w4-collection-json.json
+- docs/exec-plans/evidence/HG-048/raw/development-w4-collection-log.json
+- docs/exec-plans/evidence/HG-048/raw/development-w4-junit-xml.json
+- docs/exec-plans/evidence/HG-048/raw/development-w4-manifest-json.json
+- docs/exec-plans/evidence/HG-048/raw/development-w4-pytest-log.json
+- docs/exec-plans/evidence/HG-048/raw/e0e730d1c9f5e8aba25e12dfe0774f60e92729cee753879f754451e2f67db648.gz
+- docs/exec-plans/evidence/HG-048/raw/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-048/raw/e4b2763636730901294ad1b079186cd88e033087346884358fe1889cd4a4d8a5.gz
+- docs/exec-plans/evidence/HG-048/raw/e9550151215ebfbab93ad28baa9e826bec456827e6f2765a7a9d414685dc308e.gz
+- docs/exec-plans/evidence/HG-048/raw/efb9d7e0414add83f55f72fea15a01a33d1647ae2f5da30b5f78a15f394ca6e2.gz
+- docs/exec-plans/evidence/HG-048/raw/f34f3a7f5eb3f2844c9c6f31b377ca3ff8db0d6bbb63554d3d6ae5c0a8e7dd1c.gz
+- docs/exec-plans/evidence/HG-048/raw/final-initial-w2-collection-json.json
+- docs/exec-plans/evidence/HG-048/raw/final-initial-w2-collection-log.json
+- docs/exec-plans/evidence/HG-048/raw/final-initial-w2-execution-json.json
+- docs/exec-plans/evidence/HG-048/raw/final-initial-w2-junit-xml.json
+- docs/exec-plans/evidence/HG-048/raw/final-initial-w2-manifest-json.json
+- docs/exec-plans/evidence/HG-048/raw/final-initial-w2-pytest-log.json
+- docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-collection-json.json
+- docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-collection-log.json
+- docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-execution-json.json
+- docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-junit-xml.json
+- docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-manifest-json.json
+- docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-pytest-log.json
+- docs/exec-plans/evidence/HG-048/raw/final-serial-collection-json.json
+- docs/exec-plans/evidence/HG-048/raw/final-serial-collection-log.json
+- docs/exec-plans/evidence/HG-048/raw/final-serial-execution-json.json
+- docs/exec-plans/evidence/HG-048/raw/final-serial-junit-xml.json
+- docs/exec-plans/evidence/HG-048/raw/final-serial-manifest-json.json
+- docs/exec-plans/evidence/HG-048/raw/final-serial-pytest-log.json
+- docs/exec-plans/evidence/HG-048/raw/final-w4-collection-json.json
+- docs/exec-plans/evidence/HG-048/raw/final-w4-collection-log.json
+- docs/exec-plans/evidence/HG-048/raw/final-w4-execution-json.json
+- docs/exec-plans/evidence/HG-048/raw/final-w4-junit-xml.json
+- docs/exec-plans/evidence/HG-048/raw/final-w4-manifest-json.json
+- docs/exec-plans/evidence/HG-048/raw/final-w4-pytest-log.json
+- docs/exec-plans/evidence/HG-048/raw/quality-authority-authority-json.json
+- docs/exec-plans/evidence/HG-048/raw/quality-authority-authority-log.json
+- docs/exec-plans/evidence/HG-048/raw/quality-diff-diff-json.json
+- docs/exec-plans/evidence/HG-048/raw/quality-diff-diff-log.json
+- docs/exec-plans/evidence/HG-048/raw/quality-lint-lint-json.json
+- docs/exec-plans/evidence/HG-048/raw/quality-lint-lint-log.json
+- docs/exec-plans/evidence/HG-048/raw/quality-typecheck-typecheck-json.json
+- docs/exec-plans/evidence/HG-048/raw/quality-typecheck-typecheck-log.json
+- docs/exec-plans/evidence/HG-048/raw/quality-unit-junit.json
+- docs/exec-plans/evidence/HG-048/raw/quality-unit-unit-json.json
+- docs/exec-plans/evidence/HG-048/raw/quality-unit-unit-log.json
+- docs/exec-plans/governance/HG-048.yaml
+- pyproject.toml
+- src/kineticloop/cli.py
+- tests/harness/test_parallel_runner.py
+- tools/harness/README.md
+- tools/harness/parallel_observer.py
+- tools/harness/run_harness_tests.py
+- tools/harness/validate_harness.py
+- uv.lock
+checks_run:
+- check_id: harness_initial_w2
+  command: /Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    test-harness --workers 2 --evidence-dir /private/tmp/hg048-final-measurements/initial-w2 -q --durations=20
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-048/raw/final-initial-w2-manifest-json.json
+- check_id: harness_w4
+  command: /Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    test-harness --workers 4 --evidence-dir /private/tmp/hg048-final-measurements/w4 -q --durations=20
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-048/raw/final-w4-manifest-json.json
+- check_id: harness_serial
+  command: /Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    test-harness --workers 1 --evidence-dir /private/tmp/hg048-final-measurements/serial -q --durations=20
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-048/raw/final-serial-manifest-json.json
+- check_id: harness_repeat_w2
+  command: /Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    test-harness --workers 2 --evidence-dir /private/tmp/hg048-final-measurements/repeat-w2 -q --durations=20
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-manifest-json.json
+- check_id: lint
+  command: /Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-048/raw/quality-lint-lint-json.json
+- check_id: typecheck
+  command: /Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    typecheck --no-incremental --cache-dir /private/tmp/hg048-final-mypy
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-048/raw/quality-typecheck-typecheck-json.json
+- check_id: unit
+  command: /Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    test-unit -q --junitxml=/private/tmp/hg048-final-quality/0045808352507b7af67a3a2135408421d8bcc6bc/unit.xml
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-048/raw/quality-unit-unit-json.json
+- check_id: authority
+  command: /Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python -m kineticloop.db.cli
+    check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-048/raw/quality-authority-authority-json.json
+- check_id: diff
+  command: git diff --check 391c9198fa8ec647e377a0572700bc7568468c85 0045808352507b7af67a3a2135408421d8bcc6bc
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-048/raw/quality-diff-diff-json.json
+- check_id: cross_mode_identity
+  command: /Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python /private/tmp/hg048-final-identity.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-048/COMPARISON.json
+- check_id: scope_frozen
+  command: /Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python /private/tmp/hg048-scope-audit.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-048/SCOPE_AUDIT.json
+- check_id: lossless_raw_capture
+  command: /Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python /private/tmp/hg048-package-evidence.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-048/BENCHMARK_INDEX.json
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- Product requirements NOT_RUN. Independent GENERAL review and exact-head App-bound full isolated DB gate remain
+  pending; change PASS does not imply review PASS, merge or activation.
+- Measurements are local macOS ARM64 developer evidence on the exact tested SHA, with normal caches/background apps,
+  not hosted/x64 or release evidence.
+- PR91/HG047 is separately owned and unmerged at capture. Its Git evidence-read optimization must be retained on
+  integration; changed source requires retesting/review.
+- Only candidate pinned validator HG048 allowlist changes; no installed controller or settings change. Reviewed
+  pin/decoder installation and exact admission remain an administrator handoff.
+- Compact raw storage reuses the existing PR91 codec via the exact blob/hash in CODEC_SOURCE.json; this does not
+  assert installed format support.
