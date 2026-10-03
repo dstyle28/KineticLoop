@@ -36,8 +36,10 @@ protected = [
     'tools/harness/db_ci.py', 'tools/harness/github_app.py',
     'tools/harness/gate_validate.py', 'tools/harness/gate_pytest.py',
     'tools/harness/db_ci_pytest.py', 'tools/harness/local_db',
+    'tools/harness/run_harness_tests.py', 'tools/harness/parallel_observer.py',
+    'tests/harness/test_parallel_runner.py', 'pyproject.toml', 'uv.lock',
 ]
-for identity in ('HG-045', 'HG-046'):
+for identity in ('HG-045', 'HG-046', 'HG-048'):
     protected += [f'docs/exec-plans/{kind}/{identity}' for kind in ('evidence', 'reviews')]
     protected += [f'docs/exec-plans/governance/{identity}.yaml']
 frozen = json.loads(git('show', base + ':FROZEN_BASELINE.json'))

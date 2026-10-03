@@ -1511,3 +1511,3234 @@ def governance_allowed_patterns(change_id):
                 'tools/harness/validate_harness.py', 'tests/harness/test_parallel_runner.py',
                 'tools/harness/README.md', 'docs/exec-plans/evidence/HG-048/**',
                 'docs/exec-plans/reviews/HG-048/**', 'docs/exec-plans/governance/HG-048.yaml']
+    if change_id == 'HG-046':
+        return [INDEX, MANIFEST, '.github/workflows/ci.yml', '.github/workflows/db.yml',
+                'tools/harness/db_ci.py', 'tools/harness/db_ci_pytest.py',
+                'tools/harness/db_policy.py', 'tools/harness/local_gate.py',
+                'tools/harness/github_app.py', 'tools/harness/gate_validate.py',
+                'tools/harness/gate_pytest.py',
+                'tests/harness/test_db_policy.py',
+                'tests/harness/test_local_gate.py',
+                'tools/harness/local_db/Dockerfile', 'tools/harness/local_db/entrypoint.sh',
+                'tools/harness/validate_harness.py', 'tests/harness/test_local_db_ci.py',
+                'tests/db/test_startup_readiness.py', 'tests/db/test_workflow.py',
+                'docs/harness/LOCAL_DB_CI.md',
+                'docs/harness/MERGE_GATE.md', 'docs/harness/M3_CLOSURE_CONTRACT.md',
+                'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md',
+                'docs/exec-plans/evidence/HG-046/**', 'docs/exec-plans/reviews/HG-046/**',
+                'docs/exec-plans/governance/HG-046.yaml']
+    if change_id == 'HG-045':
+        return [BACKLOG, TRACEABILITY, PROJECT_PLAN, INDEX, MANIFEST,
+                MILESTONE_CLOSURE_SCHEMA, 'docs/harness/M3_CLOSURE_CONTRACT.md',
+                'tools/harness/validate_harness.py',
+                'tests/harness/test_source_decision_scope.py',
+                'tests/harness/test_m3_milestone_closure.py',
+                'docs/exec-plans/active/KL-080.md',
+                'docs/exec-plans/integrations/KL-028.json',
+                'docs/exec-plans/integrations/KL-029.json',
+                'docs/exec-plans/evidence/HG-045/**',
+                'docs/exec-plans/reviews/HG-045/**',
+                'docs/exec-plans/governance/HG-045.yaml']
+    if change_id == 'HG-044':
+        return [MILESTONE_CLOSURE_SCHEMA, 'tools/harness/validate_harness.py',
+                'tests/harness/test_m3_milestone_closure.py',
+                'docs/harness/M3_CLOSURE_CONTRACT.md', PROJECT_PLAN, INDEX, MANIFEST,
+                'docs/exec-plans/evidence/HG-044/**', 'docs/exec-plans/reviews/HG-044/**',
+                'docs/exec-plans/governance/HG-044.yaml']
+    if change_id == 'HG-024':
+        return HG024_ALLOWED_PATTERNS
+    return [
+        PROJECT_PLAN,
+        BACKLOG,
+        TRACEABILITY,
+        INDEX,
+        MANIFEST,
+        GOVERNANCE_SCHEMA,
+        INTEGRATION_SCHEMA,
+        MILESTONE_CLOSURE_SCHEMA,
+        '.github/workflows/**',
+        'docs/exec-plans/active/**',
+        f'docs/exec-plans/evidence/{change_id}/**',
+        'docs/exec-plans/integrations/**',
+        'docs/exec-plans/milestones/**',
+        'docs/exec-plans/reviews/KL-*/**',
+        f'docs/exec-plans/reviews/{change_id}/**',
+        f'docs/exec-plans/governance/{change_id}.yaml',
+        f'docs/exec-plans/governance/{change_id}.json',
+        'docs/harness/**',
+        'tests/harness/**',
+        'tools/harness/**',
+    ]
+
+
+def emergency_governance_task_pair(task_ids, change_ids):
+    """Return the sole approved governance/task repair pair; reject every variant."""
+    if len(task_ids) != 1 or len(change_ids) != 1:
+        return None
+    change_id, task_id = next(iter(change_ids)), next(iter(task_ids))
+    return (change_id, task_id) if EMERGENCY_GOVERNANCE_TASK.get(change_id) == task_id else None
+
+
+def traceability_projection(task, fields=TRACEABILITY_TASK_FIELDS):
+    """Return the exact task-definition fields mirrored by this traceability version."""
+    return {field: task.get(field) for field in fields}
+
+
+def traceability_task_map(document, prefix='traceability'):
+    """Validate traceability identity/index integrity without collapsing duplicates."""
+    errors = []
+    tasks = document.get('tasks') if isinstance(document, dict) else None
+    if not isinstance(tasks, list):
+        return [prefix + '-tasks'], {}
+    by_identity = {}
+    seen_ids = set()
+    for position, task in enumerate(tasks):
+        if not isinstance(task, dict):
+            errors.append(prefix + '-task-shape:' + str(position))
+            continue
+        identity, task_id = task.get('task_identity'), task.get('id')
+        if not isinstance(identity, str) or not identity:
+            errors.append(prefix + '-task-identity:' + str(position))
+            continue
+        if not isinstance(task_id, str) or not re.fullmatch(r'KL-[0-9]{3}[A-Z]?', task_id):
+            errors.append(prefix + '-task-id:' + identity)
+            continue
+        if identity != 'harness-backlog-v0.2/' + task_id:
+            errors.append(prefix + '-task-identity-mismatch:' + identity)
+        if identity in by_identity:
+            errors.append(prefix + '-duplicate-task-identity:' + identity)
+        else:
+            by_identity[identity] = task
+        if task_id in seen_ids:
+            errors.append(prefix + '-duplicate-task-id:' + task_id)
+        else:
+            seen_ids.add(task_id)
+    return errors, by_identity
+
+
+def configure_ci_merge_gate(root, args):
+    """Bind a PR checkout to one task result or one Harness governance record."""
+    if not args.ci_pr_base or not args.ci_pr_head:
+        raise ValueError('ci-revisions-required')
+    base, head = resolve(root, args.ci_pr_base), resolve(root, args.ci_pr_head)
+    if resolve(root, 'HEAD') != head:
+        raise ValueError('ci-head-not-checked-out')
+    git(root, 'merge-base', '--is-ancestor', base, head)
+    changed = changed_paths(root, base, head)
+    task_candidates = []
+    governance_candidates = []
+    review_candidates = []
+    for path in changed:
+        match = re.fullmatch(r'docs/exec-plans/completed/(KL-[0-9]{3}[A-Z]?)_RESULT\.(?:yaml|json)', path)
+        if match:
+            task_candidates.append(match.group(1))
+        match = re.fullmatch(r'docs/exec-plans/governance/(HG-[0-9]{3})\.(?:yaml|json)', path)
+        if match:
+            governance_candidates.append(match.group(1))
+        match = re.fullmatch(r'docs/exec-plans/reviews/(HG-[0-9]{3})/[A-Z_]+\.json', path)
+        if match:
+            review_candidates.append(match.group(1))
+    task_ids, change_ids = set(task_candidates), set(governance_candidates)
+    if not task_ids and not change_ids and len(set(review_candidates)) == 1:
+        change_ids = set(review_candidates)
+        args.governance_review_only = True
+    emergency_pair = emergency_governance_task_pair(task_ids, change_ids)
+    emergency_task_id = emergency_pair[1] if emergency_pair else None
+    emergency_scope_used = any(
+        matches(path, HG024_EMERGENCY_SCOPE_PATTERNS) for path in changed
+    )
+    if 'HG-024' in change_ids and emergency_scope_used and emergency_pair is None:
+        raise ValueError('ci-emergency-pair-required:HG-024:KL-073')
+    if (len(task_ids), len(change_ids)) not in ((1, 0), (0, 1)) and emergency_task_id is None:
+        raise ValueError(f'ci-change-record-count:task={len(task_ids)},governance={len(change_ids)}')
+    selected = next(iter(change_ids)) if emergency_task_id else next(iter(task_ids or change_ids))
+    review_path = root / 'docs/exec-plans/reviews' / selected / 'GENERAL.json'
+    if not review_path.is_file():
+        raise ValueError('ci-general-review-missing:' + selected)
+    review = load_artifact(review_path)
+    if not isinstance(review, dict) or not isinstance(review.get('reviewed_head_sha'), str):
+        raise ValueError('ci-general-review-invalid:' + selected)
+    args.protected_base = base
+    if emergency_task_id:
+        for path in HG024_ONE_TIME_BASE_ABSENT_PATHS:
+            if subprocess.run(
+                    ['git', 'cat-file', '-e', base + ':' + path], cwd=root,
+                    capture_output=True).returncode == 0:
+                raise ValueError('ci-emergency-already-consumed:' + path)
+        task_review_path = root / 'docs/exec-plans/reviews' / emergency_task_id / 'GENERAL.json'
+        if not task_review_path.is_file():
+            raise ValueError('ci-general-review-missing:' + emergency_task_id)
+        task_review = load_artifact(task_review_path)
+        if (not isinstance(task_review, dict)
+                or task_review.get('reviewed_head_sha') != review['reviewed_head_sha']):
+            raise ValueError('ci-emergency-reviewed-head-mismatch:' + selected)
+        args.governance_change_id = selected
+        args.governance_reviewed_head = review['reviewed_head_sha']
+        args.emergency_task_id = emergency_task_id
+    elif task_ids:
+        args.task_id = selected
+        args.reviewed_head = review['reviewed_head_sha']
+    else:
+        args.governance_change_id = selected
+        args.governance_reviewed_head = review['reviewed_head_sha']
+
+
+def suffix_errors(
+        root, start, end, task_id, kind, scope_patterns=None,
+        allow_unrelated_merges=False, allowed_patterns=None):
+    """Require ancestry and check every bookkeeping commit, including reverted changes."""
+    errors = []
+    try:
+        start, end = resolve(root, start), resolve(root, end)
+        git(root, 'merge-base', '--is-ancestor', start, end)
+        commits = git(root, 'rev-list', '--reverse', start + '..' + end).decode().splitlines()
+        allowed = (allowed_patterns if allowed_patterns is not None
+                   else review_patterns(task_id) if kind == 'review'
+                   else result_paths(task_id) + [evidence_pattern(task_id)])
+        for commit in commits:
+            parents = git(root, 'rev-list', '--parents', '-n', '1', commit).decode().split()[1:]
+            if len(parents) != 1 and not allow_unrelated_merges:
+                errors.append(kind + '-suffix-merge:' + commit)
+                continue
+            if not parents:
+                errors.append(kind + '-suffix-root:' + commit)
+                continue
+            for path in changed_paths(root, parents[0], commit):
+                if (scope_patterns is not None
+                        and not matches(path, scope_patterns)
+                        and not matches(path, allowed)):
+                    continue
+                if not matches(path, allowed):
+                    errors.append(kind + '-stale-change:' + path)
+                elif kind == 'tested' and matches(path, [evidence_pattern(task_id)]):
+                    exists = subprocess.run(['git', 'cat-file', '-e', parents[0] + ':' + path], cwd=root, capture_output=True)
+                    if exists.returncode == 0:
+                        errors.append('tested-evidence-not-addition:' + path)
+    except ValueError as ex:
+        errors.append(kind + '-revision:' + str(ex))
+    return errors
+
+
+def governance_suffix_errors(root, start, end, change_id, kind):
+    """Restrict post-test and post-review governance bookkeeping commits."""
+    errors = []
+    try:
+        start, end = resolve(root, start), resolve(root, end)
+        git(root, 'merge-base', '--is-ancestor', start, end)
+        commits = git(root, 'rev-list', '--reverse', start + '..' + end).decode().splitlines()
+        emergency_task_id = EMERGENCY_GOVERNANCE_TASK.get(change_id)
+        allowed = (
+            review_patterns(change_id) + review_patterns(emergency_task_id)
+            if kind == 'review' and emergency_task_id
+            else review_patterns(change_id)
+            if kind == 'review'
+            else governance_record_paths(change_id) + [evidence_pattern(change_id)]
+            + (result_paths(emergency_task_id) + [evidence_pattern(emergency_task_id)]
+               if emergency_task_id else [])
+        )
+        for commit in commits:
+            parents = git(root, 'rev-list', '--parents', '-n', '1', commit).decode().split()[1:]
+            if len(parents) != 1:
+                tested_descendants = [
+                    parent for parent in parents if is_ancestor(root, start, parent)
+                ]
+                prior_ancestors = [
+                    parent for parent in parents if is_ancestor(root, parent, start)
+                ]
+                safe_tested_reintegration = (
+                    kind == 'tested'
+                    and len(parents) == 2
+                    and len(tested_descendants) == 1
+                    and len(prior_ancestors) == 1
+                    and set(tested_descendants).isdisjoint(prior_ancestors)
+                    and tree_object(root, commit) == tree_object(root, tested_descendants[0])
+                )
+                if safe_tested_reintegration:
+                    continue
+                errors.append('governance-' + kind + '-suffix-merge:' + commit)
+                continue
+            for path in changed_paths(root, parents[0], commit):
+                if not matches(path, allowed):
+                    errors.append('governance-' + kind + '-stale-change:' + path)
+                elif kind == 'tested' and matches(path, [evidence_pattern(change_id)]):
+                    exists = subprocess.run(
+                        ['git', 'cat-file', '-e', parents[0] + ':' + path],
+                        cwd=root, capture_output=True)
+                    if exists.returncode == 0:
+                        errors.append('governance-tested-evidence-not-addition:' + path)
+    except ValueError as ex:
+        errors.append('governance-' + kind + '-revision:' + str(ex))
+    return errors
+
+
+_evidence_verdicts: ContextVar[set[tuple] | None] = ContextVar('evidence_verdicts', default=None)
+EVIDENCE_VERDICT_LIMIT = 4096
+
+
+@contextmanager
+def evidence_validation_session():
+    """Cache only successful immutable proof checks for one validation operation."""
+    if _evidence_verdicts.get() is not None:
+        yield
+        return
+    token = _evidence_verdicts.set(set())
+    try:
+        yield
+    finally:
+        _evidence_verdicts.reset(token)
+
+
+def evidence_exists(root, ref, revision=None, tested=None, command=None, exit_code=None):
+    if not relative_path(ref) or '\0' in ref:
+        return False
+    try:
+        cache = _evidence_verdicts.get()
+        # Mutable refs/working files and failed proofs are never memoized. Full
+        # SHA existence/type is still proven by read before a successful insert.
+        key = ((str(root.resolve()), revision, ref, tested, command, exit_code)
+               if isinstance(revision, str) and re.fullmatch(r'[0-9a-f]{40}', revision)
+               else None)
+        if cache is not None and key is not None and key in cache:
+            return True
+        compact_evidence.read(root, ref, revision, tested=tested, command=command,
+                              exit_code=exit_code)
+        if cache is not None and key is not None:
+            if len(cache) >= EVIDENCE_VERDICT_LIMIT:
+                cache.clear()
+            cache.add(key)
+        return True
+    except (ValueError, OSError, TypeError):
+        return False
+
+
+def revision_git_entry(root, ref, revision):
+    """Read an exact normalized tree entry, independently of its object's availability."""
+    if not relative_path(ref) or '\0' in ref:
+        return None
+    entries = git(root, 'ls-tree', '-z', revision, '--', ref).split(b'\0')
+    for entry in filter(None, entries):
+        metadata, name = entry.split(b'\t', 1)
+        if name == ref.encode():
+            return tuple(metadata.split())
+    return None
+
+
+def revision_regular_file(root, ref, revision):
+    """Resolve an exact regular tree entry to an available content-addressed Git blob."""
+    entry = revision_git_entry(root, ref, revision)
+    if entry is None:
+        return False
+    mode, kind, oid = entry
+    if kind != b'blob' or mode not in (b'100644', b'100755'):
+        return False
+    obj = subprocess.run(['git', 'cat-file', '-t', oid.decode()], cwd=root, capture_output=True)
+    return obj.returncode == 0 and obj.stdout.strip() == b'blob'
+
+
+def full_database_evidence_errors(root, reviewed, tested, ref):
+    """Check local/hosted full DB evidence from regular reviewed Git blobs only."""
+    try:
+        if not revision_regular_file(root, ref, reviewed):
+            raise ValueError('manifest-not-regular-reviewed-blob')
+        manifest = json.loads(git(root, 'show', reviewed + ':' + ref))
+        records = [check['stdout'] for check in manifest['checks']] + manifest['artifacts']
+        spec = importlib.util.spec_from_file_location('db_ci_evidence', Path(__file__).with_name('db_ci.py'))
+        if spec is None or spec.loader is None:
+            raise ValueError('DB evidence validator unavailable')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory(prefix='kl-db-evidence-review-') as temporary:
+            destination = Path(temporary)
+            (destination / 'manifest.json').write_bytes(git(root, 'show', reviewed + ':' + ref))
+            for item in records:
+                name = item['path']
+                if Path(name).name != name or name in ('', '.', '..'):
+                    raise ValueError('non-sibling-raw-path')
+                raw_ref = str(Path(ref).parent / name)
+                if not revision_regular_file(root, raw_ref, reviewed):
+                    raise ValueError('raw-not-regular-reviewed-blob:' + raw_ref)
+                (destination / name).write_bytes(git(root, 'show', reviewed + ':' + raw_ref))
+            module.validate_evidence(destination, tested)
+        return []
+    except (ValueError, KeyError, TypeError, OSError, ET.ParseError) as error:
+        return ['full-database-evidence:' + str(error)]
+
+
+def review_evidence_exists(root, ref, reviewed, review_commit, task_id, review_only_suffix):
+    """Bind ordinary evidence to reviewed; review-created bookkeeping to its recorded commit."""
+    if not relative_path(ref) or '\0' in ref:
+        return False
+    if revision_regular_file(root, ref, reviewed):
+        return evidence_exists(root, ref, reviewed)
+    return (review_only_suffix and matches(ref, review_patterns(task_id))
+            and revision_git_entry(root, ref, reviewed) is None
+            and revision_regular_file(root, ref, review_commit)
+            and evidence_exists(root, ref, review_commit))
+
+
+def semantic_result_errors(obj, task, root, evidence_revision=None):
+    errors = []
+    if task.get('status') == 'SUPERSEDED':
+        errors.append('result-for-superseded-task')
+    if obj['task_identity'] != task['task_identity'] or obj['display_task_id'] != task['id']:
+        errors.append('result-task-identity')
+    if obj['task_status'] == 'PASS' and obj['task_checks_status'] != 'PASS':
+        errors.append('pass-without-check-pass')
+    commands = obj['commands_run']
+    if obj['task_status'] == 'PASS' and not commands:
+        errors.append('pass-empty-commands')
+    check_ids = [c['check_id'] for c in commands]
+    expected = set(task['checks_required_for_this_task'])
+    if len(check_ids) != len(set(check_ids)) or set(check_ids) - expected:
+        errors.append('result-check-ids')
+    if obj['task_status'] == 'PASS' or obj['task_checks_status'] == 'PASS':
+        if set(check_ids) != expected or any(c['result'] != 'PASS' for c in commands):
+            errors.append('required-checks-not-pass')
+    contracts = {
+        item['check_id']: item for item in task.get('check_contracts', [])
+        if isinstance(item, dict) and isinstance(item.get('check_id'), str)
+    }
+    for c in commands:
+        contract = contracts.get(c['check_id'])
+        if contract is not None and c.get('command') != contract.get('command'):
+            errors.append('command-contract-command:' + c['check_id'])
+        evidence_ref = c.get('evidence_ref')
+        if (contract is not None and task.get('evidence_paths')
+                and not isinstance(evidence_ref, str)):
+            errors.append('command-evidence-scope:' + c['check_id'])
+        elif (contract is not None and task.get('evidence_paths')
+              and not matches(evidence_ref, task['evidence_paths'])):
+            errors.append('command-evidence-scope:' + c['check_id'])
+        if (c['result'] in ('PASS', 'FAIL')
+                and not evidence_exists(root, evidence_ref, evidence_revision,
+                                        obj['tested_commit'], c.get('command'),
+                                        0 if c['result'] == 'PASS' else None)):
+            errors.append('command-evidence:' + c['check_id'])
+    for requirement in obj['requirements_covered']:
+        if requirement['status'] in ('PASS', 'APPROVED_NA'):
+            if not evidence_exists(root, requirement.get('evidence_ref'), evidence_revision,
+                                   obj['tested_commit']):
+                errors.append('requirement-evidence:' + requirement['requirement_id'])
+            if requirement.get('tested_commit') != obj['tested_commit']:
+                errors.append('requirement-revision:' + requirement['requirement_id'])
+            if '@' not in requirement['requirement_id']:
+                errors.append('requirement-layer:' + requirement['requirement_id'])
+    return errors
+
+
+def requirement_ids(root):
+    """Expand all requirement sources to concrete ID@layer obligations."""
+    ids = set()
+    sources = load_artifact(root / 'CURRENT_REQUIREMENT_SET.json')['sources']
+    for source in sources:
+        data = load_artifact(root / source['path'])
+        for entry in data.get('original_layer_obligations', []):
+            ids.add(entry['obligation_id'])
+        for group in ('supplemental_boundary_requirements', 'interleaving_requirements', 'requirements'):
+            for entry in data.get(group, []):
+                name = entry.get('requirement_id', entry.get('id'))
+                ids.update(name + '@' + layer for layer in entry['layers'])
+    return ids
+
+
+def hash_refresh_errors(root, base_revision, name, task, changed, protected_paths):
+    """Only change hashes/byte counts of already-indexed, authorized changed files."""
+    old = json.loads(git(root, 'show', base_revision + ':' + name))
+    new = load_artifact(root / name)
+    errors = []
+    groups = ('documents', 'machine_readable') if name == INDEX else ('files',)
+    old_meta = {k: v for k, v in old.items() if k not in groups}
+    new_meta = {k: v for k, v in new.items() if k not in groups}
+    if old_meta != new_meta:
+        errors.append('derived-index-metadata:' + name)
+    for group in groups:
+        before, after = old.get(group, []), new.get(group, [])
+        if [e['path'] for e in before] != [e['path'] for e in after]:
+            errors.append('derived-index-paths:' + name)
+            continue
+        for previous, current in zip(before, after):
+            if previous == current:
+                continue
+            path = previous['path']
+            permitted = (path not in protected_paths and path in changed
+                         and (matches(path, task['write_paths']) or (name == MANIFEST and path == INDEX)))
+            if not permitted:
+                errors.append('derived-index-unauthorized:' + path)
+                continue
+            if {k: v for k, v in previous.items() if k not in ('sha256', 'bytes')} != {k: v for k, v in current.items() if k not in ('sha256', 'bytes')}:
+                errors.append('derived-index-entry:' + path)
+            target = root / path
+            if not target.is_file() or current.get('sha256') != sha(target):
+                errors.append('derived-index-hash:' + path)
+            if 'bytes' in current and (not target.is_file() or current['bytes'] != target.stat().st_size):
+                errors.append('derived-index-bytes:' + path)
+    return errors
+
+
+def governance_index_errors(
+        root, base_revision, record, changed, protected_paths, target_revision=None):
+    """Allow declared additions while preserving every existing authority identity."""
+    old = json.loads(git(root, 'show', base_revision + ':' + INDEX))
+    new = (load_artifact_at_revision(root, INDEX, target_revision)
+           if target_revision else load_artifact(root / INDEX))
+    errors = []
+    if {k: v for k, v in old.items() if k not in ('documents', 'machine_readable')} != {
+            k: v for k, v in new.items() if k not in ('documents', 'machine_readable')}:
+        errors.append('governance-index-metadata')
+    declared_additions = set(record.get('authority_entries_added', []))
+    observed_additions = set()
+    after_paths = [
+        entry['path']
+        for group in ('documents', 'machine_readable')
+        for entry in new.get(group, [])
+    ]
+    if len(after_paths) != len(set(after_paths)):
+        errors.append('governance-index-duplicate-path')
+    document_ids = [entry['document_id'] for entry in new.get('documents', [])]
+    if len(document_ids) != len(set(document_ids)):
+        errors.append('governance-index-duplicate-id')
+    for group in ('documents', 'machine_readable'):
+        before = {entry['path']: entry for entry in old.get(group, [])}
+        after = {entry['path']: entry for entry in new.get(group, [])}
+        removed = set(before) - set(after)
+        if removed:
+            errors.extend('governance-index-removal:' + path for path in sorted(removed))
+        observed_additions |= set(after) - set(before)
+        for path in sorted(set(before) & set(after)):
+            previous, current = before[path], after[path]
+            if target_revision:
+                try:
+                    target_valid = (
+                        current.get('sha256')
+                        == blob_sha_at_revision(root, path, target_revision)
+                    )
+                except ValueError:
+                    target_valid = False
+                if not target_valid:
+                    errors.append('governance-index-hash:' + path)
+            if previous == current:
+                continue
+            if path in protected_paths:
+                errors.append('governance-index-frozen:' + path)
+                continue
+            if {k: v for k, v in previous.items() if k != 'sha256'} != {
+                    k: v for k, v in current.items() if k != 'sha256'}:
+                errors.append('governance-index-entry:' + path)
+            if not target_revision:
+                target_valid = (
+                    (root / path).is_file()
+                    and current.get('sha256') == sha(root / path)
+                )
+            if path not in changed or (not target_revision and not target_valid):
+                errors.append('governance-index-hash:' + path)
+        for path in sorted(set(after) - set(before)):
+            current = after[path]
+            if path not in declared_additions:
+                errors.append('governance-index-undeclared-addition:' + path)
+            try:
+                target_valid = (
+                    current.get('sha256') == blob_sha_at_revision(root, path, target_revision)
+                    if target_revision else
+                    (root / path).is_file() and current.get('sha256') == sha(root / path)
+                )
+            except ValueError:
+                target_valid = False
+            if path in protected_paths or not target_valid:
+                errors.append('governance-index-addition-hash:' + path)
+    if observed_additions != declared_additions:
+        errors.append('governance-index-additions-mismatch')
+    return errors
+
+
+def task_index_authority_errors(root, base_revision, task, changed, protected_paths):
+    """Permit a baseline-authorized index owner to add only files in its write scope."""
+    old = json.loads(git(root, 'show', base_revision + ':' + INDEX))
+    new = load_artifact(root / INDEX)
+    errors = []
+    if {k: v for k, v in old.items() if k not in ('documents', 'machine_readable')} != {
+            k: v for k, v in new.items() if k not in ('documents', 'machine_readable')}:
+        errors.append('authority-index-metadata')
+    for group in ('documents', 'machine_readable'):
+        before = {entry['path']: entry for entry in old.get(group, [])}
+        after = {entry['path']: entry for entry in new.get(group, [])}
+        for path in sorted(set(before) - set(after)):
+            errors.append('authority-index-removal:' + path)
+        for path, current in after.items():
+            target = root / path
+            if path in before:
+                previous = before[path]
+                if previous == current:
+                    continue
+                if path in protected_paths:
+                    errors.append('authority-index-frozen:' + path)
+                if {k: v for k, v in previous.items() if k != 'sha256'} != {
+                        k: v for k, v in current.items() if k != 'sha256'}:
+                    errors.append('authority-index-entry:' + path)
+                if path not in changed or not matches(path, task['write_paths']):
+                    errors.append('authority-index-unauthorized:' + path)
+            elif path in protected_paths or not matches(path, task['write_paths']):
+                errors.append('authority-index-addition:' + path)
+            if (path not in before or before[path] != current) and (
+                    not target.is_file() or current.get('sha256') != sha(target)):
+                errors.append('authority-index-hash:' + path)
+    return errors
+
+
+def governance_manifest_errors(root, base_revision, changed, target_revision=None):
+    """Refresh existing entries and append changed, hashed governance artifacts."""
+    old = json.loads(git(root, 'show', base_revision + ':' + MANIFEST))
+    new = (load_artifact_at_revision(root, MANIFEST, target_revision)
+           if target_revision else load_artifact(root / MANIFEST))
+    errors = []
+    if {k: v for k, v in old.items() if k != 'files'} != {k: v for k, v in new.items() if k != 'files'}:
+        errors.append('governance-manifest-metadata')
+    before, after = old.get('files', []), new.get('files', [])
+    before_paths = [entry['path'] for entry in before]
+    after_paths = [entry['path'] for entry in after]
+    if (after_paths[:len(before_paths)] != before_paths
+            or len(after_paths) != len(set(after_paths))):
+        errors.append('governance-manifest-paths')
+        return errors
+    for previous, current in zip(before, after):
+        path = previous['path']
+        if target_revision:
+            try:
+                target_hash = blob_sha_at_revision(root, path, target_revision)
+                target_size = blob_size_at_revision(root, path, target_revision)
+            except ValueError:
+                target_hash, target_size = None, None
+            if current.get('sha256') != target_hash:
+                errors.append('governance-manifest-hash:' + path)
+            if 'bytes' in current and current['bytes'] != target_size:
+                errors.append('governance-manifest-bytes:' + path)
+        if previous == current:
+            continue
+        if {k: v for k, v in previous.items() if k not in ('sha256', 'bytes')} != {
+                k: v for k, v in current.items() if k not in ('sha256', 'bytes')}:
+            errors.append('governance-manifest-entry:' + path)
+        if not target_revision:
+            target_hash = sha(root / path) if (root / path).is_file() else None
+            target_size = ((root / path).stat().st_size
+                           if (root / path).is_file() else None)
+        if path not in changed or (not target_revision
+                                   and current.get('sha256') != target_hash):
+            errors.append('governance-manifest-hash:' + path)
+        if (not target_revision and 'bytes' in current
+                and current['bytes'] != target_size):
+            errors.append('governance-manifest-bytes:' + path)
+    for current in after[len(before):]:
+        path = current['path']
+        try:
+            target_hash = (
+                blob_sha_at_revision(root, path, target_revision)
+                if target_revision else sha(root / path)
+            )
+            target_size = (
+                blob_size_at_revision(root, path, target_revision)
+                if target_revision else (root / path).stat().st_size
+            )
+        except (ValueError, OSError):
+            target_hash, target_size = None, None
+        if path not in changed or current.get('sha256') != target_hash:
+            errors.append('governance-manifest-addition:' + path)
+        if 'bytes' in current and current['bytes'] != target_size:
+            errors.append('governance-manifest-bytes:' + path)
+    return errors
+
+
+@evidence_validation_session()
+def integration_record_errors(
+        root, path, record, schema, result_schema, review_schema, tasks):
+    errors = ['integration-schema:' + path.name + ':' + issue.message
+              for issue in schema.iter_errors(record)]
+    if errors:
+        return errors
+    task_id = record['display_task_id']
+    task = tasks.get(task_id)
+    if not task or task['task_identity'] != record['task_identity'] or path.stem != task_id:
+        return ['integration-identity:' + path.name]
+    try:
+        result_commit = resolve(root, record['result_commit'])
+        reviewed = resolve(root, record['reviewed_head_sha'])
+        review_commit = resolve(root, record['review_record_commit'])
+        merge_commit = resolve(root, record['merge_commit'])
+        head = resolve(root, 'HEAD')
+        for before, after, label in (
+                (result_commit, reviewed, 'result-to-reviewed'),
+                (reviewed, review_commit, 'reviewed-to-review-record'),
+                (merge_commit, head, 'merge-to-head')):
+            try:
+                git(root, 'merge-base', '--is-ancestor', before, after)
+            except ValueError:
+                errors.append('integration-ancestry:' + task_id + ':' + label)
+        try:
+            git(root, 'merge-base', '--is-ancestor', review_commit, merge_commit)
+        except ValueError:
+            exact_tree_squash = tree_object(root, review_commit) == tree_object(root, merge_commit)
+            delayed_post_merge_review = (
+                reviewed == merge_commit
+                and is_ancestor(root, merge_commit, review_commit)
+            )
+            if not exact_tree_squash and not delayed_post_merge_review:
+                errors.append('integration-ancestry-or-exact-tree:' + task_id + ':review-to-merge')
+        else:
+            delayed_post_merge_review = False
+        result_paths_at_commit = result_paths_at_revision(root, task_id, result_commit)
+        result_paths_at_review = result_paths_at_revision(root, task_id, reviewed)
+        if len(result_paths_at_commit) != 1:
+            errors.append(
+                'integration-result-representation-count:' + task_id + ':'
+                + str(len(result_paths_at_commit)))
+        if len(result_paths_at_review) != 1:
+            errors.append(
+                'integration-reviewed-result-representation-count:' + task_id + ':'
+                + str(len(result_paths_at_review)))
+        if len(result_paths_at_commit) == 1 and len(result_paths_at_review) == 1:
+            result_path = result_paths_at_commit[0]
+            reviewed_result_path = result_paths_at_review[0]
+            if result_path != reviewed_result_path:
+                errors.append('integration-result-path-mismatch:' + task_id)
+            result_bytes = git(root, 'show', result_commit + ':' + result_path)
+            reviewed_result_bytes = git(root, 'show', reviewed + ':' + reviewed_result_path)
+            if result_bytes != reviewed_result_bytes:
+                errors.append('integration-result-content-mismatch:' + task_id)
+            result = load_artifact_text(
+                result_bytes.decode(),
+                Path(result_path).suffix)
+            issues = list(result_schema.iter_errors(result))
+            errors.extend('integration-result-schema:' + task_id + ':' + issue.message
+                          for issue in issues)
+            if not issues:
+                if (result.get('display_task_id') != task_id
+                        or result.get('task_identity') != record['task_identity']):
+                    errors.append('integration-result-identity:' + task_id)
+                if result['task_status'] != 'PASS':
+                    errors.append('integration-result-not-pass:' + task_id)
+                errors.extend(
+                    'integration-result-semantic:' + task_id + ':' + issue
+                    for issue in semantic_result_errors(
+                        result, task, root, evidence_revision=reviewed))
+                result_base = resolve(root, result['base_commit'])
+                tested = resolve(root, result['tested_commit'])
+                if not is_ancestor(root, result_base, tested):
+                    errors.append('integration-result-base-tested-ancestry:' + task_id)
+                errors.extend(
+                    'integration-' + issue
+                    for issue in suffix_errors(
+                        root, tested, reviewed, task_id, 'tested',
+                        task['write_paths'] + [f'docs/exec-plans/active/{task_id}.md']))
+                delayed_scope = (
+                    [path for path in task['write_paths'] if path not in (INDEX, MANIFEST)]
+                    + result_paths(task_id)
+                    + [evidence_pattern(task_id), f'docs/exec-plans/active/{task_id}.md']
+                )
+                if delayed_post_merge_review:
+                    errors.extend(
+                        'integration-delayed-' + issue
+                        for issue in suffix_errors(
+                            root, reviewed, review_commit, task_id, 'review',
+                            delayed_scope, allow_unrelated_merges=True))
+                else:
+                    errors.extend(
+                        'integration-' + issue
+                        for issue in suffix_errors(
+                            root, reviewed, review_commit, task_id, 'review'))
+        # This stricter proof also bounds the evidence exception for delayed reviews.
+        # Their existing scoped freshness rule is not a proof of an own-review-only suffix.
+        review_only_suffix = not suffix_errors(
+            root, reviewed, review_commit, task_id, 'review')
+        for review_type in task['review_requirements']:
+            review_path = f'docs/exec-plans/reviews/{task_id}/{review_type}.json'
+            review = load_artifact_text(
+                git(root, 'show', review_commit + ':' + review_path).decode(), '.json')
+            review_issues = list(review_schema.iter_errors(review))
+            errors.extend(
+                'integration-review-schema:' + task_id + ':' + review_type + ':' + issue.message
+                for issue in review_issues)
+            if review_issues:
+                continue
+            if review.get('task_identity') != task['task_identity']:
+                errors.append('integration-review-identity:' + task_id + ':' + review_type)
+            if (review.get('review_type') != review_type
+                    or review.get('status') != 'PASS'
+                    or resolve(root, review.get('reviewed_head_sha', '')) != reviewed):
+                errors.append('integration-review-binding:' + task_id + ':' + review_type)
+            for ref in review.get('evidence_refs', []):
+                if not review_evidence_exists(
+                        root, ref, reviewed, review_commit, task_id, review_only_suffix):
+                    errors.append(
+                        'integration-review-evidence:' + task_id + ':' + review_type + ':' + ref)
+    except ValueError as ex:
+        errors.append('integration-revision:' + task_id + ':' + str(ex))
+    return errors
+
+
+@evidence_validation_session()
+def milestone_closure_errors(
+        root, closure, schema, integration_schema, result_schema, review_schema, backlog, tasks):
+    """Validate the M1 closure as revision-bound evidence, not a status assertion."""
+    errors = [
+        'milestone-schema:M1.json:' + issue.message
+        for issue in schema.iter_errors(closure)
+    ]
+    if errors:
+        return errors
+    if (closure['milestone_identity'] != 'harness-backlog-v0.2/M1'
+            or closure['display_milestone_id'] != 'M1'
+            or closure['closure_status'] != 'PASS'):
+        errors.append('milestone-identity-or-status:M1')
+    if closure['historical_model_evidence'] != {
+            'status': 'UNVERIFIED_HISTORICAL_DECLARATION',
+            'independently_reproducible_protocol_model': False,
+    }:
+        errors.append('milestone-model-evidence-overclaim:M1')
+    if closure['product_requirement_pass_claims']:
+        errors.append('milestone-product-requirement-overclaim:M1')
+    try:
+        evaluated = resolve(root, closure['evaluated_commit'])
+        head = resolve(root, 'HEAD')
+        if not is_ancestor(root, evaluated, head):
+            errors.append('milestone-evaluated-unreachable:M1')
+        evaluated_backlog = load_artifact_at_revision(root, BACKLOG, evaluated)
+        evaluated_trace = load_artifact_at_revision(root, TRACEABILITY, evaluated)
+        evaluated_task_errors, evaluated_tasks = task_definition_errors(
+            root, evaluated_backlog, evaluated, historical_m1_closure=True)
+    except ValueError as ex:
+        return errors + ['milestone-evaluated-revision:M1:' + str(ex)]
+
+    active_m1 = {
+        task['id'] for task in evaluated_backlog['tasks']
+        if task['milestone'] == 'M1' and task['status'] != 'SUPERSEDED'
+    }
+    declared_ids = [item['display_task_id'] for item in closure['integrations']]
+    if active_m1 != M1_TASK_IDS or set(declared_ids) != active_m1 or len(
+            declared_ids) != len(set(declared_ids)):
+        errors.append('milestone-active-task-set:M1')
+    for item in closure['integrations']:
+        task_id = item['display_task_id']
+        expected_path = f'docs/exec-plans/integrations/{task_id}.json'
+        if (item['task_identity'] != f'harness-backlog-v0.2/{task_id}'
+                or item['integration_record'] != expected_path):
+            errors.append('milestone-integration-binding:' + task_id)
+            continue
+        try:
+            record = load_artifact_at_revision(root, expected_path, evaluated)
+            if item['sha256'] != blob_sha_at_revision(root, expected_path, evaluated):
+                errors.append('milestone-integration-hash:' + task_id)
+            if record.get('integration_status') != 'MERGED':
+                errors.append('milestone-integration-unmerged:' + task_id)
+            if (record.get('task_identity') != item['task_identity']
+                    or record.get('display_task_id') != task_id):
+                errors.append('milestone-integration-binding:' + task_id)
+            merge_commit = resolve(root, record.get('merge_commit', ''))
+            if not is_ancestor(root, merge_commit, evaluated):
+                errors.append('milestone-integration-unreachable:' + task_id)
+            integration_issues = integration_record_errors(
+                root, root / expected_path, record, integration_schema, result_schema,
+                review_schema,
+                evaluated_tasks)
+            errors.extend(
+                'milestone-integration-invalid:' + task_id + ':' + issue
+                for issue in integration_issues)
+        except (ValueError, OSError, KeyError, TypeError) as ex:
+            errors.append('milestone-integration-invalid:' + task_id + ':' + str(ex))
+
+    expected_exit_checks = {
+        'clean_checkout_starts_test_environment',
+        'm1_m2_task_contracts_complete',
+        'historical_model_evidence_not_overclaimed',
+    }
+    exit_ids = [item['check_id'] for item in closure['exit_checks']]
+    if set(exit_ids) != expected_exit_checks or len(exit_ids) != len(set(exit_ids)):
+        errors.append('milestone-exit-check-set:M1')
+    for exit_check in closure['exit_checks']:
+        if exit_check['result'] != 'PASS':
+            errors.append('milestone-exit-check-failed:' + exit_check['check_id'])
+        if not exit_check['evidence']:
+            errors.append('milestone-exit-evidence-missing:' + exit_check['check_id'])
+        for evidence in exit_check['evidence']:
+            path = evidence['path']
+            if not relative_path(path):
+                errors.append('milestone-exit-evidence-path:' + exit_check['check_id'])
+                continue
+            try:
+                revision = resolve(root, evidence['revision'])
+                if not is_ancestor(root, revision, evaluated):
+                    errors.append('milestone-exit-evidence-unreachable:' + exit_check['check_id'])
+                if evidence['sha256'] != blob_sha_at_revision(root, path, revision):
+                    errors.append('milestone-exit-evidence-hash:' + exit_check['check_id'])
+            except ValueError as ex:
+                errors.append(
+                    'milestone-exit-evidence-missing:' + exit_check['check_id'] + ':' + str(ex))
+    evidence_paths = {
+        item['check_id']: {evidence['path'] for evidence in item['evidence']}
+        for item in closure['exit_checks']
+    }
+    clean_start_evidence = evidence_paths.get('clean_checkout_starts_test_environment', set())
+    clean_start_records: list[dict] = next(
+        (item['evidence'] for item in closure['exit_checks']
+         if item['check_id'] == 'clean_checkout_starts_test_environment'), [])
+    expected_clean_paths = {
+        check_id: [item for item in clean_start_records
+                   if Path(item['path']).name.startswith(check_id + '-')]
+        for check_id in M1_CLEAN_START_CHECKS
+    }
+    if (set(clean_start_evidence) != {item['path'] for item in clean_start_records}
+            or any(len(items) != 1 for items in expected_clean_paths.values())
+            or len(clean_start_records) != len(M1_CLEAN_START_CHECKS)):
+        errors.append('milestone-exit-evidence-semantic:clean_checkout_starts_test_environment')
+    for check_id, items in expected_clean_paths.items():
+        if len(items) != 1:
+            continue
+        evidence = items[0]
+        try:
+            revision = resolve(root, evidence['revision'])
+            if revision != evaluated:
+                errors.append('milestone-exit-evidence-stale:' + check_id)
+            payload = load_artifact_at_revision(root, evidence['path'], revision)
+            if (not isinstance(payload, dict)
+                    or payload.get('check_id') != check_id
+                    or payload.get('command') != M1_CLEAN_START_CHECKS[check_id]
+                    or payload.get('status') != 'PASS'):
+                errors.append('milestone-exit-evidence-oracle:' + check_id)
+                continue
+            tested = resolve(root, payload.get('tested_commit', ''))
+            if (not is_ancestor(root, tested, evaluated)
+                    or any(matches(path, M1_CLEAN_START_RELEVANT_PATHS)
+                           for path in changed_paths(root, tested, evaluated))):
+                errors.append('milestone-exit-evidence-freshness:' + check_id)
+        except (ValueError, OSError, KeyError, TypeError):
+            errors.append('milestone-exit-evidence-oracle:' + check_id)
+    contract_evidence = evidence_paths.get('m1_m2_task_contracts_complete', set())
+    if not {BACKLOG, TRACEABILITY}.issubset(contract_evidence):
+        errors.append('milestone-exit-evidence-semantic:m1_m2_task_contracts_complete')
+    model_evidence = evidence_paths.get('historical_model_evidence_not_overclaimed', set())
+    if 'KineticLoop_Evidence_Manifest_v0.1.json' not in model_evidence:
+        errors.append('milestone-exit-evidence-semantic:historical_model_evidence_not_overclaimed')
+
+    try:
+        errors.extend('milestone-task-contract:' + issue for issue in evaluated_task_errors)
+        trace_errors, trace_tasks = traceability_task_map(
+            evaluated_trace, 'milestone-traceability')
+        errors.extend(trace_errors)
+        for task_id in M1_CLOSURE_M2_TASK_IDS:
+            task = evaluated_tasks.get(task_id)
+            trace_task = trace_tasks.get(f'harness-backlog-v0.2/{task_id}')
+            if (task is None or trace_task != traceability_projection(
+                    task, M1_CLOSURE_TRACEABILITY_TASK_FIELDS)):
+                errors.append('milestone-m2-projection:' + task_id)
+    except (ValueError, OSError, KeyError, TypeError) as ex:
+        errors.append('milestone-m2-contract-revision:' + str(ex))
+    return errors
+
+
+@evidence_validation_session()
+def m2_milestone_closure_errors(
+        root, closure, schema, integration_schema, result_schema, review_schema, backlog, tasks):
+    """Validate M2 closure from integrated task evidence and a fresh full regression."""
+    errors = [
+        'milestone-schema:M2.json:' + issue.message
+        for issue in schema.iter_errors(closure)
+    ]
+    if errors:
+        return errors
+    if (closure['milestone_identity'] != 'harness-backlog-v0.2/M2'
+            or closure['display_milestone_id'] != 'M2'
+            or closure['closure_status'] != 'PASS'):
+        errors.append('milestone-identity-or-status:M2')
+    if closure['historical_model_evidence'] != {
+            'status': 'UNVERIFIED_HISTORICAL_DECLARATION',
+            'independently_reproducible_protocol_model': False,
+    }:
+        errors.append('milestone-model-evidence-overclaim:M2')
+    if closure['product_requirement_pass_claims']:
+        errors.append('milestone-product-requirement-overclaim:M2')
+    try:
+        evaluated = resolve(root, closure['evaluated_commit'])
+        head = resolve(root, 'HEAD')
+        if not is_ancestor(root, evaluated, head):
+            errors.append('milestone-evaluated-unreachable:M2')
+        evaluated_backlog = load_artifact_at_revision(root, BACKLOG, evaluated)
+        evaluated_task_errors, evaluated_tasks = task_definition_errors(
+            root, evaluated_backlog, evaluated)
+        errors.extend('milestone-task-contract:' + issue for issue in evaluated_task_errors)
+    except ValueError as ex:
+        return errors + ['milestone-evaluated-revision:M2:' + str(ex)]
+
+    active_m2 = {
+        task['id'] for task in evaluated_backlog['tasks']
+        if task['milestone'] == 'M2' and task['status'] != 'SUPERSEDED'
+    }
+    try:
+        m1 = load_artifact_at_revision(root, 'docs/exec-plans/milestones/M1.json', evaluated)
+        errors.extend('milestone-m2-prerequisite:' + issue for issue in milestone_closure_errors(
+            root, m1, schema, integration_schema, result_schema, review_schema,
+            evaluated_backlog, evaluated_tasks))
+        if not is_ancestor(root, m1['evaluated_commit'], evaluated):
+            errors.append('milestone-m2-prerequisite:unreachable')
+    except (ValueError, OSError, KeyError, TypeError):
+        errors.append('milestone-m2-prerequisite:missing-or-invalid')
+    declared_ids = [item['display_task_id'] for item in closure['integrations']]
+    if active_m2 != M2_TASK_IDS or set(declared_ids) != active_m2 or len(
+            declared_ids) != len(set(declared_ids)):
+        errors.append('milestone-active-task-set:M2')
+    for item in closure['integrations']:
+        task_id = item['display_task_id']
+        expected_path = f'docs/exec-plans/integrations/{task_id}.json'
+        if (item['task_identity'] != f'harness-backlog-v0.2/{task_id}'
+                or item['integration_record'] != expected_path):
+            errors.append('milestone-integration-binding:' + task_id)
+            continue
+        try:
+            record = load_artifact_at_revision(root, expected_path, evaluated)
+            if item['sha256'] != blob_sha_at_revision(root, expected_path, evaluated):
+                errors.append('milestone-integration-hash:' + task_id)
+            if record.get('integration_status') != 'MERGED':
+                errors.append('milestone-integration-unmerged:' + task_id)
+            if (record.get('task_identity') != item['task_identity']
+                    or record.get('display_task_id') != task_id):
+                errors.append('milestone-integration-binding:' + task_id)
+            merge_commit = resolve(root, record.get('merge_commit', ''))
+            if not is_ancestor(root, merge_commit, evaluated):
+                errors.append('milestone-integration-unreachable:' + task_id)
+            integration_issues = integration_record_errors(
+                root, root / expected_path, record, integration_schema, result_schema,
+                review_schema, evaluated_tasks)
+            errors.extend(
+                'milestone-integration-invalid:' + task_id + ':' + issue
+                for issue in integration_issues)
+        except (ValueError, OSError, KeyError, TypeError) as ex:
+            errors.append('milestone-integration-invalid:' + task_id + ':' + str(ex))
+
+    expected_exit_checks = {
+        'm2_task_integrations_valid',
+        'm2_regression_suite_passes',
+        'frozen_authority_and_requirement_claims_preserved',
+    } | set(M2_EXIT_TASK_CHECKS)
+    exit_ids = [item['check_id'] for item in closure['exit_checks']]
+    if set(exit_ids) != expected_exit_checks or len(exit_ids) != len(set(exit_ids)):
+        errors.append('milestone-exit-check-set:M2')
+    evidence_by_check = {
+        item['check_id']: item['evidence'] for item in closure['exit_checks']
+    }
+    for exit_id, task_checks in M2_EXIT_TASK_CHECKS.items():
+        expected_evidence = set()
+        if exit_id == 'migration_dependency_graph_documented':
+            expected_evidence.add(('docs/contracts/physical_schema_topology.md', evaluated))
+        try:
+            for task_id, check_ids in task_checks.items():
+                record = load_artifact_at_revision(
+                    root, f'docs/exec-plans/integrations/{task_id}.json', evaluated)
+                reviewed = resolve(root, record['reviewed_head_sha'])
+                paths = result_paths_at_revision(root, task_id, reviewed)
+                if len(paths) != 1:
+                    raise ValueError('result-representation')
+                result = load_artifact_at_revision(root, paths[0], reviewed)
+                commands = {item['check_id']: item for item in result['commands_run']}
+                for check_id in check_ids:
+                    command = commands[check_id]
+                    if command['result'] != 'PASS':
+                        raise ValueError('task-check-not-pass')
+                    expected_evidence.add((command['evidence_ref'], reviewed))
+            declared = [(item['path'], item['revision'])
+                        for item in evidence_by_check.get(exit_id, [])]
+            if set(declared) != expected_evidence or len(declared) != len(set(declared)):
+                errors.append('milestone-exit-task-evidence:' + exit_id)
+        except (ValueError, OSError, KeyError, TypeError):
+            errors.append('milestone-exit-task-evidence:' + exit_id)
+    # Gate constructors prove their checks before their own merge through the
+    # integration chain. Their merged boundaries must precede KL-015 use.
+    try:
+        shadow = load_artifact_at_revision(
+            root, 'docs/exec-plans/integrations/KL-008.json', evaluated)
+        for task_id in ('KL-014', 'KL-015', 'KL-017'):
+            affected = load_artifact_at_revision(
+                root, f'docs/exec-plans/integrations/{task_id}.json', evaluated)
+            affected_result = load_artifact_at_revision(
+                root, result_paths_at_revision(root, task_id, affected['reviewed_head_sha'])[0],
+                affected['reviewed_head_sha'])
+            if not is_ancestor(root, shadow['merge_commit'], affected_result['tested_commit']):
+                errors.append('milestone-gate-order:KL-008:' + task_id)
+        consumer = load_artifact_at_revision(
+            root, 'docs/exec-plans/integrations/KL-015.json', evaluated)
+        consumer_result = load_artifact_at_revision(
+            root, result_paths_at_revision(root, 'KL-015', consumer['reviewed_head_sha'])[0],
+            consumer['reviewed_head_sha'])
+        for prerequisite in ('KL-014', 'KL-016', 'KL-017', 'KL-072'):
+            gate = load_artifact_at_revision(
+                root, f'docs/exec-plans/integrations/{prerequisite}.json', evaluated)
+            if not is_ancestor(root, gate['merge_commit'], consumer_result['tested_commit']):
+                errors.append('milestone-gate-order:' + prerequisite + ':KL-015')
+    except (ValueError, OSError, KeyError, TypeError, IndexError):
+        errors.append('milestone-gate-order:invalid-chain')
+    for exit_check in closure['exit_checks']:
+        if exit_check['result'] != 'PASS':
+            errors.append('milestone-exit-check-failed:' + exit_check['check_id'])
+        if not exit_check['evidence']:
+            errors.append('milestone-exit-evidence-missing:' + exit_check['check_id'])
+        for evidence in exit_check['evidence']:
+            path = evidence['path']
+            if not relative_path(path):
+                errors.append('milestone-exit-evidence-path:' + exit_check['check_id'])
+                continue
+            try:
+                revision = resolve(root, evidence['revision'])
+                if not is_ancestor(root, revision, evaluated):
+                    errors.append('milestone-exit-evidence-unreachable:' + exit_check['check_id'])
+                if evidence['sha256'] != blob_sha_at_revision(root, path, revision):
+                    errors.append('milestone-exit-evidence-hash:' + exit_check['check_id'])
+            except ValueError as ex:
+                errors.append(
+                    'milestone-exit-evidence-missing:' + exit_check['check_id'] + ':' + str(ex))
+
+    integration_paths = {
+        item['path'] for item in evidence_by_check.get('m2_task_integrations_valid', [])
+    }
+    expected_integration_paths = {
+        f'docs/exec-plans/integrations/{task_id}.json' for task_id in M2_TASK_IDS
+    }
+    if integration_paths != expected_integration_paths or any(
+            item['revision'] != evaluated
+            for item in evidence_by_check.get('m2_task_integrations_valid', [])):
+        errors.append('milestone-exit-evidence-semantic:m2_task_integrations_valid')
+
+    regression_records = evidence_by_check.get('m2_regression_suite_passes', [])
+    if (len(regression_records) != 1
+            or not re.fullmatch(
+                r'docs/exec-plans/evidence/HG-023/m2-regression-[0-9a-f]{7,40}\.json',
+                regression_records[0]['path'])):
+        errors.append('milestone-exit-evidence-semantic:m2_regression_suite_passes')
+    else:
+        evidence = regression_records[0]
+        try:
+            revision = resolve(root, evidence['revision'])
+            payload = load_artifact_at_revision(root, evidence['path'], revision)
+            tested = resolve(root, payload.get('tested_commit', ''))
+            errors.extend(m2_execution_evidence_errors(root, payload, revision))
+            if (revision != evaluated
+                    or payload.get('check_id') != 'm2_regression_suite_passes'
+                    or payload.get('commands') != M2_REGRESSION_COMMANDS
+                    or payload.get('status') != 'PASS'
+                    or not is_ancestor(root, tested, evaluated)
+                    or governance_suffix_errors(root, tested, evaluated, 'HG-023', 'tested')):
+                errors.append('milestone-exit-evidence-oracle:m2_regression_suite_passes')
+        except (ValueError, OSError, KeyError, TypeError):
+            errors.append('milestone-exit-evidence-oracle:m2_regression_suite_passes')
+
+    authority_records = evidence_by_check.get(
+        'frozen_authority_and_requirement_claims_preserved', [])
+    if ({item['path'] for item in authority_records}
+            != {'FROZEN_BASELINE.json', 'CURRENT_REQUIREMENT_SET.json'}
+            or any(item['revision'] != evaluated for item in authority_records)):
+        errors.append(
+            'milestone-exit-evidence-semantic:'
+            'frozen_authority_and_requirement_claims_preserved')
+    return errors
+
+
+def canonical_value_sha(value):
+    return hashlib.sha256(json.dumps(
+        value, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+
+
+def m3_closure_plan_errors(text):
+    marker = '## M3 exit-evidence mapping — HG044'
+    end = '<!-- HG044 plan end -->'
+    if text.count(marker) != 1 or text.count(end) != 1:
+        return ['m3-closure-plan']
+    block = text.split(marker, 1)[1].split(end, 1)[0]
+    return [] if hashlib.sha256(block.encode()).hexdigest() == '016ebe910b40724dc7cf7b00ab0bc384fa0d5ef6b8749ae6ea741c6126023878' else ['m3-closure-plan']
+
+
+def m3_governance_plan_prefix_errors(root, base, reviewed):
+    """Compare committed plan revisions in both ordinary and review-only PR gates."""
+    before = git(root, 'show', base + ':' + PROJECT_PLAN).decode()
+    after = git(root, 'show', reviewed + ':' + PROJECT_PLAN).decode()
+    return ([] if after.split('## M3 exit-evidence mapping — HG044', 1)[0] == before + '\n'
+            else ['governance-hg044-plan-prefix'])
+
+
+def m3_closure_record_errors(root, path, revision='HEAD'):
+    """An optional closure instance is itself a committed regular blob, never ambient evidence."""
+    try:
+        ref = str(path.relative_to(root))
+        if (path.is_symlink() or not revision_regular_file(root, ref, revision)
+                or git(root, 'show', revision + ':' + ref) != path.read_bytes()):
+            raise ValueError('not-committed-regular-unchanged-blob')
+    except (ValueError, OSError, TypeError) as ex:
+        return ['milestone-m3-record-source:' + str(ex)]
+    return []
+
+
+def m3_load_closure_record(root, path):
+    """Reject nonregular sources before parsing; parse the exact checked Git revision."""
+    head = resolve(root, 'HEAD')
+    errors = m3_closure_record_errors(root, path, head)
+    if errors:
+        return None, errors
+    ref = str(path.relative_to(root))
+    return load_artifact_text(git(root, 'show', head + ':' + ref).decode(), '.json'), []
+
+
+def m3_evidence_bytes(root, evidence, evaluated, tested=None, command=None, exit_code=None):
+    """Read only content-addressed regular Git blobs at reachable exact commits."""
+    path, revision = evidence['path'], evidence['revision']
+    if (not relative_path(path) or resolve(root, revision) != revision
+            or not is_ancestor(root, revision, evaluated)
+            or not revision_regular_file(root, path, revision)
+            or blob_sha_at_revision(root, path, revision) != evidence['sha256']):
+        raise ValueError('evidence-binding')
+    return compact_evidence.read(root, path, revision, tested=tested, command=command,
+                                 exit_code=exit_code)
+
+
+def m3_pytest_count(output):
+    summaries = re.findall(r'\b([1-9][0-9]*) passed\b', output)
+    if (not summaries or re.search(
+            r'\b[1-9][0-9]* (?:failed|skipped|errors?|deselected|xfailed|xpassed)\b',
+            output, re.I)):
+        raise ValueError('failed-skipped-or-empty-run')
+    return int(summaries[-1])
+
+
+def m3_task_check_errors(root, witness, task_id, check_id, task, record, evaluated):
+    """Resolve a named check through its integration, result, contract and raw log."""
+    try:
+        reviewed = record['reviewed_head_sha']
+        paths = result_paths_at_revision(root, task_id, reviewed)
+        if len(paths) != 1:
+            raise ValueError('result-representation')
+        result = load_artifact_at_revision(root, paths[0], reviewed)
+        commands = [c for c in result['commands_run'] if c['check_id'] == check_id]
+        contracts = [c for c in task['check_contracts'] if c['check_id'] == check_id]
+        if len(commands) != 1 or len(contracts) != 1:
+            raise ValueError('check-representation')
+        command, contract = commands[0], contracts[0]
+        if (canonical_value_sha(contract) != M3_CHECK_CONTRACT_DIGESTS[task_id + ':' + check_id]
+                or witness['task_identity'] != task['task_identity']
+                or witness['check_id'] != check_id
+                or witness['tested_commit'] != result['tested_commit']
+                or witness['result'] != 'PASS' or command['result'] != 'PASS'
+                or witness['command'] != contract['command']
+                or command['command'] != contract['command']
+                or witness['oracle_sha256'] != canonical_value_sha(contract['pass_oracle'])
+                or witness['result_artifact']['path'] != paths[0]
+                or witness['result_artifact']['revision'] != reviewed
+                or witness['raw']['path'] != command['evidence_ref']
+                or witness['raw']['revision'] != reviewed
+                or not matches(witness['raw']['path'], [evidence_pattern(task_id)])):
+            raise ValueError('check-oracle-binding')
+        m3_evidence_bytes(root, witness['result_artifact'], evaluated)
+        m3_pytest_count(m3_evidence_bytes(
+            root, witness['raw'], evaluated, tested=result['tested_commit'],
+            command=command['command'], exit_code=0).decode())
+    except (ValueError, OSError, KeyError, TypeError, UnicodeError) as ex:
+        return ['milestone-m3-task-check:' + task_id + ':' + check_id + ':' + str(ex)]
+    return []
+
+
+def m3_execution_evidence_errors(root, payload, revision, evaluated, records):
+    """Fresh integrated executions retain all selectors, collection and JUnit cases."""
+    prefix = 'milestone-m3-regression:'
+    try:
+        change = payload['change_id']
+        tested = payload['tested_commit']
+        if (not re.fullmatch(r'HG-[0-9]{3}', change)
+                or resolve(root, tested) != tested or payload['status'] != 'PASS'
+                or payload['commands'] != M3_REGRESSION_COMMANDS
+                or governance_suffix_errors(root, tested, evaluated, change, 'tested')
+                or any(not is_ancestor(root, records[n]['merge_commit'], tested)
+                       for n in M3_TASK_IDS)):
+            raise ValueError('stale-or-unintegrated-revision')
+        runs = payload['executions']
+        if (not isinstance(runs, list) or len(runs) != len(M3_REGRESSION_COMMANDS)
+                or [run['command'] for run in runs] != M3_REGRESSION_COMMANDS):
+            raise ValueError('command-set')
+        for command, run in zip(M3_REGRESSION_COMMANDS, runs):
+            if (run['tested_commit'] != tested or run['exit_code'] != 0
+                    or type(run['exit_code']) is not int):
+                raise ValueError('failed-or-unbound-command')
+            def raw(item, expected_command=None):
+                if item.get('revision', revision) != revision or not matches(
+                        item['path'], [evidence_pattern(change)]):
+                    raise ValueError('raw-provenance')
+                return m3_evidence_bytes(root, dict(item, revision=revision), evaluated,
+                                         tested=tested, command=expected_command, exit_code=0)
+            output = raw(run['stdout'], command).decode()
+            if command == 'uv run kl check-harness':
+                if 'HARNESS_CHECK_PASS' not in output or 'HARNESS_CHECK_FAIL' in output:
+                    raise ValueError('harness-oracle')
+                continue
+            count = m3_pytest_count(output)
+            tree = ET.fromstring(raw(run['junit'], command))
+            cases = list(tree.iter('testcase'))
+            actual = [(case.get('classname', ''), case.get('name', '')) for case in cases]
+            if (not cases or len(cases) != count or len(actual) != len(set(actual))
+                    or any(list(case.iter(tag)) for case in cases
+                           for tag in ('failure', 'error', 'skipped'))):
+                raise ValueError('failed-skipped-duplicate-or-empty-tests')
+            selectors = (['tests/unit'] if command == 'uv run kl test-unit'
+                         else ['tests/harness'] if command == 'uv run kl test-harness'
+                         else command.removeprefix('uv run pytest -q ').split())
+            collect_command = 'uv run pytest --collect-only -q ' + ' '.join(selectors)
+            collection = load_artifact_text(raw(run['collection'], collect_command).decode(), '.json')
+            if (collection['command'] != collect_command
+                    or collection['tested_commit'] != tested or collection['exit_code'] != 0
+                    or type(collection['exit_code']) is not int):
+                raise ValueError('collection-binding')
+            nodeids = collection['nodeids']
+            collected_output = raw(collection['stdout'], collect_command).decode()
+            raw_nodes = [line for line in collected_output.splitlines()
+                         if re.match(r'^tests/[^\s]+\.py::', line)]
+            totals = re.findall(r'^([1-9][0-9]*) tests? collected in ', collected_output, re.M)
+            raw_node_lines = set(raw_nodes)
+            summary_output = '\n'.join(line for line in collected_output.splitlines()
+                                       if line not in raw_node_lines)
+            if (not nodeids or len(nodeids) != len(set(nodeids)) or nodeids != raw_nodes
+                    or len(totals) != 1 or int(totals[0]) != len(nodeids)
+                    or re.search(r'\b[1-9][0-9]* (?:deselected|errors?|skipped)\b',
+                                 summary_output, re.I)):
+                raise ValueError('collection-oracle')
+            expected = []
+            for node in nodeids:
+                address, bracket, parameters = node.partition('[')
+                components = address.split('::')
+                if not any(node == s or node.startswith(s + '[') or node.startswith(s + '::')
+                           or node.startswith(s + '/') for s in selectors):
+                    raise ValueError('wrong-selector')
+                expected.append(('.'.join([components[0].removesuffix('.py').replace('/', '.'),
+                                           *components[1:-1]]), components[-1] + bracket + parameters))
+            for selector in selectors:
+                if not any(node == selector or node.startswith(selector + '[')
+                           or node.startswith(selector + '::') or node.startswith(selector + '/')
+                           for node in nodeids):
+                    raise ValueError('missing-selector')
+            if set(actual) != set(expected) or len(actual) != len(expected):
+                raise ValueError('incomplete-executed-collection')
+    except (ValueError, OSError, KeyError, TypeError, UnicodeError, ET.ParseError) as ex:
+        return [prefix + str(ex)]
+    return []
+
+
+def m3_layer_errors(root, closure, evaluated):
+    """Exact 31 B and 10 I dispositions; support never promotes missing product layers."""
+    try:
+        packet = git(root, 'show', evaluated + ':docs/exec-plans/active/KL-028.md').decode()
+        expected = packet_json_section(packet, 'Boundary layer ledger')
+        requirements = load_artifact_at_revision(
+            root, 'KineticLoop_Acceptance_Spec_v1.2.2.json', evaluated
+        )['supplemental_boundary_requirements']
+        if m3_boundary_layer_errors(expected, requirements):
+            raise ValueError('boundary-authority')
+        for row in expected:
+            if row['disposition'] == 'KL028_PLANNED_EXECUTABLE':
+                row['status'] = 'PASS'
+        if closure['boundary_layers'] != expected:
+            raise ValueError('boundary-dispositions')
+        interleavings = [dict(requirement_id=f'I{i:02}', layer='DC', status='PASS',
+                             task_identity='harness-backlog-v0.2/KL-026', check_id=f'i{i:02}_dc')
+                        for i in range(1, 10)]
+        interleavings.append(dict(requirement_id='I04', layer='WF', status='NOT_RUN',
+                                  required_future_owner='M4 worker/fault process evidence'))
+        if closure['interleaving_layers'] != interleavings:
+            raise ValueError('interleaving-dispositions')
+    except (ValueError, OSError, KeyError, TypeError) as ex:
+        return ['milestone-m3-layers:' + str(ex)]
+    return []
+
+
+def m3_dependency_order_errors(root, records, tasks):
+    """Check both base and tested ancestry without relabeling supporting membership."""
+    errors = []
+    try:
+        for name, record in records.items():
+            reviewed = record['reviewed_head_sha']
+            paths = result_paths_at_revision(root, name, reviewed)
+            if len(paths) != 1 or not revision_regular_file(root, paths[0], reviewed):
+                raise ValueError('result-representation:' + name)
+            result = load_artifact_at_revision(root, paths[0], reviewed)
+            for dep in tasks[name]['depends_on']:
+                for key in ('base_commit', 'tested_commit'):
+                    if not is_ancestor(root, records[dep]['merge_commit'], result[key]):
+                        errors.append('milestone-m3-dependency-order:' + dep + ':' + name + ':' + key)
+    except (ValueError, OSError, KeyError, TypeError) as ex:
+        errors.append('milestone-m3-dependency-order:invalid:' + str(ex))
+    return errors
+
+
+def m3_frozen_authority_errors(root, evaluated):
+    try:
+        frozen = load_artifact_at_revision(root, 'FROZEN_BASELINE.json', evaluated)
+        if frozen != load_artifact(root / 'FROZEN_BASELINE.json'):
+            raise ValueError('baseline-drift')
+        for entry in frozen['files']:
+            if (not revision_regular_file(root, entry['path'], evaluated)
+                    or blob_sha_at_revision(root, entry['path'], evaluated) != entry['sha256']):
+                raise ValueError('file-drift:' + entry['path'])
+    except (ValueError, OSError, KeyError, TypeError) as ex:
+        return ['milestone-m3-frozen-authority:' + str(ex)]
+    return []
+
+
+@evidence_validation_session()
+def m3_milestone_closure_errors(
+        root, closure, schema, integration_schema, result_schema, review_schema, backlog, tasks):
+    """Mechanical minimal TEST demonstration closure, independent of release/product PASS."""
+    errors = ['milestone-schema:M3.json:' + issue.message for issue in schema.iter_errors(closure)]
+    if errors:
+        return errors
+    try:
+        evaluated = closure['evaluated_commit']
+        if resolve(root, evaluated) != evaluated or not is_ancestor(root, evaluated, 'HEAD'):
+            raise ValueError('evaluated-unreachable')
+        evaluated_backlog = load_artifact_at_revision(root, BACKLOG, evaluated)
+        definition_errors, evaluated_tasks = task_definition_errors(root, evaluated_backlog, evaluated)
+        errors.extend('milestone-m3-task-contract:' + e for e in definition_errors)
+        active = {t['id'] for t in evaluated_tasks.values()
+                  if t['milestone'] == 'M3' and t['status'] != 'SUPERSEDED'}
+        ids = [i['display_task_id'] for i in closure['integrations']]
+        if active != M3_TASK_IDS or set(ids) != active or len(ids) != len(set(ids)):
+            return errors + ['milestone-active-task-set:M3']
+        supporting = closure['supporting_prerequisites']
+        if [i['display_task_id'] for i in supporting] != ['KL-074'] or evaluated_tasks['KL-074']['milestone'] != 'M1':
+            return errors + ['milestone-m3-supporting-prerequisites']
+        m2_ref = closure['m2_prerequisite']
+        if m2_ref['path'] != 'docs/exec-plans/milestones/M2.json' or m2_ref['revision'] != evaluated:
+            raise ValueError('m2-prerequisite-binding')
+        m2 = load_artifact_text(m3_evidence_bytes(root, m2_ref, evaluated).decode(), '.json')
+        errors.extend('milestone-m3-prerequisite:' + e for e in m2_milestone_closure_errors(
+            root, m2, schema, integration_schema, result_schema, review_schema,
+            evaluated_backlog, evaluated_tasks))
+        if not is_ancestor(root, m2['evaluated_commit'], evaluated):
+            raise ValueError('m2-prerequisite-unreachable')
+        records = {}
+        pending = list(M3_TASK_IDS | {'KL-074'})
+        declared = {i['display_task_id']: i for i in closure['integrations'] + supporting}
+        while pending:
+            name = pending.pop()
+            if name in records:
+                continue
+            path = f'docs/exec-plans/integrations/{name}.json'
+            if not revision_regular_file(root, path, evaluated):
+                raise ValueError('missing-or-nonregular-integration:' + name)
+            record = load_artifact_at_revision(root, path, evaluated)
+            records[name] = record
+            for source in result_paths_at_revision(root, name, record['result_commit']):
+                if not revision_regular_file(root, source, record['result_commit']):
+                    raise ValueError('nonregular-result:' + name)
+            for kind in evaluated_tasks[name]['review_requirements']:
+                if not revision_regular_file(root, f'docs/exec-plans/reviews/{name}/{kind}.json',
+                                             record['review_record_commit']):
+                    raise ValueError('nonregular-review:' + name + ':' + kind)
+            if name in declared:
+                item = declared[name]
+                if (item['task_identity'] != 'harness-backlog-v0.2/' + name
+                        or item['integration_record'] != path
+                        or item['sha256'] != blob_sha_at_revision(root, path, evaluated)):
+                    errors.append('milestone-m3-integration-binding:' + name)
+            errors.extend('milestone-m3-integration:' + name + ':' + e
+                          for e in integration_record_errors(
+                              root, Path(path), record, integration_schema, result_schema,
+                              review_schema, evaluated_tasks))
+            for key in ('result_commit', 'reviewed_head_sha', 'review_record_commit', 'merge_commit'):
+                if not is_ancestor(root, record[key], evaluated):
+                    errors.append('milestone-m3-integration-unreachable:' + name + ':' + key)
+            pending.extend(evaluated_tasks[name]['depends_on'])
+        errors.extend(m3_dependency_order_errors(root, records, evaluated_tasks))
+        exits = closure['exit_checks']
+        exit_ids = [e['check_id'] for e in exits]
+        if set(exit_ids) != set(M3_EXIT_TASK_CHECKS) or len(exit_ids) != len(set(exit_ids)):
+            errors.append('milestone-exit-check-set:M3')
+        for exit_check in exits:
+            exit_id = exit_check['check_id']
+            required = {(n,c) for n,ids in M3_EXIT_TASK_CHECKS[exit_id].items() for c in ids}
+            witnesses = exit_check['task_checks']
+            pairs = [(w['task_identity'].split('/')[-1], w['check_id']) for w in witnesses]
+            if set(pairs) != required or len(pairs) != len(set(pairs)):
+                errors.append('milestone-m3-exit-task-set:' + exit_id)
+            for pair, witness in zip(pairs, witnesses):
+                if pair not in required:
+                    continue
+                name, check = pair
+                errors.extend(m3_task_check_errors(
+                    root, witness, name, check, evaluated_tasks[name], records[name], evaluated))
+        errors.extend(m3_layer_errors(root, closure, evaluated))
+        errors.extend(m3_frozen_authority_errors(root, evaluated))
+        ref = closure['integrated_regression']
+        if (ref['revision'] != evaluated or not re.fullmatch(
+                r'docs/exec-plans/evidence/HG-[0-9]{3}/m3-regression-[0-9a-f]{7,40}\.json', ref['path'])):
+            raise ValueError('regression-source')
+        payload = load_artifact_text(m3_evidence_bytes(root, ref, evaluated).decode(), '.json')
+        if not matches(ref['path'], [evidence_pattern(payload['change_id'])]):
+            raise ValueError('regression-provenance')
+        errors.extend(m3_execution_evidence_errors(root, payload, evaluated, evaluated, records))
+    except (ValueError, OSError, KeyError, TypeError, IndexError, UnicodeError) as ex:
+        errors.append('milestone-m3-invalid:' + str(ex))
+    return errors
+
+
+def m2_execution_evidence_errors(root, payload, revision):
+    """Require retained successful executions, including real DB test collection."""
+    prefix = 'milestone-regression-execution:'
+    runs = payload.get('executions', []) if isinstance(payload, dict) else []
+    if not isinstance(runs, list) or len(runs) != len(M2_REGRESSION_COMMANDS):
+        return [prefix + 'command-set']
+    errors = []
+    for command, run in zip(M2_REGRESSION_COMMANDS, runs):
+        if (not isinstance(run, dict) or run.get('command') != command
+                or run.get('exit_code') != 0
+                or run.get('tested_commit') != payload.get('tested_commit')):
+            errors.append(prefix + 'failed-or-unbound-command')
+            continue
+        try:
+            log = run['stdout']
+            if (not relative_path(log['path'])
+                    or not matches(log['path'], [evidence_pattern('HG-023')])
+                    or blob_sha_at_revision(root, log['path'], revision) != log['sha256']):
+                raise ValueError('stdout-binding')
+            output = compact_evidence.read(root, log['path'], revision,
+                                           tested=payload['tested_commit'], command=command, exit_code=0).decode()
+            if not output.strip():
+                raise ValueError('empty-stdout')
+            if command == M2_REGRESSION_COMMANDS[1]:
+                if 'HARNESS_CHECK_PASS' not in output or 'HARNESS_CHECK_FAIL' in output:
+                    raise ValueError('harness-oracle')
+                continue
+            report = run['junit']
+            if (not relative_path(report['path'])
+                    or not matches(report['path'], [evidence_pattern('HG-023')])
+                    or blob_sha_at_revision(root, report['path'], revision) != report['sha256']):
+                raise ValueError('junit-binding')
+            tree = ET.fromstring(compact_evidence.read(
+                root, report['path'], revision, tested=payload['tested_commit']))
+            cases = list(tree.iter('testcase'))
+            if not cases or any(
+                    list(case.iter(tag)) for case in cases
+                    for tag in ('failure', 'error', 'skipped')):
+                raise ValueError('failed-skipped-or-empty-tests')
+            names = {(case.get('classname', ''), case.get('name', '').split('[')[0])
+                     for case in cases}
+            collection = run['collection']
+            if (not relative_path(collection['path'])
+                    or not matches(collection['path'], [evidence_pattern('HG-023')])
+                    or blob_sha_at_revision(root, collection['path'], revision)
+                    != collection['sha256']):
+                raise ValueError('collection-binding')
+            collected = load_artifact_text(compact_evidence.read(
+                root, collection['path'], revision, tested=payload['tested_commit']).decode(), '.json')
+            nodeids = collected['nodeids']
+            if (collected.get('command') != 'uv run pytest --collect-only -q'
+                    or collected.get('exit_code') != 0
+                    or collected.get('tested_commit') != payload['tested_commit']
+                    or not isinstance(nodeids, list) or not nodeids
+                    or len(nodeids) != len(set(nodeids))):
+                raise ValueError('invalid-collection')
+            collection_log = collected['stdout']
+            if (not relative_path(collection_log['path'])
+                    or not matches(collection_log['path'], [evidence_pattern('HG-023')])
+                    or blob_sha_at_revision(root, collection_log['path'], revision)
+                    != collection_log['sha256']):
+                raise ValueError('collection-stdout-binding')
+            collection_output = compact_evidence.read(
+                root, collection_log['path'], revision, tested=payload['tested_commit']).decode()
+            raw_nodeids = [line for line in collection_output.splitlines()
+                          if re.match(r'^tests/[^\s]+\.py::', line)]
+            collected_counts = re.findall(
+                r'^([1-9][0-9]*) tests? collected in ', collection_output, re.M)
+            if (raw_nodeids != nodeids or len(collected_counts) != 1
+                    or int(collected_counts[0]) != len(nodeids)
+                    or re.search(r'\b[1-9][0-9]* (?:deselected|errors?|skipped)\b',
+                                 collection_output, re.I)):
+                raise ValueError('collection-stdout-oracle')
+            expected_cases = set()
+            for nodeid in nodeids:
+                components = nodeid.split('::')
+                expected_cases.add((
+                    '.'.join([components[0].removesuffix('.py').replace('/', '.'),
+                              *components[1:-1]]), components[-1]))
+            actual_cases = [(case.get('classname', ''), case.get('name', '')) for case in cases]
+            if set(actual_cases) != expected_cases or len(actual_cases) != len(expected_cases):
+                raise ValueError('incomplete-or-duplicate-collection')
+            required_cases = {
+                ('tests.db.test_migrations', 'test_empty_db_upgrade_head'),
+                ('tests.db.test_transaction_interfaces', 'test_reverse_lock_order_is_rejected'),
+                ('tests.db.test_transaction_interfaces', 'test_event_outbox_atomicity_enforced'),
+                ('tests.db.test_transaction_interfaces', 'test_stale_fence_commit_is_rejected'),
+                ('tests.db.test_transaction_interfaces',
+                 'test_ack_loss_replay_preserves_natural_uniqueness'),
+            }
+            if not required_cases <= names:
+                raise ValueError('missing-db-coverage')
+            summaries = re.findall(r'\b([1-9][0-9]*) passed\b', output)
+            if (not summaries or int(summaries[-1]) != len(cases)
+                    or re.search(r'\b[1-9][0-9]* (?:failed|skipped|errors?|deselected|xfailed|xpassed)\b',
+                                 output, re.I)):
+                raise ValueError('pytest-oracle')
+        except (ValueError, OSError, KeyError, TypeError, ET.ParseError) as ex:
+            errors.append(prefix + str(ex))
+    return errors
+
+
+# HG036 binds only the unstarted KL047 offline infrastructure definition.
+# Future scope/semantic changes require separate governance; historical unrefined
+# protected bases retain their original packet and are never relabelled.
+FITNESS_EVAL_DEFINITION_DIGESTS = {'milestone': '956e5e3d52c685ebc9a545a52bd240ce4d7e92668ff76877175183aa9889a2b3',
+ 'title': '69e481dc5f1f6dfe073d5af9c36848d0c93057f4b73fae510f2d747538660cc6',
+ 'owner_role': 'ff610fb106a3a1c1cedcc6589f563a9a1da99b391e061593d0965d58ddaddceb',
+ 'depends_on': '3107e2f79968e3c2d35593c65c714af842d89b0097e827afa9045ae54f7336d0',
+ 'commands': '4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945',
+ 'transaction_boundaries': '4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945',
+ 'invariant_ids': '283710e28c0d02b671756b1c42e250fad3f32deb19679291eb7be50a1497a92c',
+ 'table_ids': '9a332a5ddd9c278ae54601ec2de7b3a56a656fd493698a6c6f8d5f0a37d2a65f',
+ 'required_test_layers': '4b42aa23b42b3ca743449b544cc16ccb8e8ec8cfd2ddcf2f62a9fac0c5760f71',
+ 'deliverables': '571c2148a82fcaa4fff8e80ec8a6a522f69466cb2dfa587876e467e18266308d',
+ 'definition_of_done': '8235f87e93611a7323d079198263d3c00797af5073c5ecfe2baee50082ab42b6',
+ 'entry_conditions': 'cdb8e9e5f374da25bbf860253cfe03aebb468d1bfa3c5814ab3a7de0f62e5d11',
+ 'thread_mode': 'e08931b96108d4d7b09720df6852f99d68e4b39207dca0c1cbab878221a358d4',
+ 'context_files': '32248e7aa59b56fc871aaf7f9db803fa7752ba0bfe609d644405a073a54bf4c0',
+ 'max_context_policy': '146220a2aa769d8163fb894618fe689e8aa94a7a4240418735beeb016306660c',
+ 'merge_unit': '48f009959aa958b4b832ed0ce7af1e468160c0fae875bb5592b63882743e92d6',
+ 'handoff_artifact': '1a5914ada8e642eebf033f0ca1addfd6274734a39c370097848884866f60b77a',
+ 'shared_hotspot': 'fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa',
+ 'parallel_write_policy': '18673037cf4a790bffe39b043258e1c9ad8de9c40878e9739555fa5551a6e773',
+ 'task_identity': '3418099843e2fcd2528596625e8908d22a49baddebbcb18db366756f23d6e13b',
+ 'requirements_covered': '4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945',
+ 'checks_required_for_this_task': '18ebe2f6b730574e34bbd90f1166ecc1e1ec212ebb9cf14db0c9a5fa58ad6160',
+ 'resource_keys': 'd4105520a414172165c6490416c291fd56c26aea511c2126daec93529eef2f33',
+ 'write_paths': 'f9fe4dabe8eb6718cceb0df885c48dacd15a0c89d77b3c19842834bba570d3df',
+ 'review_requirements': '0469d2acfb8a5ec7a8beb4e1a047624a8371744c73f975a708080a1c32135964',
+ 'conditional_depends_on': '4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945',
+ 'environment_requirements': '4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945',
+ 'packet_refinement': 'bf90cfa6d2424aaea97cbc7342a33d90a3022ac6e104ade780cabd2d598818ad',
+ 'required_test_layers_semantics': 'a9a68d6f7dd868aa585d451f7591de3871f0b1608c2bdc84292071f167412d9f',
+ 'write_paths_status': 'bf90cfa6d2424aaea97cbc7342a33d90a3022ac6e104ade780cabd2d598818ad',
+ 'evidence_paths': '14bf48e02766e462a7140a262deed5c8895d4384867407c7b56a881c051c6dae',
+ 'check_contracts': 'ec38581c9638e7010124552a48c23d8af95c385223dac1eaf96d01b46036bc02'}
+FITNESS_EVAL_PACKET_SHA256 = '70a1376139605a31f1ad030c13dbc12776b92e6872de0c30f5d6ed3b24fe3aed'
+
+
+def fitness_evaluation_definition_errors(task):
+    """Keep source-derived offline scoring separate from quality/release claims."""
+    if task.get('id') != 'KL-047':
+        return []
+    errors = []
+    for field, expected in FITNESS_EVAL_DEFINITION_DIGESTS.items():
+        actual = hashlib.sha256(json.dumps(
+            task.get(field), ensure_ascii=False, sort_keys=True,
+            separators=(',', ':'),
+        ).encode()).hexdigest()
+        if actual != expected:
+            errors.append('fitness-eval-definition:KL-047:' + field)
+    return errors
+
+
+def fitness_evaluation_packet_errors(task, text):
+    if (task.get('id') != 'KL-047'
+            or task.get('packet_refinement') != 'ENFORCEABLE'):
+        return []
+    digest = hashlib.sha256(text.encode()).hexdigest()
+    return ([] if digest == FITNESS_EVAL_PACKET_SHA256
+            else ['fitness-eval-packet:KL-047'])
+
+
+def task_definition_errors(
+        root, backlog, revision=None, *, historical_m1_closure=False):
+    """Validate one revision's complete backlog, packet, resource and DAG state."""
+    errors = []
+    tasks = {task['id']: task for task in backlog['tasks']}
+    if not revision and 'KL-080' not in tasks:
+        errors.append('source-decision-task-missing:KL-080')
+    identities = [task['task_identity'] for task in backlog['tasks']]
+    if len(tasks) != len(backlog['tasks']) or len(identities) != len(set(identities)):
+        errors.append('task-identity-duplicate')
+    if backlog.get('task_count') != len(backlog['tasks']):
+        errors.append('backlog-task-count')
+    active_task_count = sum(
+        task.get('status') != 'SUPERSEDED' for task in backlog['tasks'])
+    if backlog.get('active_task_count') != active_task_count:
+        errors.append('backlog-active-task-count')
+    resource_path = 'docs/harness/RESOURCE_LOCKS.md'
+    resource_text = (git(root, 'show', revision + ':' + resource_path).decode()
+                     if revision else (root / resource_path).read_text())
+    known_resources = set(re.findall(r'^- `([^`]+)`$', resource_text, re.M))
+    if all(tasks.get(name, {}).get('packet_refinement') == 'ENFORCEABLE'
+           for name in M3_BOUNDARY_SHADOW_IDS):
+        plan_text = (git(root, 'show', revision + ':' + PROJECT_PLAN).decode()
+                     if revision else (root / PROJECT_PLAN).read_text())
+        errors.extend(m3_boundary_shadow_plan_errors(plan_text))
+    for task in backlog['tasks']:
+        name = task['id']
+        if (name == 'KL-047' and (not revision
+                or task.get('packet_refinement') == 'ENFORCEABLE')):
+            errors.extend(fitness_evaluation_definition_errors(task))
+        packet_path = 'docs/exec-plans/active/' + name + '.md'
+        if revision:
+            packet = subprocess.run(
+                ['git', 'show', revision + ':' + packet_path],
+                cwd=root, capture_output=True)
+            if packet.returncode == 0:
+                errors.extend(packet_errors(task, packet.stdout.decode()))
+            elif task['status'] != 'SUPERSEDED':
+                errors.append('packet:' + name)
+        else:
+            packet = root / packet_path
+            if packet.exists():
+                errors.extend(packet_errors(task, packet.read_text()))
+            elif task['status'] != 'SUPERSEDED':
+                errors.append('packet:' + name)
+        if name == 'KL-028' and task.get('packet_refinement') == 'ENFORCEABLE':
+            try:
+                packet_text = (git(root, 'show', revision + ':' + packet_path).decode()
+                               if revision else (root / packet_path).read_text())
+                authority_path = 'KineticLoop_Acceptance_Spec_v1.2.2.json'
+                authority = (json.loads(git(root, 'show', revision + ':' + authority_path))
+                             if revision else json.loads((root / authority_path).read_text()))
+                errors.extend(m3_boundary_layer_errors(
+                    packet_json_section(packet_text, 'Boundary layer ledger'),
+                    authority['supplemental_boundary_requirements']))
+            except (ValueError, OSError, KeyError, TypeError):
+                errors.append('m3-boundary-layer-authority-read')
+        if not revision or task.get('packet_refinement') == 'ENFORCEABLE':
+            errors.extend(wave_definition_errors(task))
+        if not revision or task.get('packet_refinement') == 'ENFORCEABLE':
+            errors.extend(ledger_definition_errors(task))
+        if not revision or task.get('packet_refinement') == 'ENFORCEABLE':
+            errors.extend(execution_definition_errors(task))
+        if not revision or task.get('packet_refinement') == 'ENFORCEABLE':
+            errors.extend(m3_boundary_shadow_definition_errors(task))
+        errors.extend(source_decision_definition_errors(task))
+        errors.extend(m3_next_wave_definition_errors(task))
+        errors.extend(readiness_definition_errors(task))
+        for dep in task['depends_on']:
+            if dep not in tasks:
+                errors.append('unknown-dep:' + name + '->' + dep)
+        conditional_dependencies = task.get('conditional_depends_on', [])
+        for conditional in conditional_dependencies:
+            if isinstance(conditional, str):
+                dep = conditional
+            elif (isinstance(conditional, dict)
+                  and isinstance(conditional.get('task_id'), str)
+                  and isinstance(conditional.get('condition'), str)
+                  and conditional['condition'].strip()):
+                dep = conditional['task_id']
+            else:
+                errors.append('invalid-conditional-dep:' + name)
+                continue
+            if dep not in tasks:
+                errors.append('unknown-conditional-dep:' + name + '->' + dep)
+        resources = task.get('resource_keys', [])
+        if len(resources) != len(set(resources)):
+            errors.append('duplicate-resource-key:' + name)
+        for resource in resources:
+            if resource not in known_resources:
+                errors.append('unknown-resource-key:' + name + '->' + resource)
+        if name in M2_REFINED_TASK_IDS:
+            contracts = task.get('check_contracts')
+            evidence_paths = task.get('evidence_paths')
+            contract_ids = (
+                [item.get('check_id') for item in contracts]
+                if isinstance(contracts, list) and all(isinstance(item, dict) for item in contracts)
+                else []
+            )
+            generic = re.compile(r'(?:^task_scope_|todo|tbd|placeholder)', re.I)
+            if (not contracts or len(contract_ids) != len(set(contract_ids))
+                    or contract_ids != task.get('checks_required_for_this_task')):
+                errors.append('check-contract-ids:' + name)
+            elif any(
+                    set(item) != {'check_id', 'command', 'pass_oracle'}
+                    or not all(isinstance(item.get(field), str) and item[field].strip()
+                               for field in ('check_id', 'command', 'pass_oracle'))
+                    or generic.search(item['check_id'])
+                    or generic.search(item['command'])
+                    or generic.search(item['pass_oracle'])
+                    for item in contracts):
+                errors.append('check-contract-generic-or-invalid:' + name)
+            expected_evidence = [f'docs/exec-plans/evidence/{name}/**']
+            if evidence_paths != expected_evidence or not all(
+                    relative_path(path[:-3]) for path in evidence_paths or []):
+                errors.append('evidence-path:' + name)
+            if task.get('packet_refinement') != 'ENFORCEABLE':
+                errors.append('m2-packet-not-enforceable:' + name)
+            if 'M1 closure PASS: docs/exec-plans/milestones/M1.json' not in task.get(
+                    'entry_conditions', []):
+                errors.append('m2-entry-condition:' + name)
+            required_checks = (
+                M1_CLOSURE_KL017_REQUIRED_CHECK_IDS
+                if historical_m1_closure and name == 'KL-017'
+                else M1_CLOSURE_KL018_REQUIRED_CHECK_IDS
+                if historical_m1_closure and name == 'KL-018'
+                else M2_REQUIRED_CHECK_IDS.get(name, set())
+            )
+            if not required_checks.issubset(set(contract_ids)):
+                errors.append('m2-required-semantic-checks:' + name)
+            if name == 'KL-014' and task.get('commands') != KL014_REQUIRED_COMMAND_SURFACE:
+                errors.append('m2-kl014-command-surface')
+            if name == 'KL-016' and task.get('commands') != KL016_REQUIRED_COMMAND_SURFACE:
+                errors.append('m2-kl016-command-surface')
+            if name == 'KL-072' and task.get('commands') != KL072_REQUIRED_COMMAND_SURFACE:
+                errors.append('m2-kl072-command-surface')
+            if (name == 'KL-072' and (task.get('shared_hotspot') is not True
+                    or 'registry_coordination' not in task.get('resource_keys', []))):
+                errors.append('m2-kl072-registry-hotspot')
+            if (name == 'KL-018' and not historical_m1_closure and (
+                    not {'migration_chain', 'persistence_permissions'} <= set(
+                        task.get('resource_keys', []))
+                    or 'migrations/versions/*_artifact_registry.py' not in task.get(
+                        'write_paths', [])
+                    or 'tests/db/test_migrations.py' not in task.get('write_paths', [])
+                    or 'tests/db/test_safety_registry.py' not in task.get('write_paths', []))):
+                errors.append('m2-kl018-registry-migration-scope')
+            if (name == 'KL-017' and not historical_m1_closure and (
+                    'KL-018' not in task.get('depends_on', [])
+                    or 'registry_coordination' not in task.get('resource_keys', [])
+                    or 'tests/db/test_migrations.py' not in task.get('write_paths', [])
+                    or 'tests/db/test_safety_registry.py' not in task.get('write_paths', []))):
+                errors.append('m2-kl017-successor-migration-scope')
+            if name == 'KL-015':
+                if task.get('invariant_ids') != KL015_REQUIRED_INVARIANT_IDS:
+                    errors.append('m2-kl015-frozen-impact:invariants')
+                if task.get('transaction_boundaries') != KL015_REQUIRED_TRANSACTION_BOUNDARIES:
+                    errors.append('m2-kl015-frozen-impact:transactions')
+                if task.get('table_ids') != KL015_REQUIRED_TABLE_IDS:
+                    errors.append('m2-kl015-frozen-impact:tables')
+            contract_map = {
+                item.get('check_id'): item for item in contracts or []
+                if isinstance(item, dict)
+            }
+            critical_contracts = (
+                M1_CLOSURE_KL017_CRITICAL_CONTRACT_DIGESTS
+                if historical_m1_closure and name == 'KL-017'
+                else M1_CLOSURE_KL018_CRITICAL_CONTRACT_DIGESTS
+                if historical_m1_closure and name == 'KL-018'
+                else M2_CRITICAL_CONTRACT_DIGESTS.get(name, {})
+            )
+            for check_id, expected_digest in critical_contracts.items():
+                contract = contract_map.get(check_id)
+                actual_digest = hashlib.sha256(json.dumps(
+                    contract, ensure_ascii=False, sort_keys=True,
+                    separators=(',', ':'),
+                ).encode()).hexdigest() if contract is not None else ''
+                if actual_digest != expected_digest:
+                    errors.append('m2-security-contract:' + name + ':' + check_id)
+            if (name in M2_REQUIRED_SECURITY_REVIEWS
+                    and 'SECURITY_DATA_BOUNDARY' not in task.get('review_requirements', [])):
+                errors.append('m2-security-review-required:' + name)
+            if (name in M2_REQUIRED_DB_REVIEWS
+                    and 'DB_CONCURRENCY' not in task.get('review_requirements', [])):
+                errors.append('m2-db-review-required:' + name)
+        if (task.get('status') == 'READY'
+                and (task.get('packet_refinement') != 'ENFORCEABLE'
+                     or task.get('write_paths_status') != 'ENFORCEABLE')):
+            errors.append('ready-write-scope-unrefined:' + name)
+    refined = [tasks[name] for name in sorted(M2_REFINED_TASK_IDS | WAVE_REFINED_TASK_IDS | {'KL-047', 'KL-074', 'KL-026', 'KL-027', 'KL-075', 'KL-076', 'KL-077', 'KL-078', 'KL-079', 'KL-080'})
+               if name in tasks and (name in M2_REFINED_TASK_IDS
+                                     or tasks[name].get('packet_refinement') == 'ENFORCEABLE')]
+    for position, left in enumerate(refined):
+        for right in refined[position + 1:]:
+            overlaps = {
+                left_path for left_path in left.get('write_paths', [])
+                for right_path in right.get('write_paths', [])
+                if (left_path == right_path
+                    or matches(left_path.replace('*', 'x'), [right_path])
+                    or matches(right_path.replace('*', 'x'), [left_path]))
+            }
+            if overlaps and not set(left.get('resource_keys', [])) & set(
+                    right.get('resource_keys', [])):
+                errors.append(
+                    'unlocked-write-path-overlap:' + left['id'] + ':' + right['id'])
+    pending = set(tasks)
+    while pending:
+        ready = set()
+        for name in pending:
+            conditional = tasks[name].get('conditional_depends_on', [])
+            dependencies = set(tasks[name]['depends_on']) | {
+                item if isinstance(item, str) else item.get('task_id')
+                for item in conditional
+            }
+            if not dependencies & pending:
+                ready.add(name)
+        if not ready:
+            errors.append('dag-cycle')
+            break
+        pending -= ready
+    return errors, tasks
+
+
+@evidence_validation_session()
+def validate(root, args):
+    from jsonschema import Draft202012Validator
+
+    errors = []
+    index, frozen, backlog = (load_artifact(root / n) for n in (INDEX, 'FROZEN_BASELINE.json', BACKLOG))
+    manifest = load_artifact(root / MANIFEST)
+    traceability = load_artifact(root / TRACEABILITY)
+    traceability_errors, _ = traceability_task_map(traceability)
+    errors.extend(traceability_errors)
+    for entry in index['documents'] + index.get('machine_readable', []) + frozen['files']:
+        path = root / entry['path']
+        if not relative_path(entry['path']) or not path.is_file():
+            errors.append('missing:' + entry['path'])
+        elif sha(path) != entry['sha256']:
+            errors.append('hash:' + entry['path'])
+    for entry in manifest.get('files', []):
+        path = root / entry['path']
+        if not relative_path(entry['path']) or not path.is_file():
+            errors.append('manifest-missing:' + entry['path'])
+        elif sha(path) != entry['sha256']:
+            errors.append('manifest-hash:' + entry['path'])
+        elif entry.get('bytes') != path.stat().st_size:
+            errors.append('manifest-bytes:' + entry['path'])
+    task_errors, tasks = task_definition_errors(root, backlog)
+    errors.extend(task_errors)
+    errors.extend(m3_closure_plan_errors((root / PROJECT_PLAN).read_text()))
+    errors.extend(source_decision_plan_errors((root / PROJECT_PLAN).read_text()))
+
+    schemas = {}
+    known_requirements = requirement_ids(root)
+    schema_files = {
+        'RESULT': 'THREAD_RESULT.schema.json',
+        'REVIEW': 'THREAD_REVIEW.schema.json',
+        'GOVERNANCE': GOVERNANCE_SCHEMA,
+        'INTEGRATION': INTEGRATION_SCHEMA,
+        'MILESTONE': MILESTONE_CLOSURE_SCHEMA,
+    }
+    for kind, schema_name in schema_files.items():
+        schema = load_artifact(root / schema_name)
+        try:
+            Draft202012Validator.check_schema(schema)
+        except Exception as ex:
+            raise ValueError('invalid-schema:' + kind + ':' + str(ex)) from ex
+        schemas[kind] = Draft202012Validator(schema)
+    milestone_dir = root / 'docs/exec-plans/milestones'
+    milestone_records: dict[str, list[tuple[Path, Any]]] = {'M1': [], 'M2': [], 'M3': []}
+    if milestone_dir.exists():
+        for path in sorted(milestone_dir.glob('*.json')):
+            if path.stem == 'M3':
+                record, source_errors = m3_load_closure_record(root, path)
+                errors.extend(source_errors)
+                if source_errors:
+                    continue
+            else:
+                record = load_artifact(path)
+            milestone_id = record.get('display_milestone_id') if isinstance(record, dict) else None
+            if path.stem in milestone_records:
+                milestone_records[path.stem].append((path, record))
+            elif milestone_id in milestone_records:
+                milestone_records[milestone_id].append((path, record))
+            else:
+                errors.append('milestone-unsupported-record:' + path.name)
+    if not milestone_records['M1']:
+        m1_closure_valid = False
+    elif len(milestone_records['M1']) != 1:
+        errors.append('milestone-closure-count:M1:' + str(len(milestone_records['M1'])))
+        m1_closure_valid = False
+    else:
+        closure_path, closure = milestone_records['M1'][0]
+        if closure_path.name != 'M1.json':
+            errors.append('milestone-closure-path:M1:' + closure_path.name)
+        closure_errors = milestone_closure_errors(
+            root, closure, schemas['MILESTONE'], schemas['INTEGRATION'],
+            schemas['RESULT'], schemas['REVIEW'], backlog, tasks)
+        errors.extend(closure_errors)
+        m1_closure_valid = not closure_errors and closure_path.name == 'M1.json'
+    if len(milestone_records['M2']) > 1:
+        errors.append('milestone-closure-count:M2:' + str(len(milestone_records['M2'])))
+    elif milestone_records['M2']:
+        closure_path, closure = milestone_records['M2'][0]
+        if closure_path.name != 'M2.json':
+            errors.append('milestone-closure-path:M2:' + closure_path.name)
+        errors.extend(m2_milestone_closure_errors(
+            root, closure, schemas['MILESTONE'], schemas['INTEGRATION'],
+            schemas['RESULT'], schemas['REVIEW'], backlog, tasks))
+    if len(milestone_records['M3']) > 1:
+        errors.append('milestone-closure-count:M3:' + str(len(milestone_records['M3'])))
+    elif milestone_records['M3']:
+        closure_path, closure = milestone_records['M3'][0]
+        if closure_path.name != 'M3.json':
+            errors.append('milestone-closure-path:M3:' + closure_path.name)
+        errors.extend(m3_closure_record_errors(root, closure_path))
+        errors.extend(m3_milestone_closure_errors(
+            root, closure, schemas['MILESTONE'], schemas['INTEGRATION'],
+            schemas['RESULT'], schemas['REVIEW'], backlog, tasks))
+    for task in tasks.values():
+        if task['milestone'] == 'M2' and task['status'] == 'READY' and not m1_closure_valid:
+            errors.append('ready-m1-closure-invalid:' + task['id'])
+    results = {}
+    completed = root / 'docs/exec-plans/completed'
+    for path in sorted(list(completed.glob('*_RESULT.yaml')) + list(completed.glob('*_RESULT.json'))):
+        obj = load_artifact(path)
+        issues = list(schemas['RESULT'].iter_errors(obj))
+        if issues:
+            errors.extend('result-schema:' + path.name + ':' + e.message for e in issues)
+            continue
+        task = tasks.get(obj['display_task_id'])
+        if task is None:
+            errors.append('result-unknown-task:' + path.name)
+            continue
+        if path.name not in [Path(p).name for p in result_paths(task['id'])] or task['id'] in results:
+            errors.append('result-duplicate-or-path:' + path.name)
+        results[task['id']] = (path, obj)
+        errors.extend(path.name + ':' + e for e in semantic_result_errors(obj, task, root))
+        requirement_names = [r['requirement_id'] for r in obj['requirements_covered']]
+        if len(requirement_names) != len(set(requirement_names)):
+            errors.append('result-duplicate-requirement:' + path.name)
+        for requirement in obj['requirements_covered']:
+            name = requirement['requirement_id']
+            covered = task['requirements_covered']
+            if name not in known_requirements or (name not in covered and name.split('@')[0] not in covered):
+                errors.append('result-unknown-or-unassigned-requirement:' + name)
+
+    reviews = []
+    governance_reviews = []
+    for path in sorted((root / 'docs/exec-plans/reviews').glob('*/*.json')):
+        obj = load_artifact(path)
+        issues = list(schemas['REVIEW'].iter_errors(obj))
+        if issues:
+            errors.extend('review-schema:' + path.name + ':' + e.message for e in issues)
+            continue
+        if re.fullmatch(r'HG-[0-9]{3}', path.parent.name):
+            expected_identity = 'harness-governance-v0.1/' + path.parent.name
+            if obj['task_identity'] != expected_identity or path.stem != obj['review_type']:
+                errors.append('governance-review-identity-or-path:' + str(path.relative_to(root)))
+                continue
+            for ref in obj.get('evidence_refs', []):
+                if not evidence_exists(root, ref):
+                    errors.append('governance-review-evidence:' + ref)
+            governance_reviews.append((path, obj))
+            continue
+        task = tasks.get(path.parent.name)
+        if not task or task['task_identity'] != obj['task_identity'] or path.stem != obj['review_type']:
+            errors.append('review-identity-or-path:' + str(path.relative_to(root)))
+            continue
+        for ref in obj.get('evidence_refs', []):
+            if not evidence_exists(root, ref):
+                errors.append('review-evidence:' + ref)
+        reviews.append((path, obj, task))
+
+    governance_records = {}
+    governance_dir = root / 'docs/exec-plans/governance'
+    if governance_dir.exists():
+        for path in sorted(list(governance_dir.glob('HG-*.yaml')) +
+                           list(governance_dir.glob('HG-*.json'))):
+            record = load_artifact(path)
+            issues = list(schemas['GOVERNANCE'].iter_errors(record))
+            if issues:
+                errors.extend('governance-schema:' + path.name + ':' + issue.message
+                              for issue in issues)
+                continue
+            change_id = record['display_change_id']
+            if path.stem != change_id or change_id in governance_records:
+                errors.append('governance-duplicate-or-path:' + path.name)
+            governance_records[change_id] = (path, record)
+            if record['change_identity'] != 'harness-governance-v0.1/' + change_id:
+                errors.append('governance-identity:' + change_id)
+            check_ids = [check['check_id'] for check in record['checks_run']]
+            if len(check_ids) != len(set(check_ids)):
+                errors.append('governance-duplicate-check:' + change_id)
+            for check in record['checks_run']:
+                if check['result'] != 'PASS' or not evidence_exists(root, check['evidence_ref']):
+                    errors.append('governance-check-evidence:' + change_id + ':' + check['check_id'])
+            if record['change_status'] == 'PASS' and record['frozen_impact'] != 'NONE':
+                errors.append('governance-pass-frozen-impact:' + change_id)
+
+    integrations = root / 'docs/exec-plans/integrations'
+    if integrations.exists():
+        for path in sorted(integrations.glob('*.json')):
+            record = load_artifact(path)
+            errors.extend(integration_record_errors(
+                root, path, record, schemas['INTEGRATION'], schemas['RESULT'],
+                schemas['REVIEW'], tasks))
+
+    if (args.protected_base or args.reviewed_head or
+            getattr(args, 'governance_reviewed_head', None)):
+        # PR checks use committed artifacts and may not silently ignore working edits.
+        if git(root, 'status', '--porcelain', '--untracked-files=all').strip():
+            errors.append('git-worktree-not-clean')
+    if args.protected_base:
+        base_sha, head = resolve(root, args.protected_base), resolve(root, 'HEAD')
+        git(root, 'merge-base', '--is-ancestor', base_sha, head)
+        changed = set(changed_paths(root, base_sha, head))
+        selected_owner = args.task_id or getattr(args, 'governance_change_id', None)
+        if selected_owner:
+            budget = compact_evidence.audit(root, base_sha, head, selected_owner)
+            errors.extend('evidence-budget:' + issue for issue in budget['errors'])
+        old_frozen = json.loads(git(root, 'show', base_sha + ':FROZEN_BASELINE.json'))
+        protected_paths = {e['path'] for e in old_frozen['files']} | {'FROZEN_BASELINE.json'}
+        errors.extend('protected-baseline-change:' + p for p in sorted(changed & protected_paths))
+        if args.task_id:
+            task = tasks.get(args.task_id)
+            # The PR may not widen its own definition to authorize additional writes.
+            old_tasks = json.loads(git(root, 'show', base_sha + ':' + BACKLOG))['tasks']
+            baseline_task = next((t for t in old_tasks if t['id'] == args.task_id), None)
+            if not task or not baseline_task or baseline_task.get('write_paths_status') != 'ENFORCEABLE':
+                errors.append('write-scope-unrefined-or-unknown:' + args.task_id)
+            else:
+                allowed = baseline_task['write_paths'] + result_paths(args.task_id) + review_patterns(args.task_id) + [evidence_pattern(args.task_id)]
+                for path in sorted(changed):
+                    if (path == INDEX and
+                            INDEX in baseline_task.get('authority_update_paths', [])):
+                        errors.extend(task_index_authority_errors(
+                            root, base_sha, baseline_task, changed, protected_paths))
+                    elif path in (INDEX, MANIFEST):
+                        errors.extend(hash_refresh_errors(root, base_sha, path, baseline_task, changed, protected_paths))
+                    elif not matches(path, allowed):
+                        errors.append('write-scope:' + args.task_id + ':' + path)
+            errors.extend(task_fixture_scope_errors(
+                root, base_sha, head, args.task_id, changed))
+        elif getattr(args, 'governance_change_id', None):
+            change_id = args.governance_change_id
+            selected = governance_records.get(change_id)
+            if not selected:
+                errors.append('governance-record-missing:' + change_id)
+            else:
+                _, record = selected
+                review_only = getattr(args, 'governance_review_only', False)
+                if record['change_status'] != 'PASS':
+                    errors.append('governance-change-not-pass:' + change_id)
+                record_base = resolve(root, record['base_commit'])
+                reviewed = resolve(root, args.governance_reviewed_head)
+                if not review_only and record_base != base_sha:
+                    errors.append('governance-base-mismatch:' + change_id)
+                if review_only:
+                    governance_base = record_base
+                    governance_changed = set(changed_paths(root, governance_base, reviewed))
+                    governance_target = reviewed
+                    old_frozen = json.loads(
+                        git(root, 'show', governance_base + ':FROZEN_BASELINE.json'))
+                    governance_protected = {
+                        entry['path'] for entry in old_frozen['files']
+                    } | {'FROZEN_BASELINE.json'}
+                    errors.extend(
+                        'protected-baseline-change:' + path
+                        for path in sorted(governance_changed & governance_protected)
+                    )
+                else:
+                    governance_base = base_sha
+                    governance_changed = set(changed_paths(root, governance_base, reviewed))
+                    governance_target = None
+                    governance_protected = protected_paths
+                if (change_id == 'HG-024'
+                        and any(matches(path, HG024_EMERGENCY_SCOPE_PATTERNS)
+                                for path in governance_changed)
+                        and getattr(args, 'emergency_task_id', None) != 'KL-073'):
+                    errors.append('governance-emergency-pair-required:HG-024:KL-073')
+                for path in sorted(changed):
+                    allowed = (review_patterns(change_id) if review_only
+                               else governance_allowed_patterns(change_id))
+                    if not matches(path, allowed):
+                        prefix = ('governance-review-only-scope:' if review_only
+                                  else 'governance-write-scope:')
+                        errors.append(prefix + change_id + ':' + path)
+                for path in sorted(governance_changed if review_only else ()):
+                    if not matches(path, governance_allowed_patterns(change_id)):
+                        errors.append('governance-write-scope:' + change_id + ':' + path)
+                if change_id == 'HG-045':
+                    errors.extend(source_governance_plan_prefix_errors(
+                        root, governance_base, reviewed))
+                if change_id == 'HG-044':
+                    errors.extend(m3_governance_plan_prefix_errors(
+                        root, governance_base, reviewed))
+                declared = set(record['files_changed'])
+                if declared != governance_changed:
+                    errors.append('governance-files-changed-mismatch:' + change_id)
+                changed_task_review_types: dict[str, set[str]] = {}
+                for path in sorted(governance_changed):
+                    if not re.match(r'docs/exec-plans/reviews/KL-[0-9]{3}[A-Z]?/', path):
+                        continue
+                    match = re.fullmatch(
+                        r'docs/exec-plans/reviews/(KL-[0-9]{3}[A-Z]?)/([A-Z_]+)\.json',
+                        path)
+                    if not match:
+                        errors.append('governance-task-review-path:' + change_id + ':' + path)
+                        continue
+                    task_id, review_type = match.groups()
+                    changed_task_review_types.setdefault(task_id, set()).add(review_type)
+                    if subprocess.run(
+                            ['git', 'cat-file', '-e', governance_base + ':' + path],
+                            cwd=root, capture_output=True).returncode == 0:
+                        errors.append(
+                            'governance-task-review-not-addition:'
+                            + change_id + ':' + path)
+                changed_integrations = {
+                    match.group(1)
+                    for path in governance_changed
+                    if (match := re.fullmatch(
+                        r'docs/exec-plans/integrations/(KL-[0-9]{3}[A-Z]?)\.json',
+                        path))
+                }
+                changed_task_reviews = set(changed_task_review_types)
+                for task_id in sorted(changed_task_reviews - changed_integrations):
+                    if EMERGENCY_GOVERNANCE_TASK.get(change_id) != task_id:
+                        errors.append(
+                            'governance-task-review-without-integration:'
+                            + change_id + ':' + task_id)
+                for task_id in sorted(changed_task_reviews & changed_integrations):
+                    integration_path = f'docs/exec-plans/integrations/{task_id}.json'
+                    if subprocess.run(
+                            ['git', 'cat-file', '-e', governance_base + ':' + integration_path],
+                            cwd=root, capture_output=True).returncode == 0:
+                        errors.append(
+                            'governance-task-integration-not-addition:'
+                            + change_id + ':' + task_id)
+                    required_reviews = set(tasks.get(task_id, {}).get('review_requirements', []))
+                    if changed_task_review_types[task_id] != required_reviews:
+                        errors.append(
+                            'governance-task-review-types:'
+                            + change_id + ':' + task_id)
+                errors.extend(governance_index_errors(
+                    root, governance_base, record, governance_changed, governance_protected,
+                    governance_target))
+                errors.extend(governance_manifest_errors(
+                    root, governance_base, governance_changed, governance_target))
+
+                old_tasks = {task['id']: task for task in
+                             json.loads(git(root, 'show', governance_base + ':' + BACKLOG))['tasks']}
+                if review_only:
+                    replay_backlog = load_artifact_at_revision(root, BACKLOG, reviewed)
+                    replay_task_errors, replay_tasks = task_definition_errors(
+                        root, replay_backlog, reviewed)
+                    errors.extend(replay_task_errors)
+                else:
+                    replay_tasks = tasks
+                changed_task_ids = {
+                    task_id for task_id in set(old_tasks) | set(replay_tasks)
+                    if old_tasks.get(task_id) != replay_tasks.get(task_id)
+                }
+                args.governance_changed_task_ids = changed_task_ids
+                args.governance_base_tasks = old_tasks
+                args.governance_reviewed_tasks = replay_tasks
+                refined = set(record['packets_refined'])
+                for task_id in sorted(changed_task_ids - refined):
+                    errors.append(
+                        'governance-task-definition-scope:'
+                        + change_id + ':' + task_id)
+
+                base_traceability = load_artifact_at_revision(
+                    root, TRACEABILITY, governance_base)
+                reviewed_traceability = (
+                    load_artifact_at_revision(root, TRACEABILITY, reviewed)
+                    if review_only else load_artifact(root / TRACEABILITY)
+                )
+                base_trace_errors, base_trace_by_identity = traceability_task_map(
+                    base_traceability, 'governance-base-traceability')
+                reviewed_trace_errors, reviewed_trace_by_identity = traceability_task_map(
+                    reviewed_traceability, 'governance-reviewed-traceability')
+                errors.extend(base_trace_errors)
+                errors.extend(reviewed_trace_errors)
+                changed_trace_identities = {
+                    identity
+                    for identity in set(base_trace_by_identity) | set(reviewed_trace_by_identity)
+                    if base_trace_by_identity.get(identity) != reviewed_trace_by_identity.get(identity)
+                }
+                refined_identities = {
+                    replay_tasks[task_id]['task_identity']
+                    for task_id in refined if task_id in replay_tasks
+                }
+                for identity in sorted(changed_trace_identities - refined_identities):
+                    errors.append(
+                        'governance-traceability-scope:'
+                        + change_id + ':' + str(identity))
+                for task_id in sorted(refined):
+                    task = replay_tasks.get(task_id)
+                    if not task:
+                        continue
+                    trace_task = reviewed_trace_by_identity.get(task['task_identity'])
+                    if (trace_task is None
+                            or trace_task.get('id') != task_id
+                            or traceability_projection(task) != trace_task):
+                        errors.append('governance-traceability-mismatch:' + task_id)
+                observed = set()
+                for task_id in refined:
+                    task = replay_tasks.get(task_id)
+                    old_task = old_tasks.get(task_id)
+                    if not task:
+                        errors.append('governance-refined-task-unknown:' + task_id)
+                        continue
+                    if old_task is None:
+                        task_artifact_patterns = (
+                            result_paths(task_id) + review_patterns(task_id)
+                            + [f'docs/exec-plans/integrations/{task_id}.json']
+                        )
+                        if task.get('status') != 'NOT_STARTED':
+                            errors.append('governance-new-task-status:' + task_id)
+                        emergency_task = EMERGENCY_GOVERNANCE_TASK.get(change_id) == task_id
+                        if (not emergency_task and any(
+                                matches(path, task_artifact_patterns)
+                                for path in governance_changed)):
+                            errors.append('governance-new-task-artifact:' + task_id)
+                        if task.get('packet_refinement') == 'ENFORCEABLE':
+                            observed.add(task_id)
+                    else:
+                        if result_paths_at_revision(root, task_id, governance_base):
+                            errors.append('governance-refine-completed-task:' + task_id)
+                        retired = (
+                            old_task.get('status') == 'NOT_STARTED'
+                            and task.get('status') == 'SUPERSEDED'
+                        )
+                        if old_task.get('status') == 'SUPERSEDED':
+                            observed.add(task_id)
+                            if task.get('status') != 'SUPERSEDED':
+                                errors.append(
+                                    'governance-reactivate-superseded-task:' + task_id)
+                            else:
+                                errors.append(
+                                    'governance-modify-superseded-task:' + task_id)
+                        if retired:
+                            observed.add(task_id)
+                            retirement_fields = {
+                                'status', 'title', 'depends_on', 'deliverables',
+                                'definition_of_done', 'superseded_by',
+                                'disposition_reason',
+                            }
+                            changed_fields = {
+                                field for field in set(old_task) | set(task)
+                                if old_task.get(field) != task.get(field)
+                            }
+                            if not changed_fields <= retirement_fields:
+                                errors.append(
+                                    'governance-retirement-definition-scope:' + task_id)
+                            replacements = task.get('superseded_by')
+                            reason = task.get('disposition_reason')
+                            if (not isinstance(replacements, list)
+                                    or not replacements
+                                    or replacements != task.get('depends_on')
+                                    or set(replacements) == set(old_task.get('depends_on', []))
+                                    or len(replacements) != len(set(replacements))):
+                                errors.append(
+                                    'governance-retirement-replacement:' + task_id)
+                            if not isinstance(reason, str) or not reason.strip():
+                                errors.append(
+                                    'governance-retirement-reason:' + task_id)
+                        elif ((old_task.get('packet_refinement') == 'MUST_REFINE_BEFORE_READY'
+                             and task.get('packet_refinement') != 'MUST_REFINE_BEFORE_READY')
+                                or (old_task != task and
+                                    task.get('packet_refinement') == 'ENFORCEABLE')):
+                            observed.add(task_id)
+                    if (task.get('status') != 'SUPERSEDED' and (
+                            task.get('write_paths_status') != 'ENFORCEABLE' or
+                            not task.get('write_paths') or
+                            any('TO_BE_REFINED' in path for path in task.get('write_paths', [])))):
+                        errors.append('governance-refinement-incomplete:' + task_id)
+                changed_packets = {
+                    Path(path).stem for path in governance_changed
+                    if re.fullmatch(r'docs/exec-plans/active/KL-[0-9]{3}[A-Z]?\.md', path)
+                }
+                if refined != observed or refined != changed_packets:
+                    errors.append('governance-refined-packets-mismatch:' + change_id)
+        else:
+            errors.append('protected-change-kind-required')
+
+    for path, review, task in reviews:
+        # Historical reviews describe their own PR, not every later repository HEAD.
+        if review['status'] != 'PASS' or not args.reviewed_head or task['id'] != args.task_id:
+            continue
+        reviewed = review['reviewed_head_sha']
+        errors.extend(suffix_errors(root, reviewed, 'HEAD', task['id'], 'review'))
+        result = results.get(task['id'])
+        if not result:
+            errors.append('review-missing-result:' + task['id'])
+            continue
+        result_path, obj = result
+        try:
+            if git(root, 'show', resolve(root, reviewed) + ':' + str(result_path.relative_to(root))) != result_path.read_bytes():
+                errors.append('review-result-not-bound:' + task['id'])
+            if obj['task_status'] != 'PASS':
+                errors.append('review-result-not-pass:' + task['id'])
+            git(root, 'merge-base', '--is-ancestor', resolve(root, obj['base_commit']), resolve(root, obj['tested_commit']))
+            errors.extend(suffix_errors(root, obj['tested_commit'], reviewed, task['id'], 'tested'))
+            refs = [c.get('evidence_ref') for c in obj['commands_run']] + [r.get('evidence_ref') for r in obj['requirements_covered']]
+            for ref in filter(None, refs):
+                if (not evidence_exists(root, ref, reviewed, obj['tested_commit'])
+                        or git(root, 'show', resolve(root, reviewed) + ':' + ref)
+                        != (root / ref).read_bytes()):
+                    errors.append('review-evidence-not-bound:' + ref)
+        except ValueError as ex:
+            errors.append('review-revision:' + str(ex))
+    if args.reviewed_head:
+        if not args.task_id:
+            errors.append('review-suffix:task-id-required')
+        else:
+            errors.extend(suffix_errors(root, args.reviewed_head, 'HEAD', args.task_id, 'review'))
+            task = tasks.get(args.task_id)
+            relevant = [review for _, review, t in reviews if t['id'] == args.task_id and review['status'] == 'PASS']
+            types = {r['review_type'] for r in relevant if resolve(root, r['reviewed_head_sha']) == resolve(root, args.reviewed_head)}
+            if not task or not set(task['review_requirements']) <= types:
+                errors.append('required-reviews-not-pass:' + args.task_id)
+            review_suffix = not suffix_errors(root, args.reviewed_head, 'HEAD', args.task_id, 'review')
+            for review in relevant:
+                if resolve(root, review['reviewed_head_sha']) != resolve(root, args.reviewed_head):
+                    continue
+                for ref in review.get('evidence_refs', []):
+                    if not review_evidence_exists(
+                            root, ref, args.reviewed_head, 'HEAD', args.task_id, review_suffix):
+                        errors.append('review-evidence-revision:' + args.task_id + ':' + ref)
+    if getattr(args, 'governance_reviewed_head', None):
+        change_id = args.governance_change_id
+        reviewed = resolve(root, args.governance_reviewed_head)
+        review_only = getattr(args, 'governance_review_only', False)
+        if review_only:
+            protected_base = resolve(root, args.protected_base)
+            if not is_ancestor(root, reviewed, protected_base):
+                errors.append('governance-review-only-reviewed-not-merged:' + change_id)
+            errors.extend(governance_suffix_errors(
+                root, protected_base, 'HEAD', change_id, 'review'))
+        else:
+            errors.extend(governance_suffix_errors(root, reviewed, 'HEAD', change_id, 'review'))
+        selected = governance_records.get(change_id)
+        if not selected:
+            errors.append('governance-record-missing:' + change_id)
+        else:
+            record_path, record = selected
+            try:
+                if git(root, 'show', reviewed + ':' + str(record_path.relative_to(root))) != record_path.read_bytes():
+                    errors.append('governance-record-not-bound:' + change_id)
+                git(root, 'merge-base', '--is-ancestor',
+                    resolve(root, record['base_commit']), resolve(root, record['tested_commit']))
+                errors.extend(governance_suffix_errors(
+                    root, record['tested_commit'], reviewed, change_id, 'tested'))
+                for check in record['checks_run']:
+                    ref = check['evidence_ref']
+                    if not matches(ref, [evidence_pattern(change_id)]):
+                        errors.append('governance-command-evidence-scope:' + ref)
+                    if (not evidence_exists(root, ref, reviewed, record['tested_commit'], check['command'], 0)
+                            or git(root, 'show', reviewed + ':' + ref) != (root / ref).read_bytes()):
+                        errors.append('governance-evidence-not-bound:' + ref)
+                    if check['check_id'] == 'full_database_regression':
+                        errors.extend(full_database_evidence_errors(
+                            root, reviewed, record['tested_commit'], ref))
+            except ValueError as ex:
+                errors.append('governance-review-revision:' + str(ex))
+            required = {'GENERAL'}
+            old_tasks = getattr(args, 'governance_base_tasks', {})
+            reviewed_tasks = getattr(args, 'governance_reviewed_tasks', tasks)
+            if change_id == 'HG-047':
+                required.update({'PROTOCOL', 'SECURITY_DATA_BOUNDARY'})
+            if change_id == 'HG-044':
+                required.update({'PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'})
+            if change_id == 'HG-046':
+                required.update({'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'})
+            changed_task_ids = getattr(args, 'governance_changed_task_ids', set())
+            for task_id in changed_task_ids:
+                required.update(old_tasks.get(task_id, {}).get('review_requirements', []))
+                required.update(reviewed_tasks.get(task_id, {}).get('review_requirements', []))
+            types = {
+                review['review_type'] for _, review in governance_reviews
+                if review['task_identity'] == 'harness-governance-v0.1/' + change_id and
+                review['status'] == 'PASS' and
+                resolve(root, review['reviewed_head_sha']) == reviewed
+            }
+            if not required <= types:
+                errors.append('governance-required-reviews-not-pass:' + change_id)
+            review_suffix = not governance_suffix_errors(root, reviewed, 'HEAD', change_id, 'review')
+            for _, review in governance_reviews:
+                if (review['task_identity'] != 'harness-governance-v0.1/' + change_id
+                        or resolve(root, review['reviewed_head_sha']) != reviewed):
+                    continue
+                for ref in review.get('evidence_refs', []):
+                    if not review_evidence_exists(root, ref, reviewed, 'HEAD', change_id, review_suffix):
+                        errors.append('governance-review-evidence-revision:' + change_id + ':' + ref)
+        emergency_task_id = getattr(args, 'emergency_task_id', None)
+        if emergency_task_id:
+            task = tasks.get(emergency_task_id)
+            result = results.get(emergency_task_id)
+            if not task or not result:
+                errors.append('emergency-task-result-missing:' + emergency_task_id)
+            else:
+                result_path, result_obj = result
+                try:
+                    if git(
+                            root, 'show', reviewed + ':'
+                            + str(result_path.relative_to(root))) != result_path.read_bytes():
+                        errors.append('emergency-task-result-not-bound:' + emergency_task_id)
+                    if result_obj['task_status'] != 'PASS':
+                        errors.append('emergency-task-result-not-pass:' + emergency_task_id)
+                    tested = resolve(root, result_obj['tested_commit'])
+                    git(root, 'merge-base', '--is-ancestor', tested, reviewed)
+                    emergency_suffix = (
+                        result_paths(emergency_task_id)
+                        + [evidence_pattern(emergency_task_id)]
+                        + governance_record_paths(change_id)
+                        + [evidence_pattern(change_id)]
+                    )
+                    errors.extend(suffix_errors(
+                        root, tested, reviewed, emergency_task_id, 'tested',
+                        allowed_patterns=emergency_suffix))
+                    for command in result_obj['commands_run']:
+                        ref = command.get('evidence_ref')
+                        if (ref and git(root, 'show', reviewed + ':' + ref)
+                                != (root / ref).read_bytes()):
+                            errors.append('emergency-task-evidence-not-bound:' + ref)
+                except ValueError as ex:
+                    errors.append('emergency-task-revision:' + str(ex))
+                task_reviews = [
+                    review for _, review, review_task in reviews
+                    if review_task['id'] == emergency_task_id
+                    and review['status'] == 'PASS'
+                    and resolve(root, review['reviewed_head_sha']) == reviewed
+                ]
+                review_types = {review['review_type'] for review in task_reviews}
+                if not set(task['review_requirements']) <= review_types:
+                    errors.append('emergency-task-reviews-not-pass:' + emergency_task_id)
+    return errors, len(tasks), sum(t['status'] != 'SUPERSEDED' for t in tasks.values())
+
+
+def main(argv=None, root=ROOT):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--protected-base', help='Trusted, already-integrated base commit for PR protection.')
+    parser.add_argument('--reviewed-head', help='Reviewed implementation/result revision; requires --task-id.')
+    parser.add_argument('--task-id')
+    parser.add_argument('--ci-pr-base', help='Pull request base SHA supplied by CI.')
+    parser.add_argument('--ci-pr-head', help='Pull request head SHA supplied by CI.')
+    parser.set_defaults(governance_change_id=None, governance_reviewed_head=None)
+    args = parser.parse_args(argv)
+    try:
+        if args.ci_pr_base or args.ci_pr_head:
+            configure_ci_merge_gate(root, args)
+        errors, count, active = validate(root, args)
+    except (ValueError, KeyError, TypeError, OSError, ImportError) as ex:
+        errors, count, active = ['validation-error:' + str(ex)], 0, 0
+    if errors:
+        print('HARNESS_CHECK_FAIL')
+        print('\n'.join(errors))
+        return 1
+    print(f'HARNESS_CHECK_PASS tasks={count} active={active}')
+    return 0
+
+
+
+
+# Generated HG037 guard proposal; append only after HG036 merge.
+READINESS_TASK_DEFINITION = {'id': 'KL-074',
+ 'milestone': 'M1',
+ 'title': 'PostgreSQL final-server startup readiness repair',
+ 'owner_role': 'platform',
+ 'depends_on': ['KL-002', 'KL-013', 'KL-023'],
+ 'commands': [],
+ 'transaction_boundaries': [],
+ 'invariant_ids': [],
+ 'table_ids': [],
+ 'required_test_layers': ['UNIT', 'DC'],
+ 'deliverables': ['explicit bounded container loopback TCP lifecycle readiness',
+                  'aligned Compose and post-reset readiness probes',
+                  'deterministic init-stop-final positive and negative regression tests',
+                  'isolated migrated coldstart provenance and cleanup evidence',
+                  'additive exact-head hosted workflow and durable raw artifact evidence'],
+ 'definition_of_done': 'Only startup readiness changes: temporary socket-only initialization '
+                       'cannot authorize reset SQL; bounded explicit container TCP readiness gates '
+                       'reset, Compose and post-reset probes align, SQL failures propagate without '
+                       'replay, and deterministic regressions plus three isolated migrated cold '
+                       'starts prove actual image ordering, ownership and cleanup. Full repository '
+                       'and normal hosted CI/gates pass without product, migration, authentication '
+                       'or frozen semantic changes. The additive exact-head hosted entrypoint '
+                       'executes both exact commands, preserves raw failure/success artifacts and '
+                       'provenance, and leaves all existing CI/gates unchanged.',
+ 'entry_conditions': ['merged KL-002 result and integration: '
+                      'docs/exec-plans/completed/KL-002_RESULT.yaml and '
+                      'docs/exec-plans/integrations/KL-002.json',
+                      'merged KL-013 baseline and KL-023 current migrated prerequisite: '
+                      'docs/exec-plans/completed/KL-013_RESULT.yaml and '
+                      'docs/exec-plans/completed/KL-023_RESULT.yaml',
+                      'exclusive postgres_lifecycle resource and exact write paths available; no '
+                      'overlap with active KL019 transaction resources',
+                      'dedicated hosted VM for full legacy DB suites; unique task-owned isolated '
+                      'coldstart namespaces',
+                      'same-repository codex/kl074- PR branch for the additive exact-head hosted '
+                      'workflow; no arbitrary inputs or shared/remote Docker'],
+ 'status': 'NOT_STARTED',
+ 'evidence_refs': [],
+ 'thread_id': 'THREAD-KL-074',
+ 'thread_mode': 'INDEPENDENT_WORKTREE',
+ 'context_files': ['docs/exec-plans/completed/KL-002_RESULT.yaml',
+                   'docs/exec-plans/integrations/KL-002.json',
+                   'docs/exec-plans/completed/KL-013_RESULT.yaml',
+                   'docs/exec-plans/completed/KL-023_RESULT.yaml',
+                   'src/kineticloop/db/lifecycle.py',
+                   'compose.yaml',
+                   'tests/db/test_lifecycle.py',
+                   'tests/db/test_migrations.py',
+                   'docs/exec-plans/evidence/HG-037/READINESS_EVIDENCE.md',
+                   'tools/harness/validate_harness.py',
+                   '.github/workflows/ci.yml',
+                   '.github/workflows/db.yml',
+                   'docs/exec-plans/evidence/HG-037/HOSTED_EXECUTION_PREFLIGHT.md',
+                   'docs/exec-plans/evidence/HG-037/kl074-readiness.workflow.proposal.yml'],
+ 'max_context_policy': 'READ_TASK_PACKET_FIRST_THEN_REFERENCES_ON_DEMAND',
+ 'merge_unit': 'ONE_PR',
+ 'handoff_artifact': 'docs/exec-plans/completed/KL-074_RESULT.yaml',
+ 'shared_hotspot': True,
+ 'parallel_write_policy': 'SERIALIZE_WITH_OTHER_HOTSPOT_TASKS',
+ 'task_identity': 'harness-backlog-v0.2/KL-074',
+ 'requirements_covered': [],
+ 'checks_required_for_this_task': ['temporary_socket_ready_not_final_ready',
+                                   'permanent_tcp_unready_bounded',
+                                   'delayed_final_ready_exact_reset',
+                                   'sql_failure_no_replay',
+                                   'compose_and_lifecycle_tcp_alignment',
+                                   'isolated_migrated_coldstart',
+                                   'lifecycle_regressions',
+                                   'full_repository_regressions',
+                                   'quality_and_harness',
+                                   'hosted_entrypoint_and_evidence'],
+ 'resource_keys': ['postgres_lifecycle'],
+ 'write_paths': ['src/kineticloop/db/lifecycle.py',
+                 'compose.yaml',
+                 'tests/db/test_lifecycle.py',
+                 'tests/db/test_startup_readiness.py',
+                 'tools/db/verify_startup_readiness.py',
+                 '.github/workflows/kl074-readiness.yml'],
+ 'review_requirements': ['GENERAL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'],
+ 'conditional_depends_on': [],
+ 'environment_requirements': ['ISOLATED_POSTGRESQL_NAMESPACE',
+                              'TASK_OWNED_COMPOSE_NAMESPACE',
+                              'DEDICATED_HOSTED_VM_FOR_LEGACY_DB_SUITES'],
+ 'packet_refinement': 'ENFORCEABLE',
+ 'required_test_layers_semantics': 'COVERAGE_HINT_ONLY_USE_checks_required_for_this_task_FOR_TASK_PASS',
+ 'check_contracts': [{'check_id': 'temporary_socket_ready_not_final_ready',
+                      'command': 'uv run pytest -q tests/db/test_lifecycle.py -k temporary_socket',
+                      'pass_oracle': 'A deterministic runner/clock reproduces the old socket-ready '
+                                     'init-stop race against protected-base lifecycle code. '
+                                     'Against repaired code, temporary initialization accepts '
+                                     'socket pg_isready but rejects explicit 127.0.0.1:5432 TCP; '
+                                     'zero psql/SQL occurs until final TCP readiness. Same '
+                                     'scenario fails old code and passes repaired code; no sleeps '
+                                     'or nondeterministic scheduler assumptions establish this '
+                                     'oracle.'},
+                     {'check_id': 'permanent_tcp_unready_bounded',
+                      'command': 'uv run pytest -q tests/db/test_lifecycle.py -k permanent_tcp',
+                      'pass_oracle': 'Socket remains ready while TCP never becomes ready. '
+                                     'Monotonic deadline terminates within the requested bound '
+                                     '(including bounded per-command probe duration) with '
+                                     'DatabaseLifecycleError and zero destructive SQL. Normal '
+                                     'missing-Docker/startup failures remain actionable; no '
+                                     'unbounded subprocess or polling wait.'},
+                     {'check_id': 'delayed_final_ready_exact_reset',
+                      'command': 'uv run pytest -q tests/db/test_lifecycle.py -k delayed_final',
+                      'pass_oracle': 'Multiple TCP failures followed by final TCP success permit '
+                                     'exactly one DROP and one CREATE for the task-owned derived '
+                                     'database only; post-reset readiness also explicitly uses '
+                                     'container loopback TCP port 5432. Default, foreign, invalid '
+                                     'or ambient-overridden targets cannot replace the owned '
+                                     'namespace; socket psql behavior remains unchanged.'},
+                     {'check_id': 'sql_failure_no_replay',
+                      'command': 'uv run pytest -q tests/db/test_lifecycle.py -k sql_failure',
+                      'pass_oracle': 'After final TCP readiness, injected DROP and CREATE failures '
+                                     'independently propagate with original redacted actionable '
+                                     'diagnostics. Neither destructive statement is replayed; '
+                                     'CREATE is never attempted after failed DROP. No destructive '
+                                     'SQL retry, reset restart, or success fabrication.'},
+                     {'check_id': 'compose_and_lifecycle_tcp_alignment',
+                      'command': 'uv run pytest -q tests/db/test_startup_readiness.py',
+                      'pass_oracle': 'Structural checks inspect actual Compose healthcheck and '
+                                     'both actual lifecycle probes: each explicitly targets '
+                                     '127.0.0.1 port 5432 inside postgres, not published host port '
+                                     'or socket. Tests reject a socket-healthcheck regression. SQL '
+                                     'stays on the existing socket/authentication path. Namespace, '
+                                     'secret redaction, ports, volume, image, normal startup and '
+                                     'migrations stay unchanged.'},
+                     {'check_id': 'isolated_migrated_coldstart',
+                      'command': 'uv run python tools/db/verify_startup_readiness.py --iterations '
+                                 '3 --startup-timeout 60 --total-timeout 300',
+                      'pass_oracle': 'Three bounded cold starts use three fresh resolved temporary '
+                                     'worktree roots with exact Compose '
+                                     'kineticloop-kl074-cold-<shortsha>-<digest> and database '
+                                     'kineticloop_kl074_cold_<shortsha>_<digest> names; shortsha '
+                                     'is tested_commit first7 lowercase hex and digest is SHA256 '
+                                     'of os.fsencode(resolved root) first12 lowercase hex; '
+                                     'validate exact names before first reset, verify no '
+                                     'preexisting owned resources/volume, and fail closed on '
+                                     'malformed/mismatched/default/foreign target. Inspect actual '
+                                     'configured image, resolved image ID/digest and in-container '
+                                     'entrypoint SHA256/source, Docker/Compose/PostgreSQL '
+                                     'versions, and timestamped startup logs/probe events. Prove '
+                                     'socket-only init start, init stop, final TCP-ready start '
+                                     'ordering for the actual image, zero measured lifecycle SQL '
+                                     'before final readiness, then successful reset and existing '
+                                     'two-phase migrated bootstrap on the identical owned '
+                                     'lifecycle. Verify current_database and migrated revision, '
+                                     'repeated reset sentinel removal and namespace isolation. '
+                                     'Each iteration captures evidence before finally destroying '
+                                     'only its exact owned containers/network/volume and proving '
+                                     'absence; cleanup failure fails. Total wall time and '
+                                     'subprocess durations are bounded; no foreign/default DB '
+                                     'reset or destroy. If actual ordering/root cause cannot be '
+                                     'demonstrated, report FAIL/NOT_RUN with limitation, never '
+                                     'infer PASS from success alone. Execute through the ratified '
+                                     'exact-head hosted workflow; retain raw logs/provenance plus '
+                                     'downloaded artifacts bound to tested_commit before final '
+                                     'result/review.'},
+                     {'check_id': 'lifecycle_regressions',
+                      'command': 'uv run pytest -q tests/db/test_lifecycle.py '
+                                 'tests/db/test_startup_readiness.py',
+                      'pass_oracle': 'All existing lifecycle assertions plus new positive/negative '
+                                     'startup checks pass without skips, xfail, disabled tests or '
+                                     'changed SQL/auth/namespace semantics.'},
+                     {'check_id': 'full_repository_regressions',
+                      'command': 'uv run pytest -q -p no:cacheprovider',
+                      'pass_oracle': 'Entire repository suite passes with no suppressed '
+                                     'failures/skips added by this task on a dedicated hosted VM '
+                                     'with job-owned Docker. Retain all normal CI jobs/gates and '
+                                     'existing DB suites; hosted VM isolates legacy prerequisite '
+                                     'fixture namespaces. Do not run legacy full DB suites on '
+                                     'shared developer Docker or borrow KL019/KL024/KL025 '
+                                     'resources. Preserve exact head-bound full-suite evidence. '
+                                     'Execute through the ratified exact-head hosted workflow; '
+                                     'retain raw logs/provenance plus downloaded artifacts bound '
+                                     'to tested_commit before final result/review.'},
+                     {'check_id': 'quality_and_harness',
+                      'command': 'uv run kl lint && uv run kl typecheck && uv run kl test-harness '
+                                 '&& uv run kl check-harness',
+                      'pass_oracle': 'All four commands exit 0; check-harness prints '
+                                     'HARNESS_CHECK_PASS. Every normal hosted CI and applicable '
+                                     'merge gate also passes at the reviewed head; no workflow '
+                                     'weakening, retry concealment or fixed startup sleep.'},
+                     {'check_id': 'hosted_entrypoint_and_evidence',
+                      'command': 'uv run pytest -q tests/db/test_startup_readiness.py -k '
+                                 'hosted_entrypoint',
+                      'pass_oracle': 'Structural positive/negative tests prove the single new '
+                                     'workflow matches the ratified bytes/hash, explicit PR head '
+                                     'checkout, same-repository codex/kl074- entrypoint, locked '
+                                     'uv, fresh ubuntu-latest runner, local default Docker daemon '
+                                     'preflight, bounded pipefail commands and always-uploaded '
+                                     'task-only artifacts. Existing workflows and gates remain '
+                                     'byte-identical. Actual hosted '
+                                     'run/job/head/run-attempt/artifact identity and downloaded '
+                                     'raw coldstart/full-suite/provenance evidence must match '
+                                     'tested_commit; both exact commands and their oracles pass '
+                                     'without skips or continue-on-error. '
+                                     'Missing/skipped/incomplete/mismatched execution is '
+                                     'NOT_RUN/FAIL, never PASS. No new secrets, elevated token '
+                                     'permissions, remote/self-hosted daemon, arbitrary inputs or '
+                                     'command substitutions.'}],
+ 'evidence_paths': ['docs/exec-plans/evidence/KL-074/**'],
+ 'write_paths_status': 'ENFORCEABLE'}
+
+READINESS_PACKET_BOUNDARIES = {'Repair boundary': 'Use explicit container loopback TCP pg_isready --host 127.0.0.1 --port 5432 '
+                    'for startup, Compose healthcheck and post-reset readiness. Retain the '
+                    'existing monotonic startup deadline and normal startup handling; bound each '
+                    'probe subprocess to remaining deadline so the timeout oracle is real. A '
+                    'readiness-loop backoff is allowed within that bound; no unconditional startup '
+                    'sleep. Keep psql socket usage, credentials, image, ports, volumes and '
+                    'namespaces unchanged. No destructive SQL retry, fixed sleeps, unbounded '
+                    'waits, CI suppression, migrations, transaction/authorization semantics or '
+                    'product/frozen changes.',
+ 'Isolation and evidence boundary': 'The dedicated probe validates exact Compose '
+                                    'kineticloop-kl074-cold-<shortsha>-<digest> and database '
+                                    'kineticloop_kl074_cold_<shortsha>_<digest> before any '
+                                    'reset/bootstrap/cleanup: shortsha is tested_commit first7 '
+                                    'lowercase hex; digest is SHA256 of os.fsencode(resolved root) '
+                                    'first12 lowercase hex. Never accept caller-supplied or '
+                                    'ambient namespaces. Use three fresh task-owned temporary '
+                                    'roots, the unchanged checked-in Compose file, and the '
+                                    'existing tests/db/test_migrations.py '
+                                    'bootstrap_two_phase(lifecycle) on that same selected '
+                                    'lifecycle. Reject preexisting resources and '
+                                    'foreign/default/ambient targets. Record image/digest, actual '
+                                    'entrypoint hash/source, timestamped logs and probe/SQL '
+                                    'ordering; redact credentials. Assert migrated revision, exact '
+                                    'current_database, reset sentinel removal, cross-root '
+                                    'separation and finally cleanup absence. Bound iterations, '
+                                    'total wall time and subprocesses. Failure or unavailable '
+                                    'exact root-cause evidence must be reported; source inference '
+                                    'is not deployed-image proof. Full legacy DB suites run on a '
+                                    'dedicated hosted VM, not shared Docker; never overlap KL019 '
+                                    'transaction resources.',
+ 'Hosted execution and evidence entrypoint': 'KL074 creates only '
+                                             '.github/workflows/kl074-readiness.yml with exact '
+                                             'bytes from '
+                                             'docs/exec-plans/evidence/HG-037/kl074-readiness.workflow.proposal.yml, '
+                                             'pinned by READINESS_WORKFLOW_SHA256 in '
+                                             'tools/harness/validate_harness.py; an existing '
+                                             'baseline file or byte drift fails closed. Open a '
+                                             'same-repository codex/kl074- PR; pull_request '
+                                             'opened/synchronize/reopened/ready_for_review runs '
+                                             'before merge, with no caller inputs. The single '
+                                             'ubuntu-latest job checks out '
+                                             'github.event.pull_request.head.sha, verifies git '
+                                             'HEAD, uses uv 0.12.17 and uv sync --locked, and '
+                                             'rejects non-GitHub-hosted Linux or any '
+                                             'DOCKER_HOST/DOCKER_CONTEXT override, nondefault '
+                                             'context or nonlocal socket endpoint. Execute the '
+                                             'exact three-iteration coldstart command and uv run '
+                                             'pytest -q -p no:cacheprovider with pipefail and '
+                                             'finite step/job deadlines. No secret access, token '
+                                             'permission expansion, self-hosted/remote daemon, '
+                                             'test suppression, continue-on-error or existing '
+                                             'workflow/gate edits.\n'
+                                             '\n'
+                                             'The probe must validate '
+                                             'KINETICLOOP_KL074_TESTED_COMMIT equals git HEAD and '
+                                             'KINETICLOOP_KL074_EVIDENCE_DIR resolves exactly to '
+                                             'docs/exec-plans/evidence/KL-074/hosted-<tested_commit> '
+                                             'under the checkout before writing. Write raw '
+                                             'timestamped container logs, actual image/entrypoint '
+                                             'provenance, ordered probes/SQL, migrated/reset '
+                                             'assertions and finally-cleanup evidence below that '
+                                             'directory. This environment sets evidence output '
+                                             'only, never namespaces. The always() upload '
+                                             'preserves this directory on success/failure; '
+                                             'incomplete upload or skipped steps cannot establish '
+                                             'PASS. Before artifact expiry, download raw files (or '
+                                             'byte-exact envelopes), record run/job URLs, '
+                                             'event/head SHA, run ID/attempt and artifact '
+                                             'ID/digest, and commit them under task evidence '
+                                             'before final result/review. Verify '
+                                             'hosted-provenance/logs and both exact command '
+                                             'oracles against tested_commit. Final reviewed-head '
+                                             'normal CI/gates also pass independently; a changed '
+                                             'implementation stales checks/reviews. Missing, '
+                                             'failed, skipped, mismatched or unavailable '
+                                             'actual-image evidence is NOT_RUN/FAIL. Governance '
+                                             'ratification is not execution evidence.',
+ 'Non-goals': 'Do not implement downstream protocol/product work, alter completed KL002 '
+              'definitions/results/evidence, edit existing CI workflows or any workflow except the '
+              'single additive .github/workflows/kl074-readiness.yml, migration/schema/auth/role '
+              'ownership, other fixtures or SQL command semantics. No production/live credentials '
+              'or data. No product requirement PASS, release closure or auto-activation claim. '
+              'Stop with SPEC_CHANGE_REQUIRED for any frozen authorization, admission, lock, '
+              'transaction, provider or shadow boundary change.',
+ 'Exact lifecycle readiness candidate': 'KL074 may change lifecycle source only to '
+                                        'readiness_lifecycle_candidate(before) in '
+                                        'tools/harness/validate_harness.py, anchored to '
+                                        'READINESS_LIFECYCLE_BASE_SHA256. The complete-byte '
+                                        'candidate adds explicit loopback TCP to '
+                                        'startup/post-reset, passes the positive remaining '
+                                        'monotonic deadline into each startup probe subprocess, '
+                                        'bounds readiness backoff by remaining time, adds only '
+                                        'optional runner timeout plumbing and a non-replaying '
+                                        'sanitized TimeoutExpired error. It preserves every other '
+                                        'byte, including normal Compose startup, '
+                                        'namespace/credential ownership, socket psql, DROP/CREATE '
+                                        'order, redaction and cleanup. Unexpected baseline or any '
+                                        'extra startup command, namespace/credential mutation, SQL '
+                                        'runner bypass, foreign endpoint or timeout drift fails '
+                                        'closed. Compose changes only the exact ratified loopback '
+                                        'healthcheck test.'}
+
+def readiness_definition_errors(task):
+    if task.get('id') != 'KL-074':
+        return []
+    return ['readiness-definition-drift:' + field
+            for field in set(task) | set(READINESS_TASK_DEFINITION)
+            if task.get(field) != READINESS_TASK_DEFINITION.get(field)]
+
+
+def readiness_packet_errors(task, text):
+    if task.get('id') != 'KL-074':
+        return []
+    return ['readiness-packet-boundary:' + heading
+            for heading, value in READINESS_PACKET_BOUNDARIES.items()
+            if (section(text, heading) or '').strip() != value]
+
+
+READINESS_LIFECYCLE_BASE_SHA256 = 'de55f62dd25e3379c67b7b6306cdbd882ce8a6d3d615715a7f9d35c30c6a3686'
+READINESS_LIFECYCLE_REPLACEMENTS = [('    def _run(\n'
+  '        self,\n'
+  '        command: Sequence[str],\n'
+  '        *,\n'
+  '        check: bool = True,\n'
+  '    ) -> subprocess.CompletedProcess[str]:\n'
+  '        try:\n'
+  '            return self._runner(\n'
+  '                list(command),\n'
+  '                cwd=self.root,\n'
+  '                env=self.environment,\n'
+  '                check=check,\n'
+  '                capture_output=True,\n'
+  '                text=True,\n'
+  '            )\n'
+  '        except FileNotFoundError as error:\n'
+  '            raise DatabaseLifecycleError(\n'
+  '                "Docker with the Compose plugin is required for the local test database."\n'
+  '            ) from error\n'
+  '        except subprocess.CalledProcessError as error:\n'
+  '            details = Redactor((self.user, self.password)).exception_diagnostic(error)\n'
+  '            raise DatabaseLifecycleError(f"database command failed: {details}") from None\n'
+  '\n',
+  '    def _run(\n'
+  '        self,\n'
+  '        command: Sequence[str],\n'
+  '        *,\n'
+  '        check: bool = True,\n'
+  '        timeout_seconds: float | None = None,\n'
+  '    ) -> subprocess.CompletedProcess[str]:\n'
+  '        try:\n'
+  '            return self._runner(\n'
+  '                list(command),\n'
+  '                cwd=self.root,\n'
+  '                env=self.environment,\n'
+  '                check=check,\n'
+  '                capture_output=True,\n'
+  '                text=True,\n'
+  '                timeout=timeout_seconds,\n'
+  '            )\n'
+  '        except subprocess.TimeoutExpired:\n'
+  '            raise DatabaseLifecycleError("database readiness command timed out") from None\n'
+  '        except FileNotFoundError as error:\n'
+  '            raise DatabaseLifecycleError(\n'
+  '                "Docker with the Compose plugin is required for the local test database."\n'
+  '            ) from error\n'
+  '        except subprocess.CalledProcessError as error:\n'
+  '            details = Redactor((self.user, self.password)).exception_diagnostic(error)\n'
+  '            raise DatabaseLifecycleError(f"database command failed: {details}") from None\n'
+  '\n'),
+ ('    def start(self, *, timeout_seconds: float = 60.0) -> None:\n'
+  '        self.validate_compose()\n'
+  '        self._run(self.compose_command("up", "--detach", "postgres"))\n'
+  '        deadline = time.monotonic() + timeout_seconds\n'
+  '        while time.monotonic() < deadline:\n'
+  '            result = self._run(\n'
+  '                self.compose_command(\n'
+  '                    "exec",\n'
+  '                    "--no-TTY",\n'
+  '                    "postgres",\n'
+  '                    "pg_isready",\n'
+  '                    "--username",\n'
+  '                    self.user,\n'
+  '                    "--dbname",\n'
+  '                    "postgres",\n'
+  '                ),\n'
+  '                check=False,\n'
+  '            )\n'
+  '            if result.returncode == 0:\n'
+  '                return\n'
+  '            time.sleep(0.5)\n'
+  '        raise DatabaseLifecycleError(\n'
+  '            f"PostgreSQL did not become ready within {timeout_seconds:g} seconds"\n'
+  '        )\n'
+  '\n',
+  '    def start(self, *, timeout_seconds: float = 60.0) -> None:\n'
+  '        self.validate_compose()\n'
+  '        self._run(self.compose_command("up", "--detach", "postgres"))\n'
+  '        deadline = time.monotonic() + timeout_seconds\n'
+  '        while time.monotonic() < deadline:\n'
+  '            remaining = deadline - time.monotonic()\n'
+  '            if remaining <= 0:\n'
+  '                break\n'
+  '            result = self._run(\n'
+  '                self.compose_command(\n'
+  '                    "exec",\n'
+  '                    "--no-TTY",\n'
+  '                    "postgres",\n'
+  '                    "pg_isready",\n'
+  '                    "--host",\n'
+  '                    "127.0.0.1",\n'
+  '                    "--port",\n'
+  '                    "5432",\n'
+  '                    "--username",\n'
+  '                    self.user,\n'
+  '                    "--dbname",\n'
+  '                    "postgres",\n'
+  '                ),\n'
+  '                check=False,\n'
+  '                timeout_seconds=remaining,\n'
+  '            )\n'
+  '            if result.returncode == 0:\n'
+  '                return\n'
+  '            time.sleep(min(0.5, max(0.0, deadline - time.monotonic())))\n'
+  '        raise DatabaseLifecycleError(\n'
+  '            f"PostgreSQL did not become ready within {timeout_seconds:g} seconds"\n'
+  '        )\n'
+  '\n'),
+ ('    def reset(self, *, timeout_seconds: float = 60.0) -> DatabaseConnection:\n'
+  '        self.start(timeout_seconds=timeout_seconds)\n'
+  '        quoted_database = f\'"{self.namespace.database_name}"\'\n'
+  '        quoted_user = f\'"{self.user}"\'\n'
+  '        self._psql(\n'
+  '            "postgres",\n'
+  '            f"DROP DATABASE IF EXISTS {quoted_database} WITH (FORCE);",\n'
+  '        )\n'
+  '        self._psql(\n'
+  '            "postgres",\n'
+  '            f"CREATE DATABASE {quoted_database} OWNER {quoted_user};",\n'
+  '        )\n'
+  '        ready = self._run(\n'
+  '            self.compose_command(\n'
+  '                "exec",\n'
+  '                "--no-TTY",\n'
+  '                "postgres",\n'
+  '                "pg_isready",\n'
+  '                "--username",\n'
+  '                self.user,\n'
+  '                "--dbname",\n'
+  '                self.namespace.database_name,\n'
+  '            ),\n'
+  '            check=False,\n'
+  '        )\n'
+  '        if ready.returncode != 0:\n'
+  '            raise DatabaseLifecycleError("reset database failed its readiness probe")\n'
+  '        return self.connection()\n'
+  '\n',
+  '    def reset(self, *, timeout_seconds: float = 60.0) -> DatabaseConnection:\n'
+  '        self.start(timeout_seconds=timeout_seconds)\n'
+  '        quoted_database = f\'"{self.namespace.database_name}"\'\n'
+  '        quoted_user = f\'"{self.user}"\'\n'
+  '        self._psql(\n'
+  '            "postgres",\n'
+  '            f"DROP DATABASE IF EXISTS {quoted_database} WITH (FORCE);",\n'
+  '        )\n'
+  '        self._psql(\n'
+  '            "postgres",\n'
+  '            f"CREATE DATABASE {quoted_database} OWNER {quoted_user};",\n'
+  '        )\n'
+  '        ready = self._run(\n'
+  '            self.compose_command(\n'
+  '                "exec",\n'
+  '                "--no-TTY",\n'
+  '                "postgres",\n'
+  '                "pg_isready",\n'
+  '                "--host",\n'
+  '                "127.0.0.1",\n'
+  '                "--port",\n'
+  '                "5432",\n'
+  '                "--username",\n'
+  '                self.user,\n'
+  '                "--dbname",\n'
+  '                self.namespace.database_name,\n'
+  '            ),\n'
+  '            check=False,\n'
+  '            timeout_seconds=timeout_seconds,\n'
+  '        )\n'
+  '        if ready.returncode != 0:\n'
+  '            raise DatabaseLifecycleError("reset database failed its readiness probe")\n'
+  '        return self.connection()\n'
+  '\n')]
+
+
+def readiness_lifecycle_candidate(before):
+    """Only the complete reviewed bounded-readiness delta is authorized."""
+    if hashlib.sha256(before).hexdigest() != READINESS_LIFECYCLE_BASE_SHA256:
+        raise ValueError('unexpected readiness lifecycle baseline')
+    text = before.decode()
+    for old, new in READINESS_LIFECYCLE_REPLACEMENTS:
+        if text.count(old) != 1:
+            raise ValueError('unexpected readiness lifecycle method baseline')
+        text = text.replace(old, new, 1)
+    return text.encode()
+
+
+def readiness_content_errors(path, before, after):
+    """Keep startup ownership, SQL/auth and every other source byte exact."""
+    if path == 'compose.yaml':
+        import yaml
+        try:
+            old, new = yaml.safe_load(before), yaml.safe_load(after)
+            expected = ['CMD-SHELL', 'pg_isready --host 127.0.0.1 --port 5432 --username "$${POSTGRES_USER}" --dbname "$${POSTGRES_DB}"']
+            if new['services']['postgres']['healthcheck']['test'] != expected:
+                return ['readiness-compose-tcp-required']
+            new['services']['postgres']['healthcheck']['test'] = old['services']['postgres']['healthcheck']['test']
+            return [] if old == new else ['readiness-compose-content-scope']
+        except (KeyError, TypeError, yaml.YAMLError):
+            return ['readiness-compose-content-scope']
+    if path != 'src/kineticloop/db/lifecycle.py':
+        return []
+    try:
+        expected = readiness_lifecycle_candidate(before)
+    except (ValueError, UnicodeError):
+        return ['readiness-lifecycle-baseline-unexpected']
+    return [] if after == expected else ['readiness-lifecycle-content-scope']
+
+
+READINESS_WORKFLOW_PATH = '.github/workflows/kl074-readiness.yml'
+READINESS_WORKFLOW_SHA256 = 'bbf7f77baa008a13660313c4af9b6ace506b41c22da7fee1737a4afd4870f6df'
+
+
+def readiness_workflow_errors(base_listing, after):
+    """Only the new, ratified exact-head hosted entrypoint is authorized."""
+    if base_listing.strip():
+        return ['readiness-workflow-baseline-exists']
+    return [] if hashlib.sha256(after).hexdigest() == READINESS_WORKFLOW_SHA256 else ['readiness-workflow-content-scope']
+
+
+
+
+
+M3_NEXT_WAVE_IDS = frozenset({'KL-026', 'KL-027', 'KL-075', 'KL-076', 'KL-077', 'KL-078', 'KL-079'})
+M3_NEXT_WAVE_DEFINITION_HASHES = {'KL-026': '4f7c470fa4cbbe77be7dd3a3c18e1576eab282a710097cfeaf0a74a7e352ca8e', 'KL-027': 'c096b030c9cdb6ac9d71d3ed309660bcb68e5e30b7ad8316b3ccd5df4ae7e625', 'KL-075': '1f2f0fbe783abc2368fc933db23732c5416338a8f67a4fea52aac65dce78aa50', 'KL-076': '97912a9834f1fefa97455fe7466a97aba6562995de34023814476b227698b5b6', 'KL-077': 'f918fd380cfe402ce8beb6c8f22ce9e166ef0d4a66282c5c73a53a97a0bc156e', 'KL-078': 'ed872c583bdead8c9486183f31fdcebc8bf7f5591a53b724ff7ae261844c8138', 'KL-079': 'd49050bee1608949a6d20246b5b3650b02c448498e4dba5867cca5c13cb63086'}
+M3_NEXT_WAVE_PACKET_HASHES = {'KL-026': '31c83ce523976265f89aa2be3890d2b428d1a23d65ae486f24e266333c854942', 'KL-027': 'c35634ce527adb3e0db39697a91874091f14a74c1a5254b910d46332e004a4cc', 'KL-075': '698722f17f1b8b977b440e79b11fe240d1605304fd95bf26f98abbf0520ee835', 'KL-076': '354dc2a62a65e8266c869a412282a363fe4347a401d52eca31cf84adf15603b7', 'KL-077': 'b081aaa48d188c2fb8c2a5367685b652580fdac162d9a4fd9e6fc273732875cc', 'KL-078': 'cc742bb17b2f282fdb78cb65971b9c9d7c39d73cb1935221c25470e266bf7784', 'KL-079': 'fba0aaf04430071435862030829ac580ea736566ee9bdaf72bdf67d5f88b57ae'}
+
+
+def m3_next_wave_definition_errors(task):
+    name = task.get('id')
+    if name not in M3_NEXT_WAVE_IDS or (
+            task.get('packet_refinement') != 'ENFORCEABLE'
+            and 'check_contracts' not in task):
+        return []
+    actual = hashlib.sha256(json.dumps(
+        task, ensure_ascii=False, sort_keys=True,
+        separators=(',', ':'),
+    ).encode()).hexdigest()
+    return ([] if actual == M3_NEXT_WAVE_DEFINITION_HASHES[name]
+            else ['m3-next-wave-definition:' + name])
+
+
+def m3_next_wave_packet_errors(task, text):
+    name = task.get('id')
+    if name not in M3_NEXT_WAVE_IDS or (
+            task.get('packet_refinement') != 'ENFORCEABLE'
+            and 'check_contracts' not in task):
+        return []
+    actual = hashlib.sha256(text.encode()).hexdigest()
+    return ([] if actual == M3_NEXT_WAVE_PACKET_HASHES[name]
+            else ['m3-next-wave-packet:' + name])
+
+
+M3_BOUNDARY_SHADOW_IDS = frozenset({'KL-028', 'KL-029'})
+M3_BOUNDARY_SHADOW_PLAN_SHA256 = '538045ee80d1e08b01829dc128cb7d9b48ebce0cb6f3c250acd128bf45effa2e'
+M3_BOUNDARY_SHADOW_DEFINITION_HASHES = {'KL-028': '275b2e7138e4248e87655938e00a0b31a43fb2e408fb8a7e75f14d15bf9ba2a6', 'KL-029': '89fa038dddb353f5c71ce6d2389b9cbb3ef369932294ac20d15b23171e9f448d'}
+M3_BOUNDARY_SHADOW_PACKET_HASHES = {'KL-028': 'cca391611cf96ca2590bee303eb1c519c53a42546ca7a9d1fe6bb5b29e32bb8d', 'KL-029': '27137bfbe5b338da563195704c36ef41990de0779ee90858db38a8de297ffe72'}
+B_LAYER_OBLIGATIONS = {
+    'B01': ('PU', 'DC'), 'B02': ('DC',), 'B03': ('DC',),
+    'B04': ('DC', 'E2E'), 'B05': ('DC', 'E2E'), 'B06': ('DC',),
+    'B07': ('DC', 'E2E'), 'B08': ('PU', 'E2E'), 'B09': ('PU', 'DC'),
+    'B10': ('PU', 'E2E'), 'B11': ('PU', 'DC'), 'B12': ('PU', 'DC'),
+    'B13': ('DC',), 'B14': ('WF', 'E2E'), 'B15': ('DC',),
+    'B16': ('DC', 'E2E'), 'B17': ('PU', 'DC'), 'B18': ('PU', 'E2E'),
+}
+
+
+def m3_boundary_shadow_definition_errors(task):
+    """Pin disjoint tests-only ownership and every prospective check/oracle."""
+    name = task.get('id')
+    if name not in M3_BOUNDARY_SHADOW_IDS:
+        return []
+    actual = hashlib.sha256(json.dumps(
+        task, ensure_ascii=False, sort_keys=True, separators=(',', ':'),
+    ).encode()).hexdigest()
+    return ([] if actual == M3_BOUNDARY_SHADOW_DEFINITION_HASHES[name]
+            else ['m3-boundary-shadow-definition:' + name])
+
+
+def m3_boundary_shadow_plan_errors(text):
+    """Pin the explicit parallel DB plan and closure/deferred-layer limitations."""
+    scoped = section(text, 'M3 boundary and shadow readiness — HG042') or ''
+    marker = '<!-- HG042 plan end -->'
+    if scoped.count(marker) != 1:
+        return ['m3-boundary-shadow-plan']
+    block = scoped.partition(marker)[0].strip()
+    return ([] if hashlib.sha256(block.encode()).hexdigest() == M3_BOUNDARY_SHADOW_PLAN_SHA256
+            else ['m3-boundary-shadow-plan'])
+
+
+def packet_json_section(text, heading):
+    block = section(text, heading) or ''
+    match = re.fullmatch(r'\s*```json\s*\n(.*?)\n```\s*', block, re.S)
+    if match is None:
+        raise ValueError('missing JSON section: ' + heading)
+    return json.loads(match[1], object_pairs_hook=unique_mapping)
+
+
+def m3_boundary_layer_errors(ledger, requirements=None):
+    """Keep all 31 frozen Given/When/Then obligations, without inferred PASS."""
+    if not isinstance(ledger, list) or any(not isinstance(row, dict) for row in ledger):
+        return ['m3-boundary-layer-ledger']
+    expected = [(rid, layer) for rid, layers in B_LAYER_OBLIGATIONS.items() for layer in layers]
+    actual = [(row.get('requirement_id'), row.get('layer')) for row in ledger]
+    errors = []
+    if actual != expected:
+        errors.append('m3-boundary-layer-obligations')
+    if any(row.get('status') != 'NOT_RUN' for row in ledger):
+        errors.append('m3-boundary-layer-status')
+    for row in ledger:
+        rid, layer = row.get('requirement_id'), row.get('layer')
+        deferred = layer in ('WF', 'E2E') or (rid in ('B11', 'B12') and layer == 'PU')
+        disposition = 'DEFERRED_LAYER' if deferred else 'KL028_PLANNED_EXECUTABLE'
+        if rid == 'B04' and layer == 'DC':
+            disposition = 'DEFERRED_FULL_ORACLE_WITH_GUARD_SUPPORT'
+        if (row.get('disposition') != disposition
+                or (deferred and (not row.get('reason') or not row.get('required_future_owner')))
+                or (not deferred and any(not row.get(field) for field in
+                                        ('check_id', 'selector', 'owner', 'pass_oracle', 'frozen_clauses')))
+                or (rid == 'B04' and layer == 'DC' and
+                    (not row.get('qualification') or not row.get('future_owner')))):
+            errors.append('m3-boundary-layer-disposition:' + str(rid) + '@' + str(layer))
+    if requirements is not None:
+        authority = {r['requirement_id']: r for r in requirements}
+        if list(authority) != list(B_LAYER_OBLIGATIONS) or any(
+                list(layers) != authority.get(rid, {}).get('layers')
+                for rid, layers in B_LAYER_OBLIGATIONS.items()):
+            errors.append('m3-boundary-layer-authority-set')
+        for row in ledger:
+            rid = row.get('requirement_id')
+            if any(row.get(field) != authority.get(rid, {}).get(field)
+                   for field in ('given', 'when', 'then')):
+                errors.append('m3-boundary-layer-authority:' + str(rid))
+    return errors
+
+
+def m3_boundary_shadow_packet_errors(task, text):
+    name = task.get('id')
+    if name not in M3_BOUNDARY_SHADOW_IDS or (
+            task.get('packet_refinement') != 'ENFORCEABLE' and 'check_contracts' not in task):
+        return []
+    errors = []
+    if hashlib.sha256(text.encode()).hexdigest() != M3_BOUNDARY_SHADOW_PACKET_HASHES[name]:
+        errors.append('m3-boundary-shadow-packet:' + name)
+    try:
+        statuses = packet_json_section(text, 'Prospective check status')
+        if statuses != {cid: 'NOT_RUN' for cid in task['checks_required_for_this_task']}:
+            errors.append('m3-boundary-shadow-prospective-status:' + name)
+        if name == 'KL-028':
+            errors.extend(m3_boundary_layer_errors(packet_json_section(text, 'Boundary layer ledger')))
+    except (KeyError, ValueError, TypeError):
+        errors.append('m3-boundary-shadow-ledger-json:' + name)
+    return errors
+
+
+
+
+SOURCE_DECISION_DEFINITION_SHA256 = '10636a6f626c073e2514c9ac40ae6bf2b095243885e594de4b0aba5fb6231d4a'
+SOURCE_DECISION_PACKET_SHA256 = '6d74f892ccbe917beeda26b6a34ac037e12e6df6b8aeee3be4ee8ddd06c9922a'
+SOURCE_DECISION_PLAN_SHA256 = '2d570ba1ac870cfed32d84977e2b08e7d896f756185847269242c422af5b6636'
+SOURCE_FIXTURE_REPLACEMENTS = {
+    'tests/db/test_factsets.py': [("'unresolved','UNRESOLVED'", "'unresolved','AMBIGUOUS'"),
+                                  ("'ALL','DENIED'", "'ALL','NOT_ELIGIBLE'")],
+    'tests/db/test_preparation.py': [("'actual-event','UNRESOLVED'", "'actual-event','AMBIGUOUS'"),
+                                    ("'TEST_ONLY','ADMITTED'", "'TEST_ONLY','ELIGIBLE'")],
+    'tests/db/test_protocol_interleavings.py': [("'TEST_ONLY','ACCEPTED'", "'TEST_ONLY','ELIGIBLE'")],
+    'tests/db/test_transaction_interfaces.py': [("'EXECUTION','ADMITTED'", "'EXECUTION','ELIGIBLE'")],
+}
+
+
+def source_decision_definition_errors(task):
+    if task.get('id') != 'KL-080':
+        return []
+    return ([] if canonical_value_sha(task) == SOURCE_DECISION_DEFINITION_SHA256
+            else ['source-decision-definition:KL-080'])
+
+
+def source_decision_packet_errors(task, text):
+    if task.get('id') != 'KL-080':
+        return []
+    return ([] if hashlib.sha256(text.encode()).hexdigest() == SOURCE_DECISION_PACKET_SHA256
+            else ['source-decision-packet:KL-080'])
+
+
+def source_decision_plan_errors(text):
+    marker = '## Prospective source-decision conformance — HG045'
+    end = '<!-- HG045 plan end -->'
+    if text.count(marker) != 1 or text.count(end) != 1:
+        return ['source-decision-plan']
+    block = text.split(marker, 1)[1].split(end, 1)[0]
+    return ([] if hashlib.sha256(block.encode()).hexdigest() == SOURCE_DECISION_PLAN_SHA256
+            else ['source-decision-plan'])
+
+
+def source_governance_plan_prefix_errors(root, base, reviewed):
+    before = git(root, 'show', base + ':' + PROJECT_PLAN).decode()
+    after = git(root, 'show', reviewed + ':' + PROJECT_PLAN).decode()
+    return ([] if after.split('## Prospective source-decision conformance — HG045', 1)[0]
+            == before + '\n' else ['governance-hg045-plan-prefix'])
+
+
+def source_fixture_content_errors(path, before, after):
+    """Only the identified source literals may change; all other bytes are pinned."""
+    expected = before
+    for old, new in SOURCE_FIXTURE_REPLACEMENTS[path]:
+        if expected.count(old.encode()) != 1:
+            return ['source-fixture-base:KL-080:' + path]
+        expected = expected.replace(old.encode(), new.encode(), 1)
+    return ([] if after == expected else ['source-fixture-content-scope:KL-080:' + path])
+
+
+if __name__ == '__main__':
+    sys.exit(main())

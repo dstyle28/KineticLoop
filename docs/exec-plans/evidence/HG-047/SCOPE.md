@@ -1,11 +1,16 @@
 # HG-047 integrated compact evidence
 
-Protected base: `391c9198fa8ec647e377a0572700bc7568468c85`.
+Protected base: `d08927706a01a397dac2c78ca4aec7e9918a389c`.
 This continues PR 91 on its existing branch/worktree. The HG-047 validator allowlist
 enumerates the exact compact implementation, tests, policy/contracts, derived
 metadata, own governance/evidence/reviews, and the minimal trusted decoder
 installation/copy compatibility paths. GENERAL, PROTOCOL and
 SECURITY_DATA_BOUNDARY fresh review are mandatory.
+
+Merged HG-048 parallel runner, dependency lock, tests, governance, evidence and
+reviews remain byte-identical to the protected base; both governance allowlists
+and both README sections are retained. Only authorized derived hashes refresh.
+Old HG-047 reviews are stale after this integration.
 
 Merged HG-045 source-decision authorities and HG-046 CI governance, evidence,
 reviews, workflows, classifier and execution policy are preserved. The only
