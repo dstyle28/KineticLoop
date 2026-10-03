@@ -1,65 +1,37 @@
 {
   "task_identity": "harness-backlog-v0.2/KL-080",
-  "reviewed_head_sha": "7e19587458d611155051d0c89d36e0b89f98b8a1",
+  "reviewed_head_sha": "275d7f849b31c9fe123c8d8594b88a85d1c25355",
   "review_type": "PROTOCOL",
   "status": "CHANGES_REQUIRED",
-  "review_contract_version": "v0.2",
   "findings": [
     {
-      "finding_id": "PROTOCOL-080-01",
-      "severity": "BLOCKER",
-      "title": "Required legacy positive owner trajectory does not reach T6/T7",
-      "location": "src/kineticloop/persistence/transactions.py:3980",
-      "description": "The packet requires actual legacy and full preparation owners through successful T6 and START/PAUSE/RESUME/CONTINUE. The committed raw owner trajectory and full suite each fail test_owner_trajectories[legacy] at prepare_authorization_basis: validation.ref_s34_id points to owner-produced Nutrition, while demand.ref_s34_id points to Fitness. The unchanged legacy guard requires equality unless full_execution_members exists. Both snapshots and code independently establish the mismatch. Legacy COMMIT_READY and successful full execution cannot satisfy this required legacy positive oracle. This is a pre-existing consumer/packet compatibility gap, not a reason to weaken bindings or relabel denial PASS.",
-      "required_action": "Coordinator must ratify a scoped oracle refinement or assign a separately authorized legacy compatibility task, then produce successful required immutable-revision evidence and fresh review. No out-of-packet consumer fix is authorized by this review.",
+      "finding_id": "KL080-PROTOCOL-HG049-01",
+      "classification": "BLOCKER",
+      "title": "Normal evidence gate and packet DoD remain unsatisfied",
+      "file": "docs/exec-plans/completed/KL-080_RESULT.yaml",
+      "line": 7,
+      "details": "Independent protected-base-to-reviewed audit reports 38,263,916 bytes across 351 changed evidence/review blobs against the 16,777,216-byte PR budget and four retained plain artifacts above 262,144 bytes. Seventeen task commands and corrected HG049 protocol oracles have valid tested-SHA evidence, but this cannot establish all normal gates or completed DoD. The committed result accurately remains BLOCKED/UNMERGED; no runtime frozen-semantic defect or necessary SPEC_CHANGE_REQUIRED was found.",
+      "required_change": "Resolve the normal evidence-storage/history blocker through authorized work without truncation, waiver or historical rewriting; present a new reviewable revision and rerun SHA-bound independent review after the required normal gates and DoD pass.",
       "evidence_refs": [
+        "docs/exec-plans/reviews/KL-080/HG049_PROTOCOL/verification.json",
         "docs/exec-plans/active/KL-080.md",
-        "src/kineticloop/persistence/transactions.py",
-        "tests/db/test_source_decision_conformance.py",
-        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_owner_trajectories_dc.log",
-        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.log"
-      ]
-    },
-    {
-      "finding_id": "PROTOCOL-080-02",
-      "severity": "BLOCKER",
-      "title": "Mandatory unchanged hosted full DB regression has no completed PASS at reviewed SHA",
-      "location": "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-status.json",
-      "description": "The reviewed result and committed hosted workflow response record DB run 37081179328 at tested_commit 15a7167e44b8044c94688cf7e367e2d02a962e31 as in_progress with empty conclusion. The packet DoD explicitly requires unchanged hosted full DB CI PASS covering the corrected older fixture corpus. Completed quality CI is separate; this reviewed revision does not contain the required completed DB PASS evidence. No assertion about the run's later live state is made.",
-      "required_action": "Bind completed successful unchanged hosted full DB regression evidence to a new permissible implementation/result revision and rereview; retain FAIL/BLOCKED and no merge recommendation until all packet conditions are satisfied.",
-      "evidence_refs": [
-        "docs/exec-plans/active/KL-080.md",
-        "docs/exec-plans/completed/KL-080_RESULT.yaml",
-        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-status.json",
-        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-run-37081179328.json"
+        "docs/harness/EVIDENCE_STORAGE_POLICY.md"
       ]
     }
   ],
   "evidence_refs": [
-    "AGENTS.md",
-    "CURRENT_DOCUMENT_INDEX.json",
-    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
-    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
-    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
     "docs/exec-plans/active/KL-080.md",
-    "docs/harness/THREAD_REVIEW_CONTRACT.md",
-    "docs/harness/M3_CLOSURE_CONTRACT.md",
+    "docs/exec-plans/governance/HG-049.yaml",
     "docs/exec-plans/completed/KL-080_RESULT.yaml",
-    "src/kineticloop/workflow/deterministic_planning.py",
-    "src/kineticloop/persistence/deterministic_planning.py",
-    "src/kineticloop/persistence/transactions.py",
-    "tests/db/test_source_decision_conformance.py",
-    "tests/unit/workflow/test_source_decision_conformance.py",
-    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_owner_trajectories_dc.log",
-    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_owner_trajectories_dc.xml",
-    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.log",
-    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.xml",
-    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/final-checks.json",
-    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-status.json",
-    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-run-37081179328.json",
-    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_canonical_full_t6_dc.xml",
-    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_invalid_reconstruction_dc.xml",
-    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_freshness_predicate_support_dc.xml",
-    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_repair_replay_expiry_dc.xml"
-  ]
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/source_suite_dc.stdout.capture.json",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/source_suite_dc.junit.capture.json",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/source_matrix_pu.stdout.capture.json",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/source_suite_pu.junit.capture.json",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/hosted.manifest.json.capture.json",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/hosted.database.xml.capture.json",
+    "docs/exec-plans/reviews/KL-080/HG049_PROTOCOL_REPORT.md",
+    "docs/exec-plans/reviews/KL-080/HG049_PROTOCOL/verify.py",
+    "docs/exec-plans/reviews/KL-080/HG049_PROTOCOL/verification.json"
+  ],
+  "review_contract_version": "v0.2"
 }
