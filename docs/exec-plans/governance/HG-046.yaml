@@ -1,7 +1,7 @@
 change_identity: harness-governance-v0.1/HG-046
 display_change_id: HG-046
 base_commit: fc8a044ffa4d15a74ce5dc59298ae411f1f4009b
-tested_commit: c91d2635427a13a97a53fe4e52ec4655e1e7d866
+tested_commit: 8fb35e9364deb5cfbe1424535f046c744bf3b369
 change_status: PASS
 summary: Move full PostgreSQL regression to local isolated execution; enforce every PR through a pinned external
   controller and dedicated App-bound required check with conservative diff selection, exact revision admission,
@@ -12,6 +12,7 @@ files_changed:
 - .github/workflows/db.yml
 - CURRENT_DOCUMENT_INDEX.json
 - HARNESS_DOCUMENT_MANIFEST.json
+- docs/exec-plans/evidence/HG-046/CONTROLLER_8fb35e9.md
 - docs/exec-plans/evidence/HG-046/CONTROLLER_RUNS.md
 - docs/exec-plans/evidence/HG-046/HARDENING_PLAN.md
 - docs/exec-plans/evidence/HG-046/RUNS.md
@@ -33,6 +34,14 @@ files_changed:
 - docs/exec-plans/evidence/HG-046/checks-341333d/unit.log
 - docs/exec-plans/evidence/HG-046/checks-341333d/validation.json
 - docs/exec-plans/evidence/HG-046/checks-341333d/validation.log
+- docs/exec-plans/evidence/HG-046/checks-8fb35e9/focused.json
+- docs/exec-plans/evidence/HG-046/checks-8fb35e9/focused.log
+- docs/exec-plans/evidence/HG-046/checks-8fb35e9/lint.json
+- docs/exec-plans/evidence/HG-046/checks-8fb35e9/lint.log
+- docs/exec-plans/evidence/HG-046/checks-8fb35e9/scope_frozen.json
+- docs/exec-plans/evidence/HG-046/checks-8fb35e9/scope_frozen.log
+- docs/exec-plans/evidence/HG-046/checks-8fb35e9/typecheck.json
+- docs/exec-plans/evidence/HG-046/checks-8fb35e9/typecheck.log
 - docs/exec-plans/evidence/HG-046/checks-c91d263/focused.json
 - docs/exec-plans/evidence/HG-046/checks-c91d263/focused.log
 - docs/exec-plans/evidence/HG-046/checks-c91d263/lint.json
@@ -41,6 +50,30 @@ files_changed:
 - docs/exec-plans/evidence/HG-046/checks-c91d263/scope_frozen.log
 - docs/exec-plans/evidence/HG-046/checks-c91d263/typecheck.json
 - docs/exec-plans/evidence/HG-046/checks-c91d263/typecheck.log
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/collection.log
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/compose_config_valid.log
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/dependency_sync.log
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/destroy.log
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/environment-readback.json
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/full_database.log
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/harness.log
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/image_build.log
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/lint.log
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/merge_gate.log
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/peer_checkout.log
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/peer_remove.log
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/postgres_ready.log
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/receipt.json
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/reset_idempotent.log
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/typecheck.log
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/unit.log
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/worker-receipt.json
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/worker/harness.xml
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/worker/run/collection.json
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/worker/run/database.xml
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/worker/run/execution.json
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/worker/unit.xml
+- docs/exec-plans/evidence/HG-046/controller-8fb35e9/worktree_db_isolated.log
 - docs/exec-plans/evidence/HG-046/controller-c91d263/collection.log
 - docs/exec-plans/evidence/HG-046/controller-c91d263/compose_config_valid.log
 - docs/exec-plans/evidence/HG-046/controller-c91d263/dependency_sync.log
@@ -66,6 +99,7 @@ files_changed:
 - docs/exec-plans/evidence/HG-046/controller-c91d263/worker/unit.xml
 - docs/exec-plans/evidence/HG-046/controller-c91d263/worktree_db_isolated.log
 - docs/exec-plans/evidence/HG-046/controller_scope_audit.py
+- docs/exec-plans/evidence/HG-046/controller_scope_audit_8fb35e9.py
 - docs/exec-plans/evidence/HG-046/db-341333d/daemon.log
 - docs/exec-plans/evidence/HG-046/db-341333d/dependency_sync.log
 - docs/exec-plans/evidence/HG-046/db-341333d/executor.log
@@ -116,6 +150,16 @@ files_changed:
 - docs/exec-plans/evidence/HG-046/development/checks-7338167/harness.log
 - docs/exec-plans/evidence/HG-046/development/checks-7338167/unit.json
 - docs/exec-plans/evidence/HG-046/development/checks-7338167/unit.log
+- docs/exec-plans/evidence/HG-046/development/checks-890c37d/focused.json
+- docs/exec-plans/evidence/HG-046/development/checks-890c37d/focused.log
+- docs/exec-plans/evidence/HG-046/development/checks-890c37d/lint.json
+- docs/exec-plans/evidence/HG-046/development/checks-890c37d/lint.log
+- docs/exec-plans/evidence/HG-046/development/checks-890c37d/scope_frozen.json
+- docs/exec-plans/evidence/HG-046/development/checks-890c37d/scope_frozen.log
+- docs/exec-plans/evidence/HG-046/development/checks-890c37d/scope_frozen_retry.json
+- docs/exec-plans/evidence/HG-046/development/checks-890c37d/scope_frozen_retry.log
+- docs/exec-plans/evidence/HG-046/development/checks-890c37d/typecheck.json
+- docs/exec-plans/evidence/HG-046/development/checks-890c37d/typecheck.log
 - docs/exec-plans/evidence/HG-046/development/checks-afca6c0/diff_check.json
 - docs/exec-plans/evidence/HG-046/development/checks-afca6c0/diff_check.log
 - docs/exec-plans/evidence/HG-046/development/checks-afca6c0/focused.json
@@ -157,6 +201,15 @@ files_changed:
 - docs/exec-plans/evidence/HG-046/development/controller-57f2581/image_build.log
 - docs/exec-plans/evidence/HG-046/development/controller-57f2581/receipt.json
 - docs/exec-plans/evidence/HG-046/development/controller-57f2581/worker-receipt.json
+- docs/exec-plans/evidence/HG-046/development/controller-890c37d/dependency_sync.log
+- docs/exec-plans/evidence/HG-046/development/controller-890c37d/image_build.log
+- docs/exec-plans/evidence/HG-046/development/controller-890c37d/lint.log
+- docs/exec-plans/evidence/HG-046/development/controller-890c37d/receipt.json
+- docs/exec-plans/evidence/HG-046/development/controller-890c37d/typecheck.log
+- docs/exec-plans/evidence/HG-046/development/controller-890c37d/unit.log
+- docs/exec-plans/evidence/HG-046/development/controller-890c37d/worker-receipt.json
+- docs/exec-plans/evidence/HG-046/development/controller-890c37d/worker/run/execution.json
+- docs/exec-plans/evidence/HG-046/development/controller-890c37d/worker/unit.xml
 - docs/exec-plans/evidence/HG-046/development/controller-checks-00df4ff/lint.json
 - docs/exec-plans/evidence/HG-046/development/controller-checks-00df4ff/lint.log
 - docs/exec-plans/evidence/HG-046/development/controller-checks-00df4ff/scope_frozen.json
@@ -265,26 +318,26 @@ checks_run:
 - check_id: scope_frozen
   command: python3 /private/tmp/hg046-controller-scope.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/checks-c91d263/scope_frozen.json
+  evidence_ref: docs/exec-plans/evidence/HG-046/checks-8fb35e9/scope_frozen.json
 - check_id: focused
   command: /private/tmp/hg044-venv/bin/python -m pytest -q tests/harness/test_local_gate.py tests/harness/test_db_policy.py
     tests/harness/test_local_db_ci.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/checks-c91d263/focused.json
+  evidence_ref: docs/exec-plans/evidence/HG-046/checks-8fb35e9/focused.json
 - check_id: lint
   command: /private/tmp/hg044-venv/bin/python -m ruff check .
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/checks-c91d263/lint.json
+  evidence_ref: docs/exec-plans/evidence/HG-046/checks-8fb35e9/lint.json
 - check_id: typecheck
   command: /private/tmp/hg044-venv/bin/python -m mypy --no-incremental --cache-dir /private/tmp/hg046-mypy-current
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/checks-c91d263/typecheck.json
+  evidence_ref: docs/exec-plans/evidence/HG-046/checks-8fb35e9/typecheck.json
 - check_id: trusted_local_quality_database_lifecycle
-  command: python3 -I /Users/davetian/.config/kineticloop-local-ci/releases/c91d2635427a13a97a53fe4e52ec4655e1e7d866/local_gate.py
-    --config /Users/davetian/.config/kineticloop-local-ci/candidate-c91d263.json --admission /Users/davetian/.config/kineticloop-local-ci/admission-test-c91d263.json
-    --pr 90 --test-only --evidence-dir /private/tmp/hg046-controller-c91d263
+  command: python3 -I /Users/davetian/.config/kineticloop-local-ci/releases/8fb35e9364deb5cfbe1424535f046c744bf3b369/local_gate.py
+    --config /Users/davetian/.config/kineticloop-local-ci/candidate-8fb35e9.json --admission /Users/davetian/.config/kineticloop-local-ci/admission-test-8fb35e9.json
+    --pr 90 --test-only --evidence-dir /private/tmp/hg046-controller-8fb35e9
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-046/controller-c91d263/receipt.json
+  evidence_ref: docs/exec-plans/evidence/HG-046/controller-8fb35e9/receipt.json
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
