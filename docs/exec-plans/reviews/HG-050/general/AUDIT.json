@@ -1,0 +1,780 @@
+{
+  "reviewed_head_sha": "26482f7f7147fe33cf37d8028574196c97c82ec6",
+  "base_commit": "034d6301316d0dade784a61b159c027b83fbce3a",
+  "tested_commit": "f302b22c0838ef2928913392e7c2a6af9e8f8698",
+  "declared_exact_paths": [
+    "CURRENT_DOCUMENT_INDEX.json",
+    "HARNESS_DOCUMENT_MANIFEST.json",
+    "docs/exec-plans/evidence/HG-050/OPERATOR_OBSERVATIONS.json",
+    "docs/exec-plans/evidence/HG-050/SCOPE.md",
+    "docs/exec-plans/evidence/HG-050/checks-f302b22/DIAGNOSIS.json",
+    "docs/exec-plans/evidence/HG-050/checks-f302b22/EXECUTION.json",
+    "docs/exec-plans/evidence/HG-050/checks-f302b22/INITIAL_EXECUTION.json",
+    "docs/exec-plans/evidence/HG-050/checks-f302b22/ISOLATED_EXECUTION.json",
+    "docs/exec-plans/evidence/HG-050/checks-f302b22/RETRY_EXECUTION.json",
+    "docs/exec-plans/evidence/HG-050/checks-f302b22/capture_driver.py",
+    "docs/exec-plans/evidence/HG-050/checks-f302b22/initial-driver.log",
+    "docs/exec-plans/evidence/HG-050/checks-f302b22/isolated_driver.py",
+    "docs/exec-plans/evidence/HG-050/checks-f302b22/rerun_driver.py",
+    "docs/exec-plans/evidence/HG-050/driver.py",
+    "docs/exec-plans/evidence/HG-050/precommit/CONTEXT.json",
+    "docs/exec-plans/evidence/HG-050/precommit/focused-2.log",
+    "docs/exec-plans/evidence/HG-050/precommit/focused-3.log",
+    "docs/exec-plans/evidence/HG-050/precommit/focused.log",
+    "docs/exec-plans/evidence/HG-050/precommit/lint-pre.log",
+    "docs/exec-plans/evidence/HG-050/precommit/typecheck-pre.log",
+    "docs/exec-plans/evidence/HG-050/runs/0f55cf624c522831e35c3e7fd9d011ccdfd05126f1df1c5c00cd4cef5cb71c5a.gz",
+    "docs/exec-plans/evidence/HG-050/runs/163efa1be3c5ab6f0919544a8f587c768d2f4eaa295121ae8467f9ded3966b40.gz",
+    "docs/exec-plans/evidence/HG-050/runs/3308ff5c4e7fb0fb60fcca5607023bced91a59e5eb842e27bba07b66901a14ef.gz",
+    "docs/exec-plans/evidence/HG-050/runs/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz",
+    "docs/exec-plans/evidence/HG-050/runs/383c28de94c0731da9b540926327b0af572a5c4130189594973d36c62c29380e.gz",
+    "docs/exec-plans/evidence/HG-050/runs/46a5cf748fd76c5a65d63ea98d4d0bb2b5ba93800f1b227fccb6e9a035fa0c9d.gz",
+    "docs/exec-plans/evidence/HG-050/runs/47151b9ebdafd49b9993e3acac76c3c2cb35c5b58443311b4b3345cfa72840fe.gz",
+    "docs/exec-plans/evidence/HG-050/runs/4ac2333d93e5f6b958ee10057f17f6ab8ee4a91ab47532992c13f0deb30ffb43.gz",
+    "docs/exec-plans/evidence/HG-050/runs/4f6761f92755654d2882cd4afd21b707c1fcbbdf982bd45c49492dc02dc5d756.gz",
+    "docs/exec-plans/evidence/HG-050/runs/70ec3b2dbe749e3be482d964e5a4181db93c3bc09fe3e80726d1d792a0fdd436.gz",
+    "docs/exec-plans/evidence/HG-050/runs/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz",
+    "docs/exec-plans/evidence/HG-050/runs/866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445.gz",
+    "docs/exec-plans/evidence/HG-050/runs/9dc9e2eeca5dfe32c3941f047b5975491dab08b37669b2103cf21bbd41d94a8a.gz",
+    "docs/exec-plans/evidence/HG-050/runs/a268e09b000ad40429cf1ab176edb62fad9bb0192f31861ccdaba6a972de2a95.gz",
+    "docs/exec-plans/evidence/HG-050/runs/a729d9b40cef6bc49ed5db20ba34e389f17f446d9428fc6bd8a4da85184f2581.gz",
+    "docs/exec-plans/evidence/HG-050/runs/a78f6fc074066252e5f508b63d2386ae5c6b61a1c22188e872b1c078d2a2697e.gz",
+    "docs/exec-plans/evidence/HG-050/runs/authority.json",
+    "docs/exec-plans/evidence/HG-050/runs/b49a1110e648b8ac9640ac56909bcbf4048f7d36f427b978c51786c924a26a6a.gz",
+    "docs/exec-plans/evidence/HG-050/runs/b746f3b70017ea89feb3e19a297122a3c78030f79e31277cdc8b34001ba5c897.gz",
+    "docs/exec-plans/evidence/HG-050/runs/d6b0c313cde1bc1ca8d3cffcfdb46f2f6ce4cdff747722a4c0c98822b5580ce6.gz",
+    "docs/exec-plans/evidence/HG-050/runs/de822dea48e5ae586e9d34f5429c656c6cd1a1d08738a6f375c4dded6997f441.gz",
+    "docs/exec-plans/evidence/HG-050/runs/diff.json",
+    "docs/exec-plans/evidence/HG-050/runs/e3af9d55335b1c7544d159a75465794525ac359551d8a6f95f780ba8b0ed148b.gz",
+    "docs/exec-plans/evidence/HG-050/runs/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz",
+    "docs/exec-plans/evidence/HG-050/runs/e9ea914ab90f74daacf0ce05b1c1a4f00e2e8b601b516a0494380a5a9ba51906.gz",
+    "docs/exec-plans/evidence/HG-050/runs/f0c9dfeff3d15aec7279fe6ad109e3d346fcc6dfb391716dce7c6489c63789f6.gz",
+    "docs/exec-plans/evidence/HG-050/runs/f377e6745bc30013b1533567705649d89c858da8882e1a8bf6b1c6c606ef8e7f.gz",
+    "docs/exec-plans/evidence/HG-050/runs/focused.json",
+    "docs/exec-plans/evidence/HG-050/runs/git-temp-probe.json",
+    "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-collection-json.json",
+    "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-collection-log.json",
+    "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-execution-json.json",
+    "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-junit-xml.json",
+    "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-manifest-json.json",
+    "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-pytest-log.json",
+    "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness.json",
+    "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-collection-json.json",
+    "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-collection-log.json",
+    "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-execution-json.json",
+    "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-junit-xml.json",
+    "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-manifest-json.json",
+    "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-pytest-log.json",
+    "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness.json",
+    "docs/exec-plans/evidence/HG-050/runs/lint.json",
+    "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-collection-json.json",
+    "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-collection-log.json",
+    "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-execution-json.json",
+    "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-junit-xml.json",
+    "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-manifest-json.json",
+    "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-pytest-log.json",
+    "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness.json",
+    "docs/exec-plans/evidence/HG-050/runs/scope.json",
+    "docs/exec-plans/evidence/HG-050/runs/typecheck.json",
+    "docs/exec-plans/evidence/HG-050/runs/unit-junit.json",
+    "docs/exec-plans/evidence/HG-050/runs/unit.json",
+    "docs/exec-plans/evidence/HG-050/scope_audit.py",
+    "docs/exec-plans/governance/HG-050.yaml",
+    "docs/harness/LOCAL_DB_CI.md",
+    "tests/harness/test_local_gate.py",
+    "tools/harness/github_app.py",
+    "tools/harness/validate_harness.py"
+  ],
+  "tested_to_reviewed_suffix": [
+    {
+      "commit": "26482f7f7147fe33cf37d8028574196c97c82ec6",
+      "paths": [
+        "docs/exec-plans/evidence/HG-050/OPERATOR_OBSERVATIONS.json",
+        "docs/exec-plans/evidence/HG-050/checks-f302b22/DIAGNOSIS.json",
+        "docs/exec-plans/evidence/HG-050/checks-f302b22/EXECUTION.json",
+        "docs/exec-plans/evidence/HG-050/checks-f302b22/INITIAL_EXECUTION.json",
+        "docs/exec-plans/evidence/HG-050/checks-f302b22/ISOLATED_EXECUTION.json",
+        "docs/exec-plans/evidence/HG-050/checks-f302b22/RETRY_EXECUTION.json",
+        "docs/exec-plans/evidence/HG-050/checks-f302b22/capture_driver.py",
+        "docs/exec-plans/evidence/HG-050/checks-f302b22/initial-driver.log",
+        "docs/exec-plans/evidence/HG-050/checks-f302b22/isolated_driver.py",
+        "docs/exec-plans/evidence/HG-050/checks-f302b22/rerun_driver.py",
+        "docs/exec-plans/evidence/HG-050/precommit/CONTEXT.json",
+        "docs/exec-plans/evidence/HG-050/precommit/focused-2.log",
+        "docs/exec-plans/evidence/HG-050/precommit/focused-3.log",
+        "docs/exec-plans/evidence/HG-050/precommit/focused.log",
+        "docs/exec-plans/evidence/HG-050/precommit/lint-pre.log",
+        "docs/exec-plans/evidence/HG-050/precommit/typecheck-pre.log",
+        "docs/exec-plans/evidence/HG-050/runs/0f55cf624c522831e35c3e7fd9d011ccdfd05126f1df1c5c00cd4cef5cb71c5a.gz",
+        "docs/exec-plans/evidence/HG-050/runs/163efa1be3c5ab6f0919544a8f587c768d2f4eaa295121ae8467f9ded3966b40.gz",
+        "docs/exec-plans/evidence/HG-050/runs/3308ff5c4e7fb0fb60fcca5607023bced91a59e5eb842e27bba07b66901a14ef.gz",
+        "docs/exec-plans/evidence/HG-050/runs/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz",
+        "docs/exec-plans/evidence/HG-050/runs/383c28de94c0731da9b540926327b0af572a5c4130189594973d36c62c29380e.gz",
+        "docs/exec-plans/evidence/HG-050/runs/46a5cf748fd76c5a65d63ea98d4d0bb2b5ba93800f1b227fccb6e9a035fa0c9d.gz",
+        "docs/exec-plans/evidence/HG-050/runs/47151b9ebdafd49b9993e3acac76c3c2cb35c5b58443311b4b3345cfa72840fe.gz",
+        "docs/exec-plans/evidence/HG-050/runs/4ac2333d93e5f6b958ee10057f17f6ab8ee4a91ab47532992c13f0deb30ffb43.gz",
+        "docs/exec-plans/evidence/HG-050/runs/4f6761f92755654d2882cd4afd21b707c1fcbbdf982bd45c49492dc02dc5d756.gz",
+        "docs/exec-plans/evidence/HG-050/runs/70ec3b2dbe749e3be482d964e5a4181db93c3bc09fe3e80726d1d792a0fdd436.gz",
+        "docs/exec-plans/evidence/HG-050/runs/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz",
+        "docs/exec-plans/evidence/HG-050/runs/866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445.gz",
+        "docs/exec-plans/evidence/HG-050/runs/9dc9e2eeca5dfe32c3941f047b5975491dab08b37669b2103cf21bbd41d94a8a.gz",
+        "docs/exec-plans/evidence/HG-050/runs/a268e09b000ad40429cf1ab176edb62fad9bb0192f31861ccdaba6a972de2a95.gz",
+        "docs/exec-plans/evidence/HG-050/runs/a729d9b40cef6bc49ed5db20ba34e389f17f446d9428fc6bd8a4da85184f2581.gz",
+        "docs/exec-plans/evidence/HG-050/runs/a78f6fc074066252e5f508b63d2386ae5c6b61a1c22188e872b1c078d2a2697e.gz",
+        "docs/exec-plans/evidence/HG-050/runs/authority.json",
+        "docs/exec-plans/evidence/HG-050/runs/b49a1110e648b8ac9640ac56909bcbf4048f7d36f427b978c51786c924a26a6a.gz",
+        "docs/exec-plans/evidence/HG-050/runs/b746f3b70017ea89feb3e19a297122a3c78030f79e31277cdc8b34001ba5c897.gz",
+        "docs/exec-plans/evidence/HG-050/runs/d6b0c313cde1bc1ca8d3cffcfdb46f2f6ce4cdff747722a4c0c98822b5580ce6.gz",
+        "docs/exec-plans/evidence/HG-050/runs/de822dea48e5ae586e9d34f5429c656c6cd1a1d08738a6f375c4dded6997f441.gz",
+        "docs/exec-plans/evidence/HG-050/runs/diff.json",
+        "docs/exec-plans/evidence/HG-050/runs/e3af9d55335b1c7544d159a75465794525ac359551d8a6f95f780ba8b0ed148b.gz",
+        "docs/exec-plans/evidence/HG-050/runs/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz",
+        "docs/exec-plans/evidence/HG-050/runs/e9ea914ab90f74daacf0ce05b1c1a4f00e2e8b601b516a0494380a5a9ba51906.gz",
+        "docs/exec-plans/evidence/HG-050/runs/f0c9dfeff3d15aec7279fe6ad109e3d346fcc6dfb391716dce7c6489c63789f6.gz",
+        "docs/exec-plans/evidence/HG-050/runs/f377e6745bc30013b1533567705649d89c858da8882e1a8bf6b1c6c606ef8e7f.gz",
+        "docs/exec-plans/evidence/HG-050/runs/focused.json",
+        "docs/exec-plans/evidence/HG-050/runs/git-temp-probe.json",
+        "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-collection-json.json",
+        "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-collection-log.json",
+        "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-execution-json.json",
+        "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-junit-xml.json",
+        "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-manifest-json.json",
+        "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-pytest-log.json",
+        "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness.json",
+        "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-collection-json.json",
+        "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-collection-log.json",
+        "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-execution-json.json",
+        "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-junit-xml.json",
+        "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-manifest-json.json",
+        "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-pytest-log.json",
+        "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness.json",
+        "docs/exec-plans/evidence/HG-050/runs/lint.json",
+        "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-collection-json.json",
+        "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-collection-log.json",
+        "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-execution-json.json",
+        "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-junit-xml.json",
+        "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-manifest-json.json",
+        "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-pytest-log.json",
+        "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness.json",
+        "docs/exec-plans/evidence/HG-050/runs/scope.json",
+        "docs/exec-plans/evidence/HG-050/runs/typecheck.json",
+        "docs/exec-plans/evidence/HG-050/runs/unit-junit.json",
+        "docs/exec-plans/evidence/HG-050/runs/unit.json",
+        "docs/exec-plans/governance/HG-050.yaml"
+      ]
+    }
+  ],
+  "derived_hashes_verified": true,
+  "envelopes": [
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/authority.json",
+      "raw_bytes": 38,
+      "sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "exit_code": 0,
+      "counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/diff.json",
+      "raw_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/focused.json",
+      "raw_bytes": 180,
+      "sha256": "a78f6fc074066252e5f508b63d2386ae5c6b61a1c22188e872b1c078d2a2697e",
+      "exit_code": 0,
+      "counts": {
+        "passed": 102
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/git-temp-probe.json",
+      "raw_bytes": 99,
+      "sha256": "e3af9d55335b1c7544d159a75465794525ac359551d8a6f95f780ba8b0ed148b",
+      "exit_code": 0,
+      "counts": {
+        "passed": 1
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-collection-json.json",
+      "raw_bytes": 3308015,
+      "sha256": "3308ff5c4e7fb0fb60fcca5607023bced91a59e5eb842e27bba07b66901a14ef",
+      "exit_code": 1,
+      "counts": {
+        "passed": 1,
+        "skipped": 1,
+        "error": 1,
+        "deselected": 1,
+        "xfailed": 1,
+        "xpassed": 1,
+        "failed": 1
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-collection-log.json",
+      "raw_bytes": 1167,
+      "sha256": "46a5cf748fd76c5a65d63ea98d4d0bb2b5ba93800f1b227fccb6e9a035fa0c9d",
+      "exit_code": 1,
+      "counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-execution-json.json",
+      "raw_bytes": 20423645,
+      "sha256": "b746f3b70017ea89feb3e19a297122a3c78030f79e31277cdc8b34001ba5c897",
+      "exit_code": 1,
+      "counts": {
+        "passed": 1,
+        "skipped": 1,
+        "error": 1,
+        "deselected": 1,
+        "xfailed": 1,
+        "xpassed": 1,
+        "failed": 1
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-junit-xml.json",
+      "raw_bytes": 3527975,
+      "sha256": "47151b9ebdafd49b9993e3acac76c3c2cb35c5b58443311b4b3345cfa72840fe",
+      "exit_code": 1,
+      "counts": {
+        "passed": 1,
+        "skipped": 1,
+        "error": 1,
+        "deselected": 1,
+        "xfailed": 1,
+        "xpassed": 1,
+        "failed": 1
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-manifest-json.json",
+      "raw_bytes": 2157,
+      "sha256": "b49a1110e648b8ac9640ac56909bcbf4048f7d36f427b978c51786c924a26a6a",
+      "exit_code": 1,
+      "counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-pytest-log.json",
+      "raw_bytes": 1758,
+      "sha256": "9dc9e2eeca5dfe32c3941f047b5975491dab08b37669b2103cf21bbd41d94a8a",
+      "exit_code": 1,
+      "counts": {
+        "passed": 1405
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/initial-failed-harness.json",
+      "raw_bytes": 1814,
+      "sha256": "0f55cf624c522831e35c3e7fd9d011ccdfd05126f1df1c5c00cd4cef5cb71c5a",
+      "exit_code": 1,
+      "counts": {
+        "passed": 1405
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-collection-json.json",
+      "raw_bytes": 3308015,
+      "sha256": "3308ff5c4e7fb0fb60fcca5607023bced91a59e5eb842e27bba07b66901a14ef",
+      "exit_code": 0,
+      "counts": {
+        "passed": 1,
+        "skipped": 1,
+        "error": 1,
+        "deselected": 1,
+        "xfailed": 1,
+        "xpassed": 1,
+        "failed": 1
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-collection-log.json",
+      "raw_bytes": 1167,
+      "sha256": "46a5cf748fd76c5a65d63ea98d4d0bb2b5ba93800f1b227fccb6e9a035fa0c9d",
+      "exit_code": 0,
+      "counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-execution-json.json",
+      "raw_bytes": 20423498,
+      "sha256": "70ec3b2dbe749e3be482d964e5a4181db93c3bc09fe3e80726d1d792a0fdd436",
+      "exit_code": 0,
+      "counts": {
+        "passed": 1,
+        "skipped": 1,
+        "error": 1,
+        "deselected": 1,
+        "xfailed": 1,
+        "xpassed": 1,
+        "failed": 1
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-junit-xml.json",
+      "raw_bytes": 3527964,
+      "sha256": "a268e09b000ad40429cf1ab176edb62fad9bb0192f31861ccdaba6a972de2a95",
+      "exit_code": 0,
+      "counts": {
+        "passed": 1,
+        "skipped": 1,
+        "error": 1,
+        "deselected": 1,
+        "xfailed": 1,
+        "xpassed": 1,
+        "failed": 1
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-manifest-json.json",
+      "raw_bytes": 2257,
+      "sha256": "4ac2333d93e5f6b958ee10057f17f6ab8ee4a91ab47532992c13f0deb30ffb43",
+      "exit_code": 0,
+      "counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-pytest-log.json",
+      "raw_bytes": 1763,
+      "sha256": "a729d9b40cef6bc49ed5db20ba34e389f17f446d9428fc6bd8a4da85184f2581",
+      "exit_code": 0,
+      "counts": {
+        "passed": 1405
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness.json",
+      "raw_bytes": 1763,
+      "sha256": "a729d9b40cef6bc49ed5db20ba34e389f17f446d9428fc6bd8a4da85184f2581",
+      "exit_code": 0,
+      "counts": {
+        "passed": 1405
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/lint.json",
+      "raw_bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "exit_code": 0,
+      "counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-collection-json.json",
+      "raw_bytes": 3308015,
+      "sha256": "3308ff5c4e7fb0fb60fcca5607023bced91a59e5eb842e27bba07b66901a14ef",
+      "exit_code": 1,
+      "counts": {
+        "passed": 1,
+        "skipped": 1,
+        "error": 1,
+        "deselected": 1,
+        "xfailed": 1,
+        "xpassed": 1,
+        "failed": 1
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-collection-log.json",
+      "raw_bytes": 1167,
+      "sha256": "46a5cf748fd76c5a65d63ea98d4d0bb2b5ba93800f1b227fccb6e9a035fa0c9d",
+      "exit_code": 1,
+      "counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-execution-json.json",
+      "raw_bytes": 20423503,
+      "sha256": "f0c9dfeff3d15aec7279fe6ad109e3d346fcc6dfb391716dce7c6489c63789f6",
+      "exit_code": 1,
+      "counts": {
+        "passed": 1,
+        "skipped": 1,
+        "error": 1,
+        "deselected": 1,
+        "xfailed": 1,
+        "xpassed": 1,
+        "failed": 1
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-junit-xml.json",
+      "raw_bytes": 3534248,
+      "sha256": "163efa1be3c5ab6f0919544a8f587c768d2f4eaa295121ae8467f9ded3966b40",
+      "exit_code": 1,
+      "counts": {
+        "passed": 1,
+        "skipped": 1,
+        "error": 1,
+        "deselected": 1,
+        "xfailed": 1,
+        "xpassed": 1,
+        "failed": 1
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-manifest-json.json",
+      "raw_bytes": 2155,
+      "sha256": "e9ea914ab90f74daacf0ce05b1c1a4f00e2e8b601b516a0494380a5a9ba51906",
+      "exit_code": 1,
+      "counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-pytest-log.json",
+      "raw_bytes": 8215,
+      "sha256": "4f6761f92755654d2882cd4afd21b707c1fcbbdf982bd45c49492dc02dc5d756",
+      "exit_code": 1,
+      "counts": {
+        "failed": 1,
+        "passed": 1404
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/retry-failed-harness.json",
+      "raw_bytes": 8262,
+      "sha256": "d6b0c313cde1bc1ca8d3cffcfdb46f2f6ce4cdff747722a4c0c98822b5580ce6",
+      "exit_code": 1,
+      "counts": {
+        "failed": 1,
+        "passed": 1404
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/scope.json",
+      "raw_bytes": 600,
+      "sha256": "383c28de94c0731da9b540926327b0af572a5c4130189594973d36c62c29380e",
+      "exit_code": 0,
+      "counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/typecheck.json",
+      "raw_bytes": 45,
+      "sha256": "866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445",
+      "exit_code": 0,
+      "counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/unit-junit.json",
+      "raw_bytes": 33807,
+      "sha256": "f377e6745bc30013b1533567705649d89c858da8882e1a8bf6b1c6c606ef8e7f",
+      "exit_code": 0,
+      "counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/runs/unit.json",
+      "raw_bytes": 433,
+      "sha256": "de822dea48e5ae586e9d34f5429c656c6cd1a1d08738a6f375c4dded6997f441",
+      "exit_code": 0,
+      "counts": {
+        "passed": 241
+      }
+    }
+  ],
+  "runs": {
+    "initial-failed": {
+      "junit": {
+        "tests": 1405,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "manifest": {
+        "format": "kineticloop-developer-harness-run-v1",
+        "tested_commit": "f302b22c0838ef2928913392e7c2a6af9e8f8698",
+        "dirty_source": false,
+        "workers": 2,
+        "command": [
+          "/Users/davetian/.codex/worktrees/cd73/KineticLoop/.venv/bin/python",
+          "-m",
+          "pytest",
+          "-p",
+          "tools.harness.parallel_observer",
+          "tests/harness",
+          "-q",
+          "-n",
+          "2",
+          "--dist",
+          "load",
+          "--maxprocesses",
+          "4",
+          "--max-worker-restart",
+          "0",
+          "--maxschedchunk",
+          "1",
+          "--junitxml=/private/tmp/hg050-checks-f302b22/harness/junit.xml"
+        ],
+        "python": "3.12.14 (main, Sep  1 2026, 14:09:38) [Clang 22.1.3 ]",
+        "platform": "macOS-26.6.2-arm64-arm-64bit",
+        "versions": {
+          "pytest": "8.4.2",
+          "pytest-xdist": "3.8.0",
+          "execnet": "2.1.2"
+        },
+        "collection_command": [
+          "/Users/davetian/.codex/worktrees/cd73/KineticLoop/.venv/bin/python",
+          "-m",
+          "pytest",
+          "-p",
+          "tools.harness.parallel_observer",
+          "tests/harness",
+          "-q",
+          "--collect-only",
+          "-q",
+          "-n",
+          "0"
+        ],
+        "collection_wall_seconds": 3.9416763340122998,
+        "wall_seconds": 1730.3576851668768,
+        "pytest_exit_code": 0,
+        "mode": "EXECUTION",
+        "execution_complete": false,
+        "requested_junitxml": null,
+        "exit_code": 1,
+        "errors": [
+          "source-changed-during-execution"
+        ],
+        "files": [
+          {
+            "path": "collection.json",
+            "bytes": 3308015,
+            "sha256": "3308ff5c4e7fb0fb60fcca5607023bced91a59e5eb842e27bba07b66901a14ef"
+          },
+          {
+            "path": "collection.log",
+            "bytes": 1167,
+            "sha256": "46a5cf748fd76c5a65d63ea98d4d0bb2b5ba93800f1b227fccb6e9a035fa0c9d"
+          },
+          {
+            "path": "execution.json",
+            "bytes": 20423645,
+            "sha256": "b746f3b70017ea89feb3e19a297122a3c78030f79e31277cdc8b34001ba5c897"
+          },
+          {
+            "path": "junit.xml",
+            "bytes": 3527975,
+            "sha256": "47151b9ebdafd49b9993e3acac76c3c2cb35c5b58443311b4b3345cfa72840fe"
+          },
+          {
+            "path": "pytest.log",
+            "bytes": 1758,
+            "sha256": "9dc9e2eeca5dfe32c3941f047b5975491dab08b37669b2103cf21bbd41d94a8a"
+          }
+        ],
+        "evidence_scope": "developer-harness; App-bound local-db-gate still required"
+      },
+      "collected": 1405,
+      "started": 1405,
+      "reports": 4215,
+      "outcomes": {
+        "('setup', 'passed')": 1405,
+        "('call', 'passed')": 1405,
+        "('teardown', 'passed')": 1405
+      },
+      "wrapper_raw": "bringing up nodes...\nbringing up nodes...\n\n........................................................................ [  5%]\n........................................................................ [ 10%]\n........................................................................ [ 15%]\n........................................................................ [ 20%]\n........................................................................ [ 25%]\n........................................................................ [ 30%]\n........................................................................ [ 35%]\n........................................................................ [ 40%]\n........................................................................ [ 46%]\n........................................................................ [ 51%]\n........................................................................ [ 56%]\n........................................................................ [ 61%]\n........................................................................ [ 66%]\n........................................................................ [ 71%]\n........................................................................ [ 76%]\n........................................................................ [ 81%]\n........................................................................ [ 87%]\n........................................................................ [ 92%]\n........................................................................ [ 97%]\n.....................................                                    [100%]\n--- generated xml file: /private/tmp/hg050-checks-f302b22/harness/junit.xml ----\n1405 passed in 1726.07s (0:28:46)\nHARNESS_EVIDENCE_ERROR: source-changed-during-execution\n"
+    },
+    "retry-failed": {
+      "junit": {
+        "tests": 1405,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "manifest": {
+        "format": "kineticloop-developer-harness-run-v1",
+        "tested_commit": "f302b22c0838ef2928913392e7c2a6af9e8f8698",
+        "dirty_source": false,
+        "workers": 2,
+        "command": [
+          "/Users/davetian/.codex/worktrees/cd73/KineticLoop/.venv/bin/python",
+          "-m",
+          "pytest",
+          "-p",
+          "tools.harness.parallel_observer",
+          "tests/harness",
+          "-q",
+          "-n",
+          "2",
+          "--dist",
+          "load",
+          "--maxprocesses",
+          "4",
+          "--max-worker-restart",
+          "0",
+          "--maxschedchunk",
+          "1",
+          "--junitxml=/private/tmp/hg050-harness-rerun-f302b22/harness/junit.xml"
+        ],
+        "python": "3.12.14 (main, Sep  1 2026, 14:09:38) [Clang 22.1.3 ]",
+        "platform": "macOS-26.6.2-arm64-arm-64bit",
+        "versions": {
+          "pytest": "8.4.2",
+          "pytest-xdist": "3.8.0",
+          "execnet": "2.1.2"
+        },
+        "collection_command": [
+          "/Users/davetian/.codex/worktrees/cd73/KineticLoop/.venv/bin/python",
+          "-m",
+          "pytest",
+          "-p",
+          "tools.harness.parallel_observer",
+          "tests/harness",
+          "-q",
+          "--collect-only",
+          "-q",
+          "-n",
+          "0"
+        ],
+        "collection_wall_seconds": 0.8436740001197904,
+        "wall_seconds": 1269.5730408751406,
+        "pytest_exit_code": 1,
+        "mode": "EXECUTION",
+        "execution_complete": false,
+        "requested_junitxml": null,
+        "exit_code": 1,
+        "errors": [
+          "failed-or-skipped-call"
+        ],
+        "files": [
+          {
+            "path": "collection.json",
+            "bytes": 3308015,
+            "sha256": "3308ff5c4e7fb0fb60fcca5607023bced91a59e5eb842e27bba07b66901a14ef"
+          },
+          {
+            "path": "collection.log",
+            "bytes": 1167,
+            "sha256": "46a5cf748fd76c5a65d63ea98d4d0bb2b5ba93800f1b227fccb6e9a035fa0c9d"
+          },
+          {
+            "path": "execution.json",
+            "bytes": 20423503,
+            "sha256": "f0c9dfeff3d15aec7279fe6ad109e3d346fcc6dfb391716dce7c6489c63789f6"
+          },
+          {
+            "path": "junit.xml",
+            "bytes": 3534248,
+            "sha256": "163efa1be3c5ab6f0919544a8f587c768d2f4eaa295121ae8467f9ded3966b40"
+          },
+          {
+            "path": "pytest.log",
+            "bytes": 8215,
+            "sha256": "4f6761f92755654d2882cd4afd21b707c1fcbbdf982bd45c49492dc02dc5d756"
+          }
+        ],
+        "evidence_scope": "developer-harness; App-bound local-db-gate still required"
+      },
+      "collected": 1405,
+      "started": 1405,
+      "reports": 4215,
+      "outcomes": {
+        "('setup', 'passed')": 1405,
+        "('call', 'passed')": 1404,
+        "('teardown', 'passed')": 1405,
+        "('call', 'failed')": 1
+      },
+      "wrapper_raw": "bringing up nodes...\nbringing up nodes...\n\n........................................................................ [  5%]\n........................................................................ [ 10%]\n........................................................................ [ 15%]\n........................................................................ [ 20%]\n........................................................................ [ 25%]\n........................................................................ [ 30%]\n........................................................................ [ 35%]\n........................................................................ [ 40%]\n........................................................................ [ 46%]\n........................................................................ [ 51%]\n........................................................................ [ 56%]\n................F....................................................... [ 61%]\n........................................................................ [ 66%]\n........................................................................ [ 71%]\n........................................................................ [ 76%]\n........................................................................ [ 81%]\n........................................................................ [ 87%]\n........................................................................ [ 92%]\n........................................................................ [ 97%]\n.....................................                                    [100%]\n=================================== FAILURES ===================================\n____ test_compact_nested_storage_cannot_supply_m3_execution_stdout[missing] ____\n[gw1] darwin -- Python 3.12.14 /Users/davetian/.codex/worktrees/cd73/KineticLoop/.venv/bin/python\n\ntmp_path = PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1981/popen-gw1/test_compact_nested_storage_ca0')\nmutation = 'missing'\n\n    @pytest.mark.parametrize('mutation', ['missing', 'corrupt', 'command', 'tested', 'exit', 'list', 'dict'])\n    def test_compact_nested_storage_cannot_supply_m3_execution_stdout(tmp_path, mutation):\n>       history = History(tmp_path / 'repo')\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/harness/test_m3_milestone_closure.py:724: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntests/harness/test_m3_milestone_closure.py:47: in __init__\n    self.make_task(name)\ntests/harness/test_m3_milestone_closure.py:128: in make_task\n    reviewed = self.commit('synthetic task result and test evidence')\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/harness/test_m3_milestone_closure.py:102: in commit\n    self.git('add', '.')\ntests/harness/test_m3_milestone_closure.py:90: in git\n    return subprocess.check_output(['git', '-c', 'user.name=M3 Fixture', '-c',\n../../../../.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/subprocess.py:466: in check_output\n    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput = None, capture_output = False, timeout = None, check = True\npopenargs = (['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', ...],)\nkwargs = {'cwd': PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1981/popen-gw1/t...ications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex', ...}, 'stderr': -2, 'stdout': -1}\nprocess = <Popen: returncode: 128 args: ['git', '-c', 'user.name=M3 Fixture', '-c', 'u...>\nstdout = b\"error: unable to create temporary file: Invalid argument\\nerror: tests/unit/test_cli.py: failed to insert into database\\nerror: unable to index file 'tests/unit/test_cli.py'\\nfatal: updating files failed\\n\"\nstderr = None, retcode = 128\n\n    def run(*popenargs,\n            input=None, capture_output=False, timeout=None, check=False, **kwargs):\n        \"\"\"Run command with arguments and return a CompletedProcess instance.\n    \n        The returned instance will have attributes args, returncode, stdout and\n        stderr. By default, stdout and stderr are not captured, and those attributes\n        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,\n        or pass capture_output=True to capture both.\n    \n        If check is True and the exit code was non-zero, it raises a\n        CalledProcessError. The CalledProcessError object will have the return code\n        in the returncode attribute, and output & stderr attributes if those streams\n        were captured.\n    \n        If timeout (seconds) is given and the process takes too long,\n         a TimeoutExpired exception will be raised.\n    \n        There is an optional argument \"input\", allowing you to\n        pass bytes or a string to the subprocess's stdin.  If you use this argument\n        you may not also use the Popen constructor's \"stdin\" argument, as\n        it will be used internally.\n    \n        By default, all communication is in bytes, and therefore any \"input\" should\n        be bytes, and the stdout and stderr will be bytes. If in text mode, any\n        \"input\" should be a string, and stdout and stderr will be strings decoded\n        according to locale encoding, or by \"encoding\" if set. Text mode is\n        triggered by setting any of text, encoding, errors or universal_newlines.\n    \n        The other arguments are the same as for the Popen constructor.\n        \"\"\"\n        if input is not None:\n            if kwargs.get('stdin') is not None:\n                raise ValueError('stdin and input arguments may not both be used.')\n            kwargs['stdin'] = PIPE\n    \n        if capture_output:\n            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:\n                raise ValueError('stdout and stderr arguments may not be used '\n                                 'with capture_output.')\n            kwargs['stdout'] = PIPE\n            kwargs['stderr'] = PIPE\n    \n        with Popen(*popenargs, **kwargs) as process:\n            try:\n                stdout, stderr = process.communicate(input, timeout=timeout)\n            except TimeoutExpired as exc:\n                process.kill()\n                if _mswindows:\n                    # Windows accumulates the output in a single blocking\n                    # read() call run on child threads, with the timeout\n                    # being done in a join() on those threads.  communicate()\n                    # _after_ kill() is required to collect that and add it\n                    # to the exception.\n                    exc.stdout, exc.stderr = process.communicate()\n                else:\n                    # POSIX _communicate already populated the output so\n                    # far into the TimeoutExpired exception.\n                    process.wait()\n                raise\n            except:  # Including KeyboardInterrupt, communicate handled that.\n                process.kill()\n                # We don't call process.wait() as .__exit__ does that for us.\n                raise\n            retcode = process.poll()\n            if check and retcode:\n>               raise CalledProcessError(retcode, process.args,\n                                         output=stdout, stderr=stderr)\nE               subprocess.CalledProcessError: Command '['git', '-c', 'user.name=M3 Fixture', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null', '-c', 'gc.auto=0', 'add', '.']' returned non-zero exit status 128.\n\n../../../../.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/subprocess.py:571: CalledProcessError\n- generated xml file: /private/tmp/hg050-harness-rerun-f302b22/harness/junit.xml -\n=========================== short test summary info ============================\nFAILED tests/harness/test_m3_milestone_closure.py::test_compact_nested_storage_cannot_supply_m3_execution_stdout[missing]\n1 failed, 1404 passed in 1268.50s (0:21:08)\nHARNESS_EVIDENCE_ERROR: failed-or-skipped-call\n"
+    },
+    "isolated-pass": {
+      "junit": {
+        "tests": 1405,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "manifest": {
+        "format": "kineticloop-developer-harness-run-v1",
+        "tested_commit": "f302b22c0838ef2928913392e7c2a6af9e8f8698",
+        "dirty_source": false,
+        "workers": 2,
+        "command": [
+          "/Users/davetian/.codex/worktrees/cd73/KineticLoop/.venv/bin/python",
+          "-m",
+          "pytest",
+          "-p",
+          "tools.harness.parallel_observer",
+          "tests/harness",
+          "-q",
+          "--basetemp=/private/tmp/hg050-harness-isolated-pytest-temp",
+          "-n",
+          "2",
+          "--dist",
+          "load",
+          "--maxprocesses",
+          "4",
+          "--max-worker-restart",
+          "0",
+          "--maxschedchunk",
+          "1",
+          "--junitxml=/private/tmp/hg050-harness-isolated-f302b22/harness/junit.xml"
+        ],
+        "python": "3.12.14 (main, Sep  1 2026, 14:09:38) [Clang 22.1.3 ]",
+        "platform": "macOS-26.6.2-arm64-arm-64bit",
+        "versions": {
+          "pytest": "8.4.2",
+          "pytest-xdist": "3.8.0",
+          "execnet": "2.1.2"
+        },
+        "collection_command": [
+          "/Users/davetian/.codex/worktrees/cd73/KineticLoop/.venv/bin/python",
+          "-m",
+          "pytest",
+          "-p",
+          "tools.harness.parallel_observer",
+          "tests/harness",
+          "-q",
+          "--basetemp=/private/tmp/hg050-harness-isolated-pytest-temp",
+          "--collect-only",
+          "-q",
+          "-n",
+          "0"
+        ],
+        "collection_wall_seconds": 0.6933933750260621,
+        "wall_seconds": 1216.9133897500578,
+        "pytest_exit_code": 0,
+        "mode": "EXECUTION",
+        "execution_complete": true,
+        "requested_junitxml": null,
+        "exit_code": 0,
+        "errors": [],
+        "files": [
+          {
+            "path": "collection.json",
+            "bytes": 3308015,
+            "sha256": "3308ff5c4e7fb0fb60fcca5607023bced91a59e5eb842e27bba07b66901a14ef"
+          },
+          {
+            "path": "collection.log",
+            "bytes": 1167,
+            "sha256": "46a5cf748fd76c5a65d63ea98d4d0bb2b5ba93800f1b227fccb6e9a035fa0c9d"
+          },
+          {
+            "path": "execution.json",
+            "bytes": 20423498,
+            "sha256": "70ec3b2dbe749e3be482d964e5a4181db93c3bc09fe3e80726d1d792a0fdd436"
+          },
+          {
+            "path": "junit.xml",
+            "bytes": 3527964,
+            "sha256": "a268e09b000ad40429cf1ab176edb62fad9bb0192f31861ccdaba6a972de2a95"
+          },
+          {
+            "path": "pytest.log",
+            "bytes": 1763,
+            "sha256": "a729d9b40cef6bc49ed5db20ba34e389f17f446d9428fc6bd8a4da85184f2581"
+          }
+        ],
+        "evidence_scope": "developer-harness; App-bound local-db-gate still required"
+      },
+      "collected": 1405,
+      "started": 1405,
+      "reports": 4215,
+      "outcomes": {
+        "('setup', 'passed')": 1405,
+        "('call', 'passed')": 1405,
+        "('teardown', 'passed')": 1405
+      },
+      "wrapper_raw": "bringing up nodes...\nbringing up nodes...\n\n........................................................................ [  5%]\n........................................................................ [ 10%]\n........................................................................ [ 15%]\n........................................................................ [ 20%]\n........................................................................ [ 25%]\n........................................................................ [ 30%]\n........................................................................ [ 35%]\n........................................................................ [ 40%]\n........................................................................ [ 46%]\n........................................................................ [ 51%]\n........................................................................ [ 56%]\n........................................................................ [ 61%]\n........................................................................ [ 66%]\n........................................................................ [ 71%]\n........................................................................ [ 76%]\n........................................................................ [ 81%]\n........................................................................ [ 87%]\n........................................................................ [ 92%]\n........................................................................ [ 97%]\n.....................................                                    [100%]\n- generated xml file: /private/tmp/hg050-harness-isolated-f302b22/harness/junit.xml -\n1405 passed in 1216.00s (0:20:16)\n"
+    }
+  },
+  "unit_tests": 241,
+  "artifact_bytes": 8949702
+}

@@ -1,0 +1,14 @@
+F841 Local variable `result` is assigned to but never used
+   --> tests/harness/test_local_gate.py:601:9
+    |
+599 |         if path.startswith('/app/'):
+600 |             return original(method, path, token, body)
+601 |         result = original(method, path, token, body)
+    |         ^^^^^^
+602 |         if method in ('POST', 'PATCH'):
+603 |             writes.append((method, path, token, body))
+    |
+help: Remove assignment to unused variable `result`
+
+Found 1 error.
+No fixes available (1 hidden fix can be enabled with the `--unsafe-fixes` option).

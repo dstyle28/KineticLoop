@@ -1491,6 +1491,11 @@ def governance_record_paths(change_id):
 
 
 def governance_allowed_patterns(change_id):
+    if change_id == 'HG-050':
+        return [INDEX, MANIFEST, 'tools/harness/github_app.py',
+                'tests/harness/test_local_gate.py', 'docs/harness/LOCAL_DB_CI.md',
+                'tools/harness/validate_harness.py', 'docs/exec-plans/governance/HG-050.yaml',
+                'docs/exec-plans/evidence/HG-050/**', 'docs/exec-plans/reviews/HG-050/**']
     if change_id == 'HG-047':
         return [INDEX, MANIFEST, 'tools/harness/compact_evidence.py',
                 'tools/harness/validate_harness.py', 'tools/harness/README.md',
@@ -3915,6 +3920,8 @@ def validate(root, args):
             except ValueError as ex:
                 errors.append('governance-review-revision:' + str(ex))
             required = {'GENERAL'}
+            if change_id == 'HG-050':
+                required.add('SECURITY_DATA_BOUNDARY')
             old_tasks = getattr(args, 'governance_base_tasks', {})
             reviewed_tasks = getattr(args, 'governance_reviewed_tasks', tasks)
             if change_id == 'HG-047':

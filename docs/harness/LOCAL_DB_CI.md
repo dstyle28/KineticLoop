@@ -171,3 +171,31 @@ proof; installing only the new validator leaves its required import unavailable.
 This repository change does not update the active installation, pins, signing key,
 admission or protection settings. The ordinary required full DB/controller gate
 still applies to the final reviewed PR head.
+
+## HG-050 installation-token freshness
+
+The App client validates the server's timezone-aware UTC `expires_at` and rejects
+invalid credentials or lifetimes with no usable interval beyond a 60-second safety
+margin. It refreshes at that wall-clock boundary or its conservative monotonic age
+limit (at most 3,000 seconds, anchored before JWT/validation/mint latency). An
+observed wall-clock rollback also invalidates the cache. Renewal clears the old
+credential first, repeats the exact App/installation/owner/selected-repository and
+permission checks, and mints only for the configured repository ID. A failed
+renewal cannot fall back to stale credentials. This protects against host suspension
+with a stalled monotonic clock; it does not claim detection of arbitrary clock
+corruption between observations.
+
+A sanitized typed HTTP 401 on an installation-token GET permits exactly one refresh
+and one retry of that same request. Installation validation and mint calls do not
+recursively retry. A second 401, failed renewal, 403, other HTTP error, redirect or
+transport failure terminates the request. POST and PATCH never automatically
+replay. Tokens, JWTs, HTTP bodies and headers are excluded from diagnostic errors.
+
+Live snapshot, admission, App/check ID verification, cleanup and publication rules
+remain unchanged. Renewal obtains fresh snapshots through the normal controller;
+worker success alone cannot authorize publication. Historical failed runs remain
+failed and cannot be imported or manually republished. After independent review,
+the administrator must install the complete pinned release and create a new exact
+revision/controller-bound admission. The candidate never updates its installation,
+configuration, signing key or pins. The normal App-owned full DB gate remains
+required at the final stable reviewed PR head.
