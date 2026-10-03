@@ -57,3 +57,23 @@ The checked-in package manifest describes the original package files with refres
 
 For lossless capture, validated retrieval and the prospective protected-base PR
 budget, see [Evidence Storage Policy](../../docs/harness/EVIDENCE_STORAGE_POLICY.md).
+`kl test-harness` uses two local pytest-xdist processes by default, capped at four.
+Use `uv run kl test-harness --workers 1` for serial execution or `--workers 4` for
+an explicitly larger local run. Pytest selection/verbosity options remain available;
+use `-k` to filter. The runner owns worker topology and retains a verified JUnit copy. Existing
+`--junitxml` / `--junit-xml` options export the same JUnit bytes to the requested path. `-s` requires
+serial mode. A collection preflight refuses parallel tests outside `tests/harness`
+or marked `harness_serial`; such tests require the explicit serial path. Future
+shared-resource tests must carry that marker or use a separately isolated suite.
+Database and migration tests are never admitted to parallel harness execution.
+
+For clean committed source, `uv run kl test-harness --workers 2 --evidence-dir
+/ABSOLUTE/NEW/RUN` (outside the checkout) retains raw collection/pytest logs, all worker collections,
+actual started node IDs and phase reports, parent-generated JUnit and a manifest
+with exact revision, versions, hashes and wall times. A run directory cannot be
+reused. Different worker collections, missing/duplicate execution, skips, worker
+crashes, missing JUnit identities or source changes fail closed. Pytest failure
+exit codes are retained. This developer evidence does not publish or replace the
+App-bound local database gate: the installed controller continues to own its
+serial pytest observer and execution policy. No controller installation is
+changed by this entrypoint.

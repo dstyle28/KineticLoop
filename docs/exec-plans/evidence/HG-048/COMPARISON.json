@@ -1,0 +1,64 @@
+{
+  "tested_commit": "0045808352507b7af67a3a2135408421d8bcc6bc",
+  "same_collection_all_runs": true,
+  "tests": 1071,
+  "runs": [
+    {
+      "run": "initial-w2",
+      "workers": 2,
+      "wall_seconds": 606.6795724579133,
+      "exit_code": 0,
+      "tests": 1071,
+      "phase_outcomes": {
+        "passed": 3213,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "run": "w4",
+      "workers": 4,
+      "wall_seconds": 378.61376625020057,
+      "exit_code": 0,
+      "tests": 1071,
+      "phase_outcomes": {
+        "passed": 3213,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "run": "serial",
+      "workers": 1,
+      "wall_seconds": 1124.2083040829748,
+      "exit_code": 0,
+      "tests": 1071,
+      "phase_outcomes": {
+        "passed": 3213,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "run": "repeat-w2",
+      "workers": 2,
+      "wall_seconds": 587.3611114579253,
+      "exit_code": 0,
+      "tests": 1071,
+      "phase_outcomes": {
+        "passed": 3213,
+        "failed": 0,
+        "skipped": 0
+      }
+    }
+  ],
+  "hardware": {
+    "physical_cpus": 18,
+    "logical_cpus": 18,
+    "memory_bytes": 38654705664
+  },
+  "limitations": [
+    "Sequential runs on the same macOS ARM64 host; normal background applications and filesystem caches were not disabled.",
+    "Developer harness evidence does not replace trusted serial local-db-gate."
+  ]
+}
