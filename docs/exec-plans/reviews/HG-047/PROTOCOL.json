@@ -1,0 +1,31 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-047",
+  "reviewed_head_sha": "47de76d206df89124ffe41c59b0b983af4defc97",
+  "review_type": "PROTOCOL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "id": "P-01",
+      "classification": "BLOCKER",
+      "title": "Compressed nested envelope metadata satisfies the M3 stdout oracle",
+      "file": "tools/harness/compact_evidence.py",
+      "line": 207,
+      "description": "read returns decompressed reserved storage JSON without reclassification. A missing-payload inner envelope is rejected directly but accepted inside a valid outer envelope; a timestamp containing 1 passed supplies the M3 pytest count. Independent History-fixture reproduction returned no M3 execution or budget errors.",
+      "required_change": "Reject or safely validate reserved storage objects after decompression before evidence availability or semantic PASS; add direct/compressed parity and full M3 regression coverage."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/HG-047/PROTOCOL_REPORT.md",
+    "tools/harness/compact_evidence.py",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_compact_evidence.py",
+    "tests/harness/test_m3_milestone_closure.py",
+    "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+    "docs/harness/M3_CLOSURE_CONTRACT.md",
+    "docs/exec-plans/governance/HG-047.yaml",
+    "docs/exec-plans/evidence/HG-047/selected-2dc15b7/execution.json",
+    "docs/exec-plans/evidence/HG-047/selected-2dc15b7/harness.json",
+    "docs/exec-plans/evidence/HG-047/selected-2dc15b7/unit.json"
+  ],
+  "review_contract_version": "v0.2"
+}
