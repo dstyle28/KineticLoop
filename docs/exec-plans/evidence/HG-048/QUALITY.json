@@ -1,0 +1,83 @@
+{
+  "tested_commit": "0045808352507b7af67a3a2135408421d8bcc6bc",
+  "max_concurrent_commands": 3,
+  "wall_seconds": 107.76052350000009,
+  "checks": [
+    {
+      "tested_commit": "0045808352507b7af67a3a2135408421d8bcc6bc",
+      "command": [
+        "/Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python",
+        "-m",
+        "kineticloop.db.cli",
+        "lint"
+      ],
+      "started_at_utc": "2026-10-03T05:50:00.008127+00:00",
+      "wall_seconds": 0.10295441699963703,
+      "exit_code": 0,
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_bytes": 19
+    },
+    {
+      "tested_commit": "0045808352507b7af67a3a2135408421d8bcc6bc",
+      "command": [
+        "/Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python",
+        "-m",
+        "kineticloop.db.cli",
+        "typecheck",
+        "--no-incremental",
+        "--cache-dir",
+        "/private/tmp/hg048-final-mypy"
+      ],
+      "started_at_utc": "2026-10-03T05:50:00.013875+00:00",
+      "wall_seconds": 4.361735334000059,
+      "exit_code": 0,
+      "raw_sha256": "2e3b0067b08542b005b33bb0e67155489543202bbb6fe03b2ec56e6fc9acdce1",
+      "raw_bytes": 45
+    },
+    {
+      "tested_commit": "0045808352507b7af67a3a2135408421d8bcc6bc",
+      "command": [
+        "/Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python",
+        "-m",
+        "kineticloop.db.cli",
+        "test-unit",
+        "-q",
+        "--junitxml=/private/tmp/hg048-final-quality/0045808352507b7af67a3a2135408421d8bcc6bc/unit.xml"
+      ],
+      "started_at_utc": "2026-10-03T05:50:00.015606+00:00",
+      "wall_seconds": 107.75194541699966,
+      "exit_code": 0,
+      "raw_sha256": "94af6316983041132a24e97ee9e8d27e1dd61cf98d4865ee32660ff767460007",
+      "raw_bytes": 459
+    },
+    {
+      "tested_commit": "0045808352507b7af67a3a2135408421d8bcc6bc",
+      "command": [
+        "/Users/davetian/.codex/worktrees/harness-concurrency/KineticLoop/.venv/bin/python",
+        "-m",
+        "kineticloop.db.cli",
+        "check-harness"
+      ],
+      "started_at_utc": "2026-10-03T05:50:00.111190+00:00",
+      "wall_seconds": 100.12209179199999,
+      "exit_code": 0,
+      "raw_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "raw_bytes": 38
+    },
+    {
+      "tested_commit": "0045808352507b7af67a3a2135408421d8bcc6bc",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "391c9198fa8ec647e377a0572700bc7568468c85",
+        "0045808352507b7af67a3a2135408421d8bcc6bc"
+      ],
+      "started_at_utc": "2026-10-03T05:50:04.375846+00:00",
+      "wall_seconds": 0.013636915999995836,
+      "exit_code": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    }
+  ]
+}

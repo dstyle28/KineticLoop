@@ -1484,6 +1484,12 @@ def governance_record_paths(change_id):
 
 
 def governance_allowed_patterns(change_id):
+    if change_id == 'HG-048':
+        return [INDEX, MANIFEST, 'src/kineticloop/cli.py', 'pyproject.toml', 'uv.lock',
+                'tools/harness/run_harness_tests.py', 'tools/harness/parallel_observer.py',
+                'tools/harness/validate_harness.py', 'tests/harness/test_parallel_runner.py',
+                'tools/harness/README.md', 'docs/exec-plans/evidence/HG-048/**',
+                'docs/exec-plans/reviews/HG-048/**', 'docs/exec-plans/governance/HG-048.yaml']
     if change_id == 'HG-046':
         return [INDEX, MANIFEST, '.github/workflows/ci.yml', '.github/workflows/db.yml',
                 'tools/harness/db_ci.py', 'tools/harness/db_ci_pytest.py',
