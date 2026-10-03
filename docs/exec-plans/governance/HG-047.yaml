@@ -1,10 +1,11 @@
 change_identity: harness-governance-v0.1/HG-047
 display_change_id: HG-047
 base_commit: 391c9198fa8ec647e377a0572700bc7568468c85
-tested_commit: ab4f21b9432240547555b73b4be341ad843bef39
-change_status: BLOCKED
-summary: Prospective lossless content-addressed gzip evidence, revision-bound safe retrieval, M3 semantic decoding
-  and protected-base PR evidence budget.
+tested_commit: 2dc15b7c79b835197449ca705f82f221eee6f05d
+change_status: PASS
+summary: Prospective lossless content-addressed gzip evidence with revision/owner/hash checks, bounded UTF8/16/32-safe
+  retrieval, preserved M3 proof semantics and PR budgets; integrate merged HG045/HG046 unchanged and pin/copy
+  the decoder for trusted CI.
 packets_refined: []
 files_changed:
 - CURRENT_DOCUMENT_INDEX.json
@@ -12,6 +13,7 @@ files_changed:
 - docs/exec-plans/evidence/HG-047/HISTORY.md
 - docs/exec-plans/evidence/HG-047/PERFORMANCE.md
 - docs/exec-plans/evidence/HG-047/SCOPE.md
+- docs/exec-plans/evidence/HG-047/SELF_REVIEW.md
 - docs/exec-plans/evidence/HG-047/audit.py
 - docs/exec-plans/evidence/HG-047/benchmark.py
 - docs/exec-plans/evidence/HG-047/development-070f94f/018e4a38e63b20c2400b44164688200c5d96aece661aacaf4c0688b8d2b32c9c.gz
@@ -31,6 +33,23 @@ files_changed:
 - docs/exec-plans/evidence/HG-047/development-070f94f/unit.json
 - docs/exec-plans/evidence/HG-047/development-ab4f21b/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
 - docs/exec-plans/evidence/HG-047/development-ab4f21b/source_diff.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/25a6e726ed95412b24e5e8a848509fe0ca5ed66a57b2f38f0182faccb2e8d4c6.gz
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/7b6201eb374ae5dabb204502b0a33dee17590bc219a875173d05f9f9dcf71261.gz
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/authority.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/c580149911452d739085d76d53e29c74d64b4dd095c854f098a2decdc2daec27.gz
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/e849815ff60a88bfd9e83f2cdad49ca263983d505a364d5120748538e844e428.gz
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/execution.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/harness.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/lint.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/performance.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/scope.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/source_diff.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/typecheck.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/unit.json
 - docs/exec-plans/governance/HG-047.yaml
 - docs/harness/EVIDENCE_STORAGE_POLICY.md
 - docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
@@ -49,17 +68,73 @@ files_changed:
 - tools/harness/local_gate.py
 - tools/harness/validate_harness.py
 checks_run:
-- check_id: source_diff
-  command: git diff --check 391c9198fa8ec647e377a0572700bc7568468c85 HEAD
+- check_id: harness
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    -m kineticloop.db.cli test-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/development-ab4f21b/source_diff.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/selected-2dc15b7/harness.json
+- check_id: unit
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    -m kineticloop.db.cli test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/selected-2dc15b7/unit.json
+- check_id: lint
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    -m kineticloop.db.cli lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/selected-2dc15b7/lint.json
+- check_id: typecheck
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    -m kineticloop.db.cli typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/selected-2dc15b7/typecheck.json
+- check_id: authority
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    -m kineticloop.db.cli check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/selected-2dc15b7/authority.json
+- check_id: scope
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    docs/exec-plans/evidence/HG-047/audit.py 391c9198fa8ec647e377a0572700bc7568468c85 2dc15b7c79b835197449ca705f82f221eee6f05d
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/selected-2dc15b7/scope.json
+- check_id: source_diff
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src git diff --check 391c9198fa8ec647e377a0572700bc7568468c85
+    2dc15b7c79b835197449ca705f82f221eee6f05d
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/selected-2dc15b7/source_diff.json
+- check_id: performance
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    docs/exec-plans/evidence/HG-047/benchmark.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/selected-2dc15b7/performance.json
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
-- Integration in progress. Previous compact runs/reviews remain only historical and establish no HG-047 PASS;
-  exact original commits and paths are documented in HISTORY.md.
-- Storage/governance only; no runtime, migration, frozen baseline, task packet, backlog, requirement status,
-  production activation or executable shadow changes. Related product/release requirements remain NOT_RUN.
-- Fresh GENERAL, PROTOCOL and SECURITY_DATA_BOUNDARY review and final-head trusted local-db-gate remain required.
-  The installed controller must be separately reviewed and updated to pin/copy the decoder; this task does
-  not change active controller configuration.
+- The bounded performance benchmark and freshness/integrity negatives cover the new per-operation immutable
+  verdict cache. Git object contents are treated as immutable within one validation operation; no cache survives
+  its exit, and working-tree/mutable refs always reread.
+- Task-local checks PASS only. Fresh independent GENERAL, PROTOCOL and SECURITY_DATA_BOUNDARY reviews must
+  bind the committed result/evidence revision; no historical compact review is current HG-047 PASS.
+- Full DB is NOT_RUN locally by coordinator direction to avoid duplicate expensive execution. The unchanged
+  HG-046 policy requires one final reviewed-head trusted controller run, plus applicable quality and merge-gate
+  checks, before merge.
+- The existing installed validator cannot decode compact proof. A separately reviewed administrator installation
+  must include the updated validator/controller plus compact_evidence.py in the complete controller_files pins
+  and trusted worker copy, with new exact-head/controller admission. No live installed state is changed by
+  this task.
+- Merged HG-045/HG-046 evidence, governance and reviews are unchanged; source-decision authorities, CI workflows/classifier,
+  runtime, migrations, frozen baseline and requirement semantics are preserved by the committed scope audit.
+- Earlier compact proof remains byte-identical in ancestor ac63ac53b1fb222ef0d816c171b2041c48d0d722 at its
+  original HG-046 paths, documented in HISTORY.md. It is stale historical evidence, not relabeled or selected
+  for HG-047 PASS.
+- The pinned existing Python 3.12 environment runs the stable kl entrypoints with absolute PYTHONPATH because
+  uv is not available on this host PATH. Execution metadata records the exact command/environment; raw logs
+  are retained in deterministic gzip.
+- Full harness includes compact, controller and M3 focused regressions in one execution. An earlier exploratory
+  focused run and the pre-correction full harness were interrupted and are not selected PASS evidence; initial
+  full-harness exit2/raw output remains under development-070f94f. Execution durations use the recorded monotonic
+  clock, not wall timestamp gaps.
+- 'Storage/governance only: no task, product requirement, M3, release, production activation or executable
+  shadow PASS is asserted. Related product/release requirements remain NOT_RUN. No historical merged evidence
+  is migrated or deleted.'
