@@ -392,3 +392,294 @@ def test_worker_copies_decoder_from_installed_release(tmp_path, monkeypatch):
         gate.run_worker(candidate, B, A, False, tmp_path, here=installed)
     decoder = [pair for pair in copies if pair[1].endswith('/gate/tools/harness/compact_evidence.py')]
     assert len(decoder) == 1 and decoder[0][0] == str(installed / 'compact_evidence.py')
+
+
+@pytest.fixture
+def token_api(monkeypatch):
+    from datetime import datetime, timezone
+    client = gate.github_app
+    clock = SimpleNamespace(wall=1800000000.0, mono=100.0)
+    fake = SimpleNamespace(clock=clock, calls=[], minted=0, lifetime=3600, latency=0,
+                           mutation=None, response=None, failures=[])
+    monkeypatch.setattr(client.time, 'time', lambda: clock.wall)
+    monkeypatch.setattr(client.time, 'monotonic', lambda: clock.mono)
+    monkeypatch.setattr(client, 'jwt', lambda *_: 'SENTINEL_JWT')
+    def api(method, path, token, body=None):
+        fake.calls.append((method, path, token, body))
+        if path == '/app/installations/2':
+            install = {'app_id': 12, 'suspended_at': None, 'repository_selection': 'selected',
+                       'account': {'login': 'owner'}, 'permissions': dict(client.PERMISSIONS)}
+            if fake.mutation:
+                fake.mutation(install)
+            return install
+        if path.endswith('/access_tokens'):
+            assert token == 'SENTINEL_JWT'
+            assert body == {'repository_ids': [42], 'permissions': client.PERMISSIONS}
+            fake.minted += 1
+            expiry = datetime.fromtimestamp(clock.wall + fake.lifetime, timezone.utc).isoformat()
+            clock.wall += fake.latency
+            clock.mono += fake.latency
+            return fake.response if fake.response is not None else {
+                'token': 'SENTINEL_TOKEN_' + str(fake.minted), 'expires_at': expiry}
+        if fake.failures:
+            error = fake.failures.pop(0)
+            if error:
+                raise error
+        return {'ok': True}
+    fake.api = api
+    monkeypatch.setattr(client, 'api', api)
+    fake.app = client.App({'app_id': 12, 'installation_id': 2, 'key_path': '/unused',
+                          'repository': 'owner/repo', 'repository_id': 42})
+    return fake
+
+
+@pytest.mark.parametrize('jump,refresh', [((3539, 0), False), ((3540, 0), True),
+    ((7200, 1613), True), ((0, 3000), True), ((-1, 1), True), ((-1, 3000), True)])
+def test_token_two_clocks_and_exact_margin(token_api, jump, refresh):
+    f = token_api
+    f.app.request('GET', '/protected')
+    f.clock.wall += jump[0]
+    f.clock.mono += jump[1]
+    f.app.request('GET', '/protected')
+    assert f.minted == (2 if refresh else 1)
+    assert f.calls[-1][2] == 'SENTINEL_TOKEN_' + str(f.minted)
+
+
+def test_token_short_lifetime_latency_and_observed_rollback(token_api):
+    f = token_api
+    f.lifetime, f.latency = 120, 10
+    f.app.refresh()
+    assert f.app.deadline == 160  # anchored at 100, not mint completion at 110
+    f.clock.wall += 30
+    f.app.request('GET', '/protected')
+    f.clock.wall -= 1  # still later than mint, but earlier than last observed request
+    f.app.request('GET', '/protected')
+    assert f.minted == 2
+
+
+@pytest.mark.parametrize('response', [{}, {'token': 'SENTINEL_TOKEN'},
+    {'token': '', 'expires_at': '2027-01-01T00:00:00Z'},
+    {'token': None, 'expires_at': '2027-01-01T00:00:00Z'},
+    {'token': 'bad token', 'expires_at': '2027-01-01T00:00:00Z'},
+    *[{'token': 'SENTINEL_TOKEN', 'expires_at': value} for value in
+      (None, 123, 'bad-SENTINEL_BODY', '2027-01-01T00:00:00',
+       '2027-01-01T00:00:00+01:00', '99999-01-01T00:00:00Z',
+       '2000-01-01T00:00:00Z')]])
+def test_invalid_token_response_clears_stale_credentials(token_api, response):
+    f = token_api
+    f.app.refresh()
+    f.response = response
+    with pytest.raises(ValueError) as error:
+        f.app.refresh()
+    assert 'SENTINEL' not in str(error.value)
+    assert f.app.token == '' and f.app.deadline == f.app.wall_deadline == 0
+    assert all(c[1].startswith('/app/') for c in f.calls)
+    with pytest.raises(ValueError):
+        f.app.request('PATCH', '/protected')
+    assert all(c[1].startswith('/app/') for c in f.calls)
+
+
+@pytest.mark.parametrize('lifetime,latency', [(60, 0), (59, 0), (0, 0), (120, 60), (3600, 3000)])
+def test_insufficient_lifetime_including_mint_latency(token_api, lifetime, latency):
+    f = token_api
+    f.lifetime, f.latency = lifetime, latency
+    with pytest.raises(ValueError):
+        f.app.request('GET', '/protected')
+    assert len(f.calls) == 2 and f.app.token == ''
+
+
+@pytest.mark.parametrize('mutation', [lambda i: i.update(app_id=13),
+    lambda i: i.update(suspended_at='now'), lambda i: i.update(repository_selection='all'),
+    lambda i: i.update(account={'login': 'other'}),
+    lambda i: i.update(permissions=dict(gate.github_app.PERMISSIONS, contents='write'))])
+def test_refresh_revalidates_installation_after_get401(token_api, mutation):
+    f = token_api
+    f.app.refresh()
+    f.mutation = mutation
+    f.failures = [gate.github_app.APIHTTPError('GET', 401)]
+    with pytest.raises(ValueError):
+        f.app.request('GET', '/protected')
+    assert len(f.calls) == 4 and f.minted == 1 and f.app.token == ''
+
+
+@pytest.mark.parametrize('second', [None, 401])
+def test_get401_has_one_refresh_and_identical_retry(token_api, second):
+    f = token_api
+    f.failures = [gate.github_app.APIHTTPError('GET', 401),
+                  gate.github_app.APIHTTPError('GET', second) if second else None]
+    body = {'same': 'body'}
+    if second:
+        with pytest.raises(gate.github_app.APIHTTPError):
+            f.app.request('GET', '/protected', body)
+        assert f.app.token == ''
+    else:
+        assert f.app.request('GET', '/protected', body) == {'ok': True}
+    assert f.minted == 2 and len(f.calls) == 6
+    protected = [c for c in f.calls if c[1] == '/protected']
+    assert [(c[0], c[1], c[3]) for c in protected] == [('GET', '/protected', body)] * 2
+    assert [c[2] for c in protected] == ['SENTINEL_TOKEN_1', 'SENTINEL_TOKEN_2']
+
+
+@pytest.mark.parametrize('stage', ['install', 'mint'])
+def test_refresh401_never_recurses(token_api, monkeypatch, stage):
+    f = token_api
+    f.app.refresh()
+    f.failures = [gate.github_app.APIHTTPError('GET', 401)]
+    original = f.api
+    def fail(method, path, token, body=None):
+        if (stage == 'install' and path == '/app/installations/2'
+                or stage == 'mint' and path.endswith('/access_tokens')):
+            f.calls.append((method, path, token, body))
+            raise gate.github_app.APIHTTPError(method, 401)
+        return original(method, path, token, body)
+    monkeypatch.setattr(gate.github_app, 'api', fail)
+    with pytest.raises(gate.github_app.APIHTTPError):
+        f.app.request('GET', '/protected')
+    assert len(f.calls) == (4 if stage == 'install' else 5) and f.app.token == ''
+
+
+@pytest.mark.parametrize('method,status', [('POST', 401), ('PATCH', 401),
+    ('GET', 403), ('GET', 500), ('POST', 403), ('PATCH', 503)])
+def test_client_never_replays_writes_or_other_status(token_api, method, status):
+    f = token_api
+    f.failures = [gate.github_app.APIHTTPError(method, status)]
+    with pytest.raises(gate.github_app.APIHTTPError):
+        f.app.request(method, '/protected', {'id': 21})
+    assert f.minted == 1 and len(f.calls) == 3
+
+
+@pytest.mark.parametrize('kind', ['401', '403', '500', 'redirect', 'timeout', 'transport'])
+def test_real_api_sanitizes_errors_and_preserves_network_policy(monkeypatch, kind):
+    import urllib.error
+    from email.message import Message
+    client = gate.github_app
+    def opener(*handlers):
+        assert handlers[0].proxies == {} and isinstance(handlers[1], client.NoRedirect)
+        def opened(request, timeout):
+            assert request.full_url == 'https://api.github.com/protected' and timeout == 60
+            if kind.isdigit():
+                headers = Message()
+                headers['SENTINEL_HEADER'] = 'SENTINEL_TOKEN'
+                raise urllib.error.HTTPError(request.full_url, int(kind), 'SENTINEL_BODY',
+                                             headers, None)
+            if kind == 'redirect':
+                return handlers[1].redirect_request(None, None, 302, 'SENTINEL_BODY', {},
+                                                      'https://evil.test/SENTINEL_TOKEN')
+            if kind == 'timeout':
+                raise TimeoutError('SENTINEL_TOKEN')
+            raise urllib.error.URLError('SENTINEL_TOKEN')
+        return SimpleNamespace(open=opened)
+    monkeypatch.setattr(client.urllib.request, 'build_opener', opener)
+    with pytest.raises(ValueError) as error:
+        client.api('GET', '/protected', 'SENTINEL_TOKEN')
+    assert 'SENTINEL' not in str(error.value)
+    if kind.isdigit():
+        assert isinstance(error.value, client.APIHTTPError) and error.value.status == int(kind)
+
+
+@pytest.mark.parametrize('error', [TimeoutError('timeout'), ValueError('redirect'),
+                                   OSError('ambiguous transport')])
+def test_transport_or_redirect_never_triggers_authentication_retry(token_api, error):
+    f = token_api
+    f.failures = [error]
+    with pytest.raises(type(error)):
+        f.app.request('GET', '/protected')
+    assert f.minted == 1 and len(f.calls) == 3
+
+
+@pytest.mark.parametrize('scenario', ['success', 'test_only', 'refresh_failure', 'changed_head',
+    'changed_base', 'cleanup_failure', 'repeated401', 'write401'])
+def test_real_app_renewal_keeps_controller_publication_boundary(tmp_path, monkeypatch,
+                                                              token_api, scenario):
+    f = token_api
+    config = private_json(tmp_path / 'config.json', f.app.config)
+    admission = private_json(tmp_path / 'admission.json', {
+        'format': 'kineticloop-local-admission-v1', 'snapshot': STATE,
+        'controller': 'identity', 'trusted_code_reviewed': True})
+    original = f.api
+    writes = []
+    def api(method, path, token, body=None):
+        if path.startswith('/app/'):
+            return original(method, path, token, body)
+        original(method, path, token, body)
+        if method in ('POST', 'PATCH'):
+            writes.append((method, path, token, body))
+            if scenario == 'write401' and method == 'PATCH':
+                raise gate.github_app.APIHTTPError('PATCH', 401)
+            return {'app': {'id': 12}, 'head_sha': B, 'name': 'local-db-gate', 'id': 21}
+        if '/pulls/' in path:
+            head = 'c' * 40 if scenario == 'changed_head' and f.minted > 1 else B
+            return {'state': 'open', 'base': {'ref': 'master', 'sha': A, 'repo': {'id': 42}},
+                    'head': {'sha': head, 'repo': {'id': 42}}}
+        return {'object': {'sha': 'c' * 40 if scenario == 'changed_base' and f.minted > 1 else A}}
+    monkeypatch.setattr(gate.github_app, 'api', api)
+    monkeypatch.setattr(gate, 'installed', lambda *_: 'identity')
+    monkeypatch.setattr(gate, 'checked', lambda *_: 'tree')
+    monkeypatch.setattr(gate.db_policy, 'classify', lambda *_: {'full_database_required': True})
+    def worker(*args, **kwargs):
+        f.clock.wall += 7200  # monotonic stalls across the whole worker
+        if scenario == 'refresh_failure':
+            f.response = {'token': 'SENTINEL_TOKEN', 'expires_at': 'bad-SENTINEL_BODY'}
+        if scenario == 'repeated401':
+            f.failures = [gate.github_app.APIHTTPError('GET', 401)] * 2
+        if scenario == 'cleanup_failure':
+            raise ValueError('cleanup failed')
+        return {'status': 'PASS', 'container_removed': True, 'volume_removed': True}
+    monkeypatch.setattr(gate, 'run_worker', worker)
+    monkeypatch.setattr(gate.os, 'environ', dict(gate.os.environ))
+    monkeypatch.setattr(gate.sys, 'argv', ['local_gate.py', '--config', str(config),
+        '--admission', str(admission), '--pr', '90', '--evidence-dir', str(tmp_path / 'run'),
+        *(['--test-only'] if scenario == 'test_only' else [])])
+    if scenario in ('success', 'test_only'):
+        assert gate.main() == 0
+    else:
+        with pytest.raises(ValueError) as error:
+            gate.main()
+        assert 'SENTINEL' not in str(error.value)
+    receipt = (tmp_path / 'run/receipt.json').read_text()
+    assert 'SENTINEL' not in receipt
+    if scenario != 'write401':
+        assert json.loads(receipt)['status'] == ('PASS' if scenario in ('success', 'test_only') else 'FAIL')
+    if scenario == 'test_only':
+        assert writes == []
+    else:
+        assert writes[0][0] == 'POST'
+        patches = [c for c in writes if c[0] == 'PATCH']
+        assert len(patches) == (0 if scenario == 'refresh_failure' else 1)
+        if patches:
+            assert patches[0][1].endswith('/check-runs/21')
+            assert patches[0][3]['conclusion'] == ('success' if scenario in ('success', 'write401') else 'failure')
+            assert patches[0][2] != writes[0][2]
+    # The controller's separate failure PATCH proactively renews after an unusable
+    # credential; this is not a replay of the failed GET or a success publication.
+    assert f.minted == {'repeated401': 4, 'refresh_failure': 3}.get(scenario, 2)
+
+
+@pytest.mark.parametrize('missing_specialist', [False, True])
+def test_hg050_real_governance_gate_requires_specialist_and_exact_scope(missing_specialist):
+    spec = importlib.util.spec_from_file_location('expiry_validator_fixtures',
+        Path(__file__).with_name('test_validator.py'))
+    assert spec and spec.loader
+    fixtures = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(fixtures)
+    fixture = fixtures.ValidatorTests()
+    fixture.setUp()
+    try:
+        fixture.put('tools/harness/github_app.py', '# fixture correction\n')
+        fixtures.refresh(fixture.root)
+        tested = fixture.commit('prospective client correction')
+        fixture.persist_governance_change('HG-050', tested, [],
+            ['GENERAL'] if missing_specialist else ['GENERAL', 'SECURITY_DATA_BOUNDARY'])
+        args = ('--ci-pr-base', fixture.base, '--ci-pr-head', 'HEAD')
+        fixture.check(1 if missing_specialist else 0,
+            'governance-required-reviews-not-pass:HG-050' if missing_specialist else '', *args)
+        allowed = fixtures.v.governance_allowed_patterns('HG-050')
+        for path in ('tools/harness/local_gate.py', '05_KineticLoop_Protocol_v1.2_FROZEN.md',
+                     'docs/exec-plans/evidence/HG-050A/file', 'docs/history/old.md',
+                     'tests/db/test_workflow.py'):
+            assert not fixtures.v.matches(path, allowed)
+        fixture.put('tools/harness/local_gate.py', '# outside exact scope\n')
+        fixture.commit('unauthorized controller edit')
+        fixture.check(1, 'governance-write-scope:HG-050:tools/harness/local_gate.py', *args)
+    finally:
+        fixture.doCleanups()
