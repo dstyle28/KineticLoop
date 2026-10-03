@@ -1,47 +1,78 @@
 {
   "task_identity": "harness-backlog-v0.2/KL-080",
-  "reviewed_head_sha": "79fa887dc20f5865902b0b5d90ce0e4b68e0118e",
+  "reviewed_head_sha": "7e19587458d611155051d0c89d36e0b89f98b8a1",
   "review_type": "DB_CONCURRENCY",
   "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "merge_recommendation": "DO_NOT_MERGE",
+  "summary": "The prospective ELIGIBLE/MATCHED reader correction, canonical full T6 freshness query reach, earlier invalid reconstruction denial, owner locking, duplicate serialization, rollback, revocation, finite expiry and own namespace cleanup are supported by inspected code and committed PostgreSQL evidence. Required legacy T6/T7 owner coverage fails, and the bound hosted full DB regression has no completed PASS. The exact packet DoD is unsatisfied.",
   "findings": [
     {
-      "id": "KL080-DB-01",
-      "classification": "BLOCKER",
-      "title": "Required legacy owner trajectory cannot commit",
-      "file": "src/kineticloop/persistence/transactions.py",
-      "line": 3979,
-      "detail": "The genuine legacy preparation owners reach COMMIT_READY with S37.ref_s34_id pointing to Nutrition and S35.ref_s34_id pointing to Fitness. prepare_authorization_basis requires those IDs to be equal unless full_execution_members is present, and denies the actual legacy CommitBundle with 'policy, demand, and calendar authorization bounds must exist'. The named source_owner_trajectories_dc execution has 1 failed/1 passed; source_suite_dc has 1 failed/105 passed. Legacy T6 and subsequent START/PAUSE/RESUME/CONTINUE therefore do not satisfy the packet's positive oracle. This is a pre-existing producer/consumer compatibility issue, honestly recorded as BLOCKED/FAIL, but it prevents this packet from passing. The packet restricts transactions.py changes to full source validation/freshness, so closing this requires authorized scope/packet resolution and fresh tests/review; replacing the positive test with an expected denial cannot close it. The later synthetic certificate mismatch is static evidence only and was not reached.",
+      "id": "DB-080-01",
+      "severity": "BLOCKER",
+      "title": "Required legacy owner trajectory cannot consume its genuine COMMIT_READY outputs",
+      "location": {
+        "path": "src/kineticloop/persistence/transactions.py",
+        "line": 3979
+      },
+      "description": "The legacy preparation owners persist S37.ref_s34_id=N while S35.ref_s34_id=F. prepare_authorization_basis requires equality of those two IDs whenever full_execution_members is absent and raises policy, demand, and calendar authorization bounds must exist. The genuine canonical legacy chain therefore reaches COMMIT_READY but fails T6 before the required START/PAUSE/RESUME/CONTINUE trajectory. This is independently confirmed by the raw traceback and JUnit: source_owner_trajectories_dc has 1 failure/1 pass and source_suite_dc has 1 failure/105 passes, both with test_owner_trajectories[legacy] failing. This incompatibility is in unchanged consumer behavior, but the packet explicitly requires the positive legacy trajectory and passing full own suite; a blocked result does not satisfy that oracle.",
+      "required_change": "Resolve the declared legacy oracle and runtime write boundary through coordinator-approved scope/packet work or a separately authorized compatibility task, then run all exact required checks on a new immutable tested revision and obtain fresh reviews. Do not forge a certificate, seed target outputs, alter immutable outputs, weaken bindings, or relabel this failed trajectory PASS.",
       "evidence_refs": [
-        "docs/exec-plans/active/KL-080.md",
-        "docs/exec-plans/completed/KL-080_RESULT.yaml",
-        "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_owner_trajectories_dc.log",
-        "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.xml"
+        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_owner_trajectories_dc.log",
+        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_owner_trajectories_dc.xml",
+        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.log",
+        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.xml",
+        "tests/db/test_source_decision_conformance.py",
+        "src/kineticloop/persistence/transactions.py"
       ]
     },
     {
-      "id": "KL080-DB-02",
-      "classification": "BLOCKER",
-      "title": "Mandatory unchanged hosted DB regression is not evidenced",
-      "detail": "The packet additionally requires the existing legacy/full preparation, execution, demo, factset, preparation, interleaving and transaction-interface suites to execute positively through unchanged hosted full PostgreSQL CI. The reviewed revision's execution ledger contains only the own source DB suite and normal non-DB commands; it contains no hosted full DB CI execution/result. Fixture corrections in the older suites are therefore not independently established as positive regression evidence at this revision. Obtain successful SHA-bound unchanged hosted DB CI before any PASS or merge recommendation; local foreign lifecycles are not an allowed substitute. This is an outstanding evidence gate, not an observed failure in those unexecuted older suites.",
+      "id": "DB-080-02",
+      "severity": "BLOCKER",
+      "title": "Mandatory unchanged hosted full DB regression lacks bound PASS evidence",
+      "location": {
+        "path": "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-status.json",
+        "line": 1
+      },
+      "description": "At the reviewed implementation/result revision, hosted-status.json and raw run 37081179328 record the unchanged PostgreSQL workflow at tested_commit 15a7167e44b8044c94688cf7e367e2d02a962e31 as in_progress with an empty conclusion. The quality workflow success is separate. No completed hosted uv run pytest tests/db PASS with positive execution counts is present at this reviewed SHA. That mandatory check covers the corrected legacy fixtures and transaction-interface/interleaving regressions and cannot be substituted by the own suite.",
+      "required_change": "Complete and inspect the unchanged hosted full DB workflow, preserve revision-bound completed raw output and positive execution evidence in pre-review task evidence/result on a new implementation/result revision, address any failures, and obtain fresh SHA-bound reviews. A later review-only append cannot supply missing pre-review task evidence.",
       "evidence_refs": [
-        "docs/exec-plans/active/KL-080.md",
-        "docs/exec-plans/completed/KL-080_RESULT.yaml",
-        "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/final-checks.json"
+        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-status.json",
+        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-run-37081179328.json",
+        ".github/workflows/db.yml",
+        "docs/exec-plans/active/KL-080.md"
       ]
     }
   ],
   "evidence_refs": [
-    "docs/exec-plans/reviews/KL-080/DB_CONCURRENCY_REPORT.md",
-    "src/kineticloop/persistence/transactions.py",
+    "docs/exec-plans/active/KL-080.md",
+    "docs/exec-plans/completed/KL-080_RESULT.yaml",
     "src/kineticloop/persistence/deterministic_planning.py",
+    "src/kineticloop/workflow/deterministic_planning.py",
+    "src/kineticloop/persistence/transactions.py",
     "tests/db/test_source_decision_conformance.py",
     "tests/unit/workflow/test_source_decision_conformance.py",
-    "docs/exec-plans/completed/KL-080_RESULT.yaml",
-    "docs/exec-plans/evidence/KL-080/entry.json",
-    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/final-checks.json",
-    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.log",
-    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.xml",
-    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/final-cleanup.json"
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/checks.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.collection.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_owner_trajectories_dc.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_owner_trajectories_dc.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_canonical_full_t6_dc.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_invalid_reconstruction_dc.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_freshness_predicate_support_dc.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_current_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_repair_replay_expiry_dc.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/witness-index.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/final-cleanup.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-status.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-run-37081179328.json",
+    ".github/workflows/db.yml",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md"
   ],
-  "review_contract_version": "v0.2"
+  "review_method": "Fresh read-only independent diff and committed-blob inspection. Ordinary evidence was verified at reviewed_head_sha, stdout/JUnit SHA256 and case counts were recomputed, raw PostgreSQL witnesses were parsed, and the prior-deployment 65 runtime/helper blob hashes were verified against protected base. No PostgreSQL lifecycle or tests were rerun; no prior KL-080 review conclusions were used.",
+  "base_commit": "fc8a044ffa4d15a74ce5dc59298ae411f1f4009b",
+  "tested_commit": "15a7167e44b8044c94688cf7e367e2d02a962e31"
 }

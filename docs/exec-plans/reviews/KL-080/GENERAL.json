@@ -1,124 +1,390 @@
 {
   "task_identity": "harness-backlog-v0.2/KL-080",
-  "reviewed_head_sha": "79fa887dc20f5865902b0b5d90ce0e4b68e0118e",
+  "reviewed_head_sha": "7e19587458d611155051d0c89d36e0b89f98b8a1",
   "review_type": "GENERAL",
   "status": "CHANGES_REQUIRED",
   "review_contract_version": "v0.2",
+  "summary": "The prospective ELIGIBLE/MATCHED source corrections are narrowly scoped and the committed evidence truthfully records fifteen passing commands and two failures. Required legacy T6/T7 success and hosted full PostgreSQL regression PASS are absent. Definition of Done is unmet; do not merge.",
   "findings": [
     {
-      "id": "KL080-GENERAL-01",
-      "classification": "BLOCKER",
-      "priority": 1,
-      "title": "Required legacy T6/T7 trajectory and own DC suite fail",
-      "description": "The packet requires an actual positive legacy mechanical T6 followed by START, ordinary PAUSE, RESUME and CONTINUE. At tested_commit d6bfb285087456a1a43d6c6b856a07eee4e1746d the genuine legacy preparation reaches COMMIT_READY, but ProtocolExecutionService.commit fails in RepositoryTransaction.prepare_authorization_basis before issuance. The exact persisted S37.ref_s34_id is the Nutrition proposal, while its S35 demand points at Fitness; the unchanged legacy consumer requires those proposal references to equal. Raw JUnit records source_owner_trajectories_dc as 1 failed / 1 passed and source_suite_dc as 1 failed / 105 passed, with zero skipped or errored cases. The full positive trajectory does not substitute for the required legacy trajectory. The result correctly reports BLOCKED, FAIL and UNMERGED, but the current packet DoD is not satisfied.",
-      "location": {
-        "path": "tests/db/test_source_decision_conformance.py",
-        "line": 881
-      },
-      "requested_change": "Resolve the packet/consumer incompatibility through an authorized, separately bounded compatibility correction or protected-base governance refinement, then execute every required oracle at a new immutable tested revision and obtain fresh reviews. Do not relax the consumer guard, forge a certificate, or relabel the denial PASS within this task runtime boundary.",
+      "id": "GENERAL-01",
+      "severity": "BLOCKER",
+      "title": "Required legacy owner trajectory fails at actual T6",
+      "file": "src/kineticloop/persistence/transactions.py",
+      "line": 3979,
+      "description": "The genuine mechanical legacy preparation chain reaches COMMIT_READY, but prepare_authorization_basis requires validation.ref_s34_id to equal demand.ref_s34_id unless full_execution_members exists. Mechanical legacy S37 anchors N while D anchors F (N.demand_feature_id correctly anchors D), so current legacy T6 raises policy, demand, and calendar authorization bounds must exist. The required source_owner_trajectories_dc run has one failure/one pass; source_suite_dc repeats that failure among 106 cases. No successful legacy START/PAUSE/RESUME/CONTINUE follows. Honest BLOCKED/FAIL reporting and complete zero-effect failure snapshots do not satisfy the packet positive oracle or DoD.",
+      "required_action": "Obtain coordinator resolution of the packet/runtime scope conflict, through an authorized compatibility task or packet refinement; do not widen legacy authorization guards within the existing source-only boundary or substitute expected denial. Then rerun all applicable exact oracles at a new immutable tested/result revision and obtain new reviews.",
       "evidence_refs": [
-        "docs/exec-plans/active/KL-080.md",
-        "docs/exec-plans/completed/KL-080_RESULT.yaml",
-        "src/kineticloop/persistence/transactions.py",
-        "tests/db/test_source_decision_conformance.py",
-        "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_owner_trajectories_dc.log",
-        "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_owner_trajectories_dc.xml",
-        "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.log",
-        "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.xml",
-        "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/legacy-scope-blocker.json"
+        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_owner_trajectories_dc.log",
+        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_owner_trajectories_dc.xml",
+        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.log",
+        "docs/exec-plans/active/KL-080.md"
       ]
     },
     {
-      "id": "KL080-GENERAL-02",
-      "classification": "BLOCKER",
-      "priority": 2,
-      "title": "Existing full-preparation helper changed beyond enum-only fixture corrections",
-      "description": "tests/db/test_full_action_preparation.py:1219-1222 changes assert_full_output to accept an extra_fact member. This is a new assertion/helper behavior, independent of ELIGIBLE/MATCHED literals or their dependent hashes. The packet fixture-only boundary explicitly says all other declared current fixture corrections are prospective source-enum corrections with dependent hashes only. The four specially content-guarded older files do contain exactly their six allowed edits; this separate existing full-preparation helper modification exceeds the broader fixture correction limit. The default assertion remains exact, but the change still requires scope authorization or relocation.",
-      "location": {
-        "path": "tests/db/test_full_action_preparation.py",
-        "line": 1219
-      },
-      "requested_change": "Keep the new duplicate-event verification in the task-owned conformance suite while restoring this existing helper to its protected-base behavior apart from the permitted source literals, or obtain a protected-base packet refinement that explicitly authorizes this helper change. Rerun required checks after any implementation/test change.",
+      "id": "GENERAL-02",
+      "severity": "BLOCKER",
+      "title": "Mandatory hosted full PostgreSQL regression is not PASS at the reviewed revision",
+      "file": "docs/exec-plans/completed/KL-080_RESULT.yaml",
+      "description": "The packet and DoD require unchanged hosted full DB CI with positive execution of the existing fixture suites. Committed hosted-status.json identifies exact tested SHA and unchanged workflow hashes but records PostgreSQL run 37081179328 as in_progress with no conclusion; the result explicitly calls this pending. There is no successful hosted full DB execution/count/raw evidence at reviewed SHA. Hosted quality run 37081179330 success is a separate fact and cannot substitute.",
+      "required_action": "Record actual successful unchanged hosted full DB regression with positive suite coverage and raw provenance at the corrective tested revision before a new implementation/result review. Review bookkeeping appended later cannot supply missing pre-review task-check evidence. Keep hosted, task, review and merge statuses separate.",
       "evidence_refs": [
-        "docs/exec-plans/active/KL-080.md",
-        "tests/db/test_full_action_preparation.py",
-        "tests/db/test_source_decision_conformance.py"
-      ]
-    },
-    {
-      "id": "KL080-GENERAL-03",
-      "classification": "REQUIRED_FOLLOWUP",
-      "priority": 2,
-      "title": "Hosted full PostgreSQL and final merge gates remain unverified",
-      "description": "The reviewed committed evidence covers the own conformance DB suite, unit/harness regressions, lint, typecheck and default harness validation. It contains no fresh hosted full tests/db CI proof for the corrected older fixture corpus. The packet requires unchanged hosted full DB CI and all normal gates, including the selected-task merge gate; the BLOCKED result merely preserves these as independently assessed future conditions. No CI PASS or merge readiness is established by this review.",
-      "requested_change": "After correcting the blockers and completing all required fresh reviews, require the unchanged hosted PostgreSQL/quality workflows and revision-bound selected-task merge gate to PASS at the relevant final head before integration. Preserve their actual run identity and revision; do not invoke foreign local database lifecycles as a substitute.",
-      "evidence_refs": [
-        "docs/exec-plans/active/KL-080.md",
-        "docs/harness/MERGE_GATE.md",
+        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-status.json",
+        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-run-37081179328.json",
+        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-quality-summary.json",
         ".github/workflows/db.yml",
-        ".github/workflows/ci.yml",
-        "docs/exec-plans/completed/KL-080_RESULT.yaml",
-        "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/final-checks.json"
+        "docs/exec-plans/completed/KL-080_RESULT.yaml"
       ]
     }
   ],
   "evidence_refs": [
     "AGENTS.md",
-    ".agents/skills/pr-merge-reviewer/SKILL.md",
     "CURRENT_DOCUMENT_INDEX.json",
+    "FROZEN_BASELINE.json",
     "CURRENT_REQUIREMENT_SET.json",
+    "THREAD_REVIEW.schema.json",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/exec-plans/active/KL-080.md",
+    "docs/exec-plans/completed/KL-080_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-080/entry.json",
+    "docs/exec-plans/milestones/M2.json",
+    "docs/harness/M3_CLOSURE_CONTRACT.md",
+    "docs/exec-plans/evidence/HG-045/SOURCE_AUDIT.md",
+    "docs/exec-plans/evidence/HG-045/FEASIBILITY.md",
     "05_KineticLoop_Protocol_v1.2_FROZEN.md",
     "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
     "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
-    "docs/exec-plans/active/KL-080.md",
-    "docs/exec-plans/evidence/HG-045/SOURCE_AUDIT.md",
-    "docs/exec-plans/evidence/HG-045/FEASIBILITY.md",
-    "docs/harness/M3_CLOSURE_CONTRACT.md",
-    "docs/harness/THREAD_RESULT_CONTRACT.md",
-    "docs/harness/THREAD_REVIEW_CONTRACT.md",
-    "docs/harness/MERGE_GATE.md",
-    "THREAD_REVIEW.schema.json",
-    "docs/exec-plans/milestones/M2.json",
-    "docs/exec-plans/evidence/KL-080/entry.json",
-    "docs/exec-plans/completed/KL-080_RESULT.yaml",
     "src/kineticloop/workflow/deterministic_planning.py",
     "src/kineticloop/persistence/deterministic_planning.py",
     "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/persistence/protocol_execution.py",
     "tests/unit/workflow/test_source_decision_conformance.py",
     "tests/db/test_source_decision_conformance.py",
-    "tests/db/test_full_action_preparation.py",
     "docs/contracts/source_decision_conformance.md",
-    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/final-checks.json",
-    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/witness-index.json",
-    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/preserved-baseline.json",
-    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/final-cleanup.json",
-    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/execution-layout.md",
-    "docs/exec-plans/completed/KL-076_RESULT.yaml",
-    "docs/exec-plans/completed/KL-079_RESULT.yaml",
-    "docs/exec-plans/completed/KL-077_RESULT.yaml",
-    "docs/exec-plans/completed/KL-027_RESULT.yaml",
-    "docs/exec-plans/completed/KL-078_RESULT.yaml",
-    "docs/exec-plans/completed/KL-026_RESULT.yaml",
-    "docs/exec-plans/completed/KL-023_RESULT.yaml",
-    "docs/exec-plans/completed/KL-022_RESULT.yaml",
-    "docs/exec-plans/completed/KL-028_RESULT.yaml",
-    "docs/exec-plans/completed/KL-029_RESULT.yaml",
-    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_owner_trajectories_dc.log",
-    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_owner_trajectories_dc.xml",
-    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.log",
-    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.xml",
-    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/legacy-scope-blocker.json",
     ".github/workflows/db.yml",
-    ".github/workflows/ci.yml"
+    ".github/workflows/ci.yml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/final-checks.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/execution-layout.md",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/witness-index.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/final-cleanup.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-status.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-run-37081179328.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-run-37081179330.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-quality-summary.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-quality.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_matrix_pu.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_matrix_pu.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_matrix_pu.collection.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_matrix_pu.collection.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_basis_pu.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_basis_pu.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_basis_pu.collection.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_basis_pu.collection.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_namespace_pu.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_namespace_pu.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_namespace_pu.collection.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_namespace_pu.collection.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_preparation_owners_dc.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_preparation_owners_dc.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_preparation_owners_dc.collection.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_preparation_owners_dc.collection.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_canonical_full_t6_dc.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_canonical_full_t6_dc.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_canonical_full_t6_dc.collection.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_canonical_full_t6_dc.collection.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_invalid_reconstruction_dc.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_invalid_reconstruction_dc.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_invalid_reconstruction_dc.collection.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_invalid_reconstruction_dc.collection.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_freshness_predicate_support_dc.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_freshness_predicate_support_dc.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_freshness_predicate_support_dc.collection.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_freshness_predicate_support_dc.collection.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_owner_trajectories_dc.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_owner_trajectories_dc.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_owner_trajectories_dc.collection.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_owner_trajectories_dc.collection.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_current_denials_dc.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_current_denials_dc.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_current_denials_dc.collection.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_current_denials_dc.collection.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_repair_replay_expiry_dc.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_repair_replay_expiry_dc.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_repair_replay_expiry_dc.collection.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_repair_replay_expiry_dc.collection.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.collection.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.collection.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_pu.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_pu.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_pu.collection.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_pu.collection.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/harness_validation_passes.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/unit_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/unit_regressions_pass.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/harness_regressions_pass.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/harness_regressions_pass.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/lint_passes.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/typecheck_passes.log",
+    "docs/exec-plans/completed/KL-076_RESULT.yaml",
+    "docs/exec-plans/integrations/KL-076.json",
+    "docs/exec-plans/completed/KL-079_RESULT.yaml",
+    "docs/exec-plans/integrations/KL-079.json",
+    "docs/exec-plans/completed/KL-077_RESULT.yaml",
+    "docs/exec-plans/integrations/KL-077.json",
+    "docs/exec-plans/completed/KL-027_RESULT.yaml",
+    "docs/exec-plans/integrations/KL-027.json",
+    "docs/exec-plans/completed/KL-078_RESULT.yaml",
+    "docs/exec-plans/integrations/KL-078.json",
+    "docs/exec-plans/completed/KL-026_RESULT.yaml",
+    "docs/exec-plans/integrations/KL-026.json",
+    "docs/exec-plans/completed/KL-023_RESULT.yaml",
+    "docs/exec-plans/integrations/KL-023.json",
+    "docs/exec-plans/completed/KL-022_RESULT.yaml",
+    "docs/exec-plans/integrations/KL-022.json",
+    "docs/exec-plans/completed/KL-028_RESULT.yaml",
+    "docs/exec-plans/integrations/KL-028.json",
+    "docs/exec-plans/completed/KL-029_RESULT.yaml",
+    "docs/exec-plans/integrations/KL-029.json"
   ],
   "merge_recommendation": "DO_NOT_MERGE",
-  "verification": {
-    "independence": "Fresh independent GENERAL inspection of the exact implementation/result SHA against protected base fc8a044ffa4d15a74ce5dc59298ae411f1f4009b. Inspected guide, complete packet, matching skill, contracts, relevant named frozen sections, prerequisite artifacts, source/test/contract diff and committed raw evidence directly. Parent conclusions and other review reasoning were not used as proof. No DB lifecycle, command execution that changes code/test/result/evidence, Git commit or HEAD change occurred. Only this own GENERAL.json was written.",
-    "authority_and_prerequisites": "All indexed document/machine-readable authority bytes, current index/package manifest, requirement registry, frozen files and baseline are unchanged from protected base. Independently read the ten named prerequisite result summaries/limitations, their required SHA-bound PASS reviews and MERGED integration records, and checked all 34 transitive entry identities for PASS result/check state, PASS required review status tied to integrated reviewed_head_sha, and merge ancestry before protected base. M2 records PASS and remains unchanged; no KL080 integration or M3 closure was created.",
-    "revision_binding": "Protected base is ancestor of tested d6bfb285087456a1a43d6c6b856a07eee4e1746d, which is ancestor of reviewed 79fa887dc20f5865902b0b5d90ce0e4b68e0118e. The sole tested-to-reviewed commit adds only the own result and new own evidence; implementation/tests/contracts remain byte-identical. All cited paths resolve as regular Git blobs at reviewed SHA.",
-    "raw_evidence": "Independently recomputed every final-check stdout and JUnit SHA256, compared recorded JUnit executed/failure/error/skip counts, and matched all twelve selector/suite collection node sets to JUnit names and raw collection hashes. No hash/count/node mismatch found. Fifteen named commands record PASS and two record FAIL; own suite has 106 executed cases, 1 failure, 0 errors, 0 skips. Unit and harness raw JUnit have 247 and 925 passing cases respectively. These data verify execution, not satisfaction of failing oracles.",
-    "source_and_boundary_inspection": "Runtime diff is confined to exact physical ELIGIBLE/MATCHED checks in both pure and persistence readers, plus full T6 shared freshness SQL/helper. S27 ADMITTED, derived S36 CONFIRMED, runtime versions/rules, public command shapes, registrations, migrations, CI and unrelated owner/lock/transaction paths are unchanged. Canonical full T6 invokes unbypassed reconstruction and then observed exact freshness query with admission revisions and finite minima. Protected-base prior-deployment subprocess supplies genuine COMMIT_READY historical ADMITTED+CONFIRMED sources; current reconstruction denial is separately labeled from independent exact SQL support. Snapshot checks retain immutable sources/outputs and zero failed-command bookkeeping effects. New own lifecycle preflights fixed task/label/HEAD7/resolved-root SHA12; nested bootstrap receives it and connection wrappers assert current_database. General inspection found no runtime authority expansion or historical row/artifact rewrite.",
-    "scope": "Declared production/test/contract write paths and own result/evidence bookkeeping are otherwise respected. Four content-guarded older fixture files contain exactly six allowed source literal replacements. The extra_fact shared assertion-helper edit is separately recorded as a scope blocker rather than silently treated as an enum correction.",
-    "state_separation": "Result remains task_status BLOCKED, task_checks_status FAIL, integration_status UNMERGED, merge_commit null, requirements_covered empty and spec_change_request null. GENERAL CHANGES_REQUIRED supplies no task, requirement, specialist review, integration, M3, product or release PASS. Future PROTOCOL, DB_CONCURRENCY and SECURITY_DATA_BOUNDARY dispositions remain independent. No merge recommendation is possible while required positive checks fail; final hosted/selected-task gates remain separate conditions."
-  }
+  "review_method": "Fresh independent exact-SHA diff, source, authority, prerequisite, raw stdout, JUnit, collection and provenance inspection. No previous KL080 review conclusions relied upon. No DB lifecycle or implementation/test/result/evidence mutation was performed; only this GENERAL review bookkeeping is written.",
+  "base_commit": "fc8a044ffa4d15a74ce5dc59298ae411f1f4009b",
+  "tested_commit": "15a7167e44b8044c94688cf7e367e2d02a962e31",
+  "scope_assessment": {
+    "status": "PASS",
+    "detail": "All changed paths are declared KL080 runtime/fixtures/contracts or own result/evidence/review bookkeeping. Runtime diff only changes physical source decisions and strict reader checks, plus the narrowly shared full T6 freshness reader. Exact six replacements independently verified for the four bounded older fixture files. No frozen/index/backlog/requirements/migrations/shared CI/harness/historical artifact change; runtime versions/RULES/request/registration/lock/transaction contracts preserved."
+  },
+  "prerequisite_assessment": {
+    "status": "PASS",
+    "detail": "All 34 recorded transitive prerequisites independently checked for PASS result/status/hash, required exact-SHA PASS reviews at their bound review-record commits, MERGED integration and protected-base ancestry; each recorded dependency merge precedes the consumer base/tested revision. Ten direct prerequisite results read. Independent indexed integration validator returned zero errors for all 34 records; M2 closure validation returned zero errors. Result schema/semantic and exact scope validation also returned zero errors."
+  },
+  "evidence_assessment": {
+    "status": "FAIL",
+    "detail": "All 17 exact result commands match final-checks records and raw tested-SHA/command headers. SHA256 for raw logs and JUnit verified from regular Git blobs at reviewed SHA; each of twelve source collection counts/nodeids and hashed collection raw stdout agrees with JUnit. Fifteen PASS, two FAIL, zero skip/error/xfail; own suite 106 executed. 106 own namespace/migration and cleanup records verify exact root digest, no remaining owned resources. Separate prior-deployment reconstruction witness verifies 65 protected-base runtime/helper blobs. Tested-to-reviewed suffix changes only own result and evidence; implementation/configuration/tests/contracts unchanged."
+  },
+  "oracle_assessments": [
+    {
+      "check_id": "source_matrix_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_source_matrix",
+      "result": "PASS",
+      "exit_code": 0,
+      "oracle_assessment": "Both actual pure profiles accept ELIGIBLE/MATCHED and deny the eleven malformed S13/S12 representatives; distinct S27 ADMITTED and derived S36 CONFIRMED are retained.",
+      "counts": {
+        "executed": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_basis_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_basis_and_actual_separation",
+      "result": "PASS",
+      "exit_code": 0,
+      "oracle_assessment": "Both pure profiles test subject/policy/scope/membership, actual-versus-target, contradiction/retraction, event deduplication and half-open expiry; exact hash/provenance checks also occur in real preparation cases.",
+      "counts": {
+        "executed": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_namespace_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_namespace",
+      "result": "PASS",
+      "exit_code": 0,
+      "oracle_assessment": "Preflight uses exact task/label/HEAD7/resolved-root SHA12; rejects foreign/default/malformed/ambient targets before lifecycle methods and nested bootstrap/cleanup.",
+      "counts": {
+        "executed": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_preparation_owners_dc",
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_preparation_owners",
+      "result": "PASS",
+      "exit_code": 0,
+      "oracle_assessment": "Four real-PG cases exercise legacy/full preparation and single/duplicate actual events through genuine COMMIT_READY owners, with F/D/N, exact source closure and immutable persisted snapshots; full has two distinct S36 and one shared S37.",
+      "counts": {
+        "executed": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_canonical_full_t6_dc",
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_canonical_full_t6",
+      "result": "PASS",
+      "exit_code": 0,
+      "oracle_assessment": "Actual full reconstruction and T6 reach the shared exact ELIGIBLE freshness reader; captured admission revision, both member S36/S37 bindings and finite minimum validity are asserted.",
+      "counts": {
+        "executed": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_invalid_reconstruction_dc",
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_invalid_source_reconstruction",
+      "result": "PASS",
+      "exit_code": 0,
+      "oracle_assessment": "Exact protected-base deployed owners in a separate task-owned subprocess produce ADMITTED/CONFIRMED COMMIT_READY only; corrected current code rejects the untouched request in _progress_sources -> _verify_full_progress, before later freshness, with complete unchanged snapshots. All 65 recorded protected blob hashes independently verified.",
+      "counts": {
+        "executed": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_freshness_predicate_support_dc",
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_freshness_predicate_support",
+      "result": "PASS",
+      "exit_code": 0,
+      "oracle_assessment": "Seven separately labeled PostgreSQL support probes exercise exact shared freshness predicate for canonical/non-ELIGIBLE/null decisions and wrong subject/policy/id; no end-to-end claim.",
+      "counts": {
+        "executed": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_owner_trajectories_dc",
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_owner_trajectories",
+      "result": "FAIL",
+      "exit_code": 1,
+      "oracle_assessment": "Full two-action F/D/N T6 and START/ordinary PAUSE/RESUME/CONTINUE pass. Required legacy T6 fails at genuine authorization demand/validation guard before T7; the positive legacy oracle is unmet.",
+      "counts": {
+        "executed": 2,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_current_denials_dc",
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_current_denials",
+      "result": "PASS",
+      "exit_code": 0,
+      "oracle_assessment": "77 real-PG cases include exhaustive malformed-source denials through both preparation profiles and typed, otherwise valid current-state T6 denials. Actual reached guards and complete failed-command snapshots distinguish earlier preparation/reconstruction/ingress from later eligibility; expiry crosses strictly past the bound.",
+      "counts": {
+        "executed": 77,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_repair_replay_expiry_dc",
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_repair_replay_expiry",
+      "result": "PASS",
+      "exit_code": 0,
+      "oracle_assessment": "14 cases exercise genuine same-root F2 revision/attempt repair, stale mixed outputs, immutable receipt-only historical replay, observed concurrent deduplication, rollback injection, source/runtime authority loss and finite START/CONTINUE/RESUME expiry. No historical row rewrite.",
+      "counts": {
+        "executed": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_suite_dc",
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py",
+      "result": "FAIL",
+      "exit_code": 1,
+      "oracle_assessment": "106 collected/executed cases; 105 pass and legacy owner trajectory fails. All 106 namespace/migration and empty own-resource cleanup witnesses resolve in raw stdout. Required all-pass own suite and hosted full regression oracle are unmet.",
+      "counts": {
+        "executed": 106,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_suite_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py",
+      "result": "PASS",
+      "exit_code": 0,
+      "oracle_assessment": "Six collected/executed own PU cases pass without skip/xfail; includes exact six-literal content guard for the four bounded older fixture files.",
+      "counts": {
+        "executed": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "command": "uv run kl check-harness",
+      "result": "PASS",
+      "exit_code": 0,
+      "oracle_assessment": "Committed raw command records HARNESS_CHECK_PASS with exit zero; this ordinary harness success does not imply selected-task merge readiness."
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "command": "uv run kl test-unit",
+      "result": "PASS",
+      "exit_code": 0,
+      "oracle_assessment": "247 repository unit cases pass, no failures/errors/skips in committed JUnit.",
+      "counts": {
+        "executed": 247,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "command": "uv run kl test-harness",
+      "result": "PASS",
+      "exit_code": 0,
+      "oracle_assessment": "925 repository harness cases pass, no failures/errors/skips in committed JUnit.",
+      "counts": {
+        "executed": 925,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "lint_passes",
+      "command": "uv run kl lint",
+      "result": "PASS",
+      "exit_code": 0,
+      "oracle_assessment": "Committed raw repository lint command passes with exit zero."
+    },
+    {
+      "check_id": "typecheck_passes",
+      "command": "uv run kl typecheck",
+      "result": "PASS",
+      "exit_code": 0,
+      "oracle_assessment": "Committed raw repository typecheck command passes with exit zero."
+    }
+  ],
+  "definition_of_done": {
+    "status": "FAIL",
+    "unmet": [
+      "source_owner_trajectories_dc positive legacy T6/T7 oracle",
+      "source_suite_dc all-pass oracle",
+      "unchanged hosted full DB CI positive regression PASS"
+    ],
+    "state_discipline": "Task remains BLOCKED; task_checks FAIL; integration UNMERGED. No product/release/M3 PASS is claimed. Source correction and successful full-profile evidence do not establish task PASS or authorize merge."
+  },
+  "required_followups": [
+    "Coordinator must resolve the legacy producer/consumer scope conflict before task PASS can be claimed. The current packet permits source-only changes and cannot authorize a local weakening of legacy execution guards.",
+    "After any implementation, packet, result or task-evidence change, obtain fresh GENERAL/PROTOCOL/DB_CONCURRENCY/SECURITY_DATA_BOUNDARY reviews at the same new implementation/result SHA. The own REVIEW_RECORD_ONLY suffix cannot cure task evidence or implementation blockers."
+  ],
+  "limitations": [
+    "This review independently evaluates committed PostgreSQL executions; it does not repeat DB lifecycle operations.",
+    "The recorded later synthetic-certificate concern is static only; the actual observed denial is the earlier demand/validation guard. No later guard reach is claimed.",
+    "M2 and prerequisite historical PASS evidence establish entry conditions only; product requirements, M3, real-data shadow, Hevy/HealthKit integration and production release remain independent."
+  ]
 }

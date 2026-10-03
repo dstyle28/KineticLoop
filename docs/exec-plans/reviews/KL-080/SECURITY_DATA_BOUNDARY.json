@@ -1,0 +1,59 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-080",
+  "reviewed_head_sha": "7e19587458d611155051d0c89d36e0b89f98b8a1",
+  "review_type": "SECURITY_DATA_BOUNDARY",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "findings": [
+    {
+      "id": "KL080-SEC-001",
+      "severity": "BLOCKER",
+      "title": "Required legacy execution trajectory and complete source suite fail",
+      "detail": "At tested_commit 15a7167e44b8044c94688cf7e367e2d02a962e31, the committed raw logs and JUnit independently establish source_owner_trajectories_dc: one failed and one passed, and source_suite_dc: one failed and 105 passed. Actual legacy preparation reaches COMMIT_READY, but its T6 consumer rejects the owner-produced basis with 'authorization requires a current PASS validation basis'. The positive legacy T6/T7 oracle is therefore not satisfied. This is a packet completion blocker; the observed denial is fail-closed and does not itself demonstrate a data-authority bypass. Full canonical owner execution passes separately and cannot substitute for the required legacy positive.",
+      "remediation": "Resolve the legacy producer/consumer compatibility within authorized scope, or obtain an explicit prospective packet refinement through the repository governance process. Preserve fail-closed guards, historical artifacts and genuine owner outputs; do not relabel the required positive as PASS. Record fresh required executions and obtain new SHA-bound reviews of the changed implementation/result.",
+      "evidence_refs": [
+        "docs/exec-plans/active/KL-080.md",
+        "docs/exec-plans/completed/KL-080_RESULT.yaml",
+        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_owner_trajectories_dc.log",
+        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_owner_trajectories_dc.xml",
+        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.xml"
+      ]
+    },
+    {
+      "id": "KL080-SEC-002",
+      "severity": "BLOCKER",
+      "title": "Required unchanged hosted full PostgreSQL PASS is unavailable at reviewed revision",
+      "detail": "The reviewed regular Git blobs record hosted PostgreSQL workflow 37081179328 for tested_commit as in_progress with no conclusion. The committed result correctly treats this as pending, not PASS. Hosted quality success is distinct. The packet requires unchanged hosted full DB CI to pass, including the older fixture corpus; its completion is not established by the own local suite or by the recorded pending run.",
+      "remediation": "Obtain and commit truthful completed hosted full DB evidence for the appropriate immutable tested revision through the task result/evidence process, then obtain fresh reviews on the resulting implementation/result SHA. Later CI or ambient HEAD state cannot retroactively satisfy this reviewed snapshot.",
+      "evidence_refs": [
+        "docs/exec-plans/active/KL-080.md",
+        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-status.json",
+        "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-run-37081179328.json"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-080.md",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "12_KineticLoop_Integration_Spec_v0.1.md",
+    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/harness/M3_CLOSURE_CONTRACT.md",
+    "docs/exec-plans/evidence/HG-045/SOURCE_AUDIT.md",
+    "docs/exec-plans/evidence/HG-045/FEASIBILITY.md",
+    "docs/exec-plans/completed/KL-080_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-080/entry.json",
+    "src/kineticloop/workflow/deterministic_planning.py",
+    "src/kineticloop/persistence/deterministic_planning.py",
+    "src/kineticloop/persistence/transactions.py",
+    "tests/unit/workflow/test_source_decision_conformance.py",
+    "tests/db/test_source_decision_conformance.py",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/final-checks.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.log",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.xml",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/witness-index.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/final-cleanup.json",
+    "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-status.json"
+  ]
+}
