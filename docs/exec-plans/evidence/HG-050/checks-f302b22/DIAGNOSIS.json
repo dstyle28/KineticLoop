@@ -1,0 +1,35 @@
+{
+  "tested_commit": "f302b22c0838ef2928913392e7c2a6af9e8f8698",
+  "initial_attempt": {
+    "wrapper_exit_code": 1,
+    "pytest_exit_code": 0,
+    "pytest_passed": 1405,
+    "error": "source-changed-during-execution",
+    "initial_source_status": "clean; manifest dirty_source=false",
+    "observed_end_head": "f302b22c0838ef2928913392e7c2a6af9e8f8698",
+    "observed_end_status": "?? docs/exec-plans/evidence/HG-050/OPERATOR_OBSERVATIONS.json\n?? docs/exec-plans/evidence/HG-050/precommit/\n",
+    "tracked_changes": "none; observed status showed only the two own untracked paths; git diff --exit-code HEAD succeeded",
+    "cause": "Implementer appended prospective untracked evidence during the clean-start harness execution.",
+    "correction": "Move pending artifacts outside checkout; no source/Git writes during later executions."
+  },
+  "retry_attempt": {
+    "wrapper_exit_code": 1,
+    "pytest_exit_code": 1,
+    "pytest_passed": 1404,
+    "pytest_failed": 1,
+    "source_start_status": "clean",
+    "source_end_status": "clean",
+    "source_end_sha": "f302b22c0838ef2928913392e7c2a6af9e8f8698",
+    "error": "Git add in synthetic M3 fixture: unable to create temporary file: Invalid argument",
+    "phase": "fixture setup before the test assertions; no GitHub client path involved",
+    "diagnosis": "Temporary Git filesystem failure; exact underlying OS cause unproven. Disk inspection showed 1.4 TiB available. Isolated same-test probe passed in task-owned basetemp; no fixture/runtime edits.",
+    "correction": "Full harness under task-owned --basetemp with normal two workers."
+  },
+  "final_attempt": {
+    "reference": "ISOLATED_EXECUTION.json",
+    "source_start_status": "clean",
+    "source_end_status": "clean",
+    "source_end_sha": "f302b22c0838ef2928913392e7c2a6af9e8f8698"
+  },
+  "claims": "Both failures remain FAIL. Only the final complete clean wrapper execution supplies harness PASS. No stitched PASS, historical mutation, import or manual publication."
+}

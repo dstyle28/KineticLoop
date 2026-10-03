@@ -1,0 +1,54 @@
+{
+  "mandatory_reviews": [
+    {
+      "omitted": null,
+      "expected_exit": 0,
+      "verified": true
+    },
+    {
+      "omitted": "GENERAL",
+      "expected_exit": 1,
+      "verified": true
+    },
+    {
+      "omitted": "SECURITY_DATA_BOUNDARY",
+      "expected_exit": 1,
+      "verified": true
+    }
+  ],
+  "exact_allowlist": [
+    "CURRENT_DOCUMENT_INDEX.json",
+    "HARNESS_DOCUMENT_MANIFEST.json",
+    "tools/harness/github_app.py",
+    "tests/harness/test_local_gate.py",
+    "docs/harness/LOCAL_DB_CI.md",
+    "tools/harness/validate_harness.py",
+    "docs/exec-plans/governance/HG-050.yaml",
+    "docs/exec-plans/evidence/HG-050/**",
+    "docs/exec-plans/reviews/HG-050/**"
+  ],
+  "forbidden_paths_rejected": [
+    "tools/harness/local_gate.py",
+    "tools/harness/db_policy.py",
+    "tools/harness/db_ci.py",
+    ".github/workflows/ci.yml",
+    ".github/workflows/db.yml",
+    "pyproject.toml",
+    "uv.lock",
+    "src/kineticloop/cli.py",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "FROZEN_BASELINE.json",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "docs/exec-plans/active/KL-080.md",
+    "docs/exec-plans/governance/HG-050.json",
+    "docs/exec-plans/evidence/HG-050A/file",
+    "docs/exec-plans/reviews/HG-050A/file",
+    "docs/exec-plans/evidence/HG-049/file",
+    "docs/history/old.md",
+    "tests/db/test_workflow.py",
+    "config.json",
+    "admission.json",
+    "signing.pem"
+  ],
+  "status": "PASS"
+}

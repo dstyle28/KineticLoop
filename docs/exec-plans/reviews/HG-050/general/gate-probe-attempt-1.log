@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/davetian/.codex/worktrees/cd73/KineticLoop/docs/exec-plans/reviews/HG-050/general/gate_probe.py", line 23, in <module>
+    fixture.check(1 if omitted else 0,
+  File "/Users/davetian/.codex/worktrees/cd73/KineticLoop/tests/harness/test_validator.py", line 118, in check
+    self.assertIn(key or ('HARNESS_CHECK_PASS' if expected == 0 else 'HARNESS_CHECK_FAIL'), out.getvalue())
+  File "/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/unittest/case.py", line 1152, in assertIn
+    self.fail(self._formatMessage(msg, standardMsg))
+  File "/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/unittest/case.py", line 715, in fail
+    raise self.failureException(msg)
+AssertionError: 'governance-required-reviews-not-pass:HG-050' not found in 'HARNESS_CHECK_FAIL\nvalidation-error:ci-general-review-missing:HG-050\n'
