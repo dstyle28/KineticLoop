@@ -1,0 +1,124 @@
+{
+  "reviewed_head_sha": "b71d2d63f8bc27ab0e905b0be8a0cea5f0122a91",
+  "base_commit": "d08927706a01a397dac2c78ca4aec7e9918a389c",
+  "tested_commit": "7b35dc5dd7c488b60651175574e37b5d9389d335",
+  "status": "PASS",
+  "source_matches_tested": true,
+  "scope_valid": true,
+  "hg048_preserved_files": 116,
+  "hg047_preserved_files": 211,
+  "full_shared_validator_and_readme_reconstruction": true,
+  "all_index_manifest_hashes_valid": true,
+  "budget": {
+    "identity": "HG-047",
+    "base": "d08927706a01a397dac2c78ca4aec7e9918a389c",
+    "head": "b71d2d63f8bc27ab0e905b0be8a0cea5f0122a91",
+    "stored_bytes": 3733970,
+    "files": 257,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "selected_checks": [
+    {
+      "id": "lint",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "id": "typecheck",
+      "sha256": "866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445",
+      "bytes": 45
+    },
+    {
+      "id": "unit",
+      "sha256": "f60fff545b7907d4ecadfccb735f0c6ef0439e2e1dfad2b5211d8b0a83a8f8f4",
+      "bytes": 422
+    },
+    {
+      "id": "harness",
+      "sha256": "2e15eca13fc24fe3ee2f2dd2242a4426de5fb2e2c826c9b13b6d3c07f601b5ed",
+      "bytes": 1634
+    },
+    {
+      "id": "installed_authority",
+      "sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "bytes": 38
+    },
+    {
+      "id": "scope",
+      "sha256": "f34982f909d55b2a4db62dca4af6ed7d2b16174432c125d8a5dba850f4b9c044",
+      "bytes": 28055
+    },
+    {
+      "id": "source_diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "id": "collection",
+      "sha256": "1af097575db0697ad342bfe1819dda97b321fc2da0947608239e2e3ec8483c99",
+      "bytes": 3156696
+    },
+    {
+      "id": "performance",
+      "sha256": "56ce89f3a8f923228c5f4083526268f1409ef0fe7caaa9d9da8b439eedc74933",
+      "bytes": 2350
+    },
+    {
+      "id": "integration",
+      "sha256": "3c206b0f3327d2eafd574a0c8b2cabe8538d30e62614d880c22f589f69173f9a",
+      "bytes": 341
+    },
+    {
+      "id": "authority",
+      "sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "bytes": 38
+    },
+    {
+      "id": "execution_identity",
+      "sha256": "b78ee2482697ac6cb0679baca50cecfa3ca57f6a87fca71f77965b949a857be1",
+      "bytes": 537
+    },
+    {
+      "id": "committed_evidence_integrity",
+      "sha256": "7a91dd3ee6534f8319c17adefce9504ff1d1accf530d0f73b01bbede18361c6a",
+      "bytes": 589
+    }
+  ],
+  "linux_development": {
+    "counts": {
+      "harness": {
+        "tests": 1324,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "unit": {
+        "tests": 241,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "receipt_artifacts_verified": 11,
+    "receipt_checks_verified": 7,
+    "host_records_verified": 6,
+    "collection_observer_order_equal": true,
+    "junit_identity_multiset_equal": true,
+    "controller_assets_verified": 11,
+    "installed_candidate_asset_differences": [
+      "validate_harness.py"
+    ],
+    "initial_metadata_hash_verified": true,
+    "final_metadata_preserved": true,
+    "recorded_cleanup": true,
+    "publication": false,
+    "full_db": "NOT_RUN"
+  },
+  "failed_app_gate_preserved": {
+    "head": "8a78241e9b752247c3c4f4a43c4fe54bad72ef6c",
+    "passed": 1304,
+    "errors": 2,
+    "conclusion": "failure"
+  }
+}

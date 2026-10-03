@@ -1,0 +1,30 @@
+{
+  "reviewed_head_sha": "b71d2d63f8bc27ab0e905b0be8a0cea5f0122a91",
+  "timestamp": "2026-10-03T08:37:43.098608+00:00",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+  "checks": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_compact_evidence.py tests/harness/test_local_gate.py tests/harness/test_review_evidence_provenance.py tests/harness/test_m3_milestone_closure.py -k \"compact or evidence_provenance or worker_copies_decoder or failed_start_still\" --basetemp=/private/tmp/hg047-security-round4-audit/pytest --junitxml=/private/tmp/hg047-security-round4-audit/focused.xml",
+      "exit_code": 0,
+      "passed": 291,
+      "errors": 0,
+      "failures": 0,
+      "skips": 0
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python /private/tmp/hg047-security-round4-audit/verify.py",
+      "exit_code": 0,
+      "status": "PASS"
+    }
+  ],
+  "raw_sha256": {
+    "focused.log": "029a45ef8796cecde5be14ee3d314223b67cec7d0699fdd7375665c049544859",
+    "focused.xml": "f5626111ed07692de80e0c39838424160d42f721b6e7e2c12d549c0da9a12994",
+    "verification.log": "5c6f36836e238d8a870f5b9e501c802718e7e2c4d5b29f59024ae4db1fdee906",
+    "verification.json": "bff4b2bff13e5974da676b53bb486fb279c50230d7614898bb04d9c80fba2e3b",
+    "verify.py": "4cf3ac5099746bdbdb9b3051e73d4d41df6f78252b477096d250928c5733d752",
+    "audit-attempt1.log": "71c8ace56a6b6fe071fc20e0c198bcfb9393a8bd1695b7ed2784fdda16aef2eb"
+  },
+  "reviewer_audit_correction": "First independent JUnit comparison naively split parameter text on :: and failed its assertion. Corrected to split the node identity before the opening parameter bracket; full corrected audit passes. Initial failure log retained."
+}

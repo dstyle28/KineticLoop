@@ -1,19 +1,28 @@
 {
   "task_identity": "harness-governance-v0.1/HG-047",
-  "reviewed_head_sha": "589e538579f519bc10d178fa02dff12332931ba7",
+  "reviewed_head_sha": "b71d2d63f8bc27ab0e905b0be8a0cea5f0122a91",
   "review_type": "SECURITY_DATA_BOUNDARY",
   "status": "PASS",
-  "findings": [],
+  "findings": [
+    {
+      "id": "G-01",
+      "classification": "NONBLOCKING",
+      "title": "Ordinary duplicate-key JSON with Unicode escapes is rejected before storage classification",
+      "file": "tools/harness/compact_evidence.py",
+      "line": 129,
+      "description": "Independently reproduced: literal nonreserved duplicate-key JSON remains plain, while Unicode-escaped equivalent raises evidence-duplicate-key. Narrow fail-closed compatibility limitation; no PASS bypass or selected-evidence impact.",
+      "suggested_change": "Prospective compatibility correction: establish reserved storage identity before enforcing unique keys for storage; add literal/escaped ordinary-data parity coverage."
+    }
+  ],
   "evidence_refs": [
-    "docs/exec-plans/reviews/HG-047/security_round3/REPORT.md",
-    "docs/exec-plans/reviews/HG-047/security_round3/checks.json",
-    "docs/exec-plans/reviews/HG-047/security_round3/verification.json",
-    "docs/exec-plans/reviews/HG-047/security_round3/verification.log",
-    "docs/exec-plans/reviews/HG-047/security_round3/raw-oracles.json",
-    "docs/exec-plans/reviews/HG-047/security_round3/focused.log",
-    "docs/exec-plans/reviews/HG-047/security_round3/focused.xml",
-    "docs/exec-plans/reviews/HG-047/security_round3/controller-copy.log",
-    "docs/exec-plans/reviews/HG-047/security_round3/controller-copy.xml"
+    "docs/exec-plans/reviews/HG-047/security_round4/REPORT.md",
+    "docs/exec-plans/reviews/HG-047/security_round4/checks.json",
+    "docs/exec-plans/reviews/HG-047/security_round4/verification.json",
+    "docs/exec-plans/reviews/HG-047/security_round4/verification.log",
+    "docs/exec-plans/reviews/HG-047/security_round4/verify.py",
+    "docs/exec-plans/reviews/HG-047/security_round4/focused.log",
+    "docs/exec-plans/reviews/HG-047/security_round4/focused.xml",
+    "docs/exec-plans/reviews/HG-047/security_round4/audit-attempt1.log"
   ],
   "review_contract_version": "v0.2"
 }

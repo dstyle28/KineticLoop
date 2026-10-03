@@ -1,0 +1,83 @@
+{
+  "reviewed_head_sha": "b71d2d63f8bc27ab0e905b0be8a0cea5f0122a91",
+  "checks": [
+    {
+      "check": "interrupted",
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_compact_evidence.py tests/harness/test_local_gate.py tests/harness/test_m3_milestone_closure.py tests/harness/test_review_evidence_provenance.py tests/harness/test_parallel_runner.py --basetemp=/private/tmp/hg047-general-r4/pytest --junitxml=/private/tmp/hg047-general-r4/focused.xml",
+      "status": "INTERRUPTED",
+      "exit_code": 130,
+      "named_cases": 373,
+      "failed_cases": 0,
+      "unnamed_artifacts": 1,
+      "log": "docs/exec-plans/reviews/HG-047/general_round4/interrupted.log",
+      "junit": "docs/exec-plans/reviews/HG-047/general_round4/interrupted.xml",
+      "log_sha256": "d785b25f79d12f2846404f17d41a2a946edaf60587217cfd2e41d411656fa0f1",
+      "junit_sha256": "d2290efed3c7ef0bf8e580a735674fe3c6a8f334051701e7d796312e55c997d1"
+    },
+    {
+      "check": "targeted",
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_review_evidence_provenance.py tests/harness/test_parallel_runner.py tests/harness/test_m3_milestone_closure.py::test_compact_nested_storage_cannot_supply_m3_execution_stdout --basetemp=/private/tmp/hg047-general-r4/targeted-pytest --junitxml=/private/tmp/hg047-general-r4/targeted.xml",
+      "status": "FAIL",
+      "exit_code": 1,
+      "named_cases": 64,
+      "failed_cases": 7,
+      "unnamed_artifacts": 0,
+      "log": "docs/exec-plans/reviews/HG-047/general_round4/targeted-log.json",
+      "junit": "docs/exec-plans/reviews/HG-047/general_round4/targeted-xml.json",
+      "log_raw_sha256": "e8c58eb11fd011d6f97c0af70a1c1109b8bea2a45a829ab425bf1e0cd4147175",
+      "log_envelope_sha256": "cb07ada53543068a5cda80673833cf5d334a689f5ccab91fea6d49952df19ea4",
+      "junit_raw_sha256": "5d249f03832c531c45179e362be03ce851ec240531a04460be389375edf4e2c7",
+      "junit_envelope_sha256": "438b52ac5660566edba6efb2570e31e1b2ed452601816340dece38e392af5e67"
+    },
+    {
+      "check": "parallel",
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg047-general-r4/venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_parallel_runner.py --basetemp=/private/tmp/hg047-general-r4/locked-parallel-pytest --junitxml=/private/tmp/hg047-general-r4/parallel.xml",
+      "status": "PASS",
+      "exit_code": 0,
+      "named_cases": 18,
+      "failed_cases": 0,
+      "unnamed_artifacts": 0,
+      "log": "docs/exec-plans/reviews/HG-047/general_round4/parallel.log",
+      "junit": "docs/exec-plans/reviews/HG-047/general_round4/parallel.xml",
+      "log_sha256": "c7c8486cfdf103b1175af278c38bee9660c071eb55551d331c591d41930bf487",
+      "junit_sha256": "8c2d20da8fa6f94b0e21eb16ec3d6ade58b17620e9dac96f46e16d7383dffc9b"
+    },
+    {
+      "check": "validator",
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_validator.py::ValidatorTests::test_ci_prospective_evidence_budget_includes_review_suffix tests/harness/test_validator.py::ValidatorTests::test_ci_review_cannot_repair_preexisting_manifest_in_suffix --basetemp=/private/tmp/hg047-general-r4/validator-pytest --junitxml=/private/tmp/hg047-general-r4/validator.xml",
+      "status": "PASS",
+      "exit_code": 0,
+      "named_cases": 2,
+      "failed_cases": 0,
+      "unnamed_artifacts": 0,
+      "log": "docs/exec-plans/reviews/HG-047/general_round4/validator.log",
+      "junit": "docs/exec-plans/reviews/HG-047/general_round4/validator.xml",
+      "log_sha256": "db5935e8dc0ce991fb796ac82f6b0a8c32a73908fd510f1f9d05d358b86257e8",
+      "junit_sha256": "850a087a53dd61aa196207f1848f4cab1a8d6b9ee77636bc62584f8195731013"
+    },
+    {
+      "check": "authority",
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python tools/harness/validate_harness.py",
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "docs/exec-plans/reviews/HG-047/general_round4/authority.log"
+    }
+  ],
+  "component_verification": {
+    "compact_completed_in_interrupted_run": 228,
+    "controller_completed_in_interrupted_run": 44,
+    "compact_m3_semantics_completed_in_interrupted_run": 9,
+    "review_provenance_completed_in_failed_environment_run": 39,
+    "nested_m3_completed_in_failed_environment_run": 7,
+    "parallel_complete_locked_environment_rerun": 18,
+    "new_validator_regressions": 2
+  },
+  "dependency_diagnosis": "The shared hg044 environment lacked pytest-xdist and execnet. Child pytest rejected -n 0. All7 failure identities belonged to HG048 runner tests. Rerun18 uses unique venv with exact uv.lock versions and wheel hashes; no source/shared-env changes.",
+  "review_probe_failure_retained": {
+    "script": "docs/exec-plans/reviews/HG-047/general_round4/verify-attempt1.py",
+    "log": "docs/exec-plans/reviews/HG-047/general_round4/verification-attempt1.log",
+    "exit_code": 1,
+    "reason": "Reviewer expected insertion position corrected after exact parent diff inspection."
+  },
+  "full_database": "NOT_RUN: mandatory root gate"
+}
