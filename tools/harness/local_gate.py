@@ -137,6 +137,28 @@ def cleanup_resource(argv: list[str]) -> bool:
         return False
 
 
+def resource_exists(kind: str, name: str) -> bool:
+    argv = ['docker', kind, 'ls', *(['-a'] if kind == 'container' else []), '--format', '{{.Name}}' if kind == 'volume' else '{{.Names}}']
+    return name in subprocess.check_output(argv, text=True, timeout=120).splitlines()
+
+
+def cleanup_owned(kind: str, name: str, owner: str) -> bool:
+    """Handle uncertain create/start outcomes; only remove our exact labelled resource."""
+    try:
+        if not resource_exists(kind, name):
+            return True
+        item = json.loads(subprocess.check_output(
+            ['docker', kind, 'inspect', name], text=True, timeout=120))[0]
+        labels = item['Config']['Labels'] if kind == 'container' else item['Labels']
+        if labels.get('kineticloop.owner') != owner:
+            return False
+        if not cleanup_resource(['docker', kind, 'rm', *(['-f', '-v'] if kind == 'container' else []), name]):
+            return False
+        return not resource_exists(kind, name)
+    except (OSError, ValueError, KeyError, subprocess.SubprocessError):
+        return False
+
+
 def run_worker(source: Path, head: str, base: str, full_db: bool, destination: Path,
                *, test_only: bool = False, here: Path = HERE) -> dict[str, Any]:
     db_ci.local_client_preflight()
@@ -161,12 +183,14 @@ def run_worker(source: Path, head: str, base: str, full_db: bool, destination: P
             raise ValueError('trusted image build failed')
         image = json.loads(checked(['docker', 'image', 'inspect', name], source))[0]['Id']
         record['image'] = image
+        if resource_exists('container', name) or resource_exists('volume', volume):
+            raise ValueError('refusing pre-existing executor resource names')
+        volume_created = container_created = True  # Reserved, including uncertain creation outcomes.
         checked(['docker', 'volume', 'create', '--label', 'kineticloop.owner=' + name, volume], source)
-        volume_created = True
-        checked(['docker', 'run', '-d', '--privileged', '--name', name,
+        checked(['docker', 'create', '--privileged', '--name', name,
                  '--mount', 'type=volume,source=' + volume + ',target=/var/lib/docker',
-                 '--label', 'kineticloop.owner=local-gate', image], source)
-        container_created = True
+                 '--label', 'kineticloop.owner=' + name, image], source)
+        checked(['docker', 'start', name], source)
         inspect = json.loads(checked(['docker', 'inspect', name], source))[0]
         record['mounts'] = db_ci.owned_mounts(inspect, volume)
         for _ in range(60):
@@ -215,11 +239,11 @@ def run_worker(source: Path, head: str, base: str, full_db: bool, destination: P
         if container_created:
             if not (destination / 'worker').exists():
                 cleanup_resource(['docker', 'cp', name + ':/evidence', str(destination / 'worker')])
-            record['container_removed'] = cleanup_resource(['docker', 'rm', '-f', '-v', name])
+            record['container_removed'] = cleanup_owned('container', name, name)
         else:
             record['container_removed'] = True
         if volume_created:
-            record['volume_removed'] = cleanup_resource(['docker', 'volume', 'rm', volume])
+            record['volume_removed'] = cleanup_owned('volume', volume, name)
         else:
             record['volume_removed'] = True
         if not record['container_removed'] or not record['volume_removed']:

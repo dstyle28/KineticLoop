@@ -249,3 +249,50 @@ def test_publication_requires_fresh_completed_worker_and_patches_one_id(tmp_path
         assert calls[0][2]['status'] == 'in_progress'
         assert calls[1][1].endswith('/check-runs/21')
         assert calls[1][2]['conclusion'] == ('success' if scenario == 'success' else 'failure')
+
+
+def test_uncertain_resource_creation_is_cleaned_by_exact_owner(monkeypatch):
+    exists = iter([True, False])
+    monkeypatch.setattr(gate, 'resource_exists', lambda *_: next(exists))
+    monkeypatch.setattr(gate.subprocess, 'check_output', lambda *a, **k:
+                        json.dumps([{'Config': {'Labels': {'kineticloop.owner': 'owned'}}}]))
+    commands = []
+    monkeypatch.setattr(gate, 'cleanup_resource', lambda argv: commands.append(argv) or True)
+    assert gate.cleanup_owned('container', 'owned', 'owned')
+    assert commands == [['docker', 'container', 'rm', '-f', '-v', 'owned']]
+
+
+def test_cleanup_never_deletes_a_foreign_resource(monkeypatch):
+    monkeypatch.setattr(gate, 'resource_exists', lambda *_: True)
+    monkeypatch.setattr(gate.subprocess, 'check_output', lambda *a, **k:
+                        json.dumps([{'Labels': {'kineticloop.owner': 'foreign'}}]))
+    monkeypatch.setattr(gate, 'cleanup_resource', lambda *_: pytest.fail('foreign resource deleted'))
+    assert gate.cleanup_owned('volume', 'candidate-name', 'owned') is False
+
+
+def test_failed_start_still_attempts_both_owned_cleanups(tmp_path, monkeypatch):
+    monkeypatch.setattr(gate.db_ci, 'local_client_preflight', lambda: None)
+    monkeypatch.setattr(gate.db_ci, 'run_capture', lambda *a, **k: {'exit_code': 0})
+    monkeypatch.setattr(gate, 'resource_exists', lambda *_: False)
+    monkeypatch.delenv('DOCKER_HOST', raising=False)
+    monkeypatch.delenv('DOCKER_CONTEXT', raising=False)
+    def checked(argv, source):
+        if argv[1:3] == ['context', 'show']:
+            return 'default'
+        if argv[1:3] == ['context', 'inspect']:
+            return 'unix:///socket'
+        if argv[1:3] == ['image', 'inspect']:
+            return '[{"Id":"sha256:image"}]'
+        if argv[1] == 'start':
+            raise subprocess.CalledProcessError(126, argv)
+        return ''
+    monkeypatch.setattr(gate, 'checked', checked)
+    monkeypatch.setattr(gate, 'cleanup_resource', lambda *_: True)
+    cleaned = []
+    monkeypatch.setattr(gate, 'cleanup_owned', lambda kind, name, owner: cleaned.append(kind) or True)
+    with pytest.raises(subprocess.CalledProcessError):
+        gate.run_worker(tmp_path, B, A, True, tmp_path)
+    assert cleaned == ['container', 'volume']
+    record = json.loads((tmp_path / 'worker-receipt.json').read_text())
+    assert record['status'] == 'FAIL'
+    assert record['container_removed'] and record['volume_removed']
