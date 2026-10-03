@@ -41,11 +41,16 @@ The real clock and trusted calendar guard remain unchanged.
 The four older fixture files are content-guarded against protected Git bytes plus
 exactly six source literal replacements. Historical artifacts and frozen files are unchanged.
 
-The packet's positive legacy mechanical T6 requirement currently encounters the
-unchanged legacy consumer's single-proposal validity and synthetic certificate
-contracts. The first actual guard requires S37.ref_s34_id=D.ref_s34_id; the
-mechanical owners bind S37 to N, D to F, and N.demand_feature_id to D. This is an unresolved
-packet/implementation scope constraint, not a source-conformance PASS. Actual legacy
-preparation reaches COMMIT_READY; canonical full owner execution reaches T6/T7.
+Under the reviewed HG049 packet, actual mechanical preparation reaches COMMIT_READY
+and remains non-executable. Its untouched S37 is presented through an authenticated,
+well-formed legacy CommitBundle with current owner, request, attempt, fence, lease,
+policy, closure, epoch, execution basis, key and fingerprint. The first actual legacy
+dependency guard rejects S37.ref_s34_id=N while D.ref_s34_id=F; N.demand_feature_id
+still correctly binds D. The test observes the owner-created first-use head inside
+that transaction and proves its rollback plus complete byte-identical source,
+output, receipt, event, outbox, root, attempt and session snapshots. No construction
+failure, policy downgrade, certificate conversion or later-certificate reach is claimed.
+Canonical full owner execution supplies the positive T6 and both action members'
+START, ordinary PAUSE, RESUME and CONTINUE with exact current execution bindings.
 Production and real-data shadow remain non-executable. Hevy/HealthKit obligations,
 retired spreadsheet policy, product statuses and release gates remain unchanged.

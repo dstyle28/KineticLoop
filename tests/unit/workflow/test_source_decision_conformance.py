@@ -395,7 +395,7 @@ def test_basis_and_actual_separation(full: bool) -> None:
     print("SOURCE_BASIS_PU", {"full": full, "denials": len(changes) + 3, "equality": "PU_ONLY"})
 
 
-BASE_COMMIT = "fc8a044ffa4d15a74ce5dc59298ae411f1f4009b"
+BASE_COMMIT = "034d6301316d0dade784a61b159c027b83fbce3a"
 FIXTURE_EDITS = {
     "tests/db/test_factsets.py": [
         ("'unresolved','UNRESOLVED'", "'unresolved','AMBIGUOUS'"),

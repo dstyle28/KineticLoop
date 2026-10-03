@@ -31,11 +31,18 @@ from kineticloop.contracts.commands import (
 )
 from kineticloop.persistence.protocol_execution import ProtocolExecutionService
 from kineticloop.persistence.transactions import (
+    GuardRequired,
     RepositoryTransaction,
     RestrictedSqlSession,
+    _cursor,
     _read_full_source_freshness,
 )
-from kineticloop.protocol.execution import ExecutionIdentity, FullCommitRequest, digest
+from kineticloop.protocol.execution import (
+    ExecutionIdentity,
+    FullCommitRequest,
+    command_digest,
+    digest,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -659,7 +666,12 @@ def assert_duplicate_resolution(db: Any, seed: Any, operation: Any, output: Any)
         ).fetchone()[0]
         receipt = db.execute(
             "SELECT id,typed_payload FROM kineticloop.command_receipts WHERE subject_id=%s AND actor_scope=%s AND command_kind=%s AND client_key=%s",
-            (operation.subject_id, seed["identity"].key, P.OWNERS[operation.kind][0], operation.key),
+            (
+                operation.subject_id,
+                seed["identity"].key,
+                P.OWNERS[operation.kind][0],
+                operation.key,
+            ),
         ).fetchone()
         events = db.execute(
             "SELECT id,typed_payload FROM kineticloop.domain_events WHERE ref_s02_id=%s",
@@ -681,14 +693,18 @@ def assert_duplicate_resolution(db: Any, seed: Any, operation: Any, output: Any)
         assert artifact.contract == P.FULL_VERSION
         assert artifact.snapshot_id == operation.sources["snapshot"]["id"]
         assert row["action_type"] == operation.action_type == artifact.action_type
-        assert row["query_basis_hash"] == artifact.query_basis_hash == P.full_query_basis(
-            artifact.payload()
+        assert (
+            row["query_basis_hash"]
+            == artifact.query_basis_hash
+            == P.full_query_basis(artifact.payload())
         )
         assert row["action_parameters_hash"] == operation.action_parameters_hash
         assert row["ref_s24_id"] == str(operation.manifest_id)
         assert row["ref_s05_id"] == str(seed["identity"].policy_id)
         assert artifact.source_members == tuple(
-            sorted(map(str, (seed["fact"], seed["extra_fact"], seed["association"], seed["admission"])))
+            sorted(
+                map(str, (seed["fact"], seed["extra_fact"], seed["association"], seed["admission"]))
+            )
         )
         assert len(artifact.facts) == 2
         assert {fact.fact_id for fact in artifact.facts} == {
@@ -971,8 +987,109 @@ def test_freshness_predicate_support(database_urls: Any, decision: Any) -> None:
         )
 
 
+def assert_mechanical_consumer_denial(
+    db: Any, seed: Any, request: CommitBundle, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Consume the untouched S37 at the actual dependency guard, never a construction error."""
+    assert type(request) is CommitBundle
+    auth(seed).require_wire(request)
+    assert request.request_hash == command_digest(request)
+    prepared = source_rows(db, seed)
+    basis, refs = seed["basis"], seed["refs"]
+    validation = prepared["validation_results"][0][0]
+    demand = prepared["prescription_demand_features"][0][0]
+    nutrition = next(
+        row for (row,) in prepared["proposal_revisions"] if row["id"] == refs["nutrition"]["id"]
+    )
+    assert validation["result"] == "PASS"
+    assert validation["id"] == request.validation_id == refs["validation"]["id"]
+    assert validation["ref_s34_id"] == nutrition["id"]
+    assert demand["ref_s34_id"] == refs["fitness"]["id"] != nutrition["id"]
+    assert validation["ref_s35_id"] == demand["id"] == nutrition["demand_feature_id"]
+    assert (
+        digest(validation["typed_payload"])
+        == validation["content_hash"]
+        == refs["validation"]["hash"]
+    )
+    assert request.result_fingerprint == digest(
+        {
+            "proposal_id": nutrition["id"],
+            "proposal_hash": nutrition["content_hash"],
+            "validation_id": validation["id"],
+        }
+    )
+    assert prepared["planning_attempts"][0][0]["status"] == "COMMIT_READY"
+    assert prepared["planning_intents"][0][0]["status"] == "RUNNING"
+    P.assert_no_execution(db, auth(seed).subject_id)
+    untouched_wire = request.model_dump(mode="json")
+    original = RepositoryTransaction.prepare_authorization_basis
+    consumed = []
+
+    def observe(tx: Any, **kwargs: Any) -> Any:
+        # This is the current owner's native transaction: the first-use head is
+        # visible here and must disappear when the actual guard aborts it.
+        cursor = _cursor(tx)
+        cursor.execute(
+            "SELECT to_jsonb(h) FROM kineticloop.daily_plan_heads h WHERE subject_id=%s AND id=%s",
+            (auth(seed).subject_id, kwargs["head_id"]),
+        )
+        head_row = cursor.fetchone()
+        assert head_row is not None
+        first_head = head_row[0]
+        assert first_head["current_bundle_revision_id"] is None
+        assert first_head["head_revision"] == 0
+        assert kwargs["validation_id"] == UUID(validation["id"])
+        assert kwargs["resolution_id"] == UUID(validation["ref_s36_id"])
+        assert kwargs["intent_id"] == basis.intent_id
+        record = {
+            "guard": "prepare_authorization_basis",
+            "first_use_head": first_head,
+            "untouched_validation": validation,
+            "status": "ENTERED",
+        }
+        consumed.append(record)
+        try:
+            return original(tx, **kwargs)
+        except GuardRequired as error:
+            record.update(status="DENIED", cause=str(error))
+            raise
+
+    monkeypatch.setattr(RepositoryTransaction, "prepare_authorization_basis", observe)
+    cause = "policy, demand, and calendar authorization bounds must exist"
+    with pytest.raises(GuardRequired, match=cause):
+        service(db, seed).commit(request)
+    assert len(consumed) == 1 and consumed[0]["status"] == "DENIED"
+    trace = [r for r in GUARD_TRACE if r["command"] == "CommitBundle"]
+    for guard in ("require_test_execution_ingress", "require_current_fence", "lock_daily_head"):
+        assert any(r["guard"] == guard and r["status"] == "PASSED" for r in trace)
+    assert any(
+        r["guard"] == "prepare_authorization_basis"
+        and r["status"] == "DENIED"
+        and r["cause"] == cause
+        for r in trace
+    )
+    assert not any(r["guard"] == "require_execution_request" for r in trace)
+    after = P.snapshot(db, auth(seed).subject_id)
+    assert after == prepared
+    assert request.model_dump(mode="json") == untouched_wire
+    P.assert_no_execution(db, auth(seed).subject_id)
+    P.witness(
+        "kl080_mechanical_s37_legacy_consumer_denial",
+        command=untouched_wire,
+        actual_cause=cause,
+        reached=consumed,
+        before=prepared,
+        after=after,
+        first_use_head_observed_then_rolled_back=True,
+        no_construction_or_ingress_error=True,
+        no_later_certificate_guard_claim=True,
+    )
+
+
 @pytest.mark.parametrize("full", [False, True], ids=["legacy", "full-fdn"])
-def test_owner_trajectories(database_urls: Any, full: bool) -> None:
+def test_owner_trajectories(
+    database_urls: Any, full: bool, monkeypatch: pytest.MonkeyPatch
+) -> None:
     if full:
         seed, request = ready(database_urls)
     else:
@@ -984,44 +1101,37 @@ def test_owner_trajectories(database_urls: Any, full: bool) -> None:
             seed["basis"] = basis
             request = legacy_commit_request(db, seed, basis, refs)
     with connect(database_urls["admin"]) as db:
-        prepared = P.snapshot(db, auth(seed).subject_id)
-        try:
-            result = (
-                service(db, seed).commit_full(request)
-                if full
-                else service(db, seed).commit(request)
-            )
-        except Exception as error:
-            assert P.snapshot(db, auth(seed).subject_id) == prepared
-            if not full:
-                P.witness(
-                    "kl080_legacy_consumer_scope_blocker",
-                    cause=str(error),
-                    producer_chain=prepared,
-                    expected_positive_oracle_not_satisfied=True,
-                    consumer_rule="S37.ref_s34_id must equal D.ref_s34_id, while owner-produced S37 anchors N and D anchors F",
-                )
-            raise
-
-        # Legacy returns a singular member. The typed T7 requests are unchanged.
         if not full:
-            result = {
-                **result,
-                "members": [
-                    dict(
-                        prescription_id=result["prescription_id"],
-                        authorization_id=result["authorization_id"],
-                        content_hash=result["content_hash"],
-                    )
-                ],
-            }
+            assert_mechanical_consumer_denial(db, seed, request, monkeypatch)
+            return
         before = source_rows(db, seed)
-        for member in range(2 if full else 1):
+        result = service(db, seed).commit_full(request)
+        assert {m["action_type"] for m in result["members"]} == {"TRAINING", "NUTRITION"}
+        E.assert_event(db, seed, result)
+        for member in range(2):
+            expected = result["members"][member]
             started = service(db, seed).start(E.session_command(seed, result, member=member))
             assert started["executable"]
+            E.assert_event(db, seed, started)
             original = E.current_binding(db, seed, started["session_id"])
+            assert (
+                original["ref_s40_id"],
+                original["ref_s42_id"],
+                original["ref_s44_id"],
+                original["execution_scope"],
+                original["binding_kind"],
+                original["binding_revision"],
+            ) == (
+                expected["prescription_id"],
+                expected["authorization_id"],
+                started["session_id"],
+                "TEST_ONLY",
+                "START",
+                1,
+            )
             paused = service(db, seed).pause(E.pause_request(db, seed, started["session_id"]))
             assert paused["executable"] is False
+            E.assert_event(db, seed, paused)
             resumed = service(db, seed).resume(
                 E.session_command(
                     seed,
@@ -1033,7 +1143,23 @@ def test_owner_trajectories(database_urls: Any, full: bool) -> None:
                 )
             )
             assert resumed["executable"]
+            E.assert_event(db, seed, resumed)
             binding = E.current_binding(db, seed, started["session_id"])
+            assert (
+                binding["ref_s40_id"],
+                binding["ref_s42_id"],
+                binding["ref_s44_id"],
+                binding["execution_scope"],
+                binding["binding_kind"],
+                binding["binding_revision"],
+            ) == (
+                expected["prescription_id"],
+                expected["authorization_id"],
+                started["session_id"],
+                "TEST_ONLY",
+                "RESUME",
+                2,
+            )
             continued = service(db, seed).continue_session(
                 E.session_command(
                     seed,
@@ -1045,11 +1171,20 @@ def test_owner_trajectories(database_urls: Any, full: bool) -> None:
                 )
             )
             assert continued["executable"]
+            E.assert_event(db, seed, continued)
+            assert E.current_binding(db, seed, started["session_id"]) == binding
         after = source_rows(db, seed)
         for table in (
             "admission_decisions",
             "event_association_decisions",
             "canonical_fact_revisions",
+            "evidence_revisions",
+            "candidate_assertions",
+            "underlying_events",
+            "proposal_revisions",
+            "prescription_demand_features",
+            "decision_snapshots",
+            "decision_manifests",
             "evidence_resolutions",
             "validation_results",
         ):
@@ -1457,6 +1592,8 @@ def failed_owner_zero_effects(monkeypatch: pytest.MonkeyPatch) -> Any:
     for name in (
         "require_test_execution_ingress",
         "require_current_fence",
+        "lock_daily_head",
+        "prepare_authorization_basis",
         "_progress_sources",
         "_prepare_full_execution",
         "require_execution_request",
