@@ -1,40 +1,44 @@
 # HG-046 DB_CONCURRENCY independent review
 
-Status: PASS. Zero BLOCKER, REQUIRED_FOLLOWUP, or NONBLOCKING findings.
+Status: CHANGES_REQUIRED. One BLOCKER; no other findings.
 
 Identity: `harness-governance-v0.1/HG-046`; review contract v0.2.
-Reviewed implementation/result: `2f7c4f50c08b21ed89ef361bd7f7b2161b6bf965`.
-Tested implementation: `341333dd4b5140ac15f715ce28bd0d2a4a4ee1ec`.
-Protected base: `26906bd7f4444914c228e98377f2b164fee0dd5d`.
+Reviewed implementation/result: `dedf063f909419dd05e0f49e8a7e646903e3548a`.
+Tested implementation: `c91d2635427a13a97a53fe4e52ec4655e1e7d866`.
+Protected base: `fc8a044ffa4d15a74ce5dc59298ae411f1f4009b`.
 
-## Independent scope and authority inspection
+## BLOCKER HG046-DB-001: manual executor leaks resources after uncertain creation
 
-Read AGENTS, CURRENT_DOCUMENT_INDEX, HG-046 scope/governance, Thread Review Contract, pr-merge-reviewer and db-transaction-reviewer skills, frozen DB sections 4–5, and relevant KL-074 requirements. Inspected the actual protected-base diff and raw evidence. Git confirms base → tested → reviewed ancestry. The tested-to-reviewed suffix is one commit containing only HG-046 governance/evidence; the implementation did not change after execution.
+Location: `tools/harness/db_ci.py:327`, creation flags at 328/333 and conditional cleanup at 370–384.
 
-No runtime, migration, Compose, frozen Protocol/DB/baseline, historical completed result, KL-074 hosted workflow/probe, or old HG-044 evidence changes. Only the two declared database-test workflow compatibility blocks change. KL-074 proposal equality, workflow hash, six negative mutations, branch/repository/head restrictions, hosted runner, locked uv, no continue-on-error, and always-upload checks remain unchanged. The generic legacy pins now assert the authorized prospective CI policy. The former review-push paths-ignore check now requires exclusive manual DB dispatch and no historical auto-writeback. These changes alter no DB fixture or behavior oracle. The exact HG-046 scope exception does not authorize other tasks or database tests.
+The newly documented `db_ci.py local` entrypoint sets volume_created and container_created only after Docker returns success. A volume-create timeout after server-side creation skips all volume cleanup and records volume_removed=true. A docker run startup failure (including exit 126 after container creation) or timeout skips container cleanup and records container_removed=true; volume removal can then fail because the container still references it. With acknowledgement lost after successful startup, a privileged nested daemon can remain running. Returning overall FAIL does not fulfill promised owned-resource cleanup or make those removal assertions true.
 
-An independent AST/source comparison confirms all 20 existing m2_* and m3_* validator functions are byte-identical to the protected base. Existing M3 collection/contribution rules and task-specific hosted requirements remain authoritative.
+Independent reproduction used the real db_ci.local with mocked Docker operations and temporary evidence paths; no Docker lifecycle was executed. Scenario 1: volume-create registered a created volume then raised TimeoutExpired; result exit 1, no remove calls, volume_removed=true. Scenario 2: volume creation succeeded and docker run registered a created container then raised CalledProcessError(126); result exit 1, only volume-rm attempted, container_removed=true and volume_removed=false. The mandatory controller fixes the analogous problem, but this separate public manual entrypoint still ships the defect.
 
-## DB isolation, lifecycle and concurrency
+Required correction: reserve exact ownership before uncertain creation; check absence first; inspect exact ownership labels before removal; attempt both cleanups after failed creation/start; record removal only after verified absence. Add focused tests for uncertain volume creation and container start/ACK loss on the manual entrypoint. This is an implementation correction, not a frozen-spec change. New implementation/results and reviews must bind the corrected revision.
 
-The wrapper creates one uniquely named disposable Linux container and a fresh owned Docker data volume. Source is copied by Git bundle; no host directory/socket mount or credential environment is supplied. Proxy forwarding and ambient remote-builder overrides are rejected. Inner preflight requires clean exact HEAD, supported Linux provenance, default local Unix daemon, and no initial containers or volumes before lifecycle/reset/destroy. Rejected preflight does not clean an unowned daemon.
+## Scope and authority inspection
 
-Legacy fixture namespaces execute inside the owned nested daemon. The detached peer uses the same tested SHA with a distinct worktree-derived DB/Compose namespace. Cleanup uses existing lifecycle ownership, removes the peer checkout, then removes only the owned outer container and volume. Nonzero commands, interruption/timeouts, failed lifecycle cleanup and failed outer removal cannot return a passing run.
+Read AGENTS, CURRENT_DOCUMENT_INDEX, own scope/governance, merged HG-045 governance, review contract, pr-merge-reviewer and db-transaction-reviewer skills, frozen DB sections 4–5, local CI policy and execution records. HG-046 is a governance change whose packet is its own scope/governance record. Inspected the protected-base diff and reviewed Git blobs independently.
 
-T1–T8 code, SafetyRegistry/S01 lock order, fencing, idempotency, call ledger, authorization and Evidence Admission remain unchanged. Image/dependency network work is CI orchestration outside coordination transactions. The unchanged real PostgreSQL regression suite supplies DB proof.
+Git confirms protected base and tested SHA are ancestors of reviewed SHA. The tested-to-reviewed commit changes only own HG-046 governance/evidence. No runtime, tools/db lifecycle, migrations, frozen Protocol/DB/baseline, historical completed result, or KL-074 hosted workflow/probe changes. Only the two authorized tests/db workflow compatibility blocks change; fixtures and behavior oracles remain intact. All 20 existing m2_/m3_ validator function source bodies are byte-identical to merged HG-045 base. M3 closure changes only add isolated local execution and preserve every existing command/contribution/hash/raw-identity requirement.
 
-## Verified selected evidence
+T1–T8, SafetyRegistry/S01 lock order, idempotency, leases/fencing, call ledger and provider/production/shadow boundaries are unaffected. Image/dependency waits are orchestration outside coordination transactions. Real PostgreSQL regression uses unchanged fixtures/selectors; aggregate PASS is not new product/source-conformance certification.
 
-Ran the Git-bound full_database_evidence_errors validator against the reviewed SHA and tested SHA: no errors. Independently verified regular reviewed Git blobs, exact inspected bytes, required commands/selectors, exit codes, interruption flags, raw hashes/lengths, and collection/execution/JUnit agreement. All 11 execution checks have exit 0. Collection/execution contain the same 674 unique DB node IDs; JUnit reports 674 tests, zero failures/errors/skips. Raw output reports `674 passed in 1601.80s`.
+## Mandatory controller and selected execution evidence
 
-Lifecycle logs prove Compose validity, readiness in the derived primary database, three resets with sentinel removal, distinct primary/peer namespaces and `peer_cannot_see_primary_probe: true`. Destroy and peer removal pass. Final inner inventories contain no containers or volumes.
+Mandatory local_gate uses a unique outer container and fresh named data volume, Git bundle source copy, no host path/socket mount, local Unix Docker endpoint and initially empty nested daemon. Candidate code does not select the controller plan. Reserved ownership and cleanup_owned handle uncertain create/start outcomes, validate exact labels, remove only owned resources and verify absence. Cleanup failure cannot publish PASS. The installation lock serializes a controller installation; separate nested daemons isolate runs despite legacy fixture names.
 
-The outer envelope binds the tested SHA and image ID. Container is `kineticloop-db-ci-341333d-cc86e43924e9`; its only mount is the named volume `kineticloop-db-ci-341333d-cc86e43924e9-data` at `/var/lib/docker`. Envelope status is PASS and both container_removed and volume_removed are true. This reviewer inspected committed cleanup records without executing a new Docker lifecycle.
+Read controller-c91d263 receipt and worker-receipt as regular blobs at reviewed SHA and verified embedded worker equality. Snapshot binds repository 1377771702, PR90, protected base and tested SHA; tree is a04b4c35d37f763ead147a6b9789de85256a54ab and controller identity f3525a8ca06c09da26620640c6ea24d0823d41771dc2b2c86f5d32603b17754a. Verified all 21 artifact hashes and all 16 command raw hashes/lengths, successful exits and uninterrupted flags. Commands cover image/dependency setup, lint/typecheck, unit/harness, test-only harness validation, DB collection/execution, Compose/readiness/reset, peer creation/isolation and destroy/removal.
 
-All eight selected check JSON/raw-log pairs match the tested SHA, successful exits and exact raw SHA256/lengths: focused 58 PASS; harness 932 PASS; unit 241 PASS; lint PASS; typecheck PASS for 156 files; check-harness PASS; scope/frozen audit PASS; diff whitespace PASS. Earlier failed/interrupted attempts remain development records and are not selected evidence. The preliminary independent runner-test execution passed 35 cases; final assessment uses the final committed 58-case evidence and inspected source.
+Collection/execution contain identical 674 unique DB nodes, both exit 0. Exact JUnit classname/name identities match those nodes. DB JUnit contains 674 cases, harness 1037, unit 241; every suite has zero failures, errors or skips. Raw logs report 674 passed in 1456.64s, 1037 passed in 133.24s and 241 passed in 9.71s.
+
+Reset proves three resets and sentinel removal. Isolation binds primary kl_workspace_5b88c45d9ce0 and peer kl_evidence_bdea8a308b1f with peer_cannot_see_primary_probe=true; peer checkout uses tested SHA. Destroy and peer-remove exit 0. Outer container kl-gate-2440e41bd01a45e48ef7ffa52ad6fdbf has only its named data volume mounted at /var/lib/docker. Receipt records verified outer removal and environment readback records both absent. Image sha256:72743a669165200bc169ab62f78f99f4979a43f86ef40c1993da87b86add1069 is Linux ARM64.
+
+Independent focused run: `/private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_local_gate.py tests/harness/test_db_policy.py tests/harness/test_local_db_ci.py` — 112 passed in 2.88s. The additional mocked reproduction exposes manual-runner coverage missing from those passing cases.
 
 ## Limits and disposition
 
-This is local Linux ARM64 evidence, not hosted/x64 attestation. Hosted fallback was not dispatched for HG-046. The privileged executor is for trusted project code, not hostile-code isolation. Inner manifest validation is complemented here by separate inspection of the outer envelope. No product, M3/release, hosted CI, merge, or production activation PASS is inferred.
+Selected controller evidence is valid local test-only quality/DB/lifecycle proof. It is not final App publication, review admission, hosted/x64 qualification, M3/product/release PASS, merge or activation. Final exact-current-head controller execution/publication remains after reviews. No credential/configuration access, installation, full DB rerun, Docker lifecycle, commit, push or merge was performed.
 
-DB_CONCURRENCY PASS binds only the reviewed revision and permitted own-task REVIEW_RECORD_ONLY suffix. The result remains immutable. This reviewer performed no full DB rerun, commit, push, or merge.
+CHANGES_REQUIRED binds reviewed SHA above. Valid execution evidence does not close HG046-DB-001. Correct manual cleanup and obtain a fresh SHA-bound review.

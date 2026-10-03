@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -300,3 +301,64 @@ def test_hg046_scope_admits_only_named_workflow_compatibility_tests():
         assert not guard.matches(path, allowed)
     assert not guard.matches("tests/db/test_startup_readiness.py", guard.governance_allowed_patterns("HG-047"))
     assert not guard.matches("tests/db/test_workflow.py", guard.governance_allowed_patterns("HG-047"))
+
+
+@pytest.mark.parametrize("failure", ["volume_timeout", "create_failure", "start_failure"])
+@pytest.mark.parametrize("cleanup_ok", [True, False])
+def test_manual_uncertain_creation_always_attempts_both_cleanups(tmp_path, monkeypatch, failure, cleanup_ok):
+    monkeypatch.setattr(db_ci, "local_client_preflight", lambda: None)
+    monkeypatch.setattr(db_ci, "resolve_revision", lambda *_: SHA)
+    monkeypatch.setattr(db_ci, "run_capture", lambda *a, **k: {"exit_code": 0})
+    monkeypatch.setattr(db_ci, "resource_exists", lambda *_: False)
+    monkeypatch.delenv("DOCKER_HOST", raising=False)
+    monkeypatch.delenv("DOCKER_CONTEXT", raising=False)
+    def output(argv, **kwargs):
+        if argv[1:3] == ["context", "show"]:
+            return "default"
+        if argv[1:3] == ["context", "inspect"]:
+            return "unix:///socket"
+        if argv[1:3] == ["image", "inspect"]:
+            return '[{"Id":"sha256:image"}]'
+        if argv[1:3] == ["volume", "create"] and failure == "volume_timeout":
+            raise subprocess.TimeoutExpired(argv, 120)
+        if ((argv[1] == "create" and failure == "create_failure")
+                or (argv[1] == "start" and failure == "start_failure")):
+            raise subprocess.CalledProcessError(126, argv)
+        return ""
+    monkeypatch.setattr(db_ci, "output", output)
+    # Even failure to collect diagnostics must not skip resource cleanup.
+    def diagnostics(*args, **kwargs):
+        raise subprocess.TimeoutExpired(args[0], 120)
+    monkeypatch.setattr(db_ci.subprocess, "run", diagnostics)
+    cleaned = []
+    def cleanup(kind, name, owner):
+        cleaned.append((kind, name, owner))
+        return cleanup_ok
+    monkeypatch.setattr(db_ci, "cleanup_owned", cleanup)
+    destination = tmp_path / "run"
+    assert db_ci.local(argparse.Namespace(revision=SHA, evidence_dir=destination)) == 1
+    assert [item[0] for item in cleaned] == ["container", "volume"]
+    assert cleaned[0][1] == cleaned[0][2] == cleaned[1][2]
+    record = json.loads((destination / "local-executor.json").read_text())
+    assert record["status"] == "FAIL"
+    assert record["container_removed"] is cleanup_ok and record["volume_removed"] is cleanup_ok
+
+
+@pytest.mark.parametrize("kind", ["container", "volume"])
+@pytest.mark.parametrize("scenario", ["absent", "owned", "foreign", "still_present", "inspect_error"])
+def test_manual_cleanup_requires_ownership_and_verified_absence(monkeypatch, kind, scenario):
+    states = iter([scenario != "absent", scenario == "still_present"])
+    monkeypatch.setattr(db_ci, "resource_exists", lambda *_: next(states))
+    def output(argv):
+        if scenario == "inspect_error":
+            raise subprocess.CalledProcessError(1, argv)
+        labels = {"kineticloop.owner": "foreign" if scenario == "foreign" else "owned"}
+        return json.dumps([{"Config": {"Labels": labels}, "Labels": labels}])
+    monkeypatch.setattr(db_ci, "output", output)
+    commands = []
+    def remove(argv, **kwargs):
+        commands.append(argv)
+        return subprocess.CompletedProcess(argv, 0)
+    monkeypatch.setattr(db_ci.subprocess, "run", remove)
+    assert db_ci.cleanup_owned(kind, "name", "owned") is (scenario in ("absent", "owned"))
+    assert bool(commands) is (scenario in ("owned", "still_present"))

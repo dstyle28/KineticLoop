@@ -1,34 +1,34 @@
 # HG-046 independent GENERAL review
 
-Status: PASS. No BLOCKER, REQUIRED_FOLLOWUP or NONBLOCKING findings.
+Verdict: PASS for reviewed implementation/result `dedf063f909419dd05e0f49e8a7e646903e3548a`. No BLOCKER or REQUIRED_FOLLOWUP findings. This review is not final controller activation, GitHub success publication, or permission to bypass the remaining merge checks.
 
-Identity: `harness-governance-v0.1/HG-046`.
-Protected base: `26906bd7f4444914c228e98377f2b164fee0dd5d`.
-Tested implementation: `341333dd4b5140ac15f715ce28bd0d2a4a4ee1ec`.
-Reviewed implementation/result: `2f7c4f50c08b21ed89ef361bd7f7b2161b6bf965`.
+## Revision and authority
 
-## Independent assessment
+Reviewed `harness-governance-v0.1/HG-046` against protected base `fc8a044ffa4d15a74ce5dc59298ae411f1f4009b`, with selected tested implementation `c91d2635427a13a97a53fe4e52ec4655e1e7d866`. Read the agent guide, current authority index, independent-review skill, scope/authorization, governance record and governance/result/review contracts. Inspected the implementation, workflow, test, policy and documentation diff directly. Earlier HG-046 reviews and development failures were not treated as current approval.
 
-The reviewer read AGENTS.md, the pr-merge-reviewer skill, current document index, HG-046 SCOPE, Thread Review Contract, Merge Gate and Harness Governance Contract, then inspected the implementation diff independently. Review covered workflow triggers, exact revision selection, local executor ownership and failure handling, collection/JUnit evidence verification, governance validation and prospective execution policy.
+The governance record conforms to HARNESS_CHANGE.schema.json and exactly declares all 253 changed paths. Frozen files/baseline, product requirement set, runtime, migrations, unit tests, historical results, KL-074 hosted workflow and merged HG-045 source-decision authorities remain unchanged. The only DB test edits are the authorized generic-workflow compatibility assertions. Current authority/index validation passed.
 
-Quality and PR-head merge-gate checks remain hosted. Branch-push duplication is removed, superseded runs are cancelled, and full hosted database execution requires an explicit immutable SHA dispatch. The hosted fallback uses the same complete database command plan as local execution. It was not dispatched for this task.
+The tested-to-reviewed suffix is one linear commit. It changes only the own governance result and adds new own evidence; no existing evidence, code, test, policy or authority is altered after the selected tested SHA. All selected evidence is a regular committed blob at the reviewed SHA.
 
-The local wrapper requires a clean selected HEAD, a local Docker endpoint, and rejects implicit proxy forwarding and ambient builder overrides. Its fresh owned volume is the only mount; host directories/socket and host networking are excluded. The inner runner checks Linux/environment provenance and an empty dedicated daemon before lifecycle actions. Failure, timeout, interruption, collection drift, wrong selectors, missing/hash-mismatched raw evidence, failed/skipped/zero-case JUnit and unsuccessful cleanup cannot produce the reviewed successful run. The outer cleanup envelope was checked separately from the inner manifest.
+## Correctness and enforcement
 
-The two database-test changes replace obsolete generic-workflow compatibility assumptions only. KL-074's exact workflow hash/bytes, negative mutations, hosted provenance, startup probes and lifecycle checks remain intact. The HG-046-specific allowlist names exactly those two test paths; focused coverage rejects unrelated DB/runtime/result/workflow paths and reuse by HG-047. No fixture or runtime implementation changes were introduced.
+Generic CI keeps PR quality and revision-bound merge validation, limits push runs to master and cancels superseded runs. Hosted full DB is explicit immutable-SHA dispatch with raw artifact preservation and no historical result writeback. The trusted classifier uses the complete base-to-head diff, both sides of renames and Git modes; unknown paths, dependencies, executable files, authority and evidence require DB.
 
-## Revision and evidence verification
+The externally installed controller owns its pinned files, orchestration, validation and test observer, requires exact repository/PR/base/head/controller admission and master ancestry, creates and patches one App-owned check, and rechecks live base/head before publication. Test-only mode cannot publish success and intentionally omits PR review admission. Failure, incomplete test execution, malformed artifacts or unsuccessful owned cleanup cannot produce controller success. Candidate test semantics remain subject to explicit trusted-code admission and independent review; privileged Docker is not represented as a hostile-code sandbox.
 
-An independent read-only audit checked regular Git blobs at the reviewed SHA, validated the governance record schema, and established protected-base → tested → reviewed ancestry. The record's 172 declared paths exactly match the protected-base diff and satisfy the HG-046 allowlist. All 155 tested-to-reviewed changed paths are additions under HG-046 evidence or its governance record; the repository suffix validator also passes. Thus no implementation changed after the selected tests.
+The committed applied/effective master rules require quality and merge-gate from GitHub Actions 15368 and local-db-gate from App 5169734, strict up-to-date branches, PR-only changes and no bypass actors, force push or deletion. This review inspected recorded readbacks, not live credentials or a new remote activation. User-approved installation/admission, final exact-head execution and publication remain separate operator steps.
 
-All 10 selected governance checks report PASS at the tested SHA. Every selected capture's raw byte length and SHA-256 match its committed log. The inner DB manifest's eleven raw logs and three collection/execution/JUnit artifacts also match their recorded hashes and lengths. The Git-bound full-database validator returns no errors. Collection and execution are identical, with 674 unique cases, and JUnit contains exactly 674 cases with zero failure, error or skipped elements. The raw test log records 674 passed in 1601.80 seconds. All eleven command checks, including repeated reset, two-worktree isolation, destroy and peer removal, have exit code zero and no interruption. Inner remaining containers and volumes are empty.
+## Verification
 
-The outer envelope binds the same tested SHA, records the image identity and only its owned Docker data volume, and reports PASS with both container_removed and volume_removed true. This is Linux ARM64 operator evidence, not GitHub-hosted or x64 attestation.
+- Independently verified the selected controller receipt's repository/PR/base/head/tree, exact controller ASSETS content hash, trusted classification and command plan.
+- Rehashed all 21 worker artifacts and all 16 observed command logs, checked stdout byte lengths, and verified the four selected focused/lint/type/scope captures. Worker receipt content equals the controller's embedded worker record.
+- Parsed JUnit: 674 DB, 1,037 harness and 241 unit cases, with zero failures/errors/skips. Independently compared DB collection, execution and JUnit identities. Confirmed successful lifecycle commands and owned container/volume removal in the recorded envelope.
+- Reviewer rerun: 114 tests passed in 2.71 seconds (112 controller/policy/evidence boundary tests plus both changed workflow compatibility checks). Command: `PYTHONPATH=src:. /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_local_gate.py tests/harness/test_db_policy.py tests/harness/test_local_db_ci.py tests/db/test_workflow.py tests/db/test_startup_readiness.py::test_hosted_entrypoint_exact_positive_and_negative_contract`. An initial invocation without PYTHONPATH failed collection before execution; adding the repository source path resolved that environment issue.
+- Reviewer repository validation: `PYTHONPATH=src:. /private/tmp/hg044-venv/bin/python tools/harness/validate_harness.py` exited 0 with `HARNESS_CHECK_PASS tasks=77 active=74`. This general consistency command is not final PR review admission.
+- Exact declaration/schema and frozen/runtime/HG-045 preservation audit passed. Implementation/configuration/test/document diff whitespace check passed. The broad diff check reports existing whitespace in archived failed development stdout/XML; those raw logs are preserved as evidence, not normalized or treated as selected PASS.
 
-Other selected raw logs record 932 harness tests, 241 unit tests and 58 focused tests passing. Lint, typecheck, harness validation, scope/frozen audit and diff checks passed. This reviewer did not repeat the full DB or full harness runs. Earlier failed/interrupted runs are retained under development and are not selected as PASS evidence.
+## Staged activation limitation
 
-Frozen Protocol/DB, FROZEN_BASELINE.json, requirement state and the KL-074 hosted workflow are unchanged. Source comparison also confirms no runtime, migration, fixture, historical task result, product requirement PASS or M3 closure machinery change. M3 policy permits the new environment prospectively while retaining its existing command, provenance and closure obligations.
+The selected full run is explicitly `test_only: true`. Its successful merge_gate command checks repository consistency, not final PR review admission. The result accurately requires fresh GENERAL, DB_CONCURRENCY and SECURITY_DATA_BOUNDARY reviews, review-only persistence, and a new controller run on the exact final head against then-current master before publishing the required App check. Earlier JSON cannot be imported as success. Local Linux ARM64 results do not replace designated hosted/x64, task-specific or release evidence. Product PASS, review PASS, activation and MERGED remain separate facts.
 
-## Disposition
-
-GENERAL review is PASS for the exact reviewed SHA above. Specialist review, hosted CI status and merge remain separate facts. This report does not claim a hosted database run, product/release/M3 PASS or MERGED status. Only the task-scoped REVIEW_RECORD_ONLY suffix may follow without a new review under the Thread Review Contract.
+No credentials, controller installation, branch protection, implementation, task evidence or other reviewers' paths were changed by this review. No full DB rerun was performed.

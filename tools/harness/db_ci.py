@@ -293,6 +293,28 @@ def local_client_preflight() -> None:
         raise ValueError("local executor requires readable valid Docker config without proxy forwarding") from None
 
 
+def resource_exists(kind: str, name: str) -> bool:
+    argv = ["docker", kind, "ls", *(["-a"] if kind == "container" else []),
+            "--format", "{{.Name}}" if kind == "volume" else "{{.Names}}"]
+    return name in output(argv).splitlines()
+
+
+def cleanup_owned(kind: str, name: str, owner: str) -> bool:
+    """Remove only this run's labelled resources, including uncertain creation."""
+    try:
+        if not resource_exists(kind, name):
+            return True
+        item = json.loads(output(["docker", kind, "inspect", name]))[0]
+        labels = item["Config"]["Labels"] if kind == "container" else item["Labels"]
+        if not isinstance(labels, dict) or labels.get("kineticloop.owner") != owner:
+            return False
+        subprocess.run(["docker", kind, "rm", *(["-f", "-v"] if kind == "container" else []),
+                        name], capture_output=True, timeout=120, check=True)
+        return not resource_exists(kind, name)
+    except (OSError, ValueError, KeyError, IndexError, TypeError, subprocess.SubprocessError):
+        return False
+
+
 def local(args: argparse.Namespace) -> int:
     local_client_preflight()
     if os.environ.get("DOCKER_HOST") or os.environ.get("DOCKER_CONTEXT"):
@@ -322,15 +344,16 @@ def local(args: argparse.Namespace) -> int:
             raise ValueError("image build failed; see image_build.log")
         envelope["image"] = json.loads(output(["docker", "image", "inspect", image]))[0]["Id"]
         # Fresh owned data volume supports overlay2; never reuse another run's data.
-        if subprocess.run(["docker", "volume", "inspect", volume], capture_output=True).returncode == 0:
-            raise ValueError("refusing a pre-existing executor data volume")
+        if resource_exists("container", name) or resource_exists("volume", volume):
+            raise ValueError("refusing pre-existing executor resource names")
+        # Reserve before mutation: Docker may create a resource and then fail/timeout.
+        volume_created = container_created = True
         output(["docker", "volume", "create", "--label", "kineticloop.owner=" + name, volume])
-        volume_created = True
         # No bind mounts, host socket/network/PID namespace or environment credentials.
-        output(["docker", "run", "--detach", "--privileged", "--name", name,
+        output(["docker", "create", "--privileged", "--name", name,
                 "--mount", "type=volume,source=" + volume + ",target=/var/lib/docker",
-                "--label", "kineticloop.owner=local-db-ci", image])
-        container_created = True
+                "--label", "kineticloop.owner=" + name, image])
+        output(["docker", "start", name])
         inspect = json.loads(output(["docker", "inspect", name]))[0]
         envelope["mounts"] = owned_mounts(inspect, volume)
         envelope["owned_volume"] = volume
@@ -366,22 +389,21 @@ def local(args: argparse.Namespace) -> int:
     except (ValueError, OSError, subprocess.SubprocessError, KeyboardInterrupt) as error:
         envelope["error"] = str(error)
     finally:
-        # Preserve daemon failures and partial evidence before own-resource cleanup.
+        # Diagnostic failures must not prevent either owned-resource cleanup.
         if container_created:
-            with (destination / "daemon.log").open("wb") as log:
-                subprocess.run(["docker", "logs", name], stdout=log, stderr=subprocess.STDOUT)
-            if not (destination / "run").exists():
-                subprocess.run(["docker", "cp", name + ":/evidence/run", str(destination / "run")],
-                               capture_output=True)
-            cleanup = subprocess.run(["docker", "rm", "--force", "--volumes", name], capture_output=True)
-            envelope["container_removed"] = cleanup.returncode == 0
-        else:
-            envelope["container_removed"] = True
-        if volume_created:
-            removed = subprocess.run(["docker", "volume", "rm", volume], capture_output=True)
-            envelope["volume_removed"] = removed.returncode == 0
-        else:
-            envelope["volume_removed"] = True
+            try:
+                with (destination / "daemon.log").open("wb") as log:
+                    subprocess.run(["docker", "logs", name], stdout=log,
+                                   stderr=subprocess.STDOUT, timeout=120)
+                if not (destination / "run").exists():
+                    subprocess.run(["docker", "cp", name + ":/evidence/run", str(destination / "run")],
+                                   capture_output=True, timeout=120)
+            except (OSError, subprocess.SubprocessError):
+                pass
+        envelope["container_removed"] = (
+            cleanup_owned("container", name, name) if container_created else True)
+        envelope["volume_removed"] = (
+            cleanup_owned("volume", volume, name) if volume_created else True)
         if not envelope["container_removed"] or not envelope["volume_removed"]:
             envelope["status"] = "FAIL"
         write_json(destination / "local-executor.json", envelope)
