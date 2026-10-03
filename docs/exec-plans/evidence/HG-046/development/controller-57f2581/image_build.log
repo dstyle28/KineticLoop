@@ -1,0 +1,49 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 694B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for ghcr.io/astral-sh/uv:0.12.17@sha256:10787c682e4184e4f290de1171fd4703dc63de99221f10fe1c99002ce7fa9acc
+#2 ...
+
+#3 [internal] load metadata for docker.io/library/ubuntu:24.04@sha256:a853f94d226358a79c740cfc7bce0c289748f3fe3488d921d038ccd752c61b60
+#3 DONE 0.7s
+
+#2 [internal] load metadata for ghcr.io/astral-sh/uv:0.12.17@sha256:10787c682e4184e4f290de1171fd4703dc63de99221f10fe1c99002ce7fa9acc
+#2 DONE 0.7s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 271B done
+#5 DONE 0.0s
+
+#6 [stage-1 1/4] FROM docker.io/library/ubuntu:24.04@sha256:a853f94d226358a79c740cfc7bce0c289748f3fe3488d921d038ccd752c61b60
+#6 resolve docker.io/library/ubuntu:24.04@sha256:a853f94d226358a79c740cfc7bce0c289748f3fe3488d921d038ccd752c61b60 0.0s done
+#6 DONE 0.0s
+
+#7 [uv 1/1] FROM ghcr.io/astral-sh/uv:0.12.17@sha256:10787c682e4184e4f290de1171fd4703dc63de99221f10fe1c99002ce7fa9acc
+#7 resolve ghcr.io/astral-sh/uv:0.12.17@sha256:10787c682e4184e4f290de1171fd4703dc63de99221f10fe1c99002ce7fa9acc 0.0s done
+#7 DONE 0.0s
+
+#8 [stage-1 2/4] RUN apt-get update && apt-get install -y --no-install-recommends     ca-certificates curl git python3 python3-venv docker.io docker-compose-v2 iptables     && rm -rf /var/lib/apt/lists/*
+#8 CACHED
+
+#9 [stage-1 3/4] COPY --from=uv /uv /uvx /usr/local/bin/
+#9 CACHED
+
+#10 [stage-1 4/4] COPY entrypoint.sh /usr/local/bin/kineticloop-local-db
+#10 DONE 0.0s
+
+#11 exporting to image
+#11 exporting layers 0.0s done
+#11 exporting manifest sha256:14e47bd1b24893ca9dfe0b516adad4b57784161fa6da14a021e6328a5133ebd2 done
+#11 exporting config sha256:7ee85d79e89319590f63d8f47535ae594242f1acb4853b8edd653a9de027b9d7 done
+#11 exporting attestation manifest sha256:bf786e25c28f6fb86d0aea8057462cdc073702d6489956570b4d7e59969ee5ec done
+#11 exporting manifest list sha256:e7cea0b7f2f7538643831bca77ad7fb471d6e7c5011ca1d954bda3ac5566c629 done
+#11 naming to docker.io/library/kl-gate-4abca0c2e4fd4418b10ddbc01f7884c0:latest done
+#11 unpacking to docker.io/library/kl-gate-4abca0c2e4fd4418b10ddbc01f7884c0:latest done
+#11 DONE 0.1s

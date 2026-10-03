@@ -73,8 +73,10 @@ Its suffix to evaluated permits only this closure governance record and newly
 appended own evidence under the existing governance-tested suffix rule. Changes to
 code, tests, task artifacts, authorities or bookkeeping of another task stale the
 regression. Use each suite's isolated supported namespace; legacy DB regression can
-use the unchanged isolated hosted lifecycle. Never run a foreign local fixture
-namespace. External waits remain outside coordination transactions.
+use the unchanged isolated hosted lifecycle or the dedicated local Linux daemon
+defined in `LOCAL_DB_CI.md`. Local evidence records its actual environment and
+architecture; every existing M3 command, contribution, hash and raw collection/JUnit
+requirement still applies. Never run a foreign local fixture namespace. External waits remain outside coordination transactions.
 
 `boundary_layers` exactly retains KL028's canonical 31-row ledger, including all
 metadata, selectors, oracles and future owners. Only the 19
