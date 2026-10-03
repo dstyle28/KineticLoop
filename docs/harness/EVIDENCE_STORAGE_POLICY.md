@@ -65,7 +65,7 @@ orphan gzip payloads and exact duplicate bulk artifacts (at least 16 KiB). JSON
 content is checked for `raw_utf8` regardless of its filename extension.
 Shared content-addressed payloads are permitted. Store base/head SHAs and inspect
 `git diff <base> <head>` on demand; do not persist complete diff dumps. Do not
-truncate, fabricate PASS, waive CI or change historical evidence to fit a budget.
+truncate, fabricate PASS, waive CI or change historical evidence to fit a budget outside the exact HG051 authorization below.
 Over-limit failures point to the capture tool. If a real execution exceeds these
 limits after compression, report the blocker and refine capture/storage through
 reviewed governance; splitting real independent executions is acceptable.
@@ -90,3 +90,51 @@ uv run kl check-harness --ci-pr-base <protected-base> --ci-pr-head <pr-head>
 Capture records the caller's actual execution metadata; it does not execute a
 command, certify a test oracle or grant PASS. Safe retrieval is byte-preserving,
 including non-UTF8 logs. No external account or storage service is needed.
+
+## HG051 exact historical representation authorization
+
+The human-approved forward storage migration is limited to the four exact KL080
+original objects pinned by `HISTORICAL_EVIDENCE_MAPPING.schema.json` and inventoried
+in `docs/exec-plans/evidence/HG-051/INVENTORY.json`. HG051 adds governance only;
+a later KL080 forward commit may replace those four current-tree raw representations
+with `kineticloop_evidence: historical-gzip-v1` envelopes at the same paths and
+same-directory `<raw_sha256>.gz` payloads. No owner/path rename, external archive,
+splitting, exception to budgets, history rewrite or other historical migration is
+permitted. All other existing KL080 evidence stays byte-identical. Original commits
+must remain in normal merge ancestry; squash/rebase/history pruning cannot replace
+that requirement. Fetch the original commits in shallow repositories before original
+verification. Unavailable originals fail verification, never borrow HEAD or archives.
+
+Exactly one new task-owned `docs/exec-plans/evidence/KL-080/HISTORICAL_EVIDENCE_MAPPING.json`
+uses `kineticloop_evidence: historical-mapping-v1`, purpose `ARCHIVAL_RETRIEVAL_ONLY`,
+and the schema's exact ordered four entries. Each original pins namespaced owner,
+path, original evidence commit, regular Git blob ID, raw SHA256/length, exact known
+execution metadata and its unchanged historical record reference. Unknown timestamps
+stay null. The historical BLOCKED/FAIL/UNMERGED result and CHANGES_REQUIRED reviews
+retain their original tested/reviewed bindings and exact hashed record snapshots;
+two source-suite failures remain FAIL/exit 1. The two harness XML captures retain
+their original recorded success without becoming fresh execution or task PASS.
+
+A mapping entry separately pins one full storage commit, envelope path/hash/length,
+and payload path/hash/length. All four use the same existing storage commit; it
+precedes the mapping commit. Storage envelopes/payloads must be regular Git blobs
+at that storage commit and byte-identical at the evaluated mapping revision.
+Build the mapping after committing storage via `compact_evidence.py archive-map`.
+This avoids self-referential commit hashes. Commit migration and mapping before a
+new tested SHA; neither post-test nor post-review bookkeeping may overwrite history.
+The mapping is a forward addition, not a rebindable replacement.
+
+Ordinary `read`, result/review verification and M3 readers reject both archival
+formats, including encoded, renamed, wrapped or nested metadata. Historical proof
+continues to read the original regular plain blob at its original bound revision.
+The separate `archive-read --revision <exact mapping commit>` recovers raw bytes and
+checks storage integrity without certifying original review/PASS; it can recover
+bytes even when original commits are unavailable. The PR audit additionally requires
+original blobs and preserved records to exist, match the fixed authorization, and
+precede storage/evaluation in normal ancestry. Missing/duplicate/orphan/out-of-scope
+mappings or payloads fail closed. Retrieval never changes any status or requirement.
+
+Every added/changed mapping, envelope, payload and review counts toward unchanged
+256KiB plain, 8MiB stored gzip, 64MiB recovered and 16MiB aggregate bounds. Existing
+gzip-v1 execution capture/decoding and all its command/tested-SHA/exit checks remain
+unchanged. This named authorization creates no general historical storage waiver.

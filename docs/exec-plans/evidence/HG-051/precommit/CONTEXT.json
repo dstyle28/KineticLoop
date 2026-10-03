@@ -1,0 +1,20 @@
+{
+  "purpose": "Development probes on uncommitted implementation; never acceptance evidence for a committed implementation SHA",
+  "starting_head": "98334784245728e80ad8433182aa5b976baeead9",
+  "dirty_source": true,
+  "initial_attempt": "uv unavailable on default PATH; no tests executed, exit 127",
+  "environment_recovery": "Existing /private/tmp/hg048-tools/bin/uv; locked offline sync with existing HG050 cache; new task-local .venv. No controller/credential/configuration installation changed.",
+  "focused_attempt": {
+    "command": "uv run pytest -q tests/harness/test_compact_evidence.py tests/harness/test_source_decision_scope.py",
+    "exit_code": 1,
+    "passed": 342,
+    "failed": 1,
+    "cause": "Packet hash in delivery manifest was not yet refreshed in the uncommitted development tree. Derived hashes refreshed before committed testing."
+  },
+  "governance_probe": {
+    "command": "uv run pytest -q tests/harness/test_validator.py -k hg051",
+    "exit_code": 0,
+    "passed": 2,
+    "deselected": 144
+  }
+}

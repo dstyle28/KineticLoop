@@ -97,7 +97,8 @@ def reserved_ascii(data: bytes) -> bool:
                   lambda m: bytes([int(m[1], 16)]) if int(m[1], 16) < 128
                   else m[0], data)
     return (b'"kineticloop_evidence"' in data or
-            all(k in data for k in (b'"payload"', b'"stored_sha256"', b'"raw_sha256"')))
+            all(k in data for k in (b'"payload"', b'"stored_sha256"', b'"raw_sha256"')) or
+            all(k in data for k in (b'"authorization"', b'"preserved_records"', b'"entries"')))
 
 
 def envelope(data: bytes) -> dict[str, Any] | None:
@@ -115,9 +116,7 @@ def envelope(data: bytes) -> dict[str, Any] | None:
                 raise ValueError('evidence-envelope-encoding') from ex
             return None
     # Storage fields identify damaged envelopes even if their marker is removed.
-    keys = (b'"payload"', b'"stored_sha256"', b'"raw_sha256"')
-    marker = b'"kineticloop_evidence"'
-    if marker not in data and not all(k in data for k in keys) and b'\\u' not in data:
+    if not reserved_ascii(data) and b'\\u' not in data:
         # A conflicting BOM/body can decode without error into NUL-interleaved
         # or wrong-endian text. Recognizable reserved bytes cannot fall back to
         # opaque evidence merely because that decoding hid their keys.
@@ -129,7 +128,7 @@ def envelope(data: bytes) -> dict[str, Any] | None:
     def storage_pairs(pairs):
         nonlocal reserved
         value = unique(pairs)
-        reserved = reserved or MARKER in value or {'payload', 'stored_sha256', 'raw_sha256'} <= set(value)
+        reserved = reserved or MARKER in value or {'payload', 'stored_sha256', 'raw_sha256'} <= set(value) or {'authorization', 'preserved_records', 'entries'} <= set(value)
         return value
     try:
         value = json.loads(data, object_pairs_hook=storage_pairs)
@@ -141,7 +140,8 @@ def envelope(data: bytes) -> dict[str, Any] | None:
             raise ValueError('evidence-envelope-json') from ex
         return None
     if isinstance(value, dict) and (MARKER in value or
-                                   {'payload', 'stored_sha256', 'raw_sha256'} <= set(value)):
+                                   {'payload', 'stored_sha256', 'raw_sha256'} <= set(value) or
+                                   {'authorization', 'preserved_records', 'entries'} <= set(value)):
         if original_bytes > PLAIN_LIMIT:
             raise ValueError('evidence-envelope-size')
         return value
@@ -256,6 +256,220 @@ def capture(root: Path, path: str, raw: bytes, tested: str, command: str, exit_c
     return record
 
 
+
+HISTORICAL_FORMAT = 'historical-gzip-v1'
+MAPPING_FORMAT = 'historical-mapping-v1'
+MAPPING_PATH = 'docs/exec-plans/evidence/KL-080/HISTORICAL_EVIDENCE_MAPPING.json'
+MAPPING_SCHEMA = 'HISTORICAL_EVIDENCE_MAPPING.schema.json'
+
+
+def historical_schema() -> dict:
+    # This schema is indexed governance authority, not caller-supplied metadata.
+    return json.loads((Path(__file__).resolve().parents[2] / MAPPING_SCHEMA).read_bytes(),
+                      object_pairs_hook=unique)
+
+
+def historical_originals() -> list[dict]:
+    return [item['properties']['original']['const'] for item in
+            historical_schema()['properties']['entries']['prefixItems']]
+
+
+def historical_template() -> dict:
+    schema = historical_schema()
+    return {key: value['const'] for key, value in schema['properties'].items()
+            if 'const' in value}
+
+
+def archive_envelope(original: dict, raw: bytes) -> tuple[dict, bytes]:
+    if original not in historical_originals() or len(raw) > RAW_LIMIT:
+        raise ValueError('archive-authorization')
+    if len(raw) != original['raw_bytes'] or digest(raw) != original['raw_sha256']:
+        raise ValueError('archive-original-integrity')
+    if envelope(raw) is not None:
+        raise ValueError('archive-nested-storage')
+    stored = gzip.compress(raw, compresslevel=9, mtime=0)
+    if len(stored) > STORED_LIMIT:
+        raise ValueError('archive-stored-limit')
+    record = {MARKER: HISTORICAL_FORMAT, 'original': original,
+              'payload': str(Path(original['path']).parent / (digest(raw) + '.gz')),
+              'raw_sha256': digest(raw), 'raw_bytes': len(raw),
+              'stored_sha256': digest(stored), 'stored_bytes': len(stored)}
+    return record, stored
+
+
+def archive_mapping(root: Path, storage_revision: str) -> dict:
+    """Build metadata only, after a normal committed forward storage change."""
+    exact_commit(root, storage_revision)
+    record = historical_template()
+    record['entries'] = []
+    for original in historical_originals():
+        path = original['path']
+        data = blob(root, path, storage_revision, PLAIN_LIMIT)
+        manifest = envelope(data)
+        if not manifest or manifest.get(MARKER) != HISTORICAL_FORMAT:
+            raise ValueError('archive-envelope')
+        storage = dict(revision=storage_revision, envelope_path=path,
+                       envelope_sha256=digest(data), envelope_bytes=len(data),
+                       payload=manifest['payload'], payload_sha256=manifest['stored_sha256'],
+                       payload_bytes=manifest['stored_bytes'])
+        record['entries'].append(dict(original=original, storage=storage))
+    validate_archive(root, record, storage_revision, verify_originals=True)
+    return record
+
+
+def exact_commit(root: Path, revision: str) -> None:
+    if (not isinstance(revision, str) or not re.fullmatch(r'[0-9a-f]{40}', revision)
+            or git(root, 'rev-parse', '--verify', '--end-of-options',
+                   revision + '^{commit}').decode().strip() != revision):
+        raise ValueError('archive-revision')
+
+
+def archive_original(root: Path, original: dict) -> bytes:
+    """Original proof always reads the exact original regular Git blob."""
+    if original not in historical_originals():
+        raise ValueError('archive-original-authorization')
+    exact_commit(root, original['revision'])
+    path = original['path']
+    raw = blob(root, path, original['revision'], RAW_LIMIT)
+    oid = git(root, 'rev-parse', original['revision'] + ':' + path).decode().strip()
+    if (oid != original['blob_id'] or digest(raw) != original['raw_sha256']
+            or len(raw) != original['raw_bytes'] or envelope(raw) is not None):
+        raise ValueError('archive-original-integrity')
+    return raw
+
+
+def validate_archive(root: Path, mapping: dict, revision: str, *,
+                     verify_originals: bool = False) -> dict[str, bytes]:
+    """Storage retrieval is separate from original-revision verification."""
+    from jsonschema import Draft202012Validator
+    issues = list(Draft202012Validator(historical_schema()).iter_errors(mapping))
+    if issues:
+        raise ValueError('archive-mapping-schema:' + issues[0].message)
+    exact_commit(root, revision)
+    if len({entry['storage']['revision'] for entry in mapping['entries']}) != 1:
+        raise ValueError('archive-single-storage-revision')
+    result = {}
+    for entry in mapping['entries']:
+        original, storage = entry['original'], entry['storage']
+        path, stored_revision = original['path'], storage['revision']
+        exact_commit(root, stored_revision)
+        git(root, 'merge-base', '--is-ancestor', stored_revision, revision)
+        expected = str(Path(path).parent / (original['raw_sha256'] + '.gz'))
+        if storage['envelope_path'] != path or storage['payload'] != expected:
+            raise ValueError('archive-storage-owner-or-path')
+        data = blob(root, path, stored_revision, PLAIN_LIMIT)
+        if (len(data) != storage['envelope_bytes']
+                or digest(data) != storage['envelope_sha256']
+                or blob(root, path, revision, PLAIN_LIMIT) != data):
+            raise ValueError('archive-envelope-integrity')
+        manifest = envelope(data)
+        fields = {MARKER, 'original', 'payload', 'raw_sha256', 'raw_bytes',
+                  'stored_sha256', 'stored_bytes'}
+        if (manifest is None or set(manifest) != fields
+                or manifest[MARKER] != HISTORICAL_FORMAT or manifest['original'] != original
+                or manifest['payload'] != expected
+                or manifest['raw_sha256'] != original['raw_sha256']
+                or type(manifest['raw_bytes']) is not int
+                or manifest['raw_bytes'] != original['raw_bytes']
+                or type(manifest['stored_bytes']) is not int
+                or manifest['stored_bytes'] != storage['payload_bytes']
+                or manifest['stored_sha256'] != storage['payload_sha256']):
+            raise ValueError('archive-envelope')
+        stored = blob(root, expected, stored_revision, STORED_LIMIT)
+        if (len(stored) != storage['payload_bytes']
+                or digest(stored) != storage['payload_sha256']
+                or blob(root, expected, revision, STORED_LIMIT) != stored):
+            raise ValueError('archive-stored-integrity')
+        decoder = zlib.decompressobj(16 + zlib.MAX_WBITS)
+        try:
+            raw = decoder.decompress(stored, min(original['raw_bytes'], RAW_LIMIT) + 1)
+        except zlib.error as ex:
+            raise ValueError('archive-gzip') from ex
+        if (original['raw_bytes'] > RAW_LIMIT or len(raw) != original['raw_bytes']
+                or not decoder.eof or decoder.unused_data or decoder.unconsumed_tail
+                or digest(raw) != original['raw_sha256']):
+            raise ValueError('archive-raw-integrity-or-bound')
+        if envelope(raw) is not None:
+            raise ValueError('archive-nested-storage')
+        if verify_originals:
+            if archive_original(root, original) != raw:
+                raise ValueError('archive-original-integrity')
+            git(root, 'merge-base', '--is-ancestor', original['revision'], stored_revision)
+            ref = original['execution_record']
+            verify_historical_ref(root, ref, stored_revision)
+        result[path] = raw
+    if verify_originals:
+        for ref in mapping['preserved_records']:
+            verify_historical_ref(root, ref, revision)
+    return result
+
+
+def verify_historical_ref(root: Path, ref: dict, revision: str) -> None:
+    exact_commit(root, ref['revision'])
+    git(root, 'merge-base', '--is-ancestor', ref['revision'], revision)
+    data = blob(root, ref['path'], ref['revision'], PLAIN_LIMIT)
+    if len(data) != ref['bytes'] or digest(data) != ref['sha256']:
+        raise ValueError('archive-preserved-record')
+
+
+def read_archive(root: Path, path: str, revision: str) -> bytes:
+    # May recover archive bytes when originals are unavailable; this is NEVER
+    # evidence_exists, original proof, review certification or execution PASS.
+    if path not in {item['path'] for item in historical_originals()}:
+        raise ValueError('archive-unauthorized-path')
+    exact_commit(root, revision)
+    mapping = envelope(blob(root, MAPPING_PATH, revision, PLAIN_LIMIT))
+    if mapping is None:
+        raise ValueError('archive-mapping-missing')
+    return validate_archive(root, mapping, revision)[path]
+
+
+def archive_audit(root: Path, revision: str) -> tuple[list[str], set[str]]:
+    """Fail closed on global orphan/duplicate/out-of-scope archival metadata."""
+    paths = git(root, 'ls-tree', '-r', '--name-only', revision, '--',
+                'docs/exec-plans/evidence/KL-080', 'docs/exec-plans/reviews/KL-080').decode().splitlines()
+    errors, archives, mappings = [], set(), set()
+    for path in paths:
+        # Plain historical bulk can be large. Classification does not recover it.
+        if path.endswith('.gz'):
+            continue
+        data = b''
+        try:
+            data = blob(root, path, revision)
+            manifest = envelope(data)
+            if manifest and manifest.get(MARKER) == HISTORICAL_FORMAT:
+                archives.add(path)
+            elif manifest and manifest.get(MARKER) == MAPPING_FORMAT:
+                mappings.add(path)
+        except ValueError as ex:
+            # Existing invalid historical output is handled by its own bound
+            # validator. Reserved archival content must never evade this audit.
+            if b'historical-' in data:
+                errors.append(path + ':' + str(ex))
+    if not archives and not mappings:
+        return errors, set()
+    if mappings != {MAPPING_PATH} or archives != {x['path'] for x in historical_originals()}:
+        errors.append('archive-exact-inventory-or-mapping')
+        return errors, set()
+    try:
+        mapping = envelope(blob(root, MAPPING_PATH, revision, PLAIN_LIMIT))
+        if mapping is None:
+            raise ValueError('archive-mapping')
+        validate_archive(root, mapping, revision, verify_originals=True)
+        # Existing non-migrated evidence remains byte-identical. New captures
+        # may be added, but never replace or delete historical inputs.
+        preservation_revision = mapping['preserved_records'][1]['revision']
+        preserved = git(root, 'diff', '--no-renames', '--name-only', '--diff-filter=MDT',
+                        preservation_revision, revision, '--',
+                        'docs/exec-plans/evidence/KL-080').decode().splitlines()
+        if set(preserved) - archives:
+            raise ValueError('archive-nonmigrated-history-changed')
+        return errors, {entry['storage']['payload'] for entry in mapping['entries']}
+    except (ValueError, OSError) as ex:
+        errors.append('archive-invalid:' + str(ex))
+        return errors, set()
+
+
 def embedded_raw(value: Any) -> bool:
     if isinstance(value, dict):
         return 'raw_utf8' in value or any(embedded_raw(v) for v in value.values())
@@ -277,6 +491,9 @@ def audit(root: Path, base: str, head: str, identity: str) -> dict:
     errors: list[str] = []
     total = 0
     payloads: set[str] = set()
+    archive_errors, archive_payloads = archive_audit(root, head)
+    errors.extend(archive_errors)
+    payloads.update(archive_payloads)
     bulk: dict[str, str] = {}
     for path in paths:
         try:
@@ -287,6 +504,14 @@ def audit(root: Path, base: str, head: str, identity: str) -> dict:
             if Path(path).name == 'complete-diff.patch':
                 raise ValueError('full-diff-copy: record base/head instead')
             manifest = envelope(data)
+            if manifest is not None and manifest.get(MARKER) in (HISTORICAL_FORMAT, MAPPING_FORMAT):
+                if (archive_errors or identity != 'KL-080'
+                        or path not in {MAPPING_PATH, *[x['path'] for x in historical_originals()]}
+                        or not archive_payloads):
+                    raise ValueError('archive-invalid-or-owner')
+                if path == MAPPING_PATH and git(root, 'ls-tree', base, '--', path).strip():
+                    raise ValueError('archive-mapping-not-forward-addition')
+                continue
             if manifest is not None:
                 raw = read(root, path, head)
                 payloads.add(manifest['payload'])
@@ -332,6 +557,11 @@ def main() -> int:
     retrieve = commands.add_parser('read', help='Write validated exact raw bytes to stdout')
     retrieve.add_argument('path')
     retrieve.add_argument('--revision', required=True)
+    archival = commands.add_parser('archive-read', help='Recover archival bytes; never execution proof')
+    archival.add_argument('path')
+    archival.add_argument('--revision', required=True)
+    mapping = commands.add_parser('archive-map', help='Build the exact authorized mapping after storage commit')
+    mapping.add_argument('--storage-revision', required=True)
     budget = commands.add_parser('audit')
     budget.add_argument('--base', required=True)
     budget.add_argument('--head', required=True)
@@ -346,6 +576,10 @@ def main() -> int:
             print(json.dumps(result, indent=2))
         elif args.action == 'read':
             sys.stdout.buffer.write(read(args.root, args.path, args.revision))
+        elif args.action == 'archive-read':
+            sys.stdout.buffer.write(read_archive(args.root, args.path, args.revision))
+        elif args.action == 'archive-map':
+            print(json.dumps(archive_mapping(args.root, args.storage_revision), indent=2))
         else:
             result = audit(args.root, args.base, args.head, args.identity)
             print(json.dumps(result, indent=2))

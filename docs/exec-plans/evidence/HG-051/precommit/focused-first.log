@@ -1,0 +1,23 @@
+........................................................................ [ 20%]
+........................................................................ [ 41%]
+........................................................................ [ 62%]
+........................................................................ [ 83%]
+..............................F........................                  [100%]
+=================================== FAILURES ===================================
+______________ test_new_packet_is_in_the_hashed_delivery_manifest ______________
+
+    def test_new_packet_is_in_the_hashed_delivery_manifest():
+        manifest = json.loads((ROOT / v.MANIFEST).read_text())
+        entries = [e for e in manifest['files'] if e['path'] == 'docs/exec-plans/active/KL-080.md']
+        assert len(entries) == 1
+        path = ROOT / entries[0]['path']
+>       assert entries[0]['sha256'] == v.sha(path)
+E       AssertionError: assert 'd69340dc8c81...7bce58239e3f8' == 'ae418be455ba...815e2d766a816'
+E         
+E         - ae418be455ba140854e6e3cc73c11de4628f5e4a11477a84cc3815e2d766a816
+E         + d69340dc8c81c4c8bad7c2f2043e19d27426f19f7870b59f10c7bce58239e3f8
+
+tests/harness/test_source_decision_scope.py:144: AssertionError
+=========================== short test summary info ============================
+FAILED tests/harness/test_source_decision_scope.py::test_new_packet_is_in_the_hashed_delivery_manifest
+1 failed, 342 passed in 198.62s (0:03:18)
