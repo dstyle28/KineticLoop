@@ -1,4 +1,4 @@
-# Prospective evidence storage policy — HG046
+# Prospective evidence storage policy — HG047
 
 Keep evidence lossless and task-owned. This policy changes storage, not task,
 requirement, review, integration or M3 PASS meaning. Historical plain references
@@ -68,18 +68,18 @@ reviewed governance; splitting real independent executions is acceptable.
 
 ```sh
 # First execute a real check, preserving its exit code and exact stdout/stderr.
-uv run kl test-harness > /tmp/hg046-harness.log 2>&1
+uv run kl test-harness > /tmp/hg047-harness.log 2>&1
 kl_capture_exit=$?
 python tools/harness/compact_evidence.py capture \
-  --input /tmp/hg046-harness.log \
-  --output docs/exec-plans/evidence/HG-046/harness.json \
+  --input /tmp/hg047-harness.log \
+  --output docs/exec-plans/evidence/HG-047/harness.json \
   --tested "$(git rev-parse HEAD)" --command 'uv run kl test-harness' \
   --exit-code "$kl_capture_exit"
 # Commit both envelope and payload before review. Retrieval requires their bound SHA.
 python tools/harness/compact_evidence.py read \
-  docs/exec-plans/evidence/HG-046/harness.json --revision <bound-sha> > /tmp/recovered.log
+  docs/exec-plans/evidence/HG-047/harness.json --revision <bound-sha> > /tmp/recovered.log
 python tools/harness/compact_evidence.py audit \
-  --base <protected-base> --head <pr-head> --identity HG-046
+  --base <protected-base> --head <pr-head> --identity HG-047
 uv run kl check-harness --ci-pr-base <protected-base> --ci-pr-head <pr-head>
 ```
 

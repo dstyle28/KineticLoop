@@ -1472,10 +1472,10 @@ def governance_record_paths(change_id):
 
 
 def governance_allowed_patterns(change_id):
-    if change_id == 'HG-046':
+    if change_id == 'HG-047':
         return ['tools/harness/**', 'tests/harness/**', 'docs/harness/**', INDEX, MANIFEST,
-                'docs/exec-plans/governance/HG-046.yaml',
-                'docs/exec-plans/evidence/HG-046/**', 'docs/exec-plans/reviews/HG-046/**']
+                'docs/exec-plans/governance/HG-047.yaml',
+                'docs/exec-plans/evidence/HG-047/**', 'docs/exec-plans/reviews/HG-047/**']
     if change_id == 'HG-044':
         return [MILESTONE_CLOSURE_SCHEMA, 'tools/harness/validate_harness.py',
                 'tests/harness/test_m3_milestone_closure.py',
@@ -3775,7 +3775,7 @@ def validate(root, args):
             required = {'GENERAL'}
             old_tasks = getattr(args, 'governance_base_tasks', {})
             reviewed_tasks = getattr(args, 'governance_reviewed_tasks', tasks)
-            if change_id == 'HG-046':
+            if change_id == 'HG-047':
                 required.update({'PROTOCOL', 'SECURITY_DATA_BOUNDARY'})
             if change_id == 'HG-044':
                 required.update({'PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'})

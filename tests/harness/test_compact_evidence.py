@@ -17,7 +17,7 @@ SPEC_V = importlib.util.spec_from_file_location('validator', ROOT / 'tools/harne
 assert SPEC_V and SPEC_V.loader
 v = importlib.util.module_from_spec(SPEC_V)
 SPEC_V.loader.exec_module(v)
-REF = 'docs/exec-plans/evidence/HG-046/run.json'
+REF = 'docs/exec-plans/evidence/HG-047/run.json'
 
 
 def git(root, *args):
@@ -59,7 +59,7 @@ def test_exact_retrieval_and_deterministic_capture(repo):
     assert (root / record['payload']).read_bytes() == gzip.compress(raw, compresslevel=9, mtime=0)
     assert record['raw_bytes'] == len(raw)
     assert record['raw_sha256'] == ce.digest(raw)
-    assert ce.audit(root, base, head, 'HG-046')['errors'] == []
+    assert ce.audit(root, base, head, 'HG-047')['errors'] == []
     assert v.evidence_exists(root, REF, head, base, 'pytest', 0)
     assert v.m3_evidence_bytes(root, {'path': REF, 'revision': head,
                                     'sha256': ce.digest((root / REF).read_bytes())}, head) == raw
@@ -72,7 +72,7 @@ def test_exact_retrieval_and_deterministic_capture(repo):
     ('raw_bytes', True), ('kineticloop_evidence', 'tar-v1'),
     ('payload', 'docs/exec-plans/evidence/HG-045/borrow.gz'),
     ('payload', '../borrow.gz'), ('payload', '/tmp/borrow.gz'),
-    ('payload', 'docs/exec-plans/evidence/HG-046/a/../borrow.gz'),
+    ('payload', 'docs/exec-plans/evidence/HG-047/a/../borrow.gz'),
     ('tested_commit', '0' * 40), ('raw_utf8', '1 passed'),
 ])
 def test_manifest_tamper_fails(repo, field, value):
@@ -80,7 +80,7 @@ def test_manifest_tamper_fails(repo, field, value):
     record[field] = value
     head = replace_record(root, record)
     assert not v.evidence_exists(root, REF, head, base, 'pytest', 0)
-    assert ce.audit(root, base, head, 'HG-046')['errors']
+    assert ce.audit(root, base, head, 'HG-047')['errors']
 
 
 @pytest.mark.parametrize('mutation', ['missing', 'tamper', 'symlink', 'directory'])
@@ -98,7 +98,7 @@ def test_payload_requires_exact_regular_git_blob(repo, mutation):
     head = commit(root)
     assert not v.evidence_exists(root, REF, head)
     assert ce.read(root, REF, original) == b'1 passed in 0.01s\n'
-    assert not v.review_evidence_exists(root, REF, head, original, 'HG-046', True)
+    assert not v.review_evidence_exists(root, REF, head, original, 'HG-047', True)
 
 
 @pytest.mark.parametrize('raw,stored', [
@@ -134,13 +134,13 @@ def test_review_created_payload_uses_same_record_revision(repo):
     ref = REF.replace('/evidence/', '/reviews/')
     record = ce.capture(root, ref, b'1 passed\n', base, 'pytest', 0)
     head = commit(root)
-    assert v.review_evidence_exists(root, ref, base, head, 'HG-046', True)
-    assert not v.review_evidence_exists(root, ref, base, head, 'HG-046', False)
+    assert v.review_evidence_exists(root, ref, base, head, 'HG-047', True)
+    assert not v.review_evidence_exists(root, ref, base, head, 'HG-047', False)
     assert not v.review_evidence_exists(root, ref, base, head, 'HG-045', True)
     (root / record['payload']).unlink()
     later = commit(root)
-    assert not v.review_evidence_exists(root, ref, base, later, 'HG-046', True)
-    assert v.review_evidence_exists(root, ref, base, head, 'HG-046', True)
+    assert not v.review_evidence_exists(root, ref, base, later, 'HG-047', True)
+    assert v.review_evidence_exists(root, ref, base, head, 'HG-047', True)
 
 
 @pytest.mark.parametrize('path', ['../x', '/tmp/x', 'a//b', 'a/./b', 'a\\b', 'a\0b'])
@@ -161,7 +161,7 @@ def test_local_and_capture_symlinks_rejected(repo):
 
 def test_plain_history_retained_and_budget_is_prospective(repo):
     root, _ = repo
-    directory = root / 'docs/exec-plans/evidence/HG-046'
+    directory = root / 'docs/exec-plans/evidence/HG-047'
     directory.mkdir(parents=True)
     raw = b'old' * ce.PLAIN_LIMIT
     (directory / 'old.log').write_bytes(raw)
@@ -169,10 +169,10 @@ def test_plain_history_retained_and_budget_is_prospective(repo):
     (root / 'source').write_text('changed')
     head = commit(root)
     assert ce.read(root, str((directory / 'old.log').relative_to(root)), head) == raw
-    assert ce.audit(root, old, head, 'HG-046')['errors'] == []
+    assert ce.audit(root, old, head, 'HG-047')['errors'] == []
     (directory / 'old.log').write_bytes(raw + b'new')
     head2 = commit(root)
-    assert any('evidence-size' in s for s in ce.audit(root, old, head2, 'HG-046')['errors'])
+    assert any('evidence-size' in s for s in ce.audit(root, old, head2, 'HG-047')['errors'])
 
 
 @pytest.mark.parametrize('filename,data,error', [
@@ -189,7 +189,7 @@ def test_budget_rejects_bulk_and_duplicate_metadata(repo, filename, data, error)
     target.parent.mkdir(parents=True)
     (target.parent / filename).write_bytes(data)
     head = commit(root)
-    assert any(error in e for e in ce.audit(root, base, head, 'HG-046')['errors'])
+    assert any(error in e for e in ce.audit(root, base, head, 'HG-047')['errors'])
 
 
 def test_duplicate_bulk_not_repeated_log_lines(repo):
@@ -199,7 +199,7 @@ def test_duplicate_bulk_not_repeated_log_lines(repo):
     target = root / REF
     (target.parent / 'copy.log').write_bytes(raw)
     head = commit(root)
-    assert any('duplicate-bulk' in e for e in ce.audit(root, base, head, 'HG-046')['errors'])
+    assert any('duplicate-bulk' in e for e in ce.audit(root, base, head, 'HG-047')['errors'])
     assert ce.read(root, REF, head) == raw
 
 
@@ -215,14 +215,14 @@ def test_total_budget_and_foreign_history(repo, monkeypatch):
         (target.parent / f'{n}.log').write_bytes(bytes([n]) * 100)
     head = commit(root)
     monkeypatch.setattr(ce, 'TOTAL_LIMIT', 250)
-    report = ce.audit(root, base, head, 'HG-046')
+    report = ce.audit(root, base, head, 'HG-047')
     assert report['stored_bytes'] == 300
     assert any('PR-evidence-total' in e for e in report['errors'])
     # Scope rejects unauthorized foreign writes separately; the budget still
     # counts changed foreign artifacts instead of allowing an identity escape.
     foreign.write_bytes(b'y' * 1000)
     later = commit(root)
-    assert ce.audit(root, base, later, 'HG-046')['stored_bytes'] == 1300
+    assert ce.audit(root, base, later, 'HG-047')['stored_bytes'] == 1300
 
 
 def test_duplicate_manifest_keys_reject(repo):
@@ -273,7 +273,7 @@ def test_escaped_marker_cannot_disguise_missing_payload(repo):
 
 def test_compressed_full_diff_cannot_bypass_name_rule(repo):
     root, base, _, head = captured(repo, b'diff --git a/source b/source\n--- a/source\n+++ b/source\n')
-    assert any('full-diff-copy' in e for e in ce.audit(root, base, head, 'HG-046')['errors'])
+    assert any('full-diff-copy' in e for e in ce.audit(root, base, head, 'HG-047')['errors'])
 
 
 def test_truncated_envelope_does_not_become_plain_proof(repo):
@@ -338,7 +338,7 @@ def test_renamed_envelope_keeps_metadata_and_payload_guards(repo, extension, mut
     assert not v.evidence_exists(root, renamed, head, head, 'pytest', 0)
     assert not v.evidence_exists(root, renamed, head, base, 'other-command', 0)
     assert not v.evidence_exists(root, renamed, head, base, 'pytest', 1)
-    assert not ce.audit(root, base, head, 'HG-046')['errors']
+    assert not ce.audit(root, base, head, 'HG-047')['errors']
     payload = root / record['payload']
     if mutation == 'missing':
         payload.unlink()
@@ -346,7 +346,7 @@ def test_renamed_envelope_keeps_metadata_and_payload_guards(repo, extension, mut
         payload.write_bytes(b'not the recorded gzip bytes')
     bad = commit(root)
     assert not v.evidence_exists(root, renamed, bad, base, 'pytest', 0)
-    assert ce.audit(root, base, bad, 'HG-046')['errors']
+    assert ce.audit(root, base, bad, 'HG-047')['errors']
 
 
 ENCODINGS = ['utf-8-sig', 'utf-16', 'utf-16-le', 'utf-16-be',
@@ -373,10 +373,10 @@ def test_encoded_envelope_keeps_payload_and_metadata_guards(repo, encoding, exte
         assert not v.evidence_exists(root, path, head, head, 'pytest', 0)
         assert not v.evidence_exists(root, path, head, base, 'other-command', 0)
         assert not v.evidence_exists(root, path, head, base, 'pytest', 1)
-        assert not ce.audit(root, base, head, 'HG-046')['errors']
+        assert not ce.audit(root, base, head, 'HG-047')['errors']
     else:
         assert not v.evidence_exists(root, path, head, base, 'pytest', 0)
-        assert ce.audit(root, base, head, 'HG-046')['errors']
+        assert ce.audit(root, base, head, 'HG-047')['errors']
 
 
 @pytest.mark.parametrize('encoding', ENCODINGS)
@@ -411,7 +411,7 @@ def test_wrapped_storage_object_cannot_be_plain_proof(repo, wrapper, encoding):
     (root / record['payload']).unlink()
     head = commit(root)
     assert not v.evidence_exists(root, REF, head)
-    assert ce.audit(root, base, head, 'HG-046')['errors']
+    assert ce.audit(root, base, head, 'HG-047')['errors']
 
 
 BOM_ENCODINGS = [(codecs.BOM_UTF8, 'utf-8'),
@@ -442,7 +442,7 @@ def test_conflicting_bom_body_cannot_hide_reserved_storage(repo, bom, body, mark
         ce.read(root, REF, head)
     assert not v.evidence_exists(root, REF, head, base, 'pytest', 0)
     assert not v.evidence_exists(root, REF, head, head, 'wrong-command', 1)
-    assert ce.audit(root, base, head, 'HG-046')['errors']
+    assert ce.audit(root, base, head, 'HG-047')['errors']
 
 
 @pytest.mark.parametrize('bom,body', CONFLICTING_ENCODINGS)
