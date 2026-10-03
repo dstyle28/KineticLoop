@@ -1,0 +1,85 @@
+{
+  "tested_commit": "f9ed15a1d11c2dd17a7f255ecd3b53da6df428e2",
+  "completed_executions": [
+    {
+      "check_id": "authority",
+      "command": "uv run kl check-harness",
+      "exit_code": 0,
+      "tested_commit": "f9ed15a1d11c2dd17a7f255ecd3b53da6df428e2",
+      "elapsed_seconds": 241.9457769393921,
+      "log": "/private/tmp/hg051-checks-f9ed15a/authority.log"
+    },
+    {
+      "check_id": "lint",
+      "command": "uv run kl lint",
+      "exit_code": 0,
+      "tested_commit": "f9ed15a1d11c2dd17a7f255ecd3b53da6df428e2",
+      "elapsed_seconds": 0.10537862777709961,
+      "log": "/private/tmp/hg051-checks-f9ed15a/lint.log"
+    },
+    {
+      "check_id": "typecheck",
+      "command": "uv run kl typecheck",
+      "exit_code": 0,
+      "tested_commit": "f9ed15a1d11c2dd17a7f255ecd3b53da6df428e2",
+      "elapsed_seconds": 0.25803589820861816,
+      "log": "/private/tmp/hg051-checks-f9ed15a/typecheck.log"
+    },
+    {
+      "check_id": "unit",
+      "command": "uv run kl test-unit -q --junitxml=/private/tmp/hg051-checks-f9ed15a/unit.xml",
+      "exit_code": 0,
+      "tested_commit": "f9ed15a1d11c2dd17a7f255ecd3b53da6df428e2",
+      "elapsed_seconds": 255.6536509990692,
+      "log": "/private/tmp/hg051-checks-f9ed15a/unit.log"
+    },
+    {
+      "check_id": "inventory_roundtrip",
+      "command": "uv run python docs/exec-plans/evidence/HG-051/inventory_roundtrip.py",
+      "exit_code": 0,
+      "tested_commit": "f9ed15a1d11c2dd17a7f255ecd3b53da6df428e2",
+      "elapsed_seconds": 18.55062508583069,
+      "log": "/private/tmp/hg051-checks-f9ed15a/inventory_roundtrip.log"
+    },
+    {
+      "check_id": "diff",
+      "command": "git diff --check b877db0edd2e4550d6ea81750656112fb7f2e223 f9ed15a1d11c2dd17a7f255ecd3b53da6df428e2",
+      "exit_code": 2,
+      "tested_commit": "f9ed15a1d11c2dd17a7f255ecd3b53da6df428e2",
+      "elapsed_seconds": 0.018252134323120117,
+      "log": "/private/tmp/hg051-checks-f9ed15a/diff.log"
+    },
+    {
+      "check_id": "budget",
+      "command": "uv run python tools/harness/compact_evidence.py audit --base b877db0edd2e4550d6ea81750656112fb7f2e223 --head f9ed15a1d11c2dd17a7f255ecd3b53da6df428e2 --identity HG-051",
+      "exit_code": 0,
+      "tested_commit": "f9ed15a1d11c2dd17a7f255ecd3b53da6df428e2",
+      "elapsed_seconds": 0.7696080207824707,
+      "log": "/private/tmp/hg051-checks-f9ed15a/budget.log"
+    },
+    {
+      "check_id": "scope_frozen_prerequisites",
+      "command": "uv run python docs/exec-plans/evidence/HG-051/scope_audit.py",
+      "exit_code": 0,
+      "tested_commit": "f9ed15a1d11c2dd17a7f255ecd3b53da6df428e2",
+      "elapsed_seconds": 111.56253790855408,
+      "log": "/private/tmp/hg051-checks-f9ed15a/scope_frozen_prerequisites.log"
+    }
+  ],
+  "interrupted_checks": [
+    {
+      "check_id": "focused",
+      "result": "NOT_RUN",
+      "terminal_exit_code": null
+    },
+    {
+      "check_id": "harness",
+      "result": "NOT_RUN",
+      "terminal_exit_code": null
+    }
+  ],
+  "reason": "Tool turn was interrupted; processes were no longer alive. Full harness/focused terminal status is unavailable. No PASS inferred from partial observer/JUnit/collection files.",
+  "source_changes_during_run": false,
+  "diff_failure": "Exact development failure log contains trailing whitespace; representation compacted losslessly before new tested SHA.",
+  "self_review_followup": "Require original current copies and immutable merged archive to reject complete deletion/truncation evasion; all required checks rerun after implementation fix."
+}

@@ -1,0 +1,28 @@
+HG051 independent DB/concurrency review probes
+Protected base: b877db0edd2e4550d6ea81750656112fb7f2e223
+Task tested revision: 5debfe1b41a26c0b3f985917b80995a9eb38b92e
+Reviewed implementation: 7141b1dfe48df8f0e25429cf9ff646af6de4b5ce
+PASS: exact scope and frozen identities; no runtime, DB test, migration, workflow or coordination owner change.
+PASS: all 4023 existing base historical artifacts retain their Git object identities.
+PASS: tested-to-reviewed delta adds check capture and governance record only; tested implementation unchanged.
+PASS: all indexed current authority hashes match exact reviewed blobs.
+PASS: original docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/harness_regressions_pass.xml: 3456356 bytes; exact regular blob/hash; lossless gzip; recorded outcome PASS exit 0; unknown timestamp retained.
+PASS: original docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.log: 12503732 bytes; exact regular blob/hash; lossless gzip; recorded outcome FAIL exit 1; unknown timestamp retained.
+PASS: original docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/harness_regressions_pass.parallel.xml: 3456356 bytes; exact regular blob/hash; lossless gzip; recorded outcome PASS exit 0; unknown timestamp retained.
+PASS: original docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.log: 12480477 bytes; exact regular blob/hash; lossless gzip; recorded outcome FAIL exit 1; unknown timestamp retained.
+PASS: actual KL080 archival migration absent; four original objects available; numeric budgets unchanged.
+PASS: bound committed check focused decodes exact execution bytes; exit zero.
+PASS: bound committed check harness decodes exact execution bytes; exit zero.
+PASS: bound committed check unit decodes exact execution bytes; exit zero.
+PASS: bound committed check authority decodes exact execution bytes; exit zero.
+PASS: bound committed check lint decodes exact execution bytes; exit zero.
+PASS: bound committed check typecheck decodes exact execution bytes; exit zero.
+PASS: bound committed check scope_frozen_prerequisites decodes exact execution bytes; exit zero.
+PASS: bound committed check inventory_roundtrip decodes exact execution bytes; exit zero.
+PASS: bound committed check diff decodes exact execution bytes; exit zero.
+PASS: bound committed check budget decodes exact execution bytes; exit zero.
+PASS: committed focused-junit contains 184 successful cases with zero failures/errors/skips.
+PASS: committed harness-junit-xml contains 1486 successful cases with zero failures/errors/skips.
+PASS: committed unit-junit contains 241 successful cases with zero failures/errors/skips.
+PASS: full harness collection and actual execution agree on 1486 unique node IDs; every setup/call/teardown outcome passed.
+Limits: these are storage/governance probes; full PostgreSQL concurrency/App/hosted gates are NOT_RUN and earn no product/M3/KL080/release closure credit.

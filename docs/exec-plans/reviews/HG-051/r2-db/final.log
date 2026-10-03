@@ -1,0 +1,145 @@
+{
+  "status": "PASS",
+  "reviewed_head_sha": "4073ca6ef64a625c398483fb5fbfe41b1ef3237c",
+  "tested_commit": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+  "governance_checks": [
+    {
+      "check_id": "focused",
+      "exit_code": 0,
+      "raw_bytes": 396,
+      "raw_sha256": "ebfb3cf3523535cc9a6a311408e2114f0e172f849cc7e627763905d21edfbcb3"
+    },
+    {
+      "check_id": "harness",
+      "exit_code": 0,
+      "raw_bytes": 1838,
+      "raw_sha256": "fda4fefa015fdac8a6123387cb977086614fe7d63acfcf6ba8cb48784988e86e"
+    },
+    {
+      "check_id": "unit",
+      "exit_code": 0,
+      "raw_bytes": 433,
+      "raw_sha256": "a7f06cfe2b24ffe6f8bb70dcbbe42a055ed44fdcb34580788ad6a83571454de0"
+    },
+    {
+      "check_id": "authority",
+      "exit_code": 0,
+      "raw_bytes": 38,
+      "raw_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70"
+    },
+    {
+      "check_id": "lint",
+      "exit_code": 0,
+      "raw_bytes": 19,
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "check_id": "typecheck",
+      "exit_code": 0,
+      "raw_bytes": 45,
+      "raw_sha256": "866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445"
+    },
+    {
+      "check_id": "scope_frozen_prerequisites",
+      "exit_code": 0,
+      "raw_bytes": 13415,
+      "raw_sha256": "25d85811efddc852672c3e23da81fbc1ef819f1a49beda2c58e3014eec5df939"
+    },
+    {
+      "check_id": "inventory_roundtrip",
+      "exit_code": 0,
+      "raw_bytes": 3598,
+      "raw_sha256": "1bdf9bd7dbcbe895b21151abc0b64094f06fe388eb93e9fdd8d404870fac02c9"
+    },
+    {
+      "check_id": "diff",
+      "exit_code": 0,
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check_id": "budget",
+      "exit_code": 0,
+      "raw_bytes": 265,
+      "raw_sha256": "87f984ed70abee700462574b9cc2d7d0a9c41f56d95e67f9847b0eea330cad4d"
+    }
+  ],
+  "junit_counts": {
+    "focused-junit": {
+      "tests": 190,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "harness-junit-xml": {
+      "tests": 1492,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "unit-junit": {
+      "tests": 241,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "auxiliary_inventory": {
+    "harness-collection-json": {
+      "keys": [
+        "collections",
+        "errors",
+        "exit_code",
+        "reports",
+        "started"
+      ],
+      "type": "dict"
+    },
+    "harness-execution-json": {
+      "keys": [
+        "collections",
+        "errors",
+        "exit_code",
+        "reports",
+        "started"
+      ],
+      "type": "dict"
+    },
+    "harness-manifest-json": {
+      "keys": [
+        "collection_command",
+        "collection_wall_seconds",
+        "command",
+        "dirty_source",
+        "errors",
+        "evidence_scope",
+        "execution_complete",
+        "exit_code",
+        "files",
+        "format",
+        "mode",
+        "platform",
+        "pytest_exit_code",
+        "python",
+        "requested_junitxml",
+        "tested_commit",
+        "versions",
+        "wall_seconds",
+        "workers"
+      ],
+      "type": "dict"
+    }
+  },
+  "installed_inventory_verified": true,
+  "budget": {
+    "identity": "HG-051",
+    "base": "b877db0edd2e4550d6ea81750656112fb7f2e223",
+    "head": "4073ca6ef64a625c398483fb5fbfe41b1ef3237c",
+    "stored_bytes": 8025994,
+    "files": 174,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "tested_reviewed_delta": "Own governance and final clean-check evidence only; source unchanged",
+  "App_fullDB_completion": "NOT_RUN by reviewer; parent-owned mandatory final gate"
+}

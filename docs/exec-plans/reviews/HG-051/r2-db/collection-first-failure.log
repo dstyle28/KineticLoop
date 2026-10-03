@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/private/tmp/hg051-r2-db-collection.py", line 16, in <module>
+    counts=Counter((r['when'],r['outcome']) for r in reports)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/collections/__init__.py", line 607, in __init__
+    self.update(iterable, **kwds)
+  File "/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/collections/__init__.py", line 699, in update
+    _count_elements(self, iterable)
+  File "/private/tmp/hg051-r2-db-collection.py", line 16, in <genexpr>
+    counts=Counter((r['when'],r['outcome']) for r in reports)
+                    ~^^^^^^^^
+KeyError: 'when'
