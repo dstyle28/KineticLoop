@@ -624,6 +624,81 @@ def source_rows(db: Any, seed: Any) -> Any:
     return rows
 
 
+def duplicate_preparation_chain(db: Any, seed: Any, basis: Any, refs: Any) -> Any:
+    """Own two-fact verifier; imported fixture assertions retain their original scope."""
+    basis, refs = P.fdn(db, seed, basis, refs)
+    resolutions = {}
+    for action, name in (("TRAINING", "resolution"), ("NUTRITION", "nutrition_resolution")):
+        operation = P.full_request(db, basis, refs, "RESOLUTION", action)
+        output = P.run(db, seed["identity"], operation)
+        assert_duplicate_resolution(db, seed, operation, output)
+        resolutions[name] = {"id": output["id"], "hash": output["hash"]}
+    refs = {**refs, **resolutions}
+    return P.full_request(db, basis, refs, "VALIDATION"), refs
+
+
+def assert_duplicate_resolution(db: Any, seed: Any, operation: Any, output: Any) -> None:
+    with db.transaction():
+        row = db.execute(
+            "SELECT to_jsonb(t) FROM kineticloop.evidence_resolutions t WHERE subject_id=%s AND id=%s",
+            (operation.subject_id, UUID(output["id"])),
+        ).fetchone()[0]
+        receipt = db.execute(
+            "SELECT id,typed_payload FROM kineticloop.command_receipts WHERE subject_id=%s AND actor_scope=%s AND command_kind=%s AND client_key=%s",
+            (operation.subject_id, seed["identity"].key, P.OWNERS[operation.kind][0], operation.key),
+        ).fetchone()
+        events = db.execute(
+            "SELECT id,typed_payload FROM kineticloop.domain_events WHERE ref_s02_id=%s",
+            (receipt[0],),
+        ).fetchall()
+        assert len(events) == 1
+        accepted = datetime.fromisoformat(events[0][1]["guard_accepted_at"])
+        before, after = P.CALL_BOUNDS[output["id"]]
+        assert before <= accepted <= after
+        assert db.execute(
+            "SELECT count(*) FROM kineticloop.outbox_deliveries WHERE ref_s03_id=%s",
+            (events[0][0],),
+        ).fetchone() == (1,)
+        assert row["content_hash"] == digest(row["typed_payload"]) == output["hash"]
+        assert receipt[1]["outcome"]["id"] == output["id"]
+        assert receipt[1]["outcome"]["executable"] is False
+        assert [item[0] for item in output["lock_trace"]] == [20, 40, 80, 90]
+        artifact = P.FullResolution.model_validate_json(json.dumps(row["typed_payload"]))
+        assert artifact.contract == P.FULL_VERSION
+        assert artifact.snapshot_id == operation.sources["snapshot"]["id"]
+        assert row["action_type"] == operation.action_type == artifact.action_type
+        assert row["query_basis_hash"] == artifact.query_basis_hash == P.full_query_basis(
+            artifact.payload()
+        )
+        assert row["action_parameters_hash"] == operation.action_parameters_hash
+        assert row["ref_s24_id"] == str(operation.manifest_id)
+        assert row["ref_s05_id"] == str(seed["identity"].policy_id)
+        assert artifact.source_members == tuple(
+            sorted(map(str, (seed["fact"], seed["extra_fact"], seed["association"], seed["admission"])))
+        )
+        assert len(artifact.facts) == 2
+        assert {fact.fact_id for fact in artifact.facts} == {
+            str(seed["fact"]),
+            str(seed["extra_fact"]),
+        }
+        assert all(fact.semantic_class == "ACTUAL_EXECUTION" for fact in artifact.facts)
+        assert all(fact.admission == "ELIGIBLE" for fact in artifact.facts)
+        assert all(fact.association == "MATCHED" for fact in artifact.facts)
+        assert {fact.event_id for fact in artifact.facts} == {str(seed["event"])}
+        assert artifact.supporting_events == (str(seed["event"]),)
+        assert row["resolver_version"] == P.FULL_VERSION
+        assert datetime.fromisoformat(row["resolution_expires_at"]) == datetime.fromisoformat(
+            artifact.resolution_expires_at
+        )
+        P.witness(
+            "kl080_duplicate_resolution",
+            receipt=receipt[0],
+            event=events[0][0],
+            accepted_at=accepted,
+            columns=row,
+        )
+
+
 @pytest.mark.parametrize("full", [False, True], ids=["legacy", "full"])
 @pytest.mark.parametrize("duplicate", [False, True], ids=["single-event", "duplicate-event"])
 def test_preparation_owners(database_urls: Any, full: bool, duplicate: bool) -> None:
@@ -632,7 +707,11 @@ def test_preparation_owners(database_urls: Any, full: bool, duplicate: bool) -> 
         upstream_with_duplicate(db, seed) if duplicate else P.upstream(db, seed)
         basis, refs = P.begin(db, seed)
         if full:
-            op, fullrefs = P.preparation_chain(db, seed, basis, refs)
+            op, fullrefs = (
+                duplicate_preparation_chain(db, seed, basis, refs)
+                if duplicate
+                else P.preparation_chain(db, seed, basis, refs)
+            )
             refs = P.prepare_validation(db, seed, op, fullrefs)
             P.commit_ready(db, seed, op, refs)
         else:

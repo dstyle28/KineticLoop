@@ -8,6 +8,8 @@ Both real preparation profiles deduplicate two owner-produced actual facts for o
 event to one exposure; conflicting quantities deny. Wrong immutable source hashes,
 policy references, association identity and provenance deny with
 complete failed-command snapshots.
+The added duplicate-fact verifier lives in the own conformance suite. Existing
+current fixtures receive only prospective source-enum and dependent hash corrections.
 There is no enum conversion, migration, new runtime identity or caller certificate.
 S27 intent ADMITTED and derived S36 aggregate CONFIRMED retain their distinct meanings.
 N remains TARGET; actual exposure requires actual canonical facts and provenance.

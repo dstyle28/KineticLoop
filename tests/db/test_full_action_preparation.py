@@ -1216,10 +1216,9 @@ def assert_full_output(db: Any, seed: Any, operation: Any, output: Any) -> Any:
             assert row["ref_s24_id"] == str(operation.manifest_id) and row["ref_s05_id"] == str(
                 seed["identity"].policy_id
             )
-            source_members = [seed["fact"], seed["association"], seed["admission"]]
-            if seed.get("extra_fact") is not None:
-                source_members.append(seed["extra_fact"])
-            assert artifact.source_members == tuple(sorted(map(str, source_members)))
+            assert artifact.source_members == tuple(
+                sorted(map(str, (seed["fact"], seed["association"], seed["admission"])))
+            )
             assert artifact.facts[0].semantic_class == "ACTUAL_EXECUTION"
             assert row["resolver_version"] == FULL_VERSION
         else:
