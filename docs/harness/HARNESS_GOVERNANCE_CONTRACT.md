@@ -135,3 +135,11 @@ named compatibility scope also updates the old `paths-ignore` string check in
 `tests/db/test_workflow.py` to require exclusively manual full-DB dispatch and no
 historical auto-writeback. These two exact test paths do not authorize other database test or runtime edits, and the
 exception applies only to HG-046. The full DB suite must pass at the new tested SHA.
+
+The same unmerged HG-046 concern also owns conservative DB classification, the
+externally installed local controller/App client and isolated trusted validation/
+pytest entrypoints, their negative tests and local installation contract. Master
+protection configuration is explicitly authorized by the user and recorded in
+HG-046 setup evidence. No signing credential is a repository artifact. The
+controller is activated only after independent review of its implementation;
+required checks may be installed earlier to block merges pending validation.

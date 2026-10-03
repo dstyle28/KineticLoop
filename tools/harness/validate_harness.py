@@ -1471,6 +1471,11 @@ def governance_allowed_patterns(change_id):
     if change_id == 'HG-046':
         return [INDEX, MANIFEST, '.github/workflows/ci.yml', '.github/workflows/db.yml',
                 'tools/harness/db_ci.py', 'tools/harness/db_ci_pytest.py',
+                'tools/harness/db_policy.py', 'tools/harness/local_gate.py',
+                'tools/harness/github_app.py', 'tools/harness/gate_validate.py',
+                'tools/harness/gate_pytest.py',
+                'tests/harness/test_db_policy.py',
+                'tests/harness/test_local_gate.py',
                 'tools/harness/local_db/Dockerfile', 'tools/harness/local_db/entrypoint.sh',
                 'tools/harness/validate_harness.py', 'tests/harness/test_local_db_ci.py',
                 'tests/db/test_startup_readiness.py', 'tests/db/test_workflow.py',
@@ -1753,7 +1758,7 @@ def full_database_evidence_errors(root, reviewed, tested, ref):
             raise ValueError('manifest-not-regular-reviewed-blob')
         manifest = json.loads(git(root, 'show', reviewed + ':' + ref))
         records = [check['stdout'] for check in manifest['checks']] + manifest['artifacts']
-        spec = importlib.util.spec_from_file_location('db_ci_evidence', root / 'tools/harness/db_ci.py')
+        spec = importlib.util.spec_from_file_location('db_ci_evidence', Path(__file__).with_name('db_ci.py'))
         if spec is None or spec.loader is None:
             raise ValueError('DB evidence validator unavailable')
         module = importlib.util.module_from_spec(spec)

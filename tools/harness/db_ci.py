@@ -180,6 +180,20 @@ def validate_evidence(directory: Path, revision: str) -> dict[str, Any]:
         path = directory / name
         if path.is_symlink() or not path.is_file() or file_record(path) != record:
             raise ValueError("evidence blob/hash mismatch: " + name)
+    counts = validate_execution(directory)
+    if counts != manifest["junit"]:
+        raise ValueError("JUnit summary mismatch")
+    return manifest
+
+
+def validate_execution(directory: Path) -> dict[str, int]:
+    """Require exact collected/executed/JUnit identities from regular raw files."""
+    if directory.is_symlink() or not directory.is_dir():
+        raise ValueError("execution artifacts directory must be regular")
+    for name in ("collection.json", "execution.json", "database.xml"):
+        path = directory / name
+        if path.is_symlink() or not path.is_file():
+            raise ValueError("execution artifacts must be regular files")
     collection = json.loads((directory / "collection.json").read_text())
     execution = json.loads((directory / "execution.json").read_text())
     if (not collection["nodeids"] or len(set(collection["nodeids"])) != len(collection["nodeids"])
@@ -202,9 +216,7 @@ def validate_evidence(directory: Path, revision: str) -> dict[str, Any]:
     if (counts["tests"] != len(collection["nodeids"]) or counts["failures"]
             or counts["errors"] or counts["skipped"]):
         raise ValueError("JUnit must execute every collected case without failure/skip")
-    if counts != manifest["junit"]:
-        raise ValueError("JUnit summary mismatch")
-    return manifest
+    return counts
 
 
 def execute(args: argparse.Namespace) -> int:

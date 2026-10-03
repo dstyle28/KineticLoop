@@ -14,8 +14,7 @@ replace the two obsolete generic-workflow hashes with the approved new policy
 assertions. tests/db/test_workflow.py replaces its old paths-ignore string check
 with exclusive manual dispatch and no auto-writeback assertions; the governance contract and exact HG-046 allowlist declare this.
 No runtime, migrations,
-fixture rewrites, frozen files, historical results, product PASS or branch
-protection edits. GENERAL, DB_CONCURRENCY and SECURITY_DATA_BOUNDARY reviews are
+fixture rewrites, frozen files, historical results, product PASS edits. Branch protection is separately authorized by the extension below. GENERAL, DB_CONCURRENCY and SECURITY_DATA_BOUNDARY reviews are
 required by this task's risk surfaces.
 
 The public repository has no self-hosted runners. An operator-started disposable
@@ -25,3 +24,16 @@ Selected proof includes actual complete local DB regression and lifecycle,
 negative runner/evidence tests, lint/typecheck/unit/harness and frozen/scope audit.
 Image download/build and test dependencies use normal network access outside any
 coordination transaction. Stop before merge for the coordinator.
+
+## Approved mandatory-enforcement extension
+
+After reviewing the remaining gaps, the user approved mandatory DB admission,
+trusted local execution, actual master protection and merge freshness before
+PR90 merges. Work continues on this same unmerged CI concern. The extension may
+add `tools/harness/db_policy.py`, its focused harness tests, a trusted controller
+and its installation/configuration contract, adversarial enforcement tests, and
+own setup/evidence records. Exact final write scope, result and required three
+reviews must be updated before publishing a new candidate. No credential may
+enter Git or the candidate worker. See HARDENING_PLAN.md for bootstrap state,
+trust boundaries and activation state. The existing reviews do not
+approve this extension; PR90 remains draft and unmerged.

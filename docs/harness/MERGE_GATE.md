@@ -31,8 +31,9 @@ Harness-definition changes use the separate `HARNESS_GOVERNANCE_CONTRACT.md` pat
 ## Prospective local database execution
 
 Full database execution may use the owned local Linux daemon specified in
-`LOCAL_DB_CI.md`. DB-affecting changes require complete revision-bound execution
-evidence; unrelated docs/review bookkeeping does not trigger a new full regression.
+`LOCAL_DB_CI.md`. Every PR requires the dedicated App-bound `local-db-gate`. Its trusted complete-diff
+policy requires full DB for all changes except the narrow inert documentation/review
+allowlist in `LOCAL_DB_CI.md`; evidence/configuration changes are not blanket exempt.
 The result and independent review must bind the complete local manifest, raw logs,
 collection/JUnit and outer cleanup envelope. This is not a GitHub-hosted claim.
 Existing task-specific hosted requirements and KL-074 provenance remain unchanged.

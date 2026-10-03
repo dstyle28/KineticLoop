@@ -11,14 +11,14 @@ code, not untrusted public pull requests; no public self-hosted Actions runner i
 registered. Local ARM64 evidence records that architecture and is not called x64
 or GitHub-hosted evidence.
 
-Run full DB regression before merging changes to persistence, database lifecycle,
-migrations, deterministic/workflow logic consumed by DB owners, DB tests/helpers,
-DB dependency locks, Compose, or this CI execution contract. Documentation,
-review/evidence records and governance-only edits do not by themselves require
-repeating the full suite. Task-specific checks and stricter hosted requirements
-already frozen into a packet/result remain authoritative. This policy is
-prospective; historical results, reviewed HG-045 and KL-074 hosted provenance are
-not rewritten or retrospectively promoted.
+Every PR needs a successful `local-db-gate` from the dedicated GitHub App.
+The administrator-installed classifier compares the complete live master-to-head
+Git diff. Unknown paths, executable modes, dependencies, tests, configuration,
+authority documents and evidence files all require full DB. Only regular README,
+`docs/notes/*.md` and `.md`/`.json` task review bookkeeping are exempt. Evidence
+files may be code inputs (for example the KL-074 workflow proposal) and therefore
+are not generally exempt. Task-specific and stricter hosted requirements remain
+authoritative. Historical task results and KL-074 hosted provenance stay unchanged.
 
 GitHub keeps quality and SHA-bound merge-gate checks. Quality runs once per PR
 update, plus master integration and explicit dispatch; superseded runs on the same
@@ -89,3 +89,67 @@ This execution evidence does not replace a task's individual acceptance selector
 M3 closure contribution/collection contracts, frozen lock semantics, or product
 release gates. A later implementation change requires a new run. The prescribed
 result/evidence and review-only suffix rules continue to apply.
+
+## Mandatory trusted controller
+
+The manual `db_ci.py local` command is useful developer feedback and result
+capture. It does not publish the required merge check. Creating a PR does not
+silently start software on an engineer's laptop. Until the trusted operator runs
+the installed controller, the required check is missing and merging is blocked.
+A local hook alone cannot provide this enforcement because hooks can be skipped.
+
+The administrator installs an independently reviewed revision of `local_gate.py`,
+`github_app.py`, `db_policy.py`, `db_ci.py`, `db_ci_pytest.py`, `gate_validate.py`,
+`gate_pytest.py`, `validate_harness.py`, and the `local_db/` Docker build files into
+one versioned directory outside any candidate checkout. `controller_files` pins
+exact SHA256 bytes of every file named by `local_gate.ASSETS`. The configuration
+and private key are owner-only regular files, outside Git, source bundles and
+workers. The App has only Checks write and Contents/Pull requests/Metadata read;
+no OAuth, public webhook, Contents write or Administration access is needed.
+
+Configuration includes `app_id`, `installation_id`, `repository`, `repository_id`,
+`key_path`, and `controller_files`. Production installation is an administrator
+operation after independent review; a PR never updates the active controller or
+its pins. Future controller changes need a separately reviewed installation.
+This desktop setup only admits explicitly reviewed trusted project code. The
+privileged nested daemon is not a sandbox for hostile public PR code. Automated
+untrusted PR execution needs a separate disposable worker without host shares,
+signer secrets or unrelated workloads.
+
+After reviewing the exact PR revision, the trusted operator writes an owner-only
+admission file outside Git. Its fields are `format: kineticloop-local-admission-v1`,
+`snapshot: {repository_id, pr, base, head}`, `controller` (SHA256 of the sorted JSON
+`controller_files` map), and `trusted_code_reviewed: true`. Admission authorizes
+execution; the installed validator separately requires the repository's exact-SHA
+independent review and task-result contracts before publication can pass.
+
+```bash
+python3 -I /ABSOLUTE/INSTALLED/local_gate.py \
+  --config /PRIVATE/config.json --admission /PRIVATE/admission.json \
+  --pr PR_NUMBER --evidence-dir /PRIVATE/RUN_UNIQUE
+```
+
+The controller fetches the live PR/master from GitHub, requires master ancestry,
+and checks exact admission before executing candidate code. It owns the build
+context, container, command plan, pytest observer, validator and verdict. All
+PRs run lint, typecheck, unit, harness and revision-bound merge checks; the full DB
+suite and lifecycle run when the trusted diff policy requires them. It observes
+each command's exit on the host, rejects missing/skipped/mismatched execution,
+validates copied files before parsing them, and removes its own container/volume.
+It holds an installation-wide execution lock, rereads live head/base before
+publication, and patches the same App-owned check created at run start. Failure,
+interruption, stale refs or cleanup failure cannot produce success. `--test-only`
+never publishes a check and does not claim PR review validation.
+
+The receipt binds repository/PR/base/head/tree, controller/image, policy, commands,
+raw hashes, unique run ID and cleanup. Store it outside Git until execution ends;
+archive non-secret selected evidence in the task result. No uploaded JSON alone
+can authorize publication. There is no success-import or evidence-reuse command.
+
+Master requires `local-db-gate` from the exact dedicated App ID, strict up-to-date
+branches, PR-only changes, no bypass actors and no force push/deletion. Existing
+quality/merge-gate checks remain required. Full DB is not automatically repeated
+on master; PR admission tests the head containing current master. Release/platform
+qualification may still explicitly invoke the hosted fallback. Passing tests
+reduces regression risk; it never proves bug-free software. The administrator,
+trusted-code admission and signing key are explicit trust boundaries.

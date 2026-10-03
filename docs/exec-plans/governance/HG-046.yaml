@@ -2,16 +2,16 @@ change_identity: harness-governance-v0.1/HG-046
 display_change_id: HG-046
 base_commit: 26906bd7f4444914c228e98377f2b164fee0dd5d
 tested_commit: 341333dd4b5140ac15f715ce28bd0d2a4a4ee1ec
-change_status: PASS
-summary: Prefer exact-revision full DB regression in a disposable local Linux environment; remove duplicate
-  branch-push CI and make full hosted DB explicit. Preserve complete raw evidence, fail-closed command/JUnit
-  verification and review binding.
+change_status: BLOCKED
+summary: Mandatory local CI hardening in progress. Earlier test records cover only the initial local DB runner.
+  The new controller requires fresh complete validation and independent reviews before PASS or publication.
 packets_refined: []
 files_changed:
 - .github/workflows/ci.yml
 - .github/workflows/db.yml
 - CURRENT_DOCUMENT_INDEX.json
 - HARNESS_DOCUMENT_MANIFEST.json
+- docs/exec-plans/evidence/HG-046/HARDENING_PLAN.md
 - docs/exec-plans/evidence/HG-046/RUNS.md
 - docs/exec-plans/evidence/HG-046/SCOPE.md
 - docs/exec-plans/evidence/HG-046/capture.py
@@ -166,19 +166,42 @@ files_changed:
 - docs/exec-plans/evidence/HG-046/development/db-typed/run/full_database.log
 - docs/exec-plans/evidence/HG-046/development/db-typed/run/lint.log
 - docs/exec-plans/evidence/HG-046/development/db-typed/run/typecheck.log
+- docs/exec-plans/evidence/HG-046/hardening-setup/app-registration-spec.json
+- docs/exec-plans/evidence/HG-046/hardening-setup/db-policy-development.log
+- docs/exec-plans/evidence/HG-046/hardening-setup/master-effective-local-gate.json
+- docs/exec-plans/evidence/HG-046/hardening-setup/master-effective-phase1.json
+- docs/exec-plans/evidence/HG-046/hardening-setup/master-rules-before.json
+- docs/exec-plans/evidence/HG-046/hardening-setup/master-rules-local-gate-applied.json
+- docs/exec-plans/evidence/HG-046/hardening-setup/master-rules-local-gate.json
+- docs/exec-plans/evidence/HG-046/hardening-setup/master-rules-phase1-applied.json
+- docs/exec-plans/evidence/HG-046/hardening-setup/master-rules-phase1.json
+- docs/exec-plans/evidence/HG-046/hardening-setup/master-rules-pre-local-gate.json
 - docs/exec-plans/evidence/HG-046/scope_audit.py
 - docs/exec-plans/governance/HG-046.yaml
+- docs/exec-plans/reviews/HG-046/DB_CONCURRENCY.json
+- docs/exec-plans/reviews/HG-046/DB_CONCURRENCY_REPORT.md
+- docs/exec-plans/reviews/HG-046/GENERAL.json
+- docs/exec-plans/reviews/HG-046/GENERAL_REPORT.md
+- docs/exec-plans/reviews/HG-046/SECURITY_DATA_BOUNDARY.json
+- docs/exec-plans/reviews/HG-046/SECURITY_DATA_BOUNDARY_REPORT.md
 - docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
 - docs/harness/LOCAL_DB_CI.md
 - docs/harness/M3_CLOSURE_CONTRACT.md
 - docs/harness/MERGE_GATE.md
 - tests/db/test_startup_readiness.py
 - tests/db/test_workflow.py
+- tests/harness/test_db_policy.py
 - tests/harness/test_local_db_ci.py
+- tests/harness/test_local_gate.py
 - tools/harness/db_ci.py
 - tools/harness/db_ci_pytest.py
+- tools/harness/db_policy.py
+- tools/harness/gate_pytest.py
+- tools/harness/gate_validate.py
+- tools/harness/github_app.py
 - tools/harness/local_db/Dockerfile
 - tools/harness/local_db/entrypoint.sh
+- tools/harness/local_gate.py
 - tools/harness/validate_harness.py
 checks_run:
 - check_id: focused
@@ -228,6 +251,8 @@ checks_run:
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
+- Current extension is not yet validated; previous reviewed SHA and full DB PASS are historical development
+  evidence, not approval of the controller.
 - Local full DB evidence is Linux ARM64, not GitHub-hosted/x64 attestation. The shared hosted command path
   is configured but not dispatched for this task.
 - No permanent public self-hosted runner is registered. Local execution is manually started for trusted project
