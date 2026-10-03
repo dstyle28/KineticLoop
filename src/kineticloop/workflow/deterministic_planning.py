@@ -361,7 +361,7 @@ def resolve(
         f.subject_id != fitness.subject_id
         or f.policy_id != fitness.policy_id
         or f.scope != "TEST_ONLY"
-        or f.admission != "ADMITTED"
+        or f.admission != "ELIGIBLE"
         or f.semantic_class != "ACTUAL_EXECUTION"
         or f.upper_minutes is None
         or f.upper_minutes < f.lower_minutes
@@ -379,7 +379,7 @@ def resolve(
         ):
             raise PlanningDenied("duplicate underlying event has conflicting actual payload")
         by_event[fact.event_id] = fact
-    associations = all(f.association == "CONFIRMED" for f in relevant)
+    associations = all(f.association == "MATCHED" for f in relevant)
     supporting = sorted(
         f.event_id for f in by_event.values() if not f.contradicts and not f.retracted
     )

@@ -69,6 +69,20 @@ from kineticloop.workflow.planning_progress import (
 
 _T = TypeVar("_T")
 
+
+def _read_full_source_freshness(
+    cursor: Cursor[Any], subject_id: UUID, admission_id: UUID, policy_id: UUID
+) -> Any:
+    """Read the exact immutable S13 basis used by full T6, without granting authority."""
+    cursor.execute(
+        "SELECT revision,GREATEST(recorded_at,COALESCE(effective_at,recorded_at)),"
+        "typed_payload->>'valid_until' FROM kineticloop.admission_decisions "
+        "WHERE subject_id=%s AND id=%s AND ref_s05_id=%s AND decision='ELIGIBLE'",
+        (subject_id, admission_id, policy_id),
+    )
+    return cursor.fetchone()
+
+
 _LOGICAL_TABLES = {row.logical_id: row.table_name for row in LOGICAL_RELATIONS}
 _CURSORS: WeakKeyDictionary[object, Cursor[Any]] = WeakKeyDictionary()
 _PREPARATION_TOKEN = object()
@@ -4315,11 +4329,9 @@ class RepositoryTransaction:
             admission_ids.update(UUID(f["admission_id"]) for f in resolution_row[0]["facts"])
         freshness = []
         for admission_id in sorted(admission_ids, key=str):
-            _cursor(self).execute(
-                "SELECT revision,GREATEST(recorded_at,COALESCE(effective_at,recorded_at)),typed_payload->>'valid_until' FROM kineticloop.admission_decisions WHERE subject_id=%s AND id=%s AND ref_s05_id=%s AND decision='ADMITTED'",
-                (self.subject_id, admission_id, identity.policy_id),
+            admission_row = _read_full_source_freshness(
+                _cursor(self), self.subject_id, admission_id, identity.policy_id
             )
-            admission_row = _cursor(self).fetchone()
             if admission_row is None:
                 raise GuardRequired("full exact admitted source freshness missing")
             freshness.append(

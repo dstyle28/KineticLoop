@@ -5,7 +5,9 @@
 exact mechanical KL076 rules and both TEST_ONLY action scopes select the profile.
 A caller cannot select legacy completeness. Existing FITNESS, Demand and Nutrition
 owners and their mechanical payloads retain KL076's version and identity algorithm;
-legacy resolution/validation requests retain their original domain and bytes.
+legacy resolution/validation requests retain their original domain and identity rules.
+Prospective source bytes use physical S13 ELIGIBLE and S12 MATCHED; historical
+resolution/validation bytes remain unchanged.
 
 `FullPreparationRequest` is a separate internal, closed, ProgressIdentity-bound
 request, accepted only by EvidenceResolver and ValidationService. Resolution binds

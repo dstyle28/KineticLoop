@@ -1,0 +1,190 @@
+{
+  "base_commit": "034d6301316d0dade784a61b159c027b83fbce3a",
+  "tested_commit": "f85277e27ab5393b7f77b6fea25d4197294d3153",
+  "reviewed_head_sha": "275d7f849b31c9fe123c8d8594b88a85d1c25355",
+  "task_command_counts": {
+    "source_matrix_pu": 2,
+    "source_basis_pu": 2,
+    "source_namespace_pu": 1,
+    "source_preparation_owners_dc": 4,
+    "source_canonical_full_t6_dc": 1,
+    "source_invalid_reconstruction_dc": 1,
+    "source_freshness_predicate_support_dc": 7,
+    "source_owner_trajectories_dc": 2,
+    "source_current_denials_dc": 77,
+    "source_repair_replay_expiry_dc": 14,
+    "source_suite_dc": 106,
+    "source_suite_pu": 6,
+    "harness_validation_passes": null,
+    "unit_regressions_pass": 247,
+    "harness_regressions_pass": 1347,
+    "lint_passes": null,
+    "typecheck_passes": null
+  },
+  "raw_suite_sha256": "dba2a53fd4f517285577a5ae2125e91089dfe52d2f517b769c1403ec5bb88e3a",
+  "witness_counts": {
+    "kl080_namespace": 106,
+    "kl080_preparation_owner": 4,
+    "kl080_cleanup": 106,
+    "kl080_duplicate_resolution": 2,
+    "kl080_canonical_full_t6_exact_freshness_reached": 1,
+    "exact_zero_effect_denial": 47,
+    "kl080_prior_deployment_earlier_denial": 1,
+    "kl080_exact_predicate_support_only": 7,
+    "kl080_mechanical_s37_legacy_consumer_denial": 1,
+    "kl080_owner_trajectory": 1,
+    "kl080_failed_owner_zero_effects": 48,
+    "kl080_source_preparation_denial": 48,
+    "kl080_trusted_clock_crossing": 4,
+    "kl080_source_or_runtime_loss_and_receipt_only_replay": 2,
+    "F2_full_commit": 1,
+    "historical_non_executable": 1,
+    "observed_duplicate": 2
+  },
+  "full_identities": {
+    "S13": "e918a737-e7ac-4e63-8f1a-72b3c57dddd1",
+    "S13_revision": 1,
+    "S12": "cbc2318f-7e17-4d8d-a7e8-5153cfda18a0",
+    "F": "a4f3ff19-4bbc-5c29-9119-4b144a2d35a2",
+    "D": "e2281b3b-37e0-5192-92fb-7bb58f30cb69",
+    "N": "a8bb99da-8f9b-5fbe-b3cb-129109526148",
+    "S36": {
+      "NUTRITION": "80921ebd-0f9c-5d40-9d01-486c1aa9c5dc",
+      "TRAINING": "987ce792-efa6-5eb3-aff5-583aed084fb7"
+    },
+    "S37": "817d6bd5-f944-52ba-a8a7-3f4fc835d230",
+    "members": [
+      {
+        "action_type": "TRAINING",
+        "authorization_id": "ed2fd5ac-315e-4198-be96-96210ca703e6",
+        "content_hash": "f863709ebb1218374d5c57e23c2de587f9f616ac436ec20eb3d2f983ed1bb000",
+        "member_id": "e70f54df-8806-429d-9684-3ed4aaf02502",
+        "member_order": 1,
+        "prescription_id": "d0223f14-4a1e-4e79-b029-2ffbaed873e8",
+        "resolution_id": "987ce792-efa6-5eb3-aff5-583aed084fb7",
+        "session_slot": "TRAINING_1",
+        "validation_id": "817d6bd5-f944-52ba-a8a7-3f4fc835d230",
+        "session_id": "414aff0d-d7bb-44a7-a397-79e2c7f88fdc",
+        "binding_ids": [
+          "01a69bbe-9654-4c9d-9569-0b0e8eb92a7c",
+          "8d3ee2ac-b760-49c5-b910-2396bf665fbd"
+        ]
+      },
+      {
+        "action_type": "NUTRITION",
+        "authorization_id": "69bddd0c-b503-4bdb-a5d5-076fd0c7a421",
+        "content_hash": "8194b165ac609544d7c59fdf8b67104428844897e8172181508102e379fa6a39",
+        "member_id": "868f7f8c-630f-4e52-b6dd-8be79cefd886",
+        "member_order": 2,
+        "prescription_id": "2263b09e-8fe7-405b-b5c7-e26f54b31335",
+        "resolution_id": "80921ebd-0f9c-5d40-9d01-486c1aa9c5dc",
+        "session_slot": "NUTRITION_1",
+        "validation_id": "817d6bd5-f944-52ba-a8a7-3f4fc835d230",
+        "session_id": "04c40859-ca3e-4275-87b7-6f523a4c91b0",
+        "binding_ids": [
+          "07c9ce26-a7be-4e3d-a360-6dc34046c3bd",
+          "1e2ba42a-c63b-4309-a3cb-15c9efe71091"
+        ]
+      }
+    ]
+  },
+  "mechanical": {
+    "cause": "policy, demand, and calendar authorization bounds must exist",
+    "validation_id": "4ad7f104-fbe7-5deb-a12e-c14d271e996d",
+    "head_id_observed_then_rolled_back": "f72ea4e2-c81a-4b66-975b-1fa30d3ae785",
+    "complete_snapshot_unchanged": true
+  },
+  "verified_prior_deployment_blobs": 65,
+  "hosted_db_cases": 780,
+  "hosted_provenance": {
+    "architecture": "x86_64",
+    "docker": {
+      "ApiVersion": "1.48",
+      "Arch": "amd64",
+      "BuildTime": "2025-03-25T15:07:16.000000000+00:00",
+      "Components": [
+        {
+          "Details": {
+            "ApiVersion": "1.48",
+            "Arch": "amd64",
+            "BuildTime": "Tue Mar 25 15:07:16 2025",
+            "Experimental": "false",
+            "GitCommit": "6430e49",
+            "GoVersion": "go1.23.7",
+            "KernelVersion": "6.17.0-1022-azure",
+            "MinAPIVersion": "1.24",
+            "Os": "linux"
+          },
+          "Name": "Engine",
+          "Version": "28.0.4"
+        },
+        {
+          "Details": {
+            "GitCommit": "ee2735368117d2eb259779949d5e75cdafec9761"
+          },
+          "Name": "containerd",
+          "Version": "v2.3.6"
+        },
+        {
+          "Details": {
+            "GitCommit": "v1.5.1-0-g8f2685a4"
+          },
+          "Name": "runc",
+          "Version": "1.5.1"
+        },
+        {
+          "Details": {
+            "GitCommit": "de40ad0"
+          },
+          "Name": "docker-init",
+          "Version": "0.19.0"
+        }
+      ],
+      "GitCommit": "6430e49",
+      "GoVersion": "go1.23.7",
+      "KernelVersion": "6.17.0-1022-azure",
+      "MinAPIVersion": "1.24",
+      "Os": "linux",
+      "Platform": {
+        "Name": "Docker Engine - Community"
+      },
+      "Version": "28.0.4"
+    },
+    "docker_endpoint": "unix:///var/run/docker.sock",
+    "environment": "github-hosted",
+    "github_run_attempt": "1",
+    "github_run_id": "37128318475",
+    "initial_containers": [],
+    "initial_volumes": [],
+    "os": "Linux",
+    "python": "3.12.3",
+    "uv": "uv 0.12.17 (x86_64-unknown-linux-gnu)"
+  },
+  "protected_authorities_unchanged": [
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "FROZEN_BASELINE.json",
+    "CURRENT_REQUIREMENT_SET.json"
+  ],
+  "runtime_changed_paths": [
+    "src/kineticloop/persistence/deterministic_planning.py",
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/workflow/deterministic_planning.py"
+  ],
+  "normal_evidence_budget": {
+    "identity": "KL-080",
+    "base": "034d6301316d0dade784a61b159c027b83fbce3a",
+    "head": "275d7f849b31c9fe123c8d8594b88a85d1c25355",
+    "stored_bytes": 38263916,
+    "files": 351,
+    "errors": [
+      "PR-evidence-total:38263916>16777216",
+      "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/harness_regressions_pass.xml:evidence-size:3456356>262144",
+      "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.log:evidence-size:12503732>262144",
+      "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/harness_regressions_pass.parallel.xml:evidence-size:3456356>262144",
+      "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.log:evidence-size:12480477>262144"
+    ],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "verification_status": "PASS_PROTOCOL_CHECKS_NORMAL_GATE_BLOCKED"
+}

@@ -1,0 +1,27 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-080",
+  "reviewed_head_sha": "275d7f849b31c9fe123c8d8594b88a85d1c25355",
+  "review_type": "DB_CONCURRENCY",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "HG049_DB_EVIDENCE_STORAGE_GATE",
+      "title": "Normal evidence storage gate remains unsatisfied",
+      "file": "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+      "description": "Independent exact-revision audit against protected base 034d6301316d0dade784a61b159c027b83fbce3a counts 38,263,916 bytes of changed KL-080 evidence/review blobs, exceeding the 16,777,216-byte limit, and rejects four retained plain blobs above 262,144 bytes. The new lossless captures and database proofs are valid, but the packet requires all normal gates and satisfied DoD before review PASS or merge recommendation. The result correctly remains BLOCKED. No budget waiver, historical rewrite, or approval is inferred.",
+      "required_change": "Resolve preservation/storage through separately authorized reviewed governance, preserve historical evidence, obtain actual normal-gate PASS, and renew the exact-SHA review if implementation/result/evidence changes. Do not waive the current limits in this task."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/completed/KL-080_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-080/resume-HG049/entry.json",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/final-checks.json",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/source_suite_dc.stdout.capture.json",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/source_suite_dc.junit.capture.json",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/hosted.manifest.json.capture.json",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/hosted.database.xml.capture.json",
+    "docs/exec-plans/reviews/KL-080/HG049_DB_CONCURRENCY_REPORT.md"
+  ],
+  "review_contract_version": "v0.2"
+}

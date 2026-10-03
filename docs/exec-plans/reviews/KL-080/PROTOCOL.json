@@ -1,0 +1,37 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-080",
+  "reviewed_head_sha": "275d7f849b31c9fe123c8d8594b88a85d1c25355",
+  "review_type": "PROTOCOL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "finding_id": "KL080-PROTOCOL-HG049-01",
+      "classification": "BLOCKER",
+      "title": "Normal evidence gate and packet DoD remain unsatisfied",
+      "file": "docs/exec-plans/completed/KL-080_RESULT.yaml",
+      "line": 7,
+      "details": "Independent protected-base-to-reviewed audit reports 38,263,916 bytes across 351 changed evidence/review blobs against the 16,777,216-byte PR budget and four retained plain artifacts above 262,144 bytes. Seventeen task commands and corrected HG049 protocol oracles have valid tested-SHA evidence, but this cannot establish all normal gates or completed DoD. The committed result accurately remains BLOCKED/UNMERGED; no runtime frozen-semantic defect or necessary SPEC_CHANGE_REQUIRED was found.",
+      "required_change": "Resolve the normal evidence-storage/history blocker through authorized work without truncation, waiver or historical rewriting; present a new reviewable revision and rerun SHA-bound independent review after the required normal gates and DoD pass.",
+      "evidence_refs": [
+        "docs/exec-plans/reviews/KL-080/HG049_PROTOCOL/verification.json",
+        "docs/exec-plans/active/KL-080.md",
+        "docs/harness/EVIDENCE_STORAGE_POLICY.md"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-080.md",
+    "docs/exec-plans/governance/HG-049.yaml",
+    "docs/exec-plans/completed/KL-080_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/source_suite_dc.stdout.capture.json",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/source_suite_dc.junit.capture.json",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/source_matrix_pu.stdout.capture.json",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/source_suite_pu.junit.capture.json",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/hosted.manifest.json.capture.json",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/hosted.database.xml.capture.json",
+    "docs/exec-plans/reviews/KL-080/HG049_PROTOCOL_REPORT.md",
+    "docs/exec-plans/reviews/KL-080/HG049_PROTOCOL/verify.py",
+    "docs/exec-plans/reviews/KL-080/HG049_PROTOCOL/verification.json"
+  ],
+  "review_contract_version": "v0.2"
+}

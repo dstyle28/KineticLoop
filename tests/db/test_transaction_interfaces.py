@@ -3776,7 +3776,7 @@ def test_t3_rejects_incomplete_or_crosswired_ready_candidate(
         connection.execute(
             "INSERT INTO kineticloop.admission_decisions"
             "(id,subject_id,action_scope,decision,ref_s05_id,ref_s09_id,ref_s10_id) "
-            "VALUES (%s,%s,'EXECUTION','ADMITTED',%s,%s,%s)",
+            "VALUES (%s,%s,'EXECUTION','ELIGIBLE',%s,%s,%s)",
             (OUTSIDE_ADMISSION, SUBJECT, POLICY, OUTSIDE_EVIDENCE, OUTSIDE_CANDIDATE),
         )
         connection.execute(

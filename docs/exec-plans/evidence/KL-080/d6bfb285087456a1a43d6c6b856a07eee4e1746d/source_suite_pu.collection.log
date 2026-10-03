@@ -1,0 +1,12 @@
+TESTED_COMMIT=d6bfb285087456a1a43d6c6b856a07eee4e1746d
+COMMAND=uv run pytest --collect-only -q tests/unit/workflow/test_source_decision_conformance.py
+tests/unit/workflow/test_source_decision_conformance.py::test_namespace
+tests/unit/workflow/test_source_decision_conformance.py::test_source_matrix[legacy]
+tests/unit/workflow/test_source_decision_conformance.py::test_source_matrix[full]
+tests/unit/workflow/test_source_decision_conformance.py::test_basis_and_actual_separation[legacy]
+tests/unit/workflow/test_source_decision_conformance.py::test_basis_and_actual_separation[full]
+tests/unit/workflow/test_source_decision_conformance.py::test_fixture_content_guards
+
+6 tests collected in 0.06s
+
+EXIT_CODE=0

@@ -1,0 +1,278 @@
+{
+  "tested_commit": "15a7167e44b8044c94688cf7e367e2d02a962e31",
+  "check_id": "source_owner_trajectories_dc",
+  "case": "legacy",
+  "actual_guard": "RepositoryTransaction.prepare_authorization_basis",
+  "actual_cause": "policy, demand, and calendar authorization bounds must exist",
+  "validation_id": "6e0df3c4-44d1-5522-a168-077f010b25fa",
+  "validation_ref_s34_N": "da042370-360d-50c6-bf57-7fe8438ca443",
+  "demand_id": "94dbb680-fb34-58c4-ac65-e63a4fc0999a",
+  "demand_ref_s34_F": "7c5aa222-1bdd-569c-a672-c88e541e8924",
+  "nutrition_demand_feature_id": "94dbb680-fb34-58c4-ac65-e63a4fc0999a",
+  "stage": "COMMIT_READY",
+  "observed_unchanged_snapshot": true,
+  "actual_guard_trace": [
+    {
+      "command": "PublishManifest",
+      "guard": "require_test_execution_ingress",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "PublishManifest",
+      "guard": "require_execution_request",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "_progress_sources",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "_progress_sources",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "RecordSnapshot",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "RecordSnapshot",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "_progress_sources",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "RecordProposal",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "RecordProposal",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "RecordProposal",
+      "guard": "_progress_sources",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "_progress_sources",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "RecordDemandFeatures",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "RecordDemandFeatures",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "RecordDemandFeatures",
+      "guard": "_progress_sources",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "_progress_sources",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "RecordProposal",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "RecordProposal",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "RecordProposal",
+      "guard": "_progress_sources",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "_progress_sources",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "ResolveEvidence",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "ResolveEvidence",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "ResolveEvidence",
+      "guard": "_progress_sources",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "RecordValidation",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "RecordValidation",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "RecordValidation",
+      "guard": "_progress_sources",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "AdvanceAttempt",
+      "guard": "_progress_sources",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "CommitBundle",
+      "guard": "require_test_execution_ingress",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    },
+    {
+      "command": "CommitBundle",
+      "guard": "require_current_fence",
+      "status": "PASSED",
+      "subject": "905f5006-9e2c-4809-b2c0-7984ae9ee3b4"
+    }
+  ],
+  "later_synthetic_certificate_branch": "Static inspection only: prepare_execution_inputs expects synthetic upstream certificate keys. This branch was not reached in the failing trajectory.",
+  "later_branch_location": "src/kineticloop/persistence/transactions.py:4417",
+  "allowed_boundary": "transactions.py changes only full T6 exact source freshness filter/strict source validation and a narrowly extracted internal read helper shared with support query.",
+  "coordinator_decision_required": [
+    "Refine required legacy execution oracle to mechanical legacy COMMIT_READY plus canonical full T6/T7 under unchanged consumers.",
+    "Assign or approve a separately scoped correction of legacy mechanical consumer compatibility, with any required protocol-version/ADR analysis."
+  ],
+  "frozen_spec_change_performed": false,
+  "denial_is_not_positive_oracle_PASS": true,
+  "raw_evidence_ref": "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_owner_trajectories_dc.log"
+}

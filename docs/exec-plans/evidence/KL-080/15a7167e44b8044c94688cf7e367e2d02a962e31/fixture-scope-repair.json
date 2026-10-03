@@ -1,0 +1,131 @@
+{
+  "base_commit": "fc8a044ffa4d15a74ce5dc59298ae411f1f4009b",
+  "tested_commit": "15a7167e44b8044c94688cf7e367e2d02a962e31",
+  "existing_current_fixtures_enum_only": [
+    {
+      "path": "tests/unit/workflow/test_deterministic_planning.py",
+      "enum_only_diff_verified": true,
+      "changes": [
+        {
+          "before": "            admission=\"ADMITTED\",",
+          "after": "            admission=\"ELIGIBLE\","
+        },
+        {
+          "before": "            association=\"CONFIRMED\",",
+          "after": "            association=\"MATCHED\","
+        }
+      ]
+    },
+    {
+      "path": "tests/unit/workflow/test_full_action_preparation.py",
+      "enum_only_diff_verified": true,
+      "changes": [
+        {
+          "before": "            admission=\"ADMITTED\",",
+          "after": "            admission=\"ELIGIBLE\","
+        },
+        {
+          "before": "            association=\"CONFIRMED\",",
+          "after": "            association=\"MATCHED\","
+        }
+      ]
+    },
+    {
+      "path": "tests/db/test_deterministic_planning.py",
+      "enum_only_diff_verified": true,
+      "changes": [
+        {
+          "before": "        assoc_body = {\"fixture_association\": \"CONFIRMED\", \"event_id\": str(event)}",
+          "after": "        assoc_body = {\"fixture_association\": \"MATCHED\", \"event_id\": str(event)}"
+        },
+        {
+          "before": "            \"INSERT INTO kineticloop.event_association_decisions(id,subject_id,association_family_identity,association_state,ref_s11_id,content_hash,typed_payload) VALUES (%s,%s,'fixture-event','CONFIRMED',%s,%s,%s)\",",
+          "after": "            \"INSERT INTO kineticloop.event_association_decisions(id,subject_id,association_family_identity,association_state,ref_s11_id,content_hash,typed_payload) VALUES (%s,%s,'fixture-event','MATCHED',%s,%s,%s)\","
+        },
+        {
+          "before": "        admission_body = {\"fixture_admission\": \"ADMITTED\", \"valid_until\": end.isoformat()}",
+          "after": "        admission_body = {\"fixture_admission\": \"ELIGIBLE\", \"valid_until\": end.isoformat()}"
+        },
+        {
+          "before": "            \"INSERT INTO kineticloop.admission_decisions(id,subject_id,action_scope,decision,ref_s05_id,ref_s09_id,ref_s10_id,content_hash,typed_payload) VALUES (%s,%s,'TEST_ONLY','ADMITTED',%s,%s,%s,%s,%s)\",",
+          "after": "            \"INSERT INTO kineticloop.admission_decisions(id,subject_id,action_scope,decision,ref_s05_id,ref_s09_id,ref_s10_id,content_hash,typed_payload) VALUES (%s,%s,'TEST_ONLY','ELIGIBLE',%s,%s,%s,%s,%s)\","
+        }
+      ]
+    },
+    {
+      "path": "tests/db/test_full_action_preparation.py",
+      "enum_only_diff_verified": true,
+      "changes": [
+        {
+          "before": "        assoc_body = {\"fixture_association\": \"CONFIRMED\", \"event_id\": str(event)}",
+          "after": "        assoc_body = {\"fixture_association\": \"MATCHED\", \"event_id\": str(event)}"
+        },
+        {
+          "before": "            \"INSERT INTO kineticloop.event_association_decisions(id,subject_id,association_family_identity,association_state,ref_s11_id,content_hash,typed_payload) VALUES (%s,%s,'fixture-event','CONFIRMED',%s,%s,%s)\",",
+          "after": "            \"INSERT INTO kineticloop.event_association_decisions(id,subject_id,association_family_identity,association_state,ref_s11_id,content_hash,typed_payload) VALUES (%s,%s,'fixture-event','MATCHED',%s,%s,%s)\","
+        },
+        {
+          "before": "        admission_body = {\"fixture_admission\": \"ADMITTED\", \"valid_until\": admission_end.isoformat()}",
+          "after": "        admission_body = {\"fixture_admission\": \"ELIGIBLE\", \"valid_until\": admission_end.isoformat()}"
+        },
+        {
+          "before": "            \"INSERT INTO kineticloop.admission_decisions(id,subject_id,action_scope,decision,ref_s05_id,ref_s09_id,ref_s10_id,content_hash,typed_payload) VALUES (%s,%s,'TEST_ONLY','ADMITTED',%s,%s,%s,%s,%s)\",",
+          "after": "            \"INSERT INTO kineticloop.admission_decisions(id,subject_id,action_scope,decision,ref_s05_id,ref_s09_id,ref_s10_id,content_hash,typed_payload) VALUES (%s,%s,'TEST_ONLY','ELIGIBLE',%s,%s,%s,%s,%s)\","
+        }
+      ]
+    },
+    {
+      "path": "tests/db/test_full_test_execution.py",
+      "enum_only_diff_verified": true,
+      "changes": [
+        {
+          "before": "        assoc_body = {\"fixture_association\": \"CONFIRMED\", \"event_id\": str(event)}",
+          "after": "        assoc_body = {\"fixture_association\": \"MATCHED\", \"event_id\": str(event)}"
+        },
+        {
+          "before": "            \"INSERT INTO kineticloop.event_association_decisions(id,subject_id,association_family_identity,association_state,ref_s11_id,content_hash,typed_payload) VALUES (%s,%s,'fixture-event','CONFIRMED',%s,%s,%s)\",",
+          "after": "            \"INSERT INTO kineticloop.event_association_decisions(id,subject_id,association_family_identity,association_state,ref_s11_id,content_hash,typed_payload) VALUES (%s,%s,'fixture-event','MATCHED',%s,%s,%s)\","
+        },
+        {
+          "before": "        admission_body = {\"fixture_admission\": \"ADMITTED\", \"valid_until\": admission_end.isoformat()}",
+          "after": "        admission_body = {\"fixture_admission\": \"ELIGIBLE\", \"valid_until\": admission_end.isoformat()}"
+        },
+        {
+          "before": "            \"INSERT INTO kineticloop.admission_decisions(id,subject_id,action_scope,decision,ref_s05_id,ref_s09_id,ref_s10_id,content_hash,typed_payload) VALUES (%s,%s,'TEST_ONLY','ADMITTED',%s,%s,%s,%s,%s)\",",
+          "after": "            \"INSERT INTO kineticloop.admission_decisions(id,subject_id,action_scope,decision,ref_s05_id,ref_s09_id,ref_s10_id,content_hash,typed_payload) VALUES (%s,%s,'TEST_ONLY','ELIGIBLE',%s,%s,%s,%s,%s)\","
+        }
+      ]
+    },
+    {
+      "path": "tests/db/test_test_only_demo.py",
+      "enum_only_diff_verified": true,
+      "changes": [
+        {
+          "before": "        assoc_body = {\"fixture_association\": \"CONFIRMED\", \"event_id\": str(event)}",
+          "after": "        assoc_body = {\"fixture_association\": \"MATCHED\", \"event_id\": str(event)}"
+        },
+        {
+          "before": "            \"INSERT INTO kineticloop.event_association_decisions(id,subject_id,association_family_identity,association_state,ref_s11_id,content_hash,typed_payload) VALUES (%s,%s,'fixture-event','CONFIRMED',%s,%s,%s)\",",
+          "after": "            \"INSERT INTO kineticloop.event_association_decisions(id,subject_id,association_family_identity,association_state,ref_s11_id,content_hash,typed_payload) VALUES (%s,%s,'fixture-event','MATCHED',%s,%s,%s)\","
+        },
+        {
+          "before": "        admission_body = {\"fixture_admission\": \"ADMITTED\", \"valid_until\": admission_end.isoformat()}",
+          "after": "        admission_body = {\"fixture_admission\": \"ELIGIBLE\", \"valid_until\": admission_end.isoformat()}"
+        },
+        {
+          "before": "            \"INSERT INTO kineticloop.admission_decisions(id,subject_id,action_scope,decision,ref_s05_id,ref_s09_id,ref_s10_id,content_hash,typed_payload) VALUES (%s,%s,'TEST_ONLY','ADMITTED',%s,%s,%s,%s,%s)\",",
+          "after": "            \"INSERT INTO kineticloop.admission_decisions(id,subject_id,action_scope,decision,ref_s05_id,ref_s09_id,ref_s10_id,content_hash,typed_payload) VALUES (%s,%s,'TEST_ONLY','ELIGIBLE',%s,%s,%s,%s,%s)\","
+        },
+        {
+          "before": "        assert audit[\"admission_decisions\"][0][0][\"decision\"] == \"ADMITTED\"",
+          "after": "        assert audit[\"admission_decisions\"][0][0][\"decision\"] == \"ELIGIBLE\""
+        }
+      ]
+    }
+  ],
+  "shared_assert_full_output_byte_identical_to_protected_base": true,
+  "shared_assert_source_sha256": "62581bb3e8a2c236df002ed6d0174d2a9750ea2b23b2f6e3e9facffe5d092f3d",
+  "additional_duplicate_verifier": "tests/db/test_source_decision_conformance.py::assert_duplicate_resolution",
+  "prior_cycle_reviewed_sha": "79fa887dc20f5865902b0b5d90ce0e4b68e0118e",
+  "prior_scope_finding_requires_new_independent_review": true
+}

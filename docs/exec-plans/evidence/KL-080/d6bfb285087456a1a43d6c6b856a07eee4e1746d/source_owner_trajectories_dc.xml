@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="12.700" timestamp="2026-10-02T16:24:02.538256-07:00" hostname="Daves-MacBook-Pro---26.local"><testcase classname="tests.db.test_source_decision_conformance" name="test_owner_trajectories[legacy]" time="5.633"><failure message="kineticloop.persistence.transactions.GuardRequired: policy, demand, and calendar authorization bounds must exist">database_urls = {'admin': 'postgresql://kineticloop:kineticloop-local-only@127.0.0.1:58373/kineticloop_kl080_source_d6bfb28_9a070975b0...': 'postgresql://kl_auditor_login:kl072-local-only@127.0.0.1:58373/kineticloop_kl080_source_d6bfb28_9a070975b04f', ...}
+full = False
+
+    @pytest.mark.parametrize("full", [False, True], ids=["legacy", "full-fdn"])
+    def test_owner_trajectories(database_urls: Any, full: bool) -&gt; None:
+        if full:
+            seed, request = ready(database_urls)
+        else:
+            seed = seed_source(database_urls, full=False)
+            with connect(database_urls["admin"]) as db:
+                P.upstream(db, seed)
+                basis, refs = P.begin(db, seed)
+                _, refs = L.full_pipeline(db, seed, basis, refs)
+                seed["basis"] = basis
+                request = legacy_commit_request(db, seed, basis, refs)
+        with connect(database_urls["admin"]) as db:
+            prepared = P.snapshot(db, auth(seed).subject_id)
+            try:
+                result = (
+                    service(db, seed).commit_full(request)
+                    if full
+&gt;                   else service(db, seed).commit(request)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                )
+
+tests/db/test_source_decision_conformance.py:899: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/kineticloop/persistence/protocol_execution.py:242: in commit
+    return self._commit(command, requested_valid_until=requested_valid_until)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/kineticloop/persistence/protocol_execution.py:506: in _commit
+    return self._fresh_or_historical(
+src/kineticloop/persistence/protocol_execution.py:112: in _fresh_or_historical
+    return operation()
+           ^^^^^^^^^^^
+src/kineticloop/persistence/protocol_execution.py:504: in fresh
+    return execute_command(self._connection, "CommitBundle", subject, operation)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/kineticloop/persistence/transactions.py:5808: in execute_command
+    result = operation(transaction)
+             ^^^^^^^^^^^^^^^^^^^^^^
+src/kineticloop/persistence/protocol_execution.py:472: in operation
+    outcome, replayed = tx.idempotent_outcome(
+src/kineticloop/persistence/transactions.py:5626: in idempotent_outcome
+    self.prepare_authorization_basis(**authorization_basis)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;kineticloop.persistence.transactions.RepositoryTransaction object at 0x10bc14410&gt;
+
+    def prepare_authorization_basis(
+        self,
+        *,
+        validation_id: UUID,
+        resolution_id: UUID,
+        intent_id: UUID,
+        head_id: UUID,
+        requested_valid_until: datetime | None = None,
+    ) -&gt; tuple[tuple[Mapping[str, Any], ...], str, datetime]:
+        """Server-compute the complete bounded T6 certificate basis under held locks."""
+    
+        if self.command_kind not in {"CommitBundle", "Reauthorize"}:
+            raise GuardRequired("authorization basis is exclusive to T6 owners")
+        if intent_id != self._coordination_context.get("verified_intent_id"):
+            raise GuardRequired("authorization basis must use the verified current intent")
+        if validation_id not in self._locked_ids.get("validation_results", set()):
+            raise GuardRequired("authorization basis requires the exact validation lock")
+        if head_id not in self._locked_ids.get("daily_plan_heads", set()):
+            raise GuardRequired("authorization basis requires the exact daily head lock")
+        _cursor(self).execute(
+            "SELECT manifest.id,manifest.revision,manifest.valid_until,"
+            "resolution.id,resolution.revision,resolution.resolution_expires_at,"
+            "validation.id,validation.revision,validation.valid_until,validation.result,"
+            "request.id,request.request_revision,intent.deadline,head.id,head.local_date,"
+            "clock_timestamp(),manifest.typed_payload,"
+            "GREATEST(manifest.recorded_at,"
+            "COALESCE(manifest.effective_at,manifest.recorded_at)),"
+            "GREATEST(resolution.recorded_at,"
+            "COALESCE(resolution.effective_at,resolution.recorded_at)),"
+            "GREATEST(validation.recorded_at,"
+            "COALESCE(validation.effective_at,validation.recorded_at)) "
+            "FROM kineticloop.planning_intents intent "
+            "JOIN kineticloop.planning_request_revisions request "
+            "ON request.subject_id=intent.subject_id AND request.id=intent.current_request_revision_id "
+            "JOIN kineticloop.planning_attempts attempt "
+            "ON attempt.subject_id=intent.subject_id AND attempt.id=intent.current_attempt_id "
+            "JOIN kineticloop.validation_results validation "
+            "ON validation.subject_id=intent.subject_id AND validation.id=%s "
+            "JOIN kineticloop.evidence_resolutions resolution "
+            "ON resolution.subject_id=intent.subject_id AND resolution.id=%s "
+            "JOIN kineticloop.decision_manifests manifest "
+            "ON manifest.subject_id=intent.subject_id AND manifest.id=%s "
+            "JOIN kineticloop.daily_plan_heads head "
+            "ON head.subject_id=intent.subject_id AND head.id=%s "
+            "WHERE intent.subject_id=%s AND intent.id=%s "
+            "AND attempt.id=%s AND attempt.status='COMMIT_READY' "
+            "AND attempt.fence_token=intent.fence_token "
+            "AND attempt.ref_s24_id=%s AND attempt.captured_epoch=%s "
+            "AND manifest.captured_epoch=%s "
+            "AND resolution.ref_s24_id=manifest.id "
+            "AND resolution.ref_s05_id=%s "
+            "AND validation.ref_s24_id=manifest.id "
+            "AND validation.ref_s36_id=resolution.id "
+            "AND validation.ref_s28_id=request.id "
+            "AND validation.ref_s29_id=attempt.id",
+            (
+                validation_id,
+                resolution_id,
+                self._coordination_context.get("current_manifest_id"),
+                head_id,
+                self.subject_id,
+                intent_id,
+                self._coordination_context.get("verified_attempt_id"),
+                self._coordination_context.get("current_manifest_id"),
+                self._coordination_context.get("authorization_epoch"),
+                self._coordination_context.get("authorization_epoch"),
+                self._coordination_context.get("active_policy_bundle_id"),
+            ),
+        )
+        row = _cursor(self).fetchone()
+        if row is None or row[9] != "PASS":
+            raise GuardRequired("authorization requires a current PASS validation basis")
+        if row[14] != self._coordination_context.get("verified_intent_local_date"):
+            raise GuardRequired("authorization head day must equal the verified intent day")
+        manifest_payload = dict(row[16] or {})
+        manifest_closure = manifest_payload.get("artifact_closure_ids")
+        manifest_roots = manifest_payload.get("artifact_root_ids")
+        verified_artifacts = sorted(str(item) for item in self._verified_artifacts)
+        if (
+            manifest_closure != verified_artifacts
+            or not isinstance(manifest_closure, list)
+            or not isinstance(manifest_roots, list)
+            or not manifest_roots
+            or not set(manifest_roots).issubset(set(manifest_closure))
+            or manifest_payload.get("artifact_dependency_closure_hash")
+            != self.artifact_closure_digest()
+        ):
+            raise ArtifactIdentityRequired(
+                "T6 registry lease must equal the current manifest artifact closure"
+            )
+        now = row[15]
+        _cursor(self).execute(
+            "SELECT revision,typed_payload FROM kineticloop.policy_bundles WHERE id=%s",
+            (self._coordination_context.get("active_policy_bundle_id"),),
+        )
+        policy = _cursor(self).fetchone()
+        if policy and policy[1].get("deterministic_fixture", {}).get("contract") == "kl079-full-actions-v1" and not self._coordination_context.get("full_execution_members"):
+            raise GuardRequired("full persisted policy requires full execution request; legacy downgrade denied")
+        _cursor(self).execute(
+            "SELECT resolution.action_type,validation.ref_s35_id,validation.ref_s34_id,"
+            "demand.ref_s34_id,demand.revision,proposal.demand_feature_id "
+            "FROM kineticloop.validation_results validation "
+            "JOIN kineticloop.evidence_resolutions resolution "
+            "ON resolution.subject_id=validation.subject_id "
+            "AND resolution.id=validation.ref_s36_id "
+            "JOIN kineticloop.prescription_demand_features demand "
+            "ON demand.subject_id=validation.subject_id AND demand.id=validation.ref_s35_id "
+            "JOIN kineticloop.proposal_revisions proposal "
+            "ON proposal.subject_id=validation.subject_id AND proposal.id=validation.ref_s34_id "
+            "WHERE validation.subject_id=%s AND validation.id=%s",
+            (self.subject_id, validation_id),
+        )
+        demand_basis = _cursor(self).fetchone()
+        _cursor(self).execute(
+            "SELECT typed_payload FROM kineticloop.daily_plan_heads WHERE subject_id=%s AND id=%s",
+            (self.subject_id, head_id),
+        )
+        calendar = _cursor(self).fetchone()
+        if (
+            policy is None
+            or calendar is None
+            or demand_basis is None
+            or demand_basis[1] is None
+            or demand_basis[2] is None
+            or (demand_basis[2] != demand_basis[3] and not self._coordination_context.get("full_execution_members"))
+            or demand_basis[1] != demand_basis[5]
+        ):
+&gt;           raise GuardRequired("policy, demand, and calendar authorization bounds must exist")
+E           kineticloop.persistence.transactions.GuardRequired: policy, demand, and calendar authorization bounds must exist
+
+src/kineticloop/persistence/transactions.py:3982: GuardRequired</failure></testcase><testcase classname="tests.db.test_source_decision_conformance" name="test_owner_trajectories[full-fdn]" time="6.635" /></testsuite></testsuites>

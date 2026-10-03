@@ -1,0 +1,48 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-080",
+  "reviewed_head_sha": "275d7f849b31c9fe123c8d8594b88a85d1c25355",
+  "review_type": "SECURITY_DATA_BOUNDARY",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "findings": [
+    {
+      "id": "KL080-HG049-SEC-001",
+      "severity": "BLOCKER",
+      "title": "Required normal evidence-storage gate fails at the reviewed revision",
+      "detail": "Independent revision-bound compact_evidence audit of protected base 034d6301316d0dade784a61b159c027b83fbce3a to reviewed SHA 275d7f849b31c9fe123c8d8594b88a85d1c25355 exits 1: changed task evidence/review blobs total 38,263,916 bytes against 16,777,216, and four preserved older plain blobs exceed 262,144 bytes. All seventeen revised command captures, own 106-case PostgreSQL suite and hosted 780-case regression pass independently; they do not satisfy this selected-task normal gate or the packet all-normal-gates DoD. The result truthfully remains BLOCKED. No new runtime data-authority bypass was found; approval remains unavailable.",
+      "remediation": "Keep all historical bytes and frozen/runtime boundaries intact. Resolve storage preservation through a separately authorized, reviewed governance decision or other explicitly compliant mechanism, obtain actual selected-task and installed App-bound normal gate PASS, and commit any resulting task result/evidence change before fresh SHA-bound review. Do not waive budgets, rewrite/delete prior evidence, promote task PASS, or substitute hosted/custom local proofs for the required installed gate.",
+      "evidence_refs": [
+        "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+        "docs/harness/MERGE_GATE.md",
+        "docs/exec-plans/active/KL-080.md",
+        "docs/exec-plans/completed/KL-080_RESULT.yaml",
+        "docs/exec-plans/reviews/KL-080/HG049_SECURITY_DATA_BOUNDARY/budget-audit.json"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-080.md",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "12_KineticLoop_Integration_Spec_v0.1.md",
+    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+    "docs/harness/M3_CLOSURE_CONTRACT.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/exec-plans/governance/HG-049.yaml",
+    "docs/exec-plans/evidence/HG-045/SOURCE_AUDIT.md",
+    "docs/exec-plans/evidence/HG-045/FEASIBILITY.md",
+    "src/kineticloop/workflow/deterministic_planning.py",
+    "src/kineticloop/persistence/deterministic_planning.py",
+    "src/kineticloop/persistence/transactions.py",
+    "tests/db/test_source_decision_conformance.py",
+    "tests/unit/workflow/test_source_decision_conformance.py",
+    "docs/exec-plans/completed/KL-080_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/final-checks.json",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/source_suite_dc.stdout.capture.json",
+    "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/hosted.manifest.json.capture.json",
+    "docs/exec-plans/reviews/KL-080/HG049_SECURITY_DATA_BOUNDARY/verify.py",
+    "docs/exec-plans/reviews/KL-080/HG049_SECURITY_DATA_BOUNDARY/verification.json",
+    "docs/exec-plans/reviews/KL-080/HG049_SECURITY_DATA_BOUNDARY/budget-audit.json",
+    "docs/exec-plans/reviews/KL-080/HG049_SECURITY_DATA_BOUNDARY_REPORT.md"
+  ]
+}

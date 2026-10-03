@@ -1,0 +1,52 @@
+{
+  "tested_commit": "15a7167e44b8044c94688cf7e367e2d02a962e31",
+  "observed_at_utc": "2026-10-03T00:40:05.200923+00:00",
+  "runs": [
+    {
+      "path": "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-run-37081179328.json",
+      "sha256": "362cb5cf86877b1746e078c88f132c81b580fcd44261191bad34c6758a903b8b",
+      "command": [
+        "/opt/homebrew/bin/gh",
+        "run",
+        "view",
+        "37081179328",
+        "--json",
+        "databaseId,headSha,status,conclusion,event,workflowName,url,jobs"
+      ],
+      "run_id": 37081179328,
+      "status": "in_progress",
+      "conclusion": "",
+      "url": "https://github.com/dstyle28/KineticLoop/actions/runs/37081179328"
+    },
+    {
+      "path": "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/hosted-run-37081179330.json",
+      "sha256": "36eb3767b59732a0362a4e876c8a1460eaa738a1e9241954fa3cc21bcae7c9d5",
+      "command": [
+        "/opt/homebrew/bin/gh",
+        "run",
+        "view",
+        "37081179330",
+        "--json",
+        "databaseId,headSha,status,conclusion,event,workflowName,url,jobs"
+      ],
+      "run_id": 37081179330,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/dstyle28/KineticLoop/actions/runs/37081179330"
+    }
+  ],
+  "workflows": [
+    {
+      "path": ".github/workflows/db.yml",
+      "byte_identical_to_protected_base": true,
+      "sha256": "efef56c3e5debb4c335fff41873889b209ce45979f950e85672165b0a1d06326"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "byte_identical_to_protected_base": true,
+      "sha256": "c955d1de33682d253aeac020efb56bb660c92759b223bd6211fefccd859d4d8a"
+    }
+  ],
+  "full_db_command": "uv run pytest tests/db",
+  "interpretation": "Actual hosted workflow execution; an in_progress DB run is NOT_RUN for the final hosted full DB PASS oracle. Completed quality success is separate. No hosted full DB PASS is claimed."
+}
