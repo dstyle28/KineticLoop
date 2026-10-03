@@ -1,0 +1,109 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-080",
+  "reviewed_head_sha": "79fa887dc20f5865902b0b5d90ce0e4b68e0118e",
+  "review_type": "PROTOCOL",
+  "status": "CHANGES_REQUIRED",
+  "review_contract_version": "v0.2",
+  "findings": [
+    {
+      "finding_id": "KL080-PROTOCOL-01",
+      "classification": "BLOCKER",
+      "title": "Required legacy canonical owner trajectory never reaches T6/T7",
+      "file": "tests/db/test_source_decision_conformance.py",
+      "line": 881,
+      "description": "The packet requires successful actual legacy and full owner trajectories through T6 and START/PAUSE/RESUME/CONTINUE. The canonical legacy preparation owner chain reaches COMMIT_READY, but ProtocolExecutionService.commit fails in unchanged RepositoryTransaction.prepare_authorization_basis: S37.ref_s34_id binds Nutrition while D.ref_s34_id binds Fitness, failing the single-proposal equality predicate at transactions.py:3979. The required selector records 1 failed / 1 passed and the full own suite records 1 failed / 105 passed. Neither the full-profile success nor the legacy preparation success satisfies the legacy positive execution oracle. The committed BLOCKED/FAIL result is honest, but DoD and merge prerequisites remain unsatisfied.",
+      "authority_refs": [
+        "docs/exec-plans/active/KL-080.md",
+        "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md"
+      ],
+      "evidence_refs": [
+        "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_owner_trajectories_dc.log",
+        "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_owner_trajectories_dc.xml",
+        "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.log",
+        "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.xml",
+        "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/legacy-scope-blocker.json",
+        "docs/exec-plans/completed/KL-080_RESULT.yaml"
+      ],
+      "required_action": "Resolve the packet/consumer compatibility conflict through authorized task/governance scope, then execute every required oracle at a new immutable tested revision and obtain fresh SHA-bound reviews. Do not loosen validation bindings, forge certificates, or relabel the existing denial as a successful legacy T6/T7 trajectory. A frozen protocol change is not shown necessary by this review."
+    },
+    {
+      "finding_id": "KL080-PROTOCOL-02",
+      "classification": "REQUIRED_FOLLOWUP",
+      "title": "Hosted full DB regression evidence remains a required completion gate",
+      "file": "docs/exec-plans/completed/KL-080_RESULT.yaml",
+      "line": 207,
+      "description": "The packet requires corrected older preparation/execution/demo/factset/preparation/interleaving/transaction-interface suites to remain positive under unchanged hosted full DB CI. The reviewed result explicitly leaves hosted full PostgreSQL CI for independent assessment and committed KL-080 executions contain only the own source suite plus unit/harness/lint/type/validation commands. This review cannot establish the required older-suite hosted regression PASS from those records.",
+      "evidence_refs": [
+        "docs/exec-plans/active/KL-080.md",
+        "docs/exec-plans/completed/KL-080_RESULT.yaml",
+        "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/final-checks.json",
+        "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/execution-layout.md"
+      ],
+      "required_action": "Before claiming DoD or merge readiness, bind positive unchanged hosted full DB CI results to the corrective implementation revision; retain the prohibition on foreign local pytest lifecycles."
+    },
+    {
+      "finding_id": "KL080-PROTOCOL-03",
+      "classification": "BLOCKER",
+      "title": "Older shared fixture assertion exceeds permitted fixture corrections",
+      "file": "tests/db/test_full_action_preparation.py",
+      "line": 1219,
+      "description": "The protected-base assertion is generalized to include optional extra_fact in source_members. The packet permits the four enumerated six source-literal edits and says all other declared current fixture corrections are prospective source-enum corrections with dependent hashes only. This extra optional-fixture behavior is neither a source enum correction nor a dependent hash correction, so it exceeds the current explicit fixture boundary even though the file appears in the path allowlist. Runtime protocol semantics are unaffected, but task scope is not satisfied.",
+      "evidence_refs": [
+        "docs/exec-plans/active/KL-080.md",
+        "tests/db/test_full_action_preparation.py",
+        "tests/db/test_source_decision_conformance.py"
+      ],
+      "required_action": "Restore the protected-base shared assertion apart from allowed source corrections and keep duplicate-source verification within the task-owned source conformance module, or obtain explicit packet scope authorization. Rerun the required commands at the changed implementation revision and obtain fresh reviews."
+    }
+  ],
+  "evidence_refs": [
+    "AGENTS.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    ".agents/skills/pr-merge-reviewer/SKILL.md",
+    ".agents/skills/protocol-guardian/SKILL.md",
+    "docs/exec-plans/active/KL-080.md",
+    "docs/harness/THREAD_RESULT_CONTRACT.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "THREAD_REVIEW.schema.json",
+    "docs/harness/M3_CLOSURE_CONTRACT.md",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+    "docs/exec-plans/evidence/HG-045/SOURCE_AUDIT.md",
+    "docs/exec-plans/evidence/HG-045/FEASIBILITY.md",
+    "src/kineticloop/workflow/deterministic_planning.py",
+    "src/kineticloop/persistence/deterministic_planning.py",
+    "src/kineticloop/persistence/transactions.py",
+    "tests/unit/workflow/test_source_decision_conformance.py",
+    "tests/db/test_source_decision_conformance.py",
+    "docs/contracts/source_decision_conformance.md",
+    "docs/exec-plans/completed/KL-080_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/final-checks.json",
+    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.log",
+    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.xml",
+    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_pu.xml",
+    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_owner_trajectories_dc.log",
+    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_owner_trajectories_dc.xml",
+    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/legacy-scope-blocker.json",
+    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/witness-index.json",
+    "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/preserved-baseline.json",
+    "docs/exec-plans/evidence/KL-080/entry.json",
+    "tests/db/test_full_action_preparation.py",
+    "docs/exec-plans/reviews/KL-080/PROTOCOL_REPORT.md"
+  ],
+  "verification": {
+    "independence": "Fresh specialist inspection of the exact committed base-to-reviewed diff, packet, indexed frozen sections, current source/tests/contracts/result and raw evidence. No parent implementation reasoning accepted as proof. No DB lifecycle, implementation/test/result/evidence changes, commit, or HEAD changes performed.",
+    "base_commit": "fc8a044ffa4d15a74ce5dc59298ae411f1f4009b",
+    "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+    "tested_suffix": "One linear implementation-to-reviewed bookkeeping commit changes only own result and new own evidence; runtime and tests identical to tested revision.",
+    "source_authority": "S13 ELIGIBLE and physical S12 MATCHED are enforced in both pure profiles and shared persistence reader; full T6 exact same-subject/policy/id helper filters ELIGIBLE. S27 ADMITTED and derived S36 CONFIRMED remain distinct. Runtime identifiers, RULES and request/wire shapes unchanged.",
+    "protocol_boundaries": "No migration, enum alias, source rewrite, changed admission ownership, T1-T8 atomic boundary, lock acquisition/order, external model/network wait, production activation, executable shadow, or product/release status change found in runtime diff. Source provenance/scope/hash/membership and actual/target guards remain fail closed.",
+    "historical_reconstruction": "Raw full-suite witness at line 80 shows protected base deployment, 65 runtime/helper blob SHA256 values independently matched to exact base Git blobs, untouched unconsumed full T6 request, only _progress_sources -> _verify_full_progress reach, malformed ADMITTED+CONFIRMED immutable rows and no later freshness claim. Current denial snapshot remains unchanged.",
+    "freshness_and_execution": "Raw full-suite witness at line 66 reaches actual freshness helper with exact admission id/revision and finite source end, then persists two TEST members. Seven separate support witnesses at lines 93/106/119/132/145/158/171 explicitly claim no end-to-end result. Full owner trajectory at line 197 succeeds; legacy trajectory at line 184 fails. Repair, finite expiry, revocation, receipt-only replay, duplicate and rollback cases preserve immutable source/output history.",
+    "raw_evidence": "Independently verified all 17 final stdout/JUnit hashes and tested SHA. Own PU JUnit is 6 passed; own DC JUnit is 105 passed, 1 failed; no skips/errors. Named owner selector is 1 passed, 1 failed. Full suite contains 106 own namespace witnesses and 106 cleanup witnesses. Normal unit JUnit is 247 passed; harness is 925 passed. No DB tests rerun during review.",
+    "authority_preservation": "All current indexed document and machine-readable blobs independently match indexed SHA256 and protected-base bytes. Ten direct predecessor integration merge commits verified ancestral to protected base. No historical evidence or product requirement status edits found.",
+    "spec_change_required": false,
+    "merge_recommendation": "DO_NOT_MERGE: result is BLOCKED/FAIL and required legacy positive trajectory remains absent."
+  }
+}
