@@ -1,0 +1,179 @@
+{
+  "reviewed_head": "b71d2d63f8bc27ab0e905b0be8a0cea5f0122a91",
+  "source": "7b35dc5dd7c488b60651175574e37b5d9389d335",
+  "base": "d08927706a01a397dac2c78ca4aec7e9918a389c",
+  "metadata_counts": {
+    "CURRENT_DOCUMENT_INDEX.json": 27,
+    "HARNESS_DOCUMENT_MANIFEST.json": 172
+  },
+  "shared_validator_exact_reconstruction": true,
+  "readme_exact_reconstruction": true,
+  "historical_nonzero_evidence": [
+    {
+      "path": "docs/exec-plans/evidence/HG-047/development-070f94f/harness.json",
+      "exit_code": 2,
+      "test_counts": {
+        "passed": 609
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-047/development-166bf3e/unit.json",
+      "exit_code": 1,
+      "test_counts": {
+        "failed": 1,
+        "passed": 240
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-047/development-8a78241/dependency_sync-log.json",
+      "exit_code": 1,
+      "test_counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-047/development-8a78241/harness-log.json",
+      "exit_code": 1,
+      "test_counts": {
+        "passed": 1304,
+        "errors": 2
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-047/development-8a78241/image_build-log.json",
+      "exit_code": 1,
+      "test_counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-047/development-8a78241/lint-log.json",
+      "exit_code": 1,
+      "test_counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-047/development-8a78241/published-check-json.json",
+      "exit_code": 1,
+      "test_counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-047/development-8a78241/receipt-json.json",
+      "exit_code": 1,
+      "test_counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-047/development-8a78241/typecheck-log.json",
+      "exit_code": 1,
+      "test_counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-047/development-8a78241/unit-log.json",
+      "exit_code": 1,
+      "test_counts": {
+        "passed": 241
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-047/development-8a78241/worker--harness-xml.json",
+      "exit_code": 1,
+      "test_counts": {
+        "passed": 1,
+        "skipped": 1,
+        "error": 1,
+        "deselected": 1,
+        "xfailed": 1,
+        "xpassed": 1,
+        "failed": 1
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-047/development-8a78241/worker--run--execution-json.json",
+      "exit_code": 1,
+      "test_counts": {
+        "passed": 1,
+        "skipped": 1,
+        "error": 1,
+        "deselected": 1,
+        "xfailed": 1,
+        "xpassed": 1,
+        "failed": 1
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-047/development-8a78241/worker--unit-xml.json",
+      "exit_code": 1,
+      "test_counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-047/development-8a78241/worker-receipt-json.json",
+      "exit_code": 1,
+      "test_counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-047/development-b30a9c6/authority.json",
+      "exit_code": 1,
+      "test_counts": {}
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/collection.json",
+      "exit_code": 0,
+      "test_counts": {
+        "passed": 1,
+        "skipped": 1,
+        "error": 1,
+        "deselected": 1,
+        "xfailed": 1,
+        "xpassed": 1,
+        "failed": 1
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--harness-xml.json",
+      "exit_code": 0,
+      "test_counts": {
+        "passed": 1,
+        "skipped": 1,
+        "error": 1,
+        "deselected": 1,
+        "xfailed": 1,
+        "xpassed": 1,
+        "failed": 1
+      }
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--run--execution-json.json",
+      "exit_code": 0,
+      "test_counts": {
+        "passed": 1,
+        "skipped": 1,
+        "error": 1,
+        "deselected": 1,
+        "xfailed": 1,
+        "xpassed": 1,
+        "failed": 1
+      }
+    }
+  ],
+  "counts": {
+    "harness": 1324,
+    "unit": 241
+  },
+  "collection_count": 1324,
+  "collection_unique": 1324,
+  "ordinary_json_probe": {
+    "literal": {
+      "classification": null,
+      "returned": "plain"
+    },
+    "unicode": {
+      "error": "evidence-duplicate-key"
+    }
+  },
+  "budget": {
+    "identity": "HG-047",
+    "base": "d08927706a01a397dac2c78ca4aec7e9918a389c",
+    "head": "b71d2d63f8bc27ab0e905b0be8a0cea5f0122a91",
+    "stored_bytes": 3733970,
+    "files": 257,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "intermediate_validator_lines": 1513,
+  "repaired_validator_lines": 4744
+}

@@ -1,0 +1,209 @@
+{
+  "reviewed_head_sha": "589e538579f519bc10d178fa02dff12332931ba7",
+  "base_commit": "391c9198fa8ec647e377a0572700bc7568468c85",
+  "tested_commit": "f29ffa97d9057eacc4bda7ad593b843c9c52c5a2",
+  "status": "PASS",
+  "raw_command_checks": {
+    "lint": {
+      "command": "docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run --no-sync python -m ruff check .",
+      "raw_bytes": 19,
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "typecheck": {
+      "command": "docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run --no-sync python -m mypy --no-incremental",
+      "raw_bytes": 45,
+      "raw_sha256": "1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe"
+    },
+    "unit": {
+      "command": "docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run --no-sync python -I /gate/tools/harness/gate_pytest.py -q tests/unit -o xfail_strict=true --junitxml=/evidence/unit.xml",
+      "raw_bytes": 422,
+      "raw_sha256": "e432dad1f2ac64e920307d7938aea1f7e392a105d6cdbb40710f0b3e76fa2096"
+    },
+    "harness": {
+      "command": "docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run --no-sync python -I /gate/tools/harness/gate_pytest.py -q tests/harness -o xfail_strict=true --junitxml=/evidence/harness.xml",
+      "raw_bytes": 1634,
+      "raw_sha256": "6fbf94451955adca5c6d48cbbedb887203968b392302ecf421411317c369cf6d"
+    },
+    "authority": {
+      "command": "docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run --no-sync python -I /gate/tools/harness/gate_validate.py",
+      "raw_bytes": 38,
+      "raw_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70"
+    },
+    "scope": {
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python docs/exec-plans/evidence/HG-047/audit.py 391c9198fa8ec647e377a0572700bc7568468c85 f29ffa97d9057eacc4bda7ad593b843c9c52c5a2",
+      "raw_bytes": 18637,
+      "raw_sha256": "46bc0c081ef69813d8d1b1ee785c9238f494b4b8804283088f60e86103375bbb"
+    },
+    "source_diff": {
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src git diff --check 391c9198fa8ec647e377a0572700bc7568468c85 f29ffa97d9057eacc4bda7ad593b843c9c52c5a2",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "collection": {
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python -m pytest --collect-only -q tests/harness",
+      "raw_bytes": 3154753,
+      "raw_sha256": "5fa7825273e579293760c41253a5a5129709b44e327e635a25fadd76c07fd723"
+    },
+    "performance": {
+      "command": "PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python docs/exec-plans/evidence/HG-047/benchmark.py",
+      "raw_bytes": 2353,
+      "raw_sha256": "ac82800c046e05e0204bed6617044ab2e2e0f869139bb3d87c38a8d05abec14e"
+    }
+  },
+  "verified_envelopes": {
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/collection.json": {
+      "raw_bytes": 3154753,
+      "raw_sha256": "5fa7825273e579293760c41253a5a5129709b44e327e635a25fadd76c07fd723"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/dependency_sync.json": {
+      "raw_bytes": 1338,
+      "raw_sha256": "c8149d94c8ea96a9690f9187312b7af3c624079716ec66f7ff79e7d67d989a86"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/development-driver-py.json": {
+      "raw_bytes": 2984,
+      "raw_sha256": "8bef81e1d5c0eb2551fbd7dceffca01eaa6e8f68fa898982e89ff52df43137ad"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/development-final-json.json": {
+      "raw_bytes": 3199,
+      "raw_sha256": "eedc247e695f8e669491600816c594da3de121a0d53f320a16102f9cf880ca1a"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/development-json.json": {
+      "raw_bytes": 2724,
+      "raw_sha256": "83dc3ad93ecbb0e9f04627d94359122643675889c5fb1c5e113ffe41be4691a5"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/driver-log.json": {
+      "raw_bytes": 858,
+      "raw_sha256": "3247b6d1c35e694cf6323bc0292ac026b4a2e09766c7d212a12f35a140668c53"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/harness.json": {
+      "raw_bytes": 1634,
+      "raw_sha256": "6fbf94451955adca5c6d48cbbedb887203968b392302ecf421411317c369cf6d"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/host--checks-json.json": {
+      "raw_bytes": 3806,
+      "raw_sha256": "18dc2cc3c1562697f20f72e3f3d7c9cb7d519d60a0e43e1774ad8aca4a049596"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/host-check-driver-py.json": {
+      "raw_bytes": 2903,
+      "raw_sha256": "99d907b8d0c716fcc67b087c982c04da81f2e5b885966e7f2d39510fef0e82e4"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/image_build.json": {
+      "raw_bytes": 2160,
+      "raw_sha256": "11d14f640d135aa2c4cde163312292e080304a20647807f2f14cd8f6a67212a4"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/lint.json": {
+      "raw_bytes": 19,
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/merge_gate.json": {
+      "raw_bytes": 38,
+      "raw_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/metadata-capture-note-txt.json": {
+      "raw_bytes": 657,
+      "raw_sha256": "9d8210154b3b9cb1ee5970b9a9b336fe2aa5472e5ef1c31f85b06a5d33234880"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/performance.json": {
+      "raw_bytes": 2353,
+      "raw_sha256": "ac82800c046e05e0204bed6617044ab2e2e0f869139bb3d87c38a8d05abec14e"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/scope.json": {
+      "raw_bytes": 18637,
+      "raw_sha256": "46bc0c081ef69813d8d1b1ee785c9238f494b4b8804283088f60e86103375bbb"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/source_diff.json": {
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/typecheck.json": {
+      "raw_bytes": 45,
+      "raw_sha256": "1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/unit.json": {
+      "raw_bytes": 422,
+      "raw_sha256": "e432dad1f2ac64e920307d7938aea1f7e392a105d6cdbb40710f0b3e76fa2096"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--harness-xml.json": {
+      "raw_bytes": 3513255,
+      "raw_sha256": "1e8140f19eb7c36de0517dd7da6c8db8d4b24ebd7eed4f0a42546d5bcfb41c10"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--run--execution-json.json": {
+      "raw_bytes": 3293764,
+      "raw_sha256": "cf9319c8c2dc44d3e8d22a494eac2b523b3a6349f9c08050ab5f4227382374c5"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--unit-xml.json": {
+      "raw_bytes": 33788,
+      "raw_sha256": "13bfddc73de6b7e9c11a642cd5cdc48777abcee1ca9f44f290a9bb9e37a6ac0c"
+    },
+    "docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker-receipt-json.json": {
+      "raw_bytes": 6828,
+      "raw_sha256": "ccdfb01542bd4a1ddbc1afc48e31dbbc6f4cb2802c6b74197ca0a910c5c14b09"
+    }
+  },
+  "raw_test_counts": {
+    "harness": {
+      "tests": 1306,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_raw_sha256": "1e8140f19eb7c36de0517dd7da6c8db8d4b24ebd7eed4f0a42546d5bcfb41c10"
+    },
+    "unit": {
+      "tests": 241,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_raw_sha256": "13bfddc73de6b7e9c11a642cd5cdc48777abcee1ca9f44f290a9bb9e37a6ac0c"
+    }
+  },
+  "harness_collection_execution_junit_equal": true,
+  "prior_failure_preserved": {
+    "head": "8a78241e9b752247c3c4f4a43c4fe54bad72ef6c",
+    "passed": 1304,
+    "errors": 2,
+    "cause": "E2BIG"
+  },
+  "protected_hashes": {
+    "FROZEN_BASELINE.json": "bb8cd79942d3ca735e38e0363d8f56c5c45bbd79210a6618d29704aac3dd04df",
+    "CURRENT_REQUIREMENT_SET.json": "c7ce1793c0b5fcbdec99afc8742e33b60e42cb633eacf9424ae84c4639dfa750",
+    "KineticLoop_Harness_Backlog_v0.2.json": "815de51547ff0c8cfa5bc0fd4e4f676d5fad8e67a40f48885d1aa41521685822",
+    "KineticLoop_Acceptance_Spec_v1.2.2.json": "32481bd6eb29fe0d8ce1e5ec3cb9b90821743cc5708343e4695a446f51e78892",
+    "KineticLoop_Integration_Acceptance_v0.1.json": "1b4ea126ed5cc8c45adde29a4db45fec96e9949267b21baf47934b4af69bf473",
+    "tools/harness/db_policy.py": "f38c298f1db950cd34e66fe74d95658ad1a23d5302c01260391fc0f573c89244",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md": "2158a80bdc0e16eaf9c2cd835f704bdc2f346565dc35cb0c1fc1a8c00a1b8eda",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md": "00bf3eb2e0e2e00867d114b42e147a2341d98454f08629c849ebf0b4c0c4916c"
+  },
+  "M3_constants_unchanged": [
+    "M3_BOUNDARY_SHADOW_DEFINITION_HASHES",
+    "M3_BOUNDARY_SHADOW_IDS",
+    "M3_BOUNDARY_SHADOW_PACKET_HASHES",
+    "M3_BOUNDARY_SHADOW_PLAN_SHA256",
+    "M3_CHECK_CONTRACT_DIGESTS",
+    "M3_EXIT_TASK_CHECKS",
+    "M3_NEXT_WAVE_DEFINITION_HASHES",
+    "M3_NEXT_WAVE_IDS",
+    "M3_NEXT_WAVE_PACKET_HASHES",
+    "M3_REGRESSION_COMMANDS",
+    "M3_TASK_IDS"
+  ],
+  "M3_oracle_functions_unchanged_excluding_session_decorator": [
+    "m3_pytest_count",
+    "m3_layer_errors",
+    "m3_dependency_order_errors",
+    "m3_frozen_authority_errors",
+    "m3_milestone_closure_errors"
+  ],
+  "latest_test_fix_AST_equal_after_removing_ids": true,
+  "tested_suffix_source_unchanged": true,
+  "development_execution_only": true,
+  "full_db_and_final_app_gate": "NOT_RUN",
+  "budget": {
+    "identity": "HG-047",
+    "base": "391c9198fa8ec647e377a0572700bc7568468c85",
+    "head": "589e538579f519bc10d178fa02dff12332931ba7",
+    "stored_bytes": 2241854,
+    "files": 176,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  }
+}

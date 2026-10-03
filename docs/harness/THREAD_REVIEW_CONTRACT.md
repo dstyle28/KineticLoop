@@ -27,3 +27,6 @@ This exception cannot supply implementation, result or task-check evidence creat
 `CHANGES_REQUIRED` findings are closed only by a new implementation revision and a new review artifact. Untracked comments do not close findings.
 
 The validator applies revision freshness to the selected task PR. Historical reviews of previously integrated tasks retain their recorded revision and are not invalidated by later unrelated task commits.
+
+Prospective compact evidence follows [Evidence Storage Policy](EVIDENCE_STORAGE_POLICY.md);
+all existing revision bindings and PASS oracles remain mandatory.

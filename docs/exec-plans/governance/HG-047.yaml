@@ -1,0 +1,379 @@
+change_identity: harness-governance-v0.1/HG-047
+display_change_id: HG-047
+base_commit: d08927706a01a397dac2c78ca4aec7e9918a389c
+tested_commit: 7b35dc5dd7c488b60651175574e37b5d9389d335
+change_status: PASS
+summary: Prospective lossless content-addressed gzip evidence with bounded Unicode-safe retrieval, revision/owner/hash
+  checks, preserved M3 proof semantics and PR budgets. Normally integrate merged HG048 developer concurrency
+  while retaining both complete implementations and all historical evidence. Fresh exact-source Linux development
+  checks pass; independent reviews and final reviewed-head App/full DB remain required.
+packets_refined: []
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- docs/exec-plans/evidence/HG-047/HISTORY.md
+- docs/exec-plans/evidence/HG-047/PERFORMANCE.md
+- docs/exec-plans/evidence/HG-047/ROUND2_SELF_REVIEW.md
+- docs/exec-plans/evidence/HG-047/ROUND3_SELF_REVIEW.md
+- docs/exec-plans/evidence/HG-047/ROUND4_SELF_REVIEW.md
+- docs/exec-plans/evidence/HG-047/ROUND4_VERIFICATION.json
+- docs/exec-plans/evidence/HG-047/SCOPE.md
+- docs/exec-plans/evidence/HG-047/SELF_REVIEW.md
+- docs/exec-plans/evidence/HG-047/audit.py
+- docs/exec-plans/evidence/HG-047/benchmark.py
+- docs/exec-plans/evidence/HG-047/development-070f94f/018e4a38e63b20c2400b44164688200c5d96aece661aacaf4c0688b8d2b32c9c.gz
+- docs/exec-plans/evidence/HG-047/development-070f94f/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz
+- docs/exec-plans/evidence/HG-047/development-070f94f/2fce8fc15f14442c1aba3b70bbab0b709b5789c13c2f22a46b65406c5b8c2c8d.gz
+- docs/exec-plans/evidence/HG-047/development-070f94f/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/HG-047/development-070f94f/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-047/development-070f94f/authority.json
+- docs/exec-plans/evidence/HG-047/development-070f94f/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-047/development-070f94f/ec398076317ede9a83d347455c37df313e466d200da75f2215a0d737647cd6dd.gz
+- docs/exec-plans/evidence/HG-047/development-070f94f/execution.json
+- docs/exec-plans/evidence/HG-047/development-070f94f/harness.json
+- docs/exec-plans/evidence/HG-047/development-070f94f/lint.json
+- docs/exec-plans/evidence/HG-047/development-070f94f/scope.json
+- docs/exec-plans/evidence/HG-047/development-070f94f/source_diff.json
+- docs/exec-plans/evidence/HG-047/development-070f94f/typecheck.json
+- docs/exec-plans/evidence/HG-047/development-070f94f/unit.json
+- docs/exec-plans/evidence/HG-047/development-166bf3e/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz
+- docs/exec-plans/evidence/HG-047/development-166bf3e/41e0abda72912ce9120aa93b64d6e8ca1177d9c0de1ad5e818641e9cefc0eda3.gz
+- docs/exec-plans/evidence/HG-047/development-166bf3e/57c1b5e9f0548004a7656a329f7b0dce54193596231a7c2e59e15b5d297a7cff.gz
+- docs/exec-plans/evidence/HG-047/development-166bf3e/80a17c64b7e9e2a66730b13c0ff1d12fe5cdd8ddc0d369470d81e95c62ba0923.gz
+- docs/exec-plans/evidence/HG-047/development-166bf3e/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-047/development-166bf3e/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-047/development-166bf3e/execution.json
+- docs/exec-plans/evidence/HG-047/development-166bf3e/lint.json
+- docs/exec-plans/evidence/HG-047/development-166bf3e/performance.json
+- docs/exec-plans/evidence/HG-047/development-166bf3e/scope.json
+- docs/exec-plans/evidence/HG-047/development-166bf3e/source_diff.json
+- docs/exec-plans/evidence/HG-047/development-166bf3e/typecheck.json
+- docs/exec-plans/evidence/HG-047/development-166bf3e/unit.json
+- docs/exec-plans/evidence/HG-047/development-8a78241/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz
+- docs/exec-plans/evidence/HG-047/development-8a78241/239ca62409d4760647d4ff292bcae8ec9391491dd89da8bb986a9ee19edb3224.gz
+- docs/exec-plans/evidence/HG-047/development-8a78241/2418d1ed3be3d024503a476cc21a5b48e1f7524ee42eb15a269d268ac3dcc532.gz
+- docs/exec-plans/evidence/HG-047/development-8a78241/2ccde75680815ea87461d562f4da58bf3de876ec3f580001fa28b1e7881765b8.gz
+- docs/exec-plans/evidence/HG-047/development-8a78241/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-047/development-8a78241/8f19c7a9dcf64f492d9d4e28a73da31b28706d3945915fc1362cbb1889f81397.gz
+- docs/exec-plans/evidence/HG-047/development-8a78241/99f04a3dcb93af973800ae0196ee52999386952238c364af20e1f311a8be0801.gz
+- docs/exec-plans/evidence/HG-047/development-8a78241/README.md
+- docs/exec-plans/evidence/HG-047/development-8a78241/a730cda6907c4717427b553a7924437e894a66c21917f73de10ae04a78761fa0.gz
+- docs/exec-plans/evidence/HG-047/development-8a78241/b5c418cef01ed3a8de82e7d9983807edac0cc9f7f419a00c165c48f6e365decb.gz
+- docs/exec-plans/evidence/HG-047/development-8a78241/c8f469e0b97241a935b73f937b7a54e9b671b0bbb35308122b7637d0bf2c5f99.gz
+- docs/exec-plans/evidence/HG-047/development-8a78241/dac78b5c1ef1a4a6463a9cb0ff77e106086f50800e308494bd9c8176b8213591.gz
+- docs/exec-plans/evidence/HG-047/development-8a78241/dependency_sync-log.json
+- docs/exec-plans/evidence/HG-047/development-8a78241/fe0b6f075ba4044225c5dfed1b1b38e3cf6209b8a69683a2a07c4dacf646e193.gz
+- docs/exec-plans/evidence/HG-047/development-8a78241/harness-log.json
+- docs/exec-plans/evidence/HG-047/development-8a78241/image_build-log.json
+- docs/exec-plans/evidence/HG-047/development-8a78241/lint-log.json
+- docs/exec-plans/evidence/HG-047/development-8a78241/published-check-json.json
+- docs/exec-plans/evidence/HG-047/development-8a78241/receipt-json.json
+- docs/exec-plans/evidence/HG-047/development-8a78241/typecheck-log.json
+- docs/exec-plans/evidence/HG-047/development-8a78241/unit-log.json
+- docs/exec-plans/evidence/HG-047/development-8a78241/worker--harness-xml.json
+- docs/exec-plans/evidence/HG-047/development-8a78241/worker--run--execution-json.json
+- docs/exec-plans/evidence/HG-047/development-8a78241/worker--unit-xml.json
+- docs/exec-plans/evidence/HG-047/development-8a78241/worker-receipt-json.json
+- docs/exec-plans/evidence/HG-047/development-ab4f21b/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-047/development-ab4f21b/source_diff.json
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/5fd2649c8ac66712b86f471fe955c689123b9f1668b4e65c2db0ef2e4ff48384.gz
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/authority.json
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/c5be17ddc17097849aea0d2f20521ec52f6fee67e664539dc08992ac7881361a.gz
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/dabf0ccdf57320cd56ebd0a81e5e78a2d83658a6a0ba1f460b6c10408db3d394.gz
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/execution.json
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/lint.json
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/performance.json
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/scope.json
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/source_diff.json
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/typecheck.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/4a3753070a66c3301beb7d1831adddfd95c85cbc284d28daaa02f1cb7c73781f.gz
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/562f011d3d8775cff98a08ba5c1ee818c40a43aa77f6e24c7ae8784311e07528.gz
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/8772e603fd11dc1288c9dc2bc95925f941b00d9c30da501a9ff8ef8b18985534.gz
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/a308a76b0ba7607029658a014521a48e259e9f0e15aa716acc8a3236a5d2d7e3.gz
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/authority.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/execution.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/harness.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/lint.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/performance.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/scope.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/source_diff.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/typecheck.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/unit.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/11d14f640d135aa2c4cde163312292e080304a20647807f2f14cd8f6a67212a4.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/13bfddc73de6b7e9c11a642cd5cdc48777abcee1ca9f44f290a9bb9e37a6ac0c.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/18dc2cc3c1562697f20f72e3f3d7c9cb7d519d60a0e43e1774ad8aca4a049596.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/1e8140f19eb7c36de0517dd7da6c8db8d4b24ebd7eed4f0a42546d5bcfb41c10.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/3247b6d1c35e694cf6323bc0292ac026b4a2e09766c7d212a12f35a140668c53.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/46bc0c081ef69813d8d1b1ee785c9238f494b4b8804283088f60e86103375bbb.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/5fa7825273e579293760c41253a5a5129709b44e327e635a25fadd76c07fd723.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/6fbf94451955adca5c6d48cbbedb887203968b392302ecf421411317c369cf6d.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/83dc3ad93ecbb0e9f04627d94359122643675889c5fb1c5e113ffe41be4691a5.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/8bef81e1d5c0eb2551fbd7dceffca01eaa6e8f68fa898982e89ff52df43137ad.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/99d907b8d0c716fcc67b087c982c04da81f2e5b885966e7f2d39510fef0e82e4.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/9d8210154b3b9cb1ee5970b9a9b336fe2aa5472e5ef1c31f85b06a5d33234880.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/ac82800c046e05e0204bed6617044ab2e2e0f869139bb3d87c38a8d05abec14e.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/c8149d94c8ea96a9690f9187312b7af3c624079716ec66f7ff79e7d67d989a86.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/ccdfb01542bd4a1ddbc1afc48e31dbbc6f4cb2802c6b74197ca0a910c5c14b09.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/cf9319c8c2dc44d3e8d22a494eac2b523b3a6349f9c08050ab5f4227382374c5.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/collection.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/dependency_sync.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/development-driver-py.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/development-final-json.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/development-json.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/driver-log.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/e432dad1f2ac64e920307d7938aea1f7e392a105d6cdbb40710f0b3e76fa2096.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/eedc247e695f8e669491600816c594da3de121a0d53f320a16102f9cf880ca1a.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/execution.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/harness.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/host--checks-json.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/host-check-driver-py.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/image_build.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/lint.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/merge_gate.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/metadata-capture-note-txt.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/performance.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/scope.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/source_diff.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/typecheck.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/unit.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--harness-xml.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--run--execution-json.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--unit-xml.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker-receipt-json.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/15309d85925f00d447ee9f32e1a182dfd1c6431288402db724c4298e9fd5f982.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/1af097575db0697ad342bfe1819dda97b321fc2da0947608239e2e3ec8483c99.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/1d5e92bbd93f7e5f1ac4b39a72c4022cf95506d4d959c14bb930f7c1a075ec1e.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/2e15eca13fc24fe3ee2f2dd2242a4426de5fb2e2c826c9b13b6d3c07f601b5ed.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/2e16c0d49d6e28b1367db7cdcfddd1f1812203f614060801083174874e28e2ca.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/36d9b35f1361487bdfc4cef25da50fb25341d15eeae225fd2a5ccd631ef8fdbb.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/3c206b0f3327d2eafd574a0c8b2cabe8538d30e62614d880c22f589f69173f9a.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/4bab41a1a2aa76140ef5b6cccff23b994e7dbeb7b3e59378ac545ce228818075.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/56ce89f3a8f923228c5f4083526268f1409ef0fe7caaa9d9da8b439eedc74933.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/936995db96e3ce14aca01f31dbc38b14eb9d7d48fe07415af36d1cf8cb526073.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/98bde06f0c20ead9d34479d8e44eac848066f608dea238641aef424670a7e634.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/a30c80dbffeb6c1d4a9405d4b8cc2446d2f45ff3a94359510b4bebfbdd19dd3c.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/a9cf83711922010d63a4ba276f6eb7e51c579e38772ed33e08146829ec7660f9.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/b78ee2482697ac6cb0679baca50cecfa3ca57f6a87fca71f77965b949a857be1.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/c20f594e0124baffcd7c2a6fbbc671fd9caa39ea45a349d7977ed430f53f6ab1.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/c7942a4b21565d683b8efcfed8b47973a97776bc0e8403fb869c38dc244eafab.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/d1326ffc6e475bc82c7d3199fedd317c3a5719e6fb9e1a867fb168309113e545.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/d50a2065d629981596063877778a0ad0d0d7b3a74f1aa0a1273eecdd5db287b8.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/dependency_sync-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/development-driver-py.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/development-initial-recovered-json.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/development-json.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/driver-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/e6bd533f95510870a2b7fa169b071954fb07ab8590232834ea399f638a0f1592.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/execution.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/f34982f909d55b2a4db62dca4af6ed7d2b16174432c125d8a5dba850f4b9c044.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/f60fff545b7907d4ecadfccb735f0c6ef0439e2e1dfad2b5211d8b0a83a8f8f4.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/fac79d9049a9bb56647b84ac5b64b84daf26e02708bc193dad05f5106a03cdf4.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/fc8006ec1e4d09fcb93decadb9030f7658701dfee2a46e5d68309f352b2b8be4.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/harness-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--authority-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--checks-json.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--collection-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--identity-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--integration-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--performance-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--scope-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--source_diff-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host-check-driver-py.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/identity-verifier-py.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/image_build-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/integration-verifier-py.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/lint-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/merge_gate-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/metadata-capture-note-txt.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/record-attempt1-py.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/typecheck-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/unit-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/worker--harness-xml.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/worker--run--execution-json.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/worker--unit-xml.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/worker-receipt-json.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/25a6e726ed95412b24e5e8a848509fe0ca5ed66a57b2f38f0182faccb2e8d4c6.gz
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/7b6201eb374ae5dabb204502b0a33dee17590bc219a875173d05f9f9dcf71261.gz
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/authority.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/c580149911452d739085d76d53e29c74d64b4dd095c854f098a2decdc2daec27.gz
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/e849815ff60a88bfd9e83f2cdad49ca263983d505a364d5120748538e844e428.gz
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/execution.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/harness.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/lint.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/performance.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/scope.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/source_diff.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/typecheck.json
+- docs/exec-plans/evidence/HG-047/selected-2dc15b7/unit.json
+- docs/exec-plans/governance/HG-047.yaml
+- docs/exec-plans/reviews/HG-047/GENERAL.json
+- docs/exec-plans/reviews/HG-047/GENERAL_REPORT.md
+- docs/exec-plans/reviews/HG-047/PROTOCOL.json
+- docs/exec-plans/reviews/HG-047/PROTOCOL_REPORT.md
+- docs/exec-plans/reviews/HG-047/SECURITY_DATA_BOUNDARY.json
+- docs/exec-plans/reviews/HG-047/SECURITY_DATA_BOUNDARY_REPORT.md
+- docs/exec-plans/reviews/HG-047/general_round2/GENERAL_REPORT.md
+- docs/exec-plans/reviews/HG-047/general_round2/focused.log
+- docs/exec-plans/reviews/HG-047/general_round2/ordinary_json_probe.json
+- docs/exec-plans/reviews/HG-047/general_round2/ordinary_json_probe.py
+- docs/exec-plans/reviews/HG-047/general_round2/verification.json
+- docs/exec-plans/reviews/HG-047/general_round2/verify.py
+- docs/exec-plans/reviews/HG-047/general_round3/REPORT.md
+- docs/exec-plans/reviews/HG-047/general_round3/focused.log
+- docs/exec-plans/reviews/HG-047/general_round3/verification.json
+- docs/exec-plans/reviews/HG-047/general_round3/verify.py
+- docs/exec-plans/reviews/HG-047/protocol_round2/REPORT.md
+- docs/exec-plans/reviews/HG-047/protocol_round2/focused-pytest.log
+- docs/exec-plans/reviews/HG-047/protocol_round2/probe.json
+- docs/exec-plans/reviews/HG-047/protocol_round3/REPORT.md
+- docs/exec-plans/reviews/HG-047/protocol_round3/checks.json
+- docs/exec-plans/reviews/HG-047/protocol_round3/focused-pytest.log
+- docs/exec-plans/reviews/HG-047/protocol_round3/focused.xml
+- docs/exec-plans/reviews/HG-047/protocol_round3/interrupted.log
+- docs/exec-plans/reviews/HG-047/protocol_round3/interrupted.xml
+- docs/exec-plans/reviews/HG-047/protocol_round3/verification.json
+- docs/exec-plans/reviews/HG-047/protocol_round3/verify.py
+- docs/exec-plans/reviews/HG-047/security_round2/budget.log
+- docs/exec-plans/reviews/HG-047/security_round2/decoder-security.log
+- docs/exec-plans/reviews/HG-047/security_round2/m3-regression.log
+- docs/exec-plans/reviews/HG-047/security_round2/new-cases-collection.log
+- docs/exec-plans/reviews/HG-047/security_round2/verification.log
+- docs/exec-plans/reviews/HG-047/security_round2/verify.py
+- docs/exec-plans/reviews/HG-047/security_round3/REPORT.md
+- docs/exec-plans/reviews/HG-047/security_round3/checks.json
+- docs/exec-plans/reviews/HG-047/security_round3/controller-copy.log
+- docs/exec-plans/reviews/HG-047/security_round3/controller-copy.xml
+- docs/exec-plans/reviews/HG-047/security_round3/finalize.py
+- docs/exec-plans/reviews/HG-047/security_round3/focused.log
+- docs/exec-plans/reviews/HG-047/security_round3/focused.xml
+- docs/exec-plans/reviews/HG-047/security_round3/raw-oracles.json
+- docs/exec-plans/reviews/HG-047/security_round3/verification.json
+- docs/exec-plans/reviews/HG-047/security_round3/verification.log
+- docs/exec-plans/reviews/HG-047/security_round3/verify.py
+- docs/harness/EVIDENCE_STORAGE_POLICY.md
+- docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
+- docs/harness/LOCAL_DB_CI.md
+- docs/harness/M3_CLOSURE_CONTRACT.md
+- docs/harness/MERGE_GATE.md
+- docs/harness/THREAD_RESULT_CONTRACT.md
+- docs/harness/THREAD_REVIEW_CONTRACT.md
+- tests/harness/test_compact_evidence.py
+- tests/harness/test_local_gate.py
+- tests/harness/test_m3_milestone_closure.py
+- tests/harness/test_review_evidence_provenance.py
+- tests/harness/test_validator.py
+- tools/harness/README.md
+- tools/harness/compact_evidence.py
+- tools/harness/local_gate.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: lint
+  command: docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src
+    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-b355dd07b10a4bca839f8287ca55ddf1 uv run
+    --no-sync python -m ruff check .
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/lint-log.json
+- check_id: typecheck
+  command: docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src
+    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-b355dd07b10a4bca839f8287ca55ddf1 uv run
+    --no-sync python -m mypy --no-incremental
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/typecheck-log.json
+- check_id: unit
+  command: docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src
+    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-b355dd07b10a4bca839f8287ca55ddf1 uv run
+    --no-sync python -I /gate/tools/harness/gate_pytest.py -q tests/unit -o xfail_strict=true --junitxml=/evidence/unit.xml
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/unit-log.json
+- check_id: harness
+  command: docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src
+    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-b355dd07b10a4bca839f8287ca55ddf1 uv run
+    --no-sync python -I /gate/tools/harness/gate_pytest.py -q tests/harness -o xfail_strict=true --junitxml=/evidence/harness.xml
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/harness-log.json
+- check_id: installed_authority
+  command: docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src
+    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-b355dd07b10a4bca839f8287ca55ddf1 uv run
+    --no-sync python -I /gate/tools/harness/gate_validate.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/merge_gate-log.json
+- check_id: scope
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    docs/exec-plans/evidence/HG-047/audit.py d08927706a01a397dac2c78ca4aec7e9918a389c 7b35dc5dd7c488b60651175574e37b5d9389d335
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--scope-log.json
+- check_id: source_diff
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src git diff --check d08927706a01a397dac2c78ca4aec7e9918a389c
+    7b35dc5dd7c488b60651175574e37b5d9389d335
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--source_diff-log.json
+- check_id: collection
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    -m pytest --collect-only -q tests/harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--collection-log.json
+- check_id: performance
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    docs/exec-plans/evidence/HG-047/benchmark.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--performance-log.json
+- check_id: integration
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    /private/tmp/hg047-integration-verify.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--integration-log.json
+- check_id: authority
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    tools/harness/validate_harness.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--authority-log.json
+- check_id: execution_identity
+  command: /private/tmp/hg044-venv/bin/python /private/tmp/hg047-round4-identity.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--identity-log.json
+- check_id: committed_evidence_integrity
+  command: /private/tmp/hg044-venv/bin/python /private/tmp/hg047-round4-verify.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/ROUND4_VERIFICATION.json
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- DEVELOPMENT_NO_PUBLICATION only. Full DB and final App publication are NOT_RUN at this source; fresh GENERAL,
+  PROTOCOL and SECURITY_DATA_BOUNDARY reviews, reviewed controller installation, exact admission and root-run
+  final App/full DB gate remain mandatory. Task PASS does not imply review, merge, product requirement, M3
+  or release PASS.
+- Intermediate merge a878a70 contains conflict-resolver truncation; repair 7b35dc5 restores complete parent
+  blobs and both allowlists. The source bootstrap record is BLOCKED with historical checks. Only the fresh
+  repaired-source execution is selected in this result.
+- Installed reviewed b737094 helper assets were byte-verified and used code-only with full_db=False/test_only=True;
+  no signer configuration, key, App object, admission, publication or external installation mutation occurred.
+  Both isolated resources were removed. Actual integrated source authority is independently checked.
+- All merged HG045/HG046/HG048 source, governance, evidence and reviews are preserved relative to the new protected
+  base except already-authorized HG047 shared paths; all prior HG047 evidence/review reports remain historical
+  and stale for this new source.
+- GENERAL G-01 ordinary duplicate-key Unicode JSON remains a prospective NONBLOCKING separate concern. Historical
+  large planning parameter IDs remain unchanged; full Linux tests pass.
+- Failed final App gate at 8a78241 (1304 passes and two E2BIG setup errors) and all earlier failed/interrupted
+  attempts remain preserved and are not relabeled PASS. Earlier compact evidence remains at original ancestor/path
+  documented by HISTORY.md.
+- Product requirements remain NOT_RUN; no frozen Protocol/DB, Evidence Admission, authorization, lock order,
+  runtime, migration, production activation, executable shadow or provider authority semantics change.

@@ -1,0 +1,37 @@
+{
+  "reviewed_head": "b71d2d63f8bc27ab0e905b0be8a0cea5f0122a91",
+  "tested_commit": "7b35dc5dd7c488b60651175574e37b5d9389d335",
+  "status": "PASS",
+  "receipt_artifacts_verified": 11,
+  "worker_checks_verified": 7,
+  "host_checks_verified": 6,
+  "installed_assets_sha_verified": 11,
+  "initial_receipt_exact_bytes_reconstructed": true,
+  "final_metadata_separate_preserved": true,
+  "container_removed_recorded": true,
+  "volume_removed_recorded": true,
+  "harness_unique_collection_observer_junit_equal": 1324,
+  "collection_identity_sha256": "77dab8d6ac81fa5f7403a5bbc4619321d1d1d05fd5f743a752999cbc35066557",
+  "no_test_failures_errors_skips": true,
+  "historical_failed_junit": {
+    "reference": "docs/exec-plans/evidence/HG-047/development-8a78241/worker--harness-xml.json",
+    "total": 1306,
+    "errors": [
+      {
+        "classname": "tests.harness.test_compact_evidence",
+        "error_type": null,
+        "name_sha256": "fd3ef8a4e4af26a72db01c3908f0aa2e4a0d6249ef439fb4f3138821cec9179b"
+      },
+      {
+        "classname": "tests.harness.test_compact_evidence",
+        "error_type": null,
+        "name_sha256": "06e1cfa48fdc6d1f918611621df027d8e84971431e493355d84ea2e15a8cb5f7"
+      }
+    ]
+  },
+  "limitations": [
+    "Cleanup verified from complete receipt and driver; no Docker calls in this review.",
+    "Full DB and final App gate remain NOT_RUN; no final merge recommendation.",
+    "Observer records session.items, not phase events; JUnit case identity corroborates completion."
+  ]
+}

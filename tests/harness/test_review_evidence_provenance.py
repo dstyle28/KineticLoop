@@ -295,7 +295,8 @@ def test_present_nonregular_entry_cannot_be_replaced_through_exception(
             target.rmdir()
         else:
             target.unlink()
-    assert v.evidence_exists(history.root, ref, history.reviewed)
+    assert v.revision_git_entry(history.root, ref, history.reviewed) is not None
+    assert not v.evidence_exists(history.root, ref, history.reviewed)
     assert not v.revision_regular_file(history.root, ref, history.reviewed)
     history.put(ref, 'review-only replacement\n')
     review = history.review([ref])

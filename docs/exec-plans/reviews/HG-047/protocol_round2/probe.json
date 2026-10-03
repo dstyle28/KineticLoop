@@ -1,0 +1,26 @@
+{
+  "purpose": "Independent synthetic missing-inner-payload regression; no product or real M3 execution claim",
+  "reviewed_head_sha": "b7370940c8b9165f471322baaeef7d9e250dfac6",
+  "previous_review_sha": "47de76d206df89124ffe41c59b0b983af4defc97",
+  "fixture_tested_commit": "cf4b3858c3bf5393081c1913d1f5916f85b69b07",
+  "fixture_evidence_commit": "f3cf5a800519bd66bb842db787be4d4ee0d995aa",
+  "results": {
+    "prior": {
+      "direct_available": false,
+      "outer_available": true,
+      "m3_errors": [],
+      "outer_budget_errors": []
+    },
+    "reviewed": {
+      "direct_available": false,
+      "outer_available": false,
+      "m3_errors": [
+        "milestone-m3-regression:evidence-nested-envelope"
+      ],
+      "outer_budget_errors": [
+        "evidence-nested-envelope"
+      ]
+    }
+  },
+  "status": "PASS"
+}

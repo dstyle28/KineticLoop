@@ -1,0 +1,91 @@
+{
+  "tested_commit": "070f94fee7d76b8e76d10a681f0a5db1c5a9e2b5",
+  "checks": {
+    "harness": {
+      "tested": "070f94fee7d76b8e76d10a681f0a5db1c5a9e2b5",
+      "command": "/private/tmp/hg044-venv/bin/python -m kineticloop.db.cli test-harness",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 2,
+      "timestamp": "2026-10-03T02:25:19.284966+00:00",
+      "seconds": 422.741033583181,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-070f94f/harness.json",
+      "outcome": "INTERRUPTED"
+    },
+    "unit": {
+      "tested": "070f94fee7d76b8e76d10a681f0a5db1c5a9e2b5",
+      "command": "/private/tmp/hg044-venv/bin/python -m kineticloop.db.cli test-unit",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T02:25:19.280414+00:00",
+      "seconds": 377.07911320822313,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-070f94f/unit.json",
+      "outcome": "PASS"
+    },
+    "lint": {
+      "tested": "070f94fee7d76b8e76d10a681f0a5db1c5a9e2b5",
+      "command": "/private/tmp/hg044-venv/bin/python -m kineticloop.db.cli lint",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T02:25:20.217594+00:00",
+      "seconds": 0.0904072499834001,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-070f94f/lint.json",
+      "outcome": "PASS"
+    },
+    "typecheck": {
+      "tested": "070f94fee7d76b8e76d10a681f0a5db1c5a9e2b5",
+      "command": "/private/tmp/hg044-venv/bin/python -m kineticloop.db.cli typecheck",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T02:25:20.344870+00:00",
+      "seconds": 0.5246433329302818,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-070f94f/typecheck.json",
+      "outcome": "PASS"
+    },
+    "authority": {
+      "tested": "070f94fee7d76b8e76d10a681f0a5db1c5a9e2b5",
+      "command": "/private/tmp/hg044-venv/bin/python -m kineticloop.db.cli check-harness",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T02:25:20.902739+00:00",
+      "seconds": 369.68596250005066,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-070f94f/authority.json",
+      "outcome": "PASS"
+    },
+    "scope": {
+      "tested": "070f94fee7d76b8e76d10a681f0a5db1c5a9e2b5",
+      "command": "/private/tmp/hg044-venv/bin/python docs/exec-plans/evidence/HG-047/audit.py 391c9198fa8ec647e377a0572700bc7568468c85 070f94fee7d76b8e76d10a681f0a5db1c5a9e2b5",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T03:01:39.872703+00:00",
+      "seconds": 0.48534883302636445,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-070f94f/scope.json",
+      "outcome": "PASS"
+    },
+    "source_diff": {
+      "tested": "070f94fee7d76b8e76d10a681f0a5db1c5a9e2b5",
+      "command": "git diff --check 391c9198fa8ec647e377a0572700bc7568468c85 070f94fee7d76b8e76d10a681f0a5db1c5a9e2b5",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/ffff/KineticLoop/src"
+      },
+      "exit_code": 0,
+      "timestamp": "2026-10-03T03:01:40.385610+00:00",
+      "seconds": 0.014453334035351872,
+      "envelope": "docs/exec-plans/evidence/HG-047/development-070f94f/source_diff.json",
+      "outcome": "PASS"
+    }
+  },
+  "selected_for_current_pass": false,
+  "note": "Unit and authority completed before requested SIGINT. Full harness interrupted after 609 of 1265 cases; no harness PASS. Monotonic durations measure execution; wall timestamp spans differed and are not reported as compute time."
+}

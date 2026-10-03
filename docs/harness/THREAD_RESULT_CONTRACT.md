@@ -68,3 +68,6 @@ A task may PASS while some related product requirements remain NOT_RUN. It may n
 Both bookkeeping suffixes must be linear; every intervening commit is checked, so an implementation change followed by a revert does not preserve old evidence. Merge/rebase integration changes require retesting before starting a new bookkeeping suffix.
 
 All executed PASS/FAIL commands require an existing repository-relative evidence file. Product PASS/APPROVED_NA entries use a concrete `requirement_id@layer`, an existing evidence file and `tested_commit` equal to the result's tested revision. The result and all referenced evidence must be committed at the reviewed revision. Raw logs remain available for independent review; existence alone is not a claim that their contents prove a requirement.
+
+Prospective compact evidence follows [Evidence Storage Policy](EVIDENCE_STORAGE_POLICY.md);
+all existing revision bindings and PASS oracles remain mandatory.

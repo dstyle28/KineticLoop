@@ -143,3 +143,6 @@ protection configuration is explicitly authorized by the user and recorded in
 HG-046 setup evidence. No signing credential is a repository artifact. The
 controller is activated only after independent review of its implementation;
 required checks may be installed earlier to block merges pending validation.
+
+Prospective compact evidence follows [Evidence Storage Policy](EVIDENCE_STORAGE_POLICY.md);
+all existing revision bindings and PASS oracles remain mandatory.

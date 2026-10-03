@@ -1,0 +1,24 @@
+{
+  "reviewed_head_sha": "b71d2d63f8bc27ab0e905b0be8a0cea5f0122a91",
+  "status": "PASS",
+  "focused": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_compact_evidence.py tests/harness/test_m3_milestone_closure.py -k \"decoded_reserved_storage or valid_nested_storage or validation_session or validation_cache or new_validation_operation or compact_regression_decodes or compact_nested_storage\" --basetemp=/private/tmp/hg047-protocol-round4.gl89w2/fixtures --junitxml=/private/tmp/hg047-protocol-round4.gl89w2/focused.xml",
+    "passed": 47,
+    "deselected": 296,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "exit_code": 0
+  },
+  "raw_audit": {
+    "command": "/private/tmp/hg044-venv/bin/python verify.py /Users/davetian/.codex/worktrees/ffff/KineticLoop",
+    "exit_code": 0,
+    "status": "PASS"
+  },
+  "budget": {
+    "command": "/private/tmp/hg044-venv/bin/python tools/harness/compact_evidence.py audit --base d08927706a01a397dac2c78ca4aec7e9918a389c --head b71d2d63f8bc27ab0e905b0be8a0cea5f0122a91 --identity HG-047",
+    "exit_code": 0
+  },
+  "full_DB_final_App": "NOT_RUN",
+  "no_merge_requirement_M3_release_claim": true
+}

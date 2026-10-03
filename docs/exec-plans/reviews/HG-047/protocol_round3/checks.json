@@ -1,0 +1,42 @@
+{
+  "reviewed_head_sha": "589e538579f519bc10d178fa02dff12332931ba7",
+  "checks": [
+    {
+      "check_id": "focused_protocol_regressions",
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_compact_evidence.py::test_bounded_single_member_decoder tests/harness/test_compact_evidence.py::test_budget_rejects_bulk_and_duplicate_metadata tests/harness/test_compact_evidence.py::test_decoded_reserved_storage_cannot_bypass_direct_rejection tests/harness/test_compact_evidence.py::test_even_valid_nested_storage_is_rejected_and_capture_cleans_up tests/harness/test_compact_evidence.py::test_nonreserved_encoded_raw_is_lossless_in_plain_and_compact_forms tests/harness/test_compact_evidence.py::test_revision_command_and_exit_binding tests/harness/test_compact_evidence.py::test_review_created_payload_uses_same_record_revision tests/harness/test_compact_evidence.py::test_reference_at_wrong_revision_cannot_borrow_payload_from_head tests/harness/test_compact_evidence.py::test_validation_session_reuses_only_complete_successful_proof tests/harness/test_compact_evidence.py::test_validation_session_never_caches_working_files_or_head tests/harness/test_compact_evidence.py::test_new_validation_operation_observes_object_loss_and_corruption 'tests/harness/test_m3_milestone_closure.py::test_compact_regression_decodes_all_semantic_sources[none]' 'tests/harness/test_m3_milestone_closure.py::test_compact_regression_decodes_all_semantic_sources[bad-log]' 'tests/harness/test_m3_milestone_closure.py::test_compact_regression_decodes_all_semantic_sources[junit-command]' 'tests/harness/test_m3_milestone_closure.py::test_compact_regression_decodes_all_semantic_sources[collection-stdout-command]' 'tests/harness/test_m3_milestone_closure.py::test_compact_nested_storage_cannot_supply_m3_execution_stdout[missing]' 'tests/harness/test_m3_milestone_closure.py::test_compact_nested_storage_cannot_supply_m3_execution_stdout[dict]' tests/harness/test_review_evidence_provenance.py::test_ordinary_and_review_created_refs_bind_exact_revisions tests/harness/test_review_evidence_provenance.py::test_present_nonregular_entry_cannot_be_replaced_through_exception tests/harness/test_review_evidence_provenance.py::test_task_checks_cannot_use_post_review_bookkeeping tests/harness/test_review_evidence_provenance.py::test_missing_blob_is_not_available_evidence_or_an_absent_path --junitxml=/private/tmp/hg047-protocol-round3-focused.xml",
+      "exit_code": 0,
+      "passed": 58,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "stdout": "focused-pytest.log",
+      "stdout_sha256": "3865d8926026456c4a6fdaf6e97fb5e1c1d4c8f43fa566b13f95ee1097d0cee1",
+      "junit": "focused.xml",
+      "junit_sha256": "d58f78df5e940a2a2e086d58baddd32c637f06aee74d978043181a1534ca78e2"
+    },
+    {
+      "check_id": "independent_raw_provenance_and_unchanged_protocol_probe",
+      "command": "PYTHONDONTWRITEBYTECODE=1 /private/tmp/hg044-venv/bin/python /private/tmp/hg047-protocol-round3-verify.py /Users/davetian/.codex/worktrees/ffff/KineticLoop",
+      "exit_code": 0,
+      "proof": "verification.json",
+      "script": "verify.py"
+    }
+  ],
+  "interrupted_broader_attempt": {
+    "status": "INTERRUPTED",
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/hg044-venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_compact_evidence.py tests/harness/test_m3_milestone_closure.py tests/harness/test_review_evidence_provenance.py --junitxml=/private/tmp/hg047-protocol-round3-focused.xml",
+    "exit_code": 2,
+    "completed_cases_before_interruption": 279,
+    "selection_collected": 382,
+    "stdout": "interrupted.log",
+    "junit": "interrupted.xml",
+    "reason": "Broad synthetic M3 history tests were unnecessary for the changed surface; no PASS is claimed for this partial run."
+  },
+  "unchanged_prior_proof_sha256": {
+    "docs/exec-plans/reviews/HG-047/PROTOCOL_REPORT.md": "abd0d85e4f05a799a4f02a6be8f18989d4e443e7283fd8ad20f0fd71ca415456",
+    "docs/exec-plans/reviews/HG-047/protocol_round2/REPORT.md": "680433ade6ad7e88345713e88bc3458d5d488eb71bc6d916327f904f7a229631",
+    "docs/exec-plans/reviews/HG-047/protocol_round2/focused-pytest.log": "b6baee25ba9c409af4fd523ddab15f9cac25c7f31f914e73aea92a9823262c7b",
+    "docs/exec-plans/reviews/HG-047/protocol_round2/probe.json": "f721c3c20742f7b0806517d6ab45d5138a9bbdc93bd5d6c73429f80f41ac82c5"
+  },
+  "scope": "Independent protocol review only; final full DB and App publication remain NOT_RUN."
+}

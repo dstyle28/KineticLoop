@@ -55,6 +55,8 @@ Evidence references are repository-relative regular files, not URLs or unchecked
 
 The checked-in package manifest describes the original package files with refreshed checksums; newly added implementation/tests need not be appended to that delivery inventory. The original ZIP remains a historical package, not a current working-tree snapshot.
 
+For lossless capture, validated retrieval and the prospective protected-base PR
+budget, see [Evidence Storage Policy](../../docs/harness/EVIDENCE_STORAGE_POLICY.md).
 `kl test-harness` uses two local pytest-xdist processes by default, capped at four.
 Use `uv run kl test-harness --workers 1` for serial execution or `--workers 4` for
 an explicitly larger local run. Pytest selection/verbosity options remain available;

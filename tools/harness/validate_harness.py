@@ -10,10 +10,17 @@ import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as ET
+from contextlib import contextmanager
+from contextvars import ContextVar
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
+_evidence_spec = importlib.util.spec_from_file_location(
+    'compact_evidence', ROOT / 'tools/harness/compact_evidence.py')
+assert _evidence_spec and _evidence_spec.loader
+compact_evidence = importlib.util.module_from_spec(_evidence_spec)
+_evidence_spec.loader.exec_module(compact_evidence)
 BACKLOG = 'KineticLoop_Harness_Backlog_v0.2.json'
 TRACEABILITY = 'KineticLoop_Harness_Traceability_v0.3.json'
 PROJECT_PLAN = '06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md'
@@ -1484,6 +1491,20 @@ def governance_record_paths(change_id):
 
 
 def governance_allowed_patterns(change_id):
+    if change_id == 'HG-047':
+        return [INDEX, MANIFEST, 'tools/harness/compact_evidence.py',
+                'tools/harness/validate_harness.py', 'tools/harness/README.md',
+                'tools/harness/local_gate.py', 'tests/harness/test_local_gate.py',
+                'tests/harness/test_compact_evidence.py',
+                'tests/harness/test_m3_milestone_closure.py',
+                'tests/harness/test_review_evidence_provenance.py', 'tests/harness/test_validator.py',
+                'docs/harness/EVIDENCE_STORAGE_POLICY.md', 'docs/harness/LOCAL_DB_CI.md',
+                'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md', 'docs/harness/M3_CLOSURE_CONTRACT.md',
+                'docs/harness/MERGE_GATE.md', 'docs/harness/THREAD_RESULT_CONTRACT.md',
+                'docs/harness/THREAD_REVIEW_CONTRACT.md',
+                'docs/exec-plans/governance/HG-047.yaml',
+                'docs/exec-plans/evidence/HG-047/**', 'docs/exec-plans/reviews/HG-047/**']
+
     if change_id == 'HG-048':
         return [INDEX, MANIFEST, 'src/kineticloop/cli.py', 'pyproject.toml', 'uv.lock',
                 'tools/harness/run_harness_tests.py', 'tools/harness/parallel_observer.py',
@@ -1750,15 +1771,44 @@ def governance_suffix_errors(root, start, end, change_id, kind):
     return errors
 
 
-def evidence_exists(root, ref, revision=None):
-    if not relative_path(ref):
+_evidence_verdicts: ContextVar[set[tuple] | None] = ContextVar('evidence_verdicts', default=None)
+EVIDENCE_VERDICT_LIMIT = 4096
+
+
+@contextmanager
+def evidence_validation_session():
+    """Cache only successful immutable proof checks for one validation operation."""
+    if _evidence_verdicts.get() is not None:
+        yield
+        return
+    token = _evidence_verdicts.set(set())
+    try:
+        yield
+    finally:
+        _evidence_verdicts.reset(token)
+
+
+def evidence_exists(root, ref, revision=None, tested=None, command=None, exit_code=None):
+    if not relative_path(ref) or '\0' in ref:
         return False
-    if revision is not None:
-        return subprocess.run(
-            ['git', 'cat-file', '-e', revision + ':' + ref],
-            cwd=root, capture_output=True).returncode == 0
-    path = root / ref
-    return path.is_file() and root.resolve() in path.resolve().parents
+    try:
+        cache = _evidence_verdicts.get()
+        # Mutable refs/working files and failed proofs are never memoized. Full
+        # SHA existence/type is still proven by read before a successful insert.
+        key = ((str(root.resolve()), revision, ref, tested, command, exit_code)
+               if isinstance(revision, str) and re.fullmatch(r'[0-9a-f]{40}', revision)
+               else None)
+        if cache is not None and key is not None and key in cache:
+            return True
+        compact_evidence.read(root, ref, revision, tested=tested, command=command,
+                              exit_code=exit_code)
+        if cache is not None and key is not None:
+            if len(cache) >= EVIDENCE_VERDICT_LIMIT:
+                cache.clear()
+            cache.add(key)
+        return True
+    except (ValueError, OSError, TypeError):
+        return False
 
 
 def revision_git_entry(root, ref, revision):
@@ -1819,10 +1869,11 @@ def review_evidence_exists(root, ref, reviewed, review_commit, task_id, review_o
     if not relative_path(ref) or '\0' in ref:
         return False
     if revision_regular_file(root, ref, reviewed):
-        return True
+        return evidence_exists(root, ref, reviewed)
     return (review_only_suffix and matches(ref, review_patterns(task_id))
             and revision_git_entry(root, ref, reviewed) is None
-            and revision_regular_file(root, ref, review_commit))
+            and revision_regular_file(root, ref, review_commit)
+            and evidence_exists(root, ref, review_commit))
 
 
 def semantic_result_errors(obj, task, root, evidence_revision=None):
@@ -1859,11 +1910,14 @@ def semantic_result_errors(obj, task, root, evidence_revision=None):
               and not matches(evidence_ref, task['evidence_paths'])):
             errors.append('command-evidence-scope:' + c['check_id'])
         if (c['result'] in ('PASS', 'FAIL')
-                and not evidence_exists(root, evidence_ref, evidence_revision)):
+                and not evidence_exists(root, evidence_ref, evidence_revision,
+                                        obj['tested_commit'], c.get('command'),
+                                        0 if c['result'] == 'PASS' else None)):
             errors.append('command-evidence:' + c['check_id'])
     for requirement in obj['requirements_covered']:
         if requirement['status'] in ('PASS', 'APPROVED_NA'):
-            if not evidence_exists(root, requirement.get('evidence_ref'), evidence_revision):
+            if not evidence_exists(root, requirement.get('evidence_ref'), evidence_revision,
+                                   obj['tested_commit']):
                 errors.append('requirement-evidence:' + requirement['requirement_id'])
             if requirement.get('tested_commit') != obj['tested_commit']:
                 errors.append('requirement-revision:' + requirement['requirement_id'])
@@ -2092,6 +2146,7 @@ def governance_manifest_errors(root, base_revision, changed, target_revision=Non
     return errors
 
 
+@evidence_validation_session()
 def integration_record_errors(
         root, path, record, schema, result_schema, review_schema, tasks):
     errors = ['integration-schema:' + path.name + ':' + issue.message
@@ -2218,6 +2273,7 @@ def integration_record_errors(
     return errors
 
 
+@evidence_validation_session()
 def milestone_closure_errors(
         root, closure, schema, integration_schema, result_schema, review_schema, backlog, tasks):
     """Validate the M1 closure as revision-bound evidence, not a status assertion."""
@@ -2376,6 +2432,7 @@ def milestone_closure_errors(
     return errors
 
 
+@evidence_validation_session()
 def m2_milestone_closure_errors(
         root, closure, schema, integration_schema, result_schema, review_schema, backlog, tasks):
     """Validate M2 closure from integrated task evidence and a fresh full regression."""
@@ -2623,7 +2680,7 @@ def m3_load_closure_record(root, path):
     return load_artifact_text(git(root, 'show', head + ':' + ref).decode(), '.json'), []
 
 
-def m3_evidence_bytes(root, evidence, evaluated):
+def m3_evidence_bytes(root, evidence, evaluated, tested=None, command=None, exit_code=None):
     """Read only content-addressed regular Git blobs at reachable exact commits."""
     path, revision = evidence['path'], evidence['revision']
     if (not relative_path(path) or resolve(root, revision) != revision
@@ -2631,7 +2688,8 @@ def m3_evidence_bytes(root, evidence, evaluated):
             or not revision_regular_file(root, path, revision)
             or blob_sha_at_revision(root, path, revision) != evidence['sha256']):
         raise ValueError('evidence-binding')
-    return git(root, 'show', revision + ':' + path)
+    return compact_evidence.read(root, path, revision, tested=tested, command=command,
+                                 exit_code=exit_code)
 
 
 def m3_pytest_count(output):
@@ -2671,7 +2729,9 @@ def m3_task_check_errors(root, witness, task_id, check_id, task, record, evaluat
                 or not matches(witness['raw']['path'], [evidence_pattern(task_id)])):
             raise ValueError('check-oracle-binding')
         m3_evidence_bytes(root, witness['result_artifact'], evaluated)
-        m3_pytest_count(m3_evidence_bytes(root, witness['raw'], evaluated).decode())
+        m3_pytest_count(m3_evidence_bytes(
+            root, witness['raw'], evaluated, tested=result['tested_commit'],
+            command=command['command'], exit_code=0).decode())
     except (ValueError, OSError, KeyError, TypeError, UnicodeError) as ex:
         return ['milestone-m3-task-check:' + task_id + ':' + check_id + ':' + str(ex)]
     return []
@@ -2698,34 +2758,36 @@ def m3_execution_evidence_errors(root, payload, revision, evaluated, records):
             if (run['tested_commit'] != tested or run['exit_code'] != 0
                     or type(run['exit_code']) is not int):
                 raise ValueError('failed-or-unbound-command')
-            def raw(item):
+            def raw(item, expected_command=None):
                 if item.get('revision', revision) != revision or not matches(
                         item['path'], [evidence_pattern(change)]):
                     raise ValueError('raw-provenance')
-                return m3_evidence_bytes(root, dict(item, revision=revision), evaluated)
-            output = raw(run['stdout']).decode()
+                return m3_evidence_bytes(root, dict(item, revision=revision), evaluated,
+                                         tested=tested, command=expected_command, exit_code=0)
+            output = raw(run['stdout'], command).decode()
             if command == 'uv run kl check-harness':
                 if 'HARNESS_CHECK_PASS' not in output or 'HARNESS_CHECK_FAIL' in output:
                     raise ValueError('harness-oracle')
                 continue
             count = m3_pytest_count(output)
-            tree = ET.fromstring(raw(run['junit']))
+            tree = ET.fromstring(raw(run['junit'], command))
             cases = list(tree.iter('testcase'))
             actual = [(case.get('classname', ''), case.get('name', '')) for case in cases]
             if (not cases or len(cases) != count or len(actual) != len(set(actual))
                     or any(list(case.iter(tag)) for case in cases
                            for tag in ('failure', 'error', 'skipped'))):
                 raise ValueError('failed-skipped-duplicate-or-empty-tests')
-            collection = load_artifact_text(raw(run['collection']).decode(), '.json')
             selectors = (['tests/unit'] if command == 'uv run kl test-unit'
                          else ['tests/harness'] if command == 'uv run kl test-harness'
                          else command.removeprefix('uv run pytest -q ').split())
-            if (collection['command'] != 'uv run pytest --collect-only -q ' + ' '.join(selectors)
+            collect_command = 'uv run pytest --collect-only -q ' + ' '.join(selectors)
+            collection = load_artifact_text(raw(run['collection'], collect_command).decode(), '.json')
+            if (collection['command'] != collect_command
                     or collection['tested_commit'] != tested or collection['exit_code'] != 0
                     or type(collection['exit_code']) is not int):
                 raise ValueError('collection-binding')
             nodeids = collection['nodeids']
-            collected_output = raw(collection['stdout']).decode()
+            collected_output = raw(collection['stdout'], collect_command).decode()
             raw_nodes = [line for line in collected_output.splitlines()
                          if re.match(r'^tests/[^\s]+\.py::', line)]
             totals = re.findall(r'^([1-9][0-9]*) tests? collected in ', collected_output, re.M)
@@ -2818,6 +2880,7 @@ def m3_frozen_authority_errors(root, evaluated):
     return []
 
 
+@evidence_validation_session()
 def m3_milestone_closure_errors(
         root, closure, schema, integration_schema, result_schema, review_schema, backlog, tasks):
     """Mechanical minimal TEST demonstration closure, independent of release/product PASS."""
@@ -2933,7 +2996,8 @@ def m2_execution_evidence_errors(root, payload, revision):
                     or not matches(log['path'], [evidence_pattern('HG-023')])
                     or blob_sha_at_revision(root, log['path'], revision) != log['sha256']):
                 raise ValueError('stdout-binding')
-            output = git(root, 'show', revision + ':' + log['path']).decode()
+            output = compact_evidence.read(root, log['path'], revision,
+                                           tested=payload['tested_commit'], command=command, exit_code=0).decode()
             if not output.strip():
                 raise ValueError('empty-stdout')
             if command == M2_REGRESSION_COMMANDS[1]:
@@ -2945,7 +3009,8 @@ def m2_execution_evidence_errors(root, payload, revision):
                     or not matches(report['path'], [evidence_pattern('HG-023')])
                     or blob_sha_at_revision(root, report['path'], revision) != report['sha256']):
                 raise ValueError('junit-binding')
-            tree = ET.fromstring(git(root, 'show', revision + ':' + report['path']))
+            tree = ET.fromstring(compact_evidence.read(
+                root, report['path'], revision, tested=payload['tested_commit']))
             cases = list(tree.iter('testcase'))
             if not cases or any(
                     list(case.iter(tag)) for case in cases
@@ -2959,7 +3024,8 @@ def m2_execution_evidence_errors(root, payload, revision):
                     or blob_sha_at_revision(root, collection['path'], revision)
                     != collection['sha256']):
                 raise ValueError('collection-binding')
-            collected = load_artifact_at_revision(root, collection['path'], revision)
+            collected = load_artifact_text(compact_evidence.read(
+                root, collection['path'], revision, tested=payload['tested_commit']).decode(), '.json')
             nodeids = collected['nodeids']
             if (collected.get('command') != 'uv run pytest --collect-only -q'
                     or collected.get('exit_code') != 0
@@ -2973,8 +3039,8 @@ def m2_execution_evidence_errors(root, payload, revision):
                     or blob_sha_at_revision(root, collection_log['path'], revision)
                     != collection_log['sha256']):
                 raise ValueError('collection-stdout-binding')
-            collection_output = git(
-                root, 'show', revision + ':' + collection_log['path']).decode()
+            collection_output = compact_evidence.read(
+                root, collection_log['path'], revision, tested=payload['tested_commit']).decode()
             raw_nodeids = [line for line in collection_output.splitlines()
                           if re.match(r'^tests/[^\s]+\.py::', line)]
             collected_counts = re.findall(
@@ -3298,6 +3364,7 @@ def task_definition_errors(
     return errors, tasks
 
 
+@evidence_validation_session()
 def validate(root, args):
     from jsonschema import Draft202012Validator
 
@@ -3491,6 +3558,10 @@ def validate(root, args):
         base_sha, head = resolve(root, args.protected_base), resolve(root, 'HEAD')
         git(root, 'merge-base', '--is-ancestor', base_sha, head)
         changed = set(changed_paths(root, base_sha, head))
+        selected_owner = args.task_id or getattr(args, 'governance_change_id', None)
+        if selected_owner:
+            budget = compact_evidence.audit(root, base_sha, head, selected_owner)
+            errors.extend('evidence-budget:' + issue for issue in budget['errors'])
         old_frozen = json.loads(git(root, 'show', base_sha + ':FROZEN_BASELINE.json'))
         protected_paths = {e['path'] for e in old_frozen['files']} | {'FROZEN_BASELINE.json'}
         errors.extend('protected-baseline-change:' + p for p in sorted(changed & protected_paths))
@@ -3777,7 +3848,9 @@ def validate(root, args):
             errors.extend(suffix_errors(root, obj['tested_commit'], reviewed, task['id'], 'tested'))
             refs = [c.get('evidence_ref') for c in obj['commands_run']] + [r.get('evidence_ref') for r in obj['requirements_covered']]
             for ref in filter(None, refs):
-                if git(root, 'show', resolve(root, reviewed) + ':' + ref) != (root / ref).read_bytes():
+                if (not evidence_exists(root, ref, reviewed, obj['tested_commit'])
+                        or git(root, 'show', resolve(root, reviewed) + ':' + ref)
+                        != (root / ref).read_bytes()):
                     errors.append('review-evidence-not-bound:' + ref)
         except ValueError as ex:
             errors.append('review-revision:' + str(ex))
@@ -3791,6 +3864,14 @@ def validate(root, args):
             types = {r['review_type'] for r in relevant if resolve(root, r['reviewed_head_sha']) == resolve(root, args.reviewed_head)}
             if not task or not set(task['review_requirements']) <= types:
                 errors.append('required-reviews-not-pass:' + args.task_id)
+            review_suffix = not suffix_errors(root, args.reviewed_head, 'HEAD', args.task_id, 'review')
+            for review in relevant:
+                if resolve(root, review['reviewed_head_sha']) != resolve(root, args.reviewed_head):
+                    continue
+                for ref in review.get('evidence_refs', []):
+                    if not review_evidence_exists(
+                            root, ref, args.reviewed_head, 'HEAD', args.task_id, review_suffix):
+                        errors.append('review-evidence-revision:' + args.task_id + ':' + ref)
     if getattr(args, 'governance_reviewed_head', None):
         change_id = args.governance_change_id
         reviewed = resolve(root, args.governance_reviewed_head)
@@ -3817,7 +3898,10 @@ def validate(root, args):
                     root, record['tested_commit'], reviewed, change_id, 'tested'))
                 for check in record['checks_run']:
                     ref = check['evidence_ref']
-                    if git(root, 'show', reviewed + ':' + ref) != (root / ref).read_bytes():
+                    if not matches(ref, [evidence_pattern(change_id)]):
+                        errors.append('governance-command-evidence-scope:' + ref)
+                    if (not evidence_exists(root, ref, reviewed, record['tested_commit'], check['command'], 0)
+                            or git(root, 'show', reviewed + ':' + ref) != (root / ref).read_bytes()):
                         errors.append('governance-evidence-not-bound:' + ref)
                     if check['check_id'] == 'full_database_regression':
                         errors.extend(full_database_evidence_errors(
@@ -3827,6 +3911,8 @@ def validate(root, args):
             required = {'GENERAL'}
             old_tasks = getattr(args, 'governance_base_tasks', {})
             reviewed_tasks = getattr(args, 'governance_reviewed_tasks', tasks)
+            if change_id == 'HG-047':
+                required.update({'PROTOCOL', 'SECURITY_DATA_BOUNDARY'})
             if change_id == 'HG-044':
                 required.update({'PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'})
             if change_id == 'HG-046':
@@ -3843,6 +3929,14 @@ def validate(root, args):
             }
             if not required <= types:
                 errors.append('governance-required-reviews-not-pass:' + change_id)
+            review_suffix = not governance_suffix_errors(root, reviewed, 'HEAD', change_id, 'review')
+            for _, review in governance_reviews:
+                if (review['task_identity'] != 'harness-governance-v0.1/' + change_id
+                        or resolve(root, review['reviewed_head_sha']) != reviewed):
+                    continue
+                for ref in review.get('evidence_refs', []):
+                    if not review_evidence_exists(root, ref, reviewed, 'HEAD', change_id, review_suffix):
+                        errors.append('governance-review-evidence-revision:' + change_id + ':' + ref)
         emergency_task_id = getattr(args, 'emergency_task_id', None)
         if emergency_task_id:
             task = tasks.get(emergency_task_id)
