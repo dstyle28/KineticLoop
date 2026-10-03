@@ -89,6 +89,15 @@ files_changed:
 - docs/exec-plans/evidence/HG-051/installed-schema/FINDING.md
 - docs/exec-plans/evidence/HG-051/installed-schema/before.json
 - docs/exec-plans/evidence/HG-051/installed-schema/before.py
+- docs/exec-plans/evidence/HG-051/installed-schema/failed-bf7bd40/43edcbf08d9fc669002108da53b50551558e7b2aae47ff3b5521dbaf17114c5d.gz
+- docs/exec-plans/evidence/HG-051/installed-schema/failed-bf7bd40/CONTEXT.json
+- docs/exec-plans/evidence/HG-051/installed-schema/failed-bf7bd40/EXECUTION.json
+- docs/exec-plans/evidence/HG-051/installed-schema/failed-bf7bd40/a11f7959dfe9df2792c98ea4db98d1a1cb4575e58d70caa7508ee59eb5aa188c.gz
+- docs/exec-plans/evidence/HG-051/installed-schema/failed-bf7bd40/authority.json
+- docs/exec-plans/evidence/HG-051/installed-schema/failed-bf7bd40/e5e08be02ba6ea154d34ed21ec41d20195a66fb1d9ebb9cdfeb4e6c626ab3184.gz
+- docs/exec-plans/evidence/HG-051/installed-schema/failed-bf7bd40/harness.json
+- docs/exec-plans/evidence/HG-051/installed-schema/failed-bf7bd40/uncommitted-authority.log
+- docs/exec-plans/evidence/HG-051/installed-schema/failed-bf7bd40/unit.json
 - docs/exec-plans/evidence/HG-051/installed-schema/precommit.json
 - docs/exec-plans/evidence/HG-051/inventory_roundtrip.py
 - docs/exec-plans/evidence/HG-051/precommit/CONTEXT.json
@@ -164,44 +173,44 @@ checks_run:
     tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -k 'archiv or hg051 or source_decision_scope
     or manifest_tamper or bounded_single_member or decoded_reserved or exact_retrieval' -n 2 --junitxml=/private/tmp/hg051-checks-5debfe1/focused.xml
     --basetemp=/private/tmp/hg051-checks-5debfe1/focused-temp
-  result: NOT_RUN
+  result: PASS
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/focused.json
 - check_id: harness
   command: uv run kl test-harness --workers 2 --evidence-dir /private/tmp/hg051-checks-5debfe1/harness -q --basetemp=/private/tmp/hg051-checks-5debfe1/harness-temp
-  result: NOT_RUN
+  result: PASS
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/harness.json
 - check_id: unit
   command: uv run kl test-unit -q --junitxml=/private/tmp/hg051-checks-5debfe1/unit.xml
-  result: NOT_RUN
+  result: PASS
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/unit.json
 - check_id: authority
   command: uv run kl check-harness
-  result: NOT_RUN
+  result: PASS
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/authority.json
 - check_id: lint
   command: uv run kl lint
-  result: NOT_RUN
+  result: PASS
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/lint.json
 - check_id: typecheck
   command: uv run kl typecheck
-  result: NOT_RUN
+  result: PASS
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/typecheck.json
 - check_id: scope_frozen_prerequisites
   command: uv run python docs/exec-plans/evidence/HG-051/scope_audit.py
-  result: NOT_RUN
+  result: PASS
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/scope_frozen_prerequisites.json
 - check_id: inventory_roundtrip
   command: uv run python docs/exec-plans/evidence/HG-051/inventory_roundtrip.py
-  result: NOT_RUN
+  result: PASS
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/inventory_roundtrip.json
 - check_id: diff
   command: git diff --check b877db0edd2e4550d6ea81750656112fb7f2e223 5debfe1b41a26c0b3f985917b80995a9eb38b92e
-  result: NOT_RUN
+  result: PASS
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/diff.json
 - check_id: budget
   command: uv run python tools/harness/compact_evidence.py audit --base b877db0edd2e4550d6ea81750656112fb7f2e223
     --head 5debfe1b41a26c0b3f985917b80995a9eb38b92e --identity HG-051
-  result: NOT_RUN
+  result: PASS
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/budget.json
 frozen_impact: NONE
 authority_entries_added:
@@ -223,3 +232,7 @@ known_limitations:
   revision. Only the own linear REVIEW_RECORD_ONLY suffix may follow.
 - Installed-schema correction pending clean committed checks and replacement independent reviews. Prior review records
   remain historical and stale for this new source revision.
+- The retained checks_run entries are restored verbatim from b9c355f and bind only the prior 5debfe1 tested SHA,
+  not the installed-schema correction. Correction remains BLOCKED pending a new clean run. bf7bd40 check-harness
+  and unit entrypoint FAIL and intentionally interrupted full harness exit 2 are preserved under installed-schema/failed-bf7bd40
+  without acceptance credit.
