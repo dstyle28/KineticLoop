@@ -1,0 +1,60 @@
+{
+  "source_commit": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+  "base_commit": "b877db0edd2e4550d6ea81750656112fb7f2e223",
+  "checks": [
+    "installed_decoder_embeds_exact_schema_without_adjacent_schema",
+    "exact_four_failed_outcomes_and_unknown_timestamps_preserved",
+    "all_original_regular_git_identities_metadata_and_preserved_records_match",
+    "real_installed_four_blob_roundtrip_never_supplies_execution_or_m3_proof",
+    "forward_ancestry_and_budget_exact_owner_only",
+    "original_failure_timestamp_and_storage_rebinding_rejected",
+    "installed_validator_rejects_missing_tampered_whitespace_oversize_and_symlink_schema_before_index",
+    "unavailable_original_cannot_fallback_but_archive_retrieval_remains_distinct",
+    "disconnected_original_ancestry_cannot_certify_proof",
+    "encoded_wrapped_archival_metadata_rejected_as_plain_output",
+    "complete_archival_deletion_and_plain_pass_substitution_rejected"
+  ],
+  "measurements": [
+    {
+      "path": "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/harness_regressions_pass.xml",
+      "bytes": 3456356,
+      "sha256": "62bdbc352d2f80bc4f254e85b91a7101fecaef40ea72f27448aa04017f19f436",
+      "stored_bytes": 399722,
+      "blob_id": "4c14842b283158b38b2b6771afa631a83fa1942b"
+    },
+    {
+      "path": "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.log",
+      "bytes": 12503732,
+      "sha256": "2b9d584a65063ef0e00040c69fcdc925e7e512b5f49c281ab880962e7490d92d",
+      "stored_bytes": 1757118,
+      "blob_id": "74b505e3882c8857e7d4434f200fa2ecf454d7b8"
+    },
+    {
+      "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/harness_regressions_pass.parallel.xml",
+      "bytes": 3456356,
+      "sha256": "089e1aba60ca60a64c6b513a966d66732f3519e21c51b6d7af3e9dd0fabb93d7",
+      "stored_bytes": 399691,
+      "blob_id": "f73c446fe5a49036e39e87121ad3a6029ebdffd1"
+    },
+    {
+      "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.log",
+      "bytes": 12480477,
+      "sha256": "5c94998447a516b39433e028b6ca98c64b0f8a00521db6096835210fb1209a1c",
+      "stored_bytes": 1754305,
+      "blob_id": "2da980979a754eaf2e081b7181aa11a839020c05"
+    }
+  ],
+  "temporary_storage_sha": "2610cb91eb480c0b3a0138cf8fe6ca3e1f73b309",
+  "temporary_mapping_sha": "9e8fae405580b3f4c7846a6a930771bb6ca356ad",
+  "budget": {
+    "identity": "KL-080",
+    "base": "477b213f67429f571b60d5701f02892ab9c1cbbf",
+    "head": "9e8fae405580b3f4c7846a6a930771bb6ca356ad",
+    "stored_bytes": 4324710,
+    "files": 9,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "status": "PASS",
+  "scope": "No repo edits or installer/credential/DB action"
+}

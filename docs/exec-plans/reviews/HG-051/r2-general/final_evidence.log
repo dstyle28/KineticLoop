@@ -1,0 +1,86 @@
+{
+  "reviewed_sha": "4073ca6ef64a625c398483fb5fbfe41b1ef3237c",
+  "tested_sha": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+  "clean_source_end": true,
+  "governance_status": "PASS",
+  "suffix": [
+    "4073ca6ef64a625c398483fb5fbfe41b1ef3237c"
+  ],
+  "checks": [
+    {
+      "check_id": "focused",
+      "raw_bytes": 396
+    },
+    {
+      "check_id": "harness",
+      "raw_bytes": 1838
+    },
+    {
+      "check_id": "unit",
+      "raw_bytes": 433
+    },
+    {
+      "check_id": "authority",
+      "raw_bytes": 38
+    },
+    {
+      "check_id": "lint",
+      "raw_bytes": 19
+    },
+    {
+      "check_id": "typecheck",
+      "raw_bytes": 45
+    },
+    {
+      "check_id": "scope_frozen_prerequisites",
+      "raw_bytes": 13415
+    },
+    {
+      "check_id": "inventory_roundtrip",
+      "raw_bytes": 3598
+    },
+    {
+      "check_id": "diff",
+      "raw_bytes": 0
+    },
+    {
+      "check_id": "budget",
+      "raw_bytes": 265
+    }
+  ],
+  "decoded_envelopes": 18,
+  "junit_counts": {
+    "focused-junit.json": {
+      "tests": 190,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "harness-junit-xml.json": {
+      "tests": 1492,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "unit-junit.json": {
+      "tests": 241,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "collection_nodes": 1492,
+  "execution_call_reports": 1492,
+  "all_execution_phases_passed": true,
+  "real_inventory_installed_roundtrip": true,
+  "budget": {
+    "identity": "HG-051",
+    "base": "b877db0edd2e4550d6ea81750656112fb7f2e223",
+    "head": "4073ca6ef64a625c398483fb5fbfe41b1ef3237c",
+    "stored_bytes": 8025994,
+    "files": 174,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "status": "PASS"
+}

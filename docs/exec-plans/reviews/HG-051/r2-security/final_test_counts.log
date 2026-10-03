@@ -1,0 +1,105 @@
+{
+  "status": "PASS",
+  "reviewed_sha": "4073ca6ef64a625c398483fb5fbfe41b1ef3237c",
+  "source_sha": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+  "junit": [
+    {
+      "suite": "focused",
+      "tests": 190,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "438962033937624cafdb1b3d19d1e25c4cb30914d580847c46678a78fa35f671"
+    },
+    {
+      "suite": "harness",
+      "tests": 1492,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "f80602b2e331db9d06fbafe4a776088240dfcbae510854b7f731bbfeddde5639"
+    },
+    {
+      "suite": "unit",
+      "tests": 241,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "e9200f7b1d981491b10496f143172f116094d2ce55352ef7939426bb62404683"
+    }
+  ]
+}
+{
+  "label": "harness-collection-json",
+  "keys": [
+    "collections",
+    "started",
+    "reports",
+    "errors",
+    "exit_code"
+  ],
+  "sha256": "54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac",
+  "summary": {
+    "exit_code": 0
+  }
+}
+{
+  "collections": [
+    "serial"
+  ],
+  "started": {
+    "length": 0,
+    "first": []
+  },
+  "reports": {
+    "length": 0,
+    "first": []
+  },
+  "errors": {
+    "length": 0,
+    "first": []
+  }
+}
+{
+  "label": "harness-execution-json",
+  "keys": [
+    "collections",
+    "started",
+    "reports",
+    "errors",
+    "exit_code"
+  ],
+  "sha256": "520eb7c6377a9590cb869117fad2804237d9007ce4d11626215411673a1844f9",
+  "summary": {
+    "exit_code": 0
+  }
+}
+{
+  "collections": [
+    "gw0",
+    "gw1"
+  ],
+  "started": {
+    "length": 1492,
+    "first": [
+      "tests/harness/acceptance/test_registry.py::test_requirement_sources_parse"
+    ]
+  },
+  "reports": {
+    "length": 4476,
+    "first": [
+      {
+        "nodeid": "tests/harness/acceptance/test_registry.py::test_requirement_sources_parse",
+        "phase": "setup",
+        "outcome": "passed",
+        "duration": 0.00020483299158513546,
+        "worker": "gw0"
+      }
+    ]
+  },
+  "errors": {
+    "length": 0,
+    "first": []
+  }
+}
+{"status": "PASS", "harness_collected": 1492, "harness_started": 1492, "phases_per_test": 3, "all_phase_outcomes": "passed", "collection_execution_exact": true}

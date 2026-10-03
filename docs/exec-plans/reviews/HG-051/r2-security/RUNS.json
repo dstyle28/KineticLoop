@@ -1,0 +1,98 @@
+{
+  "source_sha": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+  "runs": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python /private/tmp/hg051-r2-security-20261003/probes.py",
+      "exit_code": 0,
+      "checks": 93,
+      "status": "PASS"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python /private/tmp/hg051-r2-security-20261003/original_records.py",
+      "exit_code": 0,
+      "status": "PASS"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_compact_evidence.py tests/harness/test_review_evidence_provenance.py --junitxml=/private/tmp/hg051-r2-security-20261003/focused.xml",
+      "exit_code": 0,
+      "tests": 342,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "status": "PASS"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python /private/tmp/hg051-r2-security-20261003/final_evidence.py 4073ca6ef64a625c398483fb5fbfe41b1ef3237c",
+      "exit_code": 0,
+      "status": "PASS"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python /private/tmp/hg051-r2-security-20261003/final_test_counts.py",
+      "exit_code": 0,
+      "status": "PASS"
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "REPORT.md",
+      "bytes": 5337,
+      "sha256": "278d65e6c9ba9ae6a91b256fc75f006530e53c66d4e992618ac522d126be656a"
+    },
+    {
+      "name": "final_evidence.log",
+      "bytes": 10468,
+      "sha256": "e912670d451e88bbb78a48886f8b960da67f1c1287e6eab48f44f5d0f4adab78"
+    },
+    {
+      "name": "final_evidence.py",
+      "bytes": 2393,
+      "sha256": "3af902751d41ba6ad12f61346ea2026fa1031cf8a0abe9a4603b94cc6704cc5c"
+    },
+    {
+      "name": "final_test_counts.log",
+      "bytes": 2174,
+      "sha256": "ce3707d59a523c93cd605dd66c475865fc83c0a260d52059e33c84c2377528e3"
+    },
+    {
+      "name": "final_test_counts.py",
+      "bytes": 3052,
+      "sha256": "6163ee9a81674f911d0c335085b2936bc35e3bde3bfaf181fc6e4e8c7243ce13"
+    },
+    {
+      "name": "focused.log",
+      "bytes": 513,
+      "sha256": "8aaf2d856710bf16589a06a8815dca4233a96f333217e3e98ab4b2f81337a560"
+    },
+    {
+      "name": "focused.xml",
+      "bytes": 53160,
+      "sha256": "68a094115cea43b99ba53b0a507f1e297604efbfb716d59f9c9ec1ecd05f7943"
+    },
+    {
+      "name": "original_records.log",
+      "bytes": 3042,
+      "sha256": "22fc75831cdbb5676e6b12c456198becf1586a0c3dd14eacb0f6e1bc6ec57788"
+    },
+    {
+      "name": "original_records.py",
+      "bytes": 1724,
+      "sha256": "3e0a674611d7a247b395d4dce63379b1bb9f9bbc8f447d0608bb153c520f682e"
+    },
+    {
+      "name": "probes.json",
+      "bytes": 16539,
+      "sha256": "d8a4c05e5387c012950dc64e64b6f8f7506594be81c472d6c4ea7a126d835c94"
+    },
+    {
+      "name": "probes.log",
+      "bytes": 13292,
+      "sha256": "01bcf5384465db24fc054f7c2a4061ca9fd075cc032b9670a846a123d815f594"
+    },
+    {
+      "name": "probes.py",
+      "bytes": 11069,
+      "sha256": "5ee5afd202412890ef71ee7e2c001abd96401b5d9099908c0013bb66826f8c2f"
+    }
+  ],
+  "reviewed_sha": "4073ca6ef64a625c398483fb5fbfe41b1ef3237c"
+}

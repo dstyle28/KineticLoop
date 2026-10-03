@@ -1,0 +1,55 @@
+{
+  "reviewed_head_sha": "4073ca6ef64a625c398483fb5fbfe41b1ef3237c",
+  "tested_commit": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+  "executions": [
+    {
+      "check_id": "focused",
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_compact_evidence.py tests/harness/test_review_evidence_provenance.py tests/harness/test_m3_milestone_closure.py tests/harness/test_source_decision_scope.py -k 'archiv or hg051' --basetemp=/private/tmp/hg051-r2-protocol-pytest-temp --junitxml=/private/tmp/hg051-r2-protocol-pytest.xml",
+      "tested_commit": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/reviews/HG-051/r2-protocol/focused.json",
+      "raw_sha256": "626020edaef825d14eb694776949118633640dc3f458030d941cf10e4526687c",
+      "raw_bytes": 288
+    },
+    {
+      "check_id": "originals-audit",
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python /private/tmp/hg051-r2-protocol-audit.py",
+      "tested_commit": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/reviews/HG-051/r2-protocol/originals-audit.json",
+      "raw_sha256": "cff8714f87a8dec3661729ebfac13ca992b32c0b88bd707ea8c9047c6c5d903d",
+      "raw_bytes": 3816
+    },
+    {
+      "check_id": "installed-inventory",
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python docs/exec-plans/evidence/HG-051/inventory_roundtrip.py",
+      "tested_commit": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/reviews/HG-051/r2-protocol/installed-inventory.json",
+      "raw_sha256": "18b5aa0a929963e4dd132dd8f20092cfc0b867c504cd51169309cc7601d89a85",
+      "raw_bytes": 3598
+    },
+    {
+      "check_id": "final-evidence-audit",
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python /private/tmp/hg051-r2-protocol-final-audit.py",
+      "tested_commit": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/reviews/HG-051/r2-protocol/final-evidence-audit.json",
+      "raw_sha256": "51fb158dac91e5ad6f81697f4d9602f30230de2265720ba800b77f553326c389",
+      "raw_bytes": 2734
+    },
+    {
+      "check_id": "initial-audit-script",
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python /private/tmp/hg051-r2-protocol-audit.py",
+      "tested_commit": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+      "exit_code": 1,
+      "result": "FAIL",
+      "evidence_ref": "docs/exec-plans/reviews/HG-051/r2-protocol/initial-audit-failure.log",
+      "limitation": "Review script mistakenly assumed unmerged KL080 objects existed in HG051 tree. Corrected to actual original revisions plus unchanged base/source tree entries; no acceptance credit for failed script."
+    }
+  ]
+}
