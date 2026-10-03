@@ -1,17 +1,18 @@
 change_identity: harness-governance-v0.1/HG-047
 display_change_id: HG-047
 base_commit: 391c9198fa8ec647e377a0572700bc7568468c85
-tested_commit: 166bf3edb3c3ecca2c9e0facb7c94195f394d997
-change_status: BLOCKED
+tested_commit: 536c9b7b7c5bfa9b36a0b38e513bce34ed6eb31d
+change_status: PASS
 summary: Prospective lossless content-addressed gzip evidence with revision/owner/hash checks, bounded UTF8/16/32-safe
   retrieval, preserved M3 proof semantics and PR budgets; integrate merged HG045/HG046 unchanged and pin/copy
-  the decoder for trusted CI.
+  the decoder for trusted CI. P-01 correction rejects decoded nested storage metadata before raw proof oracles.
 packets_refined: []
 files_changed:
 - CURRENT_DOCUMENT_INDEX.json
 - HARNESS_DOCUMENT_MANIFEST.json
 - docs/exec-plans/evidence/HG-047/HISTORY.md
 - docs/exec-plans/evidence/HG-047/PERFORMANCE.md
+- docs/exec-plans/evidence/HG-047/ROUND2_SELF_REVIEW.md
 - docs/exec-plans/evidence/HG-047/SCOPE.md
 - docs/exec-plans/evidence/HG-047/SELF_REVIEW.md
 - docs/exec-plans/evidence/HG-047/audit.py
@@ -59,6 +60,23 @@ files_changed:
 - docs/exec-plans/evidence/HG-047/development-b30a9c6/scope.json
 - docs/exec-plans/evidence/HG-047/development-b30a9c6/source_diff.json
 - docs/exec-plans/evidence/HG-047/development-b30a9c6/typecheck.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/4a3753070a66c3301beb7d1831adddfd95c85cbc284d28daaa02f1cb7c73781f.gz
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/562f011d3d8775cff98a08ba5c1ee818c40a43aa77f6e24c7ae8784311e07528.gz
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/8772e603fd11dc1288c9dc2bc95925f941b00d9c30da501a9ff8ef8b18985534.gz
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/a308a76b0ba7607029658a014521a48e259e9f0e15aa716acc8a3236a5d2d7e3.gz
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/authority.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/execution.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/harness.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/lint.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/performance.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/scope.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/source_diff.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/typecheck.json
+- docs/exec-plans/evidence/HG-047/round2-536c9b7/unit.json
 - docs/exec-plans/evidence/HG-047/selected-2dc15b7/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz
 - docs/exec-plans/evidence/HG-047/selected-2dc15b7/25a6e726ed95412b24e5e8a848509fe0ca5ed66a57b2f38f0182faccb2e8d4c6.gz
 - docs/exec-plans/evidence/HG-047/selected-2dc15b7/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
@@ -100,41 +118,53 @@ files_changed:
 - tools/harness/local_gate.py
 - tools/harness/validate_harness.py
 checks_run:
+- check_id: harness
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    -m kineticloop.db.cli test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round2-536c9b7/harness.json
+- check_id: unit
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    -m kineticloop.db.cli test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round2-536c9b7/unit.json
 - check_id: lint
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
     -m kineticloop.db.cli lint
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/development-166bf3e/lint.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round2-536c9b7/lint.json
 - check_id: typecheck
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
     -m kineticloop.db.cli typecheck
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/development-166bf3e/typecheck.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round2-536c9b7/typecheck.json
+- check_id: authority
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    -m kineticloop.db.cli check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round2-536c9b7/authority.json
 - check_id: scope
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
-    docs/exec-plans/evidence/HG-047/audit.py 391c9198fa8ec647e377a0572700bc7568468c85 166bf3edb3c3ecca2c9e0facb7c94195f394d997
+    docs/exec-plans/evidence/HG-047/audit.py 391c9198fa8ec647e377a0572700bc7568468c85 536c9b7b7c5bfa9b36a0b38e513bce34ed6eb31d
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/development-166bf3e/scope.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round2-536c9b7/scope.json
 - check_id: source_diff
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src git diff --check 391c9198fa8ec647e377a0572700bc7568468c85
-    166bf3edb3c3ecca2c9e0facb7c94195f394d997
+    536c9b7b7c5bfa9b36a0b38e513bce34ed6eb31d
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/development-166bf3e/source_diff.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round2-536c9b7/source_diff.json
 - check_id: performance
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
     docs/exec-plans/evidence/HG-047/benchmark.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/development-166bf3e/performance.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round2-536c9b7/performance.json
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
-- Pending fresh complete validation after P-01 and reviewer-authored reference correction at b30a9c6. The failed166bf3e
-  unit and failed b30a9c6 authority captures remain exact historical non-PASS under their development directories.
-  The failed unit is not selected in checks_run because the unchanged governance validator requires each selected
-  check to be PASS; change_status remains BLOCKED and no current-source PASS is asserted.
-- Round1 PROTOCOL BLOCKER P-01 requires rejecting decoded nested storage metadata before raw evidence oracles.
-  Prior source2dc15b7 checks and reviews of47de76d are historical; fresh source-bound checks/result and all
-  three fresh independent reviews are required after correction.
+- Round1 reviews at 0fd0f3d bind 47de76d; PROTOCOL requested changes for P-01. At b30a9c6, the original reviewers
+  corrected only their decoder-source evidence reference and appended report bookkeeping without changing verdicts
+  or reviewed SHA. Original bytes remain in history, and the failed 166bf3e unit capture is preserved. The
+  new result requires fresh GENERAL, PROTOCOL and SECURITY_DATA_BOUNDARY reviews.
 - The bounded performance benchmark and freshness/integrity negatives cover the new per-operation immutable
   verdict cache. Git object contents are treated as immutable within one validation operation; no cache survives
   its exit, and working-tree/mutable refs always reread.
