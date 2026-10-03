@@ -1,7 +1,7 @@
 change_identity: harness-governance-v0.1/HG-047
 display_change_id: HG-047
 base_commit: 391c9198fa8ec647e377a0572700bc7568468c85
-tested_commit: f5fb04c635215bd7b8547306cf75d6b41153f3f2
+tested_commit: ab4f21b9432240547555b73b4be341ad843bef39
 change_status: BLOCKED
 summary: Prospective lossless content-addressed gzip evidence, revision-bound safe retrieval, M3 semantic decoding
   and protected-base PR evidence budget.
@@ -10,6 +10,8 @@ files_changed:
 - CURRENT_DOCUMENT_INDEX.json
 - HARNESS_DOCUMENT_MANIFEST.json
 - docs/exec-plans/evidence/HG-047/HISTORY.md
+- docs/exec-plans/evidence/HG-047/development-ab4f21b/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-047/development-ab4f21b/source_diff.json
 - docs/exec-plans/governance/HG-047.yaml
 - docs/harness/EVIDENCE_STORAGE_POLICY.md
 - docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
@@ -28,10 +30,10 @@ files_changed:
 - tools/harness/local_gate.py
 - tools/harness/validate_harness.py
 checks_run:
-- check_id: integrated_validation
-  command: pending integrated validation
-  result: NOT_RUN
-  evidence_ref: docs/exec-plans/evidence/HG-047/HISTORY.md
+- check_id: source_diff
+  command: git diff --check 391c9198fa8ec647e377a0572700bc7568468c85 HEAD
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/development-ab4f21b/source_diff.json
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:

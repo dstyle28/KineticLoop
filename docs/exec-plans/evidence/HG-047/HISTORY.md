@@ -5,7 +5,7 @@ local CI concern now owns HG-046. Only this compact concern is prospectively
 renamed to harness-governance-v0.1/HG-047.
 
 Original compact proof remains byte-for-byte in Git at
-`ac63ac53b1fb222ef0d816c171b2041c48d0d722` (full original head recorded below by Git),
+`ac63ac53b1fb222ef0d816c171b2041c48d0d722`,
 under `docs/exec-plans/evidence/HG-046/`,
 `docs/exec-plans/reviews/HG-046/`, and
 `docs/exec-plans/governance/HG-046.yaml`. The final original implementation was
