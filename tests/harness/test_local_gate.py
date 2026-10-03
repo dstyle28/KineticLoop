@@ -257,7 +257,10 @@ def test_uncertain_resource_creation_is_cleaned_by_exact_owner(monkeypatch):
     monkeypatch.setattr(gate.subprocess, 'check_output', lambda *a, **k:
                         json.dumps([{'Config': {'Labels': {'kineticloop.owner': 'owned'}}}]))
     commands = []
-    monkeypatch.setattr(gate, 'cleanup_resource', lambda argv: commands.append(argv) or True)
+    def cleanup(argv):
+        commands.append(argv)
+        return True
+    monkeypatch.setattr(gate, 'cleanup_resource', cleanup)
     assert gate.cleanup_owned('container', 'owned', 'owned')
     assert commands == [['docker', 'container', 'rm', '-f', '-v', 'owned']]
 
@@ -289,7 +292,10 @@ def test_failed_start_still_attempts_both_owned_cleanups(tmp_path, monkeypatch):
     monkeypatch.setattr(gate, 'checked', checked)
     monkeypatch.setattr(gate, 'cleanup_resource', lambda *_: True)
     cleaned = []
-    monkeypatch.setattr(gate, 'cleanup_owned', lambda kind, name, owner: cleaned.append(kind) or True)
+    def cleanup(kind, name, owner):
+        cleaned.append(kind)
+        return True
+    monkeypatch.setattr(gate, 'cleanup_owned', cleanup)
     with pytest.raises(subprocess.CalledProcessError):
         gate.run_worker(tmp_path, B, A, True, tmp_path)
     assert cleaned == ['container', 'volume']
