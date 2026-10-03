@@ -1,0 +1,31 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-051",
+  "reviewed_head_sha": "7141b1dfe48df8f0e25429cf9ff646af6de4b5ce",
+  "review_type": "GENERAL",
+  "status": "PASS",
+  "findings": [
+    {
+      "classification": "REQUIRED_FOLLOWUP",
+      "title": "Complete root-owned admission and normal merge gates",
+      "body": "Before merge, root must install/admit the reviewed trusted validator and schema with exact pins, obtain all four SHA-bound reviews, complete normal App/full-DB/hosted gates, and preserve normal merge ancestry. These are declared external integration steps; this local governance GENERAL PASS does not confer merge, KL080, M3, product or release PASS."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/HG-051/general/REPORT.md",
+    "docs/exec-plans/reviews/HG-051/general/audit.py",
+    "docs/exec-plans/reviews/HG-051/general/audit.json",
+    "docs/exec-plans/reviews/HG-051/general/audit.log",
+    "docs/exec-plans/reviews/HG-051/general/audit-first-script-error.log",
+    "docs/exec-plans/reviews/HG-051/general/focused.json",
+    "docs/exec-plans/reviews/HG-051/general/focused.log",
+    "docs/exec-plans/reviews/HG-051/general/inventory.log",
+    "docs/exec-plans/governance/HG-051.yaml",
+    "docs/exec-plans/evidence/HG-051/final-5debfe1/EXECUTION.json",
+    "docs/exec-plans/evidence/HG-051/final-5debfe1/focused.json",
+    "docs/exec-plans/evidence/HG-051/final-5debfe1/harness.json",
+    "docs/exec-plans/evidence/HG-051/final-5debfe1/unit.json",
+    "docs/exec-plans/evidence/HG-051/final-5debfe1/harness-execution-json.json",
+    "docs/exec-plans/evidence/HG-051/final-5debfe1/harness-junit-xml.json"
+  ],
+  "review_contract_version": "v0.2"
+}

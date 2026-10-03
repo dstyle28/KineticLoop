@@ -328,3 +328,19 @@ def test_missing_blob_is_not_available_evidence_or_an_absent_path(
     assert v.revision_git_entry(history.root, ref, bound) is not None
     assert not v.revision_regular_file(history.root, ref, bound)
     assert 'integration-review-evidence:KL-001:GENERAL:' + ref in history.errors(review)
+
+
+@pytest.mark.parametrize('removed_marker', [False, True])
+def test_archival_mapping_cannot_supply_review_record_evidence(tmp_path, removed_marker):
+    history = History(tmp_path)
+    ce = v.compact_evidence
+    metadata = ce.historical_template()
+    metadata['entries'] = []
+    if removed_marker:
+        metadata.pop(ce.MARKER)
+    ref = OWN + 'raw/archival.log'
+    history.put(ref, json.dumps(metadata))
+    record_commit = history.review([ref])
+    assert not v.review_evidence_exists(history.root, ref, history.reviewed,
+                                        record_commit, 'KL-001', True)
+    assert any('integration-review-evidence' in error for error in history.errors(record_commit))

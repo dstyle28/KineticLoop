@@ -1,0 +1,178 @@
+change_identity: harness-governance-v0.1/HG-051
+display_change_id: HG-051
+base_commit: b877db0edd2e4550d6ea81750656112fb7f2e223
+tested_commit: 5debfe1b41a26c0b3f985917b80995a9eb38b92e
+change_status: PASS
+summary: Authorize only the exact four KL080 historical current-tree lossless representations through a task-owned
+  archival mapping. Preserve original bytes, regular Git blobs/commits, failed outcomes, tested/reviewed bindings,
+  non-migrated evidence and unchanged limits. Archival retrieval is distinct from execution proof; original verification
+  cannot borrow later storage.
+packets_refined:
+- KL-080
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- HISTORICAL_EVIDENCE_MAPPING.schema.json
+- KineticLoop_Harness_Backlog_v0.2.json
+- KineticLoop_Harness_Traceability_v0.3.json
+- docs/exec-plans/active/KL-080.md
+- docs/exec-plans/evidence/HG-051/INVENTORY.json
+- docs/exec-plans/evidence/HG-051/SCOPE.md
+- docs/exec-plans/evidence/HG-051/final-5debfe1/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/HG-051/final-5debfe1/51eecfd9763e5779e3c7acbb185c376c20bbf0ebbcd922601ad0e170a7a31499.gz
+- docs/exec-plans/evidence/HG-051/final-5debfe1/7385633cc39e30bc1255f21c4756ab360093f64f60ab89742917152e780676f3.gz
+- docs/exec-plans/evidence/HG-051/final-5debfe1/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-051/final-5debfe1/866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445.gz
+- docs/exec-plans/evidence/HG-051/final-5debfe1/8aa29ca379f49b9419cfe4539cf7f8647c2030f801f25dacad2d6d2a3d2ed97e.gz
+- docs/exec-plans/evidence/HG-051/final-5debfe1/8cb03520b1b2bc80523db477e3b6953c8dd7df2dd9c1bd0362a80af4a8cc1e63.gz
+- docs/exec-plans/evidence/HG-051/final-5debfe1/8d543204c4194ea5059eeded6fa718575ce8b07a774b239e03c7a60d5f297ac9.gz
+- docs/exec-plans/evidence/HG-051/final-5debfe1/924631611fde55f1c6615195b0cb15e2e63ef8d456b69330823f7d553b80eea7.gz
+- docs/exec-plans/evidence/HG-051/final-5debfe1/EXECUTION.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/a49deb14979611467e319473c78d00474a64b9f9e19e5b44bf00f31b34c6eb33.gz
+- docs/exec-plans/evidence/HG-051/final-5debfe1/adc1b4f595f4d7eee3e90cc48ef417c69f2f312a11e5c17dbb591c41b2f3f25b.gz
+- docs/exec-plans/evidence/HG-051/final-5debfe1/authority.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/budget.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/c1164d46740a5c008ddfe3f44b6e0df1943db8204c365c67ed81cbce20134a1b.gz
+- docs/exec-plans/evidence/HG-051/final-5debfe1/capture_final.py
+- docs/exec-plans/evidence/HG-051/final-5debfe1/diff.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/driver.log
+- docs/exec-plans/evidence/HG-051/final-5debfe1/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-051/final-5debfe1/e6fd739dd94ae9ce01a45abb6e3f97dcc56c23fc4b7bc09fbb4780f7ad94a797.gz
+- docs/exec-plans/evidence/HG-051/final-5debfe1/e8658efa8219260fbac6b1f0d754e04ea67e0945cb992aaaf5f043401c5878c2.gz
+- docs/exec-plans/evidence/HG-051/final-5debfe1/eea2f6c3fb20feae6416d4fd3f30f0db49f113b7b030a88c2bb6bc9fd30eea96.gz
+- docs/exec-plans/evidence/HG-051/final-5debfe1/f1a40ad526562a4d5169bc7eb56cea0d9fb5332c276d3bfdf0868c606a4d3358.gz
+- docs/exec-plans/evidence/HG-051/final-5debfe1/focused-junit.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/focused.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/harness-collection-json.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/harness-collection-log.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/harness-execution-json.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/harness-junit-xml.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/harness-manifest-json.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/harness-pytest-log.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/harness.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/inventory_roundtrip.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/lint.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/scope_frozen_prerequisites.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/typecheck.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/unit-junit.json
+- docs/exec-plans/evidence/HG-051/final-5debfe1/unit.json
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/13e548b92989030960d906a73a6f0b04aa953f5dcc664e42b00b54bf62bdc018.gz
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/17dddbfc402ff8121848acfac4f29eee112e00861697366e2a3d9b620501b1ee.gz
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/23fed2c6073cba93518592b6a8036c89f42e8395576351a9fd5b5b2a44a55d05.gz
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/42af08919ae7daaaf56a59f93a33968f32b947cab766b7b9febfc80c2b935b31.gz
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/58264841492b21efdba33286d69f55068ae216f674b15dd573451e1a16e0368f.gz
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/6fe7fe284e840301f9ae0560cecfe4b2d6d63c261f58c2bf03aab4319e89f874.gz
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445.gz
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/93cea8439eed446869c62a8e25e595678c46a84cd0c50e1130aa847f4376a593.gz
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/EXECUTION.json
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/authority.json
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/b9fd91813478f5d960bace6bd186c11830811c67792f1298141c2609ceb7ba32.gz
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/budget.json
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/d3b39a74564bb5b30d158fd6a2632437c39e6e6fc704bcc058875d275c122488.gz
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/diff.json
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/e3fbc1161c8cb327f8d73e61e12ddaaa01664fc96d9770dfa43233a525ddb52b.gz
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/focused-interrupted.log
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/harness-interrupted.log
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/inventory_roundtrip.json
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/lint.json
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/scope_frozen_prerequisites.json
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/snapshot-collection-json.json
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/snapshot-collection-log.json
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/snapshot-execution-json.json
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/snapshot-junit-xml.json
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/snapshot-pytest-log.json
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/typecheck.json
+- docs/exec-plans/evidence/HG-051/first-f9ed15a/unit.json
+- docs/exec-plans/evidence/HG-051/inventory_roundtrip.py
+- docs/exec-plans/evidence/HG-051/precommit/CONTEXT.json
+- docs/exec-plans/evidence/HG-051/precommit/be66f6a9740e98ea53d97b6c4470d438053316bc93ab6b9ae9b32d9ca426cec1.gz
+- docs/exec-plans/evidence/HG-051/precommit/deletion-probe.log
+- docs/exec-plans/evidence/HG-051/precommit/driver-syntax-failure-2569db0.log
+- docs/exec-plans/evidence/HG-051/precommit/extra-first.log
+- docs/exec-plans/evidence/HG-051/precommit/focused-first.log
+- docs/exec-plans/evidence/HG-051/precommit/governance-focused.log
+- docs/exec-plans/evidence/HG-051/precommit/lint.log
+- docs/exec-plans/evidence/HG-051/precommit/missing-uv.log
+- docs/exec-plans/evidence/HG-051/precommit/typecheck.log
+- docs/exec-plans/evidence/HG-051/run_checks.py
+- docs/exec-plans/evidence/HG-051/scope_audit.py
+- docs/exec-plans/governance/HG-051.yaml
+- docs/harness/EVIDENCE_STORAGE_POLICY.md
+- docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
+- docs/harness/M3_CLOSURE_CONTRACT.md
+- docs/harness/MERGE_GATE.md
+- docs/harness/THREAD_RESULT_CONTRACT.md
+- docs/harness/THREAD_REVIEW_CONTRACT.md
+- tests/harness/test_compact_evidence.py
+- tests/harness/test_m3_milestone_closure.py
+- tests/harness/test_review_evidence_provenance.py
+- tests/harness/test_source_decision_scope.py
+- tests/harness/test_validator.py
+- tools/harness/README.md
+- tools/harness/compact_evidence.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: focused
+  command: uv run pytest -q tests/harness/test_compact_evidence.py tests/harness/test_source_decision_scope.py tests/harness/test_review_evidence_provenance.py
+    tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -k 'archiv or hg051 or source_decision_scope
+    or manifest_tamper or bounded_single_member or decoded_reserved or exact_retrieval' -n 2 --junitxml=/private/tmp/hg051-checks-5debfe1/focused.xml
+    --basetemp=/private/tmp/hg051-checks-5debfe1/focused-temp
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/focused.json
+- check_id: harness
+  command: uv run kl test-harness --workers 2 --evidence-dir /private/tmp/hg051-checks-5debfe1/harness -q --basetemp=/private/tmp/hg051-checks-5debfe1/harness-temp
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/harness.json
+- check_id: unit
+  command: uv run kl test-unit -q --junitxml=/private/tmp/hg051-checks-5debfe1/unit.xml
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/unit.json
+- check_id: authority
+  command: uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/authority.json
+- check_id: lint
+  command: uv run kl lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/lint.json
+- check_id: typecheck
+  command: uv run kl typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/typecheck.json
+- check_id: scope_frozen_prerequisites
+  command: uv run python docs/exec-plans/evidence/HG-051/scope_audit.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/scope_frozen_prerequisites.json
+- check_id: inventory_roundtrip
+  command: uv run python docs/exec-plans/evidence/HG-051/inventory_roundtrip.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/inventory_roundtrip.json
+- check_id: diff
+  command: git diff --check b877db0edd2e4550d6ea81750656112fb7f2e223 5debfe1b41a26c0b3f985917b80995a9eb38b92e
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/diff.json
+- check_id: budget
+  command: uv run python tools/harness/compact_evidence.py audit --base b877db0edd2e4550d6ea81750656112fb7f2e223
+    --head 5debfe1b41a26c0b3f985917b80995a9eb38b92e --identity HG-051
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/budget.json
+frozen_impact: NONE
+authority_entries_added:
+- HISTORICAL_EVIDENCE_MAPPING.schema.json
+known_limitations:
+- 'Governance only: KL080 actual historical artifacts are not migrated; KL080 remains draft blocked. No KL080, M3,
+  product or release closure claim.'
+- Root owns reviewed trusted-validator/schema asset installation, exact pins/admission, final App/full-DB gate and
+  normal merge. Full DB/App and hosted gate status are NOT_RUN in this local governance result.
+- Only the final complete clean committed run supplies required-check PASS. First f9ed15a whitespace failure remains
+  FAIL; focused/full harness were interrupted and remain NOT_RUN with unavailable terminal exit. Uncommitted stale-manifest
+  failure and driver syntax failure are preserved without acceptance credit.
+- Historical source-suite exit 1 failures and BLOCKED/FAIL/UNMERGED result/CHANGES_REQUIRED reviews remain fixed
+  in the exact indexed schema. Unknown timestamps remain null; absent historical SECURITY review is not invented.
+- Original revisions must remain available through normal merge ancestry. Archival retrieval may recover bytes without
+  originals, but cannot certify old execution/review/PASS; gate verification requires original regular blobs and
+  hashed records.
+- Fresh independent GENERAL, PROTOCOL, DB_CONCURRENCY and SECURITY_DATA_BOUNDARY reviews bind the governance/evidence
+  revision. Only the own linear REVIEW_RECORD_ONLY suffix may follow.

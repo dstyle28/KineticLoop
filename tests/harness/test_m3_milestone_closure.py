@@ -762,3 +762,26 @@ def test_compact_nested_storage_cannot_supply_m3_execution_stdout(tmp_path, muta
         assert not any('stale-or-unintegrated-revision' in error for error in errors)
     errors = ce.audit(history.root, history.tested, revision, history.change)['errors']
     assert any(error.startswith(outer_path + ':evidence-') for error in errors), errors
+
+
+@pytest.mark.parametrize('encoding', ['utf-8', 'utf-16', 'utf-32'])
+@pytest.mark.parametrize('wrapper', ['direct', 'list', 'dict'])
+def test_archival_mapping_never_supplies_m3_execution_proof(tmp_path, encoding, wrapper):
+    ce = v.compact_evidence
+    metadata = ce.historical_template()
+    metadata['entries'] = []
+    value = [metadata] if wrapper == 'list' else {'wrapped': metadata} if wrapper == 'dict' else metadata
+    raw = json.dumps(value).encode(encoding)
+    path = 'docs/exec-plans/evidence/HG-999/renamed.log'
+    target = tmp_path / path
+    target.parent.mkdir(parents=True)
+    target.write_bytes(raw)
+    subprocess.run(['git', 'init', '-q'], cwd=tmp_path, check=True)
+    subprocess.run(['git', 'add', '.'], cwd=tmp_path, check=True)
+    subprocess.run(['git', '-c', 'user.name=Fixture', '-c', 'user.email=test@example.invalid',
+                    'commit', '-qm', 'archival metadata only'], cwd=tmp_path, check=True)
+    head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=tmp_path).decode().strip()
+    ref = dict(path=path, revision=head, sha256=ce.digest(raw))
+    with pytest.raises(ValueError):
+        v.m3_evidence_bytes(tmp_path, ref, head)
+    assert not v.evidence_exists(tmp_path, path, head, head, 'pytest', 0)

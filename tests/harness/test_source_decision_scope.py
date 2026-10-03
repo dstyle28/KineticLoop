@@ -178,6 +178,7 @@ def test_profile_refinement_preserves_all_other_definitions_and_m3_contracts():
         ['git', 'show', PROFILE_BASE + ':' + v.BACKLOG], cwd=ROOT))
     old = next(t for t in before['tasks'] if t['id'] == 'KL-080')
     expected = copy.deepcopy(old)
+    expected['definition_of_done'] = TASK['definition_of_done']
     expected['deliverables'][1] = TASK['deliverables'][1]
     expected['check_contracts'][7]['pass_oracle'] = TASK['check_contracts'][7]['pass_oracle']
     assert TASK == expected
@@ -220,5 +221,27 @@ def test_hg049_exact_scope_excludes_every_other_owner_and_artifact():
                  'docs/exec-plans/reviews/KL-080/GENERAL.json',
                  'docs/exec-plans/milestones/M3.json',
                  'docs/exec-plans/evidence/HG-049A/probe.json',
+                 '.github/workflows/db.yml', 'tools/harness/local_gate.py']:
+        assert not v.matches(path, allowed)
+
+
+def test_hg051_only_refines_unmerged_preservation_language():
+    base = json.loads(subprocess.check_output(
+        ['git', 'show', 'b877db0edd2e4550d6ea81750656112fb7f2e223:' + v.BACKLOG], cwd=ROOT))
+    before = next(t for t in base['tasks'] if t['id'] == 'KL-080')
+    expected = copy.deepcopy(before)
+    expected['definition_of_done'] = TASK['definition_of_done']
+    assert TASK == expected
+    assert TASK['definition_of_done'].startswith(before['definition_of_done'])
+    assert 'archival retrieval never certifies execution or PASS' in TASK['definition_of_done']
+    assert not v.source_decision_packet_errors(TASK, PACKET)
+    assert v.source_decision_packet_errors(TASK, PACKET.replace('HG051 preservation qualification', 'weakened'))
+    allowed = v.governance_allowed_patterns('HG-051')
+    for path in ['HISTORICAL_EVIDENCE_MAPPING.schema.json', v.BACKLOG, v.TRACEABILITY,
+                 'docs/exec-plans/active/KL-080.md']:
+        assert v.matches(path, allowed)
+    for path in ['docs/exec-plans/evidence/KL-080/history.log',
+                 'docs/exec-plans/completed/KL-080_RESULT.yaml',
+                 'src/kineticloop/persistence/transactions.py', 'FROZEN_BASELINE.json',
                  '.github/workflows/db.yml', 'tools/harness/local_gate.py']:
         assert not v.matches(path, allowed)

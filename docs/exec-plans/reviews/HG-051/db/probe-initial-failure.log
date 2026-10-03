@@ -1,0 +1,3 @@
+Reviewer probe initial exit 1: the execution started ledger contains node-ID strings. Initial checker incorrectly indexed them as objects. No implementation finding or PASS credit was derived from this failed checker.
+Traceback at probe.py line 93: assert set(nodeids) == {case['nodeid'] for case in execution['started']}
+TypeError: string indices must be integers, not str
