@@ -3392,11 +3392,26 @@ def task_definition_errors(
     return errors, tasks
 
 
+def historical_schema_authority_errors(root: Path) -> list[str]:
+    # The candidate index may describe its own bytes; it cannot authorize a
+    # different inventory than the independently reviewed installed decoder.
+    try:
+        candidate = compact_evidence.blob(
+            root, compact_evidence.MAPPING_SCHEMA, None, compact_evidence.PLAIN_LIMIT)
+    except (ValueError, OSError) as ex:
+        return ['historical-schema-authority:' + str(ex)]
+    if candidate != compact_evidence.HISTORICAL_SCHEMA_BYTES:
+        return ['historical-schema-authority:mismatch']
+    return []
+
+
 @evidence_validation_session()
 def validate(root, args):
     from jsonschema import Draft202012Validator
 
-    errors = []
+    errors = historical_schema_authority_errors(root)
+    if errors:
+        return errors
     index, frozen, backlog = (load_artifact(root / n) for n in (INDEX, 'FROZEN_BASELINE.json', BACKLOG))
     manifest = load_artifact(root / MANIFEST)
     traceability = load_artifact(root / TRACEABILITY)

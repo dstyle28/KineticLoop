@@ -263,10 +263,394 @@ MAPPING_PATH = 'docs/exec-plans/evidence/KL-080/HISTORICAL_EVIDENCE_MAPPING.json
 MAPPING_SCHEMA = 'HISTORICAL_EVIDENCE_MAPPING.schema.json'
 
 
+# Exact indexed HG051 authority travels with the reviewed/pinned decoder. The
+# installed worker has only Python assets and must never trust candidate schema
+# contents or an ambient filesystem fallback to authorize historical bytes.
+HISTORICAL_SCHEMA_BYTES = r'''{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kineticloop/historical-evidence-mapping-v1",
+  "title": "HG051 exact four-blob KL080 archival storage authorization",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kineticloop_evidence",
+    "authorization",
+    "task_identity",
+    "purpose",
+    "historical_outcome",
+    "preserved_records",
+    "entries"
+  ],
+  "properties": {
+    "kineticloop_evidence": {
+      "const": "historical-mapping-v1"
+    },
+    "authorization": {
+      "const": "harness-governance-v0.1/HG-051"
+    },
+    "task_identity": {
+      "const": "harness-backlog-v0.2/KL-080"
+    },
+    "purpose": {
+      "const": "ARCHIVAL_RETRIEVAL_ONLY"
+    },
+    "historical_outcome": {
+      "const": {
+        "task_status": "BLOCKED",
+        "task_checks_status": "FAIL",
+        "integration_status": "UNMERGED",
+        "tested_commit": "15a7167e44b8044c94688cf7e367e2d02a962e31",
+        "reviewed_head_sha": "7e19587458d611155051d0c89d36e0b89f98b8a1",
+        "review_status": "CHANGES_REQUIRED"
+      }
+    },
+    "preserved_records": {
+      "const": [
+        {
+          "path": "docs/exec-plans/completed/KL-080_RESULT.yaml",
+          "revision": "7e19587458d611155051d0c89d36e0b89f98b8a1",
+          "sha256": "d2a4c09325746eed188804df75a177eb87090bed111ebd8c740efe3177ec58ba",
+          "bytes": 26928
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-080/GENERAL.json",
+          "revision": "477b213f67429f571b60d5701f02892ab9c1cbbf",
+          "sha256": "075f182f8ec7a917eb310dd8830bd81ddc6c361410b164a57184268f0ed82584",
+          "bytes": 25548
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-080/PROTOCOL.json",
+          "revision": "477b213f67429f571b60d5701f02892ab9c1cbbf",
+          "sha256": "6182dcfcd122457e7763282b8084a52d1fb5009c27a2fd368d8cbf20a4d77375",
+          "bytes": 5173
+        },
+        {
+          "path": "docs/exec-plans/reviews/KL-080/DB_CONCURRENCY.json",
+          "revision": "477b213f67429f571b60d5701f02892ab9c1cbbf",
+          "sha256": "0682ea1f9f70a8edbe72a9b3ea8f52523f9f46fed5f8da795a381138b693c37f",
+          "bytes": 7157
+        }
+      ]
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "prefixItems": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "original",
+            "storage"
+          ],
+          "properties": {
+            "original": {
+              "const": {
+                "task_identity": "harness-backlog-v0.2/KL-080",
+                "path": "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/harness_regressions_pass.xml",
+                "revision": "7e19587458d611155051d0c89d36e0b89f98b8a1",
+                "blob_id": "4c14842b283158b38b2b6771afa631a83fa1942b",
+                "raw_sha256": "62bdbc352d2f80bc4f254e85b91a7101fecaef40ea72f27448aa04017f19f436",
+                "raw_bytes": 3456356,
+                "execution": {
+                  "tested_commit": "15a7167e44b8044c94688cf7e367e2d02a962e31",
+                  "command": "uv run kl test-harness",
+                  "exit_code": 0,
+                  "result": "PASS",
+                  "timestamp": null
+                },
+                "execution_record": {
+                  "path": "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/harness_regressions_pass.execution.json",
+                  "revision": "7e19587458d611155051d0c89d36e0b89f98b8a1",
+                  "sha256": "00255738b0a2220a5980d0fb39c999d7f449dc4c9ef1fbd7eafe299c64b90ef4",
+                  "bytes": 697
+                }
+              }
+            },
+            "storage": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "envelope_path",
+                "envelope_sha256",
+                "envelope_bytes",
+                "payload",
+                "payload_sha256",
+                "payload_bytes"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40}$"
+                },
+                "envelope_path": {
+                  "type": "string"
+                },
+                "envelope_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "envelope_bytes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 262144
+                },
+                "payload": {
+                  "type": "string"
+                },
+                "payload_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "payload_bytes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 8388608
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "original",
+            "storage"
+          ],
+          "properties": {
+            "original": {
+              "const": {
+                "task_identity": "harness-backlog-v0.2/KL-080",
+                "path": "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.log",
+                "revision": "7e19587458d611155051d0c89d36e0b89f98b8a1",
+                "blob_id": "74b505e3882c8857e7d4434f200fa2ecf454d7b8",
+                "raw_sha256": "2b9d584a65063ef0e00040c69fcdc925e7e512b5f49c281ab880962e7490d92d",
+                "raw_bytes": 12503732,
+                "execution": {
+                  "tested_commit": "15a7167e44b8044c94688cf7e367e2d02a962e31",
+                  "command": "uv run pytest -q tests/db/test_source_decision_conformance.py",
+                  "exit_code": 1,
+                  "result": "FAIL",
+                  "timestamp": null
+                },
+                "execution_record": {
+                  "path": "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.execution.json",
+                  "revision": "7e19587458d611155051d0c89d36e0b89f98b8a1",
+                  "sha256": "633c49b0b8e943aaaf7cea496c4c1e6a25a133f9ad5630033704b13720602fb8",
+                  "bytes": 709
+                }
+              }
+            },
+            "storage": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "envelope_path",
+                "envelope_sha256",
+                "envelope_bytes",
+                "payload",
+                "payload_sha256",
+                "payload_bytes"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40}$"
+                },
+                "envelope_path": {
+                  "type": "string"
+                },
+                "envelope_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "envelope_bytes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 262144
+                },
+                "payload": {
+                  "type": "string"
+                },
+                "payload_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "payload_bytes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 8388608
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "original",
+            "storage"
+          ],
+          "properties": {
+            "original": {
+              "const": {
+                "task_identity": "harness-backlog-v0.2/KL-080",
+                "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/harness_regressions_pass.parallel.xml",
+                "revision": "79fa887dc20f5865902b0b5d90ce0e4b68e0118e",
+                "blob_id": "f73c446fe5a49036e39e87121ad3a6029ebdffd1",
+                "raw_sha256": "089e1aba60ca60a64c6b513a966d66732f3519e21c51b6d7af3e9dd0fabb93d7",
+                "raw_bytes": 3456356,
+                "execution": {
+                  "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+                  "command": "uv run kl test-harness",
+                  "exit_code": 0,
+                  "result": "PASS",
+                  "timestamp": null
+                },
+                "execution_record": {
+                  "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/harness_regressions_pass.parallel.json",
+                  "revision": "79fa887dc20f5865902b0b5d90ce0e4b68e0118e",
+                  "sha256": "b1c83e48564bd206eada7e1b879009741f2301423c15873d617e16eab243d190",
+                  "bytes": 715
+                }
+              }
+            },
+            "storage": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "envelope_path",
+                "envelope_sha256",
+                "envelope_bytes",
+                "payload",
+                "payload_sha256",
+                "payload_bytes"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40}$"
+                },
+                "envelope_path": {
+                  "type": "string"
+                },
+                "envelope_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "envelope_bytes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 262144
+                },
+                "payload": {
+                  "type": "string"
+                },
+                "payload_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "payload_bytes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 8388608
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "original",
+            "storage"
+          ],
+          "properties": {
+            "original": {
+              "const": {
+                "task_identity": "harness-backlog-v0.2/KL-080",
+                "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.log",
+                "revision": "79fa887dc20f5865902b0b5d90ce0e4b68e0118e",
+                "blob_id": "2da980979a754eaf2e081b7181aa11a839020c05",
+                "raw_sha256": "5c94998447a516b39433e028b6ca98c64b0f8a00521db6096835210fb1209a1c",
+                "raw_bytes": 12480477,
+                "execution": {
+                  "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+                  "command": "uv run pytest -q tests/db/test_source_decision_conformance.py",
+                  "exit_code": 1,
+                  "result": "FAIL",
+                  "timestamp": null
+                },
+                "execution_record": {
+                  "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/checks.json",
+                  "revision": "79fa887dc20f5865902b0b5d90ce0e4b68e0118e",
+                  "sha256": "9b00d9cfed7a74d5e1c4923643ad5629ab484ca8542ed4f73b77fe80ae9ceb91",
+                  "bytes": 11318
+                }
+              }
+            },
+            "storage": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "envelope_path",
+                "envelope_sha256",
+                "envelope_bytes",
+                "payload",
+                "payload_sha256",
+                "payload_bytes"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40}$"
+                },
+                "envelope_path": {
+                  "type": "string"
+                },
+                "envelope_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "envelope_bytes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 262144
+                },
+                "payload": {
+                  "type": "string"
+                },
+                "payload_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "payload_bytes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 8388608
+                }
+              }
+            }
+          }
+        }
+      ],
+      "items": false
+    }
+  }
+}
+'''.encode('ascii')
+
+
 def historical_schema() -> dict:
-    # This schema is indexed governance authority, not caller-supplied metadata.
-    return json.loads((Path(__file__).resolve().parents[2] / MAPPING_SCHEMA).read_bytes(),
-                      object_pairs_hook=unique)
+    return json.loads(HISTORICAL_SCHEMA_BYTES, object_pairs_hook=unique)
 
 
 def historical_originals() -> list[dict]:

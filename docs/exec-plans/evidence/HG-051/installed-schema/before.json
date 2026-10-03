@@ -1,0 +1,71 @@
+{
+  "head": "b9c355fd9663b20a8d0af7297eb00b42093c9361",
+  "installed_files": [
+    "__pycache__",
+    "compact_evidence.py",
+    "db_ci.py",
+    "db_ci_pytest.py",
+    "gate_pytest.py",
+    "gate_validate.py",
+    "validate_harness.py"
+  ],
+  "expected_schema": "/private/tmp/hg051-installed-schema-preflight/gate/HISTORICAL_EVIDENCE_MAPPING.schema.json",
+  "repository_schema_original_count": {
+    "success": true,
+    "result": 4
+  },
+  "installed_schema_original_count": {
+    "success": false,
+    "error": "FileNotFoundError(2, 'No such file or directory')",
+    "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/hg051-installed-schema-preflight/repro.py\", line 18, in record\n    report[name] = {'success': True, 'result': fn()}\n                                               ^^^^\n  File \"/private/tmp/hg051-installed-schema-preflight/repro.py\", line 22, in <lambda>\n    record('installed_schema_original_count', lambda: len(gate_ce.historical_originals()))\n                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/hg051-installed-schema-preflight/gate/tools/harness/compact_evidence.py\", line 274, in historical_originals\n    historical_schema()['properties']['entries']['prefixItems']]\n    ^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/hg051-installed-schema-preflight/gate/tools/harness/compact_evidence.py\", line 268, in historical_schema\n    return json.loads((Path(__file__).resolve().parents[2] / MAPPING_SCHEMA).read_bytes(),\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1019, in read_bytes\n    with self.open(mode='rb') as f:\n         ^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/hg051-installed-schema-preflight/gate/HISTORICAL_EVIDENCE_MAPPING.schema.json'\n"
+  },
+  "installed_no_archives_audit": {
+    "success": true,
+    "result": [
+      [],
+      []
+    ]
+  },
+  "installed_HG051_budget": {
+    "success": true,
+    "result": {
+      "identity": "HG-051",
+      "base": "b877db0edd2e4550d6ea81750656112fb7f2e223",
+      "head": "b9c355fd9663b20a8d0af7297eb00b42093c9361",
+      "stored_bytes": 4732551,
+      "files": 122,
+      "errors": [],
+      "remedy": "python tools/harness/compact_evidence.py capture --help"
+    }
+  },
+  "installed_KL080_budget_before_migration": {
+    "success": false,
+    "error": "FileNotFoundError(2, 'No such file or directory')",
+    "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/hg051-installed-schema-preflight/repro.py\", line 18, in record\n    report[name] = {'success': True, 'result': fn()}\n                                               ^^^^\n  File \"/private/tmp/hg051-installed-schema-preflight/repro.py\", line 25, in <lambda>\n    record('installed_KL080_budget_before_migration', lambda: gate_ce.audit(source, 'b877db0edd2e4550d6ea81750656112fb7f2e223', report['head'], 'KL-080'))\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/hg051-installed-schema-preflight/gate/tools/harness/compact_evidence.py\", line 514, in audit\n    for original in historical_originals():\n                    ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/hg051-installed-schema-preflight/gate/tools/harness/compact_evidence.py\", line 274, in historical_originals\n    historical_schema()['properties']['entries']['prefixItems']]\n    ^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/hg051-installed-schema-preflight/gate/tools/harness/compact_evidence.py\", line 268, in historical_schema\n    return json.loads((Path(__file__).resolve().parents[2] / MAPPING_SCHEMA).read_bytes(),\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1019, in read_bytes\n    with self.open(mode='rb') as f:\n         ^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/hg051-installed-schema-preflight/gate/HISTORICAL_EVIDENCE_MAPPING.schema.json'\n"
+  },
+  "fixture": {
+    "path": "/private/tmp/hg051-installed-schema-preflight/archive-fixture",
+    "head": "26544e2b31c8ae6117360925050e3aa60af255f8",
+    "raw_sizes": [
+      3456356,
+      12503732,
+      3456356,
+      12480477
+    ],
+    "original_proof_claim": false
+  },
+  "repository_approved_archive_retrieval": {
+    "success": true,
+    "result": {
+      "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/harness_regressions_pass.xml": 3456356,
+      "docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/source_suite_dc.log": 12503732,
+      "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/harness_regressions_pass.parallel.xml": 3456356,
+      "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.log": 12480477
+    }
+  },
+  "installed_approved_archive_retrieval": {
+    "success": false,
+    "error": "FileNotFoundError(2, 'No such file or directory')",
+    "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/hg051-installed-schema-preflight/repro.py\", line 18, in record\n    report[name] = {'success': True, 'result': fn()}\n                                               ^^^^\n  File \"/private/tmp/hg051-installed-schema-preflight/repro.py\", line 57, in <lambda>\n    record('installed_approved_archive_retrieval', lambda: {p: len(raw) for p, raw in gate_ce.validate_archive(fixture, mapping, head).items()})\n                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/hg051-installed-schema-preflight/gate/tools/harness/compact_evidence.py\", line 345, in validate_archive\n    issues = list(Draft202012Validator(historical_schema()).iter_errors(mapping))\n                                       ^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/hg051-installed-schema-preflight/gate/tools/harness/compact_evidence.py\", line 268, in historical_schema\n    return json.loads((Path(__file__).resolve().parents[2] / MAPPING_SCHEMA).read_bytes(),\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1019, in read_bytes\n    with self.open(mode='rb') as f:\n         ^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/hg051-installed-schema-preflight/gate/HISTORICAL_EVIDENCE_MAPPING.schema.json'\n"
+  }
+}

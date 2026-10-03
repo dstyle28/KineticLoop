@@ -2,11 +2,12 @@ change_identity: harness-governance-v0.1/HG-051
 display_change_id: HG-051
 base_commit: b877db0edd2e4550d6ea81750656112fb7f2e223
 tested_commit: 5debfe1b41a26c0b3f985917b80995a9eb38b92e
-change_status: PASS
+change_status: BLOCKED
 summary: Authorize only the exact four KL080 historical current-tree lossless representations through a task-owned
   archival mapping. Preserve original bytes, regular Git blobs/commits, failed outcomes, tested/reviewed bindings,
   non-migrated evidence and unchanged limits. Archival retrieval is distinct from execution proof; original verification
-  cannot borrow later storage.
+  cannot borrow later storage. Correct installed archival decoder dependency by embedding exact reviewed schema
+  authority and rejecting differing candidate schema bytes.
 packets_refined:
 - KL-080
 files_changed:
@@ -85,6 +86,10 @@ files_changed:
 - docs/exec-plans/evidence/HG-051/first-f9ed15a/snapshot-pytest-log.json
 - docs/exec-plans/evidence/HG-051/first-f9ed15a/typecheck.json
 - docs/exec-plans/evidence/HG-051/first-f9ed15a/unit.json
+- docs/exec-plans/evidence/HG-051/installed-schema/FINDING.md
+- docs/exec-plans/evidence/HG-051/installed-schema/before.json
+- docs/exec-plans/evidence/HG-051/installed-schema/before.py
+- docs/exec-plans/evidence/HG-051/installed-schema/precommit.json
 - docs/exec-plans/evidence/HG-051/inventory_roundtrip.py
 - docs/exec-plans/evidence/HG-051/precommit/CONTEXT.json
 - docs/exec-plans/evidence/HG-051/precommit/be66f6a9740e98ea53d97b6c4470d438053316bc93ab6b9ae9b32d9ca426cec1.gz
@@ -99,6 +104,46 @@ files_changed:
 - docs/exec-plans/evidence/HG-051/run_checks.py
 - docs/exec-plans/evidence/HG-051/scope_audit.py
 - docs/exec-plans/governance/HG-051.yaml
+- docs/exec-plans/reviews/HG-051/DB_CONCURRENCY.json
+- docs/exec-plans/reviews/HG-051/GENERAL.json
+- docs/exec-plans/reviews/HG-051/PROTOCOL.json
+- docs/exec-plans/reviews/HG-051/SECURITY_DATA_BOUNDARY.json
+- docs/exec-plans/reviews/HG-051/db/REPORT.md
+- docs/exec-plans/reviews/HG-051/db/focused-exit.txt
+- docs/exec-plans/reviews/HG-051/db/focused.log
+- docs/exec-plans/reviews/HG-051/db/focused.xml
+- docs/exec-plans/reviews/HG-051/db/probe-exit.txt
+- docs/exec-plans/reviews/HG-051/db/probe-initial-failure.log
+- docs/exec-plans/reviews/HG-051/db/probe-initial.py
+- docs/exec-plans/reviews/HG-051/db/probe.log
+- docs/exec-plans/reviews/HG-051/db/probe.py
+- docs/exec-plans/reviews/HG-051/db/run_focused.py
+- docs/exec-plans/reviews/HG-051/db/tooling.log
+- docs/exec-plans/reviews/HG-051/db/validate_record.py
+- docs/exec-plans/reviews/HG-051/db/validation.log
+- docs/exec-plans/reviews/HG-051/general/REPORT.md
+- docs/exec-plans/reviews/HG-051/general/audit-first-script-error.log
+- docs/exec-plans/reviews/HG-051/general/audit.json
+- docs/exec-plans/reviews/HG-051/general/audit.log
+- docs/exec-plans/reviews/HG-051/general/audit.py
+- docs/exec-plans/reviews/HG-051/general/focused.json
+- docs/exec-plans/reviews/HG-051/general/focused.log
+- docs/exec-plans/reviews/HG-051/general/inventory.log
+- docs/exec-plans/reviews/HG-051/protocol/REPORT.md
+- docs/exec-plans/reviews/HG-051/protocol/RUNS.json
+- docs/exec-plans/reviews/HG-051/protocol/audit-stderr.log
+- docs/exec-plans/reviews/HG-051/protocol/audit.json
+- docs/exec-plans/reviews/HG-051/protocol/audit.py
+- docs/exec-plans/reviews/HG-051/protocol/proof-separation.log
+- docs/exec-plans/reviews/HG-051/protocol/proof-separation.xml
+- docs/exec-plans/reviews/HG-051/protocol/pytest.log
+- docs/exec-plans/reviews/HG-051/protocol/pytest.xml
+- docs/exec-plans/reviews/HG-051/security/REPORT.md
+- docs/exec-plans/reviews/HG-051/security/focused.log
+- docs/exec-plans/reviews/HG-051/security/focused.xml
+- docs/exec-plans/reviews/HG-051/security/probes.log
+- docs/exec-plans/reviews/HG-051/security/probes.py
+- docs/exec-plans/reviews/HG-051/security/reviewed-budget.log
 - docs/harness/EVIDENCE_STORAGE_POLICY.md
 - docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
 - docs/harness/M3_CLOSURE_CONTRACT.md
@@ -119,44 +164,44 @@ checks_run:
     tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -k 'archiv or hg051 or source_decision_scope
     or manifest_tamper or bounded_single_member or decoded_reserved or exact_retrieval' -n 2 --junitxml=/private/tmp/hg051-checks-5debfe1/focused.xml
     --basetemp=/private/tmp/hg051-checks-5debfe1/focused-temp
-  result: PASS
+  result: NOT_RUN
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/focused.json
 - check_id: harness
   command: uv run kl test-harness --workers 2 --evidence-dir /private/tmp/hg051-checks-5debfe1/harness -q --basetemp=/private/tmp/hg051-checks-5debfe1/harness-temp
-  result: PASS
+  result: NOT_RUN
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/harness.json
 - check_id: unit
   command: uv run kl test-unit -q --junitxml=/private/tmp/hg051-checks-5debfe1/unit.xml
-  result: PASS
+  result: NOT_RUN
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/unit.json
 - check_id: authority
   command: uv run kl check-harness
-  result: PASS
+  result: NOT_RUN
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/authority.json
 - check_id: lint
   command: uv run kl lint
-  result: PASS
+  result: NOT_RUN
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/lint.json
 - check_id: typecheck
   command: uv run kl typecheck
-  result: PASS
+  result: NOT_RUN
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/typecheck.json
 - check_id: scope_frozen_prerequisites
   command: uv run python docs/exec-plans/evidence/HG-051/scope_audit.py
-  result: PASS
+  result: NOT_RUN
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/scope_frozen_prerequisites.json
 - check_id: inventory_roundtrip
   command: uv run python docs/exec-plans/evidence/HG-051/inventory_roundtrip.py
-  result: PASS
+  result: NOT_RUN
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/inventory_roundtrip.json
 - check_id: diff
   command: git diff --check b877db0edd2e4550d6ea81750656112fb7f2e223 5debfe1b41a26c0b3f985917b80995a9eb38b92e
-  result: PASS
+  result: NOT_RUN
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/diff.json
 - check_id: budget
   command: uv run python tools/harness/compact_evidence.py audit --base b877db0edd2e4550d6ea81750656112fb7f2e223
     --head 5debfe1b41a26c0b3f985917b80995a9eb38b92e --identity HG-051
-  result: PASS
+  result: NOT_RUN
   evidence_ref: docs/exec-plans/evidence/HG-051/final-5debfe1/budget.json
 frozen_impact: NONE
 authority_entries_added:
@@ -176,3 +221,5 @@ known_limitations:
   hashed records.
 - Fresh independent GENERAL, PROTOCOL, DB_CONCURRENCY and SECURITY_DATA_BOUNDARY reviews bind the governance/evidence
   revision. Only the own linear REVIEW_RECORD_ONLY suffix may follow.
+- Installed-schema correction pending clean committed checks and replacement independent reviews. Prior review records
+  remain historical and stale for this new source revision.

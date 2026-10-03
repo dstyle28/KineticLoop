@@ -926,3 +926,56 @@ def test_archive_complete_deletion_or_plain_substitution_cannot_evade_audit(arch
     later = commit(root)
     assert ce.audit(root, old, later, 'KL-080')['errors']
     assert ce.audit(root, head, later, 'HG-999')['errors']
+
+
+@pytest.fixture
+def installed_archive_decoder(tmp_path):
+    # Match the worker's layout, with no schema next to its pinned Python assets.
+    installed = tmp_path / 'gate/tools/harness'
+    installed.mkdir(parents=True)
+    for name in ('compact_evidence.py', 'validate_harness.py'):
+        (installed / name).write_bytes((ROOT / 'tools/harness' / name).read_bytes())
+    spec = importlib.util.spec_from_file_location('installed_validator', installed / 'validate_harness.py')
+    assert spec and spec.loader
+    validator = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(validator)
+    return validator
+
+
+def test_archive_installed_decoder_has_pinned_authority(installed_archive_decoder, tmp_path, monkeypatch):
+    installed = installed_archive_decoder.compact_evidence
+    assert installed.historical_schema() == ce.historical_schema()
+    assert installed.HISTORICAL_SCHEMA_BYTES == (ROOT / ce.MAPPING_SCHEMA).read_bytes()
+    # Neither an ambient /gate schema nor a candidate working-directory schema
+    # can widen the decoder inventory, even with valid but different JSON.
+    (tmp_path / 'gate' / ce.MAPPING_SCHEMA).write_text('{}')
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / ce.MAPPING_SCHEMA).write_text('{}')
+    assert installed.historical_originals() == ce.historical_originals()
+    assert installed.historical_template() == ce.historical_template()
+
+
+@pytest.mark.parametrize('mutation', ['missing', 'tampered', 'symlink', 'oversize'])
+def test_archive_installed_validator_rejects_candidate_schema(installed_archive_decoder, tmp_path, mutation):
+    candidate = tmp_path / 'candidate'
+    candidate.mkdir()
+    schema = candidate / ce.MAPPING_SCHEMA
+    if mutation == 'tampered':
+        value = ce.historical_schema()
+        value['properties']['entries']['prefixItems'][0]['properties']['original']['const']['raw_sha256'] = '0' * 64
+        schema.write_text(json.dumps(value))
+    elif mutation == 'symlink':
+        schema.symlink_to(ROOT / ce.MAPPING_SCHEMA)
+    elif mutation == 'oversize':
+        schema.write_bytes(b' ' * (ce.PLAIN_LIMIT + 1))
+    # Early fail-closed rejection precedes any candidate index/manifest reads.
+    errors = installed_archive_decoder.validate(candidate, None)
+    assert errors and all(error.startswith('historical-schema-authority:') for error in errors)
+    assert installed_archive_decoder.compact_evidence.historical_originals() == ce.historical_originals()
+
+
+def test_archive_installed_validator_accepts_exact_schema(installed_archive_decoder, tmp_path):
+    candidate = tmp_path / 'candidate'
+    candidate.mkdir()
+    (candidate / ce.MAPPING_SCHEMA).write_bytes((ROOT / ce.MAPPING_SCHEMA).read_bytes())
+    assert installed_archive_decoder.historical_schema_authority_errors(candidate) == []

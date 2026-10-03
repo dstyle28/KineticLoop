@@ -1,0 +1,25 @@
+{
+  "context": "Uncommitted diagnostic checks only; no acceptance credit.",
+  "checks": [
+    {
+      "command": ".venv/bin/python -B -m pytest -q tests/harness/test_compact_evidence.py -k installed --basetemp=/private/tmp/hg051-installed-fix-tests -p no:cacheprovider",
+      "exit_code": 0,
+      "result": "6 passed, 295 deselected"
+    },
+    {
+      "command": ".venv/bin/python -B -m ruff check tools/harness/compact_evidence.py tools/harness/validate_harness.py tests/harness/test_compact_evidence.py",
+      "exit_code": 2,
+      "error": "Failed to create .ruff_cache temporary file: Operation not permitted"
+    },
+    {
+      "command": ".venv/bin/python -B -m ruff check --no-cache tools/harness/compact_evidence.py tools/harness/validate_harness.py tests/harness/test_compact_evidence.py",
+      "exit_code": 0,
+      "result": "All checks passed!"
+    },
+    {
+      "command": ".venv/bin/python -B docs/exec-plans/evidence/HG-051/inventory_roundtrip.py",
+      "exit_code": 0,
+      "result": "Installed actual four-blob roundtrip passed; repeated at committed SHA for required evidence."
+    }
+  ]
+}
