@@ -64,8 +64,7 @@ def snapshot(app: Any, number: int) -> dict[str, Any]:
     base = app.request('GET', prefix + '/git/ref/heads/master')['object']['sha']
     if (pr['state'] != 'open' or pr['base']['ref'] != 'master'
             or pr['base']['repo']['id'] != config['repository_id']
-            or pr['head']['repo']['id'] != config['repository_id']
-            or pr['base']['sha'] != base):
+            or pr['head']['repo']['id'] != config['repository_id']):
         raise ValueError('only open same-repository master PRs are admitted')
     head = pr['head']['sha']
     if not SHA.fullmatch(base) or not SHA.fullmatch(head):

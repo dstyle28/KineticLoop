@@ -33,8 +33,9 @@ def app(pr=None, base=A):
 
 def test_live_snapshot_binds_repository_pr_and_master():
     assert gate.snapshot(app(), 90) == STATE
-    with pytest.raises(ValueError):
-        gate.snapshot(app(base='c' * 40), 90)
+    # GitHub's PR base.sha can lag behind the actual branch ref. The live ref is
+    # authoritative; git ancestry and the publication re-read enforce freshness.
+    assert gate.snapshot(app(base='c' * 40), 90)['base'] == 'c' * 40
 
 
 @pytest.mark.parametrize('mutation', ['closed', 'fork', 'base_repo', 'branch', 'short_sha'])
