@@ -1,0 +1,7 @@
+PASS installed_decoder_embeds_exact_schema_without_adjacent_schema
+PASS exact_four_failed_outcomes_and_unknown_timestamps_preserved
+Traceback (most recent call last):
+  File "/private/tmp/hg051-r2-general-work/probe.py", line 44, in <module>
+    known=json.loads(data); assert known['command']==o['execution']['command'] and known['exit_code']==o['execution']['exit_code']
+                                   ~~~~~^^^^^^^^^^^
+KeyError: 'command'

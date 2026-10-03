@@ -2045,6 +2045,34 @@ class ValidatorTests(unittest.TestCase):
         self.check(1, 'governance-tested-suffix-merge:' + merge_commit,
                    '--ci-pr-base', merge_commit, '--ci-pr-head', 'HEAD')
 
+    def test_hg051_all_four_review_types_are_mandatory(self):
+        self.put('docs/exec-plans/evidence/HG-051/scope.md', 'fixture scope')
+        tested = self.commit('HG051 governance implementation')
+        _, reviewed = self.persist_governance_change(
+            'HG-051', tested, [], ['GENERAL', 'PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'])
+        self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+        for review_type in ('PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'):
+            path = self.root / f'docs/exec-plans/reviews/HG-051/{review_type}.json'
+            original = path.read_bytes()
+            path.unlink()
+            self.commit('missing ' + review_type)
+            self.check(1, 'governance-required-reviews-not-pass:HG-051',
+                       '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+            path.write_bytes(original)
+            self.commit('restore ' + review_type)
+        self.assertEqual(self.git('rev-parse', reviewed), reviewed)
+
+    def test_hg051_cannot_write_actual_historical_artifacts(self):
+        self.put('docs/exec-plans/evidence/HG-051/scope.md', 'fixture scope')
+        tested = self.commit('HG051 governance implementation')
+        self.persist_governance_change(
+            'HG-051', tested, [], ['GENERAL', 'PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'])
+        path = 'docs/exec-plans/evidence/KL-080/unauthorized.log'
+        self.put(path)
+        self.commit('forbidden actual migration')
+        self.check(1, 'governance-write-scope:HG-051:' + path,
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
     def test_ci_governance_requires_pass_change_status(self):
         self.governance_change(change_status='BLOCKED')
         self.check(1, 'governance-change-not-pass:HG-999',

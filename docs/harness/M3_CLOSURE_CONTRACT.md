@@ -106,3 +106,11 @@ All KL080 checks are NOT_RUN until fresh execution. No closure is created by HG0
 
 Prospective compact evidence follows [Evidence Storage Policy](EVIDENCE_STORAGE_POLICY.md);
 all existing revision bindings and PASS oracles remain mandatory.
+
+HG051 authorizes only the exact four KL080 historical current-tree representations
+pinned by [Evidence Storage Policy](EVIDENCE_STORAGE_POLICY.md) and
+`HISTORICAL_EVIDENCE_MAPPING.schema.json`. Original bytes, Git commits, result/review
+bindings and failures remain historical. Archival mapping/retrieval is never
+execution evidence or task/requirement/review/M3 PASS. Migration precedes new testing;
+no post-test overwrite or post-review suffix exception is added. Normal ancestry
+must retain originals, and unavailable original revisions fail original verification.

@@ -1,0 +1,16 @@
+{
+  "kineticloop_evidence": "gzip-v1",
+  "payload": "docs/exec-plans/reviews/HG-051/r2-protocol/626020edaef825d14eb694776949118633640dc3f458030d941cf10e4526687c.gz",
+  "stored_sha256": "a54492c3ea5e223295e34b237d707874e986e8719fff4b2d1a1323b63efcb998",
+  "stored_bytes": 147,
+  "raw_sha256": "626020edaef825d14eb694776949118633640dc3f458030d941cf10e4526687c",
+  "raw_bytes": 288,
+  "tested_commit": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+  "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/harness/test_compact_evidence.py tests/harness/test_review_evidence_provenance.py tests/harness/test_m3_milestone_closure.py tests/harness/test_source_decision_scope.py -k 'archiv or hg051' --basetemp=/private/tmp/hg051-r2-protocol-pytest-temp --junitxml=/private/tmp/hg051-r2-protocol-pytest.xml",
+  "exit_code": 0,
+  "timestamp": null,
+  "test_counts": {
+    "passed": 85,
+    "deselected": 441
+  }
+}

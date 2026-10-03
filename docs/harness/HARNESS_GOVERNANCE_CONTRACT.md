@@ -146,3 +146,19 @@ required checks may be installed earlier to block merges pending validation.
 
 Prospective compact evidence follows [Evidence Storage Policy](EVIDENCE_STORAGE_POLICY.md);
 all existing revision bindings and PASS oracles remain mandatory.
+
+HG051 authorizes only the exact four KL080 historical current-tree representations
+pinned by [Evidence Storage Policy](EVIDENCE_STORAGE_POLICY.md) and
+`HISTORICAL_EVIDENCE_MAPPING.schema.json`. Original bytes, Git commits, result/review
+bindings and failures remain historical. Archival mapping/retrieval is never
+execution evidence or task/requirement/review/M3 PASS. Migration precedes new testing;
+no post-test overwrite or post-review suffix exception is added. Normal ancestry
+must retain originals, and unavailable original revisions fail original verification.
+
+HG051 requires fresh SHA-bound GENERAL, PROTOCOL, DB_CONCURRENCY and
+SECURITY_DATA_BOUNDARY review. Its exact implementation/schema/contract/test paths
+and own governance/evidence/review directories are enumerated in its committed scope
+and validator allowlist. It may refine only unmerged KL080 preservation language;
+all checks, oracles, resources, dependencies and frozen semantics remain identical.
+It does not migrate KL080 artifacts, close KL080/M3, install a trusted validator,
+admit a controller version or confer product/release PASS.

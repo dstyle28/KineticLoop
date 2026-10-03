@@ -1,0 +1,17 @@
+fatal: path 'docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/harness_regressions_pass.xml' does not exist in '0557dbd8f2196df871af20c0982bdc2526f0ad6e'
+Traceback (most recent call last):
+  File "/private/tmp/hg051-r2-protocol-audit.py", line 26, in <module>
+    assert data(original['path'])==data(original['path'],base)==raw
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/hg051-r2-protocol-audit.py", line 8, in data
+    def data(path, rev=source): return git('show',rev+':'+path)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/hg051-r2-protocol-audit.py", line 7, in git
+    def git(*args): return subprocess.check_output(['git',*args],cwd=root)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'show', '0557dbd8f2196df871af20c0982bdc2526f0ad6e:docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/harness_regressions_pass.xml']' returned non-zero exit status 128.

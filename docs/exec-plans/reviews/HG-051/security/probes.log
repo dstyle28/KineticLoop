@@ -1,0 +1,63 @@
+BOUND reviewed=7141b1dfe48df8f0e25429cf9ff646af6de4b5ce tested=5debfe1b41a26c0b3f985917b80995a9eb38b92e
+PASS unchanged storage bounds
+ORIGINAL exact bytes=3456356 sha256=62bdbc352d2f80bc4f254e85b91a7101fecaef40ea72f27448aa04017f19f436 outcome=PASS
+ORIGINAL exact bytes=12503732 sha256=2b9d584a65063ef0e00040c69fcdc925e7e512b5f49c281ab880962e7490d92d outcome=FAIL
+ORIGINAL exact bytes=3456356 sha256=089e1aba60ca60a64c6b513a966d66732f3519e21c51b6d7af3e9dd0fabb93d7 outcome=PASS
+ORIGINAL exact bytes=12480477 sha256=5c94998447a516b39433e028b6ca98c64b0f8a00521db6096835210fb1209a1c outcome=FAIL
+PASS all original regular blobs and preserved hashed records
+CHECK focused exit=0 recovered=396
+OUTPUT 184 passed in 166.12s (0:02:46)
+CHECK harness exit=0 recovered=1838
+OUTPUT 1486 passed in 1372.29s (0:22:52)
+CHECK unit exit=0 recovered=433
+OUTPUT 241 passed in 257.30s (0:04:17)
+CHECK authority exit=0 recovered=38
+CHECK lint exit=0 recovered=19
+CHECK typecheck exit=0 recovered=45
+CHECK scope_frozen_prerequisites exit=0 recovered=6274
+CHECK inventory_roundtrip exit=0 recovered=3438
+CHECK diff exit=0 recovered=0
+CHECK budget exit=0 recovered=264
+PASS committed command/tested/exit bindings
+PASS actual four-blob roundtrip; total changed storage bytes=4322973
+REJECT archive rejected by ordinary execution reader
+REJECT archive rejected by ordinary execution reader
+REJECT archive rejected by ordinary execution reader
+REJECT archive rejected by ordinary execution reader
+REJECT unknown mapping metadata
+REJECT unknown original metadata
+REJECT unknown storage metadata
+REJECT invented timestamp
+REJECT failed source promoted to PASS
+REJECT historical outcome promoted
+REJECT storage owner traversal
+REJECT storage revision alias
+REJECT duplicate entry
+REJECT omitted entry
+REJECT capture reserved archival metadata utf-8
+REJECT capture reserved archival metadata utf-8
+REJECT capture reserved archival metadata utf-8
+REJECT capture reserved archival metadata utf-16
+REJECT capture reserved archival metadata utf-16
+REJECT capture reserved archival metadata utf-16
+REJECT capture reserved archival metadata utf-16-le
+REJECT capture reserved archival metadata utf-16-le
+REJECT capture reserved archival metadata utf-16-le
+REJECT capture reserved archival metadata utf-16-be
+REJECT capture reserved archival metadata utf-16-be
+REJECT capture reserved archival metadata utf-16-be
+REJECT capture reserved archival metadata utf-32
+REJECT capture reserved archival metadata utf-32
+REJECT capture reserved archival metadata utf-32
+REJECT capture reserved archival metadata utf-32-le
+REJECT capture reserved archival metadata utf-32-le
+REJECT capture reserved archival metadata utf-32-le
+REJECT capture reserved archival metadata utf-32-be
+REJECT capture reserved archival metadata utf-32-be
+REJECT capture reserved archival metadata utf-32-be
+PASS encoded/wrapped archive cannot become gzip-v1 execution evidence
+PASS review suffix bytes included
+REJECT unavailable original cannot borrow archive
+REJECT unavailable original cannot borrow HEAD
+PASS archive recovery and original execution verification are distinct
+PASS independent security probes complete

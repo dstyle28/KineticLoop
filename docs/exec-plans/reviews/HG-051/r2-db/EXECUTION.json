@@ -1,0 +1,84 @@
+{
+  "tested_commit": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+  "environment": {
+    "UV_CACHE_DIR": "/private/tmp/hg050-uv-cache",
+    "uv": "/private/tmp/hg048-tools/bin/uv"
+  },
+  "runs": [
+    {
+      "label": "focused",
+      "command": "uv run pytest -q tests/harness/test_compact_evidence.py tests/harness/test_source_decision_scope.py tests/harness/test_review_evidence_provenance.py tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -k 'archiv or hg051 or source_decision_scope or manifest_tamper or bounded_single_member or decoded_reserved or exact_retrieval' -n 2 --junitxml=/private/tmp/hg051-r2-db-focused.xml --basetemp=/private/tmp/hg051-r2-db-focused-temp",
+      "tested_commit": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+      "exit_code": 0,
+      "timestamp": null,
+      "stdout_stderr_file": "docs/exec-plans/reviews/HG-051/r2-db/focused.log",
+      "bytes": 396,
+      "sha256": "e05ef4063e32d889462c9d3227f3cc38c5c5079ad4a26b5e3ab9f42ed61ec2dc"
+    },
+    {
+      "label": "independent_probe",
+      "command": "uv run python /private/tmp/hg051-r2-db-probe.py",
+      "tested_commit": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+      "exit_code": 0,
+      "timestamp": null,
+      "stdout_stderr_file": "docs/exec-plans/reviews/HG-051/r2-db/probe.log",
+      "bytes": 2385,
+      "sha256": "5e0330c27e30fb4570220d634534497a7d48e168d0970f9311d181416fa107db"
+    },
+    {
+      "label": "installed_inventory",
+      "command": "uv run python docs/exec-plans/evidence/HG-051/inventory_roundtrip.py",
+      "tested_commit": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+      "exit_code": 0,
+      "timestamp": null,
+      "stdout_stderr_file": "docs/exec-plans/reviews/HG-051/r2-db/installed-inventory.log",
+      "bytes": 3598,
+      "sha256": "32d4dfd30b7203d7832842316fde61419a6a427eabc80626d9c42d9c65fffd9c"
+    },
+    {
+      "label": "final_bound_checks",
+      "command": "uv run python /private/tmp/hg051-r2-db-final.py",
+      "executed_script": "docs/exec-plans/reviews/HG-051/r2-db/final.py",
+      "tested_commit": "4073ca6ef64a625c398483fb5fbfe41b1ef3237c",
+      "exit_code": 0,
+      "timestamp": null,
+      "stdout_stderr_file": "docs/exec-plans/reviews/HG-051/r2-db/final.log",
+      "bytes": 3748,
+      "sha256": "73f15a159aa1862545c2fee9838a5f614bb8974614cc2905708b3b3fd6c22fa8"
+    },
+    {
+      "label": "collection_initial",
+      "command": "uv run python /private/tmp/hg051-r2-db-collection.py",
+      "executed_script": "docs/exec-plans/reviews/HG-051/r2-db/collection-first.py",
+      "tested_commit": "4073ca6ef64a625c398483fb5fbfe41b1ef3237c",
+      "exit_code": 1,
+      "timestamp": null,
+      "stdout_stderr_file": "docs/exec-plans/reviews/HG-051/r2-db/collection-first-failure.log",
+      "bytes": 767,
+      "sha256": "e4009967de23a8033a5245e719b9b5d7a1f925b9d519f2677d2f473861175a9b"
+    },
+    {
+      "label": "collection_corrected",
+      "command": "uv run python /private/tmp/hg051-r2-db-collection.py",
+      "executed_script": "docs/exec-plans/reviews/HG-051/r2-db/collection.py",
+      "tested_commit": "4073ca6ef64a625c398483fb5fbfe41b1ef3237c",
+      "exit_code": 0,
+      "timestamp": null,
+      "stdout_stderr_file": "docs/exec-plans/reviews/HG-051/r2-db/collection.log",
+      "bytes": 335,
+      "sha256": "0a50569af6fe17a3158db51be5425f5aa24798a5249c07eb57fb0ec3ba7310db"
+    }
+  ],
+  "focused_junit": {
+    "path": "docs/exec-plans/reviews/HG-051/r2-db/focused.xml",
+    "bytes": 29467,
+    "sha256": "a4f55981e24422fdd7550ae247dda8be65d43cda6f29e94cb3293b0d7a73be50",
+    "counts": {
+      "tests": 190,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "reviewed_head_sha": "4073ca6ef64a625c398483fb5fbfe41b1ef3237c"
+}

@@ -1,0 +1,15 @@
+{
+  "kineticloop_evidence": "gzip-v1",
+  "payload": "docs/exec-plans/evidence/HG-051/final-0557dbd/ebfb3cf3523535cc9a6a311408e2114f0e172f849cc7e627763905d21edfbcb3.gz",
+  "stored_sha256": "989d330570b0bea1ff79e17d34150149aa513d47c062780ce1aa73872aa59343",
+  "stored_bytes": 162,
+  "raw_sha256": "ebfb3cf3523535cc9a6a311408e2114f0e172f849cc7e627763905d21edfbcb3",
+  "raw_bytes": 396,
+  "tested_commit": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+  "command": "uv run pytest -q tests/harness/test_compact_evidence.py tests/harness/test_source_decision_scope.py tests/harness/test_review_evidence_provenance.py tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -k 'archiv or hg051 or source_decision_scope or manifest_tamper or bounded_single_member or decoded_reserved or exact_retrieval' -n 2 --junitxml=/private/tmp/hg051-checks-0557dbd/focused.xml --basetemp=/private/tmp/hg051-checks-0557dbd/focused-temp",
+  "exit_code": 0,
+  "timestamp": null,
+  "test_counts": {
+    "passed": 190
+  }
+}

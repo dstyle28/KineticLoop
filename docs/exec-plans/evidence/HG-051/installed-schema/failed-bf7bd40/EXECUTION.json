@@ -1,0 +1,87 @@
+{
+  "tested_commit": "bf7bd402099b0994c03ba3971331c62e6912a436",
+  "source_end_sha": "bf7bd402099b0994c03ba3971331c62e6912a436",
+  "source_end_status": "",
+  "executions": [
+    {
+      "check_id": "focused",
+      "command": "uv run pytest -q tests/harness/test_compact_evidence.py tests/harness/test_source_decision_scope.py tests/harness/test_review_evidence_provenance.py tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -k 'archiv or hg051 or source_decision_scope or manifest_tamper or bounded_single_member or decoded_reserved or exact_retrieval' -n 2 --junitxml=/private/tmp/hg051-checks-bf7bd40/focused.xml --basetemp=/private/tmp/hg051-checks-bf7bd40/focused-temp",
+      "exit_code": 0,
+      "tested_commit": "bf7bd402099b0994c03ba3971331c62e6912a436",
+      "elapsed_seconds": 185.2729048728943,
+      "log": "/private/tmp/hg051-checks-bf7bd40/focused.log"
+    },
+    {
+      "check_id": "harness",
+      "command": "uv run kl test-harness --workers 2 --evidence-dir /private/tmp/hg051-checks-bf7bd40/harness -q --basetemp=/private/tmp/hg051-checks-bf7bd40/harness-temp",
+      "exit_code": 2,
+      "tested_commit": "bf7bd402099b0994c03ba3971331c62e6912a436",
+      "elapsed_seconds": 434.52716994285583,
+      "log": "/private/tmp/hg051-checks-bf7bd40/harness.log"
+    },
+    {
+      "check_id": "unit",
+      "command": "uv run kl test-unit -q --junitxml=/private/tmp/hg051-checks-bf7bd40/unit.xml",
+      "exit_code": 1,
+      "tested_commit": "bf7bd402099b0994c03ba3971331c62e6912a436",
+      "elapsed_seconds": 273.13353085517883,
+      "log": "/private/tmp/hg051-checks-bf7bd40/unit.log"
+    },
+    {
+      "check_id": "authority",
+      "command": "uv run kl check-harness",
+      "exit_code": 1,
+      "tested_commit": "bf7bd402099b0994c03ba3971331c62e6912a436",
+      "elapsed_seconds": 263.1746828556061,
+      "log": "/private/tmp/hg051-checks-bf7bd40/authority.log"
+    },
+    {
+      "check_id": "lint",
+      "command": "uv run kl lint",
+      "exit_code": 0,
+      "tested_commit": "bf7bd402099b0994c03ba3971331c62e6912a436",
+      "elapsed_seconds": 0.12804913520812988,
+      "log": "/private/tmp/hg051-checks-bf7bd40/lint.log"
+    },
+    {
+      "check_id": "typecheck",
+      "command": "uv run kl typecheck",
+      "exit_code": 0,
+      "tested_commit": "bf7bd402099b0994c03ba3971331c62e6912a436",
+      "elapsed_seconds": 0.4951150417327881,
+      "log": "/private/tmp/hg051-checks-bf7bd40/typecheck.log"
+    },
+    {
+      "check_id": "scope_frozen_prerequisites",
+      "command": "uv run python docs/exec-plans/evidence/HG-051/scope_audit.py",
+      "exit_code": 0,
+      "tested_commit": "bf7bd402099b0994c03ba3971331c62e6912a436",
+      "elapsed_seconds": 114.73870706558228,
+      "log": "/private/tmp/hg051-checks-bf7bd40/scope_frozen_prerequisites.log"
+    },
+    {
+      "check_id": "inventory_roundtrip",
+      "command": "uv run python docs/exec-plans/evidence/HG-051/inventory_roundtrip.py",
+      "exit_code": 0,
+      "tested_commit": "bf7bd402099b0994c03ba3971331c62e6912a436",
+      "elapsed_seconds": 19.230976581573486,
+      "log": "/private/tmp/hg051-checks-bf7bd40/inventory_roundtrip.log"
+    },
+    {
+      "check_id": "diff",
+      "command": "git diff --check b877db0edd2e4550d6ea81750656112fb7f2e223 bf7bd402099b0994c03ba3971331c62e6912a436",
+      "exit_code": 0,
+      "tested_commit": "bf7bd402099b0994c03ba3971331c62e6912a436",
+      "elapsed_seconds": 0.04323601722717285,
+      "log": "/private/tmp/hg051-checks-bf7bd40/diff.log"
+    },
+    {
+      "check_id": "budget",
+      "command": "uv run python tools/harness/compact_evidence.py audit --base b877db0edd2e4550d6ea81750656112fb7f2e223 --head bf7bd402099b0994c03ba3971331c62e6912a436 --identity HG-051",
+      "exit_code": 0,
+      "tested_commit": "bf7bd402099b0994c03ba3971331c62e6912a436",
+      "elapsed_seconds": 11.362269163131714,
+      "log": "/private/tmp/hg051-checks-bf7bd40/budget.log"
+    }
+  ]
+}

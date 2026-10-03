@@ -1491,6 +1491,23 @@ def governance_record_paths(change_id):
 
 
 def governance_allowed_patterns(change_id):
+    if change_id == 'HG-051':
+        return [INDEX, MANIFEST, BACKLOG, TRACEABILITY,
+                'HISTORICAL_EVIDENCE_MAPPING.schema.json',
+                'tools/harness/compact_evidence.py', 'tools/harness/validate_harness.py',
+                'tools/harness/README.md',
+                'docs/harness/EVIDENCE_STORAGE_POLICY.md',
+                'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md',
+                'docs/harness/THREAD_RESULT_CONTRACT.md',
+                'docs/harness/THREAD_REVIEW_CONTRACT.md', 'docs/harness/MERGE_GATE.md',
+                'docs/harness/M3_CLOSURE_CONTRACT.md',
+                'tests/harness/test_compact_evidence.py',
+                'tests/harness/test_review_evidence_provenance.py',
+                'tests/harness/test_validator.py', 'tests/harness/test_m3_milestone_closure.py',
+                'tests/harness/test_source_decision_scope.py',
+                'docs/exec-plans/active/KL-080.md',
+                'docs/exec-plans/governance/HG-051.yaml',
+                'docs/exec-plans/evidence/HG-051/**', 'docs/exec-plans/reviews/HG-051/**']
     if change_id == 'HG-050':
         return [INDEX, MANIFEST, 'tools/harness/github_app.py',
                 'tests/harness/test_local_gate.py', 'docs/harness/LOCAL_DB_CI.md',
@@ -3375,11 +3392,26 @@ def task_definition_errors(
     return errors, tasks
 
 
+def historical_schema_authority_errors(root: Path) -> list[str]:
+    # The candidate index may describe its own bytes; it cannot authorize a
+    # different inventory than the independently reviewed installed decoder.
+    try:
+        candidate = compact_evidence.blob(
+            root, compact_evidence.MAPPING_SCHEMA, None, compact_evidence.PLAIN_LIMIT)
+    except (ValueError, OSError) as ex:
+        return ['historical-schema-authority:' + str(ex)]
+    if candidate != compact_evidence.HISTORICAL_SCHEMA_BYTES:
+        return ['historical-schema-authority:mismatch']
+    return []
+
+
 @evidence_validation_session()
 def validate(root, args):
     from jsonschema import Draft202012Validator
 
-    errors = []
+    errors = historical_schema_authority_errors(root)
+    if errors:
+        return errors
     index, frozen, backlog = (load_artifact(root / n) for n in (INDEX, 'FROZEN_BASELINE.json', BACKLOG))
     manifest = load_artifact(root / MANIFEST)
     traceability = load_artifact(root / TRACEABILITY)
@@ -3412,6 +3444,7 @@ def validate(root, args):
         'GOVERNANCE': GOVERNANCE_SCHEMA,
         'INTEGRATION': INTEGRATION_SCHEMA,
         'MILESTONE': MILESTONE_CLOSURE_SCHEMA,
+        'HISTORICAL_EVIDENCE_MAPPING': compact_evidence.MAPPING_SCHEMA,
     }
     for kind, schema_name in schema_files.items():
         schema = load_artifact(root / schema_name)
@@ -3920,6 +3953,8 @@ def validate(root, args):
             except ValueError as ex:
                 errors.append('governance-review-revision:' + str(ex))
             required = {'GENERAL'}
+            if change_id == 'HG-051':
+                required.update({'PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'})
             if change_id == 'HG-050':
                 required.add('SECURITY_DATA_BOUNDARY')
             old_tasks = getattr(args, 'governance_base_tasks', {})
@@ -4699,8 +4734,8 @@ def m3_boundary_shadow_packet_errors(task, text):
 
 
 
-SOURCE_DECISION_DEFINITION_SHA256 = 'efc949f18e35e2ddfd9e0b5904b55712a02811b93661834c5882b57e5f275391'
-SOURCE_DECISION_PACKET_SHA256 = 'd69340dc8c81c4c8bad7c2f2043e19d27426f19f7870b59f10c7bce58239e3f8'
+SOURCE_DECISION_DEFINITION_SHA256 = 'd38938644a40c079417e1437bc9d807c2aa8fa5d9768cfdb70f71db47ed23bcd'
+SOURCE_DECISION_PACKET_SHA256 = 'ae418be455ba140854e6e3cc73c11de4628f5e4a11477a84cc3815e2d766a816'
 SOURCE_DECISION_PLAN_SHA256 = '2d570ba1ac870cfed32d84977e2b08e7d896f756185847269242c422af5b6636'
 SOURCE_FIXTURE_REPLACEMENTS = {
     'tests/db/test_factsets.py': [("'unresolved','UNRESOLVED'", "'unresolved','AMBIGUOUS'"),

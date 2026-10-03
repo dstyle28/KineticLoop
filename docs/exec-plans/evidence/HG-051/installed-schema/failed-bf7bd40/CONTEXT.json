@@ -1,0 +1,11 @@
+{
+  "tested_commit": "bf7bd402099b0994c03ba3971331c62e6912a436",
+  "governance_bookkeeping_error": "Existing prior-run check statuses were incorrectly set to NOT_RUN; validator unconditionally requires PASS for recorded governance checks.",
+  "authority": "FAIL: ten governance-check-evidence errors",
+  "unit": "FAIL: entrypoint check-harness test; 240 other tests passed",
+  "harness": "NOT_RUN: deliberately interrupted at 819 passes after known authority/unit failure; process exit 2, incomplete collection/execution/JUnit are nonacceptance output",
+  "prior_checks_restored_verbatim_from": "b9c355fd9663b20a8d0af7297eb00b42093c9361",
+  "prior_tested_commit": "5debfe1b41a26c0b3f985917b80995a9eb38b92e",
+  "new_correction_acceptance": false,
+  "correction": "Restore exact historical checks_run array and retain its old tested_commit. Overall change stays BLOCKED pending fresh clean checks."
+}

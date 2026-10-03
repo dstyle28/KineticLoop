@@ -628,3 +628,354 @@ def test_nonreserved_encoded_raw_is_lossless_in_plain_and_compact_forms(repo, en
     for ref in (REF, plain):
         assert ce.read(root, ref, head, tested=base, command='pytest', exit_code=0) == raw
         assert v.evidence_exists(root, ref, head, base, 'pytest', 0)
+
+
+@pytest.fixture
+def archival(repo, monkeypatch):
+    """Four small synthetic authorized blobs; production inventory stays exact."""
+    import copy
+    root, _ = repo
+    schema = copy.deepcopy(ce.historical_schema())
+    originals = [x['properties']['original']['const'] for x in
+                 schema['properties']['entries']['prefixItems']]
+    raws = [b'original failed suite: 105 passed, 1 failed\n' + bytes([i]) * 100
+            for i in range(4)]
+    for original, raw in zip(originals, raws, strict=True):
+        target = root / original['path']
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(raw)
+    (root / 'docs/exec-plans/evidence/KL-080/ordinary.log').write_bytes(b'unchanged')
+    old = commit(root)
+    for original, raw in zip(originals, raws, strict=True):
+        original.update(revision=old, blob_id=git(root, 'rev-parse', old + ':' + original['path']),
+                        raw_sha256=ce.digest(raw), raw_bytes=len(raw))
+        original['execution_record'] = dict(path='source', revision=old,
+                                           sha256=ce.digest(b'fixture'), bytes=7)
+    schema['properties']['preserved_records']['const'] = [dict(
+        path='source', revision=old, sha256=ce.digest(b'fixture'), bytes=7)] * 2
+    monkeypatch.setattr(ce, 'historical_schema', lambda: schema)
+    # Validator dynamically loads the module separately; use the same authority fixture.
+    monkeypatch.setattr(v.compact_evidence, 'historical_schema', lambda: schema)
+    for original, raw in zip(originals, raws, strict=True):
+        manifest, stored = ce.archive_envelope(original, raw)
+        (root / original['path']).write_text(json.dumps(manifest))
+        (root / manifest['payload']).write_bytes(stored)
+    storage = commit(root)
+    mapping = ce.archive_mapping(root, storage)
+    (root / ce.MAPPING_PATH).write_text(json.dumps(mapping))
+    head = commit(root)
+    return root, old, storage, mapping, head, raws
+
+
+def test_archive_separate_retrieval_original_proof_and_budget(archival):
+    root, old, storage, mapping, head, raws = archival
+    for entry, raw in zip(mapping['entries'], raws, strict=True):
+        original = entry['original']
+        assert ce.read(root, original['path'], old) == raw
+        assert ce.archive_original(root, original) == raw
+        assert ce.read_archive(root, original['path'], head) == raw
+        with pytest.raises(ValueError):
+            ce.read(root, original['path'], head)
+        assert not v.evidence_exists(root, original['path'], head)
+        assert not v.review_evidence_exists(root, original['path'], head, head, 'KL-080', True)
+        with pytest.raises(ValueError):
+            v.m3_evidence_bytes(root, {'path': original['path'], 'revision': head,
+                                      'sha256': entry['storage']['envelope_sha256']}, head)
+    assert ce.archive_audit(root, head)[0] == []
+    report = ce.audit(root, old, head, 'KL-080')
+    assert report['errors'] == []
+    expected = sum(len(ce.blob(root, p, head)) for p in git(
+        root, 'diff', '--no-renames', '--name-only', old, head).splitlines())
+    assert report['stored_bytes'] == expected  # mapping/envelopes/payloads all count
+    assert ce.audit(root, old, head, 'HG-051')['errors']
+    assert not v.evidence_exists(root, ce.MAPPING_PATH, head)
+    assert storage != head
+
+
+@pytest.mark.parametrize('field,value', [
+    ('task_identity', 'harness-backlog-v0.2/KL-079'), ('path', '../borrow'),
+    ('revision', '0' * 40), ('blob_id', '0' * 40),
+    ('raw_sha256', '0' * 64), ('raw_bytes', 1),
+])
+def test_archive_original_fields_cannot_be_rebound(archival, field, value):
+    import copy
+    root, _, _, mapping, head, _ = archival
+    mapping = copy.deepcopy(mapping)
+    mapping['entries'][0]['original'][field] = value
+    with pytest.raises(ValueError, match='archive-mapping-schema'):
+        ce.validate_archive(root, mapping, head)
+    with pytest.raises(ValueError):
+        ce.archive_original(root, mapping['entries'][0]['original'])
+
+
+@pytest.mark.parametrize('field,value', [('exit_code', 0), ('result', 'PASS'),
+                                        ('tested_commit', '0' * 40), ('command', 'other'),
+                                        ('timestamp', 'invented')])
+def test_archive_failed_execution_metadata_cannot_be_promoted(archival, field, value):
+    import copy
+    root, _, _, mapping, head, _ = archival
+    mapping = copy.deepcopy(mapping)
+    mapping['entries'][1]['original']['execution'][field] = value
+    with pytest.raises(ValueError, match='archive-mapping-schema'):
+        ce.validate_archive(root, mapping, head)
+
+
+@pytest.mark.parametrize('field,value', [('task_status', 'PASS'), ('task_checks_status', 'PASS'),
+                                        ('integration_status', 'MERGED'), ('review_status', 'PASS')])
+def test_archive_historical_failure_is_immutable(archival, field, value):
+    import copy
+    root, _, _, mapping, head, _ = archival
+    mapping = copy.deepcopy(mapping)
+    mapping['historical_outcome'][field] = value
+    with pytest.raises(ValueError, match='archive-mapping-schema'):
+        ce.validate_archive(root, mapping, head)
+
+
+@pytest.mark.parametrize('field,value', [
+    ('revision', '0' * 40), ('revision', 'HEAD'), ('envelope_path', '../borrow'),
+    ('envelope_path', 'docs/exec-plans/evidence/KL-079/file'),
+    ('payload', '../borrow.gz'), ('envelope_sha256', '0' * 64), ('envelope_bytes', 1),
+    ('payload_sha256', '0' * 64), ('payload_bytes', 1),
+    ('payload_bytes', ce.STORED_LIMIT + 1), ('envelope_bytes', ce.PLAIN_LIMIT + 1),
+])
+def test_archive_storage_tampering(archival, field, value):
+    import copy
+    root, _, _, mapping, head, _ = archival
+    mapping = copy.deepcopy(mapping)
+    mapping['entries'][0]['storage'][field] = value
+    with pytest.raises(ValueError):
+        ce.validate_archive(root, mapping, head)
+
+
+@pytest.mark.parametrize('mutation', ['missing-map', 'duplicate', 'omitted', 'foreign-map',
+                                     'extra-envelope', 'deleted-original', 'nonmigrated'])
+def test_archive_orphan_duplicate_scope_and_preservation(archival, mutation):
+    root, old, _, mapping, _, _ = archival
+    target = root / ce.MAPPING_PATH
+    if mutation == 'missing-map':
+        target.unlink()
+    elif mutation == 'duplicate':
+        mapping['entries'].append(mapping['entries'][0])
+        target.write_text(json.dumps(mapping))
+    elif mutation == 'omitted':
+        mapping['entries'].pop()
+        target.write_text(json.dumps(mapping))
+    elif mutation == 'foreign-map':
+        (target.parent / 'copy.json').write_bytes(target.read_bytes())
+    elif mutation == 'extra-envelope':
+        (target.parent / 'copy.log').write_bytes((root / mapping['entries'][0]['original']['path']).read_bytes())
+    elif mutation == 'deleted-original':
+        (root / mapping['entries'][0]['original']['path']).unlink()
+    else:
+        (target.parent / 'ordinary.log').write_bytes(b'new')
+    head = commit(root)
+    assert ce.archive_audit(root, head)[0]
+    assert ce.audit(root, old, head, 'KL-080')['errors']
+
+
+@pytest.mark.parametrize('mutation', ['missing', 'symlink', 'directory', 'tampered'])
+def test_archive_payload_is_exact_revision_regular_blob(archival, mutation):
+    root, _, _, mapping, original, _ = archival
+    payload = root / mapping['entries'][0]['storage']['payload']
+    saved = payload.read_bytes()
+    payload.unlink()
+    if mutation == 'symlink':
+        payload.symlink_to(root / 'source')
+    elif mutation == 'directory':
+        payload.mkdir()
+        (payload / 'child').write_bytes(b'bad')
+    elif mutation == 'tampered':
+        payload.write_bytes(b'corrupt')
+    bad = commit(root)
+    with pytest.raises(ValueError):
+        ce.read_archive(root, mapping['entries'][0]['original']['path'], bad)
+    if mutation == 'missing':
+        payload.write_bytes(saved)
+        later = commit(root)
+        assert ce.read_archive(root, mapping['entries'][0]['original']['path'], later)
+        with pytest.raises(ValueError):
+            ce.read_archive(root, mapping['entries'][0]['original']['path'], bad)
+    assert ce.read_archive(root, mapping['entries'][0]['original']['path'], original)
+
+
+@pytest.mark.parametrize('encoding', ['utf-8', 'utf-16', 'utf-32'])
+@pytest.mark.parametrize('wrapper', ['direct', 'list', 'dict', 'removed-marker', 'truncated'])
+def test_archive_objects_never_become_execution_evidence(archival, encoding, wrapper):
+    root, _, _, mapping, _, _ = archival
+    value: object = dict(mapping)
+    if wrapper == 'list':
+        value = [mapping]
+    elif wrapper == 'dict':
+        value = {'wrapped': mapping}
+    elif wrapper == 'removed-marker':
+        assert isinstance(value, dict)
+        value.pop(ce.MARKER)
+    data = json.dumps(value).encode(encoding)
+    if wrapper == 'truncated':
+        data = data[:-3]
+    ref = str(Path(ce.MAPPING_PATH).with_name('renamed.log'))
+    (root / ref).write_bytes(data)
+    head = commit(root)
+    assert not v.evidence_exists(root, ref, head)
+    outer = str(Path(ref).with_name('outer.json'))
+    unchecked_storage(root, outer, data, head)
+    nested = commit(root)
+    assert not v.evidence_exists(root, outer, nested)
+    assert ce.audit(root, head, nested, 'KL-080')['errors']
+
+
+def test_archive_missing_original_has_no_head_or_archive_fallback(archival, monkeypatch):
+    root, old, _, mapping, head, raws = archival
+    original_git = ce.git
+    def unavailable(root, *args):
+        if old + '^{commit}' in args:
+            raise ValueError('evidence-git:unavailable-original')
+        return original_git(root, *args)
+    monkeypatch.setattr(ce, 'git', unavailable)
+    path = mapping['entries'][0]['original']['path']
+    assert ce.read_archive(root, path, head) == raws[0]
+    with pytest.raises(ValueError, match='unavailable-original'):
+        ce.archive_original(root, mapping['entries'][0]['original'])
+    with pytest.raises(ValueError, match='unavailable-original'):
+        ce.read(root, path, old)
+    assert ce.archive_audit(root, head)[0]
+
+
+def test_archive_plain_and_aggregate_bounds_unchanged(archival, monkeypatch):
+    root, old, _, mapping, head, _ = archival
+    assert (ce.PLAIN_LIMIT, ce.STORED_LIMIT, ce.RAW_LIMIT, ce.TOTAL_LIMIT) == (
+        256 * 1024, 8 * 1024 * 1024, 64 * 1024 * 1024, 16 * 1024 * 1024)
+    total = ce.audit(root, old, head, 'KL-080')['stored_bytes']
+    monkeypatch.setattr(ce, 'TOTAL_LIMIT', total - 1)
+    assert any('PR-evidence-total' in e for e in ce.audit(root, old, head, 'KL-080')['errors'])
+    monkeypatch.setattr(ce, 'RAW_LIMIT', 1)
+    with pytest.raises(ValueError):
+        ce.read_archive(root, mapping['entries'][0]['original']['path'], head)
+
+
+@pytest.mark.parametrize('mutation', ['concatenated', 'trailing', 'truncated', 'corrupt', 'stored-bound'])
+def test_archive_single_member_gzip_and_stored_bound(archival, mutation):
+    root, _, _, mapping, _, _ = archival
+    path = mapping['entries'][0]['original']['path']
+    manifest = json.loads((root / path).read_bytes())
+    target = root / manifest['payload']
+    data = target.read_bytes()
+    if mutation == 'concatenated':
+        data += gzip.compress(b'borrowed', mtime=0)
+    elif mutation == 'trailing':
+        data += b'trailing'
+    elif mutation == 'truncated':
+        data = data[:-4]
+    elif mutation == 'stored-bound':
+        data = b'x' * (ce.STORED_LIMIT + 1)
+    else:
+        data = b'corrupt'
+    target.write_bytes(data)
+    manifest.update(stored_sha256=ce.digest(data), stored_bytes=len(data))
+    (root / path).write_text(json.dumps(manifest))
+    corrupt_storage = commit(root)
+    with pytest.raises(ValueError):
+        ce.archive_mapping(root, corrupt_storage)
+
+
+def test_archive_mapping_cannot_rebind_forward_addition(archival):
+    root, _, _, mapping, head, _ = archival
+    (root / ce.MAPPING_PATH).write_text(json.dumps(mapping, indent=2))
+    later = commit(root)
+    errors = ce.audit(root, head, later, 'KL-080')['errors']
+    assert any('archive-mapping-not-forward-addition' in e for e in errors)
+
+
+@pytest.mark.parametrize('section,field,value', [
+    ('execution_record', 'sha256', '0' * 64), ('execution_record', 'bytes', 1),
+    ('execution_record', 'revision', '0' * 40),
+])
+def test_archive_original_metadata_record_cannot_be_rebound(archival, section, field, value):
+    import copy
+    root, _, _, mapping, head, _ = archival
+    mapping = copy.deepcopy(mapping)
+    mapping['entries'][0]['original'][section][field] = value
+    with pytest.raises(ValueError):
+        ce.validate_archive(root, mapping, head, verify_originals=True)
+
+
+def test_archive_history_rewrite_cannot_supply_original_verification(archival):
+    import copy
+    root, _, storage, mapping, _, raws = archival
+    unrelated = git(root, 'commit-tree', storage + '^{tree}', '-m', 'unrelated storage tree')
+    mapping = copy.deepcopy(mapping)
+    for entry in mapping['entries']:
+        entry['storage']['revision'] = unrelated
+    # Archive bytes may be recovered without original proof, but the gate must
+    # reject the missing original-to-storage ancestry even with available blobs.
+    assert list(ce.validate_archive(root, mapping, unrelated).values()) == raws
+    with pytest.raises(ValueError):
+        ce.validate_archive(root, mapping, unrelated, verify_originals=True)
+
+
+@pytest.mark.parametrize('mutation', ['all-deleted', 'plain-truncation'])
+def test_archive_complete_deletion_or_plain_substitution_cannot_evade_audit(archival, mutation):
+    root, old, _, mapping, head, _ = archival
+    for entry in mapping['entries']:
+        path = root / entry['original']['path']
+        path.unlink()
+        (root / entry['storage']['payload']).unlink()
+        if mutation == 'plain-truncation':
+            path.write_bytes(b'1 passed in 0.1s\n')
+    (root / ce.MAPPING_PATH).unlink()
+    later = commit(root)
+    assert ce.audit(root, old, later, 'KL-080')['errors']
+    assert ce.audit(root, head, later, 'HG-999')['errors']
+
+
+@pytest.fixture
+def installed_archive_decoder(tmp_path):
+    # Match the worker's layout, with no schema next to its pinned Python assets.
+    installed = tmp_path / 'gate/tools/harness'
+    installed.mkdir(parents=True)
+    for name in ('compact_evidence.py', 'validate_harness.py'):
+        (installed / name).write_bytes((ROOT / 'tools/harness' / name).read_bytes())
+    spec = importlib.util.spec_from_file_location('installed_validator', installed / 'validate_harness.py')
+    assert spec and spec.loader
+    validator = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(validator)
+    return validator
+
+
+def test_archive_installed_decoder_has_pinned_authority(installed_archive_decoder, tmp_path, monkeypatch):
+    installed = installed_archive_decoder.compact_evidence
+    assert installed.historical_schema() == ce.historical_schema()
+    assert installed.HISTORICAL_SCHEMA_BYTES == (ROOT / ce.MAPPING_SCHEMA).read_bytes()
+    # Neither an ambient /gate schema nor a candidate working-directory schema
+    # can widen the decoder inventory, even with valid but different JSON.
+    (tmp_path / 'gate' / ce.MAPPING_SCHEMA).write_text('{}')
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / ce.MAPPING_SCHEMA).write_text('{}')
+    assert installed.historical_originals() == ce.historical_originals()
+    assert installed.historical_template() == ce.historical_template()
+
+
+@pytest.mark.parametrize('mutation', ['missing', 'tampered', 'symlink', 'oversize'])
+def test_archive_installed_validator_rejects_candidate_schema(installed_archive_decoder, tmp_path, mutation):
+    candidate = tmp_path / 'candidate'
+    candidate.mkdir()
+    schema = candidate / ce.MAPPING_SCHEMA
+    if mutation == 'tampered':
+        value = ce.historical_schema()
+        value['properties']['entries']['prefixItems'][0]['properties']['original']['const']['raw_sha256'] = '0' * 64
+        schema.write_text(json.dumps(value))
+    elif mutation == 'symlink':
+        schema.symlink_to(ROOT / ce.MAPPING_SCHEMA)
+    elif mutation == 'oversize':
+        schema.write_bytes(b' ' * (ce.PLAIN_LIMIT + 1))
+    # Early fail-closed rejection precedes any candidate index/manifest reads.
+    errors = installed_archive_decoder.validate(candidate, None)
+    assert errors and all(error.startswith('historical-schema-authority:') for error in errors)
+    assert installed_archive_decoder.compact_evidence.historical_originals() == ce.historical_originals()
+
+
+def test_archive_installed_validator_accepts_exact_schema(installed_archive_decoder, tmp_path):
+    candidate = tmp_path / 'candidate'
+    candidate.mkdir()
+    (candidate / ce.MAPPING_SCHEMA).write_bytes((ROOT / ce.MAPPING_SCHEMA).read_bytes())
+    assert installed_archive_decoder.historical_schema_authority_errors(candidate) == []

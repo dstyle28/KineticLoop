@@ -1,0 +1,151 @@
+{
+  "status": "PASS",
+  "reviewed_sha": "4073ca6ef64a625c398483fb5fbfe41b1ef3237c",
+  "source_tested_sha": "0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+  "base_sha": "b877db0edd2e4550d6ea81750656112fb7f2e223",
+  "changed_since_tested": [
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/1bdf9bd7dbcbe895b21151abc0b64094f06fe388eb93e9fdd8d404870fac02c9.gz",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/25d85811efddc852672c3e23da81fbc1ef819f1a49beda2c58e3014eec5df939.gz",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/438962033937624cafdb1b3d19d1e25c4cb30914d580847c46678a78fa35f671.gz",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/520eb7c6377a9590cb869117fad2804237d9007ce4d11626215411673a1844f9.gz",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445.gz",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/87f984ed70abee700462574b9cc2d7d0a9c41f56d95e67f9847b0eea330cad4d.gz",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/EXECUTION.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/a5c64e8c9d7f7160ba58d18710b800f718dddcb4f3b1e14ed6df90ab754c1ae1.gz",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/a7f06cfe2b24ffe6f8bb70dcbbe42a055ed44fdcb34580788ad6a83571454de0.gz",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/authority.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/budget.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/c5f5f7e2e83a577ee841d1f0a02dc55ef541863fe0ec25013fc04897fe91ef02.gz",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/capture_correction.py",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/diff.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/driver.log",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/duplicate-launch-rejected.log",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/e9200f7b1d981491b10496f143172f116094d2ce55352ef7939426bb62404683.gz",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/ebfb3cf3523535cc9a6a311408e2114f0e172f849cc7e627763905d21edfbcb3.gz",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/f80602b2e331db9d06fbafe4a776088240dfcbae510854b7f731bbfeddde5639.gz",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/fda4fefa015fdac8a6123387cb977086614fe7d63acfcf6ba8cb48784988e86e.gz",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/focused-junit.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/focused.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/harness-collection-json.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/harness-collection-log.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/harness-execution-json.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/harness-junit-xml.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/harness-manifest-json.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/harness-pytest-log.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/harness.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/inventory_roundtrip.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/lint.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/scope_frozen_prerequisites.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/typecheck.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/unit-junit.json",
+    "docs/exec-plans/evidence/HG-051/final-0557dbd/unit.json",
+    "docs/exec-plans/governance/HG-051.yaml"
+  ],
+  "checks": [
+    {
+      "check_id": "focused",
+      "command": "uv run pytest -q tests/harness/test_compact_evidence.py tests/harness/test_source_decision_scope.py tests/harness/test_review_evidence_provenance.py tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -k 'archiv or hg051 or source_decision_scope or manifest_tamper or bounded_single_member or decoded_reserved or exact_retrieval' -n 2 --junitxml=/private/tmp/hg051-checks-0557dbd/focused.xml --basetemp=/private/tmp/hg051-checks-0557dbd/focused-temp",
+      "ref": "docs/exec-plans/evidence/HG-051/final-0557dbd/focused.json",
+      "raw_sha256": "ebfb3cf3523535cc9a6a311408e2114f0e172f849cc7e627763905d21edfbcb3",
+      "raw_bytes": 396,
+      "envelope_bindings_valid": true,
+      "stdout_tail": "....................................... [ 75%]\n..............................................                           [100%]\n------ generated xml file: /private/tmp/hg051-checks-0557dbd/focused.xml -------\n190 passed in 168.87s (0:02:48)\n"
+    },
+    {
+      "check_id": "harness",
+      "command": "uv run kl test-harness --workers 2 --evidence-dir /private/tmp/hg051-checks-0557dbd/harness -q --basetemp=/private/tmp/hg051-checks-0557dbd/harness-temp",
+      "ref": "docs/exec-plans/evidence/HG-051/final-0557dbd/harness.json",
+      "raw_sha256": "fda4fefa015fdac8a6123387cb977086614fe7d63acfcf6ba8cb48784988e86e",
+      "raw_bytes": 1838,
+      "envelope_bindings_valid": true,
+      "stdout_tail": "..................................... [ 96%]\n....................................................                     [100%]\n--- generated xml file: /private/tmp/hg051-checks-0557dbd/harness/junit.xml ----\n1492 passed in 1461.49s (0:24:21)\n"
+    },
+    {
+      "check_id": "unit",
+      "command": "uv run kl test-unit -q --junitxml=/private/tmp/hg051-checks-0557dbd/unit.xml",
+      "ref": "docs/exec-plans/evidence/HG-051/final-0557dbd/unit.json",
+      "raw_sha256": "a7f06cfe2b24ffe6f8bb70dcbbe42a055ed44fdcb34580788ad6a83571454de0",
+      "raw_bytes": 433,
+      "envelope_bindings_valid": true,
+      "stdout_tail": "....................................... [ 89%]\n.........................                                                [100%]\n-------- generated xml file: /private/tmp/hg051-checks-0557dbd/unit.xml --------\n241 passed in 257.67s (0:04:17)\n"
+    },
+    {
+      "check_id": "authority",
+      "command": "uv run kl check-harness",
+      "ref": "docs/exec-plans/evidence/HG-051/final-0557dbd/authority.json",
+      "raw_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "raw_bytes": 38,
+      "envelope_bindings_valid": true,
+      "stdout_tail": "HARNESS_CHECK_PASS tasks=77 active=74\n"
+    },
+    {
+      "check_id": "lint",
+      "command": "uv run kl lint",
+      "ref": "docs/exec-plans/evidence/HG-051/final-0557dbd/lint.json",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_bytes": 19,
+      "envelope_bindings_valid": true,
+      "stdout_tail": "All checks passed!\n"
+    },
+    {
+      "check_id": "typecheck",
+      "command": "uv run kl typecheck",
+      "ref": "docs/exec-plans/evidence/HG-051/final-0557dbd/typecheck.json",
+      "raw_sha256": "866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445",
+      "raw_bytes": 45,
+      "envelope_bindings_valid": true,
+      "stdout_tail": "Success: no issues found in 169 source files\n"
+    },
+    {
+      "check_id": "scope_frozen_prerequisites",
+      "command": "uv run python docs/exec-plans/evidence/HG-051/scope_audit.py",
+      "ref": "docs/exec-plans/evidence/HG-051/final-0557dbd/scope_frozen_prerequisites.json",
+      "raw_sha256": "25d85811efddc852672c3e23da81fbc1ef819f1a49beda2c58e3014eec5df939",
+      "raw_bytes": 13415,
+      "envelope_bindings_valid": true,
+      "stdout_tail": "  },\n    {\n      \"task_identity\": \"harness-backlog-v0.2/KL-029\",\n      \"merge_commit\": \"fa729ca4bcca0f2c2e7a2aa0601890d1356b8842\"\n    }\n  ],\n  \"kl080_migration_applied\": false,\n  \"frozen_impact\": \"NONE\",\n  \"product_m3_release\": \"NOT_RUN\"\n}\n"
+    },
+    {
+      "check_id": "inventory_roundtrip",
+      "command": "uv run python docs/exec-plans/evidence/HG-051/inventory_roundtrip.py",
+      "ref": "docs/exec-plans/evidence/HG-051/final-0557dbd/inventory_roundtrip.json",
+      "raw_sha256": "1bdf9bd7dbcbe895b21151abc0b64094f06fe388eb93e9fdd8d404870fac02c9",
+      "raw_bytes": 3598,
+      "envelope_bindings_valid": true,
+      "stdout_tail": "ca336f2dff37\",\n    \"stored_bytes\": 4324710,\n    \"files\": 9,\n    \"errors\": [],\n    \"remedy\": \"python tools/harness/compact_evidence.py capture --help\"\n  },\n  \"purpose\": \"Archival byte recovery only; original executions/statuses unchanged\"\n}\n"
+    },
+    {
+      "check_id": "diff",
+      "command": "git diff --check b877db0edd2e4550d6ea81750656112fb7f2e223 0557dbd8f2196df871af20c0982bdc2526f0ad6e",
+      "ref": "docs/exec-plans/evidence/HG-051/final-0557dbd/diff.json",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0,
+      "envelope_bindings_valid": true,
+      "stdout_tail": ""
+    },
+    {
+      "check_id": "budget",
+      "command": "uv run python tools/harness/compact_evidence.py audit --base b877db0edd2e4550d6ea81750656112fb7f2e223 --head 0557dbd8f2196df871af20c0982bdc2526f0ad6e --identity HG-051",
+      "ref": "docs/exec-plans/evidence/HG-051/final-0557dbd/budget.json",
+      "raw_sha256": "87f984ed70abee700462574b9cc2d7d0a9c41f56d95e67f9847b0eea330cad4d",
+      "raw_bytes": 265,
+      "envelope_bindings_valid": true,
+      "stdout_tail": "\n  \"base\": \"b877db0edd2e4550d6ea81750656112fb7f2e223\",\n  \"head\": \"0557dbd8f2196df871af20c0982bdc2526f0ad6e\",\n  \"stored_bytes\": 4756119,\n  \"files\": 135,\n  \"errors\": [],\n  \"remedy\": \"python tools/harness/compact_evidence.py capture --help\"\n}\n"
+    }
+  ],
+  "reviewed_budget": {
+    "identity": "HG-051",
+    "base": "b877db0edd2e4550d6ea81750656112fb7f2e223",
+    "head": "4073ca6ef64a625c398483fb5fbfe41b1ef3237c",
+    "stored_bytes": 8025994,
+    "files": 174,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "retained_failed_attempts": true,
+  "note": "Only ordinary execution envelopes and recovered stdout supplied fresh check evidence; schema/archive metadata were not used as execution proof. App/fullDB gate remains parent-owned and prospective."
+}

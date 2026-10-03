@@ -77,3 +77,16 @@ exit codes are retained. This developer evidence does not publish or replace the
 App-bound local database gate: the installed controller continues to own its
 serial pytest observer and execution policy. No controller installation is
 changed by this entrypoint.
+
+HG051 archival metadata uses the exact indexed HISTORICAL_EVIDENCE_MAPPING schema.
+Only the later KL080 task owner may stage the four authorized archival envelopes via
+`archive_envelope(original, raw)` after verifying `archive_original(root, original)`;
+commit those envelopes/payloads, then create the mapping with
+`python tools/harness/compact_evidence.py archive-map --storage-revision <full-sha>`.
+Commit the mapping before the next tested SHA. Exact byte recovery uses
+`python tools/harness/compact_evidence.py archive-read <original-path> --revision <mapping-sha>`.
+This output certifies archival bytes only. Ordinary `read` never treats the mapping
+or archived envelopes as execution proof. The complete PR audit still counts every
+changed storage/review byte and verifies original regular blobs, record snapshots,
+normal ancestry and non-migrated history. See the Evidence Storage Policy for the
+literal four-blob authorization, unchanged limits and failure semantics.
