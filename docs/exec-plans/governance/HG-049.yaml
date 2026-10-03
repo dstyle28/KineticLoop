@@ -1,0 +1,106 @@
+change_identity: harness-governance-v0.1/HG-049
+display_change_id: HG-049
+base_commit: 95ddd75d3eb410b7dffa15a1017276c504adc9a6
+tested_commit: 4db695230c2158f67394c8ac79a5f0fdf511849a
+change_status: PASS
+summary: 'Prospectively correct KL080 mechanical preparation/execution proof boundary: preserve COMMIT_READY preparation
+  positive, require canonical full T6/T7 and untouched authenticated mechanical S37 rejection at the actual legacy
+  consumer with complete zero effects and first-use rollback. No runtime, frozen, historical or product evidence
+  changes.'
+packets_refined:
+- KL-080
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- KineticLoop_Harness_Backlog_v0.2.json
+- KineticLoop_Harness_Traceability_v0.3.json
+- docs/exec-plans/active/KL-080.md
+- docs/exec-plans/evidence/HG-049/SCOPE.md
+- docs/exec-plans/evidence/HG-049/checks-4db6952/1e07d6f9dfe167e674b4b6815297e48d16af1455decb5edf60bfe6bdd0029dc2.gz
+- docs/exec-plans/evidence/HG-049/checks-4db6952/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/HG-049/checks-4db6952/4d43c82d4d0c06ac1f95567f85e0d3d9e4bfff9e915f844f6aa49b0110039696.gz
+- docs/exec-plans/evidence/HG-049/checks-4db6952/5e3870d421e42d2a04cc5334b27e743993328e8931a0b9141067e21fbf46df1b.gz
+- docs/exec-plans/evidence/HG-049/checks-4db6952/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-049/checks-4db6952/866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445.gz
+- docs/exec-plans/evidence/HG-049/checks-4db6952/97290513c71aa894cf86b856d72837834d15d997c15901ae3990b9dcae79851a.gz
+- docs/exec-plans/evidence/HG-049/checks-4db6952/EXECUTION.json
+- docs/exec-plans/evidence/HG-049/checks-4db6952/PRECOMMIT_CAPTURE.json
+- docs/exec-plans/evidence/HG-049/checks-4db6952/aa0632cedfc329461c1ded1032f5e89e2b0a90152175356152036d62eb7fa9e2.gz
+- docs/exec-plans/evidence/HG-049/checks-4db6952/authority.json
+- docs/exec-plans/evidence/HG-049/checks-4db6952/c0501f9c7beca03b300bfa12666f1a037c60cd5adbbb5154585a72d002350707.gz
+- docs/exec-plans/evidence/HG-049/checks-4db6952/c83122b67fea4a4cdd29997d71c24e2430c27f17a5071b334856304c21daaa4d.gz
+- docs/exec-plans/evidence/HG-049/checks-4db6952/c87f4257799dfd6139dc34f88f479ed1d63f64f5c0780c1b851d59b7f2854289.gz
+- docs/exec-plans/evidence/HG-049/checks-4db6952/diff.json
+- docs/exec-plans/evidence/HG-049/checks-4db6952/driver.py
+- docs/exec-plans/evidence/HG-049/checks-4db6952/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-049/checks-4db6952/ed1ebb6011c755d059e2f4ac05192fbba952323573c17bb25717b2f8729fdbf4.gz
+- docs/exec-plans/evidence/HG-049/checks-4db6952/harness-collection-json.json
+- docs/exec-plans/evidence/HG-049/checks-4db6952/harness-collection-log.json
+- docs/exec-plans/evidence/HG-049/checks-4db6952/harness-execution-json.json
+- docs/exec-plans/evidence/HG-049/checks-4db6952/harness-junit-xml.json
+- docs/exec-plans/evidence/HG-049/checks-4db6952/harness-manifest-json.json
+- docs/exec-plans/evidence/HG-049/checks-4db6952/harness-pytest-log.json
+- docs/exec-plans/evidence/HG-049/checks-4db6952/harness.json
+- docs/exec-plans/evidence/HG-049/checks-4db6952/lint.json
+- docs/exec-plans/evidence/HG-049/checks-4db6952/scope.json
+- docs/exec-plans/evidence/HG-049/checks-4db6952/typecheck.json
+- docs/exec-plans/evidence/HG-049/checks-4db6952/unit-junit.json
+- docs/exec-plans/evidence/HG-049/checks-4db6952/unit.json
+- docs/exec-plans/evidence/HG-049/precommit/294df99f8277ac7b407e754d6ba2e0e46293d71eb5bd43512b8b5f59debbc7be.gz
+- docs/exec-plans/evidence/HG-049/precommit/2de6ef854e4a6bd8d95db0d82f14cdc4c50ba556d8c77359ca56723d8979c1c6.gz
+- docs/exec-plans/evidence/HG-049/precommit/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/HG-049/precommit/486a334edccc1de011b9eabb8fb51495afc7968616be160024dbe7b563311ee6.gz
+- docs/exec-plans/evidence/HG-049/precommit/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-049/precommit/PROBES.json
+- docs/exec-plans/evidence/HG-049/precommit/authority-pre.json
+- docs/exec-plans/evidence/HG-049/precommit/f2869381fd489ac77d65cb93e3be473d987a1155b749620e2b134b4c351b3258.gz
+- docs/exec-plans/evidence/HG-049/precommit/focused-pre.json
+- docs/exec-plans/evidence/HG-049/precommit/lint-pre.json
+- docs/exec-plans/evidence/HG-049/precommit/scope-pre-2.json
+- docs/exec-plans/evidence/HG-049/precommit/scope-pre.json
+- docs/exec-plans/evidence/HG-049/precommit/system-import-tool-output.json
+- docs/exec-plans/evidence/HG-049/scope_audit.py
+- docs/exec-plans/governance/HG-049.yaml
+- tests/harness/test_source_decision_scope.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: harness
+  command: uv run kl test-harness --workers 2 --evidence-dir /private/tmp/hg049-checks-4db6952/harness -q
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-049/checks-4db6952/harness.json
+- check_id: unit
+  command: uv run kl test-unit -q --junitxml=/private/tmp/hg049-checks-4db6952/unit.xml
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-049/checks-4db6952/unit.json
+- check_id: authority
+  command: uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-049/checks-4db6952/authority.json
+- check_id: lint
+  command: uv run kl lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-049/checks-4db6952/lint.json
+- check_id: typecheck
+  command: uv run kl typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-049/checks-4db6952/typecheck.json
+- check_id: scope
+  command: uv run python docs/exec-plans/evidence/HG-049/scope_audit.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-049/checks-4db6952/scope.json
+- check_id: diff
+  command: git diff --check 95ddd75d3eb410b7dffa15a1017276c504adc9a6 4db695230c2158f67394c8ac79a5f0fdf511849a
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-049/checks-4db6952/diff.json
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- KL080, product requirements, M3 and release checks remain NOT_RUN; no result/review/integration or closure is
+  created for them.
+- Fresh GENERAL, PROTOCOL, DB_CONCURRENCY and SECURITY_DATA_BOUNDARY reviews bind this record/evidence revision.
+  Only own REVIEW_RECORD_ONLY suffix may follow.
+- Normal current exact-head hosted and App-bound complete isolated DB gates remain required; root owns installed
+  validator pin/controller admission and publication. No install/config/admission/publication or exception is made
+  by HG049.
+- Historical blocked PR92 and dirty KL055 remain untouched. Mechanical dependency denial is an oracle for future
+  execution, not a DB consumer test executed by governance.

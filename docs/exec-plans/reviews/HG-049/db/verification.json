@@ -1,0 +1,118 @@
+{
+  "status": "PASS",
+  "review_type": "DB_CONCURRENCY",
+  "base_commit": "95ddd75d3eb410b7dffa15a1017276c504adc9a6",
+  "tested_commit": "4db695230c2158f67394c8ac79a5f0fdf511849a",
+  "reviewed_head_sha": "ceed78db431a348aae0b599a5e1b09bb082fb968",
+  "executed_verifier_sha256": "e2b97e4499cfc4fe313c28e8cdbaa573faf3e64ef21634a687a5bc37fb65b03c",
+  "historical_paths_unchanged": 3896,
+  "prerequisites": [
+    {
+      "identity": "harness-backlog-v0.2/KL-076",
+      "merge_commit": "035644e0cfb94927d7555e245223cd92c224ea5a"
+    },
+    {
+      "identity": "harness-backlog-v0.2/KL-079",
+      "merge_commit": "7be0449e81b5d6d64ce6cd1aa57aa8c494c6f588"
+    },
+    {
+      "identity": "harness-backlog-v0.2/KL-077",
+      "merge_commit": "6d1348c5a731afb74fdf6f2345109a446cdb597c"
+    },
+    {
+      "identity": "harness-backlog-v0.2/KL-027",
+      "merge_commit": "1099d85bd4aa76ec8221700e55b4e77a84479126"
+    },
+    {
+      "identity": "harness-backlog-v0.2/KL-078",
+      "merge_commit": "c599ec1ef39c28bd691748698a09805f390878cf"
+    },
+    {
+      "identity": "harness-backlog-v0.2/KL-026",
+      "merge_commit": "70dc4863ccdca95f7a44e79b68501a698262e323"
+    },
+    {
+      "identity": "harness-backlog-v0.2/KL-023",
+      "merge_commit": "8df9d8851cdc8f68e1f6429149b420604d6aa1b5"
+    },
+    {
+      "identity": "harness-backlog-v0.2/KL-022",
+      "merge_commit": "88adc5be3f7c567413be671a2b3dc5e6c802ffe8"
+    },
+    {
+      "identity": "harness-backlog-v0.2/KL-028",
+      "merge_commit": "2c44f456a0daf8e6933f20fc3eadc7e1869d6fff"
+    },
+    {
+      "identity": "harness-backlog-v0.2/KL-029",
+      "merge_commit": "fa729ca4bcca0f2c2e7a2aa0601890d1356b8842"
+    }
+  ],
+  "source_sha256": {
+    "src/kineticloop/persistence/deterministic_planning.py": "2a28fd731f5dab8915a6fb0fb87f01379fffd3f3858983d4f2e2da4b0c8f6b9c",
+    "src/kineticloop/persistence/transactions.py": "425e3afa4080d471b094abeac7f11e5648a57ffc95dc9de0342659496fbb0f3f",
+    "src/kineticloop/persistence/protocol_execution.py": "7e74e8639b7db90693b320e425cd2f732ff764c475c03c22c67c91635e094378",
+    "src/kineticloop/contracts/commands.py": "022e3fa180c6fbcd5ad8382fd5e8d1e01418c819a52b6ce706534ce594a8539e",
+    "docs/contracts/deterministic_planning.md": "697198605e42c419b446c7796ec62da2c4f50b278ed8808603beaff34bff3ece",
+    "docs/contracts/full_action_preparation.md": "fb60a7eef8649804de3bcfccba7d3f06e0a5935ddce9bab23673a1261044281c",
+    "docs/contracts/full_test_execution.md": "e7308289ad4ef4068860015de6b6d5aa30e872b45f2d13fffde9b9f1142ebd1d",
+    "docs/contracts/protocol_execution.md": "92e9b38b8c8bd2875c76b184d3be366c251f39b095f453db95835674cc932c52",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md": "2158a80bdc0e16eaf9c2cd835f704bdc2f346565dc35cb0c1fc1a8c00a1b8eda",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md": "00bf3eb2e0e2e00867d114b42e147a2341d98454f08629c849ebf0b4c0c4916c"
+  },
+  "checks": [
+    {
+      "check_id": "harness",
+      "bytes": 1678,
+      "stdout_sha256": "c83122b67fea4a4cdd29997d71c24e2430c27f17a5071b334856304c21daaa4d"
+    },
+    {
+      "check_id": "unit",
+      "bytes": 433,
+      "stdout_sha256": "5e3870d421e42d2a04cc5334b27e743993328e8931a0b9141067e21fbf46df1b"
+    },
+    {
+      "check_id": "authority",
+      "bytes": 38,
+      "stdout_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70"
+    },
+    {
+      "check_id": "lint",
+      "bytes": 19,
+      "stdout_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "check_id": "typecheck",
+      "bytes": 45,
+      "stdout_sha256": "866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445"
+    },
+    {
+      "check_id": "scope",
+      "bytes": 3522,
+      "stdout_sha256": "c87f4257799dfd6139dc34f88f479ed1d63f64f5c0780c1b851d59b7f2854289"
+    },
+    {
+      "check_id": "diff",
+      "bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "junit_counts": {
+    "harness-junit-xml": 1347,
+    "unit-junit": 241
+  },
+  "focused_source_scope_cases": 59,
+  "evidence_budget": {
+    "identity": "HG-049",
+    "base": "95ddd75d3eb410b7dffa15a1017276c504adc9a6",
+    "head": "ceed78db431a348aae0b599a5e1b09bb082fb968",
+    "stored_bytes": 3252716,
+    "files": 45,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "db_guard_observation": "STATIC_SOURCE_ONLY; no PostgreSQL execution",
+  "actual_expected_mechanical_denial": "legacy demand/proposal dependency guard before synthetic certificate",
+  "kl080_product_m3_release_status": "NOT_RUN",
+  "normal_final_head_hosted_app_full_db_gates": "PENDING_ROOT_COORDINATION"
+}

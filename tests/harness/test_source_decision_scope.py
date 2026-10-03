@@ -18,6 +18,7 @@ SPEC.loader.exec_module(v)
 TASK = next(t for t in json.loads((ROOT / v.BACKLOG).read_text())['tasks'] if t['id'] == 'KL-080')
 PACKET = (ROOT / 'docs/exec-plans/active/KL-080.md').read_text()
 BASE = '26906bd7f4444914c228e98377f2b164fee0dd5d'
+PROFILE_BASE = '95ddd75d3eb410b7dffa15a1017276c504adc9a6'
 
 
 def test_exact_prospective_definition_packet_and_projection():
@@ -142,3 +143,82 @@ def test_new_packet_is_in_the_hashed_delivery_manifest():
     path = ROOT / entries[0]['path']
     assert entries[0]['sha256'] == v.sha(path)
     assert entries[0]['bytes'] == path.stat().st_size
+
+
+@pytest.mark.parametrize('literal', [
+    'actual kl079-full-actions-v1 F/D/N owners', 'full T6',
+    'START -> ordinary PAUSE -> RESUME -> CONTINUE', 'for both action members',
+    'exact current member bindings', 'complete immutable source history',
+    'positive through COMMIT_READY', 'untouched owner-produced mechanical S37',
+    'well-formed legacy CommitBundle', 'authenticated current ingress',
+    'correct policy, closure, owner, request, attempt, fence, lease, epoch',
+    'execution basis, key and fingerprint', 'actual legacy dependency/certificate consumer',
+    'complete zero effects, including first-use head rollback', 'exact reached guard',
+    'request construction, registration, unrelated ingress/lifecycle/hash errors',
+    'full-policy downgrade are insufficient substitutes',
+    'Existing synthetic legacy execution regressions remain mandatory support coverage',
+    'cannot substitute for canonical source-to-execution evidence',
+    'No target seeding, caller PASS, certificate rewriting, policy downgrade',
+    'production or real-data-shadow output',
+])
+def test_profile_boundary_oracle_cannot_be_weakened(literal):
+    task = copy.deepcopy(TASK)
+    contract = next(c for c in task['check_contracts']
+                    if c['check_id'] == 'source_owner_trajectories_dc')
+    assert literal in contract['pass_oracle']
+    contract['pass_oracle'] = contract['pass_oracle'].replace(literal, 'omitted')
+    assert v.source_decision_definition_errors(task)
+    assert v.canonical_value_sha(contract) != v.M3_CHECK_CONTRACT_DIGESTS[
+        'KL-080:source_owner_trajectories_dc']
+    assert v.source_decision_packet_errors(TASK, PACKET.replace(literal, 'omitted'))
+
+
+def test_profile_refinement_preserves_all_other_definitions_and_m3_contracts():
+    before = json.loads(subprocess.check_output(
+        ['git', 'show', PROFILE_BASE + ':' + v.BACKLOG], cwd=ROOT))
+    old = next(t for t in before['tasks'] if t['id'] == 'KL-080')
+    expected = copy.deepcopy(old)
+    expected['deliverables'][1] = TASK['deliverables'][1]
+    expected['check_contracts'][7]['pass_oracle'] = TASK['check_contracts'][7]['pass_oracle']
+    assert TASK == expected
+    assert len(TASK['write_paths']) == 19 and len(TASK['resource_keys']) == 8
+    assert len(TASK['depends_on']) == 10 and len(TASK['check_contracts']) == 17
+    source = subprocess.check_output(
+        ['git', 'show', PROFILE_BASE + ':tools/harness/validate_harness.py'], cwd=ROOT).decode()
+    namespace: dict[str, Any] = {}
+    constants = '\n'.join(line for line in source.splitlines() if line.startswith((
+        'M3_TASK_IDS = ', 'M3_EXIT_TASK_CHECKS', 'M3_CHECK_CONTRACT_DIGESTS',
+        'M3_REGRESSION_COMMANDS', 'SOURCE_DECISION_PLAN_SHA256 = ')))
+    exec(constants, namespace)
+    assert v.M3_TASK_IDS == namespace['M3_TASK_IDS']
+    assert v.M3_EXIT_TASK_CHECKS == namespace['M3_EXIT_TASK_CHECKS']
+    assert v.M3_REGRESSION_COMMANDS == namespace['M3_REGRESSION_COMMANDS']
+    assert v.SOURCE_DECISION_PLAN_SHA256 == namespace['SOURCE_DECISION_PLAN_SHA256']
+    digests = dict(namespace['M3_CHECK_CONTRACT_DIGESTS'])
+    key = 'KL-080:source_owner_trajectories_dc'
+    assert digests[key] != v.M3_CHECK_CONTRACT_DIGESTS[key]
+    digests[key] = v.M3_CHECK_CONTRACT_DIGESTS[key]
+    assert v.M3_CHECK_CONTRACT_DIGESTS == digests
+
+
+def test_hg049_exact_scope_excludes_every_other_owner_and_artifact():
+    allowed = v.governance_allowed_patterns('HG-049')
+    assert len(allowed) == 10
+    for path in [v.BACKLOG, v.TRACEABILITY, v.INDEX, v.MANIFEST,
+                 'docs/exec-plans/active/KL-080.md', 'tools/harness/validate_harness.py',
+                 'tests/harness/test_source_decision_scope.py',
+                 'docs/exec-plans/governance/HG-049.yaml',
+                 'docs/exec-plans/evidence/HG-049/scope_audit.py',
+                 'docs/exec-plans/reviews/HG-049/GENERAL.json']:
+        assert v.matches(path, allowed)
+    for path in ['src/kineticloop/persistence/transactions.py', v.PROJECT_PLAN,
+                 'tests/db/test_source_decision_conformance.py', 'uv.lock',
+                 'CURRENT_REQUIREMENT_SET.json', 'FROZEN_BASELINE.json',
+                 'docs/exec-plans/evidence/HG-045/FEASIBILITY.md',
+                 'docs/exec-plans/completed/KL-080_RESULT.yaml',
+                 'docs/exec-plans/integrations/KL-080.json',
+                 'docs/exec-plans/reviews/KL-080/GENERAL.json',
+                 'docs/exec-plans/milestones/M3.json',
+                 'docs/exec-plans/evidence/HG-049A/probe.json',
+                 '.github/workflows/db.yml', 'tools/harness/local_gate.py']:
+        assert not v.matches(path, allowed)
