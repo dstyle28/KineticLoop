@@ -1,8 +1,8 @@
 change_identity: harness-governance-v0.1/HG-047
 display_change_id: HG-047
 base_commit: 391c9198fa8ec647e377a0572700bc7568468c85
-tested_commit: 536c9b7b7c5bfa9b36a0b38e513bce34ed6eb31d
-change_status: BLOCKED
+tested_commit: f29ffa97d9057eacc4bda7ad593b843c9c52c5a2
+change_status: PASS
 summary: Prospective lossless content-addressed gzip evidence with revision/owner/hash checks, bounded UTF8/16/32-safe
   retrieval, preserved M3 proof semantics and PR budgets; integrate merged HG045/HG046 unchanged and pin/copy
   the decoder for trusted CI. P-01 correction rejects decoded nested storage metadata before raw proof oracles.
@@ -15,6 +15,7 @@ files_changed:
 - docs/exec-plans/evidence/HG-047/HISTORY.md
 - docs/exec-plans/evidence/HG-047/PERFORMANCE.md
 - docs/exec-plans/evidence/HG-047/ROUND2_SELF_REVIEW.md
+- docs/exec-plans/evidence/HG-047/ROUND3_SELF_REVIEW.md
 - docs/exec-plans/evidence/HG-047/SCOPE.md
 - docs/exec-plans/evidence/HG-047/SELF_REVIEW.md
 - docs/exec-plans/evidence/HG-047/audit.py
@@ -104,6 +105,51 @@ files_changed:
 - docs/exec-plans/evidence/HG-047/round2-536c9b7/source_diff.json
 - docs/exec-plans/evidence/HG-047/round2-536c9b7/typecheck.json
 - docs/exec-plans/evidence/HG-047/round2-536c9b7/unit.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/11d14f640d135aa2c4cde163312292e080304a20647807f2f14cd8f6a67212a4.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/13bfddc73de6b7e9c11a642cd5cdc48777abcee1ca9f44f290a9bb9e37a6ac0c.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/18dc2cc3c1562697f20f72e3f3d7c9cb7d519d60a0e43e1774ad8aca4a049596.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/1e8140f19eb7c36de0517dd7da6c8db8d4b24ebd7eed4f0a42546d5bcfb41c10.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/3247b6d1c35e694cf6323bc0292ac026b4a2e09766c7d212a12f35a140668c53.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/46bc0c081ef69813d8d1b1ee785c9238f494b4b8804283088f60e86103375bbb.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/5fa7825273e579293760c41253a5a5129709b44e327e635a25fadd76c07fd723.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/6fbf94451955adca5c6d48cbbedb887203968b392302ecf421411317c369cf6d.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/83dc3ad93ecbb0e9f04627d94359122643675889c5fb1c5e113ffe41be4691a5.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/8bef81e1d5c0eb2551fbd7dceffca01eaa6e8f68fa898982e89ff52df43137ad.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/99d907b8d0c716fcc67b087c982c04da81f2e5b885966e7f2d39510fef0e82e4.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/9d8210154b3b9cb1ee5970b9a9b336fe2aa5472e5ef1c31f85b06a5d33234880.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/ac82800c046e05e0204bed6617044ab2e2e0f869139bb3d87c38a8d05abec14e.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/c8149d94c8ea96a9690f9187312b7af3c624079716ec66f7ff79e7d67d989a86.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/ccdfb01542bd4a1ddbc1afc48e31dbbc6f4cb2802c6b74197ca0a910c5c14b09.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/cf9319c8c2dc44d3e8d22a494eac2b523b3a6349f9c08050ab5f4227382374c5.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/collection.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/dependency_sync.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/development-driver-py.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/development-final-json.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/development-json.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/driver-log.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/e432dad1f2ac64e920307d7938aea1f7e392a105d6cdbb40710f0b3e76fa2096.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/eedc247e695f8e669491600816c594da3de121a0d53f320a16102f9cf880ca1a.gz
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/execution.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/harness.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/host--checks-json.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/host-check-driver-py.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/image_build.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/lint.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/merge_gate.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/metadata-capture-note-txt.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/performance.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/scope.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/source_diff.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/typecheck.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/unit.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--harness-xml.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--run--execution-json.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--unit-xml.json
+- docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker-receipt-json.json
 - docs/exec-plans/evidence/HG-047/selected-2dc15b7/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz
 - docs/exec-plans/evidence/HG-047/selected-2dc15b7/25a6e726ed95412b24e5e8a848509fe0ca5ed66a57b2f38f0182faccb2e8d4c6.gz
 - docs/exec-plans/evidence/HG-047/selected-2dc15b7/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
@@ -160,57 +206,70 @@ files_changed:
 - tools/harness/local_gate.py
 - tools/harness/validate_harness.py
 checks_run:
-- check_id: harness
-  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
-    -m kineticloop.db.cli test-harness
-  result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/round2-536c9b7/harness.json
-- check_id: unit
-  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
-    -m kineticloop.db.cli test-unit
-  result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/round2-536c9b7/unit.json
 - check_id: lint
-  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
-    -m kineticloop.db.cli lint
+  command: docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src
+    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run
+    --no-sync python -m ruff check .
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/round2-536c9b7/lint.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/lint.json
 - check_id: typecheck
-  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
-    -m kineticloop.db.cli typecheck
+  command: docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src
+    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run
+    --no-sync python -m mypy --no-incremental
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/round2-536c9b7/typecheck.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/typecheck.json
+- check_id: unit
+  command: docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src
+    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run
+    --no-sync python -I /gate/tools/harness/gate_pytest.py -q tests/unit -o xfail_strict=true --junitxml=/evidence/unit.xml
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/unit.json
+- check_id: harness
+  command: docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src
+    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run
+    --no-sync python -I /gate/tools/harness/gate_pytest.py -q tests/harness -o xfail_strict=true --junitxml=/evidence/harness.xml
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/harness.json
 - check_id: authority
-  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
-    -m kineticloop.db.cli check-harness
+  command: docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src
+    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run
+    --no-sync python -I /gate/tools/harness/gate_validate.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/round2-536c9b7/authority.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/merge_gate.json
 - check_id: scope
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
-    docs/exec-plans/evidence/HG-047/audit.py 391c9198fa8ec647e377a0572700bc7568468c85 536c9b7b7c5bfa9b36a0b38e513bce34ed6eb31d
+    docs/exec-plans/evidence/HG-047/audit.py 391c9198fa8ec647e377a0572700bc7568468c85 f29ffa97d9057eacc4bda7ad593b843c9c52c5a2
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/round2-536c9b7/scope.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/scope.json
 - check_id: source_diff
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src git diff --check 391c9198fa8ec647e377a0572700bc7568468c85
-    536c9b7b7c5bfa9b36a0b38e513bce34ed6eb31d
+    f29ffa97d9057eacc4bda7ad593b843c9c52c5a2
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/round2-536c9b7/source_diff.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/source_diff.json
+- check_id: collection
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    -m pytest --collect-only -q tests/harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/collection.json
 - check_id: performance
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
     docs/exec-plans/evidence/HG-047/benchmark.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/round2-536c9b7/performance.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/performance.json
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
-- The final App run at 8a78241 failed with 1304 passes and 2 setup E2BIG errors from auto-generated pytest
-  IDs containing large fixture bytes. All raw artifacts are preserved under development-8a78241. This correction
-  changes only explicit case IDs; fixture data, assertions and all 1306 cases remain. Fresh isolated Linux
-  DEVELOPMENT_NO_PUBLICATION checks and all three new reviews are pending. Prior reviews/results remain historical;
-  full DB/App gate remains mandatory.
-- An independently reviewed controller/decoder release b737094 is now installed externally by the coordinator.
-  This task only invokes its code-only run_worker helper for isolated development with full_db=False and test_only=True;
-  no App object, signer configuration, admission or publication. Final reviewed-head App/full DB remains mandatory.
+- The failed final App gate at 8a78241 is preserved under development-8a78241 (1304 harness passes, 2 E2BIG
+  setup errors; full DB not reached). The correction changes only two parametrization IDs lists, preserving
+  all fixture data/assertions and 1306 cases. Fresh exact-source Linux ARM64 DEVELOPMENT_NO_PUBLICATION checks
+  passed, with raw logs/JUnit/command plan and successful isolated resource cleanup. Full DB and final App
+  publication are NOT_RUN for this source; all three fresh reviews and root-run final reviewed-head App/full
+  DB remain mandatory.
+- The development runner used read-only installed reviewed release b737094, with all assets verified against
+  its Git bytes, full_db=False and test_only=True. It created no App object and read no signer configuration
+  or admission. Historical planning test IDs remain large (maximum 272839 bytes); those unchanged tests passed
+  Linux. GENERAL G-01 remains a prospective nonblocking ordinary duplicate-key/Unicode JSON followup outside
+  this ID fix.
 - Round1 reviews at 0fd0f3d bind 47de76d; PROTOCOL requested changes for P-01. At b30a9c6, the original reviewers
   corrected only their decoder-source evidence reference and appended report bookkeeping without changing verdicts
   or reviewed SHA. Original bytes remain in history, and the failed 166bf3e unit capture is preserved. The
@@ -228,9 +287,6 @@ known_limitations:
 - Earlier compact proof remains byte-identical in ancestor ac63ac53b1fb222ef0d816c171b2041c48d0d722 at its
   original HG-046 paths, documented in HISTORY.md. It is stale historical evidence, not relabeled or selected
   for HG-047 PASS.
-- The pinned existing Python 3.12 environment runs the stable kl entrypoints with absolute PYTHONPATH because
-  uv is not available on this host PATH. Execution metadata records the exact command/environment; raw logs
-  are retained in deterministic gzip.
 - Full harness includes compact, controller and M3 focused regressions in one execution. An earlier exploratory
   focused run and the pre-correction full harness were interrupted and are not selected PASS evidence; initial
   full-harness exit2/raw output remains under development-070f94f. Execution durations use the recorded monotonic
