@@ -1,14 +1,12 @@
 change_identity: harness-governance-v0.1/HG-047
 display_change_id: HG-047
 base_commit: d08927706a01a397dac2c78ca4aec7e9918a389c
-tested_commit: f29ffa97d9057eacc4bda7ad593b843c9c52c5a2
-change_status: BLOCKED
-summary: Prospective lossless content-addressed gzip evidence with revision/owner/hash checks, bounded UTF8/16/32-safe
-  retrieval, preserved M3 proof semantics and PR budgets; integrate merged HG045/HG046 unchanged and pin/copy
-  the decoder for trusted CI. P-01 correction rejects decoded nested storage metadata before raw proof oracles.
-  Linux E2BIG correction supplies concise pytest IDs for two data-heavy parameterizations without changing
-  cases or assertions. Normal integration of merged HG048 preserves both implementations; fresh source checks
-  and review pending.
+tested_commit: 7b35dc5dd7c488b60651175574e37b5d9389d335
+change_status: PASS
+summary: Prospective lossless content-addressed gzip evidence with bounded Unicode-safe retrieval, revision/owner/hash
+  checks, preserved M3 proof semantics and PR budgets. Normally integrate merged HG048 developer concurrency
+  while retaining both complete implementations and all historical evidence. Fresh exact-source Linux development
+  checks pass; independent reviews and final reviewed-head App/full DB remain required.
 packets_refined: []
 files_changed:
 - CURRENT_DOCUMENT_INDEX.json
@@ -17,6 +15,7 @@ files_changed:
 - docs/exec-plans/evidence/HG-047/PERFORMANCE.md
 - docs/exec-plans/evidence/HG-047/ROUND2_SELF_REVIEW.md
 - docs/exec-plans/evidence/HG-047/ROUND3_SELF_REVIEW.md
+- docs/exec-plans/evidence/HG-047/ROUND4_SELF_REVIEW.md
 - docs/exec-plans/evidence/HG-047/SCOPE.md
 - docs/exec-plans/evidence/HG-047/SELF_REVIEW.md
 - docs/exec-plans/evidence/HG-047/audit.py
@@ -151,6 +150,62 @@ files_changed:
 - docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--run--execution-json.json
 - docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker--unit-xml.json
 - docs/exec-plans/evidence/HG-047/round3-f29ffa9/worker-receipt-json.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/15309d85925f00d447ee9f32e1a182dfd1c6431288402db724c4298e9fd5f982.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/1af097575db0697ad342bfe1819dda97b321fc2da0947608239e2e3ec8483c99.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/1d5e92bbd93f7e5f1ac4b39a72c4022cf95506d4d959c14bb930f7c1a075ec1e.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/2e15eca13fc24fe3ee2f2dd2242a4426de5fb2e2c826c9b13b6d3c07f601b5ed.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/2e16c0d49d6e28b1367db7cdcfddd1f1812203f614060801083174874e28e2ca.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/36d9b35f1361487bdfc4cef25da50fb25341d15eeae225fd2a5ccd631ef8fdbb.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/3c206b0f3327d2eafd574a0c8b2cabe8538d30e62614d880c22f589f69173f9a.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/4bab41a1a2aa76140ef5b6cccff23b994e7dbeb7b3e59378ac545ce228818075.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/56ce89f3a8f923228c5f4083526268f1409ef0fe7caaa9d9da8b439eedc74933.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/936995db96e3ce14aca01f31dbc38b14eb9d7d48fe07415af36d1cf8cb526073.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/98bde06f0c20ead9d34479d8e44eac848066f608dea238641aef424670a7e634.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/a30c80dbffeb6c1d4a9405d4b8cc2446d2f45ff3a94359510b4bebfbdd19dd3c.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/a9cf83711922010d63a4ba276f6eb7e51c579e38772ed33e08146829ec7660f9.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/b78ee2482697ac6cb0679baca50cecfa3ca57f6a87fca71f77965b949a857be1.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/c20f594e0124baffcd7c2a6fbbc671fd9caa39ea45a349d7977ed430f53f6ab1.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/c7942a4b21565d683b8efcfed8b47973a97776bc0e8403fb869c38dc244eafab.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/d1326ffc6e475bc82c7d3199fedd317c3a5719e6fb9e1a867fb168309113e545.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/d50a2065d629981596063877778a0ad0d0d7b3a74f1aa0a1273eecdd5db287b8.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/dependency_sync-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/development-driver-py.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/development-initial-recovered-json.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/development-json.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/driver-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/e6bd533f95510870a2b7fa169b071954fb07ab8590232834ea399f638a0f1592.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/execution.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/f34982f909d55b2a4db62dca4af6ed7d2b16174432c125d8a5dba850f4b9c044.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/f60fff545b7907d4ecadfccb735f0c6ef0439e2e1dfad2b5211d8b0a83a8f8f4.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/fac79d9049a9bb56647b84ac5b64b84daf26e02708bc193dad05f5106a03cdf4.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/fc8006ec1e4d09fcb93decadb9030f7658701dfee2a46e5d68309f352b2b8be4.gz
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/harness-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--authority-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--checks-json.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--collection-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--identity-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--integration-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--performance-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--scope-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--source_diff-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/host-check-driver-py.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/identity-verifier-py.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/image_build-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/integration-verifier-py.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/lint-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/merge_gate-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/metadata-capture-note-txt.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/record-attempt1-py.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/typecheck-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/unit-log.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/worker--harness-xml.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/worker--run--execution-json.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/worker--unit-xml.json
+- docs/exec-plans/evidence/HG-047/round4-7b35dc5/worker-receipt-json.json
 - docs/exec-plans/evidence/HG-047/selected-2dc15b7/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz
 - docs/exec-plans/evidence/HG-047/selected-2dc15b7/25a6e726ed95412b24e5e8a848509fe0ca5ed66a57b2f38f0182faccb2e8d4c6.gz
 - docs/exec-plans/evidence/HG-047/selected-2dc15b7/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
@@ -232,92 +287,88 @@ files_changed:
 checks_run:
 - check_id: lint
   command: docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src
-    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run
+    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-b355dd07b10a4bca839f8287ca55ddf1 uv run
     --no-sync python -m ruff check .
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/lint.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/lint-log.json
 - check_id: typecheck
   command: docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src
-    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run
+    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-b355dd07b10a4bca839f8287ca55ddf1 uv run
     --no-sync python -m mypy --no-incremental
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/typecheck.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/typecheck-log.json
 - check_id: unit
   command: docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src
-    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run
+    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-b355dd07b10a4bca839f8287ca55ddf1 uv run
     --no-sync python -I /gate/tools/harness/gate_pytest.py -q tests/unit -o xfail_strict=true --junitxml=/evidence/unit.xml
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/unit.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/unit-log.json
 - check_id: harness
   command: docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src
-    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run
+    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-b355dd07b10a4bca839f8287ca55ddf1 uv run
     --no-sync python -I /gate/tools/harness/gate_pytest.py -q tests/harness -o xfail_strict=true --junitxml=/evidence/harness.xml
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/harness.json
-- check_id: authority
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/harness-log.json
+- check_id: installed_authority
   command: docker exec -w /workspace/KineticLoop -e PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src
-    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-226262ef3c5a443eb43b49e37fff082d uv run
+    -e KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json kl-gate-b355dd07b10a4bca839f8287ca55ddf1 uv run
     --no-sync python -I /gate/tools/harness/gate_validate.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/merge_gate.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/merge_gate-log.json
 - check_id: scope
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
-    docs/exec-plans/evidence/HG-047/audit.py 391c9198fa8ec647e377a0572700bc7568468c85 f29ffa97d9057eacc4bda7ad593b843c9c52c5a2
+    docs/exec-plans/evidence/HG-047/audit.py d08927706a01a397dac2c78ca4aec7e9918a389c 7b35dc5dd7c488b60651175574e37b5d9389d335
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/scope.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--scope-log.json
 - check_id: source_diff
-  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src git diff --check 391c9198fa8ec647e377a0572700bc7568468c85
-    f29ffa97d9057eacc4bda7ad593b843c9c52c5a2
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src git diff --check d08927706a01a397dac2c78ca4aec7e9918a389c
+    7b35dc5dd7c488b60651175574e37b5d9389d335
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/source_diff.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--source_diff-log.json
 - check_id: collection
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
     -m pytest --collect-only -q tests/harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/collection.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--collection-log.json
 - check_id: performance
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
     docs/exec-plans/evidence/HG-047/benchmark.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/round3-f29ffa9/performance.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--performance-log.json
+- check_id: integration
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    /private/tmp/hg047-integration-verify.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--integration-log.json
+- check_id: authority
+  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
+    tools/harness/validate_harness.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--authority-log.json
+- check_id: execution_identity
+  command: /private/tmp/hg044-venv/bin/python /private/tmp/hg047-round4-identity.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-047/round4-7b35dc5/host--identity-log.json
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
-- 'Integration bootstrap: tested_commit and checks_run below identify historical round3 execution only. This
-  BLOCKED record makes no PASS claim for the HG048-integrated source. New exact-source checks/result and three
-  fresh independent reviews are required. HG048 prerequisite source/result/reviews/evidence are preserved byte-identically.'
-- The failed final App gate at 8a78241 is preserved under development-8a78241 (1304 harness passes, 2 E2BIG
-  setup errors; full DB not reached). The correction changes only two parametrization IDs lists, preserving
-  all fixture data/assertions and 1306 cases. Fresh exact-source Linux ARM64 DEVELOPMENT_NO_PUBLICATION checks
-  passed, with raw logs/JUnit/command plan and successful isolated resource cleanup. Full DB and final App
-  publication are NOT_RUN for this source; all three fresh reviews and root-run final reviewed-head App/full
-  DB remain mandatory.
-- The development runner used read-only installed reviewed release b737094, with all assets verified against
-  its Git bytes, full_db=False and test_only=True. It created no App object and read no signer configuration
-  or admission. Historical planning test IDs remain large (maximum 272839 bytes); those unchanged tests passed
-  Linux. GENERAL G-01 remains a prospective nonblocking ordinary duplicate-key/Unicode JSON followup outside
-  this ID fix.
-- Round1 reviews at 0fd0f3d bind 47de76d; PROTOCOL requested changes for P-01. At b30a9c6, the original reviewers
-  corrected only their decoder-source evidence reference and appended report bookkeeping without changing verdicts
-  or reviewed SHA. Original bytes remain in history, and the failed 166bf3e unit capture is preserved. The
-  new result requires fresh GENERAL, PROTOCOL and SECURITY_DATA_BOUNDARY reviews.
-- The bounded performance benchmark and freshness/integrity negatives cover the new per-operation immutable
-  verdict cache. Git object contents are treated as immutable within one validation operation; no cache survives
-  its exit, and working-tree/mutable refs always reread.
-- Task-local checks PASS only. Fresh independent GENERAL, PROTOCOL and SECURITY_DATA_BOUNDARY reviews must
-  bind the committed result/evidence revision; no historical compact review is current HG-047 PASS.
-- Full DB is NOT_RUN locally by coordinator direction to avoid duplicate expensive execution. The unchanged
-  HG-046 policy requires one final reviewed-head trusted controller run, plus applicable quality and merge-gate
-  checks, before merge.
-- Merged HG-045/HG-046 evidence, governance and reviews are unchanged; source-decision authorities, CI workflows/classifier,
-  runtime, migrations, frozen baseline and requirement semantics are preserved by the committed scope audit.
-- Earlier compact proof remains byte-identical in ancestor ac63ac53b1fb222ef0d816c171b2041c48d0d722 at its
-  original HG-046 paths, documented in HISTORY.md. It is stale historical evidence, not relabeled or selected
-  for HG-047 PASS.
-- Full harness includes compact, controller and M3 focused regressions in one execution. An earlier exploratory
-  focused run and the pre-correction full harness were interrupted and are not selected PASS evidence; initial
-  full-harness exit2/raw output remains under development-070f94f. Execution durations use the recorded monotonic
-  clock, not wall timestamp gaps.
-- 'Storage/governance only: no task, product requirement, M3, release, production activation or executable
-  shadow PASS is asserted. Related product/release requirements remain NOT_RUN. No historical merged evidence
-  is migrated or deleted.'
+- DEVELOPMENT_NO_PUBLICATION only. Full DB and final App publication are NOT_RUN at this source; fresh GENERAL,
+  PROTOCOL and SECURITY_DATA_BOUNDARY reviews, reviewed controller installation, exact admission and root-run
+  final App/full DB gate remain mandatory. Task PASS does not imply review, merge, product requirement, M3
+  or release PASS.
+- Intermediate merge a878a70 contains conflict-resolver truncation; repair 7b35dc5 restores complete parent
+  blobs and both allowlists. The source bootstrap record is BLOCKED with historical checks. Only the fresh
+  repaired-source execution is selected in this result.
+- Installed reviewed b737094 helper assets were byte-verified and used code-only with full_db=False/test_only=True;
+  no signer configuration, key, App object, admission, publication or external installation mutation occurred.
+  Both isolated resources were removed. Actual integrated source authority is independently checked.
+- All merged HG045/HG046/HG048 source, governance, evidence and reviews are preserved relative to the new protected
+  base except already-authorized HG047 shared paths; all prior HG047 evidence/review reports remain historical
+  and stale for this new source.
+- GENERAL G-01 ordinary duplicate-key Unicode JSON remains a prospective NONBLOCKING separate concern. Historical
+  large planning parameter IDs remain unchanged; full Linux tests pass.
+- Failed final App gate at 8a78241 (1304 passes and two E2BIG setup errors) and all earlier failed/interrupted
+  attempts remain preserved and are not relabeled PASS. Earlier compact evidence remains at original ancestor/path
+  documented by HISTORY.md.
+- Product requirements remain NOT_RUN; no frozen Protocol/DB, Evidence Admission, authorization, lock order,
+  runtime, migration, production activation, executable shadow or provider authority semantics change.
