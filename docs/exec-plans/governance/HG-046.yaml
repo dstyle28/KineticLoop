@@ -1,7 +1,7 @@
 change_identity: harness-governance-v0.1/HG-046
 display_change_id: HG-046
-base_commit: 26906bd7f4444914c228e98377f2b164fee0dd5d
-tested_commit: 341333dd4b5140ac15f715ce28bd0d2a4a4ee1ec
+base_commit: fc8a044ffa4d15a74ce5dc59298ae411f1f4009b
+tested_commit: fc8a044ffa4d15a74ce5dc59298ae411f1f4009b
 change_status: BLOCKED
 summary: Mandatory local CI hardening in progress. Earlier test records cover only the initial local DB runner.
   The new controller requires fresh complete validation and independent reviews before PASS or publication.
@@ -251,6 +251,9 @@ checks_run:
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
+- Master advanced through merged HG-045 PR89. This BLOCKED preparation record uses the new protected base as
+  placeholder tested revision; new controller validation has not passed. Older run references remain development
+  history only.
 - Current extension is not yet validated; previous reviewed SHA and full DB PASS are historical development
   evidence, not approval of the controller.
 - Local full DB evidence is Linux ARM64, not GitHub-hosted/x64 attestation. The shared hosted command path

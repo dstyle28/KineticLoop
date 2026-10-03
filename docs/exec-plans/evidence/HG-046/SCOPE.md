@@ -37,3 +37,7 @@ reviews must be updated before publishing a new candidate. No credential may
 enter Git or the candidate worker. See HARDENING_PLAN.md for bootstrap state,
 trust boundaries and activation state. The existing reviews do not
 approve this extension; PR90 remains draft and unmerged.
+
+## Master synchronization
+
+HG-045 PR89 is now merged at fc8a044ffa4d15a74ce5dc59298ae411f1f4009b. HG-046 preserves its source-decision changes and updates the protected base to this commit. The first controller attempt refused the stale base before executing candidate code. Fresh complete validation and all reviews must bind the updated candidate.

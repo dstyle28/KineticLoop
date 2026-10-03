@@ -1484,7 +1484,6 @@ def governance_record_paths(change_id):
 
 
 def governance_allowed_patterns(change_id):
-<<<<<<< HEAD
     if change_id == 'HG-046':
         return [INDEX, MANIFEST, '.github/workflows/ci.yml', '.github/workflows/db.yml',
                 'tools/harness/db_ci.py', 'tools/harness/db_ci_pytest.py',
@@ -1501,7 +1500,6 @@ def governance_allowed_patterns(change_id):
                 'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md',
                 'docs/exec-plans/evidence/HG-046/**', 'docs/exec-plans/reviews/HG-046/**',
                 'docs/exec-plans/governance/HG-046.yaml']
-=======
     if change_id == 'HG-045':
         return [BACKLOG, TRACEABILITY, PROJECT_PLAN, INDEX, MANIFEST,
                 MILESTONE_CLOSURE_SCHEMA, 'docs/harness/M3_CLOSURE_CONTRACT.md',
@@ -1514,7 +1512,6 @@ def governance_allowed_patterns(change_id):
                 'docs/exec-plans/evidence/HG-045/**',
                 'docs/exec-plans/reviews/HG-045/**',
                 'docs/exec-plans/governance/HG-045.yaml']
->>>>>>> origin/master
     if change_id == 'HG-044':
         return [MILESTONE_CLOSURE_SCHEMA, 'tools/harness/validate_harness.py',
                 'tests/harness/test_m3_milestone_closure.py',
