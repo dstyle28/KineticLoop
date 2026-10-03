@@ -1,0 +1,37 @@
+{
+  "phase": "uncommitted implementation probes, not SHA-bound task checks",
+  "parent_commit": "034d6301316d0dade784a61b159c027b83fbce3a",
+  "observations": [
+    "Initial fresh dependency download failed under restricted DNS; locked sync succeeded with network access.",
+    "Focused attempt 2: 100 passed, 2 failed due to incorrect renewal-count expectations for the separate failure PATCH. Expectations corrected; attempt 3: 102 passed.",
+    "Typecheck found HTTPError fixture header type; corrected to email.message.Message before tested commit.",
+    "Lint found unused test assignment; removed before tested commit."
+  ],
+  "raw_logs": [
+    {
+      "path": "docs/exec-plans/evidence/HG-050/precommit/focused.log",
+      "bytes": 6549,
+      "sha256": "056ddd325d5b2f23253f73823b0b829bc304ada5dbbaab8ffe2f30203ea3e631"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/precommit/lint-pre.log",
+      "bytes": 559,
+      "sha256": "669fef1a4354b067f455b92ef901f03f1958c8ec392adedd4a1d7f6d80f58ab3"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/precommit/focused-2.log",
+      "bytes": 10318,
+      "sha256": "51e608158246a3763a1be693a62022569674e184d1388d7d491e7570e3eeda15"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/precommit/focused-3.log",
+      "bytes": 180,
+      "sha256": "11fad9ac7813d27e6c54fa03a4762ee80accd08ce94340c36a6efb8b5ece55d3"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-050/precommit/typecheck-pre.log",
+      "bytes": 203,
+      "sha256": "b1451734ccbb2c85dce2ea9c44184d0ac9de561c25ba9f6b52eb29ed1032d79a"
+    }
+  ]
+}

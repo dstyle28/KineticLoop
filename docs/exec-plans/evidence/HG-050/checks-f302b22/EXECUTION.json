@@ -1,0 +1,76 @@
+{
+  "tested_commit": "f302b22c0838ef2928913392e7c2a6af9e8f8698",
+  "passing_checks": [
+    {
+      "check_id": "focused",
+      "command": "uv run pytest tests/harness/test_local_gate.py -q",
+      "exit_code": 0,
+      "tested_commit": "f302b22c0838ef2928913392e7c2a6af9e8f8698",
+      "elapsed_seconds": 4.639343023300171,
+      "log": "/private/tmp/hg050-checks-f302b22/focused.log"
+    },
+    {
+      "check_id": "unit",
+      "command": "uv run kl test-unit -q --junitxml=/private/tmp/hg050-checks-f302b22/unit.xml",
+      "exit_code": 0,
+      "tested_commit": "f302b22c0838ef2928913392e7c2a6af9e8f8698",
+      "elapsed_seconds": 230.05067586898804,
+      "log": "/private/tmp/hg050-checks-f302b22/unit.log"
+    },
+    {
+      "check_id": "authority",
+      "command": "uv run kl check-harness",
+      "exit_code": 0,
+      "tested_commit": "f302b22c0838ef2928913392e7c2a6af9e8f8698",
+      "elapsed_seconds": 217.39999413490295,
+      "log": "/private/tmp/hg050-checks-f302b22/authority.log"
+    },
+    {
+      "check_id": "lint",
+      "command": "uv run kl lint",
+      "exit_code": 0,
+      "tested_commit": "f302b22c0838ef2928913392e7c2a6af9e8f8698",
+      "elapsed_seconds": 0.10241007804870605,
+      "log": "/private/tmp/hg050-checks-f302b22/lint.log"
+    },
+    {
+      "check_id": "typecheck",
+      "command": "uv run kl typecheck",
+      "exit_code": 0,
+      "tested_commit": "f302b22c0838ef2928913392e7c2a6af9e8f8698",
+      "elapsed_seconds": 0.2753567695617676,
+      "log": "/private/tmp/hg050-checks-f302b22/typecheck.log"
+    },
+    {
+      "check_id": "scope",
+      "command": "uv run python docs/exec-plans/evidence/HG-050/scope_audit.py",
+      "exit_code": 0,
+      "tested_commit": "f302b22c0838ef2928913392e7c2a6af9e8f8698",
+      "elapsed_seconds": 0.15009188652038574,
+      "log": "/private/tmp/hg050-checks-f302b22/scope.log"
+    },
+    {
+      "check_id": "diff",
+      "command": "git diff --check 034d6301316d0dade784a61b159c027b83fbce3a f302b22c0838ef2928913392e7c2a6af9e8f8698",
+      "exit_code": 0,
+      "tested_commit": "f302b22c0838ef2928913392e7c2a6af9e8f8698",
+      "elapsed_seconds": 0.015198945999145508,
+      "log": "/private/tmp/hg050-checks-f302b22/diff.log"
+    },
+    {
+      "check_id": "harness",
+      "command": "uv run kl test-harness --workers 2 --evidence-dir /private/tmp/hg050-harness-isolated-f302b22/harness -q --basetemp=/private/tmp/hg050-harness-isolated-pytest-temp",
+      "exit_code": 0,
+      "tested_commit": "f302b22c0838ef2928913392e7c2a6af9e8f8698",
+      "elapsed_seconds": 1217.0613751411438,
+      "log": "/private/tmp/hg050-harness-isolated-f302b22/harness.log",
+      "source_start_status": "clean",
+      "source_end_status": "",
+      "source_end_sha": "f302b22c0838ef2928913392e7c2a6af9e8f8698"
+    }
+  ],
+  "failed_attempts": [
+    "INITIAL_EXECUTION.json",
+    "RETRY_EXECUTION.json"
+  ]
+}

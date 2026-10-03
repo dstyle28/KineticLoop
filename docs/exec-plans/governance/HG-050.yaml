@@ -1,0 +1,147 @@
+change_identity: harness-governance-v0.1/HG-050
+display_change_id: HG-050
+base_commit: 034d6301316d0dade784a61b159c027b83fbce3a
+tested_commit: f302b22c0838ef2928913392e7c2a6af9e8f8698
+change_status: PASS
+summary: Prospectively validate server UTC expiry with a 60-second margin and conservative pre-mint monotonic age;
+  invalidate on observed wall rollback or failed renewal. Typed 401 permits one installation-token GET refresh/retry,
+  never write replay. Preserve controller admission, snapshots, check identity and publication semantics.
+packets_refined: []
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- docs/exec-plans/evidence/HG-050/OPERATOR_OBSERVATIONS.json
+- docs/exec-plans/evidence/HG-050/SCOPE.md
+- docs/exec-plans/evidence/HG-050/checks-f302b22/DIAGNOSIS.json
+- docs/exec-plans/evidence/HG-050/checks-f302b22/EXECUTION.json
+- docs/exec-plans/evidence/HG-050/checks-f302b22/INITIAL_EXECUTION.json
+- docs/exec-plans/evidence/HG-050/checks-f302b22/ISOLATED_EXECUTION.json
+- docs/exec-plans/evidence/HG-050/checks-f302b22/RETRY_EXECUTION.json
+- docs/exec-plans/evidence/HG-050/checks-f302b22/capture_driver.py
+- docs/exec-plans/evidence/HG-050/checks-f302b22/initial-driver.log
+- docs/exec-plans/evidence/HG-050/checks-f302b22/isolated_driver.py
+- docs/exec-plans/evidence/HG-050/checks-f302b22/rerun_driver.py
+- docs/exec-plans/evidence/HG-050/driver.py
+- docs/exec-plans/evidence/HG-050/precommit/CONTEXT.json
+- docs/exec-plans/evidence/HG-050/precommit/focused-2.log
+- docs/exec-plans/evidence/HG-050/precommit/focused-3.log
+- docs/exec-plans/evidence/HG-050/precommit/focused.log
+- docs/exec-plans/evidence/HG-050/precommit/lint-pre.log
+- docs/exec-plans/evidence/HG-050/precommit/typecheck-pre.log
+- docs/exec-plans/evidence/HG-050/runs/0f55cf624c522831e35c3e7fd9d011ccdfd05126f1df1c5c00cd4cef5cb71c5a.gz
+- docs/exec-plans/evidence/HG-050/runs/163efa1be3c5ab6f0919544a8f587c768d2f4eaa295121ae8467f9ded3966b40.gz
+- docs/exec-plans/evidence/HG-050/runs/3308ff5c4e7fb0fb60fcca5607023bced91a59e5eb842e27bba07b66901a14ef.gz
+- docs/exec-plans/evidence/HG-050/runs/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/HG-050/runs/383c28de94c0731da9b540926327b0af572a5c4130189594973d36c62c29380e.gz
+- docs/exec-plans/evidence/HG-050/runs/46a5cf748fd76c5a65d63ea98d4d0bb2b5ba93800f1b227fccb6e9a035fa0c9d.gz
+- docs/exec-plans/evidence/HG-050/runs/47151b9ebdafd49b9993e3acac76c3c2cb35c5b58443311b4b3345cfa72840fe.gz
+- docs/exec-plans/evidence/HG-050/runs/4ac2333d93e5f6b958ee10057f17f6ab8ee4a91ab47532992c13f0deb30ffb43.gz
+- docs/exec-plans/evidence/HG-050/runs/4f6761f92755654d2882cd4afd21b707c1fcbbdf982bd45c49492dc02dc5d756.gz
+- docs/exec-plans/evidence/HG-050/runs/70ec3b2dbe749e3be482d964e5a4181db93c3bc09fe3e80726d1d792a0fdd436.gz
+- docs/exec-plans/evidence/HG-050/runs/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-050/runs/866f135eda15a6396df37bd084c95fd89cee94239a37fcd17a9f9b0eb3878445.gz
+- docs/exec-plans/evidence/HG-050/runs/9dc9e2eeca5dfe32c3941f047b5975491dab08b37669b2103cf21bbd41d94a8a.gz
+- docs/exec-plans/evidence/HG-050/runs/a268e09b000ad40429cf1ab176edb62fad9bb0192f31861ccdaba6a972de2a95.gz
+- docs/exec-plans/evidence/HG-050/runs/a729d9b40cef6bc49ed5db20ba34e389f17f446d9428fc6bd8a4da85184f2581.gz
+- docs/exec-plans/evidence/HG-050/runs/a78f6fc074066252e5f508b63d2386ae5c6b61a1c22188e872b1c078d2a2697e.gz
+- docs/exec-plans/evidence/HG-050/runs/authority.json
+- docs/exec-plans/evidence/HG-050/runs/b49a1110e648b8ac9640ac56909bcbf4048f7d36f427b978c51786c924a26a6a.gz
+- docs/exec-plans/evidence/HG-050/runs/b746f3b70017ea89feb3e19a297122a3c78030f79e31277cdc8b34001ba5c897.gz
+- docs/exec-plans/evidence/HG-050/runs/d6b0c313cde1bc1ca8d3cffcfdb46f2f6ce4cdff747722a4c0c98822b5580ce6.gz
+- docs/exec-plans/evidence/HG-050/runs/de822dea48e5ae586e9d34f5429c656c6cd1a1d08738a6f375c4dded6997f441.gz
+- docs/exec-plans/evidence/HG-050/runs/diff.json
+- docs/exec-plans/evidence/HG-050/runs/e3af9d55335b1c7544d159a75465794525ac359551d8a6f95f780ba8b0ed148b.gz
+- docs/exec-plans/evidence/HG-050/runs/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-050/runs/e9ea914ab90f74daacf0ce05b1c1a4f00e2e8b601b516a0494380a5a9ba51906.gz
+- docs/exec-plans/evidence/HG-050/runs/f0c9dfeff3d15aec7279fe6ad109e3d346fcc6dfb391716dce7c6489c63789f6.gz
+- docs/exec-plans/evidence/HG-050/runs/f377e6745bc30013b1533567705649d89c858da8882e1a8bf6b1c6c606ef8e7f.gz
+- docs/exec-plans/evidence/HG-050/runs/focused.json
+- docs/exec-plans/evidence/HG-050/runs/git-temp-probe.json
+- docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-collection-json.json
+- docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-collection-log.json
+- docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-execution-json.json
+- docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-junit-xml.json
+- docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-manifest-json.json
+- docs/exec-plans/evidence/HG-050/runs/initial-failed-harness-pytest-log.json
+- docs/exec-plans/evidence/HG-050/runs/initial-failed-harness.json
+- docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-collection-json.json
+- docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-collection-log.json
+- docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-execution-json.json
+- docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-junit-xml.json
+- docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-manifest-json.json
+- docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness-pytest-log.json
+- docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness.json
+- docs/exec-plans/evidence/HG-050/runs/lint.json
+- docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-collection-json.json
+- docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-collection-log.json
+- docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-execution-json.json
+- docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-junit-xml.json
+- docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-manifest-json.json
+- docs/exec-plans/evidence/HG-050/runs/retry-failed-harness-pytest-log.json
+- docs/exec-plans/evidence/HG-050/runs/retry-failed-harness.json
+- docs/exec-plans/evidence/HG-050/runs/scope.json
+- docs/exec-plans/evidence/HG-050/runs/typecheck.json
+- docs/exec-plans/evidence/HG-050/runs/unit-junit.json
+- docs/exec-plans/evidence/HG-050/runs/unit.json
+- docs/exec-plans/evidence/HG-050/scope_audit.py
+- docs/exec-plans/governance/HG-050.yaml
+- docs/harness/LOCAL_DB_CI.md
+- tests/harness/test_local_gate.py
+- tools/harness/github_app.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: focused
+  command: uv run pytest tests/harness/test_local_gate.py -q
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-050/runs/focused.json
+- check_id: unit
+  command: uv run kl test-unit -q --junitxml=/private/tmp/hg050-checks-f302b22/unit.xml
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-050/runs/unit.json
+- check_id: authority
+  command: uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-050/runs/authority.json
+- check_id: lint
+  command: uv run kl lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-050/runs/lint.json
+- check_id: typecheck
+  command: uv run kl typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-050/runs/typecheck.json
+- check_id: scope
+  command: uv run python docs/exec-plans/evidence/HG-050/scope_audit.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-050/runs/scope.json
+- check_id: diff
+  command: git diff --check 034d6301316d0dade784a61b159c027b83fbce3a f302b22c0838ef2928913392e7c2a6af9e8f8698
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-050/runs/diff.json
+- check_id: harness
+  command: uv run kl test-harness --workers 2 --evidence-dir /private/tmp/hg050-harness-isolated-f302b22/harness
+    -q --basetemp=/private/tmp/hg050-harness-isolated-pytest-temp
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-050/runs/isolated-pass-harness.json
+- check_id: git_temp_recovery
+  command: uv run pytest 'tests/harness/test_m3_milestone_closure.py::test_compact_nested_storage_cannot_supply_m3_execution_stdout[missing]'
+    -q --basetemp=/private/tmp/hg050-m3-probe-temp
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-050/runs/git-temp-probe.json
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- Product, M3, release and full database/controller checks remain NOT_RUN here. Root owns separately reviewed installation,
+  exact pins/admission and final stable-head App full DB window.
+- GENERAL and SECURITY_DATA_BOUNDARY independent reviews bind the implementation/governance/evidence revision. Only
+  own REVIEW_RECORD_ONLY suffix may follow.
+- Historical HG049 failure and separate unchanged-controller caffeinate rerun remain untouched and supply no corrective
+  PASS. No configuration/signing/admission edit, manual publication or one-time exception.
+- Clock rollback detection is conservative at observations, not proof against arbitrary unobserved clock corruption.
+  Installation tokens remain memory-only.
+- POST/PATCH errors terminate without replay; a success body rejected with 401 is not published. A separate controller
+  failure PATCH may proactively renew after a failed GET; it never turns that run into success.
+- Failed precommit probes and both failed full-harness executions are preserved losslessly. Initial wrapper rejected
+  implementer-created untracked evidence despite 1405 pytest passes. Clean retry failed a temporary Git fixture
+  setup with 1404 passes; isolated probe passed. Only final complete clean run supplies PASS. Other checks remain
+  valid at unchanged tested SHA.

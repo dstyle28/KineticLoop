@@ -1,0 +1,157 @@
+........................................................................ [ 70%]
+......................F...F...                                           [100%]
+=================================== FAILURES ===================================
+_ test_real_app_renewal_keeps_controller_publication_boundary[refresh_failure] _
+
+tmp_path = PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1963/test_real_app_renewal_keeps_co2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10b67e3f0>
+token_api = namespace(clock=namespace(wall=1800007200.0, mono=100.0), calls=[('GET', '/app/installations/2', 'SENTINEL_JWT', None)..._BODY'}, failures=[], api=<function token_api.<locals>.api at 0x10ba287c0>, app=<github_app.App object at 0x10b67e5a0>)
+scenario = 'refresh_failure'
+
+    @pytest.mark.parametrize('scenario', ['success', 'test_only', 'refresh_failure', 'changed_head',
+        'changed_base', 'cleanup_failure', 'repeated401', 'write401'])
+    def test_real_app_renewal_keeps_controller_publication_boundary(tmp_path, monkeypatch,
+                                                                  token_api, scenario):
+        f = token_api
+        config = private_json(tmp_path / 'config.json', f.app.config)
+        admission = private_json(tmp_path / 'admission.json', {
+            'format': 'kineticloop-local-admission-v1', 'snapshot': STATE,
+            'controller': 'identity', 'trusted_code_reviewed': True})
+        original = f.api
+        writes = []
+        def api(method, path, token, body=None):
+            if path.startswith('/app/'):
+                return original(method, path, token, body)
+            result = original(method, path, token, body)
+            if method in ('POST', 'PATCH'):
+                writes.append((method, path, token, body))
+                if scenario == 'write401' and method == 'PATCH':
+                    raise gate.github_app.APIHTTPError('PATCH', 401)
+                return {'app': {'id': 12}, 'head_sha': B, 'name': 'local-db-gate', 'id': 21}
+            if '/pulls/' in path:
+                head = 'c' * 40 if scenario == 'changed_head' and f.minted > 1 else B
+                return {'state': 'open', 'base': {'ref': 'master', 'sha': A, 'repo': {'id': 42}},
+                        'head': {'sha': head, 'repo': {'id': 42}}}
+            return {'object': {'sha': 'c' * 40 if scenario == 'changed_base' and f.minted > 1 else A}}
+        monkeypatch.setattr(gate.github_app, 'api', api)
+        monkeypatch.setattr(gate, 'installed', lambda *_: 'identity')
+        monkeypatch.setattr(gate, 'checked', lambda *_: 'tree')
+        monkeypatch.setattr(gate.db_policy, 'classify', lambda *_: {'full_database_required': True})
+        def worker(*args, **kwargs):
+            f.clock.wall += 7200  # monotonic stalls across the whole worker
+            if scenario == 'refresh_failure':
+                f.response = {'token': 'SENTINEL_TOKEN', 'expires_at': 'bad-SENTINEL_BODY'}
+            if scenario == 'repeated401':
+                f.failures = [gate.github_app.APIHTTPError('GET', 401)] * 2
+            if scenario == 'cleanup_failure':
+                raise ValueError('cleanup failed')
+            return {'status': 'PASS', 'container_removed': True, 'volume_removed': True}
+        monkeypatch.setattr(gate, 'run_worker', worker)
+        monkeypatch.setattr(gate.os, 'environ', dict(gate.os.environ))
+        monkeypatch.setattr(gate.sys, 'argv', ['local_gate.py', '--config', str(config),
+            '--admission', str(admission), '--pr', '90', '--evidence-dir', str(tmp_path / 'run'),
+            *(['--test-only'] if scenario == 'test_only' else [])])
+        if scenario in ('success', 'test_only'):
+            assert gate.main() == 0
+        else:
+            with pytest.raises(ValueError) as error:
+                gate.main()
+            assert 'SENTINEL' not in str(error.value)
+        receipt = (tmp_path / 'run/receipt.json').read_text()
+        assert 'SENTINEL' not in receipt
+        if scenario != 'write401':
+            assert json.loads(receipt)['status'] == ('PASS' if scenario in ('success', 'test_only') else 'FAIL')
+        if scenario == 'test_only':
+            assert writes == []
+        else:
+            assert writes[0][0] == 'POST'
+            patches = [c for c in writes if c[0] == 'PATCH']
+            assert len(patches) == (0 if scenario == 'refresh_failure' else 1)
+            if patches:
+                assert patches[0][1].endswith('/check-runs/21')
+                assert patches[0][3]['conclusion'] == ('success' if scenario in ('success', 'write401') else 'failure')
+                assert patches[0][2] != writes[0][2]
+>       assert f.minted == (3 if scenario == 'repeated401' else 2)
+E       AssertionError: assert 3 == 2
+E        +  where 3 = namespace(clock=namespace(wall=1800007200.0, mono=100.0), calls=[('GET', '/app/installations/2', 'SENTINEL_JWT', None)..._BODY'}, failures=[], api=<function token_api.<locals>.api at 0x10ba287c0>, app=<github_app.App object at 0x10b67e5a0>).minted
+
+tests/harness/test_local_gate.py:650: AssertionError
+___ test_real_app_renewal_keeps_controller_publication_boundary[repeated401] ___
+
+tmp_path = PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-1963/test_real_app_renewal_keeps_co6')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10b681760>
+token_api = namespace(clock=namespace(wall=1800007200.0, mono=100.0), calls=[('GET', '/app/installations/2', 'SENTINEL_JWT', None)...se=None, failures=[], api=<function token_api.<locals>.api at 0x10ba29800>, app=<github_app.App object at 0x10b681700>)
+scenario = 'repeated401'
+
+    @pytest.mark.parametrize('scenario', ['success', 'test_only', 'refresh_failure', 'changed_head',
+        'changed_base', 'cleanup_failure', 'repeated401', 'write401'])
+    def test_real_app_renewal_keeps_controller_publication_boundary(tmp_path, monkeypatch,
+                                                                  token_api, scenario):
+        f = token_api
+        config = private_json(tmp_path / 'config.json', f.app.config)
+        admission = private_json(tmp_path / 'admission.json', {
+            'format': 'kineticloop-local-admission-v1', 'snapshot': STATE,
+            'controller': 'identity', 'trusted_code_reviewed': True})
+        original = f.api
+        writes = []
+        def api(method, path, token, body=None):
+            if path.startswith('/app/'):
+                return original(method, path, token, body)
+            result = original(method, path, token, body)
+            if method in ('POST', 'PATCH'):
+                writes.append((method, path, token, body))
+                if scenario == 'write401' and method == 'PATCH':
+                    raise gate.github_app.APIHTTPError('PATCH', 401)
+                return {'app': {'id': 12}, 'head_sha': B, 'name': 'local-db-gate', 'id': 21}
+            if '/pulls/' in path:
+                head = 'c' * 40 if scenario == 'changed_head' and f.minted > 1 else B
+                return {'state': 'open', 'base': {'ref': 'master', 'sha': A, 'repo': {'id': 42}},
+                        'head': {'sha': head, 'repo': {'id': 42}}}
+            return {'object': {'sha': 'c' * 40 if scenario == 'changed_base' and f.minted > 1 else A}}
+        monkeypatch.setattr(gate.github_app, 'api', api)
+        monkeypatch.setattr(gate, 'installed', lambda *_: 'identity')
+        monkeypatch.setattr(gate, 'checked', lambda *_: 'tree')
+        monkeypatch.setattr(gate.db_policy, 'classify', lambda *_: {'full_database_required': True})
+        def worker(*args, **kwargs):
+            f.clock.wall += 7200  # monotonic stalls across the whole worker
+            if scenario == 'refresh_failure':
+                f.response = {'token': 'SENTINEL_TOKEN', 'expires_at': 'bad-SENTINEL_BODY'}
+            if scenario == 'repeated401':
+                f.failures = [gate.github_app.APIHTTPError('GET', 401)] * 2
+            if scenario == 'cleanup_failure':
+                raise ValueError('cleanup failed')
+            return {'status': 'PASS', 'container_removed': True, 'volume_removed': True}
+        monkeypatch.setattr(gate, 'run_worker', worker)
+        monkeypatch.setattr(gate.os, 'environ', dict(gate.os.environ))
+        monkeypatch.setattr(gate.sys, 'argv', ['local_gate.py', '--config', str(config),
+            '--admission', str(admission), '--pr', '90', '--evidence-dir', str(tmp_path / 'run'),
+            *(['--test-only'] if scenario == 'test_only' else [])])
+        if scenario in ('success', 'test_only'):
+            assert gate.main() == 0
+        else:
+            with pytest.raises(ValueError) as error:
+                gate.main()
+            assert 'SENTINEL' not in str(error.value)
+        receipt = (tmp_path / 'run/receipt.json').read_text()
+        assert 'SENTINEL' not in receipt
+        if scenario != 'write401':
+            assert json.loads(receipt)['status'] == ('PASS' if scenario in ('success', 'test_only') else 'FAIL')
+        if scenario == 'test_only':
+            assert writes == []
+        else:
+            assert writes[0][0] == 'POST'
+            patches = [c for c in writes if c[0] == 'PATCH']
+            assert len(patches) == (0 if scenario == 'refresh_failure' else 1)
+            if patches:
+                assert patches[0][1].endswith('/check-runs/21')
+                assert patches[0][3]['conclusion'] == ('success' if scenario in ('success', 'write401') else 'failure')
+                assert patches[0][2] != writes[0][2]
+>       assert f.minted == (3 if scenario == 'repeated401' else 2)
+E       AssertionError: assert 4 == 3
+E        +  where 4 = namespace(clock=namespace(wall=1800007200.0, mono=100.0), calls=[('GET', '/app/installations/2', 'SENTINEL_JWT', None)...se=None, failures=[], api=<function token_api.<locals>.api at 0x10ba29800>, app=<github_app.App object at 0x10b681700>).minted
+
+tests/harness/test_local_gate.py:650: AssertionError
+=========================== short test summary info ============================
+FAILED tests/harness/test_local_gate.py::test_real_app_renewal_keeps_controller_publication_boundary[refresh_failure]
+FAILED tests/harness/test_local_gate.py::test_real_app_renewal_keeps_controller_publication_boundary[repeated401]
+2 failed, 100 passed in 4.22s
