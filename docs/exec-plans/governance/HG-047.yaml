@@ -1,7 +1,7 @@
 change_identity: harness-governance-v0.1/HG-047
 display_change_id: HG-047
 base_commit: 391c9198fa8ec647e377a0572700bc7568468c85
-tested_commit: 2dc15b7c79b835197449ca705f82f221eee6f05d
+tested_commit: 166bf3edb3c3ecca2c9e0facb7c94195f394d997
 change_status: BLOCKED
 summary: Prospective lossless content-addressed gzip evidence with revision/owner/hash checks, bounded UTF8/16/32-safe
   retrieval, preserved M3 proof semantics and PR budgets; integrate merged HG045/HG046 unchanged and pin/copy
@@ -31,6 +31,19 @@ files_changed:
 - docs/exec-plans/evidence/HG-047/development-070f94f/source_diff.json
 - docs/exec-plans/evidence/HG-047/development-070f94f/typecheck.json
 - docs/exec-plans/evidence/HG-047/development-070f94f/unit.json
+- docs/exec-plans/evidence/HG-047/development-166bf3e/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz
+- docs/exec-plans/evidence/HG-047/development-166bf3e/41e0abda72912ce9120aa93b64d6e8ca1177d9c0de1ad5e818641e9cefc0eda3.gz
+- docs/exec-plans/evidence/HG-047/development-166bf3e/57c1b5e9f0548004a7656a329f7b0dce54193596231a7c2e59e15b5d297a7cff.gz
+- docs/exec-plans/evidence/HG-047/development-166bf3e/80a17c64b7e9e2a66730b13c0ff1d12fe5cdd8ddc0d369470d81e95c62ba0923.gz
+- docs/exec-plans/evidence/HG-047/development-166bf3e/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-047/development-166bf3e/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-047/development-166bf3e/execution.json
+- docs/exec-plans/evidence/HG-047/development-166bf3e/lint.json
+- docs/exec-plans/evidence/HG-047/development-166bf3e/performance.json
+- docs/exec-plans/evidence/HG-047/development-166bf3e/scope.json
+- docs/exec-plans/evidence/HG-047/development-166bf3e/source_diff.json
+- docs/exec-plans/evidence/HG-047/development-166bf3e/typecheck.json
+- docs/exec-plans/evidence/HG-047/development-166bf3e/unit.json
 - docs/exec-plans/evidence/HG-047/development-ab4f21b/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
 - docs/exec-plans/evidence/HG-047/development-ab4f21b/source_diff.json
 - docs/exec-plans/evidence/HG-047/selected-2dc15b7/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz
@@ -74,49 +87,44 @@ files_changed:
 - tools/harness/local_gate.py
 - tools/harness/validate_harness.py
 checks_run:
-- check_id: harness
-  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
-    -m kineticloop.db.cli test-harness
-  result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/selected-2dc15b7/harness.json
 - check_id: unit
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
     -m kineticloop.db.cli test-unit
-  result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/selected-2dc15b7/unit.json
+  result: FAIL
+  evidence_ref: docs/exec-plans/evidence/HG-047/development-166bf3e/unit.json
 - check_id: lint
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
     -m kineticloop.db.cli lint
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/selected-2dc15b7/lint.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/development-166bf3e/lint.json
 - check_id: typecheck
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
     -m kineticloop.db.cli typecheck
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/selected-2dc15b7/typecheck.json
-- check_id: authority
-  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
-    -m kineticloop.db.cli check-harness
-  result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/selected-2dc15b7/authority.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/development-166bf3e/typecheck.json
 - check_id: scope
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
-    docs/exec-plans/evidence/HG-047/audit.py 391c9198fa8ec647e377a0572700bc7568468c85 2dc15b7c79b835197449ca705f82f221eee6f05d
+    docs/exec-plans/evidence/HG-047/audit.py 391c9198fa8ec647e377a0572700bc7568468c85 166bf3edb3c3ecca2c9e0facb7c94195f394d997
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/selected-2dc15b7/scope.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/development-166bf3e/scope.json
 - check_id: source_diff
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src git diff --check 391c9198fa8ec647e377a0572700bc7568468c85
-    2dc15b7c79b835197449ca705f82f221eee6f05d
+    166bf3edb3c3ecca2c9e0facb7c94195f394d997
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/selected-2dc15b7/source_diff.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/development-166bf3e/source_diff.json
 - check_id: performance
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
     docs/exec-plans/evidence/HG-047/benchmark.py
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-047/selected-2dc15b7/performance.json
+  evidence_ref: docs/exec-plans/evidence/HG-047/development-166bf3e/performance.json
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
+- 'Current166bf3e unit240 PASS/1 FAIL: round1 SECURITY/PROTOCOL review evidence_refs cite compact_evidence.py,
+  whose reserved literals are rejected as malformed storage evidence at both47de76d and166bf3e. Coordinator
+  decision on review metadata is pending; no classifier bypass or review edit was made. Full harness and standalone
+  authority are NOT_RUN pending metadata correction and coordinated shared-host release. This BLOCKED result
+  establishes no current-source PASS.'
 - Round1 PROTOCOL BLOCKER P-01 requires rejecting decoded nested storage metadata before raw evidence oracles.
   Prior source2dc15b7 checks and reviews of47de76d are historical; fresh source-bound checks/result and all
   three fresh independent reviews are required after correction.
