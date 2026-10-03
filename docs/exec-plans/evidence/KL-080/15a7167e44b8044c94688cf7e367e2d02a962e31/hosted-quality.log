@@ -1,0 +1,358 @@
+TESTED_COMMIT=15a7167e44b8044c94688cf7e367e2d02a962e31
+RUN_ID=37081179330
+COMMAND=gh run view 37081179330 --log
+quality	Set up job	﻿2026-10-03T00:14:04.7934329Z Current runner version: '2.337.0'
+quality	Set up job	2026-10-03T00:14:04.7959307Z ##[group]Runner Image Provisioner
+quality	Set up job	2026-10-03T00:14:04.7960260Z Hosted Compute Agent
+quality	Set up job	2026-10-03T00:14:04.7960903Z Version: 20260901.588
+quality	Set up job	2026-10-03T00:14:04.7961530Z Commit: f88ec8081b781fac6c440065ac7ff9e710ce3d0b
+quality	Set up job	2026-10-03T00:14:04.7962340Z Build Date: 2026-09-01T19:56:44Z
+quality	Set up job	2026-10-03T00:14:04.7963015Z Worker ID: {53c7bcc7-dba7-4212-9940-964c0431fff8}
+quality	Set up job	2026-10-03T00:14:04.7964269Z Azure Region: westcentralus
+quality	Set up job	2026-10-03T00:14:04.7964944Z ##[endgroup]
+quality	Set up job	2026-10-03T00:14:04.7966556Z ##[group]Operating System
+quality	Set up job	2026-10-03T00:14:04.7967315Z Ubuntu
+quality	Set up job	2026-10-03T00:14:04.7967837Z 24.04.5
+quality	Set up job	2026-10-03T00:14:04.7968413Z LTS
+quality	Set up job	2026-10-03T00:14:04.7968942Z ##[endgroup]
+quality	Set up job	2026-10-03T00:14:04.7969484Z ##[group]Runner Image
+quality	Set up job	2026-10-03T00:14:04.7970164Z Image: ubuntu-24.04
+quality	Set up job	2026-10-03T00:14:04.7970715Z Version: 20260927.320.1
+quality	Set up job	2026-10-03T00:14:04.7971791Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260927.320/images/ubuntu/Ubuntu2404-Readme.md
+quality	Set up job	2026-10-03T00:14:04.7973863Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260927.320
+quality	Set up job	2026-10-03T00:14:04.7974921Z ##[endgroup]
+quality	Set up job	2026-10-03T00:14:04.7976015Z ##[group]GITHUB_TOKEN Permissions
+quality	Set up job	2026-10-03T00:14:04.7978218Z Contents: read
+quality	Set up job	2026-10-03T00:14:04.7978842Z Metadata: read
+quality	Set up job	2026-10-03T00:14:04.7979424Z ##[endgroup]
+quality	Set up job	2026-10-03T00:14:04.7981513Z Secret source: Actions
+quality	Set up job	2026-10-03T00:14:04.7982513Z Cache mode: write
+quality	Set up job	2026-10-03T00:14:04.7983532Z Prepare workflow directory
+quality	Set up job	2026-10-03T00:14:04.8378101Z Prepare all required actions
+quality	Set up job	2026-10-03T00:14:04.8425407Z Getting action download info
+quality	Set up job	2026-10-03T00:14:05.1655179Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+quality	Set up job	2026-10-03T00:14:05.2724098Z Download action repository 'astral-sh/setup-uv@v6' (SHA:d0cc045d04ccac9d8b7881df0226f9e82c39688e)
+quality	Set up job	2026-10-03T00:14:06.2069461Z Complete job name: quality
+quality	Run actions/checkout@v4	﻿2026-10-03T00:14:06.2887226Z ##[group]Run actions/checkout@v4
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.2888213Z with:
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.2888677Z   fetch-depth: 0
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.2889179Z   repository: dstyle28/KineticLoop
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.2893139Z   token: ***
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.2893611Z   ssh-strict: true
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.2894291Z   ssh-user: git
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.2894767Z   persist-credentials: true
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.2895286Z   clean: true
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.2895773Z   sparse-checkout-cone-mode: true
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.2896338Z   fetch-tags: false
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.2896811Z   show-progress: true
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.2897287Z   lfs: false
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.2897743Z   submodules: false
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.2898255Z   set-safe-directory: true
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.2898799Z   allow-unsafe-pr-checkout: false
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.2899626Z ##[endgroup]
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.3966437Z Syncing repository: dstyle28/KineticLoop
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.3969040Z ##[group]Getting Git version info
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.3970290Z Working directory is '/home/runner/work/KineticLoop/KineticLoop'
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.3971538Z [command]/usr/bin/git version
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4075655Z git version 2.55.0
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4107727Z ##[endgroup]
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4115533Z Temporarily overriding HOME='/home/runner/work/_temp/896288d7-d03d-4a39-9063-fe7eff2fc116' before making global git config changes
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4118680Z Adding repository directory to the temporary git global config as a safe directory
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4121210Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/KineticLoop/KineticLoop
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4176273Z Deleting the contents of '/home/runner/work/KineticLoop/KineticLoop'
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4182623Z ##[group]Initializing the repository
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4187845Z [command]/usr/bin/git init /home/runner/work/KineticLoop/KineticLoop
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4324675Z hint: Using 'master' as the name for the initial branch. This default branch name
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4326064Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4327467Z hint: to use in all of your new repositories, which will suppress this warning,
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4328326Z hint: call:
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4328756Z hint:
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4329325Z hint: 	git config --global init.defaultBranch <name>
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4330003Z hint:
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4330627Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4331653Z hint: 'development'. The just-created branch can be renamed via this command:
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4332461Z hint:
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4332907Z hint: 	git branch -m <name>
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4333419Z hint:
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4334423Z hint: Disable this message with "git config set advice.defaultBranchName false"
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4337721Z Initialized empty Git repository in /home/runner/work/KineticLoop/KineticLoop/.git/
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4351090Z [command]/usr/bin/git remote add origin https://github.com/dstyle28/KineticLoop
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4410086Z ##[endgroup]
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4411517Z ##[group]Disabling automatic garbage collection
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4414596Z [command]/usr/bin/git config --local gc.auto 0
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4474553Z ##[endgroup]
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4476191Z ##[group]Setting up auth
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4484578Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4517083Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4931885Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.4969063Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.5192657Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.5229929Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.5455588Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.5496947Z ##[endgroup]
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.5498441Z ##[group]Fetching the repository
+quality	Run actions/checkout@v4	2026-10-03T00:14:06.5507059Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+quality	Run actions/checkout@v4	2026-10-03T00:14:13.7395822Z From https://github.com/dstyle28/KineticLoop
+quality	Run actions/checkout@v4	2026-10-03T00:14:13.7397521Z  * [new branch]      codex/hg045-source-decision-governance -> origin/codex/hg045-source-decision-governance
+quality	Run actions/checkout@v4	2026-10-03T00:14:13.7398703Z  * [new branch]      codex/hg046-local-db-ci -> origin/codex/hg046-local-db-ci
+quality	Run actions/checkout@v4	2026-10-03T00:14:13.7399763Z  * [new branch]      codex/kl-013-alembic-baseline-v2 -> origin/codex/kl-013-alembic-baseline-v2
+quality	Run actions/checkout@v4	2026-10-03T00:14:13.7400729Z  * [new branch]      codex/kl080-source-conformance -> origin/codex/kl080-source-conformance
+quality	Run actions/checkout@v4	2026-10-03T00:14:13.7401460Z  * [new branch]      master                  -> origin/master
+quality	Run actions/checkout@v4	2026-10-03T00:14:13.7409775Z [command]/usr/bin/git branch --list --remote origin/codex/kl080-source-conformance
+quality	Run actions/checkout@v4	2026-10-03T00:14:13.7439330Z   origin/codex/kl080-source-conformance
+quality	Run actions/checkout@v4	2026-10-03T00:14:13.7449910Z [command]/usr/bin/git rev-parse refs/remotes/origin/codex/kl080-source-conformance
+quality	Run actions/checkout@v4	2026-10-03T00:14:13.7475399Z 15a7167e44b8044c94688cf7e367e2d02a962e31
+quality	Run actions/checkout@v4	2026-10-03T00:14:13.7480479Z ##[endgroup]
+quality	Run actions/checkout@v4	2026-10-03T00:14:13.7482178Z ##[group]Determining the checkout info
+quality	Run actions/checkout@v4	2026-10-03T00:14:13.7483869Z ##[endgroup]
+quality	Run actions/checkout@v4	2026-10-03T00:14:13.7489162Z [command]/usr/bin/git sparse-checkout disable
+quality	Run actions/checkout@v4	2026-10-03T00:14:13.7548905Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+quality	Run actions/checkout@v4	2026-10-03T00:14:13.7579189Z ##[group]Checking out the ref
+quality	Run actions/checkout@v4	2026-10-03T00:14:13.7584896Z [command]/usr/bin/git checkout --progress --force -B codex/kl080-source-conformance refs/remotes/origin/codex/kl080-source-conformance
+quality	Run actions/checkout@v4	2026-10-03T00:14:14.7015887Z Switched to a new branch 'codex/kl080-source-conformance'
+quality	Run actions/checkout@v4	2026-10-03T00:14:14.7020777Z branch 'codex/kl080-source-conformance' set up to track 'origin/codex/kl080-source-conformance'.
+quality	Run actions/checkout@v4	2026-10-03T00:14:14.7071022Z ##[endgroup]
+quality	Run actions/checkout@v4	2026-10-03T00:14:14.7132771Z [command]/usr/bin/git log -1 --format=%H
+quality	Run actions/checkout@v4	2026-10-03T00:14:14.7163025Z 15a7167e44b8044c94688cf7e367e2d02a962e31
+quality	Run astral-sh/setup-uv@v6	﻿2026-10-03T00:14:14.7452154Z ##[group]Run astral-sh/setup-uv@v6
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.7452609Z with:
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.7452977Z   version: 0.12.17
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.7453291Z   enable-cache: true
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.7453956Z   activate-environment: false
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.7454500Z   working-directory: /home/runner/work/KineticLoop/KineticLoop
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.7455055Z   server-url: https://github.com
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.7457726Z   github-token: ***
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.7458479Z   cache-dependency-glob: **/*requirements*.txt
+quality	Run astral-sh/setup-uv@v6	**/*requirements*.in
+quality	Run astral-sh/setup-uv@v6	**/*constraints*.txt
+quality	Run astral-sh/setup-uv@v6	**/*constraints*.in
+quality	Run astral-sh/setup-uv@v6	**/pyproject.toml
+quality	Run astral-sh/setup-uv@v6	**/uv.lock
+quality	Run astral-sh/setup-uv@v6	**/*.py.lock
+quality	Run astral-sh/setup-uv@v6	
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.7459253Z   restore-cache: true
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.7459585Z   save-cache: true
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.7459915Z   prune-cache: true
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.7460286Z   ignore-nothing-to-cache: false
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.7460646Z   ignore-empty-workdir: false
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.7460980Z   add-problem-matchers: true
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.7461373Z ##[endgroup]
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.9405767Z (node:2359) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.9407475Z (Use `node --trace-deprecation ...` to show where the warning was created)
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.9555906Z manifest-file not provided, reading from local file.
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.9605020Z manifest-file does not contain version 0.12.17, arch x86_64, platform unknown-linux-gnu. Falling back to GitHub releases.
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:14.9615062Z Downloading uv from "https://github.com/astral-sh/uv/releases/download/0.12.17/uv-x86_64-unknown-linux-gnu.tar.gz" ...
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:15.5169997Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/c34e76ad-67c0-44e0-a0b5-b1691c3024af -f /home/runner/work/_temp/4612f639-2e9d-4785-8cf9-7e680040eec2
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:15.9907826Z Added /home/runner/.local/bin to the path
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:15.9911320Z Added /opt/hostedtoolcache/uv/0.12.17/x86_64 to the path
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:15.9934504Z Set UV_CACHE_DIR to /home/runner/work/_temp/setup-uv-cache
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:15.9934969Z Successfully installed uv version 0.12.17
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:15.9936760Z Searching files using cache dependency glob: /home/runner/work/KineticLoop/KineticLoop/**/*requirements*.txt,/home/runner/work/KineticLoop/KineticLoop/**/*requirements*.in,/home/runner/work/KineticLoop/KineticLoop/**/*constraints*.txt,/home/runner/work/KineticLoop/KineticLoop/**/*constraints*.in,/home/runner/work/KineticLoop/KineticLoop/**/pyproject.toml,/home/runner/work/KineticLoop/KineticLoop/**/uv.lock,/home/runner/work/KineticLoop/KineticLoop/**/*.py.lock
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:16.4472560Z /home/runner/work/KineticLoop/KineticLoop/pyproject.toml
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:16.4879582Z /home/runner/work/KineticLoop/KineticLoop/tools/harness/requirements.txt
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:16.4890137Z /home/runner/work/KineticLoop/KineticLoop/uv.lock
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:16.4900157Z Found 3 files to hash.
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:16.6672024Z Trying to restore uv cache from GitHub Actions cache with key: setup-uv-1-x86_64-unknown-linux-gnu-3.12.3-pruned-dda85d59b846a0a7a20200e8496df2a05e1b158bb3d5fcf791aad6b4e4abfe89
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:16.9156451Z Cache hit for: setup-uv-1-x86_64-unknown-linux-gnu-3.12.3-pruned-dda85d59b846a0a7a20200e8496df2a05e1b158bb3d5fcf791aad6b4e4abfe89
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:16.9299457Z (node:2359) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:17.2692020Z Received 83095 of 83095 (100.0%), 0.6 MBs/sec
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:17.2692844Z Cache Size: ~0 MB (83095 B)
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:17.2719181Z [command]/usr/bin/tar -xf /home/runner/work/_temp/f01e2e47-1c87-490e-92e1-a43574c72c73/cache.tzst -P -C /home/runner/work/KineticLoop/KineticLoop --use-compress-program unzstd
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:17.2815187Z Cache restored successfully
+quality	Run astral-sh/setup-uv@v6	2026-10-03T00:14:17.2820565Z uv cache restored from GitHub Actions cache with key: setup-uv-1-x86_64-unknown-linux-gnu-3.12.3-pruned-dda85d59b846a0a7a20200e8496df2a05e1b158bb3d5fcf791aad6b4e4abfe89
+quality	Run uv sync --locked	﻿2026-10-03T00:14:17.2970137Z ##[group]Run uv sync --locked
+quality	Run uv sync --locked	2026-10-03T00:14:17.2970491Z ^[[36;1muv sync --locked^[[0m
+quality	Run uv sync --locked	2026-10-03T00:14:17.3272572Z shell: /usr/bin/bash -e {0}
+quality	Run uv sync --locked	2026-10-03T00:14:17.3272898Z env:
+quality	Run uv sync --locked	2026-10-03T00:14:17.3273191Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+quality	Run uv sync --locked	2026-10-03T00:14:17.3273573Z ##[endgroup]
+quality	Run uv sync --locked	2026-10-03T00:14:17.3858959Z Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+quality	Run uv sync --locked	2026-10-03T00:14:17.3859687Z Creating virtual environment at: .venv
+quality	Run uv sync --locked	2026-10-03T00:14:17.3882730Z Resolved 33 packages in 0.74ms
+quality	Run uv sync --locked	2026-10-03T00:14:17.3995149Z    Building kineticloop @ file:///home/runner/work/KineticLoop/KineticLoop
+quality	Run uv sync --locked	2026-10-03T00:14:17.5410939Z Downloading psycopg-binary (5.0MiB)
+quality	Run uv sync --locked	2026-10-03T00:14:17.5411550Z Downloading ruff (9.8MiB)
+quality	Run uv sync --locked	2026-10-03T00:14:17.5417721Z Downloading sqlalchemy (3.2MiB)
+quality	Run uv sync --locked	2026-10-03T00:14:17.5419789Z Downloading pydantic-core (1.9MiB)
+quality	Run uv sync --locked	2026-10-03T00:14:17.5422663Z Downloading pygments (1.2MiB)
+quality	Run uv sync --locked	2026-10-03T00:14:17.5430630Z Downloading mypy (14.1MiB)
+quality	Run uv sync --locked	2026-10-03T00:14:17.7305111Z  Downloaded pygments
+quality	Run uv sync --locked	2026-10-03T00:14:17.7307872Z  Downloaded pydantic-core
+quality	Run uv sync --locked	2026-10-03T00:14:17.7558058Z  Downloaded sqlalchemy
+quality	Run uv sync --locked	2026-10-03T00:14:17.7894640Z  Downloaded psycopg-binary
+quality	Run uv sync --locked	2026-10-03T00:14:17.8469168Z  Downloaded ruff
+quality	Run uv sync --locked	2026-10-03T00:14:17.9361725Z  Downloaded mypy
+quality	Run uv sync --locked	2026-10-03T00:14:18.0910484Z       Built kineticloop @ file:///home/runner/work/KineticLoop/KineticLoop
+quality	Run uv sync --locked	2026-10-03T00:14:18.0922693Z Prepared 31 packages in 702ms
+quality	Run uv sync --locked	2026-10-03T00:14:18.1308427Z Installed 31 packages in 38ms
+quality	Run uv sync --locked	2026-10-03T00:14:18.1309131Z  + alembic==1.16.5
+quality	Run uv sync --locked	2026-10-03T00:14:18.1309581Z  + annotated-types==0.8.0
+quality	Run uv sync --locked	2026-10-03T00:14:18.1309999Z  + attrs==26.1.0
+quality	Run uv sync --locked	2026-10-03T00:14:18.1310362Z  + greenlet==3.5.6
+quality	Run uv sync --locked	2026-10-03T00:14:18.1310730Z  + iniconfig==2.3.0
+quality	Run uv sync --locked	2026-10-03T00:14:18.1311102Z  + jsonschema==4.25.1
+quality	Run uv sync --locked	2026-10-03T00:14:18.1311526Z  + jsonschema-specifications==2025.9.1
+quality	Run uv sync --locked	2026-10-03T00:14:18.1312247Z  + kineticloop==0.1.0 (from file:///home/runner/work/KineticLoop/KineticLoop)
+quality	Run uv sync --locked	2026-10-03T00:14:18.1313020Z  + librt==0.15.0
+quality	Run uv sync --locked	2026-10-03T00:14:18.1313397Z  + mako==1.4.3
+quality	Run uv sync --locked	2026-10-03T00:14:18.1313978Z  + markupsafe==3.0.3
+quality	Run uv sync --locked	2026-10-03T00:14:18.1314391Z  + mypy==1.20.2
+quality	Run uv sync --locked	2026-10-03T00:14:18.1325005Z  + mypy-extensions==1.1.0
+quality	Run uv sync --locked	2026-10-03T00:14:18.1325489Z  + packaging==26.3
+quality	Run uv sync --locked	2026-10-03T00:14:18.1325896Z  + pathspec==1.1.1
+quality	Run uv sync --locked	2026-10-03T00:14:18.1326294Z  + pluggy==1.6.0
+quality	Run uv sync --locked	2026-10-03T00:14:18.1326693Z  + psycopg==3.3.6
+quality	Run uv sync --locked	2026-10-03T00:14:18.1327080Z  + psycopg-binary==3.3.6
+quality	Run uv sync --locked	2026-10-03T00:14:18.1327341Z  + pydantic==2.11.9
+quality	Run uv sync --locked	2026-10-03T00:14:18.1327575Z  + pydantic-core==2.33.2
+quality	Run uv sync --locked	2026-10-03T00:14:18.1327813Z  + pygments==2.21.0
+quality	Run uv sync --locked	2026-10-03T00:14:18.1328023Z  + pytest==8.4.2
+quality	Run uv sync --locked	2026-10-03T00:14:18.1328225Z  + pyyaml==6.0.3
+quality	Run uv sync --locked	2026-10-03T00:14:18.1328437Z  + referencing==0.37.0
+quality	Run uv sync --locked	2026-10-03T00:14:18.1328663Z  + rpds-py==2026.6.3
+quality	Run uv sync --locked	2026-10-03T00:14:18.1328889Z  + ruff==0.16.8
+quality	Run uv sync --locked	2026-10-03T00:14:18.1329094Z  + sqlalchemy==2.0.43
+quality	Run uv sync --locked	2026-10-03T00:14:18.1329330Z  + types-jsonschema==4.26.0.20260518
+quality	Run uv sync --locked	2026-10-03T00:14:18.1329617Z  + types-pyyaml==6.0.12.20260906
+quality	Run uv sync --locked	2026-10-03T00:14:18.1329889Z  + typing-extensions==4.16.0
+quality	Run uv sync --locked	2026-10-03T00:14:18.1330157Z  + typing-inspection==0.4.4
+quality	Run uv run kl lint	﻿2026-10-03T00:14:18.1448233Z ##[group]Run uv run kl lint
+quality	Run uv run kl lint	2026-10-03T00:14:18.1448545Z ^[[36;1muv run kl lint^[[0m
+quality	Run uv run kl lint	2026-10-03T00:14:18.1511190Z shell: /usr/bin/bash -e {0}
+quality	Run uv run kl lint	2026-10-03T00:14:18.1511446Z env:
+quality	Run uv run kl lint	2026-10-03T00:14:18.1511701Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+quality	Run uv run kl lint	2026-10-03T00:14:18.1512192Z ##[endgroup]
+quality	Run uv run kl lint	2026-10-03T00:14:18.3563222Z All checks passed!
+quality	Run uv run kl typecheck	﻿2026-10-03T00:14:18.3724672Z ##[group]Run uv run kl typecheck
+quality	Run uv run kl typecheck	2026-10-03T00:14:18.3725020Z ^[[36;1muv run kl typecheck^[[0m
+quality	Run uv run kl typecheck	2026-10-03T00:14:18.3786841Z shell: /usr/bin/bash -e {0}
+quality	Run uv run kl typecheck	2026-10-03T00:14:18.3787105Z env:
+quality	Run uv run kl typecheck	2026-10-03T00:14:18.3787363Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+quality	Run uv run kl typecheck	2026-10-03T00:14:18.3787680Z ##[endgroup]
+quality	Run uv run kl typecheck	2026-10-03T00:14:31.1454521Z Success: no issues found in 156 source files
+quality	Run uv run kl test-unit	﻿2026-10-03T00:14:31.1848589Z ##[group]Run uv run kl test-unit
+quality	Run uv run kl test-unit	2026-10-03T00:14:31.1848929Z ^[[36;1muv run kl test-unit^[[0m
+quality	Run uv run kl test-unit	2026-10-03T00:14:31.1910317Z shell: /usr/bin/bash -e {0}
+quality	Run uv run kl test-unit	2026-10-03T00:14:31.1910573Z env:
+quality	Run uv run kl test-unit	2026-10-03T00:14:31.1910822Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+quality	Run uv run kl test-unit	2026-10-03T00:14:31.1911145Z ##[endgroup]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.0844852Z ============================= test session starts ==============================
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.0845438Z platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.0845920Z rootdir: /home/runner/work/KineticLoop/KineticLoop
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.0846291Z configfile: pyproject.toml
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.0846567Z collected 247 items
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.0846709Z 
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.0862951Z tests/unit/config/test_secret_loader.py .                                [  0%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.0905629Z tests/unit/contracts/test_artifact_registry.py ...                       [  1%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.1316565Z tests/unit/contracts/test_commands.py ..............                     [  7%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.1328330Z tests/unit/contracts/test_errors.py .                                    [  7%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.1485152Z tests/unit/contracts/test_receipts.py ........................           [ 17%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.1640650Z tests/unit/contracts/test_results.py .....                               [ 19%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.1658810Z tests/unit/contracts/test_safety_registry.py ..                          [ 20%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.1690466Z tests/unit/contracts/test_shadow.py ...                                  [ 21%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.1777726Z tests/unit/identity/test_roles.py .............                          [ 26%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.1898280Z tests/unit/integrations/test_launch_registry.py ........                 [ 29%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.3968307Z tests/unit/integrations/test_provider.py ...........                     [ 34%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.3995150Z tests/unit/persistence/test_fact_children.py ...                         [ 35%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.4083878Z tests/unit/persistence/test_immutability.py ....                         [ 37%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.4730950Z tests/unit/persistence/test_preparation.py ...                           [ 38%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.4783049Z tests/unit/persistence/test_schema_topology.py .......                   [ 41%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.4807715Z tests/unit/persistence/test_transactions.py ...                          [ 42%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.4878273Z tests/unit/primitives/test_canonical.py ...........                      [ 46%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.4931301Z tests/unit/primitives/test_hashes.py ........                            [ 50%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.4988831Z tests/unit/primitives/test_ids.py .........                              [ 53%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.5132783Z tests/unit/primitives/test_times.py .......................              [ 63%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.5177212Z tests/unit/protocol/test_authorization.py ...                            [ 64%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.6710887Z tests/unit/protocol/test_boundary_acceptance.py .......                  [ 67%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.7682018Z tests/unit/protocol/test_execution.py ..                                 [ 68%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.7727575Z tests/unit/protocol/test_factsets.py .....                               [ 70%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.8393121Z tests/unit/protocol/test_full_test_execution.py ....                     [ 71%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:34.8957929Z tests/unit/protocol/test_interleaving_namespace.py ...                   [ 72%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:35.2154886Z tests/unit/protocol/test_shadow_isolation.py ..                          [ 73%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:35.3510808Z tests/unit/protocol/test_test_only_demo.py ..                            [ 74%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:35.4052934Z tests/unit/security/test_redaction.py .................................. [ 88%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:35.4092175Z ...                                                                      [ 89%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:35.4114722Z tests/unit/security/test_synthetic_fixtures.py .                         [ 89%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:56.6505111Z tests/unit/test_cli.py ...                                               [ 91%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:56.6558393Z tests/unit/workflow/test_call_ledger.py ...                              [ 92%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:56.7336991Z tests/unit/workflow/test_deterministic_planning.py ....                  [ 93%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:56.8651411Z tests/unit/workflow/test_full_action_preparation.py ...                  [ 95%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:56.8669518Z tests/unit/workflow/test_planning.py ..                                  [ 95%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:56.8876229Z tests/unit/workflow/test_planning_progress.py ....                       [ 97%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:57.2261206Z tests/unit/workflow/test_source_decision_conformance.py ......           [100%]
+quality	Run uv run kl test-unit	2026-10-03T00:14:57.2262073Z 
+quality	Run uv run kl test-unit	2026-10-03T00:14:57.2262406Z ============================= 247 passed in 25.38s =============================
+quality	Run uv run kl test-harness	﻿2026-10-03T00:14:57.3755434Z ##[group]Run uv run kl test-harness
+quality	Run uv run kl test-harness	2026-10-03T00:14:57.3755788Z ^[[36;1muv run kl test-harness^[[0m
+quality	Run uv run kl test-harness	2026-10-03T00:14:57.3817897Z shell: /usr/bin/bash -e {0}
+quality	Run uv run kl test-harness	2026-10-03T00:14:57.3818160Z env:
+quality	Run uv run kl test-harness	2026-10-03T00:14:57.3818425Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+quality	Run uv run kl test-harness	2026-10-03T00:14:57.3818753Z ##[endgroup]
+quality	Run uv run kl test-harness	2026-10-03T00:14:59.0059965Z ============================= test session starts ==============================
+quality	Run uv run kl test-harness	2026-10-03T00:14:59.0060955Z platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0
+quality	Run uv run kl test-harness	2026-10-03T00:14:59.0061511Z rootdir: /home/runner/work/KineticLoop/KineticLoop
+quality	Run uv run kl test-harness	2026-10-03T00:14:59.0062013Z configfile: pyproject.toml
+quality	Run uv run kl test-harness	2026-10-03T00:14:59.0062352Z collected 925 items
+quality	Run uv run kl test-harness	2026-10-03T00:14:59.0062539Z 
+quality	Run uv run kl test-harness	2026-10-03T00:14:59.0340171Z tests/harness/acceptance/test_registry.py .....                          [  0%]
+quality	Run uv run kl test-harness	2026-10-03T00:14:59.1088528Z tests/harness/document_index/test_current_document_index.py .......      [  1%]
+quality	Run uv run kl test-harness	2026-10-03T00:14:59.1999756Z tests/harness/document_index/test_evidence_manifest.py .......           [  2%]
+quality	Run uv run kl test-harness	2026-10-03T00:14:59.2478593Z tests/harness/document_index/test_historical_task_map.py ......          [  2%]
+quality	Run uv run kl test-harness	2026-10-03T00:14:59.3085110Z tests/harness/test_call_ledger_scope.py .........................        [  5%]
+quality	Run uv run kl test-harness	2026-10-03T00:14:59.3286957Z tests/harness/test_cancel_identity_scope.py ............................ [  8%]
+quality	Run uv run kl test-harness	2026-10-03T00:14:59.4230111Z .............................                                            [ 11%]
+quality	Run uv run kl test-harness	2026-10-03T00:14:59.4471967Z tests/harness/test_fitness_evaluation_scope.py ......................... [ 14%]
+quality	Run uv run kl test-harness	2026-10-03T00:14:59.6151279Z .......................................                                  [ 18%]
+quality	Run uv run kl test-harness	2026-10-03T00:14:59.6542710Z tests/harness/test_full_action_scope.py ................................ [ 21%]
+quality	Run uv run kl test-harness	2026-10-03T00:14:59.7391407Z ..                                                                       [ 22%]
+quality	Run uv run kl test-harness	2026-10-03T00:15:02.6305033Z tests/harness/test_m3_boundary_shadow_scope.py ......................... [ 24%]
+quality	Run uv run kl test-harness	2026-10-03T00:15:05.1973584Z ..................................................                       [ 30%]
+quality	Run uv run kl test-harness	2026-10-03T00:15:36.0135515Z tests/harness/test_m3_milestone_closure.py ............................. [ 33%]
+quality	Run uv run kl test-harness	2026-10-03T00:18:20.1193344Z ......................................................................   [ 40%]
+quality	Run uv run kl test-harness	2026-10-03T00:18:20.1644433Z tests/harness/test_m3_next_wave_scope.py ............................... [ 44%]
+quality	Run uv run kl test-harness	2026-10-03T00:18:20.2251360Z ........................................................................ [ 52%]
+quality	Run uv run kl test-harness	2026-10-03T00:18:21.2840390Z ..............                                                           [ 53%]
+quality	Run uv run kl test-harness	2026-10-03T00:18:21.3074936Z tests/harness/test_planning_fixture_scope.py ............                [ 54%]
+quality	Run uv run kl test-harness	2026-10-03T00:18:21.3408587Z tests/harness/test_planning_subject_scope.py ........................    [ 57%]
+quality	Run uv run kl test-harness	2026-10-03T00:18:21.3740298Z tests/harness/test_preparation_scope.py ............................     [ 60%]
+quality	Run uv run kl test-harness	2026-10-03T00:18:21.4355639Z tests/harness/test_protocol_execution_scope.py ......................... [ 63%]
+quality	Run uv run kl test-harness	2026-10-03T00:18:21.5083681Z .....................                                                    [ 65%]
+quality	Run uv run kl test-harness	2026-10-03T00:18:21.6053244Z tests/harness/test_readiness_scope.py .................................. [ 69%]
+quality	Run uv run kl test-harness	2026-10-03T00:18:21.6576187Z ...............................                                          [ 72%]
+quality	Run uv run kl test-harness	2026-10-03T00:18:24.3783281Z tests/harness/test_review_evidence_provenance.py ....................... [ 75%]
+quality	Run uv run kl test-harness	2026-10-03T00:18:26.8505240Z ................                                                         [ 76%]
+quality	Run uv run kl test-harness	2026-10-03T00:18:26.8767082Z tests/harness/test_source_decision_scope.py ............................ [ 79%]
+quality	Run uv run kl test-harness	2026-10-03T00:18:26.9965715Z ........                                                                 [ 80%]
+quality	Run uv run kl test-harness	2026-10-03T00:18:52.3352263Z tests/harness/test_validator.py ........................................ [ 84%]
+quality	Run uv run kl test-harness	2026-10-03T00:19:53.4680278Z ........................................................................ [ 92%]
+quality	Run uv run kl test-harness	2026-10-03T00:20:32.2267052Z ..............................                                           [ 96%]
+quality	Run uv run kl test-harness	2026-10-03T00:20:32.4708413Z tests/harness/test_wave_scope.py .....................................   [100%]
+quality	Run uv run kl test-harness	2026-10-03T00:20:32.4709175Z 
+quality	Run uv run kl test-harness	2026-10-03T00:20:32.4709526Z ======================= 925 passed in 334.69s (0:05:34) ========================
+quality	Run uv run kl check-harness	﻿2026-10-03T00:20:32.6207903Z ##[group]Run uv run kl check-harness
+quality	Run uv run kl check-harness	2026-10-03T00:20:32.6208248Z ^[[36;1muv run kl check-harness^[[0m
+quality	Run uv run kl check-harness	2026-10-03T00:20:32.6270730Z shell: /usr/bin/bash -e {0}
+quality	Run uv run kl check-harness	2026-10-03T00:20:32.6271001Z env:
+quality	Run uv run kl check-harness	2026-10-03T00:20:32.6271272Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+quality	Run uv run kl check-harness	2026-10-03T00:20:32.6271594Z ##[endgroup]
+quality	Run uv run kl check-harness	2026-10-03T00:20:53.6058393Z HARNESS_CHECK_PASS tasks=77 active=74
+quality	Post Run astral-sh/setup-uv@v6	﻿2026-10-03T00:20:53.6473391Z Post job cleanup.
+quality	Post Run astral-sh/setup-uv@v6	2026-10-03T00:20:53.7715195Z Cache hit occurred on key setup-uv-1-x86_64-unknown-linux-gnu-3.12.3-pruned-dda85d59b846a0a7a20200e8496df2a05e1b158bb3d5fcf791aad6b4e4abfe89, not saving cache.
+quality	Post Run astral-sh/setup-uv@v6	2026-10-03T00:20:53.7716920Z (node:154261) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+quality	Post Run astral-sh/setup-uv@v6	2026-10-03T00:20:53.7718057Z (Use `node --trace-deprecation ...` to show where the warning was created)
+quality	Post Run actions/checkout@v4	﻿2026-10-03T00:20:53.7862766Z Post job cleanup.
+quality	Post Run actions/checkout@v4	2026-10-03T00:20:53.8754340Z [command]/usr/bin/git version
+quality	Post Run actions/checkout@v4	2026-10-03T00:20:53.8800786Z git version 2.55.0
+quality	Post Run actions/checkout@v4	2026-10-03T00:20:53.8842264Z Temporarily overriding HOME='/home/runner/work/_temp/a2918352-f7ae-4227-a014-c6b77fe09181' before making global git config changes
+quality	Post Run actions/checkout@v4	2026-10-03T00:20:53.8843981Z Adding repository directory to the temporary git global config as a safe directory
+quality	Post Run actions/checkout@v4	2026-10-03T00:20:53.8848511Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/KineticLoop/KineticLoop
+quality	Post Run actions/checkout@v4	2026-10-03T00:20:53.8889516Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+quality	Post Run actions/checkout@v4	2026-10-03T00:20:53.8925933Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+quality	Post Run actions/checkout@v4	2026-10-03T00:20:53.9179767Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+quality	Post Run actions/checkout@v4	2026-10-03T00:20:53.9207396Z http.https://github.com/.extraheader
+quality	Post Run actions/checkout@v4	2026-10-03T00:20:53.9219856Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+quality	Post Run actions/checkout@v4	2026-10-03T00:20:53.9255797Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+quality	Post Run actions/checkout@v4	2026-10-03T00:20:53.9519227Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+quality	Post Run actions/checkout@v4	2026-10-03T00:20:53.9558974Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+quality	Complete job	﻿2026-10-03T00:20:53.9975996Z Cleaning up orphan processes
+quality	Complete job	2026-10-03T00:20:54.0305604Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, astral-sh/setup-uv@v6. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
