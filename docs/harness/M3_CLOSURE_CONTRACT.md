@@ -10,7 +10,7 @@ itself must be an unchanged regular Git blob committed at HEAD; symlinks and amb
 working-tree substitutes cannot supply a closure. JSON sources reject duplicate keys.
 
 The evaluated full Git commit must contain exactly these active M3 identities:
-`harness-backlog-v0.2/KL-019` through `KL-029`, and `KL-075` through `KL-079` (16).
+`harness-backlog-v0.2/KL-019` through `KL-029`, and `KL-075` through `KL-080` (17).
 The integrations array names each once with its exact regular Git-blob hash. M2
 closure, recursively including its historical M1 prerequisite, must validate at the
 evaluated revision. `supporting_prerequisites` names exactly KL-074, whose membership
@@ -35,6 +35,7 @@ The exact executable mapping lives in `M3_EXIT_TASK_CHECKS` in the indexed valid
 | ready_sealed_barriers | KL023 writer/seal frontier; KL028 B01 PU/DC, B02/B03 READY/SEALED barriers |
 | registry_commit_freshness_and_closure | KL021 committed T2-GLOBAL semantics; KL028 B04 mandatory guard support, B05/B06/B11/B12/B13/B14 support/B15/B17 PU/DC |
 | validity_missing_timeless_and_expiry | KL022 minimum/missing closure and TIMELESS policy, persisted certificate; KL028 B08/B09 PU/DC/B10/B18 |
+| source_decision_conformance | Every named KL080 source PU/DC check: canonical source and actual owner trajectories, earlier reconstruction denial, separately labeled exact freshness support, current denials and immutable repair/replay/expiry |
 | isolated_test_and_evaluation_boundaries | KL027 scope/namespace; KL028 namespace; every named KL029 isolated boundary selector |
 
 Each exit contains an exact duplicate-free task-check set, not arbitrary document
@@ -67,13 +68,15 @@ so parameter text such as `1 skipped` cannot substitute for a disposition.
 All raw files belong to this closure governance evidence directory. No empty,
 skipped, xfail, failed, duplicate or arbitrary-check run can substitute.
 
-The one fresh tested revision contains all 16 task merges, including KL028/KL029.
+The one fresh tested revision contains all 17 task merges, including KL028/KL029.
 Its suffix to evaluated permits only this closure governance record and newly
 appended own evidence under the existing governance-tested suffix rule. Changes to
 code, tests, task artifacts, authorities or bookkeeping of another task stale the
 regression. Use each suite's isolated supported namespace; legacy DB regression can
-use the unchanged isolated hosted lifecycle. Never run a foreign local fixture
-namespace. External waits remain outside coordination transactions.
+use the unchanged isolated hosted lifecycle or the dedicated local Linux daemon
+defined in `LOCAL_DB_CI.md`. Local evidence records its actual environment and
+architecture; every existing M3 command, contribution, hash and raw collection/JUnit
+requirement still applies. Never run a foreign local fixture namespace. External waits remain outside coordination transactions.
 
 `boundary_layers` exactly retains KL028's canonical 31-row ledger, including all
 metadata, selectors, oracles and future owners. Only the 19
@@ -94,6 +97,12 @@ authority. `product_requirement_pass_claims` is empty;
 reproducibility false. Deferred product/release work remains assigned downstream.
 Closure sequencing requires the minimal TEST evidence above; it introduces no
 M3→M4 or KL029→KL045 dependency cycle and waives no later release requirement.
+
+HG045 adds KL080 as a required corrective prerequisite with pinned check contracts.
+Its prospective PU/DC suite and each named selector are mandatory fresh integrated
+regression contributions; existing deterministic/full preparation unit suites also
+remain covered. All HG044 exits/selectors/provenance and layer ledgers are preserved.
+All KL080 checks are NOT_RUN until fresh execution. No closure is created by HG045.
 
 Prospective compact evidence follows [Evidence Storage Policy](EVIDENCE_STORAGE_POLICY.md);
 all existing revision bindings and PASS oracles remain mandatory.

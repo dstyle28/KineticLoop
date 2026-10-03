@@ -28,5 +28,15 @@ Derived-hash bookkeeping is permitted for `CURRENT_DOCUMENT_INDEX.json` and `HAR
 
 Harness-definition changes use the separate `HARNESS_GOVERNANCE_CONTRACT.md` path. CI must derive exactly one task result or one governance record from the protected-base diff; mixing change types fails. Governance changes require a PASS committed record, exact file declaration, protected-base write allowlist, bound evidence, required independent reviews and an unchanged Frozen baseline. Required governance review types are the union of the protected-base and reviewed-head requirements for every changed task definition, so the PR cannot weaken its own review gate.
 
+## Prospective local database execution
+
+Full database execution may use the owned local Linux daemon specified in
+`LOCAL_DB_CI.md`. Every PR requires the dedicated App-bound `local-db-gate`. Its trusted complete-diff
+policy requires full DB for all changes except the narrow inert documentation/review
+allowlist in `LOCAL_DB_CI.md`; evidence/configuration changes are not blanket exempt.
+The result and independent review must bind the complete local manifest, raw logs,
+collection/JUnit and outer cleanup envelope. This is not a GitHub-hosted claim.
+Existing task-specific hosted requirements and KL-074 provenance remain unchanged.
+
 Prospective compact evidence follows [Evidence Storage Policy](EVIDENCE_STORAGE_POLICY.md);
 all existing revision bindings and PASS oracles remain mandatory.

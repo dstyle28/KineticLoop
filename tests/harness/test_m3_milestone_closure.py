@@ -32,7 +32,17 @@ class History:
         self.backlog = json.loads((root / v.BACKLOG).read_text())
         self.tasks = {t['id']: t for t in self.backlog['tasks']}
         self.records: dict[str, dict] = {}
-        for name in ('KL-028', 'KL-029'):
+        corrective = next(t for t in json.loads((ROOT / v.BACKLOG).read_text())['tasks']
+                          if t['id'] == 'KL-080')
+        self.backlog['tasks'].append(copy.deepcopy(corrective))
+        self.backlog['task_count'] += 1
+        self.backlog['active_task_count'] += 1
+        self.tasks['KL-080'] = self.backlog['tasks'][-1]
+        self.put(v.BACKLOG, json.dumps(self.backlog))
+        self.put('docs/exec-plans/active/KL-080.md',
+                 (ROOT / 'docs/exec-plans/active/KL-080.md').read_text())
+        self.commit('synthetic prospective corrective task definition')
+        for name in ('KL-028', 'KL-029', 'KL-080'):
             self.make_task(name)
         pending = list(v.M3_TASK_IDS | {'KL-074'})
         while pending:
@@ -484,12 +494,12 @@ def test_zero_skip_xfail_failure_cannot_supply_oracle(output):
         v.m3_pytest_count(output)
 
 
-def test_premature_real_revision_without028029_rejects(history):
+def test_premature_real_revision_before_corrective_membership_rejects(history):
     closure = copy.deepcopy(history.closure)
     base = v.resolve(ROOT, '9268fc8dd8c071c02dc5c698274dbf6fcd112776')
     closure['evaluated_commit'] = base
     closure['m2_prerequisite'] = history.evidence('docs/exec-plans/milestones/M2.json', base)
-    assert any('KL-028' in e or 'KL-029' in e for e in history.errors(closure))
+    assert history.errors(closure) == ['milestone-active-task-set:M3']
 
 
 def test_governance_scope_excludes_peer_and_runtime_and_closure_instance():
@@ -669,3 +679,39 @@ def test_compact_regression_decodes_all_semantic_sources(tmp_path, mutation):
     errors = v.m3_execution_evidence_errors(history.root, payload, revision, revision, history.records)
     assert bool(errors) == (mutation != 'none'), errors
     assert not any('stale-or-unintegrated-revision' in e for e in errors)
+
+@pytest.mark.parametrize('mutation', ['task', 'exit', 'check', 'oracle', 'command', 'regression'])
+def test_corrective_prerequisite_and_checks_cannot_be_omitted_or_weakened(history, mutation):
+    closure = copy.deepcopy(history.closure)
+    if mutation == 'task':
+        closure['integrations'] = [r for r in closure['integrations'] if r['display_task_id'] != 'KL-080']
+    elif mutation == 'exit':
+        closure['exit_checks'] = [r for r in closure['exit_checks'] if r['check_id'] != 'source_decision_conformance']
+    elif mutation == 'regression':
+        payload = copy.deepcopy(history.payload)
+        payload['commands'] = [c for c in payload['commands'] if 'source_decision' not in c]
+        assert v.m3_execution_evidence_errors(history.root, payload, history.evaluated,
+                                             history.evaluated, history.records)
+        return
+    else:
+        exit = next(r for r in closure['exit_checks'] if r['check_id'] == 'source_decision_conformance')
+        if mutation == 'check':
+            exit['task_checks'].pop(6)
+        else:
+            exit['task_checks'][6]['oracle_sha256' if mutation == 'oracle' else 'command'] = 'weakened'
+    assert history.errors(closure)
+
+
+@pytest.mark.parametrize('name', ['KL-028', 'KL-029', 'KL-080'])
+def test_actual_required_integration_omission_rejects(history, name):
+    path = f'docs/exec-plans/integrations/{name}.json'
+    original = (history.root / path).read_text()
+    (history.root / path).unlink()
+    evaluated = history.commit('synthetic omitted required integration')
+    closure = copy.deepcopy(history.closure)
+    closure['evaluated_commit'] = evaluated
+    closure['m2_prerequisite']['revision'] = evaluated
+    errors = history.errors(closure)
+    history.put(path, original)
+    history.commit('restore synthetic required integration')
+    assert any('missing-or-nonregular-integration:' + name in error for error in errors)

@@ -122,5 +122,27 @@ accepted only when `reviewed_head_sha` equals `merge_commit` exactly and
 post-merge review of the integrated tree without relabeling a later commit as the
 historical merge.
 
+
+## HG-046 workflow compatibility
+
+The authorized prospective local-first CI change has an exact task-specific scope.
+It may update only the final generic `ci.yml`/`db.yml` compatibility assertions in
+`tests/db/test_startup_readiness.py`, replacing the legacy workflow hashes with
+structural assertions for the new approved triggers and hosted fallback. All
+KL-074-specific exact workflow bytes/hash, negative mutations, hosted provenance,
+probe behavior, fixtures, packets and historical results remain unchanged. This
+named compatibility scope also updates the old `paths-ignore` string check in
+`tests/db/test_workflow.py` to require exclusively manual full-DB dispatch and no
+historical auto-writeback. These two exact test paths do not authorize other database test or runtime edits, and the
+exception applies only to HG-046. The full DB suite must pass at the new tested SHA.
+
+The same unmerged HG-046 concern also owns conservative DB classification, the
+externally installed local controller/App client and isolated trusted validation/
+pytest entrypoints, their negative tests and local installation contract. Master
+protection configuration is explicitly authorized by the user and recorded in
+HG-046 setup evidence. No signing credential is a repository artifact. The
+controller is activated only after independent review of its implementation;
+required checks may be installed earlier to block merges pending validation.
+
 Prospective compact evidence follows [Evidence Storage Policy](EVIDENCE_STORAGE_POLICY.md);
 all existing revision bindings and PASS oracles remain mandatory.

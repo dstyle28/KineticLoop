@@ -78,11 +78,28 @@ def test_hosted_entrypoint_exact_positive_and_negative_contract() -> None:
     assert steps[1]['with']['version'] == '0.12.17'
     assert all('continue-on-error' not in step for step in steps)
     assert steps[-1]['if'] == 'always()' and steps[-1]['with']['if-no-files-found'] == 'error'
-    for path, expected in {
-        '.github/workflows/ci.yml': 'c955d1de33682d253aeac020efb56bb660c92759b223bd6211fefccd859d4d8a',
-        '.github/workflows/db.yml': 'efef56c3e5debb4c335fff41873889b209ce45979f950e85672165b0a1d06326',
-    }.items():
-        assert hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == expected
+    # HG-046 prospectively replaces the legacy generic-workflow pins. KL-074's
+    # exact hosted workflow and all its negative checks above remain authoritative.
+    ci = yaml.load((ROOT / '.github/workflows/ci.yml').read_bytes(), Loader=yaml.BaseLoader)
+    db = yaml.load((ROOT / '.github/workflows/db.yml').read_bytes(), Loader=yaml.BaseLoader)
+    assert ci['on']['push']['branches'] == ['master']
+    assert 'pull_request' in ci['on']
+    assert ci['concurrency']['cancel-in-progress'] == 'true'
+    assert set(ci['jobs']) == {'quality', 'merge-gate'}
+    assert set(db['on']) == {'workflow_dispatch'}
+    assert db['on']['workflow_dispatch']['inputs']['revision']['required'] == 'true'
+    assert set(db['jobs']) == {'kl-002-database'}
+    assert db['permissions'] == {'contents': 'read'}
+    database = db['jobs']['kl-002-database']
+    assert database['runs-on'] == 'ubuntu-latest'
+    checkout = next(step for step in database['steps'] if step.get('uses', '').startswith('actions/checkout@'))
+    assert checkout['with']['ref'] == '${{ inputs.revision }}'
+    assert checkout['with']['persist-credentials'] == 'false'
+    assert any('tools/harness/db_ci.py run' in step.get('run', '')
+               and '--environment github-hosted' in step['run'] for step in database['steps'])
+    upload = database['steps'][-1]
+    assert upload['if'] == 'always()' and upload['with']['if-no-files-found'] == 'error'
+
 
 
 def test_probe_exact_environment_and_owned_namespace_fail_closed(

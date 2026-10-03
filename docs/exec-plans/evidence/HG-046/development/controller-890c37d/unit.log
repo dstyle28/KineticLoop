@@ -1,0 +1,21 @@
+........................................................................ [ 29%]
+........................................................................ [ 59%]
+........................................................................ [ 89%]
+......F..................                                                [100%]
+=================================== FAILURES ===================================
+__________________ test_harness_entrypoint_from_subdirectory ___________________
+
+    def test_harness_entrypoint_from_subdirectory():
+        result = subprocess.run([KL, "check-harness"], cwd=ROOT / "src", capture_output=True, text=True)
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: HARNESS_CHECK_FAIL
+E         manifest-hash:tools/harness/db_ci.py
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=[PosixPath('/workspace/KineticLoop/.venv/bin/kl'), 'check-harness'], returncode=1, stdout='HARNESS_CHECK_FAIL\nmanifest-hash:tools/harness/db_ci.py\n', stderr='').returncode
+
+tests/unit/test_cli.py:13: AssertionError
+-------------------- generated xml file: /evidence/unit.xml --------------------
+=========================== short test summary info ============================
+FAILED tests/unit/test_cli.py::test_harness_entrypoint_from_subdirectory - As...
+1 failed, 240 passed in 7.75s

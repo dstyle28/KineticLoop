@@ -1,0 +1,309 @@
+{
+  "artifacts": [
+    {
+      "bytes": 63275,
+      "path": "collection.json",
+      "sha256": "02f696f915715778f4256291fcb07432d3552c9906621eb55c616d6b3d8c289e"
+    },
+    {
+      "bytes": 63275,
+      "path": "execution.json",
+      "sha256": "02f696f915715778f4256291fcb07432d3552c9906621eb55c616d6b3d8c289e"
+    },
+    {
+      "bytes": 85756,
+      "path": "database.xml",
+      "sha256": "4c245c2e28e7dd12050fe5527f820d9854ab9a16891875f531261a104612f125"
+    }
+  ],
+  "checks": [
+    {
+      "argv": [
+        "uv",
+        "run",
+        "kl",
+        "lint"
+      ],
+      "check_id": "lint",
+      "duration_seconds": 0.121,
+      "exit_code": 0,
+      "interrupted": false,
+      "stdout": {
+        "bytes": 19,
+        "path": "lint.log",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      }
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "kl",
+        "typecheck"
+      ],
+      "check_id": "typecheck",
+      "duration_seconds": 5.455,
+      "exit_code": 0,
+      "interrupted": false,
+      "stdout": {
+        "bytes": 45,
+        "path": "typecheck.log",
+        "sha256": "610c3f8aec7dd5bdcb599052a5d122d72c10c912cff4f281c3166f8dc0e3ff46"
+      }
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "pytest",
+        "--collect-only",
+        "-q",
+        "-p",
+        "tools.harness.db_ci_pytest",
+        "-o",
+        "xfail_strict=true",
+        "tests/db"
+      ],
+      "check_id": "collection",
+      "duration_seconds": 2.062,
+      "exit_code": 0,
+      "interrupted": false,
+      "stdout": {
+        "bytes": 58547,
+        "path": "collection.log",
+        "sha256": "807024326311e27f881632f6273b39d9e15f8520430f207446b0b40873466dec"
+      }
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "tools.harness.db_ci_pytest",
+        "-o",
+        "xfail_strict=true",
+        "tests/db",
+        "--junitxml=/evidence/run/database.xml"
+      ],
+      "check_id": "full_database",
+      "duration_seconds": 1602.287,
+      "exit_code": 0,
+      "interrupted": false,
+      "stdout": {
+        "bytes": 914,
+        "path": "full_database.log",
+        "sha256": "2c6cb3f6c1edf8d4c2a63ad5050cccea2fa569407946d352ad4eddfcb754857f"
+      }
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "tools/db/verify.py",
+        "compose-config-valid"
+      ],
+      "check_id": "compose_config_valid",
+      "duration_seconds": 0.068,
+      "exit_code": 0,
+      "interrupted": false,
+      "stdout": {
+        "bytes": 64,
+        "path": "compose_config_valid.log",
+        "sha256": "943be1e02f58d84178041688c52100f6276f81a0329e6f3f2b85bb822df6458d"
+      }
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "tools/db/verify.py",
+        "postgres-ready"
+      ],
+      "check_id": "postgres_ready",
+      "duration_seconds": 0.42,
+      "exit_code": 0,
+      "interrupted": false,
+      "stdout": {
+        "bytes": 214,
+        "path": "postgres_ready.log",
+        "sha256": "13e584cb22897ec4174e531659fb92c3ce0c5cb72912f2c936c1f584cd269dd2"
+      }
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "tools/db/verify.py",
+        "reset-idempotent"
+      ],
+      "check_id": "reset_idempotent",
+      "duration_seconds": 1.125,
+      "exit_code": 0,
+      "interrupted": false,
+      "stdout": {
+        "bytes": 109,
+        "path": "reset_idempotent.log",
+        "sha256": "42912aeabeadf0f37b6d2f9559250657cd7585107fb907987cfb60a375a4b502"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "worktree",
+        "add",
+        "--detach",
+        "/evidence/run-peer",
+        "341333dd4b5140ac15f715ce28bd0d2a4a4ee1ec"
+      ],
+      "check_id": "peer_checkout",
+      "duration_seconds": 0.695,
+      "exit_code": 0,
+      "interrupted": false,
+      "stdout": {
+        "bytes": 130,
+        "path": "peer_checkout.log",
+        "sha256": "c8f67860d4d47a0d25da47417de2b8ae4a610bb52e0912752cd0ce2d67622404"
+      }
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "tools/db/verify.py",
+        "worktree-db-isolated",
+        "--peer-root",
+        "/evidence/run-peer"
+      ],
+      "check_id": "worktree_db_isolated",
+      "duration_seconds": 2.277,
+      "exit_code": 0,
+      "interrupted": false,
+      "stdout": {
+        "bytes": 335,
+        "path": "worktree_db_isolated.log",
+        "sha256": "a92f87a6e59dd663daf74729766b60d6e73624b529061f5a9ce5f35d159d578d"
+      }
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "tools/db/verify.py",
+        "destroy"
+      ],
+      "check_id": "destroy",
+      "duration_seconds": 0.066,
+      "exit_code": 0,
+      "interrupted": false,
+      "stdout": {
+        "bytes": 67,
+        "path": "destroy.log",
+        "sha256": "a26f8645c950412ff8ede4baa058b2395b24f1f42c4e639d97ef8cd67ed94cb6"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "worktree",
+        "remove",
+        "--force",
+        "/evidence/run-peer"
+      ],
+      "check_id": "peer_remove",
+      "duration_seconds": 0.07,
+      "exit_code": 0,
+      "interrupted": false,
+      "stdout": {
+        "bytes": 0,
+        "path": "peer_remove.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "format": "kineticloop-db-ci-v1",
+  "junit": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 674
+  },
+  "provenance": {
+    "architecture": "aarch64",
+    "docker": {
+      "ApiVersion": "1.52",
+      "Arch": "arm64",
+      "BuildTime": "2026-04-29T16:41:06.000000000+00:00",
+      "Components": [
+        {
+          "Details": {
+            "ApiVersion": "1.52",
+            "Arch": "arm64",
+            "BuildTime": "Wed Apr 29 16:41:06 2026",
+            "Experimental": "false",
+            "GitCommit": "29.1.3-0ubuntu3~24.04.2",
+            "GoVersion": "go1.24.4",
+            "KernelVersion": "7.0.12-linuxkit",
+            "MinAPIVersion": "1.44",
+            "Os": "linux"
+          },
+          "Name": "Engine",
+          "Version": "29.1.3"
+        },
+        {
+          "Details": {
+            "GitCommit": ""
+          },
+          "Name": "containerd",
+          "Version": "2.2.1"
+        },
+        {
+          "Details": {
+            "GitCommit": ""
+          },
+          "Name": "runc",
+          "Version": "1.3.4-0ubuntu1~24.04.1"
+        },
+        {
+          "Details": {
+            "GitCommit": ""
+          },
+          "Name": "docker-init",
+          "Version": "0.19.0"
+        }
+      ],
+      "GitCommit": "29.1.3-0ubuntu3~24.04.2",
+      "GoVersion": "go1.24.4",
+      "KernelVersion": "7.0.12-linuxkit",
+      "MinAPIVersion": "1.44",
+      "Os": "linux",
+      "Platform": {
+        "Name": ""
+      },
+      "Version": "29.1.3"
+    },
+    "docker_endpoint": "unix:///var/run/docker.sock",
+    "environment": "local-isolated",
+    "github_run_attempt": null,
+    "github_run_id": null,
+    "initial_containers": [],
+    "initial_volumes": [],
+    "os": "Linux",
+    "python": "3.12.3",
+    "uv": "uv 0.12.17 (aarch64-unknown-linux-musl)"
+  },
+  "remaining_containers": "",
+  "remaining_volumes": "",
+  "status": "PASS",
+  "tested_commit": "341333dd4b5140ac15f715ce28bd0d2a4a4ee1ec"
+}
