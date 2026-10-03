@@ -46,6 +46,19 @@ files_changed:
 - docs/exec-plans/evidence/HG-047/development-166bf3e/unit.json
 - docs/exec-plans/evidence/HG-047/development-ab4f21b/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
 - docs/exec-plans/evidence/HG-047/development-ab4f21b/source_diff.json
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/5fd2649c8ac66712b86f471fe955c689123b9f1668b4e65c2db0ef2e4ff48384.gz
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/authority.json
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/c5be17ddc17097849aea0d2f20521ec52f6fee67e664539dc08992ac7881361a.gz
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/dabf0ccdf57320cd56ebd0a81e5e78a2d83658a6a0ba1f460b6c10408db3d394.gz
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/execution.json
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/lint.json
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/performance.json
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/scope.json
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/source_diff.json
+- docs/exec-plans/evidence/HG-047/development-b30a9c6/typecheck.json
 - docs/exec-plans/evidence/HG-047/selected-2dc15b7/1d912ad9a40019f54ac8367f16d41aba6b15eb6127b2941995717ddcb8606bbe.gz
 - docs/exec-plans/evidence/HG-047/selected-2dc15b7/25a6e726ed95412b24e5e8a848509fe0ca5ed66a57b2f38f0182faccb2e8d4c6.gz
 - docs/exec-plans/evidence/HG-047/selected-2dc15b7/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
@@ -87,11 +100,6 @@ files_changed:
 - tools/harness/local_gate.py
 - tools/harness/validate_harness.py
 checks_run:
-- check_id: unit
-  command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
-    -m kineticloop.db.cli test-unit
-  result: FAIL
-  evidence_ref: docs/exec-plans/evidence/HG-047/development-166bf3e/unit.json
 - check_id: lint
   command: PYTHONPATH=/Users/davetian/.codex/worktrees/ffff/KineticLoop/src /private/tmp/hg044-venv/bin/python
     -m kineticloop.db.cli lint
@@ -120,11 +128,10 @@ checks_run:
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
-- 'Current166bf3e unit240 PASS/1 FAIL: round1 SECURITY/PROTOCOL review evidence_refs cite compact_evidence.py,
-  whose reserved literals are rejected as malformed storage evidence at both47de76d and166bf3e. Coordinator
-  decision on review metadata is pending; no classifier bypass or review edit was made. Full harness and standalone
-  authority are NOT_RUN pending metadata correction and coordinated shared-host release. This BLOCKED result
-  establishes no current-source PASS.'
+- Pending fresh complete validation after P-01 and reviewer-authored reference correction at b30a9c6. The failed166bf3e
+  unit and failed b30a9c6 authority captures remain exact historical non-PASS under their development directories.
+  The failed unit is not selected in checks_run because the unchanged governance validator requires each selected
+  check to be PASS; change_status remains BLOCKED and no current-source PASS is asserted.
 - Round1 PROTOCOL BLOCKER P-01 requires rejecting decoded nested storage metadata before raw evidence oracles.
   Prior source2dc15b7 checks and reviews of47de76d are historical; fresh source-bound checks/result and all
   three fresh independent reviews are required after correction.
