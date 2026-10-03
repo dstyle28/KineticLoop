@@ -106,7 +106,7 @@ def test_payload_requires_exact_regular_git_blob(repo, mutation):
     (b'a', gzip.compress(b'a', mtime=0) + gzip.compress(b'b', mtime=0)),
     (b'a', gzip.compress(b'a', mtime=0) + b'trailing'),
     (b'a', gzip.compress(b'a', mtime=0)[:-4]),
-])
+], ids=['raw-size-bound', 'concatenated-members', 'trailing-bytes', 'truncated-member'])
 def test_bounded_single_member_decoder(repo, raw, stored):
     root, _, record, _ = captured(repo, b'a')
     (root / record['payload']).write_bytes(stored)
@@ -182,7 +182,8 @@ def test_plain_history_retained_and_budget_is_prospective(repo):
     ('a.log', b'{"nested":[{"raw_utf8":"copy"}]}', 'embedded-raw_utf8'),
     ('a.txt', b'{"nested":[{"raw_utf8":"copy"}]}', 'embedded-raw_utf8'),
     ('orphan.gz', b'not compressed', 'unreferenced-payload'),
-])
+], ids=['plain-size-limit', 'full-diff-copy', 'embedded-json', 'embedded-log',
+        'embedded-text', 'orphan-payload'])
 def test_budget_rejects_bulk_and_duplicate_metadata(repo, filename, data, error):
     root, base = repo
     target = root / REF
