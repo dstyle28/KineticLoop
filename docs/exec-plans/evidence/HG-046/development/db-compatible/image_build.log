@@ -1,0 +1,46 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 694B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for ghcr.io/astral-sh/uv:0.12.17@sha256:10787c682e4184e4f290de1171fd4703dc63de99221f10fe1c99002ce7fa9acc
+#2 DONE 0.6s
+
+#3 [internal] load metadata for docker.io/library/ubuntu:24.04@sha256:a853f94d226358a79c740cfc7bce0c289748f3fe3488d921d038ccd752c61b60
+#3 DONE 0.7s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 35B done
+#5 DONE 0.0s
+
+#6 [stage-1 1/4] FROM docker.io/library/ubuntu:24.04@sha256:a853f94d226358a79c740cfc7bce0c289748f3fe3488d921d038ccd752c61b60
+#6 resolve docker.io/library/ubuntu:24.04@sha256:a853f94d226358a79c740cfc7bce0c289748f3fe3488d921d038ccd752c61b60 done
+#6 DONE 0.0s
+
+#7 [uv 1/1] FROM ghcr.io/astral-sh/uv:0.12.17@sha256:10787c682e4184e4f290de1171fd4703dc63de99221f10fe1c99002ce7fa9acc
+#7 resolve ghcr.io/astral-sh/uv:0.12.17@sha256:10787c682e4184e4f290de1171fd4703dc63de99221f10fe1c99002ce7fa9acc done
+#7 DONE 0.0s
+
+#8 [stage-1 2/4] RUN apt-get update && apt-get install -y --no-install-recommends     ca-certificates curl git python3 python3-venv docker.io docker-compose-v2 iptables     && rm -rf /var/lib/apt/lists/*
+#8 CACHED
+
+#9 [stage-1 3/4] COPY --from=uv /uv /uvx /usr/local/bin/
+#9 CACHED
+
+#10 [stage-1 4/4] COPY entrypoint.sh /usr/local/bin/kineticloop-local-db
+#10 CACHED
+
+#11 exporting to image
+#11 exporting layers done
+#11 exporting manifest sha256:2056fa2048d5350e6dd2bd7e1d089624bc42ad2e5352cd19f067d559561e4763 done
+#11 exporting config sha256:ecf005371b1d3934382c75643cc043e73b279ec537c27b975261d6186ce52860 done
+#11 exporting attestation manifest sha256:d7599432612b72eb1f53d7f06c49655e484294609cecde782525c9fa337e6419 done
+#11 exporting manifest list sha256:52ec8edc2ab048532bbb281f7f676d5cac824b784ad5acd4f11434ae9b3a5d0d done
+#11 naming to docker.io/library/kineticloop-local-db:afca6c0c83d2 done
+#11 unpacking to docker.io/library/kineticloop-local-db:afca6c0c83d2 done
+#11 DONE 0.0s

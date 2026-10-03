@@ -3,10 +3,12 @@
 import argparse
 import fnmatch
 import hashlib
+import importlib.util
 import json
 import re
 import subprocess
 import sys
+import tempfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
@@ -1482,6 +1484,22 @@ def governance_record_paths(change_id):
 
 
 def governance_allowed_patterns(change_id):
+    if change_id == 'HG-046':
+        return [INDEX, MANIFEST, '.github/workflows/ci.yml', '.github/workflows/db.yml',
+                'tools/harness/db_ci.py', 'tools/harness/db_ci_pytest.py',
+                'tools/harness/db_policy.py', 'tools/harness/local_gate.py',
+                'tools/harness/github_app.py', 'tools/harness/gate_validate.py',
+                'tools/harness/gate_pytest.py',
+                'tests/harness/test_db_policy.py',
+                'tests/harness/test_local_gate.py',
+                'tools/harness/local_db/Dockerfile', 'tools/harness/local_db/entrypoint.sh',
+                'tools/harness/validate_harness.py', 'tests/harness/test_local_db_ci.py',
+                'tests/db/test_startup_readiness.py', 'tests/db/test_workflow.py',
+                'docs/harness/LOCAL_DB_CI.md',
+                'docs/harness/MERGE_GATE.md', 'docs/harness/M3_CLOSURE_CONTRACT.md',
+                'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md',
+                'docs/exec-plans/evidence/HG-046/**', 'docs/exec-plans/reviews/HG-046/**',
+                'docs/exec-plans/governance/HG-046.yaml']
     if change_id == 'HG-045':
         return [BACKLOG, TRACEABILITY, PROJECT_PLAN, INDEX, MANIFEST,
                 MILESTONE_CLOSURE_SCHEMA, 'docs/harness/M3_CLOSURE_CONTRACT.md',
@@ -1759,6 +1777,35 @@ def revision_regular_file(root, ref, revision):
         return False
     obj = subprocess.run(['git', 'cat-file', '-t', oid.decode()], cwd=root, capture_output=True)
     return obj.returncode == 0 and obj.stdout.strip() == b'blob'
+
+
+def full_database_evidence_errors(root, reviewed, tested, ref):
+    """Check local/hosted full DB evidence from regular reviewed Git blobs only."""
+    try:
+        if not revision_regular_file(root, ref, reviewed):
+            raise ValueError('manifest-not-regular-reviewed-blob')
+        manifest = json.loads(git(root, 'show', reviewed + ':' + ref))
+        records = [check['stdout'] for check in manifest['checks']] + manifest['artifacts']
+        spec = importlib.util.spec_from_file_location('db_ci_evidence', Path(__file__).with_name('db_ci.py'))
+        if spec is None or spec.loader is None:
+            raise ValueError('DB evidence validator unavailable')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory(prefix='kl-db-evidence-review-') as temporary:
+            destination = Path(temporary)
+            (destination / 'manifest.json').write_bytes(git(root, 'show', reviewed + ':' + ref))
+            for item in records:
+                name = item['path']
+                if Path(name).name != name or name in ('', '.', '..'):
+                    raise ValueError('non-sibling-raw-path')
+                raw_ref = str(Path(ref).parent / name)
+                if not revision_regular_file(root, raw_ref, reviewed):
+                    raise ValueError('raw-not-regular-reviewed-blob:' + raw_ref)
+                (destination / name).write_bytes(git(root, 'show', reviewed + ':' + raw_ref))
+            module.validate_evidence(destination, tested)
+        return []
+    except (ValueError, KeyError, TypeError, OSError, ET.ParseError) as error:
+        return ['full-database-evidence:' + str(error)]
 
 
 def review_evidence_exists(root, ref, reviewed, review_commit, task_id, review_only_suffix):
@@ -3766,6 +3813,9 @@ def validate(root, args):
                     ref = check['evidence_ref']
                     if git(root, 'show', reviewed + ':' + ref) != (root / ref).read_bytes():
                         errors.append('governance-evidence-not-bound:' + ref)
+                    if check['check_id'] == 'full_database_regression':
+                        errors.extend(full_database_evidence_errors(
+                            root, reviewed, record['tested_commit'], ref))
             except ValueError as ex:
                 errors.append('governance-review-revision:' + str(ex))
             required = {'GENERAL'}
@@ -3773,6 +3823,8 @@ def validate(root, args):
             reviewed_tasks = getattr(args, 'governance_reviewed_tasks', tasks)
             if change_id == 'HG-044':
                 required.update({'PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'})
+            if change_id == 'HG-046':
+                required.update({'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'})
             changed_task_ids = getattr(args, 'governance_changed_task_ids', set())
             for task_id in changed_task_ids:
                 required.update(old_tasks.get(task_id, {}).get('review_requirements', []))

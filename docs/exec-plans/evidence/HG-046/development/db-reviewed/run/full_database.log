@@ -1,0 +1,63 @@
+........................................................................ [ 10%]
+........................................................................ [ 21%]
+........................................................................ [ 32%]
+........................................................................ [ 42%]
+........................................................................ [ 53%]
+........................................................................ [ 64%]
+........................................................................ [ 74%]
+............................F........................................... [ 85%]
+........................................................................ [ 96%]
+.........................F                                               [100%]
+=================================== FAILURES ===================================
+_________ test_hosted_entrypoint_exact_positive_and_negative_contract __________
+
+    def test_hosted_entrypoint_exact_positive_and_negative_contract() -> None:
+        guard = load('tools/harness/validate_harness.py')
+        actual = (ROOT / guard.READINESS_WORKFLOW_PATH).read_bytes()
+        assert actual == (ROOT / 'docs/exec-plans/evidence/HG-037/kl074-readiness.workflow.proposal.yml').read_bytes()
+        assert hashlib.sha256(actual).hexdigest() == guard.READINESS_WORKFLOW_SHA256
+        assert guard.readiness_workflow_errors('', actual) == []
+        assert guard.readiness_workflow_errors('existing-workflow', actual) == ['readiness-workflow-baseline-exists']
+        for old, new in [(b'head.sha', b'base.sha'), (b'ubuntu-latest', b'self-hosted'),
+                         (b'uv sync --locked', b'uv sync'), (b'if: always()', b'if: success()'),
+                         (b'contents: read', b'contents: write'), (b'set -euo pipefail', b'set -eu')]:
+            assert old in actual
+            assert guard.readiness_workflow_errors('', actual.replace(old, new)) == ['readiness-workflow-content-scope']
+        workflow = yaml.safe_load(actual)
+        assert set(workflow['on']) == {'pull_request'}
+        job = workflow['jobs']['kl074-readiness']
+        assert job['runs-on'] == 'ubuntu-latest' and job['timeout-minutes'] == 20
+        assert 'codex/kl074-' in job['if'] and 'head.repo.full_name == github.repository' in job['if']
+        steps = job['steps']
+        assert steps[0]['with']['ref'] == '${{ github.event.pull_request.head.sha }}'
+        assert steps[0]['with']['persist-credentials'] is False
+        assert steps[1]['with']['version'] == '0.12.17'
+        assert all('continue-on-error' not in step for step in steps)
+        assert steps[-1]['if'] == 'always()' and steps[-1]['with']['if-no-files-found'] == 'error'
+        for path, expected in {
+            '.github/workflows/ci.yml': 'c955d1de33682d253aeac020efb56bb660c92759b223bd6211fefccd859d4d8a',
+            '.github/workflows/db.yml': 'efef56c3e5debb4c335fff41873889b209ce45979f950e85672165b0a1d06326',
+        }.items():
+>           assert hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == expected
+E           AssertionError: assert '97bc8ab817f5...9aec65f1abcf7' == 'c955d1de3368...efccd859d4d8a'
+E             
+E             - c955d1de33682d253aeac020efb56bb660c92759b223bd6211fefccd859d4d8a
+E             + 97bc8ab817f5200990a04cc6af3daf2f33b5def8cffc6cce65e9aec65f1abcf7
+
+tests/db/test_startup_readiness.py:85: AssertionError
+________ test_review_record_only_push_does_not_rerun_database_evidence _________
+
+    def test_review_record_only_push_does_not_rerun_database_evidence() -> None:
+        workflow = Path(__file__).parents[2] / ".github/workflows/db.yml"
+    
+>       assert "- docs/exec-plans/reviews/KL-002/**" in workflow.read_text(encoding="utf-8")
+E       AssertionError: assert '- docs/exec-plans/reviews/KL-002/**' in 'name: PostgreSQL lifecycle\n\n# Full DB regression is local by default. Maintainers explicitly request hosted\n# repr...}}\n          path: ${{ runner.temp }}/db-evidence\n          if-no-files-found: error\n          retention-days: 14\n'
+E        +  where 'name: PostgreSQL lifecycle\n\n# Full DB regression is local by default. Maintainers explicitly request hosted\n# repr...}}\n          path: ${{ runner.temp }}/db-evidence\n          if-no-files-found: error\n          retention-days: 14\n' = read_text(encoding='utf-8')
+E        +    where read_text = PosixPath('/workspace/KineticLoop/.github/workflows/db.yml').read_text
+
+tests/db/test_workflow.py:7: AssertionError
+---------------- generated xml file: /evidence/run/database.xml ----------------
+=========================== short test summary info ============================
+FAILED tests/db/test_startup_readiness.py::test_hosted_entrypoint_exact_positive_and_negative_contract
+FAILED tests/db/test_workflow.py::test_review_record_only_push_does_not_rerun_database_evidence
+2 failed, 672 passed in 1517.29s (0:25:17)

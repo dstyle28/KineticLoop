@@ -1,0 +1,126 @@
+{
+  "artifacts": {
+    "dependency_sync.log": "d007d74846156b8b6a9aac4910589d902eb21532f2b2b3dda6aa568b58e3cadf",
+    "image_build.log": "33e5497b06691d9847cf66719cf86574d844353c129c4b97eb9c855f41ed0670",
+    "lint.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "typecheck.log": "1a97c358671d112d9b1e953d6c3f80bc62a90decff0583b8dfe94200d7ee2d6a"
+  },
+  "base": "fc8a044ffa4d15a74ce5dc59298ae411f1f4009b",
+  "checks": [
+    {
+      "argv": [
+        "docker",
+        "build",
+        "-t",
+        "kl-gate-9856596a61e340af9178558b198316e9",
+        "/Users/davetian/.config/kineticloop-local-ci/releases/00df4ffcca7d03fbed69e025ecd761df3594b060/local_db"
+      ],
+      "check_id": "image_build",
+      "duration_seconds": 0.326,
+      "exit_code": 0,
+      "interrupted": false,
+      "stdout": {
+        "bytes": 2161,
+        "path": "image_build.log",
+        "sha256": "33e5497b06691d9847cf66719cf86574d844353c129c4b97eb9c855f41ed0670"
+      }
+    },
+    {
+      "argv": [
+        "docker",
+        "exec",
+        "-w",
+        "/workspace/KineticLoop",
+        "-e",
+        "PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src",
+        "kl-gate-9856596a61e340af9178558b198316e9",
+        "uv",
+        "sync",
+        "--locked"
+      ],
+      "check_id": "dependency_sync",
+      "duration_seconds": 1.136,
+      "exit_code": 0,
+      "interrupted": false,
+      "stdout": {
+        "bytes": 1335,
+        "path": "dependency_sync.log",
+        "sha256": "d007d74846156b8b6a9aac4910589d902eb21532f2b2b3dda6aa568b58e3cadf"
+      }
+    },
+    {
+      "argv": [
+        "docker",
+        "exec",
+        "-w",
+        "/workspace/KineticLoop",
+        "-e",
+        "PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src",
+        "-e",
+        "KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json",
+        "kl-gate-9856596a61e340af9178558b198316e9",
+        "uv",
+        "run",
+        "--no-sync",
+        "python",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "check_id": "lint",
+      "duration_seconds": 0.173,
+      "exit_code": 0,
+      "interrupted": false,
+      "stdout": {
+        "bytes": 19,
+        "path": "lint.log",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      }
+    },
+    {
+      "argv": [
+        "docker",
+        "exec",
+        "-w",
+        "/workspace/KineticLoop",
+        "-e",
+        "PYTHONPATH=/gate/tools/harness:/workspace/KineticLoop:/workspace/KineticLoop/src",
+        "-e",
+        "KINETICLOOP_DB_CI_NODEIDS=/evidence/run/execution.json",
+        "kl-gate-9856596a61e340af9178558b198316e9",
+        "uv",
+        "run",
+        "--no-sync",
+        "python",
+        "-m",
+        "mypy",
+        "--no-incremental"
+      ],
+      "check_id": "typecheck",
+      "duration_seconds": 4.987,
+      "exit_code": 1,
+      "interrupted": false,
+      "stdout": {
+        "bytes": 328,
+        "path": "typecheck.log",
+        "sha256": "1a97c358671d112d9b1e953d6c3f80bc62a90decff0583b8dfe94200d7ee2d6a"
+      }
+    }
+  ],
+  "container": "kl-gate-9856596a61e340af9178558b198316e9",
+  "container_removed": true,
+  "full_database_required": true,
+  "head": "00df4ffcca7d03fbed69e025ecd761df3594b060",
+  "image": "sha256:18689be3d9d2b57c42dfb82d97828bf7a2fba2e7e9f7e8f9d677abeb8a2c686c",
+  "mounts": [
+    {
+      "Destination": "/var/lib/docker",
+      "Name": "kl-gate-9856596a61e340af9178558b198316e9-data",
+      "Type": "volume"
+    }
+  ],
+  "status": "FAIL",
+  "volume": "kl-gate-9856596a61e340af9178558b198316e9-data",
+  "volume_removed": true
+}
