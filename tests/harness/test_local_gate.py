@@ -354,3 +354,41 @@ def test_isolated_validator_never_uses_candidate_compact_decoder(tmp_path, missi
     else:
         assert result.returncode == 0, result.stderr
         assert result.stdout.strip() == str(installed / 'compact_evidence.py')
+
+
+def test_worker_copies_decoder_from_installed_release(tmp_path, monkeypatch):
+    installed = tmp_path / 'installed'
+    candidate = tmp_path / 'candidate'
+    installed.mkdir()
+    candidate.mkdir()
+    (installed / 'compact_evidence.py').write_text('installed decoder')
+    (candidate / 'compact_evidence.py').write_text('candidate decoder')
+    monkeypatch.setattr(gate.db_ci, 'local_client_preflight', lambda: None)
+    monkeypatch.setattr(gate.db_ci, 'owned_mounts', lambda *_: [])
+    monkeypatch.setattr(gate, 'resource_exists', lambda *_: False)
+    monkeypatch.setattr(gate, 'cleanup_resource', lambda *_: True)
+    monkeypatch.setattr(gate, 'cleanup_owned', lambda *_: True)
+    monkeypatch.setattr(gate.subprocess, 'run', lambda *a, **k: SimpleNamespace(returncode=0))
+    monkeypatch.delenv('DOCKER_HOST', raising=False)
+    monkeypatch.delenv('DOCKER_CONTEXT', raising=False)
+    copies = []
+    def checked(argv, source):
+        assert source == candidate
+        if argv[1:3] == ['context', 'show']:
+            return 'default'
+        if argv[1:3] == ['context', 'inspect']:
+            return 'unix:///socket'
+        if argv[1:3] == ['image', 'inspect']:
+            return '[{"Id":"sha256:image"}]'
+        if argv[1] == 'inspect':
+            return '[{}]'
+        if argv[1] == 'cp':
+            copies.append(argv[2:])
+        return ''
+    monkeypatch.setattr(gate, 'checked', checked)
+    monkeypatch.setattr(gate.db_ci, 'run_capture', lambda argv, dest, label, **kwargs:
+                        {'exit_code': 1 if label == 'dependency_sync' else 0})
+    with pytest.raises(ValueError, match='dependency sync failed'):
+        gate.run_worker(candidate, B, A, False, tmp_path, here=installed)
+    decoder = [pair for pair in copies if pair[1].endswith('/gate/tools/harness/compact_evidence.py')]
+    assert len(decoder) == 1 and decoder[0][0] == str(installed / 'compact_evidence.py')
