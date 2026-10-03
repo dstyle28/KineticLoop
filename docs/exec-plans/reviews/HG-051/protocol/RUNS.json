@@ -1,0 +1,27 @@
+{
+  "reviewed_revision": "7141b1dfe48df8f0e25429cf9ff646af6de4b5ce",
+  "runtime": ".venv/bin/python",
+  "runs": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q tests/harness/test_compact_evidence.py tests/harness/test_source_decision_scope.py tests/harness/test_review_evidence_provenance.py tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -k 'archive_missing_original or archive_failed_execution_metadata or archive_historical_failure or archive_separate_retrieval or archive_history_rewrite or hg051 or source_decision_scope' -p no:cacheprovider --basetemp=/private/tmp/hg051-protocol-probes/pytest --junitxml=/private/tmp/hg051-protocol-probes/pytest.xml",
+      "exit_code": 0,
+      "passed": 74,
+      "deselected": 592,
+      "stdout": "pytest.log",
+      "junit": "pytest.xml"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q tests/harness/test_m3_milestone_closure.py::test_archival_mapping_never_supplies_m3_execution_proof tests/harness/test_review_evidence_provenance.py::test_archival_mapping_cannot_supply_review_record_evidence -p no:cacheprovider --basetemp=/private/tmp/hg051-protocol-probes/proof-separation --junitxml=/private/tmp/hg051-protocol-probes/proof-separation.xml",
+      "exit_code": 0,
+      "passed": 11,
+      "stdout": "proof-separation.log",
+      "junit": "proof-separation.xml"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python /private/tmp/hg051-protocol-probes/audit.py",
+      "exit_code": 0,
+      "stdout": "audit.json",
+      "stderr": "audit-stderr.log"
+    }
+  ]
+}
