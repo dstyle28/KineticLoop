@@ -62,14 +62,21 @@ def blob(root: Path, path: str, revision: str | None, limit: int | None = None) 
         return target.read_bytes()
     commit = git(root, 'rev-parse', '--verify', '--end-of-options', revision + '^{commit}')
     revision = commit.decode().strip()
-    entry = [e for e in git(root, 'ls-tree', '-z', revision, '--', path).split(b'\0')
+    return _blob_at_commit(root, path, revision, limit)
+
+
+def _blob_at_commit(root: Path, path: str, revision: str, limit: int | None) -> bytes:
+    # Only internal callers that have already resolved the exact commit use this.
+    if not normalized(path):
+        raise ValueError('evidence-path')
+    entry = [e for e in git(root, 'ls-tree', '-l', '-z', revision, '--', path).split(b'\0')
              if e and e.split(b'\t', 1)[1] == path.encode()]
     if len(entry) != 1:
         raise ValueError('evidence-missing')
-    mode, kind, oid = entry[0].split(b'\t', 1)[0].split()
+    mode, kind, oid, size_text = entry[0].split(b'\t', 1)[0].split()
     if mode not in (b'100644', b'100755') or kind != b'blob':
         raise ValueError('evidence-regular-blob')
-    size = int(git(root, 'cat-file', '-s', oid.decode()))
+    size = int(size_text)
     if limit is not None and size > limit:
         raise ValueError(f'evidence-size:{size}>{limit}')
     return git(root, 'cat-file', 'blob', oid.decode())
@@ -148,7 +155,8 @@ def read(root: Path, path: str, revision: str | None, *, tested: str | None = No
     if revision is not None:
         revision = git(root, 'rev-parse', '--verify', '--end-of-options',
                        revision + '^{commit}').decode().strip()
-    data = blob(root, path, revision)
+    data = (blob(root, path, None) if revision is None else
+            _blob_at_commit(root, path, revision, None))
     manifest = envelope(data)
     if manifest is None:
         return data
@@ -184,7 +192,8 @@ def read(root: Path, path: str, revision: str | None, *, tested: str | None = No
         raise ValueError('evidence-tested-revision')
     if revision is not None:
         git(root, 'merge-base', '--is-ancestor', resolved_tested, revision)
-    stored = blob(root, expected, revision, STORED_LIMIT)
+    stored = (blob(root, expected, None, STORED_LIMIT) if revision is None else
+              _blob_at_commit(root, expected, revision, STORED_LIMIT))
     if len(stored) != manifest['stored_bytes'] or digest(stored) != manifest['stored_sha256']:
         raise ValueError('evidence-stored-integrity')
     decoder = zlib.decompressobj(16 + zlib.MAX_WBITS)

@@ -10,6 +10,8 @@ import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as ET
+from contextlib import contextmanager
+from contextvars import ContextVar
 from pathlib import Path
 from typing import Any
 
@@ -1763,12 +1765,41 @@ def governance_suffix_errors(root, start, end, change_id, kind):
     return errors
 
 
+_evidence_verdicts: ContextVar[set[tuple] | None] = ContextVar('evidence_verdicts', default=None)
+EVIDENCE_VERDICT_LIMIT = 4096
+
+
+@contextmanager
+def evidence_validation_session():
+    """Cache only successful immutable proof checks for one validation operation."""
+    if _evidence_verdicts.get() is not None:
+        yield
+        return
+    token = _evidence_verdicts.set(set())
+    try:
+        yield
+    finally:
+        _evidence_verdicts.reset(token)
+
+
 def evidence_exists(root, ref, revision=None, tested=None, command=None, exit_code=None):
     if not relative_path(ref) or '\0' in ref:
         return False
     try:
+        cache = _evidence_verdicts.get()
+        # Mutable refs/working files and failed proofs are never memoized. Full
+        # SHA existence/type is still proven by read before a successful insert.
+        key = ((str(root.resolve()), revision, ref, tested, command, exit_code)
+               if isinstance(revision, str) and re.fullmatch(r'[0-9a-f]{40}', revision)
+               else None)
+        if cache is not None and key is not None and key in cache:
+            return True
         compact_evidence.read(root, ref, revision, tested=tested, command=command,
                               exit_code=exit_code)
+        if cache is not None and key is not None:
+            if len(cache) >= EVIDENCE_VERDICT_LIMIT:
+                cache.clear()
+            cache.add(key)
         return True
     except (ValueError, OSError, TypeError):
         return False
@@ -2109,6 +2140,7 @@ def governance_manifest_errors(root, base_revision, changed, target_revision=Non
     return errors
 
 
+@evidence_validation_session()
 def integration_record_errors(
         root, path, record, schema, result_schema, review_schema, tasks):
     errors = ['integration-schema:' + path.name + ':' + issue.message
@@ -2235,6 +2267,7 @@ def integration_record_errors(
     return errors
 
 
+@evidence_validation_session()
 def milestone_closure_errors(
         root, closure, schema, integration_schema, result_schema, review_schema, backlog, tasks):
     """Validate the M1 closure as revision-bound evidence, not a status assertion."""
@@ -2393,6 +2426,7 @@ def milestone_closure_errors(
     return errors
 
 
+@evidence_validation_session()
 def m2_milestone_closure_errors(
         root, closure, schema, integration_schema, result_schema, review_schema, backlog, tasks):
     """Validate M2 closure from integrated task evidence and a fresh full regression."""
@@ -2840,6 +2874,7 @@ def m3_frozen_authority_errors(root, evaluated):
     return []
 
 
+@evidence_validation_session()
 def m3_milestone_closure_errors(
         root, closure, schema, integration_schema, result_schema, review_schema, backlog, tasks):
     """Mechanical minimal TEST demonstration closure, independent of release/product PASS."""
@@ -3323,6 +3358,7 @@ def task_definition_errors(
     return errors, tasks
 
 
+@evidence_validation_session()
 def validate(root, args):
     from jsonschema import Draft202012Validator
 

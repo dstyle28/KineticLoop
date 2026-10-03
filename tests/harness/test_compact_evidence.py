@@ -455,3 +455,102 @@ def test_conflicting_encoding_without_reserved_content_stays_opaque(repo, bom, b
     head = commit(root)
     assert ce.read(root, REF, head) == raw
     assert v.evidence_exists(root, REF, head)
+
+
+def test_validation_session_reuses_only_complete_successful_proof(repo, monkeypatch):
+    root, base, record, head = captured(repo)
+    original = ce.git
+    calls = []
+    # The validator owns its separately loaded decoder module.
+    def counted(root, *args):
+        calls.append(args)
+        return original(root, *args)
+    monkeypatch.setattr(v.compact_evidence, 'git', counted)
+    with v.evidence_validation_session():
+        assert v.evidence_exists(root, REF, head, base, 'pytest', 0)
+        first = len(calls)
+        assert first == 7  # One envelope/payload read with all integrity/ancestry checks.
+        for _ in range(20):
+            assert v.evidence_exists(root, REF, head, base, 'pytest', 0)
+        assert len(calls) == first
+        for tested, command, status in ((head, 'pytest', 0), (base, 'other', 0),
+                                        (base, 'pytest', 1)):
+            assert not v.evidence_exists(root, REF, head, tested, command, status)
+        assert len(calls) > first
+    before = len(calls)
+    with v.evidence_validation_session():
+        assert v.evidence_exists(root, REF, head, base, 'pytest', 0)
+    assert len(calls) == before + first
+    assert v._evidence_verdicts.get() is None
+
+
+def test_validation_session_never_caches_working_files_or_head(repo):
+    root, base, record, head = captured(repo)
+    with v.evidence_validation_session():
+        assert v.evidence_exists(root, REF)
+        assert v.evidence_exists(root, REF, 'HEAD')
+        (root / record['payload']).write_bytes(b'corrupt')
+        assert not v.evidence_exists(root, REF)
+        commit(root)
+        assert not v.evidence_exists(root, REF, 'HEAD')
+        # The earlier immutable revision continues to supply its own exact bytes.
+        assert v.evidence_exists(root, REF, head)
+
+
+@pytest.mark.parametrize('mutation', ['missing', 'corrupt'])
+def test_new_validation_operation_observes_object_loss_and_corruption(repo, mutation):
+    root, base, record, head = captured(repo)
+    oid = git(root, 'rev-parse', head + ':' + record['payload'])
+    path = root / '.git/objects' / oid[:2] / oid[2:]
+    original = path.read_bytes()
+    with v.evidence_validation_session():
+        assert v.evidence_exists(root, REF, head)
+    if mutation == 'missing':
+        path.unlink()
+    else:
+        path.unlink()
+        path.write_bytes(b'corrupt git object')
+    with v.evidence_validation_session():
+        assert not v.evidence_exists(root, REF, head)
+        # Failed reads never populate a negative cache; an exact restored object
+        # must be inspected again even in the same validation operation.
+        path.write_bytes(original)
+        assert v.evidence_exists(root, REF, head)
+
+
+def test_validation_cache_binds_repository_path_and_owner(repo):
+    root, base, record, head = captured(repo)
+    borrowed = 'docs/exec-plans/evidence/HG-048/borrowed.json'
+    target = root / borrowed
+    target.parent.mkdir(parents=True)
+    target.write_text(json.dumps(record))
+    head = commit(root)
+    clone = root.parent / (root.name + '-clone')
+    git(root, 'clone', '-q', '--no-hardlinks', str(root), str(clone))
+    oid = git(clone, 'rev-parse', head + ':' + record['payload'])
+    (clone / '.git/objects' / oid[:2] / oid[2:]).unlink()
+    with v.evidence_validation_session():
+        assert v.evidence_exists(root, REF, head, base, 'pytest', 0)
+        assert not v.evidence_exists(root, borrowed, head, base, 'pytest', 0)
+        assert not v.evidence_exists(clone, REF, head, base, 'pytest', 0)
+
+
+def test_validation_session_is_bounded_nested_and_cleared_on_error(repo, monkeypatch):
+    root, base, record, head = captured(repo)
+    refs = [REF]
+    for i in range(3):
+        ref = str(Path(REF).with_name(f'run-{i}.json'))
+        (root / ref).write_text(json.dumps(record))
+        refs.append(ref)
+    head = commit(root)
+    monkeypatch.setattr(v, 'EVIDENCE_VERDICT_LIMIT', 2)
+    with pytest.raises(RuntimeError):
+        with v.evidence_validation_session():
+            outer = v._evidence_verdicts.get()
+            for ref in refs:
+                assert v.evidence_exists(root, ref, head)
+                assert len(outer) <= 2
+            with v.evidence_validation_session():
+                assert v._evidence_verdicts.get() is outer
+            raise RuntimeError('interrupted validation')
+    assert v._evidence_verdicts.get() is None
