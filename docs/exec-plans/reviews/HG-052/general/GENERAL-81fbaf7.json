@@ -1,0 +1,15 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-052",
+  "reviewed_head_sha": "81fbaf7816eb884194810fe281945d6a1741f3f5",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "classification": "BLOCKER",
+      "title": "Identical harness collection payload stored twice",
+      "body": "The T run_harness-run_collection.json.json and C final/harness-run_collection.json.json envelopes decode identical 3,318,465-byte raw payload SHA256 54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac, but point to separate directory payloads. The unchanged compact_evidence.audit duplicate-bulk rule rejects this. Repackage the C envelope to share the identical same-directory content-addressed payload while preserving the T capture and every source/raw execution binding, then produce a new reviewed revision and rerun storage validation/review."
+    }
+  ],
+  "evidence_refs": ["docs/exec-plans/reviews/HG-052/general/REPORT-81fbaf7.md"],
+  "review_contract_version": "v0.2"
+}

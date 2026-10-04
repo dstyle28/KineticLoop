@@ -1,0 +1,22 @@
+{
+  "reviewer": "independent subagent /root/runner_isolation_review",
+  "reviewed_head_sha": "3fe642ce8d67e3a2b52f1c3dbd7337cf231a1bf7",
+  "verdict": "PASS",
+  "blocking_findings": [],
+  "files": {
+    "m3_runner.py": "063c9f69e2e4696c9d0839a54b1325ad906660e4b3a7783d333f798201b02247",
+    "build_closure.py": "74e515427fdac274ae7a36794d893a86b913bbd36fea507141deff69733c7b8a",
+    "verify_m3.py": "b4d273a53395c0b3feeab3381c811bc97e10a96b0760191c5d9c5ea62c4644da"
+  },
+  "resolved_findings": [
+    "diagnostic timeouts cannot bypass either owned cleanup",
+    "bounded readiness command",
+    "outer cleanup/provenance required by export/build/verify",
+    "no duplicate bulk execution-index",
+    "optimized Python rejected",
+    "only explicit migrations commands may clean known default legacy lifecycle",
+    "final inventory failure propagates nonzero",
+    "nonzero diagnostic command retains FAIL"
+  ],
+  "limits": "Pre-execution runner review only; not actual regression, final reviews, CI, App gate or release PASS"
+}

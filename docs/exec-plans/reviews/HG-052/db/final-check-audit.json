@@ -1,0 +1,59 @@
+[
+  {
+    "check": "lint",
+    "metadata_valid": true,
+    "bytes": 19
+  },
+  {
+    "check": "typecheck",
+    "metadata_valid": true,
+    "bytes": 45
+  },
+  {
+    "check": "unit",
+    "metadata_valid": true,
+    "bytes": 3474,
+    "cases": 247
+  },
+  {
+    "check": "harness",
+    "metadata_valid": true,
+    "bytes": 2141,
+    "cases": 1492
+  },
+  {
+    "check": "authority",
+    "metadata_valid": true,
+    "bytes": 38,
+    "HARNESS_CHECK_PASS": true
+  },
+  {
+    "check": "closure_validation",
+    "metadata_valid": true,
+    "bytes": 675,
+    "semantic_report": {
+      "tested_commit": "a4d9c2a6d8365c3f5ef2a5e0f8694be1d3cbf3b7",
+      "integrations": 35,
+      "m3_members": 17,
+      "exits": 8,
+      "fresh_commands": 93,
+      "errors": [],
+      "budget": {
+        "identity": "HG-052",
+        "base": "7d2322707b1ffe177c958ef9385ce40bb66d1e43",
+        "head": "a4d9c2a6d8365c3f5ef2a5e0f8694be1d3cbf3b7",
+        "stored_bytes": 5129873,
+        "files": 778,
+        "errors": [],
+        "remedy": "python tools/harness/compact_evidence.py capture --help"
+      },
+      "production_auto_activation": false,
+      "shadow_executable": false,
+      "product_requirement_pass_claims": [],
+      "deferred_boundaries": 12,
+      "i04_wf": "NOT_RUN",
+      "shadow_usability": "NOT_RUN",
+      "r04_e2e": "NOT_RUN"
+    }
+  }
+]
