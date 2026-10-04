@@ -1,0 +1,102 @@
+{
+  "base_commit": "c82e50aefad5c4d9e325d4928a8f96032b81192d",
+  "tested_commit": "a75a41edfb1b58828b81053b4ac3afa51457a279",
+  "reviewed_head_sha": "2936848abed73320db56f71a649e86eca1497502",
+  "governance_schema": "PASS",
+  "exact_files_changed": 93,
+  "linear_new_evidence_result_suffix": "PASS",
+  "required_review_types": [
+    "DB_CONCURRENCY",
+    "GENERAL",
+    "PROTOCOL",
+    "SECURITY_DATA_BOUNDARY"
+  ],
+  "checks": [
+    {
+      "check_id": "packet_refinement_audit",
+      "bytes": 2797,
+      "tail": "ions.py\"\n  ],\n  \"scheduling\": \"SERIALIZED\",\n  \"runtime_task_checks\": \"NOT_RUN\",\n  \"product_claims\": [],\n  \"generic_enforcement\": \"required IDs, exact commands, owner evidence scope and bound revisions; semantic/skip oracles require actual tests and independent review\",\n  \"packet_projection_audit\": \"task-owned governance verifier supplements generic packet mirrors without shared validator edits\"\n}\n"
+    },
+    {
+      "check_id": "authority_resolution",
+      "bytes": 59,
+      "tail": "CURRENT_DOCUMENT_INDEX_PASS resolved=14 package_bindings=3\n"
+    },
+    {
+      "check_id": "harness_validation",
+      "bytes": 38,
+      "tail": "HARNESS_CHECK_PASS tasks=77 active=74\n"
+    },
+    {
+      "check_id": "lint",
+      "bytes": 19,
+      "tail": "All checks passed!\n"
+    },
+    {
+      "check_id": "typecheck",
+      "bytes": 45,
+      "tail": "Success: no issues found in 171 source files\n"
+    },
+    {
+      "check_id": "unit",
+      "bytes": 3493,
+      "tail": "st_planning.py ..                                  [ 95%]\ntests/unit/workflow/test_planning_progress.py ....                       [ 97%]\ntests/unit/workflow/test_source_decision_conformance.py ......           [100%]\n\n- generated xml file: /private/tmp/hg053-checks-a75a41edfb1b58828b81053b4ac3afa51457a279/unit.xml -\n======================= 247 passed in 476.33s (0:07:56) ========================\n"
+    },
+    {
+      "check_id": "harness",
+      "bytes": 2165,
+      "tail": ".......................................... [ 91%]\n........................................................................ [ 96%]\n....................................................                     [100%]\n- generated xml file: /private/tmp/hg053-checks-a75a41edfb1b58828b81053b4ac3afa51457a279/harness/junit.xml -\n====================== 1492 passed in 1407.79s (0:23:27) =======================\n"
+    }
+  ],
+  "recovered_hashes": {
+    "docs/exec-plans/evidence/HG-053/checks-a75a41edfb1b58828b81053b4ac3afa51457a279/packet_refinement_audit.json": "f41eaeb7492b16bc77b71f05e91bcecc453c0a27025483873577eb5a88e7f739",
+    "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/a75a41edfb1b58828b81053b4ac3afa51457a279-authority_resolution.json": "5d8aa7d0ee18525124727581afc6468ca900c13889ffaf7e09212e878a1621fb",
+    "docs/exec-plans/evidence/HG-053/checks-a75a41edfb1b58828b81053b4ac3afa51457a279/harness_validation.json": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+    "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/a75a41edfb1b58828b81053b4ac3afa51457a279-lint.json": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/a75a41edfb1b58828b81053b4ac3afa51457a279-typecheck.json": "5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523",
+    "docs/exec-plans/evidence/HG-053/checks-a75a41edfb1b58828b81053b4ac3afa51457a279/unit.json": "0d55a819de2754c5f9d78378e1b0fcec24b3c2d3c34ef05438267ea9fe7e63da",
+    "docs/exec-plans/evidence/HG-053/checks-a75a41edfb1b58828b81053b4ac3afa51457a279/harness.json": "dd30c1345a0d20e80f0936314e21b57ad0cd617408f5f16560986916a1271a83",
+    "docs/exec-plans/evidence/HG-053/checks-a75a41edfb1b58828b81053b4ac3afa51457a279/unit-unit.xml.json": "50232a5a352c063118a407a2fc043f575fe77ecfc1ee5c0a5a0fea9d5a5f5c96",
+    "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/a75a41edfb1b58828b81053b4ac3afa51457a279-harness-collection.json.json": "54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac",
+    "docs/exec-plans/evidence/HG-053/checks-a75a41edfb1b58828b81053b4ac3afa51457a279/harness-collection.log.json": "61153d6b7da5f84ca1837cce0413ae696a382bde6ac32d6fd176053e2ef067f7",
+    "docs/exec-plans/evidence/HG-053/checks-a75a41edfb1b58828b81053b4ac3afa51457a279/harness-execution.json.json": "81563a384f7c44f1225b1e3201b043bb2209ac4360ade2ef7a50eaa562356acb",
+    "docs/exec-plans/evidence/HG-053/checks-a75a41edfb1b58828b81053b4ac3afa51457a279/harness-junit.xml.json": "104d937ffb7740f3a1025a868128242b3df7d505d5f805e1272600f6421227bc",
+    "docs/exec-plans/evidence/HG-053/checks-a75a41edfb1b58828b81053b4ac3afa51457a279/harness-manifest.json.json": "80c443313da0c140f42351ab1fb3a384056d47850326b76cd465017c7069d411",
+    "docs/exec-plans/evidence/HG-053/checks-a75a41edfb1b58828b81053b4ac3afa51457a279/a75a41edfb1b58828b81053b4ac3afa51457a279-harness-pytest.log.json": "dd30c1345a0d20e80f0936314e21b57ad0cd617408f5f16560986916a1271a83"
+  },
+  "storage": {
+    "identity": "HG-053",
+    "base": "c82e50aefad5c4d9e325d4928a8f96032b81192d",
+    "head": "2936848abed73320db56f71a649e86eca1497502",
+    "stored_bytes": 6229171,
+    "files": 86,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "harness_full_agreement": {
+    "serial_and_worker_collection": 1492,
+    "unique_started": 1492,
+    "setup_pass": 1492,
+    "call_pass": 1492,
+    "teardown_pass": 1492,
+    "junit_ids_match": true,
+    "manifest_hashes_match": true
+  },
+  "preserved_failures": [
+    {
+      "path": "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/unit.json",
+      "exit_code": 1,
+      "raw_sha256": "c85aaefd497d724b5d3cf087495a8576e09fc45328805c12423c006458931a00"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/capture_runner.json",
+      "exit_code": 1,
+      "raw_sha256": "d47993ee266998d60b2e442184e9e914146cc85743afd5e9f054a428dc308d77"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/harness.json",
+      "exit_code": 130,
+      "raw_sha256": "d2fbe26e9c8868de2345e924f31046dae25eec41903fd3d2cfdcea852b30c179"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "tested_commit": "cc0c7722974cb57bad0d794aeb2940fd65f3f516",
+  "checks": [
+    {
+      "check_id": "packet_refinement_audit",
+      "command": "uv run python docs/exec-plans/evidence/HG-053/verify_refinement.py",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 0.449,
+      "log": "/private/tmp/hg053-checks-cc0c7722974cb57bad0d794aeb2940fd65f3f516/packet_refinement_audit.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-053/checks-cc0c7722974cb57bad0d794aeb2940fd65f3f516/packet_refinement_audit.json"
+    },
+    {
+      "check_id": "authority_resolution",
+      "command": "uv run python tools/harness/document_index/check.py current_document_index_resolves",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 0.044,
+      "log": "/private/tmp/hg053-checks-cc0c7722974cb57bad0d794aeb2940fd65f3f516/authority_resolution.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/cc0c7722974cb57bad0d794aeb2940fd65f3f516-authority_resolution.json"
+    },
+    {
+      "check_id": "harness_validation",
+      "command": "uv run kl check-harness",
+      "result": "FAIL",
+      "exit_code": 241,
+      "seconds": 387.422,
+      "log": "/private/tmp/hg053-checks-cc0c7722974cb57bad0d794aeb2940fd65f3f516/harness_validation.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/cc0c7722974cb57bad0d794aeb2940fd65f3f516-harness_validation.json"
+    },
+    {
+      "check_id": "lint",
+      "command": "uv run kl lint",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 0.102,
+      "log": "/private/tmp/hg053-checks-cc0c7722974cb57bad0d794aeb2940fd65f3f516/lint.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/cc0c7722974cb57bad0d794aeb2940fd65f3f516-lint.json"
+    },
+    {
+      "check_id": "typecheck",
+      "command": "uv run kl typecheck",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 0.269,
+      "log": "/private/tmp/hg053-checks-cc0c7722974cb57bad0d794aeb2940fd65f3f516/typecheck.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/cc0c7722974cb57bad0d794aeb2940fd65f3f516-typecheck.json"
+    },
+    {
+      "check_id": "unit",
+      "command": "uv run kl test-unit --junitxml=/private/tmp/hg053-checks-cc0c7722974cb57bad0d794aeb2940fd65f3f516/unit.xml",
+      "result": "FAIL",
+      "exit_code": 1,
+      "seconds": 389.238,
+      "log": "/private/tmp/hg053-checks-cc0c7722974cb57bad0d794aeb2940fd65f3f516/unit.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-053/checks-cc0c7722974cb57bad0d794aeb2940fd65f3f516/unit.json",
+      "ancillary_refs": [
+        "docs/exec-plans/evidence/HG-053/checks-cc0c7722974cb57bad0d794aeb2940fd65f3f516/unit-unit.xml.json"
+      ]
+    },
+    {
+      "check_id": "harness",
+      "command": "uv run kl test-harness --evidence-dir /private/tmp/hg053-checks-cc0c7722974cb57bad0d794aeb2940fd65f3f516/harness",
+      "result": "FAIL",
+      "exit_code": 130,
+      "seconds": 387.666,
+      "log": "/private/tmp/hg053-checks-cc0c7722974cb57bad0d794aeb2940fd65f3f516/harness.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/cc0c7722974cb57bad0d794aeb2940fd65f3f516-harness.json",
+      "ancillary_refs": [
+        "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/cc0c7722974cb57bad0d794aeb2940fd65f3f516-harness-collection.json.json",
+        "docs/exec-plans/evidence/HG-053/checks-cc0c7722974cb57bad0d794aeb2940fd65f3f516/harness-collection.log.json",
+        "docs/exec-plans/evidence/HG-053/checks-cc0c7722974cb57bad0d794aeb2940fd65f3f516/harness-execution.json.json",
+        "docs/exec-plans/evidence/HG-053/checks-cc0c7722974cb57bad0d794aeb2940fd65f3f516/harness-junit.xml.json",
+        "docs/exec-plans/evidence/HG-053/checks-cc0c7722974cb57bad0d794aeb2940fd65f3f516/harness-manifest.json.json",
+        "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/cc0c7722974cb57bad0d794aeb2940fd65f3f516-harness-pytest.log.json"
+      ]
+    }
+  ],
+  "runtime_checks": "NOT_RUN",
+  "product_claims": []
+}
