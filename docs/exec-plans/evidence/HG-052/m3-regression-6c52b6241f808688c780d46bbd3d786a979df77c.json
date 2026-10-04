@@ -1,0 +1,1689 @@
+{
+  "change_id": "HG-052",
+  "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+  "status": "PASS",
+  "commands": [
+    "uv run kl test-unit",
+    "uv run kl test-harness",
+    "uv run kl check-harness",
+    "uv run pytest -q tests/db/test_boundary_acceptance.py",
+    "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial",
+    "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b02_stale_frontier_seal_race",
+    "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b03_sealed_immutability_ready_barrier",
+    "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b04_relevant_revoke_issue_reauthorize",
+    "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b05_unrelated_revoke_preserves_eligibility",
+    "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b06_revoke_before_publish",
+    "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b07_revoke_current_execution_denial",
+    "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b09_server_minimum_certificate",
+    "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b11_backdated_revoke_commit_linearization",
+    "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b12_future_revoke_immediate_at_commit",
+    "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b13_revoke_rollback_zero_effects",
+    "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b14_registry_failclosed_stop_support",
+    "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b15_fresh_registry_both_orders",
+    "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b16_continue_resume_after_invalidation",
+    "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b17_transitive_revoke_denied",
+    "uv run pytest -q tests/db/test_call_ledger.py",
+    "uv run pytest -q tests/db/test_deterministic_planning.py",
+    "uv run pytest -q tests/db/test_factsets.py",
+    "uv run pytest -q tests/db/test_factsets.py::test_complete_serializes_with_candidate_writer",
+    "uv run pytest -q tests/db/test_factsets.py::test_seal_frontier_atomicity_and_old_replay",
+    "uv run pytest -q tests/db/test_full_action_preparation.py",
+    "uv run pytest -q tests/db/test_full_test_execution.py",
+    "uv run pytest -q tests/db/test_full_test_execution.py::test_continue_resume_rechecks",
+    "uv run pytest -q tests/db/test_full_test_execution.py::test_replay_and_atomicity",
+    "uv run pytest -q tests/db/test_migrations.py",
+    "uv run pytest -q tests/db/test_migrations.py tests/db/test_transaction_interfaces.py",
+    "uv run pytest -q tests/db/test_planning.py",
+    "uv run pytest -q tests/db/test_planning_progress.py",
+    "uv run pytest -q tests/db/test_preparation.py",
+    "uv run pytest -q tests/db/test_protocol_execution.py",
+    "uv run pytest -q tests/db/test_protocol_interleavings.py",
+    "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_issue",
+    "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_publish",
+    "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_start",
+    "uv run pytest -q tests/db/test_protocol_interleavings.py::test_cancel_vs_dispatch",
+    "uv run pytest -q tests/db/test_protocol_interleavings.py::test_expiry_vs_start",
+    "uv run pytest -q tests/db/test_protocol_interleavings.py::test_publish_vs_user_revoke",
+    "uv run pytest -q tests/db/test_protocol_interleavings.py::test_seal_vs_input_update",
+    "uv run pytest -q tests/db/test_protocol_interleavings.py::test_start_vs_user_revoke",
+    "uv run pytest -q tests/db/test_protocol_interleavings.py::test_takeover_vs_commit",
+    "uv run pytest -q tests/db/test_safety_registry.py",
+    "uv run pytest -q tests/db/test_safety_registry.py::test_t2_global_commit_rollback_and_effective_at_semantics",
+    "uv run pytest -q tests/db/test_shadow_isolation.py::test_declared_evaluation_storage_isolation",
+    "uv run pytest -q tests/db/test_shadow_isolation.py::test_evaluation_principal_live_denials",
+    "uv run pytest -q tests/db/test_shadow_isolation.py::test_shadow_payload_owner_denials",
+    "uv run pytest -q tests/db/test_shadow_isolation.py::test_test_authorization_crossing_denials",
+    "uv run pytest -q tests/db/test_test_only_demo.py",
+    "uv run pytest -q tests/db/test_test_only_demo.py::test_expiry_then_deny",
+    "uv run pytest -q tests/db/test_test_only_demo.py::test_fdn_repair",
+    "uv run pytest -q tests/db/test_test_only_demo.py::test_full_trajectory",
+    "uv run pytest -q tests/db/test_test_only_demo.py::test_production_shadow_denials",
+    "uv run pytest -q tests/db/test_test_only_demo.py::test_revoke_then_deny",
+    "uv run pytest -q tests/db/test_transaction_interfaces.py",
+    "uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_authorization_evaluator_persists_exact_minimum_certificate",
+    "uv run pytest -q tests/e2e/test_authorization_evaluator.py",
+    "uv run pytest -q tests/unit/protocol/test_authorization.py",
+    "uv run pytest -q tests/unit/protocol/test_authorization.py::test_timeless_dependency_requires_auditable_policy_in_same_transitive_closure",
+    "uv run pytest -q tests/unit/protocol/test_authorization.py::test_validity_closure_uses_every_bound_and_denies_missing_or_elapsed_basis",
+    "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py",
+    "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial",
+    "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b08_missing_validity_denied",
+    "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b09_server_minimum_closure",
+    "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b10_expiry_without_status_job",
+    "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b17_transitive_closure_omission_denied",
+    "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b18_timeless_policy_reason_required",
+    "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_boundary_namespace",
+    "uv run pytest -q tests/unit/protocol/test_execution.py",
+    "uv run pytest -q tests/unit/protocol/test_factsets.py",
+    "uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_time_boundaries",
+    "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py tests/db/test_shadow_isolation.py",
+    "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_namespace_and_boundary",
+    "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_strict_shadow_wire",
+    "uv run pytest -q tests/unit/protocol/test_test_only_demo.py::test_namespace_and_boundary",
+    "uv run pytest -q tests/unit/workflow/test_call_ledger.py",
+    "uv run pytest -q tests/unit/workflow/test_planning.py",
+    "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_source_matrix",
+    "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_basis_and_actual_separation",
+    "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_namespace",
+    "uv run pytest -q tests/db/test_source_decision_conformance.py::test_preparation_owners",
+    "uv run pytest -q tests/db/test_source_decision_conformance.py::test_canonical_full_t6",
+    "uv run pytest -q tests/db/test_source_decision_conformance.py::test_invalid_source_reconstruction",
+    "uv run pytest -q tests/db/test_source_decision_conformance.py::test_freshness_predicate_support",
+    "uv run pytest -q tests/db/test_source_decision_conformance.py::test_owner_trajectories",
+    "uv run pytest -q tests/db/test_source_decision_conformance.py::test_current_denials",
+    "uv run pytest -q tests/db/test_source_decision_conformance.py::test_repair_replay_expiry",
+    "uv run pytest -q tests/db/test_source_decision_conformance.py",
+    "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py",
+    "uv run pytest -q tests/unit/workflow/test_deterministic_planning.py",
+    "uv run pytest -q tests/unit/workflow/test_full_action_preparation.py"
+  ],
+  "executions": [
+    {
+      "command": "uv run kl test-unit",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_01.log.json",
+        "sha256": "85ee9724fd6d90d9707c716372d7839a6bde39f794b8bb521fca5a3e319ae90c"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_01.xml.json",
+        "sha256": "75f6a42d312293bebca3669cb39aadc8e88e99da273d0d8ac91959c6a3fb90e2"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/01-collection-bound.json.json",
+        "sha256": "de65afb451974682544b36a5403ec3ec2a7253bd8d80e9b734b0924856a21678"
+      }
+    },
+    {
+      "command": "uv run kl test-harness",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_02.log.json",
+        "sha256": "0f6e826a9d7799803a61b6bfdb178923b5cdc192215aac283b411f07a442b931"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_02.xml.json",
+        "sha256": "648064c29e64014aede9cfdeb713b110c91b743fb4eb5c1844627db253ab43ce"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/02-collection-bound.json.json",
+        "sha256": "fc8e739fdc763b1155edc0aa4e7064069bce6df8ea454d3ea2574b73112345e4"
+      }
+    },
+    {
+      "command": "uv run kl check-harness",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_03.log.json",
+        "sha256": "8f2e5ca09dbe70ecc8754ee70cb6c9fa637550438f0bbb1ff454da4e190f0a6f"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_04.log.json",
+        "sha256": "2fa9c4f487850013e01d8fa0e96c92425f843af306447bb58583b6c1fbbc1b30"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_04.xml.json",
+        "sha256": "3a4732a5171afa5d7ce5ab7e09d7e8068b02ad635d8a7aaa38344e6c680ef4b3"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/04-collection-bound.json.json",
+        "sha256": "672f37d4654862bf13b0e6caa412d4924c50b9e4120dd1553529139e56f50eff"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_05.log.json",
+        "sha256": "0f23b5bef25eb0774e4cca53f1df4cab37aade7e5525134acdd0524a194f58d8"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_05.xml.json",
+        "sha256": "09c7bf59daf95bf5fbb2f763cd7cb853cbe2907445f4c7e7a2492ce036b3b1c6"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/05-collection-bound.json.json",
+        "sha256": "75b083f7c81645be70b7ec63e547f05fb3f354c4460a548d904e5beb4508b492"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b02_stale_frontier_seal_race",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_06.log.json",
+        "sha256": "463bcef3333375dc59ed1c30fff16c46ef45a7dd29f46b858311c01f6332ba81"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_06.xml.json",
+        "sha256": "56163eab2d807b50d70f709d865c77ffc0375e045bb9ccea8e0bff4f6f521a35"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/06-collection-bound.json.json",
+        "sha256": "30a3a5a4b4773e8d8f8e8e425cb496b1f6c73aee7fe91fd62028d5b9e0b06bbd"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b03_sealed_immutability_ready_barrier",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_07.log.json",
+        "sha256": "3009ec6c84a2753daafd9fd0c1b7f2061679e8530387311885f62c44ba4d6b28"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_07.xml.json",
+        "sha256": "0d8f2af3d74070996d6e1d5e888f60ff6b1031a390f89bdb2f11b6956a4d610b"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/07-collection-bound.json.json",
+        "sha256": "df7dc8791947e50ceaabad3e8db04efe6bc673094c8be67d88c9e9853dc3b925"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b04_relevant_revoke_issue_reauthorize",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_08.log.json",
+        "sha256": "d0ec08d71f1af987217df5df75168bf4ab49e3a0f4d54e0fcd1e1892f3df8ef5"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_08.xml.json",
+        "sha256": "fca215039e3a8ac0fb8260f4e399e51b66b5a78dec97d3bc448446079d93da83"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/08-collection-bound.json.json",
+        "sha256": "7aac4c4216f4f96ed4b7d2a793ca2f645110df3fb3439673970a880d9baccf85"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b05_unrelated_revoke_preserves_eligibility",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_09.log.json",
+        "sha256": "c5c80c7b55fff28e874ba825a503b2a578a4cd2233a232afe604e3015092ea58"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_09.xml.json",
+        "sha256": "27f838a4f1711ebb60a442a2867dd0a3f4dbd630e720e1b357032fde472716bc"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/09-collection-bound.json.json",
+        "sha256": "79a29ea4928a89cd3271b1fbdf5021dd5795778e12ada1db50a5fea5c596dbc8"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b06_revoke_before_publish",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_10.log.json",
+        "sha256": "a3ca2760bf9c9c29a75f2fb29e2e001e4a1b2e98040a969909526a6fa89f7433"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_10.xml.json",
+        "sha256": "b0e622d5f77fc9679a0c11c7a796d493c5b2de5713aeda0162ce4da609c7830d"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/10-collection-bound.json.json",
+        "sha256": "4044b870011656d4ed08b49f808a3eab45ba55115c03bcb077a21dab3a8e825a"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b07_revoke_current_execution_denial",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_11.log.json",
+        "sha256": "39320051ad0a517efc694778b9235712133b6cabd698c1352636ff941b411a71"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_11.xml.json",
+        "sha256": "c6bd56e45a055b451ba6577cefee53596649813970d4eb1c152b7030efc05a43"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/11-collection-bound.json.json",
+        "sha256": "81125e9cb259378f3899ab9584c4b2e7a8977bb0a513c488ed160c950a557772"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b09_server_minimum_certificate",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_12.log.json",
+        "sha256": "87e6eb7acb5044a5697729335ed08495f863ccf7fe86d39d50c87aeaf834235c"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_12.xml.json",
+        "sha256": "ec38de8b3d34942d05f5a44d46773beb7604821e43c937ac8bf7e184cf84b4ff"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/12-collection-bound.json.json",
+        "sha256": "3d0385fe4a16521b6b6036554e50a4dccc2e5ad1481066e297acba53b4fc4825"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b11_backdated_revoke_commit_linearization",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_13.log.json",
+        "sha256": "1a90bf947d926ef7a20fde48f5bc7f84ad31f5b3040fd86d117064bc5ec1bc07"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_13.xml.json",
+        "sha256": "e13fdfdbb4a0f6e2d1a20d578fae8466aefeb1a9a68ab503ee39e5ba0864f492"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/13-collection-bound.json.json",
+        "sha256": "f9ade801786a992c5fe3d3248c8af9873c18ca3ef8174156cab9f493786b8ba0"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b12_future_revoke_immediate_at_commit",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_14.log.json",
+        "sha256": "b5de8b74a4bf99bc5ab06d96e104a449119b95cf74e4f9d56d0761ac0dcf4403"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_14.xml.json",
+        "sha256": "129e5869ca61fdb7fc30fdac846f0bbd8973099192ba9fa4c2b19b756370b2c9"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/14-collection-bound.json.json",
+        "sha256": "77297affb65208dd439e5126f1db3b8854801fd6cf96f046613b8b258ba2defa"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b13_revoke_rollback_zero_effects",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_15.log.json",
+        "sha256": "740c2f24d23aca92374f545bae858522eb99df9385e55d0baaa67c0474ae141f"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_15.xml.json",
+        "sha256": "ef7ca825edc44344370da8a95b9b68b39f74b8cbe953c54fb25248aef7b8995b"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/15-collection-bound.json.json",
+        "sha256": "9fc7932204076e296f2f9f08cf204219a2bd56486ea07cb15cdab1d024052de2"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b14_registry_failclosed_stop_support",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_16.log.json",
+        "sha256": "659c56be0f7e51bae2dda2e3d7a10fa6a89bd2cc28f664239f061883f1a427d0"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_16.xml.json",
+        "sha256": "16ac404bfcaf573ba9a50488ebb243ab36608770efd08776e7d4bd95e0155bab"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/16-collection-bound.json.json",
+        "sha256": "434356007f4485220bf5ff5c23ea34018a9ead2a094bf0257c278b6cd042ebbe"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b15_fresh_registry_both_orders",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_17.log.json",
+        "sha256": "3b96fd99ad572d24a1c395d85205c65f1a9b630b921f7dc24eb8cc10f0b03363"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_17.xml.json",
+        "sha256": "dac5d377d6b7096a809802b76614e292f1eeb4df1be3e1a210e9d3a09b26afd6"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/17-collection-bound.json.json",
+        "sha256": "696474255e0a8f863b61e8427f2c4526a1acead7bb45454505fead27822293ac"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b16_continue_resume_after_invalidation",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_18.log.json",
+        "sha256": "c2ffbcbff772630acdc274e7dfa4bb3d1604bab2c503f4d26550428db3b55902"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_18.xml.json",
+        "sha256": "c7c1b7efbea276ea4da35a6cdbcb1e84ea2774698bd1cb33080c973424820637"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/18-collection-bound.json.json",
+        "sha256": "36e570d81ddf9fc2cbf0443f0b1f39b13e12cba0854ae236fcb32b251d3089c9"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_boundary_acceptance.py::test_b17_transitive_revoke_denied",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_19.log.json",
+        "sha256": "b10f115fbcbb36289ed31276255b81370b8f1e351706c1ada5a807cc5131e839"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_19.xml.json",
+        "sha256": "091c9e422b621d5cb2351ec5518763e7aba8b66f82cab4d8cef552cabbf07ef0"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/19-collection-bound.json.json",
+        "sha256": "06ff72a9e7945975f7beafaf99a15624c7818c3da643b49b82a0fdb82852501b"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_call_ledger.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_20.log.json",
+        "sha256": "1b0d483c849dd415fa75da52da847adf02ce9f65909ce944dfad3bcf6b2a482b"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_20.xml.json",
+        "sha256": "1cdea9388e467f4695f4cc2f219641c27c99aa40b78d1a7a88660e483736d500"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/20-collection-bound.json.json",
+        "sha256": "307df86dbb2ae270de834371b010874036b465f79fc49126a6e011d93c35f617"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_deterministic_planning.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_21.log.json",
+        "sha256": "d10e6c84bc8fac6c22eb68f4c31502c8653fdf57a2e043cc4640207f80d6dbc6"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_21.xml.json",
+        "sha256": "6459a4b614e4d7db81744f6e60d8af222011d7cecf6035bea4ccf6a931a6a0a2"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/21-collection-bound.json.json",
+        "sha256": "3f97a4c2ed918d5dc18ed68b6698f83d1b33687d0de019473b2c95183cc4d261"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_factsets.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_22.log.json",
+        "sha256": "5c3e59fe7bee13a910741b660b291e6038a34f99fd0b336985e6486f5f350a74"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_22.xml.json",
+        "sha256": "1791e43b09f4563c943141a64e7695eef10460c3fee2d96abf0b0c3eef79918e"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/22-collection-bound.json.json",
+        "sha256": "bbf663efa3004c074320d24f7f038ff0742585314f4220d3bffadf087274b107"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_factsets.py::test_complete_serializes_with_candidate_writer",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_23.log.json",
+        "sha256": "de6523edd3381ddc550ac5a2f0acff3561489633c6b7704f11be7e19c99e607c"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_23.xml.json",
+        "sha256": "879d1bc741ace1b6626b41c0bffcdce660064af28e09e9d768a910a2e8b09524"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/23-collection-bound.json.json",
+        "sha256": "304e3476dec37c85fcf661103bb3bfab712c08ff19fb6285d783cd6b70931d26"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_factsets.py::test_seal_frontier_atomicity_and_old_replay",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_24.log.json",
+        "sha256": "ece0f80ca490bd282b492a65488c0b9d2bbc487515162cd98a67dade0539bed3"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_24.xml.json",
+        "sha256": "a1bccfac4f8b870b051ff6a88a9e91c8d7548adb4809f2a7c7294adff190e5e9"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/24-collection-bound.json.json",
+        "sha256": "994c41b00c791c9d704b60569c635b599967de81e7ad28b2f345f8e9ac1812a2"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_full_action_preparation.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_25.log.json",
+        "sha256": "e58a7ad758309392ba20d30f918bb95ab522d64abc17d4d643ecc4865503121c"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_25.xml.json",
+        "sha256": "37fcaa527aa9b1fddd9cd273b7c50cb04512f28ba48739a08a7f58e6f0724e65"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/25-collection-bound.json.json",
+        "sha256": "0139b48885dd58fe7f8e20f518947faebd36b28e138c5546cf631d6557360b1f"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_full_test_execution.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_26.log.json",
+        "sha256": "0238447c3071e62be5508b1cd93f0c68659a9483a2e2c1e915af32f0b7789d07"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_26.xml.json",
+        "sha256": "72ab1844bedc810a5216699602fdaa6c2d6d26015fcea6169f8139611b274036"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/26-collection-bound.json.json",
+        "sha256": "f38167d100ad721553591442f0a6a9d087ab2ce65c7e48e0cbebe7fad7b16e63"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_continue_resume_rechecks",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_27.log.json",
+        "sha256": "25b028d8ea7666ae59aad18d169770dfb996f625abef1a9834a28c403cb6c7fc"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_27.xml.json",
+        "sha256": "b430db4329392cc32d6737cc88f3813cb9165439ce03bc5b0bdc8dad618f83d4"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/27-collection-bound.json.json",
+        "sha256": "dd30b9dd237454c45d990f6f1d8601925ffbac5219ae4446305d88f1a9987d5b"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_full_test_execution.py::test_replay_and_atomicity",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_28.log.json",
+        "sha256": "99a495a394d4a089c5a13d8feaa1c312ef0e72513a7ee9ac092d075c682ae35d"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_28.xml.json",
+        "sha256": "d660c5cd32989119b3312cd255a649d67e028a9d6a0c687f7a71772459b61e9c"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/28-collection-bound.json.json",
+        "sha256": "f07e890968d7d92fc87852f1aaaefe4efdd8e1e7b0521fd818c8ba265f094d4c"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_migrations.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_29.log.json",
+        "sha256": "8b32513c719f65ff24041b3a3189e5c48fde49f82653843c241065c39627018c"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_29.xml.json",
+        "sha256": "a3ceb4f44c8bb67c0901376d42131acbbe01f4e4d689d267987203c9a7f7fa4f"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/29-collection-bound.json.json",
+        "sha256": "f24fe04d460d904f09b542c21fcf4f4c4e7e44ae62c114a88ca07c47b3e8a5bc"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_migrations.py tests/db/test_transaction_interfaces.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_30.log.json",
+        "sha256": "a96f81919179c0e6eb186eade16f07c5d6ee7a061b57cc32c98f4591ab9b321d"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_30.xml.json",
+        "sha256": "6306be28a1d7bc8afb39b9d175ea25f7ac9a0d6305057fb09615cbf18782a957"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/30-collection-bound.json.json",
+        "sha256": "d8c7e23fdea88d807b9ff10f7190ca1c8499a3e25c3474faf21c5af66be9e19a"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_planning.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_31.log.json",
+        "sha256": "375fca016ca93098f64e615038d3e570f0d3e2d423b329ee042e723298cbaefa"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_31.xml.json",
+        "sha256": "6a98596f33c0a63dcf121e055dda2badfcc7761c32c956d8b7783556a9ae14d3"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/31-collection-bound.json.json",
+        "sha256": "787e2fc62d33cf5acd461e79acf2ab78acfcddcd56b67b18775ee114646aa4ee"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_planning_progress.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_32.log.json",
+        "sha256": "43a0f5228529b8776e1c79eb083d73820abc49c708f578cec2cd763f235fc880"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_32.xml.json",
+        "sha256": "78451d92fcefbba44ba7f55e138c7581316d6e26127c05fe74b1c2325cd6ad9f"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/32-collection-bound.json.json",
+        "sha256": "1afa9cf6251679ef3591018bffd223a14b7a04e91e1ef874d4039ba25159b0ca"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_preparation.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_33.log.json",
+        "sha256": "651c230649fa6023cb06799136f3092398f5e917d44c9c0fe41b995e2260035e"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_33.xml.json",
+        "sha256": "2fcfa17aad7ec1f3cf0f00cc3bb83fdceb5ebac1c8673a748d952c3896975a0f"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/33-collection-bound.json.json",
+        "sha256": "9e7b2961af4b4f1f0a7b2188fe038cd0635b439dcecf4bdae97f9ca60a71d656"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_protocol_execution.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_34.log.json",
+        "sha256": "bd7c2dfed66096eb101aa6832294386997f9b1ea418534a0c24b0e1bcb5a3c16"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_34.xml.json",
+        "sha256": "9396af858bd301ae0c298e9436f859e59fc74372b030b02dc0f84921ad008294"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/34-collection-bound.json.json",
+        "sha256": "7426a9d33eaba5ea1d42c85281f78cb4f3351ea139a6d7019ff240ee24427b93"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_35.log.json",
+        "sha256": "b87fb8a2c45b354b6ba3a5a2e7f5457d56e0a9e0feada672f87817bef0159d87"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_35.xml.json",
+        "sha256": "8c257735cb19bacfd45b3571b9f730a9234f8142467bafae41b99f7e5b2458c7"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/35-collection-bound.json.json",
+        "sha256": "840c0b6f33eff7092e92ab180ee30ea2cf078e2837e65674911902f2a513a9e9"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_issue",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_36.log.json",
+        "sha256": "56d0d828ea1a929ec8d5958ef06e5ea704ca863e7608e78acc3cdc7b58e4cd7a"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_36.xml.json",
+        "sha256": "3e33d2f5e3d226e957b34987acb647e4eba2d4492a75c6780621cc359fa21e30"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/36-collection-bound.json.json",
+        "sha256": "9fca98d3dc269f3ea90531d88c55ff644166510dd697a6b1434e9a63773d52ea"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_publish",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_37.log.json",
+        "sha256": "d28042a70055bd5048ef0e80b5d2079a996e19bd519622322e26fbf276cd28b3"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_37.xml.json",
+        "sha256": "266b74b8bfe8a6c7fefa1bda885d0156d7d697f187037a7a159a3cdaf880ac26"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/37-collection-bound.json.json",
+        "sha256": "6d897da783b0a282b5e21fea76f12d0f1bbe3f505bbe1e7f31d08eb96f1a2781"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_artifact_revoke_vs_start",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_38.log.json",
+        "sha256": "a7da2a16b3e06274557d98cb11ccb4a162f8561f936f7d4a4673a2c2262e00a3"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_38.xml.json",
+        "sha256": "57c4eb9e4eaf755e35f6c34eb4b9df5158e9d91a16398393e3df6ae2f1181ac3"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/38-collection-bound.json.json",
+        "sha256": "1e00f6a3db7ab1a518e5c6e092cc43cdc462dfbb3778e8f48883257325efc419"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_cancel_vs_dispatch",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_39.log.json",
+        "sha256": "08cfd76f3bf231906f8d4ff94f31e18844f31e90bfee1b49352edfd72dd0b620"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_39.xml.json",
+        "sha256": "2537dbb9223fd8d0d454d06339f483b7c14c6d49f09bc8b7343c6dd86faa0432"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/39-collection-bound.json.json",
+        "sha256": "464361d8f095682e716e26d1189995c93294be942c7d5b44f21ef8c4bc397f29"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_expiry_vs_start",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_40.log.json",
+        "sha256": "7c5c40592bf99942d6e77084f186c8399b4846de4bbe19e012ca59e7931be382"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_40.xml.json",
+        "sha256": "473fb5f9faf27c86c1038bdcccb4964565e142875655c874024043cefdd8244d"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/40-collection-bound.json.json",
+        "sha256": "0c7a2c97a26e46764e4974927b30073829240f1a342d3cdcde3d70acefb226ab"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_publish_vs_user_revoke",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_41.log.json",
+        "sha256": "6232aa4eadfb856aedb85ef4ac517adfd8c075e8c97cd2d8f800e159a566cd70"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_41.xml.json",
+        "sha256": "b3a020daab471fcb30d9f8a18baca0d1c59477db8ac66d82476dc35fade2649a"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/41-collection-bound.json.json",
+        "sha256": "18cfdd7779cf6d59d943feb855c1ee98526d9882f8778c5c2c8d3cbc3566317e"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_seal_vs_input_update",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_42.log.json",
+        "sha256": "627d148a62a40900d4b0864e18f28eae1669dc2f003e63e616df9f7d8541e633"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_42.xml.json",
+        "sha256": "74077cd8de06acfca8a454affa874e363d0f4131b1c8adbf521717fec3464af6"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/42-collection-bound.json.json",
+        "sha256": "dc082a1d5d3417f00195daadd781601792afda05df2aa2f36e165e0a3ca40271"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_start_vs_user_revoke",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_43.log.json",
+        "sha256": "fae67ccc984dfa8e0dbface3d5c41a83aff3882acc5e6654ad6b42435bf35d3c"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_43.xml.json",
+        "sha256": "1f1dd5ef8ad31a5d5d45c1fdea27668027c7f509f6a374d89c5017051ab8a4bf"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/43-collection-bound.json.json",
+        "sha256": "7e5e984023735e769b5cce7a14107747c7af72345ae355a74719a37126438a50"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_protocol_interleavings.py::test_takeover_vs_commit",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_44.log.json",
+        "sha256": "58cef44f4a007f27d20ed354aa5f25fb95f17706a5cbbcd891740753f84cd29a"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_44.xml.json",
+        "sha256": "664fddb6403f252dd7f9be28c8a24a6a0161ee6ad7d5114971ad9baff627e47b"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/44-collection-bound.json.json",
+        "sha256": "4da9ead1fb3544f456941fcc362a9457da08e5e152449c9fb296ca6d28906a1c"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_safety_registry.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_45.log.json",
+        "sha256": "38baa400293f97d77f4cf56c2c7f598699fdf08230ce01046537eac551c08933"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_45.xml.json",
+        "sha256": "fdf97f2499ef0473f3ce14318604592025df8431479d2e2d76fab3efc8768e6e"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/45-collection-bound.json.json",
+        "sha256": "6637cee2825b0dad9ccb9e116c297e62e04ffb8e6832f1ac0bf82c4de79a2d42"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_safety_registry.py::test_t2_global_commit_rollback_and_effective_at_semantics",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_46.log.json",
+        "sha256": "86b497600733a7e2d83f95fdfae7ec5df129d99cc1c83bef4679fd703354a843"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_46.xml.json",
+        "sha256": "7de3e891c6fe51adca7293ea156aff1e2b130f65b9cf8f46da350e9a029be932"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/46-collection-bound.json.json",
+        "sha256": "6e4f60b7a069529a9d1b666d704c2e92954514cc6f3400f1472b2035af94d01c"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_declared_evaluation_storage_isolation",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_47.log.json",
+        "sha256": "766a497e645fb66fc643d014cee432cb2568614bd423eb134896aee4c04a7c44"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_47.xml.json",
+        "sha256": "2462c61c1d2957d44af111766e8e4538060bb313a7d0e888b9842a860fb07f5d"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/47-collection-bound.json.json",
+        "sha256": "13695ba1dcf2e2bc57862e8f504b85dc537f3e0d242bad9b51181d8ff05ef930"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_evaluation_principal_live_denials",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_48.log.json",
+        "sha256": "572f35080f7d26a2fc460ebd60ad2d6f8987c12d482f92a3968fb52d69f771c5"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_48.xml.json",
+        "sha256": "3c05292c64f30bbe824f4b13d058e4298f416b327726cc62946a8f8db2ea79aa"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/48-collection-bound.json.json",
+        "sha256": "f310627f830074242a185ebe87baaa64bc60ba01ceb1ebc4d60fd446807fd64b"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_shadow_payload_owner_denials",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_49.log.json",
+        "sha256": "245d4d5afb97a2c3d46590f5472d50de2cffedf6d5e7475855144c40afbd5d2c"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_49.xml.json",
+        "sha256": "7a1978207b2aa29224dd17be71363665eb3243afc22b31324235287eeb18330a"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/49-collection-bound.json.json",
+        "sha256": "1b4c5fbcbe4f4aaf08d53dfe9267fd2fb9ee3c29195f3a85887565b1e88b2bba"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_shadow_isolation.py::test_test_authorization_crossing_denials",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_50.log.json",
+        "sha256": "5c2b604f76cf682a39185456b3a41c653f7590007e20bb34d91199df6462f9b4"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_50.xml.json",
+        "sha256": "33896d522d33339875e0b7001bf7486ab0a08d9a05526b1fa4897132b041325e"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/50-collection-bound.json.json",
+        "sha256": "bd6251b9ed07ec51efc50a4b54444dccc69f40f925d6aaf24db94d55e2581ffb"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_51.log.json",
+        "sha256": "679515ab2cd7825147302015bb58672fc8fa6cd2dc207427f7542c4b2b3927a7"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_51.xml.json",
+        "sha256": "a5313c78e7cb2542d7d1a9b3b1f582315926dad42745c15d7aa81f1352c23b18"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/51-collection-bound.json.json",
+        "sha256": "8f6f13a9295efaf347d18be203d5c44cf7006a7116de1887ac2fd3cb56d17d91"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_expiry_then_deny",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_52.log.json",
+        "sha256": "c74bf757012643b2cb83db5cfb0390b155e123e0b7350dbd6ca1dae2187afb8c"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_52.xml.json",
+        "sha256": "44cadf9a753be20909fa5560c3f3145a05b4bb225d8172415c2e470c37af3b37"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/52-collection-bound.json.json",
+        "sha256": "305577532a1a261da22c89e7485e534dce39f7346d3ffd2d73d823c8f4a35d3c"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_fdn_repair",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_53.log.json",
+        "sha256": "619649d49ab562dfdda36f0f75ec40bf5ca38a3f8dd6b4d708cb4ecbfb2773ef"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_53.xml.json",
+        "sha256": "01ad43b42d9d1f64375010eb1a056f7bf30c7c449dc2f1f3c24604e5122db28b"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/53-collection-bound.json.json",
+        "sha256": "78dbc6548881f6dbb16a128dfea0a9536f9b0f3a168b54e423b28820437160d4"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_full_trajectory",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_54.log.json",
+        "sha256": "1c8a822743ce9c7b8b488d7c5866a3d3ea2293e45c8be867d4544b50abe4d24b"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_54.xml.json",
+        "sha256": "a7bb2fa02c3a920e0b3424c3c1ab9a8e7fb1967ea8df52f60f66b6bfe03c27f3"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/54-collection-bound.json.json",
+        "sha256": "7d345752b69aa0763bef69d5cea236bd6e9fc93b241bea2f1630260bb6d13d0d"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_production_shadow_denials",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_55.log.json",
+        "sha256": "50e4078851e52b34313ad8d1cc7e87f00029d717c9fe9e8ebb21b1934e5d7327"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_55.xml.json",
+        "sha256": "e957a345bbfa5b172611495a485a0855813c1c23775aa6501cb9c986963286d6"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/55-collection-bound.json.json",
+        "sha256": "c0b9cea2a45bb1de089450e48a88ed6893e5ecdcb0e96186d74a7934bcf48c1a"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_test_only_demo.py::test_revoke_then_deny",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_56.log.json",
+        "sha256": "9521f5a66cba1c98756eb74096ef8871290994f85de5f1689da7f8e790450ff2"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_56.xml.json",
+        "sha256": "9dc74224bb2c7a7fe9bcebfd02e1d763d70f948468bf748471bffc7d12094874"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/56-collection-bound.json.json",
+        "sha256": "f0b620c578f9dd326c0f6feb65125230e7769ffd1313fa4a771962ddcfde680a"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_transaction_interfaces.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_57.log.json",
+        "sha256": "1a5c88050e0cf8fd76ccc2e7ff16420e627ba9efb806c15be8b01356c6a77025"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_57.xml.json",
+        "sha256": "c1850a63586ae90af4dd9a4b1f67095c3da99bcbb9afdef484827a18ee0c3c1b"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/57-collection-bound.json.json",
+        "sha256": "0597647ab2a351de79c86030c5379a3e8f83c342f6b32849fa057a552305408a"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_transaction_interfaces.py::test_t6_authorization_evaluator_persists_exact_minimum_certificate",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_58.log.json",
+        "sha256": "9e77dd28cf1ad7807ada6e80a0d3c6d797760737eecda6b5019d17f2fe7007ce"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_58.xml.json",
+        "sha256": "b50056f2b46b63f470d28a5862733687de6b891c7bf66f540a1565bf2e5c0eb2"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/58-collection-bound.json.json",
+        "sha256": "57c9a648052716b3367dc33b4ffd3f236a965e7b8981c88b8f8d115e1b9d88d6"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/e2e/test_authorization_evaluator.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_59.log.json",
+        "sha256": "9e9a56a5866138dfa41b745d9b120e00d40e6754a8c3d2d4943b9854e319f4fc"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_59.xml.json",
+        "sha256": "464fa809abc5cdcef5cbf37d4f99d1d4680557a019d71d21f23f68de549b32a4"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/59-collection-bound.json.json",
+        "sha256": "a076fec7f3412122ba3f25dab467c5bf25a50a3fa0258e6f18b04ac2ec51a6db"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_authorization.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_60.log.json",
+        "sha256": "6b024227cec7a82c50bf064db865c3b77dc86d1ce18ba3519c76c39fb775d7ea"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_60.xml.json",
+        "sha256": "153c72eb46b3ff0cffd84770c5609ff609f78989153417282d5a412d5acbe560"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/60-collection-bound.json.json",
+        "sha256": "1f746e2667d01dda9500dbaddb75becedeb26c51768cf721e9e097a276f2b1b6"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_authorization.py::test_timeless_dependency_requires_auditable_policy_in_same_transitive_closure",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_61.log.json",
+        "sha256": "e3e9516cb17f200e4e326bb83a969dedb69d33e2dec0e27a86c818f540ff8790"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_61.xml.json",
+        "sha256": "5b5bb074eb7d0739cc9eccb955c9f4aef64df80c8ce2dc8ad0e41f5f0422c836"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/61-collection-bound.json.json",
+        "sha256": "e1ff1ecd4ec7a07aa7c0b0d21300636218ee91f52f6413b7da4ec3c15645c446"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_authorization.py::test_validity_closure_uses_every_bound_and_denies_missing_or_elapsed_basis",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_62.log.json",
+        "sha256": "15db47f7ad55e9c23cb4f193a92492117acc9d93150ad4d448f2c859266a9878"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_62.xml.json",
+        "sha256": "620ac798d6907c8188fa974a9317880ca974ed03011b8177a8d79d87f10ca9a4"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/62-collection-bound.json.json",
+        "sha256": "4610e02bc38274666c1b47aa9c9b178791a4ac006b12bddd50c5364e07fec3d0"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_63.log.json",
+        "sha256": "c3f20fef7344eb0ab6b7d15885dbb4f66e5d51ebb861aa67201453e55854765c"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_63.xml.json",
+        "sha256": "6376040bfd09d9b1842f75ffd22e84f476f993f9d4e99fcea981f012cc098a6f"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/63-collection-bound.json.json",
+        "sha256": "9e2701c672e1fec4dc9978d09e2ea60f7cae9656d14bd7995c273d3f67d05c98"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b01_unsealed_canonical_denial",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_64.log.json",
+        "sha256": "ea99c7435bdd58a977a2fff3d7a41b4e98634caa6b553e22ca21dc118a7fc72e"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_64.xml.json",
+        "sha256": "1d652f3ec5a1564b7a388cf3e7b70d7581626c59f0f99d78cbf1456467fff192"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/64-collection-bound.json.json",
+        "sha256": "45f95e49aefc49ff8735fd10dc6d04a887b7c7dd79b328df71a8b56af5c7b59a"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b08_missing_validity_denied",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_65.log.json",
+        "sha256": "78f586babfab0893addeb9b9554ca1210b7d25d0e226e9a9650d07f3d89683bf"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_65.xml.json",
+        "sha256": "7e160aca34e5f0c495ca3d804a978f04b85c26aca0d84f40a8c927ca60225952"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/65-collection-bound.json.json",
+        "sha256": "fde93e256ff6e289c5d0a5d410b880608f0d75f7991c4d028f0df262fdbf637a"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b09_server_minimum_closure",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_66.log.json",
+        "sha256": "24c09a801eb3612da6a6efc0ab3cb43769580bc8e9ca0f919f10be9f697cf58c"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_66.xml.json",
+        "sha256": "b0b7591dd3d1bf75e77b5cee97ae41806b9ff3fa5f3f61a9794f059b81a01c09"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/66-collection-bound.json.json",
+        "sha256": "3699d32debc6e8646947540af0248aefcce9cacf9432c69fb21fed9d1e608f1a"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b10_expiry_without_status_job",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_67.log.json",
+        "sha256": "4fa902822f5c512f64c21a6fb9ef82930068ca7b5c4b857deae30af335aed957"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_67.xml.json",
+        "sha256": "152e556c8d947c562de246f4fe2f226bc45f88ee00ccd1adf8377c6965d0fd6f"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/67-collection-bound.json.json",
+        "sha256": "03f62d1ab5a0f9e5e287fe227381579798700891773e428ae1473145fd0cb052"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b17_transitive_closure_omission_denied",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_68.log.json",
+        "sha256": "7548eeec716f8bd6af92530af62ed3b802448f79ef96608fa9025d48cc5ea90c"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_68.xml.json",
+        "sha256": "a8ca3a353ed85cb5e4363506de9681ed23e3532f6506d61cb820ba10960de318"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/68-collection-bound.json.json",
+        "sha256": "1e59c09c78c74c7135edb3dfabbe7c48fbac3e6bddd2cb45c9861af652151964"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_b18_timeless_policy_reason_required",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_69.log.json",
+        "sha256": "85cced24ae4296b7c3604eea848a3297c07866bc8fd110479cb9dc14aa9c50d1"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_69.xml.json",
+        "sha256": "cd7d890d12e656bb36cca2c64706388b38a6f0c71a44a1f6a3d3edc3decb565b"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/69-collection-bound.json.json",
+        "sha256": "6c4a49593632bec806348ad02b5e1dc5da7b1b27d9c4aa5361822cfaf5414ec0"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_boundary_acceptance.py::test_boundary_namespace",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_70.log.json",
+        "sha256": "b015982a5468ecc0ef7f950e84128d574af33fab1547395b17be0378843f4a6b"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_70.xml.json",
+        "sha256": "f1c4083b3709ae9111e80ae5b59054a1e71f37b235dd2e40c9bf6a754790b303"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/70-collection-bound.json.json",
+        "sha256": "198682fd825118c0a9024508b0298f7a6a32112cdf4614ac36671360c0295daa"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_execution.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_71.log.json",
+        "sha256": "38aa3f5c07e500cce8013af6eca9a3c83716d1fe9ed627a2ada98bc43892be17"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_71.xml.json",
+        "sha256": "0f54a1d9e559408692878943a425f75fd55f7171581f70ae355d298ac4c9c128"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/71-collection-bound.json.json",
+        "sha256": "247a736afbd1802038775bcb1860723c1cf3bac0dbfc23a4f900888dfc181684"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_factsets.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_72.log.json",
+        "sha256": "1b01cdf1c14ba19f32b9bbc0180fa5cbfc054008a45534d65f9b4b776bd184a5"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_72.xml.json",
+        "sha256": "667af248cdf28a845c203e692688d05c0ad33cc2b0eb835f6c1f7ea1fd5eb5f4"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/72-collection-bound.json.json",
+        "sha256": "d0e496c97c75952ec0cc2e7f2890be3d142a190d62f15ef888d265d04e4fb2b4"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_interleaving_namespace.py::test_time_boundaries",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_73.log.json",
+        "sha256": "fda20273574e14e547001b3546f609dda72fd039651df5aa835d32a76c7559c9"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_73.xml.json",
+        "sha256": "f96dcebe6f415af012470a7b8dc1672f5c7a823b50af33bc301090979bbeeb24"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/73-collection-bound.json.json",
+        "sha256": "3ed7a857507138ef1f31d23e98bb26df05a280d9979be1d283c00d067efa3b38"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py tests/db/test_shadow_isolation.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_74.log.json",
+        "sha256": "db2fd6846289a79cf5dadb68d33b47d5995f82c6aac5ddc20059ea20a63b79f5"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_74.xml.json",
+        "sha256": "c36e0d7df629c058514fbd2d73a316df065755a8b1ec5805f10fa105896bcc9f"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/74-collection-bound.json.json",
+        "sha256": "95b695a5ce64e4c8b0d7b128da3f5aecead1380e1c8b8cc07c555f421734bf70"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_namespace_and_boundary",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_75.log.json",
+        "sha256": "f67a9cafad9bfef189073140aad6fc6445b5286adc46ae7025ac457f90891880"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_75.xml.json",
+        "sha256": "b78c38bd2f41bcf4dc5489eb316ed85558b37b19340a55cf943ee7e7c1ef83b4"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/75-collection-bound.json.json",
+        "sha256": "258e4fc2c6b4d3d77298aaf9ac00db564071e3dc43da0ed9807f1e79d758d7cc"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_shadow_isolation.py::test_strict_shadow_wire",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_76.log.json",
+        "sha256": "318d5043638defdf069be229db9b9c70de0853e027fe79e579495dda19f2dfb3"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_76.xml.json",
+        "sha256": "5769a2e547c4a4e366da7c7b501f0cb9ebbcfa83f0867a3ae0967870dd17b2fc"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/76-collection-bound.json.json",
+        "sha256": "41db280df2de83258e64051458a1a35fcc198f079014f4479161923b28ada2d9"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/protocol/test_test_only_demo.py::test_namespace_and_boundary",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_77.log.json",
+        "sha256": "4ed3dac7b3c5580cb69bfb118ef36320dcf4a104b3682f3420fbf3f0fbf505e9"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_77.xml.json",
+        "sha256": "68fa13c77da01ad4fa9055045cb32e1178e0388a53b5c5789be8382fb54d75b0"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/77-collection-bound.json.json",
+        "sha256": "f5e928f96ca99ef83916bb953cc1d557b6adce4835370786a634904aa9ad4170"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/workflow/test_call_ledger.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_78.log.json",
+        "sha256": "41df169d974da7e41168ae83497afb2e184fca1a050265b22d7451ef453e6e0c"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_78.xml.json",
+        "sha256": "565bcb2021713b3ea2fd9c934d211bfe1630e52044a03760d5e48206a0e4b9c8"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/78-collection-bound.json.json",
+        "sha256": "300ea80ee97b7c3a82a92efe22a75035dd6406505a3d83375fb03318a21ca4e3"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/workflow/test_planning.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_79.log.json",
+        "sha256": "80e57888f251e73b32e7f596d89e22e99051360e578359f0ab9d605d8732501a"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_79.xml.json",
+        "sha256": "2384b21977f3665d169d0f30ec69073f61b47c31d0ed6de1b883cfc6be969d83"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/79-collection-bound.json.json",
+        "sha256": "fff6cf044e6139bd30b77d43d49fccf96ea13cdbd02b3beef0663f737651987f"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_source_matrix",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_80.log.json",
+        "sha256": "015a74729dd263755f804f88731440cc1a14d5541b155ed40ae78e9483b7c900"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_80.xml.json",
+        "sha256": "8d6204df8ad929339662ec13e7444fda35bd09f34969c6d23b410adbba84dfb1"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/80-collection-bound.json.json",
+        "sha256": "4890917a2260e40fc99dad7d89e3581d7727e1f7daa636f954270177f069df1d"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_basis_and_actual_separation",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_81.log.json",
+        "sha256": "cbfc5b79afa5d9da67008f9147f108a76477fee90a2321d4056caa4ce6d8f269"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_81.xml.json",
+        "sha256": "cea389e2f816b24c595c5ee4d7f8f0162340f78bd93e0932e9a4c6ab70c69eca"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/81-collection-bound.json.json",
+        "sha256": "3cde1ba7f2572e863ba20c4417f2cb61d638a801a064f1407b17d7e85f72663f"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_namespace",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_82.log.json",
+        "sha256": "14e89e86acfd8c94b694f5f474ea09036bf24adc4c87e5d1451e099134d45ef3"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_82.xml.json",
+        "sha256": "b8d673bd353c1f3fcdbc907ecba259b7482dcd5fc68ab60cd599560528fedc39"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/82-collection-bound.json.json",
+        "sha256": "4d488eaef7e2ef3f22ca9235a218f8498fe8201dfcac6c50331e496d340f802c"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_preparation_owners",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_83.log.json",
+        "sha256": "c35899abeba7a1e4af0d11c269ad362c22bb33436133082d5356e3038055e209"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_83.xml.json",
+        "sha256": "32c19a76e4bfe5cb3761e28dc16b94e04c442a666d7fa1aa4c5ee3ee3961705f"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/83-collection-bound.json.json",
+        "sha256": "62880e9e1a56d03765d30ac193f423d782294be6022b9fed6b49bbdcf9def339"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_canonical_full_t6",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_84.log.json",
+        "sha256": "840f4a4910c97aba2486d5c310f6b9ce7406a4ea11229f74edb177c969339aed"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_84.xml.json",
+        "sha256": "2a77ef975a2807775b0bc1a576df1866ded4e5be2777b86843f50cd491992b8a"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/84-collection-bound.json.json",
+        "sha256": "6196057507be6b1e501a0e5bf64e0b230f550f062a4ed53771ccabd434350a2b"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_invalid_source_reconstruction",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_85.log.json",
+        "sha256": "78b1650fcaa60557f28642547afcbab9c83a8061ab09fcb1f69d3d7e8464dbb9"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_85.xml.json",
+        "sha256": "75938f06c658f6ef9d61f5e28b0c8d5634d9a963fc128442f19aaf912bdd2e45"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/85-collection-bound.json.json",
+        "sha256": "f956bd7a4840b280f2d9ab0653aa47d1618fd3f819494b7748cf8da7381d62fa"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_freshness_predicate_support",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_86.log.json",
+        "sha256": "e8916e3da88d7ed8daa6d134fdc274093b037762f6b4337179aa5dcc0da4bfda"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_86.xml.json",
+        "sha256": "d54e319fead1f703a4f603a0f0cece783bd6970e2781d1249928a65dd986f567"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/86-collection-bound.json.json",
+        "sha256": "ec46b8de3c0541eb41bf0905ea59ba2590cf5524d8cd98d85824972e72673f81"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_owner_trajectories",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_87.log.json",
+        "sha256": "722f6a6c665d30250d21c52db806c6784e5e5dda3a560842e458bb9fc22ade23"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_87.xml.json",
+        "sha256": "8391c082c9e725d92b491077d72cfe1c0ae1d005893fb2436396279ea30febc7"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/87-collection-bound.json.json",
+        "sha256": "9b52710c2918953bdff65aa5a26b316edbb4f9ab573fb5469cac0ab10d284f63"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_current_denials",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_88.log.json",
+        "sha256": "cf6c137929efb06d5abd67d87d27a3e7cfab375dba124d3cdba6c3ee603d3669"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_88.xml.json",
+        "sha256": "23234e858b1d941f706426d4c6f4a99f3de4acff212c1055bae6d44bffb904a6"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/88-collection-bound.json.json",
+        "sha256": "f994d7e2f32e2d6a3e98683b66097e4a0027fab03706a95304fd47a403e2b3b0"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_repair_replay_expiry",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_89.log.json",
+        "sha256": "a2988e8c8b05a71739b1456d197bce54ee8887d1c13a12d629a5e9c0fbf2247f"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_89.xml.json",
+        "sha256": "dd318168a41b519ee3e8bec5cc0201961377e0b7c7bb0e965d5cfcfb1a4a4ddc"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/89-collection-bound.json.json",
+        "sha256": "f9011c023cef985acfd9a4852c2a495f378f007b2383940f378a55f6bbec2aec"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_90.log.json",
+        "sha256": "464ab7b774741b6e06a123856a902ba2c4054363dd58dce9d810758b1685ad56"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_90.xml.json",
+        "sha256": "21a9f7f872252d6f1bd729588944067a9933ff44dbcb314c976629557acecdc4"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/90-collection-bound.json.json",
+        "sha256": "837990565fcc998c2bf021b670b9d52882528769cd665d7ce87d1bf0efee0710"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_91.log.json",
+        "sha256": "28d920d9ddde85753588704af5c5178431057802d0bc417e2dd6c21bafec3b36"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_91.xml.json",
+        "sha256": "9a945d2fd977932fd8042dc5fc5db485275679dd0dd4a8406832ecde3d4c4a30"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/91-collection-bound.json.json",
+        "sha256": "8a0c0ed077ca9fa9c270da933b9d2e9f17829e82bb426419b5760db5b745aa2f"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/workflow/test_deterministic_planning.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_92.log.json",
+        "sha256": "465350853a71bfc3c66bcfa0f94eb0f7896e5fb2e9a42167206e0d684e61edf1"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_92.xml.json",
+        "sha256": "fc3caf6262d20aca3e1b675a67beb2c93cb459be9364fa2e67212863d1cd8ab6"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/92-collection-bound.json.json",
+        "sha256": "32b6d03523fd85dec2bb87e354bd2a43016f7cf8121ff9d48785fe68c6e236c3"
+      }
+    },
+    {
+      "command": "uv run pytest -q tests/unit/workflow/test_full_action_preparation.py",
+      "tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_93.log.json",
+        "sha256": "85366e2cb848115d4afca52484f3a2fecb45671d8e3335aef190f113c9720713"
+      },
+      "junit": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_93.xml.json",
+        "sha256": "5e0e86314fcfbff9d77912221d083c0c93b423eed0082dbdfa32f7b0128dcd43"
+      },
+      "collection": {
+        "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/93-collection-bound.json.json",
+        "sha256": "bdea5191a123150be6f5974a105e08325928f27c47178ac3349a4d5ec69990ec"
+      }
+    }
+  ],
+  "provenance": {
+    "outer": {
+      "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/local-executor.json.json",
+      "sha256": "a65956c37740c1ab69b2dee570d000d07c9d7e3c226ef99015a864d7056e9d8b"
+    },
+    "execution_index": {
+      "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_execution-index.json.json",
+      "sha256": "a666586bf9a3b5ff7b4cb8fe00d8a4694c6862549634e2824862bedd72641907"
+    },
+    "environment": {
+      "path": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/run_environment.json.json",
+      "sha256": "a0fc93dcdb7eb0eadda8aed7e2f6d35e052163a287c713a12c7819d65147d533"
+    }
+  }
+}
