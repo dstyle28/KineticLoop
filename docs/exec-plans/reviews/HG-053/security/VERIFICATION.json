@@ -1,0 +1,78 @@
+{
+  "status": "PASS",
+  "base_commit": "c82e50aefad5c4d9e325d4928a8f96032b81192d",
+  "tested_commit": "a75a41edfb1b58828b81053b4ac3afa51457a279",
+  "reviewed_head_sha": "2936848abed73320db56f71a649e86eca1497502",
+  "checks": [
+    {
+      "id": "packet_refinement_audit",
+      "raw_bytes": 2797,
+      "raw_sha256": "f41eaeb7492b16bc77b71f05e91bcecc453c0a27025483873577eb5a88e7f739",
+      "command": "uv run python docs/exec-plans/evidence/HG-053/verify_refinement.py"
+    },
+    {
+      "id": "authority_resolution",
+      "raw_bytes": 59,
+      "raw_sha256": "5d8aa7d0ee18525124727581afc6468ca900c13889ffaf7e09212e878a1621fb",
+      "command": "uv run python tools/harness/document_index/check.py current_document_index_resolves"
+    },
+    {
+      "id": "harness_validation",
+      "raw_bytes": 38,
+      "raw_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "command": "uv run kl check-harness"
+    },
+    {
+      "id": "lint",
+      "raw_bytes": 19,
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "command": "uv run kl lint"
+    },
+    {
+      "id": "typecheck",
+      "raw_bytes": 45,
+      "raw_sha256": "5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523",
+      "command": "uv run kl typecheck"
+    },
+    {
+      "id": "unit",
+      "raw_bytes": 3493,
+      "raw_sha256": "0d55a819de2754c5f9d78378e1b0fcec24b3c2d3c34ef05438267ea9fe7e63da",
+      "command": "uv run kl test-unit --junitxml=/private/tmp/hg053-checks-a75a41edfb1b58828b81053b4ac3afa51457a279/unit.xml"
+    },
+    {
+      "id": "harness",
+      "raw_bytes": 2165,
+      "raw_sha256": "dd30c1345a0d20e80f0936314e21b57ad0cd617408f5f16560986916a1271a83",
+      "command": "uv run kl test-harness --evidence-dir /private/tmp/hg053-checks-a75a41edfb1b58828b81053b4ac3afa51457a279/harness"
+    }
+  ],
+  "harness": {
+    "serial_collected": 1492,
+    "worker_collections": 2,
+    "started": 1492,
+    "reports": 4476,
+    "junit": 1492,
+    "failed": 0,
+    "skipped": 0,
+    "manifest_file_hashes_verified": 5
+  },
+  "unit": {
+    "junit": 247,
+    "failed": 0,
+    "skipped": 0
+  },
+  "scope_and_C_to_R_bookkeeping": "PASS",
+  "prerequisite_ancestry": "PASS",
+  "storage_audit": {
+    "identity": "HG-053",
+    "base": "c82e50aefad5c4d9e325d4928a8f96032b81192d",
+    "head": "2936848abed73320db56f71a649e86eca1497502",
+    "stored_bytes": 6229171,
+    "files": 86,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "runtime_implementation_checks": "NOT_RUN",
+  "product_claims": []
+}
