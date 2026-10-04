@@ -1,0 +1,28 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-036",
+  "tested_commit": "f478248ffc9ea2f91b37cb356ae1facc76870414",
+  "launcher_status": "FAIL",
+  "launcher_exit_code": 1,
+  "reason": "Credential guard falsely matched an existing tracked synthetic password mutation test identifier; lossless original artifacts retained. Superseded before eligibility by stronger actual queue and permit/cancel interleaving oracles.",
+  "runs": [
+    {
+      "check_id": "harness_regressions_pass",
+      "command": "uv run kl test-harness",
+      "status": "PASS",
+      "exit_code": 0,
+      "collected": 1492,
+      "executed": 1492,
+      "junit": 1492,
+      "artifacts": {
+        "execution.log": "docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/harness_regressions_pass-execution.log.json",
+        "runner/collection.json": "docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/harness_regressions_pass-runner-collection.json.json",
+        "runner/collection.log": "docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/harness_regressions_pass-runner-collection.log.json",
+        "runner/execution.json": "docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/harness_regressions_pass-runner-execution.json.json",
+        "runner/junit.xml": "docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/harness_regressions_pass-runner-junit.xml.json",
+        "runner/manifest.json": "docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/harness_regressions_pass-runner-manifest.json.json",
+        "runner/pytest.log": "docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/harness_regressions_pass-runner-pytest.log.json"
+      }
+    }
+  ],
+  "remaining_checks": "NOT_RUN"
+}

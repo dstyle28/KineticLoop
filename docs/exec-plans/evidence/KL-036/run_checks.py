@@ -127,7 +127,13 @@ def main() -> int:
             raw_command = run.get("collection_command", command) if file.name.startswith("collection.") else command
             code = run.get("collection_exit", 0) if file.name.startswith("collection.") else process.returncode
             raw = file.read_bytes()
-            if re.search(rb"postgres(?:ql)?://", raw) or b"kineticloop-local-only" in raw or b"kl072-local-only" in raw:
+            # This exact tracked harness case names a deliberately changed synthetic
+            # password. Recognize only its canonical test identifier; retain raw bytes.
+            inspected = raw.replace(
+                b"test_compose_non_readiness_and_wrong_endpoint_rejected[kineticloop-local-only-changed]", b""
+            )
+            if (re.search(rb"postgres(?:ql)?://", inspected)
+                or b"kineticloop-local-only" in inspected or b"kl072-local-only" in inspected):
                 raise RuntimeError("credential-bearing diagnostic quarantined in local scratch; no Git capture")
             capture(ROOT, path, raw, tested, raw_command, code)
             artifacts[str(file.relative_to(folder))] = path

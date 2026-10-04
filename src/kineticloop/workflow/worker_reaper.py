@@ -106,6 +106,8 @@ class TestWorker:
             stop: Any, ready: Any) -> dict[str, Any]:
         from kineticloop.persistence.worker_reaper import _registration
 
+        if type(candidate) is not ReapIntent:
+            raise GuardRequired("typed worker candidate required")
         candidate.__post_init__()
         if candidate.subject_id != self.identity.subject_id or type(manifest_id) is not UUID:
             raise GuardRequired("worker target/identity mismatch")

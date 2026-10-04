@@ -122,6 +122,12 @@ def test_identity_and_namespace() -> None:
     principal = identity()
     assert PlanningWorkflowService(Mock(), principal)
     assert TestWorker(Mock(), principal)
+    connection = Mock()
+    unexpected: Any = object()
+    with pytest.raises(GuardRequired):
+        TestWorker(connection, principal).run(unexpected, manifest_id=uuid4(), epoch=0,
+                                               stop=Mock(), ready=Mock())
+    connection.execute.assert_not_called()
     bad_identities: list[tuple[str, Any]] = [("actor", RoleIdentity(str(uuid4()), ActorRole.SUBJECT)),
                          ("principal", ""), ("principal", "kl_application_login"),
                          ("environment_id", "foreign"), ("policy_id", None),

@@ -370,7 +370,7 @@ def advance(urls: dict[str, str], request: ReapIntent, *, source: str = "CREATED
 
 def child_main(urls: dict[str, str], kind: str, identity: ProgressIdentity, request: Any,
                gate: Any, output: Any, ready: Any = None, stop: Any = None, manifest: Any = None,
-               preflight_gate: Any = None) -> None:
+               preflight_gate: Any = None, ordinary_work: Any = None) -> None:
     try:
         with connect(urls["admin"]) as db:
             output.put({"kind": "child_ready", "role": kind, "pid": os.getpid(),
@@ -392,6 +392,10 @@ def child_main(urls: dict[str, str], kind: str, identity: ProgressIdentity, requ
             elif kind == "renew":
                 result = LeaseService(db, PlanningIdentity(identity.actor, SUBJECT)).renew_lease(request)
             elif kind == "worker":
+                assert db.info.transaction_status == TransactionStatus.IDLE
+                if ordinary_work is not None:
+                    request, manifest = ordinary_work.get(timeout=10)
+                    output.put({"kind": "ordinary_work_received", "pid": os.getpid(), "idle": True})
                 result = TestWorker(db, identity, WorkerSchedule(2, 0.25, 100)).run(
                     request, manifest_id=manifest, epoch=0, stop=stop, ready=ready)
             elif kind == "reaper_loop":
@@ -412,8 +416,21 @@ def child_main(urls: dict[str, str], kind: str, identity: ProgressIdentity, requ
                             assert preflight_gate.wait(10)
                         return prior
                 result = ObservedExecution(db, execution_identity).commit(request)
-            elif kind == "cancel":
-                result = CallLedgerService(db, PlanningIdentity(identity.actor, SUBJECT)).cancel(request)
+            elif kind in {"permit", "cancel"}:
+                class ObservedLedger(CallLedgerService):
+                    def _replay(self, command: Any, owner: str, request_hash: str) -> Mapping[str, Any] | None:
+                        prior = super()._replay(command, owner, request_hash)
+                        if preflight_gate is not None:
+                            assert db.info.transaction_status == TransactionStatus.IDLE
+                            output.put({"kind": "preflight_released", "pid": os.getpid(), "idle": True})
+                            assert preflight_gate.wait(10)
+                        return prior
+                ledger = ObservedLedger(db, PlanningIdentity(identity.actor, SUBJECT))
+                if kind == "permit":
+                    permission = ledger.permit(request)
+                    result = {"sendable": permission.sendable, "replayed": permission.replayed}
+                else:
+                    result = ledger.cancel(request)
             else:
                 raise AssertionError("unknown bounded child role")
             assert db.info.transaction_status == TransactionStatus.IDLE
@@ -775,24 +792,36 @@ def test_unknown_call_preserves_budget(database_urls: dict[str, str]) -> None:
     reset(urls)
     with connect(urls["admin"]) as db:
         manifest = db.execute("SELECT current_manifest_id FROM kineticloop.user_decision_state WHERE subject_id=%s", (SUBJECT,)).fetchone()[0]
-    commit = upstream(urls, {"manifest_id": str(manifest)}, lease_seconds=2)
+    commit = upstream(urls, {"manifest_id": str(manifest)}, lease_seconds=5)
     root = {"intent_id": str(commit.intent_id)}
     current = facts(urls, root)
     dispatched, reserved = reserve(urls, current, "sent"), reserve(urls, current, "never-sent")
     reservation = UUID(dispatched["reservation_id"])
-    with connect(urls["admin"]) as db:
-        ledger = CallLedgerService(db, PlanningIdentity(PROGRESS.actor, SUBJECT))
-        permit = ledger.permit(permit_request(current, dispatched))
-        assert permit.sendable is True and not permit.replayed
-        before = persisted(urls)
-        assert ledger.permit(permit_request(current, dispatched)).sendable is False
-        assert persisted(urls) == before
     cancel = CancelUndispatched(SUBJECT, "post-permit-cancel", current.intent_id, reservation)
-    contender = spawn(urls, "cancel", REAPER, cancel)
+    permit_gate, cancel_gate = CONTEXT.Event(), CONTEXT.Event()
+    permission = spawn(urls, "permit", PROGRESS, permit_request(current, dispatched), preflight_gate=permit_gate)
+    contender = spawn(urls, "cancel", REAPER, cancel, preflight_gate=cancel_gate)
+    for process in (permission, contender):
+        process[1].set()
+        observed = process[2].get(timeout=10)
+        assert observed["kind"] == "preflight_released"
+        evidence(observed)
+        idle_witness(urls, process[3]["backend_pid"])
+    with hold_subject(urls) as holder:
+        permit_gate.set()
+        blocked(urls, permission[3]["backend_pid"], holder.info.backend_pid)
+        cancel_gate.set()
+        blocked(urls, contender[3]["backend_pid"], permission[3]["backend_pid"])
+        holder.commit()
+    granted = finish(permission[0], permission[2])["result"]
+    assert granted == {"sendable": True, "replayed": False}
     before = persisted(urls)
-    contender[1].set()
     finish(contender[0], contender[2], denial=True)
     assert persisted(urls) == before
+    with connect(urls["admin"]) as db:
+        ledger = CallLedgerService(db, PlanningIdentity(PROGRESS.actor, SUBJECT))
+        assert ledger.permit(permit_request(current, dispatched)).sendable is False
+        assert persisted(urls) == before
     wait_elapsed(urls, current)
     terminal = reap(urls, scan(urls)[0])
     assert terminal["intent_status"] == "CANCELLED"
@@ -881,12 +910,17 @@ def test_independent_reaper_survives_worker_loss(database_urls: dict[str, str]) 
     with connect(urls["admin"]) as db:
         manifest = db.execute("SELECT current_manifest_id FROM kineticloop.user_decision_state WHERE subject_id=%s", (SUBJECT,)).fetchone()[0]
     worker_ready, worker_stop = CONTEXT.Event(), CONTEXT.Event()
-    worker = spawn(urls, "worker", PROGRESS, current, ready=worker_ready, stop=worker_stop, manifest=manifest)
+    ordinary = CONTEXT.Queue(maxsize=1)
+    ordinary.put((current, manifest))
+    worker = spawn(urls, "worker", PROGRESS, None, ready=worker_ready, stop=worker_stop,
+                   ordinary_work=ordinary)
     worker[1].set()
+    received = worker[2].get(timeout=10)
+    assert received == {"kind": "ordinary_work_received", "pid": worker[0].pid, "idle": True}
+    evidence(received)
     assert worker_ready.wait(10)
     idle_witness(urls, worker[3]["backend_pid"])
-    ordinary = CONTEXT.Queue(maxsize=1)
-    ordinary.put("ordinary-work-backlog")
+    ordinary.put((current, manifest))
     with pytest.raises(queue.Full):
         ordinary.put_nowait("more-work")
     # Registered admission uses its independent channel while ordinary capacity is full.
@@ -915,7 +949,8 @@ def test_independent_reaper_survives_worker_loss(database_urls: dict[str, str]) 
     ordinary.join_thread()
     evidence({"kind": "worker_loss", "worker_pid": worker[0].pid, "exitcode": worker[0].exitcode,
               "reaper_pid": reaper[0].pid, "admission_pid": admission[0].pid,
-              "ordinary_capacity_saturated": True, "independent_channels": True})
+              "ordinary_capacity_saturated": True, "ordinary_worker_consumed_job": True,
+              "independent_channels": True})
     # Restart/takeover before termination, preserving the original root limits.
     reset(urls)
     root = admit(urls)
