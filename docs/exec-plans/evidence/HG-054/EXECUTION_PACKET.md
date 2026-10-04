@@ -160,3 +160,14 @@ not a new mutation. Tested/review suffix validators reject conversion records an
 existing compact representation mutations at each commit, including restoration;
 new independently captured review output remains supported. These close explicit
 owner/timing requirements without broadening scope or numerical budgets.
+
+C5 SECURITY_DATA_BOUNDARY review independently found that canonical-only discovery
+missed renamed/wrapped metadata added and deleted on a pre-admission side branch.
+Final enforcement classifies every changed nonpayload storage blob globally at every
+ancestral stage, including aliases and Unicode forms; inherited maps retain their
+original admitted identity/base. C5 immutable outputs also preserve an actual full
+typecheck failure caused by a test loop variable's Path/string reuse. That is fixed
+with separate names and verified by the configured CLI typecheck over 171 files.
+Earlier narrow exploratory mypy results do not substitute for that full command.
+Recognizable malformed storage still fails closed; merely naming a marker in plain
+prose does not create storage metadata. No numerical limit or execution oracle changes.

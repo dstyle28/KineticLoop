@@ -224,8 +224,10 @@ admission need no retroactive map existence; their later merge must preserve all
 admitted bindings. This global historical
 verification does not authorize a new foreign-owner conversion: new mappings and
 ancestral representation mutations remain restricted to the selected PR owner.
-New canonical mapping records are discovered globally at every intervening revision,
-so deletion before HEAD cannot hide a foreign conversion. Changed compact metadata
+Changed nonpayload storage blobs are classified globally at every intervening
+revision, including renamed/wrapped/nested metadata and Unicode forms on branches
+before admission. Deletion before HEAD cannot hide a foreign conversion. Changed
+compact metadata
 and payloads are checked across owners on edges descended from the protected base.
 Task and governance tested/review suffix validators reject conversion records and
 existing compact representation changes even under allowed bookkeeping paths;

@@ -910,8 +910,7 @@ def reencoding_record(data: bytes) -> dict | None:
     try:
         value = json.loads(data, object_pairs_hook=unique)
     except (UnicodeError, json.JSONDecodeError):
-        if REENCODING_KEY.encode() in data:
-            raise ValueError('reencoding-json')
+        envelope(data)  # Recognizable damaged storage fails closed; prose stays opaque.
         return None
     if isinstance(value, dict) and {'protected_base', 'source_revision', 'entries'} <= set(value) and REENCODING_KEY not in value:
         raise ValueError('reencoding-marker-missing')
@@ -1122,17 +1121,22 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
                             raise ValueError('reencoding-merged-record-mutated-or-deleted')
                         validate_reencoding(root, path, record, record['protected_base'],
                                             bound_revision, admitted_owner)
-            # New foreign conversions cannot disappear by deleting their records
-            # before final HEAD. Inherited records keep their admitted ownership.
-            for path in git(root, 'ls-tree', '-r', '--name-only', revision,
-                            '--', *storage_roots).decode().splitlines():
-                if Path(path).name == REENCODING_NAME and path not in inherited:
-                    data = blob(root, path, revision, PLAIN_LIMIT)
-                    record = reencoding_record(data)
-                    if record is None:
-                        envelope(data)  # Wrapped/damaged storage cannot become opaque output.
-                    if record is not None and not any(path.startswith(prefix) for prefix in prefixes):
-                        raise ValueError('reencoding-foreign-owner:' + path)
+            # Classify every changed metadata blob globally, including aliases
+            # on pre-admission branches. Later deletion cannot hide a new map.
+            changed_metadata_paths = set()
+            for parent in parents:
+                changed_metadata_paths.update(git(root, 'diff', '--no-renames', '--name-only',
+                                      '--diff-filter=ACMT', parent, revision, '--',
+                                      *storage_roots).decode().splitlines())
+            for path in sorted(changed_metadata_paths):
+                if path.endswith(('.gz', '.xz')):
+                    continue
+                data = blob(root, path, revision, PLAIN_LIMIT)
+                record = reencoding_record(data)
+                if record is None:
+                    envelope(data)  # Wrapped/damaged storage cannot become opaque output.
+                elif path not in inherited and not any(path.startswith(prefix) for prefix in prefixes):
+                    raise ValueError('reencoding-foreign-owner:' + path)
             mapped = {}
             for path in git(root, 'ls-tree', '-r', '--name-only', revision, '--', *prefixes).decode().splitlines():
                 if path.endswith(('.gz', '.xz')):

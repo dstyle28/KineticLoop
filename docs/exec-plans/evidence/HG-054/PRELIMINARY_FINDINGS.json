@@ -75,5 +75,19 @@
     "failed": 3,
     "passed": 48,
     "reason": "Initial storage suffix guard tried to decode nonregular historical entries; corrected regular-entry classification preserves existing nonregular-ref failure semantics."
+  },
+  "later_c5_security_review": {
+    "reviewed_implementation": "ec5503f3f4261e8b89477fc6840df3a2980d64dd",
+    "review_type": "SECURITY_DATA_BOUNDARY",
+    "status": "CHANGES_REQUIRED",
+    "finding": "Canonical-only discovery misses renamed wrapped metadata added/deleted on a pre-admission side branch.",
+    "required_resolution": "Globally classify changed nonpayload metadata at every ancestral stage, including aliases and UTF16/32, while preserving inherited map proofs."
+  },
+  "c5_typecheck_failure": {
+    "classification": "Actual immutable C5 full typecheck FAIL, not interruption",
+    "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/typecheck.json",
+    "exit_code": 1,
+    "finding": "A regression-test variable was reused for Path and string, omitted by earlier narrow exploratory mypy selector.",
+    "resolution": "Use distinct typed loop names and run real CLI typecheck across all 171 configured source files."
   }
 }

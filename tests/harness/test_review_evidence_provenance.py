@@ -378,11 +378,11 @@ def test_compact_conversion_never_uses_bookkeeping_suffix(tmp_path, identity, ki
     ce.reencode(history.root, history.base, source, identity, [ref], record_path, ce.XZ_FORMAT)
     head = history.commit('conversion inside bookkeeping paths')
     if restore:
-        for path in (history.root / ref).parent.glob('*.xz'):
-            path.unlink()
+        for payload_path in (history.root / ref).parent.glob('*.xz'):
+            payload_path.unlink()
         (history.root / record_path).unlink()
-        for path, data in original.items():
-            (history.root / path).write_bytes(data)
+        for restore_path, data in original.items():
+            (history.root / restore_path).write_bytes(data)
         head = history.commit('restored conversion cannot repair stale review or test')
     suffix = v.governance_suffix_errors if identity.startswith('HG-') else v.suffix_errors
     assert any('representation-mutation' in error for error in

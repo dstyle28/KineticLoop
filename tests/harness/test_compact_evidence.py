@@ -1425,15 +1425,21 @@ def test_unmapped_foreign_compact_mutation_and_restoration_fails(repo, artifact)
     assert ce.audit(root, base, head, 'HG-054')['errors']
 
 
-def test_transient_wrapped_new_map_on_pre_admission_branch_fails_globally(repo):
+@pytest.mark.parametrize('name', ['COMPACT_REENCODING.json', 'renamed.json'])
+@pytest.mark.parametrize('encoding', ['utf-8', 'utf-16', 'utf-32'])
+@pytest.mark.parametrize('shape', ['wrapped', 'nested', 'removed-marker'])
+def test_transient_reserved_new_map_on_pre_admission_branch_fails_globally(repo, name, encoding, shape):
     root, original_base = repo
     main = git(root, 'branch', '--show-current')
     (root / 'later-protected-source').write_text('ordinary protected update')
     base = commit(root)
     git(root, 'checkout', '-qb', 'old-side-branch', original_base)
-    target = root / RECODE
+    target = root / str(Path(RECODE).with_name(name))
     target.parent.mkdir(parents=True)
-    target.write_text(json.dumps([{ce.REENCODING_KEY: 'v1'}]))
+    value = ([{ce.REENCODING_KEY: 'v1'}] if shape == 'wrapped' else
+             {'nested': {ce.REENCODING_KEY: 'v1'}} if shape == 'nested' else
+             {'protected_base': original_base, 'source_revision': original_base, 'entries': []})
+    target.write_bytes(json.dumps(value).encode(encoding))
     commit(root)
     target.unlink()
     commit(root)
@@ -1442,3 +1448,15 @@ def test_transient_wrapped_new_map_on_pre_admission_branch_fails_globally(repo):
     head = git(root, 'rev-parse', 'HEAD')
     assert git(root, 'diff', '--name-only', base, head) == ''
     assert ce.audit(root, base, head, 'HG-054')['errors']
+
+
+def test_mapping_marker_name_in_plain_prose_stays_ordinary_output(repo):
+    root, base = repo
+    path = REF.replace('run.json', 'note.log')
+    target = root / path
+    target.parent.mkdir(parents=True)
+    data = b'Prose mentions compact_reencoding without a storage object.\n'
+    target.write_bytes(data)
+    head = commit(root)
+    assert ce.read(root, path, head) == data
+    assert ce.audit(root, base, head, 'HG-047')['errors'] == []
