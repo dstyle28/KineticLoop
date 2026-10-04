@@ -114,7 +114,7 @@ def inner(revision, directory):
             report['status']='FAIL'
             report['inventory_error']=type(error).__name__
         write(directory/'execution-index.json',report)
-    return 0
+    return int(report["status"] != "PASS")
 
 
 def local(revision, destination):
@@ -180,7 +180,9 @@ def local(revision, destination):
                 envelope['diagnostic_errors'].append('evidence-copy:'+type(error).__name__)
             try:
                 with (destination/'daemon.log').open('wb') as log:
-                    subprocess.run(['docker','logs',name],stdout=log,stderr=subprocess.STDOUT,timeout=120)
+                    logged=subprocess.run(['docker','logs',name],stdout=log,stderr=subprocess.STDOUT,timeout=120)
+                    if logged.returncode:
+                        envelope['diagnostic_errors'].append('daemon-log-exit-'+str(logged.returncode))
             except BaseException as error:
                 envelope['diagnostic_errors'].append('daemon-log:'+type(error).__name__)
         for kind,key,resource in [('container','container_removed',name),('volume','volume_removed',volume)]:
@@ -204,7 +206,7 @@ def export(revision, directory):
     outer=json.loads((directory/'local-executor.json').read_text())
     successful=(outer['status']==index['status']=='PASS' and outer['tested_commit']==index['tested_commit']==revision
         and outer['container_removed'] is True and outer['volume_removed'] is True
-        and not outer['diagnostic_errors'] and index['final_inventory']==dict(containers=[],volumes=[]))
+        and not outer['diagnostic_errors'] and index.get('final_inventory')==dict(containers=[],volumes=[]))
     dest=f'docs/exec-plans/evidence/HG-052/captures-{revision}'
     def capture(path, command, code):
         target=dest+'/'+str(path.relative_to(directory)).replace('/','_')+'.json'
