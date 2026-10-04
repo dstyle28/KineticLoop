@@ -558,6 +558,9 @@ files_changed:
 - docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/unit_regressions_pass.junit.capture.json
 - docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/unit_regressions_pass.stdout.capture.json
 - docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/witness-index.json
+- docs/exec-plans/evidence/KL-080/HG051-hosted-index-correction/correct-index.py
+- docs/exec-plans/evidence/KL-080/HG051-hosted-index-correction/correction-validation.json
+- docs/exec-plans/evidence/KL-080/HG051-hosted-index-correction/hosted-db-verification.json
 - docs/exec-plans/evidence/KL-080/HISTORICAL_EVIDENCE_MAPPING.json
 - docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/089e1aba60ca60a64c6b513a966d66732f3519e21c51b6d7af3e9dd0fabb93d7.gz
 - docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/5c94998447a516b39433e028b6ca98c64b0f8a00521db6096835210fb1209a1c.gz
@@ -703,6 +706,10 @@ decisions:
   base; exactly six bounded source literal changes remain in the four older fixture files.
 - Capture each new execution losslessly under the unchanged 16 MiB total budget; share identical content-addressed
   payloads only for genuinely identical raw bytes.
+- Use docs/exec-plans/evidence/KL-080/HG051-hosted-index-correction/hosted-db-verification.json as the
+  authoritative hosted execution index. Independent General review found two stale references in the earlier
+  derived index; preserve that old record, correct only new metadata and independently verify every corrected
+  reference and hosted manifest artifact against exact Git bytes.
 known_limitations:
 - Mechanical denial reaches the existing dependency bounds guard in prepare_authorization_basis; a later
   synthetic certificate guard is not reached. No canonical mechanical execution success is claimed.
@@ -718,6 +725,11 @@ known_limitations:
 - Hosted DB run 37161315464 uses protected master workflow-ref SHA 1d30751 but its verified actual tested_commit
   is feb3236c175df171611fc5b7ddb4f6eeca3ce47c; all 780 cases and lifecycle checks pass. Installed App/controller
   final review-head gating is coordinator-owned and not claimed here.
+- The original HG051 hosted-db-verification.json index at 5812ff2ca2c45bfe88c743e36656ea1921112ed6 contains
+  two stale navigation references and is superseded by docs/exec-plans/evidence/KL-080/HG051-hosted-index-correction/hosted-db-verification.json.
+  Its bytes remain historical evidence of the corrected review finding; it is not the current hosted verification
+  index. Raw outputs, tested SHA, counts and cleanup are unchanged; this correction is not a new test
+  run.
 follow_up_tasks:
 - Obtain four fresh independent GENERAL/PROTOCOL/DB_CONCURRENCY/SECURITY_DATA_BOUNDARY reviews at this
   committed implementation/result revision; only own REVIEW_RECORD_ONLY suffix may follow.
