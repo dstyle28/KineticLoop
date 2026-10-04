@@ -365,7 +365,8 @@ def advance(urls: dict[str, str], request: ReapIntent, *, source: str = "CREATED
 
 
 def child_main(urls: dict[str, str], kind: str, identity: ProgressIdentity, request: Any,
-               gate: Any, output: Any, ready: Any = None, stop: Any = None, manifest: Any = None) -> None:
+               gate: Any, output: Any, ready: Any = None, stop: Any = None, manifest: Any = None,
+               preflight_gate: Any = None) -> None:
     try:
         with connect(urls["admin"]) as db:
             output.put({"kind": "child_ready", "role": kind, "pid": os.getpid(),
@@ -375,7 +376,15 @@ def child_main(urls: dict[str, str], kind: str, identity: ProgressIdentity, requ
             if kind == "reap":
                 result = ReaperService(db, identity).reap_intent(request)
             elif kind == "acquire":
-                result = LeaseService(db, PlanningIdentity(identity.actor, SUBJECT)).acquire_lease(request)
+                class ObservedLease(LeaseService):
+                    def _replay(self, command: Any, owner: str, request_hash: str) -> Mapping[str, Any] | None:
+                        prior = super()._replay(command, owner, request_hash)
+                        if preflight_gate is not None:
+                            assert db.info.transaction_status == TransactionStatus.IDLE
+                            output.put({"kind": "preflight_released", "pid": os.getpid(), "idle": True})
+                            assert preflight_gate.wait(10)
+                        return prior
+                result = ObservedLease(db, PlanningIdentity(identity.actor, SUBJECT)).acquire_lease(request)
             elif kind == "renew":
                 result = LeaseService(db, PlanningIdentity(identity.actor, SUBJECT)).renew_lease(request)
             elif kind == "worker":
@@ -390,7 +399,15 @@ def child_main(urls: dict[str, str], kind: str, identity: ProgressIdentity, requ
                     AdmitOrReviseIntent(SUBJECT, "independent-admission", now.date(), "TRAINING", "test:UTC-v1", {"minutes": 30}))
             elif kind == "commit":
                 execution_identity = ExecutionIdentity(identity.actor, SUBJECT, POLICY, ENVIRONMENT, identity.principal)
-                result = ProtocolExecutionService(db, execution_identity).commit(request)
+                class ObservedExecution(ProtocolExecutionService):
+                    def _replay(self, owner: str, key: str, request_hash: str) -> Mapping[str, Any] | None:
+                        prior = super()._replay(owner, key, request_hash)
+                        if preflight_gate is not None:
+                            assert db.info.transaction_status == TransactionStatus.IDLE
+                            output.put({"kind": "preflight_released", "pid": os.getpid(), "idle": True})
+                            assert preflight_gate.wait(10)
+                        return prior
+                result = ObservedExecution(db, execution_identity).commit(request)
             elif kind == "cancel":
                 result = CallLedgerService(db, PlanningIdentity(identity.actor, SUBJECT)).cancel(request)
             else:
@@ -399,7 +416,11 @@ def child_main(urls: dict[str, str], kind: str, identity: ProgressIdentity, requ
             output.put({"kind": "child_result", "result": dict(result), "pid": os.getpid(),
                         "idle": True, "at": datetime.now().isoformat()})
     except (RepositoryTransactionError, PlanningDenied, LedgerDenied) as error:
-        output.put({"kind": "child_denial", "error_type": type(error).__name__, "reason": str(error), "pid": os.getpid()})
+        with connect(urls["admin"]) as observer:
+            state = observer.execute("SELECT status,clock_timestamp() FROM kineticloop.planning_intents WHERE id=%s",
+                                     (request.intent_id,)).fetchone()
+        output.put({"kind": "child_denial", "error_type": type(error).__name__, "reason": str(error),
+                    "pid": os.getpid(), "post_rollback_root_state": state})
 
 
 def spawn(urls: dict[str, str], kind: str, identity: ProgressIdentity, request: Any,
@@ -567,11 +588,17 @@ def test_reaper_rechecks_after_lock(database_urls: dict[str, str]) -> None:
     candidates = scan(urls)
     assert len(candidates) == 1
     candidate = candidates[0]
+    operation_gate = CONTEXT.Event()
     a = spawn(urls, "acquire", WORKER2, AcquireLease(SUBJECT, "recover", old.intent_id,
-        old.expected_owner, old.fence, 1, old.attempt_id, 20))
+        old.expected_owner, old.fence, 1, old.attempt_id, 20), preflight_gate=operation_gate)
     b = spawn(urls, "reap", REAPER, candidate)
+    a[1].set()
+    released = a[2].get(timeout=10)
+    assert released["kind"] == "preflight_released"
+    evidence(released)
+    idle_witness(urls, a[3]["backend_pid"])
     with hold_subject(urls) as holder:
-        a[1].set()
+        operation_gate.set()
         blocked(urls, a[3]["backend_pid"], holder.info.backend_pid)
         b[1].set()
         blocked(urls, b[3]["backend_pid"], a[3]["backend_pid"])
@@ -892,17 +919,24 @@ def test_reaper_cannot_reverse_t6_success(database_urls: dict[str, str]) -> None
     command = upstream(urls, {"manifest_id": str(manifest)}, existing=(root, lease))
     before = persisted(urls)
     assert before["daily_plan_heads"] == [] and before["authorization_issuances"] == []
-    commit = spawn(urls, "commit", PROGRESS, command)
+    operation_gate = CONTEXT.Event()
+    commit = spawn(urls, "commit", PROGRESS, command, preflight_gate=operation_gate)
     reaper = spawn(urls, "reap", REAPER, cached)
+    commit[1].set()
+    released = commit[2].get(timeout=10)
+    assert released["kind"] == "preflight_released"
+    evidence(released)
+    idle_witness(urls, commit[3]["backend_pid"])
     with hold_subject(urls) as holder:
-        commit[1].set()
+        operation_gate.set()
         blocked(urls, commit[3]["backend_pid"], holder.info.backend_pid)
         reaper[1].set()
         blocked(urls, reaper[3]["backend_pid"], commit[3]["backend_pid"])
         holder.commit()
     committed = finish(commit[0], commit[2])["result"]
     after = persisted(urls)
-    finish(reaper[0], reaper[2], denial=True)
+    denied = finish(reaper[0], reaper[2], denial=True)
+    assert denied["post_rollback_root_state"][0] == "FOUND_VALID_PLAN"
     assert persisted(urls) == after
     assert len(after["daily_plan_heads"]) == len(after["authorization_issuances"]) == 1
     assert read_root(urls, old)[0] == "FOUND_VALID_PLAN"
