@@ -133,5 +133,13 @@
     "parent_exit_code": 1,
     "finding": "Parent ambient PYTHONPATH omitted task-cache dependencies during package-version serialization after all exact outputs were captured. Child checks used correct explicit cache environment.",
     "recovery": "Recovered RUN from exact captured command/exit metadata and original parent stdout; rounded duration precision explicit. No rerun or relabeling. Future helper reads versions in exact child environment before checks."
+  },
+  "later_c8_binary_payload_review": {
+    "reviewed_implementation": "50f3b908aebaea41ed9b88f409c54a17334a739a",
+    "review_type": "SECURITY_DATA_BOUNDARY",
+    "status": "CHANGES_REQUIRED",
+    "finding": "A valid small XZ stream can contain literal reserved marker names as ordinary JSON scalar values in an uncompressed chunk. Raw and bound read are valid, but global stored-byte classification mistakes binary bytes for malformed metadata.",
+    "required_resolution": "Only exact-revision full bound payload proof can suppress a JSON/encoding classifier error on a stored path, including parent state. All unproven metadata aliases and numerical/type/integrity checks remain fail-closed; later owner/map/mutation rules still run. Frozen archive proof remains exact.",
+    "required_run_status": "Superseded actual successful and interrupted statuses preserved; codec exit1 includes interruption teardown KeyError, not PASS. No final C8 PASS authority."
   }
 }

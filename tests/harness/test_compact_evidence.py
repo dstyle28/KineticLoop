@@ -1506,3 +1506,89 @@ def test_valid_pre_admission_compact_execution_stays_bound_to_original_bytes(rep
     head = git(root, 'rev-parse', 'HEAD')
     assert ce.read(root, REF, source) == b'1 failed\n'
     assert ce.audit(root, base, head, 'HG-054')['errors'] == []
+
+
+@pytest.mark.parametrize('codec', ce.CODECS)
+@pytest.mark.parametrize('marker_value', [ce.MARKER, ce.REENCODING_KEY])
+def test_bound_binary_payload_marker_value_stays_ordinary_output(repo, codec, marker_value):
+    root, base = repo
+    raw = json.dumps({'ordinary': marker_value}, separators=(',', ':')).encode()
+    assert ce.envelope(raw) is None
+    before = ce.capture(root, REF, raw, base, 'pytest', 1, codec=codec)
+    head = commit(root)
+    assert ce.read(root, REF, head, tested=base, command='pytest', exit_code=1) == raw
+    assert ce.audit(root, base, head, 'HG-047')['errors'] == []
+    assert before['exit_code'] == 1
+
+
+@pytest.mark.parametrize('codec', ce.CODECS)
+@pytest.mark.parametrize('field', ['stored_sha256', 'raw_sha256', 'stored_bytes', 'raw_bytes', 'tested_commit'])
+def test_binary_marker_payload_exemption_requires_full_bound_proof(repo, codec, field):
+    root, base = repo
+    raw = b'{"ordinary":"kineticloop_evidence"}'
+    before = ce.capture(root, REF, raw, base, 'pytest', 1, codec=codec)
+    before[field] = '0' * (40 if field == 'tested_commit' else 64) if 'sha256' in field or field == 'tested_commit' else 1
+    head = replace_record(root, before)
+    with pytest.raises(ValueError):
+        ce.read(root, REF, head)
+    assert ce.audit(root, base, head, 'HG-047')['errors']
+
+
+@pytest.mark.parametrize('codec', ce.CODECS)
+def test_binary_marker_payload_proof_cannot_use_later_revision(repo, codec):
+    root, base = repo
+    before = ce.capture(root, REF, b'{"ordinary":"kineticloop_evidence"}', base, 'pytest', 1, codec=codec)
+    target = root / before['payload']
+    stored = target.read_bytes()
+    target.unlink()
+    missing = commit(root)
+    target.write_bytes(stored)
+    head = commit(root)
+    assert ce.read(root, REF, head) == b'{"ordinary":"kineticloop_evidence"}'
+    with pytest.raises(ValueError):
+        ce.read(root, REF, missing)
+    assert ce.audit(root, base, head, 'HG-047')['errors']
+
+
+@pytest.mark.parametrize('codec', ce.CODECS)
+def test_binary_marker_payload_exemption_rejects_nested_storage(repo, codec):
+    root, base = repo
+    before = ce.capture(root, REF, b'{"ordinary":"kineticloop_evidence"}', base, 'pytest', 1, codec=codec)
+    (root / before['payload']).unlink()
+    raw = json.dumps({'nested': {ce.REENCODING_KEY: 'v1'}}).encode()
+    stored = ce.encode(raw, codec)
+    payload = str(Path(REF).parent / (ce.digest(raw) + ce.CODECS[codec]))
+    before.update(payload=payload, raw_sha256=ce.digest(raw), raw_bytes=len(raw),
+                  stored_sha256=ce.digest(stored), stored_bytes=len(stored))
+    (root / payload).write_bytes(stored)
+    head = replace_record(root, before)
+    with pytest.raises(ValueError):
+        ce.read(root, REF, head)
+    assert ce.audit(root, base, head, 'HG-047')['errors']
+
+
+@pytest.mark.parametrize('codec', ce.CODECS)
+def test_binary_marker_payload_unchanged_envelope_pre_admission_restoration(repo, codec):
+    root, original_base = repo
+    main = git(root, 'branch', '--show-current')
+    (root / 'later-protected-source').write_text('ordinary protected update')
+    base = commit(root)
+    git(root, 'checkout', '-qb', 'old-side-branch', original_base)
+    raw = b'{"ordinary":"kineticloop_evidence"}'
+    before = ce.capture(root, REF, raw, original_base, 'pytest', 1, codec=codec)
+    source = commit(root)
+    target = root / before['payload']
+    stored = target.read_bytes()
+    target.unlink()
+    commit(root)
+    target.write_bytes(stored)
+    restored = commit(root)
+    for path in (REF, before['payload']):
+        (root / path).unlink()
+    commit(root)
+    git(root, 'checkout', main)
+    git(root, 'merge', '--no-ff', '-qm', 'fixture merge', 'old-side-branch')
+    head = git(root, 'rev-parse', 'HEAD')
+    assert ce.read(root, REF, source, exit_code=1) == raw
+    assert ce.read(root, REF, restored, exit_code=1) == raw
+    assert ce.audit(root, base, head, 'HG-054')['errors'] == []

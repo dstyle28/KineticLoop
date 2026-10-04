@@ -1078,9 +1078,48 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
     """Inspect every forward commit so deletion/reversion cannot hide conversions."""
     errors: list[str] = []
     records: set[str] = set()
-    verified_archival_revisions: set[str] = set()
+    verified_archival_payloads: dict[str, set[str]] = {}
     prefixes = [f'docs/exec-plans/{kind}/{identity}/' for kind in ('evidence', 'reviews')]
     storage_roots = ['docs/exec-plans/evidence', 'docs/exec-plans/reviews']
+
+    def archival_payloads(revision: str) -> set[str]:
+        if revision not in verified_archival_payloads:
+            if git(root, 'ls-tree', revision, '--', MAPPING_PATH).strip():
+                archival_errors, payloads = archive_audit(root, revision)
+                if archival_errors:
+                    raise ValueError('reencoding-archival-binding:' + ';'.join(archival_errors))
+            else:
+                # The frozen workflow commits all four storage objects before
+                # building its mapping. The existing builder verifies this stage.
+                mapping = archive_mapping(root, revision)
+                payloads = {entry['storage']['payload'] for entry in mapping['entries']}
+            verified_archival_payloads[revision] = payloads
+        return verified_archival_payloads[revision]
+
+    def bound_payload(path: str, revision: str) -> bool:
+        # A valid unchanged sibling envelope can also bind a restored payload.
+        # Decoder selection comes from that envelope, never the file extension.
+        parent = Path(path).parent
+        for ref in git(root, 'ls-tree', '-r', '--name-only', revision, '--',
+                       str(parent) + '/').decode().splitlines():
+            if ref == path or Path(ref).parent != parent:
+                continue
+            try:
+                manifest = envelope(blob(root, ref, revision, PLAIN_LIMIT))
+                if manifest is None or manifest.get('payload') != path:
+                    continue
+                if manifest.get(MARKER) in CODECS:
+                    read(root, ref, revision)
+                    return True
+                if (manifest.get(MARKER) == HISTORICAL_FORMAT
+                        and ref in {x['path'] for x in historical_originals()}
+                        and path in archival_payloads(revision)):
+                    return True
+            except (ValueError, OSError, KeyError, TypeError):
+                # An invalid or unrelated candidate cannot supply a proof.
+                continue
+        return False
+
     try:
         git(root, 'merge-base', '--is-ancestor', base, head)
         inherited = {}
@@ -1127,36 +1166,40 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
                 changed_metadata_paths.update(git(root, 'diff', '--no-renames', '--name-only',
                                       '--diff-filter=ACMT', parent, revision, '--',
                                       *storage_roots).decode().splitlines())
+            proven_payloads: set[str] = set()
+            deferred_metadata_errors: list[tuple[str, ValueError]] = []
             for path in sorted(changed_metadata_paths):
                 data = blob(root, path, revision,
                             STORED_LIMIT if path.endswith(('.gz', '.xz')) else PLAIN_LIMIT)
-                record = reencoding_record(data)
+                try:
+                    record = reencoding_record(data)
+                except ValueError as ex:
+                    if (not path.endswith(('.gz', '.xz'))
+                            or str(ex) not in {'evidence-envelope-json', 'evidence-envelope-encoding'}):
+                        raise
+                    # Small XZ streams may contain literal ordinary JSON bytes.
+                    # Defer classification until exact envelope proofs are known.
+                    deferred_metadata_errors.append((path, ex))
+                    continue
                 if record is None:
                     manifest = envelope(data)
                     if manifest is not None:
                         if manifest.get(MARKER) in (HISTORICAL_FORMAT, MAPPING_FORMAT):
                             if path not in {MAPPING_PATH, *(x['path'] for x in historical_originals())}:
                                 raise ValueError('archive-unauthorized-path')
-                            if revision not in verified_archival_revisions:
-                                if git(root, 'ls-tree', revision, '--', MAPPING_PATH).strip():
-                                    archival_errors, _ = archive_audit(root, revision)
-                                    if archival_errors:
-                                        raise ValueError('reencoding-archival-binding:' + ';'.join(archival_errors))
-                                else:
-                                    # Frozen archival workflow commits all four
-                                    # storage objects before building its mapping.
-                                    # The existing builder verifies that exact
-                                    # inventory and original proof at this stage.
-                                    archive_mapping(root, revision)
-                                verified_archival_revisions.add(revision)
+                            proven_payloads.update(archival_payloads(revision))
                         else:
                             read(root, path, revision)
+                            proven_payloads.add(manifest['payload'])
                 elif path not in inherited and not any(path.startswith(prefix) for prefix in prefixes):
                     raise ValueError('reencoding-foreign-owner:' + path)
                 else:
                     admitted_owner = admitted[path][2] if path in inherited else identity
                     validate_reencoding(root, path, record, inherited.get(path, base),
                                         revision, admitted_owner)
+            for path, error in deferred_metadata_errors:
+                if path not in proven_payloads and not bound_payload(path, revision):
+                    raise error
             mapped = {}
             for path in git(root, 'ls-tree', '-r', '--name-only', revision, '--', *prefixes).decode().splitlines():
                 if path.endswith(('.gz', '.xz')):
@@ -1179,7 +1222,15 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
                 for path in changed:
                     old = blob(root, path, parent)
                     selected_owner = any(path.startswith(prefix) for prefix in prefixes)
-                    if reencoding_record(old) is not None:
+                    try:
+                        old_record = reencoding_record(old)
+                    except ValueError as ex:
+                        if (not path.endswith(('.gz', '.xz'))
+                                or str(ex) not in {'evidence-envelope-json', 'evidence-envelope-encoding'}
+                                or not bound_payload(path, parent)):
+                            raise
+                        old_record = None
+                    if old_record is not None:
                         raise ValueError('reencoding-record-mutated-or-deleted')
                     # Pre-admission side branches do not inherit protected state.
                     # Selected-owner history retains its existing strict checks.

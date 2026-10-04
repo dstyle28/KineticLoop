@@ -203,3 +203,18 @@ command/exit records and original stdout, with rounded duration precision explic
 no execution rerun/relabeling. The helper now reads versions in the actual child
 environment before checks. Its exception/output and all prior actual statuses are
 preserved. Only fresh corrected-source execution grants final implementation PASS.
+
+C8 independent SECURITY_DATA_BOUNDARY residual probe found valid ordinary JSON
+scalar marker names can remain literal inside a small XZ chunk. Raw classification
+and bound retrieval were valid, but raw stored-byte classification rejected that
+actual binary payload. C8 required outputs remain superseded with real successful/
+interrupted exit statuses; codec interruption also produced teardown KeyError exit1.
+Final correction suppresses only JSON/encoding classifier errors on stored paths
+after exact-revision full bound payload proof, including parent-state classification.
+Normal proof requires declared codec, same-directory ownership, regular Git objects,
+all stored/raw hashes/lengths/bounds, non-nested raw and ancestry. Frozen archives
+use unchanged exact inventory/original proof. An unchanged sibling may provide that
+exact proof; invalid/other-revision candidates never do. No extension selects a
+decoder, no size/type/integrity errors are suppressed, and later owner/map/mutation
+guards still run. New isolated tests cover scalar values for both codecs, corrupt
+proofs, later-revision absence, nested metadata and pre-admission restoration.

@@ -228,6 +228,14 @@ Changed storage blobs are classified globally at every intervening
 revision, including renamed/wrapped/nested metadata and Unicode forms on branches
 before admission, even when metadata is named with a payload extension. Classification
 reads actual bounded stored bytes and never guesses a decoder from the extension.
+Literal JSON strings inside a valid binary stream are ordinary payload bytes. A
+JSON/encoding classifier error on a stored-payload path may be disregarded only
+after full bound retrieval proves that exact payload at that exact revision (or
+parent for prior-state classification). The proof checks the declared codec,
+same-directory ownership, regular Git objects, stored/raw hashes and lengths,
+bounded decoding, non-nested raw classification and ancestry. Frozen archival
+payloads require their existing exact inventory/original proof. Unproven aliases,
+size/type/integrity failures and later mapping/mutation guards remain fail-closed.
 Recognized execution envelopes must pass bound retrieval at that revision; archival
 objects remain subject to the exact frozen archival inventory and original proof,
 including its storage-before-mapping commit. Deletion before HEAD cannot hide a foreign conversion. Changed
