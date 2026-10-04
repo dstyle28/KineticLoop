@@ -35,5 +35,12 @@
     "status": "PASS",
     "passed": 5,
     "deselected": 361
+  },
+  "later_corrected_source_review": {
+    "reviewed_implementation": "d0a39402c4f7f3585e495e4ea3b30bbcf88db737",
+    "review_type": "SECURITY_DATA_BOUNDARY",
+    "status": "CHANGES_REQUIRED",
+    "finding": "Inherited original verification was selected-owner-only. An unrelated owner audit passed despite unavailable admitted source.",
+    "required_resolution": "Reverify all admitted canonical mappings globally against each immutable recorded owner/base, preserving selected-owner-only new admission."
   }
 }

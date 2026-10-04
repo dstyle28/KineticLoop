@@ -131,3 +131,12 @@ wrapped records. These are enforcement of the same preservation/reserved-metadat
 requirements, not an additional format or write-scope expansion. Exact byte-pins
 stay implementation/runtime specific; measurements do not assume identical XZ
 sizes across liblzma versions.
+
+Fresh corrected-source SECURITY_DATA_BOUNDARY review found that inherited-source
+verification still covered only the selected owner. The d0a394 run is also preserved
+as superseded with successful checks and actual deliberate interruption statuses;
+no interrupted/full-harness evidence is promoted. Final correction validates admitted
+canonical maps globally with each recorded owner/base, including unrelated/no-change
+PRs. New conversion admission remains selected-owner-only. Cross-owner source-blob
+loss and mapping mutation/deletion have isolated negative Git fixtures. No numerical
+budget, execution oracle, controller installation or write-path scope changed.

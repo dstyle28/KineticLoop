@@ -1088,15 +1088,20 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
         # Already admitted mappings at the protected base are immutable history.
         # Reverify originals even with no changed blobs; do not authorize any new
         # migration using their older protected-base claim.
-        for path in git(root, 'ls-tree', '-r', '--name-only', base, '--', *prefixes).decode().splitlines():
-            if path.endswith(('.gz', '.xz')):
+        # Every admitted owner's originals remain required on unrelated PRs too.
+        # Canonical filenames were validated at admission; avoid reading arbitrary
+        # historical bulk merely to discover these small ordinary audit records.
+        for path in git(root, 'ls-tree', '-r', '--name-only', base, '--',
+                        'docs/exec-plans/evidence', 'docs/exec-plans/reviews').decode().splitlines():
+            if Path(path).name != REENCODING_NAME:
                 continue
-            data = blob(root, path, base)
+            data = blob(root, path, base, PLAIN_LIMIT)
             record = reencoding_record(data)
             if record is not None:
-                if len(data) > PLAIN_LIMIT or blob(root, path, head, PLAIN_LIMIT) != data:
+                if blob(root, path, head, PLAIN_LIMIT) != data:
                     raise ValueError('reencoding-merged-record-mutated-or-deleted')
-                validate_reencoding(root, path, record, record['protected_base'], head, identity)
+                admitted_owner = owner(path).split('/')[-1]
+                validate_reencoding(root, path, record, record['protected_base'], head, admitted_owner)
                 inherited[path] = record['protected_base']
                 records.add(path)
         commits = git(root, 'rev-list', '--reverse', base + '..' + head).decode().splitlines()

@@ -1323,3 +1323,28 @@ def test_merged_mapping_stays_immutable_and_reverifies_originals(repo, monkeypat
     (root / RECODE).unlink()
     head = commit(root)
     assert ce.audit(root, base, head, 'HG-047')['errors']
+
+
+def test_unrelated_owner_audit_reverifies_every_admitted_original_blob(repo):
+    root, _, source, record, base, raw = converted(repo)
+    assert ce.audit(root, base, base, 'HG-048')['errors'] == []
+    original = record['entries'][0]['original']['payload']
+    oid = git(root, 'rev-parse', source + ':' + original['path'])
+    # Only this newly initialized fixture's loose object; never real repo objects.
+    target = root / '.git/objects' / oid[:2] / oid[2:]
+    assert target.is_file() and root.resolve() in target.resolve().parents
+    target.unlink()
+    assert ce.read(root, REF, base) == raw
+    assert any('reencoding-invalid' in error for error in ce.audit(root, base, base, 'HG-048')['errors'])
+
+
+@pytest.mark.parametrize('mutation', ['delete', 'change'])
+def test_unrelated_owner_audit_enforces_admitted_map_immutability(repo, mutation):
+    root, _, _, record, base, _ = converted(repo)
+    if mutation == 'delete':
+        (root / RECODE).unlink()
+    else:
+        record['identity'] = 'HG-048'
+        (root / RECODE).write_text(json.dumps(record))
+    head = commit(root)
+    assert ce.audit(root, base, head, 'HG-048')['errors']
