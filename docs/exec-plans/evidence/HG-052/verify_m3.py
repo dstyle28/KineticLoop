@@ -1,7 +1,7 @@
 """Use authoritative semantic validators for all integrations and M3."""
 import argparse
 import json
-from build_closure import ROOT, context, schemas, v
+from build_closure import ROOT, context, schemas, v, provenance_errors
 
 p = argparse.ArgumentParser(); p.add_argument('--revision', required=True)
 a = p.parse_args(); revision = v.resolve(ROOT, a.revision)
@@ -13,6 +13,9 @@ closure, source_errors = v.m3_load_closure_record(ROOT, ROOT / 'docs/exec-plans/
 errors.extend(source_errors)
 if closure:
     errors.extend(v.m3_milestone_closure_errors(ROOT, closure, *s, backlog, tasks))
+    ref=closure['integrated_regression']
+    payload=v.load_artifact_at_revision(ROOT,ref['path'],ref['revision'])
+    errors.extend(provenance_errors(payload,ref['revision']))
 budget = v.compact_evidence.audit(ROOT, '7d2322707b1ffe177c958ef9385ce40bb66d1e43', revision, 'HG-052')
 errors.extend(budget['errors'])
 report = dict(tested_commit=revision, integrations=len(records), m3_members=len(v.M3_TASK_IDS), exits=len(v.M3_EXIT_TASK_CHECKS), fresh_commands=len(v.M3_REGRESSION_COMMANDS), errors=sorted(set(errors)), budget=budget,

@@ -142,7 +142,7 @@ def local(revision, destination):
         assert not inspected['HostConfig'].get('Binds')
         assert not any(re.match(r'(?i)(GITHUB|GH_|HTTP_PROXY|HTTPS_PROXY|ALL_PROXY|DOCKER_HOST|DOCKER_CONTEXT|BUILDX|BUILDKIT)',e) for e in inspected['Config']['Env'])
         for attempt in range(60):
-            if subprocess.run(['docker','exec',name,'docker','info'],capture_output=True).returncode==0:
+            if subprocess.run(['docker','exec',name,'docker','info'],capture_output=True,timeout=10).returncode==0:
                 break
             time.sleep(1)
         else:
@@ -192,13 +192,22 @@ def local(revision, destination):
 def export(revision, directory):
     """Capture raw bytes after immutable execution, retaining failures and ancillary proof."""
     source=directory/'run'; index=json.loads((source/'execution-index.json').read_text())
+    outer=json.loads((directory/'local-executor.json').read_text())
+    successful=(outer['status']==index['status']=='PASS' and outer['tested_commit']==index['tested_commit']==revision
+        and outer['container_removed'] is True and outer['volume_removed'] is True
+        and not outer['diagnostic_errors'] and index['final_inventory']==dict(containers=[],volumes=[]))
     dest=f'docs/exec-plans/evidence/HG-052/captures-{revision}'
     def capture(path, command, code):
         target=dest+'/'+str(path.relative_to(directory)).replace('/','_')+'.json'
         v.compact_evidence.capture(ROOT,target,path.read_bytes(),revision,command,code)
         return dict(path=target,sha256=hashlib.sha256((ROOT/target).read_bytes()).hexdigest())
-    payload=dict(change_id='HG-052',tested_commit=revision,status=index['status'],commands=COMMANDS,executions=[])
+    payload=dict(change_id='HG-052',tested_commit=revision,status='PASS' if successful else 'FAIL',commands=COMMANDS,executions=[])
     handled=set()
+    payload['provenance']={}
+    for key,path in [('outer',directory/'local-executor.json'),('execution_index',source/'execution-index.json'),('environment',source/'environment.json')]:
+        if path.exists():
+            payload['provenance'][key]=capture(path,'HG052 executor provenance',0 if successful else 1)
+            handled.add(path)
     for i,run in enumerate(index['executions'],1):
         command=run['command']; code=run.get('exit_code',125); name=f'{i:02d}'
         item=dict(command=command,tested_commit=revision,exit_code=code)
