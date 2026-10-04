@@ -34,7 +34,7 @@ authority semantics, provider trust or production/shadow activation.
 ## Checks and evidence
 All checks initially NOT_RUN. At committed candidate C run:
 - own uv run python docs/exec-plans/evidence/HG-053/verify_refinement.py
-- uv run python tools/harness/document_index/check.py
+- uv run python tools/harness/document_index/check.py current_document_index_resolves
 - uv run kl check-harness
 - uv run kl lint
 - uv run kl typecheck
