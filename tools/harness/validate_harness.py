@@ -1739,7 +1739,11 @@ def storage_bookkeeping_only(root, parent, commit, path):
             entry = revision_git_entry(root, path, revision)
             if entry is None or entry[0] not in (b'100644', b'100755') or entry[1] != b'blob':
                 continue
-            data = compact_evidence.blob(root, path, revision, compact_evidence.PLAIN_LIMIT)
+            # This classifies immutable bookkeeping history, including plain
+            # evidence merged before prospective storage budgets were adopted.
+            # Budget admission remains in audit; reserved objects still enforce
+            # their own envelope limit during classification.
+            data = compact_evidence.blob(root, path, revision)
             if compact_evidence.reencoding_record(data) is not None:
                 return False
             manifest = compact_evidence.envelope(data)

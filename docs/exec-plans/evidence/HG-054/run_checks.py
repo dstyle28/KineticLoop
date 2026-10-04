@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import concurrent.futures
 import importlib.util
-import importlib.metadata
 import json
 import os
 import shlex
@@ -30,6 +29,11 @@ def main() -> int:
     dependencies = Path('/private/tmp/hg054-dependencies')
     assert dependencies.is_dir(), 'task-owned cached pytest-xdist dependencies required'
     environment = dict(os.environ, PYTHONPATH=os.pathsep.join([str(ROOT / 'src'), str(dependencies)]))
+    # Collect metadata in the actual child environment, independently of the
+    # parent's ambient PYTHONPATH, before spending on revision-bound checks.
+    versions = json.loads(subprocess.check_output([python, '-c',
+        "import importlib.metadata,json; print(json.dumps({name: importlib.metadata.version(name) "
+        "for name in ('pytest','pytest-xdist','execnet')}))"], cwd=ROOT, env=environment))
     commands = [
         ('codec_security_and_budget', [python, '-m', 'pytest', 'tests/harness/test_compact_evidence.py', '-q']),
         ('bound_reader_regressions', [python, '-m', 'pytest', 'tests/harness/test_review_evidence_provenance.py', 'tests/harness/test_m3_milestone_closure.py', 'tests/harness/test_validator.py', '-q']),
@@ -81,7 +85,7 @@ def main() -> int:
                    (temp / 'unit.xml').read_bytes(), revision, unit['command'], unit['exit_code'])
     (directory / 'RUN.json').write_text(json.dumps({'tested_commit': revision, 'protected_base': BASE,
         'python': python, 'python_version': sys.version, 'PYTHONPATH': environment['PYTHONPATH'],
-        'versions': {name: importlib.metadata.version(name) for name in ('pytest', 'pytest-xdist', 'execnet')},
+        'versions': versions,
         'checks': records, 'scratch': str(temp), 'scope': 'HG054 developer checks; App/fullDB NOT_RUN'}, indent=2) + '\n')
     print(str(directory / 'RUN.json'), flush=True)
     return int(any(record['exit_code'] != 0 for record in records))

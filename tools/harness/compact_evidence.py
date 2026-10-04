@@ -907,14 +907,12 @@ def verify_snapshot(root: Path, value: dict, revision: str | None, limit: int) -
 
 
 def reencoding_record(data: bytes) -> dict | None:
-    try:
-        value = json.loads(data, object_pairs_hook=unique)
-    except (UnicodeError, json.JSONDecodeError):
-        envelope(data)  # Recognizable damaged storage fails closed; prose stays opaque.
+    value = envelope(data)
+    if value is None:
         return None
-    if isinstance(value, dict) and {'protected_base', 'source_revision', 'entries'} <= set(value) and REENCODING_KEY not in value:
+    if {'protected_base', 'source_revision', 'entries'} <= set(value) and REENCODING_KEY not in value:
         raise ValueError('reencoding-marker-missing')
-    return value if isinstance(value, dict) and REENCODING_KEY in value else None
+    return value if REENCODING_KEY in value else None
 
 
 def validate_reencoding(root: Path, path: str, record: dict, base: str,

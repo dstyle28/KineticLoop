@@ -186,3 +186,20 @@ regression (1 failed, 82 passed); the correction does not change HG051 inventory
 schema, budgets, or proof/execution separation. Successful archival revision proof
 is cached only within one reencoding_audit call at the exact immutable revision.
 C6 has no immutable required-run artifact and no final PASS credit.
+
+C7 immutable required execution preserves codec462 PASS, decoder103 PASS, measure/
+scope/lint/typecheck/diff PASS and actual unit FAIL (246 passed, 1 failed). Bound
+reader also observed a failed positive before interruption; other unfinished checks
+retain actual interrupted statuses. The suffix classifier incorrectly applied the
+prospective plain budget to historical already-merged ordinary evidence. Correction
+classifies exact historical regular bytes without budget admission; reserved object
+limits and unchanged new PR budget audits remain mandatory. The existing envelope
+classifier first preserves nonreserved ordinary JSON semantics. New isolated tests
+prove old suffix/read compatibility and separately prove the same large new plain
+blob is denied prospective budget admission. No history or budget is migrated.
+The C7 parent invocation also omitted cache PYTHONPATH while serializing versions
+after all outputs were captured. RUN metadata was recovered from exact captured
+command/exit records and original stdout, with rounded duration precision explicit;
+no execution rerun/relabeling. The helper now reads versions in the actual child
+environment before checks. Its exception/output and all prior actual statuses are
+preserved. Only fresh corrected-source execution grants final implementation PASS.

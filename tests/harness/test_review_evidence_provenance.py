@@ -387,3 +387,33 @@ def test_compact_conversion_never_uses_bookkeeping_suffix(tmp_path, identity, ki
     suffix = v.governance_suffix_errors if identity.startswith('HG-') else v.suffix_errors
     assert any('representation-mutation' in error for error in
                suffix(history.root, source, head, identity, kind))
+
+
+@pytest.mark.parametrize('identity', ['KL-001', 'HG-054'])
+@pytest.mark.parametrize('kind', ['tested', 'review'])
+def test_suffix_classification_preserves_historical_large_plain_evidence(tmp_path, identity, kind):
+    history = History(tmp_path)
+    ce = v.compact_evidence
+    directory = 'reviews' if kind == 'review' else 'evidence'
+    ref = f'docs/exec-plans/{directory}/{identity}/historical.log'
+    # Historical plain-read/suffix semantics predate prospective budget admission.
+    raw = b'ordinary historical execution output\n' * 8000
+    assert len(raw) > ce.PLAIN_LIMIT
+    history.put(ref, raw.decode())
+    end = history.commit('historical ordinary bookkeeping evidence')
+    suffix = v.governance_suffix_errors if identity.startswith('HG-') else v.suffix_errors
+    assert suffix(history.root, history.reviewed, end, identity, kind) == []
+    assert ce.read(history.root, ref, end) == raw
+    # This compatibility does not grant prospective admission or a size waiver.
+    assert any('evidence-size:' in error for error in
+               ce.audit(history.root, history.reviewed, end, identity)['errors'])
+
+
+def test_suffix_classification_keeps_nonreserved_plain_json_semantics(tmp_path):
+    history = History(tmp_path)
+    ref = OWN + 'historical.json'
+    raw = b'{"ordinary":1,"ordinary":2}'
+    history.put(ref, raw.decode())
+    end = history.commit('historical ordinary JSON')
+    assert v.compact_evidence.read(history.root, ref, end) == raw
+    assert v.suffix_errors(history.root, history.reviewed, end, 'KL-001', 'review') == []

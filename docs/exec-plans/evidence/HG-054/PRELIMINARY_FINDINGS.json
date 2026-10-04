@@ -117,5 +117,21 @@
     "failed": 1,
     "passed": 82,
     "reason": "Initial per-revision archive audit rejected the frozen intermediate storage-before-mapping commit. Correction uses the unchanged archive_mapping builder to verify its exact inventory/original proofs before the mapping exists. Existing archival regression confirms retrieval/original proof separation."
+  },
+  "c7_immutable_compatibility_failure": {
+    "reviewed_implementation": "ea1780c842ba12e426f2691c59fb7980589e8bfe",
+    "classification": "Actual immutable unit FAIL; bound-reader positive also failed before deliberate interruption",
+    "unit_exit_code": 1,
+    "unit_passed": 246,
+    "unit_failed": 1,
+    "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/unit.json",
+    "finding": "Suffix-only storage classification incorrectly applied prospective 256KiB plain admission budget to already-merged large plain evidence, invalidating historical integration/read semantics.",
+    "resolution": "Classify exact historical regular bytes without prospective budget admission; reserved metadata retains envelope limits and all new PR budgets remain enforced by audit. Use existing envelope classifier first for reencoding metadata to preserve nonreserved plain JSON semantics."
+  },
+  "c7_runner_finalization_recovery": {
+    "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/runner-finalization.json",
+    "parent_exit_code": 1,
+    "finding": "Parent ambient PYTHONPATH omitted task-cache dependencies during package-version serialization after all exact outputs were captured. Child checks used correct explicit cache environment.",
+    "recovery": "Recovered RUN from exact captured command/exit metadata and original parent stdout; rounded duration precision explicit. No rerun or relabeling. Future helper reads versions in exact child environment before checks."
   }
 }
