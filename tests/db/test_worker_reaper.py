@@ -943,8 +943,11 @@ def accounting_settlement_race(urls: dict[str, str], monkeypatch: pytest.MonkeyP
     # An unchanged candidate must not conceal an unrelated owner guard failure.
     def unrelated_failure(self: Any, command: Any) -> Mapping[str, Any]:
         raise GuardRequired("injected unchanged-candidate guard failure")
+    def unexpected_read(self: Any, reservation: Any) -> Any:
+        raise AssertionError("unrelated owner guard must not trigger a stale-candidate reread")
     with monkeypatch.context() as injection, connect(urls["admin"]) as db:
         injection.setattr(CallLedgerService, "mark_unknown", unrelated_failure)
+        injection.setattr(CallLedgerService, "read", unexpected_read)
         with pytest.raises(GuardRequired, match="injected unchanged-candidate"):
             ReaperService(db, REAPER).mark_outstanding_unknown()
     assert persisted(urls) == before

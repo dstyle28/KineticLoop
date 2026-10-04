@@ -115,7 +115,9 @@ class PlanningWorkflowService:
                     self._identity.subject_id, f"reaper-unknown:{reservation}:{revision}",
                     intent, reservation, expected_revision=revision,
                 ))
-            except GuardRequired:
+            except GuardRequired as error:
+                if str(error) not in {"ledger expected revision is stale", "reservation transition denied"}:
+                    raise
                 # The owner rolled back. Confirm stale discovery through its read
                 # interface; registration/integrity/infrastructure errors still fail.
                 current = ledger.read(reservation)

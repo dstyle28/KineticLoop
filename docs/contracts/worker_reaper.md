@@ -43,7 +43,8 @@ after success. A committed T6 success is immutable and never reaped.
 Unknown-call discovery commits before separate MarkUnknown owner transactions.
 It includes expired/terminated roots and reservations fenced out by takeover.
 Possible sends retain occupation; interruption leaves safe outstanding accounting
-for another scan. If a ledger guard rejects a candidate, the reaper rereads it
+for another scan. Only the ledger owner's explicit stale revision or transition
+guard errors trigger a reread. The reaper rereads the candidate
 through the ledger owner and continues only for a confirmed changed status/revision
 with the same intent binding; unchanged-basis and read failures still propagate.
 The completed count includes successful MarkUnknown calls only. Actual settlement
