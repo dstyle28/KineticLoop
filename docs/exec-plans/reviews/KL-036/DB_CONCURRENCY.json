@@ -1,46 +1,23 @@
 {
   "task_identity": "harness-backlog-v0.2/KL-036",
-  "reviewed_head_sha": "96ebb9e0e95211fc684273e7b69a49dc11e11e87",
+  "reviewed_head_sha": "900d667394599345a51cec851160d33c01ebce7f",
   "review_type": "DB_CONCURRENCY",
   "status": "CHANGES_REQUIRED",
   "findings": [
     {
-      "finding_id": "DB036-01",
       "classification": "BLOCKER",
-      "title": "Witness guarded takeover CAS contention after replay preflight",
-      "file": "tests/db/test_worker_reaper.py",
-      "start_line": 560,
-      "end_line": 570,
-      "description": "Both takeover contenders are spawned without preflight_gate. The test holds S01 before releasing their initial child gates, but AcquireLease synchronously calls _replay first, and replay_outcome itself locks S01. Consequently the two recorded PostgreSQL blockers necessarily witness the historical-replay preflight transactions, before the guarded CAS owner transactions execute. Distinct PID/backend identities, fence 1 to 2, one later loser and preserved state are verified, but this does not provide the packet-required deterministic SQL concurrency witness for the actual takeover CAS transactions.",
-      "impact": "The required worker_takeover_fencing_dc check and whole-file suite are reported PASS without establishing guarded CAS contention. The exact DC oracle remains incomplete, so DB_CONCURRENCY PASS and task DoD approval cannot be issued at this SHA.",
-      "required_correction": "Pass separate preflight_gate events to both takeover contenders using the existing ObservedLease instrumentation. Release their initial gates before holding S01, observe both preflight_released records and idle PostgreSQL state, then hold S01, release each operation gate, and capture bounded PostgreSQL blocker witnesses for the real AcquireLease owner transactions before committing the holder. Retain one-CAS-winner/fence/no-effect/current-worker assertions. Commit the corrected test and rerun all required packet checks on a new tested revision; persist new lossless captures/result and obtain fresh SHA-bound reviews.",
-      "evidence_refs": [
-        "tests/db/test_worker_reaper.py",
-        "src/kineticloop/persistence/planning.py",
-        "src/kineticloop/persistence/transactions.py",
-        "docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_takeover_fencing_dc-execution.log.json",
-        "docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_reaper_db_suite-execution.log.json"
-      ]
+      "title": "Aggregate evidence storage exceeds current cap; task result remains BLOCKED",
+      "location": "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+      "finding": "At the exact reviewed SHA, 634 changed evidence/review blobs total 18099028 bytes, exceeding the unchanged 16777216-byte aggregate cap by 1321812 bytes. All sixteen successful check exits and verified DB concurrency oracles do not satisfy this remaining task/readiness condition; KL-036_RESULT.yaml records BLOCKED.",
+      "required_correction": "Resolve the aggregate through conforming lossless capture/storage refinement or separately approved prospective storage governance, preserving execution/failure history. Commit a valid completion result and evidence, retest if implementation changes, and obtain new SHA-bound independent reviews. No storage waiver or PASS promotion of the current BLOCKED result."
     }
   ],
   "evidence_refs": [
-    "docs/exec-plans/reviews/KL-036/DB_CONCURRENCY/observations.md",
-    "docs/exec-plans/active/KL-036.md",
+    "docs/exec-plans/reviews/KL-036/DB_CONCURRENCY/V2/review-notes.md",
+    "docs/exec-plans/reviews/KL-036/DB_CONCURRENCY/V2/ancestry-audit.json",
+    "docs/exec-plans/reviews/KL-036/DB_CONCURRENCY/V2/evidence-audit.json",
     "docs/exec-plans/completed/KL-036_RESULT.yaml",
-    "docs/contracts/worker_reaper.md",
-    "src/kineticloop/persistence/worker_reaper.py",
-    "src/kineticloop/workflow/worker_reaper.py",
-    "src/kineticloop/persistence/transactions.py",
-    "tests/db/test_worker_reaper.py",
-    "docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/CHECK_INDEX.json",
-    "docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_takeover_fencing_dc-execution.log.json",
-    "docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_reaper_db_suite-execution.log.json",
-    "docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_stale_candidate_dc-execution.log.json",
-    "docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_unowned_deadline_dc-execution.log.json",
-    "docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_atomicity_history_dc-execution.log.json",
-    "docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_unknown_accounting_dc-execution.log.json",
-    "docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_independent_reaper_wf-execution.log.json",
-    "docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_preserves_committed_success_wf-execution.log.json"
+    "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/CHECK_INDEX.json"
   ],
   "review_contract_version": "v0.2"
 }

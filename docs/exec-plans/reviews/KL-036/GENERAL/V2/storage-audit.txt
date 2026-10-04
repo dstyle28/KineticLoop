@@ -1,0 +1,20 @@
+Independent protected-base storage audit
+
+Reviewed revision: 900d667394599345a51cec851160d33c01ebce7f
+Protected base: af09be228fbc89d074b6e863c83e1fdda343d55b
+Task identity: harness-backlog-v0.2/KL-036
+
+Used the unchanged indexed compact-evidence auditor against the two exact committed trees, selected owner KL-036. This was read-only inspection; it ran no DB, Docker, installed-App, hosted/full-DB, or merge gate.
+
+Changed evidence/review regular blobs: 634
+Aggregate stored size: 18,099,028 bytes
+Inclusive aggregate limit: 16,777,216 bytes
+Excess: 1,321,812 bytes
+Audit errors: exactly one aggregate-size rejection (18099028 > 16777216).
+No per-artifact, payload-integrity, nested-storage, orphan, duplicate-bulk, or ownership error was returned.
+
+Source/test/contract/result blobs are reported separately: 7 files, 547,707 bytes. They do not substitute for the evidence/review budget. This note and the other fresh review records will add review-bookkeeping bytes after the reviewed revision; the coordinator must audit that exact suffix too.
+
+The existing exact-head failure record refers to bfce1bd2be923204875360eddd0e5169332402be. This independently measured total binds the newer reviewed revision above and does not reuse that earlier audit as current proof.
+
+Required correction: separate prospective governance must authorize a lossless solution that satisfies the applicable storage contract and retains failure history. Do not erase failures, truncate captures, waive the cap, relabel command success as readiness, or rewrite frozen authority/history. Any changed result/evidence implementation revision needs the required fresh testing/review bindings. Readiness remains BLOCKED and this review remains CHANGES_REQUIRED.
