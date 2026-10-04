@@ -165,7 +165,7 @@ def _persist_reaper(tx: RepositoryTransaction, identity: ProgressIdentity,
                 "intent_status": prepared["S27"]["status"],
                 "attempt_status": prepared["S29"]["status"], "executable": False,
                 "guard_accepted_at": prepared["S29"]["completed_at"].isoformat(),
-                "lock_trace": [(int(stage), name) for stage, name in tx.lock_trace]}
+                "lock_trace": [[int(stage), name] for stage, name in tx.lock_trace]}
 
     outcome, replayed = tx.idempotent_outcome(
         receipt_id=uuid4(), actor_scope=identity.key, client_key=request.key,

@@ -149,8 +149,22 @@ CONTEXT = mp.get_context("spawn")
 CHILDREN: list[Any] = []
 
 
+class LocalDsn(str):
+    def __repr__(self) -> str:
+        return "[REDACTED_LOCAL_TEST_DSN]"
+
+
+class ConnectionUrls(dict[str, str]):
+    def __repr__(self) -> str:
+        return "<owned isolated PostgreSQL connections; credentials redacted>"
+
+
 def connect(url: str, **kwargs: Any) -> Any:
-    return psycopg.connect(url, options="-c statement_timeout=10000 -c lock_timeout=8000", **kwargs)
+    __tracebackhide__ = True
+    try:
+        return psycopg.connect(url, options="-c statement_timeout=10000 -c lock_timeout=8000", **kwargs)
+    except psycopg.Error:
+        raise AssertionError("owned isolated PostgreSQL connection failed; credentials redacted") from None
 
 
 def evidence(item: Mapping[str, Any]) -> None:
@@ -207,7 +221,11 @@ def database_urls() -> Iterator[dict[str, str]]:
         lifecycle.validate_target()
         # Record ownership before bootstrap so partial setup is cleaned as well.
         created = True
-        urls = _MIGRATIONS.bootstrap_two_phase(lifecycle)
+        try:
+            urls = ConnectionUrls({key: LocalDsn(value) for key, value in
+                                   _MIGRATIONS.bootstrap_two_phase(lifecycle).items()})
+        except Exception as error:
+            raise AssertionError("owned bootstrap failed: " + type(error).__name__) from None
         validate_database(urls)
         with connect(urls["admin"]) as db:
             head = db.execute("SELECT version_num FROM alembic_version").fetchone()[0]
@@ -363,7 +381,7 @@ def child_main(urls: dict[str, str], kind: str, identity: ProgressIdentity, requ
             output.put({"kind": "child_result", "result": dict(result), "pid": os.getpid(),
                         "idle": True, "at": datetime.now().isoformat()})
     except (RepositoryTransactionError, PlanningDenied, LedgerDenied) as error:
-        output.put({"kind": "child_denial", "error_type": type(error).__name__, "pid": os.getpid()})
+        output.put({"kind": "child_denial", "error_type": type(error).__name__, "reason": str(error), "pid": os.getpid()})
 
 
 def spawn(urls: dict[str, str], kind: str, identity: ProgressIdentity, request: Any,
@@ -827,6 +845,8 @@ def test_independent_reaper_survives_worker_loss(database_urls: dict[str, str]) 
     initial = read_root(urls, old)
     wait_elapsed(urls, old)
     cached = scan(urls)[0]
+    with connect(urls["admin"]) as db:
+        manifest = db.execute("SELECT current_manifest_id FROM kineticloop.user_decision_state WHERE subject_id=%s", (SUBJECT,)).fetchone()[0]
     ready, stop = CONTEXT.Event(), CONTEXT.Event()
     restarted = spawn(urls, "worker", WORKER2, old, ready=ready, stop=stop, manifest=manifest)
     restarted[1].set()
@@ -1179,6 +1199,8 @@ def upstream(urls: dict[str, str], published: Mapping[str, Any], existing: Any =
             )
     else:
         admitted, lease = existing
+        with connect(urls["admin"]) as db:
+            now = db.execute("SELECT clock_timestamp()").fetchone()[0]
     intent, request, attempt, manifest = (
         UUID(admitted["intent_id"]),
         UUID(admitted["request_id"]),
