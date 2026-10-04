@@ -49,7 +49,9 @@ planning or T6 authority. No provider or network waits occur in coordination.
 
 The own tests gate every constructor, nested lifecycle route, seed reset and
 cleanup on the full tested HEAD and resolved worktree. The exact names are
-kineticloop_kl036_SHA7_ROOT12 and kineticloop-kl036-SHA7-ROOT12. Before/after
+kineticloop_kl036_SHA7_ROOT12 and kineticloop-kl036-SHA7-ROOT12. Nested runners
+accept only exact inherited lifecycle command shapes, pinned Compose file and
+owned readiness/SQL targets; appended project/file overrides fail before I/O. Before/after
 inventories prove foreign databases, projects, containers, volumes and networks
 unchanged. Only owned bounded children are terminated or joined. Tests use actual
 migrated PostgreSQL, distinct OS processes, bounded process barriers, PostgreSQL

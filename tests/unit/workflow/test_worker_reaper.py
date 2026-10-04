@@ -59,6 +59,8 @@ class WorkerLifecycle(DatabaseLifecycle):
             self._owned_root, self._tested, self._task
         ):
             raise ValueError("foreign worker lifecycle target")
+        if self.compose_file != self._owned_root / "compose.yaml" or self.compose_file.is_symlink():
+            raise ValueError("foreign worker Compose file")
         current = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=self.root,
                                           text=True).strip()
         if current != self._tested:
@@ -72,13 +74,28 @@ class WorkerLifecycle(DatabaseLifecycle):
 
     def _run(self, command: Any, **kwargs: Any) -> Any:
         self.validate_target()
+        if type(command) not in {list, tuple} or any(type(arg) is not str for arg in command):
+            raise ValueError("typed bounded lifecycle command required")
+        parts = list(command)
         prefix = self.compose_command()
-        if list(command)[:len(prefix)] != prefix or len(command) <= len(prefix):
+        if parts[:len(prefix)] != prefix or len(parts) <= len(prefix):
             raise ValueError("nested lifecycle command must name exact owned Compose target")
-        return super()._run(command, **kwargs)
+        tail = parts[len(prefix):]
+        fixed = [["config", "--quiet"], ["up", "--detach", "postgres"],
+                 ["down", "--volumes", "--remove-orphans"], ["port", "postgres", "5432"]]
+        readiness = ["exec", "--no-TTY", "postgres", "pg_isready", "--host", "127.0.0.1",
+                     "--port", "5432", "--username", self.user, "--dbname"]
+        psql = ["exec", "--no-TTY", "postgres", "psql", "--username", self.user, "--dbname"]
+        if tail in fixed or tail in [readiness + [db] for db in ("postgres", self.namespace.database_name)]:
+            pass
+        elif (len(tail) == 14 and tail[:7] == psql
+              and tail[8:13] == ["--set", "ON_ERROR_STOP=1", "--tuples-only", "--no-align", "--command"]):
+            self._validate_sql_target(tail[7], tail[13])
+        else:
+            raise ValueError("only exact owned lifecycle command shapes are authorized")
+        return super()._run(parts, **kwargs)
 
-    def _psql(self, database: str, sql: str) -> Any:
-        self.validate_target()
+    def _validate_sql_target(self, database: str, sql: str) -> None:
         allowed = {
             f'DROP DATABASE IF EXISTS "{self.namespace.database_name}" WITH (FORCE);',
             f'CREATE DATABASE "{self.namespace.database_name}" OWNER TO "{self.user}";',
@@ -87,6 +104,10 @@ class WorkerLifecycle(DatabaseLifecycle):
         allowed.add(f'CREATE DATABASE "{self.namespace.database_name}" OWNER "{self.user}";')
         if database != self.namespace.database_name and not (database == "postgres" and sql in allowed):
             raise ValueError("foreign nested SQL lifecycle target")
+
+    def _psql(self, database: str, sql: str) -> Any:
+        self.validate_target()
+        self._validate_sql_target(database, sql)
         return super()._psql(database, sql)
 
     def reset(self, *, timeout_seconds: float = 60.0) -> Any:
@@ -163,6 +184,27 @@ def test_identity_and_namespace() -> None:
         lifecycle._run(["docker", "compose", "--project-name", "foreign", "up"])
     with pytest.raises(ValueError):
         lifecycle._psql("postgres", 'DROP DATABASE "foreign";')
+    prefix = lifecycle.compose_command()
+    bad_tails: list[list[Any]] = [
+        ["--project-name", "foreign", "up"],
+        ["up", "--detach", "postgres", "--project-name", "foreign"],
+        ["--file", "foreign.yaml", "config", "--quiet"],
+        ["down", "--volumes", "--remove-orphans", "--project-directory", "foreign"],
+        ["exec", "--no-TTY", "postgres", "pg_isready", "--host", "127.0.0.1", "--port", "5432",
+         "--username", lifecycle.user, "--dbname", "foreign"],
+        ["exec", "--no-TTY", "postgres", "psql", "--username", lifecycle.user, "--dbname", "foreign",
+         "--set", "ON_ERROR_STOP=1", "--tuples-only", "--no-align", "--command", "SELECT 1"],
+        ["exec", "--no-TTY", "postgres", "psql", "--username", lifecycle.user, "--dbname", "postgres",
+         "--set", "ON_ERROR_STOP=1", "--tuples-only", "--no-align", "--command", 'DROP DATABASE "foreign";'],
+        ["port", "postgres", 5432],
+    ]
+    for tail in bad_tails:
+        with pytest.raises(ValueError):
+            lifecycle._run(prefix + tail)
+    lifecycle.compose_file = ROOT / "foreign.yaml"
+    with pytest.raises(ValueError):
+        lifecycle.destroy()
+    lifecycle.compose_file = ROOT / "compose.yaml"
     runner.assert_not_called()
     request = candidate()
     assert terminal_targets(request, request.deadline, cancel_expired_lease=False) == (
