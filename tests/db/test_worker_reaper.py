@@ -933,8 +933,19 @@ def test_independent_reaper_survives_worker_loss(database_urls: dict[str, str]) 
     idle_witness(urls, reaper[3]["backend_pid"])
     reaper[1].set()
     assert reaper_ready.wait(10)
-    with connect(urls["admin"]) as observer:
-        assert observer.execute("SELECT count(*) FROM kineticloop.command_receipts WHERE command_kind='RenewLease' AND status='SUCCEEDED'").fetchone()[0] > 0
+    heartbeat_bound = time.monotonic() + 8
+    with connect(urls["admin"], autocommit=True) as observer:
+        while time.monotonic() < heartbeat_bound:
+            heartbeat = observer.execute(
+                "SELECT count(*),clock_timestamp() FROM kineticloop.command_receipts "
+                "WHERE command_kind='RenewLease' AND status='SUCCEEDED'"
+            ).fetchone()
+            if heartbeat[0] > 0:
+                evidence({"kind": "heartbeat_committed", "receipts": heartbeat[0],
+                          "server_time": heartbeat[1], "worker_pid": worker[0].pid})
+                break
+        else:
+            raise AssertionError("worker heartbeat did not commit within bounded observation")
     worker[0].terminate()
     worker[0].join(10)
     assert worker[0].exitcode is not None and worker[0].exitcode < 0
