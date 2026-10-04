@@ -466,6 +466,7 @@ files_changed:
 - docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/47315e991149308528cfcb62da054eac2e26c5e62031cb34b988cc0283b6cbe6.gz
 - docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/4a1f7cf19e01950b71c51a176c77e20fb1686c1b18699ac43dc21ebdc4db8324.gz
 - docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/4c9ee0fa1ab6c407b17bafcb14a1abc088e3d4af88c31ab6f08dc74991b7b372.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/4da1f3106ae1d6df56bbe49578a27e1a5aab5e50cd9fc8187c0c6a2bcd4e3d92.gz
 - docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/4e2d3334eebc2a1413aa6361033935bd6fbcdcb7d8c67df5e48597c51e2fa4c0.gz
 - docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/4e966ca7112f16138c79fdbe5345d9c4ce8f754d731350cb74608caaf2d3e4b6.gz
 - docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/4f03ff7ef8c3cfead6a9acd28c1afd4632fa84525b9906a98128b67f06d53bc6.gz
@@ -509,6 +510,7 @@ files_changed:
 - docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/e69178b38e8a6c89be92cc76ec93dfff76c5026636667b817a66eff7d7036225.gz
 - docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/e9789e4f3d5059f8000e89cc6c42a2c922b9d7d53799addbe6d10afa7d744d81.gz
 - docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/ec2174e6a15e422123abf1df767d32cd0a92c8df07b1c1c020472e142e839855.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/exact-head-storage-audit-fail.json
 - docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/f1a6be5cab5aac85174087f86ae4965528594d5456e3c24a28fb1147a8ab9955.gz
 - docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/f364f1fbd082be070a0e62ecf95be7691674a2606b082ecf3e21ff1d4c03ddee.gz
 - docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/f4f3eb10efce60bcae38372c0167f3ea6f2aa4d69e881039956a6ae394bd9e22.gz
@@ -771,7 +773,8 @@ known_limitations:
 - 'BLOCKER: own lossless compact evidence/review storage measures 18097388 bytes before the blocker record, above
   the 16777216-byte aggregate cap after bulk normalization. Preserved failed/superseded runs and final complete
   execution remain available; no truncation, waived CI, authority edit or history rewrite is used. A committed exact-head
-  compact audit will bind the final total before fresh review.'
+  compact audit will bind the final total before fresh review. Exact-head compact audit at bfce1bd2be923204875360eddd0e5169332402be
+  confirms aggregate storage rejection; lossless FAIL record: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/exact-head-storage-audit-fail.json.'
 - Runtime is bounded isolated TEST instrumentation, with a privileged internal service session separate from the
   authenticated nonwriter client principal. It does not prove restricted-login ACL containment or production readiness;
   there are no migration/grant/public-command/enum/authorization/Evidence Admission/lock-order/T1-T8 changes.
