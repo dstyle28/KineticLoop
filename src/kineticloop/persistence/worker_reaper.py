@@ -108,12 +108,23 @@ class PlanningWorkflowService:
         ledger = CallLedgerService(self._connection, PlanningIdentity(
             self._identity.actor, self._identity.subject_id
         ))
+        completed = 0
         for intent, reservation, revision in rows:
-            ledger.mark_unknown(MarkUnknown(
-                self._identity.subject_id, f"reaper-unknown:{reservation}:{revision}",
-                intent, reservation, expected_revision=revision,
-            ))
-        return len(rows)
+            try:
+                ledger.mark_unknown(MarkUnknown(
+                    self._identity.subject_id, f"reaper-unknown:{reservation}:{revision}",
+                    intent, reservation, expected_revision=revision,
+                ))
+            except GuardRequired:
+                # The owner rolled back. Confirm stale discovery through its read
+                # interface; registration/integrity/infrastructure errors still fail.
+                current = ledger.read(reservation)
+                if (current.intent_id != intent or
+                    (current.status == "DISPATCH_INTENT" and current.revision == revision)):
+                    raise
+                continue
+            completed += 1
+        return completed
 
     def run(self, *, stop: Any, ready: Any, max_scans: int = 100,
             poll_seconds: float = 0.1) -> Mapping[str, Any]:

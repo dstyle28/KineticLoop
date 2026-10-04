@@ -40,6 +40,7 @@ from kineticloop.persistence.planning_progress import ContextService, capture_co
 from kineticloop.persistence.planning_progress import PlanningWorkflowService as ProgressService
 from kineticloop.persistence.protocol_execution import ProtocolExecutionService
 from kineticloop.persistence.transactions import (
+    GuardRequired,
     RepositoryTransaction,
     RepositoryTransactionError,
 )
@@ -370,7 +371,8 @@ def advance(urls: dict[str, str], request: ReapIntent, *, source: str = "CREATED
 
 def child_main(urls: dict[str, str], kind: str, identity: ProgressIdentity, request: Any,
                gate: Any, output: Any, ready: Any = None, stop: Any = None, manifest: Any = None,
-               preflight_gate: Any = None, ordinary_work: Any = None) -> None:
+               preflight_gate: Any = None, ordinary_work: Any = None,
+               stale_gate: Any = None) -> None:
     try:
         with connect(urls["admin"]) as db:
             output.put({"kind": "child_ready", "role": kind, "pid": os.getpid(),
@@ -416,7 +418,38 @@ def child_main(urls: dict[str, str], kind: str, identity: ProgressIdentity, requ
                             assert preflight_gate.wait(10)
                         return prior
                 result = ObservedExecution(db, execution_identity).commit(request)
-            elif kind in {"permit", "cancel"}:
+            elif kind == "accounting_loop":
+                from unittest.mock import patch
+
+                class ObservedAccounting(CallLedgerService):
+                    paused = False
+
+                    def _replay(self, command: Any, owner: str, request_hash: str) -> Mapping[str, Any] | None:
+                        prior = super()._replay(command, owner, request_hash)
+                        if not self.paused:
+                            self.paused = True
+                            assert db.info.transaction_status == TransactionStatus.IDLE
+                            output.put({"kind": "accounting_discovery_released", "pid": os.getpid(),
+                                        "reservation_id": str(command.reservation_id),
+                                        "expected_revision": command.expected_revision, "idle": True})
+                            assert preflight_gate.wait(10)
+                        return prior
+
+                    def mark_unknown(self, command: Any) -> Mapping[str, Any]:
+                        try:
+                            return super().mark_unknown(command)
+                        except GuardRequired:
+                            assert db.info.transaction_status == TransactionStatus.IDLE
+                            output.put({"kind": "stale_accounting_rollback", "pid": os.getpid(),
+                                        "reservation_id": str(command.reservation_id), "idle": True,
+                                        "complete_relation_sha256": digest(persisted(urls))})
+                            assert stale_gate.wait(10)
+                            raise
+
+                with patch("kineticloop.persistence.worker_reaper.CallLedgerService", ObservedAccounting):
+                    result = ReaperService(db, identity).run(stop=stop, ready=ready, max_scans=1,
+                                                            poll_seconds=0.01)
+            elif kind in {"permit", "cancel", "settle"}:
                 class ObservedLedger(CallLedgerService):
                     def _replay(self, command: Any, owner: str, request_hash: str) -> Mapping[str, Any] | None:
                         prior = super()._replay(command, owner, request_hash)
@@ -425,12 +458,15 @@ def child_main(urls: dict[str, str], kind: str, identity: ProgressIdentity, requ
                             output.put({"kind": "preflight_released", "pid": os.getpid(), "idle": True})
                             assert preflight_gate.wait(10)
                         return prior
-                ledger = ObservedLedger(db, PlanningIdentity(identity.actor, SUBJECT))
+                ledger = ObservedLedger(db, PlanningIdentity(identity.actor, SUBJECT),
+                    receipt_verifier=(lambda receipt: receipt == request.receipt) if kind == "settle" else None)
                 if kind == "permit":
                     permission = ledger.permit(request)
                     result = {"sendable": permission.sendable, "replayed": permission.replayed}
-                else:
+                elif kind == "cancel":
                     result = ledger.cancel(request)
+                else:
+                    result = ledger.settle(request)
             else:
                 raise AssertionError("unknown bounded child role")
             assert db.info.transaction_status == TransactionStatus.IDLE
@@ -557,15 +593,22 @@ def test_takeover_fences_distinct_processes(database_urls: dict[str, str]) -> No
     wait_elapsed(urls, old)
     worker3 = replace(WORKER2, actor=RoleIdentity(str(UUID("00000000-0000-8000-8000-000000008cb0")), ActorRole.TEST))
     request = AcquireLease(SUBJECT, "takeover", old.intent_id, old.expected_owner, old.fence, 1, old.attempt_id, 20)
-    a = spawn(urls, "acquire", WORKER2, request)
-    b = spawn(urls, "acquire", worker3, replace(request, key="other-takeover"))
+    a_gate, b_gate = CONTEXT.Event(), CONTEXT.Event()
+    a = spawn(urls, "acquire", WORKER2, request, preflight_gate=a_gate)
+    b = spawn(urls, "acquire", worker3, replace(request, key="other-takeover"), preflight_gate=b_gate)
+    for process in (a, b):
+        process[1].set()
+        observed = process[2].get(timeout=10)
+        assert observed["kind"] == "preflight_released"
+        evidence(observed)
+        idle_witness(urls, process[3]["backend_pid"])
     assert len({old_pid["pid"], a[3]["pid"], b[3]["pid"]}) == 3
     assert len({old_pid["backend_pid"], a[3]["backend_pid"], b[3]["backend_pid"]}) == 3
     before = persisted(urls)
     with hold_subject(urls) as holder:
-        a[1].set()
+        a_gate.set()
         blocked(urls, a[3]["backend_pid"], holder.info.backend_pid)
-        b[1].set()
+        b_gate.set()
         blocked(urls, b[3]["backend_pid"], a[3]["backend_pid"])
         holder.commit()
     winner = finish(a[0], a[2])["result"]
@@ -787,7 +830,7 @@ def test_reaper_atomicity_and_history(database_urls: dict[str, str], monkeypatch
     assert reap(urls, scan(urls)[0])["intent_status"] == "DEADLINE_EXCEEDED"
 
 
-def test_unknown_call_preserves_budget(database_urls: dict[str, str]) -> None:
+def test_unknown_call_preserves_budget(database_urls: dict[str, str], monkeypatch: pytest.MonkeyPatch) -> None:
     urls = database_urls
     reset(urls)
     with connect(urls["admin"]) as db:
@@ -877,6 +920,92 @@ def test_unknown_call_preserves_budget(database_urls: dict[str, str]) -> None:
     stale_denials(urls, current, dispatched, commit=commit)
     evidence({"kind": "accounting_only_late_settlement", "unknown_occupation": occupied,
               "terminal_preserved": "CANCELLED", "separate_owner_transactions": True})
+
+
+    accounting_settlement_race(urls, monkeypatch)
+
+
+def accounting_settlement_race(urls: dict[str, str], monkeypatch: pytest.MonkeyPatch) -> None:
+    reset(urls)
+    root = admit(urls)
+    acquire(urls, facts(urls, root), seconds=2)
+    current = facts(urls, root)
+    reservations = [reserve(urls, current, slot) for slot in ("race-a", "race-b")]
+    with connect(urls["admin"]) as db:
+        ledger = CallLedgerService(db, PlanningIdentity(PROGRESS.actor, SUBJECT))
+        for n, reservation in enumerate(reservations):
+            assert ledger.permit(permit_request(current, reservation, f"race-permit:{n}")).sendable
+    wait_elapsed(urls, current)
+    assert reap(urls, scan(urls)[0])["intent_status"] == "CANCELLED"
+    before = persisted(urls)
+    # An unchanged candidate must not conceal an unrelated owner guard failure.
+    def unrelated_failure(self: Any, command: Any) -> Mapping[str, Any]:
+        raise GuardRequired("injected unchanged-candidate guard failure")
+    with monkeypatch.context() as injection, connect(urls["admin"]) as db:
+        injection.setattr(CallLedgerService, "mark_unknown", unrelated_failure)
+        with pytest.raises(GuardRequired, match="injected unchanged-candidate"):
+            ReaperService(db, REAPER).mark_outstanding_unknown()
+    assert persisted(urls) == before
+
+    accounting_gate, stale_gate = CONTEXT.Event(), CONTEXT.Event()
+    worker = spawn(urls, "accounting_loop", REAPER, current, preflight_gate=accounting_gate,
+                   stale_gate=stale_gate, stop=CONTEXT.Event(), ready=CONTEXT.Event())
+    worker[1].set()
+    discovered = worker[2].get(timeout=10)
+    assert discovered["kind"] == "accounting_discovery_released" and discovered["expected_revision"] == 1
+    evidence(discovered)
+    idle_witness(urls, worker[3]["backend_pid"])
+    settled_id = UUID(discovered["reservation_id"])
+    reliable = ReliableReceipt(settled_id, AccountingIdentity("test-provider", "model", "cfg", "count-v1"),
+        {"calls": 1, "tokens": 40, "tools": 0}, "RECONCILIATION", "race-verified-test-receipt",
+        "race-provider-request", "test:declared-trusted-reconciliation")
+    command = SettleCall(SUBJECT, "race-settle", current.intent_id, settled_id, reliable,
+                         expected_transition="DISPATCH_INTENT", expected_revision=1)
+    settle_gate = CONTEXT.Event()
+    settlement = spawn(urls, "settle", REAPER, command, preflight_gate=settle_gate)
+    assert worker[3]["pid"] != settlement[3]["pid"]
+    assert worker[3]["backend_pid"] != settlement[3]["backend_pid"]
+    settlement[1].set()
+    released = settlement[2].get(timeout=10)
+    assert released["kind"] == "preflight_released"
+    evidence(released)
+    idle_witness(urls, settlement[3]["backend_pid"])
+    with hold_subject(urls) as holder:
+        settle_gate.set()
+        blocked(urls, settlement[3]["backend_pid"], holder.info.backend_pid)
+        accounting_gate.set()
+        blocked(urls, worker[3]["backend_pid"], settlement[3]["backend_pid"])
+        holder.commit()
+    assert finish(settlement[0], settlement[2])["result"]["status"] == "SETTLED"
+    rolled_back = worker[2].get(timeout=10)
+    assert rolled_back["kind"] == "stale_accounting_rollback" and rolled_back["reservation_id"] == str(settled_id)
+    evidence(rolled_back)
+    after_settlement = persisted(urls)
+    assert rolled_back["complete_relation_sha256"] == digest(after_settlement)
+    idle_witness(urls, worker[3]["backend_pid"])
+    with connect(urls["admin"]) as db:
+        assert db.execute("SELECT count(*) FROM kineticloop.command_receipts WHERE client_key=%s",
+            (f"reaper-unknown:{settled_id}:1",)).fetchone()[0] == 0
+    stale_gate.set()
+    assert finish(worker[0], worker[2])["result"] == {"reaped": 0, "unknown": 1, "executable": False}
+    after_cleanup = persisted(urls)
+    accounting_tables = {"planning_intents", "call_reservations", "call_ledger_events",
+                         "command_receipts", "domain_events", "outbox_deliveries", "revision_records"}
+    for table in before:
+        if table not in accounting_tables:
+            assert after_cleanup[table] == after_settlement[table] == before[table]
+    with connect(urls["admin"]) as db:
+        states = dict(db.execute("SELECT id,status FROM kineticloop.call_reservations").fetchall())
+    assert states.pop(settled_id) == "SETTLED" and list(states.values()) == ["OUTCOME_UNKNOWN"]
+    payload = read_root(urls, current)[2]
+    assert payload["reserved"] == {"calls": 1, "tokens": 100, "tools": 1}
+    assert payload["settled"] == {"calls": 1, "tokens": 40, "tools": 0}
+    assert read_root(urls, current)[0] == "CANCELLED"
+    stale_denials(urls, current, reservations[0])
+    evidence({"kind": "accounting_settlement_race_continued", "reaper_pid": worker[3]["pid"],
+              "settlement_pid": settlement[3]["pid"], "unknown_completed": 1,
+              "stale_mark_unknown_zero_effects": True, "terminal_preserved": "CANCELLED",
+              "reliable_receipt_verifier": "declared trusted isolated TEST reconciliation"})
 
 
 def idle_witness(urls: dict[str, str], backend: int) -> None:

@@ -43,7 +43,13 @@ after success. A committed T6 success is immutable and never reaped.
 Unknown-call discovery commits before separate MarkUnknown owner transactions.
 It includes expired/terminated roots and reservations fenced out by takeover.
 Possible sends retain occupation; interruption leaves safe outstanding accounting
-for another scan. RESERVED cancellation and late reliable settlement use their
+for another scan. If a ledger guard rejects a candidate, the reaper rereads it
+through the ledger owner and continues only for a confirmed changed status/revision
+with the same intent binding; unchanged-basis and read failures still propagate.
+The completed count includes successful MarkUnknown calls only. Actual settlement
+winning after discovery is witnessed in separate processes; stale rollback changes
+no relations and the same reaper continues cleanup of another reservation.
+RESERVED cancellation and late reliable settlement use their
 existing dedicated ledger owners. Neither cleanup nor late settlement grants send,
 planning or T6 authority. No provider or network waits occur in coordination.
 
