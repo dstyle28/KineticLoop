@@ -1,0 +1,39 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-036",
+  "reviewed_head_sha": "96ebb9e0e95211fc684273e7b69a49dc11e11e87",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "finding_id": "GENERAL-001",
+      "classification": "REQUIRED_FOLLOWUP",
+      "priority": "P1",
+      "title": "A stale unknown-accounting candidate stops the independent reaper",
+      "file": "src/kineticloop/persistence/worker_reaper.py",
+      "line": 112,
+      "description": "A reliable SettleCall can commit between the DISPATCH_INTENT discovery read and MarkUnknown. The existing ledger owner then raises GuardRequired on the stale expected revision/status. mark_outstanding_unknown and run let that ordinary contention exception escape, ending the independent cleanup process and preventing its subsequent scans. The recorded unknown-budget scenario settles only after MarkUnknown and does not exercise this interleaving.",
+      "impact": "Normal late-result accounting concurrency can terminate independently provisioned cleanup capacity while other expired work remains outstanding; the independent-progress DoD is incomplete. The ledger guard safely preserves accounting, but the runtime does not continue.",
+      "required_correction": "Treat only confirmed stale accounting observations as no-effect contention and continue the bounded scan loop through the existing ledger owner, without swallowing registration, integrity or infrastructure failures. Add an actual distinct-process migrated PostgreSQL SettleCall-versus-accounting-scan race, verifying complete relation/occupation history and that the same reaper remains alive to process a subsequent expired candidate. Retest and obtain new SHA-bound reviews.",
+      "evidence_refs": [
+        "src/kineticloop/persistence/worker_reaper.py",
+        "src/kineticloop/persistence/call_ledger.py",
+        "src/kineticloop/persistence/transactions.py",
+        "src/kineticloop/workflow/call_ledger.py",
+        "tests/db/test_worker_reaper.py",
+        "docs/exec-plans/reviews/KL-036/GENERAL/review-notes.md"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-036.md",
+    "docs/exec-plans/completed/KL-036_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/CHECK_INDEX.json",
+    "docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_reaper_db_suite-execution.log.json",
+    "docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_unknown_accounting_dc-execution.log.json",
+    "docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_independent_reaper_wf-execution.log.json",
+    "docs/exec-plans/reviews/KL-036/GENERAL/evidence-audit.json",
+    "docs/exec-plans/reviews/KL-036/GENERAL/storage-audit.json",
+    "docs/exec-plans/reviews/KL-036/GENERAL/review-notes.md"
+  ],
+  "review_contract_version": "v0.2"
+}
