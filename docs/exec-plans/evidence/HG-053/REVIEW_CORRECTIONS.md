@@ -22,3 +22,12 @@ logs, unit failure, harness interruption and capture error are losslessly retain
 under interrupted-fb0d5d9...; they are not final acceptance. The task-owned capture
 runner now passes repository-relative output paths to the existing compact tool.
 Substantive packet/script changes require a new C and all required checks rerun.
+
+The deeper existing-regression audit identified the legacy synthetic generic
+ReapIntent FAILED outcome in tests/db/test_transaction_interfaces.py. KL036 now
+explicitly preserves that generic branch and uses a separate private authenticated
+prepared-context branch for exact frozen runtime outcomes; caller selection and
+generic FAILED are rejected by the new wrapper. The cc0c772 rerun was interrupted
+for this correction and retained with observed codes. New captures reuse identical
+payloads in their existing directory with new SHA-bound envelopes; no historical
+bytes, bindings or failures are rewritten.

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import concurrent.futures
+import hashlib
 import json
 import os
 import subprocess
@@ -41,10 +42,16 @@ def main() -> int:
     assert not subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT)
     output_root = ROOT / "docs/exec-plans/evidence/HG-053" / ("checks-" + revision)
     output_root.mkdir(exist_ok=False)
+    def capture_ref(raw_path: Path, proposed: Path, command: str, code: int) -> str:
+        raw_hash = hashlib.sha256(raw_path.read_bytes()).hexdigest()
+        existing = sorted((ROOT / "docs/exec-plans/evidence/HG-053").rglob(raw_hash + ".gz"))
+        envelope = existing[0].parent / (revision + "-" + proposed.name) if existing else proposed
+        ref = str(envelope.relative_to(ROOT))
+        subprocess.run([sys.executable, "tools/harness/compact_evidence.py", "capture", "--input", str(raw_path), "--output", ref, "--tested", revision, "--command", command, "--exit-code", str(code)], cwd=ROOT, check=True, stdout=subprocess.DEVNULL)
+        return ref
     for record in records:
         envelope = output_root / (record["check_id"] + ".json")
-        subprocess.run([sys.executable, "tools/harness/compact_evidence.py", "capture", "--input", record["log"], "--output", str(envelope.relative_to(ROOT)), "--tested", revision, "--command", record["command"], "--exit-code", str(record["exit_code"])], cwd=ROOT, check=True, stdout=subprocess.DEVNULL)
-        record["evidence_ref"] = str(envelope.relative_to(ROOT))
+        record["evidence_ref"] = capture_ref(Path(record["log"]), envelope, record["command"], record["exit_code"])
         if record["check_id"] in {"unit", "harness"}:
             paths = [temp / "unit.xml"] if record["check_id"] == "unit" else sorted((temp / "harness").iterdir())
             record["ancillary_refs"] = []
@@ -52,8 +59,7 @@ def main() -> int:
                 if not path.is_file():
                     continue
                 envelope = output_root / (record["check_id"] + "-" + path.name + ".json")
-                subprocess.run([sys.executable, "tools/harness/compact_evidence.py", "capture", "--input", str(path), "--output", str(envelope.relative_to(ROOT)), "--tested", revision, "--command", record["command"], "--exit-code", str(record["exit_code"])], cwd=ROOT, check=True, stdout=subprocess.DEVNULL)
-                record["ancillary_refs"].append(str(envelope.relative_to(ROOT)))
+                record["ancillary_refs"].append(capture_ref(path, envelope, record["command"], record["exit_code"]))
     index = {"tested_commit": revision, "checks": records, "runtime_checks": "NOT_RUN", "product_claims": []}
     (output_root / "CHECK_INDEX.json").write_text(json.dumps(index, indent=2) + "\n")
     print(json.dumps(index, indent=2))

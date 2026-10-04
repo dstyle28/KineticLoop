@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[4]
 BASE = "c82e50aefad5c4d9e325d4928a8f96032b81192d"
 TARGETS = ("KL-036", "KL-037")
 # Hashes bind only these complete prospective definitions; not shared enforcement.
-EXPECTED = {'KL-036': 'cfab3abd1275be9db6ff4f9e67ae017329bb64e38cb94d9931bf6b50cddd19b5', 'KL-037': 'a71a1fdadc0d40821c28f800297beb3d8f2f4789002db6fe90462d24065587c6'}
+EXPECTED = {'KL-036': 'd11c4357f4a726d42dc89b5af1bffae97508fcf3ab18d1ad6968a06bfffe8fe7', 'KL-037': 'a71a1fdadc0d40821c28f800297beb3d8f2f4789002db6fe90462d24065587c6'}
 
 
 def git(*args: str) -> str:

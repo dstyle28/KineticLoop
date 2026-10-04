@@ -4097,7 +4097,7 @@
         {
           "check_id": "reaper_atomicity_history_dc",
           "command": "uv run pytest -q tests/db/test_worker_reaper.py::test_reaper_atomicity_and_history",
-          "pass_oracle": "Positive guarded ReapIntent closes exact expired/deadline S27/S29 chain in one transaction using existing frozen terminal meanings; injected faults before receipt/event/outbox completion roll back all affected relations. Concurrent first-use same-key/hash returns one mutation and identical historical non-executable outcome; changed payload conflicts. Missing receipt cannot replay; acknowledged historical success remains immutable after later expiry/takeover."
+          "pass_oracle": "Positive guarded ReapIntent closes exact expired/deadline S27/S29 chain in one transaction using existing frozen terminal meanings; injected faults before receipt/event/outbox completion roll back all affected relations. Concurrent first-use same-key/hash returns one mutation and identical historical non-executable outcome; changed payload conflicts. Missing receipt cannot replay; acknowledged historical success remains immutable after later expiry/takeover. New authenticated TEST wrapper always derives exact frozen S27/S29 targets via private ReapIntent prepared context; generic FAILED, caller-selected terminal status or compatibility flag is rejected. Existing generic legacy synthetic ReapIntent branch/tests remain unchanged and are never used as new-runtime authority or frozen/production evidence."
         },
         {
           "check_id": "reaper_unknown_accounting_dc",
