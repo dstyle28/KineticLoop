@@ -204,6 +204,16 @@ def inventory() -> dict[str, Any]:
     }
 
 
+def process_inventory() -> list[dict[str, Any]]:
+    rows = subprocess.check_output(["ps", "-axo", "pid=,ppid=,comm="], text=True)
+    result = []
+    for line in rows.splitlines():
+        pieces = line.strip().split(maxsplit=2)
+        if len(pieces) == 3:
+            result.append({"pid": int(pieces[0]), "ppid": int(pieces[1]), "executable": pieces[2]})
+    return result
+
+
 @pytest.fixture(scope="module")
 def database_urls() -> Iterator[dict[str, str]]:
     _NAMESPACE.test_identity_and_namespace()  # Must pass before any lifecycle I/O.
@@ -216,6 +226,9 @@ def database_urls() -> Iterator[dict[str, str]]:
     evidence({"kind": "before_inventory", "tested_commit": tested,
               "resolved_root": str(ROOT), "namespace": asdict(selected), "inventory": before,
               "pid": os.getpid(), "reserved_resources": ["transaction_interfaces", "user_coordination", "planning_ledger"]})
+    processes = process_inventory()
+    evidence({"kind": "before_process_inventory", "pid": os.getpid(), "processes": processes,
+              "owned_children": []})
     created = False
     try:
         lifecycle.validate_target()
@@ -246,10 +259,15 @@ def database_urls() -> Iterator[dict[str, str]]:
             lifecycle.destroy()
         after = inventory()
         assert before == after
+        final_processes = process_inventory()
+        assert not {c.pid for c in CHILDREN} & {p["pid"] for p in final_processes}
         evidence({"kind": "after_inventory", "namespace": asdict(selected), "inventory": after,
                   "foreign_unchanged": True, "owned_children": [{"pid": c.pid, "exitcode": c.exitcode}
                                                               for c in CHILDREN],
                   "owned_resources_removed": True})
+        evidence({"kind": "after_process_inventory", "pid": os.getpid(), "processes": final_processes,
+                  "owned_worker_reaper_children_removed": True,
+                  "instrumentation_helpers_exit_with_pytest": True})
 
 
 def reset(urls: dict[str, str], *, deadline_seconds: int = 60) -> None:
@@ -400,9 +418,9 @@ def spawn(urls: dict[str, str], kind: str, identity: ProgressIdentity, request: 
 def finish(child: Any, output: Any, *, denial: bool = False) -> dict[str, Any]:
     result = output.get(timeout=15)
     child.join(10)
-    assert child.exitcode == 0 and not child.is_alive()
-    assert result["kind"] == ("child_denial" if denial else "child_result")
     evidence({**result, "exitcode": child.exitcode})
+    assert child.exitcode == 0 and not child.is_alive()
+    assert result["kind"] == ("child_denial" if denial else "child_result"), result
     return result
 
 
