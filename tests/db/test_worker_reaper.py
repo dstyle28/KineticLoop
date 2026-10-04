@@ -270,9 +270,13 @@ def database_urls() -> Iterator[dict[str, str]]:
                   "instrumentation_helpers_exit_with_pytest": True})
 
 
-def reset(urls: dict[str, str], *, deadline_seconds: int = 60) -> None:
+def reset(urls: dict[str, str], *, deadline_seconds: int = 60, lease_recovery: bool = True) -> None:
     validate_database(urls)
     POLICY_BODY["planning_admission"]["deadline_seconds"] = deadline_seconds
+    if lease_recovery:
+        POLICY_BODY["worker_recovery"] = {"version": "kl036-v1", "lease_expiry": "CANCEL"}
+    else:
+        POLICY_BODY.pop("worker_recovery", None)
     seed_inputs(urls)
     with connect(urls["admin"], autocommit=True) as db:
         now = db.execute("SELECT clock_timestamp()").fetchone()[0]
@@ -697,6 +701,14 @@ def test_unowned_admitted_deadline(database_urls: dict[str, str]) -> None:
     wait_elapsed(urls, pending, "deadline")
     assert reap(urls, pending)["intent_status"] == "DEADLINE_EXCEEDED"
     evidence({"kind": "legacy_pending_alias", "instrumentation_only": True})
+    reset(urls, deadline_seconds=2)
+    root = admit(urls)
+    unowned = facts(urls, root)
+    acquire(urls, unowned, seconds=1)
+    leased = facts(urls, root)
+    wait_elapsed(urls, leased, "deadline")
+    no_effect(urls, lambda: reap(urls, unowned))
+    assert reap(urls, leased)["intent_status"] == "DEADLINE_EXCEEDED"
 
 
 def test_reaper_atomicity_and_history(database_urls: dict[str, str], monkeypatch: pytest.MonkeyPatch) -> None:
@@ -748,12 +760,23 @@ def test_reaper_atomicity_and_history(database_urls: dict[str, str], monkeypatch
     no_effect(urls, lambda: acquire(urls, candidate, identity=WORKER2, key="terminal-takeover"))
     assert persisted(urls) == after
 
+    reset(urls, deadline_seconds=2, lease_recovery=False)
+    root = admit(urls)
+    acquire(urls, facts(urls, root), seconds=1)
+    expired = facts(urls, root)
+    wait_elapsed(urls, expired)
+    no_effect(urls, lambda: reap(urls, scan(urls)[0]))
+    wait_elapsed(urls, expired, "deadline")
+    assert reap(urls, scan(urls)[0])["intent_status"] == "DEADLINE_EXCEEDED"
+
 
 def test_unknown_call_preserves_budget(database_urls: dict[str, str]) -> None:
     urls = database_urls
     reset(urls)
-    root = admit(urls)
-    acquire(urls, facts(urls, root), seconds=2)
+    with connect(urls["admin"]) as db:
+        manifest = db.execute("SELECT current_manifest_id FROM kineticloop.user_decision_state WHERE subject_id=%s", (SUBJECT,)).fetchone()[0]
+    commit = upstream(urls, {"manifest_id": str(manifest)}, lease_seconds=2)
+    root = {"intent_id": str(commit.intent_id)}
     current = facts(urls, root)
     dispatched, reserved = reserve(urls, current, "sent"), reserve(urls, current, "never-sent")
     reservation = UUID(dispatched["reservation_id"])
@@ -773,8 +796,17 @@ def test_unknown_call_preserves_budget(database_urls: dict[str, str]) -> None:
     wait_elapsed(urls, current)
     terminal = reap(urls, scan(urls)[0])
     assert terminal["intent_status"] == "CANCELLED"
+    locked_reservations = [row[1].split(":", 1)[1] for row in terminal["lock_trace"] if row[0] == 50]
+    assert len(locked_reservations) == 2 and locked_reservations == sorted(locked_reservations)
     after_reap = persisted(urls)
     occupied = read_root(urls, current)[2]["reserved"]
+    from kineticloop.persistence.call_ledger import MarkUnknown
+    with connect(urls["admin"]) as db:
+        instrumented: Any = FaultConnection(db, "outbox")
+        with pytest.raises(InjectedFailure):
+            CallLedgerService(instrumented, PlanningIdentity(REAPER.actor, SUBJECT)).mark_unknown(
+                MarkUnknown(SUBJECT, "interrupted-cleanup", current.intent_id, reservation))
+    assert persisted(urls) == after_reap
     with connect(urls["admin"]) as db:
         assert ReaperService(db, REAPER).mark_outstanding_unknown() == 1
         assert ReaperService(db, REAPER).mark_outstanding_unknown() == 0
@@ -813,7 +845,7 @@ def test_unknown_call_preserves_budget(database_urls: dict[str, str]) -> None:
     assert read_root(urls, current)[0] == "CANCELLED"
     assert read_root(urls, current)[2]["reserved"] == {"calls": 0, "tokens": 0, "tools": 0}
     assert read_root(urls, current)[2]["settled"] == {"calls": 1, "tokens": 40, "tools": 0}
-    stale_denials(urls, current, dispatched)
+    stale_denials(urls, current, dispatched, commit=commit)
     evidence({"kind": "accounting_only_late_settlement", "unknown_occupation": occupied,
               "terminal_preserved": "CANCELLED", "separate_owner_transactions": True})
 
@@ -867,6 +899,8 @@ def test_independent_reaper_survives_worker_loss(database_urls: dict[str, str]) 
     idle_witness(urls, reaper[3]["backend_pid"])
     reaper[1].set()
     assert reaper_ready.wait(10)
+    with connect(urls["admin"]) as observer:
+        assert observer.execute("SELECT count(*) FROM kineticloop.command_receipts WHERE command_kind='RenewLease' AND status='SUCCEEDED'").fetchone()[0] > 0
     worker[0].terminate()
     worker[0].join(10)
     assert worker[0].exitcode is not None and worker[0].exitcode < 0

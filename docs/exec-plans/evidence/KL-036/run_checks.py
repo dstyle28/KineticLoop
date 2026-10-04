@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -125,7 +126,10 @@ def main() -> int:
             path = str(owned / (check + "-" + label + ".json"))
             raw_command = run.get("collection_command", command) if file.name.startswith("collection.") else command
             code = run.get("collection_exit", 0) if file.name.startswith("collection.") else process.returncode
-            capture(ROOT, path, file.read_bytes(), tested, raw_command, code)
+            raw = file.read_bytes()
+            if re.search(rb"postgres(?:ql)?://", raw) or b"kineticloop-local-only" in raw or b"kl072-local-only" in raw:
+                raise RuntimeError("credential-bearing diagnostic quarantined in local scratch; no Git capture")
+            capture(ROOT, path, raw, tested, raw_command, code)
             artifacts[str(file.relative_to(folder))] = path
         run["artifacts"] = artifacts
         run["errors"] = errors
