@@ -224,9 +224,13 @@ admission need no retroactive map existence; their later merge must preserve all
 admitted bindings. This global historical
 verification does not authorize a new foreign-owner conversion: new mappings and
 ancestral representation mutations remain restricted to the selected PR owner.
-Changed nonpayload storage blobs are classified globally at every intervening
+Changed storage blobs are classified globally at every intervening
 revision, including renamed/wrapped/nested metadata and Unicode forms on branches
-before admission. Deletion before HEAD cannot hide a foreign conversion. Changed
+before admission, even when metadata is named with a payload extension. Classification
+reads actual bounded stored bytes and never guesses a decoder from the extension.
+Recognized execution envelopes must pass bound retrieval at that revision; archival
+objects remain subject to the exact frozen archival inventory and original proof,
+including its storage-before-mapping commit. Deletion before HEAD cannot hide a foreign conversion. Changed
 compact metadata
 and payloads are checked across owners on edges descended from the protected base.
 Task and governance tested/review suffix validators reject conversion records and

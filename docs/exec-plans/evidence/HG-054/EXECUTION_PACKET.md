@@ -171,3 +171,18 @@ with separate names and verified by the configured CLI typecheck over 171 files.
 Earlier narrow exploratory mypy results do not substitute for that full command.
 Recognizable malformed storage still fails closed; merely naming a marker in plain
 prose does not create storage metadata. No numerical limit or execution oracle changes.
+
+C6 read-only preparation reviews found two residual gaps before any immutable C6
+required run: SECURITY recognized malformed execution metadata without validating
+it, while GENERAL/PROTOCOL independently found payload-suffix aliases excluded
+from global classification. All changed storage blobs are now classified using
+bounded actual stored bytes, including .gz/.xz aliases without decoder guessing.
+Recognized execution objects require bound retrieval at that revision; recognized
+maps immediately require canonical path/schema/owner/base proofs. Archival objects
+use existing frozen validation: archive_mapping verifies the exact storage-before-
+mapping intermediate commit, archive_audit verifies admitted mapping snapshots.
+An exploratory archive selector exposed and corrected the intermediate-commit
+regression (1 failed, 82 passed); the correction does not change HG051 inventory,
+schema, budgets, or proof/execution separation. Successful archival revision proof
+is cached only within one reencoding_audit call at the exact immutable revision.
+C6 has no immutable required-run artifact and no final PASS credit.

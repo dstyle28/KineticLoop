@@ -89,5 +89,33 @@
     "exit_code": 1,
     "finding": "A regression-test variable was reused for Path and string, omitted by earlier narrow exploratory mypy selector.",
     "resolution": "Use distinct typed loop names and run real CLI typecheck across all 171 configured source files."
+  },
+  "later_c6_reviews": [
+    {
+      "reviewed_implementation": "f910dd0a52cdd0bded556892f1a9938c3ea04a24",
+      "review_types": [
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "status": "CHANGES_REQUIRED",
+      "finding": "Global history classification recognized malformed execution envelopes but did not perform bound validation; add/delete on a pre-admission branch escaped final-head validation.",
+      "required_resolution": "Bound validate every recognized execution object at its exact revision; preserve frozen archival validation separately."
+    },
+    {
+      "reviewed_implementation": "f910dd0a52cdd0bded556892f1a9938c3ea04a24",
+      "review_types": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "status": "CHANGES_REQUIRED",
+      "finding": "Metadata renamed with .gz/.xz suffix bypassed global classification on pre-admission add/delete branches.",
+      "required_resolution": "Classify actual bounded stored bytes at all changed storage paths, without extension-based decoder guessing; validate every recognized mapping immediately."
+    }
+  ],
+  "c7_provisional_archival_regression": {
+    "classification": "Uncommitted exploratory check, not final SHA-bound authority",
+    "result": "FAIL_THEN_FIXED",
+    "failed": 1,
+    "passed": 82,
+    "reason": "Initial per-revision archive audit rejected the frozen intermediate storage-before-mapping commit. Correction uses the unchanged archive_mapping builder to verify its exact inventory/original proofs before the mapping exists. Existing archival regression confirms retrieval/original proof separation."
   }
 }

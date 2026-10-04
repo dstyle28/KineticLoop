@@ -1425,7 +1425,7 @@ def test_unmapped_foreign_compact_mutation_and_restoration_fails(repo, artifact)
     assert ce.audit(root, base, head, 'HG-054')['errors']
 
 
-@pytest.mark.parametrize('name', ['COMPACT_REENCODING.json', 'renamed.json'])
+@pytest.mark.parametrize('name', ['COMPACT_REENCODING.json', 'renamed.json', 'renamed.gz', 'renamed.xz'])
 @pytest.mark.parametrize('encoding', ['utf-8', 'utf-16', 'utf-32'])
 @pytest.mark.parametrize('shape', ['wrapped', 'nested', 'removed-marker'])
 def test_transient_reserved_new_map_on_pre_admission_branch_fails_globally(repo, name, encoding, shape):
@@ -1460,3 +1460,49 @@ def test_mapping_marker_name_in_plain_prose_stays_ordinary_output(repo):
     head = commit(root)
     assert ce.read(root, path, head) == data
     assert ce.audit(root, base, head, 'HG-047')['errors'] == []
+
+
+@pytest.mark.parametrize('name', ['renamed.json', 'renamed.gz', 'renamed.xz'])
+@pytest.mark.parametrize('encoding', ['utf-8', 'utf-16', 'utf-32'])
+@pytest.mark.parametrize('shape', ['partial-envelope', 'removed-marker', 'fake-archive'])
+def test_transient_invalid_execution_storage_on_pre_admission_branch_fails(repo, name, encoding, shape):
+    root, original_base = repo
+    main = git(root, 'branch', '--show-current')
+    (root / 'later-protected-source').write_text('ordinary protected update')
+    base = commit(root)
+    git(root, 'checkout', '-qb', 'old-side-branch', original_base)
+    target = root / str(Path(RECODE).with_name(name))
+    target.parent.mkdir(parents=True)
+    value = ({ce.MARKER: ce.XZ_FORMAT} if shape == 'partial-envelope' else
+             {'payload': 'missing', 'stored_sha256': 'missing', 'raw_sha256': 'missing'}
+             if shape == 'removed-marker' else {ce.MARKER: ce.HISTORICAL_FORMAT})
+    target.write_bytes(json.dumps(value).encode(encoding))
+    introduced = commit(root)
+    with pytest.raises(ValueError):
+        ce.read(root, str(target.relative_to(root)), introduced)
+    target.unlink()
+    commit(root)
+    git(root, 'checkout', main)
+    git(root, 'merge', '--no-ff', '-qm', 'fixture merge', 'old-side-branch')
+    head = git(root, 'rev-parse', 'HEAD')
+    assert git(root, 'diff', '--name-only', base, head) == ''
+    assert ce.audit(root, base, head, 'HG-054')['errors']
+
+
+@pytest.mark.parametrize('codec', ce.CODECS)
+def test_valid_pre_admission_compact_execution_stays_bound_to_original_bytes(repo, codec):
+    root, original_base = repo
+    main = git(root, 'branch', '--show-current')
+    (root / 'later-protected-source').write_text('ordinary protected update')
+    base = commit(root)
+    git(root, 'checkout', '-qb', 'old-side-branch', original_base)
+    before = ce.capture(root, REF, b'1 failed\n', original_base, 'pytest', 1, codec=codec)
+    source = commit(root)
+    for path in (REF, before['payload']):
+        (root / path).unlink()
+    commit(root)
+    git(root, 'checkout', main)
+    git(root, 'merge', '--no-ff', '-qm', 'fixture merge', 'old-side-branch')
+    head = git(root, 'rev-parse', 'HEAD')
+    assert ce.read(root, REF, source) == b'1 failed\n'
+    assert ce.audit(root, base, head, 'HG-054')['errors'] == []

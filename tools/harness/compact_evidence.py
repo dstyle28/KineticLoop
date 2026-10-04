@@ -1080,6 +1080,7 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
     """Inspect every forward commit so deletion/reversion cannot hide conversions."""
     errors: list[str] = []
     records: set[str] = set()
+    verified_archival_revisions: set[str] = set()
     prefixes = [f'docs/exec-plans/{kind}/{identity}/' for kind in ('evidence', 'reviews')]
     storage_roots = ['docs/exec-plans/evidence', 'docs/exec-plans/reviews']
     try:
@@ -1129,14 +1130,35 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
                                       '--diff-filter=ACMT', parent, revision, '--',
                                       *storage_roots).decode().splitlines())
             for path in sorted(changed_metadata_paths):
-                if path.endswith(('.gz', '.xz')):
-                    continue
-                data = blob(root, path, revision, PLAIN_LIMIT)
+                data = blob(root, path, revision,
+                            STORED_LIMIT if path.endswith(('.gz', '.xz')) else PLAIN_LIMIT)
                 record = reencoding_record(data)
                 if record is None:
-                    envelope(data)  # Wrapped/damaged storage cannot become opaque output.
+                    manifest = envelope(data)
+                    if manifest is not None:
+                        if manifest.get(MARKER) in (HISTORICAL_FORMAT, MAPPING_FORMAT):
+                            if path not in {MAPPING_PATH, *(x['path'] for x in historical_originals())}:
+                                raise ValueError('archive-unauthorized-path')
+                            if revision not in verified_archival_revisions:
+                                if git(root, 'ls-tree', revision, '--', MAPPING_PATH).strip():
+                                    archival_errors, _ = archive_audit(root, revision)
+                                    if archival_errors:
+                                        raise ValueError('reencoding-archival-binding:' + ';'.join(archival_errors))
+                                else:
+                                    # Frozen archival workflow commits all four
+                                    # storage objects before building its mapping.
+                                    # The existing builder verifies that exact
+                                    # inventory and original proof at this stage.
+                                    archive_mapping(root, revision)
+                                verified_archival_revisions.add(revision)
+                        else:
+                            read(root, path, revision)
                 elif path not in inherited and not any(path.startswith(prefix) for prefix in prefixes):
                     raise ValueError('reencoding-foreign-owner:' + path)
+                else:
+                    admitted_owner = admitted[path][2] if path in inherited else identity
+                    validate_reencoding(root, path, record, inherited.get(path, base),
+                                        revision, admitted_owner)
             mapped = {}
             for path in git(root, 'ls-tree', '-r', '--name-only', revision, '--', *prefixes).decode().splitlines():
                 if path.endswith(('.gz', '.xz')):
@@ -1159,14 +1181,14 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
                 for path in changed:
                     old = blob(root, path, parent)
                     selected_owner = any(path.startswith(prefix) for prefix in prefixes)
+                    if reencoding_record(old) is not None:
+                        raise ValueError('reencoding-record-mutated-or-deleted')
                     # Pre-admission side branches do not inherit protected state.
                     # Selected-owner history retains its existing strict checks.
                     if not selected_owner:
                         if (git(root, 'merge-base', base, revision).decode().strip() != base or
                                 git(root, 'merge-base', base, parent).decode().strip() != base):
                             continue
-                    if reencoding_record(old) is not None:
-                        raise ValueError('reencoding-record-mutated-or-deleted')
                     if path.endswith(('.gz', '.xz')):
                         if not selected_owner:
                             raise ValueError('reencoding-foreign-payload-mutation:' + path)
