@@ -1,5 +1,8 @@
 """Construct exact M3 witnesses from revision-bound merged records; no new oracle."""
 import argparse
+import sys
+if sys.flags.optimize:
+    raise RuntimeError("HG052 guards require Python optimization disabled")
 import importlib.util
 import json
 from pathlib import Path

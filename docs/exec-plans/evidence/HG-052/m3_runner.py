@@ -1,5 +1,8 @@
 """HG052-owned M3 execution/capture glue; unchanged suite selectors and daemon helpers."""
 import argparse
+import sys
+if sys.flags.optimize:
+    raise RuntimeError("HG052 guards require Python optimization disabled")
 import hashlib
 import importlib.util
 import json
@@ -26,11 +29,13 @@ def inventory():
                 volumes=db.output(['docker', 'volume', 'ls', '--format', '{{json .}}']).splitlines())
 
 
-def clean_legacy():
+def clean_legacy(command):
     # Only test_migrations' documented non-yield default lifecycle can remain.
     # Suite-specific yield fixtures must clean themselves; no alias override is used.
     before = inventory()
     if before['containers'] or before['volumes']:
+        if 'tests/db/test_migrations.py' not in command.split():
+            raise ValueError('unexplained suite resources:'+json.dumps(before))
         from kineticloop.db.lifecycle import DatabaseLifecycle
         lifecycle = DatabaseLifecycle(ROOT)
         project = lifecycle.namespace.project_name
@@ -95,7 +100,7 @@ def inner(revision, directory):
             else:
                 run['passed_count']=v.m3_pytest_count((directory/(name+'.log')).read_text())
                 counts=db.junit_counts(junit); assert counts['tests']==run['passed_count'],counts
-            run['namespace_cleanup']=clean_legacy()
+            run['namespace_cleanup']=clean_legacy(command)
             write(directory/'execution-index.json',report)
         status='PASS'
     except BaseException as error:
@@ -103,7 +108,11 @@ def inner(revision, directory):
         raise
     finally:
         report['status']=status
-        report['final_inventory']=inventory()
+        try:
+            report['final_inventory']=inventory()
+        except BaseException as error:
+            report['status']='FAIL'
+            report['inventory_error']=type(error).__name__
         write(directory/'execution-index.json',report)
     return 0
 

@@ -1,5 +1,8 @@
 """Use authoritative semantic validators for all integrations and M3."""
 import argparse
+import sys
+if sys.flags.optimize:
+    raise RuntimeError("HG052 guards require Python optimization disabled")
 import json
 from build_closure import ROOT, context, schemas, v, provenance_errors
 
