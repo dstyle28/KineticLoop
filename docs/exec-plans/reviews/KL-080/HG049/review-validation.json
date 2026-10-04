@@ -1,0 +1,82 @@
+{
+  "reviewed_head_sha": "275d7f849b31c9fe123c8d8594b88a85d1c25355",
+  "schema": "PASS",
+  "four_reviews_same_sha": true,
+  "reviews": [
+    {
+      "review_type": "GENERAL",
+      "status": "CHANGES_REQUIRED",
+      "findings": [
+        {
+          "id": "KL080-HG049-GENERAL-001",
+          "severity": "BLOCKER",
+          "title": "Required selected-task evidence storage gate still fails",
+          "file": "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+          "description": "Independent compact_evidence.audit at protected base 034d6301316d0dade784a61b159c027b83fbce3a and reviewed head 275d7f849b31c9fe123c8d8594b88a85d1c25355 reports 38,263,916 changed evidence/review bytes across 351 files, exceeding the inclusive 16,777,216-byte limit. Four preserved task-owned plain evidence blobs also exceed 262,144 bytes (3,456,356; 12,503,732; 3,456,356; 12,480,477). They are added relative to the protected base and therefore are not the policy's untouched protected-base historical exclusion. The result honestly remains BLOCKED; seventeen successful named command executions do not satisfy the mandatory normal gate or task DoD.",
+          "required_change": "Resolve preservation/storage through separately authorized reviewed governance without deleting, rewriting, relabeling or exempting old evidence locally. Then obtain actual required normal/controller gate PASS and a new reviewed implementation/result revision. Do not approve or merge this revision while the mandatory gate fails."
+        }
+      ],
+      "sha256": "d9a06ab08865ef1bc781cb6776d7fdb283f67e533d89c19dd83dc53bc2afabe6"
+    },
+    {
+      "review_type": "PROTOCOL",
+      "status": "CHANGES_REQUIRED",
+      "findings": [
+        {
+          "finding_id": "KL080-PROTOCOL-HG049-01",
+          "classification": "BLOCKER",
+          "title": "Normal evidence gate and packet DoD remain unsatisfied",
+          "file": "docs/exec-plans/completed/KL-080_RESULT.yaml",
+          "line": 7,
+          "details": "Independent protected-base-to-reviewed audit reports 38,263,916 bytes across 351 changed evidence/review blobs against the 16,777,216-byte PR budget and four retained plain artifacts above 262,144 bytes. Seventeen task commands and corrected HG049 protocol oracles have valid tested-SHA evidence, but this cannot establish all normal gates or completed DoD. The committed result accurately remains BLOCKED/UNMERGED; no runtime frozen-semantic defect or necessary SPEC_CHANGE_REQUIRED was found.",
+          "required_change": "Resolve the normal evidence-storage/history blocker through authorized work without truncation, waiver or historical rewriting; present a new reviewable revision and rerun SHA-bound independent review after the required normal gates and DoD pass.",
+          "evidence_refs": [
+            "docs/exec-plans/reviews/KL-080/HG049_PROTOCOL/verification.json",
+            "docs/exec-plans/active/KL-080.md",
+            "docs/harness/EVIDENCE_STORAGE_POLICY.md"
+          ]
+        }
+      ],
+      "sha256": "39aef947343a4d753bf33ab25bd2d9846381364f6fa8713bb8d9f07b0bb558f9"
+    },
+    {
+      "review_type": "DB_CONCURRENCY",
+      "status": "CHANGES_REQUIRED",
+      "findings": [
+        {
+          "severity": "BLOCKER",
+          "code": "HG049_DB_EVIDENCE_STORAGE_GATE",
+          "title": "Normal evidence storage gate remains unsatisfied",
+          "file": "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+          "description": "Independent exact-revision audit against protected base 034d6301316d0dade784a61b159c027b83fbce3a counts 38,263,916 bytes of changed KL-080 evidence/review blobs, exceeding the 16,777,216-byte limit, and rejects four retained plain blobs above 262,144 bytes. The new lossless captures and database proofs are valid, but the packet requires all normal gates and satisfied DoD before review PASS or merge recommendation. The result correctly remains BLOCKED. No budget waiver, historical rewrite, or approval is inferred.",
+          "required_change": "Resolve preservation/storage through separately authorized reviewed governance, preserve historical evidence, obtain actual normal-gate PASS, and renew the exact-SHA review if implementation/result/evidence changes. Do not waive the current limits in this task."
+        }
+      ],
+      "sha256": "fffdb6c4e29202cd92ad5831a9b656fd79f30b2c3100848e2b0ce9960ee9a7bb"
+    },
+    {
+      "review_type": "SECURITY_DATA_BOUNDARY",
+      "status": "CHANGES_REQUIRED",
+      "findings": [
+        {
+          "id": "KL080-HG049-SEC-001",
+          "severity": "BLOCKER",
+          "title": "Required normal evidence-storage gate fails at the reviewed revision",
+          "detail": "Independent revision-bound compact_evidence audit of protected base 034d6301316d0dade784a61b159c027b83fbce3a to reviewed SHA 275d7f849b31c9fe123c8d8594b88a85d1c25355 exits 1: changed task evidence/review blobs total 38,263,916 bytes against 16,777,216, and four preserved older plain blobs exceed 262,144 bytes. All seventeen revised command captures, own 106-case PostgreSQL suite and hosted 780-case regression pass independently; they do not satisfy this selected-task normal gate or the packet all-normal-gates DoD. The result truthfully remains BLOCKED. No new runtime data-authority bypass was found; approval remains unavailable.",
+          "remediation": "Keep all historical bytes and frozen/runtime boundaries intact. Resolve storage preservation through a separately authorized, reviewed governance decision or other explicitly compliant mechanism, obtain actual selected-task and installed App-bound normal gate PASS, and commit any resulting task result/evidence change before fresh SHA-bound review. Do not waive budgets, rewrite/delete prior evidence, promote task PASS, or substitute hosted/custom local proofs for the required installed gate.",
+          "evidence_refs": [
+            "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+            "docs/harness/MERGE_GATE.md",
+            "docs/exec-plans/active/KL-080.md",
+            "docs/exec-plans/completed/KL-080_RESULT.yaml",
+            "docs/exec-plans/reviews/KL-080/HG049_SECURITY_DATA_BOUNDARY/budget-audit.json"
+          ]
+        }
+      ],
+      "sha256": "a2b50586ea1dd69d3ac3abfaa9373e2a555017ba5613dbc7b9b1ae54cb13eb8d"
+    }
+  ],
+  "result_sha256": "98ff0f20b412310ca43efcff50d76a63f9b1ecad4b0e870db4fb73ff910eaef4",
+  "review_record_only_worktree": true,
+  "no_merge_recommendation": true
+}

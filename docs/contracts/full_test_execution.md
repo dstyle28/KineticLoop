@@ -92,3 +92,10 @@ All results are task-local TEST evidence. Product requirements, M3, G-SHADOW and
 production release gates remain independent; no production auto-activation,
 executable real-data shadow, model/provider authority or planned-to-actual conversion
 is introduced.
+
+KL080 requires physical S13 ELIGIBLE and S12 MATCHED during prospective source
+reconstruction. Full T6 then reads the exact same-subject/policy/admission-ID S13
+ELIGIBLE revision and finite validity through its shared internal freshness reader.
+A malformed prior-deployment source fails earlier reconstruction and does not
+reach that later query. Independent PostgreSQL predicate support is labeled
+separately; it does not constitute a full execution.

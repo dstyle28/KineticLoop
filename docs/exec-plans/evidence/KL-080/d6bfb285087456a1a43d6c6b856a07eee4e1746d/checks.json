@@ -1,0 +1,261 @@
+{
+  "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+  "executions": [
+    {
+      "check_id": "source_namespace_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_namespace",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_namespace_pu.log",
+      "sha256": "ac97f993cb5e364ff35f9ca9b24fb444f317a1137eb65118098875cee0c3eae8",
+      "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+      "junit": {
+        "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_namespace_pu.xml",
+        "sha256": "80a118573df4467d9c1b390a023dc84127af53b93ae8a2e43d409ef92aa6bf44"
+      },
+      "counts": {
+        "executed": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_matrix_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_source_matrix",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_matrix_pu.log",
+      "sha256": "720a04b414f4c3af333b1da617cf413d76d612b8ca03bfb575369c2a4f9098be",
+      "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+      "junit": {
+        "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_matrix_pu.xml",
+        "sha256": "be7977216cf20e5348e6547a27edd867e575702016b26d71de6be509fd249008"
+      },
+      "counts": {
+        "executed": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_basis_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_basis_and_actual_separation",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_basis_pu.log",
+      "sha256": "2be5549f2d446be5b6010518ce98e3ba54d99cd41ca6f2f4ce489aaed04e1efe",
+      "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+      "junit": {
+        "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_basis_pu.xml",
+        "sha256": "5f9f53557feb079d6412e493f9ead045eb499d3a9dc66297f0ba61bc6ef7df0f"
+      },
+      "counts": {
+        "executed": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_preparation_owners_dc",
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_preparation_owners",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_preparation_owners_dc.log",
+      "sha256": "c82401ded13dbd51ab7265d2c602f6270533071533924306723c939ff6f9b8bb",
+      "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+      "junit": {
+        "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_preparation_owners_dc.xml",
+        "sha256": "638e972af0b572346720536a76c4ef38fc521a7a8651a195aa2330db64bc095e"
+      },
+      "counts": {
+        "executed": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_canonical_full_t6_dc",
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_canonical_full_t6",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_canonical_full_t6_dc.log",
+      "sha256": "2a7ee0f8fada7d9c4d8ca6caaab465dc0bdd957e4389a653c340d116cc4f76c3",
+      "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+      "junit": {
+        "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_canonical_full_t6_dc.xml",
+        "sha256": "7f2f8c5341da0e13653883da30fbb55c8dd705280156c38b139295823a329855"
+      },
+      "counts": {
+        "executed": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_invalid_reconstruction_dc",
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_invalid_source_reconstruction",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_invalid_reconstruction_dc.log",
+      "sha256": "07ff38023e524b036508093ed2ac2b33886942ecae6159d3748ada96de9ec272",
+      "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+      "junit": {
+        "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_invalid_reconstruction_dc.xml",
+        "sha256": "0ff7933da7900efec8dd706aaedc88502df872c8daf192df2974e38a341c2493"
+      },
+      "counts": {
+        "executed": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_freshness_predicate_support_dc",
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_freshness_predicate_support",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_freshness_predicate_support_dc.log",
+      "sha256": "d57ff78228d6c1fe113f421da1b509dc95004a1e8bdf006f45eb6cfde45429c4",
+      "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+      "junit": {
+        "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_freshness_predicate_support_dc.xml",
+        "sha256": "de7ab02a22d68adf557fa5f266b8c836a3d2bd95a805c7774299739be5ed8884"
+      },
+      "counts": {
+        "executed": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_owner_trajectories_dc",
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_owner_trajectories",
+      "result": "FAIL",
+      "exit_code": 1,
+      "evidence_ref": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_owner_trajectories_dc.log",
+      "sha256": "c418f8919a2365869528d2fb37c3104d07818fa6efffb8fa85e69fc906554115",
+      "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+      "junit": {
+        "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_owner_trajectories_dc.xml",
+        "sha256": "31f83ed3f0643659d8332b0ede105e2ab748d5d47d8d20edac56372be2ca9024"
+      },
+      "counts": {
+        "executed": 2,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_current_denials_dc",
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_current_denials",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_current_denials_dc.log",
+      "sha256": "94a8e71dbbb0a9731c190d3caa75a11a82de33df145436feacf56c66c429eb39",
+      "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+      "junit": {
+        "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_current_denials_dc.xml",
+        "sha256": "7b861a3a51c248e3f96f70e78ede62231afcfad119bb1153a6fef25eaa284b0e"
+      },
+      "counts": {
+        "executed": 77,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_repair_replay_expiry_dc",
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_repair_replay_expiry",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_repair_replay_expiry_dc.log",
+      "sha256": "39e45ab6787e17c8dfd65e6a9a6d4e5633e2dd9fab4cc01022ce22f812a66b16",
+      "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+      "junit": {
+        "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_repair_replay_expiry_dc.xml",
+        "sha256": "28a948c707bd32b4a375c609a14345e92a6e888de84d357ca3997baca763df4a"
+      },
+      "counts": {
+        "executed": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_suite_dc",
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py",
+      "result": "FAIL",
+      "exit_code": 1,
+      "evidence_ref": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.log",
+      "sha256": "5c94998447a516b39433e028b6ca98c64b0f8a00521db6096835210fb1209a1c",
+      "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+      "junit": {
+        "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_dc.xml",
+        "sha256": "742d69209b8e9d37a41f9eb5f6d22635105ddc2ac9877523e6b999a8978cb3c0"
+      },
+      "counts": {
+        "executed": 106,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "source_suite_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_pu.log",
+      "sha256": "6bfdb5507a15ee3dd485d63af132c5f9761d245f5e1ea8b2fb090cfff499f8b2",
+      "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+      "junit": {
+        "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/source_suite_pu.xml",
+        "sha256": "f43f8a8806c7c893037054b887fd8299c5582af206545a5b00846e822c6c87d2"
+      },
+      "counts": {
+        "executed": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "command": "uv run kl check-harness",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/harness_validation_passes.log",
+      "sha256": "2448fd056596d883206eb3bf0647a48e8ca03bd937b1b6c536279f0171dcaf5b",
+      "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d"
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "command": "uv run kl test-unit",
+      "result": "PASS",
+      "exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/unit_regressions_pass.log",
+      "sha256": "7b36c610402075412f5e5522afae206031045d3b2cd63afeb6b18aba9f92ea24",
+      "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+      "junit": {
+        "path": "docs/exec-plans/evidence/KL-080/d6bfb285087456a1a43d6c6b856a07eee4e1746d/unit_regressions_pass.xml",
+        "sha256": "90f17e95ced9fd22cab905a7be1bbf2d1be97064a84245df9e848ae0a4b9dd58"
+      },
+      "counts": {
+        "executed": 247,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    }
+  ]
+}

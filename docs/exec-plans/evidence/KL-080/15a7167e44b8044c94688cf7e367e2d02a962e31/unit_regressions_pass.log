@@ -1,0 +1,51 @@
+TESTED_COMMIT=15a7167e44b8044c94688cf7e367e2d02a962e31
+COMMAND=uv run kl test-unit
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/davetian/.codex/worktrees/59e4/KineticLoop
+configfile: pyproject.toml
+collected 247 items
+
+tests/unit/config/test_secret_loader.py .                                [  0%]
+tests/unit/contracts/test_artifact_registry.py ...                       [  1%]
+tests/unit/contracts/test_commands.py ..............                     [  7%]
+tests/unit/contracts/test_errors.py .                                    [  7%]
+tests/unit/contracts/test_receipts.py ........................           [ 17%]
+tests/unit/contracts/test_results.py .....                               [ 19%]
+tests/unit/contracts/test_safety_registry.py ..                          [ 20%]
+tests/unit/contracts/test_shadow.py ...                                  [ 21%]
+tests/unit/identity/test_roles.py .............                          [ 26%]
+tests/unit/integrations/test_launch_registry.py ........                 [ 29%]
+tests/unit/integrations/test_provider.py ...........                     [ 34%]
+tests/unit/persistence/test_fact_children.py ...                         [ 35%]
+tests/unit/persistence/test_immutability.py ....                         [ 37%]
+tests/unit/persistence/test_preparation.py ...                           [ 38%]
+tests/unit/persistence/test_schema_topology.py .......                   [ 41%]
+tests/unit/persistence/test_transactions.py ...                          [ 42%]
+tests/unit/primitives/test_canonical.py ...........                      [ 46%]
+tests/unit/primitives/test_hashes.py ........                            [ 50%]
+tests/unit/primitives/test_ids.py .........                              [ 53%]
+tests/unit/primitives/test_times.py .......................              [ 63%]
+tests/unit/protocol/test_authorization.py ...                            [ 64%]
+tests/unit/protocol/test_boundary_acceptance.py .......                  [ 67%]
+tests/unit/protocol/test_execution.py ..                                 [ 68%]
+tests/unit/protocol/test_factsets.py .....                               [ 70%]
+tests/unit/protocol/test_full_test_execution.py ....                     [ 71%]
+tests/unit/protocol/test_interleaving_namespace.py ...                   [ 72%]
+tests/unit/protocol/test_shadow_isolation.py ..                          [ 73%]
+tests/unit/protocol/test_test_only_demo.py ..                            [ 74%]
+tests/unit/security/test_redaction.py .................................. [ 88%]
+...                                                                      [ 89%]
+tests/unit/security/test_synthetic_fixtures.py .                         [ 89%]
+tests/unit/test_cli.py ...                                               [ 91%]
+tests/unit/workflow/test_call_ledger.py ...                              [ 92%]
+tests/unit/workflow/test_deterministic_planning.py ....                  [ 93%]
+tests/unit/workflow/test_full_action_preparation.py ...                  [ 95%]
+tests/unit/workflow/test_planning.py ..                                  [ 95%]
+tests/unit/workflow/test_planning_progress.py ....                       [ 97%]
+tests/unit/workflow/test_source_decision_conformance.py ......           [100%]
+
+- generated xml file: /Users/davetian/.codex/worktrees/59e4/KineticLoop/docs/exec-plans/evidence/KL-080/15a7167e44b8044c94688cf7e367e2d02a962e31/unit_regressions_pass.xml -
+======================= 247 passed in 189.16s (0:03:09) ========================
+
+EXIT_CODE=0

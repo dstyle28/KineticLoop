@@ -1,0 +1,20 @@
+TESTED_COMMIT=d6bfb285087456a1a43d6c6b856a07eee4e1746d
+COMMAND=uv run pytest --collect-only -q tests/db/test_source_decision_conformance.py::test_repair_replay_expiry
+tests/db/test_source_decision_conformance.py::test_repair_replay_expiry[source_input_invalidation]
+tests/db/test_source_decision_conformance.py::test_repair_replay_expiry[runtime_revocation]
+tests/db/test_source_decision_conformance.py::test_repair_replay_expiry[expiry_START]
+tests/db/test_source_decision_conformance.py::test_repair_replay_expiry[expiry_CONTINUE]
+tests/db/test_source_decision_conformance.py::test_repair_replay_expiry[expiry_RESUME]
+tests/db/test_source_decision_conformance.py::test_repair_replay_expiry[f2]
+tests/db/test_source_decision_conformance.py::test_repair_replay_expiry[history]
+tests/db/test_source_decision_conformance.py::test_repair_replay_expiry[duplicate_commit]
+tests/db/test_source_decision_conformance.py::test_repair_replay_expiry[duplicate_pause]
+tests/db/test_source_decision_conformance.py::test_repair_replay_expiry[member]
+tests/db/test_source_decision_conformance.py::test_repair_replay_expiry[issuance]
+tests/db/test_source_decision_conformance.py::test_repair_replay_expiry[head]
+tests/db/test_source_decision_conformance.py::test_repair_replay_expiry[success]
+tests/db/test_source_decision_conformance.py::test_repair_replay_expiry[outbox]
+
+14 tests collected in 0.38s
+
+EXIT_CODE=0

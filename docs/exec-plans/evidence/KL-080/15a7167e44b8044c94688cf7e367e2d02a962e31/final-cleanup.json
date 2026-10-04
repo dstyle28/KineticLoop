@@ -1,0 +1,51 @@
+{
+  "tested_commit": "15a7167e44b8044c94688cf7e367e2d02a962e31",
+  "namespace": {
+    "compose": "kineticloop-kl080-source-15a7167-9a070975b04f",
+    "database": "kineticloop_kl080_source_15a7167_9a070975b04f"
+  },
+  "inventory": {
+    "container": {
+      "command": [
+        "/usr/local/bin/docker",
+        "container",
+        "ls",
+        "--filter",
+        "label=com.docker.compose.project=kineticloop-kl080-source-15a7167-9a070975b04f",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "volume": {
+      "command": [
+        "/usr/local/bin/docker",
+        "volume",
+        "ls",
+        "--filter",
+        "label=com.docker.compose.project=kineticloop-kl080-source-15a7167-9a070975b04f",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "network": {
+      "command": [
+        "/usr/local/bin/docker",
+        "network",
+        "ls",
+        "--filter",
+        "label=com.docker.compose.project=kineticloop-kl080-source-15a7167-9a070975b04f",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "resources_remaining": false,
+  "only_own_exact_labels_queried": true,
+  "full_suite_cleanup_witnesses": "witness-index.json"
+}

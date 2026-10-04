@@ -1,0 +1,291 @@
+{
+  "reviewed_head_sha": "417b65ee68244dc86ab02add231b24dc662be790",
+  "tested_commit": "feb3236c175df171611fc5b7ddb4f6eeca3ce47c",
+  "protected_base": "1d3075151246b2774640a3d7acec836f47ab2b8d",
+  "reviewer_db_lifecycles": 0,
+  "task_checks": [
+    {
+      "check_id": "source_matrix_pu",
+      "exit_code": 0,
+      "raw_sha256": "81c2807de39c3a27d4b12e5d2001cdf1a82e00f58e00ff9cd26ae54cba26c5ed",
+      "cases": 2
+    },
+    {
+      "check_id": "source_basis_pu",
+      "exit_code": 0,
+      "raw_sha256": "f813988874b361d89025a12ceff0b82d1927870bffcc698f89e06e546100887d",
+      "cases": 2
+    },
+    {
+      "check_id": "source_namespace_pu",
+      "exit_code": 0,
+      "raw_sha256": "5ed7e3a4f67513a8625b024d9bfca004265746749db8aa87539337aeb338a9a6",
+      "cases": 1
+    },
+    {
+      "check_id": "source_preparation_owners_dc",
+      "exit_code": 0,
+      "raw_sha256": "77f0eade042415b7eb23fb4cc3d2517c2d60271018d0db671fcf7f4c607c49b1",
+      "cases": 4
+    },
+    {
+      "check_id": "source_canonical_full_t6_dc",
+      "exit_code": 0,
+      "raw_sha256": "2256aaf41cd1d7c65a28ac2ec17c7a24336b10547b0614ef99a53a035605ddf8",
+      "cases": 1
+    },
+    {
+      "check_id": "source_invalid_reconstruction_dc",
+      "exit_code": 0,
+      "raw_sha256": "1599a5c837ea18e378e571d9bdeda031f5c134af679c22b3c31750ac9cab6e91",
+      "cases": 1
+    },
+    {
+      "check_id": "source_freshness_predicate_support_dc",
+      "exit_code": 0,
+      "raw_sha256": "62046f88e6b054f161a95e029cb9428e4723ea2eb766ec601decdf57b2b9c4f3",
+      "cases": 7
+    },
+    {
+      "check_id": "source_owner_trajectories_dc",
+      "exit_code": 0,
+      "raw_sha256": "4d87256f07f68e92f5989ef0bf74ebcab0f0f28d27efb662a5b8a8076b307a73",
+      "cases": 2
+    },
+    {
+      "check_id": "source_current_denials_dc",
+      "exit_code": 0,
+      "raw_sha256": "bd214d6456344c77eda7915d314b494b236d745f562ad5eeb14c94c77e30f425",
+      "cases": 77
+    },
+    {
+      "check_id": "source_repair_replay_expiry_dc",
+      "exit_code": 0,
+      "raw_sha256": "2fa9aaaeb3608ca6a6fe15436d67a1957e1ddbbb90cc1ee9694e4c54dc9d8d32",
+      "cases": 14
+    },
+    {
+      "check_id": "source_suite_dc",
+      "exit_code": 0,
+      "raw_sha256": "d91c2be43220735d28718aaf4b9e1905e262dc213c97d7bc4bd5b7fcc2075b08",
+      "cases": 106
+    },
+    {
+      "check_id": "source_suite_pu",
+      "exit_code": 0,
+      "raw_sha256": "5076ceb4e4ec0937c70f3f3ad145c5b388fa05bfb38ca179b04a1ef2371da9d4",
+      "cases": 6
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "exit_code": 0,
+      "raw_sha256": "7bb56a9ad014b44bca601bb7ccbfa42a6e966d5d718440757f49b490071ca6dc"
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "exit_code": 0,
+      "raw_sha256": "fe59ea8b3e02a9e3df2db31001ac41bb210d88b7191b917df6bd4fda1bd6b73b",
+      "cases": 247
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "exit_code": 0,
+      "raw_sha256": "73ec971219f95b457f27d99381babd22e4e3c78d6ea230c1912cc933b9ca7d26",
+      "cases": 1492
+    },
+    {
+      "check_id": "lint_passes",
+      "exit_code": 0,
+      "raw_sha256": "9bf04c1537d13aafeeb904045a9cc270bc2a7a717864aab4178e233e62028fdf"
+    },
+    {
+      "check_id": "typecheck_passes",
+      "exit_code": 0,
+      "raw_sha256": "ce2c07595b7772194d16d42166348d7b2bcaa56663e69b5082971cd3e95ecbeb"
+    }
+  ],
+  "source_witness_counts": {
+    "kl080_namespace": 106,
+    "kl080_preparation_owner": 4,
+    "kl080_cleanup": 106,
+    "kl080_duplicate_resolution": 2,
+    "kl080_canonical_full_t6_exact_freshness_reached": 1,
+    "exact_zero_effect_denial": 47,
+    "kl080_prior_deployment_earlier_denial": 1,
+    "kl080_exact_predicate_support_only": 7,
+    "kl080_mechanical_s37_legacy_consumer_denial": 1,
+    "kl080_owner_trajectory": 1,
+    "kl080_failed_owner_zero_effects": 48,
+    "kl080_source_preparation_denial": 48,
+    "kl080_trusted_clock_crossing": 4,
+    "kl080_source_or_runtime_loss_and_receipt_only_replay": 2,
+    "F2_full_commit": 1,
+    "historical_non_executable": 1,
+    "observed_duplicate": 2
+  },
+  "semantic_witness_assertions": "PASS: native head rollback, prior-deployment exact blobs/earlier guard, separate query support, two PG blockers, F2 immutable history, two T7 members, expiry and own cleanup",
+  "hosted_index": {
+    "path": "docs/exec-plans/evidence/KL-080/HG051-hosted-index-correction/hosted-db-verification.json",
+    "verified_canonical_refs": [
+      {
+        "name": "collection.json",
+        "path": "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/HG051-feb3236-hosted.collection.json.capture.json",
+        "sha256": "e04b229b0fd3ea2c16988fcaf5dfb2c707cea1d99fc293bdd818e15c05f4f3a5",
+        "raw_sha256": "738c12433804cce20c433b4e8b49fb54c72c11f977bd65dd7b234cd1132a9b09",
+        "raw_bytes": 73324
+      },
+      {
+        "name": "collection.log",
+        "path": "docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/hosted.collection.log.capture.json",
+        "sha256": "ed8956fff81aacc7f325c19e166dd9b97ecdc5662613bfb69da8a93fe08b6a5a",
+        "raw_sha256": "3f9394dfcbf2c1226583ed6d0d2880171e1d5351e4150835ed74a54945929dbe",
+        "raw_bytes": 67854
+      },
+      {
+        "name": "compose_config_valid.log",
+        "path": "docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/hosted.compose_config_valid.log.capture.json",
+        "sha256": "004e7899d6d53dc9b76e781d36a2f798954d2252de09c89fe676d2e5ede50e60",
+        "raw_sha256": "92987c4953738417a80c30e24e32b4890c3015f0b120ccf444f7dc3eb4795a83",
+        "raw_bytes": 66
+      },
+      {
+        "name": "database.xml",
+        "path": "docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/hosted.database.xml.capture.json",
+        "sha256": "4d4734448625bf9b2a1d3d406ca092b7c4b7c8840d76c7ab0d6f7c0793990d1c",
+        "raw_sha256": "0f34a718b858dcdb411e5608456759cc8de9453627ac2781aee20c34f99ab316",
+        "raw_bytes": 99317
+      },
+      {
+        "name": "destroy.log",
+        "path": "docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/hosted.destroy.log.capture.json",
+        "sha256": "69e51afbc95acad83c2e9d5417291529ea5a703d0b5aca0d49487805307769bd",
+        "raw_sha256": "5ab98a4bbea2204159ddacc93eea6177382680c9d761f4bea303e041563e1fee",
+        "raw_bytes": 69
+      },
+      {
+        "name": "execution.json",
+        "path": "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/HG051-feb3236-hosted.execution.json.capture.json",
+        "sha256": "76efd6bdd64be8a68c763d95cd2452a50ab7162954c474cd948a9d5dcb9ffa30",
+        "raw_sha256": "738c12433804cce20c433b4e8b49fb54c72c11f977bd65dd7b234cd1132a9b09",
+        "raw_bytes": 73324
+      },
+      {
+        "name": "full_database.log",
+        "path": "docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/hosted.full_database.log.capture.json",
+        "sha256": "89d71cf0c67aced9c10c18bd4d80bd18e1ca92dc6328b3b84be26372956902f9",
+        "raw_sha256": "e51ba3a71a533f8eb7be78351a39940995b7a9b9a6d8d4e35b7914fac9af31ae",
+        "raw_bytes": 994
+      },
+      {
+        "name": "lint.log",
+        "path": "docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/hosted.lint.log.capture.json",
+        "sha256": "e2e31abc9c1509e9525f5038d7eb87e3f995d27701f9b44b722403926d172539",
+        "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+        "raw_bytes": 19
+      },
+      {
+        "name": "manifest.json",
+        "path": "docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/hosted.manifest.json.capture.json",
+        "sha256": "8603c640b79eab810d70c064cbf6943c1cc06358408a319398b85327437624c4",
+        "raw_sha256": "baa0ad57e6877a7f85822fa9366ffee961a9b3a1fa6bcbee6d46123583841e09",
+        "raw_bytes": 7581
+      },
+      {
+        "name": "peer_checkout.log",
+        "path": "docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/hosted.peer_checkout.log.capture.json",
+        "sha256": "f48cb2d053d625c60d2e4f1c29d4f8322207f21335acfabb45d97a54f05f25cd",
+        "raw_sha256": "0e60d78bfb5d087d582bf23eeb16bd3fc681d6d4de8a3a903d718df65dea9776",
+        "raw_bytes": 526
+      },
+      {
+        "name": "peer_remove.log",
+        "path": "docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/hosted.peer_remove.log.capture.json",
+        "sha256": "77bf5c6c17f21bb5c9a99df28dae4e09a41715317cfb2bfe50228ecc0aa55d08",
+        "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "raw_bytes": 0
+      },
+      {
+        "name": "postgres_ready.log",
+        "path": "docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/hosted.postgres_ready.log.capture.json",
+        "sha256": "40457cc81716ea45ae33de7339e6d7482215a445eeffcae91662977f9c729c67",
+        "raw_sha256": "8467fb7fa7605ae1f9b6d45c0942a6a59b12f947f59fc5b8ac5dbf2b8ac0a289",
+        "raw_bytes": 217
+      },
+      {
+        "name": "reset_idempotent.log",
+        "path": "docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/hosted.reset_idempotent.log.capture.json",
+        "sha256": "14899b5bc7e9f4c7635c139e075e55b4312fb2d80c0384eb05d9f6db29d7b04f",
+        "raw_sha256": "62e271b618c31fa427bae21dca9974d421145997c63ff930ae1e215ba72fa30e",
+        "raw_bytes": 111
+      },
+      {
+        "name": "typecheck.log",
+        "path": "docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/hosted.typecheck.log.capture.json",
+        "sha256": "0b795226fd3e5ad66dec19efa115c2453e51e388f6e22df6ac4c6781b322f1bb",
+        "raw_sha256": "5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523",
+        "raw_bytes": 45
+      },
+      {
+        "name": "worktree_db_isolated.log",
+        "path": "docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/hosted.worktree_db_isolated.log.capture.json",
+        "sha256": "537b7db0343f093106874895e1379cb09a28abbb956f1337c5123606197453e7",
+        "raw_sha256": "0f6e02d57a6613deb5557812f5232730d2a9a74fbf0e6f8d97e804bd0559d667",
+        "raw_bytes": 372
+      }
+    ]
+  },
+  "hosted": {
+    "run_id": "37161315464",
+    "tested_commit": "feb3236c175df171611fc5b7ddb4f6eeca3ce47c",
+    "cases": 780,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "manifest_hashes_verified": true,
+    "cleanup_empty": true
+  },
+  "archive": {
+    "exact_objects": 4,
+    "original_bytes_and_record_bindings_verified": true,
+    "ordinary_decoder_rejects_archives": true,
+    "historical_outcome": {
+      "task_status": "BLOCKED",
+      "task_checks_status": "FAIL",
+      "integration_status": "UNMERGED",
+      "tested_commit": "15a7167e44b8044c94688cf7e367e2d02a962e31",
+      "reviewed_head_sha": "7e19587458d611155051d0c89d36e0b89f98b8a1",
+      "review_status": "CHANGES_REQUIRED"
+    }
+  },
+  "storage_audit": {
+    "identity": "KL-080",
+    "base": "1d3075151246b2774640a3d7acec836f47ab2b8d",
+    "head": "417b65ee68244dc86ab02add231b24dc662be790",
+    "stored_bytes": 16414589,
+    "files": 568,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "source_test_contract_paths": [
+    "docs/contracts/deterministic_planning.md",
+    "docs/contracts/full_action_preparation.md",
+    "docs/contracts/full_test_execution.md",
+    "docs/contracts/source_decision_conformance.md",
+    "src/kineticloop/persistence/deterministic_planning.py",
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/workflow/deterministic_planning.py",
+    "tests/db/test_deterministic_planning.py",
+    "tests/db/test_factsets.py",
+    "tests/db/test_full_action_preparation.py",
+    "tests/db/test_full_test_execution.py",
+    "tests/db/test_preparation.py",
+    "tests/db/test_protocol_interleavings.py",
+    "tests/db/test_source_decision_conformance.py",
+    "tests/db/test_test_only_demo.py",
+    "tests/db/test_transaction_interfaces.py",
+    "tests/unit/workflow/test_deterministic_planning.py",
+    "tests/unit/workflow/test_full_action_preparation.py",
+    "tests/unit/workflow/test_source_decision_conformance.py"
+  ],
+  "status": "PASS"
+}

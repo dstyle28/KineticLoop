@@ -1,0 +1,51 @@
+{
+  "tested_commit": "d6bfb285087456a1a43d6c6b856a07eee4e1746d",
+  "namespace": {
+    "compose": "kineticloop-kl080-source-d6bfb28-9a070975b04f",
+    "database": "kineticloop_kl080_source_d6bfb28_9a070975b04f"
+  },
+  "inventory": {
+    "container": {
+      "command": [
+        "/usr/local/bin/docker",
+        "container",
+        "ls",
+        "--filter",
+        "label=com.docker.compose.project=kineticloop-kl080-source-d6bfb28-9a070975b04f",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "volume": {
+      "command": [
+        "/usr/local/bin/docker",
+        "volume",
+        "ls",
+        "--filter",
+        "label=com.docker.compose.project=kineticloop-kl080-source-d6bfb28-9a070975b04f",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "network": {
+      "command": [
+        "/usr/local/bin/docker",
+        "network",
+        "ls",
+        "--filter",
+        "label=com.docker.compose.project=kineticloop-kl080-source-d6bfb28-9a070975b04f",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "resources_remaining": false,
+  "only_own_exact_labels_queried": true,
+  "full_suite_cleanup_witnesses": "witness-index.json"
+}

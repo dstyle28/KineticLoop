@@ -1,0 +1,12 @@
+{
+  "evaluated_head": "eb25e6d5ac020ea00cb06ee2403b6ca9819bea5e",
+  "reviewed_head_sha": "417b65ee68244dc86ab02add231b24dc662be790",
+  "command": "uv run kl check-harness --protected-base 1d3075151246b2774640a3d7acec836f47ab2b8d --task-id KL-080 --reviewed-head 417b65ee68244dc86ab02add231b24dc662be790",
+  "exit_code": 1,
+  "raw_failure": "docs/exec-plans/reviews/KL-080/HG051-ROOT/normal-gate-eb25e6d-FAIL.log",
+  "cause": ".gitignore:62 *.log omitted a genuine staged review log from the prior review-record commit.",
+  "correction": "Add the exact reviewer-confirmed 98-byte file as a regular Git blob in the allowed review-only suffix; no reference or execution is removed or replaced.",
+  "review_log": "docs/exec-plans/reviews/KL-080/HG051-GENERAL/prior-5812ff2/pure-probe.log",
+  "raw_sha256": "465ed2d3ad9fabde7c5ec1ed471c69ab67cd407648ac2d6bf5f0a4e0907d4201",
+  "reviewer_confirmed": true
+}

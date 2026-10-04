@@ -1,0 +1,193 @@
+{
+  "reviewed_head_sha": "417b65ee68244dc86ab02add231b24dc662be790",
+  "base_commit": "1d3075151246b2774640a3d7acec836f47ab2b8d",
+  "tested_commit": "feb3236c175df171611fc5b7ddb4f6eeca3ce47c",
+  "current_authority_hashes_and_base_bytes": 28,
+  "prerequisite_pass_and_merged_at_base": [
+    "KL-076",
+    "KL-079",
+    "KL-077",
+    "KL-027",
+    "KL-078",
+    "KL-026",
+    "KL-023",
+    "KL-022",
+    "KL-028",
+    "KL-029"
+  ],
+  "packet_executions": {
+    "source_matrix_pu": {
+      "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_source_matrix",
+      "exit_code": 0,
+      "testcases": 2
+    },
+    "source_basis_pu": {
+      "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_basis_and_actual_separation",
+      "exit_code": 0,
+      "testcases": 2
+    },
+    "source_namespace_pu": {
+      "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py::test_namespace",
+      "exit_code": 0,
+      "testcases": 1
+    },
+    "source_preparation_owners_dc": {
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_preparation_owners",
+      "exit_code": 0,
+      "testcases": 4
+    },
+    "source_canonical_full_t6_dc": {
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_canonical_full_t6",
+      "exit_code": 0,
+      "testcases": 1
+    },
+    "source_invalid_reconstruction_dc": {
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_invalid_source_reconstruction",
+      "exit_code": 0,
+      "testcases": 1
+    },
+    "source_freshness_predicate_support_dc": {
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_freshness_predicate_support",
+      "exit_code": 0,
+      "testcases": 7
+    },
+    "source_owner_trajectories_dc": {
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_owner_trajectories",
+      "exit_code": 0,
+      "testcases": 2
+    },
+    "source_current_denials_dc": {
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_current_denials",
+      "exit_code": 0,
+      "testcases": 77
+    },
+    "source_repair_replay_expiry_dc": {
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py::test_repair_replay_expiry",
+      "exit_code": 0,
+      "testcases": 14
+    },
+    "source_suite_dc": {
+      "command": "uv run pytest -q tests/db/test_source_decision_conformance.py",
+      "exit_code": 0,
+      "testcases": 106
+    },
+    "source_suite_pu": {
+      "command": "uv run pytest -q tests/unit/workflow/test_source_decision_conformance.py",
+      "exit_code": 0,
+      "testcases": 6
+    },
+    "harness_validation_passes": {
+      "command": "uv run kl check-harness",
+      "exit_code": 0,
+      "testcases": null
+    },
+    "unit_regressions_pass": {
+      "command": "uv run kl test-unit",
+      "exit_code": 0,
+      "testcases": 247
+    },
+    "harness_regressions_pass": {
+      "command": "uv run kl test-harness",
+      "exit_code": 0,
+      "testcases": 1492
+    },
+    "lint_passes": {
+      "command": "uv run kl lint",
+      "exit_code": 0,
+      "testcases": null
+    },
+    "typecheck_passes": {
+      "command": "uv run kl typecheck",
+      "exit_code": 0,
+      "testcases": null
+    }
+  },
+  "hosted": {
+    "keys": [
+      "collection.json",
+      "collection.log",
+      "compose_config_valid.log",
+      "database.xml",
+      "destroy.log",
+      "execution.json",
+      "full_database.log",
+      "lint.log",
+      "manifest.json",
+      "peer_checkout.log",
+      "peer_remove.log",
+      "postgres_ready.log",
+      "reset_idempotent.log",
+      "typecheck.log",
+      "worktree_db_isolated.log"
+    ],
+    "testcases": 780,
+    "run_id": 37161315464,
+    "manifest_artifact_checks": "PASS",
+    "old_index_preserved": true,
+    "collection_equals_execution": true,
+    "collection_shape": [
+      "nodeids",
+      "exit_code"
+    ]
+  },
+  "archive": {
+    "roundtrips": 4,
+    "ordinary_reads_rejected": 4,
+    "mapping_commit": "feb3236c175df171611fc5b7ddb4f6eeca3ce47c",
+    "historical_exit_codes": [
+      0,
+      1,
+      0,
+      1
+    ],
+    "nonmigrated_history_unchanged": true,
+    "historical_outcome": {
+      "task_status": "BLOCKED",
+      "task_checks_status": "FAIL",
+      "integration_status": "UNMERGED",
+      "tested_commit": "15a7167e44b8044c94688cf7e367e2d02a962e31",
+      "reviewed_head_sha": "7e19587458d611155051d0c89d36e0b89f98b8a1",
+      "review_status": "CHANGES_REQUIRED"
+    }
+  },
+  "witnesses": {
+    "counts": {
+      "kl080_namespace": 106,
+      "kl080_preparation_owner": 4,
+      "kl080_cleanup": 106,
+      "kl080_duplicate_resolution": 2,
+      "kl080_canonical_full_t6_exact_freshness_reached": 1,
+      "exact_zero_effect_denial": 47,
+      "kl080_prior_deployment_earlier_denial": 1,
+      "kl080_exact_predicate_support_only": 7,
+      "kl080_mechanical_s37_legacy_consumer_denial": 1,
+      "kl080_owner_trajectory": 1,
+      "kl080_failed_owner_zero_effects": 48,
+      "kl080_source_preparation_denial": 48,
+      "kl080_trusted_clock_crossing": 4,
+      "kl080_source_or_runtime_loss_and_receipt_only_replay": 2,
+      "F2_full_commit": 1,
+      "historical_non_executable": 1,
+      "observed_duplicate": 2
+    },
+    "prior_runtime_helper_blob_count": 65,
+    "prior_revision": "034d6301316d0dade784a61b159c027b83fbce3a",
+    "prior_blobs_identical_at_protected_base": true,
+    "prior_guard": [
+      "_progress_sources -> _verify_full_progress"
+    ],
+    "mechanical_guard": "policy, demand, and calendar authorization bounds must exist",
+    "mechanical_zero_effects": true,
+    "test_binding_count": 4
+  },
+  "budget": {
+    "identity": "KL-080",
+    "base": "1d3075151246b2774640a3d7acec836f47ab2b8d",
+    "head": "417b65ee68244dc86ab02add231b24dc662be790",
+    "stored_bytes": 16414589,
+    "files": 568,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "status": "PASS"
+}

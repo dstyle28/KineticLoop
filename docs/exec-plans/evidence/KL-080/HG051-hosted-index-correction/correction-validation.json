@@ -1,0 +1,50 @@
+{
+  "reviewed_revision_with_finding": "5812ff2ca2c45bfe88c743e36656ea1921112ed6",
+  "tested_commit": "feb3236c175df171611fc5b7ddb4f6eeca3ce47c",
+  "finding": "Two derived hosted index references were stale after lossless payload sharing; no raw execution or payload bytes were missing.",
+  "corrections": [
+    {
+      "artifact": "collection.json",
+      "invalid_previous_reference": {
+        "path": "docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/hosted.collection.json.capture.json",
+        "sha256": "480804b6033f2809cfe6ef0d31e15978fde2a306b083d32e15341f947be55491",
+        "raw_sha256": "738c12433804cce20c433b4e8b49fb54c72c11f977bd65dd7b234cd1132a9b09",
+        "raw_bytes": 73324
+      },
+      "correct_reference": {
+        "path": "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/HG051-feb3236-hosted.collection.json.capture.json",
+        "sha256": "e04b229b0fd3ea2c16988fcaf5dfb2c707cea1d99fc293bdd818e15c05f4f3a5",
+        "raw_sha256": "738c12433804cce20c433b4e8b49fb54c72c11f977bd65dd7b234cd1132a9b09",
+        "raw_bytes": 73324
+      }
+    },
+    {
+      "artifact": "execution.json",
+      "invalid_previous_reference": {
+        "path": "docs/exec-plans/evidence/KL-080/HG051-feb3236c175df171611fc5b7ddb4f6eeca3ce47c/hosted.execution.json.capture.json",
+        "sha256": "8ae0fbd956050d7366f733aea506cf5a1a3e2764cb1f08b0527e426b06d561d2",
+        "raw_sha256": "738c12433804cce20c433b4e8b49fb54c72c11f977bd65dd7b234cd1132a9b09",
+        "raw_bytes": 73324
+      },
+      "correct_reference": {
+        "path": "docs/exec-plans/evidence/KL-080/HG049-f85277e27ab5393b7f77b6fea25d4197294d3153/HG051-feb3236-hosted.execution.json.capture.json",
+        "sha256": "76efd6bdd64be8a68c763d95cd2452a50ab7162954c474cd948a9d5dcb9ffa30",
+        "raw_sha256": "738c12433804cce20c433b4e8b49fb54c72c11f977bd65dd7b234cd1132a9b09",
+        "raw_bytes": 73324
+      }
+    }
+  ],
+  "original_faulty_index_preserved": true,
+  "verified_raw_artifact_count": 15,
+  "every_reference_exact_git_revision_regular_blob": true,
+  "every_outer_and_raw_hash_verified": true,
+  "all_hosted_manifest_artifact_hashes_match": true,
+  "hosted_counts": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 780
+  },
+  "no_new_test_execution_claimed": true,
+  "new_authoritative_index": "docs/exec-plans/evidence/KL-080/HG051-hosted-index-correction/hosted-db-verification.json"
+}

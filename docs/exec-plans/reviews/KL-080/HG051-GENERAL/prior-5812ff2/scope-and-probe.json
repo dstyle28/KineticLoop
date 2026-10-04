@@ -1,0 +1,32 @@
+{
+  "base_commit": "1d3075151246b2774640a3d7acec836f47ab2b8d",
+  "reviewed_head_sha": "5812ff2ca2c45bfe88c743e36656ea1921112ed6",
+  "allowed_source_test_contract_paths": [
+    "docs/contracts/deterministic_planning.md",
+    "docs/contracts/full_action_preparation.md",
+    "docs/contracts/full_test_execution.md",
+    "docs/contracts/source_decision_conformance.md",
+    "src/kineticloop/persistence/deterministic_planning.py",
+    "src/kineticloop/persistence/transactions.py",
+    "src/kineticloop/workflow/deterministic_planning.py",
+    "tests/db/test_deterministic_planning.py",
+    "tests/db/test_factsets.py",
+    "tests/db/test_full_action_preparation.py",
+    "tests/db/test_full_test_execution.py",
+    "tests/db/test_preparation.py",
+    "tests/db/test_protocol_interleavings.py",
+    "tests/db/test_source_decision_conformance.py",
+    "tests/db/test_test_only_demo.py",
+    "tests/db/test_transaction_interfaces.py",
+    "tests/unit/workflow/test_deterministic_planning.py",
+    "tests/unit/workflow/test_full_action_preparation.py",
+    "tests/unit/workflow/test_source_decision_conformance.py"
+  ],
+  "exact_scope": true,
+  "prior_deployment_revision": "034d6301316d0dade784a61b159c027b83fbce3a",
+  "prior_runtime_helper_bytes_match_protected_base": true,
+  "probe_command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/unit/workflow/test_source_decision_conformance.py",
+  "probe_exit_code": 0,
+  "probe_passed": 6,
+  "probe_log_sha256": "465ed2d3ad9fabde7c5ec1ed471c69ab67cd407648ac2d6bf5f0a4e0907d4201"
+}

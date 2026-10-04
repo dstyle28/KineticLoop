@@ -117,13 +117,13 @@ def database_urls() -> Iterator[dict[str, str]]:
             db.execute(
                 "INSERT INTO kineticloop.event_association_decisions "
                 "(id,subject_id,association_family_identity,association_state) "
-                "VALUES (%s,%s,'unresolved','UNRESOLVED')",
+                "VALUES (%s,%s,'unresolved','AMBIGUOUS')",
                 (ASSOCIATION, SUBJECT),
             )
             db.execute(
                 "INSERT INTO kineticloop.admission_decisions "
                 "(id,subject_id,action_scope,decision,ref_s05_id,ref_s09_id,ref_s10_id) "
-                "VALUES (%s,%s,'ALL','DENIED',%s,%s,%s)",
+                "VALUES (%s,%s,'ALL','NOT_ELIGIBLE',%s,%s,%s)",
                 (ADMISSION, SUBJECT, POLICY, EVIDENCE, CANDIDATE),
             )
             db.execute(

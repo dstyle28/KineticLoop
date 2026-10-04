@@ -1704,7 +1704,7 @@ def seed_admitted_source(urls: dict[str, str]) -> None:
             (UNDERLYING, SUBJECT),
         )
         db.execute(
-            "INSERT INTO kineticloop.admission_decisions(id,subject_id,action_scope,decision,ref_s05_id,ref_s09_id,ref_s10_id) VALUES (%s,%s,'TEST_ONLY','ACCEPTED',%s,%s,%s)",
+            "INSERT INTO kineticloop.admission_decisions(id,subject_id,action_scope,decision,ref_s05_id,ref_s09_id,ref_s10_id) VALUES (%s,%s,'TEST_ONLY','ELIGIBLE',%s,%s,%s)",
             (ADMISSION, SUBJECT, POLICY, EVIDENCE, CANDIDATE),
         )
 
