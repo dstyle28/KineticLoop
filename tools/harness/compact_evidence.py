@@ -5,6 +5,7 @@ import argparse
 import gzip
 import hashlib
 import json
+import lzma
 import re
 import subprocess
 import sys
@@ -19,6 +20,9 @@ RAW_LIMIT = 64 * 1024 * 1024
 TOTAL_LIMIT = 16 * 1024 * 1024
 MARKER = 'kineticloop_evidence'
 FORMAT = 'gzip-v1'
+XZ_FORMAT = 'xz-v1'
+CODECS = {FORMAT: '.gz', XZ_FORMAT: '.xz'}
+XZ_MEMLIMIT = 64 * 1024 * 1024
 
 
 def digest(data: bytes) -> str:
@@ -96,7 +100,7 @@ def reserved_ascii(data: bytes) -> bool:
     data = re.sub(rb'\\u([0-9a-fA-F]{4})',
                   lambda m: bytes([int(m[1], 16)]) if int(m[1], 16) < 128
                   else m[0], data)
-    return (b'"kineticloop_evidence"' in data or
+    return (b'"kineticloop_evidence"' in data or b'"compact_reencoding"' in data or
             all(k in data for k in (b'"payload"', b'"stored_sha256"', b'"raw_sha256"')) or
             all(k in data for k in (b'"authorization"', b'"preserved_records"', b'"entries"')))
 
@@ -128,7 +132,7 @@ def envelope(data: bytes) -> dict[str, Any] | None:
     def storage_pairs(pairs):
         nonlocal reserved
         value = unique(pairs)
-        reserved = reserved or MARKER in value or {'payload', 'stored_sha256', 'raw_sha256'} <= set(value) or {'authorization', 'preserved_records', 'entries'} <= set(value)
+        reserved = reserved or MARKER in value or 'compact_reencoding' in value or {'payload', 'stored_sha256', 'raw_sha256'} <= set(value) or {'authorization', 'preserved_records', 'entries'} <= set(value)
         return value
     try:
         value = json.loads(data, object_pairs_hook=storage_pairs)
@@ -139,7 +143,7 @@ def envelope(data: bytes) -> dict[str, Any] | None:
                 reserved_ascii(original.replace(b'\0', b''))):
             raise ValueError('evidence-envelope-json') from ex
         return None
-    if isinstance(value, dict) and (MARKER in value or
+    if isinstance(value, dict) and (MARKER in value or 'compact_reencoding' in value or
                                    {'payload', 'stored_sha256', 'raw_sha256'} <= set(value) or
                                    {'authorization', 'preserved_records', 'entries'} <= set(value)):
         if original_bytes > PLAIN_LIMIT:
@@ -162,7 +166,7 @@ def read(root: Path, path: str, revision: str | None, *, tested: str | None = No
         return data
     fields = {MARKER, 'payload', 'stored_sha256', 'stored_bytes', 'raw_sha256', 'raw_bytes',
               'tested_commit', 'command', 'exit_code', 'timestamp', 'test_counts'}
-    if (len(data) > PLAIN_LIMIT or set(manifest) != fields or manifest[MARKER] != FORMAT
+    if (len(data) > PLAIN_LIMIT or set(manifest) != fields or manifest[MARKER] not in CODECS
             or not re.fullmatch(r'[0-9a-f]{40}', str(manifest['tested_commit']))
             or not isinstance(manifest['command'], str) or not manifest['command']
             or type(manifest['exit_code']) is not int
@@ -177,7 +181,7 @@ def read(root: Path, path: str, revision: str | None, *, tested: str | None = No
     for field in ('stored_sha256', 'raw_sha256'):
         if not re.fullmatch(r'[0-9a-f]{64}', str(manifest[field])):
             raise ValueError('evidence-hash')
-    expected = str(Path(path).parent / (manifest['raw_sha256'] + '.gz'))
+    expected = str(Path(path).parent / (manifest['raw_sha256'] + CODECS[manifest[MARKER]]))
     if manifest['payload'] != expected or owner(path) != owner(expected):
         raise ValueError('evidence-payload-owner-or-name')
     if tested is not None and manifest['tested_commit'] != tested:
@@ -196,13 +200,8 @@ def read(root: Path, path: str, revision: str | None, *, tested: str | None = No
               _blob_at_commit(root, expected, revision, STORED_LIMIT))
     if len(stored) != manifest['stored_bytes'] or digest(stored) != manifest['stored_sha256']:
         raise ValueError('evidence-stored-integrity')
-    decoder = zlib.decompressobj(16 + zlib.MAX_WBITS)
-    try:
-        raw = decoder.decompress(stored, manifest['raw_bytes'] + 1)
-    except zlib.error as ex:
-        raise ValueError('evidence-gzip') from ex
-    if (len(raw) != manifest['raw_bytes'] or not decoder.eof or decoder.unused_data
-            or decoder.unconsumed_tail or digest(raw) != manifest['raw_sha256']):
+    raw = decode(stored, manifest[MARKER], manifest['raw_bytes'])
+    if digest(raw) != manifest['raw_sha256']:
         raise ValueError('evidence-raw-integrity-or-bound')
     # Storage metadata is never command output, even inside a valid payload.
     # Classify once; nested/wrapped envelopes cannot supply a raw PASS oracle.
@@ -211,8 +210,37 @@ def read(root: Path, path: str, revision: str | None, *, tested: str | None = No
     return raw
 
 
+def encode(raw: bytes, codec: str) -> bytes:
+    if codec == FORMAT:
+        return gzip.compress(raw, compresslevel=9, mtime=0)
+    if codec == XZ_FORMAT:
+        return lzma.compress(raw, format=lzma.FORMAT_XZ, check=lzma.CHECK_CRC64, preset=6)
+    raise ValueError('evidence-codec')
+
+
+def decode(stored: bytes, codec: str, raw_bytes: int) -> bytes:
+    try:
+        if codec == FORMAT:
+            decoder = zlib.decompressobj(16 + zlib.MAX_WBITS)
+            raw = decoder.decompress(stored, raw_bytes + 1)
+            extra = bool(decoder.unconsumed_tail)
+        elif codec == XZ_FORMAT:
+            xz_decoder = lzma.LZMADecompressor(format=lzma.FORMAT_XZ, memlimit=XZ_MEMLIMIT)
+            raw = xz_decoder.decompress(stored, max_length=raw_bytes + 1)
+            if len(raw) != raw_bytes or not xz_decoder.eof or xz_decoder.unused_data or xz_decoder.check != lzma.CHECK_CRC64:
+                raise ValueError('evidence-raw-integrity-or-bound')
+            return raw
+        else:
+            raise ValueError('evidence-codec')
+        if len(raw) != raw_bytes or not decoder.eof or decoder.unused_data or extra:
+            raise ValueError('evidence-raw-integrity-or-bound')
+        return raw
+    except (zlib.error, lzma.LZMAError) as ex:
+        raise ValueError('evidence-' + codec) from ex
+
+
 def capture(root: Path, path: str, raw: bytes, tested: str, command: str, exit_code: int,
-            timestamp: str | None = None) -> dict:
+            timestamp: str | None = None, codec: str = FORMAT) -> dict:
     root = root.resolve()
     owner(path)
     if (not isinstance(command, str) or not command or type(exit_code) is not int
@@ -222,11 +250,11 @@ def capture(root: Path, path: str, raw: bytes, tested: str, command: str, exit_c
         raise ValueError('capture-command-or-tested-revision')
     if not path.endswith('.json') or len(raw) > RAW_LIMIT:
         raise ValueError('capture-json-path-or-raw-limit')
-    stored = gzip.compress(raw, compresslevel=9, mtime=0)
+    stored = encode(raw, codec)
     if len(stored) > STORED_LIMIT:
         raise ValueError('capture-stored-limit: split real executions, never truncate')
     target = root / path
-    payload = target.parent / (digest(raw) + '.gz')
+    payload = target.parent / (digest(raw) + CODECS[codec])
     # Check every component before writing; never follow task-directory symlinks.
     if any(p.is_symlink() for p in [target, payload, *target.parents]):
         raise ValueError('capture-symlink')
@@ -238,7 +266,7 @@ def capture(root: Path, path: str, raw: bytes, tested: str, command: str, exit_c
     counts = {kind: int(count) for count, kind in re.findall(
         r'\b([0-9]+) (passed|failed|skipped|errors?|deselected|xfailed|xpassed)\b',
         raw.decode(errors='replace'))}
-    record = {MARKER: FORMAT, 'payload': str(payload.relative_to(root)),
+    record = {MARKER: codec, 'payload': str(payload.relative_to(root)),
               'stored_sha256': digest(stored), 'stored_bytes': len(stored),
               'raw_sha256': digest(raw), 'raw_bytes': len(raw), 'tested_commit': tested,
               'command': command, 'exit_code': exit_code, 'timestamp': timestamp,
@@ -815,7 +843,7 @@ def archive_audit(root: Path, revision: str) -> tuple[list[str], set[str]]:
     errors, archives, mappings = [], set(), set()
     for path in paths:
         # Plain historical bulk can be large. Classification does not recover it.
-        if path.endswith('.gz'):
+        if path.endswith(('.gz', '.xz')):
             continue
         data = b''
         try:
@@ -852,6 +880,271 @@ def archive_audit(root: Path, revision: str) -> tuple[list[str], set[str]]:
     except (ValueError, OSError) as ex:
         errors.append('archive-invalid:' + str(ex))
         return errors, set()
+
+
+REENCODING_KEY = 'compact_reencoding'
+REENCODING_NAME = 'COMPACT_REENCODING.json'
+EXECUTION_FIELDS = ('raw_sha256', 'raw_bytes', 'tested_commit', 'command', 'exit_code',
+                    'timestamp', 'test_counts')
+
+
+def snapshot(root: Path, path: str, revision: str | None, limit: int) -> dict:
+    return snapshot_bytes(path, blob(root, path, revision, limit))
+
+
+def snapshot_bytes(path: str, data: bytes) -> dict:
+    return {'path': path, 'sha256': digest(data), 'bytes': len(data),
+            'blob_id': hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()}
+
+
+def verify_snapshot(root: Path, value: dict, revision: str | None, limit: int) -> bytes:
+    if not isinstance(value, dict) or set(value) != {'path', 'sha256', 'bytes', 'blob_id'}:
+        raise ValueError('reencoding-snapshot-shape')
+    if snapshot(root, value['path'], revision, limit) != value:
+        raise ValueError('reencoding-snapshot-integrity')
+    return blob(root, value['path'], revision, limit)
+
+
+def reencoding_record(data: bytes) -> dict | None:
+    try:
+        value = json.loads(data, object_pairs_hook=unique)
+    except (UnicodeError, json.JSONDecodeError):
+        if REENCODING_KEY.encode() in data:
+            raise ValueError('reencoding-json')
+        return None
+    return value if isinstance(value, dict) and REENCODING_KEY in value else None
+
+
+def validate_reencoding(root: Path, path: str, record: dict, base: str,
+                        head: str | None, identity: str) -> set[str]:
+    if (set(record) != {REENCODING_KEY, 'identity', 'protected_base', 'source_revision', 'entries'}
+            or record[REENCODING_KEY] != 'v1' or record['identity'] != identity
+            or owner(path).split('/')[-1] != identity or Path(path).name != REENCODING_NAME
+            or len(path.split('/')) < 6
+            or not isinstance(record['entries'], list) or not record['entries']):
+        raise ValueError('reencoding-record')
+    source = record['source_revision']
+    exact_commit(root, source)
+    exact_commit(root, record['protected_base'])
+    git(root, 'merge-base', '--is-ancestor', record['protected_base'], source)
+    git(root, 'merge-base', '--is-ancestor', source, head or 'HEAD')
+    paths = set()
+    for entry in record['entries']:
+        if not isinstance(entry, dict) or set(entry) != {'original', 'replacement', 'execution'}:
+            raise ValueError('reencoding-entry')
+        original, replacement = entry['original'], entry['replacement']
+        for binding in (original, replacement):
+            if not isinstance(binding, dict) or set(binding) != {'envelope', 'payload'}:
+                raise ValueError('reencoding-binding')
+        ref = original['envelope']['path']
+        if (ref in paths or ref != replacement['envelope']['path']
+                or owner(ref).split('/')[-1] != identity):
+            raise ValueError('reencoding-owner-or-path')
+        paths.add(ref)
+        for binding in (original, replacement):
+            for key in ('envelope', 'payload'):
+                bound_path = binding[key]['path']
+                if owner(bound_path) != owner(ref):
+                    raise ValueError('reencoding-owner')
+                for protected in (base, record['protected_base']):
+                    if git(root, 'ls-tree', protected, '--', bound_path).strip():
+                        raise ValueError('reencoding-protected-base')
+        before = envelope(verify_snapshot(root, original['envelope'], source, PLAIN_LIMIT))
+        after = envelope(verify_snapshot(root, replacement['envelope'], head, PLAIN_LIMIT))
+        if (before is None or after is None or before.get(MARKER) not in CODECS
+                or after.get(MARKER) not in CODECS or before[MARKER] == after[MARKER]):
+            raise ValueError('reencoding-compact-codec')
+        execution = {key: before[key] for key in EXECUTION_FIELDS}
+        if (json.dumps(entry['execution'], sort_keys=True) != json.dumps(execution, sort_keys=True)
+                or any(after[key] != execution[key] for key in execution)):
+            raise ValueError('reencoding-execution-changed')
+        for manifest, binding, revision in ((before, original, source), (after, replacement, head)):
+            if manifest['payload'] != binding['payload']['path']:
+                raise ValueError('reencoding-payload-binding')
+            verify_snapshot(root, binding['payload'], revision, STORED_LIMIT)
+        if read(root, ref, source) != read(root, ref, head):
+            raise ValueError('reencoding-raw-changed')
+    return paths
+
+
+def reencode(root: Path, base: str, source: str, identity: str, paths: list[str],
+             record_path: str, codec: str) -> dict:
+    """Explicit forward mutation; source and prior record bytes stay in ancestry.
+
+    One envelope can be reencoded only once per unmerged branch. Maps are immutable;
+    a second conversion of that envelope would invalidate its first map.
+    """
+    exact_commit(root, base)
+    exact_commit(root, source)
+    git(root, 'merge-base', '--is-ancestor', base, source)
+    git(root, 'merge-base', '--is-ancestor', source, 'HEAD')
+    if not paths or len(paths) != len(set(paths)) or codec not in CODECS:
+        raise ValueError('reencoding-selection')
+    # Validate all inputs and existing maps before any writes.
+    if (owner(record_path).split('/')[-1] != identity or Path(record_path).name != REENCODING_NAME
+            or len(record_path.split('/')) < 6):
+        raise ValueError('reencoding-record-path')
+    target = root / record_path
+    if target.exists() or any(p.is_symlink() for p in [target, *target.parents]):
+        raise ValueError('reencoding-existing-record-or-symlink')
+    # Existing immutable maps cannot be superseded by another representation.
+    referenced = set()
+    for subtree in ('evidence', 'reviews'):
+        for candidate in (root / 'docs/exec-plans' / subtree / identity).rglob('*'):
+            if candidate.is_file() and not candidate.name.endswith(('.gz', '.xz')):
+                candidate_path = str(candidate.relative_to(root))
+                data = blob(root, candidate_path, None)
+                prior = reencoding_record(data)
+                if prior is not None:
+                    validate_reencoding(root, candidate_path, prior, base, None, identity)
+                    if set(paths) & {e['original']['envelope']['path'] for e in prior['entries']}:
+                        raise ValueError('reencoding-already-mapped')
+                else:
+                    manifest = envelope(data)
+                    if manifest and manifest.get(MARKER) in CODECS and candidate_path not in paths:
+                        referenced.add(manifest['payload'])
+    plans = []
+    for ref in paths:
+        before_data = blob(root, ref, source, PLAIN_LIMIT)
+        before = envelope(before_data)
+        if before is None or before.get(MARKER) not in CODECS or before[MARKER] == codec:
+            raise ValueError('reencoding-compact-codec')
+        if owner(ref).split('/')[-1] != identity:
+            raise ValueError('reencoding-owner')
+        old_payload = before['payload']
+        if (blob(root, ref, None) != before_data
+                or blob(root, old_payload, None) != blob(root, old_payload, source)):
+            raise ValueError('reencoding-working-source-mismatch')
+        raw = read(root, ref, source)
+        stored = encode(raw, codec)
+        if len(stored) > STORED_LIMIT:
+            raise ValueError('reencoding-stored-limit')
+        new_payload = str(Path(ref).parent / (before['raw_sha256'] + CODECS[codec]))
+        for p in (ref, old_payload, new_payload):
+            if git(root, 'ls-tree', base, '--', p).strip():
+                raise ValueError('reencoding-protected-base')
+            dest = root / p
+            if any(part.is_symlink() for part in [dest, *dest.parents]):
+                raise ValueError('reencoding-symlink')
+        if (root / new_payload).exists() and blob(root, new_payload, None) != stored:
+            raise ValueError('reencoding-conflicting-payload')
+        after = dict(before, **{MARKER: codec, 'payload': new_payload,
+                               'stored_sha256': digest(stored), 'stored_bytes': len(stored)})
+        plans.append((ref, before, after, stored))
+    entries = []
+    replacements = {}
+    for ref, before, after, stored in plans:
+        original = {'envelope': snapshot(root, ref, source, PLAIN_LIMIT),
+                    'payload': snapshot(root, before['payload'], source, STORED_LIMIT)}
+        after_bytes = (json.dumps(after, indent=2) + '\n').encode()
+        replacements[ref] = after_bytes
+        replacements[after['payload']] = stored
+        entries.append({'original': original,
+                        'replacement': {'envelope': snapshot_bytes(ref, after_bytes),
+                                        'payload': snapshot_bytes(after['payload'], stored)},
+                        'execution': {key: before[key] for key in EXECUTION_FIELDS}})
+    record = {REENCODING_KEY: 'v1', 'identity': identity, 'protected_base': base,
+              'source_revision': source, 'entries': entries}
+    record_bytes = (json.dumps(record, indent=2) + '\n').encode()
+    if len(record_bytes) > PLAIN_LIMIT:
+        raise ValueError('reencoding-record-limit')
+    # Roll back local effects on any write/validation failure; never commit here.
+    originals = {p: blob(root, p, None) if (root / p).exists() else None for p in replacements}
+    removed = {}
+    try:
+        for path, data in replacements.items():
+            (root / path).write_bytes(data)
+        validate_reencoding(root, record_path, record, base, None, identity)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(record_bytes)
+        for _, before, _, _ in plans:
+            old = before['payload']
+            if old not in referenced and (root / old).exists():
+                removed[old] = blob(root, old, None)
+                (root / old).unlink()
+    except (ValueError, OSError, KeyError, TypeError):
+        for restore_path, restore_data in {**originals, **removed}.items():
+            if restore_data is None:
+                (root / restore_path).unlink(missing_ok=True)
+            else:
+                (root / restore_path).write_bytes(restore_data)
+        target.unlink(missing_ok=True)
+        raise
+    return record
+
+
+def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[list[str], set[str]]:
+    """Inspect every forward commit so deletion/reversion cannot hide conversions."""
+    errors: list[str] = []
+    records: set[str] = set()
+    prefixes = [f'docs/exec-plans/{kind}/{identity}/' for kind in ('evidence', 'reviews')]
+    try:
+        git(root, 'merge-base', '--is-ancestor', base, head)
+        commits = git(root, 'rev-list', '--reverse', base + '..' + head).decode().splitlines()
+        for revision in commits:
+            parents = git(root, 'rev-list', '--parents', '-n', '1', revision).decode().split()[1:]
+            if not parents:
+                continue
+            mapped = {}
+            for path in git(root, 'ls-tree', '-r', '--name-only', revision, '--', *prefixes).decode().splitlines():
+                if path.endswith(('.gz', '.xz')):
+                    continue
+                data = blob(root, path, revision)
+                record = reencoding_record(data)
+                if record is not None:
+                    if len(data) > PLAIN_LIMIT:
+                        raise ValueError('reencoding-record-limit')
+                    validate_reencoding(root, path, record, base, revision, identity)
+                    records.add(path)
+                    for entry in record['entries']:
+                        ref = entry['original']['envelope']['path']
+                        if ref in mapped:
+                            raise ValueError('reencoding-duplicate-mapping')
+                        mapped[ref] = entry
+            for parent in parents:
+                changed = git(root, 'diff', '--no-renames', '--name-only', '--diff-filter=MDT',
+                              parent, revision, '--', *prefixes).decode().splitlines()
+                for path in changed:
+                    old = blob(root, path, parent)
+                    if reencoding_record(old) is not None:
+                        raise ValueError('reencoding-record-mutated-or-deleted')
+                    if path.endswith(('.gz', '.xz')):
+                        accounted = [e for e in mapped.values()
+                                     if e['original']['payload'] == snapshot(root, path, parent, STORED_LIMIT)]
+                        if not accounted:
+                            raise ValueError('reencoding-unmapped-payload-mutation:' + path)
+                        if git(root, 'ls-tree', revision, '--', path).strip():
+                            raise ValueError('reencoding-old-payload-mutated:' + path)
+                        # No current refs may still require the removed payload.
+                        for current in git(root, 'ls-tree', '-r', '--name-only', revision, '--', *prefixes).decode().splitlines():
+                            if current.endswith(('.gz', '.xz')):
+                                continue
+                            value = envelope(blob(root, current, revision))
+                            if value and value.get('payload') == path:
+                                raise ValueError('reencoding-live-payload-deleted')
+                    else:
+                        manifest = envelope(old)
+                        if manifest and manifest.get(MARKER) in CODECS:
+                            # Existing extension/JSON encoding compatibility is not
+                            # a codec conversion. All metadata and payload identity
+                            # must remain exactly equal, under the same owner.
+                            unchanged = False
+                            for current in git(root, 'ls-tree', '-r', '--name-only', revision,
+                                               '--', owner(path) + '/').decode().splitlines():
+                                if not current.endswith(('.gz', '.xz')):
+                                    try:
+                                        if envelope(blob(root, current, revision)) == manifest:
+                                            unchanged = True
+                                            break
+                                    except ValueError:
+                                        continue
+                            if not unchanged:
+                                entry = mapped.get(path)
+                                if entry is None or entry['original']['envelope'] != snapshot(root, path, parent, PLAIN_LIMIT):
+                                    raise ValueError('reencoding-unmapped-envelope-mutation:' + path)
+        return errors, records
+    except (ValueError, OSError, KeyError, TypeError) as ex:
+        return ['reencoding-invalid:' + str(ex)], records
 
 
 def embedded_raw(value: Any) -> bool:
@@ -910,15 +1203,19 @@ def audit(root: Path, base: str, head: str, identity: str) -> dict:
                     raise ValueError('archive-original-current-format')
             except ValueError as ex:
                 errors.append(original['path'] + ':archive-original-current-missing-or-changed:' + str(ex))
+    reencoding_errors, reencoding_paths = reencoding_audit(root, base, head, identity)
+    errors.extend(reencoding_errors)
     bulk: dict[str, str] = {}
     for path in paths:
         try:
             total += int(git(root, 'cat-file', '-s', head + ':' + path))
-            data = blob(root, path, head, STORED_LIMIT if path.endswith('.gz') else PLAIN_LIMIT)
-            if path.endswith('.gz'):
+            data = blob(root, path, head, STORED_LIMIT if path.endswith(('.gz', '.xz')) else PLAIN_LIMIT)
+            if path.endswith(('.gz', '.xz')):
                 continue
             if Path(path).name == 'complete-diff.patch':
                 raise ValueError('full-diff-copy: record base/head instead')
+            if path in reencoding_paths:
+                continue
             manifest = envelope(data)
             if manifest is not None and manifest.get(MARKER) in (HISTORICAL_FORMAT, MAPPING_FORMAT):
                 if (archive_errors or identity != 'KL-080'
@@ -950,7 +1247,7 @@ def audit(root: Path, base: str, head: str, identity: str) -> dict:
         except (ValueError, OSError, UnicodeError) as ex:
             errors.append(path + ':' + str(ex))
     for path in paths:
-        if path.endswith('.gz') and path not in payloads:
+        if path.endswith(('.gz', '.xz')) and path not in payloads:
             errors.append(path + ':unreferenced-payload')
     if total > TOTAL_LIMIT:
         errors.append(f'PR-evidence-total:{total}>{TOTAL_LIMIT}')
@@ -969,6 +1266,7 @@ def main() -> int:
     cap.add_argument('--tested', required=True)
     cap.add_argument('--command', required=True)
     cap.add_argument('--exit-code', required=True, type=int)
+    cap.add_argument('--codec', choices=('gzip', 'xz'), default='gzip')
     cap.add_argument('--timestamp', default=datetime.now(timezone.utc).isoformat())
     retrieve = commands.add_parser('read', help='Write validated exact raw bytes to stdout')
     retrieve.add_argument('path')
@@ -978,6 +1276,13 @@ def main() -> int:
     archival.add_argument('--revision', required=True)
     mapping = commands.add_parser('archive-map', help='Build the exact authorized mapping after storage commit')
     mapping.add_argument('--storage-revision', required=True)
+    recode = commands.add_parser('reencode', help='Explicit own unmerged compact conversion')
+    recode.add_argument('--base', required=True)
+    recode.add_argument('--source', required=True)
+    recode.add_argument('--identity', required=True)
+    recode.add_argument('--path', action='append', required=True)
+    recode.add_argument('--record', required=True)
+    recode.add_argument('--codec', choices=('gzip', 'xz'), required=True)
     budget = commands.add_parser('audit')
     budget.add_argument('--base', required=True)
     budget.add_argument('--head', required=True)
@@ -988,8 +1293,11 @@ def main() -> int:
             if args.input.stat().st_size > RAW_LIMIT:
                 raise ValueError('capture-raw-limit')
             result = capture(args.root, args.output, args.input.read_bytes(), args.tested,
-                             args.command, args.exit_code, args.timestamp)
+                             args.command, args.exit_code, args.timestamp, args.codec + '-v1')
             print(json.dumps(result, indent=2))
+        elif args.action == 'reencode':
+            print(json.dumps(reencode(args.root, args.base, args.source, args.identity,
+                                     args.path, args.record, args.codec + '-v1'), indent=2))
         elif args.action == 'read':
             sys.stdout.buffer.write(read(args.root, args.path, args.revision))
         elif args.action == 'archive-read':

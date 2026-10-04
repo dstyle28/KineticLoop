@@ -138,3 +138,68 @@ Every added/changed mapping, envelope, payload and review counts toward unchange
 256KiB plain, 8MiB stored gzip, 64MiB recovered and 16MiB aggregate bounds. Existing
 gzip-v1 execution capture/decoding and all its command/tested-SHA/exit checks remain
 unchanged. This named authorization creates no general historical storage waiver.
+
+## HG054 optional bounded XZ and own unmerged forward re-encoding
+
+`capture --codec xz` selects `kineticloop_evidence: xz-v1` and same-directory
+`<raw_sha256>.xz`. Default capture remains `gzip-v1`; both formats use identical
+execution metadata and raw identity fields. XZ encoding pins FORMAT_XZ, CRC64 and
+preset 6. Repeated encoding must be deterministic on the executing runner;
+compressed bytes need not match across liblzma versions. Each bound envelope pins
+its actual stored bytes. The decoder selects only the declared codec: no extension
+guessing, fallback or archive-reader delegation. XZ requires one CRC64 stream,
+EOF, no trailing/unused bytes, a fixed 64 MiB decoder memory limit and at most
+`raw_bytes + 1` output; declared raw length/hash must match exactly. Gzip guards,
+UTF-8/16/32 reserved-object classification, nested-object rejection, regular Git
+blob/revision/owner binding and semantic test oracles remain mandatory.
+All numerical budgets above remain unchanged for both codecs. `.gz` and `.xz`
+payloads both count; retaining both codec copies cannot evade duplicate-bulk rules.
+
+Forward re-encoding is explicitly authorized only for same-owner, already compact,
+unmerged gzip-v1/xz-v1 regular blobs absent from the protected PR base. No plain,
+archival, foreign-owner, renamed-owner, invalid or sanitized-as-original input is
+admitted. The explicit `reencode` action is separate from capture/read/audit; source
+is a full existing ancestor commit and must match the current selected envelope and
+payload bytes. The envelope path, raw bytes/hash/length, tested commit, command,
+exit code, timestamp and test counts remain exactly equal. Only codec marker,
+payload extension/path, stored hash and stored length change. This representation
+operation is not a new execution and cannot promote any earlier failure or review.
+
+The same forward commit includes a uniquely named task-owned child
+`COMPACT_REENCODING.json` ordinary audit record with `compact_reencoding: v1`.
+It has exactly identity, protected_base, source_revision and entries. Each entry
+pins original and replacement envelope/payload path, regular Git blob ID,
+SHA256 and byte length, plus unchanged execution fields. Source snapshots stay
+readable at their original revision in normal Git ancestry; unavailable objects
+fail closed. Audit validates all mappings and each intervening commit, rejecting
+unmapped envelope/payload mutations, deletion/reversion, missing/remapped originals,
+metadata changes and protected-base paths. Maps are immutable. A mapped envelope
+cannot be converted a second time in that unmerged branch; independent envelopes
+may use separate uniquely named records. Maps, including encoded/wrapped forms,
+are never readable as execution output. New result references bind hashes of new
+envelopes at new evidence revisions; historical records retain original bindings.
+
+Obsolete current payloads are removed only when every current same-owner envelope
+reference has been accounted for; shared payloads remain while any ref uses them.
+Historical result/review record bytes are not rewritten by the action. Perform all
+representation mutations before the new tested/result/review revisions, rerun
+checks and obtain fresh required reviews. Re-encoding and mappings are never
+REVIEW_RECORD_ONLY. Provenance ambiguity stays BLOCKED. Existing harmless envelope
+filename/JSON-encoding compatibility preserves exact metadata/payload identity;
+it does not authorize owner changes or unmapped codec conversions.
+
+```sh
+python tools/harness/compact_evidence.py reencode \
+  --base <full-protected-base> --source <full-source-commit> --identity <own-id> \
+  --path docs/exec-plans/evidence/<own-id>/<run>/check.json \
+  --record docs/exec-plans/evidence/<own-id>/<unique-conversion>/COMPACT_REENCODING.json \
+  --codec xz
+# Commit conversion and record together, then establish a NEW tested SHA.
+```
+
+This authorization is independent of HG051. Its exact historical gzip schema,
+original pins, archival-only reader and failure facts remain unchanged; XZ is not
+an archival format. HG054 migrates no KL036/KL080/merged artifacts and grants no
+product, release, App or database PASS. Current installed controller assets do not
+admit new formats until root completes separately reviewed complete installation
+and exact-head/controller admission under LOCAL_DB_CI.md.

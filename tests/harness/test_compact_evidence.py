@@ -979,3 +979,267 @@ def test_archive_installed_validator_accepts_exact_schema(installed_archive_deco
     candidate.mkdir()
     (candidate / ce.MAPPING_SCHEMA).write_bytes((ROOT / ce.MAPPING_SCHEMA).read_bytes())
     assert installed_archive_decoder.historical_schema_authority_errors(candidate) == []
+
+
+@pytest.mark.parametrize('codec', [ce.FORMAT, ce.XZ_FORMAT])
+def test_both_codecs_exact_bound_readers(repo, codec):
+    root, base = repo
+    raw = b'\xff\x00' + bytes(range(256)) * 100 + b'2 passed\n1 failed\n'
+    record = ce.capture(root, REF, raw, base, 'pytest', 1, None, codec)
+    head = commit(root)
+    assert ce.encode(raw, codec) == ce.encode(raw, codec)
+    assert (root / record['payload']).read_bytes() == ce.encode(raw, codec)
+    assert ce.read(root, REF, head, tested=base, command='pytest', exit_code=1) == raw
+    assert not v.evidence_exists(root, REF, head, base, 'pytest', 0)
+    assert v.evidence_exists(root, REF, head, base, 'pytest', 1)
+    assert v.m3_evidence_bytes(root, {'path': REF, 'revision': head,
+                                    'sha256': ce.digest((root / REF).read_bytes())}, head) == raw
+    assert ce.audit(root, base, head, 'HG-047')['errors'] == []
+    assert record['test_counts'] == {'passed': 2, 'failed': 1}
+
+
+@pytest.mark.parametrize('mutation', ['truncated', 'trailing', 'concatenated', 'corrupt',
+                                      'no-check', 'crc32', 'sha256', 'dict-bomb', 'raw-bomb',
+                                      'wrong-codec', 'stored-hash', 'raw-hash'])
+def test_xz_hostile_streams(repo, mutation):
+    import lzma
+    root, base = repo
+    record = ce.capture(root, REF, b'a', base, 'pytest', 0, codec=ce.XZ_FORMAT)
+    stored = (root / record['payload']).read_bytes()
+    if mutation == 'truncated':
+        stored = stored[:-4]
+    elif mutation == 'trailing':
+        stored += b'junk'
+    elif mutation == 'concatenated':
+        stored += stored
+    elif mutation == 'corrupt':
+        stored = stored[:30] + bytes([stored[30] ^ 255]) + stored[31:]
+    elif mutation in ('no-check', 'crc32', 'sha256'):
+        stored = lzma.compress(b'a', check={'no-check': lzma.CHECK_NONE,
+                                          'crc32': lzma.CHECK_CRC32,
+                                          'sha256': lzma.CHECK_SHA256}[mutation])
+    elif mutation == 'dict-bomb':
+        stored = lzma.compress(b'a', filters=[{'id': lzma.FILTER_LZMA2, 'dict_size': 128 << 20}])
+    elif mutation == 'raw-bomb':
+        stored = ce.encode(b'a' * 1000000, ce.XZ_FORMAT)
+    elif mutation == 'wrong-codec':
+        stored = ce.encode(b'a', ce.FORMAT)
+    record.update(stored_bytes=len(stored), stored_sha256=ce.digest(stored))
+    (root / record['payload']).write_bytes(stored)
+    if mutation == 'stored-hash':
+        record['stored_sha256'] = '0' * 64
+    if mutation == 'raw-hash':
+        record['raw_sha256'] = '0' * 64
+    head = replace_record(root, record)
+    with pytest.raises(ValueError):
+        ce.read(root, REF, head)
+    assert ce.audit(root, base, head, 'HG-047')['errors']
+
+
+@pytest.mark.parametrize('encoding', ENCODINGS)
+@pytest.mark.parametrize('wrapper', [False, True])
+def test_xz_reserved_encoded_nested_output_rejected(repo, encoding, wrapper):
+    root, base = repo
+    value = {ce.MARKER: 'xz-v1'}
+    raw = json.dumps([value] if wrapper else value).encode(encoding)
+    with pytest.raises(ValueError):
+        ce.capture(root, REF, raw, base, 'pytest', 0, codec=ce.XZ_FORMAT)
+    assert not (root / REF).exists()
+
+
+RECODE = 'docs/exec-plans/evidence/HG-047/conversion/COMPACT_REENCODING.json'
+
+
+def converted(repo, refs=None):
+    root, base = repo
+    refs = refs or [REF]
+    raw = bytes(range(256)) * 100 + b'1 failed\n'
+    for ref in refs:
+        ce.capture(root, ref, raw, base, 'pytest -q', 1, '2026-10-04T00:00:00Z')
+    source = commit(root)
+    record = ce.reencode(root, base, source, 'HG-047', refs, RECODE, ce.XZ_FORMAT)
+    head = commit(root)
+    return root, base, source, record, head, raw
+
+
+def test_forward_own_conversion_preserves_original_and_failure(repo):
+    root, base, source, record, head, raw = converted(repo)
+    assert ce.read(root, REF, source, exit_code=1) == raw
+    assert ce.read(root, REF, head, exit_code=1) == raw
+    assert not v.evidence_exists(root, REF, head, base, 'pytest -q', 0)
+    assert ce.audit(root, base, head, 'HG-047')['errors'] == []
+    assert not (root / record['entries'][0]['original']['payload']['path']).exists()
+    assert record['entries'][0]['execution']['test_counts'] == {'failed': 1}
+    with pytest.raises(ValueError):
+        ce.read(root, RECODE, head)
+
+
+@pytest.mark.parametrize('mutation', ['foreign', 'protected', 'plain', 'archive', 'missing-source',
+                                      'nonancestor', 'working-tamper', 'alias-source', 'same-codec'])
+def test_forward_conversion_rejects_ineligible_inputs_without_changes(repo, mutation):
+    root, base, before, source = captured(repo)
+    selected_base, selected_source, identity, codec = base, source, 'HG-047', ce.XZ_FORMAT
+    if mutation == 'foreign':
+        identity = 'HG-054'
+    elif mutation == 'protected':
+        selected_base = source
+    elif mutation == 'plain':
+        (root / REF).write_text('1 passed\n')
+        selected_source = commit(root)
+    elif mutation == 'archive':
+        before[ce.MARKER] = ce.HISTORICAL_FORMAT
+        selected_source = replace_record(root, before)
+    elif mutation == 'missing-source':
+        selected_source = '0' * 40
+    elif mutation == 'alias-source':
+        selected_source = 'HEAD'
+    elif mutation == 'nonancestor':
+        git(root, 'checkout', '--orphan', 'other')
+        (root / 'source').write_text('other')
+        commit(root)
+    elif mutation == 'working-tamper':
+        (root / REF).write_text('tamper')
+    elif mutation == 'same-codec':
+        codec = ce.FORMAT
+    old = {str(p.relative_to(root)): p.read_bytes() for p in (root / 'docs').rglob('*') if p.is_file()}
+    with pytest.raises(ValueError):
+        ce.reencode(root, selected_base, selected_source, identity, [REF], RECODE, codec)
+    new = {str(p.relative_to(root)): p.read_bytes() for p in (root / 'docs').rglob('*') if p.is_file()}
+    assert new == old
+
+
+@pytest.mark.parametrize('mutation', ['command', 'tested_commit', 'exit_code', 'timestamp', 'test_counts',
+                                      'source', 'original-hash', 'original-blob', 'new-hash',
+                                      'map-delete', 'map-rename', 'envelope-delete', 'payload-delete',
+                                      'map-wrapped'])
+def test_forward_mapping_tamper_rejected(repo, mutation):
+    root, base, source, record, head, _ = converted(repo)
+    if mutation in ce.EXECUTION_FIELDS:
+        entry = json.loads((root / REF).read_text())
+        entry[mutation] = {'passed': 1} if mutation == 'test_counts' else 0
+        (root / REF).write_text(json.dumps(entry))
+    elif mutation == 'source':
+        record['source_revision'] = '0' * 40
+    elif mutation == 'original-hash':
+        record['entries'][0]['original']['envelope']['sha256'] = '0' * 64
+    elif mutation == 'original-blob':
+        record['entries'][0]['original']['payload']['blob_id'] = '0' * 40
+    elif mutation == 'new-hash':
+        record['entries'][0]['replacement']['payload']['sha256'] = '0' * 64
+    elif mutation == 'map-delete':
+        (root / RECODE).unlink()
+    elif mutation == 'map-rename':
+        (root / RECODE).rename((root / RECODE).with_name('renamed.json'))
+    elif mutation == 'envelope-delete':
+        (root / REF).unlink()
+    elif mutation == 'payload-delete':
+        (root / record['entries'][0]['replacement']['payload']['path']).unlink()
+    if mutation not in ('map-delete', 'map-rename'):
+        (root / RECODE).write_text(json.dumps([record] if mutation == 'map-wrapped' else record))
+    head = commit(root)
+    assert ce.audit(root, base, head, 'HG-047')['errors']
+    assert ce.read(root, REF, source) == bytes(range(256)) * 100 + b'1 failed\n'
+
+
+def test_unmapped_conversion_and_reverted_deletion_rejected(repo):
+    root, base, before, source = captured(repo)
+    raw = ce.read(root, REF, source)
+    (root / REF).unlink()
+    (root / before['payload']).unlink()
+    ce.capture(root, REF, raw, base, 'pytest', 0, codec=ce.XZ_FORMAT)
+    head = commit(root)
+    assert ce.audit(root, base, head, 'HG-047')['errors']
+    git(root, 'checkout', source, '--', REF, before['payload'])
+    head = commit(root)
+    assert ce.audit(root, base, head, 'HG-047')['errors']
+
+
+def test_shared_payload_removed_only_after_all_current_refs_converted(repo):
+    root, base = repo
+    second = REF.replace('run.json', 'second.json')
+    for ref in [REF, second]:
+        ce.capture(root, ref, b'1 failed\n', base, 'pytest', 1)
+    source = commit(root)
+    record = ce.reencode(root, base, source, 'HG-047', [REF], RECODE, ce.XZ_FORMAT)
+    old = record['entries'][0]['original']['payload']['path']
+    assert (root / old).exists()
+    head = commit(root)
+    assert ce.read(root, second, head) == b'1 failed\n'
+    assert ce.audit(root, base, head, 'HG-047')['errors'] == []
+
+
+def test_all_shared_refs_conversion_and_changed_byte_accounting(repo):
+    second = REF.replace('run.json', 'second.json')
+    root, base, _, record, head, _ = converted(repo, [REF, second])
+    old = record['entries'][0]['original']['payload']['path']
+    assert not (root / old).exists()
+    assert record['entries'][0]['replacement']['payload'] == record['entries'][1]['replacement']['payload']
+    report = ce.audit(root, base, head, 'HG-047')
+    assert report['errors'] == []
+    files = [p for p in (root / 'docs').rglob('*') if p.is_file()]
+    assert report['stored_bytes'] == sum(p.stat().st_size for p in files)
+
+
+def test_codec_limits_unchanged_and_inclusive(repo, monkeypatch):
+    assert (ce.PLAIN_LIMIT, ce.STORED_LIMIT, ce.RAW_LIMIT, ce.TOTAL_LIMIT) == (
+        256 * 1024, 8 * 1024 * 1024, 64 * 1024 * 1024, 16 * 1024 * 1024)
+    root, base = repo
+    raw = b'a' * 1000
+    stored = ce.encode(raw, ce.XZ_FORMAT)
+    monkeypatch.setattr(ce, 'RAW_LIMIT', len(raw))
+    monkeypatch.setattr(ce, 'STORED_LIMIT', len(stored))
+    ce.capture(root, REF, raw, base, 'pytest', 0, codec=ce.XZ_FORMAT)
+    head = commit(root)
+    assert ce.read(root, REF, head) == raw
+    monkeypatch.setattr(ce, 'RAW_LIMIT', len(raw) - 1)
+    with pytest.raises(ValueError):
+        ce.read(root, REF, head)
+
+
+def test_xz_orphan_and_two_codec_bulk_copies_are_accounted(repo):
+    root, base = repo
+    raw = bytes(range(256)) * 100
+    first = ce.capture(root, REF, raw, base, 'pytest', 0, codec=ce.XZ_FORMAT)
+    second = ce.capture(root, REF.replace('run.json', 'other.json'), raw, base, 'pytest', 0)
+    head = commit(root)
+    report = ce.audit(root, base, head, 'HG-047')
+    assert any('duplicate-bulk' in error for error in report['errors'])
+    assert report['stored_bytes'] >= first['stored_bytes'] + second['stored_bytes']
+    (root / first['payload']).with_name('orphan.xz').write_bytes(b'orphan')
+    head = commit(root)
+    assert any('orphan.xz:unreferenced-payload' in e for e in ce.audit(root, base, head, 'HG-047')['errors'])
+
+
+def test_second_conversion_and_shared_live_payload_deletion_fail(repo):
+    root, base, _, _, head, _ = converted(repo)
+    before = (root / REF).read_bytes()
+    with pytest.raises(ValueError, match='already-mapped'):
+        ce.reencode(root, base, head, 'HG-047', [REF],
+                    RECODE.replace('/conversion/', '/second/'), ce.FORMAT)
+    assert (root / REF).read_bytes() == before
+
+
+def test_mapping_original_source_loss_is_fail_closed(repo, monkeypatch):
+    root, base, source, record, head, _ = converted(repo)
+    original = ce.blob
+    def missing(root_arg, path, revision, limit=None):
+        if revision == source:
+            raise ValueError('source unavailable')
+        return original(root_arg, path, revision, limit)
+    monkeypatch.setattr(ce, 'blob', missing)
+    with pytest.raises(ValueError, match='source unavailable'):
+        ce.validate_reencoding(root, RECODE, record, base, head, 'HG-047')
+
+
+def test_all_selection_validated_before_first_mutation(repo):
+    root, base, record, source = captured(repo)
+    other = REF.replace('run.json', 'plain.log')
+    (root / other).write_text('plain historical bytes')
+    source = commit(root)
+    before = (root / REF).read_bytes()
+    stored = (root / record['payload']).read_bytes()
+    with pytest.raises(ValueError):
+        ce.reencode(root, base, source, 'HG-047', [REF, other], RECODE, ce.XZ_FORMAT)
+    assert (root / REF).read_bytes() == before
+    assert (root / record['payload']).read_bytes() == stored
+    assert not (root / RECODE).exists()

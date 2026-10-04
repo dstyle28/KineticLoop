@@ -620,7 +620,8 @@ def test_m3_reader_parses_checked_git_blob_not_second_ambient_read(tmp_path, mon
     'none', 'skipped-junit', 'wrong-collection', 'bad-log', 'wrong-tested',
     'renamed-envelope', 'junit-command', 'collection-command', 'collection-stdout-command',
 ])
-def test_compact_regression_decodes_all_semantic_sources(tmp_path, mutation):
+@pytest.mark.parametrize('codec', ['gzip-v1', 'xz-v1'])
+def test_compact_regression_decodes_all_semantic_sources(tmp_path, mutation, codec):
     """Compression preserves log/JUnit/collection oracles, never summary-only proof."""
     # Earlier module-history negatives intentionally commit unrelated/frozen edits.
     # Each compression case needs its own clean tested-to-evidence suffix.
@@ -632,7 +633,7 @@ def test_compact_regression_decodes_all_semantic_sources(tmp_path, mutation):
     def compressed(label, raw, command):
         path = history.prefix + f'compact-{mutation}-{label}.json'
         # Parameter fixtures append uniquely named envelopes; same raw hashes reuse payloads.
-        v.compact_evidence.capture(history.root, path, raw, history.tested, command, 0)
+        v.compact_evidence.capture(history.root, path, raw, history.tested, command, 0, codec=codec)
         return {'path': path, 'sha256': v.sha(history.root / path)}
 
     stdout = (history.root / run['stdout']['path']).read_bytes()

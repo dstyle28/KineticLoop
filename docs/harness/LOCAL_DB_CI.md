@@ -199,3 +199,14 @@ the administrator must install the complete pinned release and create a new exac
 revision/controller-bound admission. The candidate never updates its installation,
 configuration, signing key or pins. The normal App-owned full DB gate remains
 required at the final stable reviewed PR head.
+
+HG054 changes the pinned standalone `compact_evidence.py` decoder and
+`validate_harness.py` validator. The installed controller must continue using only
+its complete reviewed installed assets; candidate imports, changed/missing pins,
+source-checkout dependencies and fallback decoders are forbidden. Root must obtain
+independent installation review, compare every ASSETS hash and actual controller
+identity, then admit the exact head/controller before App/fullDB use of xz-v1 or
+forward re-encoding. Stale installed_commit metadata, an old receipt or hosted
+check cannot substitute for those pins/admission. The HG054 worker neither installs
+its candidate nor accesses signing credentials or publishes App results. Existing
+isolated trusted full database validation remains required; no docs-only waiver.

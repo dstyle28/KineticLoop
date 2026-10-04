@@ -344,3 +344,20 @@ def test_archival_mapping_cannot_supply_review_record_evidence(tmp_path, removed
     assert not v.review_evidence_exists(history.root, ref, history.reviewed,
                                         record_commit, 'KL-001', True)
     assert any('integration-review-evidence' in error for error in history.errors(record_commit))
+
+
+@pytest.mark.parametrize('codec', ['gzip-v1', 'xz-v1'])
+def test_compact_review_created_bound_revision_and_suffix(tmp_path, codec):
+    history = History(tmp_path)
+    ce = v.compact_evidence
+    ref = OWN + 'raw/run.json'
+    ce.capture(history.root, ref, b'1 passed\n', history.base, 'pytest', 0, codec=codec)
+    review = history.review([ref])
+    assert v.review_evidence_exists(history.root, ref, history.reviewed, review, 'KL-001', True)
+    assert not v.review_evidence_exists(history.root, ref, history.reviewed, review, 'KL-001', False)
+    assert not v.review_evidence_exists(history.root, ref, history.reviewed, review, 'KL-001A', True)
+    manifest = json.loads((history.root / ref).read_text())
+    (history.root / manifest['payload']).unlink()
+    later = history.commit('deleted later payload')
+    assert not v.review_evidence_exists(history.root, ref, history.reviewed, later, 'KL-001', True)
+    assert v.review_evidence_exists(history.root, ref, history.reviewed, review, 'KL-001', True)

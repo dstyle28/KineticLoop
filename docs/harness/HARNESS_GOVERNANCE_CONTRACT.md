@@ -162,3 +162,13 @@ and validator allowlist. It may refine only unmerged KL080 preservation language
 all checks, oracles, resources, dependencies and frozen semantics remain identical.
 It does not migrate KL080 artifacts, close KL080/M3, install a trusted validator,
 admit a controller version or confer product/release PASS.
+
+HG054 prospectively authorizes optional bounded xz-v1 execution storage and explicit
+same-owner already-compact unmerged forward re-encoding as specified in
+[Evidence Storage Policy](EVIDENCE_STORAGE_POLICY.md). Default gzip, all budgets,
+original bound records/Git ancestry, failed checks and stale-review rules remain
+unchanged. Its validator allowlist exactly matches its preserved execution packet.
+Fresh SHA-bound GENERAL, PROTOCOL, DB_CONCURRENCY and SECURITY_DATA_BOUNDARY reviews
+are mandatory. It changes no runtime, DB, frozen/product/release or CI authority,
+migrates no other task artifacts, reuses no HG051 exception and installs/adopts no
+credentialed controller. Installation/admission and App/fullDB stay separate gates.

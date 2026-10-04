@@ -1491,6 +1491,16 @@ def governance_record_paths(change_id):
 
 
 def governance_allowed_patterns(change_id):
+    if change_id == 'HG-054':
+        return ['tools/harness/compact_evidence.py', 'tools/harness/validate_harness.py',
+                'tests/harness/test_compact_evidence.py',
+                'tests/harness/test_review_evidence_provenance.py',
+                'tests/harness/test_m3_milestone_closure.py', 'tests/harness/test_validator.py',
+                'tests/harness/test_local_gate.py', 'docs/harness/EVIDENCE_STORAGE_POLICY.md',
+                'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md', 'docs/harness/LOCAL_DB_CI.md',
+                'tools/harness/README.md', INDEX, MANIFEST,
+                'docs/exec-plans/governance/HG-054.yaml',
+                'docs/exec-plans/evidence/HG-054/**', 'docs/exec-plans/reviews/HG-054/**']
     if change_id == 'HG-051':
         return [INDEX, MANIFEST, BACKLOG, TRACEABILITY,
                 'HISTORICAL_EVIDENCE_MAPPING.schema.json',
@@ -3953,7 +3963,7 @@ def validate(root, args):
             except ValueError as ex:
                 errors.append('governance-review-revision:' + str(ex))
             required = {'GENERAL'}
-            if change_id == 'HG-051':
+            if change_id in ('HG-051', 'HG-054'):
                 required.update({'PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'})
             if change_id == 'HG-050':
                 required.add('SECURITY_DATA_BOUNDARY')

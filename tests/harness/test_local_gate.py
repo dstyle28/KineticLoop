@@ -683,3 +683,35 @@ def test_hg050_real_governance_gate_requires_specialist_and_exact_scope(missing_
         fixture.check(1, 'governance-write-scope:HG-050:tools/harness/local_gate.py', *args)
     finally:
         fixture.doCleanups()
+
+
+def test_installed_only_xz_decode_with_poisoned_candidate(tmp_path):
+    installed = tmp_path / 'installed/tools/harness'
+    installed.mkdir(parents=True)
+    for name in ('validate_harness.py', 'compact_evidence.py'):
+        shutil.copyfile(gate.HERE / name, installed / name)
+    candidate = tmp_path / 'candidate'
+    candidate.mkdir()
+    (candidate / 'compact_evidence.py').write_text('raise RuntimeError("CANDIDATE DECODER RAN")')
+    # Build a real committed XZ capture using only the standalone installed asset.
+    probe = '''import importlib.util, sys, subprocess
+from pathlib import Path
+s = importlib.util.spec_from_file_location('trusted_validator', sys.argv[1])
+v = importlib.util.module_from_spec(s); s.loader.exec_module(v)
+r = Path(sys.argv[2]); r.mkdir()
+def g(*args):
+    return subprocess.check_output(['git', '-c', 'user.name=Fixture', '-c', 'user.email=test@example.invalid', *args], cwd=r).decode().strip()
+g('init', '-q'); (r/'source').write_text('fixture'); g('add', '.'); g('commit', '-qm', 'base')
+base=g('rev-parse', 'HEAD'); ref='docs/exec-plans/evidence/HG-054/run.json'
+ce=v.compact_evidence; raw=b'2 passed\\n'
+ce.capture(r, ref, raw, base, 'pytest', 0, codec='xz-v1')
+g('add', '.'); g('commit', '-qm', 'capture'); head=g('rev-parse', 'HEAD')
+assert ce.read(r, ref, head, tested=base, command='pytest', exit_code=0)==raw
+assert ce.audit(r, base, head, 'HG-054')['errors']==[]
+print('INSTALLED_ONLY_XZ_PASS')
+'''
+    result = subprocess.run([sys.executable, '-I', '-c', probe,
+                             str(installed / 'validate_harness.py'), str(tmp_path / 'fixture')],
+                            cwd=candidate, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == 'INSTALLED_ONLY_XZ_PASS'

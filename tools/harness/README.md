@@ -90,3 +90,14 @@ or archived envelopes as execution proof. The complete PR audit still counts eve
 changed storage/review byte and verifies original regular blobs, record snapshots,
 normal ancestry and non-migrated history. See the Evidence Storage Policy for the
 literal four-blob authorization, unchanged limits and failure semantics.
+
+HG054 adds explicit `capture --codec xz` (gzip remains default) with bounded single
+CRC64 XZ stream decoding. `reencode --base B --source S --identity ID --path REF
+--record <own-child>/COMPACT_REENCODING.json --codec xz` converts only same-owner
+already-compact unmerged inputs absent from B. Commit representation and immutable
+mapping before a new tested SHA, rerun checks and obtain fresh reviews. Old bound
+Git snapshots and raw execution metadata remain unchanged; maps are audit records,
+never execution proof. All storage budgets apply equally to `.gz` and `.xz`.
+See [Evidence Storage Policy](../../docs/harness/EVIDENCE_STORAGE_POLICY.md).
+The currently installed controller must be separately reviewed and installed by
+root before it can validate/admit these candidate formats.
