@@ -1,0 +1,41 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-036",
+  "tested_commit": "4c062e028761a16e369f2aeacf8269b520fcd1c9",
+  "scratch": "/private/tmp/kl036-checks-4c062e028761a16e369f2aeacf8269b520fcd1c9-07f6ed02",
+  "runs": [
+    {
+      "check_id": "worker_reaper_db_suite",
+      "command": "uv run pytest -q tests/db/test_worker_reaper.py",
+      "tested_commit": "4c062e028761a16e369f2aeacf8269b520fcd1c9",
+      "status": "FAIL",
+      "collection_exit": 2,
+      "collection_command": "uv run pytest --collect-only -q tests/db/test_worker_reaper.py",
+      "actual_argv": [
+        "uv",
+        "run",
+        "pytest",
+        "-q",
+        "tests/db/test_worker_reaper.py"
+      ],
+      "pytest_diagnostic_options": "-p tools.harness.parallel_observer -s --junitxml=/private/tmp/kl036-checks-4c062e028761a16e369f2aeacf8269b520fcd1c9-07f6ed02/worker_reaper_db_suite/junit.xml",
+      "exit_code": 2,
+      "wall_seconds": 0.4016965420451015,
+      "collected": 0,
+      "executed": 0,
+      "junit": 0,
+      "nodeids": [],
+      "artifacts": {
+        "collection.json": "docs/exec-plans/evidence/KL-036/checks-4c062e028761a16e369f2aeacf8269b520fcd1c9-07f6ed02/worker_reaper_db_suite-collection.json.json",
+        "collection.log": "docs/exec-plans/evidence/KL-036/checks-4c062e028761a16e369f2aeacf8269b520fcd1c9-07f6ed02/worker_reaper_db_suite-collection.log.json",
+        "execution.json": "docs/exec-plans/evidence/KL-036/checks-4c062e028761a16e369f2aeacf8269b520fcd1c9-07f6ed02/worker_reaper_db_suite-execution.json.json",
+        "execution.log": "docs/exec-plans/evidence/KL-036/checks-4c062e028761a16e369f2aeacf8269b520fcd1c9-07f6ed02/worker_reaper_db_suite-execution.log.json",
+        "junit.xml": "docs/exec-plans/evidence/KL-036/checks-4c062e028761a16e369f2aeacf8269b520fcd1c9-07f6ed02/worker_reaper_db_suite-junit.xml.json"
+      },
+      "errors": [
+        "execution-failed",
+        "collection-execution-mismatch",
+        "junit-mismatch"
+      ]
+    }
+  ]
+}

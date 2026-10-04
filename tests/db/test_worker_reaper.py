@@ -84,9 +84,9 @@ _NAMESPACE = load("tests/unit/workflow/test_worker_reaper.py")
     POLICY_ARTIFACT,
     BASIS_EVENT,
 ) = [UUID(f"00000000-0000-8000-8000-{36000 + n:012x}") for n in range(10)]
-ENVIRONMENT = UUID(int=36011)
+ENVIRONMENT = UUID("00000000-0000-8000-8000-000000008cab")
 IDENTITY = ExecutionIdentity(
-    RoleIdentity(str(UUID(int=36012)), ActorRole.TEST),
+    RoleIdentity(str(UUID("00000000-0000-8000-8000-000000008cac")), ActorRole.TEST),
     SUBJECT,
     POLICY,
     ENVIRONMENT,
@@ -137,14 +137,14 @@ TARGETS = (
 
 
 
-BUILDER = UUID(int=36013)
+BUILDER = UUID("00000000-0000-8000-8000-000000008cad")
 POLICY_BODY["planning_context"] = {block: {"status": "TEST_INPUT_ONLY", "value": []} for block in POLICY_BLOCKS}
 POLICY_BODY["planning_context_byte_budget"] = 65536
 POLICY_BODY["planning_context_builder"] = {"id": str(BUILDER), "hash": digest("context-builder")}
 POLICY_BODY["worker_recovery"] = {"version": "kl036-v1", "lease_expiry": "CANCEL"}
 PROGRESS = ProgressIdentity(IDENTITY.actor, SUBJECT, POLICY, ENVIRONMENT, IDENTITY.principal)
-REAPER = replace(PROGRESS, actor=RoleIdentity(str(UUID(int=36014)), ActorRole.TEST))
-WORKER2 = replace(PROGRESS, actor=RoleIdentity(str(UUID(int=36015)), ActorRole.TEST))
+REAPER = replace(PROGRESS, actor=RoleIdentity(str(UUID("00000000-0000-8000-8000-000000008cae")), ActorRole.TEST))
+WORKER2 = replace(PROGRESS, actor=RoleIdentity(str(UUID("00000000-0000-8000-8000-000000008caf")), ActorRole.TEST))
 CONTEXT = mp.get_context("spawn")
 CHILDREN: list[Any] = []
 
@@ -477,7 +477,7 @@ def test_takeover_fences_distinct_processes(database_urls: dict[str, str]) -> No
     reservation = reserve(urls, old)
     basis = read_root(urls, old)
     wait_elapsed(urls, old)
-    worker3 = replace(WORKER2, actor=RoleIdentity(str(UUID(int=36016)), ActorRole.TEST))
+    worker3 = replace(WORKER2, actor=RoleIdentity(str(UUID("00000000-0000-8000-8000-000000008cb0")), ActorRole.TEST))
     request = AcquireLease(SUBJECT, "takeover", old.intent_id, old.expected_owner, old.fence, 1, old.attempt_id, 20)
     a = spawn(urls, "acquire", WORKER2, request)
     b = spawn(urls, "acquire", worker3, replace(request, key="other-takeover"))

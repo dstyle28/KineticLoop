@@ -10,6 +10,7 @@ import sys
 import time
 import uuid
 import xml.etree.ElementTree as ET
+from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -89,7 +90,15 @@ def main() -> int:
                         errors.append("incomplete-or-nonpassing-" + phase)
                 xml = ET.parse(folder / "junit.xml")
                 cases = xml.findall(".//testcase")
-                if len(cases) != len(nodes) or any(list(c) for c in cases):
+                expected_cases = []
+                for node in nodes:
+                    address, separator, parameters = node.partition("[")
+                    parts = address.split("::")
+                    classname = ".".join([parts[0][:-3].replace("/", "."), *parts[1:-1]])
+                    expected_cases.append((classname, parts[-1] + separator + parameters))
+                if (Counter(expected_cases) != Counter((c.get("classname"), c.get("name")) for c in cases)
+                    or any(c.find("failure") is not None or c.find("error") is not None
+                           or c.find("skipped") is not None for c in cases)):
                     errors.append("junit-mismatch")
                 run["collected"] = run["executed"] = run["junit"] = len(nodes)
                 run["nodeids"] = nodes
