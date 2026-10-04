@@ -1,0 +1,91 @@
+{
+  "tested_commit": "a4d9c2a6d8365c3f5ef2a5e0f8694be1d3cbf3b7",
+  "checks_run": [
+    {
+      "check_id": "lint",
+      "command": "uv run kl lint",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-052/final-a4d9c2a6d8365c3f5ef2a5e0f8694be1d3cbf3b7/lint.log.json"
+    },
+    {
+      "check_id": "typecheck",
+      "command": "uv run kl typecheck",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-052/final-a4d9c2a6d8365c3f5ef2a5e0f8694be1d3cbf3b7/typecheck.log.json"
+    },
+    {
+      "check_id": "unit",
+      "command": "uv run kl test-unit",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-052/final-a4d9c2a6d8365c3f5ef2a5e0f8694be1d3cbf3b7/unit.log.json"
+    },
+    {
+      "check_id": "harness",
+      "command": "uv run kl test-harness",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-052/final-a4d9c2a6d8365c3f5ef2a5e0f8694be1d3cbf3b7/harness.log.json"
+    },
+    {
+      "check_id": "authority",
+      "command": "uv run kl check-harness",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-052/final-a4d9c2a6d8365c3f5ef2a5e0f8694be1d3cbf3b7/authority.log.json"
+    },
+    {
+      "check_id": "closure_validation",
+      "command": "uv run python docs/exec-plans/evidence/HG-052/verify_m3.py --revision a4d9c2a6d8365c3f5ef2a5e0f8694be1d3cbf3b7",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-052/final-a4d9c2a6d8365c3f5ef2a5e0f8694be1d3cbf3b7/closure_validation.log.json"
+    }
+  ],
+  "actual_argv": {
+    "lint": [
+      "uv",
+      "run",
+      "kl",
+      "lint"
+    ],
+    "typecheck": [
+      "uv",
+      "run",
+      "kl",
+      "typecheck"
+    ],
+    "unit": [
+      "uv",
+      "run",
+      "kl",
+      "test-unit",
+      "--junitxml=/private/tmp/hg052-final-a4d9c2a-run01/unit.xml"
+    ],
+    "harness": [
+      "uv",
+      "run",
+      "kl",
+      "test-harness",
+      "--evidence-dir",
+      "/private/tmp/hg052-final-a4d9c2a-run01/harness-run",
+      "--junitxml=/private/tmp/hg052-final-a4d9c2a-run01/harness.xml"
+    ],
+    "authority": [
+      "uv",
+      "run",
+      "kl",
+      "check-harness"
+    ],
+    "closure_validation": [
+      "uv",
+      "run",
+      "python",
+      "docs/exec-plans/evidence/HG-052/verify_m3.py",
+      "--revision",
+      "a4d9c2a6d8365c3f5ef2a5e0f8694be1d3cbf3b7"
+    ]
+  },
+  "capture_host": {
+    "os": "Darwin",
+    "architecture": "arm64",
+    "python": "3.12.14"
+  },
+  "instrumentation": "Only supported JUnit/durable harness exports; original selectors retained."
+}
