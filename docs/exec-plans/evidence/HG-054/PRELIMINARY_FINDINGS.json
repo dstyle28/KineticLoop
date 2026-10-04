@@ -42,5 +42,15 @@
     "status": "CHANGES_REQUIRED",
     "finding": "Inherited original verification was selected-owner-only. An unrelated owner audit passed despite unavailable admitted source.",
     "required_resolution": "Reverify all admitted canonical mappings globally against each immutable recorded owner/base, preserving selected-owner-only new admission."
+  },
+  "later_global_source_review": {
+    "reviewed_implementation": "7dd61f47bff65d2fd1260672f391fa15ae256f74",
+    "review_types": [
+      "GENERAL",
+      "PROTOCOL"
+    ],
+    "status": "CHANGES_REQUIRED",
+    "finding": "Inherited global verification compared protected base and final head only. An unrelated owner could delete/change an admitted map or representation in an intervening commit and restore it before head.",
+    "required_resolution": "Reverify immutable maps and original/replacement snapshots at every intervening revision/parent descended from protected base. Pre-admission side branches need no retroactive mapping existence."
   }
 }

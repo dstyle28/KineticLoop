@@ -140,3 +140,12 @@ canonical maps globally with each recorded owner/base, including unrelated/no-ch
 PRs. New conversion admission remains selected-owner-only. Cross-owner source-blob
 loss and mapping mutation/deletion have isolated negative Git fixtures. No numerical
 budget, execution oracle, controller installation or write-path scope changed.
+
+Fresh C3 GENERAL and PROTOCOL reviews independently reproduced transient deletion
+and restoration of an inherited map under an unrelated owner. The C3 run is also
+preserved with actual failure/interruption exit statuses, without PASS credit.
+Final enforcement validates admitted map bytes and both snapshot bindings at every
+intervening revision/parent descended from the protected base. Pre-admission side
+branches are historical states; their later merge must preserve admitted bindings.
+Isolated regressions cover transient mapping/envelope/payload deletion and change,
+merged post-admission mutation and a valid pre-admission side branch.

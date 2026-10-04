@@ -217,6 +217,10 @@ source. A removed map marker, including wrapped/encoded variants, cannot turn
 storage metadata into ordinary execution output.
 Inherited-map verification is global across all admitted owners, including unrelated
 PRs and a no-change audit. It uses each immutable map's own admitted identity/base;
-unavailable originals or changed/deleted mappings fail closed. This global historical
+unavailable originals or changed/deleted mappings fail closed. Map bytes and both
+snapshot bindings are checked at every intervening revision/parent descended from
+the protected base, so later restoration cannot hide mutation. Side branches before
+admission need no retroactive map existence; their later merge must preserve all
+admitted bindings. This global historical
 verification does not authorize a new foreign-owner conversion: new mappings and
 ancestral representation mutations remain restricted to the selected PR owner.

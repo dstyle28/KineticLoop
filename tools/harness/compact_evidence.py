@@ -1085,6 +1085,7 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
     try:
         git(root, 'merge-base', '--is-ancestor', base, head)
         inherited = {}
+        admitted = {}
         # Already admitted mappings at the protected base are immutable history.
         # Reverify originals even with no changed blobs; do not authorize any new
         # migration using their older protected-base claim.
@@ -1103,12 +1104,23 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
                 admitted_owner = owner(path).split('/')[-1]
                 validate_reencoding(root, path, record, record['protected_base'], head, admitted_owner)
                 inherited[path] = record['protected_base']
+                admitted[path] = (data, record, admitted_owner)
                 records.add(path)
         commits = git(root, 'rev-list', '--reverse', base + '..' + head).decode().splitlines()
         for revision in commits:
             parents = git(root, 'rev-list', '--parents', '-n', '1', revision).decode().split()[1:]
             if not parents:
                 continue
+            # A later restoration cannot hide a mutation after admission, even
+            # when this PR belongs to another owner. Side branches predating
+            # this protected base have not inherited its admitted records yet.
+            for bound_revision in [revision, *parents]:
+                if admitted and git(root, 'merge-base', base, bound_revision).decode().strip() == base:
+                    for path, (data, record, admitted_owner) in admitted.items():
+                        if blob(root, path, bound_revision, PLAIN_LIMIT) != data:
+                            raise ValueError('reencoding-merged-record-mutated-or-deleted')
+                        validate_reencoding(root, path, record, record['protected_base'],
+                                            bound_revision, admitted_owner)
             mapped = {}
             for path in git(root, 'ls-tree', '-r', '--name-only', revision, '--', *prefixes).decode().splitlines():
                 if path.endswith(('.gz', '.xz')):

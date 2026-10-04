@@ -1348,3 +1348,48 @@ def test_unrelated_owner_audit_enforces_admitted_map_immutability(repo, mutation
         (root / RECODE).write_text(json.dumps(record))
     head = commit(root)
     assert ce.audit(root, base, head, 'HG-048')['errors']
+
+
+@pytest.mark.parametrize('artifact', ['mapping', 'envelope', 'payload'])
+@pytest.mark.parametrize('mutation', ['delete', 'change'])
+def test_unrelated_owner_rejects_transient_admitted_binding_mutation(repo, artifact, mutation):
+    root, _, _, record, base, _ = converted(repo)
+    replacement = record['entries'][0]['replacement']
+    path = RECODE if artifact == 'mapping' else replacement[artifact]['path']
+    original = (root / path).read_bytes()
+    if mutation == 'delete':
+        (root / path).unlink()
+    else:
+        (root / path).write_bytes(original + b'changed')
+    commit(root)
+    (root / path).write_bytes(original)
+    head = commit(root)
+    assert ce.read(root, REF, head) == ce.read(root, REF, base)
+    assert ce.audit(root, base, head, 'HG-048')['errors']
+
+
+def test_unrelated_owner_rejects_restored_mapping_on_merged_post_admission_branch(repo):
+    root, _, _, _, base, _ = converted(repo)
+    main = git(root, 'branch', '--show-current')
+    original = (root / RECODE).read_bytes()
+    git(root, 'checkout', '-qb', 'after-admission', base)
+    (root / RECODE).unlink()
+    commit(root)
+    (root / RECODE).write_bytes(original)
+    commit(root)
+    git(root, 'checkout', main)
+    git(root, 'merge', '--no-ff', '-qm', 'fixture merge', 'after-admission')
+    head = git(root, 'rev-parse', 'HEAD')
+    assert ce.audit(root, base, head, 'HG-048')['errors']
+
+
+def test_pre_admission_side_branch_needs_no_retroactive_inherited_mapping(repo):
+    root, _, source, _, base, _ = converted(repo)
+    main = git(root, 'branch', '--show-current')
+    git(root, 'checkout', '-qb', 'before-admission', source)
+    (root / 'unrelated').write_text('ordinary side branch before map admission')
+    commit(root)
+    git(root, 'checkout', main)
+    git(root, 'merge', '--no-ff', '-qm', 'fixture merge', 'before-admission')
+    head = git(root, 'rev-parse', 'HEAD')
+    assert ce.audit(root, base, head, 'HG-048')['errors'] == []
