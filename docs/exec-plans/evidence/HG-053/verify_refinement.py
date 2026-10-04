@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[4]
 BASE = "c82e50aefad5c4d9e325d4928a8f96032b81192d"
 TARGETS = ("KL-036", "KL-037")
 # Hashes bind only these complete prospective definitions; not shared enforcement.
-EXPECTED = {'KL-036': 'ad98132ba214fe32128d23fc9c3cca21358d402ed23cd7b5996952f8b79fbb13', 'KL-037': 'a71a1fdadc0d40821c28f800297beb3d8f2f4789002db6fe90462d24065587c6'}
+EXPECTED = {'KL-036': 'cfab3abd1275be9db6ff4f9e67ae017329bb64e38cb94d9931bf6b50cddd19b5', 'KL-037': 'a71a1fdadc0d40821c28f800297beb3d8f2f4789002db6fe90462d24065587c6'}
 
 
 def git(*args: str) -> str:
@@ -63,7 +63,7 @@ def main() -> None:
         assert all("*" not in p for p in task["write_paths"])
         contracts = task["check_contracts"]
         assert [c["check_id"] for c in contracts] == task["checks_required_for_this_task"]
-        assert len({c["check_id"] for c in contracts}) == len(contracts) == 15
+        assert len({c["check_id"] for c in contracts}) == len(contracts) == (16 if name == "KL-036" else 15)
         assert all(set(c) == {"check_id", "command", "pass_oracle"} and all(c.values()) for c in contracts)
         assert not any(re.search("task_scope_|TODO|TBD|placeholder", json.dumps(c), re.I) for c in contracts)
         packet = (ROOT / f"docs/exec-plans/active/{name}.md").read_text()

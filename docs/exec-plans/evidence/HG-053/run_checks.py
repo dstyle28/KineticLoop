@@ -43,7 +43,7 @@ def main() -> int:
     output_root.mkdir(exist_ok=False)
     for record in records:
         envelope = output_root / (record["check_id"] + ".json")
-        subprocess.run([sys.executable, "tools/harness/compact_evidence.py", "capture", "--input", record["log"], "--output", str(envelope), "--tested", revision, "--command", record["command"], "--exit-code", str(record["exit_code"])], cwd=ROOT, check=True, stdout=subprocess.DEVNULL)
+        subprocess.run([sys.executable, "tools/harness/compact_evidence.py", "capture", "--input", record["log"], "--output", str(envelope.relative_to(ROOT)), "--tested", revision, "--command", record["command"], "--exit-code", str(record["exit_code"])], cwd=ROOT, check=True, stdout=subprocess.DEVNULL)
         record["evidence_ref"] = str(envelope.relative_to(ROOT))
         if record["check_id"] in {"unit", "harness"}:
             paths = [temp / "unit.xml"] if record["check_id"] == "unit" else sorted((temp / "harness").iterdir())
@@ -52,7 +52,7 @@ def main() -> int:
                 if not path.is_file():
                     continue
                 envelope = output_root / (record["check_id"] + "-" + path.name + ".json")
-                subprocess.run([sys.executable, "tools/harness/compact_evidence.py", "capture", "--input", str(path), "--output", str(envelope), "--tested", revision, "--command", record["command"], "--exit-code", str(record["exit_code"])], cwd=ROOT, check=True, stdout=subprocess.DEVNULL)
+                subprocess.run([sys.executable, "tools/harness/compact_evidence.py", "capture", "--input", str(path), "--output", str(envelope.relative_to(ROOT)), "--tested", revision, "--command", record["command"], "--exit-code", str(record["exit_code"])], cwd=ROOT, check=True, stdout=subprocess.DEVNULL)
                 record["ancillary_refs"].append(str(envelope.relative_to(ROOT)))
     index = {"tested_commit": revision, "checks": records, "runtime_checks": "NOT_RUN", "product_claims": []}
     (output_root / "CHECK_INDEX.json").write_text(json.dumps(index, indent=2) + "\n")

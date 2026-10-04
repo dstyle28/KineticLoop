@@ -4792,7 +4792,7 @@
         "KL-024",
         "KL-026",
         "KL-025",
-        "KL-028",
+        "KL-075",
         "KL-019"
       ],
       "commands": [
@@ -4837,7 +4837,7 @@
       "definition_of_done": "actual distinct-process worker loss expires authority and independently supervised reaper progresses without ordinary queue capacity; current guarded acquire/renew/takeover preserves original root limits/budget/deadline; stale scans and old workers cannot mutate or commit; ReapIntent and call-accounting cleanup use existing owners and frozen distinct intent/attempt terminal meanings with complete rollback and historical idempotency; no committed T6 success is reversed; no new authority, state enum, schema, lock order, model workflow or production/shadow activation",
       "entry_conditions": [
         "M3 minimal isolated TEST closure PASS: docs/exec-plans/milestones/M3.json; production_auto_activation=false and shadow_executable=false",
-        "Actual prerequisite PASS result and integration records are validated at the protected base for KL-024, KL-026, KL-025, KL-028, KL-019; every recorded merge is an ancestor of the task base",
+        "Actual prerequisite PASS result and integration records are validated at the protected base for KL-024, KL-026, KL-025, KL-075, KL-019; every recorded merge is an ancestor of the task base",
         "Verify exact merged owner APIs and migration head before implementation; missing capabilities outside this packet require prospective governance, never edits to completed packets/results",
         "Reserve all exclusive resources; validate own task/SHA7/resolved-root SHA12 database and Compose namespaces and capture before inventory before any reset/bootstrap"
       ],
@@ -4873,8 +4873,8 @@
         "docs/exec-plans/integrations/KL-026.json",
         "docs/exec-plans/completed/KL-025_RESULT.yaml",
         "docs/exec-plans/integrations/KL-025.json",
-        "docs/exec-plans/completed/KL-028_RESULT.yaml",
-        "docs/exec-plans/integrations/KL-028.json",
+        "docs/exec-plans/completed/KL-075_RESULT.yaml",
+        "docs/exec-plans/integrations/KL-075.json",
         "docs/exec-plans/completed/KL-019_RESULT.yaml",
         "docs/exec-plans/integrations/KL-019.json"
       ],
@@ -4890,6 +4890,7 @@
         "worker_lease_deadline_pu",
         "worker_takeover_fencing_dc",
         "reaper_stale_candidate_dc",
+        "reaper_unowned_deadline_dc",
         "reaper_atomicity_history_dc",
         "reaper_unknown_accounting_dc",
         "worker_independent_reaper_wf",
@@ -4948,6 +4949,11 @@
           "check_id": "reaper_stale_candidate_dc",
           "command": "uv run pytest -q tests/db/test_worker_reaper.py::test_reaper_rechecks_after_lock",
           "pass_oracle": "Candidate scan commits/releases its read transaction before S01; actual distinct-process reaper uses S01 then S27 then sorted S31 then S02/remaining S29. Renewal/takeover winner makes cached candidate stale; post-lock trusted clock decides lease/deadline. Stale candidate creates no receipt/event/outbox, termination or budget mutation. Exact equality is PU only; real SQL tests witness actual expired/live times."
+        },
+        {
+          "check_id": "reaper_unowned_deadline_dc",
+          "command": "uv run pytest -q tests/db/test_worker_reaper.py::test_unowned_admitted_deadline",
+          "pass_oracle": "Actual admission produces ADMITTED (legacy PENDING compatibility separately instrumented) with NULL lease_owner, fence0 and current CREATED attempt. At elapsed trusted deadline, distinct-process typed ReapIntent closes S27 DEADLINE_EXCEEDED/S29 LEASE_LOST atomically without acquiring a lease. Current exact NULL owner/fence/request/attempt/deadline basis required; stale revision/attempt, nonzero fence/foreign owner, future deadline and rollback faults deny with complete relations unchanged. Same-key/hash first-use/replay remains historical non-executable; no caller can choose owner/status/time or bypass registration."
         },
         {
           "check_id": "reaper_atomicity_history_dc",

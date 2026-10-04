@@ -1,0 +1,82 @@
+{
+  "tested_commit": "fb0d5d9b4b736c571269b594a71f6c221d07647e",
+  "disposition": "SUPERSEDED_INTERRUPTED_NOT_ACCEPTANCE",
+  "reason": "Independent preliminary review requires nullable unowned reaper basis, exact KL075 owner provenance and disclosure of existing privileged TEST service connection. Parent SIGTERM interrupted validators and SIGINT interrupted harness runner; unit CLI entrypoint failed because its validator was interrupted. Capture runner then failed evidence-path because absolute output paths were passed; own prospective runner corrected to supported repository-relative paths. All actual bytes/codes preserved here, never final PASS.",
+  "checks": [
+    {
+      "check_id": "packet_refinement_audit",
+      "command": "uv run python docs/exec-plans/evidence/HG-053/verify_refinement.py",
+      "observed_exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/packet_refinement_audit.json",
+      "selected_as_final": false
+    },
+    {
+      "check_id": "authority_resolution",
+      "command": "uv run python tools/harness/document_index/check.py current_document_index_resolves",
+      "observed_exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/authority_resolution.json",
+      "selected_as_final": false
+    },
+    {
+      "check_id": "harness_validation",
+      "command": "uv run kl check-harness",
+      "observed_exit_code": 241,
+      "evidence_ref": "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/harness_validation.json",
+      "selected_as_final": false
+    },
+    {
+      "check_id": "lint",
+      "command": "uv run kl lint",
+      "observed_exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/lint.json",
+      "selected_as_final": false
+    },
+    {
+      "check_id": "typecheck",
+      "command": "uv run kl typecheck",
+      "observed_exit_code": 0,
+      "evidence_ref": "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/typecheck.json",
+      "selected_as_final": false
+    },
+    {
+      "check_id": "unit",
+      "command": "uv run kl test-unit --junitxml=/private/tmp/hg053-checks-fb0d5d9b4b736c571269b594a71f6c221d07647e/unit.xml",
+      "observed_exit_code": 1,
+      "evidence_ref": "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/unit.json",
+      "selected_as_final": false,
+      "ancillary_refs": [
+        "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/unit-unit.xml.json"
+      ]
+    },
+    {
+      "check_id": "harness",
+      "command": "uv run kl test-harness --evidence-dir /private/tmp/hg053-checks-fb0d5d9b4b736c571269b594a71f6c221d07647e/harness",
+      "observed_exit_code": 130,
+      "evidence_ref": "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/harness.json",
+      "selected_as_final": false,
+      "ancillary_refs": [
+        "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/harness-collection.json.json",
+        "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/harness-collection.log.json",
+        "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/harness-execution.json.json",
+        "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/harness-junit.xml.json",
+        "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/harness-manifest.json.json",
+        "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/harness-pytest.log.json"
+      ]
+    },
+    {
+      "check_id": "capture_runner",
+      "command": "uv run python docs/exec-plans/evidence/HG-053/run_checks.py",
+      "observed_exit_code": 1,
+      "evidence_ref": "docs/exec-plans/evidence/HG-053/interrupted-fb0d5d9b4b736c571269b594a71f6c221d07647e/capture_runner.json",
+      "selected_as_final": false
+    }
+  ],
+  "earlier_uncommitted_preflight": {
+    "command": "uv run kl check-harness",
+    "revision": "UNCOMMITTED_PRECHECK_NOT_ACCEPTANCE",
+    "signal": "SIGTERM to task-owned validator PID27154",
+    "raw_stdout_bytes": 0,
+    "observed_command_exit": null,
+    "selected_as_final": false
+  }
+}
