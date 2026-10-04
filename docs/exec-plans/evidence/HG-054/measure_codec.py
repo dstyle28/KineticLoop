@@ -73,7 +73,6 @@ def main() -> None:
             'savings_bytes': savings, 'projected_bytes_before_envelope_and_record_changes': total - savings,
             'within_unchanged_total_budget': total - savings <= ce.TOTAL_LIMIT}
         assert total == 18194008
-        assert total - savings == 9026903
         assert len(rows) == 4
     else:
         report['pinned_read_only_proposal'] = {'status': 'UNAVAILABLE', 'source': SOURCE}

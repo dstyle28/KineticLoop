@@ -102,7 +102,8 @@ def reserved_ascii(data: bytes) -> bool:
                   else m[0], data)
     return (b'"kineticloop_evidence"' in data or b'"compact_reencoding"' in data or
             all(k in data for k in (b'"payload"', b'"stored_sha256"', b'"raw_sha256"')) or
-            all(k in data for k in (b'"authorization"', b'"preserved_records"', b'"entries"')))
+            all(k in data for k in (b'"authorization"', b'"preserved_records"', b'"entries"')) or
+            all(k in data for k in (b'"protected_base"', b'"source_revision"', b'"entries"')))
 
 
 def envelope(data: bytes) -> dict[str, Any] | None:
@@ -132,7 +133,7 @@ def envelope(data: bytes) -> dict[str, Any] | None:
     def storage_pairs(pairs):
         nonlocal reserved
         value = unique(pairs)
-        reserved = reserved or MARKER in value or 'compact_reencoding' in value or {'payload', 'stored_sha256', 'raw_sha256'} <= set(value) or {'authorization', 'preserved_records', 'entries'} <= set(value)
+        reserved = reserved or MARKER in value or 'compact_reencoding' in value or {'payload', 'stored_sha256', 'raw_sha256'} <= set(value) or {'authorization', 'preserved_records', 'entries'} <= set(value) or {'protected_base', 'source_revision', 'entries'} <= set(value)
         return value
     try:
         value = json.loads(data, object_pairs_hook=storage_pairs)
@@ -145,7 +146,7 @@ def envelope(data: bytes) -> dict[str, Any] | None:
         return None
     if isinstance(value, dict) and (MARKER in value or 'compact_reencoding' in value or
                                    {'payload', 'stored_sha256', 'raw_sha256'} <= set(value) or
-                                   {'authorization', 'preserved_records', 'entries'} <= set(value)):
+                                   {'authorization', 'preserved_records', 'entries'} <= set(value) or {'protected_base', 'source_revision', 'entries'} <= set(value)):
         if original_bytes > PLAIN_LIMIT:
             raise ValueError('evidence-envelope-size')
         return value
@@ -912,6 +913,8 @@ def reencoding_record(data: bytes) -> dict | None:
         if REENCODING_KEY.encode() in data:
             raise ValueError('reencoding-json')
         return None
+    if isinstance(value, dict) and {'protected_base', 'source_revision', 'entries'} <= set(value) and REENCODING_KEY not in value:
+        raise ValueError('reencoding-marker-missing')
     return value if isinstance(value, dict) and REENCODING_KEY in value else None
 
 
@@ -927,6 +930,7 @@ def validate_reencoding(root: Path, path: str, record: dict, base: str,
     exact_commit(root, source)
     exact_commit(root, record['protected_base'])
     git(root, 'merge-base', '--is-ancestor', record['protected_base'], source)
+    git(root, 'merge-base', '--is-ancestor', base, source)
     git(root, 'merge-base', '--is-ancestor', source, head or 'HEAD')
     paths = set()
     for entry in record['entries']:
@@ -1080,6 +1084,21 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
     prefixes = [f'docs/exec-plans/{kind}/{identity}/' for kind in ('evidence', 'reviews')]
     try:
         git(root, 'merge-base', '--is-ancestor', base, head)
+        inherited = {}
+        # Already admitted mappings at the protected base are immutable history.
+        # Reverify originals even with no changed blobs; do not authorize any new
+        # migration using their older protected-base claim.
+        for path in git(root, 'ls-tree', '-r', '--name-only', base, '--', *prefixes).decode().splitlines():
+            if path.endswith(('.gz', '.xz')):
+                continue
+            data = blob(root, path, base)
+            record = reencoding_record(data)
+            if record is not None:
+                if len(data) > PLAIN_LIMIT or blob(root, path, head, PLAIN_LIMIT) != data:
+                    raise ValueError('reencoding-merged-record-mutated-or-deleted')
+                validate_reencoding(root, path, record, record['protected_base'], head, identity)
+                inherited[path] = record['protected_base']
+                records.add(path)
         commits = git(root, 'rev-list', '--reverse', base + '..' + head).decode().splitlines()
         for revision in commits:
             parents = git(root, 'rev-list', '--parents', '-n', '1', revision).decode().split()[1:]
@@ -1094,7 +1113,7 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
                 if record is not None:
                     if len(data) > PLAIN_LIMIT:
                         raise ValueError('reencoding-record-limit')
-                    validate_reencoding(root, path, record, base, revision, identity)
+                    validate_reencoding(root, path, record, inherited.get(path, base), revision, identity)
                     records.add(path)
                     for entry in record['entries']:
                         ref = entry['original']['envelope']['path']
@@ -1129,8 +1148,11 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
                             # a codec conversion. All metadata and payload identity
                             # must remain exactly equal, under the same owner.
                             unchanged = False
-                            for current in git(root, 'ls-tree', '-r', '--name-only', revision,
-                                               '--', owner(path) + '/').decode().splitlines():
+                            current_exists = bool(git(root, 'ls-tree', revision, '--', path).strip())
+                            candidates = ([path] if current_exists else
+                                          git(root, 'ls-tree', '-r', '--name-only', revision,
+                                              '--', owner(path) + '/').decode().splitlines())
+                            for current in candidates:
                                 if not current.endswith(('.gz', '.xz')):
                                     try:
                                         if envelope(blob(root, current, revision)) == manifest:

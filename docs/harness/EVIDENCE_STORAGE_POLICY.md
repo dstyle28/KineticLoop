@@ -203,3 +203,15 @@ an archival format. HG054 migrates no KL036/KL080/merged artifacts and grants no
 product, release, App or database PASS. Current installed controller assets do not
 admit new formats until root completes separately reviewed complete installation
 and exact-head/controller admission under LOCAL_DB_CI.md.
+
+Local mutation requires an exclusive writer in the task worktree. Serialize capture,
+re-encoding, edits and commits; stop any concurrent producer/editor before conversion.
+Rollback restores local originals for ordinary single-writer failures; it does not
+provide concurrent-writer or crash recovery. An interrupted operation stays BLOCKED
+until original files are restored or its complete mapping/representations validate.
+This discipline grants no database transaction or execution authority.
+Maps already admitted at the protected base are immutable historical bindings,
+reverified against their original admitted base and source even if no artifacts
+changed. New mappings must additionally prove the actual PR base precedes their
+source. A removed map marker, including wrapped/encoded variants, cannot turn
+storage metadata into ordinary execution output.

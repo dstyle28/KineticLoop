@@ -112,3 +112,22 @@ payload accounting and ancestral commit auditing reject hidden/deleted/reverted
 conversions. Existing same-owner exact-metadata filename/JSON-encoding compatibility
 is retained. Root separately owns installation/admission, exact-head App/fullDB and
 normal merge. HG054 never publishes or modifies KL036, even if measured locally.
+
+The first immutable b8498 run is superseded after two independent review blockers;
+its actual successful, failed and interrupted statuses remain committed unchanged.
+Collection failed with exit 4 because the reused environment lacked pytest-xdist;
+bound-reader and authority checks were deliberately interrupted after review findings,
+not promoted to PASS. Initial exploratory corrected-copy probe is not final evidence.
+Final executions include task-owned `/private/tmp/hg054-dependencies` on PYTHONPATH:
+pytest-xdist 3.8.0 and execnet 2.1.2 copied from the existing local uv package cache,
+matching declared locked/dev requirements. No primary environment, dependency lock,
+CI, credentials or installed controller was changed. Run metadata records exact
+package versions. Re-encoding requires serialized exclusive local mutation; ordinary
+single-writer rollback is not concurrent-writer or crash recovery. Interrupted state
+must remain blocked until restored/validated.
+Final mapping audit also verifies already admitted protected-base maps without
+allowing new historical migrations, and recognizes removed markers in encoded or
+wrapped records. These are enforcement of the same preservation/reserved-metadata
+requirements, not an additional format or write-scope expansion. Exact byte-pins
+stay implementation/runtime specific; measurements do not assume identical XZ
+sizes across liblzma versions.

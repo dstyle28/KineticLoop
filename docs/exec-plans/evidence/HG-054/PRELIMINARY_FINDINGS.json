@@ -1,0 +1,39 @@
+{
+  "reviewed_implementation": "b8498b601d92a64b548fb702e962cab2431af5b7",
+  "classification": "EXPLORATORY_CHANGES_REQUIRED_NOT_FINAL_REVIEW_AUTHORITY",
+  "findings": [
+    {
+      "review_type": "GENERAL",
+      "severity": "BLOCKER",
+      "file": "tools/harness/compact_evidence.py",
+      "line": 926,
+      "finding": "Mapping validation lacks actual audit-base to source ancestry. A source already merged and later deleted at the actual protected base can be admitted using an older claimed mapping base.",
+      "reproduction": "Independent isolated Git history returned empty audit errors before fix.",
+      "required_resolution": "Require actual protected base ancestor of source, and add historical-source negative fixture."
+    },
+    {
+      "review_type": "PROTOCOL",
+      "severity": "BLOCKER",
+      "file": "tools/harness/compact_evidence.py",
+      "line": 1128,
+      "finding": "An old same-owner alias excuses an unmapped codec/metadata change at the original existing path.",
+      "reproduction": "Independent in-memory reviewed-function Git/blob mock returned errors=[] with no mapping.",
+      "required_resolution": "Only same-path equal metadata when path exists; alias compatibility only for actual deletion/rename. Add retained-alias negative fixtures."
+    },
+    {
+      "review_type": "DB_CONCURRENCY",
+      "severity": "NONBLOCKING",
+      "finding": "Rollback assumes exclusive local writer and is not concurrency/crash recovery.",
+      "reproduction": "Independent fixture showed original bytes restored for single-writer injected failure, but competing writer bytes can be overwritten by rollback.",
+      "required_resolution": "Document serialized local mutation and interrupted-operation validation discipline; no DB semantics changed."
+    }
+  ],
+  "security_preliminary": "No additional finding identified; superseded by final corrected-SHA review.",
+  "prepared_fix_probe": {
+    "scope": "Isolated /private/tmp copy, not final task evidence",
+    "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_compact_evidence.py -q -k 'retained_old_alias or handcrafted_older_base or conversion_write_failure'",
+    "status": "PASS",
+    "passed": 5,
+    "deselected": 361
+  }
+}

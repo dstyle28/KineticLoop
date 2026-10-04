@@ -1243,3 +1243,83 @@ def test_all_selection_validated_before_first_mutation(repo):
     assert (root / REF).read_bytes() == before
     assert (root / record['payload']).read_bytes() == stored
     assert not (root / RECODE).exists()
+
+
+@pytest.mark.parametrize('mutation', ['codec', 'metadata', 'raw'])
+def test_retained_old_alias_cannot_excuse_unmapped_original_path_change(repo, mutation):
+    root, base, before, source = captured(repo)
+    alias = REF.replace('run.json', 'kept-original.json')
+    (root / alias).write_bytes((root / REF).read_bytes())
+    (root / REF).unlink()
+    raw = ce.read(root, REF, source)
+    if mutation == 'raw':
+        raw = b'different 1 passed\n'
+    ce.capture(root, REF, raw, base, 'other' if mutation == 'metadata' else 'pytest', 0,
+               before['timestamp'], ce.XZ_FORMAT if mutation == 'codec' else ce.FORMAT)
+    head = commit(root)
+    assert ce.read(root, REF, head) == raw
+    assert ce.read(root, alias, head) == ce.read(root, REF, source)
+    assert any('unmapped-envelope-mutation' in error for error in
+               ce.audit(root, base, head, 'HG-047')['errors'])
+
+
+def test_handcrafted_older_base_cannot_admit_previously_merged_compact_source(repo):
+    root, original_base, before, source = captured(repo)
+    (root / REF).unlink()
+    (root / before['payload']).unlink()
+    protected_base = commit(root)  # Source was already in protected history, then deleted.
+    # Wrong claimed base permits local tool staging, but the actual PR-base audit
+    # must reject this historical source even though both paths are now absent.
+    git(root, 'checkout', source, '--', REF, before['payload'])
+    record = ce.reencode(root, original_base, source, 'HG-047', [REF], RECODE, ce.XZ_FORMAT)
+    head = commit(root)
+    with pytest.raises(ValueError):
+        ce.validate_reencoding(root, RECODE, record, protected_base, head, 'HG-047')
+    assert ce.audit(root, protected_base, head, 'HG-047')['errors']
+
+
+def test_conversion_write_failure_restores_all_original_bytes(repo, monkeypatch):
+    root, base, before, source = captured(repo)
+    data = (root / REF).read_bytes()
+    stored = (root / before['payload']).read_bytes()
+    validate = ce.validate_reencoding
+    def fail(*args, **kwargs):
+        raise ValueError('simulated validation failure')
+    monkeypatch.setattr(ce, 'validate_reencoding', fail)
+    with pytest.raises(ValueError, match='simulated'):
+        ce.reencode(root, base, source, 'HG-047', [REF], RECODE, ce.XZ_FORMAT)
+    monkeypatch.setattr(ce, 'validate_reencoding', validate)
+    assert (root / REF).read_bytes() == data
+    assert (root / before['payload']).read_bytes() == stored
+    assert not list((root / REF).parent.glob('*.xz'))
+    assert not (root / RECODE).exists()
+
+
+@pytest.mark.parametrize('encoding', ENCODINGS)
+@pytest.mark.parametrize('wrapper', [False, True])
+def test_mapping_removed_marker_never_becomes_execution_output(repo, encoding, wrapper):
+    root, base, source, record, head, _ = converted(repo)
+    del record[ce.REENCODING_KEY]
+    (root / RECODE).write_bytes(json.dumps([record] if wrapper else record).encode(encoding))
+    head = commit(root)
+    with pytest.raises(ValueError):
+        ce.read(root, RECODE, head)
+    assert ce.audit(root, base, head, 'HG-047')['errors']
+    assert ce.read(root, REF, source) == bytes(range(256)) * 100 + b'1 failed\n'
+
+
+def test_merged_mapping_stays_immutable_and_reverifies_originals(repo, monkeypatch):
+    root, _, source, record, base, _ = converted(repo)
+    report = ce.audit(root, base, base, 'HG-047')
+    assert report['errors'] == [] and report['stored_bytes'] == 0
+    original = ce.blob
+    def missing(root_arg, path, revision, limit=None):
+        if revision == source:
+            raise ValueError('source unavailable')
+        return original(root_arg, path, revision, limit)
+    monkeypatch.setattr(ce, 'blob', missing)
+    assert ce.audit(root, base, base, 'HG-047')['errors']
+    monkeypatch.setattr(ce, 'blob', original)
+    (root / RECODE).unlink()
+    head = commit(root)
+    assert ce.audit(root, base, head, 'HG-047')['errors']
