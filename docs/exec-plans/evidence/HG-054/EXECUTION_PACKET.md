@@ -149,3 +149,14 @@ intervening revision/parent descended from the protected base. Pre-admission sid
 branches are historical states; their later merge must preserve admitted bindings.
 Isolated regressions cover transient mapping/envelope/payload deletion and change,
 merged post-admission mutation and a valid pre-admission side branch.
+
+C4 GENERAL and PROTOCOL reviews found two further admission gaps: a new foreign
+conversion could be fully deleted before HEAD, and path-only bookkeeping freshness
+checks allowed conversion after review within own review paths. C4 full-run outputs
+remain preserved with actual interruption statuses. Final checks discover new maps
+globally in every ancestral stage and reject foreign compact mutations on protected
+ancestry edges. A pre-admission merge edge applies the admitted base representation,
+not a new mutation. Tested/review suffix validators reject conversion records and
+existing compact representation mutations at each commit, including restoration;
+new independently captured review output remains supported. These close explicit
+owner/timing requirements without broadening scope or numerical budgets.

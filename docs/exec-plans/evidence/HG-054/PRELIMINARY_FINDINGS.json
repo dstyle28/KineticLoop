@@ -52,5 +52,28 @@
     "status": "CHANGES_REQUIRED",
     "finding": "Inherited global verification compared protected base and final head only. An unrelated owner could delete/change an admitted map or representation in an intervening commit and restore it before head.",
     "required_resolution": "Reverify immutable maps and original/replacement snapshots at every intervening revision/parent descended from protected base. Pre-admission side branches need no retroactive mapping existence."
+  },
+  "later_c4_reviews": [
+    {
+      "reviewed_implementation": "e1de54a7bb0825d07446066401407437c7229d2e",
+      "review_type": "GENERAL",
+      "status": "CHANGES_REQUIRED",
+      "finding": "A new foreign compact conversion/map can be added then entirely removed before head, leaving empty diff and selected-owner audit PASS.",
+      "required_resolution": "Discover new canonical maps globally at each revision and inspect changed compact representation history across owners; reject new foreign conversions even after restoration/deletion."
+    },
+    {
+      "reviewed_implementation": "e1de54a7bb0825d07446066401407437c7229d2e",
+      "review_type": "PROTOCOL",
+      "status": "CHANGES_REQUIRED",
+      "finding": "Path-only task/governance bookkeeping suffix checks allow valid reencoding/maps after review inside own review directory.",
+      "required_resolution": "Reject conversion records and existing compact representation mutation in tested/review suffixes at each commit. Permit ordinary newly captured independent review outputs."
+    }
+  ],
+  "provisional_suffix_helper_regression": {
+    "classification": "Uncommitted exploratory check, not final SHA-bound authority",
+    "result": "FAIL_THEN_FIXED",
+    "failed": 3,
+    "passed": 48,
+    "reason": "Initial storage suffix guard tried to decode nonregular historical entries; corrected regular-entry classification preserves existing nonregular-ref failure semantics."
   }
 }

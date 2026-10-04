@@ -1721,6 +1721,37 @@ def configure_ci_merge_gate(root, args):
         args.governance_reviewed_head = review['reviewed_head_sha']
 
 
+def storage_bookkeeping_only(root, parent, commit, path):
+    """Conversion is implementation, even inside a bookkeeping directory."""
+    cache = _evidence_verdicts.get()
+    key = (('storage-bookkeeping', str(root.resolve()), parent, commit, path)
+           if all(re.fullmatch(r'[0-9a-f]{40}', revision) for revision in (parent, commit))
+           else None)
+    if cache is not None and key is not None and key in cache:
+        return True
+    exists = subprocess.run(['git', 'cat-file', '-e', parent + ':' + path],
+                            cwd=root, capture_output=True).returncode == 0
+    if path.endswith(('.gz', '.xz')):
+        if exists:
+            return False
+    else:
+        for revision in ([parent, commit] if exists else [commit]):
+            entry = revision_git_entry(root, path, revision)
+            if entry is None or entry[0] not in (b'100644', b'100755') or entry[1] != b'blob':
+                continue
+            data = compact_evidence.blob(root, path, revision, compact_evidence.PLAIN_LIMIT)
+            if compact_evidence.reencoding_record(data) is not None:
+                return False
+            manifest = compact_evidence.envelope(data)
+            if exists and manifest and manifest.get(compact_evidence.MARKER) in compact_evidence.CODECS:
+                return False
+    if cache is not None and key is not None:
+        if len(cache) >= EVIDENCE_VERDICT_LIMIT:
+            cache.clear()
+        cache.add(key)
+    return True
+
+
 def suffix_errors(
         root, start, end, task_id, kind, scope_patterns=None,
         allow_unrelated_merges=False, allowed_patterns=None):
@@ -1748,6 +1779,8 @@ def suffix_errors(
                     continue
                 if not matches(path, allowed):
                     errors.append(kind + '-stale-change:' + path)
+                elif not storage_bookkeeping_only(root, parents[0], commit, path):
+                    errors.append(kind + '-representation-mutation:' + path)
                 elif kind == 'tested' and matches(path, [evidence_pattern(task_id)]):
                     exists = subprocess.run(['git', 'cat-file', '-e', parents[0] + ':' + path], cwd=root, capture_output=True)
                     if exists.returncode == 0:
@@ -1798,6 +1831,8 @@ def governance_suffix_errors(root, start, end, change_id, kind):
             for path in changed_paths(root, parents[0], commit):
                 if not matches(path, allowed):
                     errors.append('governance-' + kind + '-stale-change:' + path)
+                elif not storage_bookkeeping_only(root, parents[0], commit, path):
+                    errors.append('governance-' + kind + '-representation-mutation:' + path)
                 elif kind == 'tested' and matches(path, [evidence_pattern(change_id)]):
                     exists = subprocess.run(
                         ['git', 'cat-file', '-e', parents[0] + ':' + path],

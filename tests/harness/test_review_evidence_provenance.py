@@ -361,3 +361,29 @@ def test_compact_review_created_bound_revision_and_suffix(tmp_path, codec):
     later = history.commit('deleted later payload')
     assert not v.review_evidence_exists(history.root, ref, history.reviewed, later, 'KL-001', True)
     assert v.review_evidence_exists(history.root, ref, history.reviewed, review, 'KL-001', True)
+
+
+@pytest.mark.parametrize('identity', ['KL-001', 'HG-054'])
+@pytest.mark.parametrize('kind', ['tested', 'review'])
+@pytest.mark.parametrize('restore', [False, True])
+def test_compact_conversion_never_uses_bookkeeping_suffix(tmp_path, identity, kind, restore):
+    history = History(tmp_path)
+    ce = v.compact_evidence
+    directory = 'reviews' if kind == 'review' else 'evidence'
+    ref = f'docs/exec-plans/{directory}/{identity}/raw/run.json'
+    record_path = f'docs/exec-plans/{directory}/{identity}/conversion/COMPACT_REENCODING.json'
+    before = ce.capture(history.root, ref, b'1 failed\n', history.base, 'pytest', 1)
+    source = history.commit('compact output before tested or reviewed revision')
+    original = {path: (history.root / path).read_bytes() for path in (ref, before['payload'])}
+    ce.reencode(history.root, history.base, source, identity, [ref], record_path, ce.XZ_FORMAT)
+    head = history.commit('conversion inside bookkeeping paths')
+    if restore:
+        for path in (history.root / ref).parent.glob('*.xz'):
+            path.unlink()
+        (history.root / record_path).unlink()
+        for path, data in original.items():
+            (history.root / path).write_bytes(data)
+        head = history.commit('restored conversion cannot repair stale review or test')
+    suffix = v.governance_suffix_errors if identity.startswith('HG-') else v.suffix_errors
+    assert any('representation-mutation' in error for error in
+               suffix(history.root, source, head, identity, kind))

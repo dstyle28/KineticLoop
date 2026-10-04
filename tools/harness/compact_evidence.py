@@ -1082,6 +1082,7 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
     errors: list[str] = []
     records: set[str] = set()
     prefixes = [f'docs/exec-plans/{kind}/{identity}/' for kind in ('evidence', 'reviews')]
+    storage_roots = ['docs/exec-plans/evidence', 'docs/exec-plans/reviews']
     try:
         git(root, 'merge-base', '--is-ancestor', base, head)
         inherited = {}
@@ -1121,6 +1122,17 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
                             raise ValueError('reencoding-merged-record-mutated-or-deleted')
                         validate_reencoding(root, path, record, record['protected_base'],
                                             bound_revision, admitted_owner)
+            # New foreign conversions cannot disappear by deleting their records
+            # before final HEAD. Inherited records keep their admitted ownership.
+            for path in git(root, 'ls-tree', '-r', '--name-only', revision,
+                            '--', *storage_roots).decode().splitlines():
+                if Path(path).name == REENCODING_NAME and path not in inherited:
+                    data = blob(root, path, revision, PLAIN_LIMIT)
+                    record = reencoding_record(data)
+                    if record is None:
+                        envelope(data)  # Wrapped/damaged storage cannot become opaque output.
+                    if record is not None and not any(path.startswith(prefix) for prefix in prefixes):
+                        raise ValueError('reencoding-foreign-owner:' + path)
             mapped = {}
             for path in git(root, 'ls-tree', '-r', '--name-only', revision, '--', *prefixes).decode().splitlines():
                 if path.endswith(('.gz', '.xz')):
@@ -1139,12 +1151,21 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
                         mapped[ref] = entry
             for parent in parents:
                 changed = git(root, 'diff', '--no-renames', '--name-only', '--diff-filter=MDT',
-                              parent, revision, '--', *prefixes).decode().splitlines()
+                              parent, revision, '--', *storage_roots).decode().splitlines()
                 for path in changed:
                     old = blob(root, path, parent)
+                    selected_owner = any(path.startswith(prefix) for prefix in prefixes)
+                    # Pre-admission side branches do not inherit protected state.
+                    # Selected-owner history retains its existing strict checks.
+                    if not selected_owner:
+                        if (git(root, 'merge-base', base, revision).decode().strip() != base or
+                                git(root, 'merge-base', base, parent).decode().strip() != base):
+                            continue
                     if reencoding_record(old) is not None:
                         raise ValueError('reencoding-record-mutated-or-deleted')
                     if path.endswith(('.gz', '.xz')):
+                        if not selected_owner:
+                            raise ValueError('reencoding-foreign-payload-mutation:' + path)
                         accounted = [e for e in mapped.values()
                                      if e['original']['payload'] == snapshot(root, path, parent, STORED_LIMIT)]
                         if not accounted:
@@ -1161,6 +1182,8 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
                     else:
                         manifest = envelope(old)
                         if manifest and manifest.get(MARKER) in CODECS:
+                            if not selected_owner:
+                                raise ValueError('reencoding-foreign-envelope-mutation:' + path)
                             # Existing extension/JSON encoding compatibility is not
                             # a codec conversion. All metadata and payload identity
                             # must remain exactly equal, under the same owner.

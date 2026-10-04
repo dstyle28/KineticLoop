@@ -1393,3 +1393,52 @@ def test_pre_admission_side_branch_needs_no_retroactive_inherited_mapping(repo):
     git(root, 'merge', '--no-ff', '-qm', 'fixture merge', 'before-admission')
     head = git(root, 'rev-parse', 'HEAD')
     assert ce.audit(root, base, head, 'HG-048')['errors'] == []
+
+
+@pytest.mark.parametrize('mapping', [True, False])
+def test_transient_foreign_conversion_cannot_disappear_before_head(repo, mapping):
+    root, base, before, source = captured(repo)
+    if mapping:
+        ce.reencode(root, base, source, 'HG-047', [REF], RECODE, ce.XZ_FORMAT)
+    else:
+        raw = ce.read(root, REF, source)
+        (root / REF).unlink()
+        ce.capture(root, REF, raw, base, 'pytest', 0, before['timestamp'], ce.XZ_FORMAT)
+    commit(root)
+    for path in list((root / REF).parent.rglob('*')):
+        if path.is_file():
+            path.unlink()
+    head = commit(root)
+    assert git(root, 'diff', '--name-only', base, head) == ''
+    assert ce.audit(root, base, head, 'HG-054')['errors']
+
+
+@pytest.mark.parametrize('artifact', ['envelope', 'payload'])
+def test_unmapped_foreign_compact_mutation_and_restoration_fails(repo, artifact):
+    root, _, before, base = captured(repo)
+    path = REF if artifact == 'envelope' else before['payload']
+    original = (root / path).read_bytes()
+    (root / path).write_bytes(original + b'changed')
+    commit(root)
+    (root / path).write_bytes(original)
+    head = commit(root)
+    assert ce.audit(root, base, head, 'HG-054')['errors']
+
+
+def test_transient_wrapped_new_map_on_pre_admission_branch_fails_globally(repo):
+    root, original_base = repo
+    main = git(root, 'branch', '--show-current')
+    (root / 'later-protected-source').write_text('ordinary protected update')
+    base = commit(root)
+    git(root, 'checkout', '-qb', 'old-side-branch', original_base)
+    target = root / RECODE
+    target.parent.mkdir(parents=True)
+    target.write_text(json.dumps([{ce.REENCODING_KEY: 'v1'}]))
+    commit(root)
+    target.unlink()
+    commit(root)
+    git(root, 'checkout', main)
+    git(root, 'merge', '--no-ff', '-qm', 'fixture merge', 'old-side-branch')
+    head = git(root, 'rev-parse', 'HEAD')
+    assert git(root, 'diff', '--name-only', base, head) == ''
+    assert ce.audit(root, base, head, 'HG-054')['errors']
