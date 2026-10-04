@@ -161,12 +161,27 @@ def local(revision, destination):
     except BaseException as error:
         envelope['error']=type(error).__name__+': '+str(error)
     finally:
+        envelope['diagnostic_errors']=[]
         if created:
-            subprocess.run(['docker','cp',name+':/evidence/run',str(destination/'run')],capture_output=True,timeout=180)
-            with (destination/'daemon.log').open('wb') as log:
-                subprocess.run(['docker','logs',name],stdout=log,stderr=subprocess.STDOUT,timeout=120)
-        envelope['container_removed']=db.cleanup_owned('container',name,name) if created else True
-        envelope['volume_removed']=db.cleanup_owned('volume',volume,name) if created else True
+            try:
+                copied=subprocess.run(['docker','cp',name+':/evidence/run',str(destination/'run')],capture_output=True,timeout=180)
+                if copied.returncode:
+                    envelope['diagnostic_errors'].append('evidence-copy-exit-'+str(copied.returncode))
+            except BaseException as error:
+                envelope['diagnostic_errors'].append('evidence-copy:'+type(error).__name__)
+            try:
+                with (destination/'daemon.log').open('wb') as log:
+                    subprocess.run(['docker','logs',name],stdout=log,stderr=subprocess.STDOUT,timeout=120)
+            except BaseException as error:
+                envelope['diagnostic_errors'].append('daemon-log:'+type(error).__name__)
+        for kind,key,resource in [('container','container_removed',name),('volume','volume_removed',volume)]:
+            try:
+                envelope[key]=db.cleanup_owned(kind,resource,name) if created else True
+            except BaseException as error:
+                envelope[key]=False
+                envelope['diagnostic_errors'].append('cleanup-'+kind+':'+type(error).__name__)
+        if envelope['diagnostic_errors']:
+            envelope['status']='FAIL'
         if not envelope['container_removed'] or not envelope['volume_removed']:
             envelope['status']='FAIL'
         write(destination/'local-executor.json',envelope)
@@ -201,7 +216,6 @@ def export(revision, directory):
         if path.is_file() and path not in handled and path.name!='source.bundle' and not path.name.endswith('-collection-bound.json'):
             capture(path,'HG052 executor provenance',0 if index['status']=='PASS' else 1)
     write(ROOT/f'docs/exec-plans/evidence/HG-052/m3-regression-{revision}.json',payload)
-    write(ROOT/f'docs/exec-plans/evidence/HG-052/execution-index-{revision}.json',index)
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(); p.add_argument('mode',choices=['local','inner','export']); p.add_argument('--revision',required=True); p.add_argument('--directory',type=Path,required=True)
