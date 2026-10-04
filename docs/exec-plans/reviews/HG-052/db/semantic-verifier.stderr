@@ -1,0 +1,22 @@
+Traceback (most recent call last):
+  File "/Users/davetian/.codex/worktrees/695f/KineticLoop/docs/exec-plans/evidence/HG-052/verify_m3.py", line 22, in <module>
+    budget = v.compact_evidence.audit(ROOT, '7d2322707b1ffe177c958ef9385ce40bb66d1e43', revision, 'HG-052')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.codex/worktrees/695f/KineticLoop/tools/harness/compact_evidence.py", line 917, in audit
+    data = blob(root, path, head, STORED_LIMIT if path.endswith('.gz') else PLAIN_LIMIT)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.codex/worktrees/695f/KineticLoop/tools/harness/compact_evidence.py", line 63, in blob
+    commit = git(root, 'rev-parse', '--verify', '--end-of-options', revision + '^{commit}')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.codex/worktrees/695f/KineticLoop/tools/harness/compact_evidence.py", line 43, in git
+    result = subprocess.run(['git', *args], cwd=root, capture_output=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/Users/davetian/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/subprocess.py", line 1908, in _execute_child
+    part = os.read(errpipe_read, 50000)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

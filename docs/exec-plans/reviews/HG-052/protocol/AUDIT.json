@@ -1,0 +1,158 @@
+{
+  "reviewed_head_sha": "e3ebb4c55901ca3b275aaabb3de550863defcf83",
+  "previous_unissued_head": "81fbaf7816eb884194810fe281945d6a1741f3f5",
+  "previous_audit": "INTERRUPTED (exit130); no PASS inferred",
+  "base_commit": "7d2322707b1ffe177c958ef9385ce40bb66d1e43",
+  "regression_tested_commit": "6c52b6241f808688c780d46bbd3d786a979df77c",
+  "evaluated_commit": "0eb57e52e7b10bdf429163809bae44b97e069678",
+  "governance_tested_commit": "a4d9c2a6d8365c3f5ef2a5e0f8694be1d3cbf3b7",
+  "changed_files": 811,
+  "correction": [
+    "A\tdocs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/final-C_harness-run_collection.json.json",
+    "D\tdocs/exec-plans/evidence/HG-052/final-a4d9c2a6d8365c3f5ef2a5e0f8694be1d3cbf3b7/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz",
+    "D\tdocs/exec-plans/evidence/HG-052/final-a4d9c2a6d8365c3f5ef2a5e0f8694be1d3cbf3b7/harness-run_collection.json.json",
+    "M\tdocs/exec-plans/governance/HG-052.yaml"
+  ],
+  "packaging_replacement": [
+    {
+      "new_envelope": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/final-C_harness-run_collection.json.json",
+      "shared_payload": "docs/exec-plans/evidence/HG-052/captures-6c52b6241f808688c780d46bbd3d786a979df77c/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz",
+      "raw_sha256": "54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac",
+      "tested_commit": "a4d9c2a6d8365c3f5ef2a5e0f8694be1d3cbf3b7"
+    }
+  ],
+  "authority_hashes_checked": 28,
+  "active_m3_members": 17,
+  "transitive_integrations": 35,
+  "mapped_exits": 8,
+  "historical_task_witnesses": 64,
+  "fresh_execution_records": 93,
+  "boundary_statuses": {
+    "PASS": 19,
+    "NOT_RUN": 12
+  },
+  "interleaving_layers": [
+    {
+      "requirement_id": "I01",
+      "layer": "DC",
+      "status": "PASS",
+      "task_identity": "harness-backlog-v0.2/KL-026",
+      "check_id": "i01_dc"
+    },
+    {
+      "requirement_id": "I02",
+      "layer": "DC",
+      "status": "PASS",
+      "task_identity": "harness-backlog-v0.2/KL-026",
+      "check_id": "i02_dc"
+    },
+    {
+      "requirement_id": "I03",
+      "layer": "DC",
+      "status": "PASS",
+      "task_identity": "harness-backlog-v0.2/KL-026",
+      "check_id": "i03_dc"
+    },
+    {
+      "requirement_id": "I04",
+      "layer": "DC",
+      "status": "PASS",
+      "task_identity": "harness-backlog-v0.2/KL-026",
+      "check_id": "i04_dc"
+    },
+    {
+      "requirement_id": "I05",
+      "layer": "DC",
+      "status": "PASS",
+      "task_identity": "harness-backlog-v0.2/KL-026",
+      "check_id": "i05_dc"
+    },
+    {
+      "requirement_id": "I06",
+      "layer": "DC",
+      "status": "PASS",
+      "task_identity": "harness-backlog-v0.2/KL-026",
+      "check_id": "i06_dc"
+    },
+    {
+      "requirement_id": "I07",
+      "layer": "DC",
+      "status": "PASS",
+      "task_identity": "harness-backlog-v0.2/KL-026",
+      "check_id": "i07_dc"
+    },
+    {
+      "requirement_id": "I08",
+      "layer": "DC",
+      "status": "PASS",
+      "task_identity": "harness-backlog-v0.2/KL-026",
+      "check_id": "i08_dc"
+    },
+    {
+      "requirement_id": "I09",
+      "layer": "DC",
+      "status": "PASS",
+      "task_identity": "harness-backlog-v0.2/KL-026",
+      "check_id": "i09_dc"
+    },
+    {
+      "requirement_id": "I04",
+      "layer": "WF",
+      "status": "NOT_RUN",
+      "required_future_owner": "M4 worker/fault process evidence"
+    }
+  ],
+  "semantics": {
+    "historical_model_evidence": {
+      "status": "UNVERIFIED_HISTORICAL_DECLARATION",
+      "independently_reproducible_protocol_model": false
+    },
+    "product_requirement_pass_claims": [],
+    "production_auto_activation": false,
+    "shadow_executable": false,
+    "shadow_usability_status": "NOT_RUN",
+    "r04_e2e_status": "NOT_RUN"
+  },
+  "final_c_checks": [
+    {
+      "check_id": "lint",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "check_id": "typecheck",
+      "raw_sha256": "5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523"
+    },
+    {
+      "check_id": "unit",
+      "raw_sha256": "b4d0db435f45350277f52e99124de639960385913f0a391ce30c90b1039a716f",
+      "passed": 247,
+      "junit_cases": 247
+    },
+    {
+      "check_id": "harness",
+      "raw_sha256": "84a21c41a217fe2225a5f0acc17a0244b2c3cb2ba07a2eb4093e9c3a05d19518",
+      "passed": 1492,
+      "junit_cases": 1492
+    },
+    {
+      "check_id": "authority",
+      "raw_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70"
+    },
+    {
+      "check_id": "closure_validation",
+      "raw_sha256": "caa4d22de6aa6e125540efabf5bd9abcd63af92cbca3b1271c1fb1dda995382a"
+    }
+  ],
+  "budget": {
+    "identity": "HG-052",
+    "base": "7d2322707b1ffe177c958ef9385ce40bb66d1e43",
+    "head": "e3ebb4c55901ca3b275aaabb3de550863defcf83",
+    "stored_bytes": 8373467,
+    "files": 808,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "errors": [],
+  "no_db_controller_or_93_test_rerun": true,
+  "gate_status": "Final four reviews, hosted CI, root-owned App gate and merge remain separate/prospective"
+}

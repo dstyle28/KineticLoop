@@ -1,0 +1,93 @@
+{
+  "reviewed_head_sha": "e3ebb4c55901ca3b275aaabb3de550863defcf83",
+  "base_commit": "7d2322707b1ffe177c958ef9385ce40bb66d1e43",
+  "tested_regression": "6c52b6241f808688c780d46bbd3d786a979df77c",
+  "evaluated": "0eb57e52e7b10bdf429163809bae44b97e069678",
+  "tested_closure": "a4d9c2a6d8365c3f5ef2a5e0f8694be1d3cbf3b7",
+  "changed_files": 811,
+  "scope_errors": [],
+  "envelopes": 399,
+  "plain_artifacts": 15,
+  "payloads": 394,
+  "all_decoded_envelope_bytes": 76777183,
+  "max_decoded_payload_bytes": 20522641,
+  "high_confidence_sensitive_pattern_hits": [],
+  "network_host_occurrences": {},
+  "local_dedicated_environment": {
+    "os": "Linux",
+    "architecture": "aarch64",
+    "endpoint": "unix:///var/run/docker.sock",
+    "initial_empty": true,
+    "github_run_id": null
+  },
+  "outer_owned_resources": {
+    "container": "kineticloop-hg052-6c52b62-ed30e48756ac-5a1e5af5d7e9",
+    "volume": "kineticloop-hg052-6c52b62-ed30e48756ac-5a1e5af5d7e9-data",
+    "image": "sha256:4c37385ac896e49cf93ee34a6d0a0a881667a10f91ad6b22fc5009f8f39786b5",
+    "mounts": [
+      {
+        "Type": "volume",
+        "Name": "kineticloop-hg052-6c52b62-ed30e48756ac-5a1e5af5d7e9-data",
+        "Destination": "/var/lib/docker"
+      }
+    ],
+    "cleanup": true
+  },
+  "legacy_lifecycle_cleanup_commands": [
+    29,
+    30
+  ],
+  "all93_after_inventory_empty": true,
+  "final_inventory": {
+    "containers": [],
+    "volumes": []
+  },
+  "actual_C_checks": [
+    {
+      "check_id": "lint",
+      "bytes": 19,
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "check_id": "typecheck",
+      "bytes": 45,
+      "raw_sha256": "5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523"
+    },
+    {
+      "check_id": "unit",
+      "bytes": 3474,
+      "raw_sha256": "b4d0db435f45350277f52e99124de639960385913f0a391ce30c90b1039a716f",
+      "passed": 247
+    },
+    {
+      "check_id": "harness",
+      "bytes": 2141,
+      "raw_sha256": "84a21c41a217fe2225a5f0acc17a0244b2c3cb2ba07a2eb4093e9c3a05d19518",
+      "passed": 1492
+    },
+    {
+      "check_id": "authority",
+      "bytes": 38,
+      "raw_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70"
+    },
+    {
+      "check_id": "closure_validation",
+      "bytes": 675,
+      "raw_sha256": "caa4d22de6aa6e125540efabf5bd9abcd63af92cbca3b1271c1fb1dda995382a",
+      "counts": {
+        "integrations": 35,
+        "m3_members": 17,
+        "exits": 8,
+        "fresh_commands": 93
+      }
+    }
+  ],
+  "C_collection_relocated_with_identical_payload": true,
+  "source_bundle": {
+    "path": "source.bundle",
+    "sha256": "50bab9e466a33490c26de6eed9d3b842d0f43e90596da61f50633f52272ea6eb",
+    "bytes": 95518515
+  },
+  "source_bundle_external_file_hash_matches": true,
+  "limits": "Read-only bytes/provenance audit; no tests, Docker, controller, network, checkout or repository writes. Pattern scan is not proof of absence of every possible secret."
+}
