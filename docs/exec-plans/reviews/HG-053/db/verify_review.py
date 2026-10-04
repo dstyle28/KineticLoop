@@ -30,12 +30,12 @@ def blob(path: str) -> bytes:
 
 def recover(path: str, command: str | None = None) -> bytes:
     envelope = json.loads(blob(path))
-    stored = blob(envelope["payload"])
+    stored = blob(envelope['payload'])
     assert len(stored) == envelope["stored_bytes"]
-    assert hashlib.sha256(stored).hexdigest() == envelope["stored_sha256"]
+    assert hashlib.sha256(stored).hexdigest() == envelope['stored_sha256']
     raw = gzip.decompress(stored)
     assert len(raw) == envelope["raw_bytes"]
-    assert hashlib.sha256(raw).hexdigest() == envelope["raw_sha256"]
+    assert hashlib.sha256(raw).hexdigest() == envelope['raw_sha256']
     assert len(stored) <= 8388608 and len(raw) <= 67108864
     if command is not None:
         assert envelope["tested_commit"] == C
