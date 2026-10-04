@@ -254,13 +254,13 @@ def database_urls() -> Iterator[dict[str, str]]:
             if child.is_alive():
                 child.terminate()
             child.join(10)
-            assert not child.is_alive()
         if created:
             lifecycle.validate_target()
             lifecycle.destroy()
         after = inventory()
         assert before == after
         final_processes = process_inventory()
+        assert all(not child.is_alive() for child in CHILDREN)
         assert not {c.pid for c in CHILDREN} & {p["pid"] for p in final_processes}
         evidence({"kind": "after_inventory", "namespace": asdict(selected), "inventory": after,
                   "foreign_unchanged": True, "owned_children": [{"pid": c.pid, "exitcode": c.exitcode}
@@ -375,6 +375,8 @@ def child_main(urls: dict[str, str], kind: str, identity: ProgressIdentity, requ
                stale_gate: Any = None) -> None:
     try:
         with connect(urls["admin"]) as db:
+            if kind == "settle":
+                request = SettleCall(**{**request, "receipt": ReliableReceipt(**request["receipt"])})
             output.put({"kind": "child_ready", "role": kind, "pid": os.getpid(),
                         "backend_pid": db.info.backend_pid, "at": datetime.now().isoformat()})
             if not gate.wait(10):
@@ -484,8 +486,8 @@ def spawn(urls: dict[str, str], kind: str, identity: ProgressIdentity, request: 
           **kwargs: Any) -> tuple[Any, Any, Any, dict[str, Any]]:
     gate, output = CONTEXT.Event(), CONTEXT.Queue()
     child = CONTEXT.Process(target=child_main, args=(urls, kind, identity, request, gate, output), kwargs=kwargs)
-    CHILDREN.append(child)
     child.start()
+    CHILDREN.append(child)
     observation = output.get(timeout=15)
     assert observation["kind"] == "child_ready" and observation["pid"] == child.pid
     assert child.pid != os.getpid()
@@ -959,8 +961,13 @@ def accounting_settlement_race(urls: dict[str, str], monkeypatch: pytest.MonkeyP
     reliable = ReliableReceipt(settled_id, AccountingIdentity("test-provider", "model", "cfg", "count-v1"),
         {"calls": 1, "tokens": 40, "tools": 0}, "RECONCILIATION", "race-verified-test-receipt",
         "race-provider-request", "test:declared-trusted-reconciliation")
-    command = SettleCall(SUBJECT, "race-settle", current.intent_id, settled_id, reliable,
-                         expected_transition="DISPATCH_INTENT", expected_revision=1)
+    # Immutable receipt mappings become typed again inside the spawned process.
+    command = {"subject_id": SUBJECT, "key": "race-settle", "intent_id": current.intent_id,
+               "reservation_id": settled_id, "expected_transition": "DISPATCH_INTENT", "expected_revision": 1,
+               "receipt": {"reservation_id": settled_id, "accounting": reliable.accounting,
+                           "actual": dict(reliable.actual), "source": reliable.source,
+                           "receipt_id": reliable.receipt_id, "provider_request_id": reliable.provider_request_id,
+                           "provenance": reliable.provenance}}
     settle_gate = CONTEXT.Event()
     settlement = spawn(urls, "settle", REAPER, command, preflight_gate=settle_gate)
     assert worker[3]["pid"] != settlement[3]["pid"]
