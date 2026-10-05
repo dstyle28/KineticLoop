@@ -227,5 +227,41 @@
     "Representation writes require the documented exclusive local writer; ordinary rollback does not establish concurrent-writer or crash recovery. Interrupted state must remain blocked until restored or fully validated.",
     "Per-runner XZ determinism does not assert identical stored bytes across liblzma versions.",
     "Supplied exact-R2 global audit was independently bound and its byte/file accounting checked; the retained map original-prefix audit and relevant provenance guards were independently executed."
-  ]
+  ],
+  "review_reference_bookkeeping_correction": {
+    "at_head": "eb5a006295ecb45423feef87d918c8c554405346",
+    "reviewed_head_unchanged": "8b9e2d129fc9a285db694b33f1254c9de4f0698e",
+    "actual_merge_gate_status": "FAIL",
+    "actual_merge_gate_exit_code": 1,
+    "actual_gate_log_sha256": "c00d868c9584480bc268b599019ad6d138f0cb5772ac5e6903448e3a9808127a",
+    "actual_errors": [
+      "governance-review-evidence:docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json",
+      "governance-review-evidence-revision:HG-054:docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json"
+    ],
+    "cause": "The protocol reviewer mistakenly included a reserved conversion mapping as typed review evidence. The mapping is valid audit material but compact read rejects it as execution/review evidence; the merge gate correctly failed.",
+    "correction": "Removed only that mapping from typed evidence_refs. Its original inspection and source/replacement proof remain in this ordinary report. Retained ordinary own report, governance result and immutable final RUN references. Implementation, reviewed SHA and execution authority are unchanged.",
+    "predicate_verification": [
+      {
+        "reference": "docs/exec-plans/reviews/HG-054/r2_protocol/REPORT.json",
+        "generic_available": true,
+        "exact_revision_available": true,
+        "binding": "eb5a006295ecb45423feef87d918c8c554405346"
+      },
+      {
+        "reference": "docs/exec-plans/governance/HG-054.yaml",
+        "generic_available": true,
+        "exact_revision_available": true,
+        "binding": "8b9e2d129fc9a285db694b33f1254c9de4f0698e"
+      },
+      {
+        "reference": "docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/RUN.json",
+        "generic_available": true,
+        "exact_revision_available": true,
+        "binding": "8b9e2d129fc9a285db694b33f1254c9de4f0698e"
+      }
+    ],
+    "linear_review_only_suffix_errors": [],
+    "verification_scope": "Real review_reference_available and review_evidence_exists predicates and review schema passed at H; corrected working report remains ordinary, bounded data. Final committed correction suffix and merge gate must be checked by root after persistence; no later gate PASS is asserted.",
+    "status": "PASS for reference correction only"
+  }
 }
