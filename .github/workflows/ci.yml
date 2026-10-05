@@ -27,8 +27,12 @@ jobs:
       - run: uv sync --locked
       - run: uv run kl lint
       - run: uv run kl typecheck
-      - run: uv run kl test-unit
-      - run: uv run kl test-harness
+      # PR regressions run in the required App-bound local controller.
+      # Master integration and explicit dispatch retain hosted regression runs.
+      - if: github.event_name != 'pull_request'
+        run: uv run kl test-unit
+      - if: github.event_name != 'pull_request'
+        run: uv run kl test-harness
       - run: uv run kl check-harness
 
   merge-gate:

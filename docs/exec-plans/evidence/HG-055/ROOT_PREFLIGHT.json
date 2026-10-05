@@ -1,0 +1,42 @@
+{
+  "bypass_actors": [],
+  "checks": {
+    "do_not_enforce_on_create": false,
+    "required_status_checks": [
+      {
+        "context": "quality",
+        "integration_id": 15368
+      },
+      {
+        "context": "merge-gate",
+        "integration_id": 15368
+      },
+      {
+        "context": "local-db-gate",
+        "integration_id": 5169734
+      }
+    ],
+    "strict_required_status_checks_policy": true
+  },
+  "claim": "PRECONDITION_OBSERVATION_ONLY; not task, execution, App or merge PASS; root rechecks before admission.",
+  "controller": "7c4218ffb39f09643993cbd4070306e6e7579e1a058d404493ea66d21a065849",
+  "controller_files": {
+    "compact_evidence.py": "44360837f56e4db9924be5b74d4e582560626fb6d1cee845f7ea2708ce12e6a4",
+    "db_ci.py": "9117178078cd33b46ccf9f66222dfcdb8733d180eb6ebf3f4bd8ed844253e95e",
+    "db_ci_pytest.py": "015ba311d943d5154dd81bc98a2344c7fff6eba49dbbb6b7f2ab1c9f5a9c8e9b",
+    "db_policy.py": "f38c298f1db950cd34e66fe74d95658ad1a23d5302c01260391fc0f573c89244",
+    "gate_pytest.py": "52ce264e08c28ce6ad291b0783a1853db6236304c86e1dcd5a4d188157e826b2",
+    "gate_validate.py": "14a12be4a2517fa4adadbdda5c6050c1803b7d2e11be1c78adef2a3c292125bf",
+    "github_app.py": "413afc01f5fe32feb84a86012272a568f74565136833e0bc41c75a034acd334e",
+    "local_db/Dockerfile": "6d48b8fd7b28aef879082256000ea7ec166165b70378a3cb1546fb2fd250d384",
+    "local_db/entrypoint.sh": "d25f2dc7a8c61c4d81e1412b66b77bd95ca895fdb5b091f38274e622b2ec871f",
+    "local_gate.py": "3d2b0162a7877c51eb87f72fb26e2931e042f3c2325beb8c022df3eac28bb69d",
+    "validate_harness.py": "202b8bc946698f6918c45dcf7bdfff34a831d991508213072081a286fe53e8bd"
+  },
+  "enforcement": "active",
+  "installed_and_git_pin_verification": "PASS",
+  "installed_code_commit": "4073ca6ef64a625c398483fb5fbfe41b1ef3237c",
+  "master": "af09be228fbc89d074b6e863c83e1fdda343d55b",
+  "observed_utc": "2026-10-05T06:12:40.712290+00:00",
+  "ruleset_id": 24391081
+}
