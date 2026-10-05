@@ -1,0 +1,97 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-054",
+  "status": "C14_VALIDATION_PASS_PRESERVED_PENDING_HG055_PRIORITY_MERGE",
+  "tested_commit": "9a63f08abbe64ff2736e770254703d8a09f1f35d",
+  "run_ref": "docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/RUN.json",
+  "run_sha256": "8040e05922351161517272b9e6202108c75b1646446e2f4fa497133f17cba8cd",
+  "checks": [
+    {
+      "check_id": "codec_security_and_budget",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/codec_security_and_budget.json"
+    },
+    {
+      "check_id": "bound_reader_regressions",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/bound_reader_regressions.json"
+    },
+    {
+      "check_id": "installed_decoder_isolation",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/installed_decoder_isolation.json"
+    },
+    {
+      "check_id": "representative_roundtrip",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/representative_roundtrip.json"
+    },
+    {
+      "check_id": "scope",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/scope.json"
+    },
+    {
+      "check_id": "unit",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/unit.json"
+    },
+    {
+      "check_id": "harness",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/harness.json"
+    },
+    {
+      "check_id": "lint",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/lint.json"
+    },
+    {
+      "check_id": "typecheck",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/typecheck.json"
+    },
+    {
+      "check_id": "authority",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/authority.json"
+    },
+    {
+      "check_id": "diff",
+      "exit_code": 0,
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/diff.json"
+    }
+  ],
+  "case_counts": {
+    "codec": 511,
+    "installed_decoder_isolation": 103,
+    "unit": 247,
+    "harness": 1729,
+    "bound_reader_regressions": 337
+  },
+  "shared_write_resources_released": [
+    "harness_governance",
+    "harness_validator",
+    "evidence_storage",
+    "trusted_local_ci_controller"
+  ],
+  "shared_write_resources_held": [],
+  "active_gate_executions": [],
+  "shared_source_authority_governance_result_writes": "PAUSED_PENDING_HG055_PRIORITY_MERGE",
+  "scope": "Own immutable C14 execution preservation and resource handoff only; no new final governance result or fresh review PASS. Existing earlier result/review bindings remain unchanged.",
+  "installed_controller_operations": "NOT_RUN",
+  "App_fullDB": "NOT_RUN_ROOT_OWNED",
+  "product_requirement_release_status": "NOT_RUN",
+  "merge": "NOT_PERFORMED",
+  "next_step": "After HG055 normal merge, adopt latest master with normal forward ancestry and complete affected new SHA-bound validation/reviews/gates. Preserve C14 and all earlier records at original bindings."
+}
