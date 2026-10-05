@@ -1900,6 +1900,24 @@ def revision_git_entry(root, ref, revision):
     return None
 
 
+def review_reference_available(root, ref, reviewed):
+    """Generic availability only; selected review gates still prove exact bindings.
+
+    Retiring a mapped current representation does not remove a review's original
+    regular Git objects at its recorded SHA. Never use that historical proof to
+    excuse a present invalid current artifact or an unavailable reviewed source.
+    """
+    if evidence_exists(root, ref):
+        return True
+    if not relative_path(ref) or '\0' in ref:
+        return False
+    target = root.resolve() / ref
+    if (target.exists() or any(p.is_symlink() for p in (target, *target.parents))
+            or any(p.exists() and not p.is_dir() for p in target.parents)):
+        return False
+    return evidence_exists(root, ref, reviewed)
+
+
 def revision_regular_file(root, ref, revision):
     """Resolve an exact regular tree entry to an available content-addressed Git blob."""
     entry = revision_git_entry(root, ref, revision)
@@ -3595,7 +3613,7 @@ def validate(root, args):
                 errors.append('governance-review-identity-or-path:' + str(path.relative_to(root)))
                 continue
             for ref in obj.get('evidence_refs', []):
-                if not evidence_exists(root, ref):
+                if not review_reference_available(root, ref, obj['reviewed_head_sha']):
                     errors.append('governance-review-evidence:' + ref)
             governance_reviews.append((path, obj))
             continue
@@ -3604,7 +3622,7 @@ def validate(root, args):
             errors.append('review-identity-or-path:' + str(path.relative_to(root)))
             continue
         for ref in obj.get('evidence_refs', []):
-            if not evidence_exists(root, ref):
+            if not review_reference_available(root, ref, obj['reviewed_head_sha']):
                 errors.append('review-evidence:' + ref)
         reviews.append((path, obj, task))
 

@@ -272,3 +272,20 @@ C12 corrects only generic fixture isolation by omitting HG054 delivery artifacts
 and corresponding manifest rows; scenarios build their own evidence/history.
 Decoder, mapping, provenance, collision, frozen and budget guards remain unchanged.
 All required checks and reviews must bind the next immutable tested/result SHA.
+
+C12's immutable run is superseded with actual unit246pass1fail and authorityFAIL:
+generic review-file availability required current-tree collection paths retired by
+the explicit mapping, even though the reviews' exact original R snapshots remain
+available. Codec recorded1fail432pass before interruption: the older-base negative
+fixture restored source snapshots only in the working tree, so the stronger HEAD
+input guard rejected before that fixture's intended actual-base assertion.
+The parent captured all successful/failed/interrupted outcomes and exited1.
+C13 preserves generic availability for existing valid current references, and for
+missing current paths verifies only the exact recorded reviewed SHA. Present invalid
+entries/parents and unavailable source fail; selected exact review bindings,
+result/command/tested/exit/PASS oracles and freshness remain unchanged. The older-base
+fixture commits its restored snapshots solely to satisfy the HEAD guard, then still
+requires actual protected-base rejection. Five hostile availability probes and the
+two corrected source/base cases passed; independent GENERAL8/PROTOCOL7 focused
+checks passed without any formal PASS. New immutable required checks and fresh four
+result-bound reviews remain mandatory. No frozen or production semantics changed.

@@ -1271,6 +1271,7 @@ def test_handcrafted_older_base_cannot_admit_previously_merged_compact_source(re
     # Wrong claimed base permits local tool staging, but the actual PR-base audit
     # must reject this historical source even though both paths are now absent.
     git(root, 'checkout', source, '--', REF, before['payload'])
+    commit(root)  # Satisfy HEAD-snapshot guard; actual protected source is still older.
     record = ce.reencode(root, original_base, source, 'HG-047', [REF], RECODE, ce.XZ_FORMAT)
     head = commit(root)
     with pytest.raises(ValueError):
@@ -1618,6 +1619,8 @@ def test_explicit_relocation_shares_payload_preserving_distinct_executions(repo)
     for original, destination, manifest in zip(refs, destinations, before, strict=True):
         assert not (root / original).exists() and not (root / manifest['payload']).exists()
         assert ce.read(root, original, source) == ce.read(root, destination, head) == raw
+        assert v.review_reference_available(root, original, source)
+        assert not v.review_reference_available(root, original, '0' * 40)
         current = json.loads((root / destination).read_text())
         assert all(current[key] == manifest[key] for key in ce.EXECUTION_FIELDS)
         assert Path(current['payload']).parent == Path(destination).parent
@@ -1790,3 +1793,26 @@ def test_handwritten_map_cannot_overwrite_parent_destination(repo):
     restored = commit(root)
     assert ce.audit(root, base, restored, 'HG-047')['errors']
     assert ce.blob(root, replacement['envelope']['path'], collision) == b'independent committed artifact'
+
+
+@pytest.mark.parametrize('current', ['invalid-compact', 'directory', 'dangling-symlink',
+                                     'parent-symlink', 'parent-file'])
+def test_generic_review_availability_does_not_excuse_invalid_current_entry(repo, current):
+    root, _, source, record, _, _, refs, _ = relocated(repo)
+    original = root / refs[0]
+    assert v.review_reference_available(root, refs[0], source)
+    if current == 'invalid-compact':
+        original.write_text(json.dumps({ce.MARKER: ce.FORMAT}))
+    elif current == 'directory':
+        original.mkdir()
+    elif current == 'dangling-symlink':
+        original.symlink_to(root / 'missing')
+    else:
+        original.parent.rmdir()
+        if current == 'parent-symlink':
+            original.parent.symlink_to(root / 'missing-parent')
+        else:
+            original.parent.write_text('not a directory')
+    assert not v.review_reference_available(root, refs[0], source)
+    assert not v.review_reference_available(root, '../outside', source)
+    assert ce.read(root, record['entries'][0]['original']['envelope']['path'], source)

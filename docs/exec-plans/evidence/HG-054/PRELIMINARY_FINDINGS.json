@@ -259,5 +259,71 @@
     ],
     "finding": "Fresh generic validator fixture copied actual HG054 source-bound mapping from delivery manifest into a git-init repository with no original source Git objects; fail-closed source verification correctly rejects. Actual installed decoder suite 102 passed, 1 failed; unfinished checks deliberately interrupted, not PASS.",
     "resolution": "Generic fixture omits own HG054 delivery evidence and its manifest rows, constructs independent fixture evidence with its own Git history. No production decoder/map/source guard changed or waived."
+  },
+  "C12_actual_run_superseded": {
+    "tested_commit": "4a1937086f48a28c07cf03932542126f1fc13d2f",
+    "run_ref": "docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/RUN.json",
+    "parent_exit": 1,
+    "checks": [
+      {
+        "check_id": "codec_security_and_budget",
+        "result": "FAIL",
+        "exit_code": 2
+      },
+      {
+        "check_id": "bound_reader_regressions",
+        "result": "FAIL",
+        "exit_code": 2
+      },
+      {
+        "check_id": "installed_decoder_isolation",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "representative_roundtrip",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "scope",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "unit",
+        "result": "FAIL",
+        "exit_code": 1
+      },
+      {
+        "check_id": "harness",
+        "result": "FAIL",
+        "exit_code": -2
+      },
+      {
+        "check_id": "lint",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "typecheck",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "authority",
+        "result": "FAIL",
+        "exit_code": 1
+      },
+      {
+        "check_id": "diff",
+        "result": "PASS",
+        "exit_code": 0
+      }
+    ],
+    "real_unit": "246 passed, 1 failed: generic review availability rejected retired original collection paths despite exact original reviewed SHA objects remaining available. Authority failed same references.",
+    "real_codec": "1 failed, 432 passed before deliberate interruption exit2: older-base fixture expected staging restored but uncommitted originals after stronger HEAD snapshot guard.",
+    "resolution": "Generic review availability accepts missing current refs at exact recorded reviewed SHA, rejects present invalid current entries/parents and unavailable sources. Selected exact binding/PASS/freshness rules unchanged. Older-base negative fixture commits restored snapshots to satisfy independent HEAD guard then retains actual protected-base/source rejection.",
+    "exploratory_limits": "Initial two-case prep failed after restored-snapshot commit was placed in wrong similar fixture; corrected placement, then2PASS. Five hostile availability casesPASS. Independent GENERAL8/PROTOCOL7 focusedPASS do not replace immutable checks."
   }
 }
