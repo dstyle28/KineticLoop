@@ -97,14 +97,16 @@ def unique(pairs):
 
 def reserved_ascii(data: bytes) -> bool:
     # Classification only: neither escape nor NUL normalization accepts bytes.
-    data = re.sub(rb'\\u([0-9a-fA-F]{4})',
-                  lambda m: bytes([int(m[1], 16)]) if int(m[1], 16) < 128
-                  else m[0], data)
+    data = re.sub(rb'\\(?:u([0-9a-fA-F]{4})|x([0-9a-fA-F]{2})|U([0-9a-fA-F]{8}))',
+                  lambda m: bytes([int(next(v for v in m.groups() if v), 16)])
+                  if int(next(v for v in m.groups() if v), 16) < 128 else m[0], data)
     # A field reference/string value is ordinary content. Recognize key/value
     # syntax even in broken JSON, source dictionaries, comments and string
     # wrappers; classification never parses or executes source as authority.
     data = data.replace(b'\\"', b'"').replace(b"\\'", b"'")
-    keys = set(re.findall(rb"[\"']([a-z_][a-z_0-9]*)[\"']\s*:", data))
+    # Adjacent source string literals form one key, regardless of quote style.
+    data = re.sub(rb"[\"']\s*[\"']", b"", data)
+    keys = set(re.findall(rb"[\"']([a-z_][a-z_0-9]*)[\"']\s*\)*\s*:", data))
     keys.update(re.findall(rb"\b([a-z_][a-z_0-9]*)\s*=", data))
     keys.update(re.findall(rb"[{,]\s*[\"']([a-z_][a-z_0-9]*)[\"']", data))
     return (b'kineticloop_evidence' in keys or b'compact_reencoding' in keys or

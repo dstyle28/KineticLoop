@@ -2037,6 +2037,10 @@ def test_exact_original_reader_is_plain_and_history_compatible(repo):
 
 
 @pytest.mark.parametrize('raw', [
+    br"record = {'kineticloop\x5fevidence': 'gzip-v1'}",
+    br"record = {'kineticloop\U0000005fevidence': 'gzip-v1'}",
+    b"record = {'kineticloop_' 'evidence': 'gzip-v1'}",
+    b"record = {('kineticloop_''evidence'): 'gzip-v1'}",
     b'record = {"kineticloop_evidence": "gzip-v1"}',
     b"record = {'kineticloop_evidence': 'gzip-v1'}",
     b'kineticloop_evidence = "gzip-v1"',
