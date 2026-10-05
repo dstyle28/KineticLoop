@@ -233,3 +233,30 @@ complete required run may supply final PASS.
 The uncommitted focused verification of all seven nested-storage cases passed
 (7 passed in 684.39s). This is exploratory correction evidence, not final SHA-bound
 task PASS. Actual fresh immutable required executions follow the C10 commit.
+
+### Exact-R storage blocker and mapped same-owner relocation refinement
+
+All eleven corrected C10 checks actually passed. The required storage audit of
+reviewed result R9b15954c76ff8bbe3187e87641a62a08394da75e actually failed exit1:
+C9 and C10's complete collection captures recover identical 3,345,163 bytes through
+two separate 400,494-byte gzip payload paths. Four independent exact-R reviews are
+CHANGES_REQUIRED and persisted in review-only commit 3e8d0969. Their source bindings,
+actual findings and original result/RUN bytes remain at those immutable commits.
+No final storage/merge/App/release PASS was granted.
+
+Fresh GENERAL and PROTOCOL packet review confirms requirements 4-6 authorize
+explicit original-to-new path bindings within the same owner; envelope location is
+separate from the unchanged execution fields. The fixed envelope-location rule was
+an HG054 implementation choice, not frozen authority. The correction adds only an
+explicit same-owner child-directory relocation during mandatory codec conversion,
+with immutable source/new snapshots, collision refusal, same-directory payloads,
+all-parent provenance, accounted envelope/payload retirement and ordinary rollback.
+Both original and replacement envelopes stay protected by the immutable map. No
+codec-free move, owner/subtree change, general deletion, duplicate-bulk exception,
+output perturbation, past-execution substitution or budget increase is authorized.
+Both duplicate collection representations will be explicitly converted into one
+shared XZ payload with distinct metadata envelopes before the new tested revision.
+New real collection captures can share those stored bytes while retaining their
+own exact execution provenance. Every required check and all four reviews must be
+fresh at the new tested/result revisions. Earlier failure/blocked bindings remain
+available through their original normal Git ancestry.

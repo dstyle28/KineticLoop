@@ -98,6 +98,10 @@ already-compact unmerged inputs absent from B. Commit representation and immutab
 mapping before a new tested SHA, rerun checks and obtain fresh reviews. Old bound
 Git snapshots and raw execution metadata remain unchanged; maps are audit records,
 never execution proof. All storage budgets apply equally to `.gz` and `.xz`.
+Optional `--destination-dir <own-child>` explicitly relocates selected envelopes
+during that codec conversion, binding original and new paths and refusing
+collisions. Distinct execution envelopes can then share one same-directory payload;
+this permits no codec-free move or unaccounted deletion.
 See [Evidence Storage Policy](../../docs/harness/EVIDENCE_STORAGE_POLICY.md).
 The currently installed controller must be separately reviewed and installed by
 root before it can validate/admit these candidate formats.

@@ -1592,3 +1592,201 @@ def test_binary_marker_payload_unchanged_envelope_pre_admission_restoration(repo
     assert ce.read(root, REF, source, exit_code=1) == raw
     assert ce.read(root, REF, restored, exit_code=1) == raw
     assert ce.audit(root, base, head, 'HG-054')['errors'] == []
+
+
+CONSOLIDATED = 'docs/exec-plans/evidence/HG-047/consolidated'
+
+
+def relocated(repo):
+    root, base = repo
+    refs = [REF.replace('/run.json', '/first/run.json'), REF.replace('/run.json', '/second/run.json')]
+    raw = bytes(range(256)) * 100 + b'1 failed\n'
+    before = [ce.capture(root, ref, raw, base, 'pytest ' + str(i), i, None)
+              for i, ref in enumerate(refs)]
+    source = commit(root)
+    assert any('duplicate-bulk' in error for error in ce.audit(root, base, source, 'HG-047')['errors'])
+    record = ce.reencode(root, base, source, 'HG-047', refs, RECODE, ce.XZ_FORMAT, CONSOLIDATED)
+    head = commit(root)
+    return root, base, source, record, head, raw, refs, before
+
+
+def test_explicit_relocation_shares_payload_preserving_distinct_executions(repo):
+    root, base, source, record, head, raw, refs, before = relocated(repo)
+    destinations = [entry['replacement']['envelope']['path'] for entry in record['entries']]
+    assert len(set(destinations)) == 2
+    assert record['entries'][0]['replacement']['payload'] == record['entries'][1]['replacement']['payload']
+    for original, destination, manifest in zip(refs, destinations, before, strict=True):
+        assert not (root / original).exists() and not (root / manifest['payload']).exists()
+        assert ce.read(root, original, source) == ce.read(root, destination, head) == raw
+        current = json.loads((root / destination).read_text())
+        assert all(current[key] == manifest[key] for key in ce.EXECUTION_FIELDS)
+        assert Path(current['payload']).parent == Path(destination).parent
+    assert ce.audit(root, base, head, 'HG-047')['errors'] == []
+    assert v.storage_bookkeeping_only(root, source, head, RECODE) is False
+    # The next genuine execution can share only stored bytes, with its own metadata.
+    new = CONSOLIDATED + '/new-execution.json'
+    ce.capture(root, new, raw, head, 'pytest new', 0, codec=ce.XZ_FORMAT)
+    final = commit(root)
+    assert ce.read(root, new, final, tested=head, command='pytest new', exit_code=0) == raw
+    assert ce.audit(root, base, final, 'HG-047')['errors'] == []
+
+
+@pytest.mark.parametrize('selection', ['original', 'replacement'])
+def test_relocated_immutable_map_cannot_be_superseded(repo, selection):
+    root, base, _, record, head, _, _, _ = relocated(repo)
+    ref = record['entries'][0][selection]['envelope']['path']
+    with pytest.raises(ValueError, match='already-mapped'):
+        ce.reencode(root, base, head, 'HG-047', [ref], RECODE.replace('/conversion/', '/again/'), ce.FORMAT)
+
+
+@pytest.mark.parametrize('mutation', ['restore-original', 'delete-replacement', 'modify-replacement',
+                                      'delete-payload', 'delete-map', 'move-foreign', 'source-unavailable'])
+def test_relocated_mapping_guards_every_bound_object(repo, mutation):
+    root, base, source, record, _, _, refs, _ = relocated(repo)
+    replacement = record['entries'][0]['replacement']
+    if mutation == 'restore-original':
+        (root / refs[0]).write_bytes(ce.blob(root, refs[0], source))
+    elif mutation == 'delete-replacement':
+        (root / replacement['envelope']['path']).unlink()
+    elif mutation == 'modify-replacement':
+        p = root / replacement['envelope']['path']
+        manifest = json.loads(p.read_text())
+        manifest['command'] = 'different'
+        p.write_text(json.dumps(manifest))
+    elif mutation == 'delete-payload':
+        (root / replacement['payload']['path']).unlink()
+    elif mutation == 'delete-map':
+        (root / RECODE).unlink()
+    elif mutation == 'move-foreign':
+        record['entries'][0]['replacement']['envelope']['path'] = replacement['envelope']['path'].replace('HG-047', 'HG-048')
+        (root / RECODE).write_text(json.dumps(record))
+    else:
+        record['source_revision'] = '0' * 40
+        (root / RECODE).write_text(json.dumps(record))
+    bad = commit(root)
+    assert ce.audit(root, base, bad, 'HG-047')['errors']
+    if mutation == 'restore-original':
+        (root / refs[0]).unlink()
+        restored = commit(root)
+        assert ce.audit(root, base, restored, 'HG-047')['errors']
+
+
+@pytest.mark.parametrize('directory', ['docs/exec-plans/evidence/HG-048/shared',
+                                       'docs/exec-plans/reviews/HG-047/shared',
+                                       'docs/exec-plans/evidence/HG-047/../shared',
+                                       'docs/exec-plans/evidence/HG-047'])
+def test_relocation_refuses_foreign_cross_subtree_and_invalid_directory(repo, directory):
+    root, base, before, source = captured(repo)
+    snapshot = {p: p.read_bytes() for p in (root / 'docs').rglob('*') if p.is_file()}
+    with pytest.raises(ValueError):
+        ce.reencode(root, base, source, 'HG-047', [REF], RECODE, ce.XZ_FORMAT, directory)
+    assert {p: p.read_bytes() for p in (root / 'docs').rglob('*') if p.is_file()} == snapshot
+    assert (root / before['payload']).exists()
+
+
+@pytest.mark.parametrize('collision', ['current', 'source', 'protected-base', 'symlink'])
+def test_relocation_refuses_destination_collisions_before_any_writes(repo, collision):
+    root, base = repo
+    if collision == 'protected-base':
+        p = root / CONSOLIDATED / 'occupied.json'
+        p.parent.mkdir(parents=True)
+        p.write_text('protected')
+        base = commit(root)
+    before = ce.capture(root, REF, b'1 passed\n', base, 'pytest', 0)
+    destination = CONSOLIDATED + '/' + ce.digest((root / REF).read_bytes()) + '.json'
+    p = root / destination
+    p.parent.mkdir(parents=True, exist_ok=True)
+    if collision == 'symlink':
+        p.symlink_to(root / REF)
+    elif collision in ('current', 'source'):
+        p.write_text('collision')
+    source = commit(root)
+    if collision == 'source':
+        p.unlink()
+        commit(root)
+    if collision == 'protected-base':
+        # A protected payload destination is likewise prohibited even if the new
+        # envelope would be absent. Pin the actual expected payload in the base.
+        old = root / CONSOLIDATED / (before['raw_sha256'] + '.xz')
+        old.write_bytes(ce.encode(b'1 passed\n', ce.XZ_FORMAT))
+        base = commit(root)
+        source = base
+    original = (root / REF).read_bytes()
+    with pytest.raises(ValueError):
+        ce.reencode(root, base, source, 'HG-047', [REF], RECODE, ce.XZ_FORMAT, CONSOLIDATED)
+    assert (root / REF).read_bytes() == original
+    assert not (root / RECODE).exists()
+
+
+def test_relocation_validation_failure_rolls_back_originals_and_new_destinations(repo, monkeypatch):
+    root, base, before, source = captured(repo)
+    original = (root / REF).read_bytes()
+    payload = (root / before['payload']).read_bytes()
+    def fail(*args, **kwargs):
+        raise ValueError('simulated relocation validation failure')
+    monkeypatch.setattr(ce, 'validate_reencoding', fail)
+    with pytest.raises(ValueError, match='simulated'):
+        ce.reencode(root, base, source, 'HG-047', [REF], RECODE, ce.XZ_FORMAT, CONSOLIDATED)
+    assert (root / REF).read_bytes() == original
+    assert (root / before['payload']).read_bytes() == payload
+    assert not list((root / CONSOLIDATED).glob('*'))
+    assert not (root / RECODE).exists()
+
+
+def test_relocation_rejects_hidden_committed_destination_after_source(repo):
+    root, base, _, source = captured(repo)
+    destination = CONSOLIDATED + '/' + ce.digest((root / REF).read_bytes()) + '.json'
+    p = root / destination
+    p.parent.mkdir(parents=True)
+    p.write_text('independent committed artifact')
+    commit(root)
+    p.unlink()
+    before = (root / REF).read_bytes()
+    with pytest.raises(ValueError, match='destination-collision'):
+        ce.reencode(root, base, source, 'HG-047', [REF], RECODE, ce.XZ_FORMAT, CONSOLIDATED)
+    assert (root / REF).read_bytes() == before
+    assert not p.exists() and not (root / RECODE).exists()
+
+
+@pytest.mark.parametrize('mutation', ['arbitrary-name', 'owner-root', 'retained-source'])
+def test_handwritten_relocation_map_enforces_destination_shape_and_retirement(repo, mutation):
+    root, base, _, record, _, _, refs, _ = relocated(repo)
+    old = record['entries'][0]['replacement']['envelope']['path']
+    if mutation == 'retained-source':
+        source = record['source_revision']
+        (root / refs[0]).write_bytes(ce.blob(root, refs[0], source))
+    else:
+        new = str(Path(old).with_name('arbitrary.json')) if mutation == 'arbitrary-name' else (
+            'docs/exec-plans/evidence/HG-047/' + Path(old).name)
+        (root / old).rename(root / new)
+        record['entries'][0]['replacement']['envelope'] = ce.snapshot_bytes(new, (root / new).read_bytes())
+        (root / RECODE).write_text(json.dumps(record))
+    bad = commit(root)
+    assert ce.audit(root, base, bad, 'HG-047')['errors']
+
+
+def test_handwritten_map_cannot_overwrite_parent_destination(repo):
+    root, base, original, source = captured(repo)
+    record = ce.reencode(root, base, source, 'HG-047', [REF], RECODE, ce.XZ_FORMAT, CONSOLIDATED)
+    replacement = record['entries'][0]['replacement']
+    snapshots = {path: (root / path).read_bytes() for path in (
+        replacement['envelope']['path'], replacement['payload']['path'], RECODE)}
+    git(root, 'reset', '--hard', source)
+    # Clear only fixture's untracked outputs from the uncommitted candidate.
+    for path in snapshots:
+        (root / path).unlink(missing_ok=True)
+    destination = root / replacement['envelope']['path']
+    destination.write_text('independent committed artifact')
+    collision = commit(root)
+    for path, data in snapshots.items():
+        (root / path).parent.mkdir(parents=True, exist_ok=True)
+        (root / path).write_bytes(data)
+    (root / REF).unlink()
+    (root / original['payload']).unlink()
+    bad = commit(root)
+    assert any('destination-preexists' in error for error in ce.audit(root, base, bad, 'HG-047')['errors'])
+    # A later unchanged suffix cannot erase the failed admission edge.
+    (root / 'source').write_text('later')
+    restored = commit(root)
+    assert ce.audit(root, base, restored, 'HG-047')['errors']
+    assert ce.blob(root, replacement['envelope']['path'], collision) == b'independent committed artifact'

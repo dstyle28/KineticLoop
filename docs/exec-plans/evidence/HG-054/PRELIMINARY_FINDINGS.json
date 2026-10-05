@@ -153,5 +153,47 @@
     "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness.json",
     "finding": "The two list/dict nested-storage fixtures excluded an earlier stale-source rejection. New malformed inner reserved metadata invalidates the entire tested suffix before M3 chooses either stdout, so the strengthened guard correctly rejects it earlier.",
     "resolution": "No implementation relaxation. For these two fixture shapes assert exact direct bound-read metadata-shape errors, exact tested-suffix metadata-shape error, and exact M3 stale-source rejection. Other five nested mutations and ordinary-source positives stay unchanged. Independent PROTOCOL diagnosis confirms this rejection order."
+  },
+  "exact_R_storage_review": {
+    "revision": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+    "status": "CHANGES_REQUIRED",
+    "roles": [
+      "GENERAL",
+      "PROTOCOL",
+      "DB_CONCURRENCY",
+      "SECURITY_DATA_BOUNDARY"
+    ],
+    "review_record_commit": "3e8d0969cf915d3bc06bc5d7d76f2ae300e23024",
+    "actual_audit_exit": 1,
+    "raw_sha256": "f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d",
+    "raw_bytes": 3345163,
+    "stored_bytes_each": 400494,
+    "finding": "Two separate current payload paths duplicate exact bulk collection bytes. Eleven C10 checks PASS does not grant storage gate PASS.",
+    "correction": "Explicit mapped same-owner child-directory relocation during mandatory codec change; preserve old original commit snapshots and metadata, share one current payload, rerun all checks at new tested revision and obtain four fresh reviews."
+  },
+  "relocation_refinement_exploratory": {
+    "classification": "UNCOMMITTED_SOURCE_EXPLORATORY_NOT_TESTED_SHA_AUTHORITY",
+    "first_focused_run": "1 failed, 18 passed; one new assertion incorrectly passed task identity to path classifier, corrected to mapping path.",
+    "second_focused_run": "19 passed",
+    "corrected_focused_run": "24 passed, 482 deselected in 87.35s",
+    "source_findings": [
+      {
+        "roles": [
+          "GENERAL",
+          "PROTOCOL"
+        ],
+        "issue": "Working-file absence hid destination committed after older selected source.",
+        "resolution": "HEAD-tree collision/input snapshots and every map-admission parent destination absence; writer and hand-authored map negative fixtures."
+      },
+      {
+        "roles": [
+          "DB_CONCURRENCY",
+          "PROTOCOL"
+        ],
+        "issue": "Hand-authored maps bypassed writer hash filename/child-directory rule.",
+        "resolution": "Validator enforces original-envelope SHA256 basename and same-owner child directory; manual mapping negative fixtures."
+      }
+    ],
+    "limits": "Exploratory lint/typecheck/probe passes do not replace immutable required executions or fresh formal reviews."
   }
 }

@@ -160,10 +160,23 @@ unmerged gzip-v1/xz-v1 regular blobs absent from the protected PR base. No plain
 archival, foreign-owner, renamed-owner, invalid or sanitized-as-original input is
 admitted. The explicit `reencode` action is separate from capture/read/audit; source
 is a full existing ancestor commit and must match the current selected envelope and
-payload bytes. The envelope path, raw bytes/hash/length, tested commit, command,
+payload bytes. The raw bytes/hash/length, tested commit, command,
 exit code, timestamp and test counts remain exactly equal. Only codec marker,
 payload extension/path, stored hash and stored length change. This representation
 operation is not a new execution and cannot promote any earlier failure or review.
+
+During this explicit codec change, optional `--destination-dir` may relocate the
+selected envelopes into one new child directory under exactly the same owner and
+evidence/review subtree. Replacement envelope names are the SHA256 of each original
+envelope, so independent execution metadata remains distinct while identical raw
+bytes can share one same-directory content-addressed payload. Every original and
+replacement path is snapshot-bound by the immutable mapping. Refuse source,
+current-tree or protected-base destination collisions, foreign/subtree moves and
+unaccounted source retirement. A relocated original envelope must be absent from
+the resulting tree; its original bound Git object remains available in ancestry.
+This authorizes no codec-free relocation or general deletion. The default action
+keeps each envelope at its original path. Neither side of a map may be converted
+again in the same unmerged branch.
 
 The same forward commit includes a uniquely named task-owned child
 `COMPACT_REENCODING.json` ordinary audit record with `compact_reencoding: v1`.

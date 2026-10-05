@@ -70,23 +70,33 @@ def main() -> int:
         target = directory / (record['check_id'] + '.json')
         ref = str(target.relative_to(ROOT))
         ce.capture(ROOT, ref, Path(record['log']).read_bytes(), revision,
-                   record['command'], record['exit_code'], codec=ce.FORMAT)
+                   record['command'], record['exit_code'], codec=ce.XZ_FORMAT)
         record['evidence_ref'] = ref
     # Collection identities, actual pytest phases/counts/JUnit and harness manifest
     # supplement stdout; these are captures from real executions, never a new run.
     harness = next(r for r in records if r['check_id'] == 'harness')
+    artifacts = []
     for artifact in sorted((temp / 'harness').glob('*')):
         if artifact.is_file():
-            ce.capture(ROOT, str((directory / ('harness-' + artifact.name + '.json')).relative_to(ROOT)),
-                       artifact.read_bytes(), revision, harness['command'], harness['exit_code'])
+            target = directory / ('harness-' + artifact.name + '.json')
+            if artifact.name == 'collection.json':
+                target = ROOT / 'docs/exec-plans/evidence/HG-054/shared-collection' / (
+                    revision + '-' + temp.name[-8:] + '-collection.json')
+            ref = str(target.relative_to(ROOT))
+            ce.capture(ROOT, ref, artifact.read_bytes(), revision, harness['command'],
+                       harness['exit_code'], codec=ce.XZ_FORMAT)
+            artifacts.append({'name': artifact.name, 'evidence_ref': ref})
     if (temp / 'unit.xml').exists():
         unit = next(r for r in records if r['check_id'] == 'unit')
         ce.capture(ROOT, str((directory / 'unit-junit.xml.json').relative_to(ROOT)),
-                   (temp / 'unit.xml').read_bytes(), revision, unit['command'], unit['exit_code'])
+                   (temp / 'unit.xml').read_bytes(), revision, unit['command'], unit['exit_code'],
+                   codec=ce.XZ_FORMAT)
     (directory / 'RUN.json').write_text(json.dumps({'tested_commit': revision, 'protected_base': BASE,
         'python': python, 'python_version': sys.version, 'PYTHONPATH': environment['PYTHONPATH'],
         'versions': versions,
-        'checks': records, 'scratch': str(temp), 'scope': 'HG054 developer checks; App/fullDB NOT_RUN'}, indent=2) + '\n')
+        'checks': records, 'harness_artifacts': artifacts, 'scratch': str(temp),
+        'capture_codec': 'xz-v1 explicitly selected; tool default gzip unchanged',
+        'scope': 'HG054 developer checks; App/fullDB NOT_RUN'}, indent=2) + '\n')
     print(str(directory / 'RUN.json'), flush=True)
     return int(any(record['exit_code'] != 0 for record in records))
 
