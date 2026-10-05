@@ -1,0 +1,29 @@
+{
+  "purpose": "BOUNDED_READ_ONLY_PERFORMANCE_ADJUDICATION_NOT_COMPLETE_PASS",
+  "implementation": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+  "harness_seconds": 2785.3,
+  "harness_actual": {
+    "passed": 1842,
+    "failed": 1,
+    "exit_code": 1
+  },
+  "prior_hg054_ea7_run": {
+    "bound_reader_seconds": 4199.43,
+    "harness_seconds": 2728.362,
+    "source": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/RUN.json"
+  },
+  "reader_sample": {
+    "pid": 30834,
+    "duration_seconds": 2,
+    "total_samples": 1565,
+    "subprocess_poll_samples": 1326,
+    "fork_exec_samples": 167,
+    "regex_stall_observed": false
+  },
+  "harness_failure": "test_missing_blob_is_not_available_evidence_or_an_absent_path[review_record] FileNotFoundError at isolated loose object unlink; actual failure preserved",
+  "limitations": [
+    "Two-second sample does not establish universal absence of performance regression.",
+    "Existing observer proves completed harness cases; remaining reader is active, no interruption or rerun.",
+    "No environment, locals, source fixture body, signing credentials or private logs emitted."
+  ]
+}

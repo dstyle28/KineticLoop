@@ -1,0 +1,155 @@
+change_identity: harness-governance-v0.1/HG-056
+display_change_id: HG-056
+base_commit: 3ec7f7a38d974256a928c3687f63e4d90019e42b
+tested_commit: a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86
+change_status: BLOCKED
+summary: The original reader false positive is corrected and strict reserved source-wrapper rejection is preserved.
+  Actual immutable executions are recorded, but KL036 complete-history compatibility, historical source-review availability,
+  the missing-blob fixture, and machine-identity capture remain blocked. No merge/admission or App/fullDB readiness.
+packets_refined: []
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- docs/exec-plans/evidence/HG-056/PACKET.md
+- docs/exec-plans/evidence/HG-056/PREFLIGHT.json
+- docs/exec-plans/evidence/HG-056/PREPARATION.json
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/1853ea60323bf0c7bd265ffec22744a0b3cb0897b1c136008a18583f7244cb00.xz
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/22672a1e0e2dd9a22473a72e11b9cef765f7409031f3b47f5c3b5132d3d6110e.xz
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/477005c5e1ac54200c6256a5f37ec95b44e4e12fee45a8d6ec164fceb9c691ea.xz
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/54ea2a7f52fd9a7b4d0b2db5f666e456adec8aa82f0d7ccfecf7fe6209d7a026.xz
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/6c68b3f689c819e45506f9efe6e9688c7f8327a9724ed96f675eb23c573f6b92.xz
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/706d8c98d66583900f1c073220a23aee540cc8cc77a825e2632cea998da3618a.xz
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.xz
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/RUN.json
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/authority.json
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb.xz
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/bfdf1d65b70997784e7ea9a8ff18dff59c241f47bc14231a759e5b147bddfbed.xz
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/bound_reader_regressions.json
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/codec_security_and_budget.json
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/compatibility.json
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/diff.json
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.xz
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/e8d6969abf48165fe76fb3acf0f5230046c4dad374280e76e6c0c4ac2bf72f86.xz
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/harness.json
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/installed_decoder_isolation.json
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/lint.json
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/scope.json
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/typecheck.json
+- docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/unit.json
+- docs/exec-plans/evidence/HG-056/diagnostics/REVIEW_SOURCE_PROPOSAL_NOT_IMPLEMENTED.md
+- docs/exec-plans/evidence/HG-056/diagnostics/hg056-collection-storage-diagnostic.json
+- docs/exec-plans/evidence/HG-056/diagnostics/hg056-harness-performance-diagnostic.json
+- docs/exec-plans/evidence/HG-056/diagnostics/hg056-hg047-review-suffix-diagnostic.json
+- docs/exec-plans/evidence/HG-056/diagnostics/hg056-kl036-history-blocker.json
+- docs/exec-plans/evidence/HG-056/diagnostics/hg056-kl036-selected-map-diagnostic.json
+- docs/exec-plans/evidence/HG-056/diagnostics/hg056-performance-adjudication.json
+- docs/exec-plans/evidence/HG-056/diagnostics/hg056-review-source-static-diagnostic.json
+- docs/exec-plans/evidence/HG-056/original-reader.fixture
+- docs/exec-plans/evidence/HG-056/refresh_authority.py
+- docs/exec-plans/evidence/HG-056/run_checks.py
+- docs/exec-plans/evidence/HG-056/runner-capture-failure.log
+- docs/exec-plans/evidence/HG-056/superseded-927012be/RUN.json
+- docs/exec-plans/evidence/HG-056/superseded-927012be/bound_reader_regressions.log
+- docs/exec-plans/evidence/HG-056/superseded-927012be/codec_security_and_budget.log
+- docs/exec-plans/evidence/HG-056/superseded-927012be/compatibility.log
+- docs/exec-plans/evidence/HG-056/superseded-927012be/installed_decoder_isolation.log
+- docs/exec-plans/evidence/HG-056/superseded-9bb24745/RUN.json
+- docs/exec-plans/evidence/HG-056/superseded-9bb24745/bound_reader_regressions.log
+- docs/exec-plans/evidence/HG-056/superseded-9bb24745/codec_security_and_budget.log
+- docs/exec-plans/evidence/HG-056/superseded-9bb24745/compatibility.log
+- docs/exec-plans/evidence/HG-056/superseded-9bb24745/installed_decoder_isolation.log
+- docs/exec-plans/evidence/HG-056/verify_compatibility.py
+- docs/exec-plans/evidence/HG-056/verify_scope.py
+- docs/exec-plans/governance/HG-056.yaml
+- docs/harness/EVIDENCE_STORAGE_POLICY.md
+- docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
+- tests/harness/test_compact_evidence.py
+- tests/harness/test_validator.py
+- tools/harness/compact_evidence.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: authority
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness
+  result: FAIL
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/authority.json
+- check_id: bound_reader_regressions
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_review_evidence_provenance.py
+    tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -q
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/bound_reader_regressions.json
+- check_id: codec_security_and_budget
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_compact_evidence.py
+    -q
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/codec_security_and_budget.json
+- check_id: compatibility
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-056/verify_compatibility.py
+  result: FAIL
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/compatibility.json
+- check_id: diff
+  command: git diff --check 3ec7f7a38d974256a928c3687f63e4d90019e42b a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/diff.json
+- check_id: harness
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers
+    2 --evidence-dir /private/tmp/hg056-checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/harness -q
+  result: FAIL
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/harness.json
+- check_id: installed_decoder_isolation
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_local_gate.py
+    -q
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/installed_decoder_isolation.json
+- check_id: lint
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/lint.json
+- check_id: scope
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-056/verify_scope.py
+    --base 3ec7f7a38d974256a928c3687f63e4d90019e42b
+  result: FAIL
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/scope.json
+- check_id: typecheck
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/typecheck.json
+- check_id: unit
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit -q --junitxml=/private/tmp/hg056-checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/unit.xml
+  result: FAIL
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/unit.json
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- Original reader pins and bytes remain unchanged; envelope/reencoding_record return None and bound read is byte-identical.
+  Actual decoder613 and reader/M3/validator339 PASS are implementation executions, not complete compatibility, product,
+  requirement or release PASS.
+- 'Complete immutable KL036 H1fee7a4ef9ecb484da24522962a6df4d4c2bd9b9/B3ec7f7a38d974256a928c3687f63e4d90019e42b
+  history/storage audit FAIL: e81cc2cc unmapped same-codec payload consolidation. Only inherited HG054 map reached
+  in complete history; selected current four-entry KL036 map separately validates. Exact-byte consolidation is not
+  existing codec-free relocation authority. Both actual audit errors and incomplete inventory remain BLOCKED.'
+- Actual unit246pass1fail and authorityFAIL reject three current test-source refs and three historical HG047 review-created
+  helper refs. Review-source inspection is proposed, NOT_IMPLEMENTED. Exact original reviewed/record SHA binding,
+  strict execution decoding, suffix guards and separate cache purposes remain mandatory; no HEAD borrowing or error
+  swallowing.
+- 'Actual harness1842pass1fail: isolated missing-blob review_record fixture raises FileNotFoundError unlinking its
+  expected loose object. Failure is preserved without waiver. Native sampling and actual observer show active Git/subprocess
+  validation, not a demonstrated regex stall; the two-second sample is not universal performance proof.'
+- Immutable scope FAIL was an authored100644-only assertion on pre-existing executable validator100755. Own evidence
+  verifier now accepts both regular Git modes; original immutable failure stays FAIL. No duplicate whole cycle is
+  scheduled.
+- 'Runner exits1 during ancillary capture: automatic negative fixture IDs embed reserved metadata in real ordered
+  collection JSON. Eleven exact stdout/command/exit/tested envelopes are preserved and RUN metadata reconstructed
+  from them plus original runner stdout. Original collection/execution/JUnit remain unchanged task scratch with
+  SHA/count diagnostics, not copied or filtered. Machine-identity capture is BLOCKED; explicit stable descriptive
+  IDs are proposed, not implemented.'
+- Two earlier source attempts were interrupted and superseded; completed isolation PASS and unobserved interrupted
+  outcomes remain recorded. Initial failed preparation counts are retained, not promoted to final acceptance.
+- Python3.12 fallback uses the existing absolute interpreter and already-approved isolated xdist/execnet dependency
+  path. Initial versions preflight was not persisted after capture failure; post-run version observation is explicitly
+  identified as such.
+- Classifier, validator, tests and contracts remain frozen at a8ed5ba4. All four implementation leases released;
+  only own evidence/result/review bookkeeping continues. No DB/App executor, installation/admission, signing credentials,
+  historical helper execution/edits, codec/budget/schema/frozen or requirement changes.
+- Root recovery-scope choice is pending. HG056 grants no consolidation authority and does not amend its complete
+  immutable compatibility oracle behind review. Actual unmet gates prohibit normal merge, admission, App/fullDB
+  scheduling and production/shadow PASS. Additional implementation needs exact-path resource reacquisition first.

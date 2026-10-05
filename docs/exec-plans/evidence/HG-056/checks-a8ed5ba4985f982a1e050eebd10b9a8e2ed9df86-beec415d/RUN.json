@@ -1,0 +1,135 @@
+{
+  "tested_commit": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+  "protected_base": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "python": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+  "PYTHONPATH": "/Users/davetian/.codex/worktrees/a5f1/KineticLoop/src:/private/tmp/hg054-dependencies",
+  "checks": [
+    {
+      "check_id": "authority",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness",
+      "result": "FAIL",
+      "exit_code": 1,
+      "seconds": 589.9,
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/authority.json",
+      "observed_counts": {}
+    },
+    {
+      "check_id": "bound_reader_regressions",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_review_evidence_provenance.py tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -q",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 4128.1,
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/bound_reader_regressions.json",
+      "observed_counts": {
+        "passed": 339
+      }
+    },
+    {
+      "check_id": "codec_security_and_budget",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_compact_evidence.py -q",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 821.0,
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/codec_security_and_budget.json",
+      "observed_counts": {
+        "passed": 613
+      }
+    },
+    {
+      "check_id": "compatibility",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-056/verify_compatibility.py",
+      "result": "FAIL",
+      "exit_code": 1,
+      "seconds": 325.1,
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/compatibility.json",
+      "observed_counts": {}
+    },
+    {
+      "check_id": "diff",
+      "command": "git diff --check 3ec7f7a38d974256a928c3687f63e4d90019e42b a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 0.0,
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/diff.json",
+      "observed_counts": {}
+    },
+    {
+      "check_id": "harness",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg056-checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/harness -q",
+      "result": "FAIL",
+      "exit_code": 1,
+      "seconds": 2785.3,
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/harness.json",
+      "observed_counts": {
+        "failed": 1,
+        "passed": 1842
+      }
+    },
+    {
+      "check_id": "installed_decoder_isolation",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_local_gate.py -q",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 8.5,
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/installed_decoder_isolation.json",
+      "observed_counts": {
+        "passed": 103
+      }
+    },
+    {
+      "check_id": "lint",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 0.1,
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/lint.json",
+      "observed_counts": {}
+    },
+    {
+      "check_id": "scope",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-056/verify_scope.py --base 3ec7f7a38d974256a928c3687f63e4d90019e42b",
+      "result": "FAIL",
+      "exit_code": 1,
+      "seconds": 0.4,
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/scope.json",
+      "observed_counts": {}
+    },
+    {
+      "check_id": "typecheck",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 0.4,
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/typecheck.json",
+      "observed_counts": {}
+    },
+    {
+      "check_id": "unit",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit -q --junitxml=/private/tmp/hg056-checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/unit.xml",
+      "result": "FAIL",
+      "exit_code": 1,
+      "seconds": 582.0,
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/unit.json",
+      "observed_counts": {
+        "failed": 1,
+        "passed": 246
+      }
+    }
+  ],
+  "runner_exit": 1,
+  "runner_capture_failure": "evidence-envelope-shape in real harness collection.json; automatic negative fixture IDs embedded reserved source metadata",
+  "metadata_recovery": "Reconstructed losslessly from the eleven actual captured envelopes and original runner stdout after capture exception prevented RUN creation. No unobserved exit/count claimed.",
+  "identity_capture_status": "BLOCKED: original ordered collection/execution artifacts remain unchanged task scratch; no fixture bodies copied, no filtered identities or execution PASS fabricated.",
+  "scratch": "/private/tmp/hg056-checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d",
+  "status": "BLOCKED_NOT_ADMISSION_APP_OR_TASK_PASS",
+  "implementation_resources": "All four implementation leases released; source frozen, own output/result/review bookkeeping only.",
+  "post_run_environment_observation": {
+    "python_version": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+    "versions": {
+      "pytest": "8.4.2",
+      "pytest-xdist": "3.8.0",
+      "execnet": "2.1.2"
+    },
+    "limitation": "Same unchanged child interpreter/dependency path queried after runner failure; initial version preflight was not persisted."
+  }
+}

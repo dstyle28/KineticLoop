@@ -35,7 +35,7 @@ def main() -> None:
         assert path in EXACT or path.startswith(PREFIXES), 'out-of-scope:' + path
         assert all(part not in ('', '.', '..') for part in path.split('/')), 'invalid path'
         entry = git('ls-tree', '-z', head, '--', path)
-        assert entry.startswith(b'100644 blob '), 'missing/nonregular:' + path
+        assert entry.startswith((b'100644 blob ', b'100755 blob ')), 'missing/nonregular:' + path
         assert entry.split(b'\t', 1)[1].rstrip(b'\0').decode() == path, 'wrong tree entry'
     frozen = json.loads(git('show', base + ':FROZEN_BASELINE.json'))
     retained = ['FROZEN_BASELINE.json', *[entry['path'] for entry in frozen['files']]]
