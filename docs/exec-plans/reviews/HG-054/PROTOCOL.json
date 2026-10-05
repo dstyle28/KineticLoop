@@ -1,0 +1,34 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-054",
+  "reviewed_head_sha": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+  "review_type": "PROTOCOL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "title": "Separate final/preserved collection payloads violate duplicate-bulk admission",
+      "paths": [
+        "docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness-collection.json.json",
+        "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-collection.json.json"
+      ],
+      "description": "Both exact-revision bound collection artifacts recover the same 3,345,163-byte raw object with SHA256 f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d, but use separate same-directory gzip payload paths (400,494 bytes each). The unchanged storage audit rejects duplicate raw bulk in distinct payloads at or above 16 KiB. This violates the execution packet required final exact-head zero-error storage audit even though the aggregate numerical budget and corrected execution checks pass. Preserve the earlier real failure/source/review bindings; correct the new evidence generation/admission without rewriting outputs, waiving duplicate-bulk, or promoting historical collection to a new tested execution. A new concrete revision needs fresh evidence/result/reviews as required by its scope.",
+      "independent_proof": "Retrieved both regular envelope/payload pairs at the exact reviewed SHA with each original tested SHA, command and exit; bytes are exactly equal and the payload paths are different. This satisfies the actual audit duplicate-bulk predicate at tools/harness/compact_evidence.py:1379."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/HG-054/protocol/INDEPENDENT_REVIEW.json",
+    "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/RUN.json",
+    "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-collection.json.json",
+    "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-execution.json.json",
+    "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-junit.xml.json",
+    "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-manifest.json.json",
+    "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/codec_security_and_budget.json",
+    "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/bound_reader_regressions.json",
+    "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/installed_decoder_isolation.json",
+    "docs/exec-plans/evidence/HG-054/EXECUTION_PACKET.md",
+    "docs/exec-plans/governance/HG-054.yaml",
+    "docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness-collection.json.json",
+    "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-collection.json.json"
+  ],
+  "review_contract_version": "v0.2"
+}

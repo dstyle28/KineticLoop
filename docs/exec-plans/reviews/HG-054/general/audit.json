@@ -1,0 +1,16 @@
+{
+  "reviewed_sha": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+  "command": "PYTHONPATH=\"$PWD/src:/private/tmp/hg054-dependencies\" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python tools/harness/compact_evidence.py audit --base af09be228fbc89d074b6e863c83e1fdda343d55b --head 9b15954c76ff8bbe3187e87641a62a08394da75e --identity HG-054",
+  "exit_code": 1,
+  "output": {
+    "identity": "HG-054",
+    "base": "af09be228fbc89d074b6e863c83e1fdda343d55b",
+    "head": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+    "stored_bytes": 14203926,
+    "files": 321,
+    "errors": [
+      "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-collection.json.json:duplicate-bulk:docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d.gz"
+    ],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  }
+}

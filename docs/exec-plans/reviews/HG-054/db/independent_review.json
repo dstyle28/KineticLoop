@@ -1,0 +1,230 @@
+{
+  "reviewed_revision": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+  "base_revision": "af09be228fbc89d074b6e863c83e1fdda343d55b",
+  "implementation_revision": "ea7a809d3d839bacc15ebbb106fe63d60533a718",
+  "role": "DB_CONCURRENCY",
+  "scope": "Independent fixed-result review of governance storage changes; no DB/controller/network operations.",
+  "authorities_read": [
+    "AGENTS.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    "docs/exec-plans/evidence/HG-054/EXECUTION_PACKET.md",
+    "docs/exec-plans/governance/HG-054.yaml",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    ".agents/skills/pr-merge-reviewer/SKILL.md",
+    ".agents/skills/db-transaction-reviewer/SKILL.md",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md sections 4 and 5",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md registry gate and T1-T8 boundaries",
+    "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+    "docs/harness/LOCAL_DB_CI.md"
+  ],
+  "scope_proof": {
+    "method": "git diff --name-only base result and implementation result; frozen indexed hashes independently checked from regular Git objects",
+    "unchanged_paths": [
+      "src/**",
+      "migrations/**",
+      ".github/workflows/**",
+      "FROZEN_BASELINE.json",
+      "HISTORICAL_EVIDENCE_MAPPING.schema.json",
+      "docs/harness/HISTORICAL_EVIDENCE_MAPPING.json"
+    ],
+    "frozen_authorities": [
+      {
+        "path": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "sha256": "00bf3eb2e0e2e00867d114b42e147a2341d98454f08629c849ebf0b4c0c4916c"
+      },
+      {
+        "path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "sha256": "2158a80bdc0e16eaf9c2cd835f704bdc2f346565dc35cb0c1fc1a8c00a1b8eda"
+      }
+    ],
+    "historical_inventory_function_byte_identical": true,
+    "implementation_result_suffix": "Task evidence/governance/index/manifest bookkeeping only; source/tests/contracts unchanged."
+  },
+  "database_assessment": "This changes local evidence representation and provenance, outside production T1-T8. It introduces no DB row, SQL transaction, migration, SafetyRegistry/S01 lock, lease/fence, outbox, call ledger, or command owner change. Frozen S51 -> S01 -> S30 -> S27 -> S31 -> S38 -> S44 order remains untouched. No PostgreSQL concurrency claim or product requirement PASS is supported by these local checks.",
+  "writer_assessment": {
+    "inspected_functions": [
+      "reencode",
+      "validate_reencoding",
+      "reencoding_audit",
+      "audit",
+      "storage_bookkeeping_only"
+    ],
+    "preflight": "Exact source/base commits and ancestry, source/working byte equality, owners, protected-base absence, symlink/conflict checks, and prior immutable maps are checked before first write. Source snapshots and execution fields bind unchanged bytes; deletion accounts for live same-owner references. All-parent audit rejects transient/inherited/foreign mutation.",
+    "rollback": "Replacement originals and deleted old payloads are retained in memory and restored on ordinary handled validation/write failure; new map removed. Seven focused checks independently passed.",
+    "limits": "No filesystem lock, atomic multi-file commit, concurrent-writer recovery, or crash recovery is implemented or claimed. Policy requires exclusive serialized capture/reencode/edit/commit; interrupted state remains BLOCKED until restored or complete map validates. This limitation is within the assigned packet and does not grant DB transaction authority."
+  },
+  "final_execution_proof": {
+    "method": "Loaded exact-R compact reader from Git blob; decoded all 11 actual RUN refs at R; tested SHA, command, exit0, and recorded PASS match each RUN entry; raw hash/length guards succeeded. forward_reencoding_guards shares codec module execution and is not a twelfth execution.",
+    "checks": [
+      {
+        "id": "codec_security_and_budget",
+        "bytes": 592,
+        "sha256": "abdec65897f15ea0e205b6816a19f00522a5154d1daacd6fc454c9de0331704f"
+      },
+      {
+        "id": "bound_reader_regressions",
+        "bytes": 433,
+        "sha256": "2fa0c05438446c9e39a93d34f51c4ccbee2defbf0bdeccf5cb038b952f447268"
+      },
+      {
+        "id": "installed_decoder_isolation",
+        "bytes": 180,
+        "sha256": "3217c1459995da2f5b61d21fffceb05954c074bae28739aa310be2a971237fa9"
+      },
+      {
+        "id": "representative_roundtrip",
+        "bytes": 3164,
+        "sha256": "97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e"
+      },
+      {
+        "id": "scope",
+        "bytes": 39998,
+        "sha256": "0080ae99cad60205fd7c5574096c16fcf0ac5c9e79f15a0fc8c5142db27392d1"
+      },
+      {
+        "id": "unit",
+        "bytes": 461,
+        "sha256": "6c4a8d8050453315f9ecc3c83a5a9fe076c57a95bf22700200f889d39a868bf0"
+      },
+      {
+        "id": "harness",
+        "bytes": 2115,
+        "sha256": "2ac10cccffbee4f602930e2c924adeb4678615db24755d765ce542ed6f6eed0d"
+      },
+      {
+        "id": "lint",
+        "bytes": 19,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      {
+        "id": "typecheck",
+        "bytes": 45,
+        "sha256": "5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523"
+      },
+      {
+        "id": "authority",
+        "bytes": 38,
+        "sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70"
+      },
+      {
+        "id": "diff",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "positive_counts": {
+      "codec": 482,
+      "bound_reader": 337,
+      "installed_decoder": 103,
+      "unit": 247,
+      "harness": 1700
+    },
+    "harness_identity_proof": "Serial collection has 1700 unique node IDs; both worker collections match; exactly 1700 starts and passed call reports match that set; all 5100 phase reports passed; JUnit contains 1700 cases, no failures/errors/skips. Unit JUnit has 247 cases, no failures/errors/skips.",
+    "superseded_runs": [
+      {
+        "path": "docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/RUN.json",
+        "tested_commit": "50f3b908aebaea41ed9b88f409c54a17334a739a",
+        "recorded_check_status_counts": {
+          "FAIL": 5,
+          "PASS": 6
+        }
+      },
+      {
+        "path": "docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/RUN.json",
+        "tested_commit": "7dd61f47bff65d2fd1260672f391fa15ae256f74",
+        "recorded_check_status_counts": {
+          "FAIL": 5,
+          "PASS": 6
+        }
+      },
+      {
+        "path": "docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/RUN.json",
+        "tested_commit": "b8498b601d92a64b548fb702e962cab2431af5b7",
+        "recorded_check_status_counts": {
+          "PASS": 8,
+          "FAIL": 3
+        }
+      },
+      {
+        "path": "docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/RUN.json",
+        "tested_commit": "bb0aa23090f00e37d71a18b514ade57bff9a54c1",
+        "recorded_check_status_counts": {
+          "PASS": 9,
+          "FAIL": 2
+        }
+      },
+      {
+        "path": "docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/RUN.json",
+        "tested_commit": "d0a39402c4f7f3585e495e4ea3b30bbcf88db737",
+        "recorded_check_status_counts": {
+          "PASS": 8,
+          "FAIL": 3
+        }
+      },
+      {
+        "path": "docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/RUN.json",
+        "tested_commit": "e1de54a7bb0825d07446066401407437c7229d2e",
+        "recorded_check_status_counts": {
+          "FAIL": 5,
+          "PASS": 6
+        }
+      },
+      {
+        "path": "docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/RUN.json",
+        "tested_commit": "ea1780c842ba12e426f2691c59fb7980589e8bfe",
+        "recorded_check_status_counts": {
+          "PASS": 7,
+          "FAIL": 4
+        }
+      },
+      {
+        "path": "docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/RUN.json",
+        "tested_commit": "ec5503f3f4261e8b89477fc6840df3a2980d64dd",
+        "recorded_check_status_counts": {
+          "FAIL": 6,
+          "PASS": 5
+        }
+      }
+    ]
+  },
+  "independent_focused_verification": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=<worktree>/src:/private/tmp/hg054-dependencies <existing-python> -m pytest tests/harness/test_compact_evidence.py::<seven named cases> -q -o cache_dir=/private/tmp/hg054-db-pytest-cache --basetemp /private/tmp/hg054-db-focused-fixtures",
+    "exit_code": 0,
+    "output": "7 passed in 15.25s",
+    "cases": [
+      "test_conversion_write_failure_restores_all_original_bytes",
+      "test_all_selection_validated_before_first_mutation",
+      "test_shared_payload_removed_only_after_all_current_refs_converted",
+      "test_all_shared_refs_conversion_and_changed_byte_accounting",
+      "test_mapping_original_source_loss_is_fail_closed",
+      "test_unrelated_owner_rejects_restored_mapping_on_merged_post_admission_branch",
+      "test_pre_admission_side_branch_needs_no_retroactive_inherited_mapping"
+    ]
+  },
+  "independent_exact_result_audit": {
+    "command": "python tools/harness/compact_evidence.py audit --base af09be228fbc89d074b6e863c83e1fdda343d55b --head 9b15954c76ff8bbe3187e87641a62a08394da75e --identity HG-054",
+    "files": 321,
+    "stored_bytes": 14203926,
+    "limit_bytes": 16777216,
+    "errors": [
+      "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-collection.json.json:duplicate-bulk:docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d.gz"
+    ],
+    "status": "FAIL"
+  },
+  "blocker_proof": {
+    "artifacts": [
+      "docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness-collection.json.json",
+      "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-collection.json.json"
+    ],
+    "decoded_sha256": "f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d",
+    "decoded_bytes": 3345163,
+    "payload_paths_distinct": true,
+    "impact": "Required pre-review/merge compact audit fails despite aggregate bytes fitting the budget. Prior failed/interrupted bindings must remain preserved; a prospective compliant repair needs a new implementation/test/result/review revision."
+  },
+  "limits": [
+    "No repeated full suite or DB execution performed.",
+    "App/fullDB and installed controller admission remain pending root-owned gates.",
+    "Product requirements remain NOT_RUN; task/review/App/MERGED are separate facts.",
+    "No merge recommendation."
+  ]
+}

@@ -1,0 +1,226 @@
+{
+  "reviewed_head_sha": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+  "tested_commit": "ea7a809d3d839bacc15ebbb106fe63d60533a718",
+  "base_commit": "af09be228fbc89d074b6e863c83e1fdda343d55b",
+  "role": "PROTOCOL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "title": "Separate final/preserved collection payloads violate duplicate-bulk admission",
+      "paths": [
+        "docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness-collection.json.json",
+        "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-collection.json.json"
+      ],
+      "description": "Both exact-revision bound collection artifacts recover the same 3,345,163-byte raw object with SHA256 f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d, but use separate same-directory gzip payload paths (400,494 bytes each). The unchanged storage audit rejects duplicate raw bulk in distinct payloads at or above 16 KiB. This violates the execution packet required final exact-head zero-error storage audit even though the aggregate numerical budget and corrected execution checks pass. Preserve the earlier real failure/source/review bindings; correct the new evidence generation/admission without rewriting outputs, waiving duplicate-bulk, or promoting historical collection to a new tested execution. A new concrete revision needs fresh evidence/result/reviews as required by its scope.",
+      "independent_proof": "Retrieved both regular envelope/payload pairs at the exact reviewed SHA with each original tested SHA, command and exit; bytes are exactly equal and the payload paths are different. This satisfies the actual audit duplicate-bulk predicate at tools/harness/compact_evidence.py:1379."
+    }
+  ],
+  "authority_resolution": "Resolved through CURRENT_DOCUMENT_INDEX.json at the reviewed revision; read the execution packet and governance result, repository review skills, current storage/governance/review/controller policies and merged HG051 result.",
+  "frozen_authorities": [
+    {
+      "path": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+      "sections": [
+        "2.1 INV-01/02/03/15/16/18",
+        "2.3 SafetyRegistry/S01 lock guard",
+        "3.1-3.3 Evidence identity and append-only admission",
+        "7.4-7.5 replay and outcome separation",
+        "8 T1-T8",
+        "11 versioning"
+      ],
+      "sha256": "00bf3eb2e0e2e00867d114b42e147a2341d98454f08629c849ebf0b4c0c4916c"
+    },
+    {
+      "path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+      "sections": [
+        "S01 command ownership",
+        "S09-S14 raw identity, provenance, command authority and actual facts"
+      ],
+      "sha256": "2158a80bdc0e16eaf9c2cd835f704bdc2f346565dc35cb0c1fc1a8c00a1b8eda"
+    }
+  ],
+  "diff_inspection": {
+    "comparison": "protected base to exact reviewed result",
+    "changed_paths": 335,
+    "allowlist_matches_packet": true,
+    "index_changes": "Two derived hashes only",
+    "manifest_changes": "Existing derived hashes plus own evidence registrations only",
+    "tested_suffix": "One linear result/evidence-addition commit; independently invoked governance_suffix_errors returned empty errors. No representation overwrite after testing.",
+    "frozen_status": "Frozen Protocol/DB/baseline/requirement-set, historical schema, admitted mapping, inventory and eight archival envelope/payload blobs are byte-identical to protected base.",
+    "untouched_surfaces": "No application, transaction owner, migrations, runtime policy, CI, provider adapter, requirement result or other task path changes."
+  },
+  "independently_verified_semantics": [
+    "Declared codec alone selects bounded decoder. Gzip remains default and retains single-member guards; XZ pins FORMAT_XZ, CRC64 and preset 6. XZ checks exact stored length/hash, fixed 64 MiB memory, declared raw length plus one output bound, EOF, no unused bytes, exact raw length/hash and nested storage rejection.",
+    "Both codecs preserve raw execution bytes and command/tested SHA/exit/timestamp/count fields; failed execution remains failed. Regular same-revision Git objects, same-owner same-directory payload identity, tested ancestry, missing objects and integrity failures remain fail-closed. Plain UTF encodings and harmless ordinary scalar metadata names stay compatible.",
+    "Explicit reencoding validates all inputs before mutation, selects full existing ancestor source, denies protected-base/plain/archival/foreign/invalid input, preserves raw identity and every execution field, and pins original/replacement envelope and payload Git blob IDs, hashes and lengths. Source reads remain at original revision; replacement reads remain at bound revision. Obsolete payload removal requires every current reference accounted for. Maps cannot be rewritten or reused for a second conversion.",
+    "Audit inspects each commit and every parent edge. Globally inherited maps reverify original and replacement snapshots with their admitted owner/base; post-admission transient deletion/change/restoration cannot disappear. Global changed-blob classification includes pre-admission branches, renamed/wrapped/nested/UTF metadata and payload-suffix aliases. New foreign mapping and protected-ancestry foreign compact mutation reject. Pre-admission side branches need no retroactive admitted map.",
+    "Narrow binary JSON/encoding classification exemption requires full exact-revision bound payload retrieval; no later revision or invalid sibling can prove a payload. Size/type/integrity and later map/mutation guards remain enforced. HG051 archive reader/schema/inventory remain isolated and cannot supply execution PASS.",
+    "Task and governance suffixes reject existing representation mutations and conversion records even under own bookkeeping directories, including restoration. New independent captured review output remains allowed under the linear REVIEW_RECORD_ONLY contract. Semantic M3 execution oracles remain intact; C10 tests explicitly verify direct nested shape rejection, source-suffix rejection and exact stale M3 rejection order.",
+    "No frozen table, invariant or T1-T8 atomic boundary is changed. No command owner/direct-write bypass, authorization elevation, production/shadow binding, planning-as-actual fill or model/network wait in coordination transactions is introduced. Storage proof grants no product or execution authority."
+  ],
+  "final_run_bound_outputs": [
+    {
+      "check_id": "codec_security_and_budget",
+      "raw_bytes": 592,
+      "raw_sha256": "abdec65897f15ea0e205b6816a19f00522a5154d1daacd6fc454c9de0331704f",
+      "tail": "............................................................ [ 89%]\n..................................................                       [100%]\n482 passed in 627.76s (0:10:27)"
+    },
+    {
+      "check_id": "bound_reader_regressions",
+      "raw_bytes": 433,
+      "raw_sha256": "2fa0c05438446c9e39a93d34f51c4ccbee2defbf0bdeccf5cb038b952f447268",
+      "tail": "........................................................... [ 85%]\n.................................................                        [100%]\n337 passed in 4190.17s (1:09:50)"
+    },
+    {
+      "check_id": "installed_decoder_isolation",
+      "raw_bytes": 180,
+      "raw_sha256": "3217c1459995da2f5b61d21fffceb05954c074bae28739aa310be2a971237fa9",
+      "tail": "........................................................................ [ 69%]\n...............................                                          [100%]\n103 passed in 8.64s"
+    },
+    {
+      "check_id": "representative_roundtrip",
+      "raw_bytes": 3164,
+      "raw_sha256": "97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e",
+      "tail": "f2c02d5ea724efae85\"\n      }\n    ],\n    \"savings_bytes\": 9167105,\n    \"projected_bytes_before_envelope_and_record_changes\": 9026903,\n    \"within_unchanged_total_budget\": true\n  }\n}"
+    },
+    {
+      "check_id": "scope",
+      "raw_bytes": 39998,
+      "raw_sha256": "0080ae99cad60205fd7c5574096c16fcf0ac5c9e79f15a0fc8c5142db27392d1",
+      "tail": "\"tools/harness/compact_evidence.py\",\n    \"tools/harness/validate_harness.py\"\n  ],\n  \"frozen_baseline_sha256\": \"bb8cd79942d3ca735e38e0363d8f56c5c45bbd79210a6618d29704aac3dd04df\"\n}"
+    },
+    {
+      "check_id": "unit",
+      "raw_bytes": 461,
+      "raw_sha256": "6c4a8d8050453315f9ecc3c83a5a9fe076c57a95bf22700200f889d39a868bf0",
+      "tail": "[100%]\n- generated xml file: /private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/unit.xml -\n247 passed in 496.17s (0:08:16)"
+    },
+    {
+      "check_id": "harness",
+      "raw_bytes": 2115,
+      "raw_sha256": "2ac10cccffbee4f602930e2c924adeb4678615db24755d765ce542ed6f6eed0d",
+      "tail": "[100%]\n- generated xml file: /private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness/junit.xml -\n1700 passed in 2727.04s (0:45:27)"
+    },
+    {
+      "check_id": "lint",
+      "raw_bytes": 19,
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "tail": "All checks passed!"
+    },
+    {
+      "check_id": "typecheck",
+      "raw_bytes": 45,
+      "raw_sha256": "5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523",
+      "tail": "Success: no issues found in 171 source files"
+    },
+    {
+      "check_id": "authority",
+      "raw_bytes": 38,
+      "raw_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "tail": "HARNESS_CHECK_PASS tasks=77 active=74"
+    },
+    {
+      "check_id": "diff",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tail": ""
+    }
+  ],
+  "execution_identity_proof": {
+    "serial_collection": 1700,
+    "worker_collection_each": 1700,
+    "unique_started": 1700,
+    "unique_call_passes": 1700,
+    "setup_and_teardown_passes_each": 1700,
+    "junit_passes": 1700,
+    "skipped_or_failed": 0,
+    "nodeids_match": "Exact multiset match across serial, both workers, start/call/setup/teardown and JUnit; class names normalized before parameters without altering parameter text. Manifest file hashes/lengths match bound recovered collection/log/execution/JUnit/pytest output.",
+    "source_dirty": false
+  },
+  "superseded_evidence": {
+    "runs_verified": 8,
+    "binding_method": "For every superseded RUN check independently retrieve output at reviewed SHA with exact recorded tested commit, command and actual exit. RUN bytes equal their introduction commit. No superseded check supplies final PASS.",
+    "actual_failures": [
+      "b8498 harness exit4 missing xdist",
+      "ec5503 full typecheck exit1",
+      "ea178 unit 246 passed/1 failed, exit1",
+      "bb0aa harness 1698 passed/2 failed, exit1"
+    ],
+    "interruption_status": "Real FAIL statuses and exit2/-2/teardown exit1 remain committed."
+  },
+  "budget": {
+    "changed_storage_blobs": 321,
+    "bytes_at_reviewed_sha_before_review_append": 14203926,
+    "unchanged_limit": 16777216,
+    "limits": "256 KiB envelope/plain; 8 MiB stored; 64 MiB recovered; 16 MiB total. Both codec copies count.",
+    "measurement": "Bound roundtrip output confirms four KL036 gzip objects 9,695,205 to XZ 528,100 bytes; projected total 9,026,903 before envelope/map changes. No KL036 migration or copied raw logs."
+  },
+  "independent_commands": [
+    {
+      "command": "python /private/tmp/hg054-protocol-verify.py",
+      "result": "PASS",
+      "scope": "Read exact result Git blobs with immutable exported decoder; bind final RUN outputs, JUnit and frozen bytes."
+    },
+    {
+      "command": "python /private/tmp/hg054-protocol-additional.py",
+      "result": "PASS",
+      "scope": "Case identity/hash binding, immutable old RUNs/outputs, archive byte equality, storage sum and result suffix additions."
+    },
+    {
+      "command": "python /private/tmp/hg054-protocol-suffix.py",
+      "result": "PASS",
+      "scope": "Exact immutable validator/decoder match, authorized path match and tested suffix validation."
+    },
+    {
+      "command": "git diff --check af09be228fbc89d074b6e863c83e1fdda343d55b 9b15954c76ff8bbe3187e87641a62a08394da75e",
+      "result": "PASS"
+    },
+    {
+      "command": "PYTHONPATH=\"$PWD/src:/private/tmp/hg054-dependencies\" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_compact_evidence.py -q -k \"both_codecs_exact_bound_readers or forward_own_conversion_preserves_original_and_failure or unrelated_owner_rejects_transient_admitted_binding_mutation or unrelated_owner_rejects_restored_mapping_on_merged_post_admission_branch or pre_admission_side_branch_needs_no_retroactive_inherited_mapping or transient_foreign_conversion_cannot_disappear_before_head or bound_binary_payload_marker_value_stays_ordinary_output\" --basetemp=/private/tmp/hg054-protocol-pytest --junitxml=/private/tmp/hg054-protocol-pytest.xml",
+      "exit_code": 0,
+      "result": "17 passed, 465 deselected in 28.37s",
+      "log_sha256": "c565c2933a19a35a57a95b176c037dcd0d7910de0a3474cb0bde05c03fb7c445",
+      "junit_sha256": "068b1dfeac0b79af65c687aab967e0b7bdd525a52badf5caff610e416da5f71e",
+      "case_identities": [
+        "tests.harness.test_compact_evidence::test_both_codecs_exact_bound_readers[gzip-v1]",
+        "tests.harness.test_compact_evidence::test_both_codecs_exact_bound_readers[xz-v1]",
+        "tests.harness.test_compact_evidence::test_forward_own_conversion_preserves_original_and_failure",
+        "tests.harness.test_compact_evidence::test_unrelated_owner_rejects_transient_admitted_binding_mutation[delete-mapping]",
+        "tests.harness.test_compact_evidence::test_unrelated_owner_rejects_transient_admitted_binding_mutation[delete-envelope]",
+        "tests.harness.test_compact_evidence::test_unrelated_owner_rejects_transient_admitted_binding_mutation[delete-payload]",
+        "tests.harness.test_compact_evidence::test_unrelated_owner_rejects_transient_admitted_binding_mutation[change-mapping]",
+        "tests.harness.test_compact_evidence::test_unrelated_owner_rejects_transient_admitted_binding_mutation[change-envelope]",
+        "tests.harness.test_compact_evidence::test_unrelated_owner_rejects_transient_admitted_binding_mutation[change-payload]",
+        "tests.harness.test_compact_evidence::test_unrelated_owner_rejects_restored_mapping_on_merged_post_admission_branch",
+        "tests.harness.test_compact_evidence::test_pre_admission_side_branch_needs_no_retroactive_inherited_mapping",
+        "tests.harness.test_compact_evidence::test_transient_foreign_conversion_cannot_disappear_before_head[True]",
+        "tests.harness.test_compact_evidence::test_transient_foreign_conversion_cannot_disappear_before_head[False]",
+        "tests.harness.test_compact_evidence::test_bound_binary_payload_marker_value_stays_ordinary_output[kineticloop_evidence-gzip-v1]",
+        "tests.harness.test_compact_evidence::test_bound_binary_payload_marker_value_stays_ordinary_output[kineticloop_evidence-xz-v1]",
+        "tests.harness.test_compact_evidence::test_bound_binary_payload_marker_value_stays_ordinary_output[compact_reencoding-gzip-v1]",
+        "tests.harness.test_compact_evidence::test_bound_binary_payload_marker_value_stays_ordinary_output[compact_reencoding-xz-v1]"
+      ]
+    }
+  ],
+  "limits": [
+    "Independent protocol review only; no merge recommendation. Root App/fullDB, complete installed assets/controller identity review and exact-head admission remain pending.",
+    "Related product requirements remain NOT_RUN. Governance check PASS, this review PASS, hosted/App PASS and MERGED are separate facts.",
+    "Local reencoding rollback is ordinary exclusive single-writer restoration, not concurrent-writer/crash recovery. Interrupted operation remains blocked until restored/validated.",
+    "No repeated full suite, database/network/credentials/controller operation, source/result/evidence mutation, staging, commit or publication performed.",
+    "Compressed-byte determinism verified on this runner; not promised across liblzma versions.",
+    "New report availability requires the own-task REVIEW_RECORD_ONLY persistence and exact review-record-commit binding specified by the review contract.",
+    "Final storage admission is blocked despite valid execution outputs; this review does not grant task/merge PASS."
+  ],
+  "storage_blocker_proof": {
+    "reviewed_head_sha": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+    "raw_sha256": "f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d",
+    "raw_bytes": 3345163,
+    "stored_bytes_each": [
+      400494,
+      400494
+    ],
+    "distinct_payload_paths": true,
+    "command": "python /private/tmp/hg054-protocol-duplicate.py",
+    "result": "DUPLICATE_BULK_CONFIRMED"
+  }
+}

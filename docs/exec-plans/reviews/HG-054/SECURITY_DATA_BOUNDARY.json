@@ -1,0 +1,21 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-054",
+  "reviewed_head_sha": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+  "review_type": "SECURITY_DATA_BOUNDARY",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "classification": "BLOCKER",
+      "code": "HG054_DUPLICATE_BULK_COLLECTION",
+      "path": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-collection.json.json",
+      "summary": "The reviewed result violates the unchanged duplicate-bulk rule: final and preserved C9 collection captures recover identical 3,345,163-byte raw output while referencing separately stored same-content gzip payload paths.",
+      "required_change": "Produce a corrected result with valid same-revision execution bindings and zero storage audit errors while preserving every original failed/interrupted source-bound snapshot. Retain the unchanged duplicate-bulk policy. Obtain new SHA-bound reviews of the corrected result.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-054/security/REPORT.json"
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/HG-054/security/REPORT.json",
+    "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/RUN.json"
+  ],
+  "review_contract_version": "v0.2"
+}

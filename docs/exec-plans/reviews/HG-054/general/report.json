@@ -1,0 +1,965 @@
+{
+  "reviewed_sha": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+  "tested_sha": "ea7a809d3d839bacc15ebbb106fe63d60533a718",
+  "base_sha": "af09be228fbc89d074b6e863c83e1fdda343d55b",
+  "reviewer_role": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "independent_method": "Read the execution packet, governance result, merged prerequisite governance results, current index, storage/governance/review contracts, complete protected-base source/test/document diff and immutable Git blobs. No parent reviewer conclusions supplied proof. All source reads were checked against the fixed reviewed SHA.",
+  "inspected_paths": [
+    "AGENTS.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    "FROZEN_BASELINE.json",
+    "THREAD_REVIEW.schema.json",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+    "docs/harness/LOCAL_DB_CI.md",
+    "docs/exec-plans/evidence/HG-054/EXECUTION_PACKET.md",
+    "docs/exec-plans/governance/HG-054.yaml",
+    "docs/exec-plans/governance/HG-047.yaml",
+    "docs/exec-plans/governance/HG-049.yaml",
+    "docs/exec-plans/governance/HG-051.yaml",
+    "docs/exec-plans/governance/HG-053.yaml",
+    "tools/harness/compact_evidence.py",
+    "tools/harness/validate_harness.py",
+    "tools/harness/local_gate.py",
+    "tests/harness/test_compact_evidence.py",
+    "tests/harness/test_review_evidence_provenance.py",
+    "tests/harness/test_m3_milestone_closure.py",
+    "tests/harness/test_validator.py",
+    "tests/harness/test_local_gate.py"
+  ],
+  "check_proofs": [
+    {
+      "check_id": "codec_security_and_budget",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_compact_evidence.py -q",
+      "exit_code": 0,
+      "raw_sha256": "abdec65897f15ea0e205b6816a19f00522a5154d1daacd6fc454c9de0331704f",
+      "raw_bytes": 592,
+      "observed_counts": {
+        "passed": 482
+      },
+      "tail": [
+        "........................................................................ [ 89%]",
+        "..................................................                       [100%]",
+        "482 passed in 627.76s (0:10:27)"
+      ]
+    },
+    {
+      "check_id": "bound_reader_regressions",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_review_evidence_provenance.py tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -q",
+      "exit_code": 0,
+      "raw_sha256": "2fa0c05438446c9e39a93d34f51c4ccbee2defbf0bdeccf5cb038b952f447268",
+      "raw_bytes": 433,
+      "observed_counts": {
+        "passed": 337
+      },
+      "tail": [
+        "........................................................................ [ 85%]",
+        ".................................................                        [100%]",
+        "337 passed in 4190.17s (1:09:50)"
+      ]
+    },
+    {
+      "check_id": "installed_decoder_isolation",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_local_gate.py -q",
+      "exit_code": 0,
+      "raw_sha256": "3217c1459995da2f5b61d21fffceb05954c074bae28739aa310be2a971237fa9",
+      "raw_bytes": 180,
+      "observed_counts": {
+        "passed": 103
+      },
+      "tail": [
+        "........................................................................ [ 69%]",
+        "...............................                                          [100%]",
+        "103 passed in 8.64s"
+      ]
+    },
+    {
+      "check_id": "representative_roundtrip",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-054/measure_codec.py",
+      "exit_code": 0,
+      "raw_sha256": "97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e",
+      "raw_bytes": 3164,
+      "observed_counts": {},
+      "tail": [
+        "    \"within_unchanged_total_budget\": true",
+        "  }",
+        "}"
+      ]
+    },
+    {
+      "check_id": "scope",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-054/verify_scope.py",
+      "exit_code": 0,
+      "raw_sha256": "0080ae99cad60205fd7c5574096c16fcf0ac5c9e79f15a0fc8c5142db27392d1",
+      "raw_bytes": 39998,
+      "observed_counts": {},
+      "tail": [
+        "  ],",
+        "  \"frozen_baseline_sha256\": \"bb8cd79942d3ca735e38e0363d8f56c5c45bbd79210a6618d29704aac3dd04df\"",
+        "}"
+      ]
+    },
+    {
+      "check_id": "unit",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit -q --junitxml=/private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/unit.xml",
+      "exit_code": 0,
+      "raw_sha256": "6c4a8d8050453315f9ecc3c83a5a9fe076c57a95bf22700200f889d39a868bf0",
+      "raw_bytes": 461,
+      "observed_counts": {
+        "passed": 247
+      },
+      "tail": [
+        "...............................                                          [100%]",
+        "- generated xml file: /private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/unit.xml -",
+        "247 passed in 496.17s (0:08:16)"
+      ]
+    },
+    {
+      "check_id": "harness",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness -q",
+      "exit_code": 0,
+      "raw_sha256": "2ac10cccffbee4f602930e2c924adeb4678615db24755d765ce542ed6f6eed0d",
+      "raw_bytes": 2115,
+      "observed_counts": {
+        "passed": 1700
+      },
+      "tail": [
+        "............................................                             [100%]",
+        "- generated xml file: /private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness/junit.xml -",
+        "1700 passed in 2727.04s (0:45:27)"
+      ]
+    },
+    {
+      "check_id": "lint",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+      "exit_code": 0,
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_bytes": 19,
+      "observed_counts": {},
+      "tail": [
+        "All checks passed!"
+      ]
+    },
+    {
+      "check_id": "typecheck",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+      "exit_code": 0,
+      "raw_sha256": "5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523",
+      "raw_bytes": 45,
+      "observed_counts": {},
+      "tail": [
+        "Success: no issues found in 171 source files"
+      ]
+    },
+    {
+      "check_id": "authority",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness",
+      "exit_code": 0,
+      "raw_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "raw_bytes": 38,
+      "observed_counts": {},
+      "tail": [
+        "HARNESS_CHECK_PASS tasks=77 active=74"
+      ]
+    },
+    {
+      "check_id": "diff",
+      "command": "git diff --check af09be228fbc89d074b6e863c83e1fdda343d55b ea7a809d3d839bacc15ebbb106fe63d60533a718",
+      "exit_code": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0,
+      "observed_counts": {},
+      "tail": []
+    }
+  ],
+  "identity_proof": {
+    "collection": 1700,
+    "worker_collections": [
+      "gw0",
+      "gw1"
+    ],
+    "started_once": 1700,
+    "passed_setup_call_teardown": 5100,
+    "junit_case_identity_match": true,
+    "identity_set_sha256": "ef302e6ddf2f4e04e615a467ce4601c7ad36bb47e843d02d23adbb8d9c1c9060"
+  },
+  "scope_frozen_assets": {
+    "changed_non_evidence_paths": [
+      "CURRENT_DOCUMENT_INDEX.json",
+      "HARNESS_DOCUMENT_MANIFEST.json",
+      "docs/exec-plans/governance/HG-054.yaml",
+      "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+      "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+      "docs/harness/LOCAL_DB_CI.md",
+      "tests/harness/test_compact_evidence.py",
+      "tests/harness/test_local_gate.py",
+      "tests/harness/test_m3_milestone_closure.py",
+      "tests/harness/test_review_evidence_provenance.py",
+      "tests/harness/test_validator.py",
+      "tools/harness/README.md",
+      "tools/harness/compact_evidence.py",
+      "tools/harness/validate_harness.py"
+    ],
+    "frozen_proofs": [
+      {
+        "path": "FROZEN_BASELINE.json",
+        "sha256": "bb8cd79942d3ca735e38e0363d8f56c5c45bbd79210a6618d29704aac3dd04df"
+      },
+      {
+        "path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+        "sha256": "2158a80bdc0e16eaf9c2cd835f704bdc2f346565dc35cb0c1fc1a8c00a1b8eda"
+      },
+      {
+        "path": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+        "sha256": "00bf3eb2e0e2e00867d114b42e147a2341d98454f08629c849ebf0b4c0c4916c"
+      },
+      {
+        "path": "HISTORICAL_EVIDENCE_MAPPING.schema.json",
+        "sha256": "602a3cc03bbfc13859bc5ff87da77cc636dd925871b89349b55ae42b3d3feced"
+      },
+      {
+        "path": "docs/exec-plans/evidence/HG-051/INVENTORY.json",
+        "sha256": "d876f866816b023d407c1fa0bf90c18e7653f4baa6ed0a51399d41052930318c"
+      }
+    ],
+    "current_budget": {
+      "files": 321,
+      "stored_bytes": 14203926,
+      "limit": 16777216
+    },
+    "candidate_assets_verified": 11,
+    "result_schema_and_declared_paths": "PASS",
+    "current_index_manifest_hashes": "PASS",
+    "result_checks": 12,
+    "actual_executions": 11,
+    "shared_forward_check": "The forward_reencoding_guards check references the one actual codec module execution; no doubled execution/count credit.",
+    "tested_to_reviewed": "One child result/evidence commit; no tools/tests/src/contracts changes. Git ancestry and regular blobs verified."
+  },
+  "preserved_prior_runs": [
+    {
+      "path": "docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/RUN.json",
+      "checks": [
+        {
+          "id": "codec_security_and_budget",
+          "exit": 1,
+          "result": "FAIL",
+          "counts": {}
+        },
+        {
+          "id": "bound_reader_regressions",
+          "exit": 2,
+          "result": "FAIL",
+          "counts": {
+            "passed": 56
+          }
+        },
+        {
+          "id": "installed_decoder_isolation",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {
+            "passed": 103
+          }
+        },
+        {
+          "id": "representative_roundtrip",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "scope",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "unit",
+          "exit": -2,
+          "result": "FAIL",
+          "counts": {
+            "passed": 222
+          }
+        },
+        {
+          "id": "harness",
+          "exit": -2,
+          "result": "FAIL",
+          "counts": {}
+        },
+        {
+          "id": "lint",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "typecheck",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "authority",
+          "exit": -2,
+          "result": "FAIL",
+          "counts": {}
+        },
+        {
+          "id": "diff",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        }
+      ]
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/RUN.json",
+      "checks": [
+        {
+          "id": "codec_security_and_budget",
+          "exit": 1,
+          "result": "FAIL",
+          "counts": {}
+        },
+        {
+          "id": "bound_reader_regressions",
+          "exit": 2,
+          "result": "FAIL",
+          "counts": {
+            "passed": 43
+          }
+        },
+        {
+          "id": "installed_decoder_isolation",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {
+            "passed": 103
+          }
+        },
+        {
+          "id": "representative_roundtrip",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "scope",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "unit",
+          "exit": -2,
+          "result": "FAIL",
+          "counts": {
+            "passed": 222
+          }
+        },
+        {
+          "id": "harness",
+          "exit": -2,
+          "result": "FAIL",
+          "counts": {}
+        },
+        {
+          "id": "lint",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "typecheck",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "authority",
+          "exit": -2,
+          "result": "FAIL",
+          "counts": {}
+        },
+        {
+          "id": "diff",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        }
+      ]
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/RUN.json",
+      "checks": [
+        {
+          "id": "codec_security_and_budget",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {
+            "passed": 361
+          }
+        },
+        {
+          "id": "bound_reader_regressions",
+          "exit": 2,
+          "result": "FAIL",
+          "counts": {
+            "passed": 91
+          }
+        },
+        {
+          "id": "installed_decoder_isolation",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {
+            "passed": 103
+          }
+        },
+        {
+          "id": "representative_roundtrip",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "scope",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "unit",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {
+            "passed": 247
+          }
+        },
+        {
+          "id": "harness",
+          "exit": 4,
+          "result": "FAIL",
+          "counts": {}
+        },
+        {
+          "id": "lint",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "typecheck",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "authority",
+          "exit": -2,
+          "result": "FAIL",
+          "counts": {}
+        },
+        {
+          "id": "diff",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        }
+      ]
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/RUN.json",
+      "checks": [
+        {
+          "id": "codec_security_and_budget",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {
+            "passed": 482
+          }
+        },
+        {
+          "id": "bound_reader_regressions",
+          "exit": 2,
+          "result": "FAIL",
+          "counts": {
+            "passed": 173
+          }
+        },
+        {
+          "id": "installed_decoder_isolation",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {
+            "passed": 103
+          }
+        },
+        {
+          "id": "representative_roundtrip",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "scope",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "unit",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {
+            "passed": 247
+          }
+        },
+        {
+          "id": "harness",
+          "exit": 1,
+          "result": "FAIL",
+          "counts": {
+            "skipped": 1,
+            "passed": 1698,
+            "failed": 2
+          }
+        },
+        {
+          "id": "lint",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "typecheck",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "authority",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "diff",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        }
+      ]
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/RUN.json",
+      "checks": [
+        {
+          "id": "codec_security_and_budget",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {
+            "passed": 381
+          }
+        },
+        {
+          "id": "bound_reader_regressions",
+          "exit": 2,
+          "result": "FAIL",
+          "counts": {
+            "passed": 95
+          }
+        },
+        {
+          "id": "installed_decoder_isolation",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {
+            "passed": 103
+          }
+        },
+        {
+          "id": "representative_roundtrip",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "scope",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "unit",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {
+            "passed": 247
+          }
+        },
+        {
+          "id": "harness",
+          "exit": -2,
+          "result": "FAIL",
+          "counts": {}
+        },
+        {
+          "id": "lint",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "typecheck",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "authority",
+          "exit": -2,
+          "result": "FAIL",
+          "counts": {}
+        },
+        {
+          "id": "diff",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        }
+      ]
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/RUN.json",
+      "checks": [
+        {
+          "id": "codec_security_and_budget",
+          "exit": 2,
+          "result": "FAIL",
+          "counts": {
+            "passed": 347
+          }
+        },
+        {
+          "id": "bound_reader_regressions",
+          "exit": 2,
+          "result": "FAIL",
+          "counts": {
+            "passed": 89
+          }
+        },
+        {
+          "id": "installed_decoder_isolation",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {
+            "passed": 103
+          }
+        },
+        {
+          "id": "representative_roundtrip",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "scope",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "unit",
+          "exit": -2,
+          "result": "FAIL",
+          "counts": {
+            "passed": 222
+          }
+        },
+        {
+          "id": "harness",
+          "exit": -2,
+          "result": "FAIL",
+          "counts": {}
+        },
+        {
+          "id": "lint",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "typecheck",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "authority",
+          "exit": -2,
+          "result": "FAIL",
+          "counts": {}
+        },
+        {
+          "id": "diff",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        }
+      ]
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/RUN.json",
+      "checks": [
+        {
+          "id": "codec_security_and_budget",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {
+            "passed": 462
+          }
+        },
+        {
+          "id": "bound_reader_regressions",
+          "exit": 2,
+          "result": "FAIL",
+          "counts": {
+            "failed": 1,
+            "passed": 89
+          }
+        },
+        {
+          "id": "installed_decoder_isolation",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {
+            "passed": 103
+          }
+        },
+        {
+          "id": "representative_roundtrip",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "scope",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "unit",
+          "exit": 1,
+          "result": "FAIL",
+          "counts": {
+            "failed": 1,
+            "passed": 246
+          }
+        },
+        {
+          "id": "harness",
+          "exit": -2,
+          "result": "FAIL",
+          "counts": {}
+        },
+        {
+          "id": "lint",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "typecheck",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "authority",
+          "exit": -2,
+          "result": "FAIL",
+          "counts": {}
+        },
+        {
+          "id": "diff",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        }
+      ]
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/RUN.json",
+      "checks": [
+        {
+          "id": "codec_security_and_budget",
+          "exit": 2,
+          "result": "FAIL",
+          "counts": {
+            "passed": 271
+          }
+        },
+        {
+          "id": "bound_reader_regressions",
+          "exit": 2,
+          "result": "FAIL",
+          "counts": {
+            "passed": 51
+          }
+        },
+        {
+          "id": "installed_decoder_isolation",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {
+            "passed": 103
+          }
+        },
+        {
+          "id": "representative_roundtrip",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "scope",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "unit",
+          "exit": -2,
+          "result": "FAIL",
+          "counts": {
+            "passed": 222
+          }
+        },
+        {
+          "id": "harness",
+          "exit": -2,
+          "result": "FAIL",
+          "counts": {}
+        },
+        {
+          "id": "lint",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        },
+        {
+          "id": "typecheck",
+          "exit": 1,
+          "result": "FAIL",
+          "counts": {
+            "error": 1
+          }
+        },
+        {
+          "id": "authority",
+          "exit": -2,
+          "result": "FAIL",
+          "counts": {}
+        },
+        {
+          "id": "diff",
+          "exit": 0,
+          "result": "PASS",
+          "counts": {}
+        }
+      ]
+    }
+  ],
+  "implementation_assessment": [
+    "Default capture remains deterministic gzip; optional XZ uses FORMAT_XZ, CRC64, preset 6 and fixed 64 MiB decoder memory. Stored/raw integrity, exact declared codec, one stream/EOF/no trailing bytes, bounded raw length and nested storage rejection remain enforced.",
+    "Original/replacement snapshots verify regular Git blobs, SHA256, byte lengths, unchanged raw and execution metadata. Source commits are full existing ancestors; base/foreign/plain/archive/renamed/invalid sources reject. Maps are immutable and conversions require a new tested/reviewed revision.",
+    "All-parent and transient mutation checks cover own/foreign changes, globally admitted inherited maps, source loss, pre-admission aliases and encoded metadata. Narrow stored binary classification exemption needs exact same-revision or parent full bound payload proof.",
+    "Suffix validators reject representation mutation inside review/result bookkeeping, including later restoration. New independent review evidence remains valid under the existing narrow contract.",
+    "HG051 inventory, schema and embedded historical authority remain unchanged; archival retrieval does not become execution proof. Candidate installation assets match immutable source; credentialed installation/admission is not supplied by these tests."
+  ],
+  "independent_probe": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=\"$PWD/src:/private/tmp/hg054-dependencies\" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_compact_evidence.py::test_both_codecs_exact_bound_readers tests/harness/test_compact_evidence.py::test_xz_hostile_streams tests/harness/test_compact_evidence.py::test_forward_own_conversion_preserves_original_and_failure tests/harness/test_compact_evidence.py::test_all_shared_refs_conversion_and_changed_byte_accounting tests/harness/test_local_gate.py::test_installed_only_xz_decode_with_poisoned_candidate -q --basetemp=/private/tmp/hg054-general-pytest -o cache_dir=/private/tmp/hg054-general-cache",
+    "exit_code": 0,
+    "result": "17 passed in 19.63s",
+    "cases": [
+      "test_both_codecs_exact_bound_readers[gzip-v1/xz-v1]",
+      "test_xz_hostile_streams[truncated/trailing/concatenated/corrupt/no-check/crc32/sha256/dict-bomb/raw-bomb/wrong-codec/stored-hash/raw-hash]",
+      "test_forward_own_conversion_preserves_original_and_failure",
+      "test_all_shared_refs_conversion_and_changed_byte_accounting",
+      "test_installed_only_xz_decode_with_poisoned_candidate"
+    ],
+    "scratch_log_sha256": "43e76c2d075569c8698b957325c22fd7a43d4cd7502ef0e7343e9ca33bf8fd15"
+  },
+  "measurement_verification": {
+    "reproduced_hash_length_roundtrips": 5,
+    "representative": {
+      "label": "deterministic repeated binary output",
+      "raw_bytes": 20971531,
+      "raw_sha256": "84b2760056bcfd162636fa4f920bd4ccce94ef22b3736c29dd55868f10178df1",
+      "gzip_bytes": 20977949,
+      "gzip_sha256": "03d5dc41c7f3c2d9827484e0be94b4c7379f51ae076756304fd65b43772990b5",
+      "xz_bytes": 36404,
+      "xz_sha256": "769f16995be75c1bf7e7eedb6ae260a5efe44d9e69ef49327a06da894b3ee8bf"
+    },
+    "pinned_KL036_measurement": {
+      "source": "e71e599885de45da5bcc0a1a9f817939a3fdbcf2",
+      "base": "af09be228fbc89d074b6e863c83e1fdda343d55b",
+      "changed_files": 645,
+      "payloads": 286,
+      "current_bytes": 18194008,
+      "four_largest": [
+        {
+          "label": "docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/96d7fa1d43e857aca623e8c4c8102d32df948cf5f8089ad2915080035192517b.gz",
+          "raw_bytes": 20521596,
+          "raw_sha256": "96d7fa1d43e857aca623e8c4c8102d32df948cf5f8089ad2915080035192517b",
+          "gzip_bytes": 2423922,
+          "gzip_sha256": "cdd8488b19ff0ceb6b5c73309f305b87954a7fb3715e335b55d15ed71ed6caa2",
+          "xz_bytes": 131996,
+          "xz_sha256": "9732b6bbf505df7ad298ac45a482ded5dc3b3d84849d5f1d963a070ada0330db"
+        },
+        {
+          "label": "docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/a80f15c54a610683d2d0e4d4250d1d49d77e7b5214525d9209fc2ae11d5e7182.gz",
+          "raw_bytes": 20521783,
+          "raw_sha256": "a80f15c54a610683d2d0e4d4250d1d49d77e7b5214525d9209fc2ae11d5e7182",
+          "gzip_bytes": 2423883,
+          "gzip_sha256": "c25da64f9e32c167f0c83081e2bd35607ae4253c9974e1a57b6a340e379f9fb2",
+          "xz_bytes": 132568,
+          "xz_sha256": "c5d4af490cdc455f9dab5d967f88589dcd83ff26115095788d1c2741126f334d"
+        },
+        {
+          "label": "docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/044a3e54104607ce182b3f9ef53a4c0b5db3f5fa9e0727829589099507e4fddf.gz",
+          "raw_bytes": 20521578,
+          "raw_sha256": "044a3e54104607ce182b3f9ef53a4c0b5db3f5fa9e0727829589099507e4fddf",
+          "gzip_bytes": 2423703,
+          "gzip_sha256": "2726a07f54466a4beec48d815ff66d13d4a28615f981e6cf9f1dfe42c03896de",
+          "xz_bytes": 131748,
+          "xz_sha256": "b873ef2f1e57419fbc8de64d695c0183b72684f3279716d8e646066049286c23"
+        },
+        {
+          "label": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/4fad4b1a54ccc9196841a040beac3209a40ab0c84ac5d829a49311dff7b47840.gz",
+          "raw_bytes": 20521604,
+          "raw_sha256": "4fad4b1a54ccc9196841a040beac3209a40ab0c84ac5d829a49311dff7b47840",
+          "gzip_bytes": 2423697,
+          "gzip_sha256": "2532a264fc6876a129c972b20ed340b664457929c8af09361f70874a60991754",
+          "xz_bytes": 131788,
+          "xz_sha256": "b51481c9a3aa1e92ba4f11d31390a25e307eb540c69bd9f2c02d5ea724efae85"
+        }
+      ],
+      "savings_bytes": 9167105,
+      "projected_bytes_before_envelope_and_record_changes": 9026903,
+      "within_unchanged_total_budget": true
+    }
+  },
+  "blocking_audit_ref": "docs/exec-plans/reviews/HG-054/general/audit.json",
+  "limits": [
+    "No repeated full suites, source/evidence/result/HEAD mutations, databases, network, credentials, publication or controller operations. Scratch probes and only own review files were written.",
+    "Exclusive local writer is a stated requirement; rollback handles ordinary single-writer failures, not concurrent writers or crash recovery. Interrupted conversion stays blocked until restoration or complete validation.",
+    "Exact reviewed tree has one duplicate-bulk violation despite being under the 16 MiB cap. Formal review cannot grant PASS until corrected exact-head audit and fresh applicable review.",
+    "App/fullDB, independent complete installation/controller admission, exact final-head hosted gates and merge remain pending. Product requirements remain NOT_RUN. No merge recommendation."
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-054",
+  "reviewed_head_sha": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+  "review_type": "DB_CONCURRENCY",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "finding_id": "HG054-DB-001",
+      "classification": "BLOCKER",
+      "title": "Exact result fails required compact-storage audit",
+      "paths": [
+        "docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness-collection.json.json",
+        "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-collection.json.json"
+      ],
+      "description": "The C9 and final C10 collection artifacts independently decode to the same 3,345,163 raw bytes (SHA256 f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d) through distinct current-tree payload paths. The actual exact-R compact audit reports duplicate-bulk. This violates unchanged duplicate-bulk storage admission and the mandatory passing final audit; eleven valid check executions do not waive it.",
+      "required_action": "Produce a compliant prospective storage repair at a new revision while preserving original source/result/failure bindings, rerun applicable checks, and obtain fresh SHA-bound reviews. No deletion of failed evidence or gate waiver."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/HG-054/db/independent_review.json",
+    "docs/exec-plans/governance/HG-054.yaml",
+    "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/RUN.json",
+    "docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness-collection.json.json",
+    "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-collection.json.json"
+  ],
+  "review_contract_version": "v0.2"
+}

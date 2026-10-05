@@ -1,0 +1,1242 @@
+{
+  "review_role": "SECURITY_DATA_BOUNDARY",
+  "task_identity": "harness-governance-v0.1/HG-054",
+  "reviewed_head_sha": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+  "implementation_sha": "ea7a809d3d839bacc15ebbb106fe63d60533a718",
+  "base_sha": "af09be228fbc89d074b6e863c83e1fdda343d55b",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "classification": "BLOCKER",
+      "code": "HG054_DUPLICATE_BULK_COLLECTION",
+      "path": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-collection.json.json",
+      "summary": "The reviewed result violates the unchanged duplicate-bulk rule: final and preserved C9 collection captures recover identical 3,345,163-byte raw output while referencing separately stored same-content gzip payload paths.",
+      "required_change": "Produce a corrected result with valid same-revision execution bindings and zero storage audit errors while preserving every original failed/interrupted source-bound snapshot. Retain the unchanged duplicate-bulk policy. Obtain new SHA-bound reviews of the corrected result.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-054/security/REPORT.json"
+    }
+  ],
+  "independence": "Read protected-base-to-result diff, source, authorities, tests and exact committed evidence directly. No parent or previous reviewer conclusions used as PASS authority.",
+  "authorities": [
+    "AGENTS.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    "docs/exec-plans/evidence/HG-054/EXECUTION_PACKET.md",
+    "docs/exec-plans/governance/HG-054.yaml",
+    "docs/exec-plans/governance/HG-051.yaml",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "THREAD_REVIEW.schema.json",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md sections 1,7.5,9",
+    "12_KineticLoop_Integration_Spec_v0.1.md section 10"
+  ],
+  "inspected_blobs": [
+    {
+      "path": "tools/harness/compact_evidence.py",
+      "sha256": "8bfca1499b3e761b86a2421e56a17fb46b4810b916b33f744c8a06e7c34d23f3"
+    },
+    {
+      "path": "tools/harness/validate_harness.py",
+      "sha256": "25a89d41be56b2b83e4b4d87679b7a283e2d6480138d250414553a1c253a59b0"
+    },
+    {
+      "path": "tests/harness/test_compact_evidence.py",
+      "sha256": "bb3709091037d270cb0d632a1fcab386209d424890982e327c8aacfec0b11abf"
+    },
+    {
+      "path": "tests/harness/test_review_evidence_provenance.py",
+      "sha256": "6cc3a8998f0b9df85e8109db8055ac6e06278843199b53c8a4c5a7d0a8863edf"
+    },
+    {
+      "path": "tests/harness/test_m3_milestone_closure.py",
+      "sha256": "25e5c64543d97cb6246806371cca4f9aa5dea8f1c02f3360833900ddaedd9dee"
+    },
+    {
+      "path": "tests/harness/test_local_gate.py",
+      "sha256": "938043940e98c40f989ed16aee9abe7d035efa0f5ccb252f4d260ab84de204a6"
+    },
+    {
+      "path": "tests/harness/test_validator.py",
+      "sha256": "a6b165775cdcb9828b83d27247c55658577b2ee5a11d54c99c0f48f890346759"
+    },
+    {
+      "path": "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+      "sha256": "85330f4aa2cf97efc5d9e888679825fdd5d2efb7cf68fdfb019d6b4bd295ba09"
+    },
+    {
+      "path": "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+      "sha256": "3462585a31574db067dc27299c400d930e9f7abdeeb0d1fd30b6e7fc9c34d018"
+    },
+    {
+      "path": "docs/harness/LOCAL_DB_CI.md",
+      "sha256": "29a981c374729e01883fa95c94b4bcfcf798ff53073528ed18832bcc6a1ff95d"
+    },
+    {
+      "path": "tools/harness/README.md",
+      "sha256": "f8f5e2e336882d712b0e57a1770f9a4201ce8e2174054d66381f65ffde7cb0e2"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/run_checks.py",
+      "sha256": "0bbf6aface75318f58da8727207bd6e4f19c47fec3d179acaa8ecb79967919ed"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/measure_codec.py",
+      "sha256": "357568541d16b1f8e14e98a892a810f072b615059124b4dfaaa836d67e919f4f"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/verify_scope.py",
+      "sha256": "3765dc8c8bfb9003ebf2e5cd53c00aa233c348aea1dee22f660dad2487bf0288"
+    }
+  ],
+  "boundary_verification": [
+    "XZ pinning uses FORMAT_XZ, CRC64 and preset 6. Read validates stored length/hash, fixed 64 MiB decoder memory, raw_bytes+1 output bound, exact length/hash, EOF and zero unused/trailing bytes. No extension guessing, fallback or multistream convenience decoder. Default gzip remains unchanged.",
+    "Reserved keys are classified irrespective of extension with UTF-8/16/32, malformed/conflicting encodings, escaped keys, duplicate keys, removed markers and wrapped/nested objects rejected. Binary payload classification defers only JSON/encoding errors and requires a fully decoded regular same-revision/same-parent envelope proof; unavailable or later payload evidence cannot satisfy it.",
+    "Re-encoding preserves exact raw and execution metadata, full original/replacement blob snapshots and original ancestry; only own already compact unmerged absent-at-base inputs qualify. Missing source, foreign/protected/plain/archive input, remapping and changed execution facts fail. Current sibling references retain shared payloads.",
+    "Audit walks all forward commits and every parent; transient restored/deleted foreign or admitted mappings and bindings cannot disappear in final-tree diff. Inherited maps reverify original snapshots across every admitted owner even for unrelated/no-change audits; pre-admission valid history uses exact bound proofs without retroactive mapping requirements.",
+    "Success caching binds resolved repository path, exact full evidence revision, ref, tested SHA, command and exit code; only complete successful proof is cached in a bounded operation-local context. Mutable aliases/working files and failed proofs are excluded. Post-test/review representation changes invalidate suffixes.",
+    "Protected frozen baseline, Protocol, DB, integration, requirements, historical inventory/schema, backlog/traceability, credentialed controller and DB runner code are byte-identical to base. Exact governance allowlist contains only declared tooling/tests/docs/own evidence and review paths. No runtime export, credential use, DB operation, installation or App publication introduced.",
+    "Installed-only subprocess test uses standalone pinned validator/decoder while candidate decoder is poisoned. Missing/changed installed pins and installed release isolation remain required. Root separately owns complete controller installation/admission and App/fullDB."
+  ],
+  "committed_check_verification": {
+    "head": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+    "implementation": "ea7a809d3d839bacc15ebbb106fe63d60533a718",
+    "checks": [
+      {
+        "id": "codec_security_and_budget",
+        "raw_hash": "abdec65897f15ea0e205b6816a19f00522a5154d1daacd6fc454c9de0331704f",
+        "raw_bytes": 592,
+        "last_line": [
+          "482 passed in 627.76s (0:10:27)"
+        ]
+      },
+      {
+        "id": "bound_reader_regressions",
+        "raw_hash": "2fa0c05438446c9e39a93d34f51c4ccbee2defbf0bdeccf5cb038b952f447268",
+        "raw_bytes": 433,
+        "last_line": [
+          "337 passed in 4190.17s (1:09:50)"
+        ]
+      },
+      {
+        "id": "installed_decoder_isolation",
+        "raw_hash": "3217c1459995da2f5b61d21fffceb05954c074bae28739aa310be2a971237fa9",
+        "raw_bytes": 180,
+        "last_line": [
+          "103 passed in 8.64s"
+        ]
+      },
+      {
+        "id": "representative_roundtrip",
+        "raw_hash": "97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e",
+        "raw_bytes": 3164,
+        "last_line": [
+          "}"
+        ]
+      },
+      {
+        "id": "scope",
+        "raw_hash": "0080ae99cad60205fd7c5574096c16fcf0ac5c9e79f15a0fc8c5142db27392d1",
+        "raw_bytes": 39998,
+        "last_line": [
+          "}"
+        ]
+      },
+      {
+        "id": "unit",
+        "raw_hash": "6c4a8d8050453315f9ecc3c83a5a9fe076c57a95bf22700200f889d39a868bf0",
+        "raw_bytes": 461,
+        "last_line": [
+          "247 passed in 496.17s (0:08:16)"
+        ]
+      },
+      {
+        "id": "harness",
+        "raw_hash": "2ac10cccffbee4f602930e2c924adeb4678615db24755d765ce542ed6f6eed0d",
+        "raw_bytes": 2115,
+        "last_line": [
+          "1700 passed in 2727.04s (0:45:27)"
+        ]
+      },
+      {
+        "id": "lint",
+        "raw_hash": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+        "raw_bytes": 19,
+        "last_line": [
+          "All checks passed!"
+        ]
+      },
+      {
+        "id": "typecheck",
+        "raw_hash": "5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523",
+        "raw_bytes": 45,
+        "last_line": [
+          "Success: no issues found in 171 source files"
+        ]
+      },
+      {
+        "id": "authority",
+        "raw_hash": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+        "raw_bytes": 38,
+        "last_line": [
+          "HARNESS_CHECK_PASS tasks=77 active=74"
+        ]
+      },
+      {
+        "id": "diff",
+        "raw_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "raw_bytes": 0,
+        "last_line": []
+      }
+    ],
+    "outputs": [
+      {
+        "name": "harness-collection.json.json",
+        "sha256": "f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d",
+        "bytes": 3345163,
+        "keys": [
+          "collections",
+          "errors",
+          "exit_code",
+          "reports",
+          "started"
+        ],
+        "summary": {
+          "exit_code": 0
+        }
+      },
+      {
+        "name": "harness-execution.json.json",
+        "sha256": "4f421f2179415103e23e371ff08a9879a158e0cf53d0288271a8bbc35ad4c06e",
+        "bytes": 20766395,
+        "keys": [
+          "collections",
+          "errors",
+          "exit_code",
+          "reports",
+          "started"
+        ],
+        "summary": {
+          "exit_code": 0
+        }
+      },
+      {
+        "name": "harness-junit.xml.json",
+        "sha256": "725fe4f7fe9a6aabafe620980c8603d736c5963987b6e1a147a35711e0b5dfa3",
+        "bytes": 3574283,
+        "cases": 1700,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "hostile_cases": [
+          "tests.harness.test_compact_evidence::test_validation_session_reuses_only_complete_successful_proof",
+          "tests.harness.test_compact_evidence::test_validation_session_never_caches_working_files_or_head",
+          "tests.harness.test_compact_evidence::test_validation_session_is_bounded_nested_and_cleared_on_error",
+          "tests.harness.test_compact_evidence::test_xz_hostile_streams[truncated]",
+          "tests.harness.test_compact_evidence::test_xz_hostile_streams[concatenated]",
+          "tests.harness.test_compact_evidence::test_xz_hostile_streams[trailing]",
+          "tests.harness.test_compact_evidence::test_xz_hostile_streams[corrupt]",
+          "tests.harness.test_compact_evidence::test_xz_hostile_streams[no-check]",
+          "tests.harness.test_compact_evidence::test_xz_hostile_streams[crc32]",
+          "tests.harness.test_compact_evidence::test_xz_hostile_streams[sha256]",
+          "tests.harness.test_compact_evidence::test_xz_hostile_streams[dict-bomb]",
+          "tests.harness.test_compact_evidence::test_xz_hostile_streams[raw-bomb]",
+          "tests.harness.test_compact_evidence::test_xz_hostile_streams[wrong-codec]",
+          "tests.harness.test_compact_evidence::test_xz_hostile_streams[stored-hash]",
+          "tests.harness.test_compact_evidence::test_xz_hostile_streams[raw-hash]",
+          "tests.harness.test_compact_evidence::test_forward_mapping_tamper_rejected[command]",
+          "tests.harness.test_compact_evidence::test_forward_mapping_tamper_rejected[exit_code]",
+          "tests.harness.test_compact_evidence::test_forward_mapping_tamper_rejected[tested_commit]",
+          "tests.harness.test_compact_evidence::test_forward_mapping_tamper_rejected[timestamp]",
+          "tests.harness.test_compact_evidence::test_forward_mapping_tamper_rejected[test_counts]",
+          "tests.harness.test_compact_evidence::test_forward_mapping_tamper_rejected[source]",
+          "tests.harness.test_compact_evidence::test_forward_mapping_tamper_rejected[original-hash]",
+          "tests.harness.test_compact_evidence::test_forward_mapping_tamper_rejected[original-blob]",
+          "tests.harness.test_compact_evidence::test_forward_mapping_tamper_rejected[new-hash]",
+          "tests.harness.test_compact_evidence::test_forward_mapping_tamper_rejected[map-delete]",
+          "tests.harness.test_compact_evidence::test_forward_mapping_tamper_rejected[map-rename]",
+          "tests.harness.test_compact_evidence::test_forward_mapping_tamper_rejected[envelope-delete]",
+          "tests.harness.test_compact_evidence::test_forward_mapping_tamper_rejected[payload-delete]",
+          "tests.harness.test_compact_evidence::test_forward_mapping_tamper_rejected[map-wrapped]",
+          "tests.harness.test_compact_evidence::test_mapping_original_source_loss_is_fail_closed",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-8-COMPACT_REENCODING.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-8-renamed.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-8-renamed.gz]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-8-renamed.xz]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-16-renamed.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-16-COMPACT_REENCODING.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-16-renamed.gz]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-16-renamed.xz]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-32-COMPACT_REENCODING.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-32-renamed.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-32-renamed.gz]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-32-renamed.xz]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-8-COMPACT_REENCODING.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-8-renamed.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-8-renamed.gz]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-8-renamed.xz]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-16-COMPACT_REENCODING.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-16-renamed.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-16-renamed.gz]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-16-renamed.xz]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-32-COMPACT_REENCODING.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-32-renamed.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-32-renamed.gz]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-32-renamed.xz]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-8-COMPACT_REENCODING.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-8-renamed.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-8-renamed.gz]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-8-renamed.xz]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-16-COMPACT_REENCODING.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-16-renamed.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-16-renamed.gz]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-16-renamed.xz]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-32-COMPACT_REENCODING.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-32-renamed.json]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-32-renamed.gz]",
+          "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-32-renamed.xz]",
+          "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[stored_sha256-gzip-v1]",
+          "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[stored_sha256-xz-v1]",
+          "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[raw_sha256-gzip-v1]",
+          "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[raw_sha256-xz-v1]",
+          "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[stored_bytes-gzip-v1]",
+          "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[stored_bytes-xz-v1]",
+          "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[raw_bytes-gzip-v1]",
+          "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[raw_bytes-xz-v1]",
+          "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[tested_commit-gzip-v1]",
+          "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[tested_commit-xz-v1]",
+          "tests.harness.test_compact_evidence::test_binary_marker_payload_proof_cannot_use_later_revision[gzip-v1]",
+          "tests.harness.test_compact_evidence::test_binary_marker_payload_proof_cannot_use_later_revision[xz-v1]",
+          "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_rejects_nested_storage[gzip-v1]",
+          "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_rejects_nested_storage[xz-v1]",
+          "tests.harness.test_compact_evidence::test_binary_marker_payload_unchanged_envelope_pre_admission_restoration[gzip-v1]",
+          "tests.harness.test_compact_evidence::test_binary_marker_payload_unchanged_envelope_pre_admission_restoration[xz-v1]",
+          "tests.harness.test_local_gate::test_installed_only_xz_decode_with_poisoned_candidate"
+        ]
+      },
+      {
+        "name": "unit-junit.xml.json",
+        "sha256": "00456eb8ebab28746b1f6caa284a4d35f4f8a501269b04b766d9818ad6c0ac30",
+        "bytes": 34550,
+        "cases": 247,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "hostile_cases": []
+      },
+      {
+        "name": "harness-pytest.log.json",
+        "sha256": "2ac10cccffbee4f602930e2c924adeb4678615db24755d765ce542ed6f6eed0d",
+        "bytes": 2115,
+        "last_line": [
+          "1700 passed in 2727.04s (0:45:27)"
+        ]
+      }
+    ]
+  },
+  "execution_reconciliation": {
+    "collected": 1700,
+    "executed_calls": 1700,
+    "worker_collections_match": true,
+    "phase_counts": {
+      "setup": 1700,
+      "call": 1700,
+      "teardown": 1700
+    },
+    "compact_cases": 482,
+    "hostile_positive_executed_identities": [
+      "tests/harness/test_compact_evidence.py::test_binary_marker_payload_exemption_rejects_nested_storage[gzip-v1]",
+      "tests/harness/test_compact_evidence.py::test_binary_marker_payload_exemption_rejects_nested_storage[xz-v1]",
+      "tests/harness/test_compact_evidence.py::test_binary_marker_payload_exemption_requires_full_bound_proof[raw_bytes-gzip-v1]",
+      "tests/harness/test_compact_evidence.py::test_binary_marker_payload_exemption_requires_full_bound_proof[raw_bytes-xz-v1]",
+      "tests/harness/test_compact_evidence.py::test_binary_marker_payload_exemption_requires_full_bound_proof[raw_sha256-gzip-v1]",
+      "tests/harness/test_compact_evidence.py::test_binary_marker_payload_exemption_requires_full_bound_proof[raw_sha256-xz-v1]",
+      "tests/harness/test_compact_evidence.py::test_binary_marker_payload_exemption_requires_full_bound_proof[stored_bytes-gzip-v1]",
+      "tests/harness/test_compact_evidence.py::test_binary_marker_payload_exemption_requires_full_bound_proof[stored_bytes-xz-v1]",
+      "tests/harness/test_compact_evidence.py::test_binary_marker_payload_exemption_requires_full_bound_proof[stored_sha256-gzip-v1]",
+      "tests/harness/test_compact_evidence.py::test_binary_marker_payload_exemption_requires_full_bound_proof[stored_sha256-xz-v1]",
+      "tests/harness/test_compact_evidence.py::test_binary_marker_payload_exemption_requires_full_bound_proof[tested_commit-gzip-v1]",
+      "tests/harness/test_compact_evidence.py::test_binary_marker_payload_exemption_requires_full_bound_proof[tested_commit-xz-v1]",
+      "tests/harness/test_compact_evidence.py::test_binary_marker_payload_proof_cannot_use_later_revision[gzip-v1]",
+      "tests/harness/test_compact_evidence.py::test_binary_marker_payload_proof_cannot_use_later_revision[xz-v1]",
+      "tests/harness/test_compact_evidence.py::test_binary_marker_payload_unchanged_envelope_pre_admission_restoration[gzip-v1]",
+      "tests/harness/test_compact_evidence.py::test_binary_marker_payload_unchanged_envelope_pre_admission_restoration[xz-v1]",
+      "tests/harness/test_compact_evidence.py::test_forward_mapping_tamper_rejected[command]",
+      "tests/harness/test_compact_evidence.py::test_forward_mapping_tamper_rejected[envelope-delete]",
+      "tests/harness/test_compact_evidence.py::test_forward_mapping_tamper_rejected[exit_code]",
+      "tests/harness/test_compact_evidence.py::test_forward_mapping_tamper_rejected[map-delete]",
+      "tests/harness/test_compact_evidence.py::test_forward_mapping_tamper_rejected[map-rename]",
+      "tests/harness/test_compact_evidence.py::test_forward_mapping_tamper_rejected[map-wrapped]",
+      "tests/harness/test_compact_evidence.py::test_forward_mapping_tamper_rejected[new-hash]",
+      "tests/harness/test_compact_evidence.py::test_forward_mapping_tamper_rejected[original-blob]",
+      "tests/harness/test_compact_evidence.py::test_forward_mapping_tamper_rejected[original-hash]",
+      "tests/harness/test_compact_evidence.py::test_forward_mapping_tamper_rejected[payload-delete]",
+      "tests/harness/test_compact_evidence.py::test_forward_mapping_tamper_rejected[source]",
+      "tests/harness/test_compact_evidence.py::test_forward_mapping_tamper_rejected[test_counts]",
+      "tests/harness/test_compact_evidence.py::test_forward_mapping_tamper_rejected[tested_commit]",
+      "tests/harness/test_compact_evidence.py::test_forward_mapping_tamper_rejected[timestamp]",
+      "tests/harness/test_compact_evidence.py::test_mapping_original_source_loss_is_fail_closed",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[fake-archive-utf-16-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[fake-archive-utf-16-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[fake-archive-utf-16-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[fake-archive-utf-32-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[fake-archive-utf-32-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[fake-archive-utf-32-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[fake-archive-utf-8-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[fake-archive-utf-8-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[fake-archive-utf-8-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[partial-envelope-utf-16-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[partial-envelope-utf-16-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[partial-envelope-utf-16-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[partial-envelope-utf-32-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[partial-envelope-utf-32-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[partial-envelope-utf-32-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[partial-envelope-utf-8-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[partial-envelope-utf-8-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[partial-envelope-utf-8-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[removed-marker-utf-16-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[removed-marker-utf-16-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[removed-marker-utf-16-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[removed-marker-utf-32-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[removed-marker-utf-32-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[removed-marker-utf-32-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[removed-marker-utf-8-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[removed-marker-utf-8-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[removed-marker-utf-8-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-16-COMPACT_REENCODING.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-16-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-16-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-16-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-32-COMPACT_REENCODING.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-32-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-32-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-32-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-8-COMPACT_REENCODING.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-8-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-8-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[nested-utf-8-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-16-COMPACT_REENCODING.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-16-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-16-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-16-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-32-COMPACT_REENCODING.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-32-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-32-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-32-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-8-COMPACT_REENCODING.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-8-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-8-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-8-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-16-COMPACT_REENCODING.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-16-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-16-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-16-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-32-COMPACT_REENCODING.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-32-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-32-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-32-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-8-COMPACT_REENCODING.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-8-renamed.gz]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-8-renamed.json]",
+      "tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[wrapped-utf-8-renamed.xz]",
+      "tests/harness/test_compact_evidence.py::test_validation_session_is_bounded_nested_and_cleared_on_error",
+      "tests/harness/test_compact_evidence.py::test_validation_session_never_caches_working_files_or_head",
+      "tests/harness/test_compact_evidence.py::test_validation_session_reuses_only_complete_successful_proof",
+      "tests/harness/test_compact_evidence.py::test_xz_hostile_streams[concatenated]",
+      "tests/harness/test_compact_evidence.py::test_xz_hostile_streams[corrupt]",
+      "tests/harness/test_compact_evidence.py::test_xz_hostile_streams[crc32]",
+      "tests/harness/test_compact_evidence.py::test_xz_hostile_streams[dict-bomb]",
+      "tests/harness/test_compact_evidence.py::test_xz_hostile_streams[no-check]",
+      "tests/harness/test_compact_evidence.py::test_xz_hostile_streams[raw-bomb]",
+      "tests/harness/test_compact_evidence.py::test_xz_hostile_streams[raw-hash]",
+      "tests/harness/test_compact_evidence.py::test_xz_hostile_streams[sha256]",
+      "tests/harness/test_compact_evidence.py::test_xz_hostile_streams[stored-hash]",
+      "tests/harness/test_compact_evidence.py::test_xz_hostile_streams[trailing]",
+      "tests/harness/test_compact_evidence.py::test_xz_hostile_streams[truncated]",
+      "tests/harness/test_compact_evidence.py::test_xz_hostile_streams[wrong-codec]",
+      "tests/harness/test_local_gate.py::test_installed_only_xz_decode_with_poisoned_candidate",
+      "tests/harness/test_review_evidence_provenance.py::test_compact_conversion_never_uses_bookkeeping_suffix[False-review-HG-054]",
+      "tests/harness/test_review_evidence_provenance.py::test_compact_conversion_never_uses_bookkeeping_suffix[False-review-KL-001]",
+      "tests/harness/test_review_evidence_provenance.py::test_compact_conversion_never_uses_bookkeeping_suffix[False-tested-HG-054]",
+      "tests/harness/test_review_evidence_provenance.py::test_compact_conversion_never_uses_bookkeeping_suffix[False-tested-KL-001]",
+      "tests/harness/test_review_evidence_provenance.py::test_compact_conversion_never_uses_bookkeeping_suffix[True-review-HG-054]",
+      "tests/harness/test_review_evidence_provenance.py::test_compact_conversion_never_uses_bookkeeping_suffix[True-review-KL-001]",
+      "tests/harness/test_review_evidence_provenance.py::test_compact_conversion_never_uses_bookkeeping_suffix[True-tested-HG-054]",
+      "tests/harness/test_review_evidence_provenance.py::test_compact_conversion_never_uses_bookkeeping_suffix[True-tested-KL-001]"
+    ],
+    "independent_decode_probes": [
+      "stream_padding",
+      "lzma_alone",
+      "empty_second_stream",
+      "crc32",
+      "output_bound",
+      "short_length",
+      "gzip_no_fallback"
+    ],
+    "protected_paths_equal": [
+      "FROZEN_BASELINE.json",
+      "HISTORICAL_EVIDENCE_MAPPING.schema.json",
+      "docs/exec-plans/evidence/HG-051/INVENTORY.json",
+      "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+      "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+      "12_KineticLoop_Integration_Spec_v0.1.md",
+      "CURRENT_REQUIREMENT_SET.json",
+      "KineticLoop_Harness_Backlog_v0.2.json",
+      "KineticLoop_Harness_Traceability_v0.3.json",
+      "tools/harness/local_gate.py",
+      "tools/harness/github_app.py",
+      "tools/harness/db_ci.py"
+    ],
+    "reviewed_diff_files": 335,
+    "evidence_blob_count": 321,
+    "evidence_bytes": 14203926,
+    "result_suffix_commits": [
+      "9b15954c76ff8bbe3187e87641a62a08394da75e"
+    ],
+    "evidence_bytes_note": "Numeric 16MiB budget passes; independent duplicate-bulk blocker means complete storage admission fails.",
+    "suffix_proof": {
+      "changed_path_count": 38,
+      "governance_tested_suffix_errors": [],
+      "implementation_and_test_bytes_unchanged": true,
+      "scope": "Own newly appended check evidence, controller metadata-only asset inventory and result YAML."
+    }
+  },
+  "focused_reviewer_executions": [
+    {
+      "command": "PYTHONPATH=\"$PWD/src:/private/tmp/hg054-dependencies\" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_compact_evidence.py::test_xz_hostile_streams tests/harness/test_compact_evidence.py::test_bound_binary_payload_marker_value_stays_ordinary_output tests/harness/test_compact_evidence.py::test_binary_marker_payload_exemption_requires_full_bound_proof tests/harness/test_compact_evidence.py::test_binary_marker_payload_proof_cannot_use_later_revision tests/harness/test_compact_evidence.py::test_binary_marker_payload_exemption_rejects_nested_storage tests/harness/test_compact_evidence.py::test_mapping_original_source_loss_is_fail_closed tests/harness/test_compact_evidence.py::test_unrelated_owner_audit_reverifies_every_admitted_original_blob tests/harness/test_compact_evidence.py::test_unrelated_owner_rejects_restored_mapping_on_merged_post_admission_branch tests/harness/test_compact_evidence.py::test_transient_foreign_conversion_cannot_disappear_before_head tests/harness/test_compact_evidence.py::test_binary_marker_payload_unchanged_envelope_pre_admission_restoration tests/harness/test_local_gate.py::test_installed_only_xz_decode_with_poisoned_candidate -q --basetemp=/private/tmp/hg054-security-review/pytest --junitxml=/private/tmp/hg054-security-review/focused.xml > /private/tmp/hg054-security-review/focused.log 2>&1",
+      "cases": 38,
+      "case_identities": [
+        "tests.harness.test_compact_evidence::test_xz_hostile_streams[truncated]",
+        "tests.harness.test_compact_evidence::test_xz_hostile_streams[trailing]",
+        "tests.harness.test_compact_evidence::test_xz_hostile_streams[concatenated]",
+        "tests.harness.test_compact_evidence::test_xz_hostile_streams[corrupt]",
+        "tests.harness.test_compact_evidence::test_xz_hostile_streams[no-check]",
+        "tests.harness.test_compact_evidence::test_xz_hostile_streams[crc32]",
+        "tests.harness.test_compact_evidence::test_xz_hostile_streams[sha256]",
+        "tests.harness.test_compact_evidence::test_xz_hostile_streams[dict-bomb]",
+        "tests.harness.test_compact_evidence::test_xz_hostile_streams[raw-bomb]",
+        "tests.harness.test_compact_evidence::test_xz_hostile_streams[wrong-codec]",
+        "tests.harness.test_compact_evidence::test_xz_hostile_streams[stored-hash]",
+        "tests.harness.test_compact_evidence::test_xz_hostile_streams[raw-hash]",
+        "tests.harness.test_compact_evidence::test_bound_binary_payload_marker_value_stays_ordinary_output[kineticloop_evidence-gzip-v1]",
+        "tests.harness.test_compact_evidence::test_bound_binary_payload_marker_value_stays_ordinary_output[kineticloop_evidence-xz-v1]",
+        "tests.harness.test_compact_evidence::test_bound_binary_payload_marker_value_stays_ordinary_output[compact_reencoding-gzip-v1]",
+        "tests.harness.test_compact_evidence::test_bound_binary_payload_marker_value_stays_ordinary_output[compact_reencoding-xz-v1]",
+        "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[stored_sha256-gzip-v1]",
+        "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[stored_sha256-xz-v1]",
+        "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[raw_sha256-gzip-v1]",
+        "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[raw_sha256-xz-v1]",
+        "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[stored_bytes-gzip-v1]",
+        "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[stored_bytes-xz-v1]",
+        "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[raw_bytes-gzip-v1]",
+        "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[raw_bytes-xz-v1]",
+        "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[tested_commit-gzip-v1]",
+        "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_requires_full_bound_proof[tested_commit-xz-v1]",
+        "tests.harness.test_compact_evidence::test_binary_marker_payload_proof_cannot_use_later_revision[gzip-v1]",
+        "tests.harness.test_compact_evidence::test_binary_marker_payload_proof_cannot_use_later_revision[xz-v1]",
+        "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_rejects_nested_storage[gzip-v1]",
+        "tests.harness.test_compact_evidence::test_binary_marker_payload_exemption_rejects_nested_storage[xz-v1]",
+        "tests.harness.test_compact_evidence::test_mapping_original_source_loss_is_fail_closed",
+        "tests.harness.test_compact_evidence::test_unrelated_owner_audit_reverifies_every_admitted_original_blob",
+        "tests.harness.test_compact_evidence::test_unrelated_owner_rejects_restored_mapping_on_merged_post_admission_branch",
+        "tests.harness.test_compact_evidence::test_transient_foreign_conversion_cannot_disappear_before_head[True]",
+        "tests.harness.test_compact_evidence::test_transient_foreign_conversion_cannot_disappear_before_head[False]",
+        "tests.harness.test_compact_evidence::test_binary_marker_payload_unchanged_envelope_pre_admission_restoration[gzip-v1]",
+        "tests.harness.test_compact_evidence::test_binary_marker_payload_unchanged_envelope_pre_admission_restoration[xz-v1]",
+        "tests.harness.test_local_gate::test_installed_only_xz_decode_with_poisoned_candidate"
+      ],
+      "log_sha256": "b78ba83350e1619633e4b0d10a2041b5ed632abbb30979938b952e8dd763ee9b",
+      "result": "PASS",
+      "summary": "38 passed in 29.23s"
+    },
+    {
+      "command": "PYTHONPATH=\"$PWD/src:/private/tmp/hg054-dependencies\" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest 'tests/harness/test_compact_evidence.py::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-32-renamed.xz]' 'tests/harness/test_compact_evidence.py::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[partial-envelope-utf-16-renamed.gz]' tests/harness/test_review_evidence_provenance.py::test_compact_conversion_never_uses_bookkeeping_suffix tests/harness/test_compact_evidence.py::test_validation_session_never_caches_working_files_or_head tests/harness/test_compact_evidence.py::test_validation_session_reuses_only_complete_successful_proof tests/harness/test_compact_evidence.py::test_validation_session_is_bounded_nested_and_cleared_on_error -q --basetemp=/private/tmp/hg054-security-review/pytest-extra --junitxml=/private/tmp/hg054-security-review/extra.xml > /private/tmp/hg054-security-review/extra.log 2>&1",
+      "cases": 13,
+      "case_identities": [
+        "tests.harness.test_compact_evidence::test_transient_reserved_new_map_on_pre_admission_branch_fails_globally[removed-marker-utf-32-renamed.xz]",
+        "tests.harness.test_compact_evidence::test_transient_invalid_execution_storage_on_pre_admission_branch_fails[partial-envelope-utf-16-renamed.gz]",
+        "tests.harness.test_review_evidence_provenance::test_compact_conversion_never_uses_bookkeeping_suffix[False-tested-KL-001]",
+        "tests.harness.test_review_evidence_provenance::test_compact_conversion_never_uses_bookkeeping_suffix[False-tested-HG-054]",
+        "tests.harness.test_review_evidence_provenance::test_compact_conversion_never_uses_bookkeeping_suffix[False-review-KL-001]",
+        "tests.harness.test_review_evidence_provenance::test_compact_conversion_never_uses_bookkeeping_suffix[False-review-HG-054]",
+        "tests.harness.test_review_evidence_provenance::test_compact_conversion_never_uses_bookkeeping_suffix[True-tested-KL-001]",
+        "tests.harness.test_review_evidence_provenance::test_compact_conversion_never_uses_bookkeeping_suffix[True-tested-HG-054]",
+        "tests.harness.test_review_evidence_provenance::test_compact_conversion_never_uses_bookkeeping_suffix[True-review-KL-001]",
+        "tests.harness.test_review_evidence_provenance::test_compact_conversion_never_uses_bookkeeping_suffix[True-review-HG-054]",
+        "tests.harness.test_compact_evidence::test_validation_session_never_caches_working_files_or_head",
+        "tests.harness.test_compact_evidence::test_validation_session_reuses_only_complete_successful_proof",
+        "tests.harness.test_compact_evidence::test_validation_session_is_bounded_nested_and_cleared_on_error"
+      ],
+      "log_sha256": "cf57edb1b55193b545e5b355e79648547c594e385ae7e46f640466737561635a",
+      "result": "PASS",
+      "summary": "13 passed in 11.85s"
+    }
+  ],
+  "independent_probes": {
+    "result": "PASS",
+    "cases": [
+      "stream_padding",
+      "lzma_alone",
+      "empty_second_stream",
+      "crc32",
+      "output_bound",
+      "short_length",
+      "gzip_no_fallback"
+    ],
+    "method": "Direct codec calls on synthetic non-secret bytes: reject stream padding, FORMAT_ALONE, empty second stream, CRC32, output overflow, truncation and gzip under XZ; exact XZ roundtrip and per-run repeat bytes match."
+  },
+  "read_only_measurement": {
+    "command": "PYTHONPATH=\"$PWD/src:/private/tmp/hg054-dependencies\" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-054/measure_codec.py",
+    "result": "PASS",
+    "report": {
+      "representative": {
+        "label": "deterministic repeated binary output",
+        "raw_bytes": 20971531,
+        "raw_sha256": "84b2760056bcfd162636fa4f920bd4ccce94ef22b3736c29dd55868f10178df1",
+        "gzip_bytes": 20977949,
+        "gzip_sha256": "03d5dc41c7f3c2d9827484e0be94b4c7379f51ae076756304fd65b43772990b5",
+        "xz_bytes": 36404,
+        "xz_sha256": "769f16995be75c1bf7e7eedb6ae260a5efe44d9e69ef49327a06da894b3ee8bf"
+      },
+      "limits": {
+        "plain": 262144,
+        "stored": 8388608,
+        "raw": 67108864,
+        "aggregate": 16777216,
+        "xz_memory": 67108864
+      },
+      "pinned_read_only_proposal": {
+        "source": "e71e599885de45da5bcc0a1a9f817939a3fdbcf2",
+        "base": "af09be228fbc89d074b6e863c83e1fdda343d55b",
+        "changed_files": 645,
+        "payloads": 286,
+        "current_bytes": 18194008,
+        "four_largest": [
+          {
+            "label": "docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/96d7fa1d43e857aca623e8c4c8102d32df948cf5f8089ad2915080035192517b.gz",
+            "raw_bytes": 20521596,
+            "raw_sha256": "96d7fa1d43e857aca623e8c4c8102d32df948cf5f8089ad2915080035192517b",
+            "gzip_bytes": 2423922,
+            "gzip_sha256": "cdd8488b19ff0ceb6b5c73309f305b87954a7fb3715e335b55d15ed71ed6caa2",
+            "xz_bytes": 131996,
+            "xz_sha256": "9732b6bbf505df7ad298ac45a482ded5dc3b3d84849d5f1d963a070ada0330db"
+          },
+          {
+            "label": "docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/a80f15c54a610683d2d0e4d4250d1d49d77e7b5214525d9209fc2ae11d5e7182.gz",
+            "raw_bytes": 20521783,
+            "raw_sha256": "a80f15c54a610683d2d0e4d4250d1d49d77e7b5214525d9209fc2ae11d5e7182",
+            "gzip_bytes": 2423883,
+            "gzip_sha256": "c25da64f9e32c167f0c83081e2bd35607ae4253c9974e1a57b6a340e379f9fb2",
+            "xz_bytes": 132568,
+            "xz_sha256": "c5d4af490cdc455f9dab5d967f88589dcd83ff26115095788d1c2741126f334d"
+          },
+          {
+            "label": "docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/044a3e54104607ce182b3f9ef53a4c0b5db3f5fa9e0727829589099507e4fddf.gz",
+            "raw_bytes": 20521578,
+            "raw_sha256": "044a3e54104607ce182b3f9ef53a4c0b5db3f5fa9e0727829589099507e4fddf",
+            "gzip_bytes": 2423703,
+            "gzip_sha256": "2726a07f54466a4beec48d815ff66d13d4a28615f981e6cf9f1dfe42c03896de",
+            "xz_bytes": 131748,
+            "xz_sha256": "b873ef2f1e57419fbc8de64d695c0183b72684f3279716d8e646066049286c23"
+          },
+          {
+            "label": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/4fad4b1a54ccc9196841a040beac3209a40ab0c84ac5d829a49311dff7b47840.gz",
+            "raw_bytes": 20521604,
+            "raw_sha256": "4fad4b1a54ccc9196841a040beac3209a40ab0c84ac5d829a49311dff7b47840",
+            "gzip_bytes": 2423697,
+            "gzip_sha256": "2532a264fc6876a129c972b20ed340b664457929c8af09361f70874a60991754",
+            "xz_bytes": 131788,
+            "xz_sha256": "b51481c9a3aa1e92ba4f11d31390a25e307eb540c69bd9f2c02d5ea724efae85"
+          }
+        ],
+        "savings_bytes": 9167105,
+        "projected_bytes_before_envelope_and_record_changes": 9026903,
+        "within_unchanged_total_budget": true
+      }
+    },
+    "scope": "Immutable KL036 Git blobs only; metadata/hashes/sizes output, no raw logs copied into reviewed repository or review report, no owner artifacts mutated."
+  },
+  "earlier_runs": [
+    {
+      "path": "docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/RUN.json",
+      "revision": "50f3b908aebaea41ed9b88f409c54a17334a739a",
+      "statuses": [
+        {
+          "id": "codec_security_and_budget",
+          "result": "FAIL",
+          "exit": 1
+        },
+        {
+          "id": "bound_reader_regressions",
+          "result": "FAIL",
+          "exit": 2
+        },
+        {
+          "id": "installed_decoder_isolation",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "representative_roundtrip",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "scope",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "unit",
+          "result": "FAIL",
+          "exit": -2
+        },
+        {
+          "id": "harness",
+          "result": "FAIL",
+          "exit": -2
+        },
+        {
+          "id": "lint",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "typecheck",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "authority",
+          "result": "FAIL",
+          "exit": -2
+        },
+        {
+          "id": "diff",
+          "result": "PASS",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/RUN.json",
+      "revision": "7dd61f47bff65d2fd1260672f391fa15ae256f74",
+      "statuses": [
+        {
+          "id": "codec_security_and_budget",
+          "result": "FAIL",
+          "exit": 1
+        },
+        {
+          "id": "bound_reader_regressions",
+          "result": "FAIL",
+          "exit": 2
+        },
+        {
+          "id": "installed_decoder_isolation",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "representative_roundtrip",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "scope",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "unit",
+          "result": "FAIL",
+          "exit": -2
+        },
+        {
+          "id": "harness",
+          "result": "FAIL",
+          "exit": -2
+        },
+        {
+          "id": "lint",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "typecheck",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "authority",
+          "result": "FAIL",
+          "exit": -2
+        },
+        {
+          "id": "diff",
+          "result": "PASS",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/RUN.json",
+      "revision": "b8498b601d92a64b548fb702e962cab2431af5b7",
+      "statuses": [
+        {
+          "id": "codec_security_and_budget",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "bound_reader_regressions",
+          "result": "FAIL",
+          "exit": 2
+        },
+        {
+          "id": "installed_decoder_isolation",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "representative_roundtrip",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "scope",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "unit",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "harness",
+          "result": "FAIL",
+          "exit": 4
+        },
+        {
+          "id": "lint",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "typecheck",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "authority",
+          "result": "FAIL",
+          "exit": -2
+        },
+        {
+          "id": "diff",
+          "result": "PASS",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/RUN.json",
+      "revision": "bb0aa23090f00e37d71a18b514ade57bff9a54c1",
+      "statuses": [
+        {
+          "id": "codec_security_and_budget",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "bound_reader_regressions",
+          "result": "FAIL",
+          "exit": 2
+        },
+        {
+          "id": "installed_decoder_isolation",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "representative_roundtrip",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "scope",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "unit",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "harness",
+          "result": "FAIL",
+          "exit": 1
+        },
+        {
+          "id": "lint",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "typecheck",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "authority",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "diff",
+          "result": "PASS",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/RUN.json",
+      "revision": "d0a39402c4f7f3585e495e4ea3b30bbcf88db737",
+      "statuses": [
+        {
+          "id": "codec_security_and_budget",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "bound_reader_regressions",
+          "result": "FAIL",
+          "exit": 2
+        },
+        {
+          "id": "installed_decoder_isolation",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "representative_roundtrip",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "scope",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "unit",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "harness",
+          "result": "FAIL",
+          "exit": -2
+        },
+        {
+          "id": "lint",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "typecheck",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "authority",
+          "result": "FAIL",
+          "exit": -2
+        },
+        {
+          "id": "diff",
+          "result": "PASS",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/RUN.json",
+      "revision": "e1de54a7bb0825d07446066401407437c7229d2e",
+      "statuses": [
+        {
+          "id": "codec_security_and_budget",
+          "result": "FAIL",
+          "exit": 2
+        },
+        {
+          "id": "bound_reader_regressions",
+          "result": "FAIL",
+          "exit": 2
+        },
+        {
+          "id": "installed_decoder_isolation",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "representative_roundtrip",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "scope",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "unit",
+          "result": "FAIL",
+          "exit": -2
+        },
+        {
+          "id": "harness",
+          "result": "FAIL",
+          "exit": -2
+        },
+        {
+          "id": "lint",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "typecheck",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "authority",
+          "result": "FAIL",
+          "exit": -2
+        },
+        {
+          "id": "diff",
+          "result": "PASS",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/RUN.json",
+      "revision": "ea1780c842ba12e426f2691c59fb7980589e8bfe",
+      "statuses": [
+        {
+          "id": "codec_security_and_budget",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "bound_reader_regressions",
+          "result": "FAIL",
+          "exit": 2
+        },
+        {
+          "id": "installed_decoder_isolation",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "representative_roundtrip",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "scope",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "unit",
+          "result": "FAIL",
+          "exit": 1
+        },
+        {
+          "id": "harness",
+          "result": "FAIL",
+          "exit": -2
+        },
+        {
+          "id": "lint",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "typecheck",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "authority",
+          "result": "FAIL",
+          "exit": -2
+        },
+        {
+          "id": "diff",
+          "result": "PASS",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/RUN.json",
+      "revision": "ea7a809d3d839bacc15ebbb106fe63d60533a718",
+      "statuses": [
+        {
+          "id": "codec_security_and_budget",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "bound_reader_regressions",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "installed_decoder_isolation",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "representative_roundtrip",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "scope",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "unit",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "harness",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "lint",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "typecheck",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "authority",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "diff",
+          "result": "PASS",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/RUN.json",
+      "revision": "ec5503f3f4261e8b89477fc6840df3a2980d64dd",
+      "statuses": [
+        {
+          "id": "codec_security_and_budget",
+          "result": "FAIL",
+          "exit": 2
+        },
+        {
+          "id": "bound_reader_regressions",
+          "result": "FAIL",
+          "exit": 2
+        },
+        {
+          "id": "installed_decoder_isolation",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "representative_roundtrip",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "scope",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "unit",
+          "result": "FAIL",
+          "exit": -2
+        },
+        {
+          "id": "harness",
+          "result": "FAIL",
+          "exit": -2
+        },
+        {
+          "id": "lint",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "id": "typecheck",
+          "result": "FAIL",
+          "exit": 1
+        },
+        {
+          "id": "authority",
+          "result": "FAIL",
+          "exit": -2
+        },
+        {
+          "id": "diff",
+          "result": "PASS",
+          "exit": 0
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Review is CHANGES_REQUIRED at this exact implementation/result SHA; product requirements remain NOT_RUN.",
+    "Root App/fullDB, controller installation/admission, exact-head hosted gates and MERGED remain pending; no merge recommendation.",
+    "Exclusive local writer is mandatory; rollback covers ordinary single-writer failures, not concurrent writers or crash recovery.",
+    "Deterministic compressed bytes are proven for this executing runner, not all liblzma versions.",
+    "No repeated full suite, database, network, credential, controller or publication action was performed. Scratch probes/tests alone wrote fixture Git histories in /private/tmp."
+  ],
+  "head_unchanged": true,
+  "independent_duplicate_reproduction": {
+    "reviewed_head_sha": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+    "result": "REPRODUCED",
+    "rows": [
+      {
+        "envelope_path": "docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness-collection.json.json",
+        "payload_path": "docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d.gz",
+        "raw_hash": "f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d",
+        "raw_length": 3345163,
+        "stored_hash": "17742d459530f49ddc93d376bdb39e3b19f0793b64664231bdee957577d48f1f",
+        "stored_length": 400494,
+        "tested_sha": "bb0aa23090f00e37d71a18b514ade57bff9a54c1"
+      },
+      {
+        "envelope_path": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-collection.json.json",
+        "payload_path": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d.gz",
+        "raw_hash": "f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d",
+        "raw_length": 3345163,
+        "stored_hash": "17742d459530f49ddc93d376bdb39e3b19f0793b64664231bdee957577d48f1f",
+        "stored_length": 400494,
+        "tested_sha": "ea7a809d3d839bacc15ebbb106fe63d60533a718"
+      }
+    ],
+    "trigger": "audit bulk hash already registered at a different payload path; duplicate-bulk rule fires at final envelope (compact_evidence.py:1379-1382)",
+    "scope": "Both bound envelopes and both separately stored payloads are changed PR regular blobs; earlier failure snapshots stay immutable.",
+    "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python /private/tmp/hg054-security-review/duplicate.py",
+    "script_sha256": "541cd08fa6d327332351af4876044a52211a140af691adce21fe28a2eb25b697"
+  }
+}

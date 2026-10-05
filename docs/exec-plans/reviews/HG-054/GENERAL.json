@@ -1,0 +1,24 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-054",
+  "reviewed_head_sha": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "classification": "BLOCKER",
+      "title": "Required compact audit rejects duplicate collection bulk",
+      "path": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-collection.json.json",
+      "description": "Actual exact-reviewed-head compact audit exits 1: the final and retained C9 collection captures store the same 3,345,163 raw bytes in separate 400,494-byte gzip payloads. Both decode to SHA256 f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d. The unchanged duplicate-bulk rule rejects the final envelope. Eleven execution commands pass, but that does not satisfy the separate required pre-review storage audit.",
+      "required_correction": "Produce a reviewable correction with zero-error exact-head compact audit, preserving earlier actual statuses, raw bytes, bound records and ancestry; retain the duplicate-bulk rule and all numerical budgets. New implementation/result changes require fresh SHA-bound reviews."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/HG-054/general/report.json",
+    "docs/exec-plans/reviews/HG-054/general/audit.json",
+    "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/RUN.json",
+    "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-collection.json.json",
+    "docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness-collection.json.json",
+    "docs/exec-plans/governance/HG-054.yaml"
+  ],
+  "review_contract_version": "v0.2"
+}
