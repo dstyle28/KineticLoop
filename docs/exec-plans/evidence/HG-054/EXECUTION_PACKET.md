@@ -218,3 +218,18 @@ exact proof; invalid/other-revision candidates never do. No extension selects a
 decoder, no size/type/integrity errors are suppressed, and later owner/map/mutation
 guards still run. New isolated tests cover scalar values for both codecs, corrupt
 proofs, later-revision absence, nested metadata and pre-admission restoration.
+
+C9 completed required harness execution preserves actual FAIL: 1698 passed, two
+failed list/dict nested-storage fixtures. Nine other required checks passed; the
+remaining bound-reader was deliberately interrupted with 173 passed and exit2
+before source changes. Those two fixtures excluded an earlier stale-source error,
+but new malformed inner reserved metadata correctly invalidates the entire tested
+suffix before M3 selects either stdout. Independent PROTOCOL diagnosis confirms
+this rejection order. C10 changes only those fixture expectations: exact direct
+bound-read shape errors, exact tested-suffix shape error, and exact M3 stale-source
+rejection. Five other nested mutations and ordinary-source positives stay intact.
+No implementation/decoder/budget/ancestry guard is relaxed; only a fresh immutable
+complete required run may supply final PASS.
+The uncommitted focused verification of all seven nested-storage cases passed
+(7 passed in 684.39s). This is exploratory correction evidence, not final SHA-bound
+task PASS. Actual fresh immutable required executions follow the C10 commit.

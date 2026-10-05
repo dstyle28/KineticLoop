@@ -1,0 +1,23 @@
+{
+  "fixture": "/private/tmp/hg054-protocol-m3-diagnosis-wkzl343t/repo",
+  "suffix": [
+    "governance-tested-revision:evidence-envelope-shape"
+  ],
+  "paths": {
+    "docs/exec-plans/evidence/HG-999/inner.json": {
+      "reader": "evidence-envelope-shape",
+      "m3": [
+        "milestone-m3-regression:stale-or-unintegrated-revision"
+      ]
+    },
+    "docs/exec-plans/evidence/HG-999/outer.json": {
+      "reader": "evidence-envelope-shape",
+      "m3": [
+        "milestone-m3-regression:stale-or-unintegrated-revision"
+      ]
+    }
+  },
+  "implementation_checked": "bb0aa23090f00e37d71a18b514ade57bff9a54c1",
+  "classification": "Independent scratch PROTOCOL diagnosis of actual C9 harness failure; not final task/review PASS",
+  "conclusion": "Malformed inner metadata invalidates tested suffix before M3 selects stdout; exact direct-reader shape rejection remains mandatory."
+}

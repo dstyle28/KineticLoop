@@ -756,10 +756,20 @@ def test_compact_nested_storage_cannot_supply_m3_execution_stdout(tmp_path, muta
         run['stdout'] = {'path': path, 'sha256': v.sha(history.root / path)}
         errors = v.m3_execution_evidence_errors(history.root, payload, revision, revision, history.records)
         assert errors, (mutation, path)
+        if mutation in ('list', 'dict'):
+            # The malformed inner object also invalidates the entire tested
+            # suffix, before M3 selects either stdout. Prove both direct read
+            # rejection and the earlier source guard; neither supplies execution.
+            with pytest.raises(ValueError, match='^evidence-envelope-shape$'):
+                ce.read(history.root, path, revision, tested=history.tested,
+                        command=run['command'], exit_code=0)
+            assert v.governance_suffix_errors(
+                history.root, history.tested, revision, history.change, 'tested'
+            ) == ['governance-tested-revision:evidence-envelope-shape']
+            assert errors == ['milestone-m3-regression:stale-or-unintegrated-revision']
+            continue
         if path == outer_path:
-            reason = ('evidence-envelope-shape' if mutation in ('list', 'dict')
-                      else 'evidence-nested-envelope')
-            assert errors == ['milestone-m3-regression:' + reason]
+            assert errors == ['milestone-m3-regression:evidence-nested-envelope']
         assert not any('stale-or-unintegrated-revision' in error for error in errors)
     errors = ce.audit(history.root, history.tested, revision, history.change)['errors']
     assert any(error.startswith(outer_path + ':evidence-') for error in errors), errors
