@@ -1491,6 +1491,16 @@ def governance_record_paths(change_id):
 
 
 def governance_allowed_patterns(change_id):
+    if change_id == 'HG-054':
+        return ['tools/harness/compact_evidence.py', 'tools/harness/validate_harness.py',
+                'tests/harness/test_compact_evidence.py',
+                'tests/harness/test_review_evidence_provenance.py',
+                'tests/harness/test_m3_milestone_closure.py', 'tests/harness/test_validator.py',
+                'tests/harness/test_local_gate.py', 'docs/harness/EVIDENCE_STORAGE_POLICY.md',
+                'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md', 'docs/harness/LOCAL_DB_CI.md',
+                'tools/harness/README.md', INDEX, MANIFEST,
+                'docs/exec-plans/governance/HG-054.yaml',
+                'docs/exec-plans/evidence/HG-054/**', 'docs/exec-plans/reviews/HG-054/**']
     if change_id == 'HG-051':
         return [INDEX, MANIFEST, BACKLOG, TRACEABILITY,
                 'HISTORICAL_EVIDENCE_MAPPING.schema.json',
@@ -1711,6 +1721,41 @@ def configure_ci_merge_gate(root, args):
         args.governance_reviewed_head = review['reviewed_head_sha']
 
 
+def storage_bookkeeping_only(root, parent, commit, path):
+    """Conversion is implementation, even inside a bookkeeping directory."""
+    cache = _evidence_verdicts.get()
+    key = (('storage-bookkeeping', str(root.resolve()), parent, commit, path)
+           if all(re.fullmatch(r'[0-9a-f]{40}', revision) for revision in (parent, commit))
+           else None)
+    if cache is not None and key is not None and key in cache:
+        return True
+    exists = subprocess.run(['git', 'cat-file', '-e', parent + ':' + path],
+                            cwd=root, capture_output=True).returncode == 0
+    if path.endswith(('.gz', '.xz')):
+        if exists:
+            return False
+    else:
+        for revision in ([parent, commit] if exists else [commit]):
+            entry = revision_git_entry(root, path, revision)
+            if entry is None or entry[0] not in (b'100644', b'100755') or entry[1] != b'blob':
+                continue
+            # This classifies immutable bookkeeping history, including plain
+            # evidence merged before prospective storage budgets were adopted.
+            # Budget admission remains in audit; reserved objects still enforce
+            # their own envelope limit during classification.
+            data = compact_evidence.blob(root, path, revision)
+            if compact_evidence.reencoding_record(data) is not None:
+                return False
+            manifest = compact_evidence.envelope(data)
+            if exists and manifest and manifest.get(compact_evidence.MARKER) in compact_evidence.CODECS:
+                return False
+    if cache is not None and key is not None:
+        if len(cache) >= EVIDENCE_VERDICT_LIMIT:
+            cache.clear()
+        cache.add(key)
+    return True
+
+
 def suffix_errors(
         root, start, end, task_id, kind, scope_patterns=None,
         allow_unrelated_merges=False, allowed_patterns=None):
@@ -1738,6 +1783,8 @@ def suffix_errors(
                     continue
                 if not matches(path, allowed):
                     errors.append(kind + '-stale-change:' + path)
+                elif not storage_bookkeeping_only(root, parents[0], commit, path):
+                    errors.append(kind + '-representation-mutation:' + path)
                 elif kind == 'tested' and matches(path, [evidence_pattern(task_id)]):
                     exists = subprocess.run(['git', 'cat-file', '-e', parents[0] + ':' + path], cwd=root, capture_output=True)
                     if exists.returncode == 0:
@@ -1788,6 +1835,8 @@ def governance_suffix_errors(root, start, end, change_id, kind):
             for path in changed_paths(root, parents[0], commit):
                 if not matches(path, allowed):
                     errors.append('governance-' + kind + '-stale-change:' + path)
+                elif not storage_bookkeeping_only(root, parents[0], commit, path):
+                    errors.append('governance-' + kind + '-representation-mutation:' + path)
                 elif kind == 'tested' and matches(path, [evidence_pattern(change_id)]):
                     exists = subprocess.run(
                         ['git', 'cat-file', '-e', parents[0] + ':' + path],
@@ -1849,6 +1898,24 @@ def revision_git_entry(root, ref, revision):
         if name == ref.encode():
             return tuple(metadata.split())
     return None
+
+
+def review_reference_available(root, ref, reviewed):
+    """Generic availability only; selected review gates still prove exact bindings.
+
+    Retiring a mapped current representation does not remove a review's original
+    regular Git objects at its recorded SHA. Never use that historical proof to
+    excuse a present invalid current artifact or an unavailable reviewed source.
+    """
+    if evidence_exists(root, ref):
+        return True
+    if not relative_path(ref) or '\0' in ref:
+        return False
+    target = root.resolve() / ref
+    if (target.exists() or any(p.is_symlink() for p in (target, *target.parents))
+            or any(p.exists() and not p.is_dir() for p in target.parents)):
+        return False
+    return evidence_exists(root, ref, reviewed)
 
 
 def revision_regular_file(root, ref, revision):
@@ -3546,7 +3613,7 @@ def validate(root, args):
                 errors.append('governance-review-identity-or-path:' + str(path.relative_to(root)))
                 continue
             for ref in obj.get('evidence_refs', []):
-                if not evidence_exists(root, ref):
+                if not review_reference_available(root, ref, obj['reviewed_head_sha']):
                     errors.append('governance-review-evidence:' + ref)
             governance_reviews.append((path, obj))
             continue
@@ -3555,7 +3622,7 @@ def validate(root, args):
             errors.append('review-identity-or-path:' + str(path.relative_to(root)))
             continue
         for ref in obj.get('evidence_refs', []):
-            if not evidence_exists(root, ref):
+            if not review_reference_available(root, ref, obj['reviewed_head_sha']):
                 errors.append('review-evidence:' + ref)
         reviews.append((path, obj, task))
 
@@ -3953,7 +4020,7 @@ def validate(root, args):
             except ValueError as ex:
                 errors.append('governance-review-revision:' + str(ex))
             required = {'GENERAL'}
-            if change_id == 'HG-051':
+            if change_id in ('HG-051', 'HG-054'):
                 required.update({'PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'})
             if change_id == 'HG-050':
                 required.add('SECURITY_DATA_BOUNDARY')

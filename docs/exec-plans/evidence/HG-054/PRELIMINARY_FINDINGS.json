@@ -1,0 +1,329 @@
+{
+  "reviewed_implementation": "b8498b601d92a64b548fb702e962cab2431af5b7",
+  "classification": "EXPLORATORY_CHANGES_REQUIRED_NOT_FINAL_REVIEW_AUTHORITY",
+  "findings": [
+    {
+      "review_type": "GENERAL",
+      "severity": "BLOCKER",
+      "file": "tools/harness/compact_evidence.py",
+      "line": 926,
+      "finding": "Mapping validation lacks actual audit-base to source ancestry. A source already merged and later deleted at the actual protected base can be admitted using an older claimed mapping base.",
+      "reproduction": "Independent isolated Git history returned empty audit errors before fix.",
+      "required_resolution": "Require actual protected base ancestor of source, and add historical-source negative fixture."
+    },
+    {
+      "review_type": "PROTOCOL",
+      "severity": "BLOCKER",
+      "file": "tools/harness/compact_evidence.py",
+      "line": 1128,
+      "finding": "An old same-owner alias excuses an unmapped codec/metadata change at the original existing path.",
+      "reproduction": "Independent in-memory reviewed-function Git/blob mock returned errors=[] with no mapping.",
+      "required_resolution": "Only same-path equal metadata when path exists; alias compatibility only for actual deletion/rename. Add retained-alias negative fixtures."
+    },
+    {
+      "review_type": "DB_CONCURRENCY",
+      "severity": "NONBLOCKING",
+      "finding": "Rollback assumes exclusive local writer and is not concurrency/crash recovery.",
+      "reproduction": "Independent fixture showed original bytes restored for single-writer injected failure, but competing writer bytes can be overwritten by rollback.",
+      "required_resolution": "Document serialized local mutation and interrupted-operation validation discipline; no DB semantics changed."
+    }
+  ],
+  "security_preliminary": "No additional finding identified; superseded by final corrected-SHA review.",
+  "prepared_fix_probe": {
+    "scope": "Isolated /private/tmp copy, not final task evidence",
+    "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_compact_evidence.py -q -k 'retained_old_alias or handcrafted_older_base or conversion_write_failure'",
+    "status": "PASS",
+    "passed": 5,
+    "deselected": 361
+  },
+  "later_corrected_source_review": {
+    "reviewed_implementation": "d0a39402c4f7f3585e495e4ea3b30bbcf88db737",
+    "review_type": "SECURITY_DATA_BOUNDARY",
+    "status": "CHANGES_REQUIRED",
+    "finding": "Inherited original verification was selected-owner-only. An unrelated owner audit passed despite unavailable admitted source.",
+    "required_resolution": "Reverify all admitted canonical mappings globally against each immutable recorded owner/base, preserving selected-owner-only new admission."
+  },
+  "later_global_source_review": {
+    "reviewed_implementation": "7dd61f47bff65d2fd1260672f391fa15ae256f74",
+    "review_types": [
+      "GENERAL",
+      "PROTOCOL"
+    ],
+    "status": "CHANGES_REQUIRED",
+    "finding": "Inherited global verification compared protected base and final head only. An unrelated owner could delete/change an admitted map or representation in an intervening commit and restore it before head.",
+    "required_resolution": "Reverify immutable maps and original/replacement snapshots at every intervening revision/parent descended from protected base. Pre-admission side branches need no retroactive mapping existence."
+  },
+  "later_c4_reviews": [
+    {
+      "reviewed_implementation": "e1de54a7bb0825d07446066401407437c7229d2e",
+      "review_type": "GENERAL",
+      "status": "CHANGES_REQUIRED",
+      "finding": "A new foreign compact conversion/map can be added then entirely removed before head, leaving empty diff and selected-owner audit PASS.",
+      "required_resolution": "Discover new canonical maps globally at each revision and inspect changed compact representation history across owners; reject new foreign conversions even after restoration/deletion."
+    },
+    {
+      "reviewed_implementation": "e1de54a7bb0825d07446066401407437c7229d2e",
+      "review_type": "PROTOCOL",
+      "status": "CHANGES_REQUIRED",
+      "finding": "Path-only task/governance bookkeeping suffix checks allow valid reencoding/maps after review inside own review directory.",
+      "required_resolution": "Reject conversion records and existing compact representation mutation in tested/review suffixes at each commit. Permit ordinary newly captured independent review outputs."
+    }
+  ],
+  "provisional_suffix_helper_regression": {
+    "classification": "Uncommitted exploratory check, not final SHA-bound authority",
+    "result": "FAIL_THEN_FIXED",
+    "failed": 3,
+    "passed": 48,
+    "reason": "Initial storage suffix guard tried to decode nonregular historical entries; corrected regular-entry classification preserves existing nonregular-ref failure semantics."
+  },
+  "later_c5_security_review": {
+    "reviewed_implementation": "ec5503f3f4261e8b89477fc6840df3a2980d64dd",
+    "review_type": "SECURITY_DATA_BOUNDARY",
+    "status": "CHANGES_REQUIRED",
+    "finding": "Canonical-only discovery misses renamed wrapped metadata added/deleted on a pre-admission side branch.",
+    "required_resolution": "Globally classify changed nonpayload metadata at every ancestral stage, including aliases and UTF16/32, while preserving inherited map proofs."
+  },
+  "c5_typecheck_failure": {
+    "classification": "Actual immutable C5 full typecheck FAIL, not interruption",
+    "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/typecheck.json",
+    "exit_code": 1,
+    "finding": "A regression-test variable was reused for Path and string, omitted by earlier narrow exploratory mypy selector.",
+    "resolution": "Use distinct typed loop names and run real CLI typecheck across all 171 configured source files."
+  },
+  "later_c6_reviews": [
+    {
+      "reviewed_implementation": "f910dd0a52cdd0bded556892f1a9938c3ea04a24",
+      "review_types": [
+        "SECURITY_DATA_BOUNDARY"
+      ],
+      "status": "CHANGES_REQUIRED",
+      "finding": "Global history classification recognized malformed execution envelopes but did not perform bound validation; add/delete on a pre-admission branch escaped final-head validation.",
+      "required_resolution": "Bound validate every recognized execution object at its exact revision; preserve frozen archival validation separately."
+    },
+    {
+      "reviewed_implementation": "f910dd0a52cdd0bded556892f1a9938c3ea04a24",
+      "review_types": [
+        "GENERAL",
+        "PROTOCOL"
+      ],
+      "status": "CHANGES_REQUIRED",
+      "finding": "Metadata renamed with .gz/.xz suffix bypassed global classification on pre-admission add/delete branches.",
+      "required_resolution": "Classify actual bounded stored bytes at all changed storage paths, without extension-based decoder guessing; validate every recognized mapping immediately."
+    }
+  ],
+  "c7_provisional_archival_regression": {
+    "classification": "Uncommitted exploratory check, not final SHA-bound authority",
+    "result": "FAIL_THEN_FIXED",
+    "failed": 1,
+    "passed": 82,
+    "reason": "Initial per-revision archive audit rejected the frozen intermediate storage-before-mapping commit. Correction uses the unchanged archive_mapping builder to verify its exact inventory/original proofs before the mapping exists. Existing archival regression confirms retrieval/original proof separation."
+  },
+  "c7_immutable_compatibility_failure": {
+    "reviewed_implementation": "ea1780c842ba12e426f2691c59fb7980589e8bfe",
+    "classification": "Actual immutable unit FAIL; bound-reader positive also failed before deliberate interruption",
+    "unit_exit_code": 1,
+    "unit_passed": 246,
+    "unit_failed": 1,
+    "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/unit.json",
+    "finding": "Suffix-only storage classification incorrectly applied prospective 256KiB plain admission budget to already-merged large plain evidence, invalidating historical integration/read semantics.",
+    "resolution": "Classify exact historical regular bytes without prospective budget admission; reserved metadata retains envelope limits and all new PR budgets remain enforced by audit. Use existing envelope classifier first for reencoding metadata to preserve nonreserved plain JSON semantics."
+  },
+  "c7_runner_finalization_recovery": {
+    "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/runner-finalization.json",
+    "parent_exit_code": 1,
+    "finding": "Parent ambient PYTHONPATH omitted task-cache dependencies during package-version serialization after all exact outputs were captured. Child checks used correct explicit cache environment.",
+    "recovery": "Recovered RUN from exact captured command/exit metadata and original parent stdout; rounded duration precision explicit. No rerun or relabeling. Future helper reads versions in exact child environment before checks."
+  },
+  "later_c8_binary_payload_review": {
+    "reviewed_implementation": "50f3b908aebaea41ed9b88f409c54a17334a739a",
+    "review_type": "SECURITY_DATA_BOUNDARY",
+    "status": "CHANGES_REQUIRED",
+    "finding": "A valid small XZ stream can contain literal reserved marker names as ordinary JSON scalar values in an uncompressed chunk. Raw and bound read are valid, but global stored-byte classification mistakes binary bytes for malformed metadata.",
+    "required_resolution": "Only exact-revision full bound payload proof can suppress a JSON/encoding classifier error on a stored path, including parent state. All unproven metadata aliases and numerical/type/integrity checks remain fail-closed; later owner/map/mutation rules still run. Frozen archive proof remains exact.",
+    "required_run_status": "Superseded actual successful and interrupted statuses preserved; codec exit1 includes interruption teardown KeyError, not PASS. No final C8 PASS authority."
+  },
+  "c9_immutable_nested_fixture_failure": {
+    "reviewed_implementation": "bb0aa23090f00e37d71a18b514ade57bff9a54c1",
+    "classification": "Actual complete harness FAIL; remaining bound-reader deliberately interrupted before source edits",
+    "harness_exit_code": 1,
+    "harness_passed": 1698,
+    "harness_failed": 2,
+    "bound_reader_exit_code": 2,
+    "bound_reader_passed_before_interruption": 173,
+    "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness.json",
+    "finding": "The two list/dict nested-storage fixtures excluded an earlier stale-source rejection. New malformed inner reserved metadata invalidates the entire tested suffix before M3 chooses either stdout, so the strengthened guard correctly rejects it earlier.",
+    "resolution": "No implementation relaxation. For these two fixture shapes assert exact direct bound-read metadata-shape errors, exact tested-suffix metadata-shape error, and exact M3 stale-source rejection. Other five nested mutations and ordinary-source positives stay unchanged. Independent PROTOCOL diagnosis confirms this rejection order."
+  },
+  "exact_R_storage_review": {
+    "revision": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+    "status": "CHANGES_REQUIRED",
+    "roles": [
+      "GENERAL",
+      "PROTOCOL",
+      "DB_CONCURRENCY",
+      "SECURITY_DATA_BOUNDARY"
+    ],
+    "review_record_commit": "3e8d0969cf915d3bc06bc5d7d76f2ae300e23024",
+    "actual_audit_exit": 1,
+    "raw_sha256": "f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d",
+    "raw_bytes": 3345163,
+    "stored_bytes_each": 400494,
+    "finding": "Two separate current payload paths duplicate exact bulk collection bytes. Eleven C10 checks PASS does not grant storage gate PASS.",
+    "correction": "Explicit mapped same-owner child-directory relocation during mandatory codec change; preserve old original commit snapshots and metadata, share one current payload, rerun all checks at new tested revision and obtain four fresh reviews."
+  },
+  "relocation_refinement_exploratory": {
+    "classification": "UNCOMMITTED_SOURCE_EXPLORATORY_NOT_TESTED_SHA_AUTHORITY",
+    "first_focused_run": "1 failed, 18 passed; one new assertion incorrectly passed task identity to path classifier, corrected to mapping path.",
+    "second_focused_run": "19 passed",
+    "corrected_focused_run": "24 passed, 482 deselected in 87.35s",
+    "source_findings": [
+      {
+        "roles": [
+          "GENERAL",
+          "PROTOCOL"
+        ],
+        "issue": "Working-file absence hid destination committed after older selected source.",
+        "resolution": "HEAD-tree collision/input snapshots and every map-admission parent destination absence; writer and hand-authored map negative fixtures."
+      },
+      {
+        "roles": [
+          "DB_CONCURRENCY",
+          "PROTOCOL"
+        ],
+        "issue": "Hand-authored maps bypassed writer hash filename/child-directory rule.",
+        "resolution": "Validator enforces original-envelope SHA256 basename and same-owner child directory; manual mapping negative fixtures."
+      }
+    ],
+    "limits": "Exploratory lint/typecheck/probe passes do not replace immutable required executions or fresh formal reviews."
+  },
+  "C11_actual_run_superseded": {
+    "tested_commit": "241a316ef5a0bbcbc596818528cd7d8f939a2418",
+    "run_ref": "docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/RUN.json",
+    "parent_exit": 1,
+    "checks": [
+      {
+        "check_id": "codec_security_and_budget",
+        "result": "FAIL",
+        "exit_code": 2
+      },
+      {
+        "check_id": "bound_reader_regressions",
+        "result": "FAIL",
+        "exit_code": 2
+      },
+      {
+        "check_id": "installed_decoder_isolation",
+        "result": "FAIL",
+        "exit_code": 1
+      },
+      {
+        "check_id": "representative_roundtrip",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "scope",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "unit",
+        "result": "FAIL",
+        "exit_code": -2
+      },
+      {
+        "check_id": "harness",
+        "result": "FAIL",
+        "exit_code": -2
+      },
+      {
+        "check_id": "lint",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "typecheck",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "authority",
+        "result": "FAIL",
+        "exit_code": -2
+      },
+      {
+        "check_id": "diff",
+        "result": "PASS",
+        "exit_code": 0
+      }
+    ],
+    "finding": "Fresh generic validator fixture copied actual HG054 source-bound mapping from delivery manifest into a git-init repository with no original source Git objects; fail-closed source verification correctly rejects. Actual installed decoder suite 102 passed, 1 failed; unfinished checks deliberately interrupted, not PASS.",
+    "resolution": "Generic fixture omits own HG054 delivery evidence and its manifest rows, constructs independent fixture evidence with its own Git history. No production decoder/map/source guard changed or waived."
+  },
+  "C12_actual_run_superseded": {
+    "tested_commit": "4a1937086f48a28c07cf03932542126f1fc13d2f",
+    "run_ref": "docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/RUN.json",
+    "parent_exit": 1,
+    "checks": [
+      {
+        "check_id": "codec_security_and_budget",
+        "result": "FAIL",
+        "exit_code": 2
+      },
+      {
+        "check_id": "bound_reader_regressions",
+        "result": "FAIL",
+        "exit_code": 2
+      },
+      {
+        "check_id": "installed_decoder_isolation",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "representative_roundtrip",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "scope",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "unit",
+        "result": "FAIL",
+        "exit_code": 1
+      },
+      {
+        "check_id": "harness",
+        "result": "FAIL",
+        "exit_code": -2
+      },
+      {
+        "check_id": "lint",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "typecheck",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "authority",
+        "result": "FAIL",
+        "exit_code": 1
+      },
+      {
+        "check_id": "diff",
+        "result": "PASS",
+        "exit_code": 0
+      }
+    ],
+    "real_unit": "246 passed, 1 failed: generic review availability rejected retired original collection paths despite exact original reviewed SHA objects remaining available. Authority failed same references.",
+    "real_codec": "1 failed, 432 passed before deliberate interruption exit2: older-base fixture expected staging restored but uncommitted originals after stronger HEAD snapshot guard.",
+    "resolution": "Generic review availability accepts missing current refs at exact recorded reviewed SHA, rejects present invalid current entries/parents and unavailable sources. Selected exact binding/PASS/freshness rules unchanged. Older-base negative fixture commits restored snapshots to satisfy independent HEAD guard then retains actual protected-base/source rejection.",
+    "exploratory_limits": "Initial two-case prep failed after restored-snapshot commit was placed in wrong similar fixture; corrected placement, then2PASS. Five hostile availability casesPASS. Independent GENERAL8/PROTOCOL7 focusedPASS do not replace immutable checks."
+  }
+}

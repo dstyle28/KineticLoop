@@ -620,7 +620,8 @@ def test_m3_reader_parses_checked_git_blob_not_second_ambient_read(tmp_path, mon
     'none', 'skipped-junit', 'wrong-collection', 'bad-log', 'wrong-tested',
     'renamed-envelope', 'junit-command', 'collection-command', 'collection-stdout-command',
 ])
-def test_compact_regression_decodes_all_semantic_sources(tmp_path, mutation):
+@pytest.mark.parametrize('codec', ['gzip-v1', 'xz-v1'])
+def test_compact_regression_decodes_all_semantic_sources(tmp_path, mutation, codec):
     """Compression preserves log/JUnit/collection oracles, never summary-only proof."""
     # Earlier module-history negatives intentionally commit unrelated/frozen edits.
     # Each compression case needs its own clean tested-to-evidence suffix.
@@ -632,7 +633,7 @@ def test_compact_regression_decodes_all_semantic_sources(tmp_path, mutation):
     def compressed(label, raw, command):
         path = history.prefix + f'compact-{mutation}-{label}.json'
         # Parameter fixtures append uniquely named envelopes; same raw hashes reuse payloads.
-        v.compact_evidence.capture(history.root, path, raw, history.tested, command, 0)
+        v.compact_evidence.capture(history.root, path, raw, history.tested, command, 0, codec=codec)
         return {'path': path, 'sha256': v.sha(history.root / path)}
 
     stdout = (history.root / run['stdout']['path']).read_bytes()
@@ -755,10 +756,20 @@ def test_compact_nested_storage_cannot_supply_m3_execution_stdout(tmp_path, muta
         run['stdout'] = {'path': path, 'sha256': v.sha(history.root / path)}
         errors = v.m3_execution_evidence_errors(history.root, payload, revision, revision, history.records)
         assert errors, (mutation, path)
+        if mutation in ('list', 'dict'):
+            # The malformed inner object also invalidates the entire tested
+            # suffix, before M3 selects either stdout. Prove both direct read
+            # rejection and the earlier source guard; neither supplies execution.
+            with pytest.raises(ValueError, match='^evidence-envelope-shape$'):
+                ce.read(history.root, path, revision, tested=history.tested,
+                        command=run['command'], exit_code=0)
+            assert v.governance_suffix_errors(
+                history.root, history.tested, revision, history.change, 'tested'
+            ) == ['governance-tested-revision:evidence-envelope-shape']
+            assert errors == ['milestone-m3-regression:stale-or-unintegrated-revision']
+            continue
         if path == outer_path:
-            reason = ('evidence-envelope-shape' if mutation in ('list', 'dict')
-                      else 'evidence-nested-envelope')
-            assert errors == ['milestone-m3-regression:' + reason]
+            assert errors == ['milestone-m3-regression:evidence-nested-envelope']
         assert not any('stale-or-unintegrated-revision' in error for error in errors)
     errors = ce.audit(history.root, history.tested, revision, history.change)['errors']
     assert any(error.startswith(outer_path + ':evidence-') for error in errors), errors

@@ -1,0 +1,398 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-054",
+  "review_type": "SECURITY_DATA_BOUNDARY",
+  "review_contract_version": "v0.2",
+  "reviewed_head_sha": "8b9e2d129fc9a285db694b33f1254c9de4f0698e",
+  "status": "PASS",
+  "findings": [],
+  "basis": "Fresh independent source, Git-diff, bound-evidence and focused hostile-fixture review; earlier reviewer reasoning was not used.",
+  "authorities_read": [
+    "AGENTS.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    ".agents/skills/pr-merge-reviewer/SKILL.md",
+    ".agents/skills/protocol-guardian/SKILL.md",
+    "docs/exec-plans/evidence/HG-054/EXECUTION_PACKET.md",
+    "docs/exec-plans/governance/HG-054.yaml",
+    "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "docs/harness/LOCAL_DB_CI.md",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md section 3.7",
+    "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md sections 3-6",
+    "THREAD_REVIEW.schema.json"
+  ],
+  "inspected_paths": [
+    "tools/harness/compact_evidence.py",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_compact_evidence.py",
+    "tests/harness/test_local_gate.py",
+    "tests/harness/test_review_evidence_provenance.py",
+    "tests/harness/test_m3_milestone_closure.py",
+    "tests/harness/test_validator.py",
+    "docs/exec-plans/evidence/HG-054/run_checks.py",
+    "docs/exec-plans/evidence/HG-054/verify_scope.py",
+    "docs/exec-plans/evidence/HG-054/CONTROLLER_CANDIDATE_ASSETS_a49229a.json"
+  ],
+  "independent_proofs": {
+    "reviewed_sha": "8b9e2d129fc9a285db694b33f1254c9de4f0698e",
+    "tested_sha": "a49229a73319a54c7078107f89de5ba49174cf07",
+    "protected_base_sha": "a1d040b6234d8161527d46d0773a88e8625129df",
+    "checks": [
+      {
+        "id": "codec_security_and_budget",
+        "ref": "docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/codec_security_and_budget.json",
+        "recovered_bytes": 672,
+        "recovered_sha256": "7e784222ea40ef5d072d14fa738e4636a73f8c3209c24acc8274866844f61ce1",
+        "passed": 529
+      },
+      {
+        "id": "bound_reader_regressions",
+        "ref": "docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/bound_reader_regressions.json",
+        "recovered_bytes": 433,
+        "recovered_sha256": "eec8dd7491602b47e8226e138f5e341e921f8f6871aa7fcced31f3a300188eda",
+        "passed": 337
+      },
+      {
+        "id": "installed_decoder_isolation",
+        "ref": "docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/installed_decoder_isolation.json",
+        "recovered_bytes": 180,
+        "recovered_sha256": "7c318800ff5d683886f8e9f45c3ee3c6b39d02c7cb5278ded487b68de95241c0",
+        "passed": 103
+      },
+      {
+        "id": "representative_roundtrip",
+        "ref": "docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/representative_roundtrip.json",
+        "recovered_bytes": 3164,
+        "recovered_sha256": "97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e",
+        "passed": null
+      },
+      {
+        "id": "scope",
+        "ref": "docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/scope.json",
+        "recovered_bytes": 60689,
+        "recovered_sha256": "31b8cf7be83d6508c655f02aac1f1308118a02fbec2915d1bb360c6def3d8b69",
+        "passed": null
+      },
+      {
+        "id": "unit",
+        "ref": "docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/unit.json",
+        "recovered_bytes": 461,
+        "recovered_sha256": "e4784e0163d9c93d0180cf8675ef854a2eb9aefca965113656243396616ed102",
+        "passed": 247
+      },
+      {
+        "id": "harness",
+        "ref": "docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/harness.json",
+        "recovered_bytes": 2195,
+        "recovered_sha256": "e83cd5c39381b417a536316cbcc0058e691b4c463210fd714a297baaae193e8d",
+        "passed": 1757
+      },
+      {
+        "id": "lint",
+        "ref": "docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/lint.json",
+        "recovered_bytes": 19,
+        "recovered_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+        "passed": null
+      },
+      {
+        "id": "typecheck",
+        "ref": "docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/typecheck.json",
+        "recovered_bytes": 45,
+        "recovered_sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb",
+        "passed": null
+      },
+      {
+        "id": "authority",
+        "ref": "docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/authority.json",
+        "recovered_bytes": 38,
+        "recovered_sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+        "passed": null
+      },
+      {
+        "id": "diff",
+        "ref": "docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/diff.json",
+        "recovered_bytes": 0,
+        "recovered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "passed": null
+      }
+    ],
+    "case_identities": {
+      "collected": 1757,
+      "started": 1757,
+      "passed_call": 1757,
+      "passed_phases": 5271,
+      "junit": 1757,
+      "unit_junit": 247,
+      "identity_sha256": "e8254f5c5295f2b4370398201783b7ae72ece544b7063c6a87fff29aaec9b585",
+      "errors": 0,
+      "failures": 0,
+      "skips": 0
+    },
+    "budget": {
+      "changed_files": 479,
+      "stored_bytes": 14483539,
+      "limit": 16777216
+    },
+    "unchanged_authorities": [
+      "FROZEN_BASELINE.json",
+      "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+      "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+      "HISTORICAL_EVIDENCE_MAPPING.schema.json",
+      "docs/exec-plans/evidence/HG-051/INVENTORY.json",
+      "CURRENT_REQUIREMENT_SET.json"
+    ],
+    "controller_assets_verified": 11,
+    "map_bindings": [
+      {
+        "original_ref": "docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness-collection.json.json",
+        "original_revision": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+        "replacement_ref": "docs/exec-plans/evidence/HG-054/shared-collection/3f24e49a2c70e26ff654fcadaf0f36e7100c34e600b40c67e2a62e163d6e73ce.json",
+        "raw_digest": "f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d",
+        "original_command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg054-checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness -q",
+        "original_tested_sha": "bb0aa23090f00e37d71a18b514ade57bff9a54c1",
+        "original_exit_code": 1
+      },
+      {
+        "original_ref": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-collection.json.json",
+        "original_revision": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+        "replacement_ref": "docs/exec-plans/evidence/HG-054/shared-collection/ad90918529da8a8efdd8003ba720cbec3bc7454223114a276850390a7f29acfa.json",
+        "raw_digest": "f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d",
+        "original_command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness -q",
+        "original_tested_sha": "ea7a809d3d839bacc15ebbb106fe63d60533a718",
+        "original_exit_code": 0
+      }
+    ],
+    "map_first_admission_sha": "241a316ef5a0bbcbc596818528cd7d8f939a2418",
+    "map_bytes_sha256": "09b14d75baf0330eb171ca34d5ba3c1fe5da11d6e76a34364793c240c63b974d"
+  },
+  "security_conclusions": [
+    "read verifies regular exact-revision envelope/payload blobs, same-directory owner/name, stored length/hash, existing full tested commit and ancestry. UTF-8/16/32, escaped/removed markers, malformed/wrapped/nested storage objects fail closed; archival formats never use the execution reader.",
+    "XZ decoding uses FORMAT_XZ, fixed 64 MiB memlimit, raw length plus one output bound, CRC64, EOF and empty unused_data. Exact raw length/hash rejects bombs, truncation, unsupported checks, corruption, concatenation, trailing bytes and wrong declared codecs. Gzip remains the capture default and all inclusive budgets are unchanged.",
+    "New conversions require actual protected-base ancestry, own compact source snapshots present byte-exact in working tree and HEAD, same-owner/subtree destinations, original-envelope-hash filenames, collision rejection, complete immutable map bindings and raw/execution equality. Both original and replacement envelope selections remain excluded from a second conversion.",
+    "Current source retirement is mandatory for relocation. Payload retirement is admitted only after all live same-owner references are accounted for; replacements share content bytes while preserving independent execution authority. Snapshot SHA256/length and regular Git blob proofs hold for both mapped entries at original source and reviewed replacement revision.",
+    "Retained conversion maps prove byte-identical first-parent admission before import, unique original merge-base, unchanged protected paths during base advance, original-prefix audit, and admission ancestry for every actual-base descendant containing source. Every revision/parent retains map/binding checks. Reversed-parent late admission and byte-identical late recreation reject.",
+    "Global history classification covers foreign/transient/Unicode/wrapped/renamed reserved content across all parents. Inherited maps reverify originals for all owners even on unrelated/no-change audits. A payload classification exception requires full exact-revision bound retrieval, never suffix-based decoder guessing or later HEAD proof.",
+    "storage_bookkeeping_only rejects conversion records, existing compact envelope/payload mutations and restored transient conversions in tested/review suffixes. Generic review availability uses historical reviewed-SHA retrieval only for an absent current path; invalid present entries/parents and unavailable sources still reject.",
+    "Installed-only isolated validator/decoder tests reject poisoned candidates and missing/changed pins. The candidate inventory has eleven independently matched asset hashes at tested and reviewed revisions; it supplies no installation/admission authority.",
+    "Single-writer rollback restores original bytes and removes replacement/map outputs for ordinary failures. Concurrent writers and crash recovery remain explicitly excluded; interrupted mutation stays blocked. No runtime, DB, provider export, credential, command-authority or production/shadow path is added."
+  ],
+  "focused_execution": {
+    "command": "PYTHONPATH=\"$PWD/src:/private/tmp/hg054-dependencies\" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest -p no:cacheprovider --basetemp /private/tmp/hg054-security-R2-fixtures tests/harness/test_compact_evidence.py::test_xz_hostile_streams tests/harness/test_compact_evidence.py::test_handwritten_or_late_side_branch_map_after_base_import_rejects tests/harness/test_compact_evidence.py::test_retained_map_recreation_on_base_imported_side_branch_rejects tests/harness/test_compact_evidence.py::test_handwritten_map_cannot_overwrite_parent_destination tests/harness/test_compact_evidence.py::test_relocation_validation_failure_rolls_back_originals_and_new_destinations tests/harness/test_compact_evidence.py::test_unrelated_owner_rejects_transient_admitted_binding_mutation tests/harness/test_compact_evidence.py::test_generic_review_availability_does_not_excuse_invalid_current_entry tests/harness/test_local_gate.py::test_installed_only_xz_decode_with_poisoned_candidate -q > /private/tmp/hg054-security-R2-focused.log 2>&1",
+    "selectors": [
+      "tests/harness/test_compact_evidence.py::test_xz_hostile_streams",
+      "tests/harness/test_compact_evidence.py::test_handwritten_or_late_side_branch_map_after_base_import_rejects",
+      "tests/harness/test_compact_evidence.py::test_retained_map_recreation_on_base_imported_side_branch_rejects",
+      "tests/harness/test_compact_evidence.py::test_handwritten_map_cannot_overwrite_parent_destination",
+      "tests/harness/test_compact_evidence.py::test_relocation_validation_failure_rolls_back_originals_and_new_destinations",
+      "tests/harness/test_compact_evidence.py::test_unrelated_owner_rejects_transient_admitted_binding_mutation",
+      "tests/harness/test_compact_evidence.py::test_generic_review_availability_does_not_excuse_invalid_current_entry",
+      "tests/harness/test_local_gate.py::test_installed_only_xz_decode_with_poisoned_candidate"
+    ],
+    "exit_code": 0,
+    "passed": 30,
+    "seconds": 51.91,
+    "log_sha256": "af644454395a4e05bf656789d184dd6373a21e112d28835b5db6c87af6ef60ba",
+    "scratch_log": "/private/tmp/hg054-security-R2-focused.log",
+    "interpretation": "Reviewer focused verification only; final task execution authority remains C17."
+  },
+  "commands_and_results": [
+    {
+      "command": "git diff a1d040b6234d8161527d46d0773a88e8625129df 8b9e2d129fc9a285db694b33f1254c9de4f0698e -- <inspected source/test/policy paths>",
+      "result": "Independent diff inspected"
+    },
+    {
+      "command": "git diff --check a1d040b6234d8161527d46d0773a88e8625129df 8b9e2d129fc9a285db694b33f1254c9de4f0698e",
+      "exit_code": 0
+    },
+    {
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python /private/tmp/hg054-security-R2-proof.py",
+      "exit_code": 0,
+      "result": "Exact-R2 eleven bound checks, collection/execution/JUnit equality, frozen/source/snapshot/asset/budget and retained-admission assertions passed"
+    },
+    {
+      "command": "Exact-R2 independent iteration over every committed HG054 RUN check with tested/command/exit bound retrieval",
+      "result": "All thirteen RUN records independently verified; each preserved nonzero exit remains FAIL, each PASS remains exit zero"
+    },
+    {
+      "command": "Inspect /private/tmp/hg054-compact-audit-R2.json and independently recalculate exact-R2 changed-blob bytes/count",
+      "result": "Exact root audit errors empty; independent totals agree. Full ancestral audit was not repeated."
+    }
+  ],
+  "preserved_run_bindings": [
+    {
+      "run_ref": "docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/RUN.json",
+      "tested_sha": "241a316ef5a0bbcbc596818528cd7d8f939a2418",
+      "results": {
+        "FAIL": 6,
+        "PASS": 5
+      },
+      "exits": {
+        "2": 2,
+        "1": 1,
+        "0": 5,
+        "-2": 3
+      }
+    },
+    {
+      "run_ref": "docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/RUN.json",
+      "tested_sha": "4a1937086f48a28c07cf03932542126f1fc13d2f",
+      "results": {
+        "FAIL": 5,
+        "PASS": 6
+      },
+      "exits": {
+        "2": 2,
+        "0": 6,
+        "1": 2,
+        "-2": 1
+      }
+    },
+    {
+      "run_ref": "docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/RUN.json",
+      "tested_sha": "50f3b908aebaea41ed9b88f409c54a17334a739a",
+      "results": {
+        "FAIL": 5,
+        "PASS": 6
+      },
+      "exits": {
+        "1": 1,
+        "2": 1,
+        "0": 6,
+        "-2": 3
+      }
+    },
+    {
+      "run_ref": "docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/RUN.json",
+      "tested_sha": "7dd61f47bff65d2fd1260672f391fa15ae256f74",
+      "results": {
+        "FAIL": 5,
+        "PASS": 6
+      },
+      "exits": {
+        "1": 1,
+        "2": 1,
+        "0": 6,
+        "-2": 3
+      }
+    },
+    {
+      "run_ref": "docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/RUN.json",
+      "tested_sha": "9a63f08abbe64ff2736e770254703d8a09f1f35d",
+      "results": {
+        "PASS": 11
+      },
+      "exits": {
+        "0": 11
+      }
+    },
+    {
+      "run_ref": "docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/RUN.json",
+      "tested_sha": "a49229a73319a54c7078107f89de5ba49174cf07",
+      "results": {
+        "PASS": 11
+      },
+      "exits": {
+        "0": 11
+      }
+    },
+    {
+      "run_ref": "docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/RUN.json",
+      "tested_sha": "b8498b601d92a64b548fb702e962cab2431af5b7",
+      "results": {
+        "PASS": 8,
+        "FAIL": 3
+      },
+      "exits": {
+        "0": 8,
+        "2": 1,
+        "4": 1,
+        "-2": 1
+      }
+    },
+    {
+      "run_ref": "docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/RUN.json",
+      "tested_sha": "bb0aa23090f00e37d71a18b514ade57bff9a54c1",
+      "results": {
+        "PASS": 9,
+        "FAIL": 2
+      },
+      "exits": {
+        "0": 9,
+        "2": 1,
+        "1": 1
+      }
+    },
+    {
+      "run_ref": "docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/RUN.json",
+      "tested_sha": "d0a39402c4f7f3585e495e4ea3b30bbcf88db737",
+      "results": {
+        "PASS": 8,
+        "FAIL": 3
+      },
+      "exits": {
+        "0": 8,
+        "2": 1,
+        "-2": 2
+      }
+    },
+    {
+      "run_ref": "docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/RUN.json",
+      "tested_sha": "e1de54a7bb0825d07446066401407437c7229d2e",
+      "results": {
+        "FAIL": 5,
+        "PASS": 6
+      },
+      "exits": {
+        "2": 2,
+        "0": 6,
+        "-2": 3
+      }
+    },
+    {
+      "run_ref": "docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/RUN.json",
+      "tested_sha": "ea1780c842ba12e426f2691c59fb7980589e8bfe",
+      "results": {
+        "PASS": 7,
+        "FAIL": 4
+      },
+      "exits": {
+        "0": 7,
+        "2": 1,
+        "1": 1,
+        "-2": 2
+      }
+    },
+    {
+      "run_ref": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/RUN.json",
+      "tested_sha": "ea7a809d3d839bacc15ebbb106fe63d60533a718",
+      "results": {
+        "PASS": 11
+      },
+      "exits": {
+        "0": 11
+      }
+    },
+    {
+      "run_ref": "docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/RUN.json",
+      "tested_sha": "ec5503f3f4261e8b89477fc6840df3a2980d64dd",
+      "results": {
+        "FAIL": 6,
+        "PASS": 5
+      },
+      "exits": {
+        "2": 2,
+        "0": 5,
+        "-2": 3,
+        "1": 1
+      }
+    }
+  ],
+  "limits": [
+    "No installation, controller admission, credentials, network, DB, App gate, publication or merge performed.",
+    "No full suite repeated; thirty selected focused cases were independently executed. Full final-suite authority is the inspected SHA-bound C17 evidence.",
+    "Product requirements, App/fullDB and controller installation/admission remain NOT_RUN or pending; task/review PASS does not promote them.",
+    "No merge recommendation; root installer/admission/App/fullDB gates remain outstanding.",
+    "Only the assigned typed record and this new report are authored. Reports created here require the narrow own-task REVIEW_RECORD_ONLY suffix for persisted availability."
+  ],
+  "merge_recommendation": null
+}

@@ -344,3 +344,76 @@ def test_archival_mapping_cannot_supply_review_record_evidence(tmp_path, removed
     assert not v.review_evidence_exists(history.root, ref, history.reviewed,
                                         record_commit, 'KL-001', True)
     assert any('integration-review-evidence' in error for error in history.errors(record_commit))
+
+
+@pytest.mark.parametrize('codec', ['gzip-v1', 'xz-v1'])
+def test_compact_review_created_bound_revision_and_suffix(tmp_path, codec):
+    history = History(tmp_path)
+    ce = v.compact_evidence
+    ref = OWN + 'raw/run.json'
+    ce.capture(history.root, ref, b'1 passed\n', history.base, 'pytest', 0, codec=codec)
+    review = history.review([ref])
+    assert v.review_evidence_exists(history.root, ref, history.reviewed, review, 'KL-001', True)
+    assert not v.review_evidence_exists(history.root, ref, history.reviewed, review, 'KL-001', False)
+    assert not v.review_evidence_exists(history.root, ref, history.reviewed, review, 'KL-001A', True)
+    manifest = json.loads((history.root / ref).read_text())
+    (history.root / manifest['payload']).unlink()
+    later = history.commit('deleted later payload')
+    assert not v.review_evidence_exists(history.root, ref, history.reviewed, later, 'KL-001', True)
+    assert v.review_evidence_exists(history.root, ref, history.reviewed, review, 'KL-001', True)
+
+
+@pytest.mark.parametrize('identity', ['KL-001', 'HG-054'])
+@pytest.mark.parametrize('kind', ['tested', 'review'])
+@pytest.mark.parametrize('restore', [False, True])
+def test_compact_conversion_never_uses_bookkeeping_suffix(tmp_path, identity, kind, restore):
+    history = History(tmp_path)
+    ce = v.compact_evidence
+    directory = 'reviews' if kind == 'review' else 'evidence'
+    ref = f'docs/exec-plans/{directory}/{identity}/raw/run.json'
+    record_path = f'docs/exec-plans/{directory}/{identity}/conversion/COMPACT_REENCODING.json'
+    before = ce.capture(history.root, ref, b'1 failed\n', history.base, 'pytest', 1)
+    source = history.commit('compact output before tested or reviewed revision')
+    original = {path: (history.root / path).read_bytes() for path in (ref, before['payload'])}
+    ce.reencode(history.root, history.base, source, identity, [ref], record_path, ce.XZ_FORMAT)
+    head = history.commit('conversion inside bookkeeping paths')
+    if restore:
+        for payload_path in (history.root / ref).parent.glob('*.xz'):
+            payload_path.unlink()
+        (history.root / record_path).unlink()
+        for restore_path, data in original.items():
+            (history.root / restore_path).write_bytes(data)
+        head = history.commit('restored conversion cannot repair stale review or test')
+    suffix = v.governance_suffix_errors if identity.startswith('HG-') else v.suffix_errors
+    assert any('representation-mutation' in error for error in
+               suffix(history.root, source, head, identity, kind))
+
+
+@pytest.mark.parametrize('identity', ['KL-001', 'HG-054'])
+@pytest.mark.parametrize('kind', ['tested', 'review'])
+def test_suffix_classification_preserves_historical_large_plain_evidence(tmp_path, identity, kind):
+    history = History(tmp_path)
+    ce = v.compact_evidence
+    directory = 'reviews' if kind == 'review' else 'evidence'
+    ref = f'docs/exec-plans/{directory}/{identity}/historical.log'
+    # Historical plain-read/suffix semantics predate prospective budget admission.
+    raw = b'ordinary historical execution output\n' * 8000
+    assert len(raw) > ce.PLAIN_LIMIT
+    history.put(ref, raw.decode())
+    end = history.commit('historical ordinary bookkeeping evidence')
+    suffix = v.governance_suffix_errors if identity.startswith('HG-') else v.suffix_errors
+    assert suffix(history.root, history.reviewed, end, identity, kind) == []
+    assert ce.read(history.root, ref, end) == raw
+    # This compatibility does not grant prospective admission or a size waiver.
+    assert any('evidence-size:' in error for error in
+               ce.audit(history.root, history.reviewed, end, identity)['errors'])
+
+
+def test_suffix_classification_keeps_nonreserved_plain_json_semantics(tmp_path):
+    history = History(tmp_path)
+    ref = OWN + 'historical.json'
+    raw = b'{"ordinary":1,"ordinary":2}'
+    history.put(ref, raw.decode())
+    end = history.commit('historical ordinary JSON')
+    assert v.compact_evidence.read(history.root, ref, end) == raw
+    assert v.suffix_errors(history.root, history.reviewed, end, 'KL-001', 'review') == []

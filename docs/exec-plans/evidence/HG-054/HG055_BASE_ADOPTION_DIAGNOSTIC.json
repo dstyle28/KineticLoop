@@ -1,0 +1,70 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-054",
+  "merge_revision": "7e7b99c6504f98a17e7ff990ca8d715e68b7f413",
+  "new_actual_base": "a1d040b6234d8161527d46d0773a88e8625129df",
+  "unchanged_C14_history": "9a63f08abbe64ff2736e770254703d8a09f1f35d / 3b244dd967533cafd76b9d481f57100f48960b9d",
+  "fixed_merge_feedback": {
+    "ci_ownership": {
+      "exit_code": 0,
+      "stdout": "..........                                                               [100%]\n10 passed in 0.07s\n"
+    },
+    "retained_map_new_base": {
+      "exit_code": 1,
+      "stdout": "Traceback (most recent call last):\n  File \"<stdin>\", line 5, in <module>\n  File \"/Users/davetian/.codex/worktrees/fbaf/KineticLoop/tools/harness/compact_evidence.py\", line 930, in validate_reencoding\n    git(root, 'merge-base', '--is-ancestor', base, source)\n  File \"/Users/davetian/.codex/worktrees/fbaf/KineticLoop/tools/harness/compact_evidence.py\", line 49, in git\n    raise ValueError('evidence-git:' + result.stderr.decode(errors='replace').strip())\nValueError: evidence-git:\n",
+      "description": "Direct validate_reencoding for unchanged own map, actual new base and exact merge head fails at base/source ancestry."
+    }
+  },
+  "uncommitted_preparation_v1": {
+    "exit_code": 1,
+    "stdout": ".F...........                                                            [100%]\n=================================== FAILURES ===================================\n___________ test_retained_map_survives_normal_diverged_base_advance ____________\n\nrepo = (PosixPath('/private/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/pytest-of-davetian/pytest-2235/test_retained_map_survives_nor0'), '4fb049cfbf8b4fcdecb002ceb6bd176ff5d58aec')\n\n    def test_retained_map_survives_normal_diverged_base_advance(repo):\n        root, _, source, record, _, base, head = advanced_base_conversion(repo)\n        data = (root / RECODE).read_bytes()\n        assert ce.validate_reencoding(root, RECODE, record, base, head, 'HG-047')\n>       assert ce.audit(root, base, head, 'HG-047')['errors'] == []\nE       AssertionError: assert ['reencoding-...ence-missing'] == []\nE         \nE         Left contains one more item: 'reencoding-invalid:evidence-missing'\nE         Use -v to get more diff\n\ntests/harness/test_compact_evidence.py:1835: AssertionError\n=========================== short test summary info ============================\nFAILED tests/harness/test_compact_evidence.py::test_retained_map_survives_normal_diverged_base_advance\n1 failed, 12 passed, 510 deselected in 43.85s\n",
+    "scope": "Preparation only; not immutable execution PASS. Imported protected parent predates map admission."
+  },
+  "formal_review": "NOT_RUN_FOR_NEW_IMPLEMENTATION",
+  "frozen_semantic_impact": "NONE",
+  "root_owned_gates": "NOT_RUN_BY_AUTHOR",
+  "uncommitted_preparation_v2": {
+    "exit_code": 0,
+    "stdout": ".................                                                        [100%]\n17 passed, 510 deselected in 87.18s (0:01:27)\n",
+    "scope": "17 actual focused PASS, not immutable final authority; independent GENERAL subsequently found reversed-parent late admission bypass."
+  },
+  "independent_reversed_parent_blocker": {
+    "status": "REPRODUCED",
+    "fixture": "/private/tmp/hg054-review-parent-order-fjg_brdf",
+    "actual_result": "direct validation accepted and audit errors empty before correction",
+    "correction": "Any actual-base descendant containing source must also contain original admission; applied in direct helper and audit."
+  },
+  "uncommitted_preparation_v3": {
+    "exit_code": 0,
+    "stdout": "..................                                                       [100%]\n18 passed, 510 deselected in 86.93s (0:01:26)\n",
+    "scope": "Actual focused preparation only, no immutable PASS credit."
+  },
+  "independent_duplicate_map_side_branch_blocker": {
+    "status": "REPRODUCED_THEN_REJECTED_ON_FRESH_CURRENT_CODE",
+    "description": "Source side imports actual base and recreates byte-identical valid map without original admission ancestry; reversing parents or merging into valid task cannot borrow admission.",
+    "correction": "Direct helper and audit source/admission ancestry guard; exact regression added.",
+    "formal_review": "NOT_GRANTED"
+  },
+  "uncommitted_preparation_v4": {
+    "exit_code": 0,
+    "stdout": "...................                                                      [100%]\n19 passed, 510 deselected in 87.73s (0:01:27)\n",
+    "scope": "Actual focused preparation only; 19 PASS including byte-identical late side recreation and literal path-history handling. No immutable final credit."
+  },
+  "uncommitted_lint": {
+    "exit_code": 0,
+    "stdout": "All checks passed!\n",
+    "scope": "Preparation only, not final immutable execution."
+  },
+  "uncommitted_typecheck": {
+    "exit_code": 0,
+    "stdout": "Success: no issues found in 172 source files\n",
+    "scope": "Preparation only, not final immutable execution."
+  },
+  "corrected_fixed_merge_map_validation": {
+    "exit_code": 0,
+    "base": "a1d040b6234d8161527d46d0773a88e8625129df",
+    "head": "7e7b99c6504f98a17e7ff990ca8d715e68b7f413",
+    "map_ref": "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json",
+    "returned_path_count": 4,
+    "scope": "Direct retained-map validation returned normally after original-prefix audit using uncommitted corrected implementation; preparation only."
+  }
+}

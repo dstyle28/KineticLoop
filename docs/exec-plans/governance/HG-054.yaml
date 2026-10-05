@@ -1,0 +1,649 @@
+change_identity: harness-governance-v0.1/HG-054
+display_change_id: HG-054
+base_commit: a1d040b6234d8161527d46d0773a88e8625129df
+tested_commit: a49229a73319a54c7078107f89de5ba49174cf07
+change_status: PASS
+summary: Optional bounded xz-v1 and explicit audited same-owner unmerged codec conversion, including mapped
+  same-owner child-directory relocation, shared collection payloads and narrowly proven retention across
+  normal protected-base advancement; default gzip, raw bytes/execution metadata/original ancestry and
+  all numerical budgets preserved.
+packets_refined: []
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- docs/exec-plans/evidence/HG-054/C11_STORAGE_PRECHECK/audit.json
+- docs/exec-plans/evidence/HG-054/C11_STORAGE_PRECHECK/cba029f91a3501b376414a2e3ec8f78e6cb228f03d87e944191c2ff3b4533f9c.xz
+- docs/exec-plans/evidence/HG-054/C14_RESOURCE_HANDOFF.json
+- docs/exec-plans/evidence/HG-054/C9_NESTED_FIXTURE_DIAGNOSIS.json
+- docs/exec-plans/evidence/HG-054/CONTROLLER_CANDIDATE_ASSETS.json
+- docs/exec-plans/evidence/HG-054/CONTROLLER_CANDIDATE_ASSETS_9a63f08.json
+- docs/exec-plans/evidence/HG-054/CONTROLLER_CANDIDATE_ASSETS_a49229a.json
+- docs/exec-plans/evidence/HG-054/EXECUTION_PACKET.md
+- docs/exec-plans/evidence/HG-054/HG055_BASE_ADOPTION_DIAGNOSTIC.json
+- docs/exec-plans/evidence/HG-054/PRELIMINARY_FINDINGS.json
+- docs/exec-plans/evidence/HG-054/R_STORAGE_BLOCKER/18cb3aa16d05db2be87cd57eef2b4db716a110f6d1207bd5f7b0ec23548f68a8.xz
+- docs/exec-plans/evidence/HG-054/R_STORAGE_BLOCKER/audit.json
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/26afef29188279af15e6ac5cc1c3785d6760355384a16f8a8bff45c75197884f.xz
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/3bcf94da8e881de406c3a13978d57526c6172ef08eaf7466fa88312d427d6037.xz
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523.xz
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/7045760329904f04cac2aaf3f22aeaba03631e37b2097d02a9591d36cc9b6c82.xz
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/8289ca5f907951d0f20f8324aaf5e2384fa5116b67eaaeea0a071bbcd6a41c6d.xz
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.xz
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/82cf21c7688b1abfe3991addbd6081da790e4a0c7b976df0d160ace3caeec0ce.xz
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e.xz
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/9b00e8ed11639e86ef3d89132abaec56199b6be131bea96da8f3d6211ad6a942.xz
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/RUN.json
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/a0267a301f894f958cb6d48f8cf008827b53d95d3cae4aa311b0771491b6f527.xz
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/authority.json
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/b9ce59e370ed41992705f470aff1e0f5b3053d676fa15d597aa182a1f3281a7a.xz
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/bf73275ceb7ec4fce6b6fd5a0b33d08ddcb9845887e72fa7f8a5ba51db7f492f.xz
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/bound_reader_regressions.json
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/c5354f1d55ffe236372a152816402ad32cbf643b21d8f0e826d769fe1b4e7a3d.xz
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/c85486ae73dae8ff35adcc1784b68227b25335e32875d4eca8bce3248d79bcb1.xz
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/codec_security_and_budget.json
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/diff.json
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.xz
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/f8e0114f12e32f8e160e0b933334bf70d082df1c3579e4c3d086344e4f7df590.xz
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/harness-collection.log.json
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/harness-execution.json.json
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/harness-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/harness-pytest.log.json
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/harness.json
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/installed_decoder_isolation.json
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/lint.json
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/representative_roundtrip.json
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/scope.json
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/typecheck.json
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/unit-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/unit.json
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/00cfd9ee5bca489da7d99aec811605d5e09d00f1f5c8cebffe00b77397786281.xz
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523.xz
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/5a6ef970be6764dc2174ea4ef8ad50881bde1334624bd2e4e9912f6e3bae7171.xz
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/63588a82448ca674e0f0131bf36ec480e59373014407911bdd70fe99bcb82b92.xz
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/6a873a2ac878c7c929bd93e8f8d715dee469e0e5faadb037c9aad15cef99f771.xz
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/73f3e48bbc578d7d8d1d7664ac68c8b33fb6aece90937b655f25965d75adf21e.xz
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/75750ebe0c98faf2a9fc405e511c777cc822c7ee49b112a1ed616ae7ccdf6ec6.xz
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/7ec0806dd04feed41044663bcadcb8ff204eae303f27747799ecbca8e86170ce.xz
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/8289ca5f907951d0f20f8324aaf5e2384fa5116b67eaaeea0a071bbcd6a41c6d.xz
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.xz
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e.xz
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/RUN.json
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/a4e323909df16008a7b9898759d05a301b77a3429c5df70c67e3ee1fb0639a3f.xz
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/aa26ca56bce8e10794db815d2eafcd593da83e080fc226896512a0bd37e9ec32.xz
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/ad8cf95b1e1276a58d65914887f89166d28b4e088521cc4a7e247f31186b4d06.xz
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/authority.json
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/bound_reader_regressions.json
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/codec_security_and_budget.json
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/diff.json
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.xz
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/eeed612387871e544b2b3838c8ed6f62c65f2b5341d5198ba0b60c01d8ddd074.xz
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/harness-collection.log.json
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/harness-execution.json.json
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/harness-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/harness-pytest.log.json
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/harness.json
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/installed_decoder_isolation.json
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/lint.json
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/representative_roundtrip.json
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/scope.json
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/typecheck.json
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/unit-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9/unit.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/077fd554060bc55eab5b26a33489c81cc75e98764baeeb24f57024577fa5d833.gz
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/1270bd9c4756e6f69ce95cbfbc96bd01100825a7ba4d7f029674e50956b75ecb.gz
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/1364902de9626bb38390de68b70b467460301666aec392ec817607134adb98b4.gz
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/18a117ac89a61295f541fd053f8e74f360d0410bf6085cdf9cc9ef46f932a080.gz
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/269d5f9fa6b45e5525b7119e7fd08b35bf030da7dbf9e4afd1d870d1aa20f1c7.gz
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/41636d95a84b20e92ae122b616b5ae78e1f6b0361bca2b72f6ef3b82942f3a3c.gz
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523.gz
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/7045760329904f04cac2aaf3f22aeaba03631e37b2097d02a9591d36cc9b6c82.gz
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/8cbd30dba4dc07dbd8abab8e7994e98e55e9c1b3848ebbe9048c32377a47f35f.gz
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/8e50411983bbd4d8428d04d2bc9c2be58daf7df97c78f24baf1be4dbd79e033a.gz
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e.gz
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/RUN.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/afd805d86451e97ba8046e169107373fdf90a578dcb6f52876248f618d5bd81e.gz
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/authority.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/bf03f8660cdb41575d5cb3d14dc2d774ff4193a939aae139213825b00eb6c906.gz
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/bound_reader_regressions.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/c85486ae73dae8ff35adcc1784b68227b25335e32875d4eca8bce3248d79bcb1.gz
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/codec_security_and_budget.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/diff.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/fe5d4d5c8bb9747dd7f1aeb6386269bcca2f4bb2c2243a683630c0e6b6e85d52.gz
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/harness-collection.json.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/harness-collection.log.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/harness-execution.json.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/harness-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/harness-pytest.log.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/harness.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/installed_decoder_isolation.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/lint.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/representative_roundtrip.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/scope.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/typecheck.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/unit-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-50f3b908aebaea41ed9b88f409c54a17334a739a-d7c9740b/unit.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/07ab19f8d88ee82156799974db77fd3dc3bbb038f60c85ffe2cfa9037c3dd6e9.gz
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/35c768ddd1eadd7f8947a868bfcaeb908114a98c9e7be47763cd19a3d2965282.gz
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/49c51c78e27f24204fa1ac2873e256fd925eb44ca854f7e270323638f78445bf.gz
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/4f6241d91fe1787c3f730fa9545735a4148eca7e5fd62dc3846cc6374e524f82.gz
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523.gz
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/5eec290a4a0b9a872876b0e5877abbcba4600f2a86b8564da19595ffcd34342a.gz
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/5f27e686f4c317b62f390ac24fbd4056b2ae719235eea2faf35d70190b48c12f.gz
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/649a0f20805b5f4eaf85d9b98da0e6acc2fad9cc5a07315de761ea42d406f569.gz
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/976b168261eea828a0a2c394805e533b7ae966f93072ce506816f5c6a5299e93.gz
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e.gz
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/RUN.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/authority.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/bb49d86d2124aef62f6ceff545fbc377cff18cf99577d35e47279d279b267bb2.gz
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/bound_reader_regressions.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/codec_security_and_budget.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/d663dfcb322a9d0b1aadd33d977ccbe0c05954a8319e4449fb79df114821ef40.gz
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/d928393179d97c1c1df185864c0abd295649ea1ae9a201bbd42a2bdf79abebd1.gz
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/diff.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/ed3a1ce6e022f6af21fa981751172430fbc8779d34a8c5122ea68d3e3fe944be.gz
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/f47c718faa60c4c755a66a21d18ff2a36c2318fb013bac414fd1263e9b89d8ce.gz
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/harness-collection.json.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/harness-collection.log.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/harness-execution.json.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/harness-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/harness-pytest.log.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/harness.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/installed_decoder_isolation.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/lint.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/representative_roundtrip.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/scope.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/typecheck.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/unit-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-7dd61f47bff65d2fd1260672f391fa15ae256f74-22481a7a/unit.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/0999c41053ef3b527a0bd592942e8242b478344007cb1671166737d64d50f12e.xz
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/09faf816bcbf4d1f9d827f94855063489511666a764146eea76049daa245bdf4.xz
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/1e72b7013c18b771eee6734beb523731125b7b3c2d75f243b5134f9fce224d0b.xz
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/20be7a7cdc424ae67f03a3984575f393454714bcd95e489325be581985fce161.xz
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/330c6eb89aa7a93878fa826a2733570de468ca3a192b444af585184e09a6a195.xz
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/3482bc82ace8a0aaf4d794dc4964fc7f5c02d8dba4d3c2c8312558380266a677.xz
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.xz
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/56a0662eafd332132564acae75c85c762a1ab9ebfc4a50fe67267470a3332f60.xz
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/57c42efad151c734b12b1bb3246156db3d53b23a5d1d4b7e9ae38ab9378635e6.xz
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523.xz
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/62473de7f1ca5f0a054c3ff39b3f5bd5d366fcb5352e57da0d4fb3e3490ffdfb.xz
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/81bb58c1aa205471768b676b3f58bb971f388d9ccf524dc11d47a32caf468af8.xz
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.xz
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e.xz
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/RUN.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/a7a917201c96a0e61d3cacaf18337c6b9bc67f09b8ef1ba9389b1bddf39e0747.xz
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/authority.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/bound_reader_regressions.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/codec_security_and_budget.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/diff.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.xz
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/harness-collection.log.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/harness-execution.json.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/harness-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/harness-manifest.json.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/harness-pytest.log.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/harness.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/installed_decoder_isolation.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/lint.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/representative_roundtrip.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/scope.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/typecheck.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/unit-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d/unit.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/16ed38334b7c4cf8fdb53c2708320f4be2a94f98b5d2772c91e18ddb9f1a1722.xz
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/31b8cf7be83d6508c655f02aac1f1308118a02fbec2915d1bb360c6def3d8b69.xz
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.xz
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/75b2da97a724d2a05dec8212f56e2a75a85731c543a12ee0f80629fd32cbeec0.xz
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/7c318800ff5d683886f8e9f45c3ee3c6b39d02c7cb5278ded487b68de95241c0.xz
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/7e784222ea40ef5d072d14fa738e4636a73f8c3209c24acc8274866844f61ce1.xz
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/7e8f8da54e8c454bb297f199c9f8d5485092afa0e4e0c0a5f7af5e95ad00813b.xz
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.xz
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e.xz
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/RUN.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/a53815f34535e62fc6165855dea192e3de27d6ae62d3fd16a50a252199e63b1b.xz
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/authority.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/b41f147b4d1b7f8169c1c96f32d8b9486a3f68c7aaa5f0ded64af2ecf6367d29.xz
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb.xz
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/bound_reader_regressions.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/codec_security_and_budget.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/diff.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.xz
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/e4784e0163d9c93d0180cf8675ef854a2eb9aefca965113656243396616ed102.xz
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/e83cd5c39381b417a536316cbcc0058e691b4c463210fd714a297baaae193e8d.xz
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/eec8dd7491602b47e8226e138f5e341e921f8f6871aa7fcced31f3a300188eda.xz
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/harness-collection.log.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/harness-execution.json.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/harness-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/harness-manifest.json.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/harness-pytest.log.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/harness.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/installed_decoder_isolation.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/lint.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/representative_roundtrip.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/scope.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/typecheck.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/unit-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/unit.json
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/1157894b8eaf38192bb9205f432663e9a66677ac5af9baa0c78099d4ce81f03c.gz
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/13d98d283c6c6916bb09a4a8a49b91650cbb964e2628bcb755e1b8630923b0ae.gz
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/500500dc4ae2b265a6fe068ca2293c317455209b49b31c8c64dcf1cf9ccde41d.gz
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523.gz
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/7d1227ea98ee994292090aced01203d55975e043c7f9d21d287ce37a9cc1562f.gz
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e.gz
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/RUN.json
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/a6a52874183ef50a2a2ea488917750d6302bea453751fbafa6b834850a816d4d.gz
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/ac5804c1b2d4dee6e82f1b7bcf0fd7e1e34bdb82786bd80dddbd10d0338c7172.gz
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/authority.json
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/bound_reader_regressions.json
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/c3859726d39f76d40ea7940d5efb729742d35712ec4fa4aae0a2bf61d1a57546.gz
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/codec_security_and_budget.json
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/diff.json
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/ebacca5aa4bac944cc946a24f727f3b3ba31340f64d06af96285f5329d236202.gz
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/f8c3addde10e8351831314e05556ae23d2ebbdf43dc8c47bad5dade0f4a8006a.gz
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/harness-collection.log.json
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/harness-manifest.json.json
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/harness.json
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/installed_decoder_isolation.json
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/lint.json
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/representative_roundtrip.json
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/scope.json
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/typecheck.json
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/unit-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-b8498b601d92a64b548fb702e962cab2431af5b7-d9dd2a7b/unit.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/1ea785a14c0111548506ce3a5a8ec4fc432aec691ce1caff7bf84ce253ed44d2.gz
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/203c80a1bef278210d131e145521f8b5fdab6232a50dde5ae43eb3da7c86f1c4.gz
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/451bdaccf591bbc218ac6bdf38718cdab1d38d9561fd8a3ec49a492ff99a4547.gz
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523.gz
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/605a8274e0969daaf8d309c5e4146edae4387457d4d46db9f36ed4824fa748d2.gz
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/8469c5f8d19cabe2dfa7cdca58d3313b66146f53a16c4f03a5f8a41a7862d930.gz
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/8d57030ae9f1e1945139df171ccc4e818ac9515535a021cdbe2c7eb5c69f0cf5.gz
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/9380dec241e46a671957c9f2cdfc663724e2a569ed83fca809e1777270dfce2c.gz
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/93b771d69a86492904bbdbb1371519eb6e922f9251c4d9eda6009d545fa3a7e4.gz
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e.gz
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/RUN.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/authority.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/b53336e56bafe21831b8889e2458054b0dbcd62f546ce39851a20759798c6ea6.gz
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/bound_reader_regressions.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/c3e400fd959bdc4aee1c693f17ca74f2e7f9b0abbced78a15969ada52c64a4b0.gz
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/codec_security_and_budget.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/diff.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/e8ad5f54df5b3972397d686ba6f7545fb3dd56747e092bb8e7f9153f126ecdf5.gz
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/ec6e45a8bb52fbdd32c548f7cdb40822fc83d5229558a98d3aed9adc449771d5.gz
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness-collection.log.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness-execution.json.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness-manifest.json.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness-pytest.log.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/installed_decoder_isolation.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/lint.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/representative_roundtrip.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/scope.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/typecheck.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/unit-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/unit.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/09f71cce7cc0bd150c9b07293bab149214706e2b16fc3e766d40e3f7422b6f96.gz
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/13230f3e49a85408f47f640dbd13ac6c51c8fe386b0d8e84c4cdad9520ef30e1.gz
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/24dcf6e52229e006dee58693f4f0eb7819349e45ef802bc15991521661c3b595.gz
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/2c31003353c27797a28f9e299a53d5f1f8d6d6cd703f2fa81ceff4030ff326c2.gz
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/59f05c1da7ac3d3d9369976fe99f19b679b4ba2a3c18624201fc5b7353b829ff.gz
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523.gz
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/5d9e883dc7246e144bd45848bec6bdd05b9a1c6a154a54895a3a48113d141fe6.gz
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/6aa93368af1919d006ce5b82cfed3885e429f93a71ed136018319072fb82b736.gz
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/6f11c219328e3f27fce3d1b8e319fd74095b28282970384190f0e95844a702ff.gz
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/7850a2702b6d75532a91df148a7cfa08389a447163dcb20799ffa3d42f3b07c8.gz
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e.gz
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/RUN.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/authority.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/bb976e12bf399c49cde5dfed0c576b21b9fe0362891c8670d79ca547f5ad5081.gz
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/bound_reader_regressions.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/c45b1dfe4d27f1912a4d3e192b34a3fe23c7ba00b13b93cb4f0785b3a4d04ff1.gz
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/c4c7a35084a50d714bd166e408b4e8e4283c36f897d769a08314dc6b71f801d9.gz
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/cfdddb0bfc236bda23ade416caa7efa00ed1451b0302f868e4e5dd4c46ade276.gz
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/codec_security_and_budget.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/diff.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/harness-collection.json.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/harness-collection.log.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/harness-execution.json.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/harness-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/harness-pytest.log.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/harness.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/installed_decoder_isolation.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/lint.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/representative_roundtrip.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/scope.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/typecheck.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/unit-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-d0a39402c4f7f3585e495e4ea3b30bbcf88db737-02c4edf2/unit.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/01a1eb2108f532f5dab65d7a3066efa04dbcfc70dc0ca5fe2ba5eb9fbcb9cea7.gz
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/06ab3c582aa5ec7c98d59b9f974c51328b98877d677c1c8a180c456bfcc12e07.gz
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/257d9674d65caa949adc620429f17ecf4cc53339e34da178ed17b7fa3d43d3b0.gz
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/2879f497386fcff48a5203c151f587973daa6afdc18ef53574357053af0b3ee3.gz
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/4367242df9ff68eefdd5b32adc0607db3c200d32297f83d7ec998fd650ff3e6e.gz
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523.gz
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/6333463eff08ebedc23a76952a5113d567ad73b7c46b7b94b664669a814e9ac1.gz
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/7e8d6680c039a7ea93b1c914d32c32d20a909f43fcc487b21aff9e658433fdcf.gz
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e.gz
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/RUN.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/a7c014f2a4505657e4deba29e00b5cad38fcb2dc2c632414478be64d0ba647d4.gz
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/authority.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/bound_reader_regressions.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/cdba9f818ce95bb7ab2842834f2bda9d2b3f8e6ccc982ff5792029d69c8c252e.gz
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/codec_security_and_budget.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/d4ee29a96322b51c3458f05a7a853fb220fae4a110e46e1c7e1dea0071711b5f.gz
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/diff.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/eb780d045f55cbe61b9d0450270a13b01f3d3a3a7b740d89cfc055a829bd58c6.gz
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/edda703240a57d27dbe1a55c45e48368227335e99a4494c363fd7351f16f3cc9.gz
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/fa85c4f5fc2b6360caccc4bdd1130271d4a2d31074a340f55ea7cc5181e80bd2.gz
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/harness-collection.json.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/harness-collection.log.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/harness-execution.json.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/harness-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/harness-pytest.log.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/harness.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/installed_decoder_isolation.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/lint.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/representative_roundtrip.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/scope.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/typecheck.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/unit-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-e1de54a7bb0825d07446066401407437c7229d2e-39f028d7/unit.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/08fb1753812e8518a67376ac2fb26007059bf1d00d70c9078db63b904c0af73f.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/09db5ccf03855eceb112d455a620a0c4a3792b34ee2b6ac938198044c4d177d6.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/1b070c08bba78a2b69dfea514b80a1ddd445da4705a18c453dd7662a88da4caf.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/25bd442c166728972f5c686bf8b50caf29e7dec7d31d01b685015428c2290549.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/53abbd59398f8a75e8f3ff6808ed9cee29d0b3e585ab7b2ec14ea162c6ec108b.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/677d97620e8e19d4f0c992506fb82ec0e891e4f659d152388f3b416f4530626d.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/RUN.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/a2f03d3b134799f407020ed90e7055812b7f1b85c08ef6a4fd97147a1f1baa87.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/authority.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/b602a27ba15f33e5320b6c19dae783ab347d4d420a35775b13c2140ddbe338f6.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/b7dffece7c65b50fb5d14001a77842cfa5b6b712ff0d5e19f4a399b44f812172.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/b7f83058870db19bd96f4d1d535d8106a233ead9eaa1cca8fa1b4ba125566c0b.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/bound_reader_regressions.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/codec_security_and_budget.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/diff.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/e2d3aadd2e31501f7857d1b22cea4df3552a905ee4ff8fe89deaebd1e7c85999.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/e5aa300af51a1e3e86f5d60c82e41f6da2ece012b29c16d7c0ab9df7b867b0d3.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/ede2ee4dd35db18bcc022fe713bf9bba4de459e7f21216745d3338cdfcad2586.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/f60a8852cc8ab12325bd6dca7fc44d23b42522d06af11c8ca5f0cafa965f2cb5.gz
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/harness-collection.json.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/harness-collection.log.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/harness-execution.json.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/harness-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/harness-pytest.log.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/harness.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/installed_decoder_isolation.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/lint.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/representative_roundtrip.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/runner-finalization.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/scope.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/typecheck.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/unit-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-ea1780c842ba12e426f2691c59fb7980589e8bfe-0ecf133e/unit.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/00456eb8ebab28746b1f6caa284a4d35f4f8a501269b04b766d9818ad6c0ac30.gz
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/0080ae99cad60205fd7c5574096c16fcf0ac5c9e79f15a0fc8c5142db27392d1.gz
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/2165f7482b70cc1864e59449a2f2f96f63238308a032ce89bbd97643ebfad542.gz
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/2ac10cccffbee4f602930e2c924adeb4678615db24755d765ce542ed6f6eed0d.gz
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/2fa0c05438446c9e39a93d34f51c4ccbee2defbf0bdeccf5cb038b952f447268.gz
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/3217c1459995da2f5b61d21fffceb05954c074bae28739aa310be2a971237fa9.gz
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/4f421f2179415103e23e371ff08a9879a158e0cf53d0288271a8bbc35ad4c06e.gz
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/5a5d18602ec811a5e8d5394689dedc469378e3dc613794f1897fef5a5de66523.gz
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/6c4a8d8050453315f9ecc3c83a5a9fe076c57a95bf22700200f889d39a868bf0.gz
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/725fe4f7fe9a6aabafe620980c8603d736c5963987b6e1a147a35711e0b5dfa3.gz
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e.gz
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/RUN.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/abdec65897f15ea0e205b6816a19f00522a5154d1daacd6fc454c9de0331704f.gz
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/authority.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/b53336e56bafe21831b8889e2458054b0dbcd62f546ce39851a20759798c6ea6.gz
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/bound_reader_regressions.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/codec_security_and_budget.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/diff.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-collection.log.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-execution.json.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-manifest.json.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-pytest.log.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/installed_decoder_isolation.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/lint.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/representative_roundtrip.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/scope.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/typecheck.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/unit-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/unit.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/0676c7d876e7363c337aee00c2f0b099232a44b819376d020c3d915f8aae2148.gz
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/3fb5971095ad2a4b097040722f8673dfe175ba0ef6d2ba1ef978c628d6c63913.gz
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/517c5506cd5fcbd1e046a1234918634ba7492491d9264d6dbdae7aecc3c4df34.gz
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/5d325084e34311f60e29ee9157648230fe986c171354c138d5eec887343ce8ab.gz
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/65f34ce51b9c4e8396524c81595a2145f130079be10ad4680341c2783e983c9b.gz
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/74f26598468b5d37f04440117ec04343e7a90b1165074606c8aeafa46aa14302.gz
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/77ae76097817d73b0177c695d87246adc73eaf4d7cbbb13dc88f95dafbe84bd9.gz
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/7d46ef0d087ed2a086510e6cf3093cd7dce9ab851c07f152b326e5214b162a5d.gz
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e.gz
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/RUN.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/a0f8e7dbb048390d03485fc8f01574a48c9441d7a02b731c5a437a1cf9eb0cf7.gz
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/a80b0e6794eb349045b2cdb0503885b43655ad2358d0eb69d0e5be83b23c94d4.gz
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/authority.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/b5e8f3fc3b668841d1bbed1c60b4dba77870de759a28d80e8c0bd083cbcc65d2.gz
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/b723652ec60b3d19426f44cf771219d318fc36d8363989831eb2c03b0b6342dd.gz
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/bound_reader_regressions.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/ca542587f9eb4233ab36de76fdb352772bf6d7994d5588dff9e817c41b186ed7.gz
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/codec_security_and_budget.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/d42dab93125a61b4c507b795019cb5d03619be43093b00329d7775243373aa06.gz
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/diff.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/harness-collection.json.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/harness-collection.log.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/harness-execution.json.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/harness-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/harness-pytest.log.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/harness.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/installed_decoder_isolation.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/lint.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/representative_roundtrip.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/scope.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/typecheck.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/unit-junit.xml.json
+- docs/exec-plans/evidence/HG-054/checks-ec5503f3f4261e8b89477fc6840df3a2980d64dd-f2a39b64/unit.json
+- docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json
+- docs/exec-plans/evidence/HG-054/measure_codec.py
+- docs/exec-plans/evidence/HG-054/refresh_authority.py
+- docs/exec-plans/evidence/HG-054/run_checks.py
+- docs/exec-plans/evidence/HG-054/shared-collection/241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4-collection.json
+- docs/exec-plans/evidence/HG-054/shared-collection/26d4abe4329971ac27709eb4ab4717f3e7e73c62951a7c4442b63a2b9fbfae83.xz
+- docs/exec-plans/evidence/HG-054/shared-collection/3f24e49a2c70e26ff654fcadaf0f36e7100c34e600b40c67e2a62e163d6e73ce.json
+- docs/exec-plans/evidence/HG-054/shared-collection/4a1937086f48a28c07cf03932542126f1fc13d2f-2e17dae9-collection.json
+- docs/exec-plans/evidence/HG-054/shared-collection/90c58f07d10b8c1d6b2dacdfd34c9132c88b6d43f63f5be252f677c531970be3.xz
+- docs/exec-plans/evidence/HG-054/shared-collection/9a63f08abbe64ff2736e770254703d8a09f1f35d-ac53333d-collection.json
+- docs/exec-plans/evidence/HG-054/shared-collection/a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e-collection.json
+- docs/exec-plans/evidence/HG-054/shared-collection/ad90918529da8a8efdd8003ba720cbec3bc7454223114a276850390a7f29acfa.json
+- docs/exec-plans/evidence/HG-054/shared-collection/f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d.xz
+- docs/exec-plans/evidence/HG-054/shared-collection/f74763ecbaff593bb7a0ee335b8a358ea22d4490ae5142e9922fc15fe6c21cab.xz
+- docs/exec-plans/evidence/HG-054/verify_scope.py
+- docs/exec-plans/governance/HG-054.yaml
+- docs/exec-plans/reviews/HG-054/DB_CONCURRENCY.json
+- docs/exec-plans/reviews/HG-054/GENERAL.json
+- docs/exec-plans/reviews/HG-054/PROTOCOL.json
+- docs/exec-plans/reviews/HG-054/SECURITY_DATA_BOUNDARY.json
+- docs/exec-plans/reviews/HG-054/db/independent_review.json
+- docs/exec-plans/reviews/HG-054/general/audit.json
+- docs/exec-plans/reviews/HG-054/general/report.json
+- docs/exec-plans/reviews/HG-054/protocol/INDEPENDENT_REVIEW.json
+- docs/exec-plans/reviews/HG-054/security/REPORT.json
+- docs/harness/EVIDENCE_STORAGE_POLICY.md
+- docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
+- docs/harness/LOCAL_DB_CI.md
+- tests/harness/test_compact_evidence.py
+- tests/harness/test_local_gate.py
+- tests/harness/test_m3_milestone_closure.py
+- tests/harness/test_review_evidence_provenance.py
+- tests/harness/test_validator.py
+- tools/harness/README.md
+- tools/harness/compact_evidence.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: codec_security_and_budget
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_compact_evidence.py
+    -q
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/codec_security_and_budget.json
+- check_id: bound_reader_regressions
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_review_evidence_provenance.py
+    tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -q
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/bound_reader_regressions.json
+- check_id: installed_decoder_isolation
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_local_gate.py
+    -q
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/installed_decoder_isolation.json
+- check_id: representative_roundtrip
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-054/measure_codec.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/representative_roundtrip.json
+- check_id: scope
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-054/verify_scope.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/scope.json
+- check_id: unit
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit
+    -q --junitxml=/private/tmp/hg054-checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/unit.xml
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/unit.json
+- check_id: harness
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness
+    --workers 2 --evidence-dir /private/tmp/hg054-checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/harness
+    -q
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/harness.json
+- check_id: lint
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/lint.json
+- check_id: typecheck
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/typecheck.json
+- check_id: authority
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/authority.json
+- check_id: diff
+  command: git diff --check a1d040b6234d8161527d46d0773a88e8625129df a49229a73319a54c7078107f89de5ba49174cf07
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/diff.json
+- check_id: forward_reencoding_guards
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_compact_evidence.py
+    -q
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/codec_security_and_budget.json
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- Governance implementation PASS only. No task/product requirement/release, App/fullDB, controller installation/admission
+  or MERGED PASS. All related product requirements remain NOT_RUN by this task.
+- HG054 changes no KL036/KL055/unrelated branch, runtime/DB/schema/CI/frozen authority, historical plain/merged
+  representation, or HG051 inventory/schema/byte pins. No candidate installation, credential access or
+  KL036 publication.
+- Standalone XZ FORMAT_XZ/CRC64/preset6 has a fixed 64MiB decoder memlimit. Default gzip and inclusive
+  256KiB/8MiB/64MiB/16MiB budgets are unchanged. Stored-byte determinism is per runner, not promised across
+  liblzma versions.
+- Immutable b8498, d0a394, 7dd61f, e1de54 and ec5503 superseded evidence preserves actual successful,
+  failed and deliberately interrupted statuses. b8498 collection failed exit4 from absent xdist; d0a394
+  was stopped after the cross-owner inherited-source SECURITY blocker; 7dd61f after independently reproduced
+  transient inherited mutation; e1de54 after transient foreign conversion and post-review conversion freshness
+  blockers; ec5503 after renamed pre-admission metadata evasion, also preserving actual full typecheck
+  FAIL fixed by separate typed loop names. C6 source-only preparation found recognized malformed execution
+  envelopes were not bound-validated and payload-suffix aliases were excluded from classification; both
+  are corrected in C7, with no immutable C6 run claimed. C7 codec462 PASS/decoder103 PASS and actual unit246pass1fail
+  are preserved; bound positive failed and unfinished suites were interrupted after historical plain suffix
+  classification regression. Its parent metadata exception occurred after all captures and RUN was explicitly
+  recovered from actual envelopes/stdout. C8 preserves historical plain classification while unchanged
+  prospective budgets reject new bulk, and collects dependency versions in the exact child environment
+  before checks. C8 was superseded after an independently reproduced valid-XZ scalar-marker payload audit
+  false positive; actual completed/interrupted statuses (including interruption teardown exit1) remain
+  preserved. C9 requires full same-revision/parent bound payload proof for narrow binary JSON/encoding
+  classifier errors; all unproven aliases, limits and later mutation/map guards remain enforced. Neither
+  substitutes for final tested SHA evidence. All ten independently reproduced blockers and DB single-writer
+  limitation are preserved in PRELIMINARY_FINDINGS.json and corrected source fixtures.
+- C10 all eleven real checks PASS, but exact-R required compact audit FAILED duplicate bulk and four independent
+  reviews were CHANGES_REQUIRED, preserved at R9b15954c and review-only 3e8d0969cf915d3bc06bc5d7d76f2ae300e23024.
+  C11 explicitly maps both original collection envelope/payload snapshots into distinct same-owner shared-directory
+  XZ envelopes, preserving exact original execution fields/raw bytes and normal ancestry while removing
+  only accounted current representations. New captures explicitly use XZ and genuine collection captures
+  share only stored bytes. Exploratory committed-destination collision and hand-authored destination-name/child-directory
+  gaps were independently reproduced and fixed through HEAD/input snapshots, all-parent map-admission
+  addition proof, and destination-shape validation; all 24 exploratory cases passed and do not replace
+  the new immutable checks.
+- 'C11 storage precheck actually passed (13,601,221 bytes) but fresh required run was superseded after
+  decoder suite102pass1fail: generic git-init validator fixture copied actual HG054 delivery mappings
+  without source Git ancestry. Parent exit1 retains actual successful/failed/interrupted outputs. C12
+  corrects only generic fixture copy/manifest isolation; decoder/provenance/retirement/collision guards
+  remain identical C11. Exploratory decoder103PASS does not replace immutable final source checks.'
+- C12 actual unit246pass1fail and authorityFAIL from generic review availability demanding retired current
+  collection paths are preserved; codec1fail432pass before interruption from uncommitted restored negative
+  fixture input is preserved. C13 only generic missing-current review availability now verifies exact
+  recorded reviewed SHA, rejecting present invalid entries/parents and unavailable sources; selected review/result/command/tested/exit/PASS/freshness
+  unchanged. Older-base fixture commits restored snapshots to satisfy HEAD guard then still requires actual
+  protected-base/source rejection. Exploratory GENERAL8/PROTOCOL7 focusedPASS do not grant immutable execution
+  or formal review PASS.
+- C13 runner clean-tree preflight exited1 before any check because the authorized derived validator index
+  hash was not staged; C14 commits that exact one-line hash. No C13 execution PASS is claimed. The corrected
+  implementation/fixtures and preserved immutable C14 check authority remain separate from prior failed
+  runs.
+- C9 actual complete harness FAIL (1698 passed, two failed wrapped nested-storage fixture assertions)
+  and bound-reader interruption (173 passed, exit2) are retained. C10 changes only exact fixture expectations
+  for correct earlier source-suffix rejection, with direct bound-reader shape failures and exact suffix/M3
+  errors; no implementation guard relaxed. Independent PROTOCOL reproduction and seven-case exploratory
+  PASS do not replace final immutable checks.
+- Fresh conversion requires actual protected-base ancestor of source. Retained byte-identical pre-import
+  maps require proven original admission, unique original merge-base, unchanged protected-path base-advance
+  history and full original-prefix audit; every actual-base descendant containing source must contain
+  original admission. No new or recreated conversion borrows an older base. Retaining an old alias never
+  excuses a modified original path. Existing admitted maps remain immutable and globally reverify original
+  snapshots across all protected-base owners, including unrelated/no-change audits and every post-admission
+  intervening revision/parent; missing marker/source/binding fails closed. Every changed storage blob,
+  including raw stored bytes named with payload suffixes, is globally classified in ancestry, including
+  aliases and Unicode pre-admission stages; recognized execution envelopes require bound validation at
+  each revision and archival objects use unchanged exact frozen proofs; new foreign mappings reject; tested/review
+  suffixes reject representation mutations even under own bookkeeping paths.
+- HG055 PR100 was normally merged and adopted by merge 7e7b99c6504f98a17e7ff990ca8d715e68b7f413. C14 eleven
+  real PASS and capture commit3b244dd9 remain original bindings. Fixed-merge CI ownership10PASS and retained-map
+  ancestryFAIL led to narrow admission compatibility. Uncommitted focused v1 recorded1FAIL12PASS; v2/v3/v4
+  recorded17/18/19PASS, and independent reversed-parent and byte-identical late side admission bypasses
+  were reproduced then rejected. These are preparation only and no formal PASS; new immutable run and
+  reviews supply current authority.
+- One mapped envelope cannot be converted twice in the same unmerged branch. Independent conversions use
+  unique child records. Exclusive local writer required; rollback is ordinary single-writer restoration,
+  not concurrency/crash recovery; interrupted state stays BLOCKED until restored/validated.
+- Final checks use existing Python3.12 with explicit candidate PYTHONPATH plus task-owned cache copies
+  of locked pytest-xdist3.8.0/execnet2.1.2. Primary environment and dependency/CI pins unchanged.
+- forward_reencoding_guards references the same real whole-module execution as codec_security_and_budget;
+  this is one execution with multiple checks, not duplicated execution/count credit.
+- Read-only immutable KL036 measurement independently confirmed 645 blobs/18,194,008 bytes; four gzip
+  payloads 9,695,205 -> XZ528,100 bytes, savings9,167,105, projected total9,026,903 before envelope/mapping
+  changes. Metadata only is committed; no KL036 raw payloads are copied.
+- Fresh four independent reviewed-result SHA records, exact-head hosted gates, separately reviewed root
+  installation/admission and App/fullDB remain distinct final steps. Only own linear REVIEW_RECORD_ONLY
+  suffix is allowed after reviewed result.

@@ -5,6 +5,7 @@ import argparse
 import gzip
 import hashlib
 import json
+import lzma
 import re
 import subprocess
 import sys
@@ -19,6 +20,9 @@ RAW_LIMIT = 64 * 1024 * 1024
 TOTAL_LIMIT = 16 * 1024 * 1024
 MARKER = 'kineticloop_evidence'
 FORMAT = 'gzip-v1'
+XZ_FORMAT = 'xz-v1'
+CODECS = {FORMAT: '.gz', XZ_FORMAT: '.xz'}
+XZ_MEMLIMIT = 64 * 1024 * 1024
 
 
 def digest(data: bytes) -> str:
@@ -96,9 +100,10 @@ def reserved_ascii(data: bytes) -> bool:
     data = re.sub(rb'\\u([0-9a-fA-F]{4})',
                   lambda m: bytes([int(m[1], 16)]) if int(m[1], 16) < 128
                   else m[0], data)
-    return (b'"kineticloop_evidence"' in data or
+    return (b'"kineticloop_evidence"' in data or b'"compact_reencoding"' in data or
             all(k in data for k in (b'"payload"', b'"stored_sha256"', b'"raw_sha256"')) or
-            all(k in data for k in (b'"authorization"', b'"preserved_records"', b'"entries"')))
+            all(k in data for k in (b'"authorization"', b'"preserved_records"', b'"entries"')) or
+            all(k in data for k in (b'"protected_base"', b'"source_revision"', b'"entries"')))
 
 
 def envelope(data: bytes) -> dict[str, Any] | None:
@@ -128,7 +133,7 @@ def envelope(data: bytes) -> dict[str, Any] | None:
     def storage_pairs(pairs):
         nonlocal reserved
         value = unique(pairs)
-        reserved = reserved or MARKER in value or {'payload', 'stored_sha256', 'raw_sha256'} <= set(value) or {'authorization', 'preserved_records', 'entries'} <= set(value)
+        reserved = reserved or MARKER in value or 'compact_reencoding' in value or {'payload', 'stored_sha256', 'raw_sha256'} <= set(value) or {'authorization', 'preserved_records', 'entries'} <= set(value) or {'protected_base', 'source_revision', 'entries'} <= set(value)
         return value
     try:
         value = json.loads(data, object_pairs_hook=storage_pairs)
@@ -139,9 +144,9 @@ def envelope(data: bytes) -> dict[str, Any] | None:
                 reserved_ascii(original.replace(b'\0', b''))):
             raise ValueError('evidence-envelope-json') from ex
         return None
-    if isinstance(value, dict) and (MARKER in value or
+    if isinstance(value, dict) and (MARKER in value or 'compact_reencoding' in value or
                                    {'payload', 'stored_sha256', 'raw_sha256'} <= set(value) or
-                                   {'authorization', 'preserved_records', 'entries'} <= set(value)):
+                                   {'authorization', 'preserved_records', 'entries'} <= set(value) or {'protected_base', 'source_revision', 'entries'} <= set(value)):
         if original_bytes > PLAIN_LIMIT:
             raise ValueError('evidence-envelope-size')
         return value
@@ -162,7 +167,7 @@ def read(root: Path, path: str, revision: str | None, *, tested: str | None = No
         return data
     fields = {MARKER, 'payload', 'stored_sha256', 'stored_bytes', 'raw_sha256', 'raw_bytes',
               'tested_commit', 'command', 'exit_code', 'timestamp', 'test_counts'}
-    if (len(data) > PLAIN_LIMIT or set(manifest) != fields or manifest[MARKER] != FORMAT
+    if (len(data) > PLAIN_LIMIT or set(manifest) != fields or manifest[MARKER] not in CODECS
             or not re.fullmatch(r'[0-9a-f]{40}', str(manifest['tested_commit']))
             or not isinstance(manifest['command'], str) or not manifest['command']
             or type(manifest['exit_code']) is not int
@@ -177,7 +182,7 @@ def read(root: Path, path: str, revision: str | None, *, tested: str | None = No
     for field in ('stored_sha256', 'raw_sha256'):
         if not re.fullmatch(r'[0-9a-f]{64}', str(manifest[field])):
             raise ValueError('evidence-hash')
-    expected = str(Path(path).parent / (manifest['raw_sha256'] + '.gz'))
+    expected = str(Path(path).parent / (manifest['raw_sha256'] + CODECS[manifest[MARKER]]))
     if manifest['payload'] != expected or owner(path) != owner(expected):
         raise ValueError('evidence-payload-owner-or-name')
     if tested is not None and manifest['tested_commit'] != tested:
@@ -196,13 +201,8 @@ def read(root: Path, path: str, revision: str | None, *, tested: str | None = No
               _blob_at_commit(root, expected, revision, STORED_LIMIT))
     if len(stored) != manifest['stored_bytes'] or digest(stored) != manifest['stored_sha256']:
         raise ValueError('evidence-stored-integrity')
-    decoder = zlib.decompressobj(16 + zlib.MAX_WBITS)
-    try:
-        raw = decoder.decompress(stored, manifest['raw_bytes'] + 1)
-    except zlib.error as ex:
-        raise ValueError('evidence-gzip') from ex
-    if (len(raw) != manifest['raw_bytes'] or not decoder.eof or decoder.unused_data
-            or decoder.unconsumed_tail or digest(raw) != manifest['raw_sha256']):
+    raw = decode(stored, manifest[MARKER], manifest['raw_bytes'])
+    if digest(raw) != manifest['raw_sha256']:
         raise ValueError('evidence-raw-integrity-or-bound')
     # Storage metadata is never command output, even inside a valid payload.
     # Classify once; nested/wrapped envelopes cannot supply a raw PASS oracle.
@@ -211,8 +211,37 @@ def read(root: Path, path: str, revision: str | None, *, tested: str | None = No
     return raw
 
 
+def encode(raw: bytes, codec: str) -> bytes:
+    if codec == FORMAT:
+        return gzip.compress(raw, compresslevel=9, mtime=0)
+    if codec == XZ_FORMAT:
+        return lzma.compress(raw, format=lzma.FORMAT_XZ, check=lzma.CHECK_CRC64, preset=6)
+    raise ValueError('evidence-codec')
+
+
+def decode(stored: bytes, codec: str, raw_bytes: int) -> bytes:
+    try:
+        if codec == FORMAT:
+            decoder = zlib.decompressobj(16 + zlib.MAX_WBITS)
+            raw = decoder.decompress(stored, raw_bytes + 1)
+            extra = bool(decoder.unconsumed_tail)
+        elif codec == XZ_FORMAT:
+            xz_decoder = lzma.LZMADecompressor(format=lzma.FORMAT_XZ, memlimit=XZ_MEMLIMIT)
+            raw = xz_decoder.decompress(stored, max_length=raw_bytes + 1)
+            if len(raw) != raw_bytes or not xz_decoder.eof or xz_decoder.unused_data or xz_decoder.check != lzma.CHECK_CRC64:
+                raise ValueError('evidence-raw-integrity-or-bound')
+            return raw
+        else:
+            raise ValueError('evidence-codec')
+        if len(raw) != raw_bytes or not decoder.eof or decoder.unused_data or extra:
+            raise ValueError('evidence-raw-integrity-or-bound')
+        return raw
+    except (zlib.error, lzma.LZMAError) as ex:
+        raise ValueError('evidence-' + codec) from ex
+
+
 def capture(root: Path, path: str, raw: bytes, tested: str, command: str, exit_code: int,
-            timestamp: str | None = None) -> dict:
+            timestamp: str | None = None, codec: str = FORMAT) -> dict:
     root = root.resolve()
     owner(path)
     if (not isinstance(command, str) or not command or type(exit_code) is not int
@@ -222,11 +251,11 @@ def capture(root: Path, path: str, raw: bytes, tested: str, command: str, exit_c
         raise ValueError('capture-command-or-tested-revision')
     if not path.endswith('.json') or len(raw) > RAW_LIMIT:
         raise ValueError('capture-json-path-or-raw-limit')
-    stored = gzip.compress(raw, compresslevel=9, mtime=0)
+    stored = encode(raw, codec)
     if len(stored) > STORED_LIMIT:
         raise ValueError('capture-stored-limit: split real executions, never truncate')
     target = root / path
-    payload = target.parent / (digest(raw) + '.gz')
+    payload = target.parent / (digest(raw) + CODECS[codec])
     # Check every component before writing; never follow task-directory symlinks.
     if any(p.is_symlink() for p in [target, payload, *target.parents]):
         raise ValueError('capture-symlink')
@@ -238,7 +267,7 @@ def capture(root: Path, path: str, raw: bytes, tested: str, command: str, exit_c
     counts = {kind: int(count) for count, kind in re.findall(
         r'\b([0-9]+) (passed|failed|skipped|errors?|deselected|xfailed|xpassed)\b',
         raw.decode(errors='replace'))}
-    record = {MARKER: FORMAT, 'payload': str(payload.relative_to(root)),
+    record = {MARKER: codec, 'payload': str(payload.relative_to(root)),
               'stored_sha256': digest(stored), 'stored_bytes': len(stored),
               'raw_sha256': digest(raw), 'raw_bytes': len(raw), 'tested_commit': tested,
               'command': command, 'exit_code': exit_code, 'timestamp': timestamp,
@@ -815,7 +844,7 @@ def archive_audit(root: Path, revision: str) -> tuple[list[str], set[str]]:
     errors, archives, mappings = [], set(), set()
     for path in paths:
         # Plain historical bulk can be large. Classification does not recover it.
-        if path.endswith('.gz'):
+        if path.endswith(('.gz', '.xz')):
             continue
         data = b''
         try:
@@ -852,6 +881,554 @@ def archive_audit(root: Path, revision: str) -> tuple[list[str], set[str]]:
     except (ValueError, OSError) as ex:
         errors.append('archive-invalid:' + str(ex))
         return errors, set()
+
+
+REENCODING_KEY = 'compact_reencoding'
+REENCODING_NAME = 'COMPACT_REENCODING.json'
+EXECUTION_FIELDS = ('raw_sha256', 'raw_bytes', 'tested_commit', 'command', 'exit_code',
+                    'timestamp', 'test_counts')
+
+
+def snapshot(root: Path, path: str, revision: str | None, limit: int) -> dict:
+    return snapshot_bytes(path, blob(root, path, revision, limit))
+
+
+def snapshot_bytes(path: str, data: bytes) -> dict:
+    return {'path': path, 'sha256': digest(data), 'bytes': len(data),
+            'blob_id': hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()}
+
+
+def verify_snapshot(root: Path, value: dict, revision: str | None, limit: int) -> bytes:
+    if not isinstance(value, dict) or set(value) != {'path', 'sha256', 'bytes', 'blob_id'}:
+        raise ValueError('reencoding-snapshot-shape')
+    if snapshot(root, value['path'], revision, limit) != value:
+        raise ValueError('reencoding-snapshot-integrity')
+    return blob(root, value['path'], revision, limit)
+
+
+def reencoding_record(data: bytes) -> dict | None:
+    value = envelope(data)
+    if value is None:
+        return None
+    if {'protected_base', 'source_revision', 'entries'} <= set(value) and REENCODING_KEY not in value:
+        raise ValueError('reencoding-marker-missing')
+    return value if REENCODING_KEY in value else None
+
+
+def retained_reencoding_base(root: Path, path: str, record: dict, base: str,
+                             head: str) -> tuple[str, str]:
+    """Prove an unchanged own map on the task lineage before importing a new base."""
+    original_base = record['protected_base']
+    source = record['source_revision']
+    exact_commit(root, base)
+    exact_commit(root, head)
+    exact_commit(root, original_base)
+    exact_commit(root, source)
+    git(root, 'merge-base', '--is-ancestor', original_base, base)
+    git(root, 'merge-base', '--is-ancestor', base, head)
+    if (git(root, 'merge-base', source, base).decode().strip() == source
+            or git(root, 'ls-tree', original_base, '--', path).strip()):
+        raise ValueError('reencoding-retained-source-already-protected')
+    # Walk the task's first-parent lineage, never a late side branch. Locate the
+    # first import boundary by comparing each first parent to the actual base.
+    predecessor = None
+    for revision in git(root, 'rev-list', '--first-parent', head).decode().splitlines():
+        if git(root, 'merge-base', base, revision).decode().strip() != base:
+            break
+        parents = git(root, 'rev-list', '--parents', '-n', '1', revision).decode().split()[1:]
+        if not parents:
+            break
+        if git(root, 'merge-base', base, parents[0]).decode().strip() != base:
+            predecessor = parents[0]
+            break
+    if predecessor is None:
+        raise ValueError('reencoding-retained-import-boundary')
+    data = blob(root, path, head, PLAIN_LIMIT)
+    if reencoding_record(data) != record or blob(root, path, predecessor, PLAIN_LIMIT) != data:
+        raise ValueError('reencoding-retained-map-not-before-import')
+    admission = None
+    for revision in git(root, 'rev-list', '--first-parent', '--reverse',
+                        original_base + '..' + predecessor).decode().splitlines():
+        if git(root, 'ls-tree', revision, '--', path).strip():
+            admission = revision
+            if blob(root, path, admission, PLAIN_LIMIT) != data:
+                raise ValueError('reencoding-retained-admission-bytes')
+            break
+    if (admission is None
+            or git(root, 'merge-base', '--all', admission, base).decode().splitlines() != [original_base]):
+        raise ValueError('reencoding-retained-admission-base')
+    git(root, 'merge-base', '--is-ancestor', source, admission)
+    for revision in git(root, 'rev-list', base + '..' + head).decode().splitlines():
+        if (git(root, 'merge-base', base, revision).decode().strip() == base
+                and git(root, 'merge-base', source, revision).decode().strip() == source
+                and git(root, 'merge-base', admission, revision).decode().strip() != admission):
+            raise ValueError('reencoding-retained-source-import-before-admission')
+    protected_paths = [path]
+    for entry in record['entries']:
+        for side in ('original', 'replacement'):
+            for item in ('envelope', 'payload'):
+                protected_paths.append(entry[side][item]['path'])
+    if git(root, '--literal-pathspecs', 'log', '--full-history', '--format=%H', original_base + '..' + base,
+           '--', *protected_paths).strip():
+        raise ValueError('reencoding-retained-protected-path-history')
+    # This is a strictly older task prefix. Its original admission, every edge,
+    # source/snapshot proofs and transient mutations must pass the existing audit.
+    issues, _ = reencoding_audit(root, original_base, predecessor, record['identity'])
+    if issues:
+        raise ValueError('reencoding-retained-history:' + ';'.join(issues))
+    return original_base, admission
+
+
+def validate_reencoding(root: Path, path: str, record: dict, base: str,
+                        head: str | None, identity: str) -> set[str]:
+    if (set(record) != {REENCODING_KEY, 'identity', 'protected_base', 'source_revision', 'entries'}
+            or record[REENCODING_KEY] != 'v1' or record['identity'] != identity
+            or owner(path).split('/')[-1] != identity or Path(path).name != REENCODING_NAME
+            or len(path.split('/')) < 6
+            or not isinstance(record['entries'], list) or not record['entries']):
+        raise ValueError('reencoding-record')
+    source = record['source_revision']
+    exact_commit(root, source)
+    exact_commit(root, record['protected_base'])
+    git(root, 'merge-base', '--is-ancestor', record['protected_base'], source)
+    if git(root, 'merge-base', base, source).decode().strip() != base:
+        if head is None:
+            raise ValueError('reencoding-retained-working-record')
+        retained_reencoding_base(root, path, record, base, head)
+    git(root, 'merge-base', '--is-ancestor', source, head or 'HEAD')
+    paths: set[str] = set()
+    for entry in record['entries']:
+        if not isinstance(entry, dict) or set(entry) != {'original', 'replacement', 'execution'}:
+            raise ValueError('reencoding-entry')
+        original, replacement = entry['original'], entry['replacement']
+        for binding in (original, replacement):
+            if not isinstance(binding, dict) or set(binding) != {'envelope', 'payload'}:
+                raise ValueError('reencoding-binding')
+        ref = original['envelope']['path']
+        destination = replacement['envelope']['path']
+        if (ref in paths or destination in paths
+                or owner(ref).split('/')[-1] != identity
+                or owner(destination) != owner(ref)):
+            raise ValueError('reencoding-owner-or-path')
+        paths.update((ref, destination))
+        if destination != ref:
+            if (Path(destination).name != original['envelope']['sha256'] + '.json'
+                    or len(Path(destination).parent.parts) < 5):
+                raise ValueError('reencoding-relocation-destination-shape')
+            retained = ((root / ref).exists() or (root / ref).is_symlink()) if head is None else bool(
+                git(root, 'ls-tree', head, '--', ref).strip())
+            if git(root, 'ls-tree', source, '--', destination).strip() or retained:
+                raise ValueError('reencoding-relocation-collision-or-retained-source')
+            # A destination introduced after source is still an independent
+            # artifact. Prove addition on every edge admitting this map, not
+            # merely absence at the older source/protected base.
+            bound_head = head or git(root, 'rev-parse', 'HEAD').decode().strip()
+            admission_parents = git(root, 'rev-list', '--parents', '-n', '1', bound_head).decode().split()[1:]
+            for parent in ([bound_head] if head is None else admission_parents):
+                parent_record = (reencoding_record(blob(root, path, parent, PLAIN_LIMIT))
+                                 if git(root, 'ls-tree', parent, '--', path).strip() else None)
+                if parent_record != record and git(root, 'ls-tree', parent, '--', destination).strip():
+                    raise ValueError('reencoding-relocation-destination-preexists')
+        for binding in (original, replacement):
+            for key in ('envelope', 'payload'):
+                bound_path = binding[key]['path']
+                if owner(bound_path) != owner(ref):
+                    raise ValueError('reencoding-owner')
+                for protected in (base, record['protected_base']):
+                    if git(root, 'ls-tree', protected, '--', bound_path).strip():
+                        raise ValueError('reencoding-protected-base')
+        before = envelope(verify_snapshot(root, original['envelope'], source, PLAIN_LIMIT))
+        after = envelope(verify_snapshot(root, replacement['envelope'], head, PLAIN_LIMIT))
+        if (before is None or after is None or before.get(MARKER) not in CODECS
+                or after.get(MARKER) not in CODECS or before[MARKER] == after[MARKER]):
+            raise ValueError('reencoding-compact-codec')
+        execution = {key: before[key] for key in EXECUTION_FIELDS}
+        if (json.dumps(entry['execution'], sort_keys=True) != json.dumps(execution, sort_keys=True)
+                or any(after[key] != execution[key] for key in execution)):
+            raise ValueError('reencoding-execution-changed')
+        for manifest, binding, revision in ((before, original, source), (after, replacement, head)):
+            if manifest['payload'] != binding['payload']['path']:
+                raise ValueError('reencoding-payload-binding')
+            verify_snapshot(root, binding['payload'], revision, STORED_LIMIT)
+        if read(root, ref, source) != read(root, destination, head):
+            raise ValueError('reencoding-raw-changed')
+    return paths
+
+
+def reencode(root: Path, base: str, source: str, identity: str, paths: list[str],
+             record_path: str, codec: str, destination_directory: str | None = None) -> dict:
+    """Explicit forward mutation; source and prior record bytes stay in ancestry.
+
+    One envelope can be reencoded only once per unmerged branch. Maps are immutable;
+    a second conversion of that envelope would invalidate its first map.
+    """
+    exact_commit(root, base)
+    exact_commit(root, source)
+    git(root, 'merge-base', '--is-ancestor', base, source)
+    git(root, 'merge-base', '--is-ancestor', source, 'HEAD')
+    if not paths or len(paths) != len(set(paths)) or codec not in CODECS:
+        raise ValueError('reencoding-selection')
+    # Validate all inputs and existing maps before any writes.
+    if (owner(record_path).split('/')[-1] != identity or Path(record_path).name != REENCODING_NAME
+            or len(record_path.split('/')) < 6):
+        raise ValueError('reencoding-record-path')
+    target = root / record_path
+    if target.exists() or any(p.is_symlink() for p in [target, *target.parents]):
+        raise ValueError('reencoding-existing-record-or-symlink')
+    # Existing immutable maps cannot be superseded by another representation.
+    referenced = set()
+    for subtree in ('evidence', 'reviews'):
+        for candidate in (root / 'docs/exec-plans' / subtree / identity).rglob('*'):
+            if candidate.is_file() and not candidate.name.endswith(('.gz', '.xz')):
+                candidate_path = str(candidate.relative_to(root))
+                data = blob(root, candidate_path, None)
+                prior = reencoding_record(data)
+                if prior is not None:
+                    if git(root, 'merge-base', base, prior['source_revision']).decode().strip() != base:
+                        # Retained maps must already be committed byte-exact; a
+                        # working-only backdated record cannot borrow admission.
+                        if blob(root, candidate_path, 'HEAD', PLAIN_LIMIT) != data:
+                            raise ValueError('reencoding-retained-working-record')
+                        validate_reencoding(root, candidate_path, prior, base,
+                                            git(root, 'rev-parse', 'HEAD').decode().strip(), identity)
+                        validate_reencoding(root, candidate_path, prior, prior['protected_base'], None, identity)
+                    else:
+                        validate_reencoding(root, candidate_path, prior, base, None, identity)
+                    if set(paths) & {e[side]['envelope']['path'] for e in prior['entries']
+                                     for side in ('original', 'replacement')}:
+                        raise ValueError('reencoding-already-mapped')
+                else:
+                    manifest = envelope(data)
+                    if manifest and manifest.get(MARKER) in CODECS and candidate_path not in paths:
+                        referenced.add(manifest['payload'])
+    plans: list[tuple[str, str, dict, dict, bytes]] = []
+    for ref in paths:
+        before_data = blob(root, ref, source, PLAIN_LIMIT)
+        before = envelope(before_data)
+        if before is None or before.get(MARKER) not in CODECS or before[MARKER] == codec:
+            raise ValueError('reencoding-compact-codec')
+        if owner(ref).split('/')[-1] != identity:
+            raise ValueError('reencoding-owner')
+        old_payload = before['payload']
+        if (blob(root, ref, None) != before_data
+                or blob(root, ref, 'HEAD') != before_data
+                or blob(root, old_payload, None) != blob(root, old_payload, source)
+                or blob(root, old_payload, 'HEAD') != blob(root, old_payload, source)):
+            raise ValueError('reencoding-working-source-mismatch')
+        raw = read(root, ref, source)
+        stored = encode(raw, codec)
+        if len(stored) > STORED_LIMIT:
+            raise ValueError('reencoding-stored-limit')
+        new_ref = ref
+        if destination_directory is not None:
+            if (not normalized(destination_directory)
+                    or owner(destination_directory + '/probe.json') != owner(ref)
+                    or len(destination_directory.split('/')) < 5):
+                raise ValueError('reencoding-destination-owner-or-path')
+            new_ref = destination_directory + '/' + digest(before_data) + '.json'
+            if (new_ref == ref or (root / new_ref).exists()
+                    or git(root, 'ls-tree', source, '--', new_ref).strip()
+                    or git(root, 'ls-tree', 'HEAD', '--', new_ref).strip()
+                    or any(plan[1] == new_ref for plan in plans)):
+                raise ValueError('reencoding-destination-collision')
+        new_payload = str(Path(new_ref).parent / (before['raw_sha256'] + CODECS[codec]))
+        for p in (ref, new_ref, old_payload, new_payload):
+            if git(root, 'ls-tree', base, '--', p).strip():
+                raise ValueError('reencoding-protected-base')
+            dest = root / p
+            if any(part.is_symlink() for part in [dest, *dest.parents]):
+                raise ValueError('reencoding-symlink')
+            if any(part.exists() and not part.is_dir() for part in dest.parents):
+                raise ValueError('reencoding-parent-not-directory')
+        if (root / new_payload).exists() and blob(root, new_payload, None) != stored:
+            raise ValueError('reencoding-conflicting-payload')
+        if (git(root, 'ls-tree', 'HEAD', '--', new_payload).strip()
+                and blob(root, new_payload, 'HEAD', STORED_LIMIT) != stored):
+            raise ValueError('reencoding-conflicting-committed-payload')
+        after = dict(before, **{MARKER: codec, 'payload': new_payload,
+                               'stored_sha256': digest(stored), 'stored_bytes': len(stored)})
+        plans.append((ref, new_ref, before, after, stored))
+    entries = []
+    replacements = {}
+    for ref, new_ref, before, after, stored in plans:
+        original = {'envelope': snapshot(root, ref, source, PLAIN_LIMIT),
+                    'payload': snapshot(root, before['payload'], source, STORED_LIMIT)}
+        after_bytes = (json.dumps(after, indent=2) + '\n').encode()
+        replacements[new_ref] = after_bytes
+        replacements[after['payload']] = stored
+        entries.append({'original': original,
+                        'replacement': {'envelope': snapshot_bytes(new_ref, after_bytes),
+                                        'payload': snapshot_bytes(after['payload'], stored)},
+                        'execution': {key: before[key] for key in EXECUTION_FIELDS}})
+    record = {REENCODING_KEY: 'v1', 'identity': identity, 'protected_base': base,
+              'source_revision': source, 'entries': entries}
+    record_bytes = (json.dumps(record, indent=2) + '\n').encode()
+    if len(record_bytes) > PLAIN_LIMIT:
+        raise ValueError('reencoding-record-limit')
+    # Roll back local effects on any write/validation failure; never commit here.
+    originals = {p: blob(root, p, None) if (root / p).exists() else None for p in replacements}
+    removed = {}
+    try:
+        for path, data in replacements.items():
+            (root / path).parent.mkdir(parents=True, exist_ok=True)
+            (root / path).write_bytes(data)
+        for ref, new_ref, _, _, _ in plans:
+            if ref != new_ref:
+                removed[ref] = blob(root, ref, None)
+                (root / ref).unlink()
+        validate_reencoding(root, record_path, record, base, None, identity)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(record_bytes)
+        for _, _, before, _, _ in plans:
+            old = before['payload']
+            if old not in referenced and (root / old).exists():
+                removed[old] = blob(root, old, None)
+                (root / old).unlink()
+    except (ValueError, OSError, KeyError, TypeError):
+        for restore_path, restore_data in {**originals, **removed}.items():
+            if restore_data is None:
+                (root / restore_path).unlink(missing_ok=True)
+            else:
+                (root / restore_path).write_bytes(restore_data)
+        target.unlink(missing_ok=True)
+        raise
+    return record
+
+
+def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[list[str], set[str]]:
+    """Inspect every forward commit so deletion/reversion cannot hide conversions."""
+    errors: list[str] = []
+    records: set[str] = set()
+    verified_archival_payloads: dict[str, set[str]] = {}
+    prefixes = [f'docs/exec-plans/{kind}/{identity}/' for kind in ('evidence', 'reviews')]
+    storage_roots = ['docs/exec-plans/evidence', 'docs/exec-plans/reviews']
+
+    def archival_payloads(revision: str) -> set[str]:
+        if revision not in verified_archival_payloads:
+            if git(root, 'ls-tree', revision, '--', MAPPING_PATH).strip():
+                archival_errors, payloads = archive_audit(root, revision)
+                if archival_errors:
+                    raise ValueError('reencoding-archival-binding:' + ';'.join(archival_errors))
+            else:
+                # The frozen workflow commits all four storage objects before
+                # building its mapping. The existing builder verifies this stage.
+                mapping = archive_mapping(root, revision)
+                payloads = {entry['storage']['payload'] for entry in mapping['entries']}
+            verified_archival_payloads[revision] = payloads
+        return verified_archival_payloads[revision]
+
+    def bound_payload(path: str, revision: str) -> bool:
+        # A valid unchanged sibling envelope can also bind a restored payload.
+        # Decoder selection comes from that envelope, never the file extension.
+        parent = Path(path).parent
+        for ref in git(root, 'ls-tree', '-r', '--name-only', revision, '--',
+                       str(parent) + '/').decode().splitlines():
+            if ref == path or Path(ref).parent != parent:
+                continue
+            try:
+                manifest = envelope(blob(root, ref, revision, PLAIN_LIMIT))
+                if manifest is None or manifest.get('payload') != path:
+                    continue
+                if manifest.get(MARKER) in CODECS:
+                    read(root, ref, revision)
+                    return True
+                if (manifest.get(MARKER) == HISTORICAL_FORMAT
+                        and ref in {x['path'] for x in historical_originals()}
+                        and path in archival_payloads(revision)):
+                    return True
+            except (ValueError, OSError, KeyError, TypeError):
+                # An invalid or unrelated candidate cannot supply a proof.
+                continue
+        return False
+
+    try:
+        git(root, 'merge-base', '--is-ancestor', base, head)
+        inherited = {}
+        retained = {}
+        retained_admissions = {}
+        admitted = {}
+        # Already admitted mappings at the protected base are immutable history.
+        # Reverify originals even with no changed blobs; do not authorize any new
+        # migration using their older protected-base claim.
+        # Every admitted owner's originals remain required on unrelated PRs too.
+        # Canonical filenames were validated at admission; avoid reading arbitrary
+        # historical bulk merely to discover these small ordinary audit records.
+        for path in git(root, 'ls-tree', '-r', '--name-only', base, '--',
+                        'docs/exec-plans/evidence', 'docs/exec-plans/reviews').decode().splitlines():
+            if Path(path).name != REENCODING_NAME:
+                continue
+            data = blob(root, path, base, PLAIN_LIMIT)
+            record = reencoding_record(data)
+            if record is not None:
+                if blob(root, path, head, PLAIN_LIMIT) != data:
+                    raise ValueError('reencoding-merged-record-mutated-or-deleted')
+                admitted_owner = owner(path).split('/')[-1]
+                validate_reencoding(root, path, record, record['protected_base'], head, admitted_owner)
+                inherited[path] = record['protected_base']
+                admitted[path] = (data, record, admitted_owner)
+                records.add(path)
+        for path in git(root, 'ls-tree', '-r', '--name-only', head, '--', *prefixes).decode().splitlines():
+            if Path(path).name != REENCODING_NAME or path in inherited:
+                continue
+            data = blob(root, path, head, PLAIN_LIMIT)
+            record = reencoding_record(data)
+            if (record is not None
+                    and git(root, 'merge-base', base, record['source_revision']).decode().strip() != base):
+                retained[path], retained_admissions[path] = retained_reencoding_base(root, path, record, base, head)
+                validate_reencoding(root, path, record, retained[path], head, identity)
+                for entry in record['entries']:
+                    for side in ('original', 'replacement'):
+                        for item in ('envelope', 'payload'):
+                            if git(root, 'ls-tree', base, '--', entry[side][item]['path']).strip():
+                                raise ValueError('reencoding-protected-base')
+                admitted[path] = (data, record, identity)
+        commits = git(root, 'rev-list', '--reverse', base + '..' + head).decode().splitlines()
+        for revision in commits:
+            parents = git(root, 'rev-list', '--parents', '-n', '1', revision).decode().split()[1:]
+            if not parents:
+                continue
+            # A later restoration cannot hide a mutation after admission, even
+            # when this PR belongs to another owner. Side branches predating
+            # this protected base have not inherited its admitted records yet.
+            for bound_revision in [revision, *parents]:
+                if admitted and git(root, 'merge-base', base, bound_revision).decode().strip() == base:
+                    for path, (data, record, admitted_owner) in admitted.items():
+                        if (path in retained_admissions
+                                and git(root, 'merge-base', retained_admissions[path],
+                                        bound_revision).decode().strip() != retained_admissions[path]):
+                            if git(root, 'merge-base', record['source_revision'],
+                                   bound_revision).decode().strip() == record['source_revision']:
+                                raise ValueError('reencoding-retained-source-import-before-admission')
+                            # Only a protected parent without this task's source
+                            # can precede its admission across a base import.
+                            continue
+                        if blob(root, path, bound_revision, PLAIN_LIMIT) != data:
+                            raise ValueError('reencoding-merged-record-mutated-or-deleted')
+                        validate_reencoding(root, path, record, record['protected_base'],
+                                            bound_revision, admitted_owner)
+            # Classify every changed metadata blob globally, including aliases
+            # on pre-admission branches. Later deletion cannot hide a new map.
+            changed_metadata_paths = set()
+            for parent in parents:
+                changed_metadata_paths.update(git(root, 'diff', '--no-renames', '--name-only',
+                                      '--diff-filter=ACMT', parent, revision, '--',
+                                      *storage_roots).decode().splitlines())
+            proven_payloads: set[str] = set()
+            deferred_metadata_errors: list[tuple[str, ValueError]] = []
+            for path in sorted(changed_metadata_paths):
+                data = blob(root, path, revision,
+                            STORED_LIMIT if path.endswith(('.gz', '.xz')) else PLAIN_LIMIT)
+                try:
+                    record = reencoding_record(data)
+                except ValueError as ex:
+                    if (not path.endswith(('.gz', '.xz'))
+                            or str(ex) not in {'evidence-envelope-json', 'evidence-envelope-encoding'}):
+                        raise
+                    # Small XZ streams may contain literal ordinary JSON bytes.
+                    # Defer classification until exact envelope proofs are known.
+                    deferred_metadata_errors.append((path, ex))
+                    continue
+                if record is None:
+                    manifest = envelope(data)
+                    if manifest is not None:
+                        if manifest.get(MARKER) in (HISTORICAL_FORMAT, MAPPING_FORMAT):
+                            if path not in {MAPPING_PATH, *(x['path'] for x in historical_originals())}:
+                                raise ValueError('archive-unauthorized-path')
+                            proven_payloads.update(archival_payloads(revision))
+                        else:
+                            read(root, path, revision)
+                            proven_payloads.add(manifest['payload'])
+                elif path not in inherited and not any(path.startswith(prefix) for prefix in prefixes):
+                    raise ValueError('reencoding-foreign-owner:' + path)
+                else:
+                    admitted_owner = admitted[path][2] if path in inherited else identity
+                    validate_reencoding(root, path, record, inherited.get(path, retained.get(path, base)),
+                                        revision, admitted_owner)
+            for path, error in deferred_metadata_errors:
+                if path not in proven_payloads and not bound_payload(path, revision):
+                    raise error
+            mapped = {}
+            for path in git(root, 'ls-tree', '-r', '--name-only', revision, '--', *prefixes).decode().splitlines():
+                if path.endswith(('.gz', '.xz')):
+                    continue
+                data = blob(root, path, revision)
+                record = reencoding_record(data)
+                if record is not None:
+                    if len(data) > PLAIN_LIMIT:
+                        raise ValueError('reencoding-record-limit')
+                    validate_reencoding(root, path, record, inherited.get(path, retained.get(path, base)), revision, identity)
+                    records.add(path)
+                    for entry in record['entries']:
+                        ref = entry['original']['envelope']['path']
+                        if ref in mapped:
+                            raise ValueError('reencoding-duplicate-mapping')
+                        mapped[ref] = entry
+            for parent in parents:
+                changed = git(root, 'diff', '--no-renames', '--name-only', '--diff-filter=MDT',
+                              parent, revision, '--', *storage_roots).decode().splitlines()
+                for path in changed:
+                    old = blob(root, path, parent)
+                    selected_owner = any(path.startswith(prefix) for prefix in prefixes)
+                    try:
+                        old_record = reencoding_record(old)
+                    except ValueError as ex:
+                        if (not path.endswith(('.gz', '.xz'))
+                                or str(ex) not in {'evidence-envelope-json', 'evidence-envelope-encoding'}
+                                or not bound_payload(path, parent)):
+                            raise
+                        old_record = None
+                    if old_record is not None:
+                        raise ValueError('reencoding-record-mutated-or-deleted')
+                    # Pre-admission side branches do not inherit protected state.
+                    # Selected-owner history retains its existing strict checks.
+                    if not selected_owner:
+                        if (git(root, 'merge-base', base, revision).decode().strip() != base or
+                                git(root, 'merge-base', base, parent).decode().strip() != base):
+                            continue
+                    if path.endswith(('.gz', '.xz')):
+                        if not selected_owner:
+                            raise ValueError('reencoding-foreign-payload-mutation:' + path)
+                        accounted = [e for e in mapped.values()
+                                     if e['original']['payload'] == snapshot(root, path, parent, STORED_LIMIT)]
+                        if not accounted:
+                            raise ValueError('reencoding-unmapped-payload-mutation:' + path)
+                        if git(root, 'ls-tree', revision, '--', path).strip():
+                            raise ValueError('reencoding-old-payload-mutated:' + path)
+                        # No current refs may still require the removed payload.
+                        for current in git(root, 'ls-tree', '-r', '--name-only', revision, '--', *prefixes).decode().splitlines():
+                            if current.endswith(('.gz', '.xz')):
+                                continue
+                            value = envelope(blob(root, current, revision))
+                            if value and value.get('payload') == path:
+                                raise ValueError('reencoding-live-payload-deleted')
+                    else:
+                        manifest = envelope(old)
+                        if manifest and manifest.get(MARKER) in CODECS:
+                            if not selected_owner:
+                                raise ValueError('reencoding-foreign-envelope-mutation:' + path)
+                            # Existing extension/JSON encoding compatibility is not
+                            # a codec conversion. All metadata and payload identity
+                            # must remain exactly equal, under the same owner.
+                            unchanged = False
+                            current_exists = bool(git(root, 'ls-tree', revision, '--', path).strip())
+                            candidates = ([path] if current_exists else
+                                          git(root, 'ls-tree', '-r', '--name-only', revision,
+                                              '--', owner(path) + '/').decode().splitlines())
+                            for current in candidates:
+                                if not current.endswith(('.gz', '.xz')):
+                                    try:
+                                        if envelope(blob(root, current, revision)) == manifest:
+                                            unchanged = True
+                                            break
+                                    except ValueError:
+                                        continue
+                            if not unchanged:
+                                entry = mapped.get(path)
+                                if entry is None or entry['original']['envelope'] != snapshot(root, path, parent, PLAIN_LIMIT):
+                                    raise ValueError('reencoding-unmapped-envelope-mutation:' + path)
+        return errors, records
+    except (ValueError, OSError, KeyError, TypeError) as ex:
+        return ['reencoding-invalid:' + str(ex)], records
 
 
 def embedded_raw(value: Any) -> bool:
@@ -910,15 +1487,19 @@ def audit(root: Path, base: str, head: str, identity: str) -> dict:
                     raise ValueError('archive-original-current-format')
             except ValueError as ex:
                 errors.append(original['path'] + ':archive-original-current-missing-or-changed:' + str(ex))
+    reencoding_errors, reencoding_paths = reencoding_audit(root, base, head, identity)
+    errors.extend(reencoding_errors)
     bulk: dict[str, str] = {}
     for path in paths:
         try:
             total += int(git(root, 'cat-file', '-s', head + ':' + path))
-            data = blob(root, path, head, STORED_LIMIT if path.endswith('.gz') else PLAIN_LIMIT)
-            if path.endswith('.gz'):
+            data = blob(root, path, head, STORED_LIMIT if path.endswith(('.gz', '.xz')) else PLAIN_LIMIT)
+            if path.endswith(('.gz', '.xz')):
                 continue
             if Path(path).name == 'complete-diff.patch':
                 raise ValueError('full-diff-copy: record base/head instead')
+            if path in reencoding_paths:
+                continue
             manifest = envelope(data)
             if manifest is not None and manifest.get(MARKER) in (HISTORICAL_FORMAT, MAPPING_FORMAT):
                 if (archive_errors or identity != 'KL-080'
@@ -950,7 +1531,7 @@ def audit(root: Path, base: str, head: str, identity: str) -> dict:
         except (ValueError, OSError, UnicodeError) as ex:
             errors.append(path + ':' + str(ex))
     for path in paths:
-        if path.endswith('.gz') and path not in payloads:
+        if path.endswith(('.gz', '.xz')) and path not in payloads:
             errors.append(path + ':unreferenced-payload')
     if total > TOTAL_LIMIT:
         errors.append(f'PR-evidence-total:{total}>{TOTAL_LIMIT}')
@@ -969,6 +1550,7 @@ def main() -> int:
     cap.add_argument('--tested', required=True)
     cap.add_argument('--command', required=True)
     cap.add_argument('--exit-code', required=True, type=int)
+    cap.add_argument('--codec', choices=('gzip', 'xz'), default='gzip')
     cap.add_argument('--timestamp', default=datetime.now(timezone.utc).isoformat())
     retrieve = commands.add_parser('read', help='Write validated exact raw bytes to stdout')
     retrieve.add_argument('path')
@@ -978,6 +1560,14 @@ def main() -> int:
     archival.add_argument('--revision', required=True)
     mapping = commands.add_parser('archive-map', help='Build the exact authorized mapping after storage commit')
     mapping.add_argument('--storage-revision', required=True)
+    recode = commands.add_parser('reencode', help='Explicit own unmerged compact conversion')
+    recode.add_argument('--base', required=True)
+    recode.add_argument('--source', required=True)
+    recode.add_argument('--identity', required=True)
+    recode.add_argument('--path', action='append', required=True)
+    recode.add_argument('--record', required=True)
+    recode.add_argument('--codec', choices=('gzip', 'xz'), required=True)
+    recode.add_argument('--destination-dir', help='Explicit same-owner relocation during codec conversion')
     budget = commands.add_parser('audit')
     budget.add_argument('--base', required=True)
     budget.add_argument('--head', required=True)
@@ -988,8 +1578,12 @@ def main() -> int:
             if args.input.stat().st_size > RAW_LIMIT:
                 raise ValueError('capture-raw-limit')
             result = capture(args.root, args.output, args.input.read_bytes(), args.tested,
-                             args.command, args.exit_code, args.timestamp)
+                             args.command, args.exit_code, args.timestamp, args.codec + '-v1')
             print(json.dumps(result, indent=2))
+        elif args.action == 'reencode':
+            print(json.dumps(reencode(args.root, args.base, args.source, args.identity,
+                                     args.path, args.record, args.codec + '-v1',
+                                     args.destination_dir), indent=2))
         elif args.action == 'read':
             sys.stdout.buffer.write(read(args.root, args.path, args.revision))
         elif args.action == 'archive-read':

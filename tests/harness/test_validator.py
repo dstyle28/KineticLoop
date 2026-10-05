@@ -53,10 +53,13 @@ class ValidatorTests(unittest.TestCase):
             + [v.MANIFEST]
             + [entry['path'] for entry in index['documents'] + index['machine_readable']]
         )
+        fixture_omissions = ('docs/exec-plans/milestones/', 'docs/exec-plans/evidence/HG-054/')
         for name in dict.fromkeys(names):
-            if name.startswith('docs/exec-plans/milestones/'):
+            if name.startswith(fixture_omissions):
                 # Generic fixtures deliberately have no closure; READY-specific
-                # tests exercise the fail-closed admission rule.
+                # tests exercise the fail-closed admission rule. HG054 delivery
+                # maps bind real source Git ancestry, unavailable in this new
+                # repository; each scenario constructs its own fixture evidence.
                 continue
             dst = self.root / name
             dst.parent.mkdir(parents=True, exist_ok=True)
@@ -65,7 +68,7 @@ class ValidatorTests(unittest.TestCase):
         fixture_manifest = json.loads(fixture_manifest_path.read_text())
         fixture_manifest['files'] = [
             entry for entry in fixture_manifest['files']
-            if not entry['path'].startswith('docs/exec-plans/milestones/')
+            if not entry['path'].startswith(fixture_omissions)
         ]
         dump(fixture_manifest_path, fixture_manifest)
         # Governance scenarios need a pending refinement regardless of the live
@@ -2071,6 +2074,34 @@ class ValidatorTests(unittest.TestCase):
         self.put(path)
         self.commit('forbidden actual migration')
         self.check(1, 'governance-write-scope:HG-051:' + path,
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_hg054_all_four_review_types_are_mandatory(self):
+        self.put('docs/exec-plans/evidence/HG-054/scope.md', 'fixture scope')
+        tested = self.commit('HG054 governance implementation')
+        _, reviewed = self.persist_governance_change(
+            'HG-054', tested, [], ['GENERAL', 'PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'])
+        self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+        for review_type in ('PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'):
+            path = self.root / f'docs/exec-plans/reviews/HG-054/{review_type}.json'
+            original = path.read_bytes()
+            path.unlink()
+            self.commit('missing ' + review_type)
+            self.check(1, 'governance-required-reviews-not-pass:HG-054',
+                       '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+            path.write_bytes(original)
+            self.commit('restore ' + review_type)
+        self.assertEqual(self.git('rev-parse', reviewed), reviewed)
+
+    def test_hg054_cannot_write_actual_historical_artifacts(self):
+        self.put('docs/exec-plans/evidence/HG-054/scope.md', 'fixture scope')
+        tested = self.commit('HG054 governance implementation')
+        self.persist_governance_change(
+            'HG-054', tested, [], ['GENERAL', 'PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'])
+        path = 'docs/exec-plans/evidence/KL-036/unauthorized.log'
+        self.put(path)
+        self.commit('forbidden actual migration')
+        self.check(1, 'governance-write-scope:HG-054:' + path,
                    '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
     def test_ci_governance_requires_pass_change_status(self):

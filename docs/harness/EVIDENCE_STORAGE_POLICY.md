@@ -138,3 +138,136 @@ Every added/changed mapping, envelope, payload and review counts toward unchange
 256KiB plain, 8MiB stored gzip, 64MiB recovered and 16MiB aggregate bounds. Existing
 gzip-v1 execution capture/decoding and all its command/tested-SHA/exit checks remain
 unchanged. This named authorization creates no general historical storage waiver.
+
+## HG054 optional bounded XZ and own unmerged forward re-encoding
+
+`capture --codec xz` selects `kineticloop_evidence: xz-v1` and same-directory
+`<raw_sha256>.xz`. Default capture remains `gzip-v1`; both formats use identical
+execution metadata and raw identity fields. XZ encoding pins FORMAT_XZ, CRC64 and
+preset 6. Repeated encoding must be deterministic on the executing runner;
+compressed bytes need not match across liblzma versions. Each bound envelope pins
+its actual stored bytes. The decoder selects only the declared codec: no extension
+guessing, fallback or archive-reader delegation. XZ requires one CRC64 stream,
+EOF, no trailing/unused bytes, a fixed 64 MiB decoder memory limit and at most
+`raw_bytes + 1` output; declared raw length/hash must match exactly. Gzip guards,
+UTF-8/16/32 reserved-object classification, nested-object rejection, regular Git
+blob/revision/owner binding and semantic test oracles remain mandatory.
+All numerical budgets above remain unchanged for both codecs. `.gz` and `.xz`
+payloads both count; retaining both codec copies cannot evade duplicate-bulk rules.
+
+Forward re-encoding is explicitly authorized only for same-owner, already compact,
+unmerged gzip-v1/xz-v1 regular blobs absent from the protected PR base. No plain,
+archival, foreign-owner, renamed-owner, invalid or sanitized-as-original input is
+admitted. The explicit `reencode` action is separate from capture/read/audit; source
+is a full existing ancestor commit and must match the current selected envelope and
+payload bytes. The raw bytes/hash/length, tested commit, command,
+exit code, timestamp and test counts remain exactly equal. Only codec marker,
+payload extension/path, stored hash and stored length change. This representation
+operation is not a new execution and cannot promote any earlier failure or review.
+
+During this explicit codec change, optional `--destination-dir` may relocate the
+selected envelopes into one new child directory under exactly the same owner and
+evidence/review subtree. Replacement envelope names are the SHA256 of each original
+envelope, so independent execution metadata remains distinct while identical raw
+bytes can share one same-directory content-addressed payload. Every original and
+replacement path is snapshot-bound by the immutable mapping. Refuse source,
+current-tree or protected-base destination collisions, foreign/subtree moves and
+unaccounted source retirement. A relocated original envelope must be absent from
+the resulting tree; its original bound Git object remains available in ancestry.
+This authorizes no codec-free relocation or general deletion. The default action
+keeps each envelope at its original path. Neither side of a map may be converted
+again in the same unmerged branch.
+
+The same forward commit includes a uniquely named task-owned child
+`COMPACT_REENCODING.json` ordinary audit record with `compact_reencoding: v1`.
+It has exactly identity, protected_base, source_revision and entries. Each entry
+pins original and replacement envelope/payload path, regular Git blob ID,
+SHA256 and byte length, plus unchanged execution fields. Source snapshots stay
+readable at their original revision in normal Git ancestry; unavailable objects
+fail closed. Audit validates all mappings and each intervening commit, rejecting
+unmapped envelope/payload mutations, deletion/reversion, missing/remapped originals,
+metadata changes and protected-base paths. Maps are immutable. A mapped envelope
+cannot be converted a second time in that unmerged branch; independent envelopes
+may use separate uniquely named records. Maps, including encoded/wrapped forms,
+are never readable as execution output. New result references bind hashes of new
+envelopes at new evidence revisions; historical records retain original bindings.
+
+Obsolete current payloads are removed only when every current same-owner envelope
+reference has been accounted for; shared payloads remain while any ref uses them.
+Historical result/review record bytes are not rewritten by the action. Perform all
+representation mutations before the new tested/result/review revisions, rerun
+checks and obtain fresh required reviews. Re-encoding and mappings are never
+REVIEW_RECORD_ONLY. Provenance ambiguity stays BLOCKED. Existing harmless envelope
+filename/JSON-encoding compatibility preserves exact metadata/payload identity;
+it does not authorize owner changes or unmapped codec conversions.
+
+```sh
+python tools/harness/compact_evidence.py reencode \
+  --base <full-protected-base> --source <full-source-commit> --identity <own-id> \
+  --path docs/exec-plans/evidence/<own-id>/<run>/check.json \
+  --record docs/exec-plans/evidence/<own-id>/<unique-conversion>/COMPACT_REENCODING.json \
+  --codec xz
+# Commit conversion and record together, then establish a NEW tested SHA.
+```
+
+This authorization is independent of HG051. Its exact historical gzip schema,
+original pins, archival-only reader and failure facts remain unchanged; XZ is not
+an archival format. HG054 migrates no KL036/KL080/merged artifacts and grants no
+product, release, App or database PASS. Current installed controller assets do not
+admit new formats until root completes separately reviewed complete installation
+and exact-head/controller admission under LOCAL_DB_CI.md.
+
+Local mutation requires an exclusive writer in the task worktree. Serialize capture,
+re-encoding, edits and commits; stop any concurrent producer/editor before conversion.
+Rollback restores local originals for ordinary single-writer failures; it does not
+provide concurrent-writer or crash recovery. An interrupted operation stays BLOCKED
+until original files are restored or its complete mapping/representations validate.
+This discipline grants no database transaction or execution authority.
+Maps already admitted at the protected base are immutable historical bindings,
+reverified against their original admitted base and source even if no artifacts
+changed. New conversions must additionally prove the actual PR base precedes their
+source. A normal forward merge of a newer protected base may retain an already
+committed same-owner unmerged map without rewriting its admitted base or source.
+This requires exact map bytes on the task first-parent lineage before the first
+import, a valid original admission whose unique merge-base with the actual base
+is the recorded base, and a full unchanged old-base-to-pre-import audit. Source
+must remain unmerged into the actual base; no mapped path or record may have been
+used in the protected-base advance. All source/replacement proofs and per-edge
+immutability checks continue across import and later commits. A pre-admission
+protected parent never inherited this task map. Every actual-base descendant containing the source must also contain the
+original map admission; reversing merge-parent order cannot backdate a late map.
+Late side-branch or working-only maps, older-base claims after an intermediate import, previously merged/deleted
+sources, and unavailable originals fail closed. Fresh conversions retain the
+strict actual-base-to-source requirement; committed retained maps do not grant
+new conversion authority. A removed map marker, including wrapped/encoded variants, cannot turn
+storage metadata into ordinary execution output.
+Inherited-map verification is global across all admitted owners, including unrelated
+PRs and a no-change audit. It uses each immutable map's own admitted identity/base;
+unavailable originals or changed/deleted mappings fail closed. Map bytes and both
+snapshot bindings are checked at every intervening revision/parent descended from
+the protected base, so later restoration cannot hide mutation. Side branches before
+admission need no retroactive map existence; their later merge must preserve all
+admitted bindings. This global historical
+verification does not authorize a new foreign-owner conversion: new mappings and
+ancestral representation mutations remain restricted to the selected PR owner.
+Changed storage blobs are classified globally at every intervening
+revision, including renamed/wrapped/nested metadata and Unicode forms on branches
+before admission, even when metadata is named with a payload extension. Classification
+reads actual bounded stored bytes and never guesses a decoder from the extension.
+Literal JSON strings inside a valid binary stream are ordinary payload bytes. A
+JSON/encoding classifier error on a stored-payload path may be disregarded only
+after full bound retrieval proves that exact payload at that exact revision (or
+parent for prior-state classification). The proof checks the declared codec,
+same-directory ownership, regular Git objects, stored/raw hashes and lengths,
+bounded decoding, non-nested raw classification and ancestry. Frozen archival
+payloads require their existing exact inventory/original proof. Unproven aliases,
+size/type/integrity failures and later mapping/mutation guards remain fail-closed.
+Recognized execution envelopes must pass bound retrieval at that revision; archival
+objects remain subject to the exact frozen archival inventory and original proof,
+including its storage-before-mapping commit. Deletion before HEAD cannot hide a foreign conversion. Changed
+compact metadata
+and payloads are checked across owners on edges descended from the protected base.
+Task and governance tested/review suffix validators reject conversion records and
+existing compact representation changes even under allowed bookkeeping paths;
+restoration in a later suffix commit does not restore freshness. Newly captured
+independent review output remains ordinary review evidence.
