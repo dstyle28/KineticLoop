@@ -260,3 +260,15 @@ New real collection captures can share those stored bytes while retaining their
 own exact execution provenance. Every required check and all four reviews must be
 fresh at the new tested/result revisions. Earlier failure/blocked bindings remain
 available through their original normal Git ancestry.
+
+C11 at 241a316ef5a0bbcbc596818528cd7d8f939a2418 passed its actual complete
+storage audit (13,601,221 bytes, zero errors), but its fresh required run is
+superseded: installed decoder isolation actually recorded 102 passed/1 failed.
+The generic validator fixture copied this task's real source-bound delivery map
+from the refreshed manifest into a new git-init repository lacking its original
+Git ancestry. Source-unavailability correctly failed closed. The parent captured
+all real successful/failed/interrupted outputs and exited1; nothing is relabeled.
+C12 corrects only generic fixture isolation by omitting HG054 delivery artifacts
+and corresponding manifest rows; scenarios build their own evidence/history.
+Decoder, mapping, provenance, collision, frozen and budget guards remain unchanged.
+All required checks and reviews must bind the next immutable tested/result SHA.

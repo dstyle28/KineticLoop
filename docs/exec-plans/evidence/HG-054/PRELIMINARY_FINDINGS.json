@@ -195,5 +195,69 @@
       }
     ],
     "limits": "Exploratory lint/typecheck/probe passes do not replace immutable required executions or fresh formal reviews."
+  },
+  "C11_actual_run_superseded": {
+    "tested_commit": "241a316ef5a0bbcbc596818528cd7d8f939a2418",
+    "run_ref": "docs/exec-plans/evidence/HG-054/checks-241a316ef5a0bbcbc596818528cd7d8f939a2418-035264b4/RUN.json",
+    "parent_exit": 1,
+    "checks": [
+      {
+        "check_id": "codec_security_and_budget",
+        "result": "FAIL",
+        "exit_code": 2
+      },
+      {
+        "check_id": "bound_reader_regressions",
+        "result": "FAIL",
+        "exit_code": 2
+      },
+      {
+        "check_id": "installed_decoder_isolation",
+        "result": "FAIL",
+        "exit_code": 1
+      },
+      {
+        "check_id": "representative_roundtrip",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "scope",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "unit",
+        "result": "FAIL",
+        "exit_code": -2
+      },
+      {
+        "check_id": "harness",
+        "result": "FAIL",
+        "exit_code": -2
+      },
+      {
+        "check_id": "lint",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "typecheck",
+        "result": "PASS",
+        "exit_code": 0
+      },
+      {
+        "check_id": "authority",
+        "result": "FAIL",
+        "exit_code": -2
+      },
+      {
+        "check_id": "diff",
+        "result": "PASS",
+        "exit_code": 0
+      }
+    ],
+    "finding": "Fresh generic validator fixture copied actual HG054 source-bound mapping from delivery manifest into a git-init repository with no original source Git objects; fail-closed source verification correctly rejects. Actual installed decoder suite 102 passed, 1 failed; unfinished checks deliberately interrupted, not PASS.",
+    "resolution": "Generic fixture omits own HG054 delivery evidence and its manifest rows, constructs independent fixture evidence with its own Git history. No production decoder/map/source guard changed or waived."
   }
 }

@@ -53,10 +53,13 @@ class ValidatorTests(unittest.TestCase):
             + [v.MANIFEST]
             + [entry['path'] for entry in index['documents'] + index['machine_readable']]
         )
+        fixture_omissions = ('docs/exec-plans/milestones/', 'docs/exec-plans/evidence/HG-054/')
         for name in dict.fromkeys(names):
-            if name.startswith('docs/exec-plans/milestones/'):
+            if name.startswith(fixture_omissions):
                 # Generic fixtures deliberately have no closure; READY-specific
-                # tests exercise the fail-closed admission rule.
+                # tests exercise the fail-closed admission rule. HG054 delivery
+                # maps bind real source Git ancestry, unavailable in this new
+                # repository; each scenario constructs its own fixture evidence.
                 continue
             dst = self.root / name
             dst.parent.mkdir(parents=True, exist_ok=True)
@@ -65,7 +68,7 @@ class ValidatorTests(unittest.TestCase):
         fixture_manifest = json.loads(fixture_manifest_path.read_text())
         fixture_manifest['files'] = [
             entry for entry in fixture_manifest['files']
-            if not entry['path'].startswith('docs/exec-plans/milestones/')
+            if not entry['path'].startswith(fixture_omissions)
         ]
         dump(fixture_manifest_path, fixture_manifest)
         # Governance scenarios need a pending refinement regardless of the live
