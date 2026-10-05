@@ -1,0 +1,243 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-054",
+  "review_type": "DB_CONCURRENCY",
+  "review_contract_version": "v0.2",
+  "reviewed_head_sha": "8b9e2d129fc9a285db694b33f1254c9de4f0698e",
+  "tested_commit": "a49229a73319a54c7078107f89de5ba49174cf07",
+  "base_commit": "a1d040b6234d8161527d46d0773a88e8625129df",
+  "status": "PASS",
+  "findings": [],
+  "outcome": "Zero actionable findings in the assigned governance and local-writer concurrency boundary. This is an independent review PASS only; no merge recommendation.",
+  "authority_resolution": {
+    "index": "CURRENT_DOCUMENT_INDEX.json at reviewed SHA",
+    "packet": "docs/exec-plans/evidence/HG-054/EXECUTION_PACKET.md",
+    "result": "docs/exec-plans/governance/HG-054.yaml",
+    "skills": [
+      ".agents/skills/pr-merge-reviewer/SKILL.md",
+      ".agents/skills/db-transaction-reviewer/SKILL.md"
+    ],
+    "canonical_sections": [
+      "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md sections 4 and 5: lock order, short transactions, command owners",
+      "05_KineticLoop_Protocol_v1.2_FROZEN.md section 8: T1-T8 atomic boundaries",
+      "docs/harness/EVIDENCE_STORAGE_POLICY.md: codec, reencoding, historical inventory, exclusive writer, retained admission",
+      "docs/harness/THREAD_REVIEW_CONTRACT.md: SHA binding and REVIEW_RECORD_ONLY",
+      "docs/harness/LOCAL_DB_CI.md: installed pin/admission and App/fullDB separation",
+      "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md: HG054 scope"
+    ]
+  },
+  "independently_inspected_paths": [
+    "tools/harness/compact_evidence.py",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_compact_evidence.py",
+    "tests/harness/test_local_gate.py",
+    "docs/exec-plans/evidence/HG-054/verify_scope.py",
+    "docs/exec-plans/evidence/HG-054/CONTROLLER_CANDIDATE_ASSETS_a49229a.json",
+    "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json",
+    "docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/RUN.json"
+  ],
+  "scope_proof": {
+    "changed_paths": 493,
+    "exact_allowlist": "All 493 base-to-reviewed changed paths match the literal HG054 allowlist; index changes are two derived hashes only. No src, migrations, CI, installed controller, DB policy or runtime writer change.",
+    "frozen_proof": "byte_identical",
+    "transaction_mapping": "No T1-T8 implementation transaction, SafetyRegistry/S01 coordination, SQL schema, idempotency receipt, fencing, ledger, outbox, provider or authorization command changed. File/Git subprocess operations occur solely in harness tooling; no model/network wait enters coordination transactions. Real PostgreSQL concurrency tests are not proof needed for this local file change; separate trusted App/fullDB remains required."
+  },
+  "local_writer_proof": {
+    "code": "reencode validates every selection, existing map, regular snapshots, current working bytes and committed HEAD bytes before mutation; source must descend from actual base and be ancestor of HEAD. Destination and stored-payload collisions include current/source/committed HEAD checks. It neither stages nor commits.",
+    "retirement": "Shared old payload remains when an unselected same-owner envelope references it. Audit rejects deleting payload with live current references, unaccounted mutation or original snapshots differing on any parent edge.",
+    "rollback": "Ordinary ValueError/OSError/KeyError/TypeError in mutation/validation restores saved originals and removed files and removes new record/destinations. Independently rerun injected validation failure passed.",
+    "limits": "Exclusive local writer is a policy precondition, not an advisory lock, CAS, DB transaction, atomic multi-file publish or crash recovery. Concurrent capture/edit/commit must be stopped. Interruptions stay BLOCKED until restoration or complete validation; no concurrency/crash guarantee is claimed."
+  },
+  "ancestry_proof": {
+    "all_parents": "reencoding_audit walks every base..head revision and every parent, globally classifies changed storage metadata including binary aliases, and checks inherited map bytes plus both immutable snapshot bindings even on unrelated/no-change owner audits. Deletion/restoration and transient foreign maps cannot disappear from history.",
+    "relocation": "Same-owner child directory, original-envelope-SHA256 filename, exact metadata/raw equality and retired original envelope are mandatory. Every edge introducing a map must show destination absent in its parent; independently rerun handwritten collision and hidden HEAD destination cases passed.",
+    "source_failure": "Full commit lookup and regular blob/hash/length proofs fail closed for missing source or snapshots; read cannot borrow ambient data. Independently rerun source-loss case passed.",
+    "fresh_versus_retained": "Fresh writer still requires actual base ancestor of source. Retention requires exact map bytes on first-parent lineage before first import, unique merge-base with actual base equal original admitted base, source ancestor of original admission, no protected-path use in intervening protected-base history, full original-prefix audit and immutable per-edge verification. Every actual-base descendant containing source must contain original admission. Reversed-parent late-map and byte-identical late recreation cases passed as rejections.",
+    "actual_admission_commit": "241a316ef5a0bbcbc596818528cd7d8f939a2418",
+    "actual_base_import_commit": "7e7b99c6504f98a17e7ff990ca8d715e68b7f413",
+    "actual_bound_snapshots": [
+      {
+        "map_path": "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json",
+        "source_commit": "9b15954c76ff8bbe3187e87641a62a08394da75e",
+        "admitted_base_commit": "af09be228fbc89d074b6e863c83e1fdda343d55b",
+        "entry_count": 2,
+        "shared_replacement_payload": true,
+        "snapshot_and_raw_equality": "PASS",
+        "details": [
+          {
+            "original_ref": "docs/exec-plans/evidence/HG-054/checks-bb0aa23090f00e37d71a18b514ade57bff9a54c1-be3ada73/harness-collection.json.json",
+            "new_ref": "docs/exec-plans/evidence/HG-054/shared-collection/3f24e49a2c70e26ff654fcadaf0f36e7100c34e600b40c67e2a62e163d6e73ce.json",
+            "raw_digest": "f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d",
+            "metadata_unchanged": true
+          },
+          {
+            "original_ref": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness-collection.json.json",
+            "new_ref": "docs/exec-plans/evidence/HG-054/shared-collection/ad90918529da8a8efdd8003ba720cbec3bc7454223114a276850390a7f29acfa.json",
+            "raw_digest": "f5071343d0ab13e4909a39077eea753bd01ab7956cde2f18b72dbaf436a2cb0d",
+            "metadata_unchanged": true
+          }
+        ]
+      }
+    ]
+  },
+  "final_execution_proof": {
+    "checks": [
+      {
+        "check": "codec_security_and_budget",
+        "exit": 0,
+        "raw_digest": "7e784222ea40ef5d072d14fa738e4636a73f8c3209c24acc8274866844f61ce1",
+        "counts": {
+          "passed": 529
+        }
+      },
+      {
+        "check": "bound_reader_regressions",
+        "exit": 0,
+        "raw_digest": "eec8dd7491602b47e8226e138f5e341e921f8f6871aa7fcced31f3a300188eda",
+        "counts": {
+          "passed": 337
+        }
+      },
+      {
+        "check": "installed_decoder_isolation",
+        "exit": 0,
+        "raw_digest": "7c318800ff5d683886f8e9f45c3ee3c6b39d02c7cb5278ded487b68de95241c0",
+        "counts": {
+          "passed": 103
+        }
+      },
+      {
+        "check": "representative_roundtrip",
+        "exit": 0,
+        "raw_digest": "97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e",
+        "counts": {}
+      },
+      {
+        "check": "scope",
+        "exit": 0,
+        "raw_digest": "31b8cf7be83d6508c655f02aac1f1308118a02fbec2915d1bb360c6def3d8b69",
+        "counts": {}
+      },
+      {
+        "check": "unit",
+        "exit": 0,
+        "raw_digest": "e4784e0163d9c93d0180cf8675ef854a2eb9aefca965113656243396616ed102",
+        "counts": {
+          "passed": 247
+        }
+      },
+      {
+        "check": "harness",
+        "exit": 0,
+        "raw_digest": "e83cd5c39381b417a536316cbcc0058e691b4c463210fd714a297baaae193e8d",
+        "counts": {
+          "passed": 1757
+        }
+      },
+      {
+        "check": "lint",
+        "exit": 0,
+        "raw_digest": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+        "counts": {}
+      },
+      {
+        "check": "typecheck",
+        "exit": 0,
+        "raw_digest": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb",
+        "counts": {}
+      },
+      {
+        "check": "authority",
+        "exit": 0,
+        "raw_digest": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+        "counts": {}
+      },
+      {
+        "check": "diff",
+        "exit": 0,
+        "raw_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "counts": {}
+      }
+    ],
+    "binding": "Each C17 check read from exact R2 Git revision using tested SHA, exact recorded command and exit0; raw hashes/lengths and same-revision payload provenance validated. forward_reencoding_guards is the same actual codec run, with no duplicate execution credit. Earlier failed/interrupted RUNs do not supply final PASS.",
+    "identities": {
+      "revision": "8b9e2d129fc9a285db694b33f1254c9de4f0698e",
+      "collection_count": 1757,
+      "unique_count": 1757,
+      "workers": [
+        "gw0",
+        "gw1"
+      ],
+      "started_count": 1757,
+      "passed_per_phase": 1757,
+      "identities_sha256": "e2684d55b41aa977411d35672963854bfbb427f38a1b27dfe98329b6ab382e06",
+      "manifest_file_bindings": "all actual raw hashes and lengths matched",
+      "required_actual_pass_cases": [
+        "tests/harness/test_compact_evidence.py::test_handwritten_or_late_side_branch_map_after_base_import_rejects[reversed-parents]",
+        "tests/harness/test_compact_evidence.py::test_retained_map_recreation_on_base_imported_side_branch_rejects",
+        "tests/harness/test_compact_evidence.py::test_relocation_validation_failure_rolls_back_originals_and_new_destinations",
+        "tests/harness/test_compact_evidence.py::test_handwritten_map_cannot_overwrite_parent_destination",
+        "tests/harness/test_compact_evidence.py::test_mapping_original_source_loss_is_fail_closed"
+      ]
+    },
+    "harness_junit": {
+      "case_count": 1757,
+      "failure_count": 0,
+      "error_count": 0,
+      "skipped_count": 0
+    },
+    "unit_junit": {
+      "case_count": 247,
+      "failure_count": 0,
+      "error_count": 0,
+      "skipped_count": 0
+    },
+    "tested_suffix": "linear single capture/result commit; no representation mutations"
+  },
+  "focused_independent_run": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=\"$PWD/src:/private/tmp/hg054-dependencies\" /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_compact_evidence.py -q -k \"relocation_validation_failure_rolls_back or hidden_committed_destination_after_source or handwritten_map_cannot_overwrite_parent_destination or handwritten_or_late_side_branch_map_after_base_import_rejects or retained_map_recreation_on_base_imported_side_branch_rejects or new_writer_cannot_claim_pre_import_source or retained_map_survives_normal_diverged_base_advance or mapping_original_source_loss_is_fail_closed\" --basetemp=/private/tmp/hg054-r2-db-pytest -o cache_dir=/private/tmp/hg054-r2-db-cache --junitxml=/private/tmp/hg054-r2-db-focused.xml",
+    "exit_code": 0,
+    "passed": 10,
+    "deselected": 519,
+    "seconds": 20.55,
+    "case_identities": [
+      "test_mapping_original_source_loss_is_fail_closed",
+      "test_relocation_validation_failure_rolls_back_originals_and_new_destinations",
+      "test_relocation_rejects_hidden_committed_destination_after_source",
+      "test_handwritten_map_cannot_overwrite_parent_destination",
+      "test_retained_map_survives_normal_diverged_base_advance",
+      "test_new_writer_cannot_claim_pre_import_source",
+      "test_handwritten_or_late_side_branch_map_after_base_import_rejects[none]",
+      "test_handwritten_or_late_side_branch_map_after_base_import_rejects[ordinary]",
+      "test_handwritten_or_late_side_branch_map_after_base_import_rejects[reversed-parents]",
+      "test_retained_map_recreation_on_base_imported_side_branch_rejects"
+    ],
+    "log_sha256": "de94df14767547d59384afc5af049f33274676e23ce785082a69619e2772f7eb",
+    "scope": "Isolated fixture Git repositories only; reviewer checks, not replacement final task executions."
+  },
+  "controller_boundary": {
+    "asset_inventory": "all eleven actual tested blobs match bytes and SHA256",
+    "candidate_asset_count": 11,
+    "isolation": "Standalone installed-only decoder tests use isolated Python with poisoned candidate directory and reject missing/mutated pinned decoder. No controller installation or credentialed execution was performed or is authorized by this review.",
+    "remaining_gates": [
+      "independently reviewed complete root installation",
+      "exact head/controller admission",
+      "hosted final-head gates",
+      "App-owned isolated fullDB",
+      "normal merge"
+    ],
+    "requirements": "All product/release requirements remain NOT_RUN by this task; review PASS, task PASS, hosted/App PASS and MERGED are separate."
+  },
+  "commands_and_outputs": [
+    "git diff --name-only/--numstat/--check protected base reviewed SHA: 493 scoped paths, diff-check exit0",
+    "Exact-R2 standalone decoder imported from Git blob after source-byte equality assertion; eleven bound raw outputs independently verified.",
+    "/private/tmp/hg054-r2-db-identities.py: collection/worker/start/report equality and all manifest raw bindings PASS.",
+    "/private/tmp/hg054-r2-db-extra.py: exact scope, tested suffix, eleven asset pins and source/replacement snapshot equality PASS.",
+    "Ten isolated focused adversarial tests: exit0, ten passed, no skips/errors."
+  ],
+  "review_limits": [
+    "No full-suite repetition, network, credentials, database, source mutation, stage, commit or controller operation.",
+    "Other uncommitted role reports were not used as reasoning or proof.",
+    "Provided exact-R2 compact audit was context; this report independently establishes its assigned boundaries and does not claim to rerun that expensive whole-history audit.",
+    "Own report is new review bookkeeping and must be persisted with the narrow SHA-bound REVIEW_RECORD_ONLY suffix."
+  ]
+}

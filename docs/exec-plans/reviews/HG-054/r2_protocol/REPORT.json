@@ -1,0 +1,231 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-054",
+  "review_type": "PROTOCOL",
+  "status": "PASS",
+  "reviewed_head_sha": "8b9e2d129fc9a285db694b33f1254c9de4f0698e",
+  "base_commit": "a1d040b6234d8161527d46d0773a88e8625129df",
+  "tested_commit": "a49229a73319a54c7078107f89de5ba49174cf07",
+  "findings": [],
+  "scope": "Fresh-context exact-result protocol review; no merge recommendation. Existing reviewer reasoning was not used.",
+  "authorities_inspected": [
+    "AGENTS.md",
+    "CURRENT_DOCUMENT_INDEX.json",
+    "docs/exec-plans/evidence/HG-054/EXECUTION_PACKET.md",
+    "docs/exec-plans/governance/HG-054.yaml",
+    ".agents/skills/pr-merge-reviewer/SKILL.md",
+    ".agents/skills/protocol-guardian/SKILL.md",
+    "05_KineticLoop_Protocol_v1.2_FROZEN.md sections 1, 2.1/2.1a, 3.7/3.8, 7.1-7.5",
+    "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md S01/S02, S44-S46, section 5",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md",
+    "THREAD_REVIEW.schema.json",
+    "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+    "docs/harness/LOCAL_DB_CI.md"
+  ],
+  "implementation_inspected": [
+    "Exact protected-base-to-reviewed-result Git diff, including source/tests/policy/index/manifest",
+    "tools/harness/compact_evidence.py bounded read/encode/decode, capture default, snapshots, retained_reencoding_base, validate_reencoding, reencode, reencoding_audit and audit",
+    "tools/harness/validate_harness.py exact HG054 allowlist, storage_bookkeeping_only, suffix guards, generic availability and selected bound review readers",
+    "tests/harness/test_compact_evidence.py fresh/retained/foreign/transient/relocation/XZ/ancestry and archival regressions",
+    "tests/harness/test_review_evidence_provenance.py, test_m3_milestone_closure.py, test_local_gate.py and test_validator.py diffs",
+    "docs/exec-plans/evidence/HG-054/run_checks.py and immutable C17 RUN/captures"
+  ],
+  "protocol_assessment": [
+    "Changes govern harness execution-output storage; no runtime, DB table, transaction command owner, SafetyRegistry/S01 lock order or T1-T8 atomic boundary changes. No Evidence Admission, production/shadow, provider command authority or planned/actual semantics change is required.",
+    "Default gzip remains supported; XZ decoder accepts only declared single CRC64 XZ streams with EOF/no trailing bytes, fixed 64MiB memory bound, raw length plus one output bound and exact stored/raw integrity. Codec selection has no extension/fallback or archive delegation.",
+    "Fresh conversion requires actual protected-base ancestor of source and unchanged regular source/HEAD/working snapshots; absent base paths, selected ownership and immutable original-to-replacement records prevent borrowed historical authority.",
+    "Retained maps require committed byte identity before first base import, original admission/unique merge-base, no protected-path use during base advancement, original-prefix audit and every actual-base descendant containing source also containing original admission. Reversed parents and identical late recreation reject.",
+    "Relocation binds distinct original-envelope-hash filenames under the same owner/subtree; destination absence is checked on every admitting parent. Retirement is accounted and current shared refs preserve required payloads. Both original and replacement sides remain protected; ordinary audit mappings cannot supply execution output.",
+    "Inherited maps and source/replacement snapshots are revalidated globally and per intervening parent/revision. Aliased/encoded/wrapped/transient foreign storage is classified globally. Narrow binary classifier deferral requires exact same-revision bound payload proof and does not suppress integrity/size failures.",
+    "Conversion is implementation and cannot enter tested/review bookkeeping suffixes. Missing-current generic review availability consults only the recorded reviewed SHA, while present invalid artifacts/parents and unavailable sources reject; selected command/tested/exit/PASS/freshness proof is unchanged.",
+    "Shared storage bytes retain independent execution provenance. C17 real stdout, clean tested manifest, collection identities, every setup/call/teardown report and JUnit agree. Historical failed/interrupted executions provide no final PASS credit."
+  ],
+  "immutable_execution_verification": {
+    "eleven_checks": [
+      {
+        "check": "codec_security_and_budget",
+        "bytes": 672,
+        "digest": "7e784222ea40ef5d072d14fa738e4636a73f8c3209c24acc8274866844f61ce1",
+        "tail": "........................................ [ 54%]\n........................................................................ [ 68%]\n........................................................................ [ 81%]\n........................................................................ [ 95%]\n.........................                                                [100%]\n529 passed in 845.98s (0:14:05)\n"
+      },
+      {
+        "check": "bound_reader_regressions",
+        "bytes": 433,
+        "digest": "eec8dd7491602b47e8226e138f5e341e921f8f6871aa7fcced31f3a300188eda",
+        "tail": "....................................... [ 21%]\n........................................................................ [ 42%]\n........................................................................ [ 64%]\n........................................................................ [ 85%]\n.................................................                        [100%]\n337 passed in 4398.41s (1:13:18)\n"
+      },
+      {
+        "check": "installed_decoder_isolation",
+        "bytes": 180,
+        "digest": "7c318800ff5d683886f8e9f45c3ee3c6b39d02c7cb5278ded487b68de95241c0",
+        "tail": "........................................................................ [ 69%]\n...............................                                          [100%]\n103 passed in 8.17s\n"
+      },
+      {
+        "check": "representative_roundtrip",
+        "bytes": 3164,
+        "digest": "97cd21c2807bd53e6e7f41908659180e40cb73ebad1bbe4a31738700d010142e",
+        "tail": ",\n        \"gzip_bytes\": 2423697,\n        \"gzip_sha256\": \"2532a264fc6876a129c972b20ed340b664457929c8af09361f70874a60991754\",\n        \"xz_bytes\": 131788,\n        \"xz_sha256\": \"b51481c9a3aa1e92ba4f11d31390a25e307eb540c69bd9f2c02d5ea724efae85\"\n      }\n    ],\n    \"savings_bytes\": 9167105,\n    \"projected_bytes_before_envelope_and_record_changes\": 9026903,\n    \"within_unchanged_total_budget\": true\n  }\n}\n"
+      },
+      {
+        "check": "scope",
+        "bytes": 60689,
+        "digest": "31b8cf7be83d6508c655f02aac1f1308118a02fbec2915d1bb360c6def3d8b69",
+        "tail": "\n    \"tests/harness/test_local_gate.py\",\n    \"tests/harness/test_m3_milestone_closure.py\",\n    \"tests/harness/test_review_evidence_provenance.py\",\n    \"tests/harness/test_validator.py\",\n    \"tools/harness/README.md\",\n    \"tools/harness/compact_evidence.py\",\n    \"tools/harness/validate_harness.py\"\n  ],\n  \"frozen_baseline_sha256\": \"bb8cd79942d3ca735e38e0363d8f56c5c45bbd79210a6618d29704aac3dd04df\"\n}\n"
+      },
+      {
+        "check": "unit",
+        "bytes": 461,
+        "digest": "e4784e0163d9c93d0180cf8675ef854a2eb9aefca965113656243396616ed102",
+        "tail": "........... [ 29%]\n........................................................................ [ 58%]\n........................................................................ [ 87%]\n...............................                                          [100%]\n- generated xml file: /private/tmp/hg054-checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/unit.xml -\n247 passed in 476.88s (0:07:56)\n"
+      },
+      {
+        "check": "harness",
+        "bytes": 2195,
+        "digest": "e83cd5c39381b417a536316cbcc0058e691b4c463210fd714a297baaae193e8d",
+        "tail": " [ 90%]\n........................................................................ [ 94%]\n........................................................................ [ 98%]\n.............................                                            [100%]\n- generated xml file: /private/tmp/hg054-checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/harness/junit.xml -\n1757 passed in 2847.47s (0:47:27)\n"
+      },
+      {
+        "check": "lint",
+        "bytes": 19,
+        "digest": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+        "tail": "All checks passed!\n"
+      },
+      {
+        "check": "typecheck",
+        "bytes": 45,
+        "digest": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb",
+        "tail": "Success: no issues found in 172 source files\n"
+      },
+      {
+        "check": "authority",
+        "bytes": 38,
+        "digest": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+        "tail": "HARNESS_CHECK_PASS tasks=77 active=74\n"
+      },
+      {
+        "check": "diff",
+        "bytes": 0,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tail": ""
+      }
+    ],
+    "harness_junit": {
+      "cases": 1757,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "unit_junit": {
+      "cases": 247,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "case_identity_proof": {
+      "case_count": 1757,
+      "phase_count": 5271,
+      "worker_collections_equal": true,
+      "all_phases_passed": true,
+      "selected_cases": [
+        "tests/harness/test_compact_evidence.py::test_merged_mapping_stays_immutable_and_reverifies_originals",
+        "tests/harness/test_compact_evidence.py::test_unrelated_owner_audit_enforces_admitted_map_immutability[delete]",
+        "tests/harness/test_compact_evidence.py::test_unrelated_owner_audit_enforces_admitted_map_immutability[change]",
+        "tests/harness/test_compact_evidence.py::test_transient_foreign_conversion_cannot_disappear_before_head[True]",
+        "tests/harness/test_compact_evidence.py::test_transient_foreign_conversion_cannot_disappear_before_head[False]",
+        "tests/harness/test_compact_evidence.py::test_handwritten_map_cannot_overwrite_parent_destination",
+        "tests/harness/test_compact_evidence.py::test_handwritten_or_late_side_branch_map_after_base_import_rejects[none]",
+        "tests/harness/test_compact_evidence.py::test_handwritten_or_late_side_branch_map_after_base_import_rejects[ordinary]",
+        "tests/harness/test_compact_evidence.py::test_handwritten_or_late_side_branch_map_after_base_import_rejects[reversed-parents]",
+        "tests/harness/test_compact_evidence.py::test_retained_map_missing_bound_objects_fail_closed[original]",
+        "tests/harness/test_compact_evidence.py::test_retained_map_missing_bound_objects_fail_closed[boundary-replacement]",
+        "tests/harness/test_compact_evidence.py::test_retained_map_recreation_on_base_imported_side_branch_rejects",
+        "tests/harness/test_local_gate.py::test_installed_only_xz_decode_with_poisoned_candidate",
+        "tests/harness/test_review_evidence_provenance.py::test_compact_conversion_never_uses_bookkeeping_suffix[False-tested-KL-001]",
+        "tests/harness/test_review_evidence_provenance.py::test_compact_conversion_never_uses_bookkeeping_suffix[False-tested-HG-054]",
+        "tests/harness/test_review_evidence_provenance.py::test_compact_conversion_never_uses_bookkeeping_suffix[False-review-KL-001]",
+        "tests/harness/test_review_evidence_provenance.py::test_compact_conversion_never_uses_bookkeeping_suffix[False-review-HG-054]",
+        "tests/harness/test_review_evidence_provenance.py::test_compact_conversion_never_uses_bookkeeping_suffix[True-tested-KL-001]",
+        "tests/harness/test_review_evidence_provenance.py::test_compact_conversion_never_uses_bookkeeping_suffix[True-tested-HG-054]",
+        "tests/harness/test_review_evidence_provenance.py::test_compact_conversion_never_uses_bookkeeping_suffix[True-review-KL-001]",
+        "tests/harness/test_review_evidence_provenance.py::test_compact_conversion_never_uses_bookkeeping_suffix[True-review-HG-054]"
+      ],
+      "manifest_exact_clean_tested": true
+    },
+    "run_ref": "docs/exec-plans/evidence/HG-054/checks-a49229a73319a54c7078107f89de5ba49174cf07-e88acc0e/RUN.json",
+    "forward_check_alias": "forward_reencoding_guards uses the same whole-module execution as codec_security_and_budget; no duplicate execution credit"
+  },
+  "original_conversion_proof": [
+    {
+      "path": "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json",
+      "digest": "09b14d75baf0330eb171ca34d5ba3c1fe5da11d6e76a34364793c240c63b974d",
+      "original_base": "af09be228fbc89d074b6e863c83e1fdda343d55b",
+      "admission": "241a316ef5a0bbcbc596818528cd7d8f939a2418",
+      "bindings": 2,
+      "unchanged_raw": true
+    }
+  ],
+  "budget_verification": {
+    "bytes": 14483539,
+    "files": 479,
+    "provided_audit_exact_match": true
+  },
+  "authority_byte_verification": {
+    "all_current_index_entries_match": true,
+    "frozen_protocol_db_baseline_unchanged": true,
+    "requirements_and_acceptance_sets_unchanged": true,
+    "hg051_inventory_and_schema_unchanged": true,
+    "hg051_inventory_sha256": "d876f866816b023d407c1fa0bf90c18e7653f4baa6ed0a51399d41052930318c",
+    "hg051_schema_sha256": "602a3cc03bbfc13859bc5ff87da77cc636dd925871b89349b55ae42b3d3feced"
+  },
+  "independent_commands": [
+    {
+      "operation": "Exact Git diffs/status/HEAD and current authority SHA256 verification",
+      "result": "PASS"
+    },
+    {
+      "operation": "Bound-read every final RUN check and harness/unit ancillary artifact at exact R2 with exact tested SHA/command/exit0; raw output SHA256 and lengths recorded above",
+      "result": "PASS"
+    },
+    {
+      "operation": "Verify final collection equals both worker collections and started identities; exactly one passing setup/call/teardown per case; manifest clean tested implementation and JUnit zero skip/failure/error",
+      "result": "PASS"
+    },
+    {
+      "operation": "Independent changed-blob accounting against protected base matches exact-R2 supplied compact audit: 479 regular evidence/review blobs, 14,483,539 bytes, supplied errors empty",
+      "result": "PASS"
+    },
+    {
+      "operation": "retained_reencoding_base and validate_reencoding at exact R2; original prefix audit and all snapshot/metadata/raw proofs",
+      "result": "PASS",
+      "execution_note": "Initial uncached exploratory call interrupted with exit130 to avoid redundant Git reads; completed retry memoized only read-only Git command results with immutable HEAD, without suppressing any validator checks."
+    },
+    {
+      "operation": "Focused pytest: handwritten_or_late_side_branch_map_after_base_import_rejects; retained_map_recreation_on_base_imported_side_branch_rejects; relocation_rejects_hidden_committed_destination_after_source; mapping_original_source_loss_is_fail_closed",
+      "result": "PASS",
+      "actual_counts": "6 passed, 523 deselected in 16.06s",
+      "fixture_root": "/private/tmp/hg054-r2-protocol-fixtures"
+    },
+    {
+      "operation": "New isolated handcrafted two-parent admission with independent destination existing only on second parent; audit rejects destination-preexists",
+      "result": "PASS",
+      "probe": {
+        "probe": "destination exists only on second admission parent",
+        "status": "PASS",
+        "rejection": "reencoding-relocation-destination-preexists",
+        "fixture_head": "b1d0c5a9c761e0bb67e4ead244e5dad75789c7b2"
+      }
+    },
+    {
+      "operation": "git diff --check protected base to exact R2",
+      "result": "PASS"
+    }
+  ],
+  "limits": [
+    "Protocol review PASS only; related product requirements remain NOT_RUN. Root installation/admission, hosted/App/fullDB and MERGED remain separate pending facts.",
+    "The existing controller was not installed or admitted, and no credential/controller/network/database operation was performed.",
+    "No full test suites were repeated; final C17 execution evidence was independently decoded and checked. Focused isolated fixtures are review evidence only.",
+    "Representation writes require the documented exclusive local writer; ordinary rollback does not establish concurrent-writer or crash recovery. Interrupted state must remain blocked until restored or fully validated.",
+    "Per-runner XZ determinism does not assert identical stored bytes across liblzma versions.",
+    "Supplied exact-R2 global audit was independently bound and its byte/file accounting checked; the retained map original-prefix audit and relevant provenance guards were independently executed."
+  ]
+}
