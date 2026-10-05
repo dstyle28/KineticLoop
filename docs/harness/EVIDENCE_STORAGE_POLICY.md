@@ -271,3 +271,16 @@ Task and governance tested/review suffix validators reject conversion records an
 existing compact representation changes even under allowed bookkeeping paths;
 restoration in a later suffix commit does not restore freshness. Newly captured
 independent review output remains ordinary review evidence.
+
+
+## HG056 ordinary source compatibility
+
+Reserved field names used as ordinary reader literals, quoted prose, or JSON string
+values are plain content and remain byte-identical. Recognition requires storage
+key/value or assignment structure, including partial object keys. Actual reserved
+metadata stays fail-closed in source dictionaries, assignments, comments, escaped
+string wrappers, malformed/truncated JSON and UTF-8/16/32 or conflicting BOM forms.
+This classification is content-based across all owners, paths, suffixes and bounded
+recovery. It executes no source and grants no execution, review, admission or PASS
+meaning. All binding, ancestry, per-edge, archival and retained-map proofs remain
+mandatory; no original source hash or filename is a runtime exemption.

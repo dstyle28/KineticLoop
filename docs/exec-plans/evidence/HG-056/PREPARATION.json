@@ -1,0 +1,40 @@
+{
+  "purpose": "PREPARATION_ONLY_NOT_IMMUTABLE_CHECK_PASS",
+  "base_commit": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "runs": [
+    {
+      "check": "targeted initial regressions",
+      "result": "FAIL",
+      "passed": 18,
+      "failed": 31,
+      "deselected": 529,
+      "cause": "ordinary quoted reader false positives; previously unrecognized single-quoted/source-wrapped metadata"
+    },
+    {
+      "check": "first correction targeted",
+      "result": "FAIL",
+      "passed": 46,
+      "failed": 3,
+      "deselected": 529,
+      "cause": "structural key regex omitted digits in raw_sha256/stored_sha256; corrected"
+    },
+    {
+      "check": "HG056 review fixture initial",
+      "result": "FAIL",
+      "passed": 1,
+      "failed": 1,
+      "deselected": 148,
+      "cause": "missing GENERAL rejected by earlier ci-general-review-missing guard; expected assertion corrected"
+    },
+    {
+      "check": "HG056 review fixture corrected",
+      "result": "PASS",
+      "passed": 2,
+      "failed": 0,
+      "deselected": 148
+    }
+  ],
+  "limitations": [
+    "Preparation statuses do not replace immutable final source execution. No historical helper was executed. Negative fixture diagnostics remain task scratch; no private fixture logs are copied to published evidence."
+  ]
+}

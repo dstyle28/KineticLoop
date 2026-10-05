@@ -1491,6 +1491,15 @@ def governance_record_paths(change_id):
 
 
 def governance_allowed_patterns(change_id):
+    if change_id == 'HG-056':
+        return ['tools/harness/compact_evidence.py', 'tools/harness/validate_harness.py',
+                'tests/harness/test_compact_evidence.py',
+                'tests/harness/test_review_evidence_provenance.py',
+                'tests/harness/test_m3_milestone_closure.py', 'tests/harness/test_validator.py',
+                'tests/harness/test_local_gate.py', 'docs/harness/EVIDENCE_STORAGE_POLICY.md',
+                'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md', INDEX, MANIFEST,
+                'docs/exec-plans/governance/HG-056.yaml',
+                'docs/exec-plans/evidence/HG-056/**', 'docs/exec-plans/reviews/HG-056/**']
     if change_id == 'HG-054':
         return ['tools/harness/compact_evidence.py', 'tools/harness/validate_harness.py',
                 'tests/harness/test_compact_evidence.py',
@@ -4022,7 +4031,7 @@ def validate(root, args):
             required = {'GENERAL'}
             if change_id in ('HG-051', 'HG-054'):
                 required.update({'PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'})
-            if change_id == 'HG-050':
+            if change_id in ('HG-050', 'HG-056'):
                 required.add('SECURITY_DATA_BOUNDARY')
             old_tasks = getattr(args, 'governance_base_tasks', {})
             reviewed_tasks = getattr(args, 'governance_reviewed_tasks', tasks)

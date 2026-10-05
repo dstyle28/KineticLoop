@@ -1993,3 +1993,88 @@ def test_retained_map_recreation_on_base_imported_side_branch_rejects(repo):
     with pytest.raises(ValueError, match='retained-source-import-before-admission'):
         ce.validate_reencoding(root, RECODE, record, base, head, 'HG-047')
     assert ce.audit(root, base, head, 'HG-047')['errors']
+
+
+@pytest.mark.parametrize('raw', [
+    b'envelope.get("kineticloop_evidence")',
+    b'envelope["compact_reencoding"]',
+    b'Quoted prose mentions "kineticloop_evidence" and "compact_reencoding".',
+    b'{"ordinary": "kineticloop_evidence"}',
+    b'"kineticloop_evidence"',
+    b'envelope.get("payload"); envelope["raw_sha256"]; envelope["stored_sha256"]',
+])
+@pytest.mark.parametrize('codec', [None, ce.FORMAT, ce.XZ_FORMAT])
+def test_ordinary_reserved_field_references_remain_lossless(repo, raw, codec):
+    root, base = repo
+    assert ce.envelope(raw) is None
+    assert ce.reencoding_record(raw) is None
+    if codec is None:
+        (root / REF).parent.mkdir(parents=True)
+        (root / REF).write_bytes(raw)
+    else:
+        ce.capture(root, REF, raw, base, 'pytest', 0, codec=codec)
+    head = commit(root)
+    assert ce.read(root, REF, head) == raw
+
+
+def test_exact_original_reader_is_plain_and_history_compatible(repo):
+    raw = (ROOT / 'docs/exec-plans/evidence/HG-056/original-reader.fixture').read_bytes()
+    assert len(raw) == 8063
+    assert ce.digest(raw) == 'a602ee684cdd7b4d8169388d2a2fe821fc6bc5beadf0d69a593c2ed260ffe382'
+    root, base, _, source = captured(repo)
+    path = root / 'docs/exec-plans/evidence/HG-047/reader.arbitrary'
+    path.write_bytes(raw)
+    source = commit(root)
+    ce.reencode(root, base, source, 'HG-047', [REF], RECODE, ce.XZ_FORMAT)
+    head = commit(root)
+    assert ce.envelope(raw) is None and ce.reencoding_record(raw) is None
+    assert ce.read(root, str(path.relative_to(root)), head) == raw
+    errors, maps = ce.reencoding_audit(root, base, head, 'HG-047')
+    assert errors == [] and RECODE in maps
+    assert ce.audit(root, base, head, 'HG-047')['errors'] == []
+    inherited_errors, inherited_maps = ce.reencoding_audit(root, head, head, 'HG-048')
+    assert inherited_errors == [] and inherited_maps == {RECODE}
+
+
+@pytest.mark.parametrize('raw', [
+    b'record = {"kineticloop_evidence": "gzip-v1"}',
+    b"record = {'kineticloop_evidence': 'gzip-v1'}",
+    b'kineticloop_evidence = "gzip-v1"',
+    b'# {"kineticloop_evidence": "gzip-v1"}',
+    b'prefix {"kineticloop_evidence":',
+    b'{"kineticloop_evidence"',
+    b'"{\\"compact_reencoding\\": \\"v1\\"}"',
+    b'record = "{\\"kineticloop_evidence\\": \\"gzip-v1\\"}"',
+    b"{'payload': 'missing', 'raw_sha256': 'x', 'stored_sha256': 'y'}",
+    b"{'protected_base': 'x', 'source_revision': 'y', 'entries': []}",
+    b"{'authorization': 'x', 'preserved_records': [], 'entries': []}",
+    b'envelope.get("kineticloop_evidence")\n{"compact_reencoding":',
+])
+@pytest.mark.parametrize('encoding', ['utf-8', 'utf-16', 'utf-32'])
+def test_source_looking_reserved_metadata_fails_closed(repo, raw, encoding):
+    raw = raw.decode().encode(encoding)
+    with pytest.raises(ValueError):
+        ce.envelope(raw)
+    with pytest.raises(ValueError):
+        ce.reencoding_record(raw)
+
+
+@pytest.mark.parametrize('identity', ['HG-047', 'KL-999'])
+@pytest.mark.parametrize('suffix', ['py', 'json', 'txt', 'log', 'gz', 'xz', 'arbitrary'])
+def test_reserved_classification_is_owner_and_suffix_independent(repo, identity, suffix):
+    root, _ = repo
+    path = f'docs/exec-plans/evidence/{identity}/reader.{suffix}'
+    target = root / path
+    target.parent.mkdir(parents=True)
+    raw = b'envelope.get("kineticloop_evidence")'
+    target.write_bytes(raw)
+    revision = commit(root)
+    assert ce.read(root, path, revision) == raw
+    assert v.evidence_exists(root, path, revision)
+    assert v.m3_evidence_bytes(root, {'path': path, 'revision': revision,
+                                   'sha256': ce.digest(raw)}, revision) == raw
+    target.write_bytes(b"record = {'kineticloop_evidence': 'gzip-v1'}")
+    revision = commit(root)
+    assert not v.evidence_exists(root, path, revision)
+    with pytest.raises(ValueError):
+        ce.read(root, path, revision)

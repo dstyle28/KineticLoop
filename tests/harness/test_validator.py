@@ -1,6 +1,7 @@
 """Regression fixtures for Harness admission, evidence and real Git revision checks."""
 import contextlib
 import copy
+import fnmatch
 import importlib.util
 import io
 import json
@@ -2103,6 +2104,30 @@ class ValidatorTests(unittest.TestCase):
         self.commit('forbidden actual migration')
         self.check(1, 'governance-write-scope:HG-054:' + path,
                    '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
+    def test_hg056_requires_general_and_security_reviews(self):
+        self.put('docs/exec-plans/evidence/HG-056/scope.md', 'fixture scope')
+        tested = self.commit('HG056 governance implementation')
+        self.persist_governance_change(
+            'HG-056', tested, [], ['GENERAL', 'SECURITY_DATA_BOUNDARY'])
+        self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+        for review_type in ('GENERAL', 'SECURITY_DATA_BOUNDARY'):
+            path = self.root / f'docs/exec-plans/reviews/HG-056/{review_type}.json'
+            original = path.read_bytes()
+            path.unlink()
+            self.commit('missing ' + review_type)
+            self.check(1, ('ci-general-review-missing:HG-056' if review_type == 'GENERAL'
+                           else 'governance-required-reviews-not-pass:HG-056'),
+                       '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+            path.write_bytes(original)
+            self.commit('restore ' + review_type)
+
+    def test_hg056_literal_scope_excludes_history_and_installer(self):
+        patterns = v.governance_allowed_patterns('HG-056')
+        self.assertEqual(len(patterns), 14)
+        for path in ('docs/exec-plans/evidence/KL-036/a.py',
+                     'docs/harness/LOCAL_DB_CI.md', 'tools/harness/local_gate.py'):
+            self.assertFalse(any(fnmatch.fnmatch(path, pattern) for pattern in patterns))
 
     def test_ci_governance_requires_pass_change_status(self):
         self.governance_change(change_status='BLOCKED')

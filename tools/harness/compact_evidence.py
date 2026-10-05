@@ -100,10 +100,17 @@ def reserved_ascii(data: bytes) -> bool:
     data = re.sub(rb'\\u([0-9a-fA-F]{4})',
                   lambda m: bytes([int(m[1], 16)]) if int(m[1], 16) < 128
                   else m[0], data)
-    return (b'"kineticloop_evidence"' in data or b'"compact_reencoding"' in data or
-            all(k in data for k in (b'"payload"', b'"stored_sha256"', b'"raw_sha256"')) or
-            all(k in data for k in (b'"authorization"', b'"preserved_records"', b'"entries"')) or
-            all(k in data for k in (b'"protected_base"', b'"source_revision"', b'"entries"')))
+    # A field reference/string value is ordinary content. Recognize key/value
+    # syntax even in broken JSON, source dictionaries, comments and string
+    # wrappers; classification never parses or executes source as authority.
+    data = data.replace(b'\\"', b'"').replace(b"\\'", b"'")
+    keys = set(re.findall(rb"[\"']([a-z_][a-z_0-9]*)[\"']\s*:", data))
+    keys.update(re.findall(rb"\b([a-z_][a-z_0-9]*)\s*=", data))
+    keys.update(re.findall(rb"[{,]\s*[\"']([a-z_][a-z_0-9]*)[\"']", data))
+    return (b'kineticloop_evidence' in keys or b'compact_reencoding' in keys or
+            {b'payload', b'stored_sha256', b'raw_sha256'} <= keys or
+            {b'authorization', b'preserved_records', b'entries'} <= keys or
+            {b'protected_base', b'source_revision', b'entries'} <= keys)
 
 
 def envelope(data: bytes) -> dict[str, Any] | None:
@@ -150,7 +157,7 @@ def envelope(data: bytes) -> dict[str, Any] | None:
         if original_bytes > PLAIN_LIMIT:
             raise ValueError('evidence-envelope-size')
         return value
-    if reserved:
+    if reserved or reserved_ascii(data):
         raise ValueError('evidence-envelope-shape')
     return None
 
