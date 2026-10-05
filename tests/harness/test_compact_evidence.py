@@ -2047,6 +2047,7 @@ def test_exact_original_reader_is_plain_and_history_compatible(repo):
     b'# {"kineticloop_evidence": "gzip-v1"}',
     b'prefix {"kineticloop_evidence":',
     b'{"kineticloop_evidence"',
+    b'{"kineticloop_evidence" "damaged": "gzip-v1"}',
     b'"{\\"compact_reencoding\\": \\"v1\\"}"',
     b'record = "{\\"kineticloop_evidence\\": \\"gzip-v1\\"}"',
     b"{'payload': 'missing', 'raw_sha256': 'x', 'stored_sha256': 'y'}",

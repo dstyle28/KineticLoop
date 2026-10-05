@@ -1,0 +1,17 @@
+{
+  "tested_commit": "9bb2474538b69857298f909010e5abf3f9fdbe10",
+  "status": "SUPERSEDED_NOT_FINAL_ACCEPTANCE",
+  "runner_exit": 143,
+  "completed_checks": [
+    {
+      "check_id": "installed_decoder_isolation",
+      "exit_code": 0,
+      "result": "PASS",
+      "seconds": 9.1
+    }
+  ],
+  "remaining_checks": "NOT_RUN or interrupted; no unobserved exit/count claimed",
+  "actual_finding": "Adjacent-string normalization masked a complete reserved key in malformed JSON. Preserve both original and joined classification views.",
+  "reproduction": "malformed-reserved-key PLAIN",
+  "limitations": "No private negative fixture logs copied; no App/fullDB/admission."
+}

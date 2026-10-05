@@ -104,11 +104,14 @@ def reserved_ascii(data: bytes) -> bool:
     # syntax even in broken JSON, source dictionaries, comments and string
     # wrappers; classification never parses or executes source as authority.
     data = data.replace(b'\\"', b'"').replace(b"\\'", b"'")
-    # Adjacent source string literals form one key, regardless of quote style.
-    data = re.sub(rb"[\"']\s*[\"']", b"", data)
-    keys = set(re.findall(rb"[\"']([a-z_][a-z_0-9]*)[\"']\s*\)*\s*:", data))
-    keys.update(re.findall(rb"\b([a-z_][a-z_0-9]*)\s*=", data))
-    keys.update(re.findall(rb"[{,]\s*[\"']([a-z_][a-z_0-9]*)[\"']", data))
+    # Keep the unjoined view too: malformed JSON must not hide a complete
+    # reserved key by appending an adjacent token. Both views only classify.
+    joined = re.sub(rb"[\"']\s*[\"']", b"", data)
+    keys = set()
+    for view in (data, joined):
+        keys.update(re.findall(rb"[\"']([a-z_][a-z_0-9]*)[\"']\s*\)*\s*:", view))
+        keys.update(re.findall(rb"\b([a-z_][a-z_0-9]*)\s*=", view))
+        keys.update(re.findall(rb"[{,]\s*[\"']([a-z_][a-z_0-9]*)[\"']", view))
     return (b'kineticloop_evidence' in keys or b'compact_reencoding' in keys or
             {b'payload', b'stored_sha256', b'raw_sha256'} <= keys or
             {b'authorization', b'preserved_records', b'entries'} <= keys or
