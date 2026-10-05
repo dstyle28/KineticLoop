@@ -1,0 +1,71 @@
+change_identity: harness-governance-v0.1/HG-055
+display_change_id: HG-055
+base_commit: af09be228fbc89d074b6e863c83e1fdda343d55b
+tested_commit: 8b6a99e1fc3357f64aac0832ab6ac2df1b850347
+change_status: PASS
+summary: Generic PR quality retains static and merge checks while its unit/harness steps are omitted on pull_request,
+  with full regression execution retained in the required installed App controller. Master/manual and dedicated
+  readiness/DB workflows remain unchanged. Seven author checks pass; App/fullDB/hosted gates and merge remain separate
+  root operations.
+packets_refined: []
+files_changed:
+- .github/workflows/ci.yml
+- docs/exec-plans/evidence/HG-055/CHECK_INDEX.json
+- docs/exec-plans/evidence/HG-055/PACKET.md
+- docs/exec-plans/evidence/HG-055/ROOT_PREFLIGHT.json
+- docs/exec-plans/evidence/HG-055/ci_ownership.log
+- docs/exec-plans/evidence/HG-055/diff.log
+- docs/exec-plans/evidence/HG-055/existing_gate_boundary.log
+- docs/exec-plans/evidence/HG-055/frozen_scope.log
+- docs/exec-plans/evidence/HG-055/harness_authority.log
+- docs/exec-plans/evidence/HG-055/lint.log
+- docs/exec-plans/evidence/HG-055/typecheck.log
+- docs/exec-plans/evidence/HG-055/verify_scope.py
+- docs/exec-plans/governance/HG-055.yaml
+- tests/harness/test_ci_execution_ownership.py
+checks_run:
+- check_id: ci_ownership
+  command: uv run pytest -q tests/harness/test_ci_execution_ownership.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-055/ci_ownership.log
+- check_id: existing_gate_boundary
+  command: uv run pytest -q tests/harness/test_local_db_ci.py tests/harness/test_local_gate.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-055/existing_gate_boundary.log
+- check_id: harness_authority
+  command: uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-055/harness_authority.log
+- check_id: lint
+  command: uv run kl lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-055/lint.log
+- check_id: typecheck
+  command: uv run kl typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-055/typecheck.log
+- check_id: frozen_scope
+  command: uv run python docs/exec-plans/evidence/HG-055/verify_scope.py --base af09be228fbc89d074b6e863c83e1fdda343d55b
+    --head 8b6a99e1fc3357f64aac0832ab6ac2df1b850347
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-055/frozen_scope.log
+- check_id: diff
+  command: git diff --check af09be228fbc89d074b6e863c83e1fdda343d55b 8b6a99e1fc3357f64aac0832ab6ac2df1b850347
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-055/diff.log
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- Implementation checks only. Actual final-head hosted gates, installed App unit/harness/fullDB/cleanup and normal
+  MERGED state remain NOT_RUN here and are owned by root. No product/requirement/release PASS.
+- No author full unit/harness runs added. Evidence is macOS ARM64 trusted-operator output using verified uv0.12.17
+  and existing Python3.12 environment with UV_NO_SYNC=1; shared environment/dependency pins are unchanged. It is
+  not Linux/GitHub-hosted or hardware-attested evidence.
+- Current generic validator requires GENERAL; this explicit packet also requires fresh SECURITY_DATA_BOUNDARY PASS
+  at the same reviewed implementation/result SHA, verified by root before admission.
+- ROOT_PREFLIGHT.json records actual earlier ruleset/11 installed-pin verification only. Root must reread live settings/base/head
+  for admission/publication; it is not execution or App PASS.
+- The first ci_ownership capture preserves the complete returned exec_command output/exit without rerunning its
+  actual ten-case execution; its execution timestamp was not available and remains null.
+- If HG-054 merges later, its source/base/test bindings need normal refreshed checks/reviews. Existing C14 facts
+  are preserved, never rebound. No workflow/controller/codec/task/requirement history is rewritten.
