@@ -5,7 +5,7 @@ import json
 import subprocess
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[4]
-BASE = 'af09be228fbc89d074b6e863c83e1fdda343d55b'
+BASE = 'a1d040b6234d8161527d46d0773a88e8625129df'
 SPEC = importlib.util.spec_from_file_location('validator', ROOT / 'tools/harness/validate_harness.py')
 assert SPEC and SPEC.loader
 v = importlib.util.module_from_spec(SPEC)

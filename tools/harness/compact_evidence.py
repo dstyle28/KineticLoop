@@ -915,6 +915,70 @@ def reencoding_record(data: bytes) -> dict | None:
     return value if REENCODING_KEY in value else None
 
 
+def retained_reencoding_base(root: Path, path: str, record: dict, base: str,
+                             head: str) -> tuple[str, str]:
+    """Prove an unchanged own map on the task lineage before importing a new base."""
+    original_base = record['protected_base']
+    source = record['source_revision']
+    exact_commit(root, base)
+    exact_commit(root, head)
+    exact_commit(root, original_base)
+    exact_commit(root, source)
+    git(root, 'merge-base', '--is-ancestor', original_base, base)
+    git(root, 'merge-base', '--is-ancestor', base, head)
+    if (git(root, 'merge-base', source, base).decode().strip() == source
+            or git(root, 'ls-tree', original_base, '--', path).strip()):
+        raise ValueError('reencoding-retained-source-already-protected')
+    # Walk the task's first-parent lineage, never a late side branch. Locate the
+    # first import boundary by comparing each first parent to the actual base.
+    predecessor = None
+    for revision in git(root, 'rev-list', '--first-parent', head).decode().splitlines():
+        if git(root, 'merge-base', base, revision).decode().strip() != base:
+            break
+        parents = git(root, 'rev-list', '--parents', '-n', '1', revision).decode().split()[1:]
+        if not parents:
+            break
+        if git(root, 'merge-base', base, parents[0]).decode().strip() != base:
+            predecessor = parents[0]
+            break
+    if predecessor is None:
+        raise ValueError('reencoding-retained-import-boundary')
+    data = blob(root, path, head, PLAIN_LIMIT)
+    if reencoding_record(data) != record or blob(root, path, predecessor, PLAIN_LIMIT) != data:
+        raise ValueError('reencoding-retained-map-not-before-import')
+    admission = None
+    for revision in git(root, 'rev-list', '--first-parent', '--reverse',
+                        original_base + '..' + predecessor).decode().splitlines():
+        if git(root, 'ls-tree', revision, '--', path).strip():
+            admission = revision
+            if blob(root, path, admission, PLAIN_LIMIT) != data:
+                raise ValueError('reencoding-retained-admission-bytes')
+            break
+    if (admission is None
+            or git(root, 'merge-base', '--all', admission, base).decode().splitlines() != [original_base]):
+        raise ValueError('reencoding-retained-admission-base')
+    git(root, 'merge-base', '--is-ancestor', source, admission)
+    for revision in git(root, 'rev-list', base + '..' + head).decode().splitlines():
+        if (git(root, 'merge-base', base, revision).decode().strip() == base
+                and git(root, 'merge-base', source, revision).decode().strip() == source
+                and git(root, 'merge-base', admission, revision).decode().strip() != admission):
+            raise ValueError('reencoding-retained-source-import-before-admission')
+    protected_paths = [path]
+    for entry in record['entries']:
+        for side in ('original', 'replacement'):
+            for item in ('envelope', 'payload'):
+                protected_paths.append(entry[side][item]['path'])
+    if git(root, '--literal-pathspecs', 'log', '--full-history', '--format=%H', original_base + '..' + base,
+           '--', *protected_paths).strip():
+        raise ValueError('reencoding-retained-protected-path-history')
+    # This is a strictly older task prefix. Its original admission, every edge,
+    # source/snapshot proofs and transient mutations must pass the existing audit.
+    issues, _ = reencoding_audit(root, original_base, predecessor, record['identity'])
+    if issues:
+        raise ValueError('reencoding-retained-history:' + ';'.join(issues))
+    return original_base, admission
+
+
 def validate_reencoding(root: Path, path: str, record: dict, base: str,
                         head: str | None, identity: str) -> set[str]:
     if (set(record) != {REENCODING_KEY, 'identity', 'protected_base', 'source_revision', 'entries'}
@@ -927,7 +991,10 @@ def validate_reencoding(root: Path, path: str, record: dict, base: str,
     exact_commit(root, source)
     exact_commit(root, record['protected_base'])
     git(root, 'merge-base', '--is-ancestor', record['protected_base'], source)
-    git(root, 'merge-base', '--is-ancestor', base, source)
+    if git(root, 'merge-base', base, source).decode().strip() != base:
+        if head is None:
+            raise ValueError('reencoding-retained-working-record')
+        retained_reencoding_base(root, path, record, base, head)
     git(root, 'merge-base', '--is-ancestor', source, head or 'HEAD')
     paths: set[str] = set()
     for entry in record['entries']:
@@ -1017,7 +1084,16 @@ def reencode(root: Path, base: str, source: str, identity: str, paths: list[str]
                 data = blob(root, candidate_path, None)
                 prior = reencoding_record(data)
                 if prior is not None:
-                    validate_reencoding(root, candidate_path, prior, base, None, identity)
+                    if git(root, 'merge-base', base, prior['source_revision']).decode().strip() != base:
+                        # Retained maps must already be committed byte-exact; a
+                        # working-only backdated record cannot borrow admission.
+                        if blob(root, candidate_path, 'HEAD', PLAIN_LIMIT) != data:
+                            raise ValueError('reencoding-retained-working-record')
+                        validate_reencoding(root, candidate_path, prior, base,
+                                            git(root, 'rev-parse', 'HEAD').decode().strip(), identity)
+                        validate_reencoding(root, candidate_path, prior, prior['protected_base'], None, identity)
+                    else:
+                        validate_reencoding(root, candidate_path, prior, base, None, identity)
                     if set(paths) & {e[side]['envelope']['path'] for e in prior['entries']
                                      for side in ('original', 'replacement')}:
                         raise ValueError('reencoding-already-mapped')
@@ -1168,6 +1244,8 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
     try:
         git(root, 'merge-base', '--is-ancestor', base, head)
         inherited = {}
+        retained = {}
+        retained_admissions = {}
         admitted = {}
         # Already admitted mappings at the protected base are immutable history.
         # Reverify originals even with no changed blobs; do not authorize any new
@@ -1189,6 +1267,21 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
                 inherited[path] = record['protected_base']
                 admitted[path] = (data, record, admitted_owner)
                 records.add(path)
+        for path in git(root, 'ls-tree', '-r', '--name-only', head, '--', *prefixes).decode().splitlines():
+            if Path(path).name != REENCODING_NAME or path in inherited:
+                continue
+            data = blob(root, path, head, PLAIN_LIMIT)
+            record = reencoding_record(data)
+            if (record is not None
+                    and git(root, 'merge-base', base, record['source_revision']).decode().strip() != base):
+                retained[path], retained_admissions[path] = retained_reencoding_base(root, path, record, base, head)
+                validate_reencoding(root, path, record, retained[path], head, identity)
+                for entry in record['entries']:
+                    for side in ('original', 'replacement'):
+                        for item in ('envelope', 'payload'):
+                            if git(root, 'ls-tree', base, '--', entry[side][item]['path']).strip():
+                                raise ValueError('reencoding-protected-base')
+                admitted[path] = (data, record, identity)
         commits = git(root, 'rev-list', '--reverse', base + '..' + head).decode().splitlines()
         for revision in commits:
             parents = git(root, 'rev-list', '--parents', '-n', '1', revision).decode().split()[1:]
@@ -1200,6 +1293,15 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
             for bound_revision in [revision, *parents]:
                 if admitted and git(root, 'merge-base', base, bound_revision).decode().strip() == base:
                     for path, (data, record, admitted_owner) in admitted.items():
+                        if (path in retained_admissions
+                                and git(root, 'merge-base', retained_admissions[path],
+                                        bound_revision).decode().strip() != retained_admissions[path]):
+                            if git(root, 'merge-base', record['source_revision'],
+                                   bound_revision).decode().strip() == record['source_revision']:
+                                raise ValueError('reencoding-retained-source-import-before-admission')
+                            # Only a protected parent without this task's source
+                            # can precede its admission across a base import.
+                            continue
                         if blob(root, path, bound_revision, PLAIN_LIMIT) != data:
                             raise ValueError('reencoding-merged-record-mutated-or-deleted')
                         validate_reencoding(root, path, record, record['protected_base'],
@@ -1240,7 +1342,7 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
                     raise ValueError('reencoding-foreign-owner:' + path)
                 else:
                     admitted_owner = admitted[path][2] if path in inherited else identity
-                    validate_reencoding(root, path, record, inherited.get(path, base),
+                    validate_reencoding(root, path, record, inherited.get(path, retained.get(path, base)),
                                         revision, admitted_owner)
             for path, error in deferred_metadata_errors:
                 if path not in proven_payloads and not bound_payload(path, revision):
@@ -1254,7 +1356,7 @@ def reencoding_audit(root: Path, base: str, head: str, identity: str) -> tuple[l
                 if record is not None:
                     if len(data) > PLAIN_LIMIT:
                         raise ValueError('reencoding-record-limit')
-                    validate_reencoding(root, path, record, inherited.get(path, base), revision, identity)
+                    validate_reencoding(root, path, record, inherited.get(path, retained.get(path, base)), revision, identity)
                     records.add(path)
                     for entry in record['entries']:
                         ref = entry['original']['envelope']['path']

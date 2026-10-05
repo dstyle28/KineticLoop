@@ -1816,3 +1816,180 @@ def test_generic_review_availability_does_not_excuse_invalid_current_entry(repo,
     assert not v.review_reference_available(root, refs[0], source)
     assert not v.review_reference_available(root, '../outside', source)
     assert ce.read(root, record['entries'][0]['original']['envelope']['path'], source)
+
+
+def advanced_base_conversion(repo):
+    root, old_base, source, record, admission, _ = converted(repo)
+    git(root, 'checkout', '-qb', 'protected-advance', old_base)
+    (root / 'prerequisite').write_text('merged prerequisite')
+    base = commit(root)
+    git(root, 'checkout', '-qb', 'task-lineage', admission)
+    git(root, 'merge', '-q', '--no-ff', '--no-edit', base)
+    return root, old_base, source, record, admission, base, git(root, 'rev-parse', 'HEAD')
+
+
+def test_retained_map_survives_normal_diverged_base_advance(repo):
+    root, _, source, record, _, base, head = advanced_base_conversion(repo)
+    data = (root / RECODE).read_bytes()
+    assert ce.validate_reencoding(root, RECODE, record, base, head, 'HG-047')
+    assert ce.audit(root, base, head, 'HG-047')['errors'] == []
+    assert (root / RECODE).read_bytes() == data
+    assert ce.read(root, REF, source) == ce.read(root, REF, head)
+
+
+def test_new_writer_cannot_claim_pre_import_source(repo):
+    root, old_base, _, source = captured(repo)
+    git(root, 'checkout', '-qb', 'protected-advance', old_base)
+    (root / 'prerequisite').write_text('merged prerequisite')
+    base = commit(root)
+    git(root, 'checkout', '-qb', 'task-lineage', source)
+    git(root, 'merge', '-q', '--no-ff', '--no-edit', base)
+    with pytest.raises(ValueError):
+        ce.reencode(root, base, source, 'HG-047', [REF], RECODE, ce.XZ_FORMAT)
+    assert not (root / RECODE).exists()
+
+
+@pytest.mark.parametrize('side_branch', ['none', 'ordinary', 'reversed-parents'])
+def test_handwritten_or_late_side_branch_map_after_base_import_rejects(repo, side_branch):
+    root, old_base, _, source = captured(repo)
+    git(root, 'checkout', '-qb', 'protected-advance', old_base)
+    (root / 'prerequisite').write_text('merged prerequisite')
+    base = commit(root)
+    git(root, 'checkout', '-qb', 'task-lineage', source)
+    git(root, 'merge', '-q', '--no-ff', '--no-edit', base)
+    imported = git(root, 'rev-parse', 'HEAD')
+    if side_branch != 'none':
+        git(root, 'checkout', '-qb', 'late-map', source)
+    record = ce.reencode(root, old_base, source, 'HG-047', [REF], RECODE, ce.XZ_FORMAT)
+    map_head = commit(root)
+    if side_branch == 'ordinary':
+        git(root, 'checkout', '-q', 'task-lineage')
+        assert git(root, 'rev-parse', 'HEAD') == imported
+        git(root, 'merge', '-q', '--no-ff', '--no-edit', map_head)
+    elif side_branch == 'reversed-parents':
+        git(root, 'merge', '-q', '--no-ff', '--no-edit', imported)
+    head = git(root, 'rev-parse', 'HEAD')
+    with pytest.raises(ValueError):
+        ce.validate_reencoding(root, RECODE, record, base, head, 'HG-047')
+    assert ce.audit(root, base, head, 'HG-047')['errors']
+
+
+def test_intermediate_base_import_cannot_grandfather_older_base_claim(repo):
+    root, old_base, _, source = captured(repo)
+    git(root, 'checkout', '-qb', 'protected-advance', old_base)
+    (root / 'prerequisite').write_text('intermediate')
+    intermediate = commit(root)
+    git(root, 'checkout', '-qb', 'task-lineage', source)
+    git(root, 'merge', '-q', '--no-ff', '--no-edit', intermediate)
+    record = ce.reencode(root, old_base, source, 'HG-047', [REF], RECODE, ce.XZ_FORMAT)
+    commit(root)
+    git(root, 'checkout', '-q', 'protected-advance')
+    (root / 'prerequisite').write_text('newest')
+    base = commit(root)
+    git(root, 'checkout', '-q', 'task-lineage')
+    git(root, 'merge', '-q', '--no-ff', '--no-edit', base)
+    head = git(root, 'rev-parse', 'HEAD')
+    with pytest.raises(ValueError, match='retained-admission-base'):
+        ce.validate_reencoding(root, RECODE, record, base, head, 'HG-047')
+    assert ce.audit(root, base, head, 'HG-047')['errors']
+
+
+@pytest.mark.parametrize('stage', ['before-import', 'after-import'])
+@pytest.mark.parametrize('target', ['map', 'envelope', 'payload'])
+def test_retained_map_transient_mutation_never_regains_admission(repo, stage, target):
+    root, _, _, record, admission, base, _ = advanced_base_conversion(repo)
+    if stage == 'before-import':
+        git(root, 'reset', '--hard', admission)  # Synthetic fixture only.
+    path = {'map': RECODE, 'envelope': REF,
+            'payload': record['entries'][0]['replacement']['payload']['path']}[target]
+    data = (root / path).read_bytes()
+    (root / path).unlink()
+    commit(root)
+    (root / path).write_bytes(data)
+    commit(root)
+    if stage == 'before-import':
+        git(root, 'merge', '-q', '--no-ff', '--no-edit', base)
+    head = git(root, 'rev-parse', 'HEAD')
+    assert ce.audit(root, base, head, 'HG-047')['errors']
+
+
+def test_retained_map_rejects_protected_path_use_then_deletion(repo):
+    root, old_base, _, record, admission, _, _ = advanced_base_conversion(repo)
+    git(root, 'checkout', '-qb', 'protected-reuse', old_base)
+    path = record['entries'][0]['replacement']['payload']['path']
+    (root / path).parent.mkdir(parents=True, exist_ok=True)
+    (root / path).write_bytes(b'protected artifact')
+    commit(root)
+    (root / path).unlink()
+    base = commit(root)
+    git(root, 'checkout', '-qb', 'reuse-task', admission)
+    git(root, 'merge', '-q', '--no-ff', '--no-edit', base)
+    head = git(root, 'rev-parse', 'HEAD')
+    with pytest.raises(ValueError, match='retained-protected-path-history'):
+        ce.validate_reencoding(root, RECODE, record, base, head, 'HG-047')
+    assert ce.audit(root, base, head, 'HG-047')['errors']
+
+
+@pytest.mark.parametrize('target', ['original', 'boundary-replacement'])
+def test_retained_map_missing_bound_objects_fail_closed(repo, monkeypatch, target):
+    root, _, source, record, admission, base, _ = advanced_base_conversion(repo)
+    if target == 'original':
+        original = ce.blob
+        def missing(root_arg, path, revision, limit=None):
+            if revision == source and path == REF:
+                raise ValueError('unavailable original')
+            return original(root_arg, path, revision, limit)
+        monkeypatch.setattr(ce, 'blob', missing)
+    else:
+        git(root, 'reset', '--hard', admission)  # Synthetic fixture only.
+        payload = record['entries'][0]['replacement']['payload']['path']
+        data = (root / payload).read_bytes()
+        (root / payload).unlink()
+        commit(root)
+        git(root, 'merge', '-q', '--no-ff', '--no-edit', base)
+        (root / payload).write_bytes(data)
+        commit(root)
+    head = git(root, 'rev-parse', 'HEAD')
+    assert ce.audit(root, base, head, 'HG-047')['errors']
+
+
+def test_retained_map_does_not_authorize_foreign_owner(repo):
+    root, _, _, _, _, base, head = advanced_base_conversion(repo)
+    assert ce.audit(root, base, head, 'HG-048')['errors']
+
+
+def test_retained_map_supports_later_base_advance_and_new_own_conversion(repo):
+    root, _, source, _, _, base, head = advanced_base_conversion(repo)
+    git(root, 'checkout', '-q', 'protected-advance')
+    (root / 'prerequisite').write_text('next merged prerequisite')
+    latest = commit(root)
+    git(root, 'checkout', '-q', 'task-lineage')
+    git(root, 'merge', '-q', '--no-ff', '--no-edit', latest)
+    head = git(root, 'rev-parse', 'HEAD')
+    assert ce.audit(root, latest, head, 'HG-047')['errors'] == []
+    assert ce.read(root, REF, source) == ce.read(root, REF, head)
+    second = REF.replace('run.json', 'next.json')
+    ce.capture(root, second, b'new failed check\n', head, 'second check', 1)
+    new_source = commit(root)
+    new_map = RECODE.replace('/conversion/', '/next-conversion/')
+    assert new_map != RECODE
+    ce.reencode(root, latest, new_source, 'HG-047', [second], new_map, ce.XZ_FORMAT)
+    final = commit(root)
+    assert ce.audit(root, latest, final, 'HG-047')['errors'] == []
+
+
+def test_retained_map_recreation_on_base_imported_side_branch_rejects(repo):
+    root, old_base, source, record, admission, base, task_head = advanced_base_conversion(repo)
+    git(root, 'checkout', '-qb', 'late-identical-map', source)
+    git(root, 'merge', '-q', '--no-ff', '--no-edit', base)
+    recreated = ce.reencode(root, old_base, source, 'HG-047', [REF], RECODE, ce.XZ_FORMAT)
+    assert recreated == record
+    late = commit(root)
+    git(root, 'checkout', '-q', 'task-lineage')
+    assert git(root, 'rev-parse', 'HEAD') == task_head
+    git(root, 'merge', '-q', '--no-ff', '--no-edit', late)
+    head = git(root, 'rev-parse', 'HEAD')
+    assert git(root, 'merge-base', '--is-ancestor', admission, head) == ''
+    with pytest.raises(ValueError, match='retained-source-import-before-admission'):
+        ce.validate_reencoding(root, RECODE, record, base, head, 'HG-047')
+    assert ce.audit(root, base, head, 'HG-047')['errors']

@@ -289,3 +289,44 @@ requires actual protected-base rejection. Five hostile availability probes and t
 two corrected source/base cases passed; independent GENERAL8/PROTOCOL7 focused
 checks passed without any formal PASS. New immutable required checks and fresh four
 result-bound reviews remain mandatory. No frozen or production semantics changed.
+
+
+## Forward prerequisite adoption after HG055
+
+Root prioritized and normally merged HG055 PR100 at
+`a1d040b6234d8161527d46d0773a88e8625129df`. HG054 resumed the same branch/worktree
+and adopted it by normal merge `7e7b99c6504f98a17e7ff990ca8d715e68b7f413`, preserving
+C14 `9a63f08abbe64ff2736e770254703d8a09f1f35d`, its eleven actual PASS checks and
+capture/handoff commit `3b244dd967533cafd76b9d481f57100f48960b9d`. HG055 changes
+only CI regression ownership, an independent test and its own records; codec,
+validator/controller and frozen authorities are untouched. Current protected PR
+base is now the HG055 merge SHA. Required runner/scope commands use that exact
+base, excluding the merged prerequisite from HG054 authored write scope.
+
+Actual fixed-merge feedback: ten CI ownership cases passed; the existing HG054
+conversion map failed the new actual-base-to-source check because its original
+unmerged source is on the preserved task branch. Independent GENERAL/PROTOCOL
+feedback found the retained-map refinement admissible subject to validated proof
+as harness governance,
+without a frozen Protocol/DB change or formal review PASS. The map itself remains
+byte-identical, as do original execution fields, all original bindings and budgets.
+Require exact committed map bytes on the task first-parent predecessor of base
+import, valid original admission with unique merge-base equal to recorded base,
+source still not merged into actual base, no protected-path history in the base
+advance, and full original admission/edge audit. Fresh conversions stay strict;
+late/backdated/working-only maps and previously merged then deleted source reject.
+All retained source/replacement bindings remain immutable through import and later
+commits; a protected import parent predating this task admission has no retroactive
+map-existence obligation. The first exploratory run actually had 1 FAIL/12 PASS
+from that import-parent distinction; it is preserved as preparation, not immutable
+PASS authority. New source requires its own necessary full cycle, result and four
+fresh SHA-bound independent reviews. Old C14 is never rebound. Root owns normal
+reviewed-controller installation/admission, final App/fullDB gate and merge;
+implementation resources are reacquired, with no DB executor reservation.
+
+Independent GENERAL/PROTOCOL feedback also reproduced a late-admission bypass by
+reversing merge parents or recreating the same map on a source side branch after
+importing actual base. Direct helper and audit now require every actual-base
+descendant containing the source also to contain original admission. Current-code
+isolated reruns reject both real reproductions; these are exploratory checks, not
+formal PASS. The exact byte-identical recreation case is persisted as a regression.

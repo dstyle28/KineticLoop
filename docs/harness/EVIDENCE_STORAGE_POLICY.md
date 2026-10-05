@@ -225,8 +225,21 @@ until original files are restored or its complete mapping/representations valida
 This discipline grants no database transaction or execution authority.
 Maps already admitted at the protected base are immutable historical bindings,
 reverified against their original admitted base and source even if no artifacts
-changed. New mappings must additionally prove the actual PR base precedes their
-source. A removed map marker, including wrapped/encoded variants, cannot turn
+changed. New conversions must additionally prove the actual PR base precedes their
+source. A normal forward merge of a newer protected base may retain an already
+committed same-owner unmerged map without rewriting its admitted base or source.
+This requires exact map bytes on the task first-parent lineage before the first
+import, a valid original admission whose unique merge-base with the actual base
+is the recorded base, and a full unchanged old-base-to-pre-import audit. Source
+must remain unmerged into the actual base; no mapped path or record may have been
+used in the protected-base advance. All source/replacement proofs and per-edge
+immutability checks continue across import and later commits. A pre-admission
+protected parent never inherited this task map. Every actual-base descendant containing the source must also contain the
+original map admission; reversing merge-parent order cannot backdate a late map.
+Late side-branch or working-only maps, older-base claims after an intermediate import, previously merged/deleted
+sources, and unavailable originals fail closed. Fresh conversions retain the
+strict actual-base-to-source requirement; committed retained maps do not grant
+new conversion authority. A removed map marker, including wrapped/encoded variants, cannot turn
 storage metadata into ordinary execution output.
 Inherited-map verification is global across all admitted owners, including unrelated
 PRs and a no-change audit. It uses each immutable map's own admitted identity/base;
