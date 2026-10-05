@@ -1,0 +1,115 @@
+{
+  "tested_commit": "ea7a809d3d839bacc15ebbb106fe63d60533a718",
+  "protected_base": "af09be228fbc89d074b6e863c83e1fdda343d55b",
+  "python": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+  "python_version": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+  "PYTHONPATH": "/Users/davetian/.codex/worktrees/fbaf/KineticLoop/src:/private/tmp/hg054-dependencies",
+  "versions": {
+    "pytest": "8.4.2",
+    "pytest-xdist": "3.8.0",
+    "execnet": "2.1.2"
+  },
+  "checks": [
+    {
+      "check_id": "codec_security_and_budget",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_compact_evidence.py -q",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 627.886,
+      "log": "/private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/codec_security_and_budget.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/codec_security_and_budget.json"
+    },
+    {
+      "check_id": "bound_reader_regressions",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_review_evidence_provenance.py tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -q",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 4199.43,
+      "log": "/private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/bound_reader_regressions.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/bound_reader_regressions.json"
+    },
+    {
+      "check_id": "installed_decoder_isolation",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_local_gate.py -q",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 10.162,
+      "log": "/private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/installed_decoder_isolation.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/installed_decoder_isolation.json"
+    },
+    {
+      "check_id": "representative_roundtrip",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-054/measure_codec.py",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 37.187,
+      "log": "/private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/representative_roundtrip.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/representative_roundtrip.json"
+    },
+    {
+      "check_id": "scope",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-054/verify_scope.py",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 0.152,
+      "log": "/private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/scope.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/scope.json"
+    },
+    {
+      "check_id": "unit",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit -q --junitxml=/private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/unit.xml",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 496.463,
+      "log": "/private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/unit.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/unit.json"
+    },
+    {
+      "check_id": "harness",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness -q",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 2728.362,
+      "log": "/private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/harness.json"
+    },
+    {
+      "check_id": "lint",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 0.09,
+      "log": "/private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/lint.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/lint.json"
+    },
+    {
+      "check_id": "typecheck",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 0.217,
+      "log": "/private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/typecheck.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/typecheck.json"
+    },
+    {
+      "check_id": "authority",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 526.408,
+      "log": "/private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/authority.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/authority.json"
+    },
+    {
+      "check_id": "diff",
+      "command": "git diff --check af09be228fbc89d074b6e863c83e1fdda343d55b ea7a809d3d839bacc15ebbb106fe63d60533a718",
+      "result": "PASS",
+      "exit_code": 0,
+      "seconds": 0.024,
+      "log": "/private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/diff.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-054/checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54/diff.json"
+    }
+  ],
+  "scratch": "/private/tmp/hg054-checks-ea7a809d3d839bacc15ebbb106fe63d60533a718-0f5dfa54",
+  "scope": "HG054 developer checks; App/fullDB NOT_RUN"
+}
