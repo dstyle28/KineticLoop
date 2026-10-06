@@ -1,0 +1,197 @@
+{
+  "base": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "tested": "b3171cc449a29e2ae03331cafc92500496c6179d",
+  "reviewed": "d6f1f4d65b77fba434c467af21b1cc1b8aa6d9f2",
+  "independent_checks": "PASS",
+  "functional_paths": 6,
+  "functional_oracles": 16,
+  "review_types": 4,
+  "changed_task_ids": [
+    "KL-036",
+    "KL-038",
+    "KL-039",
+    "KL-064",
+    "KL-081"
+  ],
+  "authority_entries_verified": 28,
+  "manifest_entries_verified": 213,
+  "frozen_and_storage_files_unchanged": 10,
+  "selected_envelopes_verified": 22,
+  "author_evidence": [
+    {
+      "check": "recovery",
+      "exit": 0,
+      "stdout_sha256": "344a6abb7c676d4d66738f57c6c1a04d2f073bd415b50701327f2b550e5b8a99"
+    },
+    {
+      "check": "validator",
+      "exit": 0,
+      "stdout_sha256": "fc092b8ec7186285269c80ade16b0a478b19d878922320a140927926c040ddd0",
+      "cases": 158,
+      "identity_match": true,
+      "zero_fail_skip_error": true
+    },
+    {
+      "check": "unit",
+      "exit": 0,
+      "stdout_sha256": "2039bda82d92fec2e5d3eeb841477f0c92ee24fa157c2121e107352251f93d75",
+      "cases": 247,
+      "identity_match": true,
+      "zero_fail_skip_error": true
+    },
+    {
+      "check": "harness",
+      "exit": 0,
+      "stdout_sha256": "f0a5060fc5872a7b1cb517910595a4a792ae90c3dce4356f51a24fab8a8ad520",
+      "cases": 1767,
+      "identity_match": true,
+      "zero_fail_skip_error": true
+    },
+    {
+      "check": "lint",
+      "exit": 0,
+      "stdout_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "check": "typecheck",
+      "exit": 0,
+      "stdout_sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb"
+    },
+    {
+      "check": "authority",
+      "exit": 0,
+      "stdout_sha256": "575c27614271c1c49c6a8e1968a2a6c79b664c9c880dde43ec8113846e575f94"
+    },
+    {
+      "check": "diff",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "superseded_rounds": [
+    {
+      "revision_prefix": "0f6c6dbb9f76",
+      "checks": [
+        [
+          "recovery",
+          "PASS_AT_SUPERSEDED_REVISION",
+          0
+        ],
+        [
+          "validator",
+          "PASS_AT_SUPERSEDED_REVISION",
+          0
+        ],
+        [
+          "unit",
+          "PASS_AT_SUPERSEDED_REVISION",
+          0
+        ],
+        [
+          "harness",
+          "NOT_RUN",
+          130
+        ],
+        [
+          "lint",
+          "NOT_RUN",
+          null
+        ],
+        [
+          "typecheck",
+          "NOT_RUN",
+          null
+        ],
+        [
+          "authority",
+          "PASS_AT_SUPERSEDED_REVISION",
+          0
+        ],
+        [
+          "diff",
+          "NOT_RUN",
+          null
+        ]
+      ]
+    },
+    {
+      "revision_prefix": "e21fcd5d18b7",
+      "checks": [
+        [
+          "recovery",
+          "FAIL",
+          1
+        ]
+      ]
+    },
+    {
+      "revision_prefix": "193c14adce02",
+      "checks": [
+        [
+          "recovery",
+          "PASS_AT_SUPERSEDED_REVISION",
+          0
+        ],
+        [
+          "validator",
+          "PASS_AT_SUPERSEDED_REVISION",
+          0
+        ],
+        [
+          "unit",
+          "PASS_AT_SUPERSEDED_REVISION",
+          0
+        ],
+        [
+          "harness",
+          "NOT_RUN",
+          130
+        ],
+        [
+          "lint",
+          "PASS_AT_SUPERSEDED_REVISION",
+          0
+        ],
+        [
+          "typecheck",
+          "PASS_AT_SUPERSEDED_REVISION",
+          0
+        ],
+        [
+          "authority",
+          "PASS_AT_SUPERSEDED_REVISION",
+          0
+        ],
+        [
+          "diff",
+          "FAIL",
+          2
+        ]
+      ]
+    }
+  ],
+  "interrupted_harness": "NOT_RUN; unknown exit; independently superseded by complete same-T run",
+  "original_commit_pins": {
+    "KL036_local": "1fee7a4ef9ecb484da24522962a6df4d4c2bd9b9",
+    "HG056_final": "8bfb977f67f9e1fa8af8fb43fe98ad5bebd89aea",
+    "HG056_tested": "1cb64a1baef54fc7801e4084a18db962c3528a70",
+    "HG056_result": "0b089d7d3b0212a4e5458dc7891cbb4e831cd6f6"
+  },
+  "original_local_refs_unchanged": true,
+  "original_statuses": "BLOCKED; CHANGES_REQUIRED",
+  "original_ancestry_absent": true,
+  "pinned_historical_source_identity_verified": true,
+  "unchanged_validator_functions_except": [
+    "packet_errors",
+    "governance_allowed_patterns",
+    "validate"
+  ],
+  "literal_hg057_scope_verified": true,
+  "literal_hg058_scope_and_packet_hash_verified": true,
+  "additional_result_diff_diagnostic": {
+    "command": "git diff --check 3ec7f7a38d974256a928c3687f63e4d90019e42b d6f1f4d65b77fba434c467af21b1cc1b8aa6d9f2",
+    "exit": 2,
+    "output": "docs/exec-plans/evidence/HG-057/preflight_interrupted.log:17: trailing whitespace.\n+                  \n",
+    "assessment": "non-blocking preserved raw traceback whitespace; required B..T oracle passes; no B..R PASS claim"
+  }
+}

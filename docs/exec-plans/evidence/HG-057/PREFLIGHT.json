@@ -1,0 +1,47 @@
+{
+  "base_commit": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "live_master": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "authorization": "approved packet /private/tmp/hg057-clean-successor-execution-packet.md",
+  "resources": [
+    "harness_core",
+    "harness_governance",
+    "harness_validator"
+  ],
+  "DB_App_reserved": false,
+  "preparation_checks": [
+    {
+      "command": "python -m pytest tests/harness/test_validator.py -q -k CleanRecoveryTests",
+      "outcome": "8 passed; 149 deselected; focused preparation only"
+    },
+    {
+      "command": "python -m pytest tests/harness/test_validator.py -q -k CleanRecoveryTests or hg058_security_review",
+      "outcome": "9 passed; 148 deselected; focused preparation only"
+    },
+    {
+      "command": "python -m kineticloop.cli typecheck",
+      "outcome": "PASS, 172 files"
+    },
+    {
+      "command": "python -m kineticloop.cli check-harness",
+      "exit": 254,
+      "outcome": "INTERRUPTED outdated dirty-source preflight; NOT_RUN, no authority PASS; raw traceback remains tool transcript"
+    }
+  ],
+  "originals": {
+    "KL-036": {
+      "sha": "1fee7a4ef9ecb484da24522962a6df4d4c2bd9b9",
+      "tree": "694647b3ac406a90d056ec435f4706d2ddcdca9f",
+      "refs": [
+        "refs/heads/codex/kl036-worker-reaper"
+      ]
+    },
+    "HG-056": {
+      "sha": "8bfb977f67f9e1fa8af8fb43fe98ad5bebd89aea",
+      "tree": "877026fcd3315fc3fcff576c1e7a11dac45b7ede",
+      "refs": [
+        "refs/heads/codex/hg056-storage-classifier",
+        "refs/remotes/origin/codex/hg056-storage-classifier"
+      ]
+    }
+  }
+}

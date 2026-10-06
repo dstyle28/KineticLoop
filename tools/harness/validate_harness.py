@@ -601,7 +601,7 @@ def packet_errors(task, text):
     if checks is None or sorted(bullets(checks)) != sorted(task['checks_required_for_this_task']):
         errors.append('packet-checks:' + name)
     if (name in M2_REFINED_TASK_IDS or (name == 'KL-047'
-            and task.get('packet_refinement') == 'ENFORCEABLE') or (name in (WAVE_REFINED_TASK_IDS | {'KL-019', 'KL-025', 'KL-074', 'KL-026', 'KL-027', 'KL-075', 'KL-076', 'KL-077', 'KL-078', 'KL-079', 'KL-080', 'KL-028', 'KL-029'})
+            and task.get('packet_refinement') == 'ENFORCEABLE') or (name in (WAVE_REFINED_TASK_IDS | {'KL-019', 'KL-025', 'KL-074', 'KL-026', 'KL-027', 'KL-075', 'KL-076', 'KL-077', 'KL-078', 'KL-079', 'KL-080', 'KL-028', 'KL-029', 'KL-081'})
                                       and task.get('packet_refinement') == 'ENFORCEABLE')):
         read_first = section(text, 'Read first') or ''
         if bullets(read_first) != task.get('context_files', []):
@@ -679,6 +679,12 @@ def packet_errors(task, text):
             expected_hotspot = str(task.get('shared_hotspot', False)).lower()
             if not hotspot or hotspot.group(1) != expected_hotspot:
                 errors.append('packet-shared-hotspot:' + name)
+    if name == 'KL-081':
+        environment = section(text, 'Environment and acceptance evidence') or ''
+        if ('`kineticloop_kl081_<SHA7>_<ROOT12>`' not in environment
+                or '`kineticloop-kl081-<SHA7>-<ROOT12>`' not in environment
+                or 'kl036' in environment):
+            errors.append('packet-recovery-namespace:KL-081')
     if name == 'KL-014':
         command_surface = section(text, 'Public command surface') or ''
         if bullets(command_surface) != task.get('commands', []):
@@ -1490,7 +1496,58 @@ def governance_record_paths(change_id):
     return [f'docs/exec-plans/governance/{change_id}.{ext}' for ext in ('yaml', 'json')]
 
 
+# Literal prospective scopes; HG057 never implements the HG058 reader purpose.
+HG057_ALLOWED_PATTERNS = ['KineticLoop_Harness_Backlog_v0.2.json', 'KineticLoop_Harness_Traceability_v0.3.json', '06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md', 'docs/exec-plans/active/KL-036.md', 'docs/exec-plans/active/KL-038.md', 'docs/exec-plans/active/KL-039.md', 'docs/exec-plans/active/KL-064.md', 'docs/exec-plans/active/KL-081.md', 'docs/exec-plans/active/HG-058.md', 'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md', 'tools/harness/validate_harness.py', 'tests/harness/test_validator.py', 'CURRENT_DOCUMENT_INDEX.json', 'HARNESS_DOCUMENT_MANIFEST.json', 'docs/exec-plans/governance/HG-057.yaml', 'docs/exec-plans/evidence/HG-057/**', 'docs/exec-plans/reviews/HG-057/**']
+HG058_ALLOWED_PATTERNS = ['tools/harness/compact_evidence.py', 'tools/harness/validate_harness.py', 'tests/harness/test_compact_evidence.py', 'tests/harness/test_review_evidence_provenance.py', 'tests/harness/test_m3_milestone_closure.py', 'tests/harness/test_validator.py', 'tests/harness/test_local_gate.py', 'docs/harness/EVIDENCE_STORAGE_POLICY.md', 'docs/harness/THREAD_REVIEW_CONTRACT.md', 'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md', 'CURRENT_DOCUMENT_INDEX.json', 'HARNESS_DOCUMENT_MANIFEST.json', 'docs/exec-plans/governance/HG-058.yaml', 'docs/exec-plans/evidence/HG-058/**', 'docs/exec-plans/reviews/HG-058/**']
+HG058_PACKET_SHA256 = '59c8f019227a50d3a7d9f86948ac6f01a9f6a8d843c942c5b20a17e22d37e941'
+HG057_REQUIRED_CHECKS = {'recovery', 'validator', 'unit', 'harness', 'lint',
+                         'typecheck', 'authority', 'diff'}
+HG057_RECOVERY_ENTRY_CONDITIONS = ['HG-057 recovery governance is normally merged into protected master; start a fresh KL-081 branch/worktree with no KL-036 or HG-056 ancestry, results, reviews or evidence imported.', 'HG-058 has an actual merged PASS governance record, fresh GENERAL and SECURITY_DATA_BOUNDARY reviews, complete independently reviewed installed controller/validator/decoder pins and exact-head admission; installed App unit/harness/fullDB gates and cleanup have actually passed. Governance task PASS alone is not runtime prerequisite PASS.', 'Independently compare only the six functional paths at original KL-036 1fee7a4ef9ecb484da24522962a6df4d4c2bd9b9 against its protected functional base before adopting code by fresh edits; record exact blob/diff pins, preserve all failed historical facts, and never cherry-pick old bookkeeping or branch ancestry.', 'All 16 checks start NOT_RUN and run freshly under KL-081; PostgreSQL/Compose namespace uses KL081 plus actual tested SHA7 and resolved-root SHA12. Evidence is policy-compliant from its first commit, with explicit descriptive pytest IDs prepared before execution.']
+HG057_REDIRECT_IDS = {'KL-038', 'KL-039', 'KL-064'}
+
+
+def clean_recovery_projection_errors(before, after):
+    """Compare only the approved recovery definitions against their actual base."""
+    errors = []
+    source = before.get('KL-036')
+    successor = after.get('KL-081')
+    if source is None or successor is None:
+        return ['clean-recovery-successor-missing']
+    if source.get('status') != 'NOT_STARTED' or 'KL-081' in before:
+        errors.append('clean-recovery-entry')
+    expected = json.loads(json.dumps(source).replace('KL-036', 'KL-081'))
+    expected_entries = expected.pop('entry_conditions')
+    observed = dict(successor)
+    entries = observed.pop('entry_conditions', [])
+    if observed != expected:
+        errors.append('clean-recovery-functional-projection:KL-081')
+    if entries != expected_entries + HG057_RECOVERY_ENTRY_CONDITIONS:
+        errors.append('clean-recovery-readiness:KL-081')
+    for task_id in sorted(HG057_REDIRECT_IDS):
+        original = before.get(task_id, {})
+        projected = dict(original)
+        projected['depends_on'] = [
+            'KL-081' if dependency == 'KL-036' else dependency
+            for dependency in original.get('depends_on', [])]
+        if projected == original or after.get(task_id) != projected:
+            errors.append('clean-recovery-dependency-projection:' + task_id)
+    changed = {task_id for task_id in set(before) | set(after)
+               if before.get(task_id) != after.get(task_id)}
+    if changed != HG057_REDIRECT_IDS | {'KL-036', 'KL-081'}:
+        errors.append('clean-recovery-task-set')
+    retired = after.get('KL-036', {})
+    if (retired.get('status') != 'SUPERSEDED'
+            or retired.get('superseded_by') != ['KL-081']
+            or retired.get('depends_on') != ['KL-081']):
+        errors.append('clean-recovery-disposition:KL-036')
+    return errors
+
+
 def governance_allowed_patterns(change_id):
+    if change_id == 'HG-057':
+        return HG057_ALLOWED_PATTERNS
+    if change_id == 'HG-058':
+        return HG058_ALLOWED_PATTERNS
     if change_id == 'HG-054':
         return ['tools/harness/compact_evidence.py', 'tools/harness/validate_harness.py',
                 'tests/harness/test_compact_evidence.py',
@@ -3815,6 +3872,20 @@ def validate(root, args):
                     task_id for task_id in set(old_tasks) | set(replay_tasks)
                     if old_tasks.get(task_id) != replay_tasks.get(task_id)
                 }
+                recovery_redirects = set()
+                if change_id == 'HG-057':
+                    recovery_errors = clean_recovery_projection_errors(old_tasks, replay_tasks)
+                    errors.extend(recovery_errors)
+                    if not recovery_errors:
+                        recovery_redirects = HG057_REDIRECT_IDS
+                    packet_path = 'docs/exec-plans/active/HG-058.md'
+                    if (blob_sha_at_revision(root, packet_path, governance_target)
+                            if governance_target else sha(root / packet_path)) != HG058_PACKET_SHA256:
+                        errors.append('clean-recovery-classifier-packet')
+                    check_ids = [check['check_id'] for check in record['checks_run']]
+                    if (set(check_ids) != HG057_REQUIRED_CHECKS
+                            or len(check_ids) != len(HG057_REQUIRED_CHECKS)):
+                        errors.append('clean-recovery-required-checks')
                 args.governance_changed_task_ids = changed_task_ids
                 args.governance_base_tasks = old_tasks
                 args.governance_reviewed_tasks = replay_tasks
@@ -3925,7 +3996,10 @@ def validate(root, args):
                                 or (old_task != task and
                                     task.get('packet_refinement') == 'ENFORCEABLE')):
                             observed.add(task_id)
-                    if (task.get('status') != 'SUPERSEDED' and (
+                    if task_id in recovery_redirects:
+                        observed.add(task_id)
+                    if (task_id not in recovery_redirects
+                            and task.get('status') != 'SUPERSEDED' and (
                             task.get('write_paths_status') != 'ENFORCEABLE' or
                             not task.get('write_paths') or
                             any('TO_BE_REFINED' in path for path in task.get('write_paths', [])))):
@@ -4020,9 +4094,9 @@ def validate(root, args):
             except ValueError as ex:
                 errors.append('governance-review-revision:' + str(ex))
             required = {'GENERAL'}
-            if change_id in ('HG-051', 'HG-054'):
+            if change_id in ('HG-051', 'HG-054', 'HG-057'):
                 required.update({'PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'})
-            if change_id == 'HG-050':
+            if change_id in ('HG-050', 'HG-058'):
                 required.add('SECURITY_DATA_BOUNDARY')
             old_tasks = getattr(args, 'governance_base_tasks', {})
             reviewed_tasks = getattr(args, 'governance_reviewed_tasks', tasks)

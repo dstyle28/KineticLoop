@@ -400,3 +400,21 @@ guard reach. The four pinned older fixture edits preserve ambiguous/denied inten
 Hevy and HealthKit remain mandatory; retired spreadsheet policy and all production,
 shadow, admission, owner, lock, history and actual-vs-target rules remain intact.
 <!-- HG045 plan end -->
+
+## Clean successor recovery — HG057
+
+KL-036 is SUPERSEDED, never PASS, by NOT_STARTED ENFORCEABLE KL-081. The
+worker/reaper successor preserves its five merged owners, six functional paths,
+16 checks, four reviews and empty requirement mapping. Only unmerged KL-038,
+KL-039 and KL-064 dependency projections replace KL-036 with KL-081. Counts are
+derived from the current backlog: one historical identity added, active count
+unchanged by replacement. M3 and product/release evidence retain their meaning.
+
+HG-058 is a NOT_STARTED prospective classifier and review-source availability
+governance successor. It may start only after HG057 normally merges. KL-081
+waits for actual HG058 merge, reviewed installation/controller pins, exact-head
+admission and installed App unit/harness/fullDB/cleanup readiness, separately
+from its unchanged five functional owners. Original KL036/PR99 and HG056/PR102
+remain immutable failed/blocked unmerged history. No code/evidence ancestry is
+imported; adoption compares only pinned functional changes before fresh edits.
+No executor is reserved by these definitions.

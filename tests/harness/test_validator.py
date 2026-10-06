@@ -2076,6 +2076,17 @@ class ValidatorTests(unittest.TestCase):
         self.check(1, 'governance-write-scope:HG-051:' + path,
                    '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
+    def test_hg058_security_review_is_mandatory(self):
+        self.put('docs/exec-plans/evidence/HG-058/scope.md', 'fixture scope')
+        tested = self.commit('HG058 governance implementation')
+        self.persist_governance_change(
+            'HG-058', tested, [], ['GENERAL', 'SECURITY_DATA_BOUNDARY'])
+        self.check(0, '', '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+        (self.root / 'docs/exec-plans/reviews/HG-058/SECURITY_DATA_BOUNDARY.json').unlink()
+        self.commit('missing HG058 security review')
+        self.check(1, 'governance-required-reviews-not-pass:HG-058',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
     def test_hg054_all_four_review_types_are_mandatory(self):
         self.put('docs/exec-plans/evidence/HG-054/scope.md', 'fixture scope')
         tested = self.commit('HG054 governance implementation')
@@ -2529,3 +2540,99 @@ class ValidatorTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class CleanRecoveryTests(unittest.TestCase):
+    def setUp(self):
+        tasks = json.loads((ROOT / v.BACKLOG).read_text())['tasks']
+        self.after = {task['id']: copy.deepcopy(task) for task in tasks}
+        self.before = copy.deepcopy(self.after)
+        successor = self.before.pop('KL-081')
+        source = json.loads(json.dumps(successor).replace('KL-081', 'KL-036'))
+        source['entry_conditions'] = source['entry_conditions'][:-4]
+        self.before['KL-036'] = source
+        for task_id in v.HG057_REDIRECT_IDS:
+            task = self.before[task_id]
+            task['depends_on'] = [
+                'KL-036' if dependency == 'KL-081' else dependency
+                for dependency in task['depends_on']]
+
+    def test_clean_recovery_preserves_complete_functional_projection(self):
+        self.assertEqual(v.clean_recovery_projection_errors(self.before, self.after), [])
+
+    def test_clean_recovery_rejects_changed_frozen_paths_oracles_reviews_and_requirements(self):
+        for field in ('write_paths', 'check_contracts', 'checks_required_for_this_task',
+                      'review_requirements', 'requirements_covered', 'invariant_ids',
+                      'transaction_boundaries', 'depends_on', 'table_ids', 'resource_keys'):
+            with self.subTest(field=field):
+                mutated = copy.deepcopy(self.after)
+                mutated['KL-081'][field] = []
+                if mutated['KL-081'][field] == self.after['KL-081'][field]:
+                    mutated['KL-081'][field] = ['invented-requirement']
+                self.assertIn('clean-recovery-functional-projection:KL-081',
+                              v.clean_recovery_projection_errors(self.before, mutated))
+
+    def test_clean_recovery_rejects_weakened_installed_readiness(self):
+        mutated = copy.deepcopy(self.after)
+        mutated['KL-081']['entry_conditions'][-3] = 'HG-058 governance PASS is sufficient'
+        self.assertIn('clean-recovery-readiness:KL-081',
+                      v.clean_recovery_projection_errors(self.before, mutated))
+
+    def test_clean_recovery_rejects_non_dependency_changes_and_partial_redirect(self):
+        for task_id in sorted(v.HG057_REDIRECT_IDS):
+            with self.subTest(task_id=task_id):
+                mutated = copy.deepcopy(self.after)
+                mutated[task_id]['depends_on'] = self.before[task_id]['depends_on']
+                self.assertIn('clean-recovery-dependency-projection:' + task_id,
+                              v.clean_recovery_projection_errors(self.before, mutated))
+                mutated[task_id]['depends_on'] = self.after[task_id]['depends_on']
+                mutated[task_id]['definition_of_done'] += '; new concern'
+                self.assertIn('clean-recovery-dependency-projection:' + task_id,
+                              v.clean_recovery_projection_errors(self.before, mutated))
+
+    def test_clean_recovery_rejects_extra_task_and_pass_disposition(self):
+        mutated = copy.deepcopy(self.after)
+        mutated['KL-036']['status'] = 'PASS'
+        mutated['KL-039']['requirements_covered'] = ['W01@PU']
+        mutated['KL-082'] = copy.deepcopy(mutated['KL-081'])
+        errors = v.clean_recovery_projection_errors(self.before, mutated)
+        self.assertIn('clean-recovery-task-set', errors)
+        self.assertIn('clean-recovery-disposition:KL-036', errors)
+
+    def test_hg057_scope_rejects_successor_implementation_and_original_artifacts(self):
+        patterns = v.governance_allowed_patterns('HG-057')
+        for path in ('tools/harness/compact_evidence.py', 'src/kineticloop/workflow/worker_reaper.py',
+                     'docs/harness/THREAD_REVIEW_CONTRACT.md', '.github/workflows/ci.yml',
+                     'docs/exec-plans/evidence/KL-036/probe.py',
+                     'docs/exec-plans/evidence/HG-056/probe.py',
+                     'docs/exec-plans/completed/KL-081_RESULT.yaml'):
+            with self.subTest(path=path):
+                self.assertFalse(v.matches(path, patterns))
+        self.assertTrue(v.matches('docs/exec-plans/active/HG-058.md', patterns))
+
+    def test_hg058_scope_is_literal_and_rejects_schema_or_installer_expansion(self):
+        patterns = v.governance_allowed_patterns('HG-058')
+        for path in ('THREAD_REVIEW.schema.json', 'tools/harness/local_gate.py',
+                     'docs/exec-plans/active/KL-081.md', 'tests/db/test_worker_reaper.py',
+                     'docs/exec-plans/evidence/HG-056/check.log'):
+            with self.subTest(path=path):
+                self.assertFalse(v.matches(path, patterns))
+        self.assertTrue(v.matches('docs/harness/THREAD_REVIEW_CONTRACT.md', patterns))
+
+    def test_kl081_packet_projects_entry_conditions_oracles_and_frozen_boundaries(self):
+        task = self.after['KL-081']
+        text = (ROOT / 'docs/exec-plans/active/KL-081.md').read_text()
+        self.assertEqual(v.packet_errors(task, text), [])
+        changed = text.replace(task['entry_conditions'][-3], 'HG058 PASS alone')
+        self.assertIn('packet-entry-condition:KL-081', v.packet_errors(task, changed))
+
+    def test_kl081_packet_rejects_old_or_malformed_owned_namespaces(self):
+        task = self.after['KL-081']
+        text = (ROOT / 'docs/exec-plans/active/KL-081.md').read_text()
+        for old, new in (('kineticloop_kl081_', 'kineticloop_kl036_'),
+                         ('kineticloop-kl081-', 'kineticloop-kl036-'),
+                         ('<ROOT12>', '<ROOT7>')):
+            with self.subTest(namespace=new):
+                changed = text.replace(old, new)
+                self.assertIn('packet-recovery-namespace:KL-081',
+                              v.packet_errors(task, changed))
