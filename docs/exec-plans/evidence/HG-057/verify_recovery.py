@@ -83,7 +83,7 @@ def main():
     original_packet = blob(BASE, 'docs/exec-plans/active/KL-036.md').decode()
     expected_packet = original_packet.replace('KL-036', 'KL-081').replace('KL036', 'KL081').replace('kl036', 'kl081')
     added_entries = ''.join('- ' + value + '\n' for value in entries[-4:])
-    expected_packet = expected_packet.replace('\n## Read first\n', '\n\n' + added_entries + '\n## Read first\n', 1)
+    expected_packet = expected_packet.replace('\n## Read first\n', '\n' + added_entries + '\n## Read first\n', 1)
     assert blob(tested, 'docs/exec-plans/active/KL-081.md').decode() == expected_packet
     changed_ids = {id for id in set(before) | set(after) if before.get(id) != after.get(id)}
     assert changed_ids == {'KL-036', 'KL-081', 'KL-038', 'KL-039', 'KL-064'}
