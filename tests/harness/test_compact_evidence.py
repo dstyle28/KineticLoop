@@ -2022,6 +2022,9 @@ def test_retained_map_recreation_on_base_imported_side_branch_rejects(repo):
     pytest.param(b'[ordinary, other] = [record["compact_reencoding"], "x"]', id='list-read-values'),
     pytest.param(b'"ordinary, other = record[\\"kineticloop_evidence\\"], \\"x\\""', id='string-wrapped-read-values'),
     pytest.param(br'ordinary = "x=\ud800"; envelope.get("kineticloop_evidence")', id='surrogate-literal-read'),
+    pytest.param(b'b"ordinary, other = record[\'kineticloop_evidence\'], \'x\'"', id='byte-string-read'),
+    pytest.param(b'prefix (ordinary,\n other) = record["kineticloop_evidence"], "x"', id='multiline-prose-read'),
+    pytest.param(b'# (ordinary,\n# other) = record["kineticloop_evidence"], "x"', id='multiline-comment-read'),
     pytest.param(b'# ordinary, other = record["kineticloop_evidence"], "x"', id='comment-unpacked-read'),
     pytest.param(b'prefix ordinary, other = record["kineticloop_evidence"], "x"', id='prose-unpacked-read'),
 ])
@@ -2084,6 +2087,9 @@ def test_exact_original_reader_is_plain_and_history_compatible(repo):
     pytest.param(b'[record["kineticloop_evidence"], ordinary] = ["gzip-v1", "x"]', id='list-target-write'),
     pytest.param(b'((record["compact_reencoding"], ordinary), other) = (("v1", "x"), "y")', id='nested-target-write'),
     pytest.param(b'record["kineticloop_evidence"], *ordinary = ["gzip-v1", "x"]', id='starred-target-write'),
+    pytest.param(b'b"record[\'kineticloop_evidence\'], ordinary = \'gzip-v1\', \'x\'"', id='byte-string-write'),
+    pytest.param(b'prefix (record["kineticloop_evidence"],\n ordinary) = "gzip-v1", "x"', id='multiline-prose-target'),
+    pytest.param(b'# (record["kineticloop_evidence"],\n# ordinary) = "gzip-v1", "x"', id='multiline-comment-target'),
     pytest.param(b'# record["kineticloop_evidence"], ordinary = "gzip-v1", "x"', id='comment-tuple-target'),
     pytest.param(b'# [record["compact_reencoding"], ordinary] = ["v1", "x"]', id='comment-list-target'),
     pytest.param(b'prefix record["kineticloop_evidence"], ordinary = "gzip-v1", "x"', id='prose-tuple-target'),
@@ -2171,6 +2177,9 @@ ADDITIONAL_SOURCE_WRAPPERS = [
     pytest.param(b'[record["kineticloop_evidence"], ordinary] = ["gzip-v1", "x"]', id='list-target-write'),
     pytest.param(b'((record["compact_reencoding"], ordinary), other) = (("v1", "x"), "y")', id='nested-target-write'),
     pytest.param(b'record["kineticloop_evidence"], *ordinary = ["gzip-v1", "x"]', id='starred-target-write'),
+    pytest.param(b'b"record[\'kineticloop_evidence\'], ordinary = \'gzip-v1\', \'x\'"', id='byte-string-write'),
+    pytest.param(b'prefix (record["kineticloop_evidence"],\n ordinary) = "gzip-v1", "x"', id='multiline-prose-target'),
+    pytest.param(b'# (record["kineticloop_evidence"],\n# ordinary) = "gzip-v1", "x"', id='multiline-comment-target'),
     pytest.param(b'# record["kineticloop_evidence"], ordinary = "gzip-v1", "x"', id='comment-tuple-target'),
     pytest.param(b'# [record["compact_reencoding"], ordinary] = ["v1", "x"]', id='comment-list-target'),
     pytest.param(b'prefix record["kineticloop_evidence"], ordinary = "gzip-v1", "x"', id='prose-tuple-target'),
@@ -2233,6 +2242,15 @@ def test_source_target_parser_resource_failure_does_not_accept_plain(monkeypatch
         raise error()
     monkeypatch.setattr(ce.ast, 'parse', unavailable)
     raw = b'record["kineticloop_evidence"], ordinary = "gzip-v1", "x"'
+    for classify in (ce.envelope, ce.reencoding_record):
+        with pytest.raises(ValueError, match='evidence-source-classification'):
+            classify(raw)
+
+
+@pytest.mark.parametrize('write', [False, True], ids=['read', 'write'])
+def test_native_source_parser_exhaustion_cannot_be_plain(write):
+    target = b'record["kineticloop_evidence"], ordinary' if write else b'record["kineticloop_evidence"]'
+    raw = b'(' * 256 + target + b')' * 256 + (b'="gzip-v1", "x"' if write else b'')
     for classify in (ce.envelope, ce.reencoding_record):
         with pytest.raises(ValueError, match='evidence-source-classification'):
             classify(raw)

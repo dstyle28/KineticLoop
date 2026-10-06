@@ -157,6 +157,43 @@
       "check": "round5 preparation bookkeeping initial append",
       "result": "FAIL",
       "cause": "Assembler used nonexistent checks key instead of existing runs key; KeyError occurred before any write. Corrected append uses runs. Actual test artifacts unchanged."
+    },
+    {
+      "check": "byte and multiline wrapper preparation",
+      "result": "PASS",
+      "passed": 27,
+      "failed": 0,
+      "deselected": 918,
+      "seconds": 7.09,
+      "limitation": "Preparation only; exact earlier byte-wrapper plain self-probe remains a failure."
+    },
+    {
+      "check": "native parser exhaustion and wrapper preparation",
+      "result": "PASS",
+      "passed": 31,
+      "failed": 0,
+      "deselected": 916,
+      "seconds": 7.66,
+      "limitation": "Preparation only; native deep read/write and simulated resource errors reject, no source executed."
+    },
+    {
+      "check": "final scoped source S1-S11 and ordinary reader preparation",
+      "result": "PASS",
+      "passed": 362,
+      "failed": 0,
+      "deselected": 585,
+      "seconds": 75.4,
+      "limitation": "Final source snapshot before immutable test commit; no broad cycle repeated before bounded source and collection checks."
+    },
+    {
+      "check": "actual collection shape and two-copy work scaling",
+      "result": "PASS",
+      "source_bytes": 3254088,
+      "one_copy_parse_calls": 55878,
+      "two_copy_parse_calls": 94047,
+      "one_copy_seconds": 6.745,
+      "two_copy_seconds": 11.368,
+      "limitation": "Both actual byte-shaped inputs classify plain. Preparation only, not executed identities. Earlier interrupted/ceiling failures and 2.43-billion work count stay preserved. Local profiling ceilings are not decoder/storage budgets."
     }
   ],
   "limitations": [

@@ -448,3 +448,12 @@ known_limitations:
   assignment metadata (HG056-S11). Both findings and exact prior result remain historical. The repaired result is
   structured and schema validated; new source still requires final affected execution and fresh reviews. No acceptance
   or source-inspection authority follows.
+- Intermediate 7f564e4f genuinely passed seven checks, 922/all 918 actual executions with 2766 phase reports, isolated
+  103 and 2148 collect-only zero execution. Capture was interrupted with exit 143 after a byte-string metadata gap
+  and 2431091300 potential fragment parses were found. Both original partial captures remain unchanged; later capture
+  recovery preserves all 19 stdout/artifacts losslessly without execution rerun. Recovery and bounded preparation
+  are not current-source/task acceptance.
+- 'Performance repair remains within original classifier scope: token-aware local target spans, necessary field
+  relevance and syntax-only literal peeks. Native parser exhaustion fails closed; no budget/codec/source-inspection
+  authority change. Final preparation passes 362 cases and actual collection bytes scale from 55878 to 94047 parse
+  calls for one versus two copies; immutable execution and fresh reviews still required.'

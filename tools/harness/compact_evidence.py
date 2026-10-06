@@ -97,15 +97,59 @@ def unique(pairs):
     return result
 
 
+def source_tree(source: bytes) -> ast.Module | None:
+    try:
+        return ast.parse(source)
+    except SyntaxError as ex:
+        if ex.msg == 'too many nested parentheses':
+            raise ValueError('evidence-source-classification') from ex
+        return None
+    except UnicodeError:
+        return None
+    except (MemoryError, RecursionError) as ex:
+        raise ValueError('evidence-source-classification') from ex
+
+
+def source_statements(data: bytes) -> list[bytes]:
+    """Keep multiline containers together without rescanning earlier statements."""
+    stack = []
+    start = 0
+    statements = []
+    for token in re.finditer(rb'''"(?:\\(?:[^\r\n]|\r?\n)|[^"\\\r\n])*"|'(?:\\(?:[^\r\n]|\r?\n)|[^'\\\r\n])*'|\#[^\r\n]*|[{}\[\]();\r\n]''', data):
+        text = token[0]
+        if text in (b'{', b'[', b'('):
+            stack.append((text, token.start()))
+        elif text in (b'}', b']', b')'):
+            opening = {b'}': b'{', b']': b'[', b')': b'('}[text]
+            while stack and stack[-1][0] != opening:
+                stack.pop()
+            if stack:
+                stack.pop()
+        elif text == b';' or text in (b'\r', b'\n'):
+            if text in (b'\r', b'\n') and data[max(0, token.start()-1):token.start()] == b'\\':
+                continue
+            if stack:
+                # Log parameters can contain unmatched delimiters. Retain a
+                # multiline target only when closing its containers supplies
+                # assignable syntax; this does not classify it as a write.
+                viable = False
+                closers = {b'{': b'}', b'[': b']', b'(': b')'}
+                for index, (_, position) in enumerate(stack):
+                    suffix = b''.join(closers[value] for value, _ in reversed(stack[index:]))
+                    if source_tree(data[position:token.start()] + suffix + b'=None') is not None:
+                        viable = True
+                        break
+                if viable and text != b';':
+                    continue
+            statements.append(data[start:token.start()])
+            start = token.end()
+            stack.clear()
+    statements.append(data[start:])
+    return statements
+
+
 def source_write_keys(data: bytes) -> set[bytes]:
     """Additional rejection only: parse target syntax, never evaluate input."""
-    def parsed(source):
-        try:
-            return ast.parse(source)
-        except (SyntaxError, UnicodeError):
-            return None
-        except (MemoryError, RecursionError) as ex:
-            raise ValueError('evidence-source-classification') from ex
     pending = [data]
     seen = set()
     keys: set[bytes] = set()
@@ -115,32 +159,54 @@ def source_write_keys(data: bytes) -> set[bytes]:
         if source in seen:
             continue
         seen.add(source)
-        tree = parsed(source)
+        tree = source_tree(source)
         trees = [] if tree is None else [tree]
         # Comment bodies can wrap the same actual assignments as source or
         # strings. Peeking at their syntax only adds denial; it never runs them.
-        for token in re.finditer(rb'''"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\#[^\r\n]*''', source):
-            if token[0].startswith(b'#') and b'=' in token[0]:
-                pending.append(token[0][1:].strip())
+        comments = [token[0][1:].strip() for token in re.finditer(
+            rb'''"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\#[^\r\n]*''', source)
+                    if token[0].startswith(b'#')]
+        comment_source = b'\n'.join(comments)
+        if b'=' in comment_source:
+            pending.append(comment_source)
+            pending.extend(comment for comment in comments if b'=' in comment)
         if tree is None:
             # Invalid/truncated RHS bytes cannot hide a valid write target.
             # Dummy RHS is syntax only; neither it nor source is executed.
-            for match in re.finditer(assignment, source):
-                prefix = parsed(source[:match.end()] + b'None')
-                if prefix is not None:
-                    trees.append(prefix)
-                # A prose prefix must not hide an otherwise valid target. Try
-                # syntax fragments at token/container boundaries, retaining
-                # Store versus Load context even for unpacked targets.
-                target = source[:match.end()]
-                if re.search(rb'''\[\s*[rRuUbBfF]{0,2}["']|\b(?:kineticloop_evidence|compact_reencoding|payload|stored_sha256|raw_sha256|authorization|preserved_records|entries|protected_base|source_revision)\b''', target):
-                    for start in re.finditer(rb'(?<![\w.])[\w\x80-\xff]+|[\[(]', target):
-                        fragment = parsed(target[start.start():] + b'None')
-                        if fragment is not None:
-                            trees.append(fragment)
+            for statement in source_statements(source):
+                target_start = 0
+                tokens = rb'''[rRuUbBfF]{0,2}(?:"(?:\\(?:[^\r\n]|\r?\n)|[^"\\\r\n])*"|'(?:\\(?:[^\r\n]|\r?\n)|[^'\\\r\n])*')|\#[^\r\n]*|(?P<assignment>''' + assignment + rb')'
+                for match in re.finditer(tokens, statement):
+                    if match.lastgroup != 'assignment':
+                        if not match[0].startswith(b'#') and b'=' in match[0]:
+                            literal_tree = source_tree(match[0])
+                            if literal_tree is not None:
+                                trees.append(literal_tree)
+                        continue
+                    target = statement[target_start:match.end()].lstrip()
+                    target_start = match.end()
+                    if not source_fields_present(target):
+                        continue
+                    prefix = source_tree(target + b'None')
+                    if prefix is not None:
+                        trees.append(prefix)
+                    # A prose prefix must not hide an otherwise valid target.
+                    # Peek within this logical statement, retaining Store versus
+                    # Load context without revisiting all preceding log lines.
+                    if re.search(rb'''\[\s*[rRuUbBfF]{0,2}["']|\b(?:kineticloop_evidence|compact_reencoding|payload|stored_sha256|raw_sha256|authorization|preserved_records|entries|protected_base|source_revision)\b''', target):
+                        boundaries = rb'''[rRuUbBfF]{0,2}(?:"(?:\\(?:[^\r\n]|\r?\n)|[^"\\\r\n])*"|'(?:\\(?:[^\r\n]|\r?\n)|[^'\\\r\n])*')|\#[^\r\n]*|(?P<target>(?<![\w.])[\w\x80-\xff]+|[\[(])'''
+                        for start in re.finditer(boundaries, target):
+                            if start.lastgroup != 'target':
+                                continue
+                            fragment = source_tree(target[start.start():] + b'None')
+                            if fragment is not None:
+                                trees.append(fragment)
         for node in (node for tree in trees for node in ast.walk(tree)):
-            if isinstance(node, ast.Constant) and isinstance(node.value, str) and '=' in node.value:
-                pending.append(node.value.encode('utf-8', errors='surrogatepass'))
+            if isinstance(node, ast.Constant) and isinstance(node.value, (str, bytes)):
+                literal = (node.value.encode('utf-8', errors='surrogatepass')
+                           if isinstance(node.value, str) else node.value)
+                if b'=' in literal and source_fields_present(literal):
+                    pending.append(literal)
             keys.update(source_target_keys(node))
     return keys
 
@@ -172,8 +238,7 @@ def source_target_keys(node: ast.AST) -> set[bytes]:
     return keys
 
 
-def reserved_ascii(data: bytes) -> bool:
-    source = data
+def classification_views(data: bytes) -> list[bytes]:
     # Classification only: neither escape nor NUL normalization accepts bytes.
     def ascii_escape(match):
         digits = next(value for value in match.groups() if value)
@@ -206,6 +271,24 @@ def reserved_ascii(data: bytes) -> bool:
     views = [data, continued, joined]
     if uncommented != continued:
         views.append(re.sub(rb"[\"']\s*[rRuUbBfF]{0,2}[\"']", b"", uncommented))
+    return views
+
+
+def source_fields_present(data: bytes) -> bool:
+    fields = {b'kineticloop_evidence', b'compact_reencoding', b'payload', b'stored_sha256',
+              b'raw_sha256', b'authorization', b'preserved_records', b'entries',
+              b'protected_base', b'source_revision'}
+    views = classification_views(data)
+    # ast.parse normalizes Unicode identifiers; this is relevance only and
+    # never normalizes accepted bytes or JSON keys.
+    views.append(unicodedata.normalize('NFKC', data.decode('utf-8', errors='ignore')).encode('utf-8'))
+    pattern = rb'\b(?:' + b'|'.join(sorted(fields)) + rb')\b'
+    return any(re.search(pattern, view) for view in views)
+
+
+def reserved_ascii(data: bytes) -> bool:
+    source = data
+    views = classification_views(data)
     keys = set()
     assignment = rb'(?:\*\*|//|<<|>>|[+\-*/%@&|^:])?=(?!=)'
     for view in views:
