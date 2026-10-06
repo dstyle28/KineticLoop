@@ -2014,6 +2014,9 @@ def test_retained_map_recreation_on_base_imported_side_branch_rejects(repo):
     pytest.param(b'envelope.get("kineticloop_" # comment\n"evidence")', id='comment-adjacent-read'),
     pytest.param(br'envelope.get("kineticloop\N{LOW LINE}evidence")', id='named-unicode-read'),
     pytest.param(b'kineticloop_evidence: str\nordinary = "value"', id='annotation-with-separate-write'),
+    pytest.param(b'envelope["kineticloop_evidence" # comment\n]', id='comment-subscript-read'),
+    pytest.param(b'(envelope["compact_reencoding"] # comment\n)', id='comment-parenthesized-read'),
+    pytest.param(b'record.get("ordinary # comment", "kineticloop_evidence")', id='comment-reader-default'),
 ])
 @pytest.mark.parametrize('codec', [None, ce.FORMAT, ce.XZ_FORMAT], ids=['plain', 'gzip', 'xz'])
 def test_ordinary_reserved_field_references_remain_lossless(repo, raw, codec):
@@ -2065,6 +2068,11 @@ def test_exact_original_reader_is_plain_and_history_compatible(repo):
     pytest.param(br'{"kineticloop\N{LOW LINE}evidence": "gzip-v1"}', id='named-unicode-key'),
     pytest.param(br'{"compact\N{LOW LINE}reencoding": "v1"}', id='named-unicode-map-key'),
     pytest.param(b'kineticloop_evidence: (\n str\n) = "gzip-v1"', id='multiline-typed-write'),
+    pytest.param(b'record["kineticloop_evidence" # comment\n] = "gzip-v1"', id='comment-subscript-write'),
+    pytest.param(b'record["compact_reencoding" # comment\n] = "v1"', id='comment-map-write'),
+    pytest.param(b'record["kineticloop_evidence" # comment\n] += "gzip-v1"', id='comment-augmented-write'),
+    pytest.param(b'record["kineticloop_evidence" # comment\n]: str = "gzip-v1"', id='comment-typed-write'),
+    pytest.param(b'(record["kineticloop_evidence"] # comment\n) = "gzip-v1"', id='comment-parenthesized-write'),
     pytest.param(b'record = {"kineticloop_evidence": "gzip-v1"}', id='double-quoted-dict'),
     pytest.param(b"record = {'kineticloop_evidence': 'gzip-v1'}", id='single-quoted-dict'),
     pytest.param(b'kineticloop_evidence = "gzip-v1"', id='identifier-assignment'),
@@ -2076,6 +2084,7 @@ def test_exact_original_reader_is_plain_and_history_compatible(repo):
     pytest.param(b'(kineticloop_evidence := "gzip-v1")', id='identifier-walrus-assignment'),
     pytest.param(br'record["kineticloop\137evidence"] = "gzip-v1"', id='octal-subscript-assignment'),
     pytest.param(b'# {"kineticloop_evidence": "gzip-v1"}', id='comment-object'),
+    pytest.param(b'# {"kineticloop_" r"evidence": "gzip-v1"}', id='comment-adjacent-object'),
     pytest.param(b'prefix {"kineticloop_evidence":', id='prefixed-partial-object'),
     pytest.param(b'{"kineticloop_evidence"', id='partial-first-key'),
     pytest.param(b'{"ordinary": "value", "kineticloop_evidence"', id='partial-later-key'),
@@ -2134,6 +2143,11 @@ ADDITIONAL_SOURCE_WRAPPERS = [
     pytest.param(b'{("compact_" # comment\n"reencoding"): "v1"}', id='comment-key'),
     pytest.param(br'{"kineticloop\N{LOW LINE}evidence": "gzip-v1"}', id='named-unicode-key'),
     pytest.param(b'kineticloop_evidence: (\n str\n) = "gzip-v1"', id='multiline-typed-write'),
+    pytest.param(b'record["kineticloop_evidence" # comment\n] = "gzip-v1"', id='comment-subscript-write'),
+    pytest.param(b'record["compact_reencoding" # comment\n] = "v1"', id='comment-map-write'),
+    pytest.param(b'record["kineticloop_evidence" # comment\n] += "gzip-v1"', id='comment-augmented-write'),
+    pytest.param(b'record["kineticloop_evidence" # comment\n]: str = "gzip-v1"', id='comment-typed-write'),
+    pytest.param(b'(record["kineticloop_evidence"] # comment\n) = "gzip-v1"', id='comment-parenthesized-write'),
 ]
 
 

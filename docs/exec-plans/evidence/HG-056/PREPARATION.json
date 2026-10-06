@@ -84,6 +84,24 @@
       "seconds": 35.14,
       "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_compact_evidence.py -q -k 'source_looking or ordinary_reserved or reserved_source_payload or reserved_source_cannot or exact_original'",
       "limitation": "Preparation only; new immutable affected execution required."
+    },
+    {
+      "check": "round3 comment-separated subscript repair preparation",
+      "result": "PASS",
+      "passed": 235,
+      "failed": 0,
+      "deselected": 585,
+      "seconds": 54.17,
+      "limitation": "Preparation only. Independent S9 findings remain preserved at R e3d172b9; final source needs new immutable affected checks."
+    },
+    {
+      "check": "comment normalization preserves quoted values and reserved comment objects",
+      "result": "PASS",
+      "passed": 6,
+      "failed": 0,
+      "deselected": 820,
+      "seconds": 0.91,
+      "limitation": "Two newly added guards across three encodings or codecs; preparation only."
     }
   ],
   "limitations": [

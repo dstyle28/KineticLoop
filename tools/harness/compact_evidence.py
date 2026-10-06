@@ -121,9 +121,17 @@ def reserved_ascii(data: bytes) -> bool:
     # Prefixes and comments do not prevent Python's implicit literal joining.
     # This additional view only identifies keys; it never accepts source bytes.
     joined = re.sub(rb"[\"'](?:\s|\#[^\r\n]*(?:\r?\n|$))*[rRuUbBfF]{0,2}[\"']", b"", continued)
+    # Comments may also separate a key from a target's closing delimiters.
+    # Keep comments in the original views, including reserved objects inside
+    # comments; strip them only in an additional source-classification view.
+    uncommented = re.sub(rb'''"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\#[^\r\n]*''',
+                         lambda match: b'' if match[0].startswith(b'#') else match[0], continued)
+    views = [data, continued, joined]
+    if uncommented != continued:
+        views.append(re.sub(rb"[\"']\s*[rRuUbBfF]{0,2}[\"']", b"", uncommented))
     keys = set()
     assignment = rb'(?:\*\*|//|<<|>>|[+\-*/%@&|^:])?=(?!=)'
-    for view in (data, continued, joined):
+    for view in views:
         keys.update(re.findall(rb"[\"']([a-z_][a-z_0-9]*)[\"']\s*\)*\s*:", view))
         keys.update(re.findall(rb"\b([a-z_][a-z_0-9]*)\s*" + assignment, view))
         keys.update(re.findall(
