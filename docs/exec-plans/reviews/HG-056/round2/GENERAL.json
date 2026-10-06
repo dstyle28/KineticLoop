@@ -1,0 +1,48 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-056",
+  "reviewed_head_sha": "388557f1e404de0835d3f643ab43217b0b88665f",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "id": "HG056-G1",
+      "classification": "BLOCKER",
+      "origin": "EXTERNAL_IMMUTABLE_ORACLE",
+      "title": "Required complete KL036 compatibility is unsatisfied",
+      "body": "The preserved actual complete immutable H1fee/B3ec audit has two expected maps and only one validated map, with the unmapped payload deletion at e81cc2cc and selected-map storage errors. Independent Git tree inspection reconfirms that deletion without reading the private payload. Original helper pins and lossless bound read pass; isolated selected four-entry map validation also passes, but neither closes the complete-history oracle. The latest affected executions do not rerun or relabel this actual FAIL. The BLOCKED result is truthful; DoD remains unmet.",
+      "required_action": "Keep complete compatibility FAIL/BLOCKED until a separately approved prospective root recovery/authority decision resolves it. Do not rewrite immutable history, filter inventory, grant same-codec consolidation, swallow errors or weaken classification under HG056."
+    },
+    {
+      "id": "HG056-G2",
+      "classification": "BLOCKER",
+      "origin": "DEFERRED_PROSPECTIVE_AUTHORITY",
+      "title": "Source-inspection acceptance requires separate prospective authority",
+      "file": "tools/harness/validate_harness.py",
+      "line": 1912,
+      "body": "Root adjudicated inspection-purpose availability/suffix acceptance as separate prospective governance because current references are untyped and original HG047 fallback intentionally uses strict classification. SOURCE_INSPECTION_ADJUDICATION.md explicitly forbids implementing or bypassing that acceptance under the current repair grant. The proposal remains NOT_IMPLEMENTED; availability, governance suffix, evidence execution and M3 functions are byte-equivalent in their AST to the previously reviewed candidate. Original unit and authority failures remain preserved. This is an unresolved authority/completion blocker, not a newly introduced source defect or permission to apply the round1 proposed local integration.",
+      "required_action": "Keep the proposal unimplemented and preserve strict execution/storage/M3/suffix boundaries. Root must approve a separate prospective authority packet before any inspection-purpose acceptance change; no source/path/hash/owner exemption, HEAD borrowing or decoder-error swallowing is authorized here."
+    },
+    {
+      "id": "HG056-G4",
+      "classification": "REQUIRED_FOLLOWUP",
+      "origin": "MISSING_FINAL_GATES",
+      "title": "Whole-cycle and exact-result root gates remain incomplete",
+      "body": "The repaired run genuinely passes 737 affected identities, all three phases, all 733 compact cases, isolated local-gate103, scope/lint/typecheck/diff, and 1963 collect-only identities with zero execution. These close the durable identity defect G3, demonstrate the two missing-blob fixtures pass, and correct the scope verifier's executable-mode assertion. Original eleven check envelopes/payloads and round1 reviews are byte-preserved. Whole unit/harness/authority execution and final storage/protected-base gates have not completed at this repaired R; prior unit246pass1fail, harness1842pass1fail, authorityFAIL, compatibilityFAIL, scopeFAIL and old final guard outcomes retain their original revision bindings. Installation/admission, hosted/App/fullDB and merge remain separate root-owned gates. No new source defect was found in bounded GENERAL inspection.",
+      "required_action": "Preserve prior actual outcomes and the BLOCKED task state. Complete only the justified final-revision and root-owned gates after the external/authority blockers are resolved and the appropriate scope is approved. The affected run and collect-only inventory cannot substitute whole-cycle, exact-head, installed/App/DB or merge evidence. This rereview authorizes no full-cycle rerun, installation or admission."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/evidence/HG-056/PACKET.md",
+    "docs/exec-plans/governance/HG-056.yaml",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/RUN.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/SOURCE_INSPECTION_ADJUDICATION.md",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/PRIOR_REQUIRED_CHECKS.json",
+    "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/RUN.json",
+    "docs/exec-plans/evidence/HG-056/diagnostics/hg056-kl036-history-blocker.json",
+    "docs/exec-plans/reviews/HG-056/round1/GENERAL.json",
+    "docs/exec-plans/reviews/HG-056/round1/SECURITY_DATA_BOUNDARY.json",
+    "docs/exec-plans/reviews/HG-056/general_round2/report.json",
+    "docs/exec-plans/reviews/HG-056/general_round2/REVIEW.md"
+  ],
+  "review_contract_version": "v0.2"
+}

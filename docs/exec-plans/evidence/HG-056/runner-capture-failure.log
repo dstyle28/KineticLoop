@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/Users/davetian/.codex/worktrees/a5f1/KineticLoop/docs/exec-plans/evidence/HG-056/run_checks.py", line 102, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/Users/davetian/.codex/worktrees/a5f1/KineticLoop/docs/exec-plans/evidence/HG-056/run_checks.py", line 83, in main
+    ce.capture(ROOT, ref, artifact.read_bytes(), revision, harness['command'],
+  File "/Users/davetian/.codex/worktrees/a5f1/KineticLoop/tools/harness/compact_evidence.py", line 291, in capture
+    read(root, path, None, tested=tested, command=command)
+  File "/Users/davetian/.codex/worktrees/a5f1/KineticLoop/tools/harness/compact_evidence.py", line 221, in read
+    if envelope(raw) is not None:
+       ^^^^^^^^^^^^^
+  File "/Users/davetian/.codex/worktrees/a5f1/KineticLoop/tools/harness/compact_evidence.py", line 166, in envelope
+    raise ValueError('evidence-envelope-shape')
+ValueError: evidence-envelope-shape

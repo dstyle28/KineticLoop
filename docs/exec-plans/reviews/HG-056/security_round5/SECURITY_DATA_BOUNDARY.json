@@ -1,0 +1,97 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-056",
+  "reviewed_head_sha": "d8aaf7c897e5a7653daa30b8d3bd906ba859652d",
+  "review_type": "SECURITY_DATA_BOUNDARY",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "id": "HG056-S11",
+      "classification": "BLOCKER",
+      "kind": "NEW_SOURCE_DEFECT",
+      "title": "Comment and prose wrappers hide reserved unpacked assignments",
+      "location": "tools/harness/compact_evidence.py:100",
+      "detail": "Four bounded comment/prose wrappers contain literal reserved evidence or reencoding subscript writes in tuple, list or nested targets. Independently unwrapping the comment/prose prefix produces AST Assign nodes with reserved literal Store targets; no input is executed. Both classifiers return None in all 96 pairs across eight UTF encoding views and plain/gzip/XZ recovery. Sixty temporary plain working-file reads return byte-identical metadata across UTF8/16/32 and five suffixes. Equivalent ordinary comment/prose RHS/read expressions remain plain. AST parse discards commented text or rejects prose-prefixed syntax, while the lexical target expression still requires the closing bracket to lead directly to assignment/colon. Thus actual reserved assignment metadata in the packet-required comment-like/prose wrappers becomes ordinary content. Shared bound read and recovery/history/suffix code use this classifier; no synthetic commits/bound-read fixtures or complete task PASS forgery are claimed. Incidental for/with Store contexts are excluded from this finding. S1-S3 and S6-S10 reject in the independently reviewed forms, including the exact malformed/incomplete/string root probes.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security_round5/classifier-probes.json",
+      "required_change": "Recognize these bounded comment/prose wrapped actual unpacked assignments conservatively, preserving equivalent ordinary read expressions. Add focused shared plain/recovery/history/suffix regressions, without executing input, granting source trust or weakening retention/binding guards; obtain fresh exact-revision review."
+    },
+    {
+      "id": "HG056-S4",
+      "classification": "BLOCKER",
+      "kind": "REQUIRED_EXTERNAL_ORACLE_UNMET",
+      "title": "Complete immutable KL036 compatibility remains blocked",
+      "location": "docs/exec-plans/evidence/HG-056/verify_compatibility.py:33",
+      "detail": "The retained actual H1fee/B3ec history/storage audit remains FAIL at unmapped payload retirement e81cc2cc. It reaches one inherited map from the expected two and reports the unreached selected-map storage error. Separate four-entry map diagnostic PASS cannot close the full inventory. This is an external unchanged-history authority gate, distinct from the new classifier defects. Original failed captures were verified at their original T binding; no forbidden rerun, historical rewrite or consolidation authority is inferred.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security_round5/evidence-bindings.json",
+      "required_change": "Keep this external oracle BLOCKED pending a separately authorized prospective root remedy; do not filter inventory, weaken retention, rewrite historical errors or infer adoption/merge."
+    },
+    {
+      "id": "HG056-S5",
+      "classification": "BLOCKER",
+      "kind": "DEFERRED_IMPLEMENTATION_AND_MANDATORY_GATES",
+      "title": "Source-inspection authority and whole-cycle acceptance remain unmet",
+      "location": "docs/exec-plans/governance/HG-056.yaml",
+      "detail": "Inspection-purpose availability and suffix acceptance remain NOT_IMPLEMENTED in exact R and separately deferred by root; current strict guards remain required. Independently bound final captures verify 892 executions, all 888 compact cases, 2676 passed setup/call/teardown reports, matching workers/JUnit, 2118 collect-only identities with zero execution and isolated stdout103. All seven affected checks PASS and capture_errors is empty. Original unit/harness/authority/compatibility/scope failures remain actual failures; superseded T5 typecheck FAIL and three plain hostile-probe outcomes remain preserved at their original bindings, while T6 corrects those forms. These affected checks do not replace mandatory complete cycles, immutable compatibility or root-owned exact controller/admission/App/hosted gates. Governance remains BLOCKED.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security_round5/evidence-bindings.json",
+      "required_change": "Keep this deferred boundary and unmet acceptance explicit. Proceed only through separately authorized prospective governance with fresh revision-bound checks/reviews; preserve strict availability/suffix guards and original outcomes. Complete mandatory/root-owned gates without inferring requirement/release/adoption/merge PASS."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/HG-056/security_round5/REVIEW.md",
+    "docs/exec-plans/reviews/HG-056/security_round5/classifier-probes.json",
+    "docs/exec-plans/reviews/HG-056/security_round5/read-probes.json",
+    "docs/exec-plans/reviews/HG-056/security_round5/evidence-bindings.json",
+    "docs/exec-plans/reviews/HG-056/security_round5/static-boundary.json",
+    "docs/exec-plans/reviews/HG-056/security_round5/retention-and-superseded.json",
+    "docs/exec-plans/reviews/HG-056/security_round5/review-validation.json",
+    "docs/exec-plans/reviews/HG-056/security_round5/verify_probes.py",
+    "docs/exec-plans/reviews/HG-056/security_round5/verify_bindings.py",
+    "docs/exec-plans/evidence/HG-056/PACKET.md",
+    "docs/exec-plans/governance/HG-056.yaml",
+    "docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/RUN.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/SOURCE_INSPECTION_ADJUDICATION.md",
+    "docs/exec-plans/reviews/HG-056/round4/SECURITY_DATA_BOUNDARY.json"
+  ],
+  "closed_findings_at_reviewed_revision": [
+    {
+      "id": "HG056-S1",
+      "status": "CLOSED_IN_REVIEWED_FORMS",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security_round5/classifier-probes.json"
+    },
+    {
+      "id": "HG056-S2",
+      "status": "CLOSED_IN_REVIEWED_FORMS",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security_round5/classifier-probes.json"
+    },
+    {
+      "id": "HG056-S3",
+      "status": "CLOSED_IN_REVIEWED_FORMS",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security_round5/classifier-probes.json"
+    },
+    {
+      "id": "HG056-S6",
+      "status": "CLOSED_IN_REVIEWED_FORMS",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security_round5/classifier-probes.json"
+    },
+    {
+      "id": "HG056-S7",
+      "status": "CLOSED_IN_REVIEWED_FORMS",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security_round5/classifier-probes.json"
+    },
+    {
+      "id": "HG056-S8",
+      "status": "CLOSED_IN_REVIEWED_FORMS",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security_round5/classifier-probes.json"
+    },
+    {
+      "id": "HG056-S9",
+      "status": "CLOSED_IN_REVIEWED_FORMS",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security_round5/classifier-probes.json"
+    },
+    {
+      "id": "HG056-S10",
+      "status": "CLOSED_IN_REVIEWED_FORMS",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security_round5/classifier-probes.json"
+    }
+  ],
+  "review_contract_version": "v0.2"
+}

@@ -1,0 +1,109 @@
+{
+  "purpose": "INDEPENDENT_BOUNDED_SECURITY_DATA_BOUNDARY_REVIEW",
+  "identity": "harness-governance-v0.1/HG-056",
+  "reviewed_head_sha": "76484185581647d1a5d038eaa2eaa2c26291b8c1",
+  "base_commit": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "tested_commit": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+  "status": "CHANGES_REQUIRED",
+  "merge_recommendation": "DO_NOT_MERGE_OR_ADMIT",
+  "findings": [
+    {
+      "id": "HG056-S1",
+      "classification": "BLOCKER",
+      "kind": "SOURCE_DEFECT",
+      "title": "Reserved subscript assignments become plain evidence",
+      "location": "tools/harness/compact_evidence.py:98",
+      "detail": "The structural classifier recognizes identifier assignments and quoted colon keys, but not assignment through a quoted dictionary subscript. Both evidence-marker and reencoding-marker subscript assignment probes are valid Python reserved metadata wrappers and return None from envelope and reencoding_record. The protected-base classifier rejects both. read returns bytes immediately for None; recovered payload classification and global history/suffix checks reuse this classifier. This violates the required actual-metadata-before-execution boundary, even though the probe establishes no complete task PASS forgery.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security/classifier-probes.json",
+      "required_change": "Recognize actual reserved subscript assignment structure conservatively, preserving harmless subscript reads. Add shared-reader/recovery/history/suffix negatives and fresh exact-revision evidence; do not exempt source or swallow parse errors."
+    },
+    {
+      "id": "HG056-S2",
+      "classification": "BLOCKER",
+      "kind": "SOURCE_DEFECT_UNCLOSED_COVERAGE_GAP",
+      "title": "Escaped and continued adjacent source keys evade classification",
+      "location": "tools/harness/compact_evidence.py:100",
+      "detail": "A Python source dictionary key with an octal ASCII underscore escape and an adjacent string key joined through explicit backslash-newline continuation both statically resolve to the evidence marker, yet envelope and reencoding_record return None. The implementation handles only x/u/U escapes and whitespace-only adjacency. These probes were parsed and literal keys inspected without executing input. This is an unmet source-wrapper/encoded-marker oracle; it is not represented as a demonstrated new regression in both cases.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security/classifier-probes.json",
+      "required_change": "Cover these bounded source literal forms or establish an equally conservative static recognition rule. Preserve lossless ordinary field-reference behavior and reject reserved content after gzip/XZ recovery across owners and suffixes."
+    },
+    {
+      "id": "HG056-S3",
+      "classification": "BLOCKER",
+      "kind": "SOURCE_COMPATIBILITY_DEFECT",
+      "title": "Comma detection rejects ordinary JSON string values and reader defaults",
+      "location": "tools/harness/compact_evidence.py:116",
+      "detail": "The partial-key expression treats a quote following any comma as a potential object key. A valid JSON array containing only ordinary string values, with the evidence marker as its second value, rejects evidence-envelope-shape; a harmless get call using the marker as a default string rejects evidence-envelope-json. Neither contains a storage key or assignment. The packet requires ordinary quoted prose, reader literals and JSON string values to remain plain. The original helper succeeds, but does not prove this broader compatibility oracle.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security/classifier-probes.json",
+      "required_change": "Distinguish object/assignment context from list and call string values while preserving malformed partial object-key rejection. Add focused lossless cases to the shared plain and recovered reader tests."
+    },
+    {
+      "id": "HG056-S4",
+      "classification": "BLOCKER",
+      "kind": "REQUIRED_EXTERNAL_ORACLE_UNMET",
+      "title": "Complete immutable history and storage compatibility remain blocked",
+      "location": "docs/exec-plans/evidence/HG-056/verify_compatibility.py:33",
+      "detail": "The exact captured H1fee/B3ec history audit reaches only the inherited HG054 map and fails on an unmapped payload deletion at e81cc2ccff69bf32a42f7c81b4671c99879b544b. The captured storage audit reports that same mutation and the unreached selected KL036 map as evidence-envelope. Expected inventory has two maps; reached inventory has one. Isolated selected four-entry map validation PASS does not close the complete oracle. The defect is existing unauthorized same-codec consolidation history, not proof that HG056 changed codec/retention authority.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security/evidence-bindings.json",
+      "required_change": "Keep the complete oracle and original errors BLOCKED. Root must adjudicate a prospective scope/authority remedy; no codec-free consolidation permission, historical rewrite, inventory filtering or adoption/merge follows from this review."
+    },
+    {
+      "id": "HG056-S5",
+      "classification": "BLOCKER",
+      "kind": "MANDATORY_CHECK_EVIDENCE_UNMET",
+      "title": "Review-source availability and immutable machine-identity capture are incomplete",
+      "location": "docs/exec-plans/governance/HG-056.yaml",
+      "detail": "The actual authority and unit executions fail on current test-source and historical review-created helper references. The runner fails ancillary collection capture because automatic negative-case IDs embed reserved metadata; ordered collection/execution/JUnit are not committed as immutable machine-identity evidence. Harness has 1842 passed and one actual missing loose-object fixture failure, unit has 246 passed and one failure, and original scope is FAIL. The result preserves these failures truthfully; eleven bound stdout envelopes and targeted decoder613/reader339 PASS cannot replace them or final exact-head audit/check gates.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security/evidence-bindings.json",
+      "required_change": "Resolve source availability with an explicitly bounded inspection role and exact original revision/suffix proof, repair fixture identity capture with stable descriptive IDs without dropping cases, and resolve the missing-object fixture under proper scope. Record new actual immutable checks for any changed implementation. Keep original failures unchanged."
+    }
+  ],
+  "method": {
+    "skill": ".agents/skills/pr-merge-reviewer/SKILL.md",
+    "read_scope": [
+      "AGENTS.md",
+      "CURRENT_DOCUMENT_INDEX.json",
+      "committed HG056 packet/preflight/preparation/governance result",
+      "HG054/HG055 prerequisite result/review contracts",
+      "EVIDENCE_STORAGE_POLICY",
+      "HARNESS_GOVERNANCE_CONTRACT",
+      "THREAD_REVIEW_CONTRACT",
+      "exact protected-base to reviewed diff",
+      "exact decoder/read/history/suffix/cache implementations",
+      "eleven bound execution captures and committed diagnostics"
+    ],
+    "probes": "Nine small synthetic static/classification probes from the exact reviewed decoder Git object, protected-base comparison for subscript regressions, and exact original regular Git blob/read pins. No test suite rerun, input/helper execution, private scratch/quarantined log read, fixture body emission/copy, network, database, installation, credentials or source mutation. No reviewers/subagents spawned.",
+    "critical_source_delta_tested_to_reviewed": []
+  },
+  "confirmed_boundaries": [
+    "Original 8063-byte regular blob cde206aee1eb240862863069104ad291ff98dedb and SHA256 a602ee684cdd7b4d8169388d2a2fe821fc6bc5beadf0d69a593c2ed260ffe382 independently match task fixture and exact original bound read; envelope/reencoding_record return None.",
+    "All eleven committed execution envelopes independently retrieve at reviewed SHA with exact tested SHA, command and exit, including payload integrity/length/codec/ancestry proof. Retrieval PASS does not relabel failed execution.",
+    "No decoder schema, codec, budget, frozen baseline, DB, authorization or production/shadow execution change is in the diff. Existing retained-base, admission, all-parent/global map, source/snapshot and mutation proofs remain in code; source classifier gaps affect their recognition input.",
+    "Actual targeted decoder613, reader/M3/validator339 and isolated local-gate103 PASS are preserved as source executions. Full suite and complete immutable compatibility are not PASS.",
+    "The original source is never a runtime filename/hash/owner exemption; all original-object handling in the correction is a test oracle."
+  ],
+  "proposal_assessment": {
+    "status": "NOT_IMPLEMENTED_NOT_APPROVED_BY_THIS_REVIEW",
+    "inspection_binding": "Separating inspection availability from execution decoding is a plausible narrow remedy, but untyped review refs currently cannot communicate that distinction explicitly. Clarify the non-execution role in the contract before adopting it. Resolve the exact recorded reviewed SHA first; only absence of every Git entry may use exact original own review-record SHA after whole-directory, ancestral, linear REVIEW_RECORD_ONLY proof. Never use ambient HEAD/current file as a replacement or infer proof from static parse.",
+    "source_content": "Bounded static parsing may support inspection without importing/executing source. A definition-bearing program predicate is not security authority: actual metadata can be placed next to a function/class. No valid-Python, path, suffix, owner or source-hash allowlist may change strict execution read, command/result, M3, storage or archival outcomes.",
+    "suffix": "The existing HG047 source refs are absent at reviewed b71d2d and must bind to original review-record89b3d3. Its current suffix classification errors remain real blockers. Any prospective source-aware suffix work must retain all-parent representation/mapping checks and reject existing envelope/payload mutation, conversion records, transient restoration and foreign/adjacent-owner paths. Do not use inspection success to waive storage_bookkeeping_only or to mark a conversion REVIEW_RECORD_ONLY. Obtain root scope adjudication if role-specific suffix handling exceeds the packet.",
+    "cache": "Execution success keys currently include immutable revision, path, tested, command and exit. Storage-bookkeeping cache uses a separate purpose prefix. A new inspection success must use a separate purpose-tagged cache (or no cache), with immutable revision/path/content/role and no cross-population of execution or suffix verdicts. Include same-session negative tests after successful inspection so metadata cannot supply execution availability from cache.",
+    "semantic_ids": "Explicit stable descriptive pytest IDs are the smallest capture remedy. Use distinct deterministic IDs preserving all parameter cases, ordered collection and executed identities/counts; do not sanitize already-produced output, drop cases, truncate, change decoder policy or rename failures PASS. Commit the new test implementation before a new actual tested revision and regenerate genuine collection/execution/JUnit artifacts. Prior scratch/capture failure remains historical.",
+    "authority": "Neither remedy supplies same-codec consolidation authority or changes the immutable H/B oracle. No blanket source trust, binding relaxation, error swallowing, original-history edits, admission or activation is approved."
+  },
+  "limitations": [
+    "Bounded review inspected complete existing immutable captures but did not rerun full history audit or full suites. Existing isolated selected-map diagnostic was read, not promoted to complete compatibility proof.",
+    "No complete exploitation chain into task/review PASS was fabricated; fail-open classification probes establish the specific source-boundary violation and affected shared consumers.",
+    "Final exact-R audit and CI base/head checks are unmet/NOT_RUN in the committed result and cannot be replaced by reviewer retrieval probes."
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/HG-056/security/classifier-probes.json",
+    "docs/exec-plans/reviews/HG-056/security/evidence-bindings.json",
+    "docs/exec-plans/evidence/HG-056/PACKET.md",
+    "docs/exec-plans/governance/HG-056.yaml",
+    "docs/exec-plans/evidence/HG-056/diagnostics/REVIEW_SOURCE_PROPOSAL_NOT_IMPLEMENTED.md",
+    "docs/exec-plans/evidence/HG-056/diagnostics/hg056-kl036-history-blocker.json",
+    "docs/exec-plans/evidence/HG-056/diagnostics/hg056-kl036-selected-map-diagnostic.json",
+    "docs/exec-plans/evidence/HG-056/diagnostics/hg056-hg047-review-suffix-diagnostic.json"
+  ]
+}

@@ -1,0 +1,31 @@
+[
+  {
+    "tool": "verify_resources_scaling.py first invocation",
+    "exit_code": 1,
+    "failure": "ZeroDivisionError dividing zero AST parse work on stable-ID full-collection-collection.log.json",
+    "effect": "No classifier failure observed; chosen serial collection ID log did not exercise parser. Retry uses actual full_collection captured stdout including tree input. No task outcomes changed."
+  },
+  {
+    "tool": "read unqualified REVIEW_SOURCE_PROPOSAL_NOT_IMPLEMENTED.md",
+    "failure": "File not found; source proposal actually lies in diagnostics/",
+    "effect": "Correct adjudication path read; no source result inference."
+  },
+  {
+    "tool": "verify_retention.py first invocation",
+    "exit_code": 1,
+    "failure": "AssertionError: overly strict no-diff expectation included round5 preserved canonical review added after prior R",
+    "effect": "Inspected actual Git name-status; additions only, no existing evidence mutation. Retry requires existing blobs unchanged and preserved SECURITY record byte equality to prior canonical."
+  },
+  {
+    "tool": "verify_retention.py second invocation",
+    "exit_code": 1,
+    "failure": "AssertionError comparing persisted round5 review to canonical at implementation R5; canonical at R5 legitimately still held round4 before round5 review suffix",
+    "effect": "Correct comparison uses canonical at exact R6, where round5 review was persisted; separately require only additions for round5 suffix since R5. No historical review binding changed."
+  },
+  {
+    "tool": "finish.py first invocation",
+    "exit_code": 1,
+    "failure": "Bookkeeping assertion checked its planned review-validation.json before creating that file",
+    "effect": "Corrected write/check ordering, no source/check verdict affected. Final pass validates all refs after creation."
+  }
+]

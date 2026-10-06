@@ -172,3 +172,11 @@ Fresh SHA-bound GENERAL, PROTOCOL, DB_CONCURRENCY and SECURITY_DATA_BOUNDARY rev
 are mandatory. It changes no runtime, DB, frozen/product/release or CI authority,
 migrates no other task artifacts, reuses no HG051 exception and installs/adopts no
 credentialed controller. Installation/admission and App/fullDB stay separate gates.
+
+
+HG056 corrects only ordinary-source reserved-field classification under Evidence
+Storage Policy. Its literal validator write scope matches the approved packet.
+Fresh SHA-bound GENERAL and SECURITY_DATA_BOUNDARY reviews are mandatory before
+publication readiness. It changes no DB, frozen, runtime, authorization, retention,
+codec or budget semantics; installation/admission, App/fullDB and merge are separate
+root-owned gates. Its review suffix is exclusively own REVIEW_RECORD_ONLY.

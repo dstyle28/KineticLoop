@@ -1,0 +1,63 @@
+{
+  "purpose": "READ_ONLY_HG056_CORRECTIVE_TASK_PREFLIGHT",
+  "status": "PROSPECTIVE_PACKET_READY_NOT_IMPLEMENTED",
+  "identity": "harness-governance-v0.1/HG-056",
+  "base_commit": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "kl036_immutable_head": "1fee7a4ef9ecb484da24522962a6df4d4c2bd9b9",
+  "exact_cause": "Global reserved_ascii matches the ordinary helper field-name string literal, JSON whole-input parse fails, reencoding_record propagates into global history audit. Source is ordinary reader code, not a serialized storage record.",
+  "leaf_reproduction": {
+    "revision": "f93364d90aaae9b0b62706fd4e4fe395a8cd8ec5",
+    "path": "docs/exec-plans/reviews/KL-036/SECURITY_DATA_BOUNDARY/audit.py",
+    "bytes": 8063,
+    "sha256": "a602ee684cdd7b4d8169388d2a2fe821fc6bc5beadf0d69a593c2ed260ffe382",
+    "valid_python": true,
+    "reserved_ascii": true,
+    "quoted_marker_lines": [
+      35
+    ],
+    "classifier_result": null,
+    "classifier_error": "evidence-envelope-json",
+    "ordinary_quoted_prose": {
+      "error": "evidence-envelope-json"
+    },
+    "malformed_actual_marker": {
+      "error": "evidence-envelope-json"
+    },
+    "valid_source_wrapper": {
+      "error": "evidence-envelope-json"
+    }
+  },
+  "history_reproduction": {
+    "mode": "READ_ONLY_CURRENT_DECODER_EXACT_HEAD",
+    "base": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+    "head": "1fee7a4ef9ecb484da24522962a6df4d4c2bd9b9",
+    "errors": [
+      "reencoding-invalid:evidence-envelope-json"
+    ],
+    "maps_reached": [
+      "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json"
+    ],
+    "exact_helper_failures": [
+      "evidence-envelope-json"
+    ],
+    "elapsed_seconds": 38.676
+  },
+  "required_reviews": [
+    "GENERAL",
+    "SECURITY_DATA_BOUNDARY"
+  ],
+  "review_risk": "Storage metadata-smuggling and retention/original proof; no authorized DB/frozen/T1-T8/authorization change.",
+  "genuine_frozen_spec_conflict": false,
+  "policy_clarification_needed": "Distinguish ordinary source/prose/string field references from actual reserved metadata while retaining malformed/encoded/wrapped/nested and embedded-record fail-closed classification.",
+  "prohibited_bypasses": [
+    "path/suffix/hash/owner exemptions",
+    "blanket valid-Python trust",
+    "decoder-error swallowing",
+    "historical edits",
+    "codec/budget changes"
+  ],
+  "packet": "/private/tmp/hg056-classifier-execution-packet.md",
+  "packet_sha256": "1e7c44c56a4b9df387422077bd11d50371a10ce2b0d1b2ff56ba6471a8ef6739",
+  "changes": "Only scratch preflight documents; no repo/controller/install/network/credential/DB changes or helper execution.",
+  "future_positive_required": "Complete real candidate reencoding/history + storage audit at pinned KL036 H/B; inventory inherited/selected maps and retain exact original helper bytes."
+}

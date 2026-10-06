@@ -1,0 +1,277 @@
+{
+  "purpose": "INDEPENDENT_GENERAL_REVIEW_METADATA_ONLY",
+  "B": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "T": "61ab06ea8a8adfa6e1931db7e6ea80408dd58f49",
+  "R": "0c3ad1ac6f0811f920002bfb8782e84cf0eb2460",
+  "checks": [
+    {
+      "id": "affected_harness",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg056-repair-61ab06ea8a8adfa6e1931db7e6ea80408dd58f49-cef31f82/harness -q -k 'test_compact_evidence or test_missing_blob_is_not_available_evidence_or_an_absent_path or hg056'",
+      "exit": 0,
+      "result": "PASS",
+      "sha256": "df659d40576e283aae04da3debde220ed5c4ee8a8a7f23491d3b4f950499aed1",
+      "bytes": 1153,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "full_collection",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 1 --evidence-dir /private/tmp/hg056-repair-61ab06ea8a8adfa6e1931db7e6ea80408dd58f49-cef31f82/full-collection --collect-only -q",
+      "exit": 0,
+      "result": "PASS",
+      "sha256": "6621779dc1d693b6176a8016cdea456feaf97e063239c9bab039fc54504ad85b",
+      "bytes": 3242951,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "installed_decoder_isolation",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_local_gate.py -q",
+      "exit": 0,
+      "result": "PASS",
+      "sha256": "f9f5e04231368ec784076c77b9173fc1b2a724a978734e2e91827e64b2ce2720",
+      "bytes": 180,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "scope",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-056/verify_scope.py --base 3ec7f7a38d974256a928c3687f63e4d90019e42b",
+      "exit": 0,
+      "result": "PASS",
+      "sha256": "d815f29f4a1a0bc01a06a6b021ccaafef207be287c39ff124889dfc782dc6b10",
+      "bytes": 24914,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "lint",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+      "exit": 0,
+      "result": "PASS",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "typecheck",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+      "exit": 0,
+      "result": "PASS",
+      "sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb",
+      "bytes": 45,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "diff",
+      "command": "git diff --check 3ec7f7a38d974256a928c3687f63e4d90019e42b 61ab06ea8a8adfa6e1931db7e6ea80408dd58f49",
+      "exit": 0,
+      "result": "PASS",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "bound_read": "PASS"
+    }
+  ],
+  "phases": {
+    "harness": {
+      "collected": 830,
+      "identity_digest": "088ce525fe5b138d14433b200f2b3a1b5a94893c67c47aadddc16e7647585cad",
+      "starts": 830,
+      "reports": 2490,
+      "junit_cases": 830,
+      "workers": 2,
+      "mode": "EXECUTION",
+      "manifest_file_bindings": "PASS",
+      "compact_cases": 826,
+      "phase_counts": {
+        "setup": 830,
+        "call": 830,
+        "teardown": 830
+      },
+      "phase_worker_and_junit_identity_bindings": "PASS"
+    },
+    "full-collection": {
+      "collected": 2056,
+      "identity_digest": "d0d455a4e757a2f31a3ebed396d2b240f7fa1394a489b85dbbaac5497535a6d3",
+      "starts": 0,
+      "reports": 0,
+      "junit_cases": 0,
+      "workers": 1,
+      "mode": "COLLECTION_ONLY",
+      "manifest_file_bindings": "PASS"
+    }
+  },
+  "isolated_stdout_count": 103,
+  "isolated_identity_artifact_claimed": false,
+  "scope": {
+    "paths": 259,
+    "modes": {
+      "100644": 258,
+      "100755": 1
+    },
+    "literal_scope_matches_packet": true,
+    "frozen_files_unchanged": 3
+  },
+  "tested_to_result_suffix": [
+    "0c3ad1ac6f0811f920002bfb8782e84cf0eb2460"
+  ],
+  "suffix_only_result_and_new_capture": true,
+  "preserved_prior_artifacts": 167,
+  "prior_review_rounds_preserved": [
+    "round1",
+    "round2",
+    "round3"
+  ],
+  "original_helper": {
+    "pins": "PASS",
+    "classification_plain": true,
+    "bound_read_identical": true,
+    "executed": false
+  },
+  "decoder_functions_changed": [
+    "envelope",
+    "reserved_ascii"
+  ],
+  "validator_functions_changed": [
+    "governance_allowed_patterns",
+    "validate"
+  ],
+  "prior_actual_outcomes": [
+    {
+      "id": "authority",
+      "result": "FAIL",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "1853ea60323bf0c7bd265ffec22744a0b3cb0897b1c136008a18583f7244cb00",
+      "bytes": 488
+    },
+    {
+      "id": "bound_reader_regressions",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "54ea2a7f52fd9a7b4d0b2db5f666e456adec8aa82f0d7ccfecf7fe6209d7a026",
+      "bytes": 433
+    },
+    {
+      "id": "codec_security_and_budget",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "6c68b3f689c819e45506f9efe6e9688c7f8327a9724ed96f675eb23c573f6b92",
+      "bytes": 752
+    },
+    {
+      "id": "compatibility",
+      "result": "FAIL",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "477005c5e1ac54200c6256a5f37ec95b44e4e12fee45a8d6ec164fceb9c691ea",
+      "bytes": 2449
+    },
+    {
+      "id": "diff",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "id": "harness",
+      "result": "FAIL",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "e8d6969abf48165fe76fb3acf0f5230046c4dad374280e76e6c0c4ac2bf72f86",
+      "bytes": 4954
+    },
+    {
+      "id": "installed_decoder_isolation",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "706d8c98d66583900f1c073220a23aee540cc8cc77a825e2632cea998da3618a",
+      "bytes": 180
+    },
+    {
+      "id": "lint",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "id": "scope",
+      "result": "FAIL",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "22672a1e0e2dd9a22473a72e11b9cef765f7409031f3b47f5c3b5132d3d6110e",
+      "bytes": 489
+    },
+    {
+      "id": "typecheck",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb",
+      "bytes": 45
+    },
+    {
+      "id": "unit",
+      "result": "FAIL",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "bfdf1d65b70997784e7ea9a8ff18dff59c241f47bc14231a759e5b147bddfbed",
+      "bytes": 1945
+    }
+  ],
+  "compatibility": {
+    "expected_maps": [
+      "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json",
+      "docs/exec-plans/evidence/KL-036/reencoding-hg054-f92f92bd74033937276794010f65d6fe98f657fc/COMPACT_REENCODING.json"
+    ],
+    "validated_maps": [
+      "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json"
+    ],
+    "history_errors": [
+      "reencoding-invalid:reencoding-unmapped-payload-mutation:docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz"
+    ],
+    "storage_errors": [
+      "docs/exec-plans/evidence/KL-036/reencoding-hg054-f92f92bd74033937276794010f65d6fe98f657fc/COMPACT_REENCODING.json:evidence-envelope",
+      "reencoding-invalid:reencoding-unmapped-payload-mutation:docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz"
+    ],
+    "rerun": false
+  },
+  "external_deletion_tree_confirmed": true,
+  "source_inspection_authority": "NOT_IMPLEMENTED/BLOCKED",
+  "whole_cycles_rerun": false,
+  "new_source_defects_reproduced_by_general": 0,
+  "previous_specialist_source_blocker": "HG056-S9; new commented-write cases verified at T",
+  "derived_authority_hashes_and_manifest_rows": "PASS",
+  "governance_schema": "PASS",
+  "prior_review_artifacts_preserved": 41,
+  "round3_result_snapshot_exact": true,
+  "source_change_since_round3": [
+    "reserved_ascii"
+  ],
+  "decoder_constants_identical": true,
+  "added_import_since_base": "unicodedata only",
+  "new_case_counts": {
+    "comment-subscript-write": 6,
+    "comment-map-write": 6,
+    "comment-augmented-write": 6,
+    "comment-typed-write": 6,
+    "comment-parenthesized-write": 6,
+    "comment-subscript-read": 3,
+    "comment-parenthesized-read": 3,
+    "comment-reader-default": 3,
+    "comment-adjacent-object": 3
+  },
+  "old_storage_guard": {
+    "R": "e3d172b9856bf23305c79e243eb069ffc211b019",
+    "result": "PASS",
+    "metadata": {
+      "identity": "HG-056",
+      "base": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+      "head": "e3d172b9856bf23305c79e243eb069ffc211b019",
+      "stored_bytes": 1105493,
+      "files": 193,
+      "errors": [],
+      "remedy": "python tools/harness/compact_evidence.py capture --help"
+    }
+  },
+  "ancillary_result_assembly_error_preserved": {
+    "scope": "Ancillary result assembly; not test execution",
+    "initial_result": "FileNotFoundError",
+    "cause": "A temporary helper literal substitution changed digits in a historical source directory SHA. The nonexistent path was never evidence. Corrected scratch helper copies the exact prior path; actual runs and artifacts unchanged."
+  },
+  "preparation_prior_entries_preserved": true,
+  "reviewer_preparation_error": "Initial verifier included append-only PREPARATION.json in byte-equality check; assertion failed. Inspection confirmed exactly two appended preparation entries and preserved all earlier fields. Corrected check verifies append preservation; actual task artifacts unchanged. A second assertion over all non-function AST nodes failed because the prior repair adds unicodedata; corrected comparison permits that single inspected import and requires all other non-function nodes and constants identical.",
+  "independent_execution": "This reviewer authored and executed this metadata verifier only; historical helper and captured inputs were not executed."
+}

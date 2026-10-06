@@ -1993,3 +1993,264 @@ def test_retained_map_recreation_on_base_imported_side_branch_rejects(repo):
     with pytest.raises(ValueError, match='retained-source-import-before-admission'):
         ce.validate_reencoding(root, RECODE, record, base, head, 'HG-047')
     assert ce.audit(root, base, head, 'HG-047')['errors']
+
+
+@pytest.mark.parametrize('raw', [
+    pytest.param(b'envelope.get("kineticloop_evidence")', id='field-get'),
+    pytest.param(b'envelope["compact_reencoding"]', id='field-subscript'),
+    pytest.param(b'Quoted prose mentions "kineticloop_evidence" and "compact_reencoding".', id='quoted-prose'),
+    pytest.param(b'{"ordinary": "kineticloop_evidence"}', id='object-string-value'),
+    pytest.param(b'"kineticloop_evidence"', id='scalar-string'),
+    pytest.param(b'envelope.get("payload"); envelope["raw_sha256"]; envelope["stored_sha256"]', id='signature-field-reads'),
+    pytest.param(b'["ordinary", "kineticloop_evidence"]', id='array-string-values'),
+    pytest.param(b'record.get("ordinary", "kineticloop_evidence")', id='reader-default'),
+    pytest.param(b'record["kineticloop_evidence"] == "gzip-v1"', id='subscript-comparison'),
+    pytest.param(b'kineticloop_evidence == "ordinary"', id='identifier-comparison'),
+    pytest.param(b'["{", "kineticloop_evidence"]', id='array-brace-string'),
+    pytest.param(b'record.get("{", "kineticloop_evidence")', id='default-brace-string'),
+    pytest.param(b'{"ordinary": ["x", "kineticloop_evidence"]}', id='nested-array-values'),
+    pytest.param(br'record.get("ordinary", "kineticloop\137evidence")', id='escaped-reader-default'),
+    pytest.param(b'envelope.get("kineticloop_" r"evidence")', id='prefixed-adjacent-read'),
+    pytest.param(b'envelope.get("kineticloop_" # comment\n"evidence")', id='comment-adjacent-read'),
+    pytest.param(br'envelope.get("kineticloop\N{LOW LINE}evidence")', id='named-unicode-read'),
+    pytest.param(b'kineticloop_evidence: str\nordinary = "value"', id='annotation-with-separate-write'),
+    pytest.param(b'envelope["kineticloop_evidence" # comment\n]', id='comment-subscript-read'),
+    pytest.param(b'(envelope["compact_reencoding"] # comment\n)', id='comment-parenthesized-read'),
+    pytest.param(b'record.get("ordinary # comment", "kineticloop_evidence")', id='comment-reader-default'),
+    pytest.param(b'ordinary = (record["kineticloop_evidence"], "x")', id='tuple-read-value'),
+    pytest.param(b'ordinary, other = record["kineticloop_evidence"], "x"', id='unpacked-read-values'),
+    pytest.param(b'[ordinary, other] = [record["compact_reencoding"], "x"]', id='list-read-values'),
+    pytest.param(b'"ordinary, other = record[\\"kineticloop_evidence\\"], \\"x\\""', id='string-wrapped-read-values'),
+    pytest.param(br'ordinary = "x=\ud800"; envelope.get("kineticloop_evidence")', id='surrogate-literal-read'),
+    pytest.param(b'b"ordinary, other = record[\'kineticloop_evidence\'], \'x\'"', id='byte-string-read'),
+    pytest.param(b'prefix (ordinary,\n other) = record["kineticloop_evidence"], "x"', id='multiline-prose-read'),
+    pytest.param(b'# (ordinary,\n# other) = record["kineticloop_evidence"], "x"', id='multiline-comment-read'),
+    pytest.param(b'# ordinary, other = record["kineticloop_evidence"], "x"', id='comment-unpacked-read'),
+    pytest.param(b'prefix ordinary, other = record["kineticloop_evidence"], "x"', id='prose-unpacked-read'),
+])
+@pytest.mark.parametrize('codec', [None, ce.FORMAT, ce.XZ_FORMAT], ids=['plain', 'gzip', 'xz'])
+def test_ordinary_reserved_field_references_remain_lossless(repo, raw, codec):
+    root, base = repo
+    assert ce.envelope(raw) is None
+    assert ce.reencoding_record(raw) is None
+    if codec is None:
+        (root / REF).parent.mkdir(parents=True)
+        (root / REF).write_bytes(raw)
+    else:
+        ce.capture(root, REF, raw, base, 'pytest', 0, codec=codec)
+    head = commit(root)
+    assert ce.read(root, REF, head) == raw
+
+
+def test_exact_original_reader_is_plain_and_history_compatible(repo):
+    raw = (ROOT / 'docs/exec-plans/evidence/HG-056/original-reader.fixture').read_bytes()
+    assert len(raw) == 8063
+    assert ce.digest(raw) == 'a602ee684cdd7b4d8169388d2a2fe821fc6bc5beadf0d69a593c2ed260ffe382'
+    root, base, _, source = captured(repo)
+    path = root / 'docs/exec-plans/evidence/HG-047/reader.arbitrary'
+    path.write_bytes(raw)
+    source = commit(root)
+    ce.reencode(root, base, source, 'HG-047', [REF], RECODE, ce.XZ_FORMAT)
+    head = commit(root)
+    assert ce.envelope(raw) is None and ce.reencoding_record(raw) is None
+    assert ce.read(root, str(path.relative_to(root)), head) == raw
+    errors, maps = ce.reencoding_audit(root, base, head, 'HG-047')
+    assert errors == [] and RECODE in maps
+    assert ce.audit(root, base, head, 'HG-047')['errors'] == []
+    inherited_errors, inherited_maps = ce.reencoding_audit(root, head, head, 'HG-048')
+    assert inherited_errors == [] and inherited_maps == {RECODE}
+
+
+@pytest.mark.parametrize('raw', [
+    pytest.param(br"record = {'kineticloop\x5fevidence': 'gzip-v1'}", id='hex-key'),
+    pytest.param(br"record = {'kineticloop\U0000005fevidence': 'gzip-v1'}", id='unicode-key'),
+    pytest.param(br"record = {'kineticloop\137evidence': 'gzip-v1'}", id='octal-key'),
+    pytest.param(b"record = {'kineticloop_' 'evidence': 'gzip-v1'}", id='adjacent-key'),
+    pytest.param(b"record = {('kineticloop_''evidence'): 'gzip-v1'}", id='parenthesized-adjacent-key'),
+    pytest.param(b"record = {'kineticloop_' \\\n'evidence': 'gzip-v1'}", id='continued-adjacent-key'),
+    pytest.param(b"record = {'kineticloop_' \\\r\n'evidence': 'gzip-v1'}", id='crlf-continued-key'),
+    pytest.param(b'{"kineticloop_" r"evidence": "gzip-v1"}', id='raw-prefixed-adjacent-key'),
+    pytest.param(b'{"kineticloop_" u"evidence": "gzip-v1"}', id='unicode-prefixed-adjacent-key'),
+    pytest.param(b'{("kineticloop_" r"evidence"): "gzip-v1"}', id='parenthesized-prefixed-key'),
+    pytest.param(b'{"compact_" r"reencoding": "v1"}', id='prefixed-adjacent-map-key'),
+    pytest.param(b'record["kineticloop_" r"evidence"] = "gzip-v1"', id='prefixed-adjacent-subscript-write'),
+    pytest.param(b'{("kineticloop_" # comment\n"evidence"): "gzip-v1"}', id='comment-adjacent-key'),
+    pytest.param(br'{"kineticloop\N{LOW LINE}evidence": "gzip-v1"}', id='named-unicode-key'),
+    pytest.param(br'{"compact\N{LOW LINE}reencoding": "v1"}', id='named-unicode-map-key'),
+    pytest.param(b'kineticloop_evidence: (\n str\n) = "gzip-v1"', id='multiline-typed-write'),
+    pytest.param(b'record["kineticloop_evidence" # comment\n] = "gzip-v1"', id='comment-subscript-write'),
+    pytest.param(b'record["compact_reencoding" # comment\n] = "v1"', id='comment-map-write'),
+    pytest.param(b'record["kineticloop_evidence" # comment\n] += "gzip-v1"', id='comment-augmented-write'),
+    pytest.param(b'record["kineticloop_evidence" # comment\n]: str = "gzip-v1"', id='comment-typed-write'),
+    pytest.param(b'(record["kineticloop_evidence"] # comment\n) = "gzip-v1"', id='comment-parenthesized-write'),
+    pytest.param(b'record["kineticloop_evidence"], ordinary = "gzip-v1", "x"', id='tuple-target-write'),
+    pytest.param(b'[record["kineticloop_evidence"], ordinary] = ["gzip-v1", "x"]', id='list-target-write'),
+    pytest.param(b'((record["compact_reencoding"], ordinary), other) = (("v1", "x"), "y")', id='nested-target-write'),
+    pytest.param(b'record["kineticloop_evidence"], *ordinary = ["gzip-v1", "x"]', id='starred-target-write'),
+    pytest.param(b'b"record[\'kineticloop_evidence\'], ordinary = \'gzip-v1\', \'x\'"', id='byte-string-write'),
+    pytest.param(b'prefix (record["kineticloop_evidence"],\n ordinary) = "gzip-v1", "x"', id='multiline-prose-target'),
+    pytest.param(b'# (record["kineticloop_evidence"],\n# ordinary) = "gzip-v1", "x"', id='multiline-comment-target'),
+    pytest.param(b'# record["kineticloop_evidence"], ordinary = "gzip-v1", "x"', id='comment-tuple-target'),
+    pytest.param(b'# [record["compact_reencoding"], ordinary] = ["v1", "x"]', id='comment-list-target'),
+    pytest.param(b'prefix record["kineticloop_evidence"], ordinary = "gzip-v1", "x"', id='prose-tuple-target'),
+    pytest.param(b'prefix ((record["compact_reencoding"], ordinary), other) = (("v1", "x"), "y")', id='prose-nested-target'),
+    pytest.param(b'record["kineticloop_evidence"], ordinary = $$$', id='invalid-unpacked-rhs'),
+    pytest.param(b'record["kineticloop_evidence"], ordinary = (', id='incomplete-unpacked-rhs'),
+    pytest.param(b'"record[\'kineticloop_evidence\'], ordinary = \'gzip-v1\', \'x\'"', id='string-wrapped-unpacked-write'),
+    pytest.param(br'record["kineticloop_evidence"], ordinary = "g=\ud800", "x"', id='surrogate-literal-write'),
+    pytest.param(b'record = {"kineticloop_evidence": "gzip-v1"}', id='double-quoted-dict'),
+    pytest.param(b"record = {'kineticloop_evidence': 'gzip-v1'}", id='single-quoted-dict'),
+    pytest.param(b'kineticloop_evidence = "gzip-v1"', id='identifier-assignment'),
+    pytest.param(b'record["kineticloop_evidence"] = "gzip-v1"', id='subscript-assignment'),
+    pytest.param(b'record["compact_reencoding"] = "v1"', id='map-subscript-assignment'),
+    pytest.param(b'record["kineticloop_evidence"]: str = "gzip-v1"', id='typed-subscript-assignment'),
+    pytest.param(b'kineticloop_evidence: str = "gzip-v1"', id='typed-identifier-assignment'),
+    pytest.param(b'record["kineticloop_evidence"] += "gzip-v1"', id='subscript-augmented-assignment'),
+    pytest.param(b'(kineticloop_evidence := "gzip-v1")', id='identifier-walrus-assignment'),
+    pytest.param(br'record["kineticloop\137evidence"] = "gzip-v1"', id='octal-subscript-assignment'),
+    pytest.param(b'# {"kineticloop_evidence": "gzip-v1"}', id='comment-object'),
+    pytest.param(b'# {"kineticloop_" r"evidence": "gzip-v1"}', id='comment-adjacent-object'),
+    pytest.param(b'prefix {"kineticloop_evidence":', id='prefixed-partial-object'),
+    pytest.param(b'{"kineticloop_evidence"', id='partial-first-key'),
+    pytest.param(b'{"ordinary": "value", "kineticloop_evidence"', id='partial-later-key'),
+    pytest.param(b'{"ordinary": ["a", "b"], "kineticloop_evidence"', id='partial-key-after-array'),
+    pytest.param(b'{"ordinary": (0], "kineticloop_evidence"', id='partial-key-after-mismatched-container'),
+    pytest.param(b'{"ordinary": [0]], "kineticloop_evidence"', id='partial-key-after-extra-close'),
+    pytest.param(b'{"kineticloop_evidence" "damaged": "gzip-v1"}', id='damaged-adjacent-key'),
+    pytest.param(b'"{\\"compact_reencoding\\": \\"v1\\"}"', id='quoted-map-object'),
+    pytest.param(b'record = "{\\"kineticloop_evidence\\": \\"gzip-v1\\"}"', id='assigned-quoted-object'),
+    pytest.param(b"{'payload': 'missing', 'raw_sha256': 'x', 'stored_sha256': 'y'}", id='removed-envelope-marker'),
+    pytest.param(b"{'protected_base': 'x', 'source_revision': 'y', 'entries': []}", id='removed-map-marker'),
+    pytest.param(b"{'authorization': 'x', 'preserved_records': [], 'entries': []}", id='removed-archive-marker'),
+    pytest.param(b'envelope.get("kineticloop_evidence")\n{"compact_reencoding":', id='reader-plus-partial-object'),
+])
+@pytest.mark.parametrize('encoding', ['utf-8', 'utf-16', 'utf-32'])
+def test_source_looking_reserved_metadata_fails_closed(repo, raw, encoding):
+    raw = raw.decode().encode(encoding)
+    with pytest.raises(ValueError):
+        ce.envelope(raw)
+    with pytest.raises(ValueError):
+        ce.reencoding_record(raw)
+
+
+@pytest.mark.parametrize('identity', ['HG-047', 'KL-999'])
+@pytest.mark.parametrize('suffix', ['py', 'json', 'txt', 'log', 'gz', 'xz', 'arbitrary'])
+@pytest.mark.parametrize('hostile', [
+    pytest.param(b"record = {'kineticloop_evidence': 'gzip-v1'}", id='dict'),
+    pytest.param(b'record["kineticloop_evidence"] = "gzip-v1"', id='subscript-write'),
+    pytest.param(br"record = {'kineticloop\137evidence': 'gzip-v1'}", id='octal'),
+    pytest.param(b"record = {'kineticloop_' \\\n'evidence': 'gzip-v1'}", id='continued-key'),
+])
+def test_reserved_classification_is_owner_and_suffix_independent(repo, identity, suffix, hostile):
+    root, _ = repo
+    path = f'docs/exec-plans/evidence/{identity}/reader.{suffix}'
+    target = root / path
+    target.parent.mkdir(parents=True)
+    raw = b'envelope.get("kineticloop_evidence")'
+    target.write_bytes(raw)
+    revision = commit(root)
+    assert ce.read(root, path, revision) == raw
+    assert v.evidence_exists(root, path, revision)
+    assert v.m3_evidence_bytes(root, {'path': path, 'revision': revision,
+                                   'sha256': ce.digest(raw)}, revision) == raw
+    target.write_bytes(hostile)
+    revision = commit(root)
+    assert not v.evidence_exists(root, path, revision)
+    with pytest.raises(ValueError):
+        ce.read(root, path, revision)
+    with pytest.raises(ValueError):
+        v.m3_evidence_bytes(root, {'path': path, 'revision': revision,
+                                   'sha256': ce.digest(hostile)}, revision)
+
+
+ADDITIONAL_SOURCE_WRAPPERS = [
+    pytest.param(b'{"kineticloop_" r"evidence": "gzip-v1"}', id='prefixed-key'),
+    pytest.param(b'{("compact_" # comment\n"reencoding"): "v1"}', id='comment-key'),
+    pytest.param(br'{"kineticloop\N{LOW LINE}evidence": "gzip-v1"}', id='named-unicode-key'),
+    pytest.param(b'kineticloop_evidence: (\n str\n) = "gzip-v1"', id='multiline-typed-write'),
+    pytest.param(b'record["kineticloop_evidence" # comment\n] = "gzip-v1"', id='comment-subscript-write'),
+    pytest.param(b'record["compact_reencoding" # comment\n] = "v1"', id='comment-map-write'),
+    pytest.param(b'record["kineticloop_evidence" # comment\n] += "gzip-v1"', id='comment-augmented-write'),
+    pytest.param(b'record["kineticloop_evidence" # comment\n]: str = "gzip-v1"', id='comment-typed-write'),
+    pytest.param(b'(record["kineticloop_evidence"] # comment\n) = "gzip-v1"', id='comment-parenthesized-write'),
+    pytest.param(b'record["kineticloop_evidence"], ordinary = "gzip-v1", "x"', id='tuple-target-write'),
+    pytest.param(b'[record["kineticloop_evidence"], ordinary] = ["gzip-v1", "x"]', id='list-target-write'),
+    pytest.param(b'((record["compact_reencoding"], ordinary), other) = (("v1", "x"), "y")', id='nested-target-write'),
+    pytest.param(b'record["kineticloop_evidence"], *ordinary = ["gzip-v1", "x"]', id='starred-target-write'),
+    pytest.param(b'b"record[\'kineticloop_evidence\'], ordinary = \'gzip-v1\', \'x\'"', id='byte-string-write'),
+    pytest.param(b'prefix (record["kineticloop_evidence"],\n ordinary) = "gzip-v1", "x"', id='multiline-prose-target'),
+    pytest.param(b'# (record["kineticloop_evidence"],\n# ordinary) = "gzip-v1", "x"', id='multiline-comment-target'),
+    pytest.param(b'# record["kineticloop_evidence"], ordinary = "gzip-v1", "x"', id='comment-tuple-target'),
+    pytest.param(b'# [record["compact_reencoding"], ordinary] = ["v1", "x"]', id='comment-list-target'),
+    pytest.param(b'prefix record["kineticloop_evidence"], ordinary = "gzip-v1", "x"', id='prose-tuple-target'),
+    pytest.param(b'prefix ((record["compact_reencoding"], ordinary), other) = (("v1", "x"), "y")', id='prose-nested-target'),
+    pytest.param(b'record["kineticloop_evidence"], ordinary = $$$', id='invalid-unpacked-rhs'),
+    pytest.param(b'record["kineticloop_evidence"], ordinary = (', id='incomplete-unpacked-rhs'),
+    pytest.param(b'"record[\'kineticloop_evidence\'], ordinary = \'gzip-v1\', \'x\'"', id='string-wrapped-unpacked-write'),
+]
+
+
+@pytest.mark.parametrize('raw', [
+    pytest.param(b'record["kineticloop_evidence"] = "gzip-v1"', id='subscript-write'),
+    pytest.param(b'record["compact_reencoding"] = "v1"', id='map-subscript-write'),
+    pytest.param(br"record = {'kineticloop\137evidence': 'gzip-v1'}", id='octal-key'),
+    pytest.param(b"record = {'kineticloop_' \\\n'evidence': 'gzip-v1'}", id='continued-key'),
+    *ADDITIONAL_SOURCE_WRAPPERS,
+])
+@pytest.mark.parametrize('codec', [ce.FORMAT, ce.XZ_FORMAT], ids=['gzip', 'xz'])
+def test_reserved_source_payload_cannot_supply_bound_execution(repo, raw, codec):
+    root, base = repo
+    record = ce.capture(root, REF, b'ordinary output', base, 'pytest', 0, codec=codec)
+    (root / record['payload']).unlink()
+    stored = ce.encode(raw, codec)
+    record.update(payload=str(Path(REF).parent / (ce.digest(raw) + ce.CODECS[codec])),
+                  raw_sha256=ce.digest(raw), raw_bytes=len(raw),
+                  stored_sha256=ce.digest(stored), stored_bytes=len(stored))
+    (root / record['payload']).write_bytes(stored)
+    (root / REF).write_text(json.dumps(record))
+    head = commit(root)
+    with pytest.raises(ValueError):
+        ce.read(root, REF, head, tested=base, command='pytest', exit_code=0)
+    assert not v.evidence_exists(root, REF, head, base, 'pytest', 0)
+    with pytest.raises(ValueError):
+        v.m3_evidence_bytes(root, {'path': REF, 'revision': head,
+                                  'sha256': ce.digest((root / REF).read_bytes())}, head)
+    assert ce.audit(root, base, head, 'HG-047')['errors']
+
+
+@pytest.mark.parametrize('raw', [
+    pytest.param(b'record["kineticloop_evidence"] = "gzip-v1"', id='subscript-write'),
+    pytest.param(b'record["compact_reencoding"] = "v1"', id='map-subscript-write'),
+    pytest.param(br"record = {'kineticloop\137evidence': 'gzip-v1'}", id='octal-key'),
+    pytest.param(b"record = {'kineticloop_' \\\n'evidence': 'gzip-v1'}", id='continued-key'),
+    *ADDITIONAL_SOURCE_WRAPPERS,
+])
+def test_reserved_source_cannot_be_review_only_history(repo, raw):
+    root, base = repo
+    path = root / 'docs/exec-plans/reviews/HG-047/reader.arbitrary'
+    path.parent.mkdir(parents=True)
+    path.write_bytes(raw)
+    head = commit(root)
+    assert v.governance_suffix_errors(root, base, head, 'HG-047', 'review')
+    errors, _ = ce.reencoding_audit(root, base, head, 'HG-047')
+    assert errors
+
+
+@pytest.mark.parametrize('error', [MemoryError, RecursionError])
+def test_source_target_parser_resource_failure_does_not_accept_plain(monkeypatch, error):
+    def unavailable(*args, **kwargs):
+        raise error()
+    monkeypatch.setattr(ce.ast, 'parse', unavailable)
+    raw = b'record["kineticloop_evidence"], ordinary = "gzip-v1", "x"'
+    for classify in (ce.envelope, ce.reencoding_record):
+        with pytest.raises(ValueError, match='evidence-source-classification'):
+            classify(raw)
+
+
+@pytest.mark.parametrize('write', [False, True], ids=['read', 'write'])
+def test_native_source_parser_exhaustion_cannot_be_plain(write):
+    target = b'record["kineticloop_evidence"], ordinary' if write else b'record["kineticloop_evidence"]'
+    raw = b'(' * 256 + target + b')' * 256 + (b'="gzip-v1", "x"' if write else b'')
+    for classify in (ce.envelope, ce.reencoding_record):
+        with pytest.raises(ValueError, match='evidence-source-classification'):
+            classify(raw)

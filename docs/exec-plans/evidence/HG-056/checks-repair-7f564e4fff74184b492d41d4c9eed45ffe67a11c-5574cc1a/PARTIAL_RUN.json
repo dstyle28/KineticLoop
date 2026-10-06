@@ -1,0 +1,91 @@
+{
+  "tested_commit": "7f564e4fff74184b492d41d4c9eed45ffe67a11c",
+  "base_commit": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "state": "INTERRUPTED_SUPERSEDED_CAPTURE",
+  "runner_exit_code": 143,
+  "checks": [
+    {
+      "check_id": "affected_harness",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg056-repair-7f564e4fff74184b492d41d4c9eed45ffe67a11c-5574cc1a/harness -q -k 'test_compact_evidence or test_missing_blob_is_not_available_evidence_or_an_absent_path or hg056'",
+      "exit_code": 0,
+      "result": "PASS",
+      "seconds": 476.18,
+      "stdout_path": "/private/tmp/hg056-repair-7f564e4fff74184b492d41d4c9eed45ffe67a11c-5574cc1a/affected_harness.log",
+      "raw_bytes": 1233,
+      "raw_sha256": "bcb863a0ffc9e8549022269e635977f83ebeaf65b93880ac65dcb4e3cc4f8832"
+    },
+    {
+      "check_id": "diff",
+      "command": "git diff --check 3ec7f7a38d974256a928c3687f63e4d90019e42b 7f564e4fff74184b492d41d4c9eed45ffe67a11c",
+      "exit_code": 0,
+      "result": "PASS",
+      "seconds": 0.035,
+      "stdout_path": "/private/tmp/hg056-repair-7f564e4fff74184b492d41d4c9eed45ffe67a11c-5574cc1a/diff.log",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "check_id": "full_collection",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 1 --evidence-dir /private/tmp/hg056-repair-7f564e4fff74184b492d41d4c9eed45ffe67a11c-5574cc1a/full-collection --collect-only -q",
+      "exit_code": 0,
+      "result": "PASS",
+      "seconds": 1.568,
+      "stdout_path": "/private/tmp/hg056-repair-7f564e4fff74184b492d41d4c9eed45ffe67a11c-5574cc1a/full_collection.log",
+      "raw_bytes": 3254088,
+      "raw_sha256": "6e6bf729e98405434177f5f7138dc422932de6adb0e7082ecd9a5e0d9357ce0f"
+    },
+    {
+      "check_id": "installed_decoder_isolation",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_local_gate.py -q",
+      "exit_code": 0,
+      "result": "PASS",
+      "seconds": 11.858,
+      "stdout_path": "/private/tmp/hg056-repair-7f564e4fff74184b492d41d4c9eed45ffe67a11c-5574cc1a/installed_decoder_isolation.log",
+      "raw_bytes": 180,
+      "raw_sha256": "682a5ac5b5419b0d88595f8f7fb293582314502cb12e44c450c6bd806f762b56"
+    },
+    {
+      "check_id": "lint",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+      "exit_code": 0,
+      "result": "PASS",
+      "seconds": 0.077,
+      "stdout_path": "/private/tmp/hg056-repair-7f564e4fff74184b492d41d4c9eed45ffe67a11c-5574cc1a/lint.log",
+      "raw_bytes": 19,
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "check_id": "scope",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-056/verify_scope.py --base 3ec7f7a38d974256a928c3687f63e4d90019e42b",
+      "exit_code": 0,
+      "result": "PASS",
+      "seconds": 4.459,
+      "stdout_path": "/private/tmp/hg056-repair-7f564e4fff74184b492d41d4c9eed45ffe67a11c-5574cc1a/scope.log",
+      "raw_bytes": 44268,
+      "raw_sha256": "cca4894f733284f1226e2226cf20690eb5ad40779a44fcf140aa23d18a3ed1c6"
+    },
+    {
+      "check_id": "typecheck",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+      "exit_code": 0,
+      "result": "PASS",
+      "seconds": 0.206,
+      "stdout_path": "/private/tmp/hg056-repair-7f564e4fff74184b492d41d4c9eed45ffe67a11c-5574cc1a/typecheck.log",
+      "raw_bytes": 45,
+      "raw_sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb"
+    }
+  ],
+  "actual_affected_executions": 922,
+  "actual_compact_executions": 918,
+  "passed_phase_reports": 2766,
+  "full_collect_only": 2148,
+  "full_collect_starts": 0,
+  "known_partial_capture_refs": [
+    "docs/exec-plans/evidence/HG-056/checks-repair-7f564e4fff74184b492d41d4c9eed45ffe67a11c-5574cc1a/affected_harness.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-7f564e4fff74184b492d41d4c9eed45ffe67a11c-5574cc1a/full_collection.json"
+  ],
+  "capture_verdict": "INCOMPLETE_NO_PASS",
+  "reason": "Actual seven source checks PASS. Follow-up found byte-string wrapper plain result and whole-prefix scan with 2431091300 potential parse attempts on exact full collection stdout. Runner was terminated after tests during capture. Subsequent delimiter-only attempt remained 2211094414 and its profile was terminated; further bounded preparation is not final acceptance.",
+  "scratch": "/private/tmp/hg056-repair-7f564e4fff74184b492d41d4c9eed45ffe67a11c-5574cc1a",
+  "task_status": "BLOCKED"
+}

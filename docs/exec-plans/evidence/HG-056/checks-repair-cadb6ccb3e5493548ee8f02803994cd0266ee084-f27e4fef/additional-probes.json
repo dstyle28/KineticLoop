@@ -1,0 +1,31 @@
+{
+  "tested_commit": "cadb6ccb3e5493548ee8f02803994cd0266ee084",
+  "source_executed": false,
+  "observations": [
+    {
+      "id": "unpacked-invalid-rhs",
+      "bytes": 46,
+      "input_sha256": "ee76349fa87ab45fb5dacf91eabd5ca13c8b4bf2eb061505abbc5de23aeb2055",
+      "envelope": "plain",
+      "reencoding_record": "plain",
+      "expected": "reject"
+    },
+    {
+      "id": "unpacked-incomplete-rhs",
+      "bytes": 44,
+      "input_sha256": "b1022335e1fa0967e09a22ffdcbe2bb14cfa68e8d0e4bfe2510f3deec053ad32",
+      "envelope": "plain",
+      "reencoding_record": "plain",
+      "expected": "reject"
+    },
+    {
+      "id": "string-wrapped-unpacked-target",
+      "bytes": 59,
+      "input_sha256": "3d59873c42cc0fcb438daddc39293c17df7ecbb581572733d43fdb7da57732b8",
+      "envelope": "plain",
+      "reencoding_record": "plain",
+      "expected": "reject"
+    }
+  ],
+  "conclusion": "Superseded before formal review/result; actual865 affected and other passes remain passes, actual typecheckFAIL remains FAIL."
+}

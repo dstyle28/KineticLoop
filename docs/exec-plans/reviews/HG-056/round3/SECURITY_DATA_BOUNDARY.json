@@ -1,0 +1,51 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-056",
+  "reviewed_head_sha": "e3d172b9856bf23305c79e243eb069ffc211b019",
+  "review_type": "SECURITY_DATA_BOUNDARY",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "id": "HG056-S9",
+      "classification": "BLOCKER",
+      "kind": "NEW_SOURCE_DEFECT",
+      "title": "Comment-separated subscript writes become plain evidence",
+      "location": "tools/harness/compact_evidence.py:130",
+      "detail": "A quoted reserved subscript key followed by a trailing comment and newline before the closing bracket is a valid static assignment target. Both classifiers return None for evidence and reencoding keys, including typed and augmented writes. A comment between the closing bracket and the closing parenthesis of a parenthesized assignment target also evades recognition. AST parsing and literal target inspection establish the writes without executing input. Five bounded defect variants classify plain in all eight UTF encoding views and plain/gzip/XZ recovery; 225 actual bound reads accept their bytes losslessly across UTF8/16/32 and five suffixes. This violates the actual-metadata-before-read boundary; no full task PASS forgery is asserted. S6 adjacent-prefix/comment keys, S7 named ASCII escapes and S8 multiline typed identifiers now reject in reviewed forms.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security_round3/read-probes.json",
+      "required_change": "Conservatively recognize comments within reserved subscript assignment syntax without executing source or granting Python trust. Preserve ordinary commented reader expressions, quoted values and separate annotations; add shared plain/recovery/history/suffix coverage and obtain fresh exact-revision review."
+    },
+    {
+      "id": "HG056-S4",
+      "classification": "BLOCKER",
+      "kind": "REQUIRED_EXTERNAL_ORACLE_UNMET",
+      "title": "Complete immutable KL036 compatibility remains blocked",
+      "location": "docs/exec-plans/evidence/HG-056/verify_compatibility.py:33",
+      "detail": "The retained actual H1fee/B3ec history/storage audit remains FAIL at unmapped payload retirement e81cc2cc. It reaches one inherited map from the expected two and reports the unreached selected-map storage error. Separate four-entry map diagnostic PASS cannot close the full inventory. This is an external unchanged-history authority gate, distinct from the new classifier defects. Original failed captures were verified at their original T binding; no forbidden rerun, historical rewrite or consolidation authority is inferred.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security_round3/evidence-bindings.json",
+      "required_change": "Keep this external oracle BLOCKED pending a separately authorized prospective root remedy; do not filter inventory, weaken retention, rewrite historical errors or infer adoption/merge."
+    },
+    {
+      "id": "HG056-S5",
+      "classification": "BLOCKER",
+      "kind": "DEFERRED_IMPLEMENTATION_AND_MANDATORY_GATES",
+      "title": "Source-inspection authority and whole-cycle acceptance remain unmet",
+      "location": "docs/exec-plans/governance/HG-056.yaml",
+      "detail": "Source-inspection-purpose availability and suffix acceptance remain NOT_IMPLEMENTED in exact R. Root has separately authorized prospective governance; that authorization supplies no current implementation or guard bypass. Actual repaired evidence verifies 788 executions, all 784 compact cases, three passed phases each, matching workers/JUnit, 2014 collect-only identities with zero execution and isolated stdout103. These affected captures do not relabel original unit/harness/authority/compatibility/scope failures or replace mandatory whole cycles, complete immutable compatibility and root-owned final controller/admission/App/hosted gates. Exact result remains BLOCKED.",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-92e3883a232ad4e020ea9d1ca49bb12892fc4544-52c87562/SOURCE_INSPECTION_ADJUDICATION.md",
+      "required_change": "Implement separately authorized prospective governance only through its approved scope and fresh revision-bound checks/reviews. Preserve strict current availability and suffix guards until that implementation is reviewed; complete remaining mandatory/root-owned gates and preserve original outcomes."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/HG-056/security_round3/REVIEW.md",
+    "docs/exec-plans/reviews/HG-056/security_round3/classifier-probes.json",
+    "docs/exec-plans/reviews/HG-056/security_round3/read-probes.json",
+    "docs/exec-plans/reviews/HG-056/security_round3/evidence-bindings.json",
+    "docs/exec-plans/reviews/HG-056/security_round3/static-boundary.json",
+    "docs/exec-plans/evidence/HG-056/PACKET.md",
+    "docs/exec-plans/governance/HG-056.yaml",
+    "docs/exec-plans/evidence/HG-056/checks-repair-92e3883a232ad4e020ea9d1ca49bb12892fc4544-52c87562/RUN.json",
+    "docs/exec-plans/reviews/HG-056/round1/SECURITY_DATA_BOUNDARY.json",
+    "docs/exec-plans/reviews/HG-056/round2/SECURITY_DATA_BOUNDARY.json"
+  ],
+  "review_contract_version": "v0.2"
+}

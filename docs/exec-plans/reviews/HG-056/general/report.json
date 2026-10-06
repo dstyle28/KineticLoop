@@ -1,0 +1,318 @@
+{
+  "purpose": "BOUNDED_INDEPENDENT_GENERAL_REVIEW_NOT_ACCEPTANCE_EXECUTION",
+  "reviewed": "76484185581647d1a5d038eaa2eaa2c26291b8c1",
+  "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+  "base": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "implementation_unchanged_since_tested": [
+    "tools/harness/compact_evidence.py",
+    "tools/harness/validate_harness.py",
+    "tests/harness/test_compact_evidence.py",
+    "tests/harness/test_validator.py",
+    "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+    "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md"
+  ],
+  "scope": {
+    "changed_paths": [
+      "CURRENT_DOCUMENT_INDEX.json",
+      "HARNESS_DOCUMENT_MANIFEST.json",
+      "docs/exec-plans/evidence/HG-056/PACKET.md",
+      "docs/exec-plans/evidence/HG-056/PREFLIGHT.json",
+      "docs/exec-plans/evidence/HG-056/PREPARATION.json",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/1853ea60323bf0c7bd265ffec22744a0b3cb0897b1c136008a18583f7244cb00.xz",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/22672a1e0e2dd9a22473a72e11b9cef765f7409031f3b47f5c3b5132d3d6110e.xz",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/477005c5e1ac54200c6256a5f37ec95b44e4e12fee45a8d6ec164fceb9c691ea.xz",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/54ea2a7f52fd9a7b4d0b2db5f666e456adec8aa82f0d7ccfecf7fe6209d7a026.xz",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/6c68b3f689c819e45506f9efe6e9688c7f8327a9724ed96f675eb23c573f6b92.xz",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/706d8c98d66583900f1c073220a23aee540cc8cc77a825e2632cea998da3618a.xz",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.xz",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/RUN.json",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/authority.json",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb.xz",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/bfdf1d65b70997784e7ea9a8ff18dff59c241f47bc14231a759e5b147bddfbed.xz",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/bound_reader_regressions.json",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/codec_security_and_budget.json",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/compatibility.json",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/diff.json",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.xz",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/e8d6969abf48165fe76fb3acf0f5230046c4dad374280e76e6c0c4ac2bf72f86.xz",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/harness.json",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/installed_decoder_isolation.json",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/lint.json",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/scope.json",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/typecheck.json",
+      "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/unit.json",
+      "docs/exec-plans/evidence/HG-056/diagnostics/REVIEW_SOURCE_PROPOSAL_NOT_IMPLEMENTED.md",
+      "docs/exec-plans/evidence/HG-056/diagnostics/hg056-collection-storage-diagnostic.json",
+      "docs/exec-plans/evidence/HG-056/diagnostics/hg056-harness-performance-diagnostic.json",
+      "docs/exec-plans/evidence/HG-056/diagnostics/hg056-hg047-review-suffix-diagnostic.json",
+      "docs/exec-plans/evidence/HG-056/diagnostics/hg056-kl036-history-blocker.json",
+      "docs/exec-plans/evidence/HG-056/diagnostics/hg056-kl036-selected-map-diagnostic.json",
+      "docs/exec-plans/evidence/HG-056/diagnostics/hg056-performance-adjudication.json",
+      "docs/exec-plans/evidence/HG-056/diagnostics/hg056-review-source-static-diagnostic.json",
+      "docs/exec-plans/evidence/HG-056/original-reader.fixture",
+      "docs/exec-plans/evidence/HG-056/refresh_authority.py",
+      "docs/exec-plans/evidence/HG-056/run_checks.py",
+      "docs/exec-plans/evidence/HG-056/runner-capture-failure.log",
+      "docs/exec-plans/evidence/HG-056/superseded-927012be/RUN.json",
+      "docs/exec-plans/evidence/HG-056/superseded-927012be/bound_reader_regressions.log",
+      "docs/exec-plans/evidence/HG-056/superseded-927012be/codec_security_and_budget.log",
+      "docs/exec-plans/evidence/HG-056/superseded-927012be/compatibility.log",
+      "docs/exec-plans/evidence/HG-056/superseded-927012be/installed_decoder_isolation.log",
+      "docs/exec-plans/evidence/HG-056/superseded-9bb24745/RUN.json",
+      "docs/exec-plans/evidence/HG-056/superseded-9bb24745/bound_reader_regressions.log",
+      "docs/exec-plans/evidence/HG-056/superseded-9bb24745/codec_security_and_budget.log",
+      "docs/exec-plans/evidence/HG-056/superseded-9bb24745/compatibility.log",
+      "docs/exec-plans/evidence/HG-056/superseded-9bb24745/installed_decoder_isolation.log",
+      "docs/exec-plans/evidence/HG-056/verify_compatibility.py",
+      "docs/exec-plans/evidence/HG-056/verify_scope.py",
+      "docs/exec-plans/governance/HG-056.yaml",
+      "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+      "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+      "tests/harness/test_compact_evidence.py",
+      "tests/harness/test_validator.py",
+      "tools/harness/compact_evidence.py",
+      "tools/harness/validate_harness.py"
+    ],
+    "within_packet": true,
+    "frozen_files_unchanged": 3,
+    "validator_mode": "100755"
+  },
+  "actual_captured_checks": [
+    {
+      "check": "authority",
+      "recorded_result": "FAIL",
+      "recorded_exit": 1,
+      "raw_length": 488,
+      "raw_digest": "1853ea60323bf0c7bd265ffec22744a0b3cb0897b1c136008a18583f7244cb00",
+      "counts": {},
+      "bound_read": "PASS"
+    },
+    {
+      "check": "bound_reader_regressions",
+      "recorded_result": "PASS",
+      "recorded_exit": 0,
+      "raw_length": 433,
+      "raw_digest": "54ea2a7f52fd9a7b4d0b2db5f666e456adec8aa82f0d7ccfecf7fe6209d7a026",
+      "counts": {
+        "passed": 339
+      },
+      "bound_read": "PASS"
+    },
+    {
+      "check": "codec_security_and_budget",
+      "recorded_result": "PASS",
+      "recorded_exit": 0,
+      "raw_length": 752,
+      "raw_digest": "6c68b3f689c819e45506f9efe6e9688c7f8327a9724ed96f675eb23c573f6b92",
+      "counts": {
+        "passed": 613
+      },
+      "bound_read": "PASS"
+    },
+    {
+      "check": "compatibility",
+      "recorded_result": "FAIL",
+      "recorded_exit": 1,
+      "raw_length": 2449,
+      "raw_digest": "477005c5e1ac54200c6256a5f37ec95b44e4e12fee45a8d6ec164fceb9c691ea",
+      "counts": {},
+      "bound_read": "PASS"
+    },
+    {
+      "check": "diff",
+      "recorded_result": "PASS",
+      "recorded_exit": 0,
+      "raw_length": 0,
+      "raw_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "counts": {},
+      "bound_read": "PASS"
+    },
+    {
+      "check": "harness",
+      "recorded_result": "FAIL",
+      "recorded_exit": 1,
+      "raw_length": 4954,
+      "raw_digest": "e8d6969abf48165fe76fb3acf0f5230046c4dad374280e76e6c0c4ac2bf72f86",
+      "counts": {
+        "failed": 1,
+        "passed": 1842
+      },
+      "bound_read": "PASS"
+    },
+    {
+      "check": "installed_decoder_isolation",
+      "recorded_result": "PASS",
+      "recorded_exit": 0,
+      "raw_length": 180,
+      "raw_digest": "706d8c98d66583900f1c073220a23aee540cc8cc77a825e2632cea998da3618a",
+      "counts": {
+        "passed": 103
+      },
+      "bound_read": "PASS"
+    },
+    {
+      "check": "lint",
+      "recorded_result": "PASS",
+      "recorded_exit": 0,
+      "raw_length": 19,
+      "raw_digest": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "counts": {},
+      "bound_read": "PASS"
+    },
+    {
+      "check": "scope",
+      "recorded_result": "FAIL",
+      "recorded_exit": 1,
+      "raw_length": 489,
+      "raw_digest": "22672a1e0e2dd9a22473a72e11b9cef765f7409031f3b47f5c3b5132d3d6110e",
+      "counts": {},
+      "bound_read": "PASS"
+    },
+    {
+      "check": "typecheck",
+      "recorded_result": "PASS",
+      "recorded_exit": 0,
+      "raw_length": 45,
+      "raw_digest": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb",
+      "counts": {},
+      "bound_read": "PASS"
+    },
+    {
+      "check": "unit",
+      "recorded_result": "FAIL",
+      "recorded_exit": 1,
+      "raw_length": 1945,
+      "raw_digest": "bfdf1d65b70997784e7ea9a8ff18dff59c241f47bc14231a759e5b147bddfbed",
+      "counts": {
+        "failed": 1,
+        "passed": 246
+      },
+      "bound_read": "PASS"
+    }
+  ],
+  "captured_failure_diagnostics": {
+    "harness_missing_loose_object_unlink": true,
+    "scope_regular_mode_assertion": true,
+    "authority_review_reference_failure": true,
+    "runner_capture_failure_recorded": true,
+    "machine_identity_capture": "BLOCKED: original ordered collection/execution artifacts remain unchanged task scratch; no fixture bodies copied, no filtered identities or execution PASS fabricated."
+  },
+  "original_helper": {
+    "pins_match": true,
+    "classifier_plain": true,
+    "bound_read_identical": true,
+    "executed": false
+  },
+  "recorded_complete_compatibility": {
+    "base": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+    "head": "1fee7a4ef9ecb484da24522962a6df4d4c2bd9b9",
+    "candidate": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+    "expected_maps": [
+      "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json",
+      "docs/exec-plans/evidence/KL-036/reencoding-hg054-f92f92bd74033937276794010f65d6fe98f657fc/COMPACT_REENCODING.json"
+    ],
+    "validated_maps": [
+      "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json"
+    ],
+    "history_errors": [
+      "reencoding-invalid:reencoding-unmapped-payload-mutation:docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz"
+    ],
+    "storage_errors": [
+      "docs/exec-plans/evidence/KL-036/reencoding-hg054-f92f92bd74033937276794010f65d6fe98f657fc/COMPACT_REENCODING.json:evidence-envelope",
+      "reencoding-invalid:reencoding-unmapped-payload-mutation:docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz"
+    ],
+    "rerun": false
+  },
+  "external_history_deletion_confirmed": {
+    "edge": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+    "path": "docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz"
+  },
+  "new_test_inspection": [
+    {
+      "name": "test_ordinary_reserved_field_references_remain_lossless",
+      "parameterizations": 2,
+      "parameterizations_with_explicit_ids": 0
+    },
+    {
+      "name": "test_exact_original_reader_is_plain_and_history_compatible",
+      "parameterizations": 0,
+      "parameterizations_with_explicit_ids": 0
+    },
+    {
+      "name": "test_source_looking_reserved_metadata_fails_closed",
+      "parameterizations": 2,
+      "parameterizations_with_explicit_ids": 0
+    },
+    {
+      "name": "test_reserved_classification_is_owner_and_suffix_independent",
+      "parameterizations": 2,
+      "parameterizations_with_explicit_ids": 0
+    }
+  ],
+  "source_reference_inspection": [
+    {
+      "reference": "tests/harness/test_m3_milestone_closure.py",
+      "inspection_revision": "478a46a418fc759c1843ce24702ccee7aafcddc2",
+      "regular_blob": true,
+      "static_parse": "VALID",
+      "strict_classification": "PLAIN",
+      "generic_availability": false,
+      "executed": false
+    },
+    {
+      "reference": "tests/harness/test_m3_milestone_closure.py",
+      "inspection_revision": "478a46a418fc759c1843ce24702ccee7aafcddc2",
+      "regular_blob": true,
+      "static_parse": "VALID",
+      "strict_classification": "PLAIN",
+      "generic_availability": false,
+      "executed": false
+    },
+    {
+      "reference": "tests/harness/test_m3_milestone_closure.py",
+      "inspection_revision": "478a46a418fc759c1843ce24702ccee7aafcddc2",
+      "regular_blob": true,
+      "static_parse": "VALID",
+      "strict_classification": "PLAIN",
+      "generic_availability": false,
+      "executed": false
+    },
+    {
+      "reference": "docs/exec-plans/reviews/HG-047/general_round4/verify-attempt1.py",
+      "inspection_revision": "89b3d3f55de1c8e9882bfb7f5b109eb4c15da3c2",
+      "regular_blob": true,
+      "static_parse": "VALID",
+      "strict_classification": "evidence-envelope-json",
+      "generic_availability": false,
+      "executed": false
+    },
+    {
+      "reference": "docs/exec-plans/reviews/HG-047/general_round4/verify.py",
+      "inspection_revision": "89b3d3f55de1c8e9882bfb7f5b109eb4c15da3c2",
+      "regular_blob": true,
+      "static_parse": "VALID",
+      "strict_classification": "evidence-envelope-json",
+      "generic_availability": false,
+      "executed": false
+    },
+    {
+      "reference": "docs/exec-plans/reviews/HG-047/security_round4/verify.py",
+      "inspection_revision": "89b3d3f55de1c8e9882bfb7f5b109eb4c15da3c2",
+      "regular_blob": true,
+      "static_parse": "VALID",
+      "strict_classification": "evidence-envelope-json",
+      "generic_availability": false,
+      "executed": false
+    }
+  ],
+  "hg047_historical_suffix": {
+    "record": "89b3d3f55de1c8e9882bfb7f5b109eb4c15da3c2",
+    "reviewed": "b71d2d63f8bc27ab0e905b0be8a0cea5f0122a91",
+    "linear_own_paths_only": true,
+    "commits": 1,
+    "actual_guard_errors": [
+      "governance-review-revision:evidence-envelope-json"
+    ],
+    "limitation": "Path/linearity proof alone does not replace strict representation guards."
+  }
+}

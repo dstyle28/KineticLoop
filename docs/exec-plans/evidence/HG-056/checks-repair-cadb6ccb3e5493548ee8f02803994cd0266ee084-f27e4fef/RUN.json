@@ -1,0 +1,158 @@
+{
+  "tested_commit": "cadb6ccb3e5493548ee8f02803994cd0266ee084",
+  "base_commit": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "python": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+  "python_version": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+  "PYTHONPATH": "/Users/davetian/.codex/worktrees/a5f1/KineticLoop/src:/private/tmp/hg054-dependencies",
+  "versions": {
+    "pytest": "8.4.2",
+    "pytest-xdist": "3.8.0",
+    "execnet": "2.1.2"
+  },
+  "checks": [
+    {
+      "check_id": "affected_harness",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg056-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/harness -q -k 'test_compact_evidence or test_missing_blob_is_not_available_evidence_or_an_absent_path or hg056'",
+      "exit_code": 0,
+      "result": "PASS",
+      "seconds": 461.204,
+      "stdout_path": "/private/tmp/hg056-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/affected_harness.log",
+      "raw_bytes": 1233,
+      "raw_sha256": "10df9815cd4d94f5ac10df51ac3efa0d7465560f7d98b435fd96a2e9e5ca13bf",
+      "name": "affected_harness.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/affected_harness.json"
+    },
+    {
+      "check_id": "full_collection",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 1 --evidence-dir /private/tmp/hg056-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/full-collection --collect-only -q",
+      "exit_code": 0,
+      "result": "PASS",
+      "seconds": 1.604,
+      "stdout_path": "/private/tmp/hg056-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/full_collection.log",
+      "raw_bytes": 3247122,
+      "raw_sha256": "8c41c885d9246c87c2ca216f952bc997c782914b3b75a291c32aaea16c9269c3",
+      "name": "full_collection.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/full_collection.json"
+    },
+    {
+      "check_id": "installed_decoder_isolation",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_local_gate.py -q",
+      "exit_code": 0,
+      "result": "PASS",
+      "seconds": 11.686,
+      "stdout_path": "/private/tmp/hg056-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/installed_decoder_isolation.log",
+      "raw_bytes": 180,
+      "raw_sha256": "5ff2945f4d7d60afc0d339ec9fac4549a352b620f28966c489afa118ea229a36",
+      "name": "installed_decoder_isolation.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/installed_decoder_isolation.json"
+    },
+    {
+      "check_id": "scope",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-056/verify_scope.py --base 3ec7f7a38d974256a928c3687f63e4d90019e42b",
+      "exit_code": 0,
+      "result": "PASS",
+      "seconds": 3.306,
+      "stdout_path": "/private/tmp/hg056-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/scope.log",
+      "raw_bytes": 31781,
+      "raw_sha256": "b5bd281d0410ae7f634821a590292bad3a8364156215a37d86cbced88308336c",
+      "name": "scope.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/scope.json"
+    },
+    {
+      "check_id": "lint",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+      "exit_code": 0,
+      "result": "PASS",
+      "seconds": 0.075,
+      "stdout_path": "/private/tmp/hg056-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/lint.log",
+      "raw_bytes": 19,
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "name": "lint.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/lint.json"
+    },
+    {
+      "check_id": "typecheck",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+      "exit_code": 1,
+      "result": "FAIL",
+      "seconds": 0.398,
+      "stdout_path": "/private/tmp/hg056-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/typecheck.log",
+      "raw_bytes": 258,
+      "raw_sha256": "b788b9400ba01893bf2ebfe1df238589b7a70629b36a26330b36ded824f83296",
+      "name": "typecheck.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/typecheck.json"
+    },
+    {
+      "check_id": "diff",
+      "command": "git diff --check 3ec7f7a38d974256a928c3687f63e4d90019e42b cadb6ccb3e5493548ee8f02803994cd0266ee084",
+      "exit_code": 0,
+      "result": "PASS",
+      "seconds": 0.024,
+      "stdout_path": "/private/tmp/hg056-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/diff.log",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "diff.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/diff.json"
+    }
+  ],
+  "harness_artifacts": [
+    {
+      "name": "harness-collection.json.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/harness-collection.json.json"
+    },
+    {
+      "name": "harness-collection.log.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/harness-collection.log.json"
+    },
+    {
+      "name": "harness-execution.json.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/harness-execution.json.json"
+    },
+    {
+      "name": "harness-junit.xml.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/harness-junit.xml.json"
+    },
+    {
+      "name": "harness-manifest.json.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/harness-manifest.json.json"
+    },
+    {
+      "name": "harness-pytest.log.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/harness-pytest.log.json"
+    }
+  ],
+  "full_collection_artifacts": [
+    {
+      "name": "full-collection-collection.json.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/full-collection-collection.json.json"
+    },
+    {
+      "name": "full-collection-collection.log.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/full-collection-collection.log.json"
+    },
+    {
+      "name": "full-collection-execution.json.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/full-collection-execution.json.json"
+    },
+    {
+      "name": "full-collection-junit.xml.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/full-collection-junit.xml.json"
+    },
+    {
+      "name": "full-collection-manifest.json.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/full-collection-manifest.json.json"
+    },
+    {
+      "name": "full-collection-pytest.log.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/full-collection-pytest.log.json"
+    }
+  ],
+  "capture_errors": [],
+  "scratch": "/private/tmp/hg056-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef",
+  "scope": "Affected repair checks, not a full-cycle or acceptance PASS",
+  "not_rerun": [
+    "known failing immutable KL036 compatibility",
+    "whole unit/harness/authority cycle"
+  ],
+  "remaining": "External oracle and proposed source-inspection integration remain BLOCKED; old failures unchanged"
+}

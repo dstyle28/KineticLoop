@@ -1,0 +1,55 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-056",
+  "reviewed_head_sha": "76484185581647d1a5d038eaa2eaa2c26291b8c1",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "id": "HG056-G1",
+      "classification": "BLOCKER",
+      "origin": "EXTERNAL_IMMUTABLE_ORACLE",
+      "title": "Required complete KL036 compatibility is unsatisfied",
+      "body": "The actual pinned H1fee/B3ec history audit validates only the inherited HG054 map, rather than both expected maps, and rejects the e81cc2cc unmapped payload deletion; storage audit also reports the selected map evidence-envelope error and unmapped mutation. The exact original reader passes and the isolated selected four-entry map diagnostic passes, but neither supplies complete-history PASS. Independent bounded inspection confirms the payload exists at e81's parent and is deleted at e81. This is an immutable-history/consolidation authority blocker, not a defect to repair by weakening HG056's classifier. The BLOCKED result is truthful; DoD remains unmet.",
+      "required_action": "Keep compatibility FAIL/BLOCKED. Obtain a separate prospective root scope/authority decision for same-codec consolidation or task/oracle refinement; HG056 grants neither migration authority nor permission to rewrite the immutable oracle. Do not swallow audit errors, change historical objects, or claim readiness from isolated map validation."
+    },
+    {
+      "id": "HG056-G2",
+      "classification": "BLOCKER",
+      "origin": "IMPLEMENTATION_INTEGRATION",
+      "title": "Strict execution classification breaks source-inspection reference availability",
+      "file": "tools/harness/validate_harness.py",
+      "line": 1912,
+      "body": "review_reference_available first decodes the mutable current source and refuses historical fallback when that present source is rejected. HG045's three references are actually plain, regular blobs at reviewed478a46, yet generic availability fails against the later current test source. HG047's three inspectable helper blobs are absent at reviewedb71d2d and present at record89b3d3; that exact one-commit own review suffix is linear and scoped, but its strict representation guard raises evidence-envelope-json on newly added source. Bounded independent calls reproduce all six generic availability failures and the historical suffix error without executing any source. Actual unit246pass1fail and authorityFAIL remain failing gates.",
+      "required_action": "Under explicit reacquired implementation scope, clarify a non-execution source-inspection purpose and add the smallest exact-bound availability/suffix integration. Resolve the recorded reviewed SHA first; permit the original review-record SHA only after true absence at reviewed, normalized regular-blob proof, and unchanged own linear suffix/representation guards. A bounded static inspectable-program predicate may provide inspection availability only; JSON/scalars/metadata assignments must not pass it. Keep command/result/M3/storage reads on the strict decoder, separate inspection and execution caches, and test exact historical refs plus missing/nonregular/wrong-revision/borrowed/suffix/compact-negative cases. No runtime path, owner, suffix, hash exemption, blanket Python trust, HEAD borrowing, or broad decoder-error swallowing. The committed proposal remains unimplemented and is not sufficient to close this finding."
+    },
+    {
+      "id": "HG056-G3",
+      "classification": "BLOCKER",
+      "origin": "TEST_EVIDENCE_INTEGRATION",
+      "title": "Automatic negative fixture IDs prevent durable machine-identity capture",
+      "file": "tests/harness/test_compact_evidence.py",
+      "line": 2039,
+      "body": "New raw-content parameterizations lack explicit IDs. Actual ordered harness collection.json therefore embeds reserved source metadata and correctly fails evidence-envelope-shape during ancillary capture. The runner exits1, and collection/execution/JUnit identities remain task scratch rather than committed bound evidence. All eleven stdout envelopes are genuinely preserved, but their observed counts do not replace the required durable collected/executed identity evidence.",
+      "required_action": "After scope reacquisition, assign stable descriptive explicit IDs to metadata-bearing fixture cases at collection time, preserving case multiplicity, order, selectors and test semantics. Verify generated identities contain no fixture bodies, then capture actual unchanged collection/execution/JUnit through the existing strict decoder and budgets. Do not filter, redact, rewrite, truncate, or copy private fixture-body IDs from the historical execution; current capture remains BLOCKED until a genuine fresh execution supplies the identities."
+    },
+    {
+      "id": "HG056-G4",
+      "classification": "REQUIRED_FOLLOWUP",
+      "origin": "CHECK_FIXTURE_AND_COMPLETION",
+      "title": "Other actual failures and final gates remain open",
+      "body": "Harness1842pass1fail is an isolated missing-loose-object fixture unlink failure, not demonstrated classifier acceptance or a demonstrated regex stall. ScopeFAIL is the original authored100644-only verifier assertion on the existing100755 validator; the corrected own verifier and independent bound scope check do not relabel that run. Final exact-head storage/protected-base gates, installation/admission, hosted/App/fullDB and merge remain unsatisfied or NOT_RUN, as the result records.",
+      "required_action": "Preserve recorded failures and NOT_RUN states. Investigate the missing-object fixture without waiving its fail-closed oracle, perform only justified fresh checks after approved implementation changes, and retain final root-owned gates. No full-cycle rerun or installation is authorized by this review."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/evidence/HG-056/PACKET.md",
+    "docs/exec-plans/evidence/HG-056/PREFLIGHT.json",
+    "docs/exec-plans/governance/HG-056.yaml",
+    "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/RUN.json",
+    "docs/exec-plans/evidence/HG-056/diagnostics/REVIEW_SOURCE_PROPOSAL_NOT_IMPLEMENTED.md",
+    "docs/exec-plans/reviews/HG-056/general/report.json",
+    "docs/exec-plans/reviews/HG-056/general/REVIEW.md",
+    "docs/exec-plans/reviews/HG-056/general/verify.py"
+  ],
+  "review_contract_version": "v0.2"
+}

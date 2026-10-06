@@ -1,0 +1,70 @@
+{
+  "task_identity": "harness-governance-v0.1/HG-056",
+  "reviewed_head_sha": "388557f1e404de0835d3f643ab43217b0b88665f",
+  "review_type": "SECURITY_DATA_BOUNDARY",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "id": "HG056-S6",
+      "classification": "BLOCKER",
+      "kind": "NEW_SOURCE_DEFECT",
+      "title": "Prefixed and comment-separated adjacent source keys become plain evidence",
+      "location": "tools/harness/compact_evidence.py:113",
+      "detail": "Valid Python adjacent literal keys with a second r/u prefix, and parenthesized comment-separated adjacency, statically resolve to kineticloop_evidence or compact_reencoding but envelope and reencoding_record return None. The same prefix gap permits a reserved subscript write. Exact-R static probes cover UTF8/16/32 and plain/gzip/XZ recovery; actual temporary read probes accept reserved bytes losslessly across five suffixes, including bound recovered payloads. The original S2 unprefixed continued-key repair succeeds. No probe input was executed and no full task PASS forgery is asserted.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security_round2/classifier-probes.json",
+      "required_change": "Conservatively recognize these valid adjacent literal forms without executing source or trusting suffixes/owners; preserve ordinary reader literals and add shared read/recovery/history/suffix coverage with fresh exact-revision evidence."
+    },
+    {
+      "id": "HG056-S7",
+      "classification": "BLOCKER",
+      "kind": "NEW_SOURCE_DEFECT",
+      "title": "Named Unicode key escapes evade reserved classification",
+      "location": "tools/harness/compact_evidence.py:104",
+      "detail": "A source dictionary key spelling the underscore using the Python named Unicode LOW LINE escape statically resolves to kineticloop_evidence or compact_reencoding. Both classifiers return None for the valid source wrappers across UTF8/16/32 and gzip/XZ recovered views. Actual read also accepts the evidence-marker wrapper losslessly. x/u/U and octal repairs do not cover this common Python escape form.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security_round2/classifier-probes.json",
+      "required_change": "Recognize named ASCII Unicode escapes conservatively at classification, while keeping ordinary escaped string values lossless and malformed metadata fail-closed; obtain fresh bounded recovery/integration checks."
+    },
+    {
+      "id": "HG056-S8",
+      "classification": "BLOCKER",
+      "kind": "NEW_SOURCE_DEFECT",
+      "title": "Multiline typed reserved identifier writes become plain evidence",
+      "location": "tools/harness/compact_evidence.py:123",
+      "detail": "The typed-write scan ends statements at newlines. A valid parenthesized annotation spread across lines in kineticloop_evidence assignment separates the reserved declaration from equals, so envelope and reencoding_record return None and actual plain/gzip/XZ read returns the bytes. Single-line typed subscript/identifier repairs pass. Static AST parsing establishes a valid assignment without executing input.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security_round2/read-probes.json",
+      "required_change": "Cover multiline typed assignment structure without broad source exemptions or execution, preserve ordinary references and add focused immutable checks followed by fresh review."
+    },
+    {
+      "id": "HG056-S4",
+      "classification": "BLOCKER",
+      "kind": "REQUIRED_EXTERNAL_ORACLE_UNMET",
+      "title": "Complete immutable KL036 compatibility remains blocked",
+      "location": "docs/exec-plans/evidence/HG-056/verify_compatibility.py:33",
+      "detail": "The retained actual H1fee/B3ec history/storage audit remains FAIL at unmapped payload retirement e81cc2cc. It reaches one inherited map from the expected two and reports the unreached selected-map storage error. Separate four-entry map diagnostic PASS cannot close the full inventory. This is an external unchanged-history authority gate, distinct from the new classifier defects. Original failed captures were verified at their original T binding; no forbidden rerun, historical rewrite or consolidation authority is inferred.",
+      "evidence_ref": "docs/exec-plans/reviews/HG-056/security_round2/evidence-bindings.json",
+      "required_change": "Keep this external oracle BLOCKED pending a separately authorized prospective root remedy; do not filter inventory, weaken retention, rewrite historical errors or infer adoption/merge."
+    },
+    {
+      "id": "HG056-S5",
+      "classification": "BLOCKER",
+      "kind": "ROOT_DEFERRED_AUTHORITY_AND_MANDATORY_GATES",
+      "title": "Source-inspection authority and whole-cycle acceptance remain unmet",
+      "location": "docs/exec-plans/governance/HG-056.yaml",
+      "detail": "Root explicitly deferred inspection-purpose availability/suffix acceptance: refs are untyped and original HG047 fallback uses strict classification, so the proposal remains NOT_IMPLEMENTED under this repair grant. Stable IDs, real 737/all733/three-phase evidence, 1963 collect-only with zero execution, isolated103, scope modes and missing-blob affected cases now verify. Those repaired evidence issues do not clear original unit/harness/authority/compatibility/scope failures or provide full mandatory cycles and final exact-R guards. The BLOCKED result records this truthfully.",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/SOURCE_INSPECTION_ADJUDICATION.md",
+      "required_change": "Respect the root-deferred authority clarification; do not bypass untyped refs or strict original suffix guards. Complete any newly authorized acceptance and exact-head/root gates after implementation stabilizes, preserve original failures and bind fresh reviews to the new result revision."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/HG-056/security_round2/REVIEW.md",
+    "docs/exec-plans/reviews/HG-056/security_round2/classifier-probes.json",
+    "docs/exec-plans/reviews/HG-056/security_round2/read-probes.json",
+    "docs/exec-plans/reviews/HG-056/security_round2/evidence-bindings.json",
+    "docs/exec-plans/reviews/HG-056/security_round2/verify_bindings.py",
+    "docs/exec-plans/evidence/HG-056/PACKET.md",
+    "docs/exec-plans/governance/HG-056.yaml",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/RUN.json",
+    "docs/exec-plans/reviews/HG-056/round1/SECURITY_DATA_BOUNDARY.json"
+  ],
+  "review_contract_version": "v0.2"
+}

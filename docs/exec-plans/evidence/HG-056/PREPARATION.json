@@ -1,0 +1,202 @@
+{
+  "purpose": "PREPARATION_ONLY_NOT_IMMUTABLE_CHECK_PASS",
+  "base_commit": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "runs": [
+    {
+      "check": "targeted initial regressions",
+      "result": "FAIL",
+      "passed": 18,
+      "failed": 31,
+      "deselected": 529,
+      "cause": "ordinary quoted reader false positives; previously unrecognized single-quoted/source-wrapped metadata"
+    },
+    {
+      "check": "first correction targeted",
+      "result": "FAIL",
+      "passed": 46,
+      "failed": 3,
+      "deselected": 529,
+      "cause": "structural key regex omitted digits in raw_sha256/stored_sha256; corrected"
+    },
+    {
+      "check": "HG056 review fixture initial",
+      "result": "FAIL",
+      "passed": 1,
+      "failed": 1,
+      "deselected": 148,
+      "cause": "missing GENERAL rejected by earlier ci-general-review-missing guard; expected assertion corrected"
+    },
+    {
+      "check": "HG056 review fixture corrected",
+      "result": "PASS",
+      "passed": 2,
+      "failed": 0,
+      "deselected": 148
+    },
+    {
+      "check": "review round1 initial classifier repairs",
+      "result": "PASS",
+      "passed": 173,
+      "failed": 0,
+      "deselected": 530,
+      "seconds": 32.7
+    },
+    {
+      "check": "review round1 expanded shared-reader/history repairs",
+      "result": "PASS",
+      "passed": 191,
+      "failed": 0,
+      "deselected": 530,
+      "seconds": 39.85
+    },
+    {
+      "check": "isolated missing-object diagnostic",
+      "result": "PASS",
+      "passed": 2,
+      "failed": 0,
+      "seconds": 2.26,
+      "limitation": "One new isolated run; original immutable harness fixture failure remains FAIL and no fixture was changed."
+    },
+    {
+      "check": "typed assignment and malformed-container focused preparation",
+      "result": "PASS",
+      "passed": 204,
+      "failed": 0,
+      "deselected": 529,
+      "seconds": 45.56,
+      "limitation": "The immutable 8a repair run passed its existing 725 cases, but separate classification probes exposed two further source gaps; a new implementation and actual affected execution are required."
+    },
+    {
+      "check": "round2 source-wrapper preparation before fixture restructuring",
+      "result": "PASS",
+      "passed": 183,
+      "failed": 0,
+      "deselected": 597,
+      "seconds": 29.6,
+      "limitation": "Preparation only; fixtures were then separated so review-only history checks use independent repositories."
+    },
+    {
+      "check": "round2 expanded literal and multiline classification preparation",
+      "result": "PASS",
+      "passed": 199,
+      "failed": 0,
+      "deselected": 585,
+      "seconds": 35.14,
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_compact_evidence.py -q -k 'source_looking or ordinary_reserved or reserved_source_payload or reserved_source_cannot or exact_original'",
+      "limitation": "Preparation only; new immutable affected execution required."
+    },
+    {
+      "check": "round3 comment-separated subscript repair preparation",
+      "result": "PASS",
+      "passed": 235,
+      "failed": 0,
+      "deselected": 585,
+      "seconds": 54.17,
+      "limitation": "Preparation only. Independent S9 findings remain preserved at R e3d172b9; final source needs new immutable affected checks."
+    },
+    {
+      "check": "comment normalization preserves quoted values and reserved comment objects",
+      "result": "PASS",
+      "passed": 6,
+      "failed": 0,
+      "deselected": 820,
+      "seconds": 0.91,
+      "limitation": "Two newly added guards across three encodings or codecs; preparation only."
+    },
+    {
+      "check": "round4 static reserved write-target repair preparation",
+      "result": "PASS",
+      "passed": 276,
+      "failed": 0,
+      "deselected": 585,
+      "seconds": 54.27,
+      "limitation": "Preparation only; no source executed. Exact original helper/plain reads, literal unpacked Store targets, shared guards, RHS read controls and resource errors covered; final immutable affected checks required."
+    },
+    {
+      "check": "malformed and string-wrapped unpacked-target preparation",
+      "result": "PASS",
+      "passed": 297,
+      "failed": 0,
+      "deselected": 585,
+      "seconds": 60.19,
+      "limitation": "Preparation only; cadb6ccb actual865 affected PASS and typecheckFAIL preserved, three self-review gaps superseded it before formal review/result."
+    },
+    {
+      "check": "surrogate literal contents remain classification-only",
+      "result": "PASS",
+      "passed": 6,
+      "failed": 0,
+      "deselected": 882,
+      "seconds": 0.8,
+      "limitation": "Preparation only; ordinary source bytes stay lossless and reserved writes reject without executing literal contents."
+    },
+    {
+      "check": "round5 comment/prose target repair preparation",
+      "result": "PASS",
+      "passed": 30,
+      "failed": 0,
+      "deselected": 888,
+      "seconds": 9.32,
+      "limitation": "Preparation only; confirmed S11 wrapper writes reject while corresponding RHS reads stay plain."
+    },
+    {
+      "check": "round5 surrounding source and shared-guard preparation",
+      "result": "PASS",
+      "passed": 333,
+      "failed": 0,
+      "deselected": 585,
+      "seconds": 74.74,
+      "limitation": "Preparation only; final immutable affected execution and fresh reviews remain required."
+    },
+    {
+      "check": "round5 structured result repair",
+      "result": "PASS",
+      "limitation": "Exact prior d8aaf7c result YAML failed parsing after a readability edit introduced an unquoted colon-space. Prior blob and independent G5 review stay unchanged. Current structured safe_dump round-trip plus existing schema validates; no prior task or review PASS inferred."
+    },
+    {
+      "check": "round5 preparation bookkeeping initial append",
+      "result": "FAIL",
+      "cause": "Assembler used nonexistent checks key instead of existing runs key; KeyError occurred before any write. Corrected append uses runs. Actual test artifacts unchanged."
+    },
+    {
+      "check": "byte and multiline wrapper preparation",
+      "result": "PASS",
+      "passed": 27,
+      "failed": 0,
+      "deselected": 918,
+      "seconds": 7.09,
+      "limitation": "Preparation only; exact earlier byte-wrapper plain self-probe remains a failure."
+    },
+    {
+      "check": "native parser exhaustion and wrapper preparation",
+      "result": "PASS",
+      "passed": 31,
+      "failed": 0,
+      "deselected": 916,
+      "seconds": 7.66,
+      "limitation": "Preparation only; native deep read/write and simulated resource errors reject, no source executed."
+    },
+    {
+      "check": "final scoped source S1-S11 and ordinary reader preparation",
+      "result": "PASS",
+      "passed": 362,
+      "failed": 0,
+      "deselected": 585,
+      "seconds": 75.4,
+      "limitation": "Final source snapshot before immutable test commit; no broad cycle repeated before bounded source and collection checks."
+    },
+    {
+      "check": "actual collection shape and two-copy work scaling",
+      "result": "PASS",
+      "source_bytes": 3254088,
+      "one_copy_parse_calls": 55878,
+      "two_copy_parse_calls": 94047,
+      "one_copy_seconds": 6.745,
+      "two_copy_seconds": 11.368,
+      "limitation": "Both actual byte-shaped inputs classify plain. Preparation only, not executed identities. Earlier interrupted/ceiling failures and 2.43-billion work count stay preserved. Local profiling ceilings are not decoder/storage budgets."
+    }
+  ],
+  "limitations": [
+    "Preparation statuses do not replace immutable final source execution. No historical helper was executed. Negative fixture diagnostics remain task scratch; no private fixture logs are copied to published evidence."
+  ]
+}

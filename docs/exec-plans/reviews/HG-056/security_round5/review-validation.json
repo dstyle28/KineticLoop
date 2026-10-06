@@ -1,0 +1,32 @@
+{
+  "reviewed_head_sha": "d8aaf7c897e5a7653daa30b8d3bd906ba859652d",
+  "schema": "THREAD_REVIEW.schema.json",
+  "schema_validation": "PASS",
+  "canonical_matches_round5": true,
+  "findings": [
+    "HG056-S11",
+    "HG056-S4",
+    "HG056-S5"
+  ],
+  "status": "CHANGES_REQUIRED",
+  "all_references_present": true,
+  "python": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+  "reviewer_construction_corrections": [
+    "AST changed-function expectation corrected from envelope-only to reserved_ascii plus envelope",
+    "Octal probe constructed with one backslash after initial accidental double escape",
+    "Reference availability checked before writing review-validation itself; corrected assembly order"
+  ],
+  "no_candidate_outcomes_relabelled": true,
+  "artifact_sizes": {
+    "retention-and-superseded.json": 2561,
+    "classifier-probes.json": 210310,
+    "SECURITY_DATA_BOUNDARY.json": 7437,
+    "verify_probes.py": 8249,
+    "verify_bindings.py": 9792,
+    "static-boundary.json": 1251,
+    "read-probes.json": 16282,
+    "evidence-bindings.json": 38042,
+    "REVIEW.md": 2685
+  },
+  "errors": []
+}

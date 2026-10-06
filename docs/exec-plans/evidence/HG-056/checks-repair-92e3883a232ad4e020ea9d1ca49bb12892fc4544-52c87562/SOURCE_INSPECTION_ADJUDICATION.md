@@ -1,0 +1,7 @@
+# Root adjudication — source inspection remains blocked
+
+After the first independent reviews and final read-only guard, root re-granted exclusive harness_governance, harness_validator, evidence_storage and trusted_local_ci_controller resources for the original HG056 literal paths. Root authorized the independent assignment/escaping/string-value/typed-write/damaged-key/fixture-ID/scope repairs and affected checks, with fresh reviews after a stable result/evidence commit. No DB executor or reservation was granted.
+
+Root then adjudicated the deferred source-inspection proposal: current refs are untyped, and HG047 fallback depends on a suffix guard that intentionally uses strict classification. Adding inspection-purpose acceptance at availability/suffix is an authority clarification rather than cache plumbing. That piece MUST NOT be implemented or bypass its guard under the existing repair grant. Exact existing failures and the static proposal remain for separately reviewed prospective governance; no additional user question is required here. Root's pending recovery-path decision will determine the related governance packet.
+
+Source-review availability and complete immutable KL036 compatibility remain BLOCKED. A future source role cannot grant execution, M3 or storage PASS or overwrite historical records. No acceptance rewrite, consolidation authority, installer/admission, App/fullDB or normal merge follows. Root retains the implementation resource leases until explicit freeze/release; no idle DB gate is reserved.

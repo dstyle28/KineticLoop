@@ -1,0 +1,60 @@
+{
+  "R": "d8aaf7c897e5a7653daa30b8d3bd906ba859652d",
+  "python": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+  "superseded_actual_outcomes": [
+    {
+      "check_id": "typecheck",
+      "source_tested_commit": "cadb6ccb3e5493548ee8f02803994cd0266ee084",
+      "actual_result": "FAIL",
+      "actual_exit_code": 1,
+      "bytes": 258,
+      "sha256": "b788b9400ba01893bf2ebfe1df238589b7a70629b36a26330b36ded824f83296",
+      "binding_verified": true
+    }
+  ],
+  "superseded_probe_observations": {
+    "tested_commit": "cadb6ccb3e5493548ee8f02803994cd0266ee084",
+    "source_executed": false,
+    "observations": [
+      {
+        "id": "unpacked-invalid-rhs",
+        "bytes": 46,
+        "input_sha256": "ee76349fa87ab45fb5dacf91eabd5ca13c8b4bf2eb061505abbc5de23aeb2055",
+        "envelope": "plain",
+        "reencoding_record": "plain",
+        "expected": "reject"
+      },
+      {
+        "id": "unpacked-incomplete-rhs",
+        "bytes": 44,
+        "input_sha256": "b1022335e1fa0967e09a22ffdcbe2bb14cfa68e8d0e4bfe2510f3deec053ad32",
+        "envelope": "plain",
+        "reencoding_record": "plain",
+        "expected": "reject"
+      },
+      {
+        "id": "string-wrapped-unpacked-target",
+        "bytes": 59,
+        "input_sha256": "3d59873c42cc0fcb438daddc39293c17df7ecbb581572733d43fdb7da57732b8",
+        "envelope": "plain",
+        "reencoding_record": "plain",
+        "expected": "reject"
+      }
+    ],
+    "conclusion": "Superseded before formal review/result; actual865 affected and other passes remain passes, actual typecheckFAIL remains FAIL."
+  },
+  "superseded_capture_errors": [],
+  "retention_negative_cases_present_in_verified_892_execution": {
+    "test_unrelated_owner_rejects_transient_admitted_binding_mutation": 6,
+    "test_transient_foreign_conversion_cannot_disappear_before_head": 2,
+    "test_unmapped_foreign_compact_mutation_and_restoration_fails": 2,
+    "test_transient_reserved_new_map_on_pre_admission_branch_fails_globally": 36,
+    "test_retained_map_missing_bound_objects_fail_closed": 2,
+    "test_retained_map_recreation_on_base_imported_side_branch_rejects": 1,
+    "test_handwritten_or_late_side_branch_map_after_base_import_rejects": 3,
+    "test_reference_at_wrong_revision_cannot_borrow_payload_from_head": 1
+  },
+  "retention_tests_rerun": false,
+  "superseded_full_cycles_and_KL036_not_rerun": true,
+  "boundary": "Existing guard functions unchanged. These execution identities supply negative regression evidence; new wrapper probes do not claim all retention behavior PASS."
+}

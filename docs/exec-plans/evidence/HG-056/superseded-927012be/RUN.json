@@ -1,0 +1,26 @@
+{
+  "tested_commit": "927012bea2f137ac13f2b6e4f9278d42aad59c95",
+  "status": "SUPERSEDED_NOT_FINAL_ACCEPTANCE",
+  "runner_exit": 143,
+  "completed_checks": [
+    {
+      "check_id": "installed_decoder_isolation",
+      "exit_code": 0,
+      "result": "PASS",
+      "seconds": 10.1
+    }
+  ],
+  "remaining_checks": "NOT_RUN or interrupted; no unobserved child exit/count claimed",
+  "outputs_preserved": [
+    "docs/exec-plans/evidence/HG-056/superseded-927012be/bound_reader_regressions.log",
+    "docs/exec-plans/evidence/HG-056/superseded-927012be/codec_security_and_budget.log",
+    "docs/exec-plans/evidence/HG-056/superseded-927012be/compatibility.log",
+    "docs/exec-plans/evidence/HG-056/superseded-927012be/installed_decoder_isolation.log"
+  ],
+  "actual_finding": "Source x/U escapes and adjacent string key literals were classified plain; corrected before final immutable run",
+  "source_escape_reproduction": {
+    "x_escape": "PLAIN",
+    "adjacent_literals": "PLAIN"
+  },
+  "limitations": "No App/fullDB/admission execution. No negative private fixture logs copied."
+}

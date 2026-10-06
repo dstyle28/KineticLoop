@@ -1,0 +1,7 @@
+# HG056 round-four unpacked target repair
+
+Independent SECURITY_DATA_BOUNDARY S10 at R 0c3ad1ac / T 61ab06ea found four valid unpacked assignment forms with literal reserved subscript keys. Exact round4 findings,96 classifier/recovery pairs and60 temporary unbound plain reads are preserved. Those60 reads are not exact-commit execution evidence; original helper verification remains exact-bound. S9 and earlier reviewed forms closed.
+
+The additional static target analysis uses Python syntax only to collect literal Store targets of assignments, augmented assignments, valued annotations and named expressions, including nested/unpacked targets. Ordinary RHS Load uses and unvalued identifier annotations add no denial. Parsing success grants no trust or acceptance; original lexical rejection always wins. Syntax/unicode non-source results leave lexical classification unchanged; resource errors raise classification errors. It executes no input, changes no codec/budget or evidence/authorization meaning, and grants no inspection-purpose availability/suffix role. Root's separate source-inspection proposal remains NOT_IMPLEMENTED/BLOCKED.
+
+Actual prior own storage guard passed: 250 files, 1588967 stored bytes, errors empty. Prior830/all826 cases,2056 collect-only zero execution and isolated103 remain actual scoped passes, superseded by S10. All prior outcomes/review rounds remain unchanged. Immutable KL036 history and unrepeated whole-cycle/root gates remain blockers.
