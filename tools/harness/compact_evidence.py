@@ -117,7 +117,12 @@ def reserved_ascii(data: bytes) -> bool:
         keys.update(re.findall(rb"[\"']([a-z_][a-z_0-9]*)[\"']\s*\)*\s*:", view))
         keys.update(re.findall(rb"\b([a-z_][a-z_0-9]*)\s*" + assignment, view))
         keys.update(re.findall(
-            rb"[\"']([a-z_][a-z_0-9]*)[\"']\s*\)*\s*\]\s*\)*\s*" + assignment, view))
+            rb"[\"']([a-z_][a-z_0-9]*)[\"']\s*\)*\s*\]\s*\)*\s*(?:" + assignment + rb"|:)", view))
+        # Typed identifier writes also declare reserved fields. Scan each
+        # statement once; do not backtrack across arbitrary annotation text.
+        for statement in re.finditer(rb'[^;\r\n]+', view):
+            if re.search(rb'(?<![=<>!])' + assignment, statement[0]):
+                keys.update(re.findall(rb"\b([a-z_][a-z_0-9]*)\s*:", statement[0]))
         keys.update(re.findall(rb"\{\s*[\"']([a-z_][a-z_0-9]*)[\"']", view))
         # An unfinished object key after a comma still identifies damaged
         # metadata. Commas in lists/calls and quoted values do not identify keys.
@@ -130,7 +135,12 @@ def reserved_ascii(data: bytes) -> bool:
             if text in (b'{', b'[', b'('):
                 stack.append(text)
             elif text in (b'}', b']', b')'):
-                if stack and stack[-1] == {b'}': b'{', b']': b'[', b')': b'('}[text]:
+                opening = {b'}': b'{', b']': b'[', b')': b'('}[text]
+                # Damaged inner containers must not mask a later partial object
+                # key. Only a closing brace can discard the enclosing object.
+                while stack and stack[-1] not in (opening, b'{'):
+                    stack.pop()
+                if stack and stack[-1] == opening:
                     stack.pop()
             elif text == b',' and stack and stack[-1] == b'{':
                 object_commas.add(token.start())

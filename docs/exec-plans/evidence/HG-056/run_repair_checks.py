@@ -35,6 +35,8 @@ def main() -> int:
         ('affected_harness', [sys.executable, '-m', 'kineticloop.cli', 'test-harness',
             '--workers', '2', '--evidence-dir', str(scratch / 'harness'), '-q', '-k',
             'test_compact_evidence or test_missing_blob_is_not_available_evidence_or_an_absent_path or hg056']),
+        ('full_collection', [sys.executable, '-m', 'kineticloop.cli', 'test-harness',
+            '--workers', '1', '--evidence-dir', str(scratch / 'full-collection'), '--collect-only', '-q']),
         ('installed_decoder_isolation', [sys.executable, '-m', 'pytest',
             'tests/harness/test_local_gate.py', '-q']),
         ('scope', [sys.executable, 'docs/exec-plans/evidence/HG-056/verify_scope.py', '--base', BASE]),
@@ -82,9 +84,14 @@ def main() -> int:
     harness = next(record for record in records if record['check_id'] == 'affected_harness')
     artifacts = [capture(path, 'harness-' + path.name + '.json', harness['command'], harness['exit_code'])
                  for path in sorted((scratch / 'harness').iterdir()) if path.is_file()]
+    collection = next(record for record in records if record['check_id'] == 'full_collection')
+    collection_artifacts = [capture(path, 'full-collection-' + path.name + '.json',
+                                   collection['command'], collection['exit_code'])
+                            for path in sorted((scratch / 'full-collection').iterdir()) if path.is_file()]
     payload = {'tested_commit': revision, 'base_commit': BASE, 'python': sys.executable,
         'python_version': sys.version, 'PYTHONPATH': env['PYTHONPATH'], 'versions': versions,
-        'checks': records, 'harness_artifacts': artifacts, 'capture_errors': capture_errors,
+        'checks': records, 'harness_artifacts': artifacts,
+        'full_collection_artifacts': collection_artifacts, 'capture_errors': capture_errors,
         'scratch': str(scratch), 'scope': 'Affected repair checks, not a full-cycle or acceptance PASS',
         'not_rerun': ['known failing immutable KL036 compatibility', 'whole unit/harness/authority cycle'],
         'remaining': 'External oracle and proposed source-inspection integration remain BLOCKED; old failures unchanged'}

@@ -1,0 +1,19 @@
+{
+  "tested_source": "8a7686f81a1aa903b729f2fe9052b1f4da93f04d",
+  "purpose": "Static classification diagnostics, never input execution",
+  "cases": [
+    {
+      "case": "damaged_container_partial_key",
+      "classification": "PLAIN",
+      "bytes": 40,
+      "sha256": "c657b0978892b02404d3d5a810b6601c2316bc5b464bbc25c8b34a936e7659d7"
+    },
+    {
+      "case": "typed_subscript_assignment",
+      "classification": "PLAIN",
+      "bytes": 47,
+      "sha256": "98e0690fcf01f6479f9a4f12cb75b529252be021706a28167b0fdf4e8d14994c"
+    }
+  ],
+  "disposition": "Superseded repair candidate; actual affected run and full collection PASS preserved, newly found classification gaps require a new implementation"
+}
