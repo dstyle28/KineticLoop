@@ -172,3 +172,34 @@ Fresh SHA-bound GENERAL, PROTOCOL, DB_CONCURRENCY and SECURITY_DATA_BOUNDARY rev
 are mandatory. It changes no runtime, DB, frozen/product/release or CI authority,
 migrates no other task artifacts, reuses no HG051 exception and installs/adopts no
 credentialed controller. Installation/admission and App/fullDB stay separate gates.
+
+## HG057 clean successor recovery
+
+HG057 defines only the exact KL036 SUPERSEDED disposition, NOT_STARTED enforceable
+KL081 functional successor, unmerged KL038/KL039/KL064 dependency projections and
+prospective HG058 execution packet. Its literal validator scope includes these
+packets, backlog/traceability/plan, own governance/evidence/reviews, derived index
+and manifest, and only scope/projection validator tests. Eight author checks and
+fresh GENERAL, PROTOCOL, DB_CONCURRENCY and SECURITY_DATA_BOUNDARY are mandatory.
+The three dependency-only edits preserve all remaining definitions, including
+existing refinement barriers; they do not make their templates ENFORCEABLE.
+
+Original KL036 local 1fee7a4ef9ecb484da24522962a6df4d4c2bd9b9/PR99 and HG056
+final 8bfb977f67f9e1fa8af8fb43fe98ad5bebd89aea/PR102, tested
+1cb64a1baef54fc7801e4084a18db962c3528a70 and result
+0b089d7d3b0212a4e5458dc7891cbb4e831cd6f6 stay immutable unmerged failed/blocked
+history. No old evidence/result/review or branch ancestry is adopted. Replacement
+links precede coordinator-owned eventual closure; no deletion or historical rewrite.
+Disposition and governance PASS are never functional or requirement PASS.
+
+HG058's exact prospective scope and complete acceptance/installation requirements
+are in docs/exec-plans/active/HG-058.md. It requires GENERAL and
+SECURITY_DATA_BOUNDARY; its source-inspection purpose proves source availability
+only, with reviewed SHA first and absence-only exact original review-record fallback
+under regular-blob/linear own suffix proof. HG057 activates no reader implementation,
+storage trust, schema field, inspection caller or controller. Unsupported routing
+must be a concrete packet issue, never guessed permission. Execution/M3/storage/
+global history guards and original failure facts stay enforced. Actual merged HG058,
+reviewed complete installation/pins, exact controller admission and installed App
+unit/harness/fullDB/cleanup readiness precede KL081; five merged functional owners
+and all 16 fresh checks remain required. No runtime/frozen/release PASS is conferred.
