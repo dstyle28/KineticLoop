@@ -679,6 +679,12 @@ def packet_errors(task, text):
             expected_hotspot = str(task.get('shared_hotspot', False)).lower()
             if not hotspot or hotspot.group(1) != expected_hotspot:
                 errors.append('packet-shared-hotspot:' + name)
+    if name == 'KL-081':
+        environment = section(text, 'Environment and acceptance evidence') or ''
+        if ('`kineticloop_kl081_<SHA7>_<ROOT12>`' not in environment
+                or '`kineticloop-kl081-<SHA7>-<ROOT12>`' not in environment
+                or 'kl036' in environment):
+            errors.append('packet-recovery-namespace:KL-081')
     if name == 'KL-014':
         command_surface = section(text, 'Public command surface') or ''
         if bullets(command_surface) != task.get('commands', []):

@@ -1,0 +1,168 @@
+{
+  "tested_commit": "0f6c6dbb9f76244b6d77dc66726d59857ccfab0e",
+  "disposition": "SUPERSEDED; namespace finding requires corrected revision and fresh checks",
+  "new_PASS_evidence": false,
+  "checks": [
+    {
+      "check_id": "recovery",
+      "tested_commit": "0f6c6dbb9f76244b6d77dc66726d59857ccfab0e",
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "/Users/davetian/.codex/worktrees/d932/KineticLoop/docs/exec-plans/evidence/HG-057/verify_recovery.py",
+        "--base",
+        "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+        "--tested",
+        "0f6c6dbb9f76244b6d77dc66726d59857ccfab0e"
+      ],
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python /Users/davetian/.codex/worktrees/d932/KineticLoop/docs/exec-plans/evidence/HG-057/verify_recovery.py --base 3ec7f7a38d974256a928c3687f63e4d90019e42b --tested 0f6c6dbb9f76244b6d77dc66726d59857ccfab0e",
+      "PYTHONPATH": "/Users/davetian/.codex/worktrees/d932/KineticLoop:/Users/davetian/.codex/worktrees/d932/KineticLoop/src:/private/tmp/kl080-uv-cache/archive-v0/pMDaJUI6sj_futnY:/private/tmp/kl080-uv-cache/archive-v0/_eUbZQqhbuQIXsBR",
+      "start": 1791265347.52799,
+      "exit_code": 0,
+      "elapsed_seconds": 3.5370547771453857,
+      "status": "PASS_AT_SUPERSEDED_REVISION",
+      "evidence_refs": [
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/recovery-recovery.log.json"
+      ]
+    },
+    {
+      "check_id": "validator",
+      "tested_commit": "0f6c6dbb9f76244b6d77dc66726d59857ccfab0e",
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/harness/test_validator.py",
+        "-q",
+        "-p",
+        "tools.harness.parallel_observer",
+        "--junitxml=/private/tmp/hg057-author-0f6c6dbb9f76/validator-junit.xml"
+      ],
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg057-author-0f6c6dbb9f76/validator-junit.xml",
+      "PYTHONPATH": "/Users/davetian/.codex/worktrees/d932/KineticLoop:/Users/davetian/.codex/worktrees/d932/KineticLoop/src:/private/tmp/kl080-uv-cache/archive-v0/pMDaJUI6sj_futnY:/private/tmp/kl080-uv-cache/archive-v0/_eUbZQqhbuQIXsBR",
+      "start": 1791265351.065281,
+      "collection_argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/harness/test_validator.py",
+        "--collect-only",
+        "-q",
+        "-p",
+        "tools.harness.parallel_observer"
+      ],
+      "collection_exit": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 431.00627517700195,
+      "status": "PASS_AT_SUPERSEDED_REVISION",
+      "evidence_refs": [
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/validator-validator.log.json",
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/validator-validator-collection.log.json",
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/validator-validator-collection.json.json",
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/validator-validator-execution.json.json",
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/validator-validator-junit.xml.json"
+      ]
+    },
+    {
+      "check_id": "unit",
+      "tested_commit": "0f6c6dbb9f76244b6d77dc66726d59857ccfab0e",
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "kineticloop.cli",
+        "test-unit",
+        "-q",
+        "-p",
+        "tools.harness.parallel_observer",
+        "--junitxml=/private/tmp/hg057-author-0f6c6dbb9f76/unit-junit.xml"
+      ],
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg057-author-0f6c6dbb9f76/unit-junit.xml",
+      "PYTHONPATH": "/Users/davetian/.codex/worktrees/d932/KineticLoop:/Users/davetian/.codex/worktrees/d932/KineticLoop/src:/private/tmp/kl080-uv-cache/archive-v0/pMDaJUI6sj_futnY:/private/tmp/kl080-uv-cache/archive-v0/_eUbZQqhbuQIXsBR",
+      "start": 1791265782.0719821,
+      "collection_argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/unit",
+        "--collect-only",
+        "-q",
+        "-p",
+        "tools.harness.parallel_observer"
+      ],
+      "collection_exit": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 398.1755509376526,
+      "status": "PASS_AT_SUPERSEDED_REVISION",
+      "evidence_refs": [
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/unit-unit.log.json",
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/unit-unit-collection.log.json",
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/unit-unit-collection.json.json",
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/unit-unit-execution.json.json",
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/unit-unit-junit.xml.json"
+      ]
+    },
+    {
+      "check_id": "harness",
+      "tested_commit": "0f6c6dbb9f76244b6d77dc66726d59857ccfab0e",
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "kineticloop.cli",
+        "test-harness",
+        "--workers",
+        "2",
+        "--evidence-dir",
+        "/private/tmp/hg057-author-0f6c6dbb9f76/harness-run",
+        "-q"
+      ],
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg057-author-0f6c6dbb9f76/harness-run -q",
+      "PYTHONPATH": "/Users/davetian/.codex/worktrees/d932/KineticLoop:/Users/davetian/.codex/worktrees/d932/KineticLoop/src:/private/tmp/kl080-uv-cache/archive-v0/pMDaJUI6sj_futnY:/private/tmp/kl080-uv-cache/archive-v0/_eUbZQqhbuQIXsBR",
+      "start": 1791266180.2478058,
+      "exit_code": 130,
+      "elapsed_seconds": 1794.1561260223389,
+      "status": "NOT_RUN",
+      "evidence_refs": [
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/harness-harness.log.json",
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/harness-collection.json.json",
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/harness-collection.log.json",
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/harness-execution.json.json",
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/harness-junit.xml.json",
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/harness-manifest.json.json",
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/harness-pytest.log.json"
+      ]
+    },
+    {
+      "check_id": "lint",
+      "status": "NOT_RUN",
+      "reason": "runner stopped after superseded interrupted harness"
+    },
+    {
+      "check_id": "typecheck",
+      "status": "NOT_RUN",
+      "reason": "runner stopped after superseded interrupted harness"
+    },
+    {
+      "check_id": "authority",
+      "tested_commit": "0f6c6dbb9f76244b6d77dc66726d59857ccfab0e",
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "kineticloop.cli",
+        "check-harness"
+      ],
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness",
+      "PYTHONPATH": "/Users/davetian/.codex/worktrees/d932/KineticLoop:/Users/davetian/.codex/worktrees/d932/KineticLoop/src:/private/tmp/kl080-uv-cache/archive-v0/pMDaJUI6sj_futnY:/private/tmp/kl080-uv-cache/archive-v0/_eUbZQqhbuQIXsBR",
+      "start": 1791265348.6497548,
+      "exit_code": 0,
+      "elapsed_seconds": 444.4243252277374,
+      "status": "PASS_AT_SUPERSEDED_REVISION",
+      "evidence_refs": [
+        "docs/exec-plans/evidence/HG-057/superseded-0f6c6dbb9f76/authority-authority.log.json"
+      ]
+    },
+    {
+      "check_id": "diff",
+      "status": "NOT_RUN",
+      "reason": "runner stopped after superseded interrupted harness"
+    }
+  ]
+}

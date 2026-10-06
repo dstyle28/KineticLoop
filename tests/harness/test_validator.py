@@ -2625,3 +2625,14 @@ class CleanRecoveryTests(unittest.TestCase):
         self.assertEqual(v.packet_errors(task, text), [])
         changed = text.replace(task['entry_conditions'][-3], 'HG058 PASS alone')
         self.assertIn('packet-entry-condition:KL-081', v.packet_errors(task, changed))
+
+    def test_kl081_packet_rejects_old_or_malformed_owned_namespaces(self):
+        task = self.after['KL-081']
+        text = (ROOT / 'docs/exec-plans/active/KL-081.md').read_text()
+        for old, new in (('kineticloop_kl081_', 'kineticloop_kl036_'),
+                         ('kineticloop-kl081-', 'kineticloop-kl036-'),
+                         ('<ROOT12>', '<ROOT7>')):
+            with self.subTest(namespace=new):
+                changed = text.replace(old, new)
+                self.assertIn('packet-recovery-namespace:KL-081',
+                              v.packet_errors(task, changed))
