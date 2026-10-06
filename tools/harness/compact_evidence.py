@@ -97,21 +97,46 @@ def unique(pairs):
 
 def reserved_ascii(data: bytes) -> bool:
     # Classification only: neither escape nor NUL normalization accepts bytes.
-    data = re.sub(rb'\\(?:u([0-9a-fA-F]{4})|x([0-9a-fA-F]{2})|U([0-9a-fA-F]{8}))',
-                  lambda m: bytes([int(next(v for v in m.groups() if v), 16)])
-                  if int(next(v for v in m.groups() if v), 16) < 128 else m[0], data)
+    def ascii_escape(match):
+        digits = next(value for value in match.groups() if value)
+        value = int(digits, 8 if match.group(4) else 16)
+        return bytes([value]) if value < 128 else match[0]
+    data = re.sub(rb'\\(?:u([0-9a-fA-F]{4})|x([0-9a-fA-F]{2})|U([0-9a-fA-F]{8})|([0-7]{1,3}))',
+                  ascii_escape, data)
     # A field reference/string value is ordinary content. Recognize key/value
     # syntax even in broken JSON, source dictionaries, comments and string
     # wrappers; classification never parses or executes source as authority.
     data = data.replace(b'\\"', b'"').replace(b"\\'", b"'")
     # Keep the unjoined view too: malformed JSON must not hide a complete
     # reserved key by appending an adjacent token. Both views only classify.
-    joined = re.sub(rb"[\"']\s*[\"']", b"", data)
+    continued = re.sub(rb'\\\r?\n', b'', data)
+    joined = re.sub(rb"[\"']\s*[\"']", b"", continued)
     keys = set()
-    for view in (data, joined):
+    assignment = rb'(?:\*\*|//|<<|>>|[+\-*/%@&|^:])?=(?!=)'
+    for view in (data, continued, joined):
         keys.update(re.findall(rb"[\"']([a-z_][a-z_0-9]*)[\"']\s*\)*\s*:", view))
-        keys.update(re.findall(rb"\b([a-z_][a-z_0-9]*)\s*=", view))
-        keys.update(re.findall(rb"[{,]\s*[\"']([a-z_][a-z_0-9]*)[\"']", view))
+        keys.update(re.findall(rb"\b([a-z_][a-z_0-9]*)\s*" + assignment, view))
+        keys.update(re.findall(
+            rb"[\"']([a-z_][a-z_0-9]*)[\"']\s*\)*\s*\]\s*\)*\s*" + assignment, view))
+        keys.update(re.findall(rb"\{\s*[\"']([a-z_][a-z_0-9]*)[\"']", view))
+        # An unfinished object key after a comma still identifies damaged
+        # metadata. Commas in lists/calls and quoted values do not identify keys.
+        # This small lexical walk supplies only delimiter context, never trust
+        # in a source program or permission to execute it.
+        stack = []
+        object_commas = set()
+        for token in re.finditer(rb'''"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[{}\[\](),]''', view):
+            text = token[0]
+            if text in (b'{', b'[', b'('):
+                stack.append(text)
+            elif text in (b'}', b']', b')'):
+                if stack and stack[-1] == {b'}': b'{', b']': b'[', b')': b'('}[text]:
+                    stack.pop()
+            elif text == b',' and stack and stack[-1] == b'{':
+                object_commas.add(token.start())
+        keys.update(match[1] for match in re.finditer(
+            rb",\s*[\"']([a-z_][a-z_0-9]*)[\"']", view)
+                    if match.start() in object_commas)
     return (b'kineticloop_evidence' in keys or b'compact_reencoding' in keys or
             {b'payload', b'stored_sha256', b'raw_sha256'} <= keys or
             {b'authorization', b'preserved_records', b'entries'} <= keys or

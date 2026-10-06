@@ -47,3 +47,33 @@ reviewedb71d2d and require original review-record89b3d3, whose strict suffix che
 currently returns evidence-envelope-json. A proposed integration must handle this
 exact original record/suffix proof rather than borrowing HEAD. Inspection verdicts
 must never enter or satisfy the execution evidence cache.
+
+## Reacquired repair scope, after round1 reviews
+
+Root re-granted the four original HG056 implementation leases after the final guard
+and review persistence. Independent classifier/fixture-ID repairs proceed. This
+source-inspection proposal remains NOT_IMPLEMENTED and is not approved merely by
+that resource grant. Exact historical HG047 helper blobs still fail the repaired
+strict classifier; the current source-review guard and six original authority
+errors remain actual failures. Bounded AST inspection (never execution) finds real
+program definitions in all three helpers, without literal reserved-key or signature
+dictionaries; source strings/other field structures still trigger strict rejection.
+
+A reviewed-SHA-first lookup can recover the already-plain HG045 reviewed source,
+but supplying absent-at-reviewed HG047 helper references additionally needs the
+exact original review-record SHA and its complete linear own suffix proof. That
+proof currently calls storage_bookkeeping_only, which classifies the helper bytes
+through the strict storage decoder. A separate inspection predicate used solely
+by availability cannot close this guard while leaving all strict suffix storage
+checks unchanged. No current/HEAD borrowing, broad catch, path/hash exemption or
+blanket Python trust has been added.
+
+The minimum authority clarification is a non-execution source-inspection role at
+review-reference and original review-suffix validation, with exact regular Git
+bindings, absence-only fallback, immutable per-edge conversion/representation
+checks, separate cache purpose, and explicit rejection of JSON/scalars/metadata
+assignment wrappers. Existing evidence_refs are untyped and the packet explicitly
+requires reserved source wrappers to fail closed. The interaction between this
+inspection role and that storage obligation needs root adjudication before this
+piece is implemented; no new schema or authority is inferred. It creates no KL036
+consolidation permission or execution/read/storage/M3 PASS.
