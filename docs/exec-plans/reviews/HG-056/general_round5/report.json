@@ -1,0 +1,209 @@
+{
+  "purpose": "INDEPENDENT_GENERAL_METADATA_ONLY",
+  "B": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "T": "9650c791e58aeb3aa79dcd20911863b33dc4d62f",
+  "R": "d8aaf7c897e5a7653daa30b8d3bd906ba859652d",
+  "governance_schema": {
+    "status": "FAIL",
+    "exception": "ScannerError",
+    "context_line": 406,
+    "problem_line": 407,
+    "problem": "could not find expected ':'"
+  },
+  "initial_verifier_attempts": [
+    {
+      "invocations": 2,
+      "stage": "governance safe_load",
+      "observed_failure": "ScannerError from actual result on the retained invocation",
+      "first_invocation_output": "Not retained after tool yielded; session identifier was inadvertently omitted from displayed output"
+    },
+    {
+      "runs": 1,
+      "stage": "round4 copy origin comparison",
+      "outcome": "reviewer assertion failure: compared to result commit0c rather than review-record commit f535; corrected in finish.py"
+    }
+  ],
+  "checks_verified_before_verifier_exceptions": [
+    {
+      "check_id": "affected_harness",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg056-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/harness -q -k 'test_compact_evidence or test_missing_blob_is_not_available_evidence_or_an_absent_path or hg056'",
+      "result": "PASS",
+      "exit_code": 0,
+      "raw_bytes": 1233,
+      "raw_sha256": "a320bce86a385658470e5455037bf92a94415fec6ea221ad826e2ef9ea6a3fd2"
+    },
+    {
+      "check_id": "full_collection",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 1 --evidence-dir /private/tmp/hg056-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/full-collection --collect-only -q",
+      "result": "PASS",
+      "exit_code": 0,
+      "raw_bytes": 3250488,
+      "raw_sha256": "b25b0634f855d192dac35601ea1cf7b96fce72753ce02f0024cd5be123846510"
+    },
+    {
+      "check_id": "installed_decoder_isolation",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_local_gate.py -q",
+      "result": "PASS",
+      "exit_code": 0,
+      "raw_bytes": 180,
+      "raw_sha256": "e8ad5f54df5b3972397d686ba6f7545fb3dd56747e092bb8e7f9153f126ecdf5"
+    },
+    {
+      "check_id": "scope",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-056/verify_scope.py --base 3ec7f7a38d974256a928c3687f63e4d90019e42b",
+      "result": "PASS",
+      "exit_code": 0,
+      "raw_bytes": 37234,
+      "raw_sha256": "16f66502ba248a965b99758c5e8955118df1a574647d4257583e0c60c9c7da1d"
+    },
+    {
+      "check_id": "lint",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+      "result": "PASS",
+      "exit_code": 0,
+      "raw_bytes": 19,
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "check_id": "typecheck",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+      "result": "PASS",
+      "exit_code": 0,
+      "raw_bytes": 45,
+      "raw_sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb"
+    },
+    {
+      "check_id": "diff",
+      "command": "git diff --check 3ec7f7a38d974256a928c3687f63e4d90019e42b 9650c791e58aeb3aa79dcd20911863b33dc4d62f",
+      "result": "PASS",
+      "exit_code": 0,
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "execution_assertions_completed_before_exceptions": {
+    "executed": 892,
+    "compact": 888,
+    "phases": 2676,
+    "workers": [
+      "gw0",
+      "gw1"
+    ],
+    "junit_and_worker_identity_sets": "PASS",
+    "collection_only": 2118,
+    "collection_starts": 0,
+    "collection_reports": 0,
+    "collection_junit_cases": 0,
+    "isolated_stdout": 103
+  },
+  "preceding_verifier_assertions": "Seven bound reads, all artifact manifest hashes, phase identities, literal scope, regular Git modes, frozen/requirement/backlog/map bytes, exact T-R parent and source-equivalent suffix all passed before result safe_load.",
+  "isolated_identity_artifact_claimed": false,
+  "source_scope_review": "PASS",
+  "derived_hashes_and_manifest": "PASS",
+  "prior_review_artifacts_unchanged": 56,
+  "round4_copies_exact": true,
+  "round4_result_snapshot_exact": true,
+  "prior_evidence_unchanged_T_R": 249,
+  "cadb_typecheck": "FAIL_PRESERVED",
+  "cadb_self_probes": 3,
+  "prior_required_outcomes": {
+    "purpose": "Preserved prior actual outcomes, not executions at the repaired source",
+    "result_revision": "76484185581647d1a5d038eaa2eaa2c26291b8c1",
+    "tested_commit": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+    "checks_run": [
+      {
+        "check_id": "authority",
+        "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness",
+        "result": "FAIL",
+        "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/authority.json"
+      },
+      {
+        "check_id": "bound_reader_regressions",
+        "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_review_evidence_provenance.py tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -q",
+        "result": "PASS",
+        "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/bound_reader_regressions.json"
+      },
+      {
+        "check_id": "codec_security_and_budget",
+        "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_compact_evidence.py -q",
+        "result": "PASS",
+        "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/codec_security_and_budget.json"
+      },
+      {
+        "check_id": "compatibility",
+        "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-056/verify_compatibility.py",
+        "result": "FAIL",
+        "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/compatibility.json"
+      },
+      {
+        "check_id": "diff",
+        "command": "git diff --check 3ec7f7a38d974256a928c3687f63e4d90019e42b a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+        "result": "PASS",
+        "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/diff.json"
+      },
+      {
+        "check_id": "harness",
+        "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg056-checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/harness -q",
+        "result": "FAIL",
+        "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/harness.json"
+      },
+      {
+        "check_id": "installed_decoder_isolation",
+        "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_local_gate.py -q",
+        "result": "PASS",
+        "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/installed_decoder_isolation.json"
+      },
+      {
+        "check_id": "lint",
+        "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+        "result": "PASS",
+        "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/lint.json"
+      },
+      {
+        "check_id": "scope",
+        "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-056/verify_scope.py --base 3ec7f7a38d974256a928c3687f63e4d90019e42b",
+        "result": "FAIL",
+        "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/scope.json"
+      },
+      {
+        "check_id": "typecheck",
+        "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+        "result": "PASS",
+        "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/typecheck.json"
+      },
+      {
+        "check_id": "unit",
+        "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit -q --junitxml=/private/tmp/hg056-checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/unit.xml",
+        "result": "FAIL",
+        "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/unit.json"
+      }
+    ],
+    "original_result_ref": "docs/exec-plans/evidence/HG-056/checks-repair-8a7686f81a1aa903b729f2fe9052b1f4da93f04d-2250f602/ROUND1_RESULT.yaml",
+    "status": "Original failures/PASS unchanged; new affected checks do not relabel a whole cycle"
+  },
+  "original_helper": {
+    "pins": "PASS",
+    "plain_classification": "PASS",
+    "bound_read_byte_identical": true,
+    "executed": false
+  },
+  "external_unmapped_deletion_tree_confirmed": true,
+  "immutable_whole_oracle": "FAIL_RETAINED_NO_RERUN",
+  "source_inspection_authority": "NOT_IMPLEMENTED",
+  "decoder_new_functions": [
+    "source_target_keys",
+    "source_write_keys"
+  ],
+  "decoder_changed_functions": [
+    "envelope",
+    "reserved_ascii"
+  ],
+  "validator_changed_functions": [
+    "governance_allowed_patterns",
+    "validate"
+  ],
+  "new_general_defects": 1,
+  "exact_R_storage_audit": "ROOT_OWNED_NOT_CLAIMED",
+  "whole_cycles_rerun": false,
+  "independent_execution": "Own verifier/finish metadata checks only; no input/helper execution, private historical payload/DB/network/install/admit/App/merge."
+}

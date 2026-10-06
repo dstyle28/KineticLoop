@@ -1,0 +1,13 @@
+# HG056 SECURITY_DATA_BOUNDARY round five
+
+Reviewed R `d8aaf7c897e5a7653daa30b8d3bd906ba859652d`, tested T `9650c791e58aeb3aa79dcd20911863b33dc4d62f`, protected B `3ec7f7a38d974256a928c3687f63e4d90019e42b`. Outcome: CHANGES_REQUIRED.
+
+HG056-S11 is a concrete source defect: four comment/prose wrapped literal reserved unpacked assignments classify plain in all 96 UTF/recovery pairs and return byte-identically from 60 working-file plain reads. Static analysis of their underlying assignments proves reserved literal Store targets. Equivalent ordinary RHS/read controls remain plain. No fixture/source input was executed; no complete PASS forgery is claimed. No incidental for/with finding is made.
+
+S1–S3 and S6–S10 close only in the reviewed forms. The original helper retains exact Git blob/byte/hash pins and its actual bound read is byte-identical; it was never executed. The new AST routines only add denial keys after lexical rejection and never grant source trust. Other decoder, codec, binding, history, retained-map and suffix function bodies are unchanged.
+
+Final immutable affected evidence independently verifies 892 executed identities/all888 compact, 2676 passed phases, matching two worker collections and JUnit, full2118 collection with zero execution, isolated stdout103, seven affected checks PASS and no capture errors. Retention negative identities in the same verified execution cover transient/foreign/restoration/pre-admission/missing-object/late-admission cases. No full-cycle rerun was performed. T5 typecheck FAIL and three hostile probe outcomes remain actual preserved failures; their repaired T6 forms reject.
+
+HG056-S4 remains the immutable KL036 external inventory failure (one reached map of two, unmapped same-codec payload retirement and selected-map storage error). HG056-S5 remains deferred inspection-purpose implementation and mandatory/root gates. Current availability/suffix guards remain strict. These are independent from S11; no retention waiver, historical rewrite, installation, admission, App, signing, merge, requirement or release PASS follows. Root separately owns exact-R storage auditing.
+
+Reviewer verification used the established absolute Python3.12 interpreter. Common evidence-reading mechanics were adapted from the earlier reviewer tool, and all assertions reran on exact committed R/T blobs. Review script corrections included the expected pre-existing changed-function list and removal of an accidental double escape in a constructed octal probe; these were reviewer construction errors, not candidate failures. Metadata remains lossless and bounded; no raw historical/private payload logs or full diffs were persisted.
