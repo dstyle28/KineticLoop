@@ -1,0 +1,776 @@
+{
+  "R": "388557f1e404de0835d3f643ab43217b0b88665f",
+  "T": "272784e9966206c7ed35acccf9dcb2cb67f33d9d",
+  "B": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "checks": [
+    {
+      "check_id": "affected_harness",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg056-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/harness -q -k 'test_compact_evidence or test_missing_blob_is_not_available_evidence_or_an_absent_path or hg056'",
+      "exit_code": 0,
+      "reported_result": "PASS",
+      "read_binding": "PASS",
+      "raw_sha256": "c093c2dbf332290135b18c4115bb7929dc3b6a00b13903ed78080c7aa70d466d",
+      "raw_bytes": 1073,
+      "observed_summary_counts": {
+        "passed": 737
+      }
+    },
+    {
+      "check_id": "full_collection",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 1 --evidence-dir /private/tmp/hg056-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/full-collection --collect-only -q",
+      "exit_code": 0,
+      "reported_result": "PASS",
+      "read_binding": "PASS",
+      "raw_sha256": "70048732a30052efce6b17a3a628c6dd4cd18d49b5f310f8aef390b7888be613",
+      "raw_bytes": 3231543,
+      "observed_summary_counts": {
+        "passed": 1,
+        "skipped": 1,
+        "error": 1,
+        "deselected": 1,
+        "xfailed": 1,
+        "xpassed": 1,
+        "failed": 1
+      }
+    },
+    {
+      "check_id": "installed_decoder_isolation",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_local_gate.py -q",
+      "exit_code": 0,
+      "reported_result": "PASS",
+      "read_binding": "PASS",
+      "raw_sha256": "e8ad5f54df5b3972397d686ba6f7545fb3dd56747e092bb8e7f9153f126ecdf5",
+      "raw_bytes": 180,
+      "observed_summary_counts": {
+        "passed": 103
+      }
+    },
+    {
+      "check_id": "scope",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-056/verify_scope.py --base 3ec7f7a38d974256a928c3687f63e4d90019e42b",
+      "exit_code": 0,
+      "reported_result": "PASS",
+      "read_binding": "PASS",
+      "raw_sha256": "7a8c9461a58d80a88541121c6a51bc82bea9ae7c9402b6167a8f83882193bf24",
+      "raw_bytes": 12182,
+      "observed_summary_counts": {}
+    },
+    {
+      "check_id": "lint",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+      "exit_code": 0,
+      "reported_result": "PASS",
+      "read_binding": "PASS",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_bytes": 19,
+      "observed_summary_counts": {}
+    },
+    {
+      "check_id": "typecheck",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+      "exit_code": 0,
+      "reported_result": "PASS",
+      "read_binding": "PASS",
+      "raw_sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb",
+      "raw_bytes": 45,
+      "observed_summary_counts": {}
+    },
+    {
+      "check_id": "diff",
+      "command": "git diff --check 3ec7f7a38d974256a928c3687f63e4d90019e42b 272784e9966206c7ed35acccf9dcb2cb67f33d9d",
+      "exit_code": 0,
+      "reported_result": "PASS",
+      "read_binding": "PASS",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0,
+      "observed_summary_counts": {}
+    }
+  ],
+  "phases": {
+    "affected_harness": {
+      "mode": "EXECUTION",
+      "tested_commit": "272784e9966206c7ed35acccf9dcb2cb67f33d9d",
+      "dirty_source": false,
+      "command": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "tools.harness.parallel_observer",
+        "tests/harness",
+        "-q",
+        "-k",
+        "test_compact_evidence or test_missing_blob_is_not_available_evidence_or_an_absent_path or hg056",
+        "-n",
+        "2",
+        "--dist",
+        "load",
+        "--maxprocesses",
+        "4",
+        "--max-worker-restart",
+        "0",
+        "--maxschedchunk",
+        "1",
+        "--junitxml=/private/tmp/hg056-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/harness/junit.xml"
+      ],
+      "collection_command": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "tools.harness.parallel_observer",
+        "tests/harness",
+        "-q",
+        "-k",
+        "test_compact_evidence or test_missing_blob_is_not_available_evidence_or_an_absent_path or hg056",
+        "--collect-only",
+        "-q",
+        "-n",
+        "0"
+      ],
+      "collected_identities": 737,
+      "ordered_collection_sha256": "5bfeba7f54c4ce752af89368bde5aef48174b7d0b2ec0e2923d867eeb2af296d",
+      "workers": 2,
+      "started_count": 737,
+      "reports_count": 2211,
+      "worker_collection_counts": {
+        "gw0": 737,
+        "gw1": 737
+      },
+      "junit_cases": 737,
+      "junit_failures": 0,
+      "junit_errors": 0,
+      "junit_skips": 0,
+      "all_manifest_files_match_raw": true,
+      "execution_complete": true,
+      "compact_case_identities": 733,
+      "all_three_phases_passed": true,
+      "junit_identity_set_matches": true,
+      "execution_identity_set_matches": true
+    },
+    "full_collection": {
+      "mode": "COLLECTION_ONLY",
+      "tested_commit": "272784e9966206c7ed35acccf9dcb2cb67f33d9d",
+      "dirty_source": false,
+      "command": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "tools.harness.parallel_observer",
+        "tests/harness",
+        "--collect-only",
+        "-q",
+        "-n",
+        "0",
+        "--dist",
+        "load",
+        "--maxprocesses",
+        "4",
+        "--max-worker-restart",
+        "0",
+        "--maxschedchunk",
+        "1",
+        "--junitxml=/private/tmp/hg056-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/full-collection/junit.xml"
+      ],
+      "collection_command": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "tools.harness.parallel_observer",
+        "tests/harness",
+        "--collect-only",
+        "-q",
+        "--collect-only",
+        "-q",
+        "-n",
+        "0"
+      ],
+      "collected_identities": 1963,
+      "ordered_collection_sha256": "496153580fe1fc6ac50105c104b062970121a92330fa01f1619c9d3bbb5d7411",
+      "workers": 1,
+      "started_count": 0,
+      "reports_count": 0,
+      "worker_collection_counts": {
+        "serial": 1963
+      },
+      "junit_cases": 0,
+      "junit_failures": 0,
+      "junit_errors": 0,
+      "junit_skips": 0,
+      "all_manifest_files_match_raw": true,
+      "execution_complete": false,
+      "executed_identities": 0
+    }
+  },
+  "isolated_count_source": "Actual captured stdout: 103 passed; no separate ordered isolated identity artifact is claimed",
+  "scope": {
+    "head": "272784e9966206c7ed35acccf9dcb2cb67f33d9d",
+    "changed_path_count": 115,
+    "tree_modes": {
+      "100644": 114,
+      "100755": 1
+    },
+    "exact_changed_paths_match": true,
+    "frozen_paths_verified": 3
+  },
+  "critical_source_tested_to_result_identical": true,
+  "tested_to_result_changed_paths": [
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/3053796bffebd54bbfd64b9ab5e6d657b0debf1af083fb3040545a64c77163e2.xz",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/37da8d74dfb847b510cd377db9fa7a49ea861bf9f52af76370e104e91ae9f1d8.xz",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/560c6a23bdd1b826fbaecba7e4c5d2d577eb0d0e85d05645ab585b654f8f9ff0.xz",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/5a0a283ef90387c35ebdcee3fa1e4ee47d96dda5b6f8cf4bc91868370cf71e30.xz",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/6ce8588f6b004fa22e9c45abd6877683ea01d8ee4da11f8b388354307a556eb5.xz",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/6d19edcc8d35720fc5fcbf3c2941ea64c341abc75481ec089c06067e7899f831.xz",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/70048732a30052efce6b17a3a628c6dd4cd18d49b5f310f8aef390b7888be613.xz",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/7a8c9461a58d80a88541121c6a51bc82bea9ae7c9402b6167a8f83882193bf24.xz",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.xz",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/8400dc3d988dbac6bc69b798926ce56fa481a03e365772d666a551eeba4112c4.xz",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/PRIOR_REQUIRED_CHECKS.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/RUN.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/SOURCE_INSPECTION_ADJUDICATION.md",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/a388600afe76af9d1a756dfe96d867247ed2702737cf6875dd2bf7947a0d6b8f.xz",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/affected_harness.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/b1037b67106eaefc2b520e996e8f094d1ffb3ce64bd862cf00aea9d43b17a05b.xz",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb.xz",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/c093c2dbf332290135b18c4115bb7929dc3b6a00b13903ed78080c7aa70d466d.xz",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/diff.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.xz",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/e8ad5f54df5b3972397d686ba6f7545fb3dd56747e092bb8e7f9153f126ecdf5.xz",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/full-collection-collection.json.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/full-collection-collection.log.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/full-collection-execution.json.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/full-collection-junit.xml.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/full-collection-manifest.json.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/full-collection-pytest.log.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/full_collection.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/harness-collection.json.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/harness-collection.log.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/harness-execution.json.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/harness-junit.xml.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/harness-manifest.json.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/harness-pytest.log.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/installed_decoder_isolation.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/lint.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/scope.json",
+    "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/typecheck.json",
+    "docs/exec-plans/governance/HG-056.yaml"
+  ],
+  "prior_actual_outcomes": [
+    {
+      "check_id": "authority",
+      "source_tested_commit": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "result": "FAIL",
+      "exit_code": 1,
+      "bound_read": "PASS",
+      "raw_sha256": "1853ea60323bf0c7bd265ffec22744a0b3cb0897b1c136008a18583f7244cb00",
+      "raw_bytes": 488
+    },
+    {
+      "check_id": "bound_reader_regressions",
+      "source_tested_commit": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "result": "PASS",
+      "exit_code": 0,
+      "bound_read": "PASS",
+      "raw_sha256": "54ea2a7f52fd9a7b4d0b2db5f666e456adec8aa82f0d7ccfecf7fe6209d7a026",
+      "raw_bytes": 433
+    },
+    {
+      "check_id": "codec_security_and_budget",
+      "source_tested_commit": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "result": "PASS",
+      "exit_code": 0,
+      "bound_read": "PASS",
+      "raw_sha256": "6c68b3f689c819e45506f9efe6e9688c7f8327a9724ed96f675eb23c573f6b92",
+      "raw_bytes": 752
+    },
+    {
+      "check_id": "compatibility",
+      "source_tested_commit": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "result": "FAIL",
+      "exit_code": 1,
+      "bound_read": "PASS",
+      "raw_sha256": "477005c5e1ac54200c6256a5f37ec95b44e4e12fee45a8d6ec164fceb9c691ea",
+      "raw_bytes": 2449,
+      "compatibility_objects": [
+        {
+          "history_errors": [
+            "reencoding-invalid:reencoding-unmapped-payload-mutation:docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz"
+          ],
+          "validated_maps": [
+            "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json"
+          ]
+        },
+        {
+          "base": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+          "candidate": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+          "expected_maps": [
+            "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json",
+            "docs/exec-plans/evidence/KL-036/reencoding-hg054-f92f92bd74033937276794010f65d6fe98f657fc/COMPACT_REENCODING.json"
+          ],
+          "head": "1fee7a4ef9ecb484da24522962a6df4d4c2bd9b9",
+          "history_errors": [
+            "reencoding-invalid:reencoding-unmapped-payload-mutation:docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz"
+          ],
+          "original_blob": "cde206aee1eb240862863069104ad291ff98dedb",
+          "original_bytes": 8063,
+          "original_revision": "f93364d90aaae9b0b62706fd4e4fe395a8cd8ec5",
+          "original_sha256": "a602ee684cdd7b4d8169388d2a2fe821fc6bc5beadf0d69a593c2ed260ffe382",
+          "purpose": "READ_ONLY_COMPATIBILITY_NOT_TASK_APP_OR_ADMISSION_PASS",
+          "storage_audit": {
+            "base": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+            "errors": [
+              "docs/exec-plans/evidence/KL-036/reencoding-hg054-f92f92bd74033937276794010f65d6fe98f657fc/COMPACT_REENCODING.json:evidence-envelope",
+              "reencoding-invalid:reencoding-unmapped-payload-mutation:docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz"
+            ],
+            "files": 672,
+            "head": "1fee7a4ef9ecb484da24522962a6df4d4c2bd9b9",
+            "identity": "KL-036",
+            "remedy": "python tools/harness/compact_evidence.py capture --help",
+            "stored_bytes": 9072305
+          },
+          "validated_maps": [
+            "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json"
+          ]
+        }
+      ]
+    },
+    {
+      "check_id": "diff",
+      "source_tested_commit": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "result": "PASS",
+      "exit_code": 0,
+      "bound_read": "PASS",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "check_id": "harness",
+      "source_tested_commit": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "result": "FAIL",
+      "exit_code": 1,
+      "bound_read": "PASS",
+      "raw_sha256": "e8d6969abf48165fe76fb3acf0f5230046c4dad374280e76e6c0c4ac2bf72f86",
+      "raw_bytes": 4954
+    },
+    {
+      "check_id": "installed_decoder_isolation",
+      "source_tested_commit": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "result": "PASS",
+      "exit_code": 0,
+      "bound_read": "PASS",
+      "raw_sha256": "706d8c98d66583900f1c073220a23aee540cc8cc77a825e2632cea998da3618a",
+      "raw_bytes": 180
+    },
+    {
+      "check_id": "lint",
+      "source_tested_commit": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "result": "PASS",
+      "exit_code": 0,
+      "bound_read": "PASS",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_bytes": 19
+    },
+    {
+      "check_id": "scope",
+      "source_tested_commit": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "result": "FAIL",
+      "exit_code": 1,
+      "bound_read": "PASS",
+      "raw_sha256": "22672a1e0e2dd9a22473a72e11b9cef765f7409031f3b47f5c3b5132d3d6110e",
+      "raw_bytes": 489
+    },
+    {
+      "check_id": "typecheck",
+      "source_tested_commit": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "result": "PASS",
+      "exit_code": 0,
+      "bound_read": "PASS",
+      "raw_sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb",
+      "raw_bytes": 45
+    },
+    {
+      "check_id": "unit",
+      "source_tested_commit": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "result": "FAIL",
+      "exit_code": 1,
+      "bound_read": "PASS",
+      "raw_sha256": "bfdf1d65b70997784e7ea9a8ff18dff59c241f47bc14231a759e5b147bddfbed",
+      "raw_bytes": 1945
+    }
+  ],
+  "source_inspection": "Root deferred authority clarification, NOT_IMPLEMENTED; strict original HG047 suffix unchanged",
+  "pins": [
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/RUN.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "ffc94e78b93397e80c0ba1d0ea1c2b5803433ed2",
+      "sha256": "de9df7814e7bb970a83bbe00c8e55e93ee6af5c0dab8a2ffa5676527fe34d94b",
+      "bytes": 8368
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/affected_harness.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "d8801725b21bf425ad37fc3e00a909692b0cbd8f",
+      "sha256": "4f29304a935e0e7b3f10201089a00094594c9a784ab21f5eba8b1f41d5742b1f",
+      "bytes": 903
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/c093c2dbf332290135b18c4115bb7929dc3b6a00b13903ed78080c7aa70d466d.xz",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "9a8f77f69f197b22903810c8bbe18f8018798a60",
+      "sha256": "de5eaf325388bd22adfaae8e98d99f2a816cb18bb7d9ad4d6dbf5d9de17f432e",
+      "bytes": 268
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/full_collection.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "8104132b57d0ab1b3c3f4fc82917a688ce883d08",
+      "sha256": "6050864dbbaa5d283b9f56bb7b69bea9aaed8f1294ca81c6b6ca512e4c9df5ad",
+      "bytes": 936
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/70048732a30052efce6b17a3a628c6dd4cd18d49b5f310f8aef390b7888be613.xz",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "2875f8e5f658c7b7e2fe55095d0464d5efcec0e4",
+      "sha256": "9194e7669451ac9115b7d824933f402a28b349d11883278251901eae4877f7fb",
+      "bytes": 55560
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/installed_decoder_isolation.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "82c4a6164fc2ab44c0114d3f5e70f7925bc8d360",
+      "sha256": "c01dc6dd530d307124c4dca784331e247f7cc15e34224f60115ea7c56e8710db",
+      "bytes": 701
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/e8ad5f54df5b3972397d686ba6f7545fb3dd56747e092bb8e7f9153f126ecdf5.xz",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "184a84d766eecf1a3e6780735db0514c1ec28614",
+      "sha256": "2027ca05207ece22cf3574fc20c33103d0d666c929d774a0498ba9093f48ca86",
+      "bytes": 112
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/scope.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "f816789e16750650962efebd84fbb9027609bc2b",
+      "sha256": "5f621360660a7b89c5f663fed2d979b8a3d1aee133eb78dc4e7c0310239c5e1f",
+      "bytes": 733
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/7a8c9461a58d80a88541121c6a51bc82bea9ae7c9402b6167a8f83882193bf24.xz",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "42529f3d2f41137a15d5d102702b77f01240e60e",
+      "sha256": "cb6eab75763b27e333609a0283d821f5f97fd6bd2d686f36759c259e4ab7924e",
+      "bytes": 2240
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/lint.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "b7e77790e4293ab0c2451c1814b9b06dc18f7595",
+      "sha256": "f7b643ca0f46271c80fa89ebd8c6d6ff45603d8ec8f1d6dcb62c2263c27ce377",
+      "bytes": 656
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.xz",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "82eed823562025ce14421cafda0c002ac356f983",
+      "sha256": "76746c316d09ceba3ee70f618ecbaa3740cee45a2173af3c3e7eb3a11ef73eea",
+      "bytes": 76
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/typecheck.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "8f424e977159d4cd76f399d4b300cf690b580b85",
+      "sha256": "0168479a63aa2d4329163473ed0ac2536229ffa91160cc524a80f4b6865ac6ee",
+      "bytes": 662
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb.xz",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "304abea21f6d7ee7db08c39362c90de98b5872cb",
+      "sha256": "1e3a9fdbc18248295b125a4decdc4f6b20bf5a1909e273c8f0cabc61bb36ad3a",
+      "bytes": 104
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/diff.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "d1c9455860941658b229c22b414d0f1a198f7b13",
+      "sha256": "9a623f0b6768c0b32202262c12e0226b93c1a86177d645fedac5b7b59e7e1e2b",
+      "bytes": 667
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.xz",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "ea28d9e05f69d458ccfaf4aa985d30d366bfbc25",
+      "sha256": "0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275",
+      "bytes": 32
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/harness-collection.json.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "2fa83ca52d4ea7405d0b2432983ed820c884efb9",
+      "sha256": "ca24e49adcdca5f0f8119fa30206748a8588a730f0b0c5a7a3c4e6694d0ec9f5",
+      "bytes": 903
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/560c6a23bdd1b826fbaecba7e4c5d2d577eb0d0e85d05645ab585b654f8f9ff0.xz",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "74c16304877f3e02e2da01bdb0df516037494ee7",
+      "sha256": "ce79bfea69bcfbd12a7c3dfab33df380b9b0deb0f358f70e738590d36d74a67d",
+      "bytes": 6072
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/harness-collection.log.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "101edb42642e1d7fe9c2bf56675d78c123f7e3ba",
+      "sha256": "641110d961f9c2bde9800974bdba181fb6ae57718da5d37686f4d770dfdaeddd",
+      "bytes": 881
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/6d19edcc8d35720fc5fcbf3c2941ea64c341abc75481ec089c06067e7899f831.xz",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "48fad2faa7ec6d55a21a3f8b3d052fd02a2d70d1",
+      "sha256": "add469225547fb1d35f3ab527b87459654ff6f7f526ce3ade9a3fb02f8b5f1dd",
+      "bytes": 144
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/harness-execution.json.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "ac0bfba15f1b588a094fcbd0341ab43e8becb132",
+      "sha256": "8eaab11ea5b8f4fa694b765cc057eb304657a495fbe617813e3b03cd2a6ba845",
+      "bytes": 905
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/5a0a283ef90387c35ebdcee3fa1e4ee47d96dda5b6f8cf4bc91868370cf71e30.xz",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "74f91845ddd3846612dbd4013d66add1a16bd7ab",
+      "sha256": "1b0df165f2099ec6cf6793b55d4c13fa711a2fea49dded476d5910f7d31527b9",
+      "bytes": 39944
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/harness-junit.xml.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "30ce096a02f7eb2a0b0e166e56328158aa4c877e",
+      "sha256": "44275fac46c523316c423ba7e55ac13377691d0b91241c86867c7b4285af8387",
+      "bytes": 904
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/b1037b67106eaefc2b520e996e8f094d1ffb3ce64bd862cf00aea9d43b17a05b.xz",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "7d4a3915f0f1062e98317072aff8483cbba53b35",
+      "sha256": "de68c5a5c0cb89b23ee18be87a78fdcf7ea8a4aa86f23edce3507b7dd242d833",
+      "bytes": 8440
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/harness-manifest.json.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "85fa944f64b58cee0833d610c8948fff930dc7a4",
+      "sha256": "fb2de01a3c09072edb36718213394f2e1399d0b6f965a586b00a77871d953a9c",
+      "bytes": 883
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/6ce8588f6b004fa22e9c45abd6877683ea01d8ee4da11f8b388354307a556eb5.xz",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "7ee3d6e0975b869de5c820d3a8e13efb85a86c52",
+      "sha256": "f1875b94207d039c352226be3dbbce9d9c603aa627e353dcd64cb3c34c479e45",
+      "bytes": 1080
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/harness-pytest.log.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "d8801725b21bf425ad37fc3e00a909692b0cbd8f",
+      "sha256": "4f29304a935e0e7b3f10201089a00094594c9a784ab21f5eba8b1f41d5742b1f",
+      "bytes": 903
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/full-collection-collection.json.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "efddd0afec1a59c4ae641fedb9f59e3a4c7a24bf",
+      "sha256": "a98ed60b31b3b90fd83b9b36da1b39b3d3f9fd58036b047875ee32f82ddd9e6b",
+      "bytes": 936
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/a388600afe76af9d1a756dfe96d867247ed2702737cf6875dd2bf7947a0d6b8f.xz",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "3f0af651057bb529c1fe36f75abd85df6e97dc70",
+      "sha256": "734cc8c1100455f6dd59820ec1399ed382d743925ca648f88a100c8c4faa1bc3",
+      "bytes": 56152
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/full-collection-collection.log.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "ac2698d3856e3266f67670d7811371d4b63dc453",
+      "sha256": "5f655cb04fa149917d581a8fe81a5de1fd3e754e32df0b26b52f68cf3f3969dc",
+      "bytes": 804
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/3053796bffebd54bbfd64b9ab5e6d657b0debf1af083fb3040545a64c77163e2.xz",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "876ca64748c271bec75d139313446465abcaa21c",
+      "sha256": "d6fa93d9b14e8de9b2da13992fd05496e5e36f3626e055c9c6cf58665df6316c",
+      "bytes": 480
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/full-collection-execution.json.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "efddd0afec1a59c4ae641fedb9f59e3a4c7a24bf",
+      "sha256": "a98ed60b31b3b90fd83b9b36da1b39b3d3f9fd58036b047875ee32f82ddd9e6b",
+      "bytes": 936
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/full-collection-junit.xml.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "372f0ecba3a407592630f5e5fcb2c72e2f7562d5",
+      "sha256": "2a3a21341fae76b68a3326a1bad8363e31f18ef40cf8f9ddb78de1a00abbfedc",
+      "bytes": 803
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/37da8d74dfb847b510cd377db9fa7a49ea861bf9f52af76370e104e91ae9f1d8.xz",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "11dd277f37a424558a1c83294ed41d1bf717f7cf",
+      "sha256": "d010972e7758c3a21ae54b3edd8ecd3880c5b413306c23d7eb4ab2a2822a1b76",
+      "bytes": 232
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/full-collection-manifest.json.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "92cbfd684ca04aaa88a204784bdc0a247e83312e",
+      "sha256": "3ca4bcc5fe4d42b2a26504062bbbda5ce2afce1bf04acbd2ff7ce388762f8bef",
+      "bytes": 804
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/8400dc3d988dbac6bc69b798926ce56fa481a03e365772d666a551eeba4112c4.xz",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "81c2a56015988b4f235e85795457370a32c754eb",
+      "sha256": "a4a172c850876deb579e563fb80bfdeec142afeaaad8d603271b23e0fcc87018",
+      "bytes": 988
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/full-collection-pytest.log.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "8104132b57d0ab1b3c3f4fc82917a688ce883d08",
+      "sha256": "6050864dbbaa5d283b9f56bb7b69bea9aaed8f1294ca81c6b6ca512e4c9df5ad",
+      "bytes": 936
+    },
+    {
+      "path": "tools/harness/compact_evidence.py",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "4e433c4dcf50bbb07a7fbf3b1098a2f5b713b93e",
+      "sha256": "a813587dc5d8ebd53a5e3d2d0fd3e43923443b2f804bdc92cab573e1875a79da",
+      "bytes": 83700
+    },
+    {
+      "path": "tools/harness/validate_harness.py",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100755",
+      "git_blob": "bd0d8e88616fc05dbec575f55739ae3d04586d2c",
+      "sha256": "149080404587781ca6fbfd7ece830b6f696e31e6d8b1b58ce27126a2fc18fccc",
+      "bytes": 305350
+    },
+    {
+      "path": "tests/harness/test_compact_evidence.py",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "e283168d7e6072ac0e6c6f60b8cf33f6367426c6",
+      "sha256": "11598483ae415cca90b59db1ca94d081479c4ecab6ce0a21851ad64e7281f794",
+      "bytes": 101957
+    },
+    {
+      "path": "tests/harness/test_validator.py",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "8022d8e6ebe45340e793ea57e834b82c07123939",
+      "sha256": "3a1c79c58347a88421bb4035068ae80371b2d39f25b6237ede92d431534dc2a8",
+      "bytes": 127759
+    },
+    {
+      "path": "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "53037c3c25a093f189c37a6ea50a34f54dc984ee",
+      "sha256": "d5db4da06bd588720b2f3570c52771cc7834e0992bf1be663a4f40d6aa35d5d0",
+      "bytes": 19698
+    },
+    {
+      "path": "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "061d79ea3d3f9f638f89575e48605b25a542bf45",
+      "sha256": "84dc5fc955450773131b7fe9e99640da7004208044e0faa475defccd30ccc011",
+      "bytes": 12258
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/verify_scope.py",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "b6389161bf221ddd75f4973f729047c32e8c0268",
+      "sha256": "20aacee2f20c7fe38541cb4d758ef35ad1d10ffa191012a227473d2ffc635a85",
+      "bytes": 2502
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/PRIOR_REQUIRED_CHECKS.json",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "0b31ce9c6affbb7569bc7394996ee106f0178e6d",
+      "sha256": "6a2253e35a9ddb121da9a258e9e3167208e2f705e7f66c8807704aafa995a33d",
+      "bytes": 4397
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-056/checks-repair-272784e9966206c7ed35acccf9dcb2cb67f33d9d-1cdb6604/SOURCE_INSPECTION_ADJUDICATION.md",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "3f3f407ce97aadf2d6bd62dfada5b537453c7c3a",
+      "sha256": "187045d6c56b5bdd87faedb3b71de32e8f56eea37c2b564a2f8adc2d626513af",
+      "bytes": 1538
+    },
+    {
+      "path": "docs/exec-plans/governance/HG-056.yaml",
+      "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+      "mode": "100644",
+      "git_blob": "0eae537547165a749b22654cc7b9f2eadd83d7eb",
+      "sha256": "f8510d15f41829db6e29673e44d7d88ed46d111fcee1c9d79ed878b27e94265c",
+      "bytes": 24189
+    }
+  ],
+  "raw_logs_emitted": false,
+  "complete_cycles_rerun": false
+}

@@ -1,0 +1,3960 @@
+{
+  "R": "388557f1e404de0835d3f643ab43217b0b88665f",
+  "T": "272784e9966206c7ed35acccf9dcb2cb67f33d9d",
+  "B": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "decoder_pin": {
+    "path": "tools/harness/compact_evidence.py",
+    "revision": "388557f1e404de0835d3f643ab43217b0b88665f",
+    "git_blob": "4e433c4dcf50bbb07a7fbf3b1098a2f5b713b93e",
+    "sha256": "a813587dc5d8ebd53a5e3d2d0fd3e43923443b2f804bdc92cab573e1875a79da",
+    "bytes": 83700
+  },
+  "case_count": 43,
+  "classification_pair_count": 387,
+  "violating_ids": [
+    "source-key-raw-second",
+    "source-key-unicode-second",
+    "source-key-raw-parenthesized",
+    "source-map-raw-second",
+    "source-subscript-raw-second",
+    "source-key-comment-adjacency",
+    "source-key-named-unicode",
+    "source-key-named-unicode-map",
+    "typed-identifier-multiline"
+  ],
+  "original_reader": {
+    "revision": "f93364d90aaae9b0b62706fd4e4fe395a8cd8ec5",
+    "path": "docs/exec-plans/reviews/KL-036/SECURITY_DATA_BOUNDARY/audit.py",
+    "git_blob": "cde206aee1eb240862863069104ad291ff98dedb",
+    "sha256": "a602ee684cdd7b4d8169388d2a2fe821fc6bc5beadf0d69a593c2ed260ffe382",
+    "bytes": 8063,
+    "classification": {
+      "envelope": "plain",
+      "reencoding_record": "plain"
+    },
+    "bound_read_byte_identical": true
+  },
+  "probe_input_executed": false,
+  "historical_helper_executed": false,
+  "cases": [
+    {
+      "id": "subscript-write",
+      "input_sha256": "7a3854f9672ad9a6d7c4c7ea341260113c693e998452dac9c0a78e61022b6fa9",
+      "bytes": 42,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "typed-subscript-write",
+      "input_sha256": "98e0690fcf01f6479f9a4f12cb75b529252be021706a28167b0fdf4e8d14994c",
+      "bytes": 47,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "typed-identifier-write",
+      "input_sha256": "f4c7ae4cb35b81c2b8b609a4962895b4d91c480dcdd5d526309ae8bfd383e192",
+      "bytes": 37,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": null,
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "octal-key",
+      "input_sha256": "4bd7b3f40f85a86db99cd3b98dc61af49084e9b1d9ec4d2ae35f920213c3e96b",
+      "bytes": 38,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "continued-adjacent-key",
+      "input_sha256": "b96b4ceb25d1bb4677e2d2d4cd9905c9da6e1612dc329f38b239d1c86a882e19",
+      "bytes": 40,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "damaged-mismatched-container",
+      "input_sha256": "c657b0978892b02404d3d5a810b6601c2316bc5b464bbc25c8b34a936e7659d7",
+      "bytes": 40,
+      "expected": "reject",
+      "python_valid": false,
+      "statically_resolved_reserved_key": null,
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "damaged-extra-close",
+      "input_sha256": "f71f1708db22677b97dfd5c74553a3e38da1bcebe7ad3ec34b2fb05d3e0a5b92",
+      "bytes": 41,
+      "expected": "reject",
+      "python_valid": false,
+      "statically_resolved_reserved_key": null,
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "ordinary-list-value",
+      "input_sha256": "9f5237bdbea1d406c2f28d564cd0bbdb9cf81ba3b515ad612834903853146b06",
+      "bytes": 36,
+      "expected": "plain",
+      "python_valid": true,
+      "statically_resolved_reserved_key": null,
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "ordinary-call-default",
+      "input_sha256": "b34346491e91794704eb738e915665ddddc274876816de7d0a7be7d8c548f088",
+      "bytes": 48,
+      "expected": "plain",
+      "python_valid": true,
+      "statically_resolved_reserved_key": null,
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "ordinary-subscript-read",
+      "input_sha256": "84daf14d203f90174485886ba079d7e1b24821be0191bc42c23821263c53d3f6",
+      "bytes": 32,
+      "expected": "plain",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "ordinary-parenthesized-read",
+      "input_sha256": "5ff9d7d7286724c76526153a98bbf7d57017a22b0d291b2a114f33265c4c035c",
+      "bytes": 34,
+      "expected": "plain",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "ordinary-adjacent-read",
+      "input_sha256": "80514cd67d94b88b8a44974d86052e745d76bc18b4b5e88d4ddda5c9bfaeb817",
+      "bytes": 39,
+      "expected": "plain",
+      "python_valid": true,
+      "statically_resolved_reserved_key": null,
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "ordinary-raw-adjacent-read",
+      "input_sha256": "e54f0045a6d1de4aeb1d0220f5c21043eca07eadbaac491d18d2ce7c734af492",
+      "bytes": 40,
+      "expected": "plain",
+      "python_valid": true,
+      "statically_resolved_reserved_key": null,
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "ordinary-json-string",
+      "input_sha256": "3e0ab11f9d0fb97002fbae22ad0ee863bacbb286bf5dcf1db8b1889b277ce796",
+      "bytes": 35,
+      "expected": "plain",
+      "python_valid": true,
+      "statically_resolved_reserved_key": null,
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "ordinary-escaped-json-string",
+      "input_sha256": "fcdf47017a5fb40eed4c182b965358db8cec6fba0fc20a17b07f3d57147ca0d6",
+      "bytes": 40,
+      "expected": "plain",
+      "python_valid": true,
+      "statically_resolved_reserved_key": null,
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "ordinary-quoted-prose",
+      "input_sha256": "1f5cd4166cba51e39dbd9e0e895c8ec33108fc0ff1a20250cf1fc9ec396f3d52",
+      "bytes": 49,
+      "expected": "plain",
+      "python_valid": false,
+      "statically_resolved_reserved_key": null,
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "partial-object",
+      "input_sha256": "d74edea92225b483cf099eaa12b26a58b14884a0fdcc36b425d3c7650ead1c09",
+      "bytes": 23,
+      "expected": "reject",
+      "python_valid": false,
+      "statically_resolved_reserved_key": null,
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "reader-mixed-partial-object",
+      "input_sha256": "73c716817a52fa6eeacad0f23cbd692efe50986be6bdc5441bcb3a2355137bf6",
+      "bytes": 59,
+      "expected": "reject",
+      "python_valid": false,
+      "statically_resolved_reserved_key": null,
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "source-key-raw-first",
+      "input_sha256": "281facfd02056726b7b570b8774d2ebf4352d7213911f2a5964a74beb1011732",
+      "bytes": 39,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "source-key-raw-second",
+      "input_sha256": "2dcf98709e98b86e0de06e685f6949e4980de4c77ba64c354870ea6f1476b4f2",
+      "bytes": 39,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        }
+      ]
+    },
+    {
+      "id": "source-key-unicode-second",
+      "input_sha256": "8f4c2f1960fb908422a80094b78dd40882bc19d08e1a307f6c366d5edd344c30",
+      "bytes": 39,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        }
+      ]
+    },
+    {
+      "id": "source-key-raw-parenthesized",
+      "input_sha256": "ff52f97075ab84d18f4ebe668c79059fdca0fabcaf4b44f2218636982b6522c5",
+      "bytes": 41,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        }
+      ]
+    },
+    {
+      "id": "source-map-raw-second",
+      "input_sha256": "ff0a99d9e68b2ff951acc7007edd468718d4cd8fc7b916f89902787341ca7667",
+      "bytes": 32,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "compact_reencoding",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        }
+      ]
+    },
+    {
+      "id": "source-subscript-raw-second",
+      "input_sha256": "03ff2fb36f660e9051862fec75cafaf419351e5e60dc9ecd1a76bf8fbba3b2f7",
+      "bytes": 46,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        }
+      ]
+    },
+    {
+      "id": "source-key-comment-adjacency",
+      "input_sha256": "3979d3132110c6939a256d107a3f2dcfd2098879e7fde313468e6490e698096f",
+      "bytes": 61,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        }
+      ]
+    },
+    {
+      "id": "source-key-named-unicode",
+      "input_sha256": "1f347fb56f72583cdb3aad43862064ddd57d2c376f7e75f2b5bd02b81ea2ae09",
+      "bytes": 46,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        }
+      ]
+    },
+    {
+      "id": "source-key-named-unicode-map",
+      "input_sha256": "7eefa8d8a4bcb9aa4a27d0be49b1cc461d164fbf5a5997cc1132870b2ebf0ecd",
+      "bytes": 39,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "compact_reencoding",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        }
+      ]
+    },
+    {
+      "id": "typed-identifier-multiline",
+      "input_sha256": "b2cd332531edbbfdbb77b6e75bfeb1251433c392b1cee609e10d17bb50bc8269",
+      "bytes": 42,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": null,
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "plain",
+            "reencoding_record": "plain"
+          },
+          "matches_expected": false
+        }
+      ]
+    },
+    {
+      "id": "ordinary-complete-set",
+      "input_sha256": "f28e1d1b387536d2ee40089cf6a461ebb23761c17e12b84c1d4eefccaed89d03",
+      "bytes": 24,
+      "expected": "ambiguous",
+      "python_valid": true,
+      "statically_resolved_reserved_key": null,
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": null
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": null
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": null
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": null
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": null
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": null
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": null
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": null
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": null
+        }
+      ]
+    },
+    {
+      "id": "augmented-=",
+      "input_sha256": "7a3854f9672ad9a6d7c4c7ea341260113c693e998452dac9c0a78e61022b6fa9",
+      "bytes": 42,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "augmented-+=",
+      "input_sha256": "1738cd463c3ba9b76b1615d0cde3dbd2d5f8e8e52d31e5a4003b522958106088",
+      "bytes": 43,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "augmented--=",
+      "input_sha256": "997b3e578eb030e114b10f949582430fed7f4875b3c1aae74ab7504bcaed8cba",
+      "bytes": 43,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "augmented-*=",
+      "input_sha256": "58c6d58f490c576ca9f58139930ac28a7d0dc16842c88854f265dc9cd5c3eb61",
+      "bytes": 43,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "augmented-**=",
+      "input_sha256": "8ed465aa7c2c47d53d71c3be5d39a0f7951ca21afbacd77d1054ebf075194207",
+      "bytes": 44,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "augmented-/=",
+      "input_sha256": "ae9c5cb4f780c7cf1866c71e87646a56a4ab0d0745e809b7d7755de990d9ba24",
+      "bytes": 43,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "augmented-//=",
+      "input_sha256": "75a9616b9e85bd7f8c1335919e94adb60aa0d20dddb35d2d12cba48279830927",
+      "bytes": 44,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "augmented-%=",
+      "input_sha256": "90cb15837d52594155604ff51c699e10a63715d05807ca3c231c00b3f4e4bb27",
+      "bytes": 43,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "augmented-@=",
+      "input_sha256": "c6ef5da6eee0a561ed87f23b3875a630f58be567cc571f7a616572565461fce6",
+      "bytes": 43,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "augmented-&=",
+      "input_sha256": "4ea089cf228835a65590680b31350771a78055f512103a9496ba0dbc86763d8b",
+      "bytes": 43,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "augmented-|=",
+      "input_sha256": "54b5510249df7abe9b4af46b7dcdbf0c02e158eb9b97ea9b2440ba1006a1cc68",
+      "bytes": 43,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "augmented-^=",
+      "input_sha256": "f54581228fb3b15c3b2527fa92d5806169037a9629a7b0f457751f3ece0d6968",
+      "bytes": 43,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "augmented->>=",
+      "input_sha256": "8257c80b130d72cff4a4de66db7cb87934185d77387387128d37fff0746eab20",
+      "bytes": 44,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    },
+    {
+      "id": "augmented-<<=",
+      "input_sha256": "26f20d515ee52b0b780c8d12be572d1385ea52dbc0c8a505fbad3c64e161e150",
+      "bytes": 44,
+      "expected": "reject",
+      "python_valid": true,
+      "statically_resolved_reserved_key": "kineticloop_evidence",
+      "views": [
+        {
+          "encoding": "utf-8",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-8",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-16",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "plain",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "gzip-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        },
+        {
+          "encoding": "utf-32",
+          "recovery": "xz-v1",
+          "outcomes": {
+            "envelope": "evidence-envelope-json",
+            "reencoding_record": "evidence-envelope-json"
+          },
+          "matches_expected": true
+        }
+      ]
+    }
+  ],
+  "ambiguities": [
+    {
+      "id": "ordinary-complete-set",
+      "adjudication": "Root leaves compatibility ambiguous under partial-key fail-closed rules; no acceptance exemption or source defect asserted."
+    }
+  ]
+}
