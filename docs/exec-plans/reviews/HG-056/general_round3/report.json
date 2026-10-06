@@ -1,0 +1,237 @@
+{
+  "purpose": "INDEPENDENT_GENERAL_REVIEW_METADATA_ONLY",
+  "B": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "T": "92e3883a232ad4e020ea9d1ca49bb12892fc4544",
+  "R": "e3d172b9856bf23305c79e243eb069ffc211b019",
+  "checks": [
+    {
+      "id": "affected_harness",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg056-repair-92e3883a232ad4e020ea9d1ca49bb12892fc4544-52c87562/harness -q -k 'test_compact_evidence or test_missing_blob_is_not_available_evidence_or_an_absent_path or hg056'",
+      "exit": 0,
+      "result": "PASS",
+      "sha256": "5d268bd8a87a69b56dbee020556d98a4581e3ee00109c871d22f145213665193",
+      "bytes": 1073,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "full_collection",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 1 --evidence-dir /private/tmp/hg056-repair-92e3883a232ad4e020ea9d1ca49bb12892fc4544-52c87562/full-collection --collect-only -q",
+      "exit": 0,
+      "result": "PASS",
+      "sha256": "5d10b5bd0e1927d27b953194195dc5a772052343985d06bdd3c0b29a50f8b52d",
+      "bytes": 3237785,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "installed_decoder_isolation",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_local_gate.py -q",
+      "exit": 0,
+      "result": "PASS",
+      "sha256": "d54166409127f2f63531795f9ff31812559c0579871003c9b2904a0c26b8e4ad",
+      "bytes": 180,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "scope",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-056/verify_scope.py --base 3ec7f7a38d974256a928c3687f63e4d90019e42b",
+      "exit": 0,
+      "result": "PASS",
+      "sha256": "56c7a50ee3831cf327e9c735e395a9c24ea9b65f694b3c7aa6eb9f4267dff2b2",
+      "bytes": 18239,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "lint",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+      "exit": 0,
+      "result": "PASS",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "typecheck",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+      "exit": 0,
+      "result": "PASS",
+      "sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb",
+      "bytes": 45,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "diff",
+      "command": "git diff --check 3ec7f7a38d974256a928c3687f63e4d90019e42b 92e3883a232ad4e020ea9d1ca49bb12892fc4544",
+      "exit": 0,
+      "result": "PASS",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "bound_read": "PASS"
+    }
+  ],
+  "phases": {
+    "harness": {
+      "collected": 788,
+      "identity_digest": "14aa873f01f5c095b7d1ee01ee12dd3788deaf2ecc01284f83f7151636c4fbdd",
+      "starts": 788,
+      "reports": 2364,
+      "junit_cases": 788,
+      "workers": 2,
+      "mode": "EXECUTION",
+      "manifest_file_bindings": "PASS",
+      "compact_cases": 784,
+      "phase_counts": {
+        "setup": 788,
+        "call": 788,
+        "teardown": 788
+      },
+      "phase_worker_and_junit_identity_bindings": "PASS"
+    },
+    "full-collection": {
+      "collected": 2014,
+      "identity_digest": "a03ec7ce8992c7762c6d50df15d1c6c373cbbad5c081e6339028ec56279e36d5",
+      "starts": 0,
+      "reports": 0,
+      "junit_cases": 0,
+      "workers": 1,
+      "mode": "COLLECTION_ONLY",
+      "manifest_file_bindings": "PASS"
+    }
+  },
+  "isolated_stdout_count": 103,
+  "isolated_identity_artifact_claimed": false,
+  "scope": {
+    "paths": 202,
+    "modes": {
+      "100644": 201,
+      "100755": 1
+    },
+    "literal_scope_matches_packet": true,
+    "frozen_files_unchanged": 3
+  },
+  "tested_to_result_suffix": [
+    "e3d172b9856bf23305c79e243eb069ffc211b019"
+  ],
+  "suffix_only_result_and_new_capture": true,
+  "preserved_prior_artifacts": 118,
+  "prior_review_rounds_preserved": [
+    "round1",
+    "round2"
+  ],
+  "original_helper": {
+    "pins": "PASS",
+    "classification_plain": true,
+    "bound_read_identical": true,
+    "executed": false
+  },
+  "decoder_functions_changed": [
+    "envelope",
+    "reserved_ascii"
+  ],
+  "validator_functions_changed": [
+    "governance_allowed_patterns",
+    "validate"
+  ],
+  "prior_actual_outcomes": [
+    {
+      "id": "authority",
+      "result": "FAIL",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "1853ea60323bf0c7bd265ffec22744a0b3cb0897b1c136008a18583f7244cb00",
+      "bytes": 488
+    },
+    {
+      "id": "bound_reader_regressions",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "54ea2a7f52fd9a7b4d0b2db5f666e456adec8aa82f0d7ccfecf7fe6209d7a026",
+      "bytes": 433
+    },
+    {
+      "id": "codec_security_and_budget",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "6c68b3f689c819e45506f9efe6e9688c7f8327a9724ed96f675eb23c573f6b92",
+      "bytes": 752
+    },
+    {
+      "id": "compatibility",
+      "result": "FAIL",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "477005c5e1ac54200c6256a5f37ec95b44e4e12fee45a8d6ec164fceb9c691ea",
+      "bytes": 2449
+    },
+    {
+      "id": "diff",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "id": "harness",
+      "result": "FAIL",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "e8d6969abf48165fe76fb3acf0f5230046c4dad374280e76e6c0c4ac2bf72f86",
+      "bytes": 4954
+    },
+    {
+      "id": "installed_decoder_isolation",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "706d8c98d66583900f1c073220a23aee540cc8cc77a825e2632cea998da3618a",
+      "bytes": 180
+    },
+    {
+      "id": "lint",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "id": "scope",
+      "result": "FAIL",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "22672a1e0e2dd9a22473a72e11b9cef765f7409031f3b47f5c3b5132d3d6110e",
+      "bytes": 489
+    },
+    {
+      "id": "typecheck",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb",
+      "bytes": 45
+    },
+    {
+      "id": "unit",
+      "result": "FAIL",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "bfdf1d65b70997784e7ea9a8ff18dff59c241f47bc14231a759e5b147bddfbed",
+      "bytes": 1945
+    }
+  ],
+  "compatibility": {
+    "expected_maps": [
+      "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json",
+      "docs/exec-plans/evidence/KL-036/reencoding-hg054-f92f92bd74033937276794010f65d6fe98f657fc/COMPACT_REENCODING.json"
+    ],
+    "validated_maps": [
+      "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json"
+    ],
+    "history_errors": [
+      "reencoding-invalid:reencoding-unmapped-payload-mutation:docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz"
+    ],
+    "storage_errors": [
+      "docs/exec-plans/evidence/KL-036/reencoding-hg054-f92f92bd74033937276794010f65d6fe98f657fc/COMPACT_REENCODING.json:evidence-envelope",
+      "reencoding-invalid:reencoding-unmapped-payload-mutation:docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz"
+    ],
+    "rerun": false
+  },
+  "external_deletion_tree_confirmed": true,
+  "source_inspection_authority": "NOT_IMPLEMENTED/BLOCKED",
+  "whole_cycles_rerun": false,
+  "new_source_defects_reproduced_by_general": 0,
+  "specialist_reported_current_source_blocker": "HG056-S9; trailing comment before subscript close",
+  "derived_authority_hashes_and_manifest_rows": "PASS",
+  "governance_schema": "PASS"
+}
