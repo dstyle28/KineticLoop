@@ -1,0 +1,826 @@
+{
+  "summary": {
+    "R": "0c3ad1ac6f0811f920002bfb8782e84cf0eb2460",
+    "case_count": 34,
+    "classifier_pairs": 816,
+    "new_defect_cases": [
+      "s10-list-target",
+      "s10-nested-tuple",
+      "s10-starred-remainder",
+      "s10-tuple-first"
+    ],
+    "new_defect_pairs": 96,
+    "s9_cases_checked": 8,
+    "s9_all_reject": true,
+    "ordinary_all_plain": true,
+    "unbound_plain_reads": 60,
+    "input_executed": false,
+    "synthetic_commits_created": false,
+    "raw_adversarial_inputs_retained": false,
+    "original": {
+      "revision": "f93364d90aaae9b0b62706fd4e4fe395a8cd8ec5",
+      "mode": "100644",
+      "git_blob": "cde206aee1eb240862863069104ad291ff98dedb",
+      "bytes": 8063,
+      "sha256": "a602ee684cdd7b4d8169388d2a2fe821fc6bc5beadf0d69a593c2ed260ffe382",
+      "envelope": "plain",
+      "reencoding_record": "plain",
+      "exact_bound_read_byte_identical": true,
+      "fixture_matches_at_R": true,
+      "helper_executed": false
+    }
+  },
+  "encodings": [
+    "utf8",
+    "utf8-bom",
+    "utf16le",
+    "utf16be",
+    "utf16-bom",
+    "utf32le",
+    "utf32be",
+    "utf32-bom"
+  ],
+  "recovery_modes": [
+    "plain",
+    "gzip-v1",
+    "xz-v1"
+  ],
+  "static_target_inspection": [
+    {
+      "case": "s9-subscript",
+      "parses_python": true,
+      "statement_type": "Assign",
+      "reserved_subscript_store_fields": [
+        "kineticloop_evidence"
+      ]
+    },
+    {
+      "case": "s9-map",
+      "parses_python": true,
+      "statement_type": "Assign",
+      "reserved_subscript_store_fields": [
+        "compact_reencoding"
+      ]
+    },
+    {
+      "case": "s9-augmented",
+      "parses_python": true,
+      "statement_type": "AugAssign",
+      "reserved_subscript_store_fields": [
+        "kineticloop_evidence"
+      ]
+    },
+    {
+      "case": "s9-typed",
+      "parses_python": true,
+      "statement_type": "AnnAssign",
+      "reserved_subscript_store_fields": [
+        "kineticloop_evidence"
+      ]
+    },
+    {
+      "case": "s9-parenthesized",
+      "parses_python": true,
+      "statement_type": "Assign",
+      "reserved_subscript_store_fields": [
+        "kineticloop_evidence"
+      ]
+    },
+    {
+      "case": "s9-double-comment",
+      "parses_python": true,
+      "statement_type": "Assign",
+      "reserved_subscript_store_fields": [
+        "kineticloop_evidence"
+      ]
+    },
+    {
+      "case": "s9-adjacent-key",
+      "parses_python": true,
+      "statement_type": "Assign",
+      "reserved_subscript_store_fields": [
+        "kineticloop_evidence"
+      ]
+    },
+    {
+      "case": "s9-prefixed-triple",
+      "parses_python": true,
+      "statement_type": "Assign",
+      "reserved_subscript_store_fields": [
+        "kineticloop_evidence"
+      ]
+    },
+    {
+      "case": "s6-prefixed",
+      "parses_python": true,
+      "statement_type": "Expr",
+      "reserved_subscript_store_fields": []
+    },
+    {
+      "case": "s6-comment",
+      "parses_python": true,
+      "statement_type": "Expr",
+      "reserved_subscript_store_fields": []
+    },
+    {
+      "case": "s7-named",
+      "parses_python": true,
+      "statement_type": "Expr",
+      "reserved_subscript_store_fields": []
+    },
+    {
+      "case": "s8-multiline",
+      "parses_python": true,
+      "statement_type": "AnnAssign",
+      "reserved_subscript_store_fields": []
+    },
+    {
+      "case": "s1-subscript",
+      "parses_python": true,
+      "statement_type": "Assign",
+      "reserved_subscript_store_fields": [
+        "kineticloop_evidence"
+      ]
+    },
+    {
+      "case": "s1-augmented",
+      "parses_python": true,
+      "statement_type": "AugAssign",
+      "reserved_subscript_store_fields": [
+        "compact_reencoding"
+      ]
+    },
+    {
+      "case": "s2-octal",
+      "parses_python": true,
+      "statement_type": "Assign",
+      "reserved_subscript_store_fields": [
+        "kineticloop_evidence"
+      ]
+    },
+    {
+      "case": "s2-continued",
+      "parses_python": true,
+      "statement_type": "Expr",
+      "reserved_subscript_store_fields": []
+    },
+    {
+      "case": "comment-object",
+      "parses_python": true,
+      "statement_type": "CommentOnly",
+      "reserved_subscript_store_fields": []
+    },
+    {
+      "case": "comment-adjacent-object",
+      "parses_python": true,
+      "statement_type": "CommentOnly",
+      "reserved_subscript_store_fields": []
+    },
+    {
+      "case": "damaged-object",
+      "parses_python": false
+    },
+    {
+      "case": "missing-marker-signature",
+      "parses_python": true,
+      "statement_type": "Expr",
+      "reserved_subscript_store_fields": []
+    },
+    {
+      "case": "s10-tuple-first",
+      "parses_python": true,
+      "statement_type": "Assign",
+      "reserved_subscript_store_fields": [
+        "kineticloop_evidence"
+      ]
+    },
+    {
+      "case": "s10-list-target",
+      "parses_python": true,
+      "statement_type": "Assign",
+      "reserved_subscript_store_fields": [
+        "kineticloop_evidence"
+      ]
+    },
+    {
+      "case": "s10-nested-tuple",
+      "parses_python": true,
+      "statement_type": "Assign",
+      "reserved_subscript_store_fields": [
+        "compact_reencoding"
+      ]
+    },
+    {
+      "case": "s10-starred-remainder",
+      "parses_python": true,
+      "statement_type": "Assign",
+      "reserved_subscript_store_fields": [
+        "kineticloop_evidence"
+      ]
+    },
+    {
+      "case": "ordinary-comment-subscript",
+      "parses_python": true,
+      "statement_type": "Expr",
+      "reserved_subscript_store_fields": []
+    },
+    {
+      "case": "ordinary-comment-parenthesized",
+      "parses_python": true,
+      "statement_type": "Expr",
+      "reserved_subscript_store_fields": []
+    },
+    {
+      "case": "ordinary-comment-default",
+      "parses_python": true,
+      "statement_type": "Expr",
+      "reserved_subscript_store_fields": []
+    },
+    {
+      "case": "ordinary-adjacent-read",
+      "parses_python": true,
+      "statement_type": "Expr",
+      "reserved_subscript_store_fields": []
+    },
+    {
+      "case": "ordinary-tuple-read",
+      "parses_python": true,
+      "statement_type": "Expr",
+      "reserved_subscript_store_fields": []
+    },
+    {
+      "case": "ordinary-list-read",
+      "parses_python": true,
+      "statement_type": "Expr",
+      "reserved_subscript_store_fields": []
+    },
+    {
+      "case": "ordinary-separate-annotation",
+      "parses_python": true,
+      "statement_type": "AnnAssign",
+      "reserved_subscript_store_fields": []
+    },
+    {
+      "case": "ordinary-list-values",
+      "parses_python": true,
+      "statement_type": "Expr",
+      "reserved_subscript_store_fields": []
+    },
+    {
+      "case": "ordinary-json-string",
+      "parses_python": true,
+      "statement_type": "Expr",
+      "reserved_subscript_store_fields": []
+    },
+    {
+      "case": "ordinary-prose",
+      "parses_python": false
+    }
+  ],
+  "observations": [
+    {
+      "case": "s9-subscript",
+      "expected": "reject",
+      "source_sha256": "0c18c353b61eb4481cbbe1c5cc1a2d6a56f9b6edda62fd64c80691a4bc2ebaae",
+      "source_bytes": 53,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "s9-map",
+      "expected": "reject",
+      "source_sha256": "fb0d2b5891e9c4fcc68753ec537f3ee2f0aa197ae367af64a1a6208992471bc3",
+      "source_bytes": 46,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "s9-augmented",
+      "expected": "reject",
+      "source_sha256": "a86219edc770622a0b7b313cabbc9e885d27fcaa7327e87a6377ec9fa86e0be3",
+      "source_bytes": 54,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "s9-typed",
+      "expected": "reject",
+      "source_sha256": "06c7e3d2a197017ef602085ff841b0e72fe01c6b5fe4c4e0250cf209d919fb6f",
+      "source_bytes": 58,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "s9-parenthesized",
+      "expected": "reject",
+      "source_sha256": "175477ad7084cffbe62f8e78b0057db143fe6d1f026be0e65303ce6e1577f91a",
+      "source_bytes": 55,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "s9-double-comment",
+      "expected": "reject",
+      "source_sha256": "58750994a1ec3fad03033f4040a9b38dc7389a93797f2efe6293fcab5018bf4f",
+      "source_bytes": 63,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "s9-adjacent-key",
+      "expected": "reject",
+      "source_sha256": "1be90f030e0e3721cf8c2b7f1d1156c0240668fdb72581c6d2d4337813802849",
+      "source_bytes": 64,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "s9-prefixed-triple",
+      "expected": "reject",
+      "source_sha256": "a62ec356d4d4acfde4605e1e15e8c0bc60cae227ca0b17b85bb6d6c6d35c9c5f",
+      "source_bytes": 58,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "s6-prefixed",
+      "expected": "reject",
+      "source_sha256": "ff52f97075ab84d18f4ebe668c79059fdca0fabcaf4b44f2218636982b6522c5",
+      "source_bytes": 41,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "s6-comment",
+      "expected": "reject",
+      "source_sha256": "d122192f5b4786eb2891699b3ea6c017f69adc4a4a8d385adec545f5488d9422",
+      "source_bytes": 43,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "s7-named",
+      "expected": "reject",
+      "source_sha256": "1f347fb56f72583cdb3aad43862064ddd57d2c376f7e75f2b5bd02b81ea2ae09",
+      "source_bytes": 46,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "s8-multiline",
+      "expected": "reject",
+      "source_sha256": "b2cd332531edbbfdbb77b6e75bfeb1251433c392b1cee609e10d17bb50bc8269",
+      "source_bytes": 42,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "s1-subscript",
+      "expected": "reject",
+      "source_sha256": "7a3854f9672ad9a6d7c4c7ea341260113c693e998452dac9c0a78e61022b6fa9",
+      "source_bytes": 42,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "s1-augmented",
+      "expected": "reject",
+      "source_sha256": "49422e5a2d4cc8a57e67a09231a84061dd6d4e50540a221405a99c2295f7df54",
+      "source_bytes": 36,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "s2-octal",
+      "expected": "reject",
+      "source_sha256": "233f6c163955fa32acb849ef2bc7ce2812d1bb0d4a5273cfe37e577f68c50df3",
+      "source_bytes": 45,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "s2-continued",
+      "expected": "reject",
+      "source_sha256": "92f6d9d3f1d90dbc221fc12cd2c548d45ce19d46d3b319b148b191e0e9f83b17",
+      "source_bytes": 37,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "comment-object",
+      "expected": "reject",
+      "source_sha256": "14cdd930b768c5fe27f60a0b4435bcab17b04c46b67ba9f29aafe6596cde11eb",
+      "source_bytes": 37,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "comment-adjacent-object",
+      "expected": "reject",
+      "source_sha256": "663b2c48cb6ab09a1824e3577e96c24318886b74158f33aeb1d8b35ff4ecc0c4",
+      "source_bytes": 41,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "damaged-object",
+      "expected": "reject",
+      "source_sha256": "8f2005a1f8a9ead7b2c849c4407e1abbcd1a0fa4d55441b45e26017d697f53f0",
+      "source_bytes": 44,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "reject:evidence-envelope-json",
+          "reencoding_record": "reject:evidence-envelope-json"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "missing-marker-signature",
+      "expected": "reject",
+      "source_sha256": "c34c6d84277e370da125584b3de3c89e2543b8cecdbec3ef80ba26de517190aa",
+      "source_bytes": 57,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "recognized",
+          "reencoding_record": "plain"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "s10-tuple-first",
+      "expected": "reject",
+      "source_sha256": "2732871ecfc93ecb884ea8a75636edf079ca48599fd60c08fb7953d7e724a568",
+      "source_bytes": 57,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "plain",
+          "reencoding_record": "plain"
+        }
+      ],
+      "all_meet_expectation": false
+    },
+    {
+      "case": "s10-list-target",
+      "expected": "reject",
+      "source_sha256": "fdf8e698872d99c9817223f6a05e5d77106deb7443e7764406a504ae5e1a6f0a",
+      "source_bytes": 61,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "plain",
+          "reencoding_record": "plain"
+        }
+      ],
+      "all_meet_expectation": false
+    },
+    {
+      "case": "s10-nested-tuple",
+      "expected": "reject",
+      "source_sha256": "4cc481b6185c35250159439418b8107b1670a5c6219e3061c242fedcfecce52f",
+      "source_bytes": 72,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "plain",
+          "reencoding_record": "plain"
+        }
+      ],
+      "all_meet_expectation": false
+    },
+    {
+      "case": "s10-starred-remainder",
+      "expected": "reject",
+      "source_sha256": "9abdf3314ce3163c8295088ff24b3b8768d3f6b879d92a0d974e5add3a4fd21d",
+      "source_bytes": 60,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "plain",
+          "reencoding_record": "plain"
+        }
+      ],
+      "all_meet_expectation": false
+    },
+    {
+      "case": "ordinary-comment-subscript",
+      "expected": "plain",
+      "source_sha256": "82ba47147b2d7e3174af81a02bbc59576bf5bc87a6eb83e3ec887942f5441b9c",
+      "source_bytes": 41,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "plain",
+          "reencoding_record": "plain"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "ordinary-comment-parenthesized",
+      "expected": "plain",
+      "source_sha256": "a2a74ca33b268f203b779bc2958dc486c19c20c06bb67cc46c3da00e43d31c1c",
+      "source_bytes": 41,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "plain",
+          "reencoding_record": "plain"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "ordinary-comment-default",
+      "expected": "plain",
+      "source_sha256": "7d64a19383242b2e109b412237a9f8d381e84d5dbcf7562f60c33c32292f479d",
+      "source_bytes": 56,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "plain",
+          "reencoding_record": "plain"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "ordinary-adjacent-read",
+      "expected": "plain",
+      "source_sha256": "a548e521204e522527dc08c301ff21013718d1a75674f92a97b050f3275bee45",
+      "source_bytes": 48,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "plain",
+          "reencoding_record": "plain"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "ordinary-tuple-read",
+      "expected": "plain",
+      "source_sha256": "a605e913b8a1fc77bcf8ff276b506befe4c154a18bd3dba38edd21ccb2af010d",
+      "source_bytes": 40,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "plain",
+          "reencoding_record": "plain"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "ordinary-list-read",
+      "expected": "plain",
+      "source_sha256": "22ab6ff2f289a4b7d57c4c27d1bd2b14b1a8a376961940a4de88db7567457d44",
+      "source_bytes": 42,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "plain",
+          "reencoding_record": "plain"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "ordinary-separate-annotation",
+      "expected": "plain",
+      "source_sha256": "8b242a3a6bb52bc70af015bca2b22863d85e31bede5fc8bb083cb7384cec7302",
+      "source_bytes": 44,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "plain",
+          "reencoding_record": "plain"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "ordinary-list-values",
+      "expected": "plain",
+      "source_sha256": "9f5237bdbea1d406c2f28d564cd0bbdb9cf81ba3b515ad612834903853146b06",
+      "source_bytes": 36,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "plain",
+          "reencoding_record": "plain"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "ordinary-json-string",
+      "expected": "plain",
+      "source_sha256": "f61bd8b7ba8eef904a649854fd59c17050fd4fdc245c0671fd2bcc3ed1e1b5bb",
+      "source_bytes": 22,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "plain",
+          "reencoding_record": "plain"
+        }
+      ],
+      "all_meet_expectation": true
+    },
+    {
+      "case": "ordinary-prose",
+      "expected": "plain",
+      "source_sha256": "24c5fbea6908e442c279bc0ce9498152f13ca61042470973df92ccb02a50dddd",
+      "source_bytes": 51,
+      "encoding_count": 8,
+      "recovery_count": 3,
+      "observation_pairs": 24,
+      "distinct_observations": [
+        {
+          "envelope": "plain",
+          "reencoding_record": "plain"
+        }
+      ],
+      "all_meet_expectation": true
+    }
+  ]
+}

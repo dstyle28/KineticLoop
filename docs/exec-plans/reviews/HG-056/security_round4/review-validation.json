@@ -1,0 +1,58 @@
+{
+  "R": "0c3ad1ac6f0811f920002bfb8782e84cf0eb2460",
+  "schema_validation": "PASS",
+  "canonical_review_bound_to_exact_R": true,
+  "storage_safe_metadata_only": true,
+  "per_file_classification": [
+    {
+      "path": "docs/exec-plans/reviews/HG-056/SECURITY_DATA_BOUNDARY.json",
+      "bytes": 7056,
+      "sha256": "7adc2b0f48bfa592bfb4045f8638b41c287256b1b71d75469b859df061657221",
+      "storage_classification": "plain",
+      "within_plain_budget": true
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-056/security_round4/REVIEW.md",
+      "bytes": 5438,
+      "sha256": "fbf81ecea421c255a1efe1bd388fb47bc978484592ccbda2995c47f8ebe8652d",
+      "storage_classification": "plain",
+      "within_plain_budget": true
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-056/security_round4/classifier-probes.json",
+      "bytes": 22916,
+      "sha256": "acdcf75594a5d09b7bc28896c2546dea8e5ee0236135cc1ef2ab4a628718541c",
+      "storage_classification": "plain",
+      "within_plain_budget": true
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-056/security_round4/evidence-bindings.json",
+      "bytes": 37955,
+      "sha256": "51d25c315d200e4a3988c97dca53e898dff973c8491e0c9641d042f51fe0f10b",
+      "storage_classification": "plain",
+      "within_plain_budget": true
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-056/security_round4/read-probes.json",
+      "bytes": 16585,
+      "sha256": "4333372cf2d6c1686c37c98da5910b40730f932d066e836a34a923d4a8aac08b",
+      "storage_classification": "plain",
+      "within_plain_budget": true
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-056/security_round4/static-boundary.json",
+      "bytes": 1057,
+      "sha256": "76adbafa28a3492321ef6e2d8721a992bb7ee9ace159da494034891121a930fe",
+      "storage_classification": "plain",
+      "within_plain_budget": true
+    }
+  ],
+  "review_harness_preparation_failure": {
+    "initial_result": "IndexError",
+    "cause": "Comment-only AST has empty body; bounded scratch inspector corrected before successful observations",
+    "candidate_input_executed": false,
+    "candidate_test_outcome_altered": false
+  },
+  "suffix_requirement": "New review files resolve only through proven own-task linear REVIEW_RECORD_ONLY record suffix",
+  "repository_commits_created": false
+}
