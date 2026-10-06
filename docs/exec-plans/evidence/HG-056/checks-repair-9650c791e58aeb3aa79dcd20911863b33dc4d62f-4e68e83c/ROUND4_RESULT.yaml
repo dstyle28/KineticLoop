@@ -1,11 +1,11 @@
 change_identity: harness-governance-v0.1/HG-056
 display_change_id: HG-056
 base_commit: 3ec7f7a38d974256a928c3687f63e4d90019e42b
-tested_commit: 9650c791e58aeb3aa79dcd20911863b33dc4d62f
+tested_commit: 61ab06ea8a8adfa6e1931db7e6ea80408dd58f49
 change_status: BLOCKED
-summary: Preserves ordinary source references while rejecting reviewed reserved writes, encoded/continued/prefixed/comment-separated
-  keys, unpacked targets and malformed/string-wrapped target declarations. Actual affected executions and complete
-  collect-only identities are preserved. Acceptance remains BLOCKED by immutable KL036 compatibility, deferred source-inspection
+summary: Corrects ordinary source references while rejecting reviewed reserved assignments, escaped/continued/prefixed/comment-separated
+  keys, multiline typed writes and damaged-object contexts. Actual affected executions and complete collect-only
+  identities are preserved. Complete acceptance remains BLOCKED by immutable KL036 compatibility, deferred source-inspection
   authority and unrepeated whole-cycle/root gates.
 packets_refined: []
 files_changed:
@@ -193,88 +193,9 @@ files_changed:
 - docs/exec-plans/evidence/HG-056/checks-repair-92e3883a232ad4e020ea9d1ca49bb12892fc4544-52c87562/lint.json
 - docs/exec-plans/evidence/HG-056/checks-repair-92e3883a232ad4e020ea9d1ca49bb12892fc4544-52c87562/scope.json
 - docs/exec-plans/evidence/HG-056/checks-repair-92e3883a232ad4e020ea9d1ca49bb12892fc4544-52c87562/typecheck.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/0f0956cfa63d7130832216efb5e2ae5da5dd24cee3aad436a101f0993271a7a1.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/16f66502ba248a965b99758c5e8955118df1a574647d4257583e0c60c9c7da1d.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/311f96cb4da5aa4e79c917bb8e7ad9737c57975d0464b6f3b03d1c2f9a0f23a0.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/48d66cbda8c8c8ff9c46da700a02dfe179b20e496da35f9b1698d66498b98a98.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/5104fe2d22c9029a165e8cb39cb5a3f901eaeeb39c89c4b2d3cfcb54561ab0e2.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/628632def40e2c7b7d858fca7ace2ef10bb7e43beb61b8c55a0c730e9214ed6f.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/9ea1bf3297e85b08227ff342cad0e22b25d5aab789099474c6ec8557ce1db7e8.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/PRIOR_REQUIRED_CHECKS.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/ROUND4_RESULT.yaml
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/RUN.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/SOURCE_INSPECTION_ADJUDICATION.md
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/a320bce86a385658470e5455037bf92a94415fec6ea221ad826e2ef9ea6a3fd2.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/affected_harness.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/b25b0634f855d192dac35601ea1cf7b96fce72753ce02f0024cd5be123846510.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/d46e869476f592c942bcfc77e175af0fd3d5e0c15c8787fe126555cdc099af58.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/d5fc2fbe78a4165a5ba90f0fa163eee3b70e14a822cc36a1e7a0724f02309491.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/de089383a9233501c6efb4371472f5037976060b306c655b2b8b2f44873d5d68.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/diff.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/e8ad5f54df5b3972397d686ba6f7545fb3dd56747e092bb8e7f9153f126ecdf5.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/full-collection-collection.json.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/full-collection-collection.log.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/full-collection-execution.json.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/full-collection-junit.xml.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/full-collection-manifest.json.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/full-collection-pytest.log.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/full_collection.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/harness-collection.json.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/harness-collection.log.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/harness-execution.json.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/harness-junit.xml.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/harness-manifest.json.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/harness-pytest.log.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/installed_decoder_isolation.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/lint.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/scope.json
-- docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/typecheck.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/10df9815cd4d94f5ac10df51ac3efa0d7465560f7d98b435fd96a2e9e5ca13bf.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/3c7d2ddb024562618bbb6f84c2417bdb4c6dc4ab943fe240d190679ed997dc51.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/4f81427e8f658cf4f9e527cc5f0ff7a798085019284431dea36e1d4849ed162f.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/5ff2945f4d7d60afc0d339ec9fac4549a352b620f28966c489afa118ea229a36.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/74e9391baa582911e92fcf004c74538bfe234ca44c1fd064d5bbf2f5b7258185.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/8886030ec83cf02cd1cccda09b10aa88590915236b4d153f19be6672690fd7cb.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/8c41c885d9246c87c2ca216f952bc997c782914b3b75a291c32aaea16c9269c3.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/929441b77a478c8bdf1d33ada4d58aefce53e7d7588b628eb39db1d30ba5b4c0.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/93a60710073cc552ac66f88992e618e699cb2c25df8d9dbb1a276a9c07e231c4.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/ROUND4_RESULT.yaml
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/RUN.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/additional-probes.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/affected_harness.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/b1454b6e783d4894cdde45d04c421516f8252ce9f8d1413b722a7f217f1000b6.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/b22f63589cf043921c14e20ca241aa553034e7ec375e2ed196f937649cbc4768.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/b5bd281d0410ae7f634821a590292bad3a8364156215a37d86cbced88308336c.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/b788b9400ba01893bf2ebfe1df238589b7a70629b36a26330b36ded824f83296.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/d7b12018228d19ecc8041066c35b768826460f2bc3da485ae401e1c9f364ebd7.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/diff.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.xz
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/full-collection-collection.json.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/full-collection-collection.log.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/full-collection-execution.json.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/full-collection-junit.xml.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/full-collection-manifest.json.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/full-collection-pytest.log.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/full_collection.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/harness-collection.json.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/harness-collection.log.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/harness-execution.json.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/harness-junit.xml.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/harness-manifest.json.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/harness-pytest.log.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/installed_decoder_isolation.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/lint.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/scope.json
-- docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/typecheck.json
 - docs/exec-plans/evidence/HG-056/diagnostics/REVIEW_SOURCE_PROPOSAL_NOT_IMPLEMENTED.md
 - docs/exec-plans/evidence/HG-056/diagnostics/ROUND2_REPAIR.md
 - docs/exec-plans/evidence/HG-056/diagnostics/ROUND3_REPAIR.md
-- docs/exec-plans/evidence/HG-056/diagnostics/ROUND4_REPAIR.md
-- docs/exec-plans/evidence/HG-056/diagnostics/ROUND5_REPAIR.md
 - docs/exec-plans/evidence/HG-056/diagnostics/hg056-collection-storage-diagnostic.json
 - docs/exec-plans/evidence/HG-056/diagnostics/hg056-harness-performance-diagnostic.json
 - docs/exec-plans/evidence/HG-056/diagnostics/hg056-hg047-review-suffix-diagnostic.json
@@ -312,10 +233,6 @@ files_changed:
 - docs/exec-plans/reviews/HG-056/final-round3/RUN.json
 - docs/exec-plans/reviews/HG-056/final-round3/f961813deef8c62dbf2992a0e5d77d9ccc26677ced1334c87f3615d1528db9f0.xz
 - docs/exec-plans/reviews/HG-056/final-round3/storage_audit.json
-- docs/exec-plans/reviews/HG-056/final-round4/3501b56e02d9b218ff5b64abe1934814eb9eeb29e12c50bd0237b3f6f45a6994.xz
-- docs/exec-plans/reviews/HG-056/final-round4/ROOT_READCHECK.json
-- docs/exec-plans/reviews/HG-056/final-round4/RUN.json
-- docs/exec-plans/reviews/HG-056/final-round4/storage_audit.json
 - docs/exec-plans/reviews/HG-056/general/REVIEW.md
 - docs/exec-plans/reviews/HG-056/general/report.json
 - docs/exec-plans/reviews/HG-056/general/verify.py
@@ -325,19 +242,12 @@ files_changed:
 - docs/exec-plans/reviews/HG-056/general_round3/REVIEW.md
 - docs/exec-plans/reviews/HG-056/general_round3/report.json
 - docs/exec-plans/reviews/HG-056/general_round3/verify.py
-- docs/exec-plans/reviews/HG-056/general_round4/GENERAL.json
-- docs/exec-plans/reviews/HG-056/general_round4/REVIEW.md
-- docs/exec-plans/reviews/HG-056/general_round4/report.json
-- docs/exec-plans/reviews/HG-056/general_round4/review-validation.json
-- docs/exec-plans/reviews/HG-056/general_round4/verify.py
 - docs/exec-plans/reviews/HG-056/round1/GENERAL.json
 - docs/exec-plans/reviews/HG-056/round1/SECURITY_DATA_BOUNDARY.json
 - docs/exec-plans/reviews/HG-056/round2/GENERAL.json
 - docs/exec-plans/reviews/HG-056/round2/SECURITY_DATA_BOUNDARY.json
 - docs/exec-plans/reviews/HG-056/round3/GENERAL.json
 - docs/exec-plans/reviews/HG-056/round3/SECURITY_DATA_BOUNDARY.json
-- docs/exec-plans/reviews/HG-056/round4/GENERAL.json
-- docs/exec-plans/reviews/HG-056/round4/SECURITY_DATA_BOUNDARY.json
 - docs/exec-plans/reviews/HG-056/security/classifier-probes.json
 - docs/exec-plans/reviews/HG-056/security/evidence-bindings.json
 - docs/exec-plans/reviews/HG-056/security/report.json
@@ -352,12 +262,6 @@ files_changed:
 - docs/exec-plans/reviews/HG-056/security_round3/read-probes.json
 - docs/exec-plans/reviews/HG-056/security_round3/review-validation.json
 - docs/exec-plans/reviews/HG-056/security_round3/static-boundary.json
-- docs/exec-plans/reviews/HG-056/security_round4/REVIEW.md
-- docs/exec-plans/reviews/HG-056/security_round4/classifier-probes.json
-- docs/exec-plans/reviews/HG-056/security_round4/evidence-bindings.json
-- docs/exec-plans/reviews/HG-056/security_round4/read-probes.json
-- docs/exec-plans/reviews/HG-056/security_round4/review-validation.json
-- docs/exec-plans/reviews/HG-056/security_round4/static-boundary.json
 - docs/harness/EVIDENCE_STORAGE_POLICY.md
 - docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
 - tests/harness/test_compact_evidence.py
@@ -367,47 +271,48 @@ files_changed:
 checks_run:
 - check_id: affected_harness
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers
-    2 --evidence-dir /private/tmp/hg056-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/harness -q -k 'test_compact_evidence
+    2 --evidence-dir /private/tmp/hg056-repair-61ab06ea8a8adfa6e1931db7e6ea80408dd58f49-cef31f82/harness -q -k 'test_compact_evidence
     or test_missing_blob_is_not_available_evidence_or_an_absent_path or hg056'
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/affected_harness.json
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-repair-61ab06ea8a8adfa6e1931db7e6ea80408dd58f49-cef31f82/affected_harness.json
 - check_id: full_collection
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers
-    1 --evidence-dir /private/tmp/hg056-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/full-collection
+    1 --evidence-dir /private/tmp/hg056-repair-61ab06ea8a8adfa6e1931db7e6ea80408dd58f49-cef31f82/full-collection
     --collect-only -q
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/full_collection.json
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-repair-61ab06ea8a8adfa6e1931db7e6ea80408dd58f49-cef31f82/full_collection.json
 - check_id: installed_decoder_isolation
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_local_gate.py
     -q
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/installed_decoder_isolation.json
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-repair-61ab06ea8a8adfa6e1931db7e6ea80408dd58f49-cef31f82/installed_decoder_isolation.json
 - check_id: scope
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-056/verify_scope.py
     --base 3ec7f7a38d974256a928c3687f63e4d90019e42b
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/scope.json
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-repair-61ab06ea8a8adfa6e1931db7e6ea80408dd58f49-cef31f82/scope.json
 - check_id: lint
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/lint.json
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-repair-61ab06ea8a8adfa6e1931db7e6ea80408dd58f49-cef31f82/lint.json
 - check_id: typecheck
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/typecheck.json
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-repair-61ab06ea8a8adfa6e1931db7e6ea80408dd58f49-cef31f82/typecheck.json
 - check_id: diff
-  command: git diff --check 3ec7f7a38d974256a928c3687f63e4d90019e42b 9650c791e58aeb3aa79dcd20911863b33dc4d62f
+  command: git diff --check 3ec7f7a38d974256a928c3687f63e4d90019e42b 61ab06ea8a8adfa6e1931db7e6ea80408dd58f49
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/diff.json
+  evidence_ref: docs/exec-plans/evidence/HG-056/checks-repair-61ab06ea8a8adfa6e1931db7e6ea80408dd58f49-cef31f82/diff.json
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
-- Final affected execution at 9650c791: 892 distinct actual cases, all 888 compact cases, and 2676 passed setup/call/teardown
-  reports with identical two-worker identity sets and JUnit. Lossless captures have zero errors. Isolated 103, scope,
-  lint, typecheck and diff PASS. This is scoped repair evidence, not whole-cycle or task acceptance.
-- Complete ordered actual collect-only inventory contains 2118 distinct identities, zero starts/reports and zero
-  JUnit cases. Collection-only execution.json is not execution or whole-harness PASS. Raw artifacts are unchanged;
-  no filtering/relabeling/post-collection body-ID substitution.
+- 'Final affected harness execution at 61ab06ea: 830 distinct cases executed by two workers, all setup/call/teardown
+  passed, including all 826 compact-evidence cases plus two missing-blob and two HG056 scope/review fixtures. Ordered
+  collection, actual execution, JUnit and stdout were captured losslessly with unchanged budgets. Isolated local-gate103,
+  scope, lint, typecheck and diff PASS.'
+- Full actual collect-only inventory has 2056 identities, zero starts and zero reports. Its collection-only execution.json
+  is not test execution or whole-harness PASS. All raw artifacts and bound envelopes are unchanged; no filtering,
+  rewriting or post-collection body ID substitution.
 - Task remains BLOCKED. Root adjudicated inspection-purpose availability/suffix acceptance as separate prospective
   authority because refs are untyped and original HG047 suffix uses strict classification. Proposal remains NOT_IMPLEMENTED;
   validator/strict execution/storage/M3/cache/suffix semantics remain unchanged from the prior candidate. Exact
@@ -426,21 +331,18 @@ known_limitations:
   cases pass in the new isolated preparation and in the final real two-worker affected run; full unit/harness/authority
   cycle was not rerun merely to reconfirm known blockers. These scoped passes do not relabel the previous whole-cycle
   failure.
-- The intermediate repair candidate8a7686f8 genuinely passed725 affected cases, isolated 103, corrected scope, lint/typecheck/diff
+- The intermediate repair candidate8a7686f8 genuinely passed725 affected cases, isolated103, corrected scope, lint/typecheck/diff
   and full collect-only1951, all with durable identities. Static diagnostics then found typed-write and damaged-container
   partial-key gaps; that candidate was superseded. Preparation204PASS is not final immutable acceptance evidence.
-- Round1 R76484185, round2 R388557f1, round3 R e3d172b9 and round4 R0c3ad1ac CHANGES_REQUIRED records remain preserved
-  under round1/round2/round3/round4 and Git history. Round4 genuinely passed 830/all 826, isolated 103 and 2056 collect-only
-  zero execution; own storage guard PASS. New S10 superseded it. Intermediate cadb6ccb genuinely passed 865/all 861
-  and 2091 collect-only, but typecheck FAIL and three bounded self-probes remain failures in its unchanged run; superseded
-  before formal review. Preparation 297 plus 6 passes are not immutable acceptance. Fresh SHA-bound reviews are required;
-  no task/requirement/review/integration/release or production/shadow PASS inferred.
+- Round1 at R76484185, round2 at R388557f1 and round3 at R e3d172b9 CHANGES_REQUIRED records remain preserved under
+  round1/round2/round3 and Git history. Round3 verified788 actual cases/all784 compact, isolated103, collect-only2014
+  zero execution, and exact-R own storage audit PASS193 files/1105493 stored bytes. Fresh security S9 comment-separated
+  subscript findings superseded that genuinely passing scoped candidate. Current repair preparation235 plus6 new
+  comment guards passed; preparation is not immutable acceptance. Fresh SHA-bound review required; no task/requirement/review/integration/release
+  or production/shadow PASS inferred.
 - Python3.12 fallback, exact interpreter and already-approved isolated xdist/execnet dependency path are recorded
   before execution. No shim, CI/config/installer/platform change, credential access, original historical helper
   execution, frozen/DB/runtime/auth change or real-data execution occurred.
 - Only original literal HG056 write paths were used under root re-granted exclusive implementation leases; no DB
   executor/reservation. Root recovery-scope decision and prospective source-inspection governance remain pending.
   Installation/admission, hosted/App/fullDB and normal merge remain root-owned and unscheduled here.
-- Static target and literal/prefix peeks only add denials, never override lexical rejection or grant source trust.
-  They execute no source/dummy expressions, preserve all existing byte/provenance/binding/ancestry/per-edge/suffix
-  semantics and codecs/budgets, and leave root-deferred inspection-purpose availability/suffix integration NOT_IMPLEMENTED.
