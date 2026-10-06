@@ -1,0 +1,36 @@
+Traceback (most recent call last):
+  File "/Users/davetian/.codex/worktrees/d932/KineticLoop/tools/harness/validate_harness.py", line 4929, in <module>
+  File "/Users/davetian/.codex/worktrees/d932/KineticLoop/tools/harness/validate_harness.py", line 4182, in main
+    errors, count, active = ['validation-error:' + str(ex)], 0, 0
+                            ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.codex/worktrees/d932/KineticLoop/tools/harness/validate_harness.py", line 3625, in validate
+    for task in tasks.values():
+                      ^^^^^^^^^
+  File "/Users/davetian/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.codex/worktrees/d932/KineticLoop/tools/harness/validate_harness.py", line 3123, in m3_milestone_closure_errors
+    return errors
+                  
+  File "/Users/davetian/.codex/worktrees/d932/KineticLoop/tools/harness/validate_harness.py", line 2898, in m3_execution_evidence_errors
+    raise ValueError('stale-or-unintegrated-revision')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.codex/worktrees/d932/KineticLoop/tools/harness/validate_harness.py", line 1895, in governance_suffix_errors
+    if exists.returncode == 0:
+             ^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 2115, in _communicate
+    ready = selector.select(timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/selectors.py", line 415, in select
+    fd_event_list = self._selector.poll(timeout)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

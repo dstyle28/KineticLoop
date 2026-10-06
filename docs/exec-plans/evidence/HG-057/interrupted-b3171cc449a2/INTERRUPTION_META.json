@@ -1,0 +1,46 @@
+{
+  "tested_commit": "b3171cc449a29e2ae03331cafc92500496c6179d",
+  "status": "NOT_RUN",
+  "exit_code": null,
+  "reason": "Explicit turn interruption terminated the owned runner and its parent; no final command metadata, execution JSON, JUnit or manifest exists. Process absence checked at 2026-10-06 07:07 UTC.",
+  "actual_command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg057-author-b3171cc449a2/harness-run -q",
+  "new_PASS_evidence": false,
+  "files": [
+    {
+      "path": "harness.log",
+      "bytes": 1243
+    },
+    {
+      "path": "harness-run/pytest.log",
+      "bytes": 1243
+    },
+    {
+      "path": "harness-run/collection.log",
+      "bytes": 1216
+    },
+    {
+      "path": "harness-run/collection.json",
+      "bytes": 3353573
+    }
+  ],
+  "partial_stdout_ref": "docs/exec-plans/evidence/HG-057/interrupted-b3171cc449a2/partial_stdout.log",
+  "partial_stdout_sha256": "b146c2c2784f0b1dc298e42aa2d2b3d7f1159457bbe4e575d91a9e25e01ce7c0",
+  "collection_refs": [
+    "docs/exec-plans/evidence/HG-057/superseded-193c14adce02/interrupted-b3171cc449a2-collection.log.json",
+    "docs/exec-plans/evidence/HG-057/superseded-193c14adce02/interrupted-b3171cc449a2-collection.json.json"
+  ],
+  "collection_only_status": "PASS_AT_SAME_REVISION; no execution/JUnit/manifest; full harness NOT_RUN",
+  "known_collection_argv": [
+    "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-p",
+    "tools.harness.parallel_observer",
+    "tests/harness",
+    "-q",
+    "--collect-only",
+    "-q",
+    "-n",
+    "0"
+  ]
+}

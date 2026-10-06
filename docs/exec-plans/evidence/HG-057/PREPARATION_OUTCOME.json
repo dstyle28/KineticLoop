@@ -1,0 +1,28 @@
+{
+  "purpose": "PREPARATION_ONLY_NOT_EXECUTION_PASS",
+  "revision": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "dirty_source": true,
+  "command": "PYTHONPATH=src /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness",
+  "reported_exit_code": 254,
+  "status": "INTERRUPTED_NOT_RUN",
+  "capture_method": "exact combined stdout/stderr copied losslessly from own exec/write_stdin tool output; timestamp unavailable",
+  "raw_ref": "docs/exec-plans/evidence/HG-057/preflight_interrupted.log",
+  "reason": "own obsolete dirty preflight intentionally interrupted before stable revision testing",
+  "live_original_PRs": {
+    "99": {
+      "state": "OPEN",
+      "mergedAt": null,
+      "headRefOid": "e71e599885de45da5bcc0a1a9f817939a3fdbcf2"
+    },
+    "102": {
+      "state": "OPEN",
+      "mergedAt": null,
+      "headRefOid": "8bfb977f67f9e1fa8af8fb43fe98ad5bebd89aea"
+    }
+  },
+  "live_read_commands": [
+    "gh pr view 99 --repo dstyle28/KineticLoop --json number,state,mergedAt,headRefOid,url",
+    "gh pr view 102 --repo dstyle28/KineticLoop --json number,state,mergedAt,headRefOid,url"
+  ],
+  "live_read_exit": 0
+}
