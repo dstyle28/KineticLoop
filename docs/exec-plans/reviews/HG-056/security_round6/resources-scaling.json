@@ -1,0 +1,97 @@
+{
+  "R": "0b089d7d3b0212a4e5458dc7891cbb4e831cd6f6",
+  "resource_checks": [
+    {
+      "kind": "actual_native",
+      "write": false,
+      "classifier": "envelope",
+      "native_error": "too many nested parentheses",
+      "outcome": "evidence-source-classification",
+      "sha256": "8abe8f614de1c628c528edab8d8f5b7bb3e82a598a8cb14e315d4d220556446b",
+      "bytes": 542
+    },
+    {
+      "kind": "actual_native",
+      "write": false,
+      "classifier": "reencoding_record",
+      "native_error": "too many nested parentheses",
+      "outcome": "evidence-source-classification",
+      "sha256": "8abe8f614de1c628c528edab8d8f5b7bb3e82a598a8cb14e315d4d220556446b",
+      "bytes": 542
+    },
+    {
+      "kind": "actual_native",
+      "write": true,
+      "classifier": "envelope",
+      "native_error": "too many nested parentheses",
+      "outcome": "evidence-source-classification",
+      "sha256": "ebb1039153ac0562dc97ada6150892a8cdbf3f0b3c2c967475fcf673a55e36db",
+      "bytes": 567
+    },
+    {
+      "kind": "actual_native",
+      "write": true,
+      "classifier": "reencoding_record",
+      "native_error": "too many nested parentheses",
+      "outcome": "evidence-source-classification",
+      "sha256": "ebb1039153ac0562dc97ada6150892a8cdbf3f0b3c2c967475fcf673a55e36db",
+      "bytes": 567
+    },
+    {
+      "kind": "simulated_resource",
+      "error": "MemoryError",
+      "classifier": "envelope",
+      "outcome": "evidence-source-classification"
+    },
+    {
+      "kind": "simulated_resource",
+      "error": "MemoryError",
+      "classifier": "reencoding_record",
+      "outcome": "evidence-source-classification"
+    },
+    {
+      "kind": "simulated_resource",
+      "error": "RecursionError",
+      "classifier": "envelope",
+      "outcome": "evidence-source-classification"
+    },
+    {
+      "kind": "simulated_resource",
+      "error": "RecursionError",
+      "classifier": "reencoding_record",
+      "outcome": "evidence-source-classification"
+    }
+  ],
+  "profiling_status": "COMPLETE",
+  "actual_collector_ref": "docs/exec-plans/evidence/HG-056/checks-repair-1cb64a1baef54fc7801e4084a18db962c3528a70-9bc7f4cc/full_collection.json",
+  "raw_sha256": "2ba906b8bbbb62a8498fc3e9d98fd6d93cdd8d049475e93b948ca7bd1ed70d8a",
+  "raw_bytes": 3257569,
+  "profiles": [
+    {
+      "copies": 1,
+      "input_bytes": 3257569,
+      "seconds": 7.158,
+      "outcome": "plain",
+      "calls": 55878,
+      "parse_bytes": 1016539185,
+      "maximum_parse_span": 3257569
+    },
+    {
+      "copies": 2,
+      "input_bytes": 6515138,
+      "seconds": 12.084,
+      "outcome": "plain",
+      "calls": 94047,
+      "parse_bytes": 1593220932,
+      "maximum_parse_span": 6515138
+    }
+  ],
+  "ratios": {
+    "calls": 1.6830774186620852,
+    "parse_bytes": 1.5672990825238085,
+    "seconds": 1.6881810561609387
+  },
+  "input_execution": false,
+  "new_production_budget": false,
+  "interpretation": "Observed work on one and two complete copies of actual committed collector bytes; source inspection resets local target spans per logical statement and does not rescan all preceding statements. No universal complexity proof or production work ceiling inferred."
+}

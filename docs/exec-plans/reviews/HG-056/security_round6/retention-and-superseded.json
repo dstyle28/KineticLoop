@@ -1,0 +1,83 @@
+{
+  "R": "0b089d7d3b0212a4e5458dc7891cbb4e831cd6f6",
+  "B": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "T": "1cb64a1baef54fc7801e4084a18db962c3528a70",
+  "retention_negative_cases_in_actual951_execution": {
+    "test_unrelated_owner_rejects_transient_admitted_binding_mutation": 6,
+    "test_transient_foreign_conversion_cannot_disappear_before_head": 2,
+    "test_unmapped_foreign_compact_mutation_and_restoration_fails": 2,
+    "test_transient_reserved_new_map_on_pre_admission_branch_fails_globally": 36,
+    "test_retained_map_missing_bound_objects_fail_closed": 2,
+    "test_retained_map_recreation_on_base_imported_side_branch_rejects": 1,
+    "test_handwritten_or_late_side_branch_map_after_base_import_rejects": 3,
+    "test_reference_at_wrong_revision_cannot_borrow_payload_from_head": 1
+  },
+  "protected_prerequisite_and_KL036_roots_byte_unchanged": [
+    "docs/exec-plans/evidence/HG-054",
+    "docs/exec-plans/evidence/HG-055",
+    "docs/exec-plans/governance/HG-054.yaml",
+    "docs/exec-plans/governance/HG-055.yaml",
+    "docs/exec-plans/evidence/KL-036",
+    "docs/exec-plans/reviews/KL-036"
+  ],
+  "round5_and_superseded_existing_evidence_byte_unchanged_since_original_R": [
+    "docs/exec-plans/reviews/HG-056/security_round5",
+    "docs/exec-plans/reviews/HG-056/round5",
+    "docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c",
+    "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef"
+  ],
+  "review_suffix_additions": [
+    "A\tdocs/exec-plans/reviews/HG-056/round5/GENERAL.json",
+    "A\tdocs/exec-plans/reviews/HG-056/round5/SECURITY_DATA_BOUNDARY.json",
+    "A\tdocs/exec-plans/reviews/HG-056/security_round5/REVIEW.md",
+    "A\tdocs/exec-plans/reviews/HG-056/security_round5/SECURITY_DATA_BOUNDARY.json",
+    "A\tdocs/exec-plans/reviews/HG-056/security_round5/classifier-probes.json",
+    "A\tdocs/exec-plans/reviews/HG-056/security_round5/evidence-bindings.json",
+    "A\tdocs/exec-plans/reviews/HG-056/security_round5/read-probes.json",
+    "A\tdocs/exec-plans/reviews/HG-056/security_round5/retention-and-superseded.json",
+    "A\tdocs/exec-plans/reviews/HG-056/security_round5/review-validation.json",
+    "A\tdocs/exec-plans/reviews/HG-056/security_round5/static-boundary.json",
+    "A\tdocs/exec-plans/reviews/HG-056/security_round5/verify_bindings.py",
+    "A\tdocs/exec-plans/reviews/HG-056/security_round5/verify_probes.py"
+  ],
+  "superseded_typecheck": {
+    "tested_commit": "cadb6ccb3e5493548ee8f02803994cd0266ee084",
+    "result": "FAIL",
+    "exit_code": 1,
+    "raw_bytes": 258,
+    "raw_sha256": "b788b9400ba01893bf2ebfe1df238589b7a70629b36a26330b36ded824f83296",
+    "exact_read_binding_verified": true
+  },
+  "superseded_three_plain_hostile_observations_preserved": {
+    "tested_commit": "cadb6ccb3e5493548ee8f02803994cd0266ee084",
+    "source_executed": false,
+    "observations": [
+      {
+        "id": "unpacked-invalid-rhs",
+        "bytes": 46,
+        "input_sha256": "ee76349fa87ab45fb5dacf91eabd5ca13c8b4bf2eb061505abbc5de23aeb2055",
+        "envelope": "plain",
+        "reencoding_record": "plain",
+        "expected": "reject"
+      },
+      {
+        "id": "unpacked-incomplete-rhs",
+        "bytes": 44,
+        "input_sha256": "b1022335e1fa0967e09a22ffdcbe2bb14cfa68e8d0e4bfe2510f3deec053ad32",
+        "envelope": "plain",
+        "reencoding_record": "plain",
+        "expected": "reject"
+      },
+      {
+        "id": "string-wrapped-unpacked-target",
+        "bytes": 59,
+        "input_sha256": "3d59873c42cc0fcb438daddc39293c17df7ecbb581572733d43fdb7da57732b8",
+        "envelope": "plain",
+        "reencoding_record": "plain",
+        "expected": "reject"
+      }
+    ],
+    "conclusion": "Superseded before formal review/result; actual865 affected and other passes remain passes, actual typecheckFAIL remains FAIL."
+  },
+  "scope": "Guard bodies unchanged; actual captured negative-case identity/phase evidence verified independently. No guard fixture or historical full cycle rerun; no historical authority inferred."
+}

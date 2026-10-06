@@ -1,0 +1,297 @@
+{
+  "purpose": "INDEPENDENT_GENERAL_EXACT_GIT_METADATA_ONLY",
+  "B": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "T": "1cb64a1baef54fc7801e4084a18db962c3528a70",
+  "R": "0b089d7d3b0212a4e5458dc7891cbb4e831cd6f6",
+  "environment": {
+    "python": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+    "python_version": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+    "PYTHONPATH": "/Users/davetian/.codex/worktrees/a5f1/KineticLoop/src:/private/tmp/hg054-dependencies",
+    "versions": {
+      "pytest": "8.4.2",
+      "pytest-xdist": "3.8.0",
+      "execnet": "2.1.2"
+    }
+  },
+  "checks": [
+    {
+      "id": "affected_harness",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg056-repair-1cb64a1baef54fc7801e4084a18db962c3528a70-9bc7f4cc/harness -q -k 'test_compact_evidence or test_missing_blob_is_not_available_evidence_or_an_absent_path or hg056'",
+      "sha256": "dc5018a533cb51b91ccfcc03a21bcc5595328db7117ef5e7d2d7b0e24be11468",
+      "bytes": 1313,
+      "exit_code": 0,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "full_collection",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 1 --evidence-dir /private/tmp/hg056-repair-1cb64a1baef54fc7801e4084a18db962c3528a70-9bc7f4cc/full-collection --collect-only -q",
+      "sha256": "2ba906b8bbbb62a8498fc3e9d98fd6d93cdd8d049475e93b948ca7bd1ed70d8a",
+      "bytes": 3257569,
+      "exit_code": 0,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "installed_decoder_isolation",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_local_gate.py -q",
+      "sha256": "88608f0faaa4769f0e5dd183b1e5399434cd2ee2fc92f663903f42ccdd5ff742",
+      "bytes": 180,
+      "exit_code": 0,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "scope",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-056/verify_scope.py --base 3ec7f7a38d974256a928c3687f63e4d90019e42b",
+      "sha256": "4e9cfb5b9669a57d5305d5aa135781c872678bf1617a991b7eeb1243478955f5",
+      "bytes": 51195,
+      "exit_code": 0,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "lint",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19,
+      "exit_code": 0,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "typecheck",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+      "sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb",
+      "bytes": 45,
+      "exit_code": 0,
+      "bound_read": "PASS"
+    },
+    {
+      "id": "diff",
+      "command": "git diff --check 3ec7f7a38d974256a928c3687f63e4d90019e42b 1cb64a1baef54fc7801e4084a18db962c3528a70",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "exit_code": 0,
+      "bound_read": "PASS"
+    }
+  ],
+  "execution": {
+    "harness": {
+      "collected": 951,
+      "identity_sha256": "f40042bb0015f7ccf18497649cac6737f791573910a42125dd141c5fb42fc8b4",
+      "starts": 951,
+      "reports": 2853,
+      "junit_cases": 951,
+      "mode": "EXECUTION",
+      "artifact_hashes": "PASS",
+      "compact_cases": 947,
+      "worker_phase_junit_binding": "PASS",
+      "phase_counts": {
+        "setup": 951,
+        "call": 951,
+        "teardown": 951
+      }
+    },
+    "full-collection": {
+      "collected": 2177,
+      "identity_sha256": "82023a206ec2b53de8f69b1f2b18a07c1ecfc25477f4f1642567bf57c4bcc97b",
+      "starts": 0,
+      "reports": 0,
+      "junit_cases": 0,
+      "mode": "COLLECTION_ONLY",
+      "artifact_hashes": "PASS"
+    }
+  },
+  "isolated_stdout_count": 103,
+  "isolated_identity_artifact_claimed": false,
+  "paths_in_scope": 465,
+  "governance_schema_and_bindings": "PASS",
+  "old_invalid_result_preserved": true,
+  "G5_closed_at_new_revision": true,
+  "source_tree_identical_T_R": true,
+  "frozen_paths_identical": 3,
+  "derived_index_and_manifest": "PASS",
+  "literal_scope_and_regular_modes": "PASS",
+  "old_artifacts_preserved": 343,
+  "round5_canonical_copies_exact": true,
+  "original_helper": {
+    "pins": "PASS",
+    "plain": "PASS",
+    "bound_read": "PASS",
+    "executed": false
+  },
+  "prior_actual_outcomes": [
+    {
+      "id": "authority",
+      "result": "FAIL",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "1853ea60323bf0c7bd265ffec22744a0b3cb0897b1c136008a18583f7244cb00",
+      "bytes": 488
+    },
+    {
+      "id": "bound_reader_regressions",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "54ea2a7f52fd9a7b4d0b2db5f666e456adec8aa82f0d7ccfecf7fe6209d7a026",
+      "bytes": 433
+    },
+    {
+      "id": "codec_security_and_budget",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "6c68b3f689c819e45506f9efe6e9688c7f8327a9724ed96f675eb23c573f6b92",
+      "bytes": 752
+    },
+    {
+      "id": "compatibility",
+      "result": "FAIL",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "477005c5e1ac54200c6256a5f37ec95b44e4e12fee45a8d6ec164fceb9c691ea",
+      "bytes": 2449
+    },
+    {
+      "id": "diff",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "id": "harness",
+      "result": "FAIL",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "e8d6969abf48165fe76fb3acf0f5230046c4dad374280e76e6c0c4ac2bf72f86",
+      "bytes": 4954
+    },
+    {
+      "id": "installed_decoder_isolation",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "706d8c98d66583900f1c073220a23aee540cc8cc77a825e2632cea998da3618a",
+      "bytes": 180
+    },
+    {
+      "id": "lint",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "id": "scope",
+      "result": "FAIL",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "22672a1e0e2dd9a22473a72e11b9cef765f7409031f3b47f5c3b5132d3d6110e",
+      "bytes": 489
+    },
+    {
+      "id": "typecheck",
+      "result": "PASS",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb",
+      "bytes": 45
+    },
+    {
+      "id": "unit",
+      "result": "FAIL",
+      "tested": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "sha256": "bfdf1d65b70997784e7ea9a8ff18dff59c241f47bc14231a759e5b147bddfbed",
+      "bytes": 1945
+    }
+  ],
+  "compatibility": {
+    "expected_maps": [
+      "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json",
+      "docs/exec-plans/evidence/KL-036/reencoding-hg054-f92f92bd74033937276794010f65d6fe98f657fc/COMPACT_REENCODING.json"
+    ],
+    "validated_maps": [
+      "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json"
+    ],
+    "history_errors": [
+      "reencoding-invalid:reencoding-unmapped-payload-mutation:docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz"
+    ],
+    "storage_errors": [
+      "docs/exec-plans/evidence/KL-036/reencoding-hg054-f92f92bd74033937276794010f65d6fe98f657fc/COMPACT_REENCODING.json:evidence-envelope",
+      "reencoding-invalid:reencoding-unmapped-payload-mutation:docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz"
+    ],
+    "rerun": false
+  },
+  "external_deletion_tree_confirmed": true,
+  "source_inspection_authority": "NOT_IMPLEMENTED/BLOCKED",
+  "collection_scaling": [
+    {
+      "copies": 1,
+      "bytes": 3257569,
+      "parse_calls": 18626,
+      "seconds": 2.363,
+      "reserved": false
+    },
+    {
+      "copies": 2,
+      "bytes": 6515138,
+      "parse_calls": 31349,
+      "seconds": 3.97,
+      "reserved": false
+    }
+  ],
+  "bounded_original_scope_probes": [
+    {
+      "name": "byte-string-write",
+      "sha256": "9eabe6ee224d41c15f5f0ec3be75975deefe1531ba4d5592bb22c3ee8815b52a",
+      "bytes": 60,
+      "outcomes": [
+        "evidence-envelope-json",
+        "evidence-envelope-json"
+      ]
+    },
+    {
+      "name": "byte-string-read",
+      "sha256": "243e68abea2162b75da004d74ed56daebec52a500d8ee6c3325e71f9c321e0df",
+      "bytes": 56,
+      "outcomes": [
+        "plain",
+        "plain"
+      ]
+    },
+    {
+      "name": "multiline-comment-target",
+      "sha256": "c7d6b226a64d58b3520e246ac5b14a5181a48497dc2d3d522d070022b7118909",
+      "bytes": 63,
+      "outcomes": [
+        "evidence-envelope-json",
+        "evidence-envelope-json"
+      ]
+    },
+    {
+      "name": "multiline-prose-target",
+      "sha256": "9afa6bbe2bbeae5d157e696f0528d91166c44b475c5e61e8d9b9123eb0248f59",
+      "bytes": 67,
+      "outcomes": [
+        "evidence-envelope-json",
+        "evidence-envelope-json"
+      ]
+    },
+    {
+      "name": "field-get",
+      "sha256": "5b5d7f3e3c49a1eb8f52f22b35e4938b0bb27ef551e076accdaa5c911e974a40",
+      "bytes": 36,
+      "outcomes": [
+        "plain",
+        "plain"
+      ]
+    },
+    {
+      "name": "deep-native-read",
+      "sha256": "41b0c48dcce3c86d8aaea232f43e00b3b546680e5ffa48ad0099bbfac48acfa6",
+      "bytes": 548,
+      "outcomes": [
+        "evidence-source-classification",
+        "evidence-source-classification"
+      ]
+    }
+  ],
+  "new_general_implementation_defects": 0,
+  "whole_cycles_rerun": false,
+  "root_audit_duplicated": false,
+  "reviewer_verifier_initial_failures": [
+    "First invocation passed current capture/result checks, then expected old ScannerError hit incorrect yaml.ScannerError exception path (AttributeError); reviewer script corrected to yaml.scanner.ScannerError.",
+    "Second invocation passed captures/current schema/prior invalid-result preservation, then assumed round5 canonical copies existed at the earlier reviewed R instead of the later review-record R; corrected to compare exact current R copies. No implementation or evidence was changed."
+  ],
+  "reviewer_execution": "Only this metadata verifier, classification of inert bytes, and bound recovery; no helper/private logs/DB/network/config/credentials."
+}
