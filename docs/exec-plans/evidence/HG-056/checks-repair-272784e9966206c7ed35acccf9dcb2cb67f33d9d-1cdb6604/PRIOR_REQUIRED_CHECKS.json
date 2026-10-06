@@ -1,0 +1,75 @@
+{
+  "purpose": "Preserved prior actual outcomes, not executions at the repaired source",
+  "result_revision": "76484185581647d1a5d038eaa2eaa2c26291b8c1",
+  "tested_commit": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+  "checks_run": [
+    {
+      "check_id": "authority",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness",
+      "result": "FAIL",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/authority.json"
+    },
+    {
+      "check_id": "bound_reader_regressions",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_review_evidence_provenance.py tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -q",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/bound_reader_regressions.json"
+    },
+    {
+      "check_id": "codec_security_and_budget",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_compact_evidence.py -q",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/codec_security_and_budget.json"
+    },
+    {
+      "check_id": "compatibility",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-056/verify_compatibility.py",
+      "result": "FAIL",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/compatibility.json"
+    },
+    {
+      "check_id": "diff",
+      "command": "git diff --check 3ec7f7a38d974256a928c3687f63e4d90019e42b a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/diff.json"
+    },
+    {
+      "check_id": "harness",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg056-checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/harness -q",
+      "result": "FAIL",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/harness.json"
+    },
+    {
+      "check_id": "installed_decoder_isolation",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_local_gate.py -q",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/installed_decoder_isolation.json"
+    },
+    {
+      "check_id": "lint",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/lint.json"
+    },
+    {
+      "check_id": "scope",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-056/verify_scope.py --base 3ec7f7a38d974256a928c3687f63e4d90019e42b",
+      "result": "FAIL",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/scope.json"
+    },
+    {
+      "check_id": "typecheck",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/typecheck.json"
+    },
+    {
+      "check_id": "unit",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit -q --junitxml=/private/tmp/hg056-checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/unit.xml",
+      "result": "FAIL",
+      "evidence_ref": "docs/exec-plans/evidence/HG-056/checks-a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86-beec415d/unit.json"
+    }
+  ],
+  "original_result_ref": "docs/exec-plans/evidence/HG-056/checks-repair-8a7686f81a1aa903b729f2fe9052b1f4da93f04d-2250f602/ROUND1_RESULT.yaml",
+  "status": "Original failures/PASS unchanged; new affected checks do not relabel a whole cycle"
+}
