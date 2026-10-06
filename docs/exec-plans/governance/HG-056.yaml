@@ -402,7 +402,7 @@ checks_run:
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
-- Final affected execution at 9650c791: 892 distinct actual cases, all 888 compact cases, and 2676 passed setup/call/teardown
+- Final affected execution at 9650c791 has 892 distinct actual cases, all 888 compact cases, and 2676 passed setup/call/teardown
   reports with identical two-worker identity sets and JUnit. Lossless captures have zero errors. Isolated 103, scope,
   lint, typecheck and diff PASS. This is scoped repair evidence, not whole-cycle or task acceptance.
 - Complete ordered actual collect-only inventory contains 2118 distinct identities, zero starts/reports and zero
@@ -430,11 +430,11 @@ known_limitations:
   and full collect-only1951, all with durable identities. Static diagnostics then found typed-write and damaged-container
   partial-key gaps; that candidate was superseded. Preparation204PASS is not final immutable acceptance evidence.
 - Round1 R76484185, round2 R388557f1, round3 R e3d172b9 and round4 R0c3ad1ac CHANGES_REQUIRED records remain preserved
-  under round1/round2/round3/round4 and Git history. Round4 genuinely passed 830/all 826, isolated 103 and 2056 collect-only
-  zero execution; own storage guard PASS. New S10 superseded it. Intermediate cadb6ccb genuinely passed 865/all 861
-  and 2091 collect-only, but typecheck FAIL and three bounded self-probes remain failures in its unchanged run; superseded
-  before formal review. Preparation 297 plus 6 passes are not immutable acceptance. Fresh SHA-bound reviews are required;
-  no task/requirement/review/integration/release or production/shadow PASS inferred.
+  under round1/round2/round3/round4 and Git history. Round4 genuinely passed 830/all 826, isolated 103 and 2056
+  collect-only zero execution; own storage guard PASS. New S10 superseded it. Intermediate cadb6ccb genuinely passed
+  865/all 861 and 2091 collect-only, but typecheck FAIL and three bounded self-probes remain failures in its unchanged
+  run; superseded before formal review. Preparation 297 plus 6 passes are not immutable acceptance. Fresh SHA-bound
+  reviews are required; no task/requirement/review/integration/release or production/shadow PASS inferred.
 - Python3.12 fallback, exact interpreter and already-approved isolated xdist/execnet dependency path are recorded
   before execution. No shim, CI/config/installer/platform change, credential access, original historical helper
   execution, frozen/DB/runtime/auth change or real-data execution occurred.
@@ -444,3 +444,7 @@ known_limitations:
 - Static target and literal/prefix peeks only add denials, never override lexical rejection or grant source trust.
   They execute no source/dummy expressions, preserve all existing byte/provenance/binding/ancestry/per-edge/suffix
   semantics and codecs/budgets, and leave root-deferred inspection-purpose availability/suffix integration NOT_IMPLEMENTED.
+- Round5 reviewed d8aaf7c independently found invalid result YAML (HG056-G5) and comment/prose wrapped unpacked
+  assignment metadata (HG056-S11). Both findings and exact prior result remain historical. The repaired result is
+  structured and schema validated; new source still requires final affected execution and fresh reviews. No acceptance
+  or source-inspection authority follows.

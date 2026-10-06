@@ -129,6 +129,34 @@
       "deselected": 882,
       "seconds": 0.8,
       "limitation": "Preparation only; ordinary source bytes stay lossless and reserved writes reject without executing literal contents."
+    },
+    {
+      "check": "round5 comment/prose target repair preparation",
+      "result": "PASS",
+      "passed": 30,
+      "failed": 0,
+      "deselected": 888,
+      "seconds": 9.32,
+      "limitation": "Preparation only; confirmed S11 wrapper writes reject while corresponding RHS reads stay plain."
+    },
+    {
+      "check": "round5 surrounding source and shared-guard preparation",
+      "result": "PASS",
+      "passed": 333,
+      "failed": 0,
+      "deselected": 585,
+      "seconds": 74.74,
+      "limitation": "Preparation only; final immutable affected execution and fresh reviews remain required."
+    },
+    {
+      "check": "round5 structured result repair",
+      "result": "PASS",
+      "limitation": "Exact prior d8aaf7c result YAML failed parsing after a readability edit introduced an unquoted colon-space. Prior blob and independent G5 review stay unchanged. Current structured safe_dump round-trip plus existing schema validates; no prior task or review PASS inferred."
+    },
+    {
+      "check": "round5 preparation bookkeeping initial append",
+      "result": "FAIL",
+      "cause": "Assembler used nonexistent checks key instead of existing runs key; KeyError occurred before any write. Corrected append uses runs. Actual test artifacts unchanged."
     }
   ],
   "limitations": [

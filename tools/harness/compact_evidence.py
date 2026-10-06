@@ -117,6 +117,11 @@ def source_write_keys(data: bytes) -> set[bytes]:
         seen.add(source)
         tree = parsed(source)
         trees = [] if tree is None else [tree]
+        # Comment bodies can wrap the same actual assignments as source or
+        # strings. Peeking at their syntax only adds denial; it never runs them.
+        for token in re.finditer(rb'''"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\#[^\r\n]*''', source):
+            if token[0].startswith(b'#') and b'=' in token[0]:
+                pending.append(token[0][1:].strip())
         if tree is None:
             # Invalid/truncated RHS bytes cannot hide a valid write target.
             # Dummy RHS is syntax only; neither it nor source is executed.
@@ -124,6 +129,15 @@ def source_write_keys(data: bytes) -> set[bytes]:
                 prefix = parsed(source[:match.end()] + b'None')
                 if prefix is not None:
                     trees.append(prefix)
+                # A prose prefix must not hide an otherwise valid target. Try
+                # syntax fragments at token/container boundaries, retaining
+                # Store versus Load context even for unpacked targets.
+                target = source[:match.end()]
+                if re.search(rb'''\[\s*[rRuUbBfF]{0,2}["']|\b(?:kineticloop_evidence|compact_reencoding|payload|stored_sha256|raw_sha256|authorization|preserved_records|entries|protected_base|source_revision)\b''', target):
+                    for start in re.finditer(rb'(?<![\w.])[\w\x80-\xff]+|[\[(]', target):
+                        fragment = parsed(target[start.start():] + b'None')
+                        if fragment is not None:
+                            trees.append(fragment)
         for node in (node for tree in trees for node in ast.walk(tree)):
             if isinstance(node, ast.Constant) and isinstance(node.value, str) and '=' in node.value:
                 pending.append(node.value.encode('utf-8', errors='surrogatepass'))
