@@ -1,0 +1,45 @@
+{
+  "event": "ACTUAL_EXACT_R_OWN_STORAGE_AUDIT_HANDOFF",
+  "timestamp_utc": "2026-10-06T03:53:47.067684+00:00",
+  "reviewed_head_sha": "0b089d7d3b0212a4e5458dc7891cbb4e831cd6f6",
+  "tested_commit": "1cb64a1baef54fc7801e4084a18db962c3528a70",
+  "result": "FAIL",
+  "exit_code": 1,
+  "seconds": 1011.636,
+  "lossless_capture": "PASS_RAW_BYTES_AND_BOTH_HASHES_MATCH_ACTUAL_SCRATCH",
+  "audit_summary": {
+    "identity": "HG-056",
+    "base": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+    "head": "0b089d7d3b0212a4e5458dc7891cbb4e831cd6f6",
+    "stored_bytes": 3086607,
+    "files": 456,
+    "errors": [
+      "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/ROUND4_RESULT.yaml:duplicate-bulk:docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/ROUND4_RESULT.yaml",
+      "docs/exec-plans/reviews/HG-056/security_round5/verify_probes.py:evidence-envelope-json",
+      "reencoding-invalid:evidence-envelope-json"
+    ],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  },
+  "duplicate_copy_exact_git_proof": {
+    "paths": [
+      "docs/exec-plans/evidence/HG-056/checks-repair-cadb6ccb3e5493548ee8f02803994cd0266ee084-f27e4fef/ROUND4_RESULT.yaml",
+      "docs/exec-plans/evidence/HG-056/checks-repair-9650c791e58aeb3aa79dcd20911863b33dc4d62f-4e68e83c/ROUND4_RESULT.yaml"
+    ],
+    "bytes": 37328,
+    "sha256": "1184d1604fb7b715a380332c359a7a207d6d15eb125b6e4702a715e1d62ebbf0",
+    "bytes_equal": true
+  },
+  "audit_interrupted": false,
+  "audit_rerun": false,
+  "implementation_frozen": true,
+  "shared_write_resources_held": [],
+  "shared_write_resources_released": [
+    "harness_governance",
+    "harness_validator",
+    "evidence_storage",
+    "trusted_local_ci_controller"
+  ],
+  "active_gate_executions": [],
+  "task_status": "BLOCKED",
+  "interpretation": "This completed own-storage FAIL is additional to retained immutable KL036 compatibility and deferred source-purpose authority. No source defect verdict or PASS follows from duplicate copies or source-looking historical probe content. No history/result rewrite, classifier exemption, consolidation authority or new implementation lease is inferred. Root must adjudicate any prospective remedy before implementation resumes. Earlier RUNNING handoff is a preserved point-in-time event, superseded only by this later actual observation."
+}

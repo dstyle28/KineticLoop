@@ -1,0 +1,14 @@
+{
+  "base_commit": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "audited_head": "0b089d7d3b0212a4e5458dc7891cbb4e831cd6f6",
+  "check_id": "own_storage_audit",
+  "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python tools/harness/compact_evidence.py audit --base 3ec7f7a38d974256a928c3687f63e4d90019e42b --head 0b089d7d3b0212a4e5458dc7891cbb4e831cd6f6 --identity HG-056",
+  "exit_code": 1,
+  "seconds": 1011.636,
+  "raw_bytes": 26654,
+  "raw_sha256": "b4c77c49fde24ace0e521d238f3eca1df4f57a0a885afb86058c951034c8f452",
+  "evidence_ref": "docs/exec-plans/reviews/HG-056/final-round6/storage_audit.json",
+  "result": "FAIL",
+  "scope": "Own storage guard only; not immutable KL036 compatibility or task acceptance",
+  "not_rerun": "Known failing whole-cycle/CI guard and immutable KL036 oracle retained at original source as directed by root"
+}
