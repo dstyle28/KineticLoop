@@ -9,6 +9,7 @@ import lzma
 import re
 import subprocess
 import sys
+import unicodedata
 import zlib
 from datetime import datetime, timezone
 from pathlib import Path
@@ -103,6 +104,13 @@ def reserved_ascii(data: bytes) -> bool:
         return bytes([value]) if value < 128 else match[0]
     data = re.sub(rb'\\(?:u([0-9a-fA-F]{4})|x([0-9a-fA-F]{2})|U([0-9a-fA-F]{8})|([0-7]{1,3}))',
                   ascii_escape, data)
+    def named_ascii_escape(match):
+        try:
+            value = unicodedata.lookup(match[1].decode('ascii'))
+        except (KeyError, UnicodeError):
+            return match[0]
+        return value.encode('ascii') if value.isascii() else match[0]
+    data = re.sub(rb'\\N\{([^{}\r\n]+)\}', named_ascii_escape, data)
     # A field reference/string value is ordinary content. Recognize key/value
     # syntax even in broken JSON, source dictionaries, comments and string
     # wrappers; classification never parses or executes source as authority.
@@ -110,7 +118,9 @@ def reserved_ascii(data: bytes) -> bool:
     # Keep the unjoined view too: malformed JSON must not hide a complete
     # reserved key by appending an adjacent token. Both views only classify.
     continued = re.sub(rb'\\\r?\n', b'', data)
-    joined = re.sub(rb"[\"']\s*[\"']", b"", continued)
+    # Prefixes and comments do not prevent Python's implicit literal joining.
+    # This additional view only identifies keys; it never accepts source bytes.
+    joined = re.sub(rb"[\"'](?:\s|\#[^\r\n]*(?:\r?\n|$))*[rRuUbBfF]{0,2}[\"']", b"", continued)
     keys = set()
     assignment = rb'(?:\*\*|//|<<|>>|[+\-*/%@&|^:])?=(?!=)'
     for view in (data, continued, joined):
@@ -118,11 +128,6 @@ def reserved_ascii(data: bytes) -> bool:
         keys.update(re.findall(rb"\b([a-z_][a-z_0-9]*)\s*" + assignment, view))
         keys.update(re.findall(
             rb"[\"']([a-z_][a-z_0-9]*)[\"']\s*\)*\s*\]\s*\)*\s*(?:" + assignment + rb"|:)", view))
-        # Typed identifier writes also declare reserved fields. Scan each
-        # statement once; do not backtrack across arbitrary annotation text.
-        for statement in re.finditer(rb'[^;\r\n]+', view):
-            if re.search(rb'(?<![=<>!])' + assignment, statement[0]):
-                keys.update(re.findall(rb"\b([a-z_][a-z_0-9]*)\s*:", statement[0]))
         keys.update(re.findall(rb"\{\s*[\"']([a-z_][a-z_0-9]*)[\"']", view))
         # An unfinished object key after a comma still identifies damaged
         # metadata. Commas in lists/calls and quoted values do not identify keys.
@@ -130,7 +135,9 @@ def reserved_ascii(data: bytes) -> bool:
         # in a source program or permission to execute it.
         stack = []
         object_commas = set()
-        for token in re.finditer(rb'''"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[{}\[\](),]''', view):
+        statement_start = 0
+        statements = []
+        for token in re.finditer(rb'''"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\#[^\r\n]*|[{}\[\](),;\r\n]''', view):
             text = token[0]
             if text in (b'{', b'[', b'('):
                 stack.append(text)
@@ -144,6 +151,15 @@ def reserved_ascii(data: bytes) -> bool:
                     stack.pop()
             elif text == b',' and stack and stack[-1] == b'{':
                 object_commas.add(token.start())
+            elif text == b';' or (text in (b'\r', b'\n') and not stack):
+                statements.append(view[statement_start:token.start()])
+                statement_start = token.end()
+        statements.append(view[statement_start:])
+        # Newlines inside annotations belong to the same logical statement.
+        # Scan each statement once without unbounded annotation backtracking.
+        for statement in statements:
+            if re.search(rb'(?<![=<>!])' + assignment, statement):
+                keys.update(re.findall(rb"\b([a-z_][a-z_0-9]*)\s*:", statement))
         keys.update(match[1] for match in re.finditer(
             rb",\s*[\"']([a-z_][a-z_0-9]*)[\"']", view)
                     if match.start() in object_commas)

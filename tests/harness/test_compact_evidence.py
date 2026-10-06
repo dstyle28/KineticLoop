@@ -2010,6 +2010,10 @@ def test_retained_map_recreation_on_base_imported_side_branch_rejects(repo):
     pytest.param(b'record.get("{", "kineticloop_evidence")', id='default-brace-string'),
     pytest.param(b'{"ordinary": ["x", "kineticloop_evidence"]}', id='nested-array-values'),
     pytest.param(br'record.get("ordinary", "kineticloop\137evidence")', id='escaped-reader-default'),
+    pytest.param(b'envelope.get("kineticloop_" r"evidence")', id='prefixed-adjacent-read'),
+    pytest.param(b'envelope.get("kineticloop_" # comment\n"evidence")', id='comment-adjacent-read'),
+    pytest.param(br'envelope.get("kineticloop\N{LOW LINE}evidence")', id='named-unicode-read'),
+    pytest.param(b'kineticloop_evidence: str\nordinary = "value"', id='annotation-with-separate-write'),
 ])
 @pytest.mark.parametrize('codec', [None, ce.FORMAT, ce.XZ_FORMAT], ids=['plain', 'gzip', 'xz'])
 def test_ordinary_reserved_field_references_remain_lossless(repo, raw, codec):
@@ -2052,6 +2056,15 @@ def test_exact_original_reader_is_plain_and_history_compatible(repo):
     pytest.param(b"record = {('kineticloop_''evidence'): 'gzip-v1'}", id='parenthesized-adjacent-key'),
     pytest.param(b"record = {'kineticloop_' \\\n'evidence': 'gzip-v1'}", id='continued-adjacent-key'),
     pytest.param(b"record = {'kineticloop_' \\\r\n'evidence': 'gzip-v1'}", id='crlf-continued-key'),
+    pytest.param(b'{"kineticloop_" r"evidence": "gzip-v1"}', id='raw-prefixed-adjacent-key'),
+    pytest.param(b'{"kineticloop_" u"evidence": "gzip-v1"}', id='unicode-prefixed-adjacent-key'),
+    pytest.param(b'{("kineticloop_" r"evidence"): "gzip-v1"}', id='parenthesized-prefixed-key'),
+    pytest.param(b'{"compact_" r"reencoding": "v1"}', id='prefixed-adjacent-map-key'),
+    pytest.param(b'record["kineticloop_" r"evidence"] = "gzip-v1"', id='prefixed-adjacent-subscript-write'),
+    pytest.param(b'{("kineticloop_" # comment\n"evidence"): "gzip-v1"}', id='comment-adjacent-key'),
+    pytest.param(br'{"kineticloop\N{LOW LINE}evidence": "gzip-v1"}', id='named-unicode-key'),
+    pytest.param(br'{"compact\N{LOW LINE}reencoding": "v1"}', id='named-unicode-map-key'),
+    pytest.param(b'kineticloop_evidence: (\n str\n) = "gzip-v1"', id='multiline-typed-write'),
     pytest.param(b'record = {"kineticloop_evidence": "gzip-v1"}', id='double-quoted-dict'),
     pytest.param(b"record = {'kineticloop_evidence': 'gzip-v1'}", id='single-quoted-dict'),
     pytest.param(b'kineticloop_evidence = "gzip-v1"', id='identifier-assignment'),
@@ -2116,11 +2129,20 @@ def test_reserved_classification_is_owner_and_suffix_independent(repo, identity,
                                    'sha256': ce.digest(hostile)}, revision)
 
 
+ADDITIONAL_SOURCE_WRAPPERS = [
+    pytest.param(b'{"kineticloop_" r"evidence": "gzip-v1"}', id='prefixed-key'),
+    pytest.param(b'{("compact_" # comment\n"reencoding"): "v1"}', id='comment-key'),
+    pytest.param(br'{"kineticloop\N{LOW LINE}evidence": "gzip-v1"}', id='named-unicode-key'),
+    pytest.param(b'kineticloop_evidence: (\n str\n) = "gzip-v1"', id='multiline-typed-write'),
+]
+
+
 @pytest.mark.parametrize('raw', [
     pytest.param(b'record["kineticloop_evidence"] = "gzip-v1"', id='subscript-write'),
     pytest.param(b'record["compact_reencoding"] = "v1"', id='map-subscript-write'),
     pytest.param(br"record = {'kineticloop\137evidence': 'gzip-v1'}", id='octal-key'),
     pytest.param(b"record = {'kineticloop_' \\\n'evidence': 'gzip-v1'}", id='continued-key'),
+    *ADDITIONAL_SOURCE_WRAPPERS,
 ])
 @pytest.mark.parametrize('codec', [ce.FORMAT, ce.XZ_FORMAT], ids=['gzip', 'xz'])
 def test_reserved_source_payload_cannot_supply_bound_execution(repo, raw, codec):
@@ -2148,6 +2170,7 @@ def test_reserved_source_payload_cannot_supply_bound_execution(repo, raw, codec)
     pytest.param(b'record["compact_reencoding"] = "v1"', id='map-subscript-write'),
     pytest.param(br"record = {'kineticloop\137evidence': 'gzip-v1'}", id='octal-key'),
     pytest.param(b"record = {'kineticloop_' \\\n'evidence': 'gzip-v1'}", id='continued-key'),
+    *ADDITIONAL_SOURCE_WRAPPERS,
 ])
 def test_reserved_source_cannot_be_review_only_history(repo, raw):
     root, base = repo
