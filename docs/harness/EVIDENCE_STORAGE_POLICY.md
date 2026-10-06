@@ -280,6 +280,9 @@ values are plain content and remain byte-identical. Recognition requires storage
 key/value or assignment structure, including partial object keys. Actual reserved
 metadata stays fail-closed in source dictionaries, assignments, comments, escaped
 string wrappers and adjacent string keys, ASCII x/u/U escapes, malformed/truncated JSON and UTF-8/16/32 or conflicting BOM forms.
+Static assignment-target analysis adds rejection of reserved writes in unpacked
+targets. It evaluates no input and cannot override lexical rejection or grant
+source trust; resource failures remain classification errors.
 This classification is content-based across all owners, paths, suffixes and bounded
 recovery. It executes no source and grants no execution, review, admission or PASS
 meaning. All binding, ancestry, per-edge, archival and retained-map proofs remain

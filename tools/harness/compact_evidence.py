@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import gzip
 import hashlib
 import json
@@ -96,7 +97,43 @@ def unique(pairs):
     return result
 
 
+def source_write_keys(data: bytes) -> set[bytes]:
+    """Additional rejection only: parse target syntax, never evaluate input."""
+    try:
+        tree = ast.parse(data)
+    except (SyntaxError, UnicodeError):
+        return set()
+    except (MemoryError, RecursionError) as ex:
+        raise ValueError('evidence-source-classification') from ex
+    keys = set()
+    for node in ast.walk(tree):
+        targets = []
+        if isinstance(node, ast.Assign):
+            targets = node.targets
+        elif isinstance(node, (ast.AugAssign, ast.NamedExpr)):
+            targets = [node.target]
+        elif isinstance(node, ast.AnnAssign) and node.value is not None:
+            targets = [node.target]
+        for target in targets:
+            # Store context distinguishes unpacked targets from RHS/read uses.
+            for field in ast.walk(target):
+                key = None
+                if isinstance(field, ast.Name) and isinstance(field.ctx, ast.Store):
+                    key = field.id
+                elif isinstance(field, ast.Attribute) and isinstance(field.ctx, ast.Store):
+                    key = field.attr
+                elif (isinstance(field, ast.Subscript) and isinstance(field.ctx, ast.Store)
+                      and isinstance(field.slice, ast.Constant)):
+                    key = field.slice.value
+                if isinstance(key, str) and key.isascii():
+                    keys.add(key.encode('ascii'))
+                elif isinstance(key, bytes):
+                    keys.add(key)
+    return keys
+
+
 def reserved_ascii(data: bytes) -> bool:
+    source = data
     # Classification only: neither escape nor NUL normalization accepts bytes.
     def ascii_escape(match):
         digits = next(value for value in match.groups() if value)
@@ -171,10 +208,21 @@ def reserved_ascii(data: bytes) -> bool:
         keys.update(match[1] for match in re.finditer(
             rb",\s*[\"']([a-z_][a-z_0-9]*)[\"']", view)
                     if match.start() in object_commas)
-    return (b'kineticloop_evidence' in keys or b'compact_reencoding' in keys or
-            {b'payload', b'stored_sha256', b'raw_sha256'} <= keys or
-            {b'authorization', b'preserved_records', b'entries'} <= keys or
-            {b'protected_base', b'source_revision', b'entries'} <= keys)
+    def reserved():
+        return (b'kineticloop_evidence' in keys or b'compact_reencoding' in keys or
+                {b'payload', b'stored_sha256', b'raw_sha256'} <= keys or
+                {b'authorization', b'preserved_records', b'entries'} <= keys or
+                {b'protected_base', b'source_revision', b'entries'} <= keys)
+    if reserved():
+        return True
+    # Only potentially relevant text needs target parsing. Successful parsing
+    # grants no trust, acceptance or evidence status; it can only add rejections.
+    fields = {b'kineticloop_evidence', b'compact_reencoding', b'payload', b'stored_sha256',
+              b'raw_sha256', b'authorization', b'preserved_records', b'entries',
+              b'protected_base', b'source_revision'}
+    if any(name in view for view in views for name in fields):
+        keys.update(source_write_keys(source))
+    return reserved()
 
 
 def envelope(data: bytes) -> dict[str, Any] | None:
