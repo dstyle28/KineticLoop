@@ -111,6 +111,24 @@
       "deselected": 585,
       "seconds": 54.27,
       "limitation": "Preparation only; no source executed. Exact original helper/plain reads, literal unpacked Store targets, shared guards, RHS read controls and resource errors covered; final immutable affected checks required."
+    },
+    {
+      "check": "malformed and string-wrapped unpacked-target preparation",
+      "result": "PASS",
+      "passed": 297,
+      "failed": 0,
+      "deselected": 585,
+      "seconds": 60.19,
+      "limitation": "Preparation only; cadb6ccb actual865 affected PASS and typecheckFAIL preserved, three self-review gaps superseded it before formal review/result."
+    },
+    {
+      "check": "surrogate literal contents remain classification-only",
+      "result": "PASS",
+      "passed": 6,
+      "failed": 0,
+      "deselected": 882,
+      "seconds": 0.8,
+      "limitation": "Preparation only; ordinary source bytes stay lossless and reserved writes reject without executing literal contents."
     }
   ],
   "limitations": [

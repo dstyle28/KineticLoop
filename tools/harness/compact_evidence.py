@@ -99,36 +99,62 @@ def unique(pairs):
 
 def source_write_keys(data: bytes) -> set[bytes]:
     """Additional rejection only: parse target syntax, never evaluate input."""
-    try:
-        tree = ast.parse(data)
-    except (SyntaxError, UnicodeError):
-        return set()
-    except (MemoryError, RecursionError) as ex:
-        raise ValueError('evidence-source-classification') from ex
-    keys = set()
-    for node in ast.walk(tree):
-        targets = []
-        if isinstance(node, ast.Assign):
-            targets = node.targets
-        elif isinstance(node, (ast.AugAssign, ast.NamedExpr)):
-            targets = [node.target]
-        elif isinstance(node, ast.AnnAssign) and node.value is not None:
-            targets = [node.target]
-        for target in targets:
-            # Store context distinguishes unpacked targets from RHS/read uses.
-            for field in ast.walk(target):
-                key = None
-                if isinstance(field, ast.Name) and isinstance(field.ctx, ast.Store):
-                    key = field.id
-                elif isinstance(field, ast.Attribute) and isinstance(field.ctx, ast.Store):
-                    key = field.attr
-                elif (isinstance(field, ast.Subscript) and isinstance(field.ctx, ast.Store)
-                      and isinstance(field.slice, ast.Constant)):
-                    key = field.slice.value
-                if isinstance(key, str) and key.isascii():
-                    keys.add(key.encode('ascii'))
-                elif isinstance(key, bytes):
-                    keys.add(key)
+    def parsed(source):
+        try:
+            return ast.parse(source)
+        except (SyntaxError, UnicodeError):
+            return None
+        except (MemoryError, RecursionError) as ex:
+            raise ValueError('evidence-source-classification') from ex
+    pending = [data]
+    seen = set()
+    keys: set[bytes] = set()
+    assignment = rb'(?<![=<>!])(?:\*\*|//|<<|>>|[+\-*/%@&|^:])?=(?!=)'
+    while pending:
+        source = pending.pop()
+        if source in seen:
+            continue
+        seen.add(source)
+        tree = parsed(source)
+        trees = [] if tree is None else [tree]
+        if tree is None:
+            # Invalid/truncated RHS bytes cannot hide a valid write target.
+            # Dummy RHS is syntax only; neither it nor source is executed.
+            for match in re.finditer(assignment, source):
+                prefix = parsed(source[:match.end()] + b'None')
+                if prefix is not None:
+                    trees.append(prefix)
+        for node in (node for tree in trees for node in ast.walk(tree)):
+            if isinstance(node, ast.Constant) and isinstance(node.value, str) and '=' in node.value:
+                pending.append(node.value.encode('utf-8', errors='surrogatepass'))
+            keys.update(source_target_keys(node))
+    return keys
+
+
+def source_target_keys(node: ast.AST) -> set[bytes]:
+    keys: set[bytes] = set()
+    targets = []
+    if isinstance(node, ast.Assign):
+        targets = node.targets
+    elif isinstance(node, (ast.AugAssign, ast.NamedExpr)):
+        targets = [node.target]
+    elif isinstance(node, ast.AnnAssign) and node.value is not None:
+        targets = [node.target]
+    for target in targets:
+        # Store context distinguishes unpacked targets from RHS/read uses.
+        for field in ast.walk(target):
+            key: Any = None
+            if isinstance(field, ast.Name) and isinstance(field.ctx, ast.Store):
+                key = field.id
+            elif isinstance(field, ast.Attribute) and isinstance(field.ctx, ast.Store):
+                key = field.attr
+            elif (isinstance(field, ast.Subscript) and isinstance(field.ctx, ast.Store)
+                  and isinstance(field.slice, ast.Constant)):
+                key = field.slice.value
+            if isinstance(key, str) and key.isascii():
+                keys.add(key.encode('ascii'))
+            elif isinstance(key, bytes):
+                keys.add(key)
     return keys
 
 
