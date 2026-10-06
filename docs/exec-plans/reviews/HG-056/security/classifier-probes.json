@@ -1,0 +1,99 @@
+{
+  "reviewed_head_sha": "76484185581647d1a5d038eaa2eaa2c26291b8c1",
+  "decoder_sha256": "31d0e651499b79f94475c8be4557fb636d01dfd7123bf8a2cf66a2c25a23bdd4",
+  "probe_scope": "Bounded synthetic static/classification probes; no input execution, body emission or historical helper execution.",
+  "cases": [
+    {
+      "case": "ordinary_subscript_read",
+      "valid_python": true,
+      "bytes": 30,
+      "sha256": "702b1d1f4c58225520773668d561edcdc9e113055f295bc11a37efb881c84d7f",
+      "static_reserved_key": false,
+      "envelope": "PLAIN",
+      "reencoding_record": "PLAIN"
+    },
+    {
+      "case": "reserved_subscript_assignment",
+      "valid_python": true,
+      "bytes": 42,
+      "sha256": "7a3854f9672ad9a6d7c4c7ea341260113c693e998452dac9c0a78e61022b6fa9",
+      "static_reserved_key": true,
+      "envelope": "PLAIN",
+      "reencoding_record": "PLAIN",
+      "base_envelope": "REJECT:evidence-envelope-json"
+    },
+    {
+      "case": "reserved_map_subscript_assignment",
+      "valid_python": true,
+      "bytes": 35,
+      "sha256": "3e1ce9e4752b26a628e06f3d60850492d97fdbb0ad3ccf6873dc0de796021539",
+      "static_reserved_key": true,
+      "envelope": "PLAIN",
+      "reencoding_record": "PLAIN",
+      "base_envelope": "REJECT:evidence-envelope-json"
+    },
+    {
+      "case": "reserved_octal_source_key",
+      "valid_python": true,
+      "bytes": 47,
+      "sha256": "4bc343f7d877f8da15cbfe6158304ce30a1159a3813e8e796bbefd0fcdabb62a",
+      "static_reserved_key": true,
+      "envelope": "PLAIN",
+      "reencoding_record": "PLAIN"
+    },
+    {
+      "case": "reserved_continued_adjacent_key",
+      "valid_python": true,
+      "bytes": 49,
+      "sha256": "38d9f4b4473b619d89ed9d09c81a118d0ad191447e73160c0879e86caf7de5b0",
+      "static_reserved_key": true,
+      "envelope": "PLAIN",
+      "reencoding_record": "PLAIN"
+    },
+    {
+      "case": "ordinary_get_reference",
+      "valid_python": true,
+      "bytes": 36,
+      "sha256": "5b5d7f3e3c49a1eb8f52f22b35e4938b0bb27ef551e076accdaa5c911e974a40",
+      "static_reserved_key": false,
+      "envelope": "PLAIN",
+      "reencoding_record": "PLAIN"
+    },
+    {
+      "case": "reserved_literal_key",
+      "valid_python": true,
+      "bytes": 44,
+      "sha256": "049dfd85ce3be3c1510a02a1e155b3adb5ccc821a5a234b257380cca445977ff",
+      "static_reserved_key": true,
+      "envelope": "REJECT:evidence-envelope-json",
+      "reencoding_record": "REJECT:evidence-envelope-json"
+    },
+    {
+      "case": "ordinary_json_string_values_array",
+      "bytes": 36,
+      "sha256": "9f5237bdbea1d406c2f28d564cd0bbdb9cf81ba3b515ad612834903853146b06",
+      "static_reserved_key": false,
+      "valid_json_string_values_only": true,
+      "envelope": "REJECT:evidence-envelope-shape",
+      "reencoding_record": "REJECT:evidence-envelope-shape"
+    },
+    {
+      "case": "ordinary_reader_default_string_value",
+      "bytes": 46,
+      "sha256": "ff97b2a8c05a75b00c8158a783cd821baa0bf798edd6814be3ddc5e786f44931",
+      "static_reserved_key": false,
+      "envelope": "REJECT:evidence-envelope-json",
+      "reencoding_record": "REJECT:evidence-envelope-json"
+    }
+  ],
+  "exact_original": {
+    "revision": "f93364d90aaae9b0b62706fd4e4fe395a8cd8ec5",
+    "blob_id": "cde206aee1eb240862863069104ad291ff98dedb",
+    "bytes": 8063,
+    "sha256": "a602ee684cdd7b4d8169388d2a2fe821fc6bc5beadf0d69a593c2ed260ffe382",
+    "fixture_byte_equal": true,
+    "envelope_plain": true,
+    "reencoding_record_plain": true,
+    "bound_read_byte_equal": true
+  }
+}

@@ -1,0 +1,160 @@
+{
+  "reviewed_head_sha": "76484185581647d1a5d038eaa2eaa2c26291b8c1",
+  "base_commit": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+  "tested_commit": "a8ed5ba4985f982a1e050eebd10b9a8e2ed9df86",
+  "critical_source_delta_tested_to_reviewed": [],
+  "execution_capture_verifications": [
+    {
+      "check_id": "authority",
+      "bound_read": "PASS",
+      "reported_result": "FAIL",
+      "exit_code": 1,
+      "raw_bytes": 488,
+      "raw_sha256": "1853ea60323bf0c7bd265ffec22744a0b3cb0897b1c136008a18583f7244cb00",
+      "test_counts": {}
+    },
+    {
+      "check_id": "bound_reader_regressions",
+      "bound_read": "PASS",
+      "reported_result": "PASS",
+      "exit_code": 0,
+      "raw_bytes": 433,
+      "raw_sha256": "54ea2a7f52fd9a7b4d0b2db5f666e456adec8aa82f0d7ccfecf7fe6209d7a026",
+      "test_counts": {
+        "passed": 339
+      }
+    },
+    {
+      "check_id": "codec_security_and_budget",
+      "bound_read": "PASS",
+      "reported_result": "PASS",
+      "exit_code": 0,
+      "raw_bytes": 752,
+      "raw_sha256": "6c68b3f689c819e45506f9efe6e9688c7f8327a9724ed96f675eb23c573f6b92",
+      "test_counts": {
+        "passed": 613
+      }
+    },
+    {
+      "check_id": "compatibility",
+      "bound_read": "PASS",
+      "reported_result": "FAIL",
+      "exit_code": 1,
+      "raw_bytes": 2449,
+      "raw_sha256": "477005c5e1ac54200c6256a5f37ec95b44e4e12fee45a8d6ec164fceb9c691ea",
+      "test_counts": {},
+      "compatibility_objects": [
+        {
+          "history_errors": [
+            "reencoding-invalid:reencoding-unmapped-payload-mutation:docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz"
+          ],
+          "validated_maps": [
+            "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json"
+          ]
+        },
+        {
+          "base": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+          "expected_maps": [
+            "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json",
+            "docs/exec-plans/evidence/KL-036/reencoding-hg054-f92f92bd74033937276794010f65d6fe98f657fc/COMPACT_REENCODING.json"
+          ],
+          "head": "1fee7a4ef9ecb484da24522962a6df4d4c2bd9b9",
+          "history_errors": [
+            "reencoding-invalid:reencoding-unmapped-payload-mutation:docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz"
+          ],
+          "original_blob": "cde206aee1eb240862863069104ad291ff98dedb",
+          "original_bytes": 8063,
+          "original_revision": "f93364d90aaae9b0b62706fd4e4fe395a8cd8ec5",
+          "original_sha256": "a602ee684cdd7b4d8169388d2a2fe821fc6bc5beadf0d69a593c2ed260ffe382",
+          "storage_audit": {
+            "base": "3ec7f7a38d974256a928c3687f63e4d90019e42b",
+            "errors": [
+              "docs/exec-plans/evidence/KL-036/reencoding-hg054-f92f92bd74033937276794010f65d6fe98f657fc/COMPACT_REENCODING.json:evidence-envelope",
+              "reencoding-invalid:reencoding-unmapped-payload-mutation:docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz"
+            ],
+            "files": 672,
+            "head": "1fee7a4ef9ecb484da24522962a6df4d4c2bd9b9",
+            "identity": "KL-036",
+            "remedy": "python tools/harness/compact_evidence.py capture --help",
+            "stored_bytes": 9072305
+          },
+          "validated_maps": [
+            "docs/exec-plans/evidence/HG-054/collection-conversion/COMPACT_REENCODING.json"
+          ]
+        }
+      ]
+    },
+    {
+      "check_id": "diff",
+      "bound_read": "PASS",
+      "reported_result": "PASS",
+      "exit_code": 0,
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_counts": {}
+    },
+    {
+      "check_id": "harness",
+      "bound_read": "PASS",
+      "reported_result": "FAIL",
+      "exit_code": 1,
+      "raw_bytes": 4954,
+      "raw_sha256": "e8d6969abf48165fe76fb3acf0f5230046c4dad374280e76e6c0c4ac2bf72f86",
+      "test_counts": {
+        "failed": 1,
+        "passed": 1842
+      }
+    },
+    {
+      "check_id": "installed_decoder_isolation",
+      "bound_read": "PASS",
+      "reported_result": "PASS",
+      "exit_code": 0,
+      "raw_bytes": 180,
+      "raw_sha256": "706d8c98d66583900f1c073220a23aee540cc8cc77a825e2632cea998da3618a",
+      "test_counts": {
+        "passed": 103
+      }
+    },
+    {
+      "check_id": "lint",
+      "bound_read": "PASS",
+      "reported_result": "PASS",
+      "exit_code": 0,
+      "raw_bytes": 19,
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "test_counts": {}
+    },
+    {
+      "check_id": "scope",
+      "bound_read": "PASS",
+      "reported_result": "FAIL",
+      "exit_code": 1,
+      "raw_bytes": 489,
+      "raw_sha256": "22672a1e0e2dd9a22473a72e11b9cef765f7409031f3b47f5c3b5132d3d6110e",
+      "test_counts": {}
+    },
+    {
+      "check_id": "typecheck",
+      "bound_read": "PASS",
+      "reported_result": "PASS",
+      "exit_code": 0,
+      "raw_bytes": 45,
+      "raw_sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb",
+      "test_counts": {}
+    },
+    {
+      "check_id": "unit",
+      "bound_read": "PASS",
+      "reported_result": "FAIL",
+      "exit_code": 1,
+      "raw_bytes": 1945,
+      "raw_sha256": "bfdf1d65b70997784e7ea9a8ff18dff59c241f47bc14231a759e5b147bddfbed",
+      "test_counts": {
+        "failed": 1,
+        "passed": 246
+      }
+    }
+  ],
+  "scope": "Exact immutable captured artifacts verified once; no test rerun or private scratch log read. PASS here denotes retrieval integrity only."
+}
