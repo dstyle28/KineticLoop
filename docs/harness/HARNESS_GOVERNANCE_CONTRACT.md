@@ -203,3 +203,58 @@ global history guards and original failure facts stay enforced. Actual merged HG
 reviewed complete installation/pins, exact controller admission and installed App
 unit/harness/fullDB/cleanup readiness precede KL081; five merged functional owners
 and all 16 fresh checks remain required. No runtime/frozen/release PASS is conferred.
+
+## HG059 definitions and HG058 continuation
+
+HG059 is definitions-only governance under its committed PACKET.md: explicit
+REVIEW_SOURCE_DECLARATIONS schema/six tuples, non-execution REVIEW_SOURCE_LINEAGE,
+caller boundaries and prospective repaired-current-candidate acceptance. Its exact
+scope includes only those definitions, three named contracts, HG058 packet,
+validator scope/review/index projection enforcement and tests, derived index/manifest
+and own governance/evidence/reviews. Eight author checks and fresh GENERAL plus
+SECURITY_DATA_BOUNDARY reviews are required. No routing/classifier implementation,
+old artifacts/ancestry, frozen authority, requirement, installation or DB changes.
+`packets_refined` remains [] because HARNESS_CHANGE accepts KL identities only;
+summary/files explicitly enumerate the HG058 packet refinement.
+
+HG058 may read the exact indexed declaration/schema after HG059 normal merge; it
+may not write them or expand THREAD_REVIEW schema. Its four review availability
+callers and all exclusions are defined in THREAD_REVIEW_CONTRACT.md. That contract
+intentionally replaces storage-aware RRO only for declared source retrieval with
+separate REVIEW_SOURCE_LINEAGE. No execution/storage/freshness verdict is supplied;
+HG047's actual strict RRO failure remains. Definitions PASS is never HG058 PASS.
+The first-commit HG058 FAIL and conditional repaired-candidate disposition in
+EVIDENCE_STORAGE_POLICY.md are authoritative; no historical rewrite or waiver.
+
+After HG059 normally merges, the coordinator regrants the five exclusive HG058
+resources. Retain original HG058 final ada3b2f0e4f24f2b1fe857ad32c95e8ff6c6b983,
+tested 36b942f3087497d0c6609839df5e04398ec8bc4e and result
+6081301453f30496e6a06b12e20098c4a05a9fa4, with both CHANGES_REQUIRED reviews.
+Continue the existing task first-parent lineage through a normal forward merge of
+live protected master; never rebase/squash/cherry-pick away original map sources or
+import HG056 ancestry. Inspect/resolve only authorized paths and do not overwrite
+new governance with old packet text. Retained-map base advance must satisfy the
+existing HG054 storage contract: exact pre-import map bytes on task first-parent
+lineage, original admission/unique merge-base, unchanged old-base-to-pre-import
+audit, source still unmerged, and no mapped path or record used in base advance.
+Verify every own and inherited map (the inherited map owner is HG054, not HG055).
+If these conditions fail, report the exact conflict before inventing an exception.
+
+Two base identities are mandatory: the immutable original audit base is
+9700a1b95d05c856897f74f125cfdf6fb3f6e646; the new HARNESS_CHANGE base_commit is the
+actual live protected PR base, as the unchanged governance-base-mismatch guard
+requires. Preserve original audit-base identity in the own verification/check index
+and result limitations. Run complete original-base-to-candidate storage/history
+inventory as well as actual-live-base candidate audit/ci-pr; no earlier audit is
+rebound. New stable T follows base adoption/implementation; every required author
+command runs freshly and new result R precedes independent GENERAL/SECURITY review.
+Only exact own REVIEW_RECORD_ONLY append follows R. A later protected-base change
+requires a new stable tested/result revision and reviews as existing guards demand.
+
+Root independently reviews complete ASSETS/controller_files and actual release,
+validator/decoder/controller/installed commit/image/policy identities before install,
+creates exact repository/PR/base/head/controller admission, and owns installed App
+unit/harness/fullDB, cleanup, hosted checks and normal merge. No author install,
+sign/admit or DB/App lease follows from these definitions. KL081 dependencies and
+all 16 functional checks remain unchanged; all release/production/shadow boundaries
+remain enforced.

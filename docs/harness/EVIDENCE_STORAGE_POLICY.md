@@ -271,3 +271,32 @@ Task and governance tested/review suffix validators reject conversion records an
 existing compact representation changes even under allowed bookkeeping paths;
 restoration in a later suffix commit does not restore freshness. Newly captured
 independent review output remains ordinary review evidence.
+
+## HG059 non-execution source boundary and repaired candidate
+
+The HG059 declaration and REVIEW_SOURCE_LINEAGE definitions in
+THREAD_REVIEW_CONTRACT.md apply only to explicitly declared historical source uses
+at its four enumerated review-availability callers. This is a separate source proof,
+not storage_bookkeeping_only or REVIEW_RECORD_ONLY. All ordinary/compact output,
+execution/M3/task/requirement, budget, classifier, global-history, reencoding and
+admission guards remain unchanged. The same physical path used as output retains
+strict decoding. Invalid declarations fail closed before role dispatch; no decoder
+exception fallback. HG047's original strict RRO failure is preserved.
+
+HG058's first duplicate-bulk commit 5da0e253 remains acceptance FAIL forever. Its
+existing genuine first-retirement map at d1c1411eae72cbc3499e5fbdc8a266dfde19d003,
+source 6af4b99f6895ac63686f3a560cae2d01a8a40a17, is lawful technical repair under
+HG054, not retrospective first-commit PASS. A repaired current candidate is eligible
+only after the complete original 9700a1b95d05c856897f74f125cfdf6fb3f6e646-to-candidate
+history/storage audit, every own/inherited map and original snapshot, every changed
+edge/blob and all other gates pass. No classifier/history semantics, old errors,
+late-map rule, HG051 exception or historical cutoff changes. Preserve all prior
+HG058 commits, results, reviews, evidence and failures. A successful later tree
+cannot make the first commit compliant.
+
+One genuine execution may serve multiple references only under the existing
+capture-once rule above: retain each oracle's exact command/tested/capture identity,
+collection/execution/JUnit provenance and demonstrate that it consumed that actual
+execution. This grants no execution grouping, fake PASS, new evidence platform or
+relaxation of required commands. Identical same-directory content-addressed payload
+bytes may be shared; distinct actual executions retain distinct envelopes.

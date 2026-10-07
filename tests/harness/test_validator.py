@@ -2076,6 +2076,13 @@ class ValidatorTests(unittest.TestCase):
         self.check(1, 'governance-write-scope:HG-051:' + path,
                    '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
+    def test_hg059_security_review_is_mandatory(self):
+        self.put('docs/exec-plans/evidence/HG-059/scope.md', 'fixture scope')
+        tested = self.commit('HG059 governance implementation')
+        self.persist_governance_change('HG-059', tested, [], ['GENERAL'])
+        self.check(1, 'governance-required-reviews-not-pass:HG-059',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
     def test_hg058_security_review_is_mandatory(self):
         self.put('docs/exec-plans/evidence/HG-058/scope.md', 'fixture scope')
         tested = self.commit('HG058 governance implementation')
@@ -2636,3 +2643,51 @@ class CleanRecoveryTests(unittest.TestCase):
                 changed = text.replace(old, new)
                 self.assertIn('packet-recovery-namespace:KL-081',
                               v.packet_errors(task, changed))
+
+
+class SourceLineageDefinitionTests(unittest.TestCase):
+    def test_hg059_literal_scope_and_hg058_read_only_authority(self):
+        patterns = v.governance_allowed_patterns('HG-059')
+        for path in ('REVIEW_SOURCE_DECLARATIONS.schema.json',
+                     'docs/harness/REVIEW_SOURCE_DECLARATIONS.json',
+                     'docs/exec-plans/active/HG-058.md',
+                     'docs/exec-plans/evidence/HG-059/check.json',
+                     'docs/exec-plans/reviews/HG-059/GENERAL.json'):
+            with self.subTest(path=path):
+                self.assertTrue(v.matches(path, patterns))
+        for path in ('tools/harness/compact_evidence.py', 'tools/harness/local_gate.py',
+                     'THREAD_REVIEW.schema.json', 'FROZEN_BASELINE.json',
+                     'CURRENT_REQUIREMENT_SET.json', 'docs/exec-plans/active/KL-081.md',
+                     'docs/exec-plans/evidence/HG-058/check.json',
+                     'docs/exec-plans/evidence/HG-059A/check.json',
+                     'docs/exec-plans/reviews/HG-047/GENERAL.json'):
+            with self.subTest(path=path):
+                self.assertFalse(v.matches(path, patterns))
+        for path in ('REVIEW_SOURCE_DECLARATIONS.schema.json',
+                     'docs/harness/REVIEW_SOURCE_DECLARATIONS.json'):
+            self.assertFalse(v.matches(path, v.governance_allowed_patterns('HG-058')))
+
+    def test_hg059_exact_checks_authorities_and_no_product_definition_projection(self):
+        record = {'checks_run': [{'check_id': name} for name in v.HG059_REQUIRED_CHECKS],
+                  'authority_entries_added': ['REVIEW_SOURCE_DECLARATIONS.schema.json',
+                                             'docs/harness/REVIEW_SOURCE_DECLARATIONS.json'],
+                  'packets_refined': []}
+        self.assertEqual(v.source_lineage_projection_errors(record, set()), [])
+        for change in ('missing', 'duplicate', 'foreign'):
+            mutated = copy.deepcopy(record)
+            if change == 'missing':
+                mutated['checks_run'].pop()
+            elif change == 'duplicate':
+                mutated['checks_run'].append(mutated['checks_run'][0])
+            else:
+                mutated['checks_run'][0] = {'check_id': 'invented-check'}
+            self.assertIn('source-lineage-required-checks',
+                          v.source_lineage_projection_errors(mutated, set()))
+        for additions in ([], ['THREAD_REVIEW.schema.json']):
+            mutated = dict(record, authority_entries_added=additions)
+            self.assertIn('source-lineage-authority-projection',
+                          v.source_lineage_projection_errors(mutated, set()))
+        self.assertIn('source-lineage-task-projection',
+                      v.source_lineage_projection_errors(record, {'KL-081'}))
+        self.assertIn('source-lineage-task-projection', v.source_lineage_projection_errors(
+            dict(record, packets_refined=['KL-081']), set()))
