@@ -92,8 +92,8 @@ aggregate work, fail closed on exhaustion). Maximum lineage proof is 4096 commit
 64 entries per validation context; caches retain at most those 64 source receipts.
 HG058 must test these finite bounds; exhaustion denies, never truncates proof. No evaluation, import, network, decoding or content repair.
 Return source identity only: proof kind, exact declaration/record identity, selected
-revision, normalized path, mode, blob OID, byte count and SHA256 (raw bytes may be
-returned for inspection). Cache keys include validation/protected-base revisions,
+revision, normalized path, mode, blob OID, byte count and SHA256. The receipt returns no source body or evidence verdict.
+Cache keys include validation/protected-base revisions,
 declaration blob, evaluated record blob, owner/type/reference and both bound SHAs;
 cache entries never cross proof kinds or validation contexts.
 
