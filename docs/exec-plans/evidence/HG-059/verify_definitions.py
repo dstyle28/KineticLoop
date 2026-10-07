@@ -135,6 +135,18 @@ def main():
         try: declarations(data, schema)
         except Exception: negatives.append(name)
         else: raise AssertionError(name)
+    for field in ('reference', 'review_record_path', 'owner', 'reviewed_head_sha',
+                  'original_review_record_commit', 'original_review_record_blob'):
+        bad = copy.deepcopy(obj)
+        bad['declarations'][0][field] += '\n'
+        try: declarations(json.dumps(bad).encode(), schema)
+        except Exception: negatives.append('trailing-newline:' + field)
+        else: raise AssertionError('trailing-newline:' + field)
+    bad = copy.deepcopy(obj)
+    bad['declarations'][0]['reference'] = 'a' * 1025
+    try: declarations(json.dumps(bad).encode(), schema)
+    except Exception: negatives.append('path-string-budget')
+    else: raise AssertionError('path-string-budget')
     try: declarations(b'{"format":1,"format":2}', schema)
     except ValueError: negatives.append('duplicate-json-key')
     else: raise AssertionError('duplicate-json-key')
