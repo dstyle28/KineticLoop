@@ -1,0 +1,208 @@
+{
+  "reviewed_head_sha": "337146e1927ba0f57995d4af26f4108cfc95d7a5",
+  "base_commit": "9700a1b95d05c856897f74f125cfdf6fb3f6e646",
+  "tested_commit": "74c93c06e83cd5087ecd3b4cc11320b88b246616",
+  "status": "PASS",
+  "changed_files": 176,
+  "scope_and_governance_projection": "exact",
+  "index_entries_verified": 30,
+  "manifest_entries_verified": 343,
+  "compact_envelopes_verified": 85,
+  "independently_verified_source_identities": [
+    {
+      "owner": "harness-governance-v0.1/HG-045",
+      "type": "GENERAL",
+      "reference": "tests/harness/test_m3_milestone_closure.py",
+      "selected_revision": "478a46a418fc759c1843ce24702ccee7aafcddc2",
+      "source_bytes": 35709,
+      "source_sha256": "b36721459bd032c6ef518179c7ace46e06d540695b13c5cf549e84a06eb15694",
+      "source_blob": "9a34163c2b5e726d1a1d4a9af2dd6c00e7235b64",
+      "fallback_edges": [],
+      "original_review_bytes_preserved": true
+    },
+    {
+      "owner": "harness-governance-v0.1/HG-045",
+      "type": "PROTOCOL",
+      "reference": "tests/harness/test_m3_milestone_closure.py",
+      "selected_revision": "478a46a418fc759c1843ce24702ccee7aafcddc2",
+      "source_bytes": 35709,
+      "source_sha256": "b36721459bd032c6ef518179c7ace46e06d540695b13c5cf549e84a06eb15694",
+      "source_blob": "9a34163c2b5e726d1a1d4a9af2dd6c00e7235b64",
+      "fallback_edges": [],
+      "original_review_bytes_preserved": true
+    },
+    {
+      "owner": "harness-governance-v0.1/HG-045",
+      "type": "DB_CONCURRENCY",
+      "reference": "tests/harness/test_m3_milestone_closure.py",
+      "selected_revision": "478a46a418fc759c1843ce24702ccee7aafcddc2",
+      "source_bytes": 35709,
+      "source_sha256": "b36721459bd032c6ef518179c7ace46e06d540695b13c5cf549e84a06eb15694",
+      "source_blob": "9a34163c2b5e726d1a1d4a9af2dd6c00e7235b64",
+      "fallback_edges": [],
+      "original_review_bytes_preserved": true
+    },
+    {
+      "owner": "harness-governance-v0.1/HG-047",
+      "type": "GENERAL",
+      "reference": "docs/exec-plans/reviews/HG-047/general_round4/verify.py",
+      "selected_revision": "39a9a562cb4b9604916099b1a2af48e270c5b8d7",
+      "source_bytes": 6697,
+      "source_sha256": "3b96d3d62df4197f49dc9efc516d3a41cf462bb85dda7ade4ec245aff751de25",
+      "source_blob": "fb33e99c3a47c9c1b60fe27ad30ab5ea42e5e329",
+      "fallback_edges": [
+        {
+          "commit": "89b3d3f55de1c8e9882bfb7f5b109eb4c15da3c2",
+          "changed_path_count": 46
+        },
+        {
+          "commit": "39a9a562cb4b9604916099b1a2af48e270c5b8d7",
+          "changed_path_count": 5
+        }
+      ],
+      "original_review_bytes_preserved": true
+    },
+    {
+      "owner": "harness-governance-v0.1/HG-047",
+      "type": "GENERAL",
+      "reference": "docs/exec-plans/reviews/HG-047/general_round4/verify-attempt1.py",
+      "selected_revision": "39a9a562cb4b9604916099b1a2af48e270c5b8d7",
+      "source_bytes": 6729,
+      "source_sha256": "4b7f9e0b5b51f5851af85d4890b18df897909361b5a542afba7b13db70e9dfcc",
+      "source_blob": "e565722e8f495008d00962304ecd2522c5100740",
+      "fallback_edges": [
+        {
+          "commit": "89b3d3f55de1c8e9882bfb7f5b109eb4c15da3c2",
+          "changed_path_count": 46
+        },
+        {
+          "commit": "39a9a562cb4b9604916099b1a2af48e270c5b8d7",
+          "changed_path_count": 5
+        }
+      ],
+      "original_review_bytes_preserved": true
+    },
+    {
+      "owner": "harness-governance-v0.1/HG-047",
+      "type": "SECURITY_DATA_BOUNDARY",
+      "reference": "docs/exec-plans/reviews/HG-047/security_round4/verify.py",
+      "selected_revision": "39a9a562cb4b9604916099b1a2af48e270c5b8d7",
+      "source_bytes": 10728,
+      "source_sha256": "4bfcade49d7803ee057d319741713cface4a173297b32a91fda6b568c6231d06",
+      "source_blob": "816e9ff76f8f85676d854627bd34a35b742f6fb7",
+      "fallback_edges": [
+        {
+          "commit": "89b3d3f55de1c8e9882bfb7f5b109eb4c15da3c2",
+          "changed_path_count": 46
+        },
+        {
+          "commit": "39a9a562cb4b9604916099b1a2af48e270c5b8d7",
+          "changed_path_count": 5
+        }
+      ],
+      "original_review_bytes_preserved": true
+    }
+  ],
+  "author_checks": [
+    {
+      "check_id": "definitions",
+      "exit_code": 0,
+      "output_sha256": "9b82c4fb5f8dd1bcab5add4ea042158fe5c1a4865776e60bc8fde803bfc56bad"
+    },
+    {
+      "check_id": "validator",
+      "exit_code": 0,
+      "output_sha256": "de516fe833f7a5697b51e41fee4a4980dcbf98e74e5aeb8b8e8a457ca96bb5c3",
+      "cases": 161,
+      "phase_reports": 483,
+      "junit_identity_match": true,
+      "collection_sha256": "b0d0bb2d98b1fb8153575d375311458321ffdc80b946fb40a4913bc2206e9cf6"
+    },
+    {
+      "check_id": "unit",
+      "exit_code": 0,
+      "output_sha256": "d6a007f76fca0394330799a863f1d82afebc0f45682314d36815b7809d65cb8b",
+      "cases": 247,
+      "phase_reports": 741,
+      "junit_identity_match": true,
+      "collection_sha256": "aa44ef95cbd9dfea6a741f359cb2c8884c51e7d9c1909eed35d63d526de16280"
+    },
+    {
+      "check_id": "harness",
+      "exit_code": 0,
+      "output_sha256": "16e39ce07764e118cf4b9c36153d347ae7d7062aab16f61129994c32dc1d7fb7",
+      "cases": 1770,
+      "phase_reports": 5310,
+      "junit_identity_match": true,
+      "collection_sha256": "6698a87a4e73bf53a2930d6c31dee8579255af32b6deae5ae7e5bfdab7b1be62",
+      "clean_source_workers": 2
+    },
+    {
+      "check_id": "lint",
+      "exit_code": 0,
+      "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "check_id": "typecheck",
+      "exit_code": 0,
+      "output_sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb"
+    },
+    {
+      "check_id": "authority",
+      "exit_code": 0,
+      "output_sha256": "575c27614271c1c49c6a8e1968a2a6c79b664c9c880dde43ec8113846e575f94"
+    },
+    {
+      "check_id": "diff",
+      "exit_code": 0,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "definition_oracle": {
+    "argv": [
+      "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+      "/Users/davetian/.codex/worktrees/e520/KineticLoop/docs/exec-plans/evidence/HG-059/verify_definitions.py",
+      "--base",
+      "9700a1b95d05c856897f74f125cfdf6fb3f6e646",
+      "--tested",
+      "74c93c06e83cd5087ecd3b4cc11320b88b246616"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "9b82c4fb5f8dd1bcab5add4ea042158fe5c1a4865776e60bc8fde803bfc56bad",
+    "tuples": 6,
+    "negative_cases": 18
+  },
+  "historical_source_executed": false,
+  "full_suites_rerun": false,
+  "root_installation_admission_app_full_db_hosted_merge": "NOT_RUN by this review",
+  "targeted_independent_check": {
+    "argv": [
+      "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/harness/test_validator.py",
+      "-q",
+      "-k",
+      "SourceLineageDefinitionTests or hg059_security_review_is_mandatory",
+      "--junitxml=docs/exec-plans/reviews/HG-059/GENERAL/targeted.xml"
+    ],
+    "exit_code": 0,
+    "passed": 3,
+    "deselected": 158,
+    "meaning": "bounded new tests only; no full suite claim",
+    "artifacts": {
+      "targeted.log": {
+        "bytes": 240,
+        "sha256": "ff94cad4d259f225fe9fde3c0ef5d7faaaef0337248d0fa9dacb8d1e8060b3a6"
+      },
+      "targeted.xml": {
+        "bytes": 710,
+        "sha256": "e2907b75edc3109eae76d745fd26a2a2a863bedee0392f647f86a8bbed7259d8"
+      }
+    }
+  },
+  "historical_source_purpose_review": {
+    "status": "six exact source uses confirmed",
+    "basis": "Original immutable review records, HG045 protocol/DB reports and HG047 general/security reports distinguish inspected tests/audit-helper source from separately cited captured outputs; original governance checks do not select any declared source as output. No filename or decoder-error inference assigns purpose."
+  }
+}

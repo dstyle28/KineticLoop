@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kineticloop/review-source-declarations-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "declarations"
+  ],
+  "properties": {
+    "format": {
+      "const": "kineticloop-review-source-declarations-v1"
+    },
+    "declarations": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "owner",
+          "review_type",
+          "review_record_path",
+          "original_review_record_commit",
+          "original_review_record_blob",
+          "reviewed_head_sha",
+          "reference",
+          "purpose"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^(?:harness-governance-v0\\.1/HG-[0-9]{3}|harness-backlog-v0\\.2/KL-[0-9]{3}[A-Z]?)(?![\\s\\S])"
+          },
+          "review_type": {
+            "enum": [
+              "GENERAL",
+              "PROTOCOL",
+              "DB_CONCURRENCY",
+              "SECURITY_DATA_BOUNDARY"
+            ]
+          },
+          "review_record_path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024,
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*//)[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*(?![\\s\\S])"
+          },
+          "original_review_record_commit": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}(?![\\s\\S])",
+            "minLength": 40,
+            "maxLength": 40
+          },
+          "original_review_record_blob": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}(?![\\s\\S])",
+            "minLength": 40,
+            "maxLength": 40
+          },
+          "reviewed_head_sha": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}(?![\\s\\S])",
+            "minLength": 40,
+            "maxLength": 40
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024,
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*//)[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*(?![\\s\\S])"
+          },
+          "purpose": {
+            "const": "REVIEW_SOURCE_INSPECTION"
+          }
+        }
+      }
+    }
+  }
+}

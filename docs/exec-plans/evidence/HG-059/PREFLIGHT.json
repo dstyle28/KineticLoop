@@ -1,0 +1,35 @@
+{
+  "identity": "harness-governance-v0.1/HG-059",
+  "base": "9700a1b95d05c856897f74f125cfdf6fb3f6e646",
+  "live_master_verified": true,
+  "prerequisites": [
+    {
+      "owner": "HG-054",
+      "record": "docs/exec-plans/governance/HG-054.yaml",
+      "record_commit": "8b9e2d129fc9a285db694b33f1254c9de4f0698e",
+      "merged_in_base": true
+    },
+    {
+      "owner": "HG-055",
+      "record": "docs/exec-plans/governance/HG-055.yaml",
+      "record_commit": "17a13302ddd09e90bec72d2a30eafe32a7cf405a",
+      "merged_in_base": true
+    },
+    {
+      "owner": "HG-057",
+      "record": "docs/exec-plans/governance/HG-057.yaml",
+      "record_commit": "d6f1f4d65b77fba434c467af21b1cc1b8aa6d9f2",
+      "merged_in_base": true
+    }
+  ],
+  "leases": [
+    "harness_core",
+    "harness_governance",
+    "harness_validator",
+    "evidence_storage",
+    "trusted_local_ci_controller"
+  ],
+  "scope": "definitions only; no App/DB/installation lease",
+  "preparation": "uv unavailable; approved existing Python3.12 fallback. Initial sandbox network read failed DNS; escalated live read succeeded. Initial branch creation failed sandbox lock permission; approved Git operation succeeded. These are preparation failures, not execution PASS.",
+  "historical_source_purpose": "Six refs point to source/test helpers read as code citations in original reviews, not command outputs; original immutable records and source identities verified by verify_definitions.py and independently reviewed. No historical source executed."
+}

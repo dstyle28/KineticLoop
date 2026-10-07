@@ -1499,6 +1499,15 @@ def governance_record_paths(change_id):
 # Literal prospective scopes; HG057 never implements the HG058 reader purpose.
 HG057_ALLOWED_PATTERNS = ['KineticLoop_Harness_Backlog_v0.2.json', 'KineticLoop_Harness_Traceability_v0.3.json', '06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md', 'docs/exec-plans/active/KL-036.md', 'docs/exec-plans/active/KL-038.md', 'docs/exec-plans/active/KL-039.md', 'docs/exec-plans/active/KL-064.md', 'docs/exec-plans/active/KL-081.md', 'docs/exec-plans/active/HG-058.md', 'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md', 'tools/harness/validate_harness.py', 'tests/harness/test_validator.py', 'CURRENT_DOCUMENT_INDEX.json', 'HARNESS_DOCUMENT_MANIFEST.json', 'docs/exec-plans/governance/HG-057.yaml', 'docs/exec-plans/evidence/HG-057/**', 'docs/exec-plans/reviews/HG-057/**']
 HG058_ALLOWED_PATTERNS = ['tools/harness/compact_evidence.py', 'tools/harness/validate_harness.py', 'tests/harness/test_compact_evidence.py', 'tests/harness/test_review_evidence_provenance.py', 'tests/harness/test_m3_milestone_closure.py', 'tests/harness/test_validator.py', 'tests/harness/test_local_gate.py', 'docs/harness/EVIDENCE_STORAGE_POLICY.md', 'docs/harness/THREAD_REVIEW_CONTRACT.md', 'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md', 'CURRENT_DOCUMENT_INDEX.json', 'HARNESS_DOCUMENT_MANIFEST.json', 'docs/exec-plans/governance/HG-058.yaml', 'docs/exec-plans/evidence/HG-058/**', 'docs/exec-plans/reviews/HG-058/**']
+HG059_ALLOWED_PATTERNS = [
+    'REVIEW_SOURCE_DECLARATIONS.schema.json', 'docs/harness/REVIEW_SOURCE_DECLARATIONS.json',
+    'docs/harness/THREAD_REVIEW_CONTRACT.md', 'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md',
+    'docs/harness/EVIDENCE_STORAGE_POLICY.md', 'docs/exec-plans/active/HG-058.md',
+    'tools/harness/validate_harness.py', 'tests/harness/test_validator.py',
+    INDEX, MANIFEST, 'docs/exec-plans/governance/HG-059.yaml',
+    'docs/exec-plans/evidence/HG-059/**', 'docs/exec-plans/reviews/HG-059/**']
+HG059_REQUIRED_CHECKS = {'definitions', 'validator', 'unit', 'harness', 'lint',
+                         'typecheck', 'authority', 'diff'}
 HG058_PACKET_SHA256 = '59c8f019227a50d3a7d9f86948ac6f01a9f6a8d843c942c5b20a17e22d37e941'
 HG057_REQUIRED_CHECKS = {'recovery', 'validator', 'unit', 'harness', 'lint',
                          'typecheck', 'authority', 'diff'}
@@ -1543,7 +1552,25 @@ def clean_recovery_projection_errors(before, after):
     return errors
 
 
+def source_lineage_projection_errors(record, changed_task_ids):
+    """Definitions-only HG059 record projection; no source-reader behavior."""
+    errors = []
+    check_ids = [check['check_id'] for check in record['checks_run']]
+    if (set(check_ids) != HG059_REQUIRED_CHECKS
+            or len(check_ids) != len(HG059_REQUIRED_CHECKS)):
+        errors.append('source-lineage-required-checks')
+    if set(record.get('authority_entries_added', [])) != {
+            'REVIEW_SOURCE_DECLARATIONS.schema.json',
+            'docs/harness/REVIEW_SOURCE_DECLARATIONS.json'}:
+        errors.append('source-lineage-authority-projection')
+    if changed_task_ids or record['packets_refined']:
+        errors.append('source-lineage-task-projection')
+    return errors
+
+
 def governance_allowed_patterns(change_id):
+    if change_id == 'HG-059':
+        return HG059_ALLOWED_PATTERNS
     if change_id == 'HG-057':
         return HG057_ALLOWED_PATTERNS
     if change_id == 'HG-058':
@@ -3886,6 +3913,8 @@ def validate(root, args):
                     if (set(check_ids) != HG057_REQUIRED_CHECKS
                             or len(check_ids) != len(HG057_REQUIRED_CHECKS)):
                         errors.append('clean-recovery-required-checks')
+                if change_id == 'HG-059':
+                    errors.extend(source_lineage_projection_errors(record, changed_task_ids))
                 args.governance_changed_task_ids = changed_task_ids
                 args.governance_base_tasks = old_tasks
                 args.governance_reviewed_tasks = replay_tasks
@@ -4096,7 +4125,7 @@ def validate(root, args):
             required = {'GENERAL'}
             if change_id in ('HG-051', 'HG-054', 'HG-057'):
                 required.update({'PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'})
-            if change_id in ('HG-050', 'HG-058'):
+            if change_id in ('HG-050', 'HG-058', 'HG-059'):
                 required.add('SECURITY_DATA_BOUNDARY')
             old_tasks = getattr(args, 'governance_base_tasks', {})
             reviewed_tasks = getattr(args, 'governance_reviewed_tasks', tasks)
